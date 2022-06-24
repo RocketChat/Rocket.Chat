@@ -1,4 +1,14 @@
-import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult, IndexSpecification, Collection, Db } from 'mongodb';
+import type {
+	Cursor,
+	UpdateOneOptions,
+	UpdateQuery,
+	UpdateWriteOpResult,
+	IndexSpecification,
+	Collection,
+	Db,
+	FindOneOptions,
+	FilterQuery,
+} from 'mongodb';
 import type {
 	VideoConference,
 	IGroupVideoConference,
@@ -19,7 +29,10 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	}
 
 	protected modelIndexes(): IndexSpecification[] {
-		return [{ key: { rid: 1, createdAt: 1 }, unique: false }];
+		return [
+			{ key: { rid: 1, createdAt: 1 }, unique: false },
+			{ key: { type: 1, status: 1 }, unique: false },
+		];
 	}
 
 	public async findAllByRoomId(
@@ -37,6 +50,20 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				},
 			},
 		);
+	}
+
+	public async countByTypeAndStatus(
+		type: VideoConference['type'],
+		status: VideoConferenceStatus,
+		options: FindOneOptions<VideoConference>,
+	): Promise<number> {
+		return this.find(
+			{
+				type,
+				status,
+			} as FilterQuery<VideoConference>,
+			options,
+		).count();
 	}
 
 	public async createDirect({

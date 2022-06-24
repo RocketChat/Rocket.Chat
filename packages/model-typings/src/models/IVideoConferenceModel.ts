@@ -1,10 +1,23 @@
-import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult } from 'mongodb';
-import type { IGroupVideoConference, ILivechatVideoConference, IRoom, IUser, VideoConference } from '@rocket.chat/core-typings';
+import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult, FindOneOptions } from 'mongodb';
+import type {
+	IGroupVideoConference,
+	ILivechatVideoConference,
+	IRoom,
+	IUser,
+	VideoConference,
+	VideoConferenceStatus,
+} from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
 export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	findAllByRoomId(rid: IRoom['_id'], { offset, count }: { offset?: number; count?: number }): Promise<Cursor<VideoConference>>;
+
+	countByTypeAndStatus(
+		type: VideoConference['type'],
+		status: VideoConferenceStatus,
+		options: FindOneOptions<VideoConference>,
+	): Promise<number>;
 
 	createDirect({ providerName, ...callDetails }: Pick<VideoConference, 'rid' | 'createdBy' | 'providerName'>): Promise<string>;
 

@@ -92,7 +92,7 @@ const VideoConfListItem = ({
 						{!endedAt && (
 							<Button primary small alignItems='center' display='flex' onClick={handleJoinConference}>
 								<Icon size='x20' name='video' mie='x4' />
-								{t('Join')}
+								{t('join')}
 							</Button>
 						)}
 						{joinedUsers.length > 0 && (

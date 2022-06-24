@@ -1,3 +1,4 @@
+import { MongoInternals } from 'meteor/mongo';
 import type {
 	IDirectVideoConference,
 	IRoom,
@@ -9,6 +10,7 @@ import type {
 	AtLeast,
 	IGroupVideoConference,
 	IMessage,
+	IStats,
 	IVideoConferenceMessage,
 	VideoConference,
 	VideoConferenceCapabilities,
@@ -33,7 +35,11 @@ import { settings } from '../../../app/settings/server';
 import { getURL } from '../../../app/utils/server';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
+import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
 import { api } from '../../sdk/api';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+
+const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -99,6 +105,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 		if (!user) {
 			throw new Error('failed-to-load-own-data');
+		}
+
+		if (call.providerName === 'jitsi') {
+			updateCounter({ settingsId: 'Jitsi_Click_To_Join_Count' });
 		}
 
 		return this.joinCall(call, user, options);
@@ -252,6 +262,35 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				return error.message;
 			}
 		}
+	}
+
+	public async getStatistics(): Promise<IStats['videoConf']> {
+		const options = {
+			readPreference: readSecondaryPreferred(db),
+		};
+
+		return {
+			videoConference: {
+				started: await VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.STARTED, options),
+				ended: await VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.ENDED, options),
+			},
+			direct: {
+				calling: await VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.CALLING, options),
+				started: await VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.STARTED, options),
+				ended: await VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.ENDED, options),
+			},
+			livechat: {
+				started: await VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.STARTED, options),
+				ended: await VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.ENDED, options),
+			},
+			settings: {
+				provider: settings.get<string>('VideoConf_Default_Provider'),
+				dms: settings.get<boolean>('VideoConf_Enable_DMs'),
+				channels: settings.get<boolean>('VideoConf_Enable_Channels'),
+				groups: settings.get<boolean>('VideoConf_Enable_Groups'),
+				teams: settings.get<boolean>('VideoConf_Enable_Teams'),
+			},
+		};
 	}
 
 	private async endCall(callId: VideoConference['_id']): Promise<void> {
