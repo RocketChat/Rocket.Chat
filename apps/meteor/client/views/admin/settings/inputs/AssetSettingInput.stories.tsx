@@ -30,7 +30,7 @@ export const WithValue = Template.bind({});
 WithValue.args = {
 	_id: 'setting_id',
 	label: 'Label',
-	value: { src: 'https://rocket.chat/images/logo.svg' },
+	value: { url: 'https://rocket.chat/images/logo.svg' },
 };
 
 export const WithFileConstraints = Template.bind({});

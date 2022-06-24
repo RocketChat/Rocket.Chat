@@ -1,7 +1,6 @@
 import { Box, ButtonGroup, Button, Icon, Modal } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, FC } from 'react';
-
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 
 type ConfirmationModalProps = {
 	onClose: () => void;
@@ -33,7 +32,7 @@ const ConfirmationModal: FC<ConfirmationModalProps> = ({ onClose, onConfirmActio
 			<Modal.Footer>
 				<ButtonGroup align='end'>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button onClick={handleConfirm} primary danger>
+					<Button onClick={handleConfirm} danger>
 						{labelButton}
 					</Button>
 				</ButtonGroup>

@@ -1,9 +1,6 @@
-import React from 'react';
+import { useToastMessageDispatch, usePermission, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { ReactElement } from 'react';
 
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import { Mailer } from './Mailer';
 
@@ -22,7 +19,7 @@ const useSendMail: useSendMailType = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	return ({ fromEmail, subject, emailBody, dryRun, query }) => {
+	return ({ fromEmail, subject, emailBody, dryRun, query }): void => {
 		if (query.error) {
 			dispatchToastMessage({
 				type: 'error',
@@ -53,7 +50,7 @@ const useSendMail: useSendMailType = () => {
 	};
 };
 
-export default function MailerRoute() {
+export default function MailerRoute(): ReactElement {
 	const canAccessMailer = usePermission('access-mailer');
 	const sendMail = useSendMail();
 

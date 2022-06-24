@@ -1,9 +1,9 @@
 import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
+import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
 import { Meta, Story } from '@storybook/react';
+import type { ObjectId } from 'mongodb';
 import React, { ContextType } from 'react';
 
-import { SettingsContext } from '../contexts/SettingsContext';
-import { UserContext } from '../contexts/UserContext';
 import RoomList from './RoomList/index';
 import Header from './header';
 
@@ -31,14 +31,8 @@ const settings: Record<string, ISetting> = {
 const settingContextValue: ContextType<typeof SettingsContext> = {
 	hasPrivateAccess: true,
 	isLoading: false,
-	querySetting: (_id) => ({
-		getCurrentValue: () => settings[_id],
-		subscribe: () => () => undefined,
-	}),
-	querySettings: () => ({
-		getCurrentValue: () => [],
-		subscribe: () => () => undefined,
-	}),
+	querySetting: (_id) => [() => () => undefined, () => settings[_id]],
+	querySettings: () => [() => () => undefined, () => []],
 	dispatch: async () => undefined,
 };
 
@@ -87,24 +81,15 @@ const userContextValue: ContextType<typeof UserContext> = {
 		roles: ['admin'],
 		type: 'user',
 	},
-	queryPreference: <T,>(pref: string | Mongo.ObjectID, defaultValue: T) => ({
-		getCurrentValue: () => (typeof pref === 'string' ? (userPreferences[pref] as T) : defaultValue),
-		subscribe: () => () => undefined,
-	}),
-	querySubscriptions: () => ({
-		getCurrentValue: () => subscriptions,
-		subscribe: () => () => undefined,
-	}),
-	querySubscription: () => ({
-		getCurrentValue: () => undefined,
-		subscribe: () => () => undefined,
-	}),
+	queryPreference: <T,>(pref: string | ObjectId, defaultValue: T) => [
+		() => () => undefined,
+		() => (typeof pref === 'string' ? (userPreferences[pref] as T) : defaultValue),
+	],
+	querySubscriptions: () => [() => () => undefined, () => subscriptions],
+	querySubscription: () => [() => () => undefined, () => undefined],
 	loginWithPassword: () => Promise.resolve(undefined),
 	logout: () => Promise.resolve(undefined),
-	queryRoom: () => ({
-		getCurrentValue: () => undefined,
-		subscribe: () => () => undefined,
-	}),
+	queryRoom: () => [() => () => undefined, () => undefined],
 };
 
 export const Sidebar: Story = () => (

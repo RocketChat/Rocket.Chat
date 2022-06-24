@@ -1,6 +1,6 @@
 import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
 
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 
 export class AppUsersConverter {
 	constructor(orch) {
@@ -43,6 +43,11 @@ export class AppUsersConverter {
 			lastLoginAt: user.lastLogin,
 			appId: user.appId,
 			customFields: user.customFields,
+			settings: {
+				preferences: {
+					...(user?.settings?.preferences?.language && { language: user.settings.preferences.language }),
+				},
+			},
 		};
 	}
 

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { Settings } from '@rocket.chat/models';
 
 import { RocketChatFile } from '../../app/file';
 import { FileUpload } from '../../app/file-upload/server';
@@ -8,14 +9,18 @@ import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 import { Users, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib/server';
-import { Settings } from '../../app/models/server/raw';
 import { validateEmail } from '../../lib/emailValidator';
 
 Meteor.startup(async function () {
-	if (settings.get('Show_Setup_Wizard') === 'pending' && !Rooms.findOneById('GENERAL')) {
-		Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
-			default: true,
-		});
+	if (!settings.get('Initial_Channel_Created')) {
+		const exists = Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
+		if (!exists) {
+			Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
+				default: true,
+			});
+		}
+
+		Settings.updateValueById('Initial_Channel_Created', true);
 	}
 
 	if (!Users.findOneById('rocket.cat')) {
@@ -130,6 +135,8 @@ Meteor.startup(async function () {
 				console.log('Inserting initial user:'.green);
 				console.log(JSON.stringify(initialUser, null, 2).green);
 				Users.create(initialUser);
+
+				await addUserToDefaultChannels(initialUser, true);
 			}
 		} catch (e) {
 			console.log('Error processing environment variable INITIAL_USER'.red, e);

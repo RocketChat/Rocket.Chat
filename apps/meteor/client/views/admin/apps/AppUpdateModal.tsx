@@ -1,7 +1,6 @@
 import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
-
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 type AppUpdateModalProps = {
 	confirm: () => void;
@@ -33,10 +32,10 @@ const AppUpdateModal: FC<AppUpdateModalProps> = ({ confirm, cancel, ...props }) 
 			<Modal.Content fontScale='p2'>{t('Apps_Manual_Update_Modal_Body')}</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button ghost onClick={handleCancelButtonClick}>
+					<Button secondary onClick={handleCancelButtonClick}>
 						{t('No')}
 					</Button>
-					<Button primary danger onClick={handleConfirmButtonClick}>
+					<Button danger onClick={handleConfirmButtonClick}>
 						{t('Yes')}
 					</Button>
 				</ButtonGroup>

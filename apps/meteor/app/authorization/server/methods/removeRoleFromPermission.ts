@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { Permissions } from '@rocket.chat/models';
 
 import { hasPermission } from '../functions/hasPermission';
 import { CONSTANTS } from '../../lib';
-import { Permissions } from '../../../models/server/raw';
 
 Meteor.methods({
 	async 'authorization:removeRoleFromPermission'(permissionId, role) {

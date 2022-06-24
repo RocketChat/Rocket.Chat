@@ -1,13 +1,10 @@
 import { Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useMemo, useState } from 'react';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import BusinessHoursFormContainer from './BusinessHoursFormContainer';
@@ -20,7 +17,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 	const isSingleBH = useIsSingleBusinessHours();
 
 	const { value: data, phase: state } = useEndpointData(
-		'livechat/business-hour',
+		'/v1/livechat/business-hour',
 		useMemo(() => ({ _id: id, type }), [id, type]),
 	);
 
@@ -111,7 +108,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 				<ButtonGroup>
 					{!isSingleBH && <Button onClick={handleReturn}>{t('Back')}</Button>}
 					{type === 'custom' && (
-						<Button primary danger onClick={handleDelete}>
+						<Button danger onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					)}

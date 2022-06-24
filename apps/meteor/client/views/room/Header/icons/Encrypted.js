@@ -1,12 +1,9 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
+import { useSetting, usePermission, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import Header from '../../../../components/Header';
-import { usePermission } from '../../../../contexts/AuthorizationContext';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 
 const Encrypted = ({ room }) => {
 	const t = useTranslation();
@@ -21,7 +18,7 @@ const Encrypted = ({ room }) => {
 		toggleE2E(room._id, 'encrypted', !(room && room.encrypted));
 	});
 	return e2eEnabled && room?.encrypted ? (
-		<Header.State title={encryptedLabel} icon='key' onClick={handleE2EClick} color={colors.g500} tiny ghost />
+		<Header.State title={encryptedLabel} icon='key' onClick={handleE2EClick} color={colors.s500} tiny />
 	) : null;
 };
 

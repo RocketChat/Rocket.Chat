@@ -14,15 +14,11 @@ import {
 	UrlInput,
 } from '@rocket.chat/fuselage';
 import { useUniqueId, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRoute, useRouteParameter, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo, useEffect } from 'react';
 
 import { Importers } from '../../../../app/importer/client/index';
 import Page from '../../../components/Page';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useSetting } from '../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 import { useErrorHandler } from './useErrorHandler';
 
@@ -42,8 +38,8 @@ function NewImportPage() {
 	const newImportRoute = useRoute('admin-import-new');
 	const prepareImportRoute = useRoute('admin-import-prepare');
 
-	const uploadImportFile = useEndpoint('POST', 'uploadImportFile');
-	const downloadPublicImportFile = useEndpoint('POST', 'downloadPublicImportFile');
+	const uploadImportFile = useEndpoint('POST', '/v1/uploadImportFile');
+	const downloadPublicImportFile = useEndpoint('POST', '/v1/downloadPublicImportFile');
 
 	useEffect(() => {
 		if (importerKey && !importer) {
@@ -172,7 +168,7 @@ function NewImportPage() {
 		<Page className='page-settings'>
 			<Page.Header title={t('Import_New_File')}>
 				<ButtonGroup>
-					<Button ghost onClick={handleBackToImportsButtonClick}>
+					<Button secondary onClick={handleBackToImportsButtonClick}>
 						<Icon name='back' /> {t('Back_to_imports')}
 					</Button>
 					{importer && (

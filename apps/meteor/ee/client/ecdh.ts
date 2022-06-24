@@ -65,18 +65,14 @@ async function initEncryptedSession(): Promise<void> {
 }
 
 initEncryptedSession();
-
-const _jqueryCall = APIClient._jqueryCall.bind(APIClient);
-
-APIClient._jqueryCall = async (method, endpoint, params, body, headers = {}): Promise<any> => {
+APIClient.use(async (request, next) => {
 	const session = await sessionPromise;
 
 	if (!session) {
-		return _jqueryCall(method, endpoint, params, body, headers);
+		return next(...request);
 	}
-
-	const result = await _jqueryCall(method, endpoint, params, body, headers, 'text');
+	const result = await (await next(...request)).text();
 	const decrypted = await session.decrypt(result);
 	const parsed = JSON.parse(decrypted);
 	return parsed;
-};
+});

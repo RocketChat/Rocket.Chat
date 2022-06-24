@@ -1,8 +1,11 @@
 import { Match, check } from 'meteor/check';
+import mem from 'mem';
 
 import { API } from '../../../../api/server';
 import { Livechat } from '../../lib/Livechat';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent } from '../lib/livechat';
+
+const cachedSettings = mem(settings, { maxAge: 1000, cacheKey: JSON.stringify });
 
 API.v1.addRoute('livechat/config', {
 	async get() {
@@ -20,7 +23,7 @@ API.v1.addRoute('livechat/config', {
 
 			const { token, department, businessUnit } = this.queryParams;
 
-			const config = await settings({ businessUnit });
+			const config = await cachedSettings({ businessUnit });
 
 			const status = Livechat.online(department);
 			const guest = token && Livechat.findGuest(token);

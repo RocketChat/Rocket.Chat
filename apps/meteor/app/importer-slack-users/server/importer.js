@@ -4,13 +4,15 @@ import { Random } from 'meteor/random';
 
 import { RawImports, Base, ProgressStep, Selection, SelectionUser } from '../../importer/server';
 import { RocketChatFile } from '../../file';
-import { Users } from '../../models';
+import { Users, Settings as SettingsRaw } from '../../models/server';
 
 export class SlackUsersImporter extends Base {
 	constructor(info, importRecord) {
 		super(info, importRecord);
 
-		this.csvParser = require('csv-parse/lib/sync');
+		const { parse } = require('csv-parse/lib/sync');
+
+		this.csvParser = parse;
 		this.userMap = new Map();
 		this.admins = []; // Array of ids of the users which are admins
 	}
@@ -164,6 +166,7 @@ export class SlackUsersImporter extends Base {
 					});
 				}
 
+				SettingsRaw.incrementValueById('Slack_Users_Importer_Count', this.users.users.length);
 				super.updateProgress(ProgressStep.FINISHING);
 				super.updateProgress(ProgressStep.DONE);
 			} catch (e) {

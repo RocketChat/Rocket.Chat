@@ -6,7 +6,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
-import { settings } from '../../../settings/server/functions/settings';
+import { settings } from '../../../settings/server';
 
 const queryStatusAgentOnline = (extraFilters = {}) => ({
 	statusLivechat: 'available',
@@ -52,7 +52,6 @@ export class Users extends Base {
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ appId: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
-		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
 		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
@@ -60,6 +59,9 @@ export class Users extends Base {
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
 		this.tryEnsureIndex({ extension: 1 }, { sparse: true, unique: true });
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
+
+		this.tryEnsureIndex({ 'active': 1, 'services.email2fa.enabled': 1 }, { sparse: true }); // used by statistics
+		this.tryEnsureIndex({ 'active': 1, 'services.totp.enabled': 1 }, { sparse: true }); // used by statistics
 
 		const collectionObj = this.model.rawCollection();
 		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
@@ -332,30 +334,6 @@ export class Users extends Base {
 		if (settings.get('Livechat_show_agent_email')) {
 			options.fields.emails = 1;
 		}
-
-		return this.findOne(query, options);
-	}
-
-	setTokenpassTcaBalances(_id, tcaBalances) {
-		const update = {
-			$set: {
-				'services.tokenpass.tcaBalances': tcaBalances,
-			},
-		};
-
-		return this.update(_id, update);
-	}
-
-	getTokenBalancesByUserId(userId) {
-		const query = {
-			_id: userId,
-		};
-
-		const options = {
-			fields: {
-				'services.tokenpass.tcaBalances': 1,
-			},
-		};
 
 		return this.findOne(query, options);
 	}

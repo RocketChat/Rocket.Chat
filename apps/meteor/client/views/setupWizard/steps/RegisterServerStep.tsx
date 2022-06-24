@@ -51,7 +51,7 @@ const RegisterServerStep = (): ReactElement => {
 			stepCount={maxSteps}
 			onSubmit={handleRegister}
 			currentStep={currentStep}
-			initialValues={{ email: adminData.companyEmail }}
+			initialValues={{ email: adminData.email }}
 		/>
 	);
 };

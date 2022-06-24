@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useWebRTCProps } from '../../../hooks/useWebRTC';
 
 const UserWebRTCButtons = ({ webRTCData }: { webRTCData: useWebRTCProps }): ReactElement => {
@@ -21,7 +21,7 @@ const UserWebRTCButtons = ({ webRTCData }: { webRTCData: useWebRTCProps }): Reac
 
 	return (
 		<ButtonGroup align='center'>
-			<Button primary danger onClick={handleStopCall} title={t('Stop_call')}>
+			<Button danger onClick={handleStopCall} title={t('Stop_call')}>
 				<Icon size='x20' name='phone-off' />
 			</Button>
 

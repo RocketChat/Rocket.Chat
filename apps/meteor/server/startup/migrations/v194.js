@@ -1,5 +1,6 @@
+import { Settings } from '@rocket.chat/models';
+
 import { Users } from '../../../app/models/server';
-import { Settings } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
 async function updateFieldMap() {

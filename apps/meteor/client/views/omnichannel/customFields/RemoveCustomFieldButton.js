@@ -1,12 +1,9 @@
-import { Table, Icon, Button } from '@rocket.chat/fuselage';
+import { Table, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 function RemoveCustomFieldButton({ _id, reload }) {
 	const removeCustomField = useMethod('livechat:removeCustomField');
@@ -40,9 +37,7 @@ function RemoveCustomFieldButton({ _id, reload }) {
 
 	return (
 		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
-			<Button small ghost title={t('Remove')} onClick={handleDelete}>
-				<Icon name='trash' size='x16' />
-			</Button>
+			<IconButton icon='trash' mini title={t('Remove')} onClick={handleDelete} />
 		</Table.Cell>
 	);
 }

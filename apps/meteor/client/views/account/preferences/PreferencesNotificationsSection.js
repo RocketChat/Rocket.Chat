@@ -1,10 +1,8 @@
 import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Button, Box } from '@rocket.chat/fuselage';
+import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 
 import { KonchatNotification } from '../../../../app/ui';
-import { useSetting } from '../../../contexts/SettingsContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUserPreference } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 
 const notificationOptionsLabelMap = {

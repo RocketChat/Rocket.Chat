@@ -2,7 +2,6 @@ import { UiKitBannerPayload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Icon } from '@rocket.chat/fuselage';
 import { ComponentProps } from 'react';
-import { Subscription } from 'use-subscription';
 
 export type LegacyBannerPayload = {
 	id: string;
@@ -27,10 +26,10 @@ const emitter = new Emitter<{
 	'update-first': undefined;
 }>();
 
-export const firstSubscription: Subscription<BannerPayload | null> = {
-	getCurrentValue: () => queue[0] ?? null,
-	subscribe: (callback) => emitter.on('update-first', callback),
-};
+export const firstSubscription = [
+	(callback: () => void): (() => void) => emitter.on('update-first', callback),
+	(): BannerPayload | null => queue[0] ?? null,
+] as const;
 
 export const open = (payload: BannerPayload): void => {
 	let index = queue.findIndex((_payload) => {

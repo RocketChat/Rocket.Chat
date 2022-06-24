@@ -1,8 +1,7 @@
 import { Box, Button, Margins } from '@rocket.chat/fuselage';
+import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUser } from '../../../contexts/UserContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
 const TwoFactorEmail = (props) => {
@@ -26,7 +25,7 @@ const TwoFactorEmail = (props) => {
 			<Margins blockEnd='x8'>
 				<Box fontScale='h4'>{t('Two-factor_authentication_email')}</Box>
 				{isEnabled && (
-					<Button primary danger onClick={handleDisable}>
+					<Button danger onClick={handleDisable}>
 						{t('Disable_two-factor_authentication_email')}
 					</Button>
 				)}

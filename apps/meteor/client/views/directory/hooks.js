@@ -8,7 +8,7 @@ export function useQuery({ text, itemsPerPage, current }, [column, direction], t
 				text,
 				workspace,
 			}),
-			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : 0 }),
+			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),
 		}),

@@ -328,6 +328,7 @@ describe('[Users]', function () {
 					email,
 					name: 'name',
 					username,
+					pass: 'test',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -3117,7 +3118,6 @@ describe('[Users]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal("The 'selector' param is required");
 					})
 					.end(done);
 			});

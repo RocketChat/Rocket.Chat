@@ -1,12 +1,10 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditTriggerPageContainer from './EditTriggerPageContainer';
 import NewTriggerPage from './NewTriggerPage';

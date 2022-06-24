@@ -1,15 +1,11 @@
 import { Box, Button, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useUser, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useEffect } from 'react';
 import qrcode from 'yaqrcode';
 
 import TextCopy from '../../../components/TextCopy';
 import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotpModal';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUser } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 import BackupCodesModal from './BackupCodesModal';
 
@@ -140,7 +136,7 @@ const TwoFactorTOTP = (props) => {
 				)}
 				{totpEnabled && (
 					<>
-						<Button primary danger onClick={handleDisableTotp}>
+						<Button danger onClick={handleDisableTotp}>
 							{t('Disable_two-factor_authentication')}
 						</Button>
 						<Box fontScale='p2m' mbs='x8'>

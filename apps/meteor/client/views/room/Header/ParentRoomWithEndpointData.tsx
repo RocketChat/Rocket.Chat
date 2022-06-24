@@ -12,7 +12,7 @@ type ParentRoomWithEndpointDataProps = {
 
 const ParentRoomWithEndpointData = ({ rid }: ParentRoomWithEndpointDataProps): ReactElement | null => {
 	const { phase, value } = useEndpointData(
-		'rooms.info',
+		'/v1/rooms.info',
 		useMemo(() => ({ roomId: rid }), [rid]),
 	);
 
