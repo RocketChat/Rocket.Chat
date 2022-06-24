@@ -124,5 +124,5 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findActiveByIdsOrUsernames(userIds: string[], options?: any): Cursor<IUser>;
 
-	setAsFederated(userId: string): Promise<void>
+	setAsFederated(userId: string): Promise<void>;
 }

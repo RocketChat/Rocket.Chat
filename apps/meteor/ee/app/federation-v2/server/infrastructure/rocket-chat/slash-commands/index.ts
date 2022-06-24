@@ -32,7 +32,7 @@ const executeSlashCommand = async (
 		return;
 	}
 	const currentUserId = Meteor.userId();
-	const [command, ...externalUserIdsToInvite] = stringParams.split(' ');
+	const [command, ...externalUserIdsToInvite] = stringParams.trim().split(' ');
 	if (!currentUserId || !commands[command]) {
 		return;
 	}

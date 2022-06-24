@@ -2,8 +2,9 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Users, Subscriptions, Rooms } from '@rocket.chat/models';
+import { Subscriptions } from '@rocket.chat/models';
 
+import { Users, Rooms } from '../../../models/server';
 import { Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
