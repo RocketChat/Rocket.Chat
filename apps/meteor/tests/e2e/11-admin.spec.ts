@@ -19,7 +19,7 @@ test.describe('[Administration]', () => {
 		flexTab = new FlexTab(page);
 		admin = new Administration(page);
 		await loginPage.goto(baseURL as string);
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 	});
 	test.describe('[Admin View]', () => {
 		test.beforeAll(async () => {
