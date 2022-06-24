@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import { Accounts } from 'meteor/accounts-base';
 
 import { hasPermission } from '../../../../../app/authorization';
-import { Users } from '../../../../../app/models';
+import { Users } from '../../../../../app/models/server';
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 
 Meteor.methods({
