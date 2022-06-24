@@ -3,10 +3,10 @@ import { Fragment, ReactElement } from 'react';
 
 import PreviewCodeElement from '../code/PreviewCodeElement';
 import PreviewColorElement from '../colors/PreviewColorElement';
+import PreviewEmojiElement from '../emoji/PreviewEmojiElement';
 import PreviewKatexElement from '../katex/PreviewKatexElement';
 import PreviewChannelMentionElement from '../mentions/PreviewChannelMentionElement';
 import PreviewUserMentionElement from '../mentions/PreviewUserMentionElement';
-import PreviewEmojiElement from './PreviewEmojiElement';
 
 type PreviewInlineElementsProps = {
 	children: MessageParser.Inlines[];
@@ -40,7 +40,7 @@ const PreviewInlineElements = ({ children }: PreviewInlineElementsProps): ReactE
 					return <PreviewCodeElement key={index} code={child.value.value} />;
 
 				case 'EMOJI':
-					return <PreviewEmojiElement key={index} handle={child.value?.value ?? ''} />;
+					return <PreviewEmojiElement key={index} {...child} />;
 
 				case 'COLOR':
 					return <PreviewColorElement key={index} {...child.value} />;

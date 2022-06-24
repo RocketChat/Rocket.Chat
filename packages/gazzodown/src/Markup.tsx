@@ -1,13 +1,13 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { lazy, memo, ReactElement } from 'react';
 
-import BigEmojiBlock from './blocks/BigEmojiBlock';
 import HeadingBlock from './blocks/HeadingBlock';
 import OrderedListBlock from './blocks/OrderedListBlock';
 import ParagraphBlock from './blocks/ParagraphBlock';
 import QuoteBlock from './blocks/QuoteBlock';
 import TaskList from './blocks/TaskListBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
+import BigEmojiBlock from './emoji/BigEmojiBlock';
 
 const CodeBlock = lazy(() => import('./code/CodeBlock'));
 const KatexBlock = lazy(() => import('./katex/KatexBlock'));
@@ -21,7 +21,7 @@ const Markup = ({ tokens }: MarkupProps): ReactElement => (
 		{tokens.map((block, index) => {
 			switch (block.type) {
 				case 'BIG_EMOJI':
-					return <BigEmojiBlock key={index} emojis={block.value} />;
+					return <BigEmojiBlock key={index} emoji={block.value} />;
 
 				case 'PARAGRAPH':
 					return <ParagraphBlock key={index} children={block.value} />;

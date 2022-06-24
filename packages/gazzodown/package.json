@@ -5,7 +5,7 @@
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/fuselage": "next",
-		"@rocket.chat/message-parser": "^0.32.0-dev.5",
+		"@rocket.chat/message-parser": "next",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/jest": "^27.4.1",
 		"@types/katex": "~0",

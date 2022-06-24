@@ -2,10 +2,10 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import { lazy, ReactElement } from 'react';
 
 import ColorElement from '../colors/ColorElement';
+import EmojiElement from '../emoji/EmojiElement';
 import ChannelMentionElement from '../mentions/ChannelMentionElement';
 import UserMentionElement from '../mentions/UserMentionElement';
 import BoldSpan from './BoldSpan';
-import EmojiElement from './EmojiElement';
 import ImageElement from './ImageElement';
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
@@ -51,7 +51,7 @@ const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
 					return <CodeElement key={index} code={child.value.value} />;
 
 				case 'EMOJI':
-					return <EmojiElement key={index} handle={child.value?.value ?? ''} />;
+					return <EmojiElement key={index} {...child} />;
 
 				case 'COLOR':
 					return <ColorElement key={index} {...child.value} />;

@@ -1,9 +1,9 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { memo, ReactElement } from 'react';
 
-import PreviewBigEmojiBlock from './blocks/PreviewBigEmojiBlock';
 import PreviewCodeBlock from './code/PreviewCodeBlock';
 import PreviewInlineElements from './elements/PreviewInlineElements';
+import PreviewBigEmojiBlock from './emoji/PreviewBigEmojiBlock';
 import PreviewKatexBlock from './katex/PreviewKatexBlock';
 
 const isOnlyBigEmojiBlock = (tokens: MessageParser.Root): tokens is [MessageParser.BigEmoji] =>
@@ -15,7 +15,7 @@ type PreviewMarkupProps = {
 
 const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 	if (isOnlyBigEmojiBlock(tokens)) {
-		return <PreviewBigEmojiBlock emojis={tokens[0].value} />;
+		return <PreviewBigEmojiBlock emoji={tokens[0].value} />;
 	}
 
 	const firstBlock = tokens.find((block) => block.type !== 'LINE_BREAK');
