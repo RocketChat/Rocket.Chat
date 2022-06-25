@@ -8,11 +8,11 @@ type BigEmojiBlockProps = {
 };
 
 const BigEmojiBlock = ({ emoji }: BigEmojiBlockProps): ReactElement => (
-	<>
+	<div role='presentation'>
 		{emoji.map((emoji, index) => (
 			<BigEmojiElement key={index} {...emoji} />
 		))}
-	</>
+	</div>
 );
 
 export default BigEmojiBlock;

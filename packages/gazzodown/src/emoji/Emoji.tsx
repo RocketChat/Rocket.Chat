@@ -12,11 +12,12 @@ type EmojiProps = MessageParser.Emoji & {
 const Emoji = ({ big = false, preview = false, ...emoji }: EmojiProps): ReactElement => {
 	const { detectEmoji } = useContext(MarkupInteractionContext);
 
+	const fallback = useMemo(() => ('unicode' in emoji ? emoji.unicode : `:${emoji.shortCode}:`), [emoji]);
+
 	const descriptors = useMemo(() => {
-		const whatToInspect = 'unicode' in emoji ? emoji.unicode : `:${emoji.shortCode}:`;
-		const detected = detectEmoji?.(whatToInspect);
+		const detected = detectEmoji?.(fallback);
 		return detected?.length !== 0 ? detected : undefined;
-	}, [detectEmoji, emoji]);
+	}, [detectEmoji, fallback]);
 
 	return (
 		<>
@@ -32,7 +33,11 @@ const Emoji = ({ big = false, preview = false, ...emoji }: EmojiProps): ReactEle
 						</MessageEmoji>
 					)}
 				</span>
-			)) ?? <>:{emoji.value?.value}:</>}
+			)) ?? (
+				<span role='img' aria-label={fallback.charAt(0) === ':' ? fallback : undefined}>
+					{fallback}
+				</span>
+			)}
 		</>
 	);
 };

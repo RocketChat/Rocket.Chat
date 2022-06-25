@@ -55,7 +55,7 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 	}, [language, content]);
 
 	return (
-		<pre>
+		<pre role='region'>
 			<span className='copyonly'>```</span>
 			<code key={language + code} ref={ref} className={language ? `code-colors language-${language}` : 'code-colors'}>
 				{content}
