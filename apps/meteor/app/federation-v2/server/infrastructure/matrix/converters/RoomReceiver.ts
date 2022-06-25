@@ -28,7 +28,6 @@ export class MatrixRoomReceiverConverter {
 		externalEvent: IMatrixEvent<MatrixEventType.ROOM_MEMBERSHIP_CHANGED>,
 		homeServerDomain: string,
 	): FederationRoomChangeMembershipDto {
-		console.log({ externalEvent });
 		return Object.assign(new FederationRoomChangeMembershipDto(), {
 			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
 			...MatrixRoomReceiverConverter.tryToGetExternalInfoFromTheRoomState(

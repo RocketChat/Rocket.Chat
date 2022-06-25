@@ -47,7 +47,7 @@ export class FederationBeforeDirectMessageRoomCreationDto {
 }
 
 export class FederationBeforeAddUserToARoomDto extends FederationBeforeDirectMessageRoomCreationDto {
-	internalRoomId: string
+	internalRoomId: string;
 }
 
 export class FederationOnUsersAddedToARoomDto extends FederationOnRoomCreationDto {

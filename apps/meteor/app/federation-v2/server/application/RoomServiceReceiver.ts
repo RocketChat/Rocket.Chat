@@ -74,7 +74,6 @@ export class FederationRoomServiceReceiver {
 			roomType,
 			leave,
 		} = roomChangeMembershipInput;
-		console.log({ roomChangeMembershipInput })
 		const affectedFederatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 
 		if (!affectedFederatedRoom && eventOrigin === EVENT_ORIGIN.LOCAL) {
@@ -140,9 +139,11 @@ export class FederationRoomServiceReceiver {
 				federatedInviterUser as FederatedUser,
 			);
 		}
-		console.log({ affectedFederatedRoom })
 		if (affectedFederatedRoom?.isDirectMessage() && eventOrigin === EVENT_ORIGIN.REMOTE) {
-			const membersUsernames = [...(affectedFederatedRoom.internalReference?.usernames || []), federatedInviteeUser?.internalReference.username as string];
+			const membersUsernames = [
+				...(affectedFederatedRoom.internalReference?.usernames || []),
+				federatedInviteeUser?.internalReference.username as string,
+			];
 			const newFederatedRoom = FederatedRoom.createInstance(
 				externalRoomId,
 				normalizedRoomId,
@@ -154,8 +155,6 @@ export class FederationRoomServiceReceiver {
 				return;
 			}
 			await this.rocketRoomAdapter.removeDirectMessageRoom(affectedFederatedRoom);
-			console.log({ newFederatedRoom })
-			console.log({ membersUsernames })
 			await this.rocketRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom, membersUsernames);
 			await this.bridge.inviteToRoom(externalRoomId, externalInviterId, externalInviteeId);
 			return;

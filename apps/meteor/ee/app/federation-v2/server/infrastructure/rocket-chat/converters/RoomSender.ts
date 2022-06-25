@@ -120,12 +120,13 @@ export class FederationRoomSenderConverterEE {
 		});
 	}
 
-	public static toBeforeAddUserToARoomDto(members: (IUser | string)[], internalRoom: IRoom, homeServerDomainName: string): FederationBeforeAddUserToARoomDto {
-		const dto = FederationRoomSenderConverterEE.toBeforeDirectMessageCreatedDto(
-			members,
-			homeServerDomainName
-		) 
-		
+	public static toBeforeAddUserToARoomDto(
+		members: (IUser | string)[],
+		internalRoom: IRoom,
+		homeServerDomainName: string,
+	): FederationBeforeAddUserToARoomDto {
+		const dto = FederationRoomSenderConverterEE.toBeforeDirectMessageCreatedDto(members, homeServerDomainName);
+
 		return Object.assign(dto, {
 			internalRoomId: internalRoom._id,
 		}) as FederationBeforeAddUserToARoomDto;

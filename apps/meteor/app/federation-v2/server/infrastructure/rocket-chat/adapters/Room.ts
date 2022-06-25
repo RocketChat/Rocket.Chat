@@ -54,7 +54,7 @@ export class RocketChatRoomAdapter {
 		const roomId = federatedRoom.internalReference._id;
 		await Rooms.removeById(roomId);
 		await Subscriptions.removeByRoomId(roomId);
-		await MatrixBridgedRoom.remove({ rid: roomId })
+		await MatrixBridgedRoom.remove({ rid: roomId });
 	}
 
 	public async createFederatedRoomForDirectMessage(federatedRoom: FederatedRoom, membersUsernames: string[]): Promise<void> {
