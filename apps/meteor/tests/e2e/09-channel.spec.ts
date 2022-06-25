@@ -23,7 +23,7 @@ test.describe('[Channel]', () => {
 		loginPage = new LoginPage(page);
 		await loginPage.goto(URL);
 
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 		flexTab = new FlexTab(page);
@@ -31,32 +31,22 @@ test.describe('[Channel]', () => {
 
 		if (!publicChannelCreated) {
 			await sideNav.createChannel(publicChannelName, false);
-			await setPublicChannelCreated(true);
+			setPublicChannelCreated(true);
 		}
-		await sideNav.openChannel('general');
+		await sideNav.doOpenChat('general');
 	});
 	test.describe('[Search]', () => {
 		test.describe('[SpotlightSearch]', async () => {
 			test.describe('general:', () => {
-				test('expect search general', async () => {
-					await sideNav.spotlightSearchIcon.click();
-					await sideNav.searchChannel('general');
-				});
-
 				test('expect go to general', async () => {
-					await sideNav.openChannel('general');
+					await sideNav.doOpenChat('general');
 					await expect(mainContent.channelTitle('general')).toContainText('general');
 				});
 			});
 
 			test.describe('user created channel:', () => {
-				test('expect search the user created channel', async () => {
-					await sideNav.spotlightSearchIcon.click();
-					await sideNav.searchChannel(publicChannelName);
-				});
-
 				test('expect go to the user created channel', async () => {
-					await sideNav.openChannel(publicChannelName);
+					await sideNav.doOpenChat(publicChannelName);
 					await expect(mainContent.channelTitle(publicChannelName)).toContainText(publicChannelName);
 				});
 			});
@@ -68,24 +58,14 @@ test.describe('[Channel]', () => {
 			});
 
 			test.describe('general:', async () => {
-				test('expect show the general in the channel list', async () => {
-					await sideNav.getChannelFromList('general').scrollIntoViewIfNeeded();
-					await expect(sideNav.getChannelFromList('general')).toBeVisible();
-				});
-
 				test('expect go to the general channel', async () => {
-					await sideNav.openChannel('general');
+					await sideNav.doOpenChat('general');
 				});
 			});
 
 			test.describe('user created channel:', async () => {
-				test('expect show the user created channel in the channel list', async () => {
-					await sideNav.getChannelFromList(publicChannelName).scrollIntoViewIfNeeded();
-					await expect(sideNav.getChannelFromList(publicChannelName)).toBeVisible();
-				});
-
 				test('expect go to the user created channel', async () => {
-					await sideNav.openChannel(publicChannelName);
+					await sideNav.doOpenChat(publicChannelName);
 				});
 			});
 		});
@@ -93,7 +73,7 @@ test.describe('[Channel]', () => {
 
 	test.describe('[Usage]', () => {
 		test.beforeAll(async () => {
-			await sideNav.openChannel(publicChannelName);
+			await sideNav.doOpenChat(publicChannelName);
 		});
 
 		test.describe('Adding a user to the room:', async () => {
@@ -101,14 +81,14 @@ test.describe('[Channel]', () => {
 				if (await global.getToastBar.isVisible()) {
 					await global.dismissToastBar();
 				}
-				await flexTab.operateFlexTab('members', true);
+				await flexTab.btnTabMembers.click();
 			});
 
 			test.afterAll(async () => {
 				if (await global.getToastBar.isVisible()) {
 					await global.dismissToastBar();
 				}
-				await flexTab.operateFlexTab('members', false);
+				await flexTab.btnTabMembers.click();
 			});
 
 			test('expect add people to the room', async () => {
@@ -121,7 +101,7 @@ test.describe('[Channel]', () => {
 		test.describe('[Channel settings]:', async () => {
 			test.describe('[Channel topic edit]', async () => {
 				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('info', true);
+					await flexTab.btnTabInfo.click();
 					await flexTab.editNameBtn.click();
 				});
 
@@ -149,7 +129,7 @@ test.describe('[Channel]', () => {
 
 			test.describe('[Channel announcement edit]', async () => {
 				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('info', true);
+					await flexTab.btnTabInfo.click();
 					await flexTab.editNameBtn.click();
 				});
 
@@ -177,7 +157,7 @@ test.describe('[Channel]', () => {
 
 			test.describe('[Channel description edit]', async () => {
 				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('info', true);
+					await flexTab.btnTabInfo.click();
 					await flexTab.editNameBtn.click();
 				});
 
@@ -209,18 +189,18 @@ test.describe('[Channel]', () => {
 			test.describe('User muted', async () => {
 				test.beforeAll(async () => {
 					if (!hasUserAddedInChannel) {
-						await flexTab.operateFlexTab('members', true);
+						await flexTab.btnTabMembers.click();
 						await flexTab.addPeopleToChannel(targetUser);
-						await flexTab.operateFlexTab('members', false);
+						await flexTab.btnTabMembers.click();
 					}
-					await flexTab.operateFlexTab('members', true);
+					await flexTab.btnTabMembers.click();
 				});
 
 				test.afterAll(async () => {
 					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
-					await flexTab.operateFlexTab('members', false);
+					await flexTab.btnTabMembers.click();
 				});
 
 				test('expect mute rocket cat', async () => {
@@ -231,18 +211,18 @@ test.describe('[Channel]', () => {
 			test.describe('[Owner added]', async () => {
 				test.beforeAll(async () => {
 					if (!hasUserAddedInChannel) {
-						await flexTab.operateFlexTab('members', true);
+						await flexTab.btnTabMembers.click();
 						await flexTab.addPeopleToChannel(targetUser);
-						await flexTab.operateFlexTab('members', false);
+						await flexTab.btnTabMembers.click();
 					}
-					await flexTab.operateFlexTab('members', true);
+					await flexTab.btnTabMembers.click();
 				});
 
 				test.afterAll(async () => {
 					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
-					await flexTab.operateFlexTab('members', false);
+					await flexTab.btnTabMembers.click();
 				});
 
 				test('expect set rocket cat as owner', async () => {
@@ -267,18 +247,18 @@ test.describe('[Channel]', () => {
 			test.describe('[Moderator added]', async () => {
 				test.beforeAll(async () => {
 					if (!hasUserAddedInChannel) {
-						await flexTab.operateFlexTab('members', true);
+						await flexTab.btnTabMembers.click();
 						await flexTab.addPeopleToChannel(targetUser);
-						await flexTab.operateFlexTab('members', false);
+						await flexTab.btnTabMembers.click();
 					}
-					await flexTab.operateFlexTab('members', true);
+					await flexTab.btnTabMembers.click();
 				});
 
 				test.afterAll(async () => {
 					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
-					await flexTab.operateFlexTab('members', false);
+					await flexTab.btnTabMembers.click();
 				});
 
 				test('expect set rocket cat as moderator', async () => {
@@ -295,7 +275,7 @@ test.describe('[Channel]', () => {
 					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
-					await flexTab.operateFlexTab('info', true);
+					await flexTab.btnTabInfo.click();
 				});
 
 				test.afterAll(async () => {
@@ -304,7 +284,7 @@ test.describe('[Channel]', () => {
 					}
 
 					if (await flexTab.mainSideBar.isVisible()) {
-						await flexTab.operateFlexTab('info', false);
+						await flexTab.btnTabInfo.click();
 					}
 				});
 
@@ -324,9 +304,8 @@ test.describe('[Channel]', () => {
 					await flexTab.editNameSave.click();
 				});
 
-				test('expect show the new name', async () => {
-					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${publicChannelName}`);
-					await expect(channelName).toHaveText(`NAME-EDITED-${publicChannelName}`);
+				test('expect to find and open with new name', async () => {
+					await sideNav.doOpenChat(`NAME-EDITED-${publicChannelName}`);
 				});
 			});
 		});

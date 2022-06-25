@@ -19,7 +19,7 @@ async function initConfig(
 	loginPage = new LoginPage(page);
 	await loginPage.goto(URL);
 
-	await loginPage.login(adminLogin);
+	await loginPage.doLogin(adminLogin);
 	sideNav = new SideNav(page);
 	mainContent = new MainContent(page);
 	global = new Global(page);
@@ -69,7 +69,7 @@ test.describe('[Resolution]', function () {
 			});
 
 			test('expect close the sidenav when open general channel', async () => {
-				await sideNav.openChannel('general');
+				await sideNav.doOpenChat('general');
 				await expect(await sideNav.isSideBarOpen()).toBeFalsy;
 			});
 
