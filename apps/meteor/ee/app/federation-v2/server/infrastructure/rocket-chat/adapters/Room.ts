@@ -68,6 +68,12 @@ export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
 		createDirectMessage(members, creatorId) as ICreatedRoom;
 	}
 
+	public async isUserAlreadyJoined(internalRoomId: string, internalUserId: string): Promise<boolean> {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(internalRoomId, internalUserId);
+
+		return Boolean(subscription);
+	}
+
 	private createFederatedRoomEEInstance(externalRoomId: string, room: IRoom): FederatedRoomEE {
 		const federatedRoom = FederatedRoomEE.build();
 		federatedRoom.externalId = externalRoomId;
