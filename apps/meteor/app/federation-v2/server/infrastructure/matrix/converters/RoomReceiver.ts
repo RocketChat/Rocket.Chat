@@ -96,9 +96,8 @@ export class MatrixRoomReceiverConverter {
 			[RoomJoinRules.JOIN]: RoomType.CHANNEL,
 			[RoomJoinRules.INVITE]: RoomType.PRIVATE_GROUP,
 		};
-		const roomType = mapping[matrixJoinRule] || RoomType.CHANNEL;
 
-		return roomType === RoomType.PRIVATE_GROUP && matrixRoomIsDirect ? RoomType.DIRECT_MESSAGE : roomType;
+		return mapping[matrixJoinRule] || RoomType.CHANNEL;
 	}
 
 	protected static tryToGetExternalInfoFromTheRoomState(
