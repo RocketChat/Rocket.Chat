@@ -13,6 +13,7 @@ import type {
 	IStats,
 	VideoConference,
 	VideoConferenceCapabilities,
+	Optional,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
@@ -38,6 +39,7 @@ import { updateCounter } from '../../../app/statistics/server/functions/updateSt
 import { api } from '../../sdk/api';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
+import { callbacks } from '../../../lib/callbacks';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -622,66 +624,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'>,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
-		switch (call.type) {
-			case 'direct':
-				await this.joinDirectCall(call, user);
-				break;
-			case 'videoconference':
-				await this.joinGroupCall(call, user);
-				break;
-		}
+		await callbacks.runAsync('onJoinVideoConference', call._id, user._id);
 
 		return this.getUrl(call, user, options);
-	}
-
-	private async joinDirectCall(call: IDirectVideoConference, user: AtLeast<IUser, '_id' | 'username' | 'name'>): Promise<void> {
-		await this.addUserToCall(call, user);
-
-		if (call.status === VideoConferenceStatus.CALLING) {
-			await VideoConferenceModel.setStatusById(call._id, VideoConferenceStatus.STARTED);
-		}
-
-		if (call.messages.started) {
-			const text = TAPi18n.__('video_direct_started', { username: call.createdBy.username || '' });
-			await Messages.setBlocksById(call.messages.started, [await this.buildMessageBlock(text)]);
-		}
-	}
-
-	private async joinGroupCall(call: IGroupVideoConference, user: AtLeast<IUser, '_id' | 'username' | 'name'>): Promise<void> {
-		await this.addUserToCall(call, user);
-
-		if (!call.messages.started || !user.username) {
-			return;
-		}
-
-		const message = await Messages.findOneById<IMessage>(call.messages.started, {});
-		if (!message) {
-			return;
-		}
-
-		const blocks = message.blocks || [];
-
-		const avatarsBlock = (blocks.find((block) => block.type === 'context') || { type: 'context', elements: [] }) as ContextBlock;
-		if (!blocks.includes(avatarsBlock)) {
-			blocks.push(avatarsBlock);
-		}
-
-		const imageUrl = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
-
-		if (avatarsBlock.elements.find((el) => el.type === 'image' && el.imageUrl === imageUrl)) {
-			return;
-		}
-
-		avatarsBlock.elements = [
-			...avatarsBlock.elements,
-			{
-				type: 'image',
-				imageUrl,
-				altText: user.name || user.username,
-			},
-		];
-
-		await Messages.setBlocksById(call.messages.started, blocks);
 	}
 
 	private async getProviderManager(): Promise<AppVideoConfProviderManager> {
@@ -760,13 +705,70 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async addUserToCall(
-		call: AtLeast<VideoConference, '_id' | 'users'>,
+		call: Optional<VideoConference, 'providerData'>,
 		{ _id, username, name, avatarETag, ts }: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> & { ts?: Date },
 	): Promise<void> {
 		if (call.users.find((user) => user._id === _id)) {
 			return;
 		}
 
-		return VideoConferenceModel.addUserById(call._id, { _id, username, name, avatarETag, ts });
+		await VideoConferenceModel.addUserById(call._id, { _id, username, name, avatarETag, ts });
+
+		switch (call.type) {
+			case 'videoconference':
+				return this.updateGroupCallMessage(call as IGroupVideoConference, { _id, username, name });
+			case 'direct':
+				return this.updateDirectCall(call as IDirectVideoConference);
+		}
+	}
+
+	private async updateGroupCallMessage(
+		call: Optional<IGroupVideoConference, 'providerData'>,
+		user: Pick<IUser, '_id' | 'username' | 'name'>,
+	): Promise<void> {
+		if (!call.messages.started || !user.username) {
+			return;
+		}
+
+		const message = await Messages.findOneById<IMessage>(call.messages.started, {});
+		if (!message) {
+			return;
+		}
+
+		const blocks = message.blocks || [];
+
+		const avatarsBlock = (blocks.find((block) => block.type === 'context') || { type: 'context', elements: [] }) as ContextBlock;
+		if (!blocks.includes(avatarsBlock)) {
+			blocks.push(avatarsBlock);
+		}
+
+		const imageUrl = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+
+		if (avatarsBlock.elements.find((el) => el.type === 'image' && el.imageUrl === imageUrl)) {
+			return;
+		}
+
+		avatarsBlock.elements = [
+			...avatarsBlock.elements,
+			{
+				type: 'image',
+				imageUrl,
+				altText: user.name || user.username,
+			},
+		];
+
+		await Messages.setBlocksById(call.messages.started, blocks);
+	}
+
+	private async updateDirectCall(call: IDirectVideoConference): Promise<void> {
+		if (call.status !== VideoConferenceStatus.CALLING) {
+			return;
+		}
+		await VideoConferenceModel.setStatusById(call._id, VideoConferenceStatus.STARTED);
+
+		if (call.messages.started) {
+			const text = TAPi18n.__('video_direct_started', { username: call.createdBy.username || '' });
+			await Messages.setBlocksById(call.messages.started, [await this.buildMessageBlock(text)]);
+		}
 	}
 }

@@ -9,6 +9,7 @@ import type {
 	OmnichannelAgentStatus,
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
+	VideoConference,
 } from '@rocket.chat/core-typings';
 
 import type { Logger } from '../app/logger/server';
@@ -56,6 +57,7 @@ type EventLikeCallbackSignatures = {
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
 	'onValidateLogin': (login: ILoginAttempt) => void;
+	'onJoinVideoConference': (callId: VideoConference['_id'], userId: IUser['_id']) => Promise<void>;
 };
 
 /**
