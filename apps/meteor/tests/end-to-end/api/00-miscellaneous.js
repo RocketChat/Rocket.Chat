@@ -137,6 +137,7 @@ describe('miscellaneous', function () {
 			.expect(200)
 			.expect((res) => {
 				const allUserPreferencesKeys = [
+					'alsoSendThreadToChannel',
 					// 'language',
 					'newRoomNotification',
 					'newMessageNotification',
