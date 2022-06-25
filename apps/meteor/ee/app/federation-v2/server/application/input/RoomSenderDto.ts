@@ -46,7 +46,9 @@ export class FederationBeforeDirectMessageRoomCreationDto {
 	invitees: FederationInviteeDto[];
 }
 
-export type FederationBeforeAddUserToARoomDto = FederationBeforeDirectMessageRoomCreationDto;
+export class FederationBeforeAddUserToARoomDto extends FederationBeforeDirectMessageRoomCreationDto {
+	internalRoomId: string
+}
 
 export class FederationOnUsersAddedToARoomDto extends FederationOnRoomCreationDto {
 	externalInviterId?: string;

@@ -1,4 +1,4 @@
-import { IUser } from '@rocket.chat/core-typings';
+import { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import {
 	FederationBeforeAddUserToARoomDto,
@@ -120,11 +120,15 @@ export class FederationRoomSenderConverterEE {
 		});
 	}
 
-	public static toBeforeAddUserToARoomDto(members: (IUser | string)[], homeServerDomainName: string): FederationBeforeAddUserToARoomDto {
-		return FederationRoomSenderConverterEE.toBeforeDirectMessageCreatedDto(
+	public static toBeforeAddUserToARoomDto(members: (IUser | string)[], internalRoom: IRoom, homeServerDomainName: string): FederationBeforeAddUserToARoomDto {
+		const dto = FederationRoomSenderConverterEE.toBeforeDirectMessageCreatedDto(
 			members,
-			homeServerDomainName,
-		) as FederationBeforeAddUserToARoomDto;
+			homeServerDomainName
+		) 
+		
+		return Object.assign(dto, {
+			internalRoomId: internalRoom._id,
+		}) as FederationBeforeAddUserToARoomDto;
 	}
 
 	public static toCreateDirectMessageDto(internalInviterId: string, invitees: string[]): FederationCreateDirectMessageDto {

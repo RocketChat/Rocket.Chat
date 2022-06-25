@@ -68,7 +68,7 @@ export class FederationRoomServiceSender {
 				'',
 				[federatedInviterUser, federatedInviteeUser] as any[],
 			);
-			await this.rocketRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
+			await this.rocketRoomAdapter.createFederatedRoom(newFederatedRoom);
 		}
 
 		const federatedRoom = (await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId)) as FederatedRoom;

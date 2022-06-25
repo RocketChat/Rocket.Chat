@@ -1,7 +1,7 @@
 import { ICreatedRoom, IRoom } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
-import { MatrixBridgedRoom } from '../../../../../models/server';
+import { MatrixBridgedRoom, Subscriptions } from '../../../../../models/server';
 import { FederatedRoom } from '../../../domain/FederatedRoom';
 import { createRoom, addUserToRoom, removeUserFromRoom } from '../../../../../lib/server';
 import { FederatedUser } from '../../../domain/FederatedUser';
@@ -50,16 +50,22 @@ export class RocketChatRoomAdapter {
 		await Rooms.setAsFederated(roomId);
 	}
 
-	public async createFederatedRoomForDirectMessage(federatedRoom: FederatedRoom): Promise<void> {
-		const members = federatedRoom.getMembers();
+	public async removeDirectMessageRoom(federatedRoom: FederatedRoom): Promise<void> {
+		const roomId = federatedRoom.internalReference._id;
+		await Rooms.removeById(roomId);
+		await Subscriptions.removeByRoomId(roomId);
+		await MatrixBridgedRoom.remove({ rid: roomId })
+	}
+
+	public async createFederatedRoomForDirectMessage(federatedRoom: FederatedRoom, membersUsernames: string[]): Promise<void> {
 		const { rid, _id } = createRoom(
 			federatedRoom.internalReference.t,
 			federatedRoom.internalReference.name,
 			federatedRoom.internalReference.u.username as string,
-			members,
+			membersUsernames,
 			false,
 			undefined,
-			{ creator: members[0]?._id as string },
+			{ creator: federatedRoom.internalReference.u._id },
 		) as ICreatedRoom;
 		const roomId = rid || _id;
 		MatrixBridgedRoom.upsert({ rid: roomId }, { rid: roomId, mri: federatedRoom.externalId });

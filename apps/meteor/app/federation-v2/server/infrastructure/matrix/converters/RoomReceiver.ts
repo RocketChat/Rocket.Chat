@@ -28,6 +28,7 @@ export class MatrixRoomReceiverConverter {
 		externalEvent: IMatrixEvent<MatrixEventType.ROOM_MEMBERSHIP_CHANGED>,
 		homeServerDomain: string,
 	): FederationRoomChangeMembershipDto {
+		console.log({ externalEvent });
 		return Object.assign(new FederationRoomChangeMembershipDto(), {
 			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
 			...MatrixRoomReceiverConverter.tryToGetExternalInfoFromTheRoomState(
@@ -89,6 +90,9 @@ export class MatrixRoomReceiverConverter {
 	}
 
 	protected static convertMatrixJoinRuleToRCRoomType(matrixJoinRule: RoomJoinRules, matrixRoomIsDirect = false): RoomType {
+		if (matrixRoomIsDirect) {
+			return RoomType.DIRECT_MESSAGE;
+		}
 		const mapping: Record<string, RoomType> = {
 			[RoomJoinRules.JOIN]: RoomType.CHANNEL,
 			[RoomJoinRules.INVITE]: RoomType.PRIVATE_GROUP,

@@ -57,7 +57,7 @@ export class FederationHooksEE {
 				if (!room.federated) {
 					return;
 				}
-				Promise.await(callback(params.user));
+				Promise.await(callback(params.user, room));
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-before-add-user-to-the-room',

@@ -69,7 +69,12 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void> {
-		await this.bridgeInstance.getIntent(externalInviterId).invite(externalRoomId, externalInviteeId);
+		try {
+			await this.bridgeInstance.getIntent(externalInviterId).invite(externalRoomId, externalInviteeId);
+		} catch (e) {
+			console.log({ externalRoomId, externalInviterId, externalInviteeId })
+		}
+		
 	}
 
 	public async createUser(username: string, name: string, domain: string): Promise<string> {
@@ -87,7 +92,7 @@ export class MatrixBridge implements IFederationBridge {
 
 		const visibility = RoomJoinRules.INVITE;
 		const preset = MatrixRoomType.PRIVATE;
-
+		try {
 		const matrixRoom = await intent.createRoom({
 			createAsClient: true,
 			options: {
@@ -103,8 +108,12 @@ export class MatrixBridge implements IFederationBridge {
 				},
 			},
 		});
-
 		return matrixRoom.room_id;
+	} catch(e){
+			console.log('ERROO')
+			console.log({ externalCreatorId, externalInviteeIds })
+		}
+
 	}
 
 	public async sendMessage(externalRoomId: string, externaSenderId: string, text: string): Promise<void> {

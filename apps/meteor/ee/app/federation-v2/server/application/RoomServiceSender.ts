@@ -21,6 +21,8 @@ import {
 	FederationSetupRoomDto,
 } from './input/RoomSenderDto';
 
+require('util').inspect.defaultOptions.depth = null;
+
 export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 	constructor(
 		protected rocketRoomAdapter: RocketChatRoomAdapterEE,
@@ -54,6 +56,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 
 	public async onDirectMessageRoomCreation(dmRoomOnCreationInput: FederationOnDirectMessageRoomCreationDto): Promise<void> {
 		const { internalRoomId, internalInviterId, invitees, externalInviterId } = dmRoomOnCreationInput;
+		console.log({ dmRoomOnCreationInput })
 		if (invitees.length === 0 || externalInviterId) {
 			return;
 		}
@@ -62,6 +65,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 
 	public async beforeDirectMessageRoomCreation(dmBeforeRoomCreationInput: FederationBeforeDirectMessageRoomCreationDto): Promise<void> {
 		const { invitees = [] } = dmBeforeRoomCreationInput;
+		console.log({ dmBeforeRoomCreationInput })
 
 		if (invitees.length === 0) {
 			return;
@@ -85,6 +89,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 	}
 
 	public async beforeAddUserToARoom(dmBeforeAddUserToARoomInput: FederationBeforeAddUserToARoomDto): Promise<void> {
+		console.log({ dmBeforeAddUserToARoomInput })
 		return this.beforeDirectMessageRoomCreation(dmBeforeAddUserToARoomInput);
 	}
 
