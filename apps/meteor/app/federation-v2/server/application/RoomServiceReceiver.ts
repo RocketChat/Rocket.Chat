@@ -150,11 +150,14 @@ export class FederationRoomServiceReceiver {
 				RoomType.DIRECT_MESSAGE,
 				externalRoomName,
 			);
+			if (affectedFederatedRoom.internalReference?.usernames?.includes(federatedInviteeUser?.internalReference.username || '')) {
+				return;
+			}
 			await this.rocketRoomAdapter.removeDirectMessageRoom(affectedFederatedRoom);
 			console.log({ newFederatedRoom })
 			console.log({ membersUsernames })
 			await this.rocketRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom, membersUsernames);
-			// await this.bridge.inviteToRoom(externalRoomId, externalInviterId, externalInviteeId);
+			await this.bridge.inviteToRoom(externalRoomId, externalInviterId, externalInviteeId);
 			return;
 		}
 

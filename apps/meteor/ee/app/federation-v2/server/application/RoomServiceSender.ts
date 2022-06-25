@@ -177,18 +177,20 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 		}
 		const federatedInviterUser = (await this.rocketUserAdapter.getFederatedUserByInternalId(internalInviterId)) as FederatedUser;
 
-		const externalRoomId = await this.bridge.createDirectMessageRoom(
-			federatedInviterUser.externalId,
-			invitees.map((invitee) => invitee.rawInviteeId),
-		);
-		const newFederatedRoom = FederatedRoomEE.createInstanceEE(
-			externalRoomId,
-			externalRoomId,
-			federatedInviterUser,
-			RoomType.DIRECT_MESSAGE,
-			'',
-		);
-		await this.rocketRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, newFederatedRoom);
+		if (!(await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId))){
+			const externalRoomId = await this.bridge.createDirectMessageRoom(
+				federatedInviterUser.externalId,
+				invitees.map((invitee) => invitee.rawInviteeId),
+			);
+			const newFederatedRoom = FederatedRoomEE.createInstanceEE(
+				externalRoomId,
+				externalRoomId,
+				federatedInviterUser,
+				RoomType.DIRECT_MESSAGE,
+				'',
+			);
+			await this.rocketRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, newFederatedRoom);
+		}
 
 		await Promise.all(
 			invitees.map((member) =>
