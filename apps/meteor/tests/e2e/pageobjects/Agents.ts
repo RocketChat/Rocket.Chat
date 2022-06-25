@@ -1,5 +1,6 @@
 import { Locator, expect } from '@playwright/test';
 
+import { BACKSPACE } from '../utils/mocks/keyboardKeyMock';
 import { BasePage } from './BasePage';
 
 export class Agents extends BasePage {
@@ -83,7 +84,10 @@ export class Agents extends BasePage {
 
 	public async doAddAgent(): Promise<void> {
 		await this.textAgentsTitle.waitFor();
-		await this.inputAgentsUserName.type('Rocket.Cat', { delay: 50 });
+		await this.inputAgentsUserName.type('rocket.cat', { delay: 100 });
+		// FIXME: temp solution for rocket.chat instability
+		await this.page.waitForTimeout(2000);
+		await this.keyboardPress(BACKSPACE);
 
 		await this.userOption.click();
 		await this.btnAddAgents.click();
