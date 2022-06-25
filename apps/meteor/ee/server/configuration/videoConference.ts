@@ -10,8 +10,8 @@ Meteor.startup(() =>
 	onLicense('videoconference-enterprise', () => {
 		addSettings();
 
-		videoConfTypes.registerVideoConferenceType('direct', async ({ _id, t }) => {
-			if (t !== 'd') {
+		videoConfTypes.registerVideoConferenceType('direct', async ({ _id, t }, allowRinging) => {
+			if (!allowRinging || t !== 'd') {
 				return false;
 			}
 

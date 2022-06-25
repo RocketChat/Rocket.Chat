@@ -164,7 +164,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.startingNewCall = true;
 		this.emit('calling/changed');
 
-		const { data } = await APIClient.post('/v1/video-conference.start', { roomId, title }).catch((e: any) => {
+		const { data } = await APIClient.post('/v1/video-conference.start', { roomId, title, allowRinging: true }).catch((e: any) => {
 			debug && console.error(`[VideoConf] Failed to start new call on room ${roomId}`);
 			this.startingNewCall = false;
 			this.emit('calling/changed');

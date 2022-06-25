@@ -76,9 +76,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	// VideoConference.start: Detect the desired type and provider then start a video conference using them
-	public async start(caller: IUser['_id'], rid: string, title?: string): Promise<VideoConferenceInstructions> {
+	public async start(
+		caller: IUser['_id'],
+		rid: string,
+		{ title, allowRinging }: { title?: string; allowRinging?: boolean },
+	): Promise<VideoConferenceInstructions> {
 		const providerName = await this.getValidatedProvider();
-		const type = await this.getTypeForNewVideoConference(rid);
+		const type = await this.getTypeForNewVideoConference(rid, Boolean(allowRinging));
 
 		const data = {
 			type,
@@ -323,7 +327,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
-	private async getTypeForNewVideoConference(rid: IRoom['_id']): Promise<VideoConferenceCreateData['type']> {
+	private async getTypeForNewVideoConference(rid: IRoom['_id'], allowRinging: boolean): Promise<VideoConferenceCreateData['type']> {
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(rid, {
 			projection: { t: 1 },
 		});
@@ -332,7 +336,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-room');
 		}
 
-		return videoConfTypes.getTypeForRoom(room);
+		return videoConfTypes.getTypeForRoom(room, allowRinging);
 	}
 
 	private async createMessage(rid: IRoom['_id'], user: IUser, extraData: Partial<IMessage> = {}): Promise<IMessage['_id']> {

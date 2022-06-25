@@ -18,7 +18,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isVideoConfStartProps },
 	{
 		async post() {
-			const { roomId, title } = this.bodyParams;
+			const { roomId, title, allowRinging } = this.bodyParams;
 			const { userId } = this;
 			if (!userId || !(await canAccessRoomIdAsync(roomId, userId))) {
 				return API.v1.failure('invalid-params');
@@ -33,7 +33,7 @@ API.v1.addRoute(
 
 				return API.v1.success({
 					data: {
-						...(await VideoConf.start(userId, roomId, title)),
+						...(await VideoConf.start(userId, roomId, { title, allowRinging: Boolean(allowRinging) })),
 						providerName,
 					},
 				});
