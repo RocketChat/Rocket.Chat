@@ -82,9 +82,4 @@ export class LoginPage extends BasePage {
 			await this.page.waitForSelector('.main-content');
 		}
 	}
-
-	async logout(): Promise<void> {
-		await this.getSideBarAvatarButton.click();
-		await this.page.locator('li.rcx-option >> text="Logout"').click();
-	}
 }

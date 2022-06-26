@@ -29,8 +29,7 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 		});
 
 		test.afterAll(async () => {
-			await page.goto('/home');
-			await loginPage.logout();
+			await sideNav.doLogout();
 		});
 
 		test('Set permission for user to manage settings', async () => {
@@ -68,8 +67,7 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 		});
 
 		test.afterAll(async () => {
-			await page.goto('/home');
-			await loginPage.logout();
+			await sideNav.doLogout();
 		});
 
 		test('expect new permissions is enabled for user', async () => {
@@ -90,8 +88,7 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 		});
 
 		test.afterAll(async () => {
-			await page.goto('/home');
-			await loginPage.logout();
+			await sideNav.doLogout();
 		});
 
 		test('New settings value visible for admin as well', async () => {
