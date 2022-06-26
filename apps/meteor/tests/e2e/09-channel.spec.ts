@@ -3,8 +3,9 @@ import { test, expect } from '@playwright/test';
 import { Global, FlexTab, MainContent, SideNav, LoginPage } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { publicChannelCreated, setPublicChannelCreated } from './utils/mocks/checks';
-import { publicChannelName } from './utils/mocks/channel';
-import { targetUser } from './utils/mocks/interations';
+
+const anyUser = 'rocket.cat';
+const anyChannelName = `channel-test-${Date.now()}`;
 
 let hasUserAddedInChannel = false;
 
@@ -28,7 +29,7 @@ test.describe('[Channel]', () => {
 		await loginPage.doLogin(adminLogin);
 
 		if (!publicChannelCreated) {
-			await sideNav.doCreateChannel(publicChannelName, false);
+			await sideNav.doCreateChannel(anyChannelName, false);
 			setPublicChannelCreated(true);
 		}
 
@@ -43,8 +44,8 @@ test.describe('[Channel]', () => {
 			});
 
 			test('expect go to the user created channel', async () => {
-				await sideNav.doOpenChat(publicChannelName);
-				await expect(mainContent.channelTitle(publicChannelName)).toContainText(publicChannelName);
+				await sideNav.doOpenChat(anyChannelName);
+				await expect(mainContent.channelTitle(anyChannelName)).toContainText(anyChannelName);
 			});
 		});
 
@@ -58,14 +59,14 @@ test.describe('[Channel]', () => {
 			});
 
 			test('expect go to the user created channel', async () => {
-				await sideNav.doOpenChat(publicChannelName);
+				await sideNav.doOpenChat(anyChannelName);
 			});
 		});
 	});
 
 	test.describe('[Usage]', () => {
 		test.beforeAll(async () => {
-			await sideNav.doOpenChat(publicChannelName);
+			await sideNav.doOpenChat(anyChannelName);
 		});
 
 		test.describe('Adding a user to the room:', async () => {
@@ -84,7 +85,7 @@ test.describe('[Channel]', () => {
 			});
 
 			test('expect add people to the room', async () => {
-				await flexTab.addPeopleToChannel(targetUser);
+				await flexTab.addPeopleToChannel(anyUser);
 				hasUserAddedInChannel = true;
 				await expect(global.getToastBarSuccess).toBeVisible();
 			});
@@ -182,7 +183,7 @@ test.describe('[Channel]', () => {
 				test.beforeAll(async () => {
 					if (!hasUserAddedInChannel) {
 						await flexTab.btnTabMembers.click();
-						await flexTab.addPeopleToChannel(targetUser);
+						await flexTab.addPeopleToChannel(anyUser);
 						await flexTab.btnTabMembers.click();
 					}
 					await flexTab.btnTabMembers.click();
@@ -196,7 +197,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect mute rocket cat', async () => {
-					await flexTab.muteUser(targetUser);
+					await flexTab.muteUser(anyUser);
 				});
 			});
 
@@ -204,7 +205,7 @@ test.describe('[Channel]', () => {
 				test.beforeAll(async () => {
 					if (!hasUserAddedInChannel) {
 						await flexTab.btnTabMembers.click();
-						await flexTab.addPeopleToChannel(targetUser);
+						await flexTab.addPeopleToChannel(anyUser);
 						await flexTab.btnTabMembers.click();
 					}
 					await flexTab.btnTabMembers.click();
@@ -218,7 +219,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect set rocket cat as owner', async () => {
-					await flexTab.setUserOwner(targetUser);
+					await flexTab.setUserOwner(anyUser);
 				});
 
 				test('expect dismiss the toast', async () => {
@@ -232,7 +233,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect show the target username in owner add message', async () => {
-					await expect(mainContent.lastMessageRoleAdded).toContainText(targetUser);
+					await expect(mainContent.lastMessageRoleAdded).toContainText(anyUser);
 				});
 			});
 
@@ -240,7 +241,7 @@ test.describe('[Channel]', () => {
 				test.beforeAll(async () => {
 					if (!hasUserAddedInChannel) {
 						await flexTab.btnTabMembers.click();
-						await flexTab.addPeopleToChannel(targetUser);
+						await flexTab.addPeopleToChannel(anyUser);
 						await flexTab.btnTabMembers.click();
 					}
 					await flexTab.btnTabMembers.click();
@@ -254,7 +255,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect set rocket cat as moderator', async () => {
-					await flexTab.setUserModerator(targetUser);
+					await flexTab.setUserModerator(anyUser);
 				});
 
 				test('expect be that the last message is a subscription role added', async () => {
@@ -281,7 +282,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect show the old name', async () => {
-					await expect(flexTab.firstSetting).toHaveText(publicChannelName);
+					await expect(flexTab.firstSetting).toHaveText(anyChannelName);
 				});
 
 				test('expect click the edit name', async () => {
@@ -289,7 +290,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect edit the name input', async () => {
-					await flexTab.editNameTextInput.fill(`NAME-EDITED-${publicChannelName}`);
+					await flexTab.editNameTextInput.fill(`NAME-EDITED-${anyChannelName}`);
 				});
 
 				test('expect save the name', async () => {
@@ -297,7 +298,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect to find and open with new name', async () => {
-					await sideNav.doOpenChat(`NAME-EDITED-${publicChannelName}`);
+					await sideNav.doOpenChat(`NAME-EDITED-${anyChannelName}`);
 				});
 			});
 		});
