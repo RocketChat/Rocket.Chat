@@ -137,9 +137,9 @@ export class SideNav extends BasePage {
 		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
 	}
 
-	async createChannel(channelName: any, isPrivate: any /* isReadOnly*/): Promise<void> {
-		await this.newChannelBtnToolbar.click();
-		await this.newChannelBtn.click();
+	async doCreateChannel(channelName: string, isPrivate = false): Promise<void> {
+		await this.page.locator('[data-qa="sidebar-create"]').click();
+		await this.page.locator('li.rcx-option >> text="Channel"').click();
 
 		if (!isPrivate) {
 			await this.channelType.click();

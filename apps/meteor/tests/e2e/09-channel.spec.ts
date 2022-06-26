@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 
 import { Global, FlexTab, MainContent, SideNav, LoginPage } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
-import { LOCALHOST } from './utils/mocks/urlMock';
 import { publicChannelCreated, setPublicChannelCreated } from './utils/mocks/checks';
 import { publicChannelName } from './utils/mocks/channel';
 import { targetUser } from './utils/mocks/interations';
@@ -16,39 +15,36 @@ test.describe('[Channel]', () => {
 	let sideNav: SideNav;
 	let global: Global;
 
-	test.beforeAll(async ({ browser, baseURL }) => {
-		const context = await browser.newContext();
-		const page = await context.newPage();
-		const URL = baseURL || LOCALHOST;
-		loginPage = new LoginPage(page);
-		await loginPage.goto(URL);
+	test.beforeAll(async ({ browser }) => {
+		const page = await browser.newPage();
 
-		await loginPage.doLogin(adminLogin);
+		loginPage = new LoginPage(page);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 		flexTab = new FlexTab(page);
 		global = new Global(page);
 
+		await loginPage.goto('/');
+		await loginPage.doLogin(adminLogin);
+
 		if (!publicChannelCreated) {
-			await sideNav.createChannel(publicChannelName, false);
+			await sideNav.doCreateChannel(publicChannelName, false);
 			setPublicChannelCreated(true);
 		}
+
 		await sideNav.doOpenChat('general');
 	});
+
 	test.describe('[Search]', () => {
 		test.describe('[SpotlightSearch]', async () => {
-			test.describe('general:', () => {
-				test('expect go to general', async () => {
-					await sideNav.doOpenChat('general');
-					await expect(mainContent.channelTitle('general')).toContainText('general');
-				});
+			test('expect go to general', async () => {
+				await sideNav.doOpenChat('general');
+				await expect(mainContent.channelTitle('general')).toContainText('general');
 			});
 
-			test.describe('user created channel:', () => {
-				test('expect go to the user created channel', async () => {
-					await sideNav.doOpenChat(publicChannelName);
-					await expect(mainContent.channelTitle(publicChannelName)).toContainText(publicChannelName);
-				});
+			test('expect go to the user created channel', async () => {
+				await sideNav.doOpenChat(publicChannelName);
+				await expect(mainContent.channelTitle(publicChannelName)).toContainText(publicChannelName);
 			});
 		});
 
@@ -57,16 +53,12 @@ test.describe('[Channel]', () => {
 				await mainContent.messageInput.click();
 			});
 
-			test.describe('general:', async () => {
-				test('expect go to the general channel', async () => {
-					await sideNav.doOpenChat('general');
-				});
+			test('expect go to the general channel', async () => {
+				await sideNav.doOpenChat('general');
 			});
 
-			test.describe('user created channel:', async () => {
-				test('expect go to the user created channel', async () => {
-					await sideNav.doOpenChat(publicChannelName);
-				});
+			test('expect go to the user created channel', async () => {
+				await sideNav.doOpenChat(publicChannelName);
 			});
 		});
 	});
