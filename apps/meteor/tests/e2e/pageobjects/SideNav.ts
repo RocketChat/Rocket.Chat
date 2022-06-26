@@ -77,7 +77,7 @@ export class SideNav extends BasePage {
 		return this.page.locator('[data-qa="sidebar-search-result"]');
 	}
 
-	get newChannelBtnToolbar(): Locator {
+	get btnSidebarCreate(): Locator {
 		return this.page.locator('[data-qa="sidebar-create"]');
 	}
 
