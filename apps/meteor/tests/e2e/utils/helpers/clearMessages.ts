@@ -1,10 +1,8 @@
 import { MongoHelper } from './MongoHelper';
+import { URL_MONGODB } from '../constants';
 
-const mongoBaseUrl = process.env.MONGO_URL
-	? `${process.env.MONGO_URL}?retryWrites=false`
-	: 'mongodb://localhost:3001/meteor?retryWrites=false';
 export const clearMessages = async (channelIds: string[]): Promise<void> => {
-	await MongoHelper.connect(mongoBaseUrl);
+	await MongoHelper.connect(URL_MONGODB);
 	const messageCollection = await MongoHelper.getCollection('rocketchat_message');
 	await messageCollection.deleteMany({ rid: { $in: channelIds } });
 	await MongoHelper.disconnect();

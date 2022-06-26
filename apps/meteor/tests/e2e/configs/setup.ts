@@ -1,9 +1,6 @@
 import { MongoHelper } from '../utils/helpers/MongoHelper';
 import { roomMock, subscriptionMock, userMock } from '../utils/mocks/initialData';
-
-const mongoBaseUrl = process.env.MONGO_URL
-	? `${process.env.MONGO_URL}?retryWrites=false`
-	: 'mongodb://localhost:3001/meteor?retryWrites=false';
+import { URL_MONGODB } from '../utils/constants';
 
 const insertRoom = async (): Promise<void> => {
 	const roomCollection = await MongoHelper.getCollection('rocketchat_room');
@@ -21,7 +18,7 @@ const subscribeUserInChannels = async (): Promise<void> => {
 };
 
 export default async (): Promise<void> => {
-	await MongoHelper.connect(mongoBaseUrl);
+	await MongoHelper.connect(URL_MONGODB);
 	await insertRoom();
 	await insertUser();
 	await subscribeUserInChannels();
