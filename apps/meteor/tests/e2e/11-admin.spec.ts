@@ -11,14 +11,14 @@ test.describe('[Administration]', () => {
 	let flexTab: FlexTab;
 	const checkBoxesSelectors = ['Direct', 'Public', 'Private', 'Omnichannel', 'Discussions', 'Teams'];
 
-	test.beforeAll(async ({ browser, baseURL }) => {
-		const context = await browser.newContext();
-		const page = await context.newPage();
+	test.beforeAll(async ({ browser }) => {
+		const page = await browser.newPage();
 		loginPage = new LoginPage(page);
 		sideNav = new SideNav(page);
 		flexTab = new FlexTab(page);
 		admin = new Administration(page);
-		await loginPage.goto(baseURL as string);
+
+		await page.goto('/');
 		await loginPage.doLogin(adminLogin);
 	});
 	test.describe('[Admin View]', () => {

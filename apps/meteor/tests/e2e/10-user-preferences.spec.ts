@@ -19,7 +19,7 @@ test.describe('[User Preferences]', () => {
 		preferencesMainContent = new PreferencesMainContent(page);
 		flexTab = new FlexTab(page);
 
-		await loginPage.goto('/');
+		await page.goto('/');
 		await loginPage.doLogin(adminLogin);
 		await sideNav.sidebarUserMenu.click();
 		await sideNav.account.click();

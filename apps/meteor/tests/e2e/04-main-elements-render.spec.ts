@@ -18,7 +18,7 @@ test.describe('[Main Elements Render]', function () {
 		mainContent = new MainContent(page);
 		flexTab = new FlexTab(page);
 
-		await loginPage.goto('/');
+		await page.goto('/');
 		await loginPage.doLogin(adminLogin);
 	});
 

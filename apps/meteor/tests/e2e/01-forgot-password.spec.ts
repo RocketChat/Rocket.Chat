@@ -7,11 +7,11 @@ test.describe('[Forgot Password]', () => {
 	let loginPage: LoginPage;
 	let global: Global;
 
-	test.beforeEach(async ({ page, baseURL }) => {
+	test.beforeEach(async ({ page }) => {
 		loginPage = new LoginPage(page);
 		global = new Global(page);
-		const baseUrl = baseURL as string;
-		await loginPage.goto(baseUrl);
+
+		await page.goto('/');
 		await loginPage.gotToForgotPassword();
 	});
 

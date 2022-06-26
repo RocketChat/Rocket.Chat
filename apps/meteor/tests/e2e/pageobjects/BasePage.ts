@@ -7,10 +7,6 @@ export class BasePage {
 		this.page = page;
 	}
 
-	async goto(path: string): Promise<void> {
-		await this.page.goto(path);
-	}
-
 	async waitForSelector(selector: string): Promise<void> {
 		await this.page.waitForSelector(selector);
 	}

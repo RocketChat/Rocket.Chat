@@ -8,11 +8,10 @@ test.describe('[Login]', () => {
 	let loginPage: LoginPage;
 	let global: Global;
 
-	test.beforeEach(async ({ page, baseURL }) => {
-		const baseUrl = baseURL;
+	test.beforeEach(async ({ page }) => {
 		loginPage = new LoginPage(page);
 		global = new Global(page);
-		await loginPage.goto(baseUrl as string);
+		await page.goto('/');
 	});
 
 	test('expect user write a password incorrectly', async () => {

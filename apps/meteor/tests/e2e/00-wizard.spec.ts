@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
 import { VALID_EMAIL, adminLogin } from './utils/mocks/userAndPasswordMock';
 import { setupWizardStepRegex } from './utils/mocks/urlMock';
@@ -8,16 +8,17 @@ import { LoginPage, SetupWizard } from './pageobjects';
 test.describe('[Wizard]', () => {
 	let setupWizard: SetupWizard;
 	let loginPage: LoginPage;
+	let page: Page;
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ browser }) => {
+		page = await browser.newPage();
 		setupWizard = new SetupWizard(page);
 		loginPage = new LoginPage(page);
 	});
 
 	test.describe('[Step 2]', async () => {
-		test.beforeEach(async ({ baseURL }) => {
-			const baseUrl = baseURL;
-			await setupWizard.goto(baseUrl as string);
+		test.beforeEach(async () => {
+			await page.goto('/');
 			await loginPage.doLogin(adminLogin, false);
 		});
 
@@ -33,7 +34,7 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Step 3]', async () => {
 		test.beforeEach(async () => {
-			await setupWizard.goto('');
+			await page.goto('');
 			await loginPage.doLogin(adminLogin, false);
 			await setupWizard.stepTwoSuccess();
 		});
@@ -63,7 +64,7 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Final Step]', async () => {
 		test.beforeEach(async () => {
-			await setupWizard.goto('');
+			await page.goto('');
 			await loginPage.doLogin(adminLogin, false);
 			await setupWizard.stepTwoSuccess();
 			await setupWizard.stepThreeSuccess();

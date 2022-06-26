@@ -13,7 +13,7 @@ test.describe('[Channel]', async () => {
 		loginPage = new LoginPage(page);
 		sideNav = new SideNav(page);
 
-		await loginPage.goto('/');
+		await page.goto('/');
 		await loginPage.doLogin(adminLogin);
 	});
 

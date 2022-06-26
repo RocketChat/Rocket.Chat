@@ -24,7 +24,7 @@ test.describe('[Channel]', () => {
 		flexTab = new FlexTab(page);
 		global = new Global(page);
 
-		await loginPage.goto('/');
+		await page.goto('/');
 		await loginPage.doLogin(adminLogin);
 
 		if (!publicChannelCreated) {

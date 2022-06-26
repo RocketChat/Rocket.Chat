@@ -6,10 +6,9 @@ import { LoginPage } from './pageobjects';
 test.describe('[Register]', () => {
 	let loginPage: LoginPage;
 
-	test.beforeEach(async ({ page, baseURL }) => {
-		const URL = baseURL as string;
+	test.beforeEach(async ({ page }) => {
 		loginPage = new LoginPage(page);
-		await loginPage.goto(URL);
+		await page.goto('/');
 	});
 
 	test('expect user click in register button without data', async () => {
