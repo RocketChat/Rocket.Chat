@@ -13,10 +13,6 @@ export class SideNav extends BasePage {
 		return this.page.locator('#modal-root [placeholder="Channel Name"]');
 	}
 
-	get saveChannelBtn(): Locator {
-		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
-	}
-
 	get sidebarUserMenu(): Locator {
 		return this.page.locator('[data-qa="sidebar-avatar-button"]');
 	}
@@ -86,7 +82,7 @@ export class SideNav extends BasePage {
 	}
 
 	get general(): Locator {
-		return this.getChannelFromList('general');
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: 'general' });
 	}
 
 	get preferences(): Locator {
@@ -117,18 +113,6 @@ export class SideNav extends BasePage {
 		return !!(await this.sideNavBar.getAttribute('style'));
 	}
 
-	getChannelFromList(channelName: any): Locator {
-		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
-	}
-
-	get searchUser(): Locator {
-		return this.page.locator('[data-qa="sidebar-search"]');
-	}
-
-	get searchInput(): Locator {
-		return this.page.locator('[data-qa="sidebar-search-input"]');
-	}
-
 	async doOpenChat(name: string): Promise<void> {
 		await expect(this.page.locator('[data-qa="sidebar-search"]')).toBeVisible();
 
@@ -146,7 +130,7 @@ export class SideNav extends BasePage {
 		}
 
 		await this.channelName.type(channelName);
-		await this.saveChannelBtn.click();
+		await this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]').click();
 	}
 
 	async doLogout(): Promise<void> {

@@ -77,7 +77,7 @@ test.describe('[Wizard]', () => {
 
 		test('expect confirm standalone', async () => {
 			await setupWizard.goToWorkspace.click();
-			await setupWizard.waitForSelector(HOME_SELECTOR);
+			await page.waitForSelector(HOME_SELECTOR);
 		});
 	});
 });

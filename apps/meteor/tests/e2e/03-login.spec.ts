@@ -1,14 +1,16 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
 import { validUser } from './utils/mocks/userAndPasswordMock';
 import { Global, LoginPage } from './pageobjects';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
 
 test.describe('[Login]', () => {
+	let page: Page;
 	let loginPage: LoginPage;
 	let global: Global;
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ browser }) => {
+		page = await browser.newPage();
 		loginPage = new LoginPage(page);
 		global = new Global(page);
 		await page.goto('/');
@@ -25,6 +27,6 @@ test.describe('[Login]', () => {
 
 	test('expect user make login', async () => {
 		await loginPage.doLogin(validUser);
-		await loginPage.waitForSelector(HOME_SELECTOR);
+		await page.waitForSelector(HOME_SELECTOR);
 	});
 });

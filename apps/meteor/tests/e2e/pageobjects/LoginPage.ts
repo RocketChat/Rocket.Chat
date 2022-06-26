@@ -76,9 +76,9 @@ export class LoginPage extends BasePage {
 		await this.confirmPasswordField.type(password);
 		await this.submit();
 
-		await this.waitForSelector(REGISTER_STEP2_BUTTON);
+		await this.page.waitForSelector(REGISTER_STEP2_BUTTON);
 		await this.registerNextButton.click();
-		await this.waitForSelector(HOME_SELECTOR);
+		await this.page.waitForSelector(HOME_SELECTOR);
 	}
 
 	async doLogin({ email, password }: ILogin, shouldWaitForHomeScreen = true): Promise<void> {
@@ -87,7 +87,7 @@ export class LoginPage extends BasePage {
 		await this.submitButton.click();
 
 		if (shouldWaitForHomeScreen) {
-			await this.waitForSelector('.main-content');
+			await this.page.waitForSelector('.main-content');
 		}
 	}
 

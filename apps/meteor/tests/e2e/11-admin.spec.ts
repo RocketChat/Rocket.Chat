@@ -1,18 +1,20 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
 import { adminLogin, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';
 import { FlexTab, Administration, LoginPage, SideNav } from './pageobjects';
 import { ROCKET_CAT_SELECTOR } from './utils/mocks/waitSelectorsMock';
 
 test.describe('[Administration]', () => {
+	let page: Page;
 	let loginPage: LoginPage;
 	let sideNav: SideNav;
 	let admin: Administration;
 	let flexTab: FlexTab;
+
 	const checkBoxesSelectors = ['Direct', 'Public', 'Private', 'Omnichannel', 'Discussions', 'Teams'];
 
 	test.beforeAll(async ({ browser }) => {
-		const page = await browser.newPage();
+		page = await browser.newPage();
 		loginPage = new LoginPage(page);
 		sideNav = new SideNav(page);
 		flexTab = new FlexTab(page);
@@ -140,7 +142,7 @@ test.describe('[Administration]', () => {
 
 					test('expect should show rocket.cat', async () => {
 						await admin.usersFilter.type(ROCKET_CAT);
-						await admin.waitForSelector(ROCKET_CAT_SELECTOR);
+						await page.waitForSelector(ROCKET_CAT_SELECTOR);
 					});
 					test('expect dont user when write wrong name', async () => {
 						await admin.usersFilter.type('any_user_wrong');
