@@ -342,8 +342,8 @@ test.describe.skip('[Settings]', async () => {
 
 			expect(userPreferences.avatarFileInput.isDisabled()).toBeTruthy();
 			expect(userPreferences.emailTextInput.isDisabled()).toBeTruthy();
-			expect(userPreferences.realNameTextInput.isDisabled()).toBeTruthy();
-			expect(userPreferences.userNameTextInput.isDisabled()).toBeTruthy();
+			expect(userPreferences.inputName.isDisabled()).toBeTruthy();
+			expect(userPreferences.inputUsername.isDisabled()).toBeTruthy();
 		});
 
 		test('(API) expect enable profile change', async ({ request }) => {

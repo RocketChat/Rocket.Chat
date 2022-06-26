@@ -125,7 +125,7 @@ export class FlexTab extends BasePage {
 		return this.page.locator('[value="muteUser"]');
 	}
 
-	get memberRealName(): Locator {
+	get userUsername(): Locator {
 		return this.page.locator('[data-qa="UserInfoUserName"]');
 	}
 
