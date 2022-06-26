@@ -31,15 +31,15 @@ export class PreferencesMainContent extends BasePage {
 		return this.page.locator('[data-qa="AccountProfilePageSaveButton"]');
 	}
 
-	public async changeUsername(userName: string): Promise<void> {
+	async changeUsername(userName: string): Promise<void> {
 		await this.userNameTextInput.fill(userName);
 	}
 
-	public async changeRealName(realName: string): Promise<void> {
+	async changeRealName(realName: string): Promise<void> {
 		await this.realNameTextInput.fill(realName);
 	}
 
-	public async saveChanges(): Promise<void> {
+	async saveChanges(): Promise<void> {
 		await expect(this.submitBtn).toBeEnabled();
 		await this.submitBtn.click();
 	}

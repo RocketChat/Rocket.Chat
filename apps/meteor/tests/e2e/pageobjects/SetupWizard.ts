@@ -118,7 +118,7 @@ export class SetupWizard extends BasePage {
 		return this.page.locator('//input[@name="email"]/../../span[contains(text(), "This field is required")]');
 	}
 
-	public async stepTwoSuccess(): Promise<void> {
+	async stepTwoSuccess(): Promise<void> {
 		await this.organizationName.type(reason);
 		await this.organizationType.click();
 		await this.organizationTypeSelect.click();
@@ -134,11 +134,11 @@ export class SetupWizard extends BasePage {
 		await this.nextStep.click();
 	}
 
-	public async stepThreeSuccess(): Promise<void> {
+	async stepThreeSuccess(): Promise<void> {
 		await this.standaloneServer.click();
 	}
 
-	public async stepOneFailedBlankFields(): Promise<void> {
+	async stepOneFailedBlankFields(): Promise<void> {
 		await this.nextStep.click();
 		await expect(this.fullNameInvalidText).toBeVisible();
 		await expect(this.userNameInvalidText).toBeVisible();
@@ -146,7 +146,7 @@ export class SetupWizard extends BasePage {
 		await expect(this.passwordInvalidText).toBeVisible();
 	}
 
-	public async stepOneFailedWithInvalidEmail(adminCredentials: IRegister): Promise<void> {
+	async stepOneFailedWithInvalidEmail(adminCredentials: IRegister): Promise<void> {
 		await this.fullName.type(adminCredentials.name);
 		await this.userName.type(adminCredentials.name);
 		await this.companyEmail.type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
@@ -155,7 +155,7 @@ export class SetupWizard extends BasePage {
 		await expect(this.companyEmail).toBeFocused();
 	}
 
-	public async stepTwoFailedWithBlankFields(): Promise<void> {
+	async stepTwoFailedWithBlankFields(): Promise<void> {
 		await this.nextStep.click();
 		await expect(this.organizationName).toBeVisible();
 		await expect(this.industryInvalidSelect).toBeVisible();
@@ -163,7 +163,7 @@ export class SetupWizard extends BasePage {
 		await expect(this.countryInvalidSelect).toBeVisible();
 	}
 
-	public async stepThreeFailedWithInvalidField(): Promise<void> {
+	async stepThreeFailedWithInvalidField(): Promise<void> {
 		await this.registeredServer.type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
 		await this.registeredServer.click({ clickCount: 3 });
 		await this.keyboardPress(BACKSPACE);

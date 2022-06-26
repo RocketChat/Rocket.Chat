@@ -145,7 +145,7 @@ export class FlexTab extends BasePage {
 		return this.page.locator('//aside//i[contains(@class, "rcx-icon--name-hashtag")]/../div');
 	}
 
-	public secondSetting(topic: string): Locator {
+	secondSetting(topic: string): Locator {
 		return this.page.locator(`//header//*[contains(text(), "${topic}")]`);
 	}
 
@@ -223,7 +223,7 @@ export class FlexTab extends BasePage {
 		return this.page.locator('//html//body//div[1]//div//div[3]//div[1]//main//div//aside//div[2]//div//div//h3//div//div[2]//button[2]');
 	}
 
-	public getUserEl(username: string): Locator {
+	getUserEl(username: string): Locator {
 		return this.page.locator(`[data-qa="MemberItem-${username}"]`);
 	}
 
@@ -251,20 +251,20 @@ export class FlexTab extends BasePage {
 		return this.page.locator('[data-qa="UserUserInfo-menu"]');
 	}
 
-	public async setUserOwner(user: string): Promise<void> {
+	async setUserOwner(user: string): Promise<void> {
 		await this.enterUserView(user);
 		await this.setOwnerBtn.waitFor();
 		await this.setOwnerBtn.click();
 	}
 
-	public async setUserModerator(user: string): Promise<void> {
+	async setUserModerator(user: string): Promise<void> {
 		await this.enterUserView(user);
 		await this.userMoreActions.click();
 		await this.setModeratorBtn.waitFor();
 		await this.setModeratorBtn.click();
 	}
 
-	public async muteUser(user: string): Promise<void> {
+	async muteUser(user: string): Promise<void> {
 		await this.enterUserView(user);
 		await this.userMoreActions.click();
 		await this.muteUserBtn.waitFor();
@@ -273,13 +273,13 @@ export class FlexTab extends BasePage {
 		await this.mainSideBarBack.click();
 	}
 
-	public async enterUserView(user: string): Promise<void> {
+	async enterUserView(user: string): Promise<void> {
 		const userEl = this.getUserEl(user);
 		await userEl.waitFor();
 		await userEl.click();
 	}
 
-	public async addPeopleToChannel(user: string): Promise<void> {
+	async addPeopleToChannel(user: string): Promise<void> {
 		await this.addUserButton.click();
 		await this.chooseUserSearch.type(user);
 		await this.page.waitForTimeout(3000);
@@ -293,7 +293,7 @@ export class FlexTab extends BasePage {
 		);
 	}
 
-	public async doAddRole(role: string): Promise<void> {
+	async doAddRole(role: string): Promise<void> {
 		await this.usersAddUserRoleList.click();
 		await this.page.locator(`li[value=${role}]`).click();
 	}

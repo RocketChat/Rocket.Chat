@@ -61,15 +61,15 @@ export class LoginPage extends BasePage {
 		return this.page.locator('[data-qa="sidebar-avatar-button"]');
 	}
 
-	public async gotToRegister(): Promise<void> {
+	async gotToRegister(): Promise<void> {
 		await this.registerButton.click();
 	}
 
-	public async gotToForgotPassword(): Promise<void> {
+	async gotToForgotPassword(): Promise<void> {
 		await this.forgotPasswordButton.click();
 	}
 
-	public async registerNewUser({ name, email, password }: IRegister): Promise<void> {
+	async registerNewUser({ name, email, password }: IRegister): Promise<void> {
 		await this.nameField.type(name);
 		await this.emailField.type(email);
 		await this.passwordField.type(password);
@@ -91,11 +91,11 @@ export class LoginPage extends BasePage {
 		}
 	}
 
-	public async submit(): Promise<void> {
+	async submit(): Promise<void> {
 		await this.submitButton.click();
 	}
 
-	public async registerFail(): Promise<void> {
+	async registerFail(): Promise<void> {
 		await this.gotToRegister();
 		await this.submit();
 
@@ -104,7 +104,7 @@ export class LoginPage extends BasePage {
 		await expect(this.passwordInvalidText).toBeVisible();
 	}
 
-	public async registerFailWithDifferentPassword({ name, email, password }: IRegister, invalidPassword: string): Promise<void> {
+	async registerFailWithDifferentPassword({ name, email, password }: IRegister, invalidPassword: string): Promise<void> {
 		await this.gotToRegister();
 		await this.passwordField.type(password);
 		await this.emailField.type(email);
@@ -116,7 +116,7 @@ export class LoginPage extends BasePage {
 		await expect(this.confirmPasswordInvalidText).toHaveText('The password confirmation does not match password');
 	}
 
-	public async logout(): Promise<void> {
+	async logout(): Promise<void> {
 		await this.getSideBarAvatarButton.click();
 		await this.page.locator('li.rcx-option >> text="Logout"').click();
 	}
