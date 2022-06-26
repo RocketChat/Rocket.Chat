@@ -1,4 +1,4 @@
-import { MongoHelper } from '../utils/helpers/MongoHelper';
+import { MongoHelper } from '../utils/MongoHelper';
 
 const mongoBaseUrl = process.env.MONGO_URL
 	? `${process.env.MONGO_URL}?retryWrites=false`

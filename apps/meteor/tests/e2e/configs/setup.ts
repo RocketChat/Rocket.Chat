@@ -1,4 +1,4 @@
-import { MongoHelper } from '../utils/helpers/MongoHelper';
+import { MongoHelper } from '../utils/MongoHelper';
 import { roomMock, subscriptionMock, userMock } from '../utils/mocks/initialData';
 import { URL_MONGODB } from '../utils/constants';
 
