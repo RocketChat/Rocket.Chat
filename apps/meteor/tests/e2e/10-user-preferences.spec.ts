@@ -13,6 +13,7 @@ test.describe('[User Preferences]', () => {
 			await clearMessages(['GENERAL']);
 		}
 	});
+
 	test.describe('default', () => {
 		let flexTab: FlexTab;
 		let loginPage: LoginPage;
@@ -51,11 +52,11 @@ test.describe('[User Preferences]', () => {
 			});
 
 			test('expect show the username input', async () => {
-				await expect(preferencesMainContent.userNameTextInput).toBeVisible();
+				await expect(preferencesMainContent.inputUsername).toBeVisible();
 			});
 
-			test('expect show the real name input', async () => {
-				await expect(preferencesMainContent.realNameTextInput).toBeVisible();
+			test('expect show the name input', async () => {
+				await expect(preferencesMainContent.inputName).toBeVisible();
 			});
 
 			test('expect show the email input', async () => {
@@ -81,15 +82,15 @@ test.describe('[User Preferences]', () => {
 			});
 
 			test('expect change the name field', async () => {
-				await preferencesMainContent.changeRealName(newName);
+				await preferencesMainContent.inputName.fill(newName);
 			});
 
 			test('expect change the Username field', async () => {
-				await preferencesMainContent.changeUsername(newUserName);
+				await preferencesMainContent.inputUsername.fill(newUserName);
 			});
 
 			test('expect save the settings', async () => {
-				await preferencesMainContent.saveChanges();
+				await preferencesMainContent.submitBtn.click();
 			});
 
 			test('expect close the preferences menu', async () => {
