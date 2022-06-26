@@ -1,19 +1,19 @@
-import { Locator, expect } from '@playwright/test';
+import { Locator } from '@playwright/test';
 
 import { ILogin, IRegister } from '../utils/interfaces/Login';
 import { BasePage } from './BasePage';
 import { HOME_SELECTOR, REGISTER_STEP2_BUTTON } from '../utils/mocks/waitSelectorsMock';
 
 export class LoginPage extends BasePage {
-	private get registerButton(): Locator {
+	get btnRegister(): Locator {
 		return this.page.locator('button.register');
 	}
 
-	private get forgotPasswordButton(): Locator {
+	get btnForgotPassword(): Locator {
 		return this.page.locator('.forgot-password');
 	}
 
-	get submitButton(): Locator {
+	get btnSubmit(): Locator {
 		return this.page.locator('.login');
 	}
 
@@ -61,20 +61,12 @@ export class LoginPage extends BasePage {
 		return this.page.locator('[data-qa="sidebar-avatar-button"]');
 	}
 
-	async gotToRegister(): Promise<void> {
-		await this.registerButton.click();
-	}
-
-	async gotToForgotPassword(): Promise<void> {
-		await this.forgotPasswordButton.click();
-	}
-
 	async registerNewUser({ name, email, password }: IRegister): Promise<void> {
 		await this.nameField.type(name);
 		await this.emailField.type(email);
 		await this.passwordField.type(password);
 		await this.confirmPasswordField.type(password);
-		await this.submit();
+		await this.btnSubmit.click();
 
 		await this.page.waitForSelector(REGISTER_STEP2_BUTTON);
 		await this.registerNextButton.click();
@@ -84,36 +76,11 @@ export class LoginPage extends BasePage {
 	async doLogin({ email, password }: ILogin, shouldWaitForHomeScreen = true): Promise<void> {
 		await this.emailOrUsernameField.type(email);
 		await this.passwordField.type(password);
-		await this.submitButton.click();
+		await this.btnSubmit.click();
 
 		if (shouldWaitForHomeScreen) {
 			await this.page.waitForSelector('.main-content');
 		}
-	}
-
-	async submit(): Promise<void> {
-		await this.submitButton.click();
-	}
-
-	async registerFail(): Promise<void> {
-		await this.gotToRegister();
-		await this.submit();
-
-		await expect(this.nameInvalidText).toBeVisible();
-		await expect(this.emailInvalidText).toBeVisible();
-		await expect(this.passwordInvalidText).toBeVisible();
-	}
-
-	async registerFailWithDifferentPassword({ name, email, password }: IRegister, invalidPassword: string): Promise<void> {
-		await this.gotToRegister();
-		await this.passwordField.type(password);
-		await this.emailField.type(email);
-		await this.nameField.type(name);
-		await this.confirmPasswordField.type(invalidPassword);
-
-		await this.submit();
-		await expect(this.confirmPasswordInvalidText).toBeVisible();
-		await expect(this.confirmPasswordInvalidText).toHaveText('The password confirmation does not match password');
 	}
 
 	async logout(): Promise<void> {

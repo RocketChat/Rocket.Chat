@@ -12,30 +12,30 @@ test.describe('[Forgot Password]', () => {
 		global = new Global(page);
 
 		await page.goto('/');
-		await loginPage.gotToForgotPassword();
+		await loginPage.btnForgotPassword.click();
 	});
 
 	test('expect be required', async () => {
-		loginPage.submit();
+		loginPage.btnSubmit.click();
 
 		await expect(loginPage.emailInvalidText).toBeVisible();
 	});
 
 	test('expect invalid for email without domain', async () => {
 		await loginPage.emailField.type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
-		await loginPage.submit();
+		await loginPage.btnSubmit.click();
 		await expect(loginPage.emailInvalidText).toBeVisible();
 	});
 
 	test('expect be invalid for email with invalid domain', async () => {
 		await loginPage.emailField.type(INVALID_EMAIL);
-		await loginPage.submit();
+		await loginPage.btnSubmit.click();
 		await expect(loginPage.emailInvalidText).toBeVisible();
 	});
 
 	test('expect user type a valid email', async () => {
 		await loginPage.emailField.type(VALID_EMAIL);
-		await loginPage.submit();
+		await loginPage.btnSubmit.click();
 		await expect(global.getToastBarSuccess).toBeVisible();
 	});
 });

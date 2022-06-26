@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 import { registerUser, WRONG_PASSWORD } from './utils/mocks/userAndPasswordMock';
 import { LoginPage } from './pageobjects';
@@ -12,15 +12,28 @@ test.describe('[Register]', () => {
 	});
 
 	test('expect user click in register button without data', async () => {
-		await loginPage.registerFail();
+		await loginPage.btnRegister.click();
+		await loginPage.btnSubmit.click();
+
+		await expect(loginPage.nameInvalidText).toBeVisible();
+		await expect(loginPage.emailInvalidText).toBeVisible();
+		await expect(loginPage.passwordInvalidText).toBeVisible();
 	});
 
 	test('expect user click in register button with different password', async () => {
-		await loginPage.registerFailWithDifferentPassword(registerUser, WRONG_PASSWORD);
+		await loginPage.btnRegister.click();
+		await loginPage.passwordField.type(registerUser.password);
+		await loginPage.emailField.type(registerUser.email);
+		await loginPage.nameField.type(registerUser.name);
+		await loginPage.confirmPasswordField.type(WRONG_PASSWORD);
+
+		await loginPage.btnSubmit.click();
+		await expect(loginPage.confirmPasswordInvalidText).toBeVisible();
+		await expect(loginPage.confirmPasswordInvalidText).toHaveText('The password confirmation does not match password');
 	});
 
 	test('expect new user is created', async () => {
-		await loginPage.gotToRegister();
+		await loginPage.btnRegister.click();
 		await loginPage.registerNewUser(registerUser);
 	});
 });
