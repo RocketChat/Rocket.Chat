@@ -28,6 +28,15 @@ describe('VideoConfStartProps (definition/rest/v1)', () => {
 			);
 		});
 
+		it('should accept the allowRinging parameter', () => {
+			assert.isTrue(
+				isVideoConfStartProps({
+					roomId: 'roomId',
+					allowRinging: true,
+				}),
+			);
+		});
+
 		it('should accept a roomId with a title', () => {
 			assert.isTrue(
 				isVideoConfStartProps({
