@@ -1,6 +1,8 @@
 import { MongoHelper } from '../utils/MongoHelper';
-import { roomMock, subscriptionMock, userMock } from '../utils/mocks/initialData';
 import { URL_MONGODB } from '../utils/constants';
+import { roomMock } from '../utils/mocks/roomMock';
+import { userMock } from '../utils/mocks/userMock';
+import { subscriptionMock } from '../utils/mocks/subscriptionMock';
 
 const insertRoom = async (): Promise<void> => {
 	const roomCollection = await MongoHelper.getCollection('rocketchat_room');
