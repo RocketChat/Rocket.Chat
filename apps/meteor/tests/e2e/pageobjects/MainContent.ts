@@ -57,8 +57,12 @@ export class MainContent extends BasePage {
 		return this.page.locator('.popup-item.selected');
 	}
 
-	get lastMessageUser(): Locator {
-		return this.page.locator('.message:last-child div:nth-child(2) button');
+	get lastUserMessage(): Locator {
+		return this.page.locator('[data-qa-id=UserMessage]').last();
+	}
+
+	get btnLastUserMessage(): Locator {
+		return this.page.locator('[data-qa-id=UserMessage]:not(.sequential) > button').last();
 	}
 
 	get lastMessageFileName(): Locator {

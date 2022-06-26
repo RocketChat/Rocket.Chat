@@ -36,16 +36,17 @@ test.describe('[User Preferences]', () => {
 			await preferencesMainContent.submitBtn.click();
 		});
 
-		test('expect send message with different user name', async () => {
+		test('expect show new username in the last message', async () => {
 			await sideNav.preferencesClose.click();
 			await sideNav.doOpenChat('general');
 			await mainContent.sendMessage('HI');
 
-			await expect(mainContent.lastMessageUser).toContainText(newUserName);
+			await expect(mainContent.lastUserMessage).toContainText(newUserName);
 		});
 
 		test('expect show new username in card and profile', async () => {
-			await mainContent.lastMessageUser.click();
+			await mainContent.sendMessage('HI');
+			await mainContent.btnLastUserMessage.click();
 			await expect(mainContent.userCard).toBeVisible();
 
 			await mainContent.viewUserProfile.click();
