@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-import { VALID_EMAIL, adminLogin } from './utils/mocks/userAndPasswordMock';
+import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { setupWizardStepRegex } from './utils/mocks/urlMock';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
 import { LoginPage, SetupWizard } from './pageobjects';
@@ -52,7 +52,7 @@ test.describe('[Wizard]', () => {
 		});
 
 		test('expect enable "Register" button when email is valid and terms checked', async () => {
-			await setupWizard.registeredServer.type(VALID_EMAIL);
+			await setupWizard.registeredServer.type('mail@mail.com');
 			await setupWizard.agreementField.click();
 			await expect(setupWizard.registerButton).toBeEnabled();
 		});

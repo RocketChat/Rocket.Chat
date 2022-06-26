@@ -1,7 +1,6 @@
 import { expect, Locator } from '@playwright/test';
 
 import { BasePage } from './BasePage';
-import { reason, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from '../utils/mocks/userAndPasswordMock';
 import { IRegister } from '../utils/interfaces/Login';
 import { BACKSPACE } from '../utils/mocks/keyboardKeyMock';
 
@@ -119,7 +118,7 @@ export class SetupWizard extends BasePage {
 	}
 
 	async stepTwoSuccess(): Promise<void> {
-		await this.organizationName.type(reason);
+		await this.organizationName.type('rocket.chat.reason');
 		await this.organizationType.click();
 		await this.organizationTypeSelect.click();
 		await expect(this.page.locator('.rcx-options')).toHaveCount(0);
@@ -149,7 +148,7 @@ export class SetupWizard extends BasePage {
 	async stepOneFailedWithInvalidEmail(adminCredentials: IRegister): Promise<void> {
 		await this.fullName.type(adminCredentials.name);
 		await this.userName.type(adminCredentials.name);
-		await this.companyEmail.type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
+		await this.companyEmail.type('mail');
 		await this.password.type(adminCredentials.password);
 		await this.nextStep.click();
 		await expect(this.companyEmail).toBeFocused();
@@ -164,7 +163,7 @@ export class SetupWizard extends BasePage {
 	}
 
 	async stepThreeFailedWithInvalidField(): Promise<void> {
-		await this.registeredServer.type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
+		await this.registeredServer.type('mail');
 		await this.registeredServer.click({ clickCount: 3 });
 		await this.keyboardPress(BACKSPACE);
 		await expect(this.stepThreeInputInvalidMail).toBeVisible();

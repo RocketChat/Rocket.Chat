@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import { registerUser, WRONG_PASSWORD } from './utils/mocks/userAndPasswordMock';
+import { registerUser } from './utils/mocks/userAndPasswordMock';
 import { LoginPage } from './pageobjects';
 
 test.describe('[Register]', () => {
@@ -25,7 +25,7 @@ test.describe('[Register]', () => {
 		await loginPage.passwordField.type(registerUser.password);
 		await loginPage.emailField.type(registerUser.email);
 		await loginPage.nameField.type(registerUser.name);
-		await loginPage.confirmPasswordField.type(WRONG_PASSWORD);
+		await loginPage.confirmPasswordField.type('wrong_password');
 
 		await loginPage.btnSubmit.click();
 		await expect(loginPage.confirmPasswordInvalidText).toBeVisible();

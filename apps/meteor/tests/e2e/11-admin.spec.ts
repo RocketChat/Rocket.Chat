@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-import { adminLogin, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';
+import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { FlexTab, Administration, LoginPage, SideNav } from './pageobjects';
 import { ROCKET_CAT_SELECTOR } from './utils/mocks/waitSelectorsMock';
 
@@ -141,7 +141,7 @@ test.describe('[Administration]', () => {
 					});
 
 					test('expect should show rocket.cat', async () => {
-						await admin.usersFilter.type(ROCKET_CAT);
+						await admin.usersFilter.type('rocket.cat');
 						await page.waitForSelector(ROCKET_CAT_SELECTOR);
 					});
 					test('expect dont user when write wrong name', async () => {
