@@ -264,6 +264,7 @@ export default {
 			totalSubscriptionRoles: 0,
 			totalUserRoles: 0,
 			totalWebRTCCalls: 0,
+			matrixBridgeEnabled: false,
 		},
 		instances: [],
 	},

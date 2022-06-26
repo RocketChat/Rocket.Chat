@@ -173,4 +173,5 @@ export interface IStats {
 	totalSubscriptionRoles: number;
 	totalUserRoles: number;
 	totalWebRTCCalls: number;
+	matrixBridgeEnabled: boolean;
 }
