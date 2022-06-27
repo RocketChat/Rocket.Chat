@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { LivechatTrigger } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
-import { LivechatTrigger } from '../../../models/server/raw';
 
 Meteor.methods({
 	async 'livechat:removeTrigger'(triggerId) {

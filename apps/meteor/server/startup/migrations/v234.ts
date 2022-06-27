@@ -1,4 +1,5 @@
-import { Settings } from '../../../app/models/server/raw';
+import { Settings } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
