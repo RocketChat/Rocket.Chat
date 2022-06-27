@@ -147,6 +147,8 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				const { threads } = await getThreadsList({
 					rid,
 					type: 'unread',
+					count: 0,
+					offset: 0
 				});
 				const promises = threads.map((thread) => readThreads(thread?._id));
 				await Promise.all(promises);
