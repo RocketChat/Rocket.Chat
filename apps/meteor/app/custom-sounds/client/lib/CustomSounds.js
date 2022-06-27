@@ -109,6 +109,12 @@ class CustomSoundsClass {
 			audio.currentTime = 0;
 		}
 	};
+
+	isPlaying = (sound) => {
+		const audio = document.querySelector(`#${getCustomSoundId(sound)}`);
+
+		return audio && audio.duration > 0 && !audio.paused;
+	};
 }
 
 export const CustomSounds = new CustomSoundsClass();

@@ -26,17 +26,15 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 	);
 
 	useEffect(() => {
-		if (isRinging) {
-			customSound.play('calling');
-			const soundInterval = setInterval(() => {
-				customSound.play('calling');
-			}, 3000);
-
-			return (): void => {
-				customSound.pause('calling');
-				clearInterval(soundInterval);
-			};
+		if (!isRinging) {
+			return;
 		}
+
+		customSound.play('calling', { loop: true });
+
+		return (): void => {
+			customSound.pause('calling');
+		};
 	}, [customSound, isRinging]);
 
 	return (
