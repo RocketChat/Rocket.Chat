@@ -20,7 +20,8 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
+import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
+import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
@@ -53,6 +54,7 @@ export const CallProvider: FC = ({ children }) => {
 	const result = useVoipClient();
 	const user = useUser();
 	const homeRoute = useRoute('home');
+	const isEnterprise = useHasLicense('voip-enterprise');
 
 	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
@@ -61,7 +63,7 @@ export const CallProvider: FC = ({ children }) => {
 	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
 
 	const closeRoom = useCallback(
-		async (data): Promise<void> => {
+		async (data = {}): Promise<void> => {
 			roomInfo &&
 				(await voipCloseRoomEndpoint({
 					rid: roomInfo.rid,
@@ -85,6 +87,15 @@ export const CallProvider: FC = ({ children }) => {
 	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
 
 	const [networkStatus, setNetworkStatus] = useState<NetworkState>('online');
+
+	const handleWrapUp = useCallback(() => {
+		if (isEnterprise) {
+			openWrapUpModal();
+			return;
+		}
+
+		closeRoom();
+	}, [isEnterprise, openWrapUpModal, closeRoom]);
 
 	useEffect(() => {
 		if (!result?.voipClient) {
@@ -154,12 +165,14 @@ export const CallProvider: FC = ({ children }) => {
 
 		const handleCallHangup = (_event: { roomId: string }): void => {
 			setQueueName(queueAggregator.getCurrentQueueName());
-			openWrapUpModal();
+
+			handleWrapUp();
+
 			dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ENDED'], rid: _event.roomId });
 		};
 
 		return subscribeToNotifyUser(`${user._id}/call.hangup`, handleCallHangup);
-	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled, dispatchEvent]);
+	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled, dispatchEvent, handleWrapUp]);
 
 	useEffect(() => {
 		if (!result.voipClient) {
