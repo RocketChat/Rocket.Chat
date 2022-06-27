@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { api } from '../../../../server/sdk/api';
 
 callbacks.add(

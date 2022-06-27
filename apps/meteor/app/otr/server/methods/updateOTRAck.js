@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../models';
+import { Messages } from '../../../models/server';
 
 Meteor.methods({
 	updateOTRAck(_id, ack) {

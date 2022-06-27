@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo';
+import { NotificationQueue, Settings } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
-import { NotificationQueue, Settings } from '../../../app/models/server/raw';
 
 function convertNotification(notification) {
 	try {

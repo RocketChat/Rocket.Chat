@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
-import { ChatMessage, Subscriptions } from '../../models';
+import { ChatMessage, Subscriptions } from '../../models/client';
 
 Meteor.methods({
 	snippetMessage(message) {
