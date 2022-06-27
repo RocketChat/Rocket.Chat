@@ -3,12 +3,10 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useToastMessageDispatch, useRoute, usePermission, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
-import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
-import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
+import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useOmnichannelAgentAvailable } from '../../hooks/omnichannel/useOmnichannelAgentAvailable';
 import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';
 import { OmnichannelCallToggle } from './components/OmnichannelCallToggle';
-import { OmnichannelMakeCall } from './components/OmnichannelMakeCall';
 
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
@@ -16,8 +14,6 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const isCallEnabled = useIsCallEnabled();
 	const hasPermission = usePermission('view-omnichannel-contact-center');
 	const agentAvailable = useOmnichannelAgentAvailable();
-	const isCallReady = useIsCallReady();
-	const isEnterprise = useHasLicense('voip-enterprise');
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
 	const { sidebar } = useLayout();
 	const directoryRoute = useRoute('omnichannel-directory');
@@ -64,8 +60,6 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} onClick={(): void => handleRoute('queue')} />}
 				{isCallEnabled && <OmnichannelCallToggle />}
 				<Sidebar.TopBar.Action {...availableIcon} onClick={handleAvailableStatusChange} />
-				{/* Remove below line and the component OmnichannelMakeCall once the dialpad is in place */}
-				{isCallEnabled && isCallReady && isEnterprise && <OmnichannelMakeCall />}
 				{hasPermission && <Sidebar.TopBar.Action {...directoryIcon} onClick={(): void => handleRoute('directory')} />}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
