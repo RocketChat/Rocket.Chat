@@ -82,10 +82,30 @@ export class PushClass {
 		const pushTokenQuery = appTokensCollection.findOne({ token: pushToken });
 
 		if (!pushTokenQuery) {
-			return;
+			return false;
 		}
 
-		const { authToken, userId } = pushTokenQuery;
+		const { authToken, userId, expiration, usesLeft, _id } = pushTokenQuery;
+		if (!authToken) {
+			if (expiration && expiration > Date.now()) {
+				return true;
+			}
+			if (usesLeft > 0) {
+				appTokensCollection.rawCollection().updateOne(
+					{
+						_id,
+					},
+					{
+						$inc: {
+							usesLeft: -1,
+						},
+					},
+				);
+
+				return true;
+			}
+		}
+
 		const user = authToken && userId && Users.findOneByIdAndLoginToken(userId, authToken, { projection: { _id: 1 } });
 
 		if (!user) {
