@@ -29,10 +29,16 @@ export const useOutboundDialer = (): UseOutboundDialerResult => {
 				setResult({ outboundDialer: voipClient as EEVoipClient });
 			}
 		});
+
 		return (): void => {
-			if (voipClient) {
-				voipClient.clear();
-			}
+			hasLicense('livechat-enterprise').then((enabled) => {
+				if (!enabled) {
+					return;
+				}
+				if (voipClient) {
+					voipClient.clear();
+				}
+			});
 		};
 	}, [setResult, voipClient]);
 
