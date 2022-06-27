@@ -81,6 +81,14 @@ const parseAndValidate = (property: string, date?: string): DateParam => {
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
 
+const isRoomSearchProps = (props: any): props is { rid: string; token: string } => {
+	return 'rid' in props && 'token' in props;
+};
+
+const isRoomCreationProps = (props: any): props is { agentId: string; direction: IVoipRoom['direction'] } => {
+	return 'agentId' in props && 'direction' in props;
+};
+
 API.v1.addRoute(
 	'voip/room',
 	{
@@ -91,12 +99,20 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { token, agentId, direction } = this.queryParams as {
-				token: string;
-				agentId: ILivechatAgent['_id'];
-				direction: IVoipRoom['direction'];
-			};
-			const { rid } = this.queryParams as { rid: string; token: string };
+			const { token } = this.queryParams;
+			let agentId: string | undefined = undefined;
+			let direction: IVoipRoom['direction'] = 'inbound';
+			let rid: string | undefined = undefined;
+
+			if (isRoomCreationProps(this.queryParams)) {
+				agentId = this.queryParams.agentId;
+				direction = this.queryParams.direction;
+			}
+
+			if (isRoomSearchProps(this.queryParams)) {
+				rid = this.queryParams.rid;
+			}
+
 			const guest = await LivechatVisitors.getVisitorByToken(token, {});
 			if (!guest) {
 				return API.v1.failure('invalid-token');
@@ -123,7 +139,7 @@ API.v1.addRoute(
 				const rid = Random.id();
 
 				return API.v1.success(
-					await LivechatVoip.getNewRoom(guest, agent, rid, direction as IVoipRoom['direction'], {
+					await LivechatVoip.getNewRoom(guest, agent, rid, direction, {
 						projection: API.v1.defaultFieldsToExclude,
 					}),
 				);
