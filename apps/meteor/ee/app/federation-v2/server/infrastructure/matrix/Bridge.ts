@@ -1,6 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import { MatrixBridge } from '../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge';
+import { MatrixRoomVisibility } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomVisibility';
 import { IFederationBridgeEE } from '../../domain/IFederationBridge';
 
 export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE {
@@ -20,7 +21,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 	public async createRoom(externalCreatorId: string, roomType: RoomType, roomName: string, roomTopic?: string): Promise<string> {
 		const intent = this.bridgeInstance.getIntent(externalCreatorId);
 
-		const visibility = roomType === 'p' || roomType === 'd' ? 'invite' : 'public';
+		const visibility = roomType === 'p' || roomType === 'd' ? MatrixRoomVisibility.PRIVATE : MatrixRoomVisibility.PUBLIC;
 		const preset = roomType === 'p' || roomType === 'd' ? 'private_chat' : 'public_chat';
 
 		// Create the matrix room

@@ -156,7 +156,6 @@ export class FederationRoomServiceReceiver {
 			}
 			await this.rocketRoomAdapter.removeDirectMessageRoom(affectedFederatedRoom);
 			await this.rocketRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom, membersUsernames);
-			await this.bridge.inviteToRoom(externalRoomId, externalInviterId, externalInviteeId);
 			return;
 		}
 

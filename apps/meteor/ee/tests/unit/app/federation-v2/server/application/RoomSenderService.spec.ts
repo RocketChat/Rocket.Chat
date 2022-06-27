@@ -245,7 +245,8 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 			expect(userAdapter.createFederatedUser.calledWith(inviter)).to.be.true;
 		});
 
-		it('should create the external room with all the invitees', async () => {
+		it('should create the external room with all the invitees when the inviter is from the same homeserver', async () => {
+			bridge.isUserIdFromTheSameHomeserver.returns(true);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			room.externalId = 'externalRoomId';
 			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
@@ -257,6 +258,16 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 					invitees.map((invitee) => invitee.rawInviteeId),
 				),
 			).to.be.true;
+		});
+
+		it('should NOT create the external room with all the invitees when the inviter is NOT from the same homeserver', async () => {
+			bridge.isUserIdFromTheSameHomeserver.returns(false);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			room.externalId = 'externalRoomId';
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+			await service.onDirectMessageRoomCreation({ invitees } as any);
+
+			expect(bridge.createDirectMessageRoom.called).to.be.false;
 		});
 
 		it('should create the user on the proxy homeserver if it is from the same homeserver', async () => {

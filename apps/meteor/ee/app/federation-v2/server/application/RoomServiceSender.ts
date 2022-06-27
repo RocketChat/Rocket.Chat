@@ -54,13 +54,6 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 
 	public async onDirectMessageRoomCreation(dmRoomOnCreationInput: FederationOnDirectMessageRoomCreationDto): Promise<void> {
 		const { internalRoomId, internalInviterId, invitees, externalInviterId } = dmRoomOnCreationInput;
-		const federatedInviterUser = await this.rocketUserAdapter.getFederatedUserByInternalId(internalInviterId);
-		if(federatedInviterUser){
-			const isInviterFromTheSameHomeServer = this.bridge.isUserIdFromTheSameHomeserver(federatedInviterUser.externalId, this.rocketSettingsAdapter.getHomeServerDomain())
-			if (!isInviterFromTheSameHomeServer) {
-				return;
-			}
-		}
 		if (invitees.length === 0 || externalInviterId) {
 			return;
 		}
@@ -178,7 +171,10 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 			await this.rocketUserAdapter.createFederatedUser(federatedInviterUser);
 		}
 		const federatedInviterUser = (await this.rocketUserAdapter.getFederatedUserByInternalId(internalInviterId)) as FederatedUser;
-		const isInviterFromTheSameHomeServer = this.bridge.isUserIdFromTheSameHomeserver(federatedInviterUser.externalId, this.rocketSettingsAdapter.getHomeServerDomain())
+		const isInviterFromTheSameHomeServer = this.bridge.isUserIdFromTheSameHomeserver(
+			federatedInviterUser.externalId,
+			this.rocketSettingsAdapter.getHomeServerDomain(),
+		);
 
 		if (!(await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId)) && isInviterFromTheSameHomeServer) {
 			const externalRoomId = await this.bridge.createDirectMessageRoom(
@@ -306,9 +302,9 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 				federatedInviteeUser?.internalReference?.name as string,
 				this.rocketSettingsAdapter.getHomeServerDomain(),
 			);
-			await this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser.externalId);		
+			await this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser.externalId);
 			await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
-			
+
 			return;
 		}
 

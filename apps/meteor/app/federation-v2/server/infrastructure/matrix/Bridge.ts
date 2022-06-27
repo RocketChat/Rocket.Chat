@@ -3,9 +3,9 @@ import { AppServiceOutput, Bridge, MatrixUser } from '@rocket.chat/forked-matrix
 import { IFederationBridge } from '../../domain/IFederationBridge';
 import { bridgeLogger } from '../rocket-chat/adapters/logger';
 import { IMatrixEvent } from './definitions/IMatrixEvent';
-import { RoomJoinRules } from './definitions/IMatrixEventContent/IMatrixEventContentSetRoomJoinRules';
 import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
+import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
 export class MatrixBridge implements IFederationBridge {
 	protected bridgeInstance: Bridge;
@@ -79,7 +79,7 @@ export class MatrixBridge implements IFederationBridge {
 	public async createUser(username: string, name: string, domain: string): Promise<string> {
 		const matrixUserId = `@${username?.toLowerCase()}:${domain}`;
 		const newUser = new MatrixUser(matrixUserId);
-		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})`});
+		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})` });
 
 		return matrixUserId;
 	}
@@ -87,7 +87,7 @@ export class MatrixBridge implements IFederationBridge {
 	public async createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[]): Promise<string> {
 		const intent = this.bridgeInstance.getIntent(externalCreatorId);
 
-		const visibility = RoomJoinRules.INVITE;
+		const visibility = MatrixRoomVisibility.PRIVATE;
 		const preset = MatrixRoomType.PRIVATE;
 		const matrixRoom = await intent.createRoom({
 			createAsClient: true,
