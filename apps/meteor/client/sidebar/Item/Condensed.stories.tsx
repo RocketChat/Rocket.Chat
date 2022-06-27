@@ -60,9 +60,9 @@ export const Actions = Template.bind({});
 Actions.args = {
 	actions: (
 		<>
-			<IconButton secondarySuccess icon='phone' />
-			<IconButton secondaryDanger icon='circle-cross' />
-			<IconButton secondaryInfo icon='trash' />
+			<IconButton secondary success icon='phone' />
+			<IconButton secondary danger icon='circle-cross' />
+			<IconButton secondary info icon='trash' />
 			<IconButton secondary icon='phone' />
 		</>
 	),
