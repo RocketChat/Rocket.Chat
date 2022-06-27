@@ -1,4 +1,4 @@
-import POP3Lib from 'poplib';
+import POP3Lib from '@rocket.chat/poplib';
 import { simpleParser } from 'mailparser';
 
 import { settings } from '../../../settings';

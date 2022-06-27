@@ -1,7 +1,6 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
-
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 
 type OTREstablishedProps = {
 	onClickRefresh: () => void;
@@ -14,7 +13,7 @@ const OTREstablished = ({ onClickRefresh, onClickEnd }: OTREstablishedProps): Re
 	return (
 		<ButtonGroup stretch>
 			<Button onClick={onClickRefresh}>{t('Refresh_keys')}</Button>
-			<Button danger onClick={onClickEnd}>
+			<Button secondary danger onClick={onClickEnd}>
 				{t('End_OTR')}
 			</Button>
 		</ButtonGroup>

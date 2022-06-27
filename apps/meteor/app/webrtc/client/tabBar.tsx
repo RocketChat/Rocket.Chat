@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
+import { useSetting } from '@rocket.chat/ui-contexts';
 
-import { useSetting } from '../../../client/contexts/SettingsContext';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { APIClient } from '../../utils/client';
 
@@ -9,7 +9,7 @@ addAction('webRTCVideo', ({ room }) => {
 
 	const handleClick = useCallback(async (): Promise<void> => {
 		if (!room.callStatus || room.callStatus === 'declined' || room.callStatus === 'ended') {
-			await APIClient.v1.get('livechat/webrtc.call', { rid: room._id });
+			await APIClient.get('/v1/livechat/webrtc.call', { rid: room._id });
 		}
 		window.open(`/meet/${room._id}`, room._id);
 	}, [room._id, room.callStatus]);

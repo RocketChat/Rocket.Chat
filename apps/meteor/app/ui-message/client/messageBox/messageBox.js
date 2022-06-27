@@ -9,7 +9,7 @@ import moment from 'moment';
 import { setupAutogrow } from './messageBoxAutogrow';
 import { formattingButtons, applyFormatting } from './messageBoxFormatting';
 import { EmojiPicker } from '../../../emoji';
-import { Users } from '../../../models';
+import { Users } from '../../../models/client';
 import { settings } from '../../../settings';
 import { fileUpload, KonchatNotification } from '../../../ui';
 import { messageBox, popover } from '../../../ui-utils';

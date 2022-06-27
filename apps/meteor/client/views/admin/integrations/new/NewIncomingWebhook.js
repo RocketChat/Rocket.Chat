@@ -1,8 +1,7 @@
 import { Field, Box, Margins, Button } from '@rocket.chat/fuselage';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo } from 'react';
 
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../hooks/useForm';
 import IncomingWebhookForm from '../IncomingWebhookForm';
@@ -13,7 +12,7 @@ const initialState = {
 	username: '',
 	name: '',
 	alias: '',
-	avatarUrl: '',
+	avatar: '',
 	emoji: '',
 	scriptEnabled: false,
 	script: '',
@@ -27,7 +26,7 @@ export default function NewIncomingWebhook(props) {
 	const { values: formValues, handlers: formHandlers, reset } = useForm(initialState);
 
 	const params = useMemo(() => ({ ...formValues, type: 'webhook-incoming' }), [formValues]);
-	const saveAction = useEndpointAction('POST', 'integrations.create', params, t('Integration_added'));
+	const saveAction = useEndpointAction('POST', '/v1/integrations.create', params, t('Integration_added'));
 
 	const handleSave = useCallback(async () => {
 		const result = await saveAction();

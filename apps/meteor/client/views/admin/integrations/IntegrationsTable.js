@@ -1,9 +1,8 @@
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import FilterByTypeAndText from './FilterByTypeAndText';
 import IntegrationRow from './IntegrationRow';
@@ -37,7 +36,7 @@ function IntegrationsTable({ type }) {
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery({ ...params, text: debouncedText, type }, debouncedSort);
 
-	const { value: data } = useEndpointData('integrations.list', query);
+	const { value: data } = useEndpointData('/v1/integrations.list', query);
 
 	const router = useRoute('admin-integrations');
 

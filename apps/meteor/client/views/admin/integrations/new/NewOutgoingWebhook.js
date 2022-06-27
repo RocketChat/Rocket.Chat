@@ -1,9 +1,8 @@
 import { Field, Button } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../hooks/useForm';
 import OutgoingWebhookForm from '../OutgoiongWebhookForm';
@@ -48,7 +47,7 @@ export default function NewOutgoingWebhook({ data = defaultData, onChange, setSa
 		}),
 		[formValues, triggerWords, urls],
 	);
-	const saveIntegration = useEndpointAction('POST', 'integrations.create', params, t('Integration_added'));
+	const saveIntegration = useEndpointAction('POST', '/v1/integrations.create', params, t('Integration_added'));
 
 	const handleSave = useCallback(async () => {
 		const result = await saveIntegration();

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import Field from '../../../components/Field';
@@ -11,7 +11,14 @@ import { FormSkeleton } from '../../Skeleton';
 
 const PriorityField = ({ id }) => {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`livechat/priorities.getOne?priorityId=${id}`);
+	const {
+		value: data,
+		phase: state,
+		error,
+	} = useEndpointData(
+		'/v1/livechat/priorities.getOne',
+		useMemo(() => ({ priorityId: id }), [id]),
+	);
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}

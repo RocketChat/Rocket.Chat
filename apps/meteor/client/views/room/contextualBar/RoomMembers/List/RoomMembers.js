@@ -1,11 +1,11 @@
 import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import DefaultRow from './DefaultRow';
 
 const RoomMembers = ({
@@ -44,7 +44,7 @@ const RoomMembers = ({
 
 	return (
 		<>
-			<VerticalBar.Header>
+			<VerticalBar.Header data-qa-id='RoomHeader-Members'>
 				<VerticalBar.Icon name='members' />
 				<VerticalBar.Text>{isTeam ? t('Teams_members') : t('Members')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}

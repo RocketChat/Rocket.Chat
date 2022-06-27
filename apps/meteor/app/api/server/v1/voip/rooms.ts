@@ -1,9 +1,10 @@
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import { VoipRoom, LivechatVisitors, Users } from '@rocket.chat/models';
+import { isVoipRoomCloseProps } from '@rocket.chat/rest-typings/dist/v1/voip';
 
 import { API } from '../../api';
-import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { hasPermission } from '../../../../authorization/server';
 import { typedJsonParse } from '../../../../../lib/typedJSONParse';
@@ -82,7 +83,11 @@ const parseAndValidate = (property: string, date?: string): DateParam => {
 
 API.v1.addRoute(
 	'voip/room',
-	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 } },
+	{
+		authRequired: true,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		permissionsRequired: ['inbound-voip-calls'],
+	},
 	{
 		async get() {
 			const defaultCheckParams = {
@@ -102,6 +107,9 @@ API.v1.addRoute(
 				const room = await VoipRoom.findOneOpenByVisitorToken(token, { projection: API.v1.defaultFieldsToExclude });
 				if (room) {
 					return API.v1.success({ room, newRoom: false });
+				}
+				if (!agentId) {
+					return API.v1.failure('agent-not-found');
 				}
 
 				const agentObj: ILivechatAgent = await Users.findOneAgentById(agentId, {
@@ -212,16 +220,10 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'voip/room.close',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isVoipRoomCloseProps, permissionsRequired: ['inbound-voip-calls'] },
 	{
 		async post() {
-			check(this.bodyParams, {
-				rid: String,
-				token: String,
-				comment: Match.Maybe(String),
-				tags: Match.Maybe([String]),
-			});
-			const { rid, token, comment, tags } = this.bodyParams;
+			const { rid, token, options } = this.bodyParams;
 
 			const visitor = await LivechatVisitors.getVisitorByToken(token, {});
 			if (!visitor) {
@@ -234,7 +236,7 @@ API.v1.addRoute(
 			if (!room.open) {
 				return API.v1.failure('room-closed');
 			}
-			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user, comment, tags);
+			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user, 'voip-call-wrapup', options);
 			if (!closeResult) {
 				return API.v1.failure();
 			}

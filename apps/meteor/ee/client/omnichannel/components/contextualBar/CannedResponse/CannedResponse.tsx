@@ -1,9 +1,9 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Tag } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, MouseEventHandler } from 'react';
 
 import VerticalBar from '../../../../../../client/components/VerticalBar';
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
 const CannedResponse: FC<{

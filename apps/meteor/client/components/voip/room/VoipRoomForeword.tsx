@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Avatar, Box, Tag } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import { getUserAvatarURL } from '../../../../app/utils/client';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 export const VoipRoomForeword = ({ room }: { room: IRoom }): ReactElement => {
 	const t = useTranslation();
@@ -20,7 +20,7 @@ export const VoipRoomForeword = ({ room }: { room: IRoom }): ReactElement => {
 			</Box>
 			<Box is='div' mb='x8' flexGrow={1} display='flex' justifyContent='center'>
 				<Box mi='x4'>
-					<Tag style={{ cursor: 'default' }} variant='secondary' medium>
+					<Tag style={{ cursor: 'default' }} variant='primary' medium>
 						{room.name || room.fname}
 					</Tag>
 				</Box>

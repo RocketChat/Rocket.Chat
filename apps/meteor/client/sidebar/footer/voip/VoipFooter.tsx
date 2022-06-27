@@ -24,7 +24,6 @@ type VoipFooterPropsType = {
 	};
 	callsInQueue: string;
 
-	openWrapUpCallModal: () => void;
 	createRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
@@ -46,7 +45,6 @@ export const VoipFooter = ({
 	createRoom,
 	openRoom,
 	callsInQueue,
-	openWrapUpCallModal,
 	dispatchEvent,
 	openedRoomInfo,
 	anonymousText,
@@ -82,7 +80,7 @@ export const VoipFooter = ({
 								title={tooltips.mute}
 								small
 								square
-								nude
+								secondary
 								onClick={(e): void => {
 									e.stopPropagation();
 									toggleMic(!muted);
@@ -94,7 +92,7 @@ export const VoipFooter = ({
 								title={tooltips.holdCall}
 								small
 								square
-								nude
+								secondary
 								onClick={(e): void => {
 									e.stopPropagation();
 									if (paused) {
@@ -132,14 +130,10 @@ export const VoipFooter = ({
 								small
 								square
 								danger
-								primary
 								onClick={(e): unknown => {
 									e.stopPropagation();
 									toggleMic(false);
 									togglePause(false);
-									openWrapUpCallModal();
-									dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ENDED'], rid: openedRoomInfo.rid });
-
 									return callActions.end();
 								}}
 							>
@@ -147,7 +141,7 @@ export const VoipFooter = ({
 							</Button>
 						)}
 						{callerState === 'OFFER_RECEIVED' && (
-							<Button title={tooltips.endCall} small square danger primary onClick={callActions.reject}>
+							<Button title={tooltips.endCall} small square danger onClick={callActions.reject}>
 								<Icon name='phone-off' size='x16' />
 							</Button>
 						)}
@@ -157,7 +151,6 @@ export const VoipFooter = ({
 								small
 								square
 								success
-								primary
 								onClick={async (): Promise<void> => {
 									callActions.pickUp();
 									const rid = await createRoom(caller);

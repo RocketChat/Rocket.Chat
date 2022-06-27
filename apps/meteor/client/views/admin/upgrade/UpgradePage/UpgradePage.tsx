@@ -1,16 +1,11 @@
 import { Throbber, Box } from '@rocket.chat/fuselage';
+import { useLayout, useRouteParameter, useQueryStringParameter, useAbsoluteUrl, useLanguage } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 
 import type { UpgradeTabVariant } from '../../../../../lib/getUpgradeTabType';
 import Page from '../../../../components/Page';
 import PageHeader from '../../../../components/Page/PageHeader';
-import { useLayout } from '../../../../contexts/LayoutContext';
-import { useRouteParameter, useQueryStringParameter } from '../../../../contexts/RouterContext';
-import { useAbsoluteUrl } from '../../../../contexts/ServerContext';
-import { useLanguage } from '../../../../contexts/TranslationContext';
 import UpgradePageError from '../UpgradePageError';
-
-const iframeStyle = { width: '100%', height: '100%' };
 
 const urlMap: Record<UpgradeTabVariant, string> = {
 	'go-fully-featured': 'https://go.rocket.chat/i/upgrade-ce-1-unregistered',
@@ -95,11 +90,21 @@ const UpgradePage = (): ReactElement => {
 			{isMobile && <PageHeader title='' />}
 			{!hasConnection && <UpgradePageError />}
 			{hasConnection && isLoading && (
-				<Box pb='x24'>
+				<Box width='100%' height='100%' position='absolute' display='flex' justifyContent='center' alignItems='center'>
 					<Throbber />
 				</Box>
 			)}
-			{hasConnection && <iframe src={pageUrl} style={iframeStyle} ref={ref} onLoad={(): void => setIsLoading(false)} />}
+			{hasConnection && (
+				<Box
+					is='iframe'
+					src={pageUrl}
+					ref={ref}
+					onLoad={(): void => setIsLoading(false)}
+					invisible={isLoading}
+					width='100%'
+					height='100%'
+				/>
+			)}
 		</Page>
 	);
 };

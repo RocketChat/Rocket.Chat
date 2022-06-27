@@ -1,5 +1,6 @@
+import { Subscriptions, Messages } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import { Subscriptions, Messages } from '../../../app/models/server/raw';
 
 async function migrate() {
 	const subs = await Subscriptions.find(

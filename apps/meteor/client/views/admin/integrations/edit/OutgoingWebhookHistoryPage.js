@@ -1,13 +1,10 @@
 import { Button, ButtonGroup, Icon, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRoute, useRouteParameter, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
 import { integrationHistoryStreamer } from '../../../../../app/integrations/client/streamer';
 import Page from '../../../../components/Page';
-import { useRoute, useRouteParameter } from '../../../../contexts/RouterContext';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import HistoryContent from './HistoryContent';
@@ -38,7 +35,7 @@ function OutgoingWebhookHistoryPage(props) {
 		[id, itemsPerPage, current],
 	);
 
-	const { value: data, phase: state, reload } = useEndpointData('integrations.history', query);
+	const { value: data, phase: state, reload } = useEndpointData('/v1/integrations.history', query);
 
 	const handleClearHistory = async () => {
 		try {
@@ -104,7 +101,7 @@ function OutgoingWebhookHistoryPage(props) {
 					<Button onClick={handleClickReturn}>
 						<Icon name='back' size='x16' /> {t('Back')}
 					</Button>
-					<Button primary danger onClick={handleClearHistory} disabled={total === 0}>
+					<Button danger onClick={handleClearHistory} disabled={total === 0}>
 						<Icon name='trash' /> {t('clear_history')}
 					</Button>
 				</ButtonGroup>

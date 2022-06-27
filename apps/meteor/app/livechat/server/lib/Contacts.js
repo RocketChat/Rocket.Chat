@@ -1,13 +1,26 @@
 import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { LivechatVisitors, Users } from '@rocket.chat/models';
 
-import { LivechatVisitors, LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models';
+import { LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
 
 export const Contacts = {
-	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
+	async registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
 		check(token, String);
 
 		const visitorEmail = s.trim(email).toLowerCase();
+
+		if (contactManager?.username) {
+			// verify if the user exists with this username and has a livechat-agent role
+			const user = await Users.findOneByUsername(contactManager.username, { projection: { roles: 1 } });
+			if (!user) {
+				throw new Meteor.Error('error-contact-manager-not-found', `No user found with username ${contactManager.username}`);
+			}
+			if (!user.roles || !Array.isArray(user.roles) || !user.roles.includes('livechat-agent')) {
+				throw new Meteor.Error('error-invalid-contact-manager', 'The contact manager must have the role "livechat-agent"');
+			}
+		}
 
 		let contactId;
 		const updateUser = {
@@ -16,18 +29,18 @@ export const Contacts = {
 			},
 		};
 
-		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+		const user = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
 		if (user) {
 			contactId = user._id;
 		} else {
 			if (!username) {
-				username = LivechatVisitors.getNextVisitorUsername();
+				username = await LivechatVisitors.getNextVisitorUsername();
 			}
 
 			let existingUser = null;
 
-			if (visitorEmail !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(visitorEmail))) {
+			if (visitorEmail !== '' && (existingUser = await LivechatVisitors.findOneGuestByEmailAddress(visitorEmail))) {
 				contactId = existingUser._id;
 			} else {
 				const userData = {
@@ -35,7 +48,7 @@ export const Contacts = {
 					ts: new Date(),
 				};
 
-				contactId = LivechatVisitors.insert(userData);
+				contactId = await LivechatVisitors.insertOne(userData);
 			}
 		}
 
@@ -55,7 +68,7 @@ export const Contacts = {
 		updateUser.$set.livechatData = livechatData;
 		updateUser.$set.contactManager = (contactManager?.username && { username: contactManager.username }) || null;
 
-		LivechatVisitors.updateById(contactId, updateUser);
+		await LivechatVisitors.updateById(contactId, updateUser);
 
 		const rooms = LivechatRooms.findByVisitorId(contactId).fetch();
 

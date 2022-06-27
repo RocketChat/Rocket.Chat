@@ -2,10 +2,10 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Skeleton } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useHourlyChatActivity } from './useHourlyChatActivity';
 
 type ContentForHoursProps = {
@@ -45,13 +45,13 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 	return (
 		<>
 			<Box display='flex' alignItems='center' justifyContent='center'>
-				<Button ghost square small onClick={onPreviousDateClick}>
+				<Button square small onClick={onPreviousDateClick}>
 					<Chevron left size='x20' style={{ verticalAlign: 'middle' }} />
 				</Button>
 				<Box mi='x8' flexBasis='25%' is='span' style={{ textAlign: 'center' }}>
 					{data ? moment(data.day).format(displacement < 7 ? 'dddd' : 'L') : null}
 				</Box>
-				<Button ghost square small disabled={displacement === 0} onClick={onNextDateClick}>
+				<Button square small disabled={displacement === 0} onClick={onNextDateClick}>
 					<Chevron right size='x20' style={{ verticalAlign: 'middle' }} />
 				</Button>
 			</Box>
@@ -72,7 +72,7 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 								}}
 								colors={[
 									// TODO: Get it from theme
-									colors.b500,
+									colors.p500,
 								]}
 								enableLabel={false}
 								enableGridY={false}

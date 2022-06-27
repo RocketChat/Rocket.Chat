@@ -3,7 +3,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 
 const { MongoClient } = require('mongodb');
 
-const { aggregates } = require('../../../../../../app/models/server/raw/Sessions');
+const { aggregates } = require('../../../../../../server/models/raw/Sessions');
 
 const sessions_dates = [];
 const baseDate = new Date(2018, 6, 1);

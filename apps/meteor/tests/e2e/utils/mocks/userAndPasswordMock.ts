@@ -1,38 +1,40 @@
-import { v4 } from 'uuid';
+import { faker } from '@faker-js/faker';
 
 import { ILogin, IRegister } from '../interfaces/Login';
-
-export const reason = 'rocket.chat.reason';
-
-export const adminRegister: IRegister = {
-	name: 'rocketchat.internal.admin.test',
-	email: 'rocketchat.internal.admin.test@rocket.chat',
-	password: 'rocketchat.internal.admin.test',
-};
 
 export const adminLogin: ILogin = {
 	email: 'rocketchat.internal.admin.test@rocket.chat',
 	password: 'rocketchat.internal.admin.test',
 };
 
-export const registerUser: IRegister = {
-	email: `any_user@email.com`,
+export const validUserInserted: ILogin = {
+	email: 'user.name.test@email.com',
 	password: 'any_password',
-	name: `any_name${v4()}`,
+};
+
+export const registerUser: IRegister = {
+	email: faker.internet.email(),
+	password: 'any_password',
+	name: faker.name.findName(),
+};
+
+export const createRegisterUser = (): IRegister => {
+	const name = faker.name.findName();
+	const [firstName] = name.split(' ');
+	return {
+		email: faker.internet.email(firstName.toLocaleLowerCase()),
+		password: 'any_password',
+		name,
+		username: faker.internet.userName(),
+	};
 };
 
 export const validUser: ILogin = {
-	email: 'any_user@email.com',
+	email: registerUser.email,
 	password: 'any_password',
 };
 
 export const incorrectUser: ILogin = {
-	email: `${v4()}@email.com`,
+	email: faker.internet.email(),
 	password: 'any_password',
 };
-
-export const VALID_EMAIL = 'email@email.com';
-export const INVALID_EMAIL = 'mail@mail';
-export const INVALID_EMAIL_WITHOUT_MAIL_PROVIDER = 'email';
-export const ROCKET_CAT = 'rocket.cat';
-export const WRONG_PASSWORD = 'passwo1';

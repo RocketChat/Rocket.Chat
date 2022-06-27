@@ -20,6 +20,6 @@ export const Default = Template.bind({});
 
 export const WithCallout = Template.bind({});
 WithCallout.args = {
-	pinned: true,
+	values: { pinned: true },
 	callOutText: 'This is a callout',
 };

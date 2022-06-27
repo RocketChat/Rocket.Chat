@@ -1,11 +1,11 @@
 import moment from 'moment';
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { ICronJobs } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users } from '../../../models/server/raw';
 
 const cronJobDayDict: Record<string, number> = {
 	Sunday: 0,

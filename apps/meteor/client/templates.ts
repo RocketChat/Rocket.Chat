@@ -2,18 +2,18 @@ import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
-createTemplateForComponent('MessageActions', () => import('./components/Message/MessageActions'));
+createTemplateForComponent('MessageActions', () => import('./components/message/MessageActions'));
 
-createTemplateForComponent('reactAttachments', () => import('./components/Message/Attachments'));
+createTemplateForComponent('reactAttachments', () => import('./components/message/Attachments'));
 
-createTemplateForComponent('ThreadMetric', () => import('./components/Message/Metrics/Thread'), {
+createTemplateForComponent('ThreadMetric', () => import('./components/message/Metrics/Thread'), {
 	renderContainerView: () =>
 		HTML.DIV({
 			style: 'min-height: 36px;',
 		}),
 });
 
-createTemplateForComponent('DiscussionMetric', () => import('./components/Message/Metrics/Discussion'), {
+createTemplateForComponent('DiscussionMetric', () => import('./components/message/Metrics/Discussion'), {
 	renderContainerView: () =>
 		HTML.DIV({
 			style: 'min-height: 36px;',
@@ -21,9 +21,8 @@ createTemplateForComponent('DiscussionMetric', () => import('./components/Messag
 });
 
 createTemplateForComponent('MessageList', () => import('./views/room/MessageList/MessageList'));
-createTemplateForComponent('MessageBody', () => import('./components/Message/MessageBodyRender'));
 
-createTemplateForComponent('BroadCastMetric', () => import('./components/Message/Metrics/Broadcast'));
+createTemplateForComponent('BroadCastMetric', () => import('./components/message/Metrics/Broadcast'));
 
 createTemplateForComponent(
 	'Checkbox',
@@ -53,14 +52,6 @@ createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/inde
 
 createTemplateForComponent('omnichannelFlex', () => import('./views/omnichannel/sidebar/OmnichannelSidebar'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
-});
-
-createTemplateForComponent('auditPage', () => import('../ee/client/audit/AuditPage'), {
-	attachment: 'at-parent',
-});
-
-createTemplateForComponent('auditLogPage', () => import('../ee/client/audit/AuditLogPage'), {
-	attachment: 'at-parent',
 });
 
 createTemplateForComponent('DiscussionMessageList', () => import('./views/room/contextualBar/Discussions'), {
@@ -126,8 +117,6 @@ createTemplateForComponent('UserInfoWithData', () => import('./views/room/contex
 createTemplateForComponent('channelFilesList', () => import('./views/room/contextualBar/RoomFiles'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
-
-createTemplateForComponent('RoomAnnouncement', () => import('./views/room/Announcement'));
 
 createTemplateForComponent('PruneMessages', () => import('./views/room/contextualBar/PruneMessages'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),

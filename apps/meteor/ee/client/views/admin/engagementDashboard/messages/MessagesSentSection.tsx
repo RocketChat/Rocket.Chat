@@ -1,16 +1,16 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
-import CounterSet from '../../../../../../client/components/data/CounterSet';
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import CounterSet from '../../../../../../client/components/dataView/CounterSet';
 import Section from '../Section';
-import DownloadDataButton from '../data/DownloadDataButton';
-import PeriodSelector from '../data/PeriodSelector';
-import { usePeriodLabel } from '../data/usePeriodLabel';
-import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
+import DownloadDataButton from '../dataView/DownloadDataButton';
+import PeriodSelector from '../dataView/PeriodSelector';
+import { usePeriodLabel } from '../dataView/usePeriodLabel';
+import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useMessagesSent } from './useMessagesSent';
 
 const MessagesSentSection = (): ReactElement => {
@@ -94,7 +94,7 @@ const MessagesSentSection = (): ReactElement => {
 										}}
 										colors={[
 											// TODO: Get it from theme
-											colors.b500,
+											colors.p500,
 										]}
 										enableLabel={false}
 										enableGridY={false}

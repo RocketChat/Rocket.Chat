@@ -1,11 +1,10 @@
 import type { IInstanceStatus, IServerInfo, IStats } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
 import Card from '../../../components/Card';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import InstancesModal from './InstancesModal';
 
@@ -29,7 +28,7 @@ const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): R
 	});
 
 	return (
-		<Card>
+		<Card data-qa-id='deployment-card'>
 			<Card.Title>{t('Deployment')}</Card.Title>
 			<Card.Body>
 				<Card.Col>

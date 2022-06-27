@@ -1,41 +1,27 @@
 import { test } from '@playwright/test';
-import { v4 } from 'uuid';
+import { faker } from '@faker-js/faker';
 
-import ChannelCreation from './utils/pageobjects/ChannelCreation';
-import LoginPage from './utils/pageobjects/LoginPage';
-import { validUser, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';
+import { LoginPage, SideNav } from './pageobjects';
+import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Channel]', async () => {
-	let channelCreation: ChannelCreation;
+	let sideNav: SideNav;
 	let loginPage: LoginPage;
 
-	const HELLO = 'Hello';
-
-	test.beforeEach(async ({ page, baseURL }) => {
-		const baseUrl = baseURL as string;
+	test.beforeAll(async ({ browser }) => {
+		const page = await browser.newPage();
 		loginPage = new LoginPage(page);
-		await loginPage.goto(baseUrl);
-		await loginPage.login(validUser);
+		sideNav = new SideNav(page);
 
-		channelCreation = new ChannelCreation(page);
+		await page.goto('/');
+		await loginPage.doLogin(adminLogin);
 	});
 
-	test.describe('[Public and private channel creation]', () => {
-		let channelName: string;
-		test.beforeEach(async () => {
-			channelName = v4();
-		});
-
-		test('expect create privateChannel channel', async () => {
-			await channelCreation.createChannel(channelName, true);
-		});
-
-		test('expect create public channel', async () => {
-			await channelCreation.createChannel(channelName, false);
-		});
+	test('expect create private channel', async () => {
+		await sideNav.doCreateChannel(faker.animal.type() + Date.now(), true);
 	});
-	// TODO: Verify why is intermitent
-	test.skip('expect send message to channel created', async () => {
-		await channelCreation.sendMessage(ROCKET_CAT, HELLO);
+
+	test('expect create public channel', async () => {
+		await sideNav.doCreateChannel(faker.animal.type() + Date.now());
 	});
 });

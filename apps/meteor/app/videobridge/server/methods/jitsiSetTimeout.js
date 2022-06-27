@@ -7,7 +7,7 @@ import { metrics } from '../../../metrics/server';
 import * as CONSTANTS from '../../constants';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 
 // TODO: Access Token missing. This is just a partial solution, it doesn't handle access token generation logic as present in this file - client/views/room/contextualBar/Call/Jitsi/CallJitsWithData.js
 const resolveJitsiCallUrl = (room) => {
@@ -75,10 +75,10 @@ Meteor.methods({
 			}
 
 			return jitsiTimeout || nextTimeOut;
-		} catch (error) {
-			SystemLogger.error('Error starting video call:', error.message);
+		} catch (err) {
+			SystemLogger.error({ msg: 'Error starting video call:', err });
 
-			throw new Meteor.Error('error-starting-video-call', error.message, {
+			throw new Meteor.Error('error-starting-video-call', err.message, {
 				method: 'jitsi:updateTimeout',
 			});
 		}
