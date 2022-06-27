@@ -213,6 +213,7 @@ export default {
 			totalUserRoles: 0,
 			totalWebRTCCalls: 0,
 			matrixBridgeEnabled: false,
+			uncaughtExceptionsCount: 0,
 		},
 	},
 } as ComponentMeta<typeof UsageCard>;
