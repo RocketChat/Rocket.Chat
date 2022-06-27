@@ -8,6 +8,7 @@ addMigration({
 		// mark all voip rooms as inbound which doesn't have any direction property set or has an invalid value
 		await VoipRoom.updateMany(
 			{
+				t: 'v',
 				$or: [{ direction: { $exists: false } }, { direction: { $nin: ['inbound', 'outbound'] } }],
 			},
 			{
