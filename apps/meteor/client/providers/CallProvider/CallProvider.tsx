@@ -124,7 +124,7 @@ export const CallProvider: FC = ({ children }) => {
 						name: caller.callerName || caller.callerId,
 					},
 				});
-				const voipRoom = await voipEndpoint({ token: visitor.token, agentId: user._id });
+				const voipRoom = await voipEndpoint({ token: visitor.token, agentId: user._id, direction: 'inbound' });
 				openRoom(voipRoom.room._id);
 				voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
 				const queueAggregator = result.voipClient?.getAggregator();
