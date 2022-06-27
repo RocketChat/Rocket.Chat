@@ -3275,7 +3275,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.32.0, @rocket.chat/apps-engine@npm:^1.31.0":
+"@rocket.chat/apps-engine@npm:1.33.0-alpha.6451":
+  version: 1.33.0-alpha.6451
+  resolution: "@rocket.chat/apps-engine@npm:1.33.0-alpha.6451"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+  checksum: 9ae8ebf9ba5fdd837cfffa8192ecd6f790aaf7b8b076f9f4f44db8f28f8bbf6074c1b39e909b79792630161da25bb4c7b7fef2f09d43c36925f80efb58cce375
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/apps-engine@npm:^1.31.0":
   version: 1.32.0
   resolution: "@rocket.chat/apps-engine@npm:1.32.0"
   dependencies:
@@ -3819,7 +3833,7 @@ __metadata:
     "@nivo/pie": 0.73.0
     "@playwright/test": ^1.21.1
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.32.0
+    "@rocket.chat/apps-engine": 1.33.0-alpha.6451
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.12
     "@rocket.chat/emitter": ~0.31.12
@@ -7781,7 +7795,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"adm-zip@npm:0.5.9":
+"adm-zip@npm:0.5.9, adm-zip@npm:^0.5.9":
   version: 0.5.9
   resolution: "adm-zip@npm:0.5.9"
   checksum: 4909bc04119fdd5e8f8ba43826e50623e5c427cf0a939c809d4f9456a6a03c6aa0544e82088739de9ba16b7649f71b99ccbbddc7b2c38bd6143f9c4726cc7ed9
@@ -27670,7 +27684,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:2 || 3 || 4 || 5, semver@npm:^5.0.3, semver@npm:^5.1.0, semver@npm:^5.3.0, semver@npm:^5.4.1, semver@npm:^5.5.0, semver@npm:^5.6.0":
+"semver@npm:2 || 3 || 4 || 5, semver@npm:^5.0.3, semver@npm:^5.1.0, semver@npm:^5.3.0, semver@npm:^5.4.1, semver@npm:^5.5.0, semver@npm:^5.6.0, semver@npm:^5.7.1":
   version: 5.7.1
   resolution: "semver@npm:5.7.1"
   bin:
@@ -31361,7 +31375,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^3.0.1, uuid@npm:^3.1.0, uuid@npm:^3.2.1, uuid@npm:^3.3.2":
+"uuid@npm:^3.0.1, uuid@npm:^3.1.0, uuid@npm:^3.2.1, uuid@npm:^3.3.2, uuid@npm:^3.4.0":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
   bin:
