@@ -40,6 +40,7 @@ const initialValues = {
 	imapUsername: '',
 	imapPassword: '',
 	imapSecure: false,
+	imapRetries: 10,
 };
 
 const getInitialValues = (data) => {
@@ -180,13 +181,14 @@ function EmailInboxForm({ id, data }) {
 			maxRetries: parseInt(imapRetries),
 		};
 
+		console.log(department);
 		const payload = {
 			active,
 			name,
 			email,
 			description,
 			senderInfo,
-			department,
+			department: typeof department === 'string' ? department : department.value,
 			smtp,
 			imap,
 		};
