@@ -3614,21 +3614,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-ui-kit@npm:~0.31.14-dev.1":
-  version: 0.31.14-dev.1
-  resolution: "@rocket.chat/fuselage-ui-kit@npm:0.31.14-dev.1"
+"@rocket.chat/fuselage-ui-kit@npm:~0.32.0-dev.15":
+  version: 0.32.0-dev.15
+  resolution: "@rocket.chat/fuselage-ui-kit@npm:0.32.0-dev.15"
   dependencies:
-    "@rocket.chat/ui-kit": ~0.31.14-dev.1
+    "@rocket.chat/ui-kit": ~0.32.0-dev.0
     tslib: ^2.3.1
   peerDependencies:
-    "@rocket.chat/fuselage": ~0.32.0-dev.48
-    "@rocket.chat/fuselage-hooks": ~0.31.14-dev.1
+    "@rocket.chat/fuselage": ~0.32.0-dev.65
+    "@rocket.chat/fuselage-hooks": ~0.31.14-dev.18
     "@rocket.chat/fuselage-polyfills": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/styled": ~0.31.14-dev.1
+    "@rocket.chat/styled": ~0.31.14-dev.18
     react: ^17.0.2
     react-dom: ^17.0.2
-  checksum: 3be924851a2ebe90a5ff61349fc9c02ebcb98035a9a33f42f6f16be282b1687a847845e59523789153ae5476f9b0640885c21827018c5e1d722460e81e15b058
+  checksum: bb803a4821511bfe8a80e8ff60325954ccde8713895269c02e40bd75206e6e2897112e45e7855d087ba3020750dee677669eeba03dcb9d721c3457571d8b8074
   languageName: node
   linkType: hard
 
@@ -3847,7 +3847,7 @@ __metadata:
     "@rocket.chat/fuselage-polyfills": ~0.31.12
     "@rocket.chat/fuselage-toastbar": ^0.32.0-dev.22
     "@rocket.chat/fuselage-tokens": ~0.31.12
-    "@rocket.chat/fuselage-ui-kit": ~0.31.14-dev.1
+    "@rocket.chat/fuselage-ui-kit": ~0.32.0-dev.15
     "@rocket.chat/icons": ~0.31.12
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logo": ~0.31.12
@@ -3858,7 +3858,7 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.12
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@rocket.chat/ui-kit": ~0.31.12
+    "@rocket.chat/ui-kit": ~0.32.0-dev.0
     "@settlin/spacebars-loader": ^1.0.9
     "@slack/client": ^4.12.0
     "@slack/rtm-api": ^6.0.0
@@ -4292,17 +4292,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/ui-kit@npm:^0.31.6, @rocket.chat/ui-kit@npm:~0.31.12, @rocket.chat/ui-kit@npm:~0.31.9":
+"@rocket.chat/ui-kit@npm:^0.31.6, @rocket.chat/ui-kit@npm:~0.31.9":
   version: 0.31.13
   resolution: "@rocket.chat/ui-kit@npm:0.31.13"
   checksum: 94926dee4687e69b2a51a3570d09ba051b0638b3364499daed864e36480b56c538a20e3b66b02563492c7c2fe15b101ab03850d86bdac46f3fab442a9f93ef10
   languageName: node
   linkType: hard
 
-"@rocket.chat/ui-kit@npm:~0.31.14-dev.1":
-  version: 0.31.14-dev.1
-  resolution: "@rocket.chat/ui-kit@npm:0.31.14-dev.1"
-  checksum: 9f807601eb6b90a975e61c78fc1af2663fe42998b931f825e694e5843a0bc048f679dfe7c264e772819824a7b57e5c7f6df30048d88bbc797dceab8d6e766e2a
+"@rocket.chat/ui-kit@npm:~0.32.0-dev.0":
+  version: 0.32.0-dev.0
+  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.0"
+  checksum: db4f5191d01da1d9953cecef4135e388f2e5547182a4c600156611978eff40f716d6e23608f6a9914eb6074b4a008c96d0f8abb4cef3326e86670c6764fe0568
   languageName: node
   linkType: hard
 
@@ -7721,7 +7721,7 @@ __metadata:
     human-interval: ~1.0.0
     moment-timezone: ~0.5.27
     mongodb: ~3.5.0
-  checksum: f5f68008298f9482631f1f494e392cd6b8ba7971a3b0ece81ae2abe60f53d67973ff4476156fa5c9c41b8b58c4ccd284e95c545e0523996dfd05f9a80b843e07
+  checksum: acb4ebb7e7356f6e53e810d821eb6aa3d88bbfb9e85183e707517bee6d1eea1f189f38bdf0dd2b91360492ab7643134d510c320d2523d86596498ab98e59735b
   languageName: node
   linkType: hard
 
