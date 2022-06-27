@@ -1,7 +1,5 @@
 import { test, Page, expect, APIRequestContext } from '@playwright/test';
 
-import { updateMailToLiveChat } from './utils/helpers/updateMailToLiveChat';
-import { verifyTestBaseUrl } from './utils/configs/verifyTestBaseUrl';
 import { LoginPage, MainContent, Agents, LiveChat, SideNav } from './pageobjects';
 import { createRegisterUser, validUserInserted, adminLogin } from './utils/mocks/userAndPasswordMock';
 import { BASE_API_URL } from './utils/mocks/urlMock';
@@ -34,11 +32,6 @@ test.describe.skip('[Livechat]', () => {
 	});
 	test.describe('[Offline message]', () => {
 		test.beforeAll(async ({ browser }) => {
-			const { isLocal } = verifyTestBaseUrl();
-
-			if (isLocal) {
-				await updateMailToLiveChat();
-			}
 			page = await browser.newPage();
 			const liveChatUrl = '/livechat';
 			await page.goto(liveChatUrl);
@@ -75,7 +68,7 @@ test.describe.skip('[Livechat]', () => {
 			mainContent = new MainContent(otherContextPage);
 			agent = new Agents(otherContextPage);
 
-			await loginPage.login(validUserInserted);
+			await loginPage.doLogin(validUserInserted);
 
 			await page.reload();
 			await liveChat.btnOpenLiveChat('R').click();
@@ -83,7 +76,7 @@ test.describe.skip('[Livechat]', () => {
 			await liveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 			await liveChat.btnSendMessageToOnlineAgent.click();
 
-			await agent.clickOnLiveChatCall(liveChatUser.name).click();
+			// await agent.clickOnLiveChatCall(liveChatUser.name).click();
 
 			await mainContent.sendMessage('this_a_test_message_from_agent');
 		});
@@ -111,33 +104,34 @@ test.describe.skip('[Livechat]', () => {
 			test.skip(!IS_EE, 'verify agent is not allowed to close chat');
 
 			test.beforeAll(async () => {
-				await loginPage.logout();
-				await loginPage.login(adminLogin);
+				// await loginPage.doLogout();
+				await loginPage.doLogin(adminLogin);
 
 				const sideNav = new SideNav(otherContextPage);
 				await sideNav.sidebarUserMenu.click();
-				await sideNav.admin.click();
-				await sideNav.linkSettings.click();
-				await mainContent.inputSearchSettings.type('Omnichannel');
+				await agent.agentInfo.click();
+				// await sideNav.admin.click();
+				// await sideNav.linkSettings.click();
+				// await mainContent.inputSearchSettings.type('Omnichannel');
 
-				await mainContent.btnOpenOmnichannelConfig.click();
-				await mainContent.session.click();
-				await mainContent.setToHold.click();
-				await mainContent.btnSaveChanges.click();
-				await otherContextPage.goto('/');
+				// await mainContent.btnOpenOmnichannelConfig.click();
+				// await mainContent.session.click();
+				// await mainContent.setToHold.click();
+				// await mainContent.btnSaveChanges.click();
+				// await otherContextPage.goto('/');
 
-				await loginPage.logout();
+				// await loginPage.logout();
 
-				await loginPage.login(validUserInserted);
-				await agent.clickOnLiveChatCall(liveChatUser.name).click();
+				// await loginPage.login(validUserInserted);
+				// await agent.clickOnLiveChatCall(liveChatUser.name).click();
 			});
 
-			test('verify that agent is not allows to close a chat', async () => {});
+			// test('verify that agent is not allows to close a chat', async () => {});
 		});
 
-		test('verify that agent is allowed to close a chat', async () => {
-			await mainContent.closeLiveChatConversation();
-			await expect(agent.clickOnLiveChatCall(liveChatUser.name)).not.toBeVisible();
-		});
+		// test('verify that agent is allowed to close a chat', async () => {
+		// 	await mainContent.closeLiveChatConversation();
+		// 	await expect(agent.clickOnLiveChatCall(liveChatUser.name)).not.toBeVisible();
+		// });
 	});
 });

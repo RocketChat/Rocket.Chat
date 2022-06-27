@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 
-import { Rooms, Messages } from '../../../models';
+import { Rooms, Messages } from '../../../models/server';
 
 export const saveRoomReadOnly = function (rid, readOnly, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {

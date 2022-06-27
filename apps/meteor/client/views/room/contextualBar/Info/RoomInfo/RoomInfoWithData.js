@@ -56,15 +56,15 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
-	const deleteRoom = useEndpoint('POST', room.t === 'c' ? 'channels.delete' : 'groups.delete');
+	const deleteRoom = useEndpoint('POST', room.t === 'c' ? '/v1/channels.delete' : '/v1/groups.delete');
 	const hideRoom = useMethod('hideRoom');
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRooms', t('Rooms_added_successfully'));
+	const moveChannelToTeam = useEndpointActionExperimental('POST', '/v1/teams.addRooms', t('Rooms_added_successfully'));
 	const convertRoomToTeam = useEndpointActionExperimental(
 		'POST',
-		type === 'c' ? 'channels.convertToTeam' : 'groups.convertToTeam',
+		type === 'c' ? '/v1/channels.convertToTeam' : '/v1/groups.convertToTeam',
 		t('Success'),
 	);
 

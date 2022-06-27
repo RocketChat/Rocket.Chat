@@ -17,7 +17,7 @@ export class MainContent extends BasePage {
 		return this.page.locator('//*[contains(@class, "rcx-room-header")]//*[contains(@class, "rcx-icon--name-star-filled")]');
 	}
 
-	public channelTitle(title: string): Locator {
+	channelTitle(title: string): Locator {
 		return this.page.locator('.rcx-room-header', { hasText: title });
 	}
 
@@ -57,8 +57,12 @@ export class MainContent extends BasePage {
 		return this.page.locator('.popup-item.selected');
 	}
 
-	get lastMessageUser(): Locator {
-		return this.page.locator('.message:last-child div:nth-child(2) button');
+	get lastUserMessage(): Locator {
+		return this.page.locator('[data-qa-id=UserMessage]').last();
+	}
+
+	get btnLastUserMessage(): Locator {
+		return this.page.locator('[data-qa-id=UserMessage]:not(.sequential) > button').last();
 	}
 
 	get lastMessageFileName(): Locator {
@@ -178,11 +182,11 @@ export class MainContent extends BasePage {
 	}
 
 	get modalCancelButton(): Locator {
-		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--ghost');
+		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
 
 	get modalDeleteMessageButton(): Locator {
-		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary-danger');
+		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger');
 	}
 
 	get buttonSend(): Locator {
@@ -203,54 +207,30 @@ export class MainContent extends BasePage {
 		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//label');
 	}
 
-	get btnCloseLiveChat(): Locator {
-		return this.page.locator('[data-qa="VisibleActions-Close"]');
-	}
-
-	get inputSearchSettings(): Locator {
-		return this.page.locator('.rcx-input-box');
-	}
-
-	get btnOpenOmnichannelConfig(): Locator {
-		return this.page.locator('[data-qa-id="Omnichannel"] .rcx-button--small.rcx-button.rcx-button-group__item');
-	}
-
-	get session(): Locator {
-		return this.page.locator('[data-qa-section="Sessions"]');
-	}
-
-	get setToHold(): Locator {
-		return this.page.locator('[data-qa-setting-id="Livechat_allow_manual_on_hold"]');
-	}
-
-	get btnSaveChanges(): Locator {
-		return this.page.locator('.rcx-button--primary.rcx-button.save.rcx-button-group__item >> text="Save changes"');
-	}
-
-	public async waitForLastMessageEqualsHtml(text: string): Promise<void> {
+	async waitForLastMessageEqualsHtml(text: string): Promise<void> {
 		await expect(this.page.locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
 	}
 
-	public async waitForLastMessageEqualsText(text: string): Promise<void> {
+	async waitForLastMessageEqualsText(text: string): Promise<void> {
 		await expect(this.page.locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
 	}
 
-	public async sendMessage(text: string): Promise<void> {
+	async sendMessage(text: string): Promise<void> {
 		await this.setTextToInput(text);
 		await this.keyboardPress('Enter');
 	}
 
-	public async addTextToInput(text: any): Promise<void> {
+	async addTextToInput(text: any): Promise<void> {
 		await this.messageInput.type(text);
 	}
 
-	public async setTextToInput(text: string, options: { delay?: number } = {}): Promise<void> {
+	async setTextToInput(text: string, options: { delay?: number } = {}): Promise<void> {
 		await this.messageInput.click({ clickCount: 3 });
 		await this.page.keyboard.press('Backspace');
 		await this.messageInput.type(text, { delay: options.delay ?? 0 });
 	}
 
-	public async dragAndDropFile(): Promise<void> {
+	async dragAndDropFile(): Promise<void> {
 		const contract = await fs.promises.readFile('./tests/e2e/utils/fixtures/any_file.txt', 'utf-8');
 
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
@@ -269,7 +249,7 @@ export class MainContent extends BasePage {
 		);
 	}
 
-	public async sendFileClick(): Promise<void> {
+	async sendFileClick(): Promise<void> {
 		await this.buttonSend.click();
 	}
 
@@ -281,11 +261,11 @@ export class MainContent extends BasePage {
 		return this.page.locator('//div[@id="modal-root"]//fieldset//div[1]//span//input');
 	}
 
-	public async setFileName(): Promise<void> {
+	async setFileName(): Promise<void> {
 		await this.fileNameInput.fill('any_file1.txt');
 	}
 
-	public async setDescription(): Promise<void> {
+	async setDescription(): Promise<void> {
 		await this.descriptionInput.type('any_description');
 	}
 
@@ -293,27 +273,7 @@ export class MainContent extends BasePage {
 		return this.page.locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div p');
 	}
 
-	get inputCommentCloseLiveChat(): Locator {
-		return this.page.locator('[name="comment"]');
-	}
-
-	get inputTag(): Locator {
-		return this.page.locator('[placeholder="Enter a tag"]');
-	}
-
-	get btnAddTag(): Locator {
-		return this.page.locator('.rcx-button >> text="Add"');
-	}
-
-	get btnConfirm(): Locator {
-		return this.page.locator('.rcx-button.rcx-button--primary >> text="Confirm"');
-	}
-
-	get btnTag(): Locator {
-		return this.page.locator('.rcx-chip >> text="any_tag"');
-	}
-
-	public async selectAction(action: string): Promise<void> {
+	async selectAction(action: string): Promise<void> {
 		switch (action) {
 			case 'edit':
 				await this.messageEdit.click();
@@ -355,18 +315,18 @@ export class MainContent extends BasePage {
 		}
 	}
 
-	public async openMessageActionMenu(): Promise<void> {
+	async openMessageActionMenu(): Promise<void> {
 		await this.page.locator('.messages-box [data-qa-type="message"]:last-child').hover();
 		await this.page.locator('[data-qa-type="message"]:last-child div.message-actions__menu').waitFor();
 		await this.page.locator('[data-qa-type="message"]:last-child div.message-actions__menu').click();
 	}
 
-	public async openMoreActionMenu(): Promise<void> {
+	async openMoreActionMenu(): Promise<void> {
 		await this.page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
 		await this.page.waitForSelector('.rc-popover__content');
 	}
 
-	public async acceptDeleteMessage(): Promise<void> {
+	async acceptDeleteMessage(): Promise<void> {
 		await this.modalDeleteMessageButton.click();
 	}
 
@@ -382,17 +342,17 @@ export class MainContent extends BasePage {
 		return this.page.locator('[data-qa="UserCard"] a');
 	}
 
-	public async doReload(): Promise<void> {
+	async doReload(): Promise<void> {
 		await this.page.reload({ waitUntil: 'load' });
 		await this.page.waitForSelector('.messages-box');
 	}
 
-	async closeLiveChatConversation(): Promise<void> {
-		await this.btnCloseLiveChat.click();
-		await this.inputCommentCloseLiveChat.type('any_reason');
-		await this.inputTag.type('any_tag');
-		await this.btnAddTag.click();
-		await expect(this.btnTag).toBeVisible();
-		await this.btnConfirm.click();
-	}
+	// async closeLiveChatConversation(): Promise<void> {
+	// 	await this.btnCloseLiveChat.click();
+	// 	await this.inputCommentCloseLiveChat.type('any_reason');
+	// 	await this.inputTag.type('any_tag');
+	// 	await this.btnAddTag.click();
+	// 	await expect(this.btnTag).toBeVisible();
+	// 	await this.btnConfirm.click();
+	// }
 }
