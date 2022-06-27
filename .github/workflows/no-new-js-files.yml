@@ -1,4 +1,4 @@
-name: "JS file preventer"
+name: 'JS file preventer'
 on:
   pull_request:
     types: [opened, synchronize]
@@ -6,6 +6,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: ggazzo/no-js-action@1.0.2
+      - uses: ggazzo/no-js-action@1.0.3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
