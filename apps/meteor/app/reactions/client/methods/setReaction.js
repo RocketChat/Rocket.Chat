@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Messages, Rooms, Subscriptions } from '../../../models';
+import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { emoji } from '../../../emoji';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';

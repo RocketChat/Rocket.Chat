@@ -855,7 +855,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'/v1/livechat/tags/:tagId': {
-		GET: () => ILivechatTag;
+		GET: () => ILivechatTag | null;
 	};
 	'/v1/livechat/department': {
 		GET: (params: LivechatDepartmentProps) => PaginatedResult<{

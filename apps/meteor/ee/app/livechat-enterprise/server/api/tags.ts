@@ -17,7 +17,7 @@ API.v1.addRoute(
 					pagination: {
 						offset,
 						count,
-						sort,
+						sort: typeof sort === 'string' ? JSON.parse(sort || '{}') : sort,
 					},
 				}),
 			);

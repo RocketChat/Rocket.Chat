@@ -1,6 +1,6 @@
 import { addMigration } from '../../lib/migrations';
 import { Messages, Rooms } from '../../../app/models/server';
-import { trash } from '../../../app/models/server/models/_BaseDb';
+import { trash } from '../../database/trash';
 
 addMigration({
 	version: 192,
