@@ -7,7 +7,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	'livechat:saveInfo'(guestData, roomData) {
+	async 'livechat:saveInfo'(guestData, roomData) {
 		const userId = Meteor.userId();
 
 		if (!userId || !hasPermission(userId, 'view-l-room')) {
@@ -49,7 +49,7 @@ Meteor.methods({
 			delete guestData.phone;
 		}
 
-		const ret = Livechat.saveGuest(guestData, userId) && Livechat.saveRoomInfo(roomData, guestData, userId);
+		const ret = (await Livechat.saveGuest(guestData, userId)) && Livechat.saveRoomInfo(roomData, guestData, userId);
 
 		const user = Meteor.users.findOne({ _id: userId }, { fields: { _id: 1, username: 1 } });
 

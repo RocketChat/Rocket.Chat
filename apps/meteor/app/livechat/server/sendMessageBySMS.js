@@ -1,7 +1,8 @@
+import { LivechatVisitors } from '@rocket.chat/models';
+
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { SMS } from '../../sms';
-import { LivechatVisitors } from '../../models/server';
 import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
 
 callbacks.add(
@@ -49,7 +50,7 @@ callbacks.add(
 			return message;
 		}
 
-		const visitor = LivechatVisitors.getVisitorByToken(room.v.token);
+		const visitor = Promise.await(LivechatVisitors.getVisitorByToken(room.v.token));
 
 		if (!visitor || !visitor.phone || visitor.phone.length === 0) {
 			return message;
