@@ -1,15 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
+// TODO: check if this is still in use
 Meteor.methods({
-	'livechat:startFileUploadRoom'(roomId, token) {
+	async 'livechat:startFileUploadRoom'(roomId, token) {
 		methodDeprecationLogger.warn('livechat:startFileUploadRoom will be deprecated in future versions of Rocket.Chat');
-		const guest = LivechatVisitors.getVisitorByToken(token);
+		const guest = await LivechatVisitors.getVisitorByToken(token);
 
 		const message = {
 			_id: Random.id(),

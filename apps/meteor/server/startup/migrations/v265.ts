@@ -1,10 +1,12 @@
+import { Integrations } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import { Integrations } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 265,
 	async up() {
 		// Load all integrations that have an `avatarUrl` and don't have an `avatar`
+
 		const integrations = await Integrations.find<{ _id: string; avatarUrl: string }>(
 			{
 				avatarUrl: {

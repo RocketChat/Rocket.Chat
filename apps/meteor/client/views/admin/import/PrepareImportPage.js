@@ -188,7 +188,7 @@ function PrepareImportPage() {
 		<Page>
 			<Page.Header title={t('Importing_Data')}>
 				<ButtonGroup>
-					<Button ghost onClick={handleBackToImportsButtonClick}>
+					<Button secondary onClick={handleBackToImportsButtonClick}>
 						<Icon name='back' /> {t('Back_to_imports')}
 					</Button>
 					<Button primary disabled={isImporting || handleMinimumImportData()} onClick={handleStartButtonClick}>

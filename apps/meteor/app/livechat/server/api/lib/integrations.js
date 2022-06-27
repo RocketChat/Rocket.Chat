@@ -1,5 +1,6 @@
+import { Settings } from '@rocket.chat/models';
+
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Settings } from '../../../../models/server/raw';
 
 export async function findIntegrationSettings({ userId }) {
 	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
