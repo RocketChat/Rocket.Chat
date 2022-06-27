@@ -109,7 +109,9 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		<ToolboxContext.Provider value={contextValue}>
 			{actions
 				.filter(
-					([, action]) => uid || (allowAnonymousRead && action.hasOwnProperty('anonymous') && (action as ToolboxActionConfig).anonymous),
+					([, action]) =>
+						!action.hidden &&
+						(uid || (allowAnonymousRead && action.hasOwnProperty('anonymous') && (action as ToolboxActionConfig).anonymous)),
 				)
 				.map(([id, item]) => (
 					<VirtualAction action={item} room={room} id={id} key={id + room._id} handleChange={handleChange} />

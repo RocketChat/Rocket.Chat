@@ -9,6 +9,7 @@ import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/T
 import { useTabBarOpen } from '../../../client/views/room/providers/ToolboxProvider';
 import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/useVideoConfWarning';
+import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 
 addAction('video-conf-list', {
 	groups: ['channel', 'group', 'team'],
@@ -16,7 +17,7 @@ addAction('video-conf-list', {
 	icon: 'video',
 	title: 'Video_Conferences',
 	template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
-	order: 9999,
+	hidden: true,
 });
 
 addAction('video-conf', ({ room }) => {
@@ -25,6 +26,7 @@ addAction('video-conf', ({ room }) => {
 	const startCall = useVideoConfStartCall();
 	const user = useUser();
 	const dispatchWarning = useVideoConfWarning();
+	const hasLicense = useHasLicenseModule('videoconference-enterprise');
 
 	const openTabBar = useTabBarOpen();
 	const { isMobile } = useLayout();
@@ -100,13 +102,18 @@ addAction('video-conf', ({ room }) => {
 						id: 'video-conference',
 						title: 'Video_Conference',
 						icon: 'phone',
-						renderAction: ({ key }): ReactElement => (
-							<Menu key={key} tiny={!isMobile} title={t('Video_Conference')} icon='phone' options={menuOptions} />
-						),
+						...(hasLicense && {
+							renderAction: ({ key }): ReactElement => (
+								<Menu key={key} tiny={!isMobile} title={t('Video_Conference')} icon='phone' options={menuOptions} />
+							),
+						}),
+						...(!hasLicense && {
+							action: handleOpenVideoConf,
+						}),
 						full: true,
 						order: live ? -1 : 4,
 				  }
 				: null,
-		[t, groups, enableOption, live, isMobile, menuOptions],
+		[t, groups, enableOption, live, isMobile, menuOptions, hasLicense, handleOpenVideoConf],
 	);
 });
