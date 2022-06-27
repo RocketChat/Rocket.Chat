@@ -21,7 +21,7 @@ export const useOutboundDialer = (): UseOutboundDialerResult => {
 			setResult(empty);
 			return;
 		}
-		hasLicense('livechat-enterprise').then((enabled) => {
+		hasLicense('voip-enterprise').then((enabled) => {
 			if (!enabled) {
 				return;
 			}
@@ -31,7 +31,7 @@ export const useOutboundDialer = (): UseOutboundDialerResult => {
 		});
 
 		return (): void => {
-			hasLicense('livechat-enterprise').then((enabled) => {
+			hasLicense('voip-enterprise').then((enabled) => {
 				if (!enabled) {
 					return;
 				}

@@ -26,7 +26,7 @@ export class SimpleVoipUser {
 			connectionRetryCount: voipRetryCount,
 			enableKeepAliveUsingOptionsForUnstableNetworks: enableKeepAliveForUnstableNetworks,
 		};
-		if (await hasLicense('livechat-enterprise')) {
+		if (await hasLicense('voip-enterprise')) {
 			return EEVoipClient.create(config, mediaStreamRendered);
 		}
 		return VoIPUser.create(config, mediaStreamRendered);
