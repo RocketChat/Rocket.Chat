@@ -4,7 +4,7 @@ import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
-import { usePreventPropagation } from '../../../../hooks/usePreventProgation';
+import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import RoomActions from './RoomActions';
 
