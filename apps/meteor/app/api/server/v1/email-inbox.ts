@@ -50,6 +50,7 @@ API.v1.addRoute(
 					username: String,
 					password: String,
 					secure: Boolean,
+					mostRetries: Number,
 				}),
 			});
 

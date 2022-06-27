@@ -180,13 +180,14 @@ function EmailInboxForm({ id, data }) {
 			maxRetries: parseInt(imapRetries),
 		};
 
+		const dept = department?.label || '';
 		const payload = {
 			active,
 			name,
 			email,
 			description,
 			senderInfo,
-			department,
+			dept,
 			smtp,
 			imap,
 		};
