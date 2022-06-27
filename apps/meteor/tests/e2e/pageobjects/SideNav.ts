@@ -13,10 +13,6 @@ export class SideNav extends BasePage {
 		return this.page.locator('#modal-root [placeholder="Channel Name"]');
 	}
 
-	get saveChannelBtn(): Locator {
-		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
-	}
-
 	get sidebarUserMenu(): Locator {
 		return this.page.locator('[data-qa="sidebar-avatar-button"]');
 	}
@@ -77,7 +73,7 @@ export class SideNav extends BasePage {
 		return this.page.locator('[data-qa="sidebar-search-result"]');
 	}
 
-	get newChannelBtnToolbar(): Locator {
+	get btnSidebarCreate(): Locator {
 		return this.page.locator('[data-qa="sidebar-create"]');
 	}
 
@@ -86,7 +82,7 @@ export class SideNav extends BasePage {
 	}
 
 	get general(): Locator {
-		return this.getChannelFromList('general');
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: 'general' });
 	}
 
 	get preferences(): Locator {
@@ -113,20 +109,8 @@ export class SideNav extends BasePage {
 		return this.page.locator('//button[@aria-label="Close menu"]');
 	}
 
-	public async isSideBarOpen(): Promise<boolean> {
+	async isSideBarOpen(): Promise<boolean> {
 		return !!(await this.sideNavBar.getAttribute('style'));
-	}
-
-	public getChannelFromList(channelName: any): Locator {
-		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
-	}
-
-	get searchUser(): Locator {
-		return this.page.locator('[data-qa="sidebar-search"]');
-	}
-
-	get searchInput(): Locator {
-		return this.page.locator('[data-qa="sidebar-search-input"]');
 	}
 
 	async doOpenChat(name: string): Promise<void> {
@@ -137,19 +121,19 @@ export class SideNav extends BasePage {
 		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
 	}
 
-	public async createChannel(channelName: any, isPrivate: any /* isReadOnly*/): Promise<void> {
-		await this.newChannelBtnToolbar.click();
-		await this.newChannelBtn.click();
+	async doCreateChannel(channelName: string, isPrivate = false): Promise<void> {
+		await this.page.locator('[data-qa="sidebar-create"]').click();
+		await this.page.locator('li.rcx-option >> text="Channel"').click();
 
 		if (!isPrivate) {
 			await this.channelType.click();
 		}
 
 		await this.channelName.type(channelName);
-		await this.saveChannelBtn.click();
+		await this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]').click();
 	}
 
-	public async doLogout(): Promise<void> {
+	async doLogout(): Promise<void> {
 		await this.page.goto('/home');
 		await this.sidebarUserMenu.click();
 		await this.logout.click();

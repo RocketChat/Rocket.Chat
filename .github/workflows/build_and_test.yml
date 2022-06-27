@@ -681,7 +681,7 @@ jobs:
           docker logs presence --tail=50
 
           cd ./apps/meteor
-          E2E_COVERAGE=true npm run test:e2e
+          E2E_COVERAGE=true IS_EE=true npm run test:e2e
 
       - name: Extract e2e:ee:coverage
         run: |

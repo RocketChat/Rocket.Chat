@@ -19,14 +19,14 @@ test.describe('[Main Elements Render]', function () {
 		mainContent = new MainContent(page);
 		flexTab = new FlexTab(page);
 
-		await loginPage.goto('/');
+		await page.goto('/');
 		await loginPage.doLogin(adminLogin);
 	});
 
 	test.describe('[Side Nav Bar]', () => {
 		test.describe('[Render]', () => {
 			test('expect show the new channel button', async () => {
-				await expect(sideNav.newChannelBtnToolbar).toBeVisible();
+				await expect(sideNav.btnSidebarCreate).toBeVisible();
 			});
 
 			test('expect show "general" channel', async () => {

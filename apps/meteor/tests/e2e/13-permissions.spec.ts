@@ -77,7 +77,7 @@ test.describe('[Permissions]', () => {
 	test.describe('assert "userToBeCreated" permissions', () => {
 		test.beforeAll(async () => {
 			await sideNav.doLogout();
-			await loginPage.goto('/');
+			await page.goto('/');
 			await loginPage.doLogin(userToBeCreated);
 			await sideNav.general.click();
 		});

@@ -30,7 +30,7 @@ test.describe('[Discussion]', () => {
 		test('expect discussion is created', async () => {
 			const discussionName = faker.animal.type() + Date.now();
 			message = faker.animal.type();
-			await sideNav.newChannelBtnToolbar.click();
+			await sideNav.btnSidebarCreate.click();
 			await discussion.doCreateDiscussion('public channel', discussionName, message);
 		});
 	});
