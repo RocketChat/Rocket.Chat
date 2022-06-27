@@ -151,8 +151,7 @@ export const drawLineChart = async (
 			fill: false,
 		});
 	});
-	const chartjs = await import('chart.js/auto');
-	const Chart = chartjs.default;
+	const { Chart } = await import('chart.js/auto');
 	return new Chart(chart, {
 		type: 'line',
 		data: {
@@ -184,8 +183,7 @@ export const drawDoughnutChart = async (
 	if (chartContext) {
 		chartContext.destroy();
 	}
-	const chartjs = await import('chart.js/auto');
-	const Chart = chartjs.default;
+	const { Chart } = await import('chart.js/auto');
 	return new Chart(chart, {
 		type: 'doughnut',
 		data: {
