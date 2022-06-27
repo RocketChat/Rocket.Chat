@@ -48,57 +48,38 @@ export const listenSessionLogin = async (): Promise<void> => {
 			} = user;
 			const { browser, os, device, cpu, app } = await uaParser(connection.httpHeaders['user-agent']);
 
-			let mailData = {};
+			const mailData = {
+				name,
+				username,
+				browserInfo: `${browser.name} ${browser.version}`,
+				osInfo: `${os.name} ${os.version || ''}`,
+				deviceInfo: `${device.type || t('Device_Management_Device_Unknown')} ${device.vendor || ''} ${device.model || ''} ${
+					cpu.architecture || ''
+				}`,
+				ipInfo: connection.clientAddress,
+				userAgent: '',
+			};
 
 			switch (device.type) {
 				case 'mobile':
 				case 'tablet':
 				case 'smarttv':
-					mailData = {
-						name,
-						username,
-						browserInfo: `${browser.name} ${browser.version}`,
-						osInfo: `${os.name} ${os.version || ''}`,
-						deviceInfo: `${device.type} ${device.vendor || ''} ${device.model || ''} ${cpu.architecture || ''}`,
-						ipInfo: connection.clientAddress,
-						userAgent: '',
-					};
+					mailData.browserInfo = `${browser.name} ${browser.version}`;
+					mailData.osInfo = `${os.name} ${os.version || ''}`;
+					mailData.deviceInfo = `${device.type} ${device.vendor || ''} ${device.model || ''} ${cpu.architecture || ''}`;
 					break;
 				case 'mobile-app':
-					mailData = {
-						name,
-						username,
-						browserInfo: `Rocket.Chat App ${app?.bundle || app?.version}`,
-						osInfo: `${os.name} ${os.version || ''}`,
-						deviceInfo: 'Mobile App',
-						ipInfo: connection.clientAddress,
-						userAgent: '',
-					};
+					mailData.browserInfo = `Rocket.Chat App ${app?.bundle || app?.version}`;
+					mailData.osInfo = `${os.name} ${os.version || ''}`;
+					mailData.deviceInfo = 'Mobile App';
 					break;
 				case 'desktop-app':
-					mailData = {
-						name,
-						username,
-						browserInfo: `Rocket.Chat ${app?.name || browser.name} ${app?.bundle || app?.version || browser.version}`,
-						osInfo: `${os.name} ${os.version || ''}`,
-						deviceInfo: `Desktop App ${cpu.architecture || ''}`,
-						ipInfo: connection.clientAddress,
-						userAgent: '',
-					};
+					mailData.browserInfo = `Rocket.Chat ${app?.name || browser.name} ${app?.bundle || app?.version || browser.version}`;
+					mailData.osInfo = `${os.name} ${os.version || ''}`;
+					mailData.deviceInfo = `Desktop App ${cpu.architecture || ''}`;
 					break;
 				default:
-					mailData = {
-						name,
-						username,
-						browserInfo: `${browser.name} ${browser.version}`,
-						osInfo: `${os.name} ${os.version || ''}`,
-						deviceInfo: `${device.type || t('Device_Management_Device_Unknown')} ${device.vendor || ''} ${device.model || ''} ${
-							cpu.architecture || ''
-						}`,
-						ipInfo: connection.clientAddress,
-						userAgent: connection.httpHeaders['user-agent'],
-					};
-
+					mailData.userAgent = connection.httpHeaders['user-agent'] || '';
 					break;
 			}
 
