@@ -13,6 +13,7 @@ import {
 	isChatUnStarMessageParamsPOST,
 	isChatUpdateParamsPOST,
 	isChatReactParamsPOST,
+	isChatGetMessageReadReceiptsParamsGET,
 } from '@rocket.chat/rest-typings';
 import { IMessage } from '@rocket.chat/core-typings';
 
@@ -363,15 +364,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getMessageReadReceipts',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatGetMessageReadReceiptsParamsGET,
+	},
 	{
 		async get() {
 			const { messageId } = this.queryParams;
-			if (!messageId) {
-				return API.v1.failure({
-					error: "The required 'messageId' param is missing.",
-				});
-			}
 
 			try {
 				return API.v1.success({
@@ -379,7 +378,8 @@ API.v1.addRoute(
 				});
 			} catch (error) {
 				return API.v1.failure({
-					error: error.message,
+					error,
+					// error: error.message,
 				});
 			}
 		},

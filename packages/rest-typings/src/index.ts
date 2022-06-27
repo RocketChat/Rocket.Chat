@@ -205,3 +205,4 @@ export * from './v1/chat/ChatUnPinMessageParamsPOST';
 export * from './v1/chat/ChatUnStarMessageParamsPOST';
 export * from './v1/chat/ChatUpdateParamsPOST';
 export * from './v1/chat/ChatReactParamsPOST';
+export * from './v1/chat/ChatGetMessageReadReceiptsParamsGET';
