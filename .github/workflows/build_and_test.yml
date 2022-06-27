@@ -150,7 +150,12 @@ jobs:
         run: yarn turbo run translation-check --api="http://127.0.0.1:9080"
 
       - name: TS typecheck
-        run: yarn turbo run typecheck --api="http://127.0.0.1:9080"
+        run: |
+          cd ./apps/meteor
+          yarn typecheck
+
+      # - name: TS typecheck
+      #   run: yarn turbo run typecheck --api="http://127.0.0.1:9080"
 
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
