@@ -26,7 +26,7 @@ const ReleaseItem = ({ release, key, ...props }: ReleaseItemProps): JSX.Element 
 				{release.version}
 			</Box>
 			<Box is='p' fontWeight='400' fontSize='x16' lineHeight='x24' color='info'>
-				{formatDate(release.createdDate.replace('Z', ''))}
+				{formatDate(release.createdDate)}
 			</Box>
 		</Box>
 	);
