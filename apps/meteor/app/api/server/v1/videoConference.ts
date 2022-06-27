@@ -61,17 +61,25 @@ API.v1.addRoute(
 				return API.v1.failure('invalid-params');
 			}
 
+			let url: string | undefined;
+
 			try {
-				return API.v1.success({
-					url: await VideoConf.join(userId, callId, {
-						...(state?.cam !== undefined ? { cam: state.cam } : {}),
-						...(state?.mic !== undefined ? { mic: state.mic } : {}),
-					}),
-					providerName: call.providerName,
+				url = await VideoConf.join(userId, callId, {
+					...(state?.cam !== undefined ? { cam: state.cam } : {}),
+					...(state?.mic !== undefined ? { mic: state.mic } : {}),
 				});
 			} catch (e) {
 				return API.v1.failure(await VideoConf.diagnoseProvider(userId, call.rid, call.providerName));
 			}
+
+			if (!url) {
+				return API.v1.failure('failed-to-get-url');
+			}
+
+			return API.v1.success({
+				url,
+				providerName: call.providerName,
+			});
 		},
 	},
 );

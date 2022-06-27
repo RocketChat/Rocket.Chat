@@ -342,6 +342,10 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return Promise.reject(e);
 		});
 
+		if (!url) {
+			throw new Error('Failed to get video conference URL.');
+		}
+
 		debug && console.log(`[VideoConf] Opening ${url}.`);
 		this.emit('call/join', { url, callId });
 	}
