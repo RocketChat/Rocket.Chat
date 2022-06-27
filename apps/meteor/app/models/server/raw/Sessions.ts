@@ -795,7 +795,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				loginAt: -1,
 			},
 		};
-		const customSortOp = !sort || sort.loginAt ? [] : [{ $sort: sort }];
+		const customSortOp = !sort ? [] : [{ $sort: sort }];
 
 		const groupOperator = {
 			$group: {
@@ -896,7 +896,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				loginAt: -1,
 			},
 		};
-		const customSortOp = !sort || sort.loginAt ? [] : [{ $sort: sort }];
+		const customSortOp = !sort ? [] : [{ $sort: sort }];
 
 		const groupOperator = {
 			$group: {
