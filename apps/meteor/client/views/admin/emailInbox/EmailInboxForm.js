@@ -40,6 +40,7 @@ const initialValues = {
 	imapUsername: '',
 	imapPassword: '',
 	imapSecure: false,
+	imapRetries: 10,
 };
 
 const getInitialValues = (data) => {
@@ -180,14 +181,13 @@ function EmailInboxForm({ id, data }) {
 			maxRetries: parseInt(imapRetries),
 		};
 
-		const dept = department?.label || '';
 		const payload = {
 			active,
 			name,
 			email,
 			description,
 			senderInfo,
-			dept,
+			department: typeof department === 'string' ? department : department.value,
 			smtp,
 			imap,
 		};
@@ -339,7 +339,7 @@ function EmailInboxForm({ id, data }) {
 							<Field>
 								<Field.Label>{t('Max_Retry')}*</Field.Label>
 								<Field.Row>
-									<TextInput value={imapRetries} onChange={handleImapRetries} />
+									<TextInput type='number' value={imapRetries} onChange={handleImapRetries} />
 								</Field.Row>
 							</Field>
 							<Field>

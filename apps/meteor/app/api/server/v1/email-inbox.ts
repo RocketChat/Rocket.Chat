@@ -29,6 +29,7 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'manage-email-inbox')) {
 				throw new Error('error-not-allowed');
 			}
+
 			check(this.bodyParams, {
 				_id: Match.Maybe(String),
 				active: Boolean,
@@ -50,7 +51,7 @@ API.v1.addRoute(
 					username: String,
 					password: String,
 					secure: Boolean,
-					mostRetries: Number,
+					maxRetries: Number,
 				}),
 			});
 
@@ -127,6 +128,7 @@ API.v1.addRoute(
 			const { email } = this.queryParams;
 
 			// TODO: Chapter day backend - check if user has permission to view this email inbox instead of null values
+			// TODO: Chapter day: Remove this endpoint and move search to GET /email-inbox
 			const emailInbox = await EmailInbox.findOne({ email });
 
 			return API.v1.success({ emailInbox });
