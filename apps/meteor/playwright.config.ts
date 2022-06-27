@@ -12,7 +12,7 @@ const setupIsLocalhost = constants.IS_LOCALHOST
 export default {
 	...setupIsLocalhost,
 	use: {
-		headless: false,
+		headless: true,
 		viewport: { width: 1368, height: 768 },
 		ignoreHTTPSErrors: true,
 		video: 'retain-on-failure',
@@ -23,7 +23,7 @@ export default {
 	outputDir: 'tests/e2e/test-failures',
 	reporter: process.env.CI ? 'github' : 'list',
 	testDir: 'tests/e2e',
-	// retries: 3,
+	retries: 3,
 	workers: 1,
 	timeout: 42 * 1000,
 } as PlaywrightTestConfig;
