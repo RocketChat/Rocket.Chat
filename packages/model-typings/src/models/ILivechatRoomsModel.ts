@@ -1,4 +1,4 @@
-import type { IRocketChatRecord } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -19,7 +19,7 @@ type WithOptions = {
 	options?: any;
 };
 
-export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
+export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	getQueueMetrics(params: { departmentId: any; agentId: any; includeOfflineAgents: any; options?: any }): any;
 
 	findAllNumberOfAbandonedRooms(params: Period & WithDepartment & WithOnlyCount & WithOptions): Promise<any>;
@@ -94,4 +94,10 @@ export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
 	findAllAverageServiceTimeByAgents(params: Period & WithOptions & WithOnlyCount): any;
 
 	setDepartmentByRoomId(roomId: any, departmentId: any): any;
+
+	setAutoTransferOngoingById(roomId: string): void;
+
+	unsetAutoTransferOngoingById(roomId: string): void;
+
+	setAutoTransferredAtById(roomId: string): void;
 }
