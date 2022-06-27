@@ -1,5 +1,5 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import LivechatTag from '@rocket.chat/models';
+import { LivechatTag } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 
