@@ -83,23 +83,23 @@ describe('licenses', function () {
 				.end(done);
 		});
 
-		it('should fail if user is unauthorized', (done) => {
-			request
-				.get(api('licenses.get'))
-				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
-				})
-				.end(done);
-		});
-
-		it('should return licenses if user is logged in and is authorized', (done) => {
+		it('should return licenses if user is logged in and is authorized role', (done) => {
 			request
 				.get(api('licenses.get'))
 				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('licenses').and.to.be.an('array');
+				})
+
+				.end(done);
+		});
+
+		it('should return licenses if user is logged in and it has user role', (done) => {
+			request
+				.get(api('licenses.get'))
+				.set(unauthorizedUserCredentials)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
