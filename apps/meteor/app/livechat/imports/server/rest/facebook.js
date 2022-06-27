@@ -1,9 +1,10 @@
 import crypto from 'crypto';
 
 import { Random } from 'meteor/random';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { LivechatRooms, LivechatVisitors } from '../../../../models/server';
+import { LivechatRooms } from '../../../../models/server';
 import { settings } from '../../../../settings/server';
 import { Livechat } from '../../../server/lib/Livechat';
 
@@ -21,7 +22,7 @@ import { Livechat } from '../../../server/lib/Livechat';
  * @apiParam {String} [attachments] Facebook message attachments
  */
 API.v1.addRoute('livechat/facebook', {
-	post() {
+	async post() {
 		if (!this.bodyParams.text && !this.bodyParams.attachments) {
 			return {
 				success: false,
@@ -63,7 +64,7 @@ API.v1.addRoute('livechat/facebook', {
 				},
 			},
 		};
-		let visitor = LivechatVisitors.getVisitorByToken(this.bodyParams.token);
+		let visitor = await LivechatVisitors.getVisitorByToken(this.bodyParams.token);
 		if (visitor) {
 			const rooms = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
 			if (rooms && rooms.length > 0) {
@@ -76,12 +77,12 @@ API.v1.addRoute('livechat/facebook', {
 			sendMessage.message.rid = Random.id();
 			sendMessage.message.token = this.bodyParams.token;
 
-			const userId = Livechat.registerGuest({
+			const userId = await Livechat.registerGuest({
 				token: sendMessage.message.token,
 				name: `${this.bodyParams.first_name} ${this.bodyParams.last_name}`,
 			});
 
-			visitor = LivechatVisitors.findOneById(userId);
+			visitor = await LivechatVisitors.findOneById(userId);
 		}
 
 		sendMessage.message.msg = this.bodyParams.text;

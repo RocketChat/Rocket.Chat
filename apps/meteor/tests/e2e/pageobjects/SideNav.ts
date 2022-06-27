@@ -1,7 +1,6 @@
 import { expect, Locator } from '@playwright/test';
 
 import { BasePage } from './BasePage';
-import { ENTER } from '../utils/mocks/keyboardKeyMock';
 
 export class SideNav extends BasePage {
 	get channelType(): Locator {
@@ -118,25 +117,6 @@ export class SideNav extends BasePage {
 		return !!(await this.sideNavBar.getAttribute('style'));
 	}
 
-	public async openChannel(channelName: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).scrollIntoViewIfNeeded();
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).click();
-		await expect(this.page.locator('.rcx-room-header')).toContainText(channelName);
-	}
-
-	public async searchChannel(channelName: string): Promise<void> {
-		await expect(this.spotlightSearch).toBeVisible();
-
-		await this.spotlightSearch.click();
-
-		await expect(this.spotlightSearch).toBeFocused();
-		await this.spotlightSearch.type(channelName);
-
-		await expect(this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).first()).toContainText(channelName);
-
-		await this.spotlightSearchPopUp.click();
-	}
-
 	public getChannelFromList(channelName: any): Locator {
 		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
 	}
@@ -149,9 +129,16 @@ export class SideNav extends BasePage {
 		return this.page.locator('[data-qa="sidebar-search-input"]');
 	}
 
+	async doOpenChat(name: string): Promise<void> {
+		await expect(this.page.locator('[data-qa="sidebar-search"]')).toBeVisible();
+
+		await this.page.locator('[data-qa="sidebar-search"]').click();
+		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
+		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
+	}
+
 	public async createChannel(channelName: any, isPrivate: any /* isReadOnly*/): Promise<void> {
 		await this.newChannelBtnToolbar.click();
-
 		await this.newChannelBtn.click();
 
 		if (!isPrivate) {
@@ -159,17 +146,7 @@ export class SideNav extends BasePage {
 		}
 
 		await this.channelName.type(channelName);
-
-		await expect(this.saveChannelBtn).toBeEnabled();
-
 		await this.saveChannelBtn.click();
-		await expect(this.channelType).not.toBeVisible();
-	}
-
-	public async findForChat(target: string): Promise<void> {
-		await this.searchUser.click();
-		await this.searchInput.type(target, { delay: 100 });
-		await this.page.keyboard.press(ENTER);
 	}
 
 	public async doLogout(): Promise<void> {
