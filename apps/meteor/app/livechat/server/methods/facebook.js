@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import OmniChannel from '../lib/OmniChannel';
 import { Settings } from '../../../models/server';
 

@@ -25,5 +25,13 @@ to: packages/<%= name %>/package.json
 		"/dist"
 	],
 	"dependencies": {
+	},
+	"eslintConfig": {
+		"extends": [
+			"@rocket.chat/eslint-config"
+		],
+		"ignorePatterns": [
+			"**/dist"
+		]
 	}
 }

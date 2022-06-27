@@ -13,7 +13,7 @@ import {
 	getAgentsProductivityMetrics,
 	getChatsMetrics,
 } from '../../../server/lib/analytics/dashboards';
-import { Users } from '../../../../models';
+import { Users } from '../../../../models/server';
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversation-totalizers',

@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
-import { LivechatRooms } from '../../../models';
+import { LivechatRooms } from '../../../models/server';
 
 const sendTranscriptOnClose = (room) => {
 	const { _id: rid, transcriptRequest, v: { token } = {} } = room;
@@ -9,7 +9,8 @@ const sendTranscriptOnClose = (room) => {
 	}
 
 	const { email, subject, requestedBy: user } = transcriptRequest;
-	Livechat.sendTranscript({ token, rid, email, subject, user });
+	// TODO: refactor this to use normal await
+	Promise.await(Livechat.sendTranscript({ token, rid, email, subject, user }));
 
 	LivechatRooms.removeTranscriptRequestByRoomId(rid);
 
