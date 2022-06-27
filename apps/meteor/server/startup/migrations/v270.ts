@@ -1,14 +1,21 @@
-import { Settings } from '@rocket.chat/models';
+import { VoipRoom } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 270,
 	async up() {
-		await Settings.deleteMany({
-			_id: {
-				$in: ['VoIP_Server_Host', 'VoIP_Server_Websocket_Port'],
+		// mark all voip rooms as inbound which doesn't have any direction property set or has an invalid value
+		await VoipRoom.updateMany(
+			{
+				t: 'v',
+				$or: [{ direction: { $exists: false } }, { direction: { $nin: ['inbound', 'outbound'] } }],
 			},
-		});
+			{
+				$set: {
+					direction: 'inbound',
+				},
+			},
+		);
 	},
 });
