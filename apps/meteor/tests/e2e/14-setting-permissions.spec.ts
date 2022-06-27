@@ -8,10 +8,12 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 	let admin: Administration;
 	let sideNav: SideNav;
 	let loginPage: LoginPage;
+
 	const newHomeTitle = faker.animal.type();
+
 	test.beforeAll(async ({ browser }) => {
-		const context = await browser.newContext();
-		const page = await context.newPage();
+		const page = await browser.newPage();
+
 		sideNav = new SideNav(page);
 		admin = new Administration(page);
 		loginPage = new LoginPage(page);
@@ -20,7 +22,7 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 	test.describe('[Give User Permissions]', async () => {
 		test.beforeAll(async () => {
 			await loginPage.goto('/');
-			await loginPage.login(adminLogin);
+			await loginPage.doLogin(adminLogin);
 			await sideNav.sidebarUserMenu.click();
 			await sideNav.admin.click();
 			await admin.permissionsLink.click();
@@ -35,6 +37,7 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 			await admin.rolesSettingsFindInput.type('settings');
 			await admin.page.locator('table tbody tr:first-child td:nth-child(1) >> text="Change some settings"').waitFor();
 			const isOptionChecked = await admin.page.isChecked('table tbody tr:first-child td:nth-child(6) label input');
+
 			if (!isOptionChecked) {
 				await admin.page.click('table tbody tr:first-child td:nth-child(6) label');
 			}
@@ -53,15 +56,17 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 		});
 	});
 
-	test.describe('Test new user setting permissions', async () => {
+	test.describe('[Test new user setting permissions]', async () => {
 		test.beforeAll(async () => {
 			await loginPage.goto('/');
-			await loginPage.login(validUserInserted);
+			await loginPage.doLogin(validUserInserted);
+
 			await sideNav.sidebarUserMenu.click();
 			await sideNav.admin.click();
 			await admin.settingsLink.click();
 			await admin.layoutSettingsButton.click();
 		});
+
 		test.afterAll(async () => {
 			await loginPage.goto('/home');
 			await loginPage.logout();
@@ -76,7 +81,7 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 	test.describe('[Verify settings change and cleanup]', async () => {
 		test.beforeAll(async () => {
 			await loginPage.goto('/');
-			await loginPage.login(adminLogin);
+			await loginPage.doLogin(adminLogin);
 			await sideNav.sidebarUserMenu.click();
 			await sideNav.admin.click();
 			await admin.settingsLink.click();

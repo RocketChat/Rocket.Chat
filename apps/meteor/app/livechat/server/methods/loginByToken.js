@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-
-import { LivechatVisitors } from '../../../models/server';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 Meteor.methods({
-	'livechat:loginByToken'(token) {
-		const visitor = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+	async 'livechat:loginByToken'(token) {
+		const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
 		if (!visitor) {
 			return;

@@ -30,7 +30,7 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 	const setModal = useSetModal();
 
 	const deleteQuery = useMemo(() => ({ type: 'webhook-incoming', integrationId: data._id }), [data._id]);
-	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
+	const deleteIntegration = useEndpointAction('POST', '/v1/integrations.remove', deleteQuery);
 	const saveIntegration = useMethod('updateIncomingIntegration');
 
 	const router = useRoute('admin-integrations');
