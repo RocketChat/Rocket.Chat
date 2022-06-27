@@ -157,7 +157,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 				<Field>
 					<Field.Row>
 						<ButtonGroup stretch w='full'>
-							<Button primary danger onClick={openConfirmDelete}>
+							<Button danger onClick={openConfirmDelete}>
 								<Icon name='trash' mie='x4' />
 								{t('Delete')}
 							</Button>

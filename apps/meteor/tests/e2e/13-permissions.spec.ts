@@ -1,7 +1,6 @@
-import { Page } from '@playwright/test';
+import { Page, test, expect } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
-import { expect, test } from './utils/test';
 import { LoginPage, FlexTab, Administration, MainContent, SideNav } from './pageobjects';
 import { adminLogin, createRegisterUser } from './utils/mocks/userAndPasswordMock';
 import { BACKSPACE } from './utils/mocks/keyboardKeyMock';
@@ -28,7 +27,7 @@ test.describe('[Permissions]', () => {
 		mainContent = new MainContent(page);
 
 		await page.goto('/');
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 		await sideNav.sidebarUserMenu.click();
 		await sideNav.admin.click();
 		await sideNav.users.click();
@@ -77,8 +76,8 @@ test.describe('[Permissions]', () => {
 	test.describe('assert "userToBeCreated" permissions', () => {
 		test.beforeAll(async () => {
 			await sideNav.doLogout();
-			await loginPage.goto('/');
-			await loginPage.login(userToBeCreated);
+			await page.goto('/');
+			await loginPage.doLogin(userToBeCreated);
 			await sideNav.general.click();
 		});
 

@@ -1,6 +1,5 @@
-import { Page } from '@playwright/test';
+import { Page, test, expect } from '@playwright/test';
 
-import { expect, test } from './utils/test';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { userMock } from './utils/mocks/userMock';
 import { LoginPage, MainContent, SideNav } from './pageobjects';
@@ -19,9 +18,9 @@ test.describe('[Message Popup]', () => {
 		mainContent = new MainContent(page);
 		sideNav = new SideNav(page);
 
-		await loginPage.goto('/');
-		await loginPage.login(adminLogin);
-		await sideNav.openChannel('public channel');
+		await page.goto('/');
+		await loginPage.doLogin(adminLogin);
+		await sideNav.doOpenChat('public channel');
 	});
 
 	test.describe('User mentions', () => {
