@@ -2938,7 +2938,7 @@
 	"Markdown_SupportSchemesForLink": "Markdown Support Schemes for Link",
 	"Markdown_SupportSchemesForLink_Description": "Comma-separated list of allowed schemes",
 	"Marketplace": "Marketplace",
-	"Marketplace_app_last_updated": "Last updated __lastUpdated__ ago",
+	"Marketplace_app_last_updated": "Last updated __lastUpdated__",
 	"Marketplace_view_marketplace": "View Marketplace",
 	"Marketplace_error": "Cannot connect to internet or your workspace may be an offline install.",
 	"MAU_value": "MAU __value__",
