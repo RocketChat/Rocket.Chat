@@ -1,4 +1,5 @@
 import { isModalsProps, isModalsInsertProps } from '@rocket.chat/rest-typings';
+
 import { Modals, ModalsDismiss } from '../../../models/server/raw/index';
 import { API } from '../api';
 
@@ -10,12 +11,21 @@ API.v1.addRoute(
 			if (!this.userId) {
 				return API.v1.failure('error-invalid-user');
 			}
-
 			const { content, contentType, title, expires } = this.bodyParams;
 			const createdAt = new Date();
+
 			const stmt = await Modals.insertOne({ content, contentType, title, expires, status: true, createdBy: this.userId, createdAt });
-			return API.v1.success({ success: stmt.insertedCount ? true : false });
+
+			if (!stmt.insertedCount) return API.v1.failure('error-modal-not-created');
+
+			return API.v1.success({ success: true });
 		},
+	},
+);
+API.v1.addRoute(
+	'modals/remove',
+	{ authRequired: true, validateParams: isModalsProps, permissions: ['manage-modals'] },
+	{
 		async delete() {
 			if (!this.userId) {
 				return API.v1.failure('error-invalid-user');
@@ -24,7 +34,10 @@ API.v1.addRoute(
 			const { modalId } = this.bodyParams;
 
 			const stmt = await Modals.deleteModal(modalId);
-			return API.v1.success({ success: stmt.modifiedCount ? true : false });
+
+			if (!stmt.modifiedCount) return API.v1.failure('error-modal-not-deleted');
+
+			return API.v1.success({ success: true });
 		},
 	},
 );
@@ -63,9 +76,8 @@ API.v1.addRoute(
 			const stmt = await ModalsDismiss.removeUserByUserIdAndId(modalId, this.userId);
 			if (stmt.deletedCount) {
 				return API.v1.success({ success: true });
-			} else {
-				return API.v1.failure('error-modal-not-dismissed');
 			}
+			return API.v1.failure('error-modal-not-dismissed');
 		},
 	},
 );
