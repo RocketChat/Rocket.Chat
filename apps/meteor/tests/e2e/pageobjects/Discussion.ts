@@ -27,7 +27,7 @@ export class Discussion extends BasePage {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Create"');
 	}
 
-	public discussionCreated(discussionName: string): Locator {
+	discussionCreated(discussionName: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item-title"] >> text='${discussionName}'`);
 	}
 

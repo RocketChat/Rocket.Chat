@@ -60,7 +60,7 @@ export class Agents extends BasePage {
 		return this.page.locator('[data-qa="AgentInfoAction-Remove"]');
 	}
 
-	public availabilityOption(availability: string): Locator {
+	availabilityOption(availability: string): Locator {
 		return this.page.locator(`div.rcx-options[role="listbox"] div.rcx-box ol[role="listbox"] li[value="${availability}"]`);
 	}
 
@@ -78,11 +78,11 @@ export class Agents extends BasePage {
 		return this.page.locator('[data-qa="AgentEditButtonSave"]');
 	}
 
-	public getAgentInputs(id: string): Locator {
+	getAgentInputs(id: string): Locator {
 		return this.page.locator(`[data-qa="AgentEditTextInput-${id}"]`);
 	}
 
-	public async doAddAgent(): Promise<void> {
+	async doAddAgent(): Promise<void> {
 		await this.textAgentsTitle.waitFor();
 		await this.inputAgentsUserName.type('rocket.cat', { delay: 100 });
 		// FIXME: temp solution for rocket.chat instability
@@ -93,13 +93,13 @@ export class Agents extends BasePage {
 		await this.btnAddAgents.click();
 	}
 
-	public async getListOfExpectedInputs(): Promise<void> {
+	async getListOfExpectedInputs(): Promise<void> {
 		const inputs = ['Name', 'Username', 'Email', 'Departaments', 'Status'].map((id) => this.getAgentInputs(id));
 		await Promise.all(inputs.map((input) => expect(input).toBeVisible()));
 		await this.btnClose.click();
 	}
 
-	public async doChangeUserStatus(availability: string): Promise<void> {
+	async doChangeUserStatus(availability: string): Promise<void> {
 		await this.agentAdded.click();
 		await this.btnEdit.click();
 		await this.agentStatus.click();
@@ -107,7 +107,7 @@ export class Agents extends BasePage {
 		await this.btnAgentSave.click();
 	}
 
-	public async doRemoveAgent(): Promise<void> {
+	async doRemoveAgent(): Promise<void> {
 		await this.agentAdded.click();
 		await this.btnRemove.click();
 	}
