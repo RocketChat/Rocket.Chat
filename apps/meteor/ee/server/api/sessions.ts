@@ -1,5 +1,3 @@
-import { IUser } from '@rocket.chat/core-typings';
-
 import { isSessionsPaginateProps, isSessionsProps } from '../../definition/rest/v1/sessions';
 import { Users, Sessions } from '../../../app/models/server/raw/index';
 import { API } from '../../../app/api/server/api';
@@ -93,24 +91,11 @@ API.v1.addRoute(
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
-			let search: string = this.queryParams?.filter || '';
+			const search: string = this.queryParams?.filter || '';
 
 			const sortKeys = ['loginAt', 'device.name', 'device.os.name', '_user.username', '_user.name'];
 			if (!Object.keys(sort).filter((key) => sortKeys.includes(key)).length) {
 				return API.v1.failure('error-invalid-sort');
-			}
-
-			const searchUser = await Users.find<Pick<IUser, '_id'>>(
-				{ $text: { $search: search }, active: true },
-				{
-					projection: { _id: 1 },
-					limit: 5,
-					sort: { score: { $meta: 'textScore' } },
-				},
-			).toArray();
-
-			if (searchUser?.length) {
-				search += ` ${searchUser.map((user) => user._id).join(' ')}`;
 			}
 
 			const sessions = await Sessions.aggregateSessionsAndPopulate({ search, sort, offset, count });

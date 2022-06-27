@@ -764,7 +764,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		offset?: number;
 		count?: number;
 	}): Promise<PaginatedResult<{ sessions: DeviceManagementSession[] }>> {
-		const searchQuery = search ? [{ $text: { $search: search } }] : [];
+		const searchQuery = search ? [{ searchTerm: { $regex: search, $options: 'i' } }] : [];
 
 		const matchOperator = {
 			$match: {
@@ -870,7 +870,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		offset?: number;
 		count?: number;
 	}): Promise<PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>> {
-		const searchQuery = search ? [{ $text: { $search: search } }] : [];
+		const searchQuery = search ? [{ searchTerm: { $regex: search, $options: 'i' } }] : [];
 
 		const matchOperator = {
 			$match: {
@@ -985,31 +985,13 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		return [
 			{ key: { createdAt: -1 } },
 			{ key: { loginAt: -1 } },
+			{ key: { searchTerm: 1 }, background: true },
 			{ key: { ip: 1, loginAt: -1 } },
 			{ key: { userId: 1, sessionId: 1 } },
 			{ key: { type: 1, year: 1, month: 1, day: 1 } },
 			{ key: { sessionId: 1, instanceId: 1, year: 1, month: 1, day: 1 } },
 			{ key: { _computedAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 45 },
 			{ key: { 'loginToken': 1, 'logoutAt': 1, 'userId': 1, 'device.name': 1, 'device.os.name': 1, 'logintAt': -1 } },
-			{
-				key: {
-					'device.name': 'text',
-					'device.type': 'text',
-					'device.os.name': 'text',
-					'sessionId': 'text',
-					'userId': 'text',
-					'logintAt': -1,
-				},
-				weights: {
-					'device.name': 10,
-					'device.os.name': 10,
-					'device.type': 5,
-					'sessionId': 1,
-					'userId': 1,
-				},
-				name: 'text_search_w_weights',
-				background: true,
-			},
 		];
 	}
 
