@@ -281,7 +281,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 		this.logger.debug(`Room ${room._id} closed and timers set`);
 		this.logger.debug(`Room ${room._id} was closed at ${closeInfo.closedAt} (duration ${closeInfo.callDuration})`);
-		VoipRoom.closeByRoomId(room._id, closeInfo);
+		await VoipRoom.closeByRoomId(room._id, closeInfo);
 
 		return true;
 	}
