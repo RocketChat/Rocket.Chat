@@ -18,8 +18,6 @@ env:
   MONGO_URL: mongodb://localhost:27017/rocketchat
   MONGO_OPLOG_URL: mongodb://mongo:27017/local
   TOOL_NODE_FLAGS: --max_old_space_size=4096
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
   release-versions:
@@ -140,8 +138,9 @@ jobs:
       - name: TurboRepo local server
         uses: felixmosh/turborepo-gh-artifacts@v1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
       - name: Lint
         run: yarn lint --api="http://127.0.0.1:9080"
@@ -251,8 +250,9 @@ jobs:
       - name: TurboRepo local server
         uses: felixmosh/turborepo-gh-artifacts@v1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
       - name: Unit Test
         run: yarn testunit --api="http://127.0.0.1:9080"
@@ -410,8 +410,9 @@ jobs:
       - name: TurboRepo local server
         uses: felixmosh/turborepo-gh-artifacts@v1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
       - name: yarn install
         run: yarn
