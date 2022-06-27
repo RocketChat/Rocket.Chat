@@ -31,6 +31,7 @@ import { LivechatVisitorsRaw } from './LivechatVisitors';
 import { LoginServiceConfigurationRaw } from './LoginServiceConfiguration';
 import { MessagesRaw } from './Messages';
 import { ModalsRaw } from './Modals';
+import { ModalsDismissRaw } from './ModalsDismiss';
 import { NotificationQueueRaw } from './NotificationQueue';
 import { OAuthAppsRaw } from './OAuthApps';
 import { OEmbedCacheRaw } from './OEmbedCache';
@@ -147,6 +148,7 @@ export const PbxEvent = new PbxEventsRaw(db.collection('pbx_events'), trashColle
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(db.collection(`${prefix}livechat_agent_activity`), trashCollection);
 
 export const Modals = new ModalsRaw(db.collection(`${prefix}modals`), trashCollection);
+export const ModalsDismiss = new ModalsDismissRaw(db.collection(`${prefix}modals_dismiss`), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,

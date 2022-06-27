@@ -7,4 +7,8 @@ export type ModalsEndpoints = {
 		POST: (params: ModalsInsertProps) => { success: boolean };
 		DELETE: (params: ModalsProps) => { success: boolean };
 	};
+	'/v1/modals/dismiss': {
+		POST: (params: ModalsProps) => { success: boolean };
+		DELETE: (params: ModalsProps) => { success: boolean };
+	};
 };
