@@ -426,10 +426,23 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Sort_By',
 		});
 
-		this.add('Accounts_Default_User_Preferences_showMessageInMainThread', false, {
-			type: 'boolean',
+		this.add('Accounts_Default_User_Preferences_alsoSendThreadToChannel', 'default', {
+			type: 'select',
+			values: [
+				{
+					key: 'default',
+					i18nLabel: 'Default',
+				},
+				{
+					key: 'always',
+					i18nLabel: 'Always',
+				},
+				{
+					key: 'never',
+					i18nLabel: 'Never',
+				},
+			],
 			public: true,
-			i18nLabel: 'Show_Message_In_Main_Thread',
 		});
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
@@ -457,6 +470,7 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Enter_Behaviour',
 		});
+
 		this.add('Accounts_Default_User_Preferences_messageViewMode', 0, {
 			type: 'select',
 			values: [

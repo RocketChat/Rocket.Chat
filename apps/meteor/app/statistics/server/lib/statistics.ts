@@ -15,6 +15,7 @@ import {
 	Invites,
 	Uploads,
 	LivechatDepartment,
+	LivechatVisitors,
 	EmailInbox,
 	LivechatBusinessHours,
 	Messages as MessagesRaw,
@@ -22,7 +23,7 @@ import {
 	InstanceStatus,
 } from '@rocket.chat/models';
 
-import { Settings, Users, Rooms, Subscriptions, Messages, LivechatVisitors } from '../../../models/server';
+import { Settings, Users, Rooms, Subscriptions, Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
@@ -113,7 +114,7 @@ export const statistics = {
 		statistics.totalThreads = Messages.countThreads();
 
 		// livechat visitors
-		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
+		statistics.totalLivechatVisitors = await LivechatVisitors.find().count();
 
 		// livechat agents
 		statistics.totalLivechatAgents = Users.findAgents().count();

@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { Messages, LivechatRooms, LivechatVisitors } from '../../../models/server';
+import { Messages, LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	'livechat:registerGuest'({ token, name, email, department, customFields } = {}) {
-		const userId = Livechat.registerGuest.call(this, {
+	async 'livechat:registerGuest'({ token, name, email, department, customFields } = {}) {
+		const userId = await Livechat.registerGuest.call(this, {
 			token,
 			name,
 			email,
@@ -15,8 +16,8 @@ Meteor.methods({
 		// update visited page history to not expire
 		Messages.keepHistoryForToken(token);
 
-		const visitor = LivechatVisitors.getVisitorByToken(token, {
-			fields: {
+		const visitor = await LivechatVisitors.getVisitorByToken(token, {
+			projection: {
 				token: 1,
 				name: 1,
 				username: 1,
@@ -32,6 +33,7 @@ Meteor.methods({
 		});
 
 		if (customFields && customFields instanceof Array) {
+			// TODO: refactor to use normal await
 			customFields.forEach((customField) => {
 				if (typeof customField !== 'object') {
 					return;
@@ -39,7 +41,7 @@ Meteor.methods({
 
 				if (!customField.scope || customField.scope !== 'room') {
 					const { key, value, overwrite } = customField;
-					LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
+					Promise.await(LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite));
 				}
 			});
 		}

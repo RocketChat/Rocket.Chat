@@ -15,7 +15,7 @@ import { Logger } from '../../../../logger';
 const logger = new Logger('LivechatVideoCallApi');
 
 API.v1.addRoute('livechat/video.call/:token', {
-	get() {
+	async get() {
 		try {
 			check(this.urlParams, {
 				token: String,
@@ -27,7 +27,7 @@ API.v1.addRoute('livechat/video.call/:token', {
 
 			const { token } = this.urlParams;
 
-			const guest = findGuest(token);
+			const guest = await findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
@@ -40,8 +40,8 @@ API.v1.addRoute('livechat/video.call/:token', {
 					alias: 'video-call',
 				},
 			};
-			const { room } = getRoom({ guest, rid, roomInfo });
-			const config = Promise.await(settings());
+			const { room } = await getRoom({ guest, rid, roomInfo });
+			const config = await settings();
 			if (!config.theme || !config.theme.actionLinks || !config.theme.actionLinks.jitsi) {
 				throw new Meteor.Error('invalid-livechat-config');
 			}

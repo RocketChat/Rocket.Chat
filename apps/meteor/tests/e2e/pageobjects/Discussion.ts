@@ -27,11 +27,11 @@ export class Discussion extends BasePage {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Create"');
 	}
 
-	public discussionCreated(discussionName: string): Locator {
+	discussionCreated(discussionName: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item-title"] >> text='${discussionName}'`);
 	}
 
-	async createDiscussion(channelName: string, discussionName: string, message: string): Promise<void> {
+	async doCreateDiscussion(channelName: string, discussionName: string, message: string): Promise<void> {
 		await this.createDiscussionBtn.click();
 		await this.channelName.type(channelName);
 		await this.page.keyboard.press('Enter');

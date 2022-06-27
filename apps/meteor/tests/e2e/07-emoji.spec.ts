@@ -8,18 +8,15 @@ test.describe('[Emoji]', () => {
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 
-	test.beforeAll(async ({ browser, baseURL }) => {
-		const context = await browser.newContext();
-		const page = await context.newPage();
-		const URL = baseURL as string;
+	test.beforeAll(async ({ browser }) => {
+		const page = await browser.newPage();
 		loginPage = new LoginPage(page);
-		await loginPage.goto(URL);
-
-		await loginPage.login(adminLogin);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 
-		await sideNav.openChannel('general');
+		await page.goto('/');
+		await loginPage.doLogin(adminLogin);
+		await sideNav.doOpenChat('general');
 	});
 
 	test.describe('Render:', () => {
