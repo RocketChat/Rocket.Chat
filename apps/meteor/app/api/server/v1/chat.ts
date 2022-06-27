@@ -14,6 +14,8 @@ import {
 	isChatUpdateParamsPOST,
 	isChatReactParamsPOST,
 	isChatGetMessageReadReceiptsParamsGET,
+	isChatReportMessageParamsPOST,
+	isChatIgnoreUserParamsGET,
 } from '@rocket.chat/rest-typings';
 import { IMessage } from '@rocket.chat/core-typings';
 
@@ -388,17 +390,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.reportMessage',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatReportMessageParamsPOST,
+	},
 	{
 		post() {
 			const { messageId, description } = this.bodyParams;
-			if (!messageId) {
-				return API.v1.failure('The required "messageId" param is missing.');
-			}
-
-			if (!description) {
-				return API.v1.failure('The required "description" param is missing.');
-			}
 
 			Meteor.call('reportMessage', messageId, description);
 
@@ -409,7 +407,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.ignoreUser',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatIgnoreUserParamsGET,
+	},
 	{
 		get() {
 			const { rid, userId } = this.queryParams;
@@ -417,17 +418,9 @@ API.v1.addRoute(
 
 			ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
 
-			if (!rid || !rid.trim()) {
-				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
-			}
+			const result = Meteor.call('ignoreUser', { rid, userId, ignore });
 
-			if (!userId || !userId.trim()) {
-				throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
-			}
-
-			Meteor.runAsUser(this.userId, () => Meteor.call('ignoreUser', { rid, userId, ignore }));
-
-			return API.v1.success();
+			return API.v1.success(result);
 		},
 	},
 );

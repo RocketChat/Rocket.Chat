@@ -4,12 +4,12 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type ChatSyncMessagesParamsPOST = {
+export type ChatSyncMessagesParamsGET = {
 	roomId: string;
 	lastUpdate: string;
 };
 
-const ChatSyncMessagesParamsPostSchema = {
+const ChatSyncMessagesParamsGETSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -23,4 +23,4 @@ const ChatSyncMessagesParamsPostSchema = {
 	required: ['roomId', 'lastUpdate'],
 };
 
-export const isChatSyncMessagesParamsPOST = ajv.compile<ChatSyncMessagesParamsPOST>(ChatSyncMessagesParamsPostSchema);
+export const isChatSyncMessagesParamsGET = ajv.compile<ChatSyncMessagesParamsGET>(ChatSyncMessagesParamsGETSchema);

@@ -4,11 +4,11 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type ChatGetMessagesParamsGET = {
+export type ChatGetMessageParamsGET = {
 	msgId: string;
 };
 
-const ChatGetMessagesParamsGETSchema = {
+const ChatGetMessageParamsGETSchema = {
 	type: 'object',
 	properties: {
 		msgId: {
@@ -19,4 +19,4 @@ const ChatGetMessagesParamsGETSchema = {
 	required: ['msgId'],
 };
 
-export const isChatGetMessagesParamsGET = ajv.compile<ChatGetMessagesParamsGET>(ChatGetMessagesParamsGETSchema);
+export const isChatGetMessageParamsGET = ajv.compile<ChatGetMessageParamsGET>(ChatGetMessageParamsGETSchema);
