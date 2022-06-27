@@ -50,4 +50,4 @@ export const isIExtensionDetails = (prop: any): prop is IExtensionDetails =>
 	prop.extension !== undefined && prop.password !== undefined && prop.authtype !== undefined && prop.state !== undefined;
 
 export const isIRegistrationInfo = (prop: any): prop is IRegistrationInfo =>
-	prop.hasOwnProperty('host') && prop.hasOwnProperty('callServerConfig') && prop.hasOwnProperty('extensionDetails');
+	prop.hasOwnProperty('callServerConfig') && prop.hasOwnProperty('extensionDetails');
