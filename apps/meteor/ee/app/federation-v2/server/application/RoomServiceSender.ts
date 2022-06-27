@@ -247,7 +247,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 			if (await this.rocketRoomAdapter.isUserAlreadyJoined(internalRoomId, federatedInviteeUser.internalReference._id || '')) {
 				return;
 			}
-
+			await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 			await this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, rawInviteeId);
 			return;
 		}
@@ -292,13 +292,15 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 			await this.createFederatedUserIfNecessary(inviteeUsernameOnly, rawInviteeId, existsOnlyOnProxyServer);
 
 			const federatedInviteeUser = (await this.rocketUserAdapter.getFederatedUserByInternalUsername(inviteeUsernameOnly)) as FederatedUser;
+			
 			await this.bridge.createUser(
 				inviteeUsernameOnly,
 				federatedInviteeUser?.internalReference?.name as string,
 				this.rocketSettingsAdapter.getHomeServerDomain(),
 			);
-			await this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser.externalId);
-			await this.bridge.joinRoom(federatedRoom.externalId, federatedInviteeUser.externalId);
+			await this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser.externalId);		
+			await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
+			
 			return;
 		}
 

@@ -82,8 +82,6 @@ export class MatrixBridge implements IFederationBridge {
 		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})`});
 
 		return matrixUserId;
-
-		
 	}
 
 	public async createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[]): Promise<string> {
