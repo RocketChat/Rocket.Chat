@@ -1,5 +1,6 @@
 import { ICallerInfo, IMediaStreamRenderer, Operation, UserState, VoIPUserConfiguration } from '@rocket.chat/core-typings';
 import { Inviter, UserAgent } from 'sip.js';
+import { IncomingResponse } from 'sip.js/lib/core';
 
 import { VoIPUser } from '../../../../client/lib/voip/VoIPUser';
 
@@ -38,7 +39,18 @@ export class EEVoipClient extends VoIPUser {
 		this.session = inviter;
 		this.setupSessionEventHandlers(inviter);
 		this._opInProgress = Operation.OP_SEND_INVITE;
-		await inviter.invite();
+		await inviter.invite({
+			requestDelegate: {
+				onReject: (response: IncomingResponse): void => {
+					let reason = 'unknown';
+					if (response.message.reasonPhrase) {
+						reason = response.message.reasonPhrase;
+					}
+					console.error(response);
+					this.emit('callfailed', reason);
+				},
+			},
+		});
 		this._callState = 'OFFER_SENT';
 		const callerInfo: ICallerInfo = {
 			callerId: inviter.remoteIdentity.uri.user ? inviter.remoteIdentity.uri.user : '',

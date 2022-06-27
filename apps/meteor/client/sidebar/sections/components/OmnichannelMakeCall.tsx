@@ -29,6 +29,9 @@ export const OmnichannelMakeCall = (): ReactElement => {
 			return;
 		}
 		voipData.outboundDialer.makeCall('sip:70010@omni-asterisk.dev.rocket.chat');
+		voipData.outboundDialer.on('callfailed', (reason) => {
+			console.error(`reason = ${reason}`);
+		});
 	});
 
 	return <Sidebar.TopBar.Action {...voipCallIcon} onClick={makeCall} />;
