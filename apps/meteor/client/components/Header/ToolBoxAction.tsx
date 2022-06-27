@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 
 const ToolBoxAction: FC<any> = ({ id, icon, color, title, action, className, index, ...props }) => (
 	<IconButton
+		data-qa-id={`ToolBoxAction-${icon}`}
 		className={className}
 		onClick={action}
 		title={title}
