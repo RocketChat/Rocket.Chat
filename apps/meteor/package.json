@@ -14,7 +14,7 @@
 	],
 	"scripts": {
 		"start": "meteor",
-		"build:ci": "meteor build --server-only",
+		"build:ci": "METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --server-only",
 		"dev": "meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
 		"dsv": "meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
 		"ha": "meteor npm run ha:start",
@@ -29,7 +29,7 @@
 		"obj:dev": "TEST_MODE=true yarn dev",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
-		"typecheck": "cross-env NODE_OPTIONS=\"--max-old-space-size=8184\" tsc --noEmit --skipLibCheck",
+		"typecheck": "cross-env NODE_OPTIONS=\"--max-old-space-size=8184\" tsc --noEmit --skipLibCheck --verbose",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"coverage": "nyc -r html mocha --config ./.mocharc.js",
 		"test:playwright": "playwright test",
