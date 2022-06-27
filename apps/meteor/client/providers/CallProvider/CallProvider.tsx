@@ -22,7 +22,6 @@ import {
 	useStream,
 	useSetOutputMediaDevice,
 	useSetInputMediaDevice,
-	useDeviceConstraints,
 	Device,
 	useSetModal,
 } from '@rocket.chat/ui-contexts';
@@ -58,7 +57,6 @@ export const CallProvider: FC = ({ children }) => {
 	const subscribeToNotifyUser = useStream('notify-user');
 	const dispatchEvent = useEndpoint('POST', '/v1/voip/events');
 	const setModal = useSetModal();
-	const devicesConstraints = useDeviceConstraints();
 
 	const result = useVoipClient();
 	const user = useUser();
