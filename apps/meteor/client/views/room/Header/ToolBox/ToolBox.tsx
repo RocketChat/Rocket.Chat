@@ -91,6 +91,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 			})}
 			{actions.length > 6 && (
 				<Menu
+					data-qa-id='ToolBox-Menu'
 					tiny={!isMobile}
 					title={t('Options')}
 					maxHeight='initial'
