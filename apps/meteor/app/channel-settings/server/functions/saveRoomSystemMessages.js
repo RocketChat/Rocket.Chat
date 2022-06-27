@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 
-import { Rooms } from '../../../models';
+import { Rooms } from '../../../models/server';
 import { MessageTypesValues } from '../../../lib/lib/MessageTypes';
 
 export const saveRoomSystemMessages = function (rid, systemMessages) {

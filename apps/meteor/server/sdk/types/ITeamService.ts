@@ -23,8 +23,8 @@ export interface ITeamMemberParams {
 export interface IUserInfo {
 	_id: string;
 	username?: string;
-	name: string;
-	status: string;
+	name?: string;
+	status?: string;
 	settings?: Record<string, any>;
 }
 
@@ -112,4 +112,5 @@ export interface ITeamService {
 	removeAllMembersFromTeam(teamId: string): Promise<void>;
 	removeRolesFromMember(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<boolean>;
 	getStatistics(): Promise<ITeamStats>;
+	findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]>;
 }

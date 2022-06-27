@@ -1,6 +1,7 @@
+import { Settings } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
 import { LivechatInquiry } from '../../../app/models/server';
-import { Settings } from '../../../app/models/server/raw';
 
 function removeQueueTimeoutFromInquiries(): void {
 	LivechatInquiry.update(

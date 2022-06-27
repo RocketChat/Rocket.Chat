@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings';
-import { Users, LivechatDepartmentAgents } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Users, LivechatDepartmentAgents } from '../../../models/server';
 
 callbacks.add(
 	'livechat.beforeDelegateAgent',

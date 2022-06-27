@@ -12,7 +12,7 @@ import {
 	isVoipEventCallAbandoned,
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
+import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -22,9 +22,9 @@ import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
-import { imperativeModal } from '../../lib/imperativeModal';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
+import VoIPAgentProvider from '../VoIPAgentProvider';
 import { useVoipClient } from './hooks/useVoipClient';
 
 const startRingback = (user: IUser): void => {
@@ -45,6 +45,10 @@ export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
 	const subscribeToNotifyUser = useStream('notify-user');
 	const dispatchEvent = useEndpoint('POST', '/v1/voip/events');
+	const visitorEndpoint = useEndpoint('POST', '/v1/livechat/visitor');
+	const voipEndpoint = useEndpoint('GET', '/v1/voip/room');
+	const voipCloseRoomEndpoint = useEndpoint('POST', '/v1/voip/room.close');
+	const setModal = useSetModal();
 
 	const result = useVoipClient();
 	const user = useUser();
@@ -54,10 +58,29 @@ export const CallProvider: FC = ({ children }) => {
 
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
+	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
+
+	const closeRoom = useCallback(
+		async (data): Promise<void> => {
+			roomInfo &&
+				(await voipCloseRoomEndpoint({
+					rid: roomInfo.rid,
+					token: roomInfo.v.token || '',
+					options: { comment: data?.comment, tags: data?.tags },
+				}));
+			homeRoute.push({});
+
+			const queueAggregator = result.voipClient?.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.callEnded();
+			}
+		},
+		[homeRoute, result?.voipClient, roomInfo, voipCloseRoomEndpoint],
+	);
 
 	const openWrapUpModal = useCallback((): void => {
-		imperativeModal.open({ component: WrapUpCallModal });
-	}, []);
+		setModal(() => <WrapUpCallModal closeRoom={closeRoom} />);
+	}, [closeRoom, setModal]);
 
 	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
 
@@ -234,12 +257,6 @@ export const CallProvider: FC = ({ children }) => {
 		};
 	}, [onNetworkConnected, onNetworkDisconnected, result.voipClient]);
 
-	const visitorEndpoint = useEndpoint('POST', '/v1/livechat/visitor');
-	const voipEndpoint = useEndpoint('GET', '/v1/voip/room');
-	const voipCloseRoomEndpoint = useEndpoint('POST', '/v1/voip/room.close');
-
-	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
-
 	const openRoom = (rid: IVoipRoom['_id']): void => {
 		roomCoordinator.openRouteLink('v', { rid });
 	};
@@ -319,34 +336,24 @@ export const CallProvider: FC = ({ children }) => {
 				}
 				return '';
 			},
-			closeRoom: async ({ comment, tags }: { comment?: string; tags?: string[] }): Promise<void> => {
-				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', options: { comment, tags } }));
-				homeRoute.push({});
-				const queueAggregator = voipClient.getAggregator();
-				if (queueAggregator) {
-					queueAggregator.callEnded();
-				}
-			},
+			closeRoom,
 			openWrapUpModal,
 		};
-	}, [
-		voipEnabled,
-		user,
-		result,
-		roomInfo,
-		queueCounter,
-		queueName,
-		openWrapUpModal,
-		visitorEndpoint,
-		voipEndpoint,
-		voipCloseRoomEndpoint,
-		homeRoute,
-	]);
+	}, [voipEnabled, user, result, roomInfo, queueCounter, queueName, closeRoom, openWrapUpModal, visitorEndpoint, voipEndpoint]);
 
 	return (
 		<CallContext.Provider value={contextValue}>
-			{children}
-			{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
+			{contextValue.ready ? (
+				<VoIPAgentProvider>
+					{children}
+					{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
+				</VoIPAgentProvider>
+			) : (
+				<>
+					{children}
+					{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
+				</>
+			)}
 		</CallContext.Provider>
 	);
 };

@@ -1,9 +1,9 @@
 import { check, Match } from 'meteor/check';
+import { EmailInbox } from '@rocket.chat/models';
 
 import { API } from '../api';
 import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailInbox } from '../lib/emailInbox';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
-import { EmailInbox } from '../../../models/server/raw';
 import Users from '../../../models/server/models/Users';
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
 
