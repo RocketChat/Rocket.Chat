@@ -6,7 +6,7 @@ const ajv = new Ajv({
 
 export type AutotranslateTranslateMessageParamsPOST = {
 	messageId: string;
-	targetLanguage: string;
+	targetLanguage?: string;
 };
 
 const AutotranslateTranslateMessageParamsPostSchema = {
@@ -17,9 +17,10 @@ const AutotranslateTranslateMessageParamsPostSchema = {
 		},
 		targetLanguage: {
 			type: 'string',
+			nullable: true,
 		},
 	},
-	required: ['messageId', 'targetLanguage'],
+	required: ['messageId'],
 	additionalProperties: false,
 };
 

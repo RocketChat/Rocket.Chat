@@ -21,7 +21,7 @@ API.v1.addRoute(
 				return API.v1.failure('AutoTranslate is disabled.');
 			}
 			const { targetLanguage } = this.queryParams;
-			const languages = Meteor.runAsUser(this.userId, () => Meteor.call('autoTranslate.getSupportedLanguages', targetLanguage));
+			const languages = Meteor.call('autoTranslate.getSupportedLanguages', targetLanguage);
 
 			return API.v1.success({ languages: languages || [] });
 		},
@@ -57,9 +57,7 @@ API.v1.addRoute(
 				return API.v1.failure('The bodyParam "autoTranslateLanguage" must be a string.');
 			}
 
-			Meteor.runAsUser(this.userId, () =>
-				Meteor.call('autoTranslate.saveSettings', roomId, field, value === true ? '1' : String(value).valueOf(), { defaultLanguage }),
-			);
+			Meteor.call('autoTranslate.saveSettings', roomId, field, value === true ? '1' : String(value).valueOf(), { defaultLanguage });
 
 			return API.v1.success();
 		},
@@ -86,7 +84,7 @@ API.v1.addRoute(
 				return API.v1.failure('Message not found.');
 			}
 
-			const translatedMessage = Meteor.runAsUser(this.userId, () => Meteor.call('autoTranslate.translateMessage', message, targetLanguage));
+			const translatedMessage = Meteor.call('autoTranslate.translateMessage', message, targetLanguage);
 
 			return API.v1.success({ message: translatedMessage });
 		},

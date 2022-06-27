@@ -6,8 +6,8 @@ const ajv = new Ajv({
 
 export type AutotranslateSaveSettingsParamsPOST = {
 	roomId: string;
-	field: string;
-	value: boolean;
+	field: 'autoTranslate' | 'autoTranslateLanguage';
+	value: boolean | string;
 	defaultLanguage?: string;
 };
 
@@ -21,7 +21,7 @@ const AutotranslateSaveSettingsParamsPostSchema = {
 			enum: ['autoTranslate', 'autoTranslateLanguage'],
 		},
 		value: {
-			type: 'boolean',
+			"type": ["boolean", "string"]
 		},
 		defaultLanguage: {
 			type: 'string',

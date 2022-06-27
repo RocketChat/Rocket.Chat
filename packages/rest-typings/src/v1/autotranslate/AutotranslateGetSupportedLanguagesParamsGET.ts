@@ -1,4 +1,3 @@
-import type { ISupportedLanguage } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -7,7 +6,6 @@ const ajv = new Ajv({
 
 export type AutotranslateGetSupportedLanguagesParamsGET = {
 	targetLanguage: string;
-	languages: ISupportedLanguage[];
 };
 
 const AutotranslateGetSupportedLanguagesParamsGETSchema = {
@@ -16,23 +14,8 @@ const AutotranslateGetSupportedLanguagesParamsGETSchema = {
 		targetLanguage: {
 			type: 'string',
 		},
-		languages: {
-			type: 'array',
-			items: {
-				type: 'object',
-				properties: {
-					language: {
-						type: 'string',
-					},
-					name: {
-						type: 'string',
-					},
-				},
-				required: ['language', 'name'],
-			},
-		},
 	},
-	required: ['targetLanguage', 'languages'],
+	required: ['targetLanguage'],
 	additionalProperties: false,
 };
 

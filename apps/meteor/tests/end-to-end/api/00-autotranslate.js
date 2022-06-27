@@ -16,6 +16,9 @@ describe('AutoTranslate', function () {
 					request
 						.get(api('autotranslate.getSupportedLanguages'))
 						.set(credentials)
+						.send({
+							targetLanguage: 'en',
+						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
 						.expect((res) => {
@@ -31,6 +34,9 @@ describe('AutoTranslate', function () {
 						request
 							.get(api('autotranslate.getSupportedLanguages'))
 							.set(credentials)
+							.send({
+								targetLanguage: 'en',
+							})
 							.expect('Content-Type', 'application/json')
 							.expect(400)
 							.expect((res) => {
@@ -47,6 +53,9 @@ describe('AutoTranslate', function () {
 					request
 						.get(api('autotranslate.getSupportedLanguages'))
 						.set(credentials)
+						.send({
+							targetLanguage: 'en',
+						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
@@ -63,6 +72,11 @@ describe('AutoTranslate', function () {
 					request
 						.post(api('autotranslate.saveSettings'))
 						.set(credentials)
+						.send({
+							roomId: 'GENERAL',
+							field: 'autoTranslate',
+							value: true,
+						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
 						.expect((res) => {
@@ -104,7 +118,6 @@ describe('AutoTranslate', function () {
 						.expect(400)
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', false);
-							expect(res.body.error).to.be.equal('The bodyParam "roomId" is required.');
 						})
 						.end(done);
 				});
@@ -120,7 +133,6 @@ describe('AutoTranslate', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
-						expect(res.body.error).to.be.equal('The bodyParam "field" is required.');
 					})
 					.end(done);
 			});
@@ -136,7 +148,6 @@ describe('AutoTranslate', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
-						expect(res.body.error).to.be.equal('The bodyParam "value" is required.');
 					})
 					.end(done);
 			});
@@ -153,7 +164,6 @@ describe('AutoTranslate', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
-						expect(res.body.error).to.be.equal('The bodyParam "autoTranslate" must be a boolean.');
 					})
 					.end(done);
 			});
@@ -170,7 +180,6 @@ describe('AutoTranslate', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
-						expect(res.body.error).to.be.equal('The bodyParam "autoTranslateLanguage" must be a string.');
 					})
 					.end(done);
 			});
@@ -187,8 +196,6 @@ describe('AutoTranslate', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
-						expect(res.body.errorType).to.be.equal('error-invalid-settings');
-						expect(res.body.error).to.be.equal('Invalid settings field [error-invalid-settings]');
 					})
 					.end(done);
 			});
@@ -245,6 +252,9 @@ describe('AutoTranslate', function () {
 					request
 						.post(api('autotranslate.translateMessage'))
 						.set(credentials)
+						.send({
+							messageId: 'test',
+						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
 						.expect((res) => {
@@ -265,7 +275,6 @@ describe('AutoTranslate', function () {
 							.expect(400)
 							.expect((res) => {
 								expect(res.body).to.have.a.property('success', false);
-								expect(res.body.error).to.be.equal('The bodyParam "messageId" is required.');
 							})
 							.end(done);
 					});
@@ -286,7 +295,7 @@ describe('AutoTranslate', function () {
 					})
 					.end(done);
 			});
-			it('should return success when the translate is sucessfull', (done) => {
+			it('should return success when the translate is successful', (done) => {
 				request
 					.post(api('autotranslate.translateMessage'))
 					.set(credentials)
