@@ -44,7 +44,7 @@ const getInitialValues = (user: IUser | null): AccountFormValues => ({
 	password: '',
 	confirmationPassword: '',
 	avatar: '' as AvatarObject,
-	url: user?.avatarUrl ?? '',
+	url: '',
 	statusText: user?.statusText ?? '',
 	statusType: user?.status ?? '',
 	bio: user?.bio ?? '',
