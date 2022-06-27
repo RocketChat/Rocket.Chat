@@ -262,7 +262,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 			return;
 		}
 
-		this.bridge
+		await this.bridge
 			.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser?.externalId as string)
 			.catch(() => {
 				this.rocketNotificationAdapter.notifyWithEphemeralMessage(
@@ -292,7 +292,6 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 			await this.createFederatedUserIfNecessary(inviteeUsernameOnly, rawInviteeId, existsOnlyOnProxyServer);
 
 			const federatedInviteeUser = (await this.rocketUserAdapter.getFederatedUserByInternalUsername(inviteeUsernameOnly)) as FederatedUser;
-
 			await this.bridge.createUser(
 				inviteeUsernameOnly,
 				federatedInviteeUser?.internalReference?.name as string,
@@ -308,8 +307,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 		await this.createFederatedUserIfNecessary(normalizedInviteeId, rawInviteeId, existsOnlyOnProxyServer);
 
 		const federatedInviteeUser = (await this.rocketUserAdapter.getFederatedUserByInternalUsername(normalizedInviteeId)) as FederatedUser;
-
-		this.bridge
+		await this.bridge
 			.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser?.externalId as string)
 			.catch(() => {
 				this.rocketNotificationAdapter.notifyWithEphemeralMessage(

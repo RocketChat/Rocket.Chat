@@ -1,4 +1,4 @@
-import { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
+import { AppServiceOutput, Bridge, MatrixUser } from '@rocket.chat/forked-matrix-appservice-bridge';
 
 import { IFederationBridge } from '../../domain/IFederationBridge';
 import { bridgeLogger } from '../rocket-chat/adapters/logger';
@@ -78,12 +78,12 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async createUser(username: string, name: string, domain: string): Promise<string> {
 		const matrixUserId = `@${username?.toLowerCase()}:${domain}`;
-		const intent = this.bridgeInstance.getIntent(matrixUserId);
-
-		await intent.ensureProfile(name);
-		await intent.setDisplayName(`${username} (${name})`);
+		const newUser = new MatrixUser(matrixUserId);
+		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})`});
 
 		return matrixUserId;
+
+		
 	}
 
 	public async createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[]): Promise<string> {
