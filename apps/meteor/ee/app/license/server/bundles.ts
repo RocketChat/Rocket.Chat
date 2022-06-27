@@ -3,6 +3,7 @@ export type BundleFeature =
 	| 'canned-responses'
 	| 'ldap-enterprise'
 	| 'livechat-enterprise'
+	| 'voip-enterprise'
 	| 'omnichannel-mobile-enterprise'
 	| 'engagement-dashboard'
 	| 'push-privacy'
@@ -21,6 +22,7 @@ const bundles: IBundle = {
 		'canned-responses',
 		'ldap-enterprise',
 		'livechat-enterprise',
+		'voip-enterprise',
 		'omnichannel-mobile-enterprise',
 		'engagement-dashboard',
 		'push-privacy',

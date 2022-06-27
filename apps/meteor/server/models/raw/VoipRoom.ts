@@ -1,3 +1,4 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IRoomClosingInfo, IVoipRoom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IVoipRoomModel } from '@rocket.chat/model-typings';
 import type { Collection, Cursor, Db, FilterQuery, FindOneOptions, WithoutProjection, WriteOpResult } from 'mongodb';
@@ -114,6 +115,8 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		tags,
 		queue,
 		visitorId,
+		direction,
+		roomName,
 		options = {},
 	}: {
 		agents?: string[];
@@ -123,6 +126,8 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		tags?: string[];
 		queue?: string;
 		visitorId?: string;
+		direction?: IVoipRoom['direction'];
+		roomName?: string;
 		options?: {
 			sort?: Record<string, unknown>;
 			count?: number;
@@ -166,6 +171,12 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		}
 		if (queue) {
 			query.queue = queue;
+		}
+		if (direction) {
+			query.direction = direction;
+		}
+		if (roomName) {
+			query.name = new RegExp(escapeRegExp(roomName), 'i');
 		}
 
 		return this.find(query, {
