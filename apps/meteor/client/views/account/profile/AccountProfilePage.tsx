@@ -258,7 +258,7 @@ const AccountProfilePage = (): ReactElement => {
 							{t('Logout_Others')}
 						</Button>
 						{allowDeleteOwnAccount && (
-							<Button secondaryDanger onClick={handleDeleteOwnAccount}>
+							<Button danger onClick={handleDeleteOwnAccount}>
 								<Icon name='trash' size='x20' mie='x4' />
 								{t('Delete_my_account')}
 							</Button>
