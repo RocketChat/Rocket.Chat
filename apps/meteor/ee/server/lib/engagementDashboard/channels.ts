@@ -1,7 +1,7 @@
 import moment from 'moment';
 import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive } from './date';
 
 export const findAllChannelsWithNumberOfMessages = async ({

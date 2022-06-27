@@ -1,4 +1,4 @@
-import { FederationKeys } from '../../../models/server/raw';
+import { FederationKeys } from '@rocket.chat/models';
 
 // Create key pair if needed
 (async () => {
