@@ -1,3 +1,7 @@
+/**
+ * This file is sample code to use outbound calling.
+ * Once the dialpad is in-place, this file should be removed.
+ */
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement } from 'react';

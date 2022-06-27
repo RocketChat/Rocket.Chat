@@ -64,6 +64,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} onClick={(): void => handleRoute('queue')} />}
 				{isCallEnabled && <OmnichannelCallToggle />}
 				<Sidebar.TopBar.Action {...availableIcon} onClick={handleAvailableStatusChange} />
+				{/* Remove below line and the component OmnichannelMakeCall once the dialpad is in place */}
 				{isCallEnabled && isCallReady && isEnterprise && <OmnichannelMakeCall />}
 				{hasPermission && <Sidebar.TopBar.Action {...directoryIcon} onClick={(): void => handleRoute('directory')} />}
 			</Sidebar.TopBar.Actions>

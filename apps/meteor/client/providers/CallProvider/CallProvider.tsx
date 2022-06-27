@@ -87,21 +87,26 @@ export const CallProvider: FC = ({ children }) => {
 			if (!user) {
 				return '';
 			}
-			const { visitor } = await visitorEndpoint({
-				visitor: {
-					token: Random.id(),
-					phone: caller.callerId,
-					name: caller.callerName || caller.callerId,
-				},
-			});
-			const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
-			openRoom(voipRoom.room._id);
-			voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
-			const queueAggregator = result.voipClient?.getAggregator();
-			if (queueAggregator) {
-				queueAggregator.callStarted();
+			try {
+				const { visitor } = await visitorEndpoint({
+					visitor: {
+						token: Random.id(),
+						phone: caller.callerId,
+						name: caller.callerName || caller.callerId,
+					},
+				});
+				const voipRoom = await voipEndpoint({ token: visitor.token, agentId: user._id });
+				openRoom(voipRoom.room._id);
+				voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
+				const queueAggregator = result.voipClient?.getAggregator();
+				if (queueAggregator) {
+					queueAggregator.callStarted();
+				}
+				return voipRoom.room._id;
+			} catch (error) {
+				console.error(`Error while creating a visitor ${error}`);
+				return '';
 			}
-			return voipRoom.room._id;
 		},
 		[result.voipClient, setRoomInfo, user, visitorEndpoint, voipEndpoint],
 	);
@@ -358,26 +363,7 @@ export const CallProvider: FC = ({ children }) => {
 				reject: (): Promise<void> => voipClient.rejectCall(),
 			},
 			openRoom,
-			createRoom: async (caller: ICallerInfo): Promise<IVoipRoom['_id']> => {
-				if (user) {
-					const { visitor } = await visitorEndpoint({
-						visitor: {
-							token: Random.id(),
-							phone: caller.callerId,
-							name: caller.callerName || caller.callerId,
-						},
-					});
-					const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
-					openRoom(voipRoom.room._id);
-					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
-					const queueAggregator = voipClient.getAggregator();
-					if (queueAggregator) {
-						queueAggregator.callStarted();
-					}
-					return voipRoom.room._id;
-				}
-				return '';
-			},
+			createRoom,
 			closeRoom: async ({ comment, tags }: { comment?: string; tags?: string[] }): Promise<void> => {
 				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', options: { comment, tags } }));
 				homeRoute.push({});
@@ -388,19 +374,7 @@ export const CallProvider: FC = ({ children }) => {
 			},
 			openWrapUpModal,
 		};
-	}, [
-		voipEnabled,
-		user,
-		result,
-		roomInfo,
-		queueCounter,
-		queueName,
-		openWrapUpModal,
-		visitorEndpoint,
-		voipEndpoint,
-		voipCloseRoomEndpoint,
-		homeRoute,
-	]);
+	}, [voipEnabled, user, result, roomInfo, queueCounter, queueName, createRoom, openWrapUpModal, voipCloseRoomEndpoint, homeRoute]);
 
 	return (
 		<CallContext.Provider value={contextValue}>
