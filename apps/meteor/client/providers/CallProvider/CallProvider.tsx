@@ -84,7 +84,7 @@ export const CallProvider: FC = ({ children }) => {
 		if (!result.voipClient) {
 			return;
 		}
-		const constraints = devicesConstraints;
+		const constraints = { audio: { deviceId: { exact: selectedAudioDevice.id } } };
 
 		// TODO: Migrate the classes that manage MediaStream to a more react based approach (using contexts/providers perhaps)
 		// For now the MediaStream management is very coupled with the VoIP client,
