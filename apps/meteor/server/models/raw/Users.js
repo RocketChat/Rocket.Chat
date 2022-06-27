@@ -1012,7 +1012,7 @@ export class UsersRaw extends BaseRaw {
 			],
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findActiveUsersTOTPEnable(options) {

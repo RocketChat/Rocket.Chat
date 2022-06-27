@@ -16,23 +16,21 @@ export const findAllDepartmentsAvailable = async (uid, unitId, offset, count, te
 		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId: uid });
 	}
 
-	const cursor = LivechatDepartment.find(query, { limit: count, offset });
+	const { cursor, totalCount: total } = await LivechatDepartment.findPaginated(query, { limit: count, offset });
 
 	const departments = await cursor.toArray();
-	const total = await cursor.count();
 
 	return { departments, total };
 };
 
 export const findAllDepartmentsByUnit = async (unitId, offset, count) => {
-	const cursor = LivechatDepartment.find(
+	const { cursor, totalCount: total } = await LivechatDepartment.findPaginated(
 		{
 			ancestors: { $in: [unitId] },
 		},
 		{ limit: count, offset },
 	);
 
-	const total = await cursor.count();
 	const departments = await cursor.toArray();
 
 	return { departments, total };

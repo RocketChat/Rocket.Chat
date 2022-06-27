@@ -218,24 +218,25 @@ API.v1.addRoute(
 
 			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
 
-			const files = (
-				await Uploads.find<IUpload & { userId: string }>(ourQuery, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-					projection: fields,
-				}).toArray()
-			).map((file): IImFilesObject | (IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }) => {
-				if (file.userId) {
-					return this.insertUserObject<IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }>({
-						object: { ...file },
-						userId: file.userId,
-					});
-				}
-				return file;
+			const { cursor, totalCount: total } = await Uploads.findPaginated<IUpload & { userId: string }>(ourQuery, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
 			});
 
-			const total = await Uploads.find(ourQuery).count();
+			const files = (await cursor.toArray()).map(
+				(file): IImFilesObject | (IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }) => {
+					if (file.userId) {
+						return this.insertUserObject<IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }>({
+							object: { ...file },
+							userId: file.userId,
+						});
+					}
+					return file;
+				},
+			);
+
 			return API.v1.success({
 				files,
 				count: files.length,
@@ -355,18 +356,21 @@ API.v1.addRoute(
 
 			const ourQuery = { rid: room._id, ...query };
 			const sortObj = { ts: sort?.ts ?? -1 };
-			const messages = await Messages.find(ourQuery, {
+
+			const { cursor, totalCount: total } = await Messages.findPaginated(ourQuery, {
 				sort: sortObj,
 				skip: offset,
 				limit: count,
 				...(fields && { projection: fields }),
-			}).toArray();
+			});
+
+			const messages = await cursor.toArray();
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
-				total: await Messages.find(ourQuery).count(),
+				total,
 			});
 		},
 	},
@@ -407,17 +411,18 @@ API.v1.addRoute(
 			const { sort, fields, query } = this.parseJsonQuery();
 			const ourQuery = Object.assign({}, query, { rid: room._id });
 
-			const msgs = await Messages.find<IMessage>(ourQuery, {
+			const { cursor, totalCount: total } = await Messages.findPaginated<IMessage>(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
 				projection: fields,
-			}).toArray();
+			});
+
+			const msgs = await cursor.toArray();
 
 			if (!msgs) {
 				throw new Meteor.Error('error-no-messages', 'No messages found');
 			}
-			const total = await Messages.find(ourQuery).count();
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(msgs, this.userId),
@@ -443,7 +448,7 @@ API.v1.addRoute(
 				.map((item) => item.rid)
 				.toArray();
 
-			const rooms = Rooms.find(
+			const { cursor, totalCount: total } = await Rooms.findPaginated(
 				{ type: 'd', _id: { $in: subscriptions } },
 				{
 					sort,
@@ -451,9 +456,10 @@ API.v1.addRoute(
 					limit: count,
 					projection: fields,
 				},
-			).map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId));
+			);
 
-			const total = await rooms.count();
+			const rooms = cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId));
+
 			const ims = await rooms.toArray();
 
 			return API.v1.success({
@@ -480,20 +486,20 @@ API.v1.addRoute(
 
 			const ourQuery = { ...query, t: 'd' } as FilterQuery<IRoom>;
 
-			const rooms = await Rooms.find(ourQuery, {
+			const { cursor, totalCount: total } = await Rooms.findPaginated(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 				projection: fields,
-			})
-				.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId))
-				.toArray();
+			});
+
+			const rooms = await cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray();
 
 			return API.v1.success({
 				ims: rooms,
 				offset,
 				count: rooms.length,
-				total: await Rooms.find(ourQuery).count(),
+				total,
 			});
 		},
 	},

@@ -1,5 +1,5 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import LivechatPriority from '@rocket.chat/models';
+import { LivechatPriority } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 
@@ -12,13 +12,11 @@ export async function findPriorities({ userId, text, pagination: { offset, count
 
 	const query = { ...(text && { $or: [{ name: filterReg }, { description: filterReg }] }) };
 
-	const cursor = LivechatPriority.find(query, {
+	const { cursor, totalCount: total } = await LivechatPriority.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
-
-	const total = await cursor.count();
 
 	const priorities = await cursor.toArray();
 

@@ -1,5 +1,5 @@
 import type { ITeam, RocketChatRecordDeleted, TEAM_TYPE } from '@rocket.chat/core-typings';
-import type { ITeamModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ITeamModel } from '@rocket.chat/model-typings';
 import { getCollectionName } from '@rocket.chat/models';
 import type {
 	Collection,
@@ -52,10 +52,22 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		query?: FilterQuery<ITeam>,
 	): Cursor<P> | Cursor<ITeam> {
 		if (options === undefined) {
-			return this.col.find({ _id: { $in: ids }, ...query });
+			return this.find({ _id: { $in: ids }, ...query });
 		}
 
-		return this.col.find({ _id: { $in: ids }, ...query }, options);
+		return this.find({ _id: { $in: ids }, ...query }, options);
+	}
+
+	findByIdsPaginated(
+		ids: Array<string>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeam>>,
+		query?: FilterQuery<ITeam>,
+	): FindPaginated<Cursor<ITeam>> {
+		if (options === undefined) {
+			return this.findPaginated({ _id: { $in: ids }, ...query });
+		}
+
+		return this.findPaginated({ _id: { $in: ids }, ...query }, options);
 	}
 
 	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE): Cursor<ITeam>;

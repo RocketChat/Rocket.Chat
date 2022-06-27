@@ -297,7 +297,7 @@ export async function exportRoomMessages(
 		readPreference: readSecondaryPreferred(Messages.model.rawDatabase()),
 	});
 
-	const total = await cursor.count();
+	const total = await Messages.model.rawCollection().count(query);
 	const results = await cursor.toArray();
 
 	const result = {

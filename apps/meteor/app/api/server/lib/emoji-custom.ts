@@ -14,13 +14,11 @@ export async function findEmojisCustom({
 	offset: any;
 	total: number;
 }> {
-	const cursor = EmojiCustom.find(query, {
+	const { cursor, totalCount: total } = await EmojiCustom.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
-
-	const total = await cursor.count();
 
 	const emojis = await cursor.toArray();
 

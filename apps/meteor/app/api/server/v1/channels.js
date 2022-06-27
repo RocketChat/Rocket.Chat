@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
-import { Integrations, Uploads } from '@rocket.chat/models';
+import { Integrations, Uploads, Messages as MessagesRaw } from '@rocket.chat/models';
 
 import { Rooms, Subscriptions, Messages, Users } from '../../../models/server';
 import { canAccessRoom, hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
@@ -271,7 +271,7 @@ API.v1.addRoute(
 	'channels.files',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const findResult = findChannelByIdOrName({
 				params: this.requestParams(),
 				checkedArchived: false,
@@ -292,20 +292,20 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
-			const files = Promise.await(
-				Uploads.find(ourQuery, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-					fields,
-				}).toArray(),
-			);
+			const { cursor, totalCount: total } = await Uploads.findPaginated(ourQuery, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
+			});
+
+			const files = await cursor.map(addUserObjectToEveryObject).toArray();
 
 			return API.v1.success({
-				files: files.map(addUserObjectToEveryObject),
+				files,
 				count: files.length,
 				offset,
-				total: Promise.await(Uploads.find(ourQuery).count()),
+				total,
 			});
 		},
 	},
@@ -315,7 +315,7 @@ API.v1.addRoute(
 	'channels.getIntegrations',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (
 				!hasAtLeastOnePermission(this.userId, [
 					'manage-outgoing-integrations',
@@ -351,15 +351,15 @@ API.v1.addRoute(
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 
 			ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
-			const cursor = Integrations.find(ourQuery, {
+
+			const { cursor, totalCount: total } = await Integrations.findPaginated(ourQuery, {
 				sort: sort || { _createdAt: 1 },
 				skip: offset,
 				limit: count,
 				projection,
 			});
 
-			const integrations = Promise.await(cursor.toArray());
-			const total = Promise.await(cursor.count());
+			const integrations = await cursor.toArray();
 
 			return API.v1.success({
 				integrations,
@@ -914,7 +914,7 @@ API.v1.addRoute(
 	'channels.anonymousread',
 	{ authRequired: false },
 	{
-		get() {
+		async get() {
 			const findResult = findChannelByIdOrName({
 				params: this.requestParams(),
 				checkedArchived: false,
@@ -930,15 +930,14 @@ API.v1.addRoute(
 				});
 			}
 
-			const cursor = Messages.find(ourQuery, {
+			const { cursor, totalCount: total } = await MessagesRaw.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			});
 
-			const total = cursor.count();
-			const messages = cursor.fetch();
+			const messages = await cursor.toArray();
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),

@@ -12,7 +12,7 @@ export async function findRooms({
 	onhold,
 	options: { offset, count, fields, sort },
 }) {
-	const cursor = LivechatRooms.findRoomsWithCriteria({
+	const { cursor, totalCount: total } = await LivechatRooms.findRoomsWithCriteria({
 		agents,
 		roomName,
 		departmentId,
@@ -29,8 +29,6 @@ export async function findRooms({
 			fields,
 		},
 	});
-
-	const total = await cursor.count();
 
 	const rooms = await cursor.toArray();
 

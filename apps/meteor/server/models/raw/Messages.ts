@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, IMessage, IRoom, IUser, MessageTypesValues, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IMessagesModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import { getCollectionName } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -25,28 +25,28 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		username: IUser['username'],
 		rid: IRoom['_id'],
 		options: WithoutProjection<FindOneOptions<IMessage>>,
-	): Cursor<IMessage> {
+	): FindPaginated<Cursor<IMessage>> {
 		const query: FilterQuery<IMessage> = {
 			'_hidden': { $ne: true },
 			'mentions.username': username,
 			rid,
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findStarredByUserAtRoom(
 		userId: IUser['_id'],
 		roomId: IRoom['_id'],
 		options: WithoutProjection<FindOneOptions<IMessage>>,
-	): Cursor<IMessage> {
+	): FindPaginated<Cursor<IMessage>> {
 		const query: FilterQuery<IMessage> = {
 			'_hidden': { $ne: true },
 			'starred._id': userId,
 			'rid': roomId,
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findByRoomIdAndType(
@@ -62,14 +62,14 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findSnippetedByRoom(roomId: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
+	findSnippetedByRoom(roomId: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): FindPaginated<Cursor<IMessage>> {
 		const query: FilterQuery<IMessage> = {
 			_hidden: { $ne: true },
 			snippeted: true,
 			rid: roomId,
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	// TODO: do we need this? currently not used anywhere
@@ -79,14 +79,18 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
+	findDiscussionsByRoomAndText(
+		rid: IRoom['_id'],
+		text: string,
+		options: WithoutProjection<FindOneOptions<IMessage>>,
+	): FindPaginated<Cursor<IMessage>> {
 		const query: FilterQuery<IMessage> = {
 			rid,
 			drid: { $exists: true },
 			msg: new RegExp(escapeRegExp(text), 'i'),
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findAllNumberOfTransferredRooms({
@@ -219,8 +223,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findLivechatClosedMessages(rid: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
-		return this.find(
+	findLivechatClosedMessages(rid: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): FindPaginated<Cursor<IMessage>> {
+		return this.findPaginated(
 			{
 				rid,
 				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],

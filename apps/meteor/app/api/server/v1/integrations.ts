@@ -55,7 +55,7 @@ API.v1.addRoute(
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 			const ourQuery = Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
 
-			const cursor = IntegrationHistory.find(ourQuery, {
+			const { cursor, totalCount: total } = await IntegrationHistory.findPaginated(ourQuery, {
 				sort: sort || { _updatedAt: -1 },
 				skip: offset,
 				limit: count,
@@ -63,7 +63,6 @@ API.v1.addRoute(
 			});
 
 			const history = await cursor.toArray();
-			const total = await cursor.count();
 
 			return API.v1.success({
 				history,
@@ -80,7 +79,7 @@ API.v1.addRoute(
 	'integrations.list',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (
 				!hasAtLeastOnePermission(this.userId, [
 					'manage-outgoing-integrations',
@@ -96,16 +95,15 @@ API.v1.addRoute(
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 
 			const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query);
-			const cursor = Integrations.find(ourQuery, {
+
+			const { cursor, totalCount: total } = await Integrations.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
 				projection,
 			});
 
-			const total = Promise.await(cursor.count());
-
-			const integrations = Promise.await(cursor.toArray());
+			const integrations = await cursor.toArray();
 
 			return API.v1.success({
 				integrations,

@@ -48,6 +48,11 @@ export type InsertionModel<T> = EnhancedOmit<ModelOptionalId<T>, '_updatedAt'> &
 	_updatedAt?: Date;
 };
 
+export type FindPaginated<C> = Promise<{
+	cursor: C;
+	totalCount: number;
+}>;
+
 export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 	col: Collection<T>;
 
@@ -65,6 +70,9 @@ export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 	find(query?: FilterQuery<T>): Cursor<ResultFields<T, C>>;
 	find(query: FilterQuery<T>, options: WithoutProjection<FindOneOptions<T>>): Cursor<ResultFields<T, C>>;
 	find<P = T>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P>;
+	findPaginated(query?: FilterQuery<T>): FindPaginated<Cursor<ResultFields<T, C>>>;
+	findPaginated(query: FilterQuery<T>, options: WithoutProjection<FindOneOptions<T>>): FindPaginated<Cursor<ResultFields<T, C>>>;
+	findPaginated<P = T>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): FindPaginated<Cursor<P>>;
 	update(
 		filter: FilterQuery<T>,
 		update: UpdateQuery<T> | Partial<T>,

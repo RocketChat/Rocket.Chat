@@ -15,22 +15,24 @@ import { API, ResultFor } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
 
-const fetchSettings = async (
+async function fetchSettings(
 	query: Parameters<typeof Settings.find>[0],
 	sort: Parameters<typeof Settings.find>[1]['sort'],
 	offset: Parameters<typeof Settings.find>[1]['skip'],
 	count: Parameters<typeof Settings.find>[1]['limit'],
 	fields: Parameters<typeof Settings.find>[1]['projection'],
-): Promise<ISetting[]> => {
-	const settings = (await Settings.find(query, {
+): Promise<{ settings: ISetting[]; totalCount: number }> {
+	const { cursor, totalCount } = await Settings.findPaginated(query, {
 		sort: sort || { _id: 1 },
 		skip: offset,
 		limit: count,
 		projection: { _id: 1, value: 1, enterprise: 1, invalidValue: 1, modules: 1, ...fields },
-	}).toArray()) as unknown as ISetting[];
+	});
+
+	const settings = await cursor.toArray();
 
 	SettingsEvents.emit('fetch-settings', settings);
-	return settings;
+	return { settings, totalCount };
 };
 
 // settings endpoints
@@ -48,13 +50,13 @@ API.v1.addRoute(
 				public: true,
 			};
 
-			const settings = await fetchSettings(ourQuery, sort, offset, count, fields);
+			const { settings, totalCount: total } = await fetchSettings(ourQuery, sort, offset, count, fields);
 
 			return API.v1.success({
 				settings,
 				count: settings.length,
 				offset,
-				total: await Settings.find(ourQuery).count(),
+				total,
 			});
 		},
 	},
@@ -126,13 +128,13 @@ API.v1.addRoute(
 
 			ourQuery = Object.assign({}, query, ourQuery);
 
-			const settings = await fetchSettings(ourQuery, sort, offset, count, fields);
+			const { settings, totalCount: total } = await fetchSettings(ourQuery, sort, offset, count, fields);
 
 			return API.v1.success({
 				settings,
 				count: settings.length,
 				offset,
-				total: Settings.find(ourQuery).count(),
+				total,
 			});
 		},
 	},

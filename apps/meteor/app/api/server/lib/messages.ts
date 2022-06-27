@@ -27,13 +27,11 @@ export async function findMentionedMessages({
 		throw new Error('invalid-user');
 	}
 
-	const cursor = await Messages.findVisibleByMentionAndRoomId(user.username, roomId, {
+	const { cursor, totalCount: total } = await Messages.findVisibleByMentionAndRoomId(user.username, roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
-
-	const total = await cursor.count();
 
 	const messages = await cursor.toArray();
 
@@ -68,13 +66,11 @@ export async function findStarredMessages({
 		throw new Error('invalid-user');
 	}
 
-	const cursor = await Messages.findStarredByUserAtRoom(uid, roomId, {
+	const { cursor, totalCount: total } = await Messages.findStarredByUserAtRoom(uid, roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
-
-	const total = await cursor.count();
 
 	const messages = await cursor.toArray();
 
@@ -137,13 +133,11 @@ export async function findSnippetedMessages({
 		throw new Error('error-not-allowed');
 	}
 
-	const cursor = await Messages.findSnippetedByRoom(roomId, {
+	const { cursor, totalCount: total } = await Messages.findSnippetedByRoom(roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
-
-	const total = await cursor.count();
 
 	const messages = await cursor.toArray();
 
@@ -177,13 +171,11 @@ export async function findDiscussionsFromRoom({
 		throw new Error('error-not-allowed');
 	}
 
-	const cursor = Messages.findDiscussionsByRoomAndText(roomId, text, {
+	const { cursor, totalCount: total } = await Messages.findDiscussionsByRoomAndText(roomId, text, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
-
-	const total = await cursor.count();
 
 	const messages = await cursor.toArray();
 

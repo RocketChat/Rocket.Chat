@@ -1,5 +1,5 @@
 import type { ILivechatDepartmentAgents, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
 import type { Collection, Cursor, Db, FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
 import { getCollectionName } from '@rocket.chat/models';
 
@@ -49,17 +49,17 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.find({ agentId });
 	}
 
-	findAgentsByDepartmentId(departmentId: string): Cursor<ILivechatDepartmentAgents>;
+	findAgentsByDepartmentId(departmentId: string): FindPaginated<Cursor<ILivechatDepartmentAgents>>;
 
 	findAgentsByDepartmentId(
 		departmentId: string,
 		options: WithoutProjection<FindOneOptions<ILivechatDepartmentAgents>>,
-	): Cursor<ILivechatDepartmentAgents>;
+	): FindPaginated<Cursor<ILivechatDepartmentAgents>>;
 
 	findAgentsByDepartmentId<P>(
 		departmentId: string,
 		options: FindOneOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): Cursor<P>;
+	): FindPaginated<Cursor<P>>;
 
 	findAgentsByDepartmentId<P>(
 		departmentId: string,
@@ -67,14 +67,14 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			| undefined
 			| WithoutProjection<FindOneOptions<ILivechatDepartmentAgents>>
 			| FindOneOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): Cursor<ILivechatDepartmentAgents> | Cursor<P> {
+	): FindPaginated<Cursor<ILivechatDepartmentAgents> | Cursor<P>> {
 		const query = { departmentId };
 
 		if (options === undefined) {
-			return this.find(query);
+			return this.findPaginated(query);
 		}
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findActiveDepartmentsByAgentId(agentId: string): Cursor<ILivechatDepartmentAgents>;

@@ -49,8 +49,8 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 		],
 	};
 
-	const cursor = LivechatInquiry.find(filter, options);
-	const total = await cursor.count();
+	const { cursor, totalCount: total } = await LivechatInquiry.findPaginated(filter, options);
+
 	const inquiries = await cursor.toArray();
 
 	return {

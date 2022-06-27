@@ -1,7 +1,7 @@
 import type { UpdateWriteOpResult, Cursor } from 'mongodb';
 import type { IUser, IRole, IRoom, ILivechatAgent } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface IUsersModel extends IBaseModel<IUser> {
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateWriteOpResult>;
@@ -116,7 +116,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	unsetExtension(userId: any): any;
 
-	getAvailableAgentsIncludingExt(includeExt: any, text: any, options: any): any;
+	getAvailableAgentsIncludingExt(includeExt: any, text: any, options: any): FindPaginated<Cursor<ILivechatAgent>>;
 
 	findActiveUsersTOTPEnable(options: any): any;
 

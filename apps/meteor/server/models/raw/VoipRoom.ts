@@ -1,5 +1,5 @@
 import type { IRoomClosingInfo, IVoipRoom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IVoipRoomModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, IVoipRoomModel } from '@rocket.chat/model-typings';
 import type { Collection, Cursor, Db, FilterQuery, FindOneOptions, WithoutProjection, WriteOpResult } from 'mongodb';
 import { getCollectionName } from '@rocket.chat/models';
 
@@ -129,7 +129,7 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 			fields?: Record<string, unknown>;
 			offset?: number;
 		};
-	}): Cursor<IVoipRoom> {
+	}): FindPaginated<Cursor<IVoipRoom>> {
 		const query: FilterQuery<IVoipRoom> = {
 			t: 'v',
 		};
@@ -168,7 +168,7 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 			query.queue = queue;
 		}
 
-		return this.find(query, {
+		return this.findPaginated(query, {
 			sort: options.sort || { name: 1 },
 			skip: options.offset,
 			limit: options.count,

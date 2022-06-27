@@ -226,7 +226,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			};
 		}
 
-		const cursor = Team.findByIds(
+		const { cursor, totalCount: total } = await Team.findByIdsPaginated(
 			teamIds,
 			{
 				...(sort && { sort }),
@@ -249,7 +249,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		return {
-			total: await cursor.count(),
+			total,
 			records: results,
 		};
 	}

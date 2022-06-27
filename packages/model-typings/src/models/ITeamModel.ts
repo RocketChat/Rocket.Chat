@@ -1,7 +1,7 @@
 import type { WithoutProjection, FindOneOptions, Cursor, UpdateWriteOpResult, DeleteWriteOpResultObject, FilterQuery } from 'mongodb';
 import type { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface ITeamModel extends IBaseModel<ITeam> {
 	findByNames(names: Array<string>): Cursor<ITeam>;
@@ -26,6 +26,12 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
 		query?: FilterQuery<ITeam>,
 	): Cursor<P> | Cursor<ITeam>;
+
+	findByIdsPaginated(
+		ids: Array<string>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeam>>,
+		query?: FilterQuery<ITeam>,
+	): FindPaginated<Cursor<ITeam>>;
 
 	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE): Cursor<ITeam>;
 

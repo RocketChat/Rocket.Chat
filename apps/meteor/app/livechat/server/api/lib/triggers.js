@@ -7,7 +7,7 @@ export async function findTriggers({ userId, pagination: { offset, count, sort }
 		throw new Error('error-not-authorized');
 	}
 
-	const cursor = await LivechatTrigger.find(
+	const { cursor, totalCount: total } = await LivechatTrigger.findPaginated(
 		{},
 		{
 			sort: sort || { name: 1 },
@@ -15,8 +15,6 @@ export async function findTriggers({ userId, pagination: { offset, count, sort }
 			limit: count,
 		},
 	);
-
-	const total = await cursor.count();
 
 	const triggers = await cursor.toArray();
 

@@ -1,7 +1,7 @@
 import type { Cursor, WithoutProjection, FindOneOptions } from 'mongodb';
 import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepartmentAgents> {
 	findUsersInQueue(usersList: string[]): Cursor<ILivechatDepartmentAgents>;
@@ -24,17 +24,18 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 			| FindOneOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
 	): Cursor<ILivechatDepartmentAgents> | Cursor<P>;
 	findByAgentId(agentId: string): Cursor<ILivechatDepartmentAgents>;
-	findAgentsByDepartmentId(departmentId: string): Cursor<ILivechatDepartmentAgents>;
+
+	findAgentsByDepartmentId(departmentId: string): FindPaginated<Cursor<ILivechatDepartmentAgents>>;
 
 	findAgentsByDepartmentId(
 		departmentId: string,
 		options: WithoutProjection<FindOneOptions<ILivechatDepartmentAgents>>,
-	): Cursor<ILivechatDepartmentAgents>;
+	): FindPaginated<Cursor<ILivechatDepartmentAgents>>;
 
 	findAgentsByDepartmentId<P>(
 		departmentId: string,
 		options: FindOneOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): Cursor<P>;
+	): FindPaginated<Cursor<P>>;
 
 	findAgentsByDepartmentId<P>(
 		departmentId: string,
@@ -42,7 +43,8 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 			| undefined
 			| WithoutProjection<FindOneOptions<ILivechatDepartmentAgents>>
 			| FindOneOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): Cursor<ILivechatDepartmentAgents> | Cursor<P>;
+	): FindPaginated<Cursor<ILivechatDepartmentAgents> | Cursor<P>>;
+
 	findActiveDepartmentsByAgentId(agentId: string): Cursor<ILivechatDepartmentAgents>;
 
 	findActiveDepartmentsByAgentId(

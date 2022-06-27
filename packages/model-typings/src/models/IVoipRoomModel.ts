@@ -1,7 +1,7 @@
 import type { WithoutProjection, FindOneOptions, WriteOpResult, Cursor } from 'mongodb';
 import type { IVoipRoom, IRoomClosingInfo } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface IVoipRoomModel extends IBaseModel<IVoipRoom> {
 	findOneOpenByVisitorToken(visitorToken: string, options?: FindOneOptions<IVoipRoom>): Promise<IVoipRoom | null>;
@@ -38,5 +38,5 @@ export interface IVoipRoomModel extends IBaseModel<IVoipRoom> {
 			fields?: Record<string, unknown>;
 			offset?: number;
 		};
-	}): Cursor<IVoipRoom>;
+	}): FindPaginated<Cursor<IVoipRoom>>;
 }

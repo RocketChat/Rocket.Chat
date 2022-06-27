@@ -482,16 +482,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findSnippetedByRoom(roomId, options) {
-		const query = {
-			_hidden: { $ne: true },
-			snippeted: true,
-			rid: roomId,
-		};
-
-		return this.find(query, options);
-	}
-
 	getLastTimestamp(options = { fields: { _id: 0, ts: 1 } }) {
 		options.sort = { ts: -1 };
 		options.limit = 1;

@@ -1,5 +1,5 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import LivechatTag from '@rocket.chat/models';
+import { LivechatTag } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 
@@ -10,13 +10,11 @@ export async function findTags({ userId, text, pagination: { offset, count, sort
 	const filterReg = new RegExp(escapeRegExp(text), 'i');
 	const query = { ...(text && { $or: [{ name: filterReg }, { description: filterReg }] }) };
 
-	const cursor = LivechatTag.find(query, {
+	const { cursor, totalCount: total } = await LivechatTag.find(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
-
-	const total = await cursor.count();
 
 	const tags = await cursor.toArray();
 
