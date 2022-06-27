@@ -24,7 +24,6 @@ export type UsersSetPreferencesParamsPOST = {
 		highlights?: string[];
 		desktopNotificationRequireInteraction?: boolean;
 		messageViewMode?: number;
-		showMessageInMainThread?: boolean;
 		hideUsernames?: boolean;
 		hideRoles?: boolean;
 		displayAvatars?: boolean;
@@ -120,10 +119,6 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				messageViewMode: {
 					type: 'number',
-					nullable: true,
-				},
-				showMessageInMainThread: {
-					type: 'boolean',
 					nullable: true,
 				},
 				hideUsernames: {
