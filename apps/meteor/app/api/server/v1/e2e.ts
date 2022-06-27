@@ -78,7 +78,6 @@ API.v1.addRoute(
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
 
-// ------------------------------------ TO-DO
 API.v1.addRoute(
 	'e2e.setRoomKeyID',
 	{
@@ -89,9 +88,9 @@ API.v1.addRoute(
 		post() {
 			const { rid, keyID } = this.bodyParams;
 
-			const result = API.v1.success(Meteor.call('e2e.setRoomKeyID', rid, keyID));
+			Meteor.call('e2e.setRoomKeyID', rid, keyID);
 
-			return API.v1.success(result);
+			return API.v1.success();
 		},
 	},
 );
@@ -136,14 +135,11 @@ API.v1.addRoute(
 	{
 		post() {
 			const { public_key, private_key } = Meteor.call('e2e.fetchMyKeys');
-			// this.bodyParams is unknown type
 
-			API.v1.success(
-				Meteor.call('e2e.setUserPublicAndPrivateKeys', {
-					public_key,
-					private_key,
-				}),
-			);
+			Meteor.call('e2e.setUserPublicAndPrivateKeys', {
+				public_key,
+				private_key,
+			});
 
 			return API.v1.success();
 		},
@@ -193,9 +189,9 @@ API.v1.addRoute(
 		post() {
 			const { uid, rid, key } = this.bodyParams;
 
-			const result = API.v1.success(Meteor.call('e2e.updateGroupKey', rid, uid, key));
+			Meteor.call('e2e.updateGroupKey', rid, uid, key);
 
-			return API.v1.success(result);
+			return API.v1.success();
 		},
 	},
 );
