@@ -16,10 +16,10 @@ import {
 	isOEmbedUrlWithMetadata,
 	OEmbedMeta,
 } from '@rocket.chat/core-typings';
+import { OEmbedCache } from '@rocket.chat/models';
 
 import { Logger } from '../../logger/server';
 import { Messages } from '../../models/server';
-import { OEmbedCache } from '../../models/server/raw';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { isURL } from '../../../lib/utils/isURL';

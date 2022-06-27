@@ -9,15 +9,15 @@ type AnnouncementComponentParams = {
 
 const AnnouncementComponent: FC<AnnouncementComponentParams> = ({ children, onClickOpen }) => {
 	const announcementBar = css`
-		background-color: ${colors.b200};
-		background-color: var(--rc-color-announcement-background, ${colors.b200});
-		color: ${colors.b600};
-		color: var(--rc-color-announcement-text, ${colors.b600});
+		background-color: ${colors.p200};
+		background-color: var(--rc-color-announcement-background, ${colors.p200});
+		color: ${colors.p600};
+		color: var(--rc-color-announcement-text, ${colors.p600});
 		cursor: pointer;
 		transition: transform 0.2s ease-out;
 		a {
-			color: ${colors.b600} !important;
-			color: var(--rc-color-announcement-text, ${colors.b600}) !important;
+			color: ${colors.p600} !important;
+			color: var(--rc-color-announcement-text, ${colors.p600}) !important;
 			text-decoration: underline !important;
 		}
 		> * {
@@ -25,10 +25,10 @@ const AnnouncementComponent: FC<AnnouncementComponentParams> = ({ children, onCl
 		}
 		&:hover,
 		&:focus {
-			background-color: ${colors.b300};
-			background-color: var(--rc-color-announcement-background-hover, ${colors.b300});
-			color: ${colors.b800};
-			color: var(--rc-color-announcement-text-hover, ${colors.b800});
+			background-color: ${colors.p300};
+			background-color: var(--rc-color-announcement-background-hover, ${colors.p300});
+			color: ${colors.p800};
+			color: var(--rc-color-announcement-text-hover, ${colors.p800});
 		}
 	`;
 

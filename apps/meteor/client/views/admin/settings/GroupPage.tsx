@@ -14,7 +14,7 @@ import {
 import React, { useMemo, memo, FC, ReactNode, FormEvent, MouseEvent } from 'react';
 
 import Page from '../../../components/Page';
-import { useEditableSettingsDispatch, useEditableSettings, IEditableSetting } from '../EditableSettingsContext';
+import { useEditableSettingsDispatch, useEditableSettings, EditableSetting } from '../EditableSettingsContext';
 import GroupPageSkeleton from './GroupPageSkeleton';
 
 type GroupPageProps = {
@@ -129,7 +129,7 @@ const GroupPage: FC<GroupPageProps> = ({
 				};
 			})
 			.filter(Boolean);
-		dispatchToEditing(settingsToDispatch as Partial<IEditableSetting>[]);
+		dispatchToEditing(settingsToDispatch as Partial<EditableSetting>[]);
 	});
 
 	const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
@@ -161,7 +161,7 @@ const GroupPage: FC<GroupPageProps> = ({
 			<Page.Header onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
 				<ButtonGroup>
 					{changedEditableSettings.length > 0 && (
-						<Button danger primary type='reset' onClick={handleCancelClick}>
+						<Button primary type='reset' onClick={handleCancelClick}>
 							{t('Cancel')}
 						</Button>
 					)}

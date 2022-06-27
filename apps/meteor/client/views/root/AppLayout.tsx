@@ -1,5 +1,5 @@
 import React, { FC, Fragment, Suspense } from 'react';
-import { useSubscription } from 'use-subscription';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { appLayout } from '../../lib/appLayout';
 import { blazePortals } from '../../lib/portals/blazePortals';
@@ -9,8 +9,8 @@ import { useTooltipHandling } from './useTooltipHandling';
 const AppLayout: FC = () => {
 	useTooltipHandling();
 
-	const layout = useSubscription(appLayout);
-	const portals = useSubscription(blazePortals);
+	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
+	const portals = useSyncExternalStore(blazePortals.subscribe, blazePortals.getSnapshot);
 
 	return (
 		<>
