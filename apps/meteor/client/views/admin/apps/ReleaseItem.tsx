@@ -1,6 +1,8 @@
 import { Accordion, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import { useTimeAgo } from '../../../hooks/useTimeAgo';
+
 type release = {
 	version: string;
 	createdDate: string;
@@ -16,13 +18,15 @@ type ReleaseItemProps = {
 };
 
 const ReleaseItem = ({ release, key, ...props }: ReleaseItemProps): JSX.Element => {
+	const formatDate = useTimeAgo();
+
 	const title = (
 		<Box display='flex' flexDirection='row'>
 			<Box is='h4' fontWeight='700' fontSize='x16' lineHeight='x24' color='default' mie='x24'>
 				{release.version}
 			</Box>
 			<Box is='p' fontWeight='400' fontSize='x16' lineHeight='x24' color='info'>
-				{release.createdDate}
+				{formatDate(release.createdDate.replace('Z', ''))}
 			</Box>
 		</Box>
 	);

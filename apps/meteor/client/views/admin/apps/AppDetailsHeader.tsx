@@ -12,7 +12,7 @@ import { App } from './types';
 const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
 	const t = useTranslation();
 	const { iconFileData, name, author, version, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn, description } = app;
-	const lastUpdated = modifiedAt && moment(modifiedAt).fromNow();
+	const lastUpdated = modifiedAt && moment(modifiedAt.replace('Z', '')).fromNow();
 
 	return (
 		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
