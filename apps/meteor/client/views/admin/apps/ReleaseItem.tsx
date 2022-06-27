@@ -33,7 +33,7 @@ const ReleaseItem = ({ release, key, ...props }: ReleaseItemProps): JSX.Element 
 
 	return (
 		<Accordion.Item key={key} title={title} {...props}>
-			{release.detailedChangelog.raw}
+			{release.detailedChangelog?.rendered && <Box dangerouslySetInnerHTML={{ __html: release.detailedChangelog?.rendered }} />}
 		</Accordion.Item>
 	);
 };
