@@ -52,12 +52,19 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 		}
 
 		hljs.highlightElement(element);
+		if (!element.classList.contains('hljs')) {
+			element.classList.add('hljs');
+		}
 	}, [language, content]);
 
 	return (
 		<pre role='region'>
 			<span className='copyonly'>```</span>
-			<code key={language + code} ref={ref} className={language ? `code-colors language-${language}` : 'code-colors'}>
+			<code
+				key={language + code}
+				ref={ref}
+				className={((!language || language === 'none') && 'code-colors') || `code-colors language-${language}`}
+			>
 				{content}
 			</code>
 			<span className='copyonly'>```</span>
