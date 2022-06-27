@@ -141,16 +141,15 @@ jobs:
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
-          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
       - name: Lint
-        run: yarn lint --api="http://127.0.0.1:9080"
+        run: yarn lint --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Translation check
-        run: yarn turbo run translation-check --api="http://127.0.0.1:9080"
+        run: yarn turbo run translation-check --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: TS typecheck
-        run: yarn turbo run typecheck --api="http://127.0.0.1:9080"
+        run: yarn turbo run typecheck --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
@@ -253,10 +252,9 @@ jobs:
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
-          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
       - name: Unit Test
-        run: yarn testunit --api="http://127.0.0.1:9080"
+        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -413,13 +411,12 @@ jobs:
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
-          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
       - name: yarn install
         run: yarn
 
       - name: Unit Test
-        run: yarn testunit --api="http://127.0.0.1:9080"
+        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Restore build
         uses: actions/download-artifact@v2
