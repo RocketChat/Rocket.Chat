@@ -20,7 +20,6 @@ export class Departments extends BasePage {
 	}
 
 	get enabledToggle(): Locator {
-		// temporary selector
 		return this.page.locator('[data-qa="DepartmentEditToggle-Enabled"] span label');
 	}
 
@@ -107,6 +106,7 @@ export class Departments extends BasePage {
 		await this.emailInput.type('any_email@mail.com');
 		await this.showOnRegistrationPage.click();
 		await this.selectLiveChatDepartmentOfflineMessageToChannel.click();
+		await this.selectLiveChatDepartmentOfflineMessageToChannel.type('general');
 		await this.virtuosoOptions('general').click();
 		await this.selectAgentsTable.click();
 		await this.btnSaveDepartment.click();
