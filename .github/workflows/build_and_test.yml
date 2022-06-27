@@ -18,6 +18,7 @@ env:
   MONGO_URL: mongodb://localhost:27017/rocketchat
   MONGO_OPLOG_URL: mongodb://mongo:27017/local
   TOOL_NODE_FLAGS: --max_old_space_size=4096
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
   release-versions:
