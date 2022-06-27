@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import URL from 'url';
 import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
+import { ITranslatedMessage, MessageAttachment, isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
@@ -10,14 +12,25 @@ import { callbacks } from '../../../lib/callbacks';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';
 
-const recursiveRemove = (message, deep = 1) => {
-	if (message) {
-		if ('attachments' in message && message.attachments !== null && deep < settings.get('Message_QuoteChainLimit')) {
-			message.attachments.map((msg) => recursiveRemove(msg, deep + 1));
+const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttachment => {
+	if (attachments && isQuoteAttachment(attachments)) {
+		if (deep < settings.get<number>('Message_QuoteChainLimit')) {
+			attachments.attachments?.map((msg) => recursiveRemove(msg, deep + 1));
 		} else {
-			delete message.attachments;
+			delete attachments.attachments;
 		}
 	}
+
+	return attachments;
+};
+
+const validateAttachmentDeepness = (message: ITranslatedMessage): ITranslatedMessage => {
+	if (!message || !message.attachments) {
+		return message;
+	}
+
+	message.attachments = message.attachments?.map((attachment) => recursiveRemove(attachment));
+
 	return message;
 };
 
@@ -50,7 +63,7 @@ callbacks.add(
 				return;
 			}
 
-			const jumpToMessage = recursiveRemove(Messages.findOneById(msgId));
+			const jumpToMessage = validateAttachmentDeepness(Messages.findOneById(msgId));
 			if (!jumpToMessage) {
 				return;
 			}
@@ -65,7 +78,8 @@ callbacks.add(
 			}
 
 			msg.attachments = msg.attachments || [];
-			const index = msg.attachments.findIndex((a) => a.message_link === item.url);
+			// Only QuoteAttachments have "message_link" property
+			const index = msg.attachments.findIndex((a) => isQuoteAttachment(a) && a.message_link === item.url);
 			if (index > -1) {
 				msg.attachments.splice(index, 1);
 			}
@@ -76,6 +90,7 @@ callbacks.add(
 				author_name: jumpToMessage.alias || jumpToMessage.u.username,
 				author_icon: getUserAvatarURL(jumpToMessage.u.username),
 				message_link: item.url,
+				// @ts-expect-error
 				attachments: jumpToMessage.attachments || [],
 				ts: jumpToMessage.ts,
 			});

@@ -1,3 +1,5 @@
+import Url from 'url';
+
 import { Meteor } from 'meteor/meteor';
 import { FilterQuery } from 'mongodb';
 import type {
@@ -10,6 +12,9 @@ import type {
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
 	VideoConference,
+	ParsedUrl,
+	OEmbedMeta,
+	OEmbedUrlContent,
 } from '@rocket.chat/core-typings';
 
 import type { Logger } from '../app/logger/server';
@@ -107,6 +112,26 @@ type ChainedCallbackSignatures = {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
+	'oembed:beforeGetUrlContent': (data: {
+		urlObj: Omit<Url.UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };
+		parsedUrl: ParsedUrl;
+	}) => {
+		urlObj: Url.UrlWithParsedQuery;
+		parsedUrl: ParsedUrl;
+	};
+	'oembed:afterParseContent': (data: {
+		url: string;
+		meta: OEmbedMeta;
+		headers: { [k: string]: string };
+		parsedUrl: ParsedUrl;
+		content: OEmbedUrlContent;
+	}) => {
+		url: string;
+		meta: OEmbedMeta;
+		headers: { [k: string]: string };
+		parsedUrl: ParsedUrl;
+		content: OEmbedUrlContent;
+	};
 };
 
 type Hook =
@@ -160,8 +185,6 @@ type Hook =
 	| 'livechat.saveInfo'
 	| 'loginPageStateChange'
 	| 'mapLDAPUserData'
-	| 'oembed:afterParseContent'
-	| 'oembed:beforeGetUrlContent'
 	| 'onCreateUser'
 	| 'onLDAPLogin'
 	| 'onValidateLogin'
