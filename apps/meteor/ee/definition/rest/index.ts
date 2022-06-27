@@ -3,4 +3,3 @@
 import './v1/engagementDashboard';
 import './v1/omnichannel';
 import './v1/sessions';
-import './v1/modals';

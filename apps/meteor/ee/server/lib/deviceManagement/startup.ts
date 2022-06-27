@@ -19,6 +19,5 @@ export const createDeviceManagementModal = async (): Promise<void> => {
 			createdAt: new Date(),
 			expires: null,
 			status: true,
-			users: [],
 		});
 };

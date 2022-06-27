@@ -10,15 +10,15 @@ type T = IModal;
 
 export class ModalsRaw extends BaseRaw<T> {
 	protected modelIndexes(): IndexSpecification[] {
-		return [{ key: { createdBy: 1 } }, { key: { 'users.userId': 1, 'createdAt': 1 }, background: true }];
+		return [{ key: { createdBy: -1 } }, { key: { status: 1 } }, { key: { createdBy: 1, createdAt: -1, status: 1 }, background: true }];
 	}
 
 	findOneByIdAndUserId(_id: IModal['_id'], userId: IUser['_id'], options: FindOneOptions<T>): Promise<T | null> {
-		return this.findOne({ _id, users: { $elemMatch: { userId } } }, options);
+		return this.findOne({ _id, createBy: userId }, options);
 	}
 
 	findWithUserId(userId: IUser['_id'], options: FindOneOptions<T>): Cursor<T> {
-		const query = { users: { $elemMatch: { userId } } };
+		const query = { createdBy: userId, status: { $ne: false, $exists: true } };
 		return this.find(query, options);
 	}
 
@@ -27,35 +27,7 @@ export class ModalsRaw extends BaseRaw<T> {
 		return this.find(query, options);
 	}
 
-	async addUserByIdAndUserId(
-		_id: IModal['_id'],
-		userId: IUser['_id'],
-	): Promise<Pick<UpdateWriteOpResult, 'modifiedCount' | 'matchedCount'>> {
-		// check if exists
-		const query = { _id, users: { $elemMatch: { userId } } };
-		const exists = await this.findOne<IModal>(query, {
-			projection: { _id: 1 },
-		});
-		if (exists) return { matchedCount: 0, modifiedCount: 0 };
-
-		const date = new Date();
-		return this.updateOne(
-			{ _id },
-			{
-				$push: {
-					users: {
-						userId,
-						createdAt: date,
-					},
-				},
-			},
-		);
-	}
-
-	async removeUserByUserIdAndId(
-		_id: IModal['_id'],
-		userId: IUser['_id'],
-	): Promise<Pick<UpdateWriteOpResult, 'modifiedCount' | 'matchedCount'>> {
-		return this.updateOne({ _id, users: { $elemMatch: { userId } } }, { $pull: { users: { userId } } });
+	async deleteModal(_id: IModal['_id']): Promise<Pick<UpdateWriteOpResult, 'modifiedCount' | 'matchedCount'>> {
+		return this.updateOne({ _id }, { $set: { status: false } });
 	}
 }
