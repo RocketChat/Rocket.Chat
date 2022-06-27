@@ -10,7 +10,11 @@ import {
 	isChatSendMessageParamsPOST,
 	isChatStarMessageParamsPOST,
 	isChatUnPinMessageParamsPOST,
+	isChatUnStarMessageParamsPOST,
+	isChatUpdateParamsPOST,
+	isChatReactParamsPOST,
 } from '@rocket.chat/rest-typings';
+import { IMessage } from '@rocket.chat/core-typings';
 
 import { Messages } from '../../../models/server';
 import { canAccessRoom, canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
@@ -274,26 +278,25 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.unStarMessage',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatUnStarMessageParamsPOST,
+	},
 	{
 		post() {
-			if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
-				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
-			}
+			const { messageId } = this.bodyParams;
 
-			const msg = Messages.findOneById(this.bodyParams.messageId);
+			const msg = Messages.findOneById(messageId);
 
 			if (!msg) {
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			Meteor.runAsUser(this.userId, () =>
-				Meteor.call('starMessage', {
-					_id: msg._id,
-					rid: msg.rid,
-					starred: false,
-				}),
-			);
+			Meteor.call('starMessage', {
+				_id: msg._id,
+				rid: msg.rid,
+				starred: false,
+			});
 
 			return API.v1.success();
 		},
@@ -302,65 +305,56 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.update',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatUpdateParamsPOST,
+	},
 	{
 		post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					roomId: String,
-					msgId: String,
-					text: String, // Using text to be consistant with chat.postMessage
-				}),
-			);
+			const { roomId, msgId, text } = this.bodyParams;
 
-			const msg = Messages.findOneById(this.bodyParams.msgId);
+			const msg = Messages.findOneById(msgId);
 
 			// Ensure the message exists
 			if (!msg) {
-				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
+				return API.v1.failure(`No message found with the id of "${msgId}".`);
 			}
 
-			if (this.bodyParams.roomId !== msg.rid) {
+			if (roomId !== msg.rid) {
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
 			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid });
-			});
+			Meteor.call('updateMessage', { _id: msg._id, msg: text, rid: msg.rid });
 
-			const [message] = normalizeMessagesForUser([Messages.findOneById(msg._id)], this.userId);
+			const message = normalizeMessagesForUser([Messages.findOneById(msg._id)], this.userId);
 
 			return API.v1.success({
 				message,
-			});
+			} as { message: IMessage });
 		},
 	},
 );
 
 API.v1.addRoute(
 	'chat.react',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatReactParamsPOST,
+	},
 	{
 		post() {
-			if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
-				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is missing.');
-			}
+			const { messageId, reaction, shouldReact } = this.bodyParams;
 
-			const msg = Messages.findOneById(this.bodyParams.messageId);
+			const msg = Messages.findOneById(messageId);
 
 			if (!msg) {
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			const emoji = this.bodyParams.emoji || this.bodyParams.reaction;
+			const emoji = this.bodyParams.emoji || reaction;
 
-			if (!emoji) {
-				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
-			}
-
-			Meteor.runAsUser(this.userId, () => Promise.await(executeSetReaction(emoji, msg._id, this.bodyParams.shouldReact)));
+			Promise.await(executeSetReaction(emoji, msg._id, shouldReact));
 
 			return API.v1.success();
 		},

@@ -202,3 +202,6 @@ export * from './v1/chat/ChatSearchParamsGET';
 export * from './v1/chat/ChatSendMessageParamsPOST';
 export * from './v1/chat/ChatStarMessageParamsPOST';
 export * from './v1/chat/ChatUnPinMessageParamsPOST';
+export * from './v1/chat/ChatUnStarMessageParamsPOST';
+export * from './v1/chat/ChatUpdateParamsPOST';
+export * from './v1/chat/ChatReactParamsPOST';
