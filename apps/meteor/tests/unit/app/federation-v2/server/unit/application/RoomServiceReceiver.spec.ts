@@ -42,6 +42,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 			bridge as any,
 		);
 	});
+	const room = FederatedRoom.build();
 
 	afterEach(() => {
 		roomAdapter.getFederatedRoomByExternalId.reset();
@@ -133,21 +134,21 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		});
 
 		it('should NOT throw an error if the room already exists AND event origin is equal to LOCAL', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			await service.changeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.LOCAL } as any);
 
 			expect(bridge.isUserIdFromTheSameHomeserver.called).to.be.true;
 		});
 
 		it('should NOT throw an error if the room already exists AND event origin is equal to REMOTE', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			await service.changeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.REMOTE } as any);
 
 			expect(bridge.isUserIdFromTheSameHomeserver.called).to.be.true;
 		});
 
 		it('should NOT create the inviter if it already exists', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.onCall(0).resolves({} as any);
 			userAdapter.getFederatedUserByExternalId.onCall(1).resolves({} as any);
 			await service.changeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.LOCAL } as any);
@@ -161,7 +162,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 				username: 'normalizedInviterId',
 				existsOnlyOnProxyServer: false,
 			});
-			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.onCall(0).resolves(undefined);
 			bridge.isUserIdFromTheSameHomeserver.onCall(0).returns(false);
 			await service.changeRoomMembership({
@@ -175,7 +176,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		});
 
 		it('should NOT create the invitee if it already exists', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.onCall(0).resolves({} as any);
 			userAdapter.getFederatedUserByExternalId.onCall(1).resolves(undefined);
 			await service.changeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.LOCAL } as any);
@@ -189,7 +190,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 				username: 'normalizedInviteeId',
 				existsOnlyOnProxyServer: false,
 			});
-			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.onCall(0).resolves({} as any);
 			userAdapter.getFederatedUserByExternalId.onCall(1).resolves(undefined);
 			bridge.isUserIdFromTheSameHomeserver.onCall(1).returns(false);
@@ -234,7 +235,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		});
 
 		it('should NOT create the room if it already exists yet AND the event origin is REMOTE', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			await service.changeRoomMembership({
 				externalRoomId: 'externalRoomId',
 				normalizedRoomId: 'normalizedRoomId',
@@ -248,7 +249,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		});
 
 		it('should NOT create the room if it already exists yet AND the event origin is REMOTE', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			await service.changeRoomMembership({
 				externalRoomId: 'externalRoomId',
 				normalizedRoomId: 'normalizedRoomId',
@@ -262,7 +263,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		});
 
 		it('should remove the user from room if its a LEAVE event', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			await service.changeRoomMembership({
 				externalRoomId: 'externalRoomId',
 				normalizedRoomId: 'normalizedRoomId',
@@ -278,7 +279,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		});
 
 		it('should add the user from room if its NOT a LEAVE event', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			await service.changeRoomMembership({
 				externalRoomId: 'externalRoomId',
 				normalizedRoomId: 'normalizedRoomId',

@@ -21,8 +21,6 @@ import {
 	FederationSetupRoomDto,
 } from './input/RoomSenderDto';
 
-require('util').inspect.defaultOptions.depth = null;
-
 export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 	constructor(
 		protected rocketRoomAdapter: RocketChatRoomAdapterEE,

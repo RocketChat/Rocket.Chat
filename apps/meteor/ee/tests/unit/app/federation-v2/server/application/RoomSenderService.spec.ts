@@ -14,6 +14,7 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 		updateFederatedRoomByInternalRoomId: sinon.stub(),
 		addUserToRoom: sinon.stub(),
 		getInternalRoomById: sinon.stub(),
+		isUserAlreadyJoined: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByInternalId: sinon.stub(),
@@ -37,6 +38,9 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 	const notificationAdapter = {};
 	const room = FederatedRoomEE.build();
 	const user = FederatedUserEE.build();
+	user.internalReference = {
+		_id: 'id',
+	} as any;
 	const invitees = [
 		{
 			inviteeUsernameOnly: 'marcos.defendi',
@@ -61,6 +65,7 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 		roomAdapter.updateFederatedRoomByInternalRoomId.reset();
 		roomAdapter.addUserToRoom.reset();
 		roomAdapter.getInternalRoomById.reset();
+		roomAdapter.isUserAlreadyJoined.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getInternalUserById.reset();
 		userAdapter.createFederatedUser.reset();
@@ -126,7 +131,13 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 			roomAdapter.getFederatedRoomByInternalId.onCall(1).resolves(room);
 			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.onRoomCreated({ invitees: [] } as any);
-			const roomResult = FederatedRoomEE.createInstanceEE('externalRoomId', 'externalRoomId', user as any, RoomType.CHANNEL, 'roomName');
+			const roomResult = FederatedRoomEE.createInstanceEE(
+				'externalRoomId',
+				'externalRoomId',
+				{ externalId: 'externalInviterId' } as any,
+				RoomType.CHANNEL,
+				'roomName',
+			);
 
 			expect(bridge.createRoom.calledWith('externalInviterId', RoomType.CHANNEL, 'roomName', 'topic')).to.be.true;
 			expect(roomAdapter.updateFederatedRoomByInternalRoomId.calledWith('internalRoomId', roomResult)).to.be.true;
@@ -237,7 +248,7 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 		it('should create the external room with all the invitees', async () => {
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			room.externalId = 'externalRoomId';
-			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
 			await service.onDirectMessageRoomCreation({ invitees } as any);
 
 			expect(
@@ -325,7 +336,7 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 			expect(userAdapter.createFederatedUser.calledWith(inviter)).to.be.true;
 		});
 
-		it('should set the room as federated if it is federated yet', async () => {
+		it('should set the room as federated if it is NOT federated yet', async () => {
 			userAdapter.getFederatedUserByInternalId.resolves({ externalId: 'externalInviterId' } as any);
 			userAdapter.getFederatedUserByInternalUsername.resolves({ externalId: 'externalInviteeId' } as any);
 			roomAdapter.getInternalRoomById.resolves({ _id: 'internalRoomId', t: RoomType.CHANNEL, name: 'roomName', topic: 'topic' } as any);
@@ -337,7 +348,13 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 			roomAdapter.getFederatedRoomByInternalId.onCall(1).resolves(room);
 			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.setupFederatedRoom({ normalizedInviteeId: 'normalizedInviteeId', rawInviteeId: 'rawInviteeId' } as any);
-			const roomResult = FederatedRoomEE.createInstanceEE('externalRoomId', 'externalRoomId', user as any, RoomType.CHANNEL, 'roomName');
+			const roomResult = FederatedRoomEE.createInstanceEE(
+				'externalRoomId',
+				'externalRoomId',
+				{ externalId: 'externalInviterId' } as any,
+				RoomType.CHANNEL,
+				'roomName',
+			);
 
 			expect(bridge.createRoom.calledWith('externalInviterId', RoomType.CHANNEL, 'roomName', 'topic')).to.be.true;
 			expect(roomAdapter.updateFederatedRoomByInternalRoomId.calledWith('internalRoomId', roomResult)).to.be.true;

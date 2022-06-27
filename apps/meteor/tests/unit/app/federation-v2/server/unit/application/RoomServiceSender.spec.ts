@@ -15,6 +15,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		removeUserFromRoom: sinon.stub(),
 		addUserToRoom: sinon.stub(),
 		getInternalRoomById: sinon.stub(),
+		createFederatedRoom: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -48,6 +49,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		roomAdapter.createFederatedRoomForDirectMessage.reset();
 		roomAdapter.addUserToRoom.reset();
 		roomAdapter.getInternalRoomById.reset();
+		roomAdapter.createFederatedRoom.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getInternalUserById.reset();
@@ -166,7 +168,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			]);
 
 			expect(bridge.createDirectMessageRoom.calledWith('externalInviterId', ['externalInviteeId'])).to.be.true;
-			expect(roomAdapter.createFederatedRoomForDirectMessage.calledWith(roomResult)).to.be.true;
+			expect(roomAdapter.createFederatedRoom.calledWith(roomResult)).to.be.true;
 		});
 
 		it('should create, invite and join the user to the room in the proxy home server if the invitee is from the same homeserver', async () => {
