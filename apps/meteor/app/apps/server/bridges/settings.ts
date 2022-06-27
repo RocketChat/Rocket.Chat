@@ -1,7 +1,7 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { ServerSettingBridge } from '@rocket.chat/apps-engine/server/bridges/ServerSettingBridge';
+import { Settings } from '@rocket.chat/models';
 
-import { Settings } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class AppSettingBridge extends ServerSettingBridge {

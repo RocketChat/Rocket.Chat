@@ -46,7 +46,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 	const router = useRoute('admin-integrations');
 
 	const deleteQuery = useMemo(() => ({ type: 'webhook-outgoing', integrationId: data._id }), [data._id]);
-	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
+	const deleteIntegration = useEndpointAction('POST', '/v1/integrations.remove', deleteQuery);
 
 	const handleDeleteIntegration = useCallback(() => {
 		const closeModal = () => setModal();
@@ -105,7 +105,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 							</Button>
 						</Margins>
 					</Box>
-					<Button mbs='x4' primary danger w='full' onClick={handleDeleteIntegration}>
+					<Button mbs='x4' danger w='full' onClick={handleDeleteIntegration}>
 						{t('Delete')}
 					</Button>
 				</Field.Row>

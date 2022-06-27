@@ -19,7 +19,7 @@ import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Apps, AppEvents } from '../../../apps/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
@@ -531,7 +531,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	const { token } = guest;
-	Livechat.setDepartmentForGuest({ token, department: departmentId });
+	await Livechat.setDepartmentForGuest({ token, department: departmentId });
 	logger.debug(`Department for visitor with token ${token} was updated to ${departmentId}`);
 
 	return true;

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import { Users } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings/server';
 import { getMaxNumberSimultaneousChat } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
