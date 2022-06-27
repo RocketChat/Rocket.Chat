@@ -31,8 +31,6 @@ describe('VideoConfJoinProps (definition/rest/v1)', () => {
 		it('should return false when provided with an invalid state', () => {
 			assert.isFalse(isVideoConfJoinProps({ callId: 'callId', state: 123 }));
 			assert.isFalse(isVideoConfJoinProps({ callId: 'callId', state: [] }));
-			assert.isFalse(isVideoConfJoinProps({ callId: 'callId', state: new Date() }));
-			assert.isFalse(isVideoConfJoinProps({ callId: 'callId', state: new Error() }));
 		});
 
 		it('should return false when extra parameters are provided to VideoConfJoinProps', () => {
