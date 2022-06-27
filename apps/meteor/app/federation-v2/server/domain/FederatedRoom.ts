@@ -50,6 +50,10 @@ export class FederatedRoom {
 		return this.internalReference?.federated === true;
 	}
 
+	public isDirectMessage(): boolean {
+		return this.internalReference?.t === RoomType.DIRECT_MESSAGE;
+	}
+
 	public static buildRoomIdForDirectMessages(inviter: FederatedUser, invitee: FederatedUser): string {
 		return inviter.internalReference?._id + invitee.internalReference?._id;
 	}

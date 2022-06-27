@@ -31,7 +31,7 @@ export const createRoom = function <T extends RoomType>(
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 
 	if (type === 'd') {
-		return createDirectRoom(members as IUser[], extraData, options);
+		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });
 	}
 
 	if (!isValidName(name)) {
@@ -114,28 +114,40 @@ export const createRoom = function <T extends RoomType>(
 		callbacks.run('beforeCreateChannel', owner, roomProps);
 	}
 	const room = Rooms.createWithFullRoomData(roomProps);
-
-	for (const username of [...new Set(members as string[])]) {
-		const member = Users.findOneByUsername(username, {
-			fields: { 'username': 1, 'settings.preferences': 1 },
-		});
-		if (!member) {
-			continue;
-		}
-
+	const shouldBeHandledByFederation = room.federated === true || ownerUsername.includes(':');
+	if (shouldBeHandledByFederation) {
 		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-
 		extra.open = true;
+		extra.ls = now;
 
 		if (room.prid) {
 			extra.prid = room.prid;
 		}
 
-		if (username === owner.username) {
-			extra.ls = now;
-		}
+		Subscriptions.createWithRoomAndUser(room, owner, extra);
+	} else {
+		for (const username of [...new Set(members as string[])]) {
+			const member = Users.findOneByUsername(username, {
+				fields: { 'username': 1, 'settings.preferences': 1, 'federated': 1 },
+			});
+			if (!member || member?.federated) {
+				continue;
+			}
 
-		Subscriptions.createWithRoomAndUser(room, member, extra);
+			const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
+
+			extra.open = true;
+
+			if (room.prid) {
+				extra.prid = room.prid;
+			}
+
+			if (username === owner.username) {
+				extra.ls = now;
+			}
+
+			Subscriptions.createWithRoomAndUser(room, member, extra);
+		}
 	}
 
 	addUserRoles(owner._id, ['owner'], room._id);
@@ -150,6 +162,9 @@ export const createRoom = function <T extends RoomType>(
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
+	if (shouldBeHandledByFederation) {
+		callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
+	}
 
 	Apps.triggerEvent('IPostRoomCreate', room);
 

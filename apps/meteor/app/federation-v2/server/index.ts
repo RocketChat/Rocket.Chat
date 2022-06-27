@@ -1,6 +1,5 @@
 import { FederationFactoryEE } from '../../../ee/app/federation-v2/server/infrastructure/Factory';
 import { FederationFactory } from './infrastructure/Factory';
-import './infrastructure/rocket-chat/slash-commands';
 
 export const FEDERATION_PROCESSING_CONCURRENCY = 1;
 
@@ -20,7 +19,7 @@ const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver
 	federation,
 );
 
-const federationEventsHandler = FederationFactory.buildEventHandlers(federationRoomServiceReceiver);
+const federationEventsHandler = FederationFactory.buildEventHandlers(federationRoomServiceReceiver, rocketSettingsAdapter);
 
 export const federationRoomServiceSender = FederationFactory.buildRoomServiceSender(
 	rocketRoomAdapter,
@@ -35,11 +34,13 @@ export const runFederation = async (): Promise<void> => {
 	await federation.start();
 
 	await rocketSettingsAdapter.onFederationEnabledStatusChanged(federation.onFederationAvailabilityChanged.bind(federation));
+	require('./infrastructure/rocket-chat/slash-commands');
 
 	FederationFactory.setupListeners(federationRoomServiceSender);
 };
 
 export const stopFederation = async (): Promise<void> => {
+	FederationFactory.removeListeners();
 	await federation.stop();
 };
 

@@ -37,8 +37,15 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 			let to = Users.findOneByUsernameIgnoringCase(username);
 
 			// If the username does have an `@`, but does not exist locally, we create it first
-			if (!to && username.indexOf('@') !== -1) {
-				to = Promise.await(addUser(username));
+			if (!to && username.includes('@')) {
+				try {
+					to = Promise.await(addUser(username));
+				} catch {
+					// no-op
+				}
+				if (!to) {
+					return username;
+				}
 			}
 
 			if (!to) {
@@ -48,7 +55,6 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 			}
 			return to;
 		});
-
 	const roomUsers = excludeSelf ? users : [me, ...users];
 
 	// allow self-DMs

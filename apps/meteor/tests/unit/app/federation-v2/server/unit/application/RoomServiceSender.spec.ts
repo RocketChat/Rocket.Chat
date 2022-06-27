@@ -15,6 +15,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		removeUserFromRoom: sinon.stub(),
 		addUserToRoom: sinon.stub(),
 		getInternalRoomById: sinon.stub(),
+		createFederatedRoom: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -48,6 +49,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		roomAdapter.createFederatedRoomForDirectMessage.reset();
 		roomAdapter.addUserToRoom.reset();
 		roomAdapter.getInternalRoomById.reset();
+		roomAdapter.createFederatedRoom.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getInternalUserById.reset();
@@ -165,8 +167,8 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				invitee,
 			]);
 
-			expect(bridge.createDirectMessageRoom.calledWith('externalInviterId', 'externalInviteeId')).to.be.true;
-			expect(roomAdapter.createFederatedRoomForDirectMessage.calledWith(roomResult)).to.be.true;
+			expect(bridge.createDirectMessageRoom.calledWith('externalInviterId', ['externalInviteeId'])).to.be.true;
+			expect(roomAdapter.createFederatedRoom.calledWith(roomResult)).to.be.true;
 		});
 
 		it('should create, invite and join the user to the room in the proxy home server if the invitee is from the same homeserver', async () => {
@@ -180,7 +182,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			room.externalId = 'externalRoomId';
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			settingsAdapter.getHomeServerDomain.returns('domain');
-			bridge.isUserIdFromTheSameHomeserver.resolves(true);
+			bridge.isUserIdFromTheSameHomeserver.returns(true);
 			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.createDirectMessageRoomAndInviteUser({
 				normalizedInviteeId: 'normalizedInviteeId',
@@ -202,7 +204,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			room.internalReference = {} as any;
 			room.internalReference.t = RoomType.DIRECT_MESSAGE;
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
-			bridge.isUserIdFromTheSameHomeserver.resolves(false);
+			bridge.isUserIdFromTheSameHomeserver.returns(false);
 			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.createDirectMessageRoomAndInviteUser({
 				normalizedInviteeId: 'normalizedInviteeId',
@@ -224,7 +226,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			room.internalReference = {} as any;
 			room.internalReference.t = RoomType.DIRECT_MESSAGE;
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
-			bridge.isUserIdFromTheSameHomeserver.resolves(false);
+			bridge.isUserIdFromTheSameHomeserver.returns(false);
 			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.createDirectMessageRoomAndInviteUser({
 				normalizedInviteeId: 'normalizedInviteeId',

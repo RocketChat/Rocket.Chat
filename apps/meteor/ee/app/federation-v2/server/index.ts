@@ -10,7 +10,7 @@ const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapter();
 const queueInstance = FederationFactory.buildQueue();
 const federationEE = FederationFactoryEE.buildBridge(rocketSettingsAdapter, queueInstance);
 const rocketRoomAdapter = FederationFactoryEE.buildRocketRoomAdapter();
-const rocketUserAdapter = FederationFactory.buildRocketUserAdapter();
+const rocketUserAdapter = FederationFactoryEE.buildRocketUserAdapter();
 const rocketMessageAdapter = FederationFactory.buildRocketMessageAdapter();
 const rocketNotificationAdapter = FederationFactoryEE.buildRocketNotificationdapter();
 
@@ -21,7 +21,7 @@ const federationRoomServiceReceiver = FederationFactoryEE.buildRoomServiceReceiv
 	rocketSettingsAdapter,
 	federationEE,
 );
-const federationEventsHandler = FederationFactoryEE.buildEventHandlers(federationRoomServiceReceiver);
+const federationEventsHandler = FederationFactoryEE.buildEventHandlers(federationRoomServiceReceiver, rocketSettingsAdapter);
 
 export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSender(
 	rocketRoomAdapter,
@@ -42,10 +42,13 @@ onToggledFeature('federation', {
 			await stopFederation();
 			queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 			await runFederationEE();
+			FederationFactoryEE.setupListeners(federationRoomServiceSenderEE, rocketSettingsAdapter);
+			require('./infrastructure/rocket-chat/slash-commands');
 		}),
 	down: () =>
 		Meteor.startup(async () => {
 			await federationEE.stop();
 			await runFederation();
+			FederationFactoryEE.removeListeners();
 		}),
 });

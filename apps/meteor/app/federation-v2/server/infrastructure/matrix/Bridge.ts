@@ -44,8 +44,6 @@ export class MatrixBridge implements IFederationBridge {
 		} catch (e) {
 			bridgeLogger.error('Failed to initialize the matrix-appservice-bridge.', e);
 			bridgeLogger.error('Disabling Matrix Bridge.  Please resolve error and try again');
-
-			// await this.settingsAdapter.disableFederation();
 		}
 	}
 
@@ -53,14 +51,14 @@ export class MatrixBridge implements IFederationBridge {
 		if (!this.isRunning) {
 			return;
 		}
+		this.isRunning = false;
 		// the http server might take some minutes to shutdown, and this promise can take some time to be resolved
 		await this.bridgeInstance?.close();
-		this.isRunning = false;
 	}
 
 	public async getUserProfileInformation(externalUserId: string): Promise<any> {
 		try {
-			return this.bridgeInstance.getIntent(externalUserId).getProfileInfo(externalUserId);
+			return await this.bridgeInstance.getIntent(externalUserId).getProfileInfo(externalUserId);
 		} catch (err) {
 			// no-op
 		}
@@ -71,7 +69,11 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void> {
-		await this.bridgeInstance.getIntent(externalInviterId).invite(externalRoomId, externalInviteeId);
+		try {
+			await this.bridgeInstance.getIntent(externalInviterId).invite(externalRoomId, externalInviteeId);
+		} catch (e) {
+			// no-op
+		}
 	}
 
 	public async createUser(username: string, name: string, domain: string): Promise<string> {
@@ -84,12 +86,11 @@ export class MatrixBridge implements IFederationBridge {
 		return matrixUserId;
 	}
 
-	public async createDirectMessageRoom(externalCreatorId: string, externalInviteeId: string): Promise<string> {
+	public async createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[]): Promise<string> {
 		const intent = this.bridgeInstance.getIntent(externalCreatorId);
 
 		const visibility = RoomJoinRules.INVITE;
 		const preset = MatrixRoomType.PRIVATE;
-
 		const matrixRoom = await intent.createRoom({
 			createAsClient: true,
 			options: {
@@ -97,7 +98,7 @@ export class MatrixBridge implements IFederationBridge {
 				preset,
 				// eslint-disable-next-line @typescript-eslint/camelcase
 				is_direct: true,
-				invite: [externalInviteeId],
+				invite: externalInviteeIds,
 				// eslint-disable-next-line @typescript-eslint/camelcase
 				creation_content: {
 					// eslint-disable-next-line @typescript-eslint/camelcase
@@ -105,7 +106,6 @@ export class MatrixBridge implements IFederationBridge {
 				},
 			},
 		});
-
 		return matrixRoom.room_id;
 	}
 
@@ -148,9 +148,6 @@ export class MatrixBridge implements IFederationBridge {
 			registration: AppServiceRegistration.fromObject(this.homeServerRegistrationFile as AppServiceOutput),
 			disableStores: true,
 			controller: {
-				onAliasQuery: (alias, matrixRoomId): void => {
-					console.log('onAliasQuery', alias, matrixRoomId);
-				},
 				onEvent: async (request /* , context*/): Promise<void> => {
 					// Get the event
 					const event = request.getData() as unknown as IMatrixEvent<MatrixEventType>;

@@ -88,7 +88,7 @@ export interface IRoomFederated extends IRoom {
 	federated: true;
 }
 
-export const isIRoomFederated = (room: IRoom): room is IRoomFederated => 'federated' in room && (room as any).federated === true;
+export const isIRoomFederated = (room: Partial<IRoom>): room is IRoomFederated => 'federated' in room && (room as any).federated === true;
 export interface ICreatedRoom extends IRoom {
 	rid: string;
 }
@@ -112,7 +112,7 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 	usernames: Array<Username>;
 }
 
-export const isDirectMessageRoom = (room: IRoom | IDirectMessageRoom): room is IDirectMessageRoom => room.t === 'd';
+export const isDirectMessageRoom = (room: Partial<IRoom> | IDirectMessageRoom): room is IDirectMessageRoom => room.t === 'd';
 export const isMultipleDirectMessageRoom = (room: IRoom | IDirectMessageRoom): room is IDirectMessageRoom =>
 	isDirectMessageRoom(room) && room.uids.length > 2;
 

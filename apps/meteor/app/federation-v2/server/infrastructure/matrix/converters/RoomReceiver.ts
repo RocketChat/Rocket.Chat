@@ -26,6 +26,7 @@ export class MatrixRoomReceiverConverter {
 
 	public static toChangeRoomMembershipDto(
 		externalEvent: IMatrixEvent<MatrixEventType.ROOM_MEMBERSHIP_CHANGED>,
+		homeServerDomain: string,
 	): FederationRoomChangeMembershipDto {
 		return Object.assign(new FederationRoomChangeMembershipDto(), {
 			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
@@ -39,7 +40,7 @@ export class MatrixRoomReceiverConverter {
 			normalizedInviteeId: MatrixRoomReceiverConverter.convertMatrixUserIdFormatToRCFormat(externalEvent.state_key),
 			inviteeUsernameOnly: MatrixRoomReceiverConverter.formatMatrixUserIdToRCUsernameFormat(externalEvent.state_key),
 			inviterUsernameOnly: MatrixRoomReceiverConverter.formatMatrixUserIdToRCUsernameFormat(externalEvent.sender),
-			eventOrigin: MatrixRoomReceiverConverter.getEventOrigin(externalEvent.sender, externalEvent.state_key),
+			eventOrigin: MatrixRoomReceiverConverter.getEventOrigin(externalEvent.sender, homeServerDomain),
 			leave: externalEvent.content?.membership === AddMemberToRoomMembership.LEAVE,
 		});
 	}
@@ -68,10 +69,8 @@ export class MatrixRoomReceiverConverter {
 		return matrixUserId.split(':')[0]?.replace('@', '');
 	}
 
-	protected static getEventOrigin(inviterId = '', inviteeId = ''): EVENT_ORIGIN {
-		const fromADifferentServer =
-			MatrixRoomReceiverConverter.extractServerNameFromMatrixUserId(inviterId) !==
-			MatrixRoomReceiverConverter.extractServerNameFromMatrixUserId(inviteeId);
+	protected static getEventOrigin(inviterId = '', homeServerDomain: string): EVENT_ORIGIN {
+		const fromADifferentServer = MatrixRoomReceiverConverter.extractServerNameFromMatrixUserId(inviterId) !== homeServerDomain;
 
 		return fromADifferentServer ? EVENT_ORIGIN.REMOTE : EVENT_ORIGIN.LOCAL;
 	}
@@ -90,13 +89,15 @@ export class MatrixRoomReceiverConverter {
 	}
 
 	protected static convertMatrixJoinRuleToRCRoomType(matrixJoinRule: RoomJoinRules, matrixRoomIsDirect = false): RoomType {
+		if (matrixRoomIsDirect) {
+			return RoomType.DIRECT_MESSAGE;
+		}
 		const mapping: Record<string, RoomType> = {
 			[RoomJoinRules.JOIN]: RoomType.CHANNEL,
 			[RoomJoinRules.INVITE]: RoomType.PRIVATE_GROUP,
 		};
-		const roomType = mapping[matrixJoinRule] || RoomType.CHANNEL;
 
-		return roomType === RoomType.PRIVATE_GROUP && matrixRoomIsDirect ? RoomType.DIRECT_MESSAGE : roomType;
+		return mapping[matrixJoinRule] || RoomType.CHANNEL;
 	}
 
 	protected static tryToGetExternalInfoFromTheRoomState(

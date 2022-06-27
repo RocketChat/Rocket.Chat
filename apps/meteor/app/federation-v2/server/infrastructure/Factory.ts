@@ -66,14 +66,20 @@ export class FederationFactory {
 		);
 	}
 
-	public static buildEventHandlers(roomServiceReceive: FederationRoomServiceReceiver): MatrixEventsHandler {
-		return new MatrixEventsHandler(FederationFactory.getEventHandlers(roomServiceReceive));
+	public static buildEventHandlers(
+		roomServiceReceive: FederationRoomServiceReceiver,
+		rocketSettingsAdapter: RocketChatSettingsAdapter,
+	): MatrixEventsHandler {
+		return new MatrixEventsHandler(FederationFactory.getEventHandlers(roomServiceReceive, rocketSettingsAdapter));
 	}
 
-	public static getEventHandlers(roomServiceReceive: FederationRoomServiceReceiver): any[] {
+	public static getEventHandlers(
+		roomServiceReceive: FederationRoomServiceReceiver,
+		rocketSettingsAdapter: RocketChatSettingsAdapter,
+	): any[] {
 		return [
 			new MatrixRoomCreatedHandler(roomServiceReceive),
-			new MatrixRoomMembershipChangedHandler(roomServiceReceive),
+			new MatrixRoomMembershipChangedHandler(roomServiceReceive, rocketSettingsAdapter),
 			new MatrixRoomMessageSentHandler(roomServiceReceive),
 		];
 	}
@@ -82,5 +88,11 @@ export class FederationFactory {
 		FederationHooks.afterLeaveRoom(async (user: IUser, room: IRoom) =>
 			roomServiceSender.leaveRoom(FederationRoomSenderConverter.toAfterLeaveRoom(user._id, room._id)),
 		);
+		FederationHooks.canAddTheUserToTheRoom((user: IUser | string, room: IRoom) => roomServiceSender.canAddThisUserToTheRoom(user, room));
+		FederationHooks.canAddUsersToTheRoom((user: IUser | string, room: IRoom) => roomServiceSender.canAddUsersToTheRoom(user, room));
+	}
+
+	public static removeListeners(): void {
+		FederationHooks.removeCEValidation();
 	}
 }
