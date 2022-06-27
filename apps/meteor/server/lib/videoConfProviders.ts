@@ -10,8 +10,10 @@ export const videoConfProviders = {
 	},
 
 	unRegisterProvider(providerName: string): void {
-		if (providers.has(providerName)) {
-			providers.delete(providerName);
+		const key = providerName.toLowerCase();
+
+		if (providers.has(key)) {
+			providers.delete(key);
 		}
 	},
 
