@@ -155,7 +155,7 @@ const AppsWithData = ({
 
 	const context = {
 		action: async ({ actionId, appId, value, blockId, dispatchActionConfig }: ActionParams): Promise<void> => {
-			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes('on_character_entered')) {
+			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes(InputElementDispatchAction.ON_CHARACTER_ENTERED)) {
 				await debouncedBlockAction({ actionId, appId, value, blockId });
 			} else {
 				await triggerBlockAction({
