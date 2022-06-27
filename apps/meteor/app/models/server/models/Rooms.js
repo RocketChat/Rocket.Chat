@@ -457,7 +457,7 @@ export class Rooms extends Base {
 			},
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findBySubscriptionUserIdUpdatedAfter(userId, _updatedAt, options) {

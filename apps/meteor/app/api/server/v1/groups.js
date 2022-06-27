@@ -585,14 +585,13 @@ API.v1.addRoute(
 			const { sort, fields } = this.parseJsonQuery();
 
 			// TODO: CACHE: Add Breacking notice since we removed the query param
-			const cursor = Rooms.findBySubscriptionTypeAndUserId('p', this.userId, {
+			const { cursor, totalCount } = Rooms.findBySubscriptionTypeAndUserId('p', this.userId, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 				fields,
 			});
 
-			const totalCount = cursor.count();
 			const rooms = cursor.fetch();
 
 			return API.v1.success({

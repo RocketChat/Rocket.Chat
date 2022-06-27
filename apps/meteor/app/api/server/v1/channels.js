@@ -455,14 +455,12 @@ API.v1.addRoute(
 					},
 				];
 
-				const cursor = Rooms.find(ourQuery, {
+				const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
 					sort: sort || { name: 1 },
 					skip: offset,
 					limit: count,
 					fields,
 				});
-
-				const total = cursor.count();
 
 				const rooms = cursor.fetch();
 
@@ -470,7 +468,7 @@ API.v1.addRoute(
 					channels: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 					count: rooms.length,
 					offset,
-					total,
+					total: totalCount,
 				});
 			},
 		},
@@ -486,14 +484,13 @@ API.v1.addRoute(
 			const { sort, fields } = this.parseJsonQuery();
 
 			// TODO: CACHE: Add Breacking notice since we removed the query param
-			const cursor = Rooms.findBySubscriptionTypeAndUserId('c', this.userId, {
+			const { cursor, totalCount } = Rooms.findBySubscriptionTypeAndUserId('c', this.userId, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 				fields,
 			});
 
-			const totalCount = cursor.count();
 			const rooms = cursor.fetch();
 
 			return API.v1.success({

@@ -125,6 +125,19 @@ export class Base {
 		}
 	}
 
+	findPaginated(...args) {
+		try {
+			const totalCount = this[this.origin].find(args[0]).count();
+			const cursor = this[this.origin].find(...args);
+			return {
+				totalCount,
+				cursor,
+			};
+		} catch (e) {
+			console.error('Exception on find', e, ...args);
+		}
+	}
+
 	findById(...args) {
 		try {
 			return this[this.origin].findById(...args);
