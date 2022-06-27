@@ -1,7 +1,8 @@
+import { Roles } from '@rocket.chat/models';
+
 import { Rooms } from '../../../../app/models/server';
 import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Logger } from '../../../../app/logger/server';
-import { Roles } from '../../../../app/models/server/raw';
 import { syncUserRoles } from '../syncUserRoles';
 
 export const logger = new Logger('OAuth');

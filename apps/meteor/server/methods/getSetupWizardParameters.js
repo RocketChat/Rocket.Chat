@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Settings } from '../../app/models';
+import { Settings } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 Meteor.methods({

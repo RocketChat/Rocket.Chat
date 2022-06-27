@@ -1,8 +1,8 @@
 import moment from 'moment-timezone';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import { LivechatBusinessHours } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
-import { LivechatBusinessHours } from '../../../app/models/server/raw';
 
 const updateBusinessHours = async () => {
 	await LivechatBusinessHours.update(

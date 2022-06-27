@@ -1,6 +1,6 @@
 import type { IRole } from '@rocket.chat/core-typings';
+import { Roles, Users, Subscriptions } from '@rocket.chat/models';
 
-import { Roles, Users, Subscriptions } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({

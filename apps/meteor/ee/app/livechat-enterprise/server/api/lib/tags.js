@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import LivechatTag from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import LivechatTag from '../../../../models/server/raw/LivechatTag';
 
 export async function findTags({ userId, text, pagination: { offset, count, sort } }) {
 	if (!(await hasPermissionAsync(userId, 'manage-livechat-tags')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
