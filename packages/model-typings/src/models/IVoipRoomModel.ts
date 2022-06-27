@@ -23,6 +23,8 @@ export interface IVoipRoomModel extends IBaseModel<IVoipRoom> {
 		tags,
 		queue,
 		visitorId,
+		direction,
+		roomName,
 		options,
 	}: {
 		agents?: string[];
@@ -32,6 +34,8 @@ export interface IVoipRoomModel extends IBaseModel<IVoipRoom> {
 		tags?: string[];
 		queue?: string;
 		visitorId?: string;
+		direction?: IVoipRoom['direction'];
+		roomName?: string;
 		options?: {
 			sort?: Record<string, unknown>;
 			count?: number;
