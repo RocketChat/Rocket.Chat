@@ -22,7 +22,7 @@ test.describe('[Agents]', () => {
 		await sideNav.sidebarUserMenu.click();
 		await sideNav.omnichannel.click();
 		await agents.agentsLink.click();
-		await agents.doAddAgent('Rocket.Cat');
+		await agents.doAddAgent();
 	});
 
 	test('expect admin/manager is able to add an agent', async () => {
@@ -95,7 +95,7 @@ test.describe('[Agents]', () => {
 
 			test.describe('[Remove from table]', async () => {
 				test.beforeAll(async () => {
-					await agents.doAddAgent('Rocket.Cat');
+					await agents.doAddAgent();
 				});
 
 				test.beforeEach(async () => {
