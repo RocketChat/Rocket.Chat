@@ -1,6 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { IMessage } from '@rocket.chat/core-typings';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
@@ -43,7 +42,6 @@ const removePossibleNullValues = ({
 });
 
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
-	const showInMainThread = useUserPreference<boolean>('showMessageInMainThread', false);
 	// const hideSettings = !!useSetting('Hide_System_Messages');
 
 	// const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
@@ -53,11 +51,9 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 		() => ({
 			rid,
 			_hidden: { $ne: true },
-			...(!showInMainThread && {
-				$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
-			}),
+			$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
 		}),
-		[rid, showInMainThread],
+		[rid],
 	);
 
 	// if (hideMessagesOfType.size) {
