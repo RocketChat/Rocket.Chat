@@ -1,5 +1,6 @@
 import { useContext } from 'react';
-import { DeviceContext, Device } from '@rocket.chat/ui-contexts/src/DeviceContext';
+
+import { DeviceContext, Device } from '../DeviceContext';
 
 type setInputMediaDevice = (inputDevice: Device) => void;
 
