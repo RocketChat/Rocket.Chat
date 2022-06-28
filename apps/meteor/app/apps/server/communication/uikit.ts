@@ -6,10 +6,10 @@ import { WebApp } from 'meteor/webapp';
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Apps, AppServerOrchestrator } from '../orchestrator';
 import { UiKitCoreApp } from '../../../../server/sdk';
+import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
 const apiServer = express();
 
@@ -51,16 +51,14 @@ Meteor.startup(() => {
 			settings.get('API_Enable_Rate_Limiter') !== true ||
 			(process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true),
 	});
+
 	router.use(apiLimiter);
 });
 
-router.use((req, res, next) => {
-	const { 'x-user-id': userId, 'x-auth-token': authToken, 'x-visitor-token': visitorToken } = req.headers;
+router.use(authenticationMiddleware({ rejectUnauthorized: false }));
 
-	if (userId && authToken) {
-		req.body.user = Users.findOneByIdAndLoginToken(userId, authToken);
-		req.body.userId = req.body.user._id;
-	}
+router.use((req, res, next) => {
+	const { 'x-visitor-token': visitorToken } = req.headers;
 
 	if (visitorToken) {
 		req.body.visitor = Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
