@@ -24,6 +24,7 @@ import {
 	useSetInputMediaDevice,
 	Device,
 	useSetModal,
+	IExperimentalHTMLAudioElement,
 } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
@@ -70,7 +71,7 @@ export const CallProvider: FC = ({ children }) => {
 	const setInputMediaDevice = useSetInputMediaDevice();
 	const isEnterprise = useHasLicense('voip-enterprise');
 
-	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
+	const remoteAudioMediaRef = useRef<IExperimentalHTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
@@ -154,7 +155,7 @@ export const CallProvider: FC = ({ children }) => {
 					name: caller.callerName || caller.callerId,
 				},
 			});
-			const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
+			const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id, direction: 'outbound' }));
 			openRoom(voipRoom.room._id);
 			voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
 			const queueAggregator = result.voipClient?.getAggregator();
