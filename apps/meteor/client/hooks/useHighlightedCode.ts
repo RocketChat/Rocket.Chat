@@ -1,4 +1,3 @@
-// import hljs from 'highlight.js';
 import { useMemo } from 'react';
 
 import hljs from '../../app/markdown/lib/hljs';
