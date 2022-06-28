@@ -20,7 +20,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { Rooms, Subscriptions, Messages } from '../../../models/server';
-import { hasPermission, hasAllPermission } from '../../../authorization/server';
+import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
@@ -454,7 +454,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (!hasAllPermission(this.userId, ['create-team', 'edit-room'])) {
+			if (!hasPermission(this.userId, 'create-team')) {
 				return API.v1.unauthorized();
 			}
 
@@ -462,6 +462,10 @@ API.v1.addRoute(
 
 			if (!channelId && !channelName) {
 				return API.v1.failure('The parameter "channelId" or "channelName" is required');
+			}
+
+			if (!hasPermission(this.userId, 'edit-room', channelId)) {
+				return API.v1.unauthorized();
 			}
 
 			const room = findChannelByIdOrName({
