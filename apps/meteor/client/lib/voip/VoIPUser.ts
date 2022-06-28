@@ -227,6 +227,10 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this._connectionState = 'WAITING_FOR_NETWORK';
 	}
 
+	get userConfig(): VoIPUserConfiguration {
+		return this.config;
+	}
+
 	get callState(): CallStates {
 		return this._callState;
 	}

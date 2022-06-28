@@ -50,7 +50,7 @@ export const useDialPad = (handleClose: () => void): DialPadStateHandlers => {
 			return setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
 		}
 
-		outbound.outboundDialer.makeCall(`sip:*${value}@${outbound.outboundDialer.config.sipRegistrarHostnameOrIP}`).then(
+		outbound.outboundDialer.makeCall(`sip:*${value}@${outbound.outboundDialer.userConfig.sipRegistrarHostnameOrIP}`).then(
 			() => {
 				handleClose();
 			},
