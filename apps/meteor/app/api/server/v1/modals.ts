@@ -56,7 +56,7 @@ API.v1.addRoute(
 			}
 			const { modalId } = this.bodyParams;
 
-			if (await Modals.findOne({ _id: modalId, active: true })) {
+			if (!(await Modals.findOne({ _id: modalId, active: true }))) {
 				return API.v1.notFound();
 			}
 
