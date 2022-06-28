@@ -5,6 +5,8 @@ import type {
 	DeviceSessionAggregationResult,
 	OSSessionAggregationResult,
 	IUser,
+	DeviceManagementPopulatedSession,
+	DeviceManagementSession,
 } from '@rocket.chat/core-typings';
 
 import type { IBaseModel, ModelOptionalId } from './IBaseModel';
@@ -19,7 +21,36 @@ export type DestructuredDateWithType = {
 export type DestructuredRange = { start: DestructuredDate; end: DestructuredDate };
 export type DateRange = { start: Date; end: Date };
 
+type CustomSortOp = 'loginAt' | 'device.name' | 'device.os.name';
+type CustomSortOpAdmin = CustomSortOp | '_user.username' | '_user.name';
+
 export interface ISessionsModel extends IBaseModel<ISession> {
+	aggregateSessionsAndPopulate({
+		sort,
+		search,
+		offset,
+		count,
+	}: {
+		sort?: Record<CustomSortOpAdmin, 1 | -1>;
+		search?: string | null;
+		offset?: number;
+		count?: number;
+	}): Promise<{ sessions: DeviceManagementPopulatedSession[] }>;
+
+	aggregateSessionsByUserId({
+		uid,
+		sort,
+		search,
+		offset,
+		count,
+	}: {
+		uid: string;
+		sort?: Record<CustomSortOp, 1 | -1>;
+		search?: string | null;
+		offset?: number;
+		count?: number;
+	}): Promise<{ sessions: DeviceManagementSession[] }>;
+
 	getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]>;
 	findLastLoginByIp(ip: string): Promise<ISession | null>;
 	findOneBySessionId(sessionId: string): Promise<ISession | null>;

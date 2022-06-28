@@ -1,7 +1,8 @@
 import type { Cursor, FindOneOptions, UpdateWriteOpResult } from 'mongodb';
 import type { IModal, IUser } from '@rocket.chat/core-typings';
+import type { IBaseModel } from './IBaseModel';
 
-export interface IModalModel {
+export interface IModalModel extends IBaseModel<IModal> {
 	findOneByIdAndUserId(_id: IModal['_id'], userId: IUser['_id'], options: FindOneOptions<IModal>): Promise<IModal | null>;
 
 	findWithUserId(userId: IUser['_id'], options: FindOneOptions<IModal>): Cursor<IModal>;

@@ -1,7 +1,8 @@
 import type { Cursor, DeleteWriteOpResultObject, FindOneOptions } from 'mongodb';
 import type { IModal, IUser, IModalDismiss } from '@rocket.chat/core-typings';
+import type { IBaseModel } from './IBaseModel';
 
-export interface IModalDismissModel {
+export interface IModalDismissModel extends IBaseModel<IModalDismiss> {
 	findOneByModalIdAndUserId(
 		modalId: IModal['_id'],
 		userId: IUser['_id'],

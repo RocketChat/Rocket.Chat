@@ -1,6 +1,6 @@
 import { IModal } from '@rocket.chat/core-typings';
 
-import { Modals, Permissions } from '../../../../app/models/server/raw/index';
+import { Modals, Permissions } from '@rocket.chat/models';
 
 export const createPermissions = async (): Promise<void> => {
 	Permissions.create('view-device-management', ['admin']);
