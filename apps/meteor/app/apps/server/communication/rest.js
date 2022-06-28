@@ -546,7 +546,6 @@ export class AppsRestApi {
 						result = HTTP.get(`${baseUrl}/v1/apps/${this.urlParams.id}`, {
 							headers,
 						});
-						console.log('Rest js versions', result);
 					} catch (e) {
 						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
