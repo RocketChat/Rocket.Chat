@@ -17,6 +17,7 @@ type CallContextEnabled = {
 	ready: unknown;
 };
 type CallContextReady = {
+	canMakeCall: boolean;
 	enabled: true;
 	ready: true;
 	voipClient: VoIPUser;
@@ -71,6 +72,8 @@ export const useIsCallError = (): boolean => {
 	const context = useContext(CallContext);
 	return Boolean(isCallContextError(context));
 };
+
+export const useCallContext = (): CallContextValue => useContext(CallContext);
 
 export const useCallActions = (): CallActionsType => {
 	const context = useContext(CallContext);
@@ -142,6 +145,7 @@ export const useCallClient = (): VoIPUser => {
 	if (!isCallContextReady(context)) {
 		throw new Error('useClient only if Calls are enabled and ready');
 	}
+
 	return context.voipClient;
 };
 

@@ -18,9 +18,9 @@ test.describe('[Message Popup]', () => {
 		mainContent = new MainContent(page);
 		sideNav = new SideNav(page);
 
-		await loginPage.goto('/');
-		await loginPage.login(adminLogin);
-		await sideNav.openChannel('public channel');
+		await page.goto('/');
+		await loginPage.doLogin(adminLogin);
+		await sideNav.doOpenChat('public channel');
 	});
 
 	test.describe('User mentions', () => {
