@@ -1,4 +1,5 @@
 import { Sessions } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
