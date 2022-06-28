@@ -1,8 +1,8 @@
+import { Settings } from '@rocket.chat/models';
 import { addMigration } from '../../lib/migrations';
-import { Settings } from '../../../app/models/server/raw';
 
 addMigration({
-	version: 271,
+	version: 273,
 	async up() {
 		const style = `html, body, .body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Helvetica Neue','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Meiryo UI',Arial,sans-serif; }
 

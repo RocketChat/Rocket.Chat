@@ -8,7 +8,7 @@ import UrlPreview from './UrlPreview';
 type OembedUrlLegacy = {
 	url: string;
 	meta: Record<string, string>;
-	headers?: { contentLength: string; contentType: string };
+	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
 };
 
 type PreviewType = 'photo' | 'video' | 'link' | 'rich';
@@ -79,14 +79,16 @@ const normalizeMeta = ({ url, meta }: OembedUrlLegacy): PreviewMetadata => {
 	);
 };
 
+const hasContentType = (headers: any): headers is { contentType: string } => !!headers.contentType;
+
 const getHeaderType = (headers: OembedUrlLegacy['headers']): UrlPreview['type'] | undefined => {
-	if (headers?.contentType?.match(/image\/.*/)) {
+	if (hasContentType(headers) && headers?.contentType?.match(/image\/.*/)) {
 		return 'image';
 	}
-	if (headers?.contentType?.match(/audio\/.*/)) {
+	if (hasContentType(headers) && headers?.contentType?.match(/audio\/.*/)) {
 		return 'audio';
 	}
-	if (headers?.contentType?.match(/video\/.*/)) {
+	if (hasContentType(headers) && headers?.contentType?.match(/video\/.*/)) {
 		return 'video';
 	}
 };
@@ -97,7 +99,10 @@ const processMetaAndHeaders = (url: OembedUrlLegacy): PreviewData | false => {
 	}
 
 	if (!url.meta) {
-		return { type: 'headers', data: { url: url.url, type: getHeaderType(url.headers), originalType: url.headers?.contentType } };
+		return {
+			type: 'headers',
+			data: { url: url.url, type: getHeaderType(url.headers), originalType: hasContentType(url.headers) ? url.headers?.contentType : '' },
+		};
 	}
 
 	return { type: 'oembed', data: normalizeMeta(url) };
