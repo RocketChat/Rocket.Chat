@@ -2,6 +2,7 @@ import { Box, Button, Modal, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, ReactElement, useMemo } from 'react';
 
+import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
 import FeatureModalBullets from './FeatureModalBullets';
 
 type bulletOptionType = {
@@ -34,6 +35,13 @@ const DeviceManagementFeatureModal = ({ close }: { close: () => void }): ReactEl
 		[t],
 	);
 
+	const modalAcknowledgement = useEndpointAction('POST', '/v1/modals/dismiss', { modalId: 'device-management' });
+
+	const handleGotit = (): void => {
+		modalAcknowledgement();
+		close();
+	};
+
 	return (
 		<Modal>
 			<Modal.Header>
@@ -53,9 +61,7 @@ const DeviceManagementFeatureModal = ({ close }: { close: () => void }): ReactEl
 							{t('Documentation')}
 						</Box>
 					</Box>
-					<Button onClick={close}>
-						{t('Got_it')}
-					</Button>
+					<Button onClick={handleGotit}>{t('Got_it')}</Button>
 				</Box>
 			</Modal.Footer>
 		</Modal>

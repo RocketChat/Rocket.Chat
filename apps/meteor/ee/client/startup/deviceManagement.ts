@@ -19,6 +19,23 @@ const [registerAccountRouter, unregisterAccountRouter] = registerAccountRoute('/
 	component: lazy(() => import('../views/account/deviceManagement/DeviceManagementAccountPage')),
 });
 
+const handleDeviceManagementFeatureModal = (): void => {
+	Meteor.call('findDeviceManagementModal', (error: Error, hasUserAcknowledged: boolean) => {
+		if (error) {
+			return;
+		}
+
+		if (!hasUserAcknowledged) {
+			imperativeModal.open({
+				component: DeviceManagementFeatureModal,
+				props: {
+					close: imperativeModal.close,
+				},
+			});
+		}
+	});
+};
+
 onToggledFeature('device-management', {
 	up: () =>
 		Meteor.startup(() => {
@@ -36,12 +53,7 @@ onToggledFeature('device-management', {
 			registerAdminRouter();
 			registerAccountRouter();
 
-			imperativeModal.open({
-				component: DeviceManagementFeatureModal,
-				props: {
-					close: imperativeModal.close,
-				},
-			});
+			handleDeviceManagementFeatureModal();
 		}),
 	down: () =>
 		Meteor.startup(() => {
