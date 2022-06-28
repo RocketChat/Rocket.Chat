@@ -1,3 +1,4 @@
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { BulkWriteOpResultObject, UpdateWriteOpResult, Cursor } from 'mongodb';
 import type {
 	ISession,
@@ -35,7 +36,7 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 		search?: string | null;
 		offset?: number;
 		count?: number;
-	}): Promise<{ sessions: DeviceManagementPopulatedSession[] }>;
+	}): Promise<PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>>;
 
 	aggregateSessionsByUserId({
 		uid,
@@ -49,11 +50,12 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 		search?: string | null;
 		offset?: number;
 		count?: number;
-	}): Promise<{ sessions: DeviceManagementSession[] }>;
+	}): Promise<PaginatedResult<{ sessions: DeviceManagementSession[] }>>;
 
 	getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]>;
 	findLastLoginByIp(ip: string): Promise<ISession | null>;
 	findOneBySessionId(sessionId: string): Promise<ISession | null>;
+	findOneBySessionIdAndUserId(sessionId: string, userId: string): Promise<ISession | null>;
 
 	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession>;
 	getActiveUsersOfPeriodByDayBetweenDates({ start, end }: DestructuredRange): Promise<
@@ -124,6 +126,16 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 	updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data?: Record<string, any>): Promise<UpdateWriteOpResult>;
 
 	logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateWriteOpResult>;
+	logoutBySessionIdAndUserId({ sessionId, userId }: { sessionId: string; userId: string }): Promise<UpdateWriteOpResult>;
+	logoutByloginTokenAndUserId({
+		loginToken,
+		userId,
+		logoutBy,
+	}: {
+		loginToken: string;
+		userId: string;
+		logoutBy?: IUser['_id'];
+	}): Promise<UpdateWriteOpResult>;
 
 	createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteOpResultObject | undefined>;
 }
