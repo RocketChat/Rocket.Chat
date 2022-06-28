@@ -142,7 +142,7 @@ export class FederationRoomServiceSender {
 			return;
 		}
 
-		const user = await this.rocketUserAdapter.getFederatedUserByInternalId(internalUser._id);
+		const user = await this.rocketUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
 		if (user && !user.existsOnlyOnProxyServer) {
 			throw new Error('error-cant-add-federated-users');
 		}
@@ -158,7 +158,7 @@ export class FederationRoomServiceSender {
 			return;
 		}
 
-		const user = await this.rocketUserAdapter.getFederatedUserByInternalId(internalUser._id);
+		const user = await this.rocketUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
 		if (user && !user.existsOnlyOnProxyServer && internalRoom.t !== RoomType.DIRECT_MESSAGE) {
 			throw new Error('error-this-is-an-ee-feature');
 		}
