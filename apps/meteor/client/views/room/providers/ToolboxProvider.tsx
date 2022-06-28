@@ -110,7 +110,7 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 			{actions
 				.filter(
 					([, action]) =>
-						!action.hidden &&
+						!(action as ToolboxActionConfig).hidden &&
 						(uid || (allowAnonymousRead && action.hasOwnProperty('anonymous') && (action as ToolboxActionConfig).anonymous)),
 				)
 				.map(([id, item]) => (
