@@ -12,7 +12,6 @@ export function useParsedMessage(message: IMessage & Partial<ITranslatedMessage>
 	const katexParenthesisSyntax = useSetting('Katex_Parenthesis_Syntax') as boolean;
 	const autoTranslateLanguage = useAutotranslateLanguage(message.rid);
 	const translated = useShowTranslated({ message });
-	const shouldTranslate = autoTranslateLanguage && translated && isTranslatedMessage(message);
 
 	return useMemo(() => {
 		const parseOptions = {
@@ -24,7 +23,7 @@ export function useParsedMessage(message: IMessage & Partial<ITranslatedMessage>
 			},
 		};
 
-		if (shouldTranslate) {
+		if (translated && autoTranslateLanguage && isTranslatedMessage(message)) {
 			return parse(message.translations[autoTranslateLanguage], parseOptions);
 		}
 		if (message.md) {
@@ -36,14 +35,5 @@ export function useParsedMessage(message: IMessage & Partial<ITranslatedMessage>
 		}
 
 		return parse(message.msg, parseOptions);
-	}, [
-		colors,
-		katexDollarSyntax,
-		katexParenthesisSyntax,
-		autoTranslateLanguage,
-		shouldTranslate,
-		message.md,
-		message.msg,
-		message.translations,
-	]);
+	}, [colors, katexDollarSyntax, katexParenthesisSyntax, autoTranslateLanguage, message.md, message.msg, message.translations]);
 }
