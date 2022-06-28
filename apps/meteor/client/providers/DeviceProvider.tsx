@@ -1,7 +1,11 @@
 import { DeviceContext, Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
-import React, { FC, useEffect, useState } from 'react';
+import React, { ReactElement, ReactNode, useEffect, useState } from 'react';
 
-export const DeviceProvider: FC = ({ children }) => {
+type DeviceProviderProps = {
+	children?: ReactNode | undefined;
+};
+
+export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement => {
 	const [availableAudioOutputDevices, setAvailableAudioOutputDevices] = useState<Device[]>([]);
 	const [availableAudioInputDevices, setAvailableAudioInputDevices] = useState<Device[]>([]);
 	const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] = useState<Device>({

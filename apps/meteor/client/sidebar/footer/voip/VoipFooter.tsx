@@ -2,9 +2,9 @@ import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo, VoIpCallerInfo, VoipClientEvents } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
-import React, { MouseEvent, ReactElement, useMemo } from 'react';
+import React, { ReactElement, MouseEvent } from 'react';
 
-import { useDevicesMenuOption } from '../../../../ee/client/hooks/useDevicesMenuOption';
+import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import { CallActionsType } from '../../../contexts/CallContext';
 
 type VoipFooterPropsType = {
@@ -60,15 +60,7 @@ export const VoipFooter = ({
 			  `
 			: '';
 
-	const deviceMenuOption = useDevicesMenuOption();
-
-	const options = useMemo(
-		() =>
-			deviceMenuOption && {
-				deviceSettings: deviceMenuOption,
-			},
-		[deviceMenuOption],
-	);
+	const options = useVoipFooterMenu();
 
 	const handleHold = (e: MouseEvent<HTMLButtonElement>): void => {
 		e.stopPropagation();

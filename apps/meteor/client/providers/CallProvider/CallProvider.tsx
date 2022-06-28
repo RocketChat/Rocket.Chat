@@ -24,6 +24,7 @@ import {
 	useSetInputMediaDevice,
 	Device,
 	useSetModal,
+	IExperimentalHTMLAudioElement,
 } from '@rocket.chat/ui-contexts';
 // import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
@@ -71,7 +72,7 @@ export const CallProvider: FC = ({ children }) => {
 	const setInputMediaDevice = useSetInputMediaDevice();
 	const isEnterprise = useHasLicense('voip-enterprise');
 
-	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
+	const remoteAudioMediaRef = useRef<IExperimentalHTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
