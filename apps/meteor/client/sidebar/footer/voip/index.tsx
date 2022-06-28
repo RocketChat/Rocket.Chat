@@ -1,6 +1,7 @@
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
+import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
 import {
 	useCallActions,
 	useCallCreateRoom,
@@ -26,6 +27,7 @@ export const VoipFooter = (): ReactElement | null => {
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
+	const isEE = useHasLicense('voip-enterprise');
 
 	const toggleMic = useCallback(
 		(state: boolean) => {
@@ -60,6 +62,7 @@ export const VoipFooter = (): ReactElement | null => {
 	const tooltips = {
 		mute: t('Mute'),
 		holdCall: t('Hold_Call'),
+		holdCallEEOnly: t('Hold_Call_EE_only'),
 		acceptCall: t('Accept_Call'),
 		endCall: t('End_Call'),
 	};
@@ -98,6 +101,7 @@ export const VoipFooter = (): ReactElement | null => {
 			dispatchEvent={dispatchEvent}
 			openedRoomInfo={openedRoomInfo}
 			anonymousText={t('Anonymous')}
+			isEnterprise={isEE === true}
 		/>
 	);
 };
