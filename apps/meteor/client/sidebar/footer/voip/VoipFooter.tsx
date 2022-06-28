@@ -109,7 +109,7 @@ export const VoipFooter = ({
 								square
 								onClick={handleHold}
 							/>
-							{options && <Menu secondary options={options} />}
+							{options && <Menu color='neutral-500' options={options} />}
 						</ButtonGroup>
 					)}
 				</Box>
