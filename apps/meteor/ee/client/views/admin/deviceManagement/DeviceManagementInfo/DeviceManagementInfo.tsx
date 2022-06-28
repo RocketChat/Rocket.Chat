@@ -8,7 +8,7 @@ import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import { usePresence } from '../../../../../../client/hooks/usePresence';
 import InfoPanel from '../../../../../../client/views/InfoPanel';
-import { useDeviceLogout } from '../useDeviceLogout';
+import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 
 type DeviceManagementInfoProps = DeviceManagementPopulatedSession & {
 	onReload: () => void;
@@ -19,7 +19,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();
 
-	const handleDeviceLogout = useDeviceLogout(sessionId);
+	const handleDeviceLogout = useDeviceLogout(sessionId, '/v1/sessions/logout');
 
 	const { name: clientName, os } = device || {};
 	const { username, name } = _user || {};

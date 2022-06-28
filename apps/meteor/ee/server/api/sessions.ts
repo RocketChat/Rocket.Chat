@@ -4,6 +4,7 @@ import { isSessionsPaginateProps, isSessionsProps } from '../../definition/rest/
 import { Users, Sessions } from '../../../app/models/server/raw/index';
 import { API } from '../../../app/api/server/api';
 import { hasLicense } from '../../app/license/server/license';
+import { Notifications } from '../../../app/notifications/server';
 
 API.v1.addRoute(
 	'sessions/list',
@@ -16,7 +17,6 @@ API.v1.addRoute(
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
-
 			const { offset, count } = this.getPaginationItems();
 			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
 			const search = this.queryParams?.filter || '';
@@ -152,6 +152,8 @@ API.v1.addRoute(
 			if (!sessionObj) {
 				return API.v1.notFound('Session not found');
 			}
+
+			Notifications.notifyUser(sessionObj.userId, 'force_logout');
 
 			Promise.all([
 				Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken),
