@@ -1,5 +1,4 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
 import { UserStatus } from '../../../client/components/UserStatus';
@@ -30,12 +29,7 @@ function ContactManagerInfo({ username }) {
 		<>
 			<Info className={wordBreak} style={{ display: 'flex' }}>
 				<UserAvatar title={username} username={username} />
-				<AgentOrContactDetails mis='x10' name={username} status={<UserStatus status={status} />} />
-				{name && (
-					<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
-						({name})
-					</Box>
-				)}
+				<AgentOrContactDetails mis='x10' name={name} shortName={username} status={<UserStatus status={status} />} />
 			</Info>
 		</>
 	);

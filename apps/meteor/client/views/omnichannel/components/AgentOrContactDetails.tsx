@@ -4,11 +4,17 @@ import React, { ReactElement, ReactNode, ComponentProps } from 'react';
 import * as UserStatus from '../../../components/UserStatus';
 
 type AgentOrContactDetailsProps = ComponentProps<typeof Box> & {
-	name: ReactNode;
+	name: string;
 	status: ReactNode;
+	shortName?: string;
 };
 
-const AgentOrContactDetails = ({ name, status = <UserStatus.Offline />, ...props }: AgentOrContactDetailsProps): ReactElement => (
+const AgentOrContactDetails = ({
+	name,
+	shortName,
+	status = <UserStatus.Offline />,
+	...props
+}: AgentOrContactDetailsProps): ReactElement => (
 	<Box
 		display='flex'
 		title={name}
@@ -25,6 +31,11 @@ const AgentOrContactDetails = ({ name, status = <UserStatus.Offline />, ...props
 		<Box mis='x8' flexGrow={1} withTruncatedText>
 			{name}
 		</Box>
+		{shortName && (
+			<Box display='flex' mis='x7' mb='x9' justifyContent='center' fontScale='c1'>
+				({shortName})
+			</Box>
+		)}
 	</Box>
 );
 

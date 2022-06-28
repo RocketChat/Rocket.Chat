@@ -46,12 +46,7 @@ const ContactField = ({ contact, room }) => {
 			<Label>{t('Contact')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<Avatar size='x40' title={fname} url={avatarUrl} />
-				<AgentOrContactDetails mis='x10' name={displayName} status={<UserStatus status={status} />} />
-				{username && (
-					<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
-						({username})
-					</Box>
-				)}
+				<AgentOrContactDetails mis='x10' name={displayName} shortName={username} status={<UserStatus status={status} />} />
 			</Info>
 		</Field>
 	);
