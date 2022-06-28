@@ -13,7 +13,7 @@ type DevicesMenuOption = {
 
 export const useDevicesMenuOption = (): DevicesMenuOption | null => {
 	// After Pull, change to correct license
-	const isEnterprise = useHasLicense('livechat-enterprise');
+	const isEnterprise = useHasLicense('voip-enterprise');
 	const t = useTranslation();
 	const setModal = useSetModal();
 
