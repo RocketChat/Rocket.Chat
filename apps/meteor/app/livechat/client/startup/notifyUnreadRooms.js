@@ -3,7 +3,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../../settings';
 import { getUserPreference } from '../../../utils';
-import { Subscriptions, Users } from '../../../models';
+import { Subscriptions, Users } from '../../../models/client';
 import { CustomSounds } from '../../../custom-sounds/client';
 
 let audio = null;

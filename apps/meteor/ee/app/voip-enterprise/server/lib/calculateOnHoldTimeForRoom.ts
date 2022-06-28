@@ -1,13 +1,12 @@
 import { IVoipRoom } from '@rocket.chat/core-typings';
-
-import { PbxEvent } from '../../../../../app/models/server/raw';
+import { PbxEvents } from '@rocket.chat/models';
 
 export const calculateOnHoldTimeForRoom = async (room: IVoipRoom, closedAt: Date): Promise<number> => {
 	if (!room.callUniqueId) {
 		return 0;
 	}
 
-	const events = await PbxEvent.findByEvents(room.callUniqueId, ['Hold', 'Unhold']).toArray();
+	const events = await PbxEvents.findByEvents(room.callUniqueId, ['Hold', 'Unhold']).toArray();
 	if (!events.length) {
 		// if there's no events, that means no hold time
 		return 0;

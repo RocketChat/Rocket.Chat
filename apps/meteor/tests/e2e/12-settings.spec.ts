@@ -1,7 +1,6 @@
-import { Page } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
-import { expect, test } from './utils/test';
 import { BASE_API_URL } from './utils/mocks/urlMock';
 import { adminLogin, validUserInserted, registerUser } from './utils/mocks/userAndPasswordMock';
 import { LoginPage, MainContent, SideNav, Administration, PreferencesMainContent } from './pageobjects';
@@ -24,8 +23,8 @@ test.describe.skip('[Settings]', async () => {
 		sideNav = new SideNav(page);
 		userPreferences = new PreferencesMainContent(page);
 
-		await loginPage.goto('/');
-		await loginPage.login(validUserInserted);
+		await page.goto('/');
+		await loginPage.doLogin(validUserInserted);
 		await sideNav.general.click();
 	});
 
@@ -343,8 +342,8 @@ test.describe.skip('[Settings]', async () => {
 
 			expect(userPreferences.avatarFileInput.isDisabled()).toBeTruthy();
 			expect(userPreferences.emailTextInput.isDisabled()).toBeTruthy();
-			expect(userPreferences.realNameTextInput.isDisabled()).toBeTruthy();
-			expect(userPreferences.userNameTextInput.isDisabled()).toBeTruthy();
+			expect(userPreferences.inputName.isDisabled()).toBeTruthy();
+			expect(userPreferences.inputUsername.isDisabled()).toBeTruthy();
 		});
 
 		test('(API) expect enable profile change', async ({ request }) => {
@@ -407,8 +406,8 @@ test.describe.skip('[Settings (admin)]', async () => {
 		sideNav = new SideNav(page);
 		admin = new Administration(page);
 
-		await loginPage.goto('/');
-		await loginPage.login(adminLogin);
+		await page.goto('/');
+		await loginPage.doLogin(adminLogin);
 		await sideNav.general.click();
 	});
 
@@ -474,7 +473,7 @@ test.describe.skip('[Settings (admin)]', async () => {
 
 		test.describe('(UI) expect activate/deactivate flow as admin', () => {
 			test('expect open /users as admin', async () => {
-				await admin.goto('/admin');
+				await page.goto('/admin');
 				await admin.usersLink.click();
 			});
 

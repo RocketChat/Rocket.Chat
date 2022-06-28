@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { Settings } from '../../models';
+import { Settings } from '../../models/server';
 import { settings } from '../../settings/server';
 import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
 import './scripts';
