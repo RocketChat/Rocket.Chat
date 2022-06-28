@@ -30,7 +30,7 @@ export class AutoCloseOnHoldScheduler extends AbstractOmniSchedulerClass {
 			{
 				'data.roomId': 1,
 			},
-			{ unique: true },
+			{ sparse: true },
 		);
 	}
 

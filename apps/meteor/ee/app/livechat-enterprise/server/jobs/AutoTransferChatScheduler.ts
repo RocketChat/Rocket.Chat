@@ -31,7 +31,7 @@ export class AutoTransferChatScheduler extends AbstractOmniSchedulerClass {
 			{
 				'data.roomId': 1,
 			},
-			{ unique: true },
+			{ sparse: true },
 		);
 	}
 
