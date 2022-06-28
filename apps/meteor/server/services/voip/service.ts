@@ -230,6 +230,7 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		}
 
 		const result = {
+			host: config.host,
 			callServerConfig: config.configData,
 			extensionDetails: endpointDetails.result,
 		};
