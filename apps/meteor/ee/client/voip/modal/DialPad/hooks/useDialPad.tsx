@@ -2,6 +2,8 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import { ChangeEvent, RefCallback, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { useOutboundDialer } from '../../../../hooks/useOutboundDialer';
+
 type DialPadStateHandlers = {
 	inputName: string;
 	inputRef: RefCallback<HTMLInputElement>;
@@ -13,8 +15,9 @@ type DialPadStateHandlers = {
 	handleCallButtonClick: () => void;
 };
 
-export const useDialPad = (): DialPadStateHandlers => {
+export const useDialPad = (handleClose: () => void): DialPadStateHandlers => {
 	const t = useTranslation();
+	const outbound = useOutboundDialer();
 
 	const {
 		setFocus,
@@ -43,9 +46,19 @@ export const useDialPad = (): DialPadStateHandlers => {
 	);
 
 	const handleCallButtonClick = useCallback((): void => {
-		// TODO: Waiting for backend to implement this feature
-		setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
-	}, [setError, t]);
+		if (!outbound || !outbound.outboundDialer) {
+			return setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
+		}
+
+		outbound.outboundDialer.makeCall(`sip:*${value}@${outbound.outboundDialer.config.sipRegistrarHostnameOrIP}`).then(
+			() => {
+				handleClose();
+			},
+			(error) => {
+				setError('PhoneInput', { message: error.message });
+			},
+		);
+	}, [handleClose, outbound, setError, t, value]);
 
 	useEffect(() => {
 		setDisabled(!value);

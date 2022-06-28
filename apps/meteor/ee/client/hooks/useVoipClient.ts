@@ -4,10 +4,10 @@ import { useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-con
 import { KJUR } from 'jsrsasign';
 import { useEffect, useState } from 'react';
 
-import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
-import { EEVoipClient } from '../../../../ee/client/lib/voip/EEVoipClient';
-import { VoIPUser } from '../../../lib/voip/VoIPUser';
-import { useWebRtcServers } from './useWebRtcServers';
+import { VoIPUser } from '../../../client/lib/voip/VoIPUser';
+import { useWebRtcServers } from '../../../client/providers/CallProvider/hooks/useWebRtcServers';
+import { EEVoipClient } from '../lib/voip/EEVoipClient';
+import { useHasLicense } from './useHasLicense';
 
 type UseVoipClientResult = {
 	voipClient?: VoIPUser;

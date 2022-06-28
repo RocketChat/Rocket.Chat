@@ -1,7 +1,6 @@
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useState } from 'react';
 
-// import { useVoipClient } from '../../../client/providers/CallProvider/hooks/useVoipClient';
 import { useCallClient } from '../../../client/contexts/CallContext';
 import { hasLicense } from '../../app/license/client';
 import { EEVoipClient } from '../lib/voip/EEVoipClient';
@@ -29,17 +28,6 @@ export const useOutboundDialer = (): UseOutboundDialerResult => {
 				setResult({ outboundDialer: voipClient as EEVoipClient });
 			}
 		});
-
-		return (): void => {
-			hasLicense('voip-enterprise').then((enabled) => {
-				if (!enabled) {
-					return;
-				}
-				if (voipClient) {
-					voipClient.clear();
-				}
-			});
-		};
 	}, [setResult, voipClient]);
 
 	return result;

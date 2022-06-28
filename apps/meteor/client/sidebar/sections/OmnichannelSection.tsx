@@ -17,12 +17,14 @@ import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useOmnichannelAgentAvailable } from '../../hooks/omnichannel/useOmnichannelAgentAvailable';
 import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';
 import { OmnichannelCallToggle } from './actions/OmnichannelCallToggle';
+import { useVoipAgent } from './hooks/useVoipAgent';
 
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const isCallEnabled = useIsCallEnabled();
+	const { agentEnabled } = useVoipAgent();
 	const hasPermission = usePermission('view-omnichannel-contact-center');
 	const agentAvailable = useOmnichannelAgentAvailable();
 	const voipLicense = useHasLicense('voip-enterprise');
@@ -81,6 +83,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 						title={voipLicense ? t('New_Call') : t('New_Call_Enterprise_Edition_Only')}
 						icon='dialpad'
 						onClick={openDialModal}
+						disabled={!agentEnabled}
 					/>
 				)}
 			</Sidebar.TopBar.Actions>
