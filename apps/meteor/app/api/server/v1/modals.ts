@@ -14,7 +14,7 @@ API.v1.addRoute(
 			const { content, contentType, title, expires } = this.bodyParams;
 			const createdAt = new Date();
 
-			const stmt = await Modals.insertOne({ content, contentType, title, expires, status: true, createdBy: this.userId, createdAt });
+			const stmt = await Modals.insertOne({ content, contentType, title, expires, active: true, createdBy: this.userId, createdAt });
 
 			if (!stmt.insertedCount) return API.v1.failure('error-modal-not-created');
 
@@ -32,7 +32,7 @@ API.v1.addRoute(
 			}
 
 			const { modalId } = this.bodyParams;
-			const modal = await Modals.findOne({ _id: modalId, status: true });
+			const modal = await Modals.findOne({ _id: modalId, active: true });
 			if (!modal) {
 				return API.v1.notFound();
 			}
@@ -56,7 +56,7 @@ API.v1.addRoute(
 			}
 			const { modalId } = this.bodyParams;
 
-			if (await Modals.findOne({ _id: modalId, status: true })) {
+			if (await Modals.findOne({ _id: modalId, active: true })) {
 				return API.v1.notFound();
 			}
 
@@ -72,7 +72,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-user');
 			}
 			const { modalId } = this.bodyParams;
-			const modal = await Modals.findOne({ _id: modalId, status: true });
+			const modal = await Modals.findOne({ _id: modalId, active: true });
 			if (!modal) {
 				return API.v1.notFound();
 			}

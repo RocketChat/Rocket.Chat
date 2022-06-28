@@ -18,7 +18,7 @@ export const createDeviceManagementModal = async (): Promise<void> => {
 			contentType: 'text',
 			createdAt: new Date(),
 			expires: null,
-			status: true,
+			active: true,
 		});
 	}
 };

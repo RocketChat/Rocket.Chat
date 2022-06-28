@@ -8,5 +8,5 @@ export interface IModal extends IRocketChatRecord {
 	createdBy?: IUser['_id'];
 	createdAt: Date;
 	expires: Date | null;
-	status: boolean;
+	active: boolean;
 }
