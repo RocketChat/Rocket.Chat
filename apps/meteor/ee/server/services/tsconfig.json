@@ -43,6 +43,6 @@
 		// "emitDecoratorMetadata": true,
 		// "experimentalDecorators": true,
 	},
-	"include": ["./**/*", "../../../definition", "../../../server/services/device-management"],
+	"include": ["./**/*", "../../../definition"],
 	"exclude": ["./dist", "./ecosystem.config.js", "../../../definition/methods"]
 }
