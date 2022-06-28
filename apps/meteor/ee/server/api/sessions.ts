@@ -149,7 +149,7 @@ API.v1.addRoute(
 			const { sessionId } = this.bodyParams;
 			const sessionObj = await Sessions.findOneBySessionId(sessionId);
 
-			if (!sessionObj) {
+			if (!sessionObj?.loginToken) {
 				return API.v1.notFound('Session not found');
 			}
 

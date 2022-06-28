@@ -21,6 +21,7 @@ import type {
 	DeviceManagementPopulatedSession,
 	OSSessionAggregationResult,
 	IUser,
+	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
 import { getCollectionName } from '@rocket.chat/models';
@@ -1534,6 +1535,25 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			},
 			update,
 		);
+	}
+
+	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateWriteOpResult> {
+		const query = {
+			instanceId,
+			sessionId,
+			userId,
+			logoutAt: { $exists: false },
+		};
+
+		const logoutAt = new Date();
+		const update = {
+			$set: {
+				logoutAt,
+				lastActivityAt: logoutAt,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 
 	async logoutBySessionIdAndUserId({

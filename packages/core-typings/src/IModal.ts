@@ -1,7 +1,8 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 
-export interface IModal extends IRocketChatRecord {
+export interface IModal {
+	_id: string;
 	title: string;
 	content: string;
 	contentType: 'markdown' | 'text';
