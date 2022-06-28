@@ -1,5 +1,4 @@
 import type { IModal } from './IModal';
-import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 
 export interface IModalDismiss {
