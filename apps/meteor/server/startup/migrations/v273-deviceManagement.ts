@@ -109,7 +109,6 @@ addMigration({
 			},
 			{
 				$set: {
-					value: style,
 					packageValue: style,
 				},
 			},
