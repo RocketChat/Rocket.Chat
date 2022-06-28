@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
+import { Settings } from '../../../models/server';
+
 const timeoutQuery = parseInt(process.env.OBSERVERS_CHECK_TIMEOUT) || 2 * 60 * 1000;
 const interval = parseInt(process.env.OBSERVERS_CHECK_INTERVAL) || 60 * 1000;
 const debug = Boolean(process.env.OBSERVERS_CHECK_DEBUG);
@@ -59,6 +61,7 @@ Meteor.setInterval(() => {
  */
 
 process.on('unhandledRejection', (error) => {
+	Settings.incrementValueById('Uncaught_Exceptions_Count');
 	console.error('=== UnHandledPromiseRejection ===');
 	console.error(error);
 	console.error('---------------------------------');
