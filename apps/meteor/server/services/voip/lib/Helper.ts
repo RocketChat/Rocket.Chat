@@ -7,6 +7,7 @@ export function getServerConfigDataFromSettings(type: ServerType): IVoipCallServ
 		case ServerType.CALL_SERVER: {
 			const serverCofig: IVoipCallServerConfig = {
 				type: ServerType.CALL_SERVER,
+				host: settings.get<string>('VoIP_Server_Host'),
 				name: settings.get<string>('VoIP_Server_Name'),
 				configData: {
 					websocketPath: settings.get<string>('VoIP_Server_Websocket_Path'),
