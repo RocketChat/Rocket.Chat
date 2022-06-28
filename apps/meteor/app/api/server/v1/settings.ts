@@ -33,7 +33,7 @@ async function fetchSettings(
 
 	SettingsEvents.emit('fetch-settings', settings);
 	return { settings, totalCount };
-};
+}
 
 // settings endpoints
 API.v1.addRoute(
