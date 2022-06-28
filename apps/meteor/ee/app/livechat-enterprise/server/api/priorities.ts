@@ -32,12 +32,16 @@ API.v1.addRoute(
 		async get() {
 			const { priorityId } = this.urlParams;
 
-			return API.v1.success(
-				await findPriorityById({
-					userId: this.userId,
-					priorityId,
-				}),
-			);
+			const priority = await findPriorityById({
+				userId: this.userId,
+				priorityId,
+			});
+
+			if (!priority) {
+				return API.v1.notFound(`Priority with id ${priorityId} not found`);
+			}
+
+			return API.v1.success(priority);
 		},
 	},
 );

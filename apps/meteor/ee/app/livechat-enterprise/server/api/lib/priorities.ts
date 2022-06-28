@@ -1,16 +1,45 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatPriority } from '@rocket.chat/models';
+import { ILivechatPriority } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 
-export async function findPriorities({ userId, text, pagination: { offset, count, sort } }) {
+type FindPrioritiesParams = {
+	userId: string;
+	text?: string;
+	pagination: {
+		offset: number;
+		count: number;
+		sort: object;
+	};
+};
+
+type FindPrioritiesResult = {
+	priorities: ILivechatPriority[];
+	count: number;
+	offset: number;
+	total: number;
+};
+
+type FindPrioritiesByIdParams = {
+	userId: string;
+	priorityId: string;
+};
+
+type FindPrioritiesByIdResult = ILivechatPriority | null;
+
+export async function findPriorities({
+	userId,
+	text,
+	pagination: { offset, count, sort },
+}: FindPrioritiesParams): Promise<FindPrioritiesResult> {
 	if (!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
-	const filterReg = new RegExp(escapeRegExp(text), 'i');
-
-	const query = { ...(text && { $or: [{ name: filterReg }, { description: filterReg }] }) };
+	const query = {
+		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
+	};
 
 	const cursor = LivechatPriority.find(query, {
 		sort: sort || { name: 1 },
@@ -30,7 +59,7 @@ export async function findPriorities({ userId, text, pagination: { offset, count
 	};
 }
 
-export async function findPriorityById({ userId, priorityId }) {
+export async function findPriorityById({ userId, priorityId }: FindPrioritiesByIdParams): Promise<FindPrioritiesByIdResult> {
 	if (!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
