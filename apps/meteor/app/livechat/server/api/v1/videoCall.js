@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Messages, Rooms } from '../../../../models/server';
+import { Messages, Rooms, Settings } from '../../../../models';
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { settings } from '../lib/livechat';
@@ -48,6 +48,7 @@ API.v1.addRoute(
 				let { callStatus } = room;
 
 				if (!callStatus || callStatus === 'ended' || callStatus === 'declined') {
+					Settings.incrementValueById('WebRTC_Calls_Count');
 					callStatus = 'ringing';
 					Promise.await(Rooms.setCallStatusAndCallStartTime(room._id, callStatus));
 					Promise.await(
