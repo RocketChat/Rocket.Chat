@@ -5,7 +5,7 @@ import { UserStatus } from '../../../client/components/UserStatus';
 import UserAvatar from '../../../client/components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../client/hooks/useEndpointData';
-import AgentOrContactDetails from '../../../client/views/omnichannel/components/AgentOrContactDetails';
+import AgentInfoDetails from '../../../client/views/omnichannel/components/AgentInfoDetails';
 import Info from '../../../client/views/omnichannel/components/Info';
 
 const wordBreak = css`
@@ -29,7 +29,7 @@ function ContactManagerInfo({ username }) {
 		<>
 			<Info className={wordBreak} style={{ display: 'flex' }}>
 				<UserAvatar title={username} username={username} />
-				<AgentOrContactDetails mis='x10' name={name} shortName={username} status={<UserStatus status={status} />} />
+				<AgentInfoDetails mis='x10' name={name} shortName={username} status={<UserStatus status={status} />} />
 			</Info>
 		</>
 	);

@@ -6,7 +6,7 @@ import { UserStatus } from '../../../../../components/UserStatus';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import AgentOrContactDetails from '../../../components/AgentOrContactDetails';
+import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
@@ -46,7 +46,7 @@ const ContactField = ({ contact, room }) => {
 			<Label>{t('Contact')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<Avatar size='x40' title={fname} url={avatarUrl} />
-				<AgentOrContactDetails mis='x10' name={displayName} shortName={username} status={<UserStatus status={status} />} />
+				<AgentInfoDetails mis='x10' name={displayName} shortName={username} status={<UserStatus status={status} />} />
 			</Info>
 		</Field>
 	);

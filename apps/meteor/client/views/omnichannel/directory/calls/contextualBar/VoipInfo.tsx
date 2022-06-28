@@ -8,7 +8,7 @@ import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import InfoPanel from '../../../../InfoPanel';
-import AgentOrContactDetails from '../../../components/AgentOrContactDetails';
+import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import AgentField from '../../chats/contextualBar/AgentField';
 import { InfoField } from './InfoField';
 
@@ -54,7 +54,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 							<InfoPanel.Label>{t('Contact')}</InfoPanel.Label>
 							<Box display='flex'>
 								<UserAvatar size='x28' username={_name} />
-								<AgentOrContactDetails mis='x8' name={_name} status={<UserStatus status={v?.status} />} />
+								<AgentInfoDetails mis='x8' name={_name} status={<UserStatus status={v?.status} />} />
 							</Box>
 						</InfoPanel.Field>
 					)}

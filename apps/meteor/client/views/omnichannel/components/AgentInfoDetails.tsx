@@ -3,18 +3,13 @@ import React, { ReactElement, ReactNode, ComponentProps } from 'react';
 
 import * as UserStatus from '../../../components/UserStatus';
 
-type AgentOrContactDetailsProps = ComponentProps<typeof Box> & {
+type AgentInfoDetailsProps = ComponentProps<typeof Box> & {
 	name: string;
 	status: ReactNode;
 	shortName?: string;
 };
 
-const AgentOrContactDetails = ({
-	name,
-	shortName,
-	status = <UserStatus.Offline />,
-	...props
-}: AgentOrContactDetailsProps): ReactElement => (
+const AgentInfoDetails = ({ name, shortName, status = <UserStatus.Offline />, ...props }: AgentInfoDetailsProps): ReactElement => (
 	<Box
 		display='flex'
 		title={name}
@@ -39,4 +34,4 @@ const AgentOrContactDetails = ({
 	</Box>
 );
 
-export default AgentOrContactDetails;
+export default AgentInfoDetails;

@@ -5,7 +5,7 @@ import { UserStatus } from '../../../../../components/UserStatus';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
-import AgentOrContactDetails from '../../../components/AgentOrContactDetails';
+import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
@@ -34,12 +34,7 @@ const AgentField = ({ agent, isSmall = false }) => {
 			<Label>{t('Agent')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<UserAvatar size={isSmall ? 'x28' : 'x40'} title={username} username={username} />
-				<AgentOrContactDetails
-					mis={isSmall ? 'x8' : 'x10'}
-					name={displayName}
-					shortName={username}
-					status={<UserStatus status={status} />}
-				/>
+				<AgentInfoDetails mis={isSmall ? 'x8' : 'x10'} name={displayName} shortName={username} status={<UserStatus status={status} />} />
 			</Info>
 		</Field>
 	);
