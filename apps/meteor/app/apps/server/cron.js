@@ -3,12 +3,12 @@ import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import { Settings } from '@rocket.chat/models';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../cloud/server';
 import { Users } from '../../models/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
-import { Settings } from '../../models/server/raw';
 
 const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {

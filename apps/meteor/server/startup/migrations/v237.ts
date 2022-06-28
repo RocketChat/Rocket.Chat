@@ -1,7 +1,8 @@
+import { Settings } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
 import { settings } from '../../../app/settings/server';
 import { isEnterprise } from '../../../ee/app/license/server';
-import { Settings } from '../../../app/models/server/raw';
 
 function copySettingValue(newName: string, oldName: string): void {
 	const value = settings.get(oldName);

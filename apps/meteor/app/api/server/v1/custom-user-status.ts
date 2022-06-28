@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { CustomUserStatus } from '@rocket.chat/models';
 
-import { CustomUserStatus } from '../../../models/server/raw';
 import { API } from '../api';
 
 API.v1.addRoute(

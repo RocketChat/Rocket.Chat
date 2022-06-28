@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { jws } from 'jsrsasign';
 
-import { Rooms } from '../../../models';
-import { settings } from '../../../settings';
+import { Rooms } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 

@@ -20,7 +20,6 @@ export class Departments extends BasePage {
 	}
 
 	get enabledToggle(): Locator {
-		// temporary selector
 		return this.page.locator('[data-qa="DepartmentEditToggle-Enabled"] span label');
 	}
 
@@ -73,11 +72,11 @@ export class Departments extends BasePage {
 	}
 
 	get btnModalCancelDeleteDepartment(): Locator {
-		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--ghost');
+		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--secondary');
 	}
 
 	get btnModalDeleteDepartment(): Locator {
-		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--primary-danger');
+		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--danger');
 	}
 
 	get modalDepartment(): Locator {
@@ -107,6 +106,7 @@ export class Departments extends BasePage {
 		await this.emailInput.type('any_email@mail.com');
 		await this.showOnRegistrationPage.click();
 		await this.selectLiveChatDepartmentOfflineMessageToChannel.click();
+		await this.selectLiveChatDepartmentOfflineMessageToChannel.type('general');
 		await this.virtuosoOptions('general').click();
 		await this.selectAgentsTable.click();
 		await this.btnSaveDepartment.click();
