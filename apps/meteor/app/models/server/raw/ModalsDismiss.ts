@@ -6,18 +6,20 @@ import type { IModal, IModalDismiss, IUser } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 
-type T = IModalDismiss;
-
-export class ModalsDismissRaw extends BaseRaw<T> {
+export class ModalsDismissRaw extends BaseRaw<IModalDismiss> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { createdAt: -1 } }, { key: { _modal: 1, _user: 1, createdAt: -1 }, background: true }];
 	}
 
-	findOneByModalIdAndUserId(modalId: IModal['_id'], userId: IUser['_id'], options: FindOneOptions<T>): Promise<T | null> {
+	findOneByModalIdAndUserId(
+		modalId: IModal['_id'],
+		userId: IUser['_id'],
+		options: FindOneOptions<IModalDismiss>,
+	): Promise<IModalDismiss | null> {
 		return this.findOne({ _modal: modalId, _user: userId }, options);
 	}
 
-	findWithUserId(userId: IUser['_id'], options: FindOneOptions<T>): Cursor<T> {
+	findWithUserId(userId: IUser['_id'], options: FindOneOptions<IModalDismiss>): Cursor<IModalDismiss> {
 		const query = { _user: userId };
 		return this.find(query, options);
 	}

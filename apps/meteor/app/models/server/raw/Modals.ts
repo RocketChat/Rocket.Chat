@@ -6,23 +6,21 @@ import type { IModal, IUser } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 
-type T = IModal;
-
-export class ModalsRaw extends BaseRaw<T> {
+export class ModalsRaw extends BaseRaw<IModal> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { createdBy: -1 } }, { key: { status: 1 } }, { key: { createdBy: 1, createdAt: -1, status: 1 }, background: true }];
 	}
 
-	findOneByIdAndUserId(_id: IModal['_id'], userId: IUser['_id'], options: FindOneOptions<T>): Promise<T | null> {
+	findOneByIdAndUserId(_id: IModal['_id'], userId: IUser['_id'], options: FindOneOptions<IModal>): Promise<IModal | null> {
 		return this.findOne({ _id, createBy: userId }, options);
 	}
 
-	findWithUserId(userId: IUser['_id'], options: FindOneOptions<T>): Cursor<T> {
+	findWithUserId(userId: IUser['_id'], options: FindOneOptions<IModal>): Cursor<IModal> {
 		const query = { createdBy: userId, status: { $ne: false, $exists: true } };
 		return this.find(query, options);
 	}
 
-	findByCreatedBy(createdBy: IUser['_id'], options: FindOneOptions<T>): Cursor<T> {
+	findByCreatedBy(createdBy: IUser['_id'], options: FindOneOptions<IModal>): Cursor<IModal> {
 		const query = { createdBy };
 		return this.find(query, options);
 	}
