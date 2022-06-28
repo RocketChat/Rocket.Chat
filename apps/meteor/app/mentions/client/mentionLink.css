@@ -16,7 +16,6 @@
 
 	&:hover {
 		opacity: 0.6;
-		color: var(--mention-link-text-color);
 	}
 
 	&--me {

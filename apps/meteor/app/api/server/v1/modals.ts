@@ -1,6 +1,5 @@
 import { isModalsProps, isModalsInsertProps } from '@rocket.chat/rest-typings';
-
-import { Modals, ModalsDismiss } from '../../../models/server/raw';
+import { Modals, ModalDismiss } from '@rocket.chat/models';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -60,11 +59,11 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 
-			const modalsDismiss = await ModalsDismiss.findOneByModalIdAndUserId(modalId, this.userId, { projection: { _id: 1 } });
+			const modalsDismiss = await ModalDismiss.findOneByModalIdAndUserId(modalId, this.userId, { projection: { _id: 1 } });
 			if (modalsDismiss) {
 				return API.v1.failure('error-modal-already-dismissed');
 			}
-			await ModalsDismiss.insertOne({ _modal: modalId, _user: this.userId, createdAt: new Date() });
+			await ModalDismiss.insertOne({ _modal: modalId, _user: this.userId, createdAt: new Date() });
 			return API.v1.success();
 		},
 		async delete() {
@@ -77,7 +76,7 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 
-			const stmt = await ModalsDismiss.removeUserByUserIdAndId(modalId, this.userId);
+			const stmt = await ModalDismiss.removeUserByUserIdAndId(modalId, this.userId);
 			if (stmt.deletedCount) {
 				return API.v1.success();
 			}

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { ModalsDismiss } from '../../../../app/models/server/raw/index';
+import { Modals } from '@rocket.chat/models';
 import { hasLicense } from '../../../app/license/server/license';
 
 Meteor.methods({

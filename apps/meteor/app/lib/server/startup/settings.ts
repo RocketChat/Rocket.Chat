@@ -426,10 +426,23 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Sort_By',
 		});
 
-		this.add('Accounts_Default_User_Preferences_showMessageInMainThread', false, {
-			type: 'boolean',
+		this.add('Accounts_Default_User_Preferences_alsoSendThreadToChannel', 'default', {
+			type: 'select',
+			values: [
+				{
+					key: 'default',
+					i18nLabel: 'Default',
+				},
+				{
+					key: 'always',
+					i18nLabel: 'Always',
+				},
+				{
+					key: 'never',
+					i18nLabel: 'Never',
+				},
+			],
 			public: true,
-			i18nLabel: 'Show_Message_In_Main_Thread',
 		});
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
@@ -457,6 +470,7 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Enter_Behaviour',
 		});
+
 		this.add('Accounts_Default_User_Preferences_messageViewMode', 0, {
 			type: 'select',
 			values: [
@@ -1702,6 +1716,11 @@ settingsRegistry.addGroup('Logs', function () {
 		},
 	});
 
+	this.add('Uncaught_Exceptions_Count', 0, {
+		hidden: true,
+		type: 'int',
+	});
+
 	this.section('Prometheus', function () {
 		this.add('Prometheus_Enabled', false, {
 			type: 'boolean',
@@ -2910,6 +2929,10 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 		});
 		this.add('Organization_Email', '', {
 			type: 'string',
+		});
+		this.add('Triggered_Emails_Count', 0, {
+			type: 'int',
+			hidden: true,
 		});
 	});
 
