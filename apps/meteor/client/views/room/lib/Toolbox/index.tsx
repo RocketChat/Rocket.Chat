@@ -25,7 +25,6 @@ export type ToolboxActionConfig = {
 	icon: string;
 	title: TranslationKey;
 	anonymous?: boolean;
-	hidden?: boolean;
 	renderAction?: ActionRenderer;
 	full?: true;
 	renderOption?: OptionRenderer;

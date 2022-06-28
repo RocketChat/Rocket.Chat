@@ -1,4 +1,4 @@
-import React, { useMemo, lazy, ReactElement, ComponentProps } from 'react';
+import React, { useMemo, lazy, ComponentProps, ReactElement } from 'react';
 import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Menu } from '@rocket.chat/fuselage';
 import { useSetting, useSetModal, useUser, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
@@ -17,7 +17,7 @@ addAction('video-conf-list', {
 	icon: 'video',
 	title: 'Video_Conferences',
 	template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
-	hidden: true,
+	order: 999,
 });
 
 addAction('video-conf', ({ room }) => {
