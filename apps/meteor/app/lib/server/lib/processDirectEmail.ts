@@ -55,12 +55,12 @@ export const processDirectEmail = Meteor.bindEnvironment(function (email: Parsed
 		return;
 	}
 
-	const room = canAccessRoom({ _id: prevMessage.rid }, user);
+	const roomInfo: IRoom = Rooms.findOneById(prevMessage.rid);
+
+	const room = canAccessRoom(roomInfo, user);
 	if (!room) {
 		return;
 	}
-
-	const roomInfo: IRoom = Rooms.findOneById(prevMessage.rid);
 
 	// check mention
 	if (msg.indexOf(`@${prevMessage.u.username}`) === -1 && roomInfo.t !== 'd') {
@@ -92,7 +92,7 @@ export const processDirectEmail = Meteor.bindEnvironment(function (email: Parsed
 
 	// room is readonly
 	if (roomInfo.ro === true) {
-		if (!hasPermission(Meteor.userId(), 'post-readonly', roomInfo._id)) {
+		if (!hasPermission(user._id, 'post-readonly', roomInfo._id)) {
 			// Check if the user was manually unmuted
 			if (!(roomInfo.unmuted || []).includes(user.username)) {
 				return;
