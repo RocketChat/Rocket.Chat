@@ -66,6 +66,9 @@ export class AppRoomsConverter {
 		if (isLivechatRoom(room)) {
 			if (room.visitor) {
 				const visitor = Promise.await(LivechatVisitors.findOneById(room.visitor.id));
+				if (!visitor) {
+					throw new Error('Visitor not found');
+				}
 				v = {
 					_id: visitor._id,
 					username: visitor.username,

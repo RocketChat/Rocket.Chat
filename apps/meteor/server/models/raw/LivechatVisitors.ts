@@ -70,7 +70,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find(query);
 	}
 
-	getVisitorByToken(token: string, options: FindOneOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
+	getVisitorByToken(token: string, options?: FindOneOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
 		const query = {
 			token,
 		};

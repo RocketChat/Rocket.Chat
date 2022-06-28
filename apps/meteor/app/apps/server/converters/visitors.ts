@@ -20,6 +20,10 @@ export class AppVisitorsConverter {
 		| undefined {
 		const visitor = Promise.await(LivechatVisitors.findOneById(id));
 
+		if (!visitor) {
+			throw new Error(`Visitor with id ${id} not found`);
+		}
+
 		return this.convertVisitor(visitor);
 	}
 
@@ -29,6 +33,10 @@ export class AppVisitorsConverter {
 		  })
 		| undefined {
 		const visitor = Promise.await(LivechatVisitors.getVisitorByToken(token));
+
+		if (!visitor) {
+			throw new Error(`Visitor with token ${token} not found`);
+		}
 
 		return this.convertVisitor(visitor);
 	}

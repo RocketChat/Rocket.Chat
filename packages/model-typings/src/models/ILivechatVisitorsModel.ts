@@ -13,7 +13,7 @@ import type { IBaseModel } from './IBaseModel';
 
 export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findById(_id: string, options: FindOneOptions<ILivechatVisitor>): Cursor<ILivechatVisitor>;
-	getVisitorByToken(token: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>>): Promise<ILivechatVisitor | null>;
+	getVisitorByToken(token: string, options?: WithoutProjection<FindOneOptions<ILivechatVisitor>>): Promise<ILivechatVisitor | null>;
 	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department: string }): Cursor<ILivechatVisitor>;
 	findByNameRegexWithExceptionsAndConditions<P = ILivechatVisitor>(
 		searchTerm: string,
