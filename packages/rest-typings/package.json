@@ -26,7 +26,7 @@
 	"dependencies": {
 		"@rocket.chat/apps-engine": "^1.31.0",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/message-parser": "next",
+		"@rocket.chat/message-parser": "^0.32.0-dev.5",
 		"@rocket.chat/ui-kit": "^0.31.6",
 		"ajv": "^8.11.0"
 	}
