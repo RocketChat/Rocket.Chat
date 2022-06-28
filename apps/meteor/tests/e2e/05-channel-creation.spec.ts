@@ -1,27 +1,27 @@
 import { test } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
-import { LoginPage, ChannelCreation } from './pageobjects';
+import { LoginPage, SideNav } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Channel]', async () => {
-	let channelCreation: ChannelCreation;
+	let sideNav: SideNav;
 	let loginPage: LoginPage;
 
 	test.beforeAll(async ({ browser }) => {
 		const page = await browser.newPage();
 		loginPage = new LoginPage(page);
-		channelCreation = new ChannelCreation(page);
+		sideNav = new SideNav(page);
 
-		await loginPage.goto('/');
+		await page.goto('/');
 		await loginPage.doLogin(adminLogin);
 	});
 
 	test('expect create private channel', async () => {
-		await channelCreation.doCreateChannel(faker.animal.type() + Date.now(), true);
+		await sideNav.doCreateChannel(faker.animal.type() + Date.now(), true);
 	});
 
 	test('expect create public channel', async () => {
-		await channelCreation.doCreateChannel(faker.animal.type() + Date.now());
+		await sideNav.doCreateChannel(faker.animal.type() + Date.now());
 	});
 });

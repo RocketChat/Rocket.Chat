@@ -16,7 +16,7 @@ const createBrowserContextForChat = async (
 	const mainContent = new MainContent(page);
 	const sideNav = new SideNav(page);
 
-	await loginPage.goto(baseURL);
+	await page.goto(baseURL);
 	await loginPage.doLogin(validUserInserted);
 
 	return { mainContent, sideNav };
@@ -27,17 +27,15 @@ test.describe('[Messaging]', () => {
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 	let flexTab: FlexTab;
-	test.beforeAll(async ({ browser, baseURL }) => {
-		const context = await browser.newContext();
-		const page = await context.newPage();
+	test.beforeAll(async ({ browser }) => {
+		const page = await browser.newPage();
 
 		loginPage = new LoginPage(page);
 		mainContent = new MainContent(page);
 		sideNav = new SideNav(page);
 		flexTab = new FlexTab(page);
 
-		await loginPage.goto(baseURL as string);
-
+		await page.goto('/');
 		await loginPage.doLogin(adminLogin);
 	});
 
