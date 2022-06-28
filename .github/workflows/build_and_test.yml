@@ -15,8 +15,8 @@ concurrency:
 
 env:
   CI: true
-  MONGO_URL: mongodb://127.0.0.1:27017/rocketchat
-  MONGO_OPLOG_URL: mongodb://mongo:27017/local
+  MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0
+  MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0
   TOOL_NODE_FLAGS: --max_old_space_size=4096
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
@@ -224,9 +224,10 @@ jobs:
 
     steps:
       - name: Launch MongoDB
-        uses: wbari/start-mongoDB@v0.2
+        uses: supercharge/mongodb-github-action@1.7.0
         with:
-          mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
+          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-replica-set: rs0
 
       - uses: actions/checkout@v3
 
@@ -238,11 +239,6 @@ jobs:
 
       - name: Setup Chrome
         run: npm i chromedriver
-
-      - name: Configure Replica Set
-        run: |
-          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"127.0.0.1:27017"}]})'
-          docker exec mongo mongo --eval 'rs.status()'
 
       - name: yarn install
         run: yarn
@@ -305,11 +301,11 @@ jobs:
           IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${IMAGE_TAG}"
 
           docker run --name rocketchat -d \
-            --link mongo \
+            --link mongodb \
             -p 3000:3000 \
             -e TEST_MODE=true \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
             ${IMAGE_NAME}
 
       - name: E2E Test API
@@ -319,7 +315,7 @@ jobs:
           cd ./apps/meteor
           for i in $(seq 1 5); do
             docker stop rocketchat
-            docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+            docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
             echo $NOW
@@ -349,7 +345,7 @@ jobs:
           docker logs rocketchat --tail=50
 
           docker stop rocketchat
-          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+          docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
           echo $NOW
@@ -383,9 +379,10 @@ jobs:
 
     steps:
       - name: Launch MongoDB
-        uses: wbari/start-mongoDB@v0.2
+        uses: supercharge/mongodb-github-action@1.7.0
         with:
-          mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
+          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-replica-set: rs0
 
       - name: Launch NATS
         run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
@@ -400,11 +397,6 @@ jobs:
 
       - name: Setup Chrome
         run: npm i chromedriver
-
-      - name: Configure Replica Set
-        run: |
-          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"127.0.0.1:27017"}]})'
-          docker exec mongo mongo --eval 'rs.status()'
 
       - name: TurboRepo local server
         uses: felixmosh/turborepo-gh-artifacts@v1
@@ -494,11 +486,11 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           docker run --name rocketchat -d \
-            --link mongo \
+            --link mongodb \
             --link nats \
             -e TEST_MODE=true \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             -e ENTERPRISE_LICENSE="${{ secrets.ENTERPRISE_LICENSE }}" \
@@ -508,11 +500,11 @@ jobs:
 
           # spin up all micro services
           docker run --name ddp-streamer -d \
-            --link mongo \
+            --link mongodb \
             --link nats \
             -e PORT=4000 \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             --label 'traefik.http.services.ddp-streamer.loadbalancer.server.port=4000' \
@@ -524,10 +516,10 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           docker run --name stream-hub -d \
-            --link mongo \
+            --link mongodb \
             --link nats \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -543,10 +535,10 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           docker run --name account -d \
-            --link mongo \
+            --link mongodb \
             --link nats \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -562,10 +554,10 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           docker run --name authorization -d \
-            --link mongo \
+            --link mongodb \
             --link nats \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -581,10 +573,10 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           docker run --name presence -d \
-            --link mongo \
+            --link mongodb \
             --link nats \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -606,7 +598,7 @@ jobs:
             docker stop ddp-streamer
             docker stop presence
 
-            docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+            docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
             echo $NOW
@@ -654,7 +646,7 @@ jobs:
           docker stop ddp-streamer
           docker stop presence
 
-          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+          docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
           echo $NOW
