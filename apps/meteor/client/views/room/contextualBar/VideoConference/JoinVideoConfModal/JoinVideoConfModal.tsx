@@ -50,28 +50,26 @@ const JoinVideoConfModal = ({ room, confTitle, callId, onClose, onConfirm }: Joi
 			<VideoConfModalContent>
 				<RoomAvatar room={room} size='x124' />
 				<VideoConfModalTitle>{`${t('Join_conference')} ${confTitle || ''}`}</VideoConfModalTitle>
-				<VideoConfModalInfo>
-					{phase === AsyncStatePhase.LOADING && <Skeleton />}
-					{value?.users && (
+				{phase === AsyncStatePhase.LOADING && <Skeleton />}
+				{value?.users && value.users.length > 0 && (
+					<VideoConfModalInfo>
 						<Box display='flex' flexDirection='column' alignItems='center'>
-							{value.users.length > 0 && (
-								<Avatar.Stack>
-									{value.users.map(
-										(member, index) =>
-											index + 1 <= VIDEOCONF_STACK_MAX_USERS && (
-												<UserAvatar key={member._id} username={member.username || ''} etag={member.avatarETag} />
-											),
-									)}
-								</Avatar.Stack>
-							)}
+							<Avatar.Stack>
+								{value.users.map(
+									(member, index) =>
+										index + 1 <= VIDEOCONF_STACK_MAX_USERS && (
+											<UserAvatar key={member._id} username={member.username || ''} etag={member.avatarETag} />
+										),
+								)}
+							</Avatar.Stack>
 							<Box mbs='x8' fontScale='c1' color='neutral-700'>
 								{value.users.length > VIDEOCONF_STACK_MAX_USERS
 									? t('__usersCount__members_joined', { usersCount: value?.users && value.users.length - VIDEOCONF_STACK_MAX_USERS })
 									: t('joined')}
 							</Box>
 						</Box>
-					)}
-				</VideoConfModalInfo>
+					</VideoConfModalInfo>
+				)}
 				{(showMic || showCam) && (
 					<VideoConfModalControllers>
 						{showMic && (

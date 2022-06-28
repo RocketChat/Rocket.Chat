@@ -1,4 +1,4 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import { IRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { TextInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -27,17 +27,18 @@ type StartGroupVideoConfModalProps = {
 
 const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
-	const [confTitle, setConfTitle] = useState<string | undefined>(undefined);
+	const [confTitle, setConfTitle] = useState('');
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
 	const capabilities = useVideoConfCapabilities();
+	const isDirect = isDirectMessageRoom(room);
 
 	const showCam = !!capabilities.cam;
 	const showMic = !!capabilities.mic;
 
 	const handleStartCall = useMutableCallback(() => {
 		setPreferences(controllersConfig);
-		onConfirm(confTitle);
+		onConfirm(confTitle !== '' ? confTitle : undefined);
 	});
 
 	return (
@@ -45,9 +46,11 @@ const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoC
 			<VideoConfModalContent>
 				<RoomAvatar room={room} size='x124' />
 				<VideoConfModalTitle>{t('Start_conference_call')}</VideoConfModalTitle>
-				<VideoConfModalInfo>
-					{room.usersCount && t('__usersCount__people_will_be_invited', { usersCount: room.usersCount - 1 })}
-				</VideoConfModalInfo>
+				{!isDirect && (
+					<VideoConfModalInfo>
+						{room.usersCount && t('__usersCount__people_will_be_invited', { usersCount: room.usersCount - 1 })}
+					</VideoConfModalInfo>
+				)}
 				{(showCam || showMic) && (
 					<VideoConfModalControllers>
 						{showMic && (
@@ -70,14 +73,16 @@ const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoC
 						)}
 					</VideoConfModalControllers>
 				)}
-				<VideoConfModalField>
-					<TextInput
-						width='full'
-						placeholder={t('Conference_name')}
-						value={confTitle}
-						onChange={(e: ChangeEvent<HTMLInputElement>): void => setConfTitle(e.target.value)}
-					/>
-				</VideoConfModalField>
+				{!isDirect && (
+					<VideoConfModalField>
+						<TextInput
+							width='full'
+							placeholder={t('Conference_name')}
+							value={confTitle}
+							onChange={(e: ChangeEvent<HTMLInputElement>): void => setConfTitle(() => e.target.value)}
+						/>
+					</VideoConfModalField>
+				)}
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
 				<VideoConfButton onClick={handleStartCall} primary icon='phone'>

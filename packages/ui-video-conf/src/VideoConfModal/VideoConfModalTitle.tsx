@@ -3,7 +3,7 @@ import type { ReactNode, ReactElement } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
 const VideoConfModalTitle = ({ children }: { children: ReactNode }): ReactElement => (
-  <Box fontScale='p2b' mbs='x16'>
+  <Box width='100%' fontScale='p2b' mbs='x16' withTruncatedText>
     {children}
   </Box>
 );
