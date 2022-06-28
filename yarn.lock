@@ -3319,7 +3319,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/css-in-js@npm:^0.31.13, @rocket.chat/css-in-js@npm:~0.31.11, @rocket.chat/css-in-js@npm:~0.31.12":
+"@rocket.chat/css-in-js@npm:^0.31.13, @rocket.chat/css-in-js@npm:~0.31.12":
   version: 0.31.13
   resolution: "@rocket.chat/css-in-js@npm:0.31.13"
   dependencies:
@@ -3332,7 +3332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-in-js@npm:^0.31.14":
+"@rocket.chat/css-in-js@npm:^0.31.14, @rocket.chat/css-in-js@npm:~0.31.14":
   version: 0.31.14
   resolution: "@rocket.chat/css-in-js@npm:0.31.14"
   dependencies:
@@ -3528,7 +3528,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-hooks@npm:^0.31.11, @rocket.chat/fuselage-hooks@npm:^0.31.13":
+"@rocket.chat/fuselage-hooks@npm:^0.31.13":
   version: 0.31.13
   resolution: "@rocket.chat/fuselage-hooks@npm:0.31.13"
   dependencies:
@@ -3538,6 +3538,18 @@ __metadata:
     react: ^17.0.2
     use-subscription: ^1.5.1
   checksum: 4b1f63536bafd31cc18d2c6479a253c7b41226c43dddc60adc55681ba971f542452f4db62b845b5b47c0b37f5fb822c7ae9612a3c8d4cc1a026fee9170aceac1
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/fuselage-hooks@npm:~0.31.14":
+  version: 0.31.14
+  resolution: "@rocket.chat/fuselage-hooks@npm:0.31.14"
+  dependencies:
+    use-sync-external-store: ~1.2.0
+  peerDependencies:
+    "@rocket.chat/fuselage-tokens": "*"
+    react: ^17.0.2
+  checksum: 7f298d7094f9afacc48357db0d472d4d4f6f875554f51e5c41e4e202b24e1e3a1ed00c5ec6b8a281fbfde1fd9d4ce7a57e20bad7e87d81fe0bfe942e8e113653
   languageName: node
   linkType: hard
 
@@ -3634,7 +3646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage@npm:^0.31.13, @rocket.chat/fuselage@npm:~0.31.11":
+"@rocket.chat/fuselage@npm:^0.31.13":
   version: 0.31.13
   resolution: "@rocket.chat/fuselage@npm:0.31.13"
   dependencies:
@@ -3656,7 +3668,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage@npm:^0.31.14":
+"@rocket.chat/fuselage@npm:^0.31.14, @rocket.chat/fuselage@npm:~0.31.14":
   version: 0.31.14
   resolution: "@rocket.chat/fuselage@npm:0.31.14"
   dependencies:
@@ -4243,7 +4255,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:^0.31.11, @rocket.chat/styled@npm:^0.31.13":
+"@rocket.chat/styled@npm:^0.31.13":
   version: 0.31.13
   resolution: "@rocket.chat/styled@npm:0.31.13"
   dependencies:
@@ -4253,7 +4265,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:^0.31.14":
+"@rocket.chat/styled@npm:^0.31.14, @rocket.chat/styled@npm:~0.31.14":
   version: 0.31.14
   resolution: "@rocket.chat/styled@npm:0.31.14"
   dependencies:
@@ -4362,23 +4374,23 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-video-conf@workspace:packages/ui-video-conf"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.11
+    "@rocket.chat/css-in-js": ~0.31.14
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ~0.31.11
-    "@rocket.chat/fuselage-hooks": ^0.31.11
-    "@rocket.chat/styled": ^0.31.11
+    "@rocket.chat/fuselage": ~0.31.14
+    "@rocket.chat/fuselage-hooks": ~0.31.14
+    "@rocket.chat/styled": ~0.31.14
     "@types/jest": ^27.4.1
     eslint: ^8.12.0
     jest: ^27.5.1
-    react: ^17.0.2
-    react-dom: ^17.0.2
     ts-jest: ^27.1.4
     typescript: ~4.3.5
   peerDependencies:
+    "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
-    react: "*"
-    react-dom: "*"
+    "@rocket.chat/styled": "*"
+    react: ^17.0.2
+    react-dom: ^17.0.2
   languageName: unknown
   linkType: soft
 
@@ -26045,7 +26057,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^17.0.2, react-dom@npm:~17, react-dom@npm:~17.0.2":
+"react-dom@npm:~17, react-dom@npm:~17.0.2":
   version: 17.0.2
   resolution: "react-dom@npm:17.0.2"
   dependencies:
@@ -26306,7 +26318,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^17.0.2, react@npm:~17.0.2":
+"react@npm:~17.0.2":
   version: 17.0.2
   resolution: "react@npm:17.0.2"
   dependencies:

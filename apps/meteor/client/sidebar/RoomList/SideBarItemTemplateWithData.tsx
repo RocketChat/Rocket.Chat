@@ -154,8 +154,8 @@ function SideBarItemTemplateWithData({
 			actions={
 				videoConfActions && (
 					<>
-						<SidebarItemAction onClick={videoConfActions.acceptCall} primary success icon='phone' />
-						<SidebarItemAction onClick={videoConfActions.rejectCall} primary danger icon='phone-off' />
+						<SidebarItemAction onClick={videoConfActions.acceptCall} secondary success icon='phone' />
+						<SidebarItemAction onClick={videoConfActions.rejectCall} secondary danger icon='phone-off' />
 					</>
 				)
 			}
