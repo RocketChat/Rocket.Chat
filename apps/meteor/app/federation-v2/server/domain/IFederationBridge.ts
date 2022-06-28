@@ -10,6 +10,7 @@ export interface IFederationBridge {
 	createUser(username: string, name: string, domain: string): Promise<string>;
 	isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean;
 	leaveRoom(externalRoomId: string, externalUserId: string): Promise<void>;
+	kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void>;
 }
 
 export enum EVENT_ORIGIN {

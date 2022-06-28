@@ -36,10 +36,15 @@ export class FederationRoomSenderConverter {
 		});
 	}
 
-	public static toAfterLeaveRoom(internalUserId: string, internalRoomId: string): FederationAfterLeaveRoomDto {
+	public static toAfterLeaveRoom(
+		internalUserId: string,
+		internalRoomId: string,
+		whoRemovedInternalId?: string,
+	): FederationAfterLeaveRoomDto {
 		return Object.assign(new FederationAfterLeaveRoomDto(), {
 			internalRoomId,
 			internalUserId,
+			whoRemovedInternalId,
 		});
 	}
 }

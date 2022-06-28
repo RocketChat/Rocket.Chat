@@ -131,7 +131,15 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async leaveRoom(externalRoomId: string, externalUserId: string): Promise<void> {
-		await this.bridgeInstance.getIntent(externalUserId).leave(externalRoomId);
+		try {
+			await this.bridgeInstance.getIntent(externalUserId).leave(externalRoomId);
+		} catch (e) {
+			// no-op
+		}
+	}
+
+	public async kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void> {
+		this.bridgeInstance.getIntent(externalOwnerId).kick(externalRoomId, externalUserId);
 	}
 
 	protected async createInstance(): Promise<void> {

@@ -24,4 +24,6 @@ export class FederationAfterLeaveRoomDto {
 	internalRoomId: string;
 
 	internalUserId: string;
+
+	whoRemovedInternalId?: string;
 }

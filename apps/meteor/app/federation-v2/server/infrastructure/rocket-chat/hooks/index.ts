@@ -17,6 +17,20 @@ export class FederationHooks {
 		);
 	}
 
+	public static afterRemoveFromRoom(callback: Function): void {
+		callbacks.add(
+			'afterRemoveFromRoom',
+			(params: { removedUser: IUser; userWhoRemoved: IUser }, room: IRoom | undefined): void => {
+				if (!room?.federated) {
+					return;
+				}
+				Promise.await(callback(params.removedUser, room, params.userWhoRemoved));
+			},
+			callbacks.priority.HIGH,
+			'federation-v2-after-remove-from-room',
+		);
+	}
+
 	public static canAddTheUserToTheRoom(callback: Function): void {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',

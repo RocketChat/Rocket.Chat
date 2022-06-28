@@ -23,11 +23,11 @@ export class RocketChatUserAdapter {
 		if (!internalBridgedUserId) {
 			return;
 		}
-		const { uid: userId, mui: externalUserId } = internalBridgedUserId;
+		const { uid: userId, mui: externalUserId, remote } = internalBridgedUserId;
 		const user = await Users.findOneById(userId);
 
 		if (user) {
-			return this.createFederatedUserInstance(externalUserId, user);
+			return this.createFederatedUserInstance(externalUserId, user, remote);
 		}
 	}
 
@@ -40,9 +40,9 @@ export class RocketChatUserAdapter {
 		if (!internalBridgedUserId) {
 			return;
 		}
-		const { mui: externalUserId } = internalBridgedUserId;
+		const { mui: externalUserId, remote } = internalBridgedUserId;
 
-		return this.createFederatedUserInstance(externalUserId, user);
+		return this.createFederatedUserInstance(externalUserId, user, remote);
 	}
 
 	public async getInternalUserById(userId: string): Promise<IUser | null> {
@@ -83,10 +83,11 @@ export class RocketChatUserAdapter {
 		);
 	}
 
-	private createFederatedUserInstance(externalUserId: string, user: IUser): FederatedUser {
+	private createFederatedUserInstance(externalUserId: string, user: IUser, remote = true): FederatedUser {
 		const federatedUser = FederatedUser.build();
 		federatedUser.externalId = externalUserId;
 		federatedUser.internalReference = user;
+		federatedUser.existsOnlyOnProxyServer = !remote;
 
 		return federatedUser;
 	}

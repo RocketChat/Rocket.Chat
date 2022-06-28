@@ -130,8 +130,14 @@ export const createRoom = function <T extends RoomType>(
 			const member = Users.findOneByUsername(username, {
 				fields: { 'username': 1, 'settings.preferences': 1, 'federated': 1 },
 			});
-			if (!member || member?.federated) {
+			if (!member) {
 				continue;
+			}
+
+			try {
+				callbacks.run('federation.beforeAddUserAToRoom', { user: member, inviter: owner }, room);
+			} catch (error) {
+				throw new Meteor.Error((error as any)?.message);
 			}
 
 			const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};

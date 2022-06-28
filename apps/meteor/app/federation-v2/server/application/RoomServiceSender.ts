@@ -85,10 +85,7 @@ export class FederationRoomServiceSender {
 	}
 
 	public async leaveRoom(afterLeaveRoomInput: FederationAfterLeaveRoomDto): Promise<void> {
-		const { internalRoomId, internalUserId } = afterLeaveRoomInput;
-		if (!(await this.rocketRoomAdapter.isUserAlreadyJoined(internalRoomId, internalUserId))) {
-			return;
-		}
+		const { internalRoomId, internalUserId, whoRemovedInternalId } = afterLeaveRoomInput;
 
 		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 		if (!federatedRoom) {
@@ -99,6 +96,13 @@ export class FederationRoomServiceSender {
 		if (!federatedUser) {
 			return;
 		}
+
+		if (whoRemovedInternalId) {
+			const who = await this.rocketUserAdapter.getFederatedUserByInternalId(whoRemovedInternalId);
+			await this.bridge.kickUserFromRoom(federatedRoom.externalId, federatedUser.externalId, who?.externalId as string);
+			return;
+		}
+
 		await this.bridge.leaveRoom(federatedRoom.externalId, federatedUser.externalId);
 	}
 
@@ -128,24 +132,34 @@ export class FederationRoomServiceSender {
 		return Boolean(federatedRoom?.isFederated());
 	}
 
-	public canAddThisUserToTheRoom(internalUser: IUser | string, internalRoom: IRoom): void {
+	public async canAddThisUserToTheRoom(internalUser: IUser | string, internalRoom: IRoom): Promise<void> {
 		const newUserBeingAdded = typeof internalUser === 'string';
 		if (newUserBeingAdded) {
 			return;
 		}
 
-		if ((internalUser as IUser).federated && !internalRoom.federated) {
+		if (internalRoom.federated) {
+			return;
+		}
+
+		const user = await this.rocketUserAdapter.getFederatedUserByInternalId(internalUser._id);
+		if (user && !user.existsOnlyOnProxyServer) {
 			throw new Error('error-cant-add-federated-users');
 		}
 	}
 
-	public canAddUsersToTheRoom(internalUser: IUser | string, internalRoom: IRoom): void {
+	public async canAddUsersToTheRoom(internalUser: IUser | string, internalRoom: IRoom): Promise<void> {
 		const newUserBeingAdded = typeof internalUser === 'string';
 		if (newUserBeingAdded) {
 			return;
 		}
 
-		if ((internalUser as IUser).federated && internalRoom.federated && internalRoom.t !== RoomType.DIRECT_MESSAGE) {
+		if (!internalRoom.federated) {
+			return;
+		}
+
+		const user = await this.rocketUserAdapter.getFederatedUserByInternalId(internalUser._id);
+		if (user && !user.existsOnlyOnProxyServer && internalRoom.t !== RoomType.DIRECT_MESSAGE) {
 			throw new Error('error-this-is-an-ee-feature');
 		}
 	}

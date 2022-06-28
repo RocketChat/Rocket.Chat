@@ -88,6 +88,9 @@ export class FederationFactory {
 		FederationHooks.afterLeaveRoom(async (user: IUser, room: IRoom) =>
 			roomServiceSender.leaveRoom(FederationRoomSenderConverter.toAfterLeaveRoom(user._id, room._id)),
 		);
+		FederationHooks.afterRemoveFromRoom(async (user: IUser, room: IRoom, userWhoRemoved: IUser) =>
+			roomServiceSender.leaveRoom(FederationRoomSenderConverter.toAfterLeaveRoom(user._id, room._id, userWhoRemoved._id)),
+		);
 		FederationHooks.canAddTheUserToTheRoom((user: IUser | string, room: IRoom) => roomServiceSender.canAddThisUserToTheRoom(user, room));
 		FederationHooks.canAddUsersToTheRoom((user: IUser | string, room: IRoom) => roomServiceSender.canAddUsersToTheRoom(user, room));
 	}
