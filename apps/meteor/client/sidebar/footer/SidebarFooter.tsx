@@ -27,7 +27,7 @@ const SidebarFooter = (): ReactElement => {
 
 	const isEnterpriseEdition = useEndpoint('GET', '/v1/licenses.isEnterprise');
 	const { data, isSuccess } = useQuery(['licences'], () => isEnterpriseEdition());
-	const isCommunityEdition = isSuccess && !data.isEnterprise;
+	const isCommunityEdition = isSuccess && !data?.isEnterprise;
 
 	const isCallEnabled = useIsCallEnabled();
 	const ready = useIsCallReady();
