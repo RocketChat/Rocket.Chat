@@ -8,7 +8,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { unitId } = this.queryParams;
+			const { unitId } = this.urlParams;
 
 			if (!unitId) {
 				return API.v1.failure('The "unitId" parameter is required');
