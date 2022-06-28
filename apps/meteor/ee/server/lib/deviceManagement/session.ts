@@ -7,7 +7,7 @@ import * as Mailer from '../../../../app/mailer';
 import { Users } from '../../../../app/models/server/raw/index';
 import { settings } from '../../../../app/settings/server';
 import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/server/lib/UAParserCustom';
-import { sauEvents } from '../../../../server/services/sauMonitor/events';
+import { deviceManagementEvents } from '../../../../server/services/device-management/events';
 import { hasLicense } from '../../../app/license/server/license';
 import { t } from '../../../../app/utils/server';
 
@@ -36,7 +36,7 @@ const uaParser = async (
 };
 
 export const listenSessionLogin = async (): Promise<void> => {
-	sauEvents.on('accounts.login', async ({ userId, connection }) => {
+	deviceManagementEvents.on('device-login', async ({ userId, connection }) => {
 		if (!hasLicense('device-management')) return;
 
 		const user = await Users.findOneById<IUser>(userId, { projection: { name: 1, username: 1, emails: 1 } });
