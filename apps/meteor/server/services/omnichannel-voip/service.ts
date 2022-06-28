@@ -105,11 +105,27 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 		this.logger.debug(`Creating Voip room for visitor ${_id}`);
 
+		/**
+		 * This is a peculiar case for outbound. In case of outbound,
+		 * the room is created as soon as the remote use accepts a call.
+		 * We generate the DialEnd (dialstatus = 'ANSWERED') only when
+		 * the call is picked up. But the agent receiving 200 OK and the ContinuousMonitor
+		 * receiving DialEnd happens in any order. So just depending here on
+		 * DialEnd would result in creating a room which does not have a correct reference of the call.
+		 *
+		 * This may result in missed system messages or posting messages to wrong room.
+		 * So ContinuousMonitor adds a DialState (dialstatus = 'RINGING') event.
+		 * When this event gets added, findone call below will find the latest of
+		 * the 'QueueCallerJoin', 'DialEnd', 'DialState' event and create a correct association of the room.
+		 */
+
 		// Use latest queue caller join event
 		const callStartPbxEvent = await PbxEvents.findOne(
 			{
 				phone: guest?.phone?.[0]?.phoneNumber,
-				event: 'QueueCallerJoin',
+				event: {
+					$in: ['QueueCallerJoin', 'DialEnd', 'DialState'],
+				},
 			},
 			{ sort: { ts: -1 } },
 		);
