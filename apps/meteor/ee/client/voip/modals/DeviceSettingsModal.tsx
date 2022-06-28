@@ -47,11 +47,10 @@ const DeviceSettingsModal = (): ReactElement => {
 	return (
 		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
 			<Modal.Header>
-				<Modal.Title>{t('Closing_chat')}</Modal.Title>
+				<Modal.Title>{t('Audio_settings')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
-				<Box color='neutral-600'>{t('Audio_settings')}</Box>
 				<Field>
 					<Field.Label>{t('Microphone')}</Field.Label>
 					<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
