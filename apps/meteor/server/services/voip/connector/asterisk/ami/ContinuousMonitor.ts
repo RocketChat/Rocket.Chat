@@ -148,17 +148,17 @@ export class ContinuousMonitor extends Command {
 				return;
 			}
 
-			// let uniqueId = `${eventName}-${event.calleridnum}-`;
-			// if (event.queue) {
-			// 	uniqueId += `${event.queue}-${event.uniqueid}`;
-			// } else {
-			// 	uniqueId += `${event.channel}-${event.destchannel}-${event.uniqueid}`;
-			// }
+			let uniqueId = `${eventName}-${event.calleridnum}-`;
+			if (event.queue) {
+				uniqueId += `${event.queue}-${event.uniqueid}`;
+			} else {
+				uniqueId += `${event.channel}-${event.destchannel}-${event.uniqueid}`;
+			}
 			// NOTE: using the uniqueId prop of event is not the recommented approach, since it's an opaque ID
 			// However, since we're not using it for anything special, it's a "fair use"
 			// uniqueId => {server}/{epoch}.{id of channel associated with this call}
 			await PbxEvents.insertOne({
-				uniqueId: `${eventName}-${event.calleridnum}-${event.queue}-${event.uniqueid}`,
+				uniqueId,
 				event: eventName,
 				ts: now,
 				phone: event.calleridnum,

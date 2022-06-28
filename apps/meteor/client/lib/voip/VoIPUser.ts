@@ -1043,4 +1043,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	// 	LocalStream.replaceTrack(peerConnection, newStream, 'video');
 	// 	return true;
 	// }
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+	async makeCall(_callee: string, _mediaRenderer?: IMediaStreamRenderer): Promise<void> {
+		throw new Error('Not implemented');
+	}
 }

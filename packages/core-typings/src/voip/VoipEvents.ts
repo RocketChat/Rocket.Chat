@@ -10,6 +10,7 @@ export type VoipEvents = {
 	connectionerror: unknown;
 	callestablished: ICallDetails;
 	incomingcall: ICallerInfo;
+	callfailed: string;
 	ringing: ICallDetails;
 	callterminated: undefined;
 	hold: undefined;
