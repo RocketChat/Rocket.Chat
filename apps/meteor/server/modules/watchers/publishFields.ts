@@ -29,6 +29,7 @@ export const subscriptionFields = {
 	autoTranslateLanguage: 1,
 	disableNotifications: 1,
 	hideUnreadStatus: 1,
+	hideMentionStatus: 1,
 	muteGroupMentions: 1,
 	ignored: 1,
 	E2EKey: 1,
@@ -83,7 +84,6 @@ export const roomFields = {
 	reactWhenReadOnly: 1,
 	sysMes: 1,
 	sentiment: 1,
-	tokenpass: 1,
 	streamingOptions: 1,
 	broadcast: 1,
 	encrypted: 1,
@@ -104,7 +104,7 @@ export const roomFields = {
 	queuedAt: 1,
 
 	// Federation fields
-	bridged: 1,
+	federated: 1,
 
 	// fields used by DMs
 	usernames: 1,

@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { UserStatus } from '../../../client/components/UserStatus';
 import UserAvatar from '../../../client/components/avatar/UserAvatar';
@@ -14,7 +14,10 @@ const wordBreak = css`
 `;
 
 function ContactManagerInfo({ username }) {
-	const { value: data, phase: state } = useEndpointData(`users.info?username=${username}`);
+	const { value: data, phase: state } = useEndpointData(
+		`/v1/users.info`,
+		useMemo(() => ({ username }), [username]),
+	);
 	if (!data && state === AsyncStatePhase.LOADING) {
 		return null;
 	}

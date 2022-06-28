@@ -13,7 +13,7 @@ callbacks.add(
 			_id,
 			ts: new Date(),
 		};
-		Livechat.updateLastChat(guestId, lastChat);
+		Promise.await(Livechat.updateLastChat(guestId, lastChat));
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-save-last-chat',

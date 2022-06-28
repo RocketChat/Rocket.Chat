@@ -119,6 +119,7 @@ export interface IStats {
 		totalFailed: number | false;
 	};
 	services: Record<string, unknown>;
+	importer: Record<string, unknown>;
 	settings: ISettingStatisticsObject;
 	integrations: {
 		totalIntegrations: number;
@@ -145,4 +146,33 @@ export interface IStats {
 	messageAuditLoad: number;
 	dashboardCount: number;
 	joinJitsiButton: number;
+	totalBroadcastRooms: number;
+	totalRoomsWithActiveLivestream: number;
+	totalTriggeredEmails: number;
+	totalRoomsWithStarred: number;
+	totalRoomsWithPinned: number;
+	totalUserEmail2fa: number;
+	totalUserTOTP: number;
+	totalStarred: number;
+	totalPinned: number;
+	totalLinkInvitation: number;
+	totalEmailInvitation: number;
+	totalE2ERooms: number;
+	logoChange: boolean;
+	homeTitleChanged: boolean;
+	homeBodyChanged: boolean;
+	customCSSChanged: boolean;
+	onLogoutCustomScriptChanged: boolean;
+	loggedOutCustomScriptChanged: boolean;
+	loggedInCustomScriptChanged: boolean;
+	roomsInsideTeams: number;
+	showHomeButton: boolean;
+	totalEncryptedMessages: number;
+	totalLinkInvitationUses: number;
+	totalManuallyAddedUsers: number;
+	totalSubscriptionRoles: number;
+	totalUserRoles: number;
+	totalWebRTCCalls: number;
+	matrixBridgeEnabled: boolean;
+	uncaughtExceptionsCount: number;
 }

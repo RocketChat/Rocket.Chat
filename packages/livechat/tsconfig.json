@@ -6,11 +6,10 @@
 		"outDir": "./dist",
 		"allowJs": true,
 		"checkJs": false,
-
 		"noImplicitAny": true,
 	},
 	"exclude": [
 		"./node_modules",
-		"./build"
+		"./dist"
 	]
 }

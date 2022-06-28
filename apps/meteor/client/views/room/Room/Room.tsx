@@ -56,8 +56,8 @@ export const Room: FC<{}> = () => {
 				</RoomTemplate.Aside>
 			)}
 			{appsContextualBarContext && (
-				<SelectedMessagesProvider>
-					<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBarContext.viewId}>
+				<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBarContext.viewId}>
+					<SelectedMessagesProvider>
 						<ErrorBoundary>
 							<LazyComponent
 								template={AppsContextualBar}
@@ -67,8 +67,8 @@ export const Room: FC<{}> = () => {
 								appInfo={appsContextualBarContext.appInfo}
 							/>
 						</ErrorBoundary>
-					</RoomTemplate.Aside>
-				</SelectedMessagesProvider>
+					</SelectedMessagesProvider>
+				</RoomTemplate.Aside>
 			)}
 		</RoomTemplate>
 	);

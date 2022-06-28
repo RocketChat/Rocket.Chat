@@ -70,22 +70,24 @@ Template.contactChatHistory.onCreated(async function () {
 		const offset = this.offset.get();
 		const searchTerm = this.searchTerm.get();
 
-		let baseUrl = `livechat/visitors.searchChats/room/${
-			currentData.rid
-		}/visitor/${this.visitorId.get()}?count=${limit}&offset=${offset}&closedChatsOnly=true&servedChatsOnly=true`;
-		if (searchTerm) {
-			baseUrl += `&searchText=${searchTerm}`;
-		}
+		const baseUrl = `/v1/livechat/visitors.searchChats/room/${currentData.rid}/visitor/${this.visitorId.get()}`;
+		const params = {
+			count: limit,
+			offset,
+			closedChatsOnly: true,
+			servedChatsOnly: true,
+			...(searchTerm && { searchText: searchTerm }),
+		};
 
 		this.isLoading.set(true);
-		const { history, total } = await APIClient.v1.get(baseUrl);
+		const { history, total } = await APIClient.get(baseUrl, params);
 		this.history.set(offset === 0 ? history : this.history.get().concat(history));
 		this.hasMore.set(total > this.history.get().length);
 		this.isLoading.set(false);
 	});
 
 	this.autorun(async () => {
-		const { room } = await APIClient.v1.get(`rooms.info?roomId=${currentData.rid}`);
+		const { room } = await APIClient.get(`/v1/rooms.info`, { roomId: currentData.rid });
 		if (room?.v) {
 			this.visitorId.set(room.v._id);
 		}

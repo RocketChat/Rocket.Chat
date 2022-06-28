@@ -8,12 +8,12 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
 
-export function AddUser({ roles, onReload, ...props }) {
+const AddUser = ({ onReload, ...props }) => {
 	const t = useTranslation();
 
 	const router = useRoute('admin-users');
 
-	const { value: roleData } = useEndpointData('roles.list', '');
+	const { value: roleData } = useEndpointData('/v1/roles.list', '');
 	const [errors, setErrors] = useState({});
 
 	const validationKeys = {
@@ -77,7 +77,10 @@ export function AddUser({ roles, onReload, ...props }) {
 		[router],
 	);
 
-	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully!'));
+	const saveAction = useEndpointAction('POST', '/v1/users.create', values, t('User_created_successfully!'));
+	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry', {
+		params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
+	});
 
 	const handleSave = useMutableCallback(async () => {
 		Object.entries(values).forEach(([key, value]) => {
@@ -94,6 +97,7 @@ export function AddUser({ roles, onReload, ...props }) {
 
 		const result = await saveAction();
 		if (result.success) {
+			eventStats();
 			goToUser(result.user._id);
 			onReload();
 		}
@@ -122,4 +126,6 @@ export function AddUser({ roles, onReload, ...props }) {
 	return (
 		<UserForm errors={errors} formValues={values} formHandlers={handlers} availableRoles={availableRoles} append={append} {...props} />
 	);
-}
+};
+
+export default AddUser;

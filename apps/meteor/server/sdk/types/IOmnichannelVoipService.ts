@@ -21,10 +21,17 @@ export interface IOmnichannelVoipService {
 		guest: ILivechatVisitor,
 		agent: { agentId: string; username: string },
 		rid: string,
+		direction: IVoipRoom['direction'],
 		options: FindOneOptions<IVoipRoom>,
 	): Promise<IRoomCreationResponse>;
 	findRoom(token: string, rid: string): Promise<IVoipRoom | null>;
-	closeRoom(closer: ILivechatVisitor | ILivechatAgent, room: IVoipRoom, user: IUser, comment?: string, tags?: string[]): Promise<boolean>;
+	closeRoom(
+		closer: ILivechatVisitor | ILivechatAgent,
+		room: IVoipRoom,
+		user: IUser,
+		sysMessageId?: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
+		options?: { comment?: string | null; tags?: string[] | null },
+	): Promise<boolean>;
 	handleEvent(
 		event: VoipClientEvents,
 		room: IRoom,

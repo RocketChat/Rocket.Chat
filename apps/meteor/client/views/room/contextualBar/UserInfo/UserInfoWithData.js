@@ -27,7 +27,7 @@ function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = 
 		phase: state,
 		error,
 	} = useEndpointData(
-		'users.info',
+		'/v1/users.info',
 		useMemo(() => ({ ...(uid && { userId: uid }), ...(username && { username }) }), [uid, username]),
 	);
 

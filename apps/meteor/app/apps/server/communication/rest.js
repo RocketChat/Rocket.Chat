@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { Settings } from '@rocket.chat/models';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
@@ -7,7 +8,6 @@ import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
 import { Users } from '../../../models/server';
-import { Settings } from '../../../models/server/raw';
 import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
@@ -213,10 +213,13 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 						}
 
-						const formData = await getUploadFormData({
-							request: this.request,
-						});
-						buff = formData?.app?.fileBuffer;
+						const [app, formData] = await getUploadFormData(
+							{
+								request: this.request,
+							},
+							{ field: 'app' },
+						);
+						buff = app?.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
@@ -462,10 +465,13 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 						}
 
-						const formData = await getUploadFormData({
-							request: this.request,
-						});
-						buff = formData?.app?.fileBuffer;
+						const [app, formData] = await getUploadFormData(
+							{
+								request: this.request,
+							},
+							{ field: 'app' },
+						);
+						buff = app?.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');

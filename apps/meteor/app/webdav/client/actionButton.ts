@@ -4,7 +4,7 @@ import { t, getURL } from '../../utils/client';
 import { WebdavAccounts } from '../../models/client';
 import { settings } from '../../settings/client';
 import { MessageAction, modal } from '../../ui-utils/client';
-import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../client/lib/utils/messageArgs';
 
 Meteor.startup(function () {
 	MessageAction.addButton({

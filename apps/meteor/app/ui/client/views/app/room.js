@@ -12,10 +12,10 @@ import { Template } from 'meteor/templating';
 
 import { t, getUserPreference } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
-import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
+import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
-import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../../../client/lib/utils/messageArgs';
 import { settings } from '../../../../settings/client';
 import { callbacks } from '../../../../../lib/callbacks';
 import { hasAllPermission, hasRole } from '../../../../authorization/client';
@@ -180,7 +180,6 @@ Template.roomOld.helpers({
 		return state.get('subscribed');
 	},
 	messagesHistory() {
-		const showInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 		const { rid } = Template.instance();
 		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
@@ -191,9 +190,7 @@ Template.roomOld.helpers({
 		const query = {
 			rid,
 			_hidden: { $ne: true },
-			...(!showInMainThread && {
-				$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
-			}),
+			$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
 		};
 
 		if (hideMessagesOfType.size) {

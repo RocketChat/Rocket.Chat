@@ -180,6 +180,26 @@ settingsRegistry.addGroup('Accounts', function () {
 			type: 'string',
 			hidden: true,
 		});
+		this.add('Manual_Entry_User_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('CSV_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Hipchat_Enterprise_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Slack_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Slack_Users_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
 		this.add('Accounts_UseDefaultBlockedDomainsList', true, {
 			type: 'boolean',
 		});
@@ -406,10 +426,23 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Sort_By',
 		});
 
-		this.add('Accounts_Default_User_Preferences_showMessageInMainThread', false, {
-			type: 'boolean',
+		this.add('Accounts_Default_User_Preferences_alsoSendThreadToChannel', 'default', {
+			type: 'select',
+			values: [
+				{
+					key: 'default',
+					i18nLabel: 'Default',
+				},
+				{
+					key: 'always',
+					i18nLabel: 'Always',
+				},
+				{
+					key: 'never',
+					i18nLabel: 'Never',
+				},
+			],
 			public: true,
-			i18nLabel: 'Show_Message_In_Main_Thread',
 		});
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
@@ -437,6 +470,7 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Enter_Behaviour',
 		});
+
 		this.add('Accounts_Default_User_Preferences_messageViewMode', 0, {
 			type: 'select',
 			values: [
@@ -1682,6 +1716,11 @@ settingsRegistry.addGroup('Logs', function () {
 		},
 	});
 
+	this.add('Uncaught_Exceptions_Count', 0, {
+		hidden: true,
+		type: 'int',
+	});
+
 	this.section('Prometheus', function () {
 		this.add('Prometheus_Enabled', false, {
 			type: 'boolean',
@@ -2891,6 +2930,10 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 		this.add('Organization_Email', '', {
 			type: 'string',
 		});
+		this.add('Triggered_Emails_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
 	});
 
 	this.section('Cloud_Info', function () {
@@ -3219,6 +3262,15 @@ settingsRegistry.addGroup('Call_Center', function () {
 				public: true,
 				enableQuery: {
 					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Enable_Keep_Alive_For_Unstable_Networks', true, {
+				type: 'boolean',
+				public: true,
+				i18nDescription: 'VoIP_Enable_Keep_Alive_For_Unstable_Networks_Description',
+				enableQuery: {
+					_id: 'Livechat_enabled',
 					value: true,
 				},
 			});

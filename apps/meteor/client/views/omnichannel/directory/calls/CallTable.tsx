@@ -1,3 +1,4 @@
+import { IVoipRoom } from '@rocket.chat/core-typings';
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
@@ -22,7 +23,7 @@ const useQuery = (
 	userIdLoggedIn: string | null,
 ): {
 	sort: string;
-	open: boolean;
+	open: 'false';
 	roomName: string;
 	agents: string[];
 	count?: number;
@@ -31,7 +32,7 @@ const useQuery = (
 	useMemo(
 		() => ({
 			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
-			open: false,
+			open: 'false',
 			roomName: text || '',
 			agents: userIdLoggedIn ? [userIdLoggedIn] : [],
 			...(itemsPerPage && { count: itemsPerPage }),
@@ -54,6 +55,17 @@ const CallTable: FC = () => {
 	const query = useQuery(debouncedParams, debouncedSort, userIdLoggedIn);
 	const directoryRoute = useRoute('omnichannel-directory');
 
+	const resolveDirectionLabel = useCallback(
+		(direction: IVoipRoom['direction']) => {
+			const labels = {
+				inbound: 'Incoming',
+				outbound: 'Outgoing',
+			} as const;
+			return t(labels[direction] || 'Not_Available');
+		},
+		[t],
+	);
+
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
 
@@ -75,7 +87,7 @@ const CallTable: FC = () => {
 		);
 	});
 
-	const { value: data } = useEndpointData('voip/rooms', query);
+	const { value: data } = useEndpointData('/v1/voip/rooms', query);
 
 	const header = useMemo(
 		() =>
@@ -117,21 +129,21 @@ const CallTable: FC = () => {
 					{t('Talk_Time')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
-					key={'source'}
+					key='direction'
 					direction={sort[1]}
-					active={sort[0] === 'source'}
+					active={sort[0] === 'direction'}
 					onClick={onHeaderClick}
-					sort='source'
+					sort='direction'
 					w='x200'
 				>
-					{t('Source')}
+					{t('Direction')}
 				</GenericTable.HeaderCell>,
 			].filter(Boolean),
 		[sort, onHeaderClick, t],
 	);
 
 	const renderRow = useCallback(
-		({ _id, fname, callStarted, queue, callDuration, v }) => {
+		({ _id, fname, callStarted, queue, callDuration, v, direction }) => {
 			const duration = moment.duration(callDuration / 1000, 'seconds');
 			return (
 				<Table.Row key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id, v?.token)} action qa-user-id={_id}>
@@ -140,11 +152,11 @@ const CallTable: FC = () => {
 					<Table.Cell withTruncatedText>{queue}</Table.Cell>
 					<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
 					<Table.Cell withTruncatedText>{duration.isValid() && duration.humanize()}</Table.Cell>
-					<Table.Cell withTruncatedText>{t('Incoming')}</Table.Cell>
+					<Table.Cell withTruncatedText>{resolveDirectionLabel(direction)}</Table.Cell>
 				</Table.Row>
 			);
 		},
-		[onRowClick, t],
+		[onRowClick, resolveDirectionLabel],
 	);
 
 	return (
