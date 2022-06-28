@@ -97,6 +97,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		name: string,
 		agent: { agentId: string; username: string },
 		guest: ILivechatVisitor,
+		direction: IVoipRoom['direction'],
 	): Promise<string> {
 		const status = 'online';
 		const { _id, department: departmentId } = guest;
@@ -104,11 +105,27 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 		this.logger.debug(`Creating Voip room for visitor ${_id}`);
 
+		/**
+		 * This is a peculiar case for outbound. In case of outbound,
+		 * the room is created as soon as the remote use accepts a call.
+		 * We generate the DialEnd (dialstatus = 'ANSWERED') only when
+		 * the call is picked up. But the agent receiving 200 OK and the ContinuousMonitor
+		 * receiving DialEnd happens in any order. So just depending here on
+		 * DialEnd would result in creating a room which does not have a correct reference of the call.
+		 *
+		 * This may result in missed system messages or posting messages to wrong room.
+		 * So ContinuousMonitor adds a DialState (dialstatus = 'RINGING') event.
+		 * When this event gets added, findone call below will find the latest of
+		 * the 'QueueCallerJoin', 'DialEnd', 'DialState' event and create a correct association of the room.
+		 */
+
 		// Use latest queue caller join event
 		const callStartPbxEvent = await PbxEvents.findOne(
 			{
 				phone: guest?.phone?.[0]?.phoneNumber,
-				event: 'QueueCallerJoin',
+				event: {
+					$in: ['QueueCallerJoin', 'DialEnd', 'DialState'],
+				},
 			},
 			{ sort: { ts: -1 } },
 		);
@@ -161,6 +178,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 				_id: agent.agentId,
 				username: agent.username,
 			},
+			direction,
 			_updatedAt: newRoomAt,
 		};
 
@@ -213,6 +231,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		guest: ILivechatVisitor,
 		agent: { agentId: string; username: string },
 		rid: string,
+		direction: IVoipRoom['direction'],
 		options: FindOneOptions<IVoipRoom> = {},
 	): Promise<IRoomCreationResponse> {
 		this.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
@@ -224,7 +243,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		}
 		if (room == null) {
 			const name = guest.name || guest.username;
-			const roomId = await this.createVoipRoom(rid, name, agent, guest);
+			const roomId = await this.createVoipRoom(rid, name, agent, guest, direction);
 			room = await VoipRoom.findOneVoipRoomById(roomId);
 			newRoom = true;
 			this.logger.debug(`Room obtained for visitor ${guest._id} -> ${room?._id}`);
@@ -281,7 +300,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 		this.logger.debug(`Room ${room._id} closed and timers set`);
 		this.logger.debug(`Room ${room._id} was closed at ${closeInfo.closedAt} (duration ${closeInfo.callDuration})`);
-		VoipRoom.closeByRoomId(room._id, closeInfo);
+		await VoipRoom.closeByRoomId(room._id, closeInfo);
 
 		return true;
 	}
@@ -371,6 +390,8 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		visitorId,
 		tags,
 		queue,
+		direction,
+		roomName,
 		options: { offset = 0, count, fields, sort } = {},
 	}: FindVoipRoomsParams): Promise<PaginatedResult<{ rooms: IVoipRoom[] }>> {
 		const cursor = VoipRoom.findRoomsWithCriteria({
@@ -381,6 +402,8 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			tags,
 			queue,
 			visitorId,
+			direction,
+			roomName,
 			options: {
 				sort: sort || { ts: -1 },
 				offset,
