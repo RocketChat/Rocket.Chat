@@ -1716,6 +1716,11 @@ settingsRegistry.addGroup('Logs', function () {
 		},
 	});
 
+	this.add('Uncaught_Exceptions_Count', 0, {
+		hidden: true,
+		type: 'int',
+	});
+
 	this.section('Prometheus', function () {
 		this.add('Prometheus_Enabled', false, {
 			type: 'boolean',
@@ -2924,6 +2929,10 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 		});
 		this.add('Organization_Email', '', {
 			type: 'string',
+		});
+		this.add('Triggered_Emails_Count', 0, {
+			type: 'int',
+			hidden: true,
 		});
 	});
 
