@@ -1,4 +1,4 @@
-import { Box, Modal, Field, Select, ButtonGroup, Button, SelectOption } from '@rocket.chat/fuselage';
+import { Modal, Field, Select, ButtonGroup, Button, SelectOption } from '@rocket.chat/fuselage';
 import { useTranslation, useAvailableDevices, useToastMessageDispatch, useSetModal, useSelectedDevices } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
