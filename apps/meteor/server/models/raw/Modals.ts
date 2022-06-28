@@ -4,8 +4,9 @@
 import type { Collection, Db, Cursor, FindOneOptions, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
 import type { IModal, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IModalModel } from '@rocket.chat/model-typings';
-import { BaseRaw } from './BaseRaw';
 import { getCollectionName } from '@rocket.chat/models';
+
+import { BaseRaw } from './BaseRaw';
 
 export class ModalsRaw extends BaseRaw<IModal> implements IModalModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IModal>>) {

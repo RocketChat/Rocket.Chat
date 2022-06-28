@@ -1,6 +1,6 @@
 import { registerModel } from '@rocket.chat/models';
-import { ModalsRaw } from './raw/Modals';
 
+import { ModalsRaw } from './raw/Modals';
 import { db } from '../database/utils';
 import { trashCollection } from '../database/trash';
 
