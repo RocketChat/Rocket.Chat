@@ -24,7 +24,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const setModal = useSetModal();
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const isCallEnabled = useIsCallEnabled();
-	const { agentEnabled } = useVoipAgent();
+	const { agentEnabled, registered } = useVoipAgent();
 	const hasPermission = usePermission('view-omnichannel-contact-center');
 	const agentAvailable = useOmnichannelAgentAvailable();
 	const voipLicense = useHasLicense('voip-enterprise');
@@ -63,9 +63,11 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 
 	const openDialModal = useCallback(() => {
 		if (voipLicense) {
-			setModal(<DialPadModal handleClose={(): void => setModal(null)} />);
+			return setModal(<DialPadModal handleClose={(): void => setModal(null)} />);
 		}
-	}, [voipLicense, setModal]);
+
+		dispatchToastMessage({ type: 'error', message: t('You_do_not_have_permission_to_do_this') });
+	}, [voipLicense, dispatchToastMessage, t, setModal]);
 
 	// The className is a paliative while we make TopBar.ToolBox optional on fuselage
 	return (
@@ -83,7 +85,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 						title={voipLicense ? t('New_Call') : t('New_Call_Enterprise_Edition_Only')}
 						icon='dialpad'
 						onClick={openDialModal}
-						disabled={!agentEnabled}
+						disabled={!agentEnabled || !registered}
 					/>
 				)}
 			</Sidebar.TopBar.Actions>

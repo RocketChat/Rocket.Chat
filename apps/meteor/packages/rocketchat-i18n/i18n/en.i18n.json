@@ -1858,6 +1858,7 @@
   "error-no-permission-team-channel": "You don't have permission to add this channel to the team",
   "error-no-owner-channel": "Only owners can add this channel to the team",
   "error-you-are-last-owner": "You are the last owner. Please set new owner before leaving the room.",
+  "You_do_not_have_permission_to_do_this": "You do not have permission to do this",
   "Errors_and_Warnings": "Errors and Warnings",
   "Esc_to": "Esc to",
   "Estimated_due_time": "Estimated due time",
