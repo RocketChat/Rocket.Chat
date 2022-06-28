@@ -10,8 +10,9 @@ import {
 	isVoipEventQueueMemberAdded,
 	isVoipEventQueueMemberRemoved,
 	isVoipEventCallAbandoned,
+	ICallDetails,
+	UserState,
 } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
@@ -88,15 +89,6 @@ export const CallProvider: FC = ({ children }) => {
 
 	const [networkStatus, setNetworkStatus] = useState<NetworkState>('online');
 
-	const handleWrapUp = useCallback(() => {
-		if (isEnterprise) {
-			openWrapUpModal();
-			return;
-		}
-
-		closeRoom();
-	}, [isEnterprise, openWrapUpModal, closeRoom]);
-
 	useEffect(() => {
 		if (!result?.voipClient) {
 			return;
@@ -104,6 +96,39 @@ export const CallProvider: FC = ({ children }) => {
 
 		setQueueAggregator(result.voipClient.getAggregator());
 	}, [result]);
+
+	const openRoom = useCallback((rid: IVoipRoom['_id']): void => {
+		roomCoordinator.openRouteLink('v', { rid });
+	}, []);
+
+	const createRoom = useCallback(
+		async (caller: ICallerInfo): Promise<IVoipRoom['_id']> => {
+			if (!user) {
+				return '';
+			}
+			try {
+				const { visitor } = await visitorEndpoint({
+					visitor: {
+						token: Random.id(),
+						phone: caller.callerId,
+						name: caller.callerName || caller.callerId,
+					},
+				});
+				const voipRoom = await voipEndpoint({ token: visitor.token, agentId: user._id, direction: 'inbound' });
+				openRoom(voipRoom.room._id);
+				voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
+				const queueAggregator = result.voipClient?.getAggregator();
+				if (queueAggregator) {
+					queueAggregator.callStarted();
+				}
+				return voipRoom.room._id;
+			} catch (error) {
+				console.error(`Error while creating a visitor ${error}`);
+				return '';
+			}
+		},
+		[openRoom, result.voipClient, user, visitorEndpoint, voipEndpoint],
+	);
 
 	useEffect(() => {
 		if (!voipEnabled || !user || !queueAggregator) {
@@ -166,13 +191,18 @@ export const CallProvider: FC = ({ children }) => {
 		const handleCallHangup = (_event: { roomId: string }): void => {
 			setQueueName(queueAggregator.getCurrentQueueName());
 
-			handleWrapUp();
+			if (isEnterprise) {
+				openWrapUpModal();
+				return;
+			}
+
+			closeRoom();
 
 			dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ENDED'], rid: _event.roomId });
 		};
 
 		return subscribeToNotifyUser(`${user._id}/call.hangup`, handleCallHangup);
-	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled, dispatchEvent, handleWrapUp]);
+	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled, dispatchEvent, isEnterprise, closeRoom]);
 
 	useEffect(() => {
 		if (!result.voipClient) {
@@ -181,25 +211,25 @@ export const CallProvider: FC = ({ children }) => {
 
 		/*
 		 * This code may need a revisit when we handle callinqueue differently.
-		 * Check clickup taks for more details
+		 * Check clickup tasks for more details
 		 * https://app.clickup.com/t/22hy1k4
 		 * When customer called a queue (Either using skype or using internal number), call would get established
 		 * customer would hear agent's voice but agent would not hear anything from customer.
-		 * This issue was observed on unstable. It was found to be incosistent to reproduce.
+		 * This issue was observed on unstable. It was found to be inconsistent to reproduce.
 		 * On some developer env, it would happen randomly. On Safari it did not happen if
 		 * user refreshes before taking every call.
 		 *
 		 * The reason behind this was as soon as agent accepts a call, queueCounter would change.
 		 * This change will trigger re-rendering of media and creation of audio element.
 		 * This audio element gets used by voipClient to render the remote audio.
-		 * Because the re-render happend, it would hold a stale reference.
+		 * Because the re-render happened, it would hold a stale reference.
 		 *
 		 * If the dom is inspected, audio element just before body is usually created by this class.
 		 * this audio element.srcObject contains null value. In working case, it should display
 		 * valid stream object.
 		 *
-		 * Reason for inconsistecies :
-		 * This element is utilised in VoIPUser::setupRemoteMedia
+		 * Reason for inconsistencies :
+		 * This element is utilized in VoIPUser::setupRemoteMedia
 		 * This function is called when webRTC receives a remote track event. i.e when the webrtc's peer connection
 		 * starts receiving media. This event call back depends on several factors. How does asterisk setup streams.
 		 * How does it creates a bridge which patches up the agent and customer (Media is flowing thru asterisk).
@@ -220,46 +250,74 @@ export const CallProvider: FC = ({ children }) => {
 		remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 	}, [result.voipClient]);
 
-	const onNetworkConnected = useMutableCallback((): void => {
-		if (!result.voipClient) {
-			return;
-		}
-		if (networkStatus === 'offline') {
-			setNetworkStatus('online');
-		}
-	});
-
-	const onNetworkDisconnected = useMutableCallback((): void => {
-		if (!result.voipClient) {
-			return;
-		}
-		// Transitioning from online -> offline
-		// If there is ongoing call, terminate it or if we are processing an incoming/outgoing call
-		// reject it.
-		if (networkStatus === 'online') {
-			setNetworkStatus('offline');
-			switch (result.voipClient.callerInfo.state) {
-				case 'IN_CALL':
-				case 'ON_HOLD':
-					result.voipClient?.endCall();
-					break;
-				case 'OFFER_RECEIVED':
-				case 'ANSWER_SENT':
-					result.voipClient?.rejectCall();
-					break;
-			}
-		}
-	});
+	const hasLicenseToMakeVoIPCalls = useHasLicense('voip-enterprise');
 
 	useEffect(() => {
 		if (!result.voipClient) {
 			return;
 		}
+
+		if (!user) {
+			return;
+		}
+
+		const onCallEstablished = async (callDetails: ICallDetails): Promise<undefined> => {
+			if (!callDetails.callInfo) {
+				return;
+			}
+			stopRingback();
+			if (callDetails.userState !== UserState.UAC) {
+				return;
+			}
+			// Agent has sent Invite. So it must create a room.
+			const { callInfo } = callDetails;
+			// While making the call, there is no remote media element available.
+			// When the call is ringing we have that element created. But we still
+			// do not want it to be attached.
+			// When call gets established, then switch the media renderer.
+			remoteAudioMediaRef.current && result.voipClient?.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
+			const roomId = await createRoom(callInfo);
+			dispatchEvent({ event: VoipClientEvents['VOIP-CALL-STARTED'], rid: roomId });
+		};
+
+		const onNetworkConnected = (): void => {
+			if (networkStatus === 'offline') {
+				setNetworkStatus('online');
+			}
+		};
+
+		const onNetworkDisconnected = (): void => {
+			// Transitioning from online -> offline
+			// If there is ongoing call, terminate it or if we are processing an incoming/outgoing call
+			// reject it.
+			if (networkStatus === 'online') {
+				setNetworkStatus('offline');
+				switch (result.voipClient?.callerInfo.state) {
+					case 'IN_CALL':
+					case 'ON_HOLD':
+						result.voipClient?.endCall();
+						break;
+					case 'OFFER_RECEIVED':
+					case 'ANSWER_SENT':
+						result.voipClient?.rejectCall();
+						break;
+				}
+			}
+		};
+
+		const onRinging = (): void => {
+			startRingback(user);
+		};
+
 		result.voipClient.onNetworkEvent('connected', onNetworkConnected);
 		result.voipClient.onNetworkEvent('disconnected', onNetworkDisconnected);
 		result.voipClient.onNetworkEvent('connectionerror', onNetworkDisconnected);
 		result.voipClient.onNetworkEvent('localnetworkonline', onNetworkConnected);
 		result.voipClient.onNetworkEvent('localnetworkoffline', onNetworkDisconnected);
+		result.voipClient.on('callestablished', onCallEstablished);
+		result.voipClient.on('ringing', onRinging);
+		result.voipClient.on('incomingcall', onRinging);
+		result.voipClient.on('callterminated', stopRingback);
 
 		return (): void => {
 			result.voipClient?.offNetworkEvent('connected', onNetworkConnected);
@@ -267,12 +325,12 @@ export const CallProvider: FC = ({ children }) => {
 			result.voipClient?.offNetworkEvent('connectionerror', onNetworkDisconnected);
 			result.voipClient?.offNetworkEvent('localnetworkonline', onNetworkConnected);
 			result.voipClient?.offNetworkEvent('localnetworkoffline', onNetworkDisconnected);
+			result.voipClient?.off('incomingcall', onRinging);
+			result.voipClient?.off('ringing', onRinging);
+			result.voipClient?.off('callestablished', onCallEstablished);
+			result.voipClient?.off('callterminated', stopRingback);
 		};
-	}, [onNetworkConnected, onNetworkDisconnected, result.voipClient]);
-
-	const openRoom = (rid: IVoipRoom['_id']): void => {
-		roomCoordinator.openRouteLink('v', { rid });
-	};
+	}, [createRoom, dispatchEvent, networkStatus, result.voipClient, user]);
 
 	const contextValue: CallContextValue = useMemo(() => {
 		if (!voipEnabled) {
@@ -306,11 +364,8 @@ export const CallProvider: FC = ({ children }) => {
 
 		const { registrationInfo, voipClient } = result;
 
-		voipClient.on('incomingcall', () => user && startRingback(user));
-		voipClient.on('callestablished', () => stopRingback());
-		voipClient.on('callterminated', () => stopRingback());
-
 		return {
+			canMakeCall: hasLicenseToMakeVoIPCalls,
 			enabled: true,
 			ready: true,
 			openedRoomInfo: roomInfo,
@@ -329,30 +384,23 @@ export const CallProvider: FC = ({ children }) => {
 				reject: (): Promise<void> => voipClient.rejectCall(),
 			},
 			openRoom,
-			createRoom: async (caller: ICallerInfo): Promise<IVoipRoom['_id']> => {
-				if (user) {
-					const { visitor } = await visitorEndpoint({
-						visitor: {
-							token: Random.id(),
-							phone: caller.callerId,
-							name: caller.callerName || caller.callerId,
-						},
-					});
-					const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id, direction: 'inbound' }));
-					openRoom(voipRoom.room._id);
-					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
-					const queueAggregator = voipClient.getAggregator();
-					if (queueAggregator) {
-						queueAggregator.callStarted();
-					}
-					return voipRoom.room._id;
-				}
-				return '';
-			},
+			createRoom,
 			closeRoom,
 			openWrapUpModal,
 		};
-	}, [voipEnabled, user, result, roomInfo, queueCounter, queueName, closeRoom, openWrapUpModal, visitorEndpoint, voipEndpoint]);
+	}, [
+		voipEnabled,
+		user?.extension,
+		result,
+		hasLicenseToMakeVoIPCalls,
+		roomInfo,
+		queueCounter,
+		queueName,
+		openRoom,
+		createRoom,
+		closeRoom,
+		openWrapUpModal,
+	]);
 
 	return (
 		<CallContext.Provider value={contextValue}>

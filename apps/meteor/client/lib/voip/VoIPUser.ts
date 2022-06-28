@@ -47,8 +47,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		enableVideo: false,
 	};
 
-	private session: Session | undefined;
-
 	private remoteStream: Stream | undefined;
 
 	userAgentOptions: UserAgentOptions = {};
@@ -58,12 +56,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	registerer: Registerer | undefined;
 
 	mediaStreamRendered?: IMediaStreamRenderer;
-
-	private _callState: CallStates = 'INITIAL';
-
-	private _callerInfo: ICallerInfo | undefined;
-
-	private _userState: UserState = UserState.IDLE;
 
 	private _connectionState: ConnectionState = 'INITIAL';
 
@@ -88,6 +80,24 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	private optionsKeepAliveDebounceTimeInSec = 5;
 
 	private attemptRegistration = false;
+
+	protected session: Session | undefined;
+
+	protected _callState: CallStates = 'INITIAL';
+
+	protected _callerInfo: ICallerInfo | undefined;
+
+	protected _userState: UserState = UserState.IDLE;
+
+	protected _opInProgress: Operation = Operation.OP_NONE;
+
+	get operationInProgress(): Operation {
+		return this._opInProgress;
+	}
+
+	get userState(): UserState | undefined {
+		return this._userState;
+	}
 
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
@@ -116,7 +126,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			server: this.config.webSocketURI,
 			connectionTimeout: 100, // Replace this with config
 			keepAliveInterval: 20,
-			// traceSip: true
+			// traceSip: true,
 		};
 		const sdpFactoryOptions = {
 			iceGatheringTimeout: 10,
@@ -242,16 +252,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		};
 	}
 
-	private _opInProgress: Operation = Operation.OP_NONE;
-
-	get operationInProgress(): Operation {
-		return this._opInProgress;
-	}
-
-	get userState(): UserState | undefined {
-		return this._userState;
-	}
-
 	/* Media Stream functions begin */
 	/** The local media stream. Undefined if call not answered. */
 	get localMediaStream(): MediaStream | undefined {
@@ -322,7 +322,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	 * This class handles such session state changes and takes necessary actions.
 	 */
 
-	private setupSessionEventHandlers(session: Session): void {
+	protected setupSessionEventHandlers(session: Session): void {
 		this.session?.stateChange.addListener((state: SessionState) => {
 			if (this.session !== session) {
 				return; // if our session has changed, just return
@@ -331,12 +331,32 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				case SessionState.Initial:
 					break;
 				case SessionState.Establishing:
+					this.emit('ringing', { userState: this._userState, callInfo: this._callerInfo });
 					break;
 				case SessionState.Established:
+					if (this._userState === UserState.UAC) {
+						/**
+						 * We need to decide about user-state ANSWER-RECEIVED for outbound.
+						 * This state is there for the symmetry of ANSWER-SENT.
+						 * ANSWER-SENT occurs when there is incoming invite. So then the UA
+						 * accepts a call, it sends the answer and state becomes ANSWER-SENT.
+						 * The call gets established only when the remote party sends ACK.
+						 *
+						 * But in case of UAC where the invite is sent out, there is no intermediate
+						 * state where the UA can be in ANSWER-RECEIVED. As soon this UA receives the answer,
+						 * it sends ack and changes the SessionState to established.
+						 *
+						 * So we do not have an actual state transitions from ANSWER-RECEIVED to IN-CALL.
+						 *
+						 * Nevertheless, this state is just added to maintain the symmetry. This can be safely removed.
+						 *
+						 * */
+						this._callState = 'ANSWER_RECEIVED';
+					}
 					this._opInProgress = Operation.OP_NONE;
-					this._callState = 'IN_CALL';
 					this.setupRemoteMedia();
-					this.emit('callestablished');
+					this._callState = 'IN_CALL';
+					this.emit('callestablished', { userState: this._userState, callInfo: this._callerInfo });
 					this.emit('stateChanged');
 					break;
 				case SessionState.Terminating:
@@ -633,6 +653,18 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		throw new Error('Something went wrong');
 	}
 
+	/* Helper routines for checking call actions BEGIN */
+
+	private canRejectCall(): boolean {
+		return ['OFFER_RECEIVED', 'OFFER_SENT'].includes(this._callState);
+	}
+
+	private canEndOrHoldCall(): boolean {
+		return ['ANSWER_SENT', 'ANSWER_RECEIVED', 'IN_CALL', 'ON_HOLD'].includes(this._callState);
+	}
+
+	/* Helper routines for checking call actions END */
+
 	/**
 	 * Public method called from outside to reject a call.
 	 * @remarks
@@ -641,7 +673,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		if (!this.session) {
 			throw new Error('Session does not exist.');
 		}
-		if (this._callState !== 'OFFER_RECEIVED') {
+		if (!this.canRejectCall()) {
 			throw new Error(`Incorrect call State = ${this.callState}`);
 		}
 		if (!(this.session instanceof Invitation)) {
@@ -658,7 +690,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		if (!this.session) {
 			throw new Error('Session does not exist.');
 		}
-		if (this._callState !== 'ANSWER_SENT' && this._callState !== 'IN_CALL' && this._callState !== 'ON_HOLD') {
+		if (!this.canEndOrHoldCall()) {
 			throw new Error(`Incorrect call State = ${this.callState}`);
 		}
 
@@ -708,7 +740,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		if (!this.session) {
 			throw new Error('Session does not exist.');
 		}
-		if (this._callState !== 'ANSWER_SENT' && this._callState !== 'IN_CALL' && this._callState !== 'ON_HOLD') {
+		if (!this.canEndOrHoldCall()) {
 			throw new Error(`Incorrect call State = ${this.callState}`);
 		}
 		this.handleHoldUnhold(holdState);
@@ -965,5 +997,10 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				},
 			},
 		});
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async makeCall(_callee: string, _mediaRenderer?: IMediaStreamRenderer): Promise<void> {
+		throw new Error('Not implemented');
 	}
 }
