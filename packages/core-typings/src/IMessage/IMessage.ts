@@ -1,3 +1,5 @@
+import type Url from 'url';
+
 import type Icons from '@rocket.chat/icons';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { parser } from '@rocket.chat/message-parser';
@@ -15,7 +17,9 @@ type MessageUrl = {
 	url: string;
 	source?: string;
 	meta: Record<string, string>;
-	headers?: { contentLength: string; contentType: string };
+	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
+	ignoreParse?: boolean;
+	parsedUrl?: Pick<Url.UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
 
 type VoipMessageTypesValues =
@@ -171,6 +175,8 @@ export interface IMessage extends IRocketChatRecord {
 	// Tokenization fields
 	tokens?: Token[];
 	html?: string;
+	// Messages sent from visitors have this field
+	token?: string;
 }
 
 export type MessageSystem = {

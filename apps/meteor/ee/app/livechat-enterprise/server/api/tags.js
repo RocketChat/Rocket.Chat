@@ -18,7 +18,7 @@ API.v1.addRoute(
 						pagination: {
 							offset,
 							count,
-							sort,
+							sort: JSON.parse(sort || '{}'),
 						},
 					}),
 				),
