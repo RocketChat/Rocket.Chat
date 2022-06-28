@@ -998,4 +998,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			},
 		});
 	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async makeCall(_callee: string, _mediaRenderer?: IMediaStreamRenderer): Promise<void> {
+		throw new Error('Not implemented');
+	}
 }
