@@ -131,8 +131,16 @@ export class FederationRoomServiceReceiver {
 			await this.bridge.joinRoom(externalRoomId, externalInviteeId);
 		}
 		const federatedRoom = affectedFederatedRoom || (await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId));
-
 		if (leave) {
+			if (
+				!(await this.rocketRoomAdapter.isUserAlreadyJoined(
+					federatedRoom?.internalReference?._id as string,
+					federatedInviteeUser?.internalReference._id as string,
+				))
+			) {
+				return;
+			}
+
 			return this.rocketRoomAdapter.removeUserFromRoom(
 				federatedRoom as FederatedRoom,
 				federatedInviteeUser as FederatedUser,

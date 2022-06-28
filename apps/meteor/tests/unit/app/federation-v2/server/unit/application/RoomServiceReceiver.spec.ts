@@ -16,6 +16,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		createFederatedRoom: sinon.stub(),
 		removeUserFromRoom: sinon.stub(),
 		addUserToRoom: sinon.stub(),
+		isUserAlreadyJoined: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -48,6 +49,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		roomAdapter.getFederatedRoomByExternalId.reset();
 		roomAdapter.createFederatedRoom.reset();
 		roomAdapter.removeUserFromRoom.reset();
+		roomAdapter.isUserAlreadyJoined.reset();
 		roomAdapter.addUserToRoom.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.createFederatedUser.reset();
@@ -262,8 +264,9 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 			expect(roomAdapter.createFederatedRoom.called).to.be.false;
 		});
 
-		it('should remove the user from room if its a LEAVE event', async () => {
+		it('should remove the user from room if its a LEAVE event and the user is in the room', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			roomAdapter.isUserAlreadyJoined.resolves(true);
 			await service.changeRoomMembership({
 				externalRoomId: 'externalRoomId',
 				normalizedRoomId: 'normalizedRoomId',
@@ -275,6 +278,23 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 			} as any);
 
 			expect(roomAdapter.removeUserFromRoom.called).to.be.true;
+			expect(roomAdapter.addUserToRoom.called).to.be.false;
+		});
+
+		it('should NOT remove the user from room if its a LEAVE event and the user is NOT in the room anymore', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			roomAdapter.isUserAlreadyJoined.resolves(false);
+			await service.changeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.LOCAL,
+				roomType: RoomType.CHANNEL,
+				externalInviteeId: 'externalInviteeId',
+				leave: true,
+				normalizedInviteeId: 'normalizedInviteeId',
+			} as any);
+
+			expect(roomAdapter.removeUserFromRoom.called).to.be.false;
 			expect(roomAdapter.addUserToRoom.called).to.be.false;
 		});
 

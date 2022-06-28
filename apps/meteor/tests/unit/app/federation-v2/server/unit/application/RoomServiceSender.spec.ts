@@ -16,6 +16,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		addUserToRoom: sinon.stub(),
 		getInternalRoomById: sinon.stub(),
 		createFederatedRoom: sinon.stub(),
+		isUserAlreadyJoined: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -35,6 +36,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		inviteToRoom: sinon.stub().returns(new Promise((resolve) => resolve({}))),
 		createDirectMessageRoom: sinon.stub(),
 		joinRoom: sinon.stub(),
+		leaveRoom: sinon.stub(),
 	};
 	const room = FederatedRoom.build();
 	const user = FederatedRoom.build();
@@ -50,6 +52,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		roomAdapter.addUserToRoom.reset();
 		roomAdapter.getInternalRoomById.reset();
 		roomAdapter.createFederatedRoom.reset();
+		roomAdapter.isUserAlreadyJoined.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getInternalUserById.reset();
@@ -62,6 +65,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		bridge.createDirectMessageRoom.reset();
 		bridge.inviteToRoom.reset();
 		bridge.joinRoom.reset();
+		bridge.leaveRoom.reset();
 	});
 
 	describe('#createDirectMessageRoomAndInviteUser()', () => {
@@ -290,6 +294,37 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			room.internalReference.federated = true;
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			expect(await service.isAFederatedRoom('internalRoomId')).to.be.true;
+		});
+	});
+
+	describe('#leaveRoom()', () => {
+		it('should not remove the user from the proxy server if it is not in the room anymore', async () => {
+			roomAdapter.isUserAlreadyJoined.resolves(false);
+			await service.leaveRoom({} as any);
+			expect(bridge.leaveRoom.called).to.be.false;
+		});
+
+		it('should not remove the user from the proxy server if the room does not exists', async () => {
+			roomAdapter.isUserAlreadyJoined.resolves(true);
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+			await service.leaveRoom({} as any);
+			expect(bridge.leaveRoom.called).to.be.false;
+		});
+
+		it('should not remove the user from the proxy server if the user does not exists', async () => {
+			roomAdapter.isUserAlreadyJoined.resolves(true);
+			roomAdapter.getFederatedRoomByInternalId.resolves({});
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+			await service.leaveRoom({} as any);
+			expect(bridge.leaveRoom.called).to.be.false;
+		});
+
+		it('should remove the user from the proxy server room if the room and the user exists AND it is in the local room', async () => {
+			roomAdapter.isUserAlreadyJoined.resolves(true);
+			roomAdapter.getFederatedRoomByInternalId.resolves({ externalId: 'externalId' });
+			userAdapter.getFederatedUserByInternalId.resolves({ externalId: 'externalId' });
+			await service.leaveRoom({} as any);
+			expect(bridge.leaveRoom.calledWith('externalId', 'externalId')).to.be.true;
 		});
 	});
 });

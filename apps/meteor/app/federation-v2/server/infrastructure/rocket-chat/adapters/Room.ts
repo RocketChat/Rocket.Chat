@@ -95,4 +95,10 @@ export class RocketChatRoomAdapter {
 
 		return federatedRoom;
 	}
+
+	public async isUserAlreadyJoined(internalRoomId: string, internalUserId: string): Promise<boolean> {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(internalRoomId, internalUserId);
+
+		return Boolean(subscription);
+	}
 }

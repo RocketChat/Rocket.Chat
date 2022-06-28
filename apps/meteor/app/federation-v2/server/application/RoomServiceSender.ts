@@ -86,6 +86,9 @@ export class FederationRoomServiceSender {
 
 	public async leaveRoom(afterLeaveRoomInput: FederationAfterLeaveRoomDto): Promise<void> {
 		const { internalRoomId, internalUserId } = afterLeaveRoomInput;
+		if (!(await this.rocketRoomAdapter.isUserAlreadyJoined(internalRoomId, internalUserId))) {
+			return;
+		}
 
 		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 		if (!federatedRoom) {
@@ -96,7 +99,6 @@ export class FederationRoomServiceSender {
 		if (!federatedUser) {
 			return;
 		}
-
 		await this.bridge.leaveRoom(federatedRoom.externalId, federatedUser.externalId);
 	}
 
