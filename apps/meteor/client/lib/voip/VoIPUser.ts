@@ -240,7 +240,12 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	}
 
 	get callerInfo(): VoIpCallerInfo {
-		if (this.callState === 'IN_CALL' || this.callState === 'OFFER_RECEIVED' || this.callState === 'ON_HOLD') {
+		if (
+			this.callState === 'IN_CALL' ||
+			this.callState === 'OFFER_RECEIVED' ||
+			this.callState === 'ON_HOLD' ||
+			this.callState === 'OFFER_SENT'
+		) {
 			if (!this._callerInfo) {
 				throw new Error('[VoIPUser callerInfo] invalid state');
 			}

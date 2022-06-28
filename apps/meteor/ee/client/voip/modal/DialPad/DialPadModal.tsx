@@ -16,7 +16,7 @@ const DialPadModal = ({ handleClose }: { handleClose: () => void }): ReactElemen
 		handleBackspaceClick,
 		handlePadButtonClick,
 		handleCallButtonClick,
-	} = useDialPad(handleClose);
+	} = useDialPad();
 
 	const mask = (rawValue = ''): (string | RegExp)[] => ['+', /[1-9]/].concat(rawValue.split('').map(() => /\d/));
 	return (

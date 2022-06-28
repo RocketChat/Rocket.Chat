@@ -15,7 +15,7 @@ type DialPadStateHandlers = {
 	handleCallButtonClick: () => void;
 };
 
-export const useDialPad = (handleClose: () => void): DialPadStateHandlers => {
+export const useDialPad = (): DialPadStateHandlers => {
 	const t = useTranslation();
 	const outbound = useOutboundDialer();
 
@@ -50,15 +50,24 @@ export const useDialPad = (handleClose: () => void): DialPadStateHandlers => {
 			return setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
 		}
 
-		outbound.outboundDialer.makeCall(`sip:*${value}@${outbound.outboundDialer.userConfig.sipRegistrarHostnameOrIP}`).then(
-			() => {
-				handleClose();
-			},
-			(error) => {
-				setError('PhoneInput', { message: error.message });
-			},
-		);
-	}, [handleClose, outbound, setError, t, value]);
+		outbound.outboundDialer.makeCall(`sip:*${value.replace('+', '')}@${outbound.outboundDialer.userConfig.sipRegistrarHostnameOrIP}`);
+	}, [outbound, setError, t, value]);
+
+	useEffect(() => {
+		if (!outbound || !outbound.outboundDialer) {
+			return;
+		}
+
+		const onCallFailed = (): void => {
+			setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
+		};
+
+		outbound.outboundDialer.on('callfailed', onCallFailed);
+
+		return (): void => {
+			outbound.outboundDialer?.off('callfailed', onCallFailed);
+		};
+	}, [outbound, outbound.outboundDialer, setError, t]);
 
 	useEffect(() => {
 		setDisabled(!value);
