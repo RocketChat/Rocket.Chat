@@ -1,6 +1,6 @@
 import { isModalsProps, isModalsInsertProps } from '@rocket.chat/rest-typings';
 
-import { Modals, ModalsDismiss } from '../../../models/server/raw/index';
+import { Modals, ModalsDismiss } from '../../../models/server/raw';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -32,6 +32,10 @@ API.v1.addRoute(
 			}
 
 			const { modalId } = this.bodyParams;
+			const modal = await Modals.findOne({ _id: modalId, status: true });
+			if (!modal) {
+				return API.v1.notFound();
+			}
 
 			const stmt = await Modals.deleteModal(modalId);
 
@@ -68,8 +72,8 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-user');
 			}
 			const { modalId } = this.bodyParams;
-
-			if (await Modals.findOne({ _id: modalId, status: true })) {
+			const modal = await Modals.findOne({ _id: modalId, status: true });
+			if (!modal) {
 				return API.v1.notFound();
 			}
 

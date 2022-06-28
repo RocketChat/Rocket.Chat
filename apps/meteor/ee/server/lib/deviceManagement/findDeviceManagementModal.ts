@@ -5,7 +5,7 @@ import { Modals } from '../../../../app/models/server/raw/index';
 import { hasLicense } from '../../../app/license/server/license';
 
 Meteor.methods({
-	async deviceManagementModal(): Promise<Pick<IModal, '_id'> | null> {
+	async findDeviceManagementModal(): Promise<Pick<IModal, '_id'> | null> {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'deviceManagementModal',

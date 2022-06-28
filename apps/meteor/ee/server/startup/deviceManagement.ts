@@ -8,6 +8,6 @@ onToggledFeature('device-management', {
 			const { createPermissions, createDeviceManagementModal } = await import('../lib/deviceManagement/startup');
 			await createPermissions();
 			await createDeviceManagementModal();
-			await import('../lib/deviceManagement/deviceManagementModal');
+			await import('../lib/deviceManagement/findDeviceManagementModal');
 		}),
 });

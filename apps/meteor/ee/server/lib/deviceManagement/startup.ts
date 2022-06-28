@@ -10,7 +10,7 @@ export const createPermissions = async (): Promise<void> => {
 
 export const createDeviceManagementModal = async (): Promise<void> => {
 	const modal = await Modals.findOneById<IModal>('device-management', { projection: { _id: 1 } });
-	modal ??
+	if (!modal) {
 		Modals.insertOne({
 			_id: 'device-management',
 			title: 'Device Management',
@@ -20,4 +20,5 @@ export const createDeviceManagementModal = async (): Promise<void> => {
 			expires: null,
 			status: true,
 		});
+	}
 };
