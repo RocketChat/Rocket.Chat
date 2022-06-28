@@ -26,8 +26,9 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const settingsRef = useRef<Record<string, ISetting['value']>>({});
 	const appData = useAppInfo(id);
 
-	const [, urlParams] = useCurrentRoute();
+	const [routeName, urlParams] = useCurrentRoute();
 	const appsRoute = useRoute('admin-apps');
+	const marketplaceRoute = useRoute('admin-marketplace');
 	const tab = useRouteParameter('tab');
 
 	const [currentRouteName] = useCurrentRoute();
@@ -58,7 +59,13 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	}, [id, settings]);
 
 	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs'): void => {
-		appsRoute.replace({ ...urlParams, tab });
+		if (routeName === 'admin-marketplace') {
+			marketplaceRoute.replace({ ...urlParams, tab });
+		}
+
+		if (routeName === 'admin-apps') {
+			appsRoute.replace({ ...urlParams, tab });
+		}
 	};
 
 	return (
