@@ -1,7 +1,8 @@
 import { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users } from '@rocket.chat/models';
-import { Db } from 'mongodb';
+import { Collection } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
+import moment from 'moment';
 
 import { Livechat } from '../../../../../app/livechat/server';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
@@ -9,7 +10,7 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { schedulerLogger } from '../lib/logger';
 import { AbstractOmniSchedulerClass } from './AbstractOmniSchedulerClass';
 
-const AUTO_TRANSFER_UNANSWERED_CHAT_JOB_NAME = 'omnichannel_auto_transfer_unanswered_chat';
+const JOB_NAME = 'omnichannel_auto_transfer_unanswered_chat';
 
 type JobData = {
 	roomId: string;
@@ -21,13 +22,12 @@ export class AutoTransferChatScheduler extends AbstractOmniSchedulerClass {
 
 	schedulerUser: IUser;
 
-	initialize(): void {
-		this.scheduler.define(AUTO_TRANSFER_UNANSWERED_CHAT_JOB_NAME, this.executeJob.bind(this));
+	createJobDefinition(): void {
+		this.scheduler.define<JobData>(JOB_NAME, this.executeJob.bind(this));
 	}
 
-	createIndexes(db: Db): void {
-		db.createIndex(
-			'data_RoomId_1',
+	createIndexes(collection: Collection): void {
+		collection.createIndex(
 			{
 				'data.roomId': 1,
 			},
@@ -47,6 +47,7 @@ export class AutoTransferChatScheduler extends AbstractOmniSchedulerClass {
 		AutoTransferChatScheduler.getInstance();
 	}
 
+	// cache for SchedulerUser variable
 	async getSchedularUser(): Promise<IUser> {
 		if (this.schedulerUser) {
 			return this.schedulerUser;
@@ -60,28 +61,28 @@ export class AutoTransferChatScheduler extends AbstractOmniSchedulerClass {
 	}
 
 	public async scheduleRoom(roomId: string, timeout: number): Promise<void> {
-		schedulerLogger.debug(`Scheduling ${AUTO_TRANSFER_UNANSWERED_CHAT_JOB_NAME} for room ${roomId}`);
+		schedulerLogger.debug(`Scheduling ${JOB_NAME} for room ${roomId}`);
 		await this.unscheduleRoom(roomId);
 
+		const when = moment(new Date()).add(timeout, 's').toDate();
+
 		const [job] = await Promise.all([
-			this.scheduler.schedule<JobData>(this.addSecondsToDate(new Date(), timeout), AUTO_TRANSFER_UNANSWERED_CHAT_JOB_NAME, { roomId }),
+			this.scheduler.schedule<JobData>(when, JOB_NAME, { roomId }),
 			LivechatRooms.setAutoTransferOngoingById(roomId),
 		]);
 
-		schedulerLogger.debug(`Scheduled ${AUTO_TRANSFER_UNANSWERED_CHAT_JOB_NAME} for room ${roomId} at ${job.attrs.nextRunAt}`);
+		schedulerLogger.debug(`Scheduled ${JOB_NAME} for room ${roomId} at ${job.attrs.nextRunAt}`);
 	}
 
 	public async unscheduleRoom(roomId: string): Promise<void> {
-		schedulerLogger.debug(`Unscheduling ${AUTO_TRANSFER_UNANSWERED_CHAT_JOB_NAME} for room ${roomId}`);
+		schedulerLogger.debug(`Unscheduling ${JOB_NAME} for room ${roomId}`);
 
 		const [, totalCancelledJobs] = await Promise.all([
 			LivechatRooms.unsetAutoTransferOngoingById(roomId),
 			this.scheduler.cancel({ data: { roomId } }),
 		]);
 
-		schedulerLogger.debug(
-			`Unscheduled ${AUTO_TRANSFER_UNANSWERED_CHAT_JOB_NAME} for room ${roomId} (${totalCancelledJobs} jobs cancelled)`,
-		);
+		schedulerLogger.debug(`Unscheduled ${JOB_NAME} for room ${roomId} (${totalCancelledJobs} jobs cancelled)`);
 	}
 
 	private async transferRoom(roomId: string): Promise<boolean> {
@@ -118,7 +119,7 @@ export class AutoTransferChatScheduler extends AbstractOmniSchedulerClass {
 	}
 
 	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
-		schedulerLogger.debug(`Executing ${AUTO_TRANSFER_UNANSWERED_CHAT_JOB_NAME} for room ${data.roomId}`);
+		schedulerLogger.debug(`Executing ${JOB_NAME} for room ${data.roomId}`);
 		const { roomId } = data;
 
 		if (await this.transferRoom(roomId)) {
@@ -128,12 +129,8 @@ export class AutoTransferChatScheduler extends AbstractOmniSchedulerClass {
 
 		await this.unscheduleRoom(roomId);
 
-		schedulerLogger.debug(`Executed ${AUTO_TRANSFER_UNANSWERED_CHAT_JOB_NAME} for room ${roomId}`);
+		schedulerLogger.debug(`Executed ${JOB_NAME} for room ${roomId}`);
 	}
-
-	private addSecondsToDate = (date: Date, seconds: number): Date => {
-		return new Date(date.getTime() + seconds * 1000);
-	};
 }
 
 Meteor.startup(() => {

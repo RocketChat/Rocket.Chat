@@ -1,6 +1,6 @@
 import Agenda from 'agenda';
 import { MongoInternals } from 'meteor/mongo';
-import { Db } from 'mongodb';
+import { Collection } from 'mongodb';
 
 import { schedulerLogger } from '../lib/logger';
 
@@ -9,9 +9,9 @@ const SCHEDULER_NAME = 'omnichannel_scheduler';
 export abstract class AbstractOmniSchedulerClass {
 	scheduler: Agenda;
 
-	abstract initialize(): void;
+	abstract createJobDefinition(): void;
 
-	abstract createIndexes(db: Db): void;
+	abstract createIndexes(collection: Collection): void;
 
 	protected constructor() {
 		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
@@ -37,8 +37,8 @@ export abstract class AbstractOmniSchedulerClass {
 			this.scheduler.stop();
 		});
 
-		this.initialize();
+		this.createJobDefinition();
 
-		this.createIndexes(db);
+		this.createIndexes(db.collection(SCHEDULER_NAME));
 	}
 }
