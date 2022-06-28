@@ -391,7 +391,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-d-room')) {
+			if (!hasPermission(this.userId, 'view-d-room') || !hasPermission(this.userId, 'view-user-administration')) {
 				return API.v1.unauthorized();
 			}
 
