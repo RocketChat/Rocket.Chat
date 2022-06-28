@@ -250,7 +250,7 @@ export const CallProvider: FC = ({ children }) => {
 		remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 	}, [result.voipClient]);
 
-	const hasLicenseToMakeVoIPCalls = useHasLicense('voip-enterprise');
+	const hasLicenseToMakeVoIPCalls = useHasLicenseModule('voip-enterprise');
 
 	useEffect(() => {
 		if (!result.voipClient) {
