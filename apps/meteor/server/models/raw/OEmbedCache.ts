@@ -1,6 +1,6 @@
 import type { IOEmbedCache, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IOEmbedCacheModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, DeleteWriteOpResultObject, IndexSpecification } from 'mongodb';
+import type { Collection, Db, DeleteResult, IndexDescription } from 'mongodb';
 import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
@@ -10,7 +10,7 @@ export class OEmbedCacheRaw extends BaseRaw<IOEmbedCache> implements IOEmbedCach
 		super(db, getCollectionName('oembed_cache'), trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { updatedAt: 1 } }];
 	}
 
@@ -24,7 +24,7 @@ export class OEmbedCacheRaw extends BaseRaw<IOEmbedCache> implements IOEmbedCach
 		return record;
 	}
 
-	removeAfterDate(date: Date): Promise<DeleteWriteOpResultObject> {
+	removeAfterDate(date: Date): Promise<DeleteResult> {
 		const query = {
 			updatedAt: {
 				$lte: date,

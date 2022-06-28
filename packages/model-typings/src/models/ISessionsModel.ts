@@ -1,4 +1,4 @@
-import type { BulkWriteOpResultObject, UpdateWriteOpResult, Cursor } from 'mongodb';
+import type { BulkWriteResult, UpdateResult, FindCursor } from 'mongodb';
 import type {
 	ISession,
 	UserSessionAggregationResult,
@@ -24,7 +24,7 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 	findLastLoginByIp(ip: string): Promise<ISession | null>;
 	findOneBySessionId(sessionId: string): Promise<ISession | null>;
 
-	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession>;
+	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): FindCursor<ISession>;
 	getActiveUsersOfPeriodByDayBetweenDates({ start, end }: DestructuredRange): Promise<
 		{
 			day: number;
@@ -79,20 +79,20 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 
 	getUniqueOSOfLastWeek(): Promise<OSSessionAggregationResult>;
 
-	createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateWriteOpResult | undefined>;
+	createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateResult | undefined>;
 
-	closeByInstanceIdAndSessionId(instanceId: string, sessionId: string): Promise<UpdateWriteOpResult>;
+	closeByInstanceIdAndSessionId(instanceId: string, sessionId: string): Promise<UpdateResult>;
 
 	updateActiveSessionsByDateAndInstanceIdAndIds(
 		params: Partial<DestructuredDate>,
 		instanceId: string,
 		sessions: string[],
 		data?: Record<string, any>,
-	): Promise<UpdateWriteOpResult>;
+	): Promise<UpdateResult>;
 
-	updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data?: Record<string, any>): Promise<UpdateWriteOpResult>;
+	updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data?: Record<string, any>): Promise<UpdateResult>;
 
-	logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateWriteOpResult>;
+	logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult>;
 
-	createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteOpResultObject | undefined>;
+	createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteResult | undefined>;
 }

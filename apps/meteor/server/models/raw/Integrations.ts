@@ -1,6 +1,6 @@
 import type { IIntegration, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, IIntegrationsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexSpecification } from 'mongodb';
+import type { Collection, Db, IndexDescription } from 'mongodb';
 import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
@@ -10,7 +10,7 @@ export class IntegrationsRaw extends BaseRaw<IIntegration> implements IIntegrati
 		super(db, getCollectionName('integrations'), trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { type: 1 } }];
 	}
 

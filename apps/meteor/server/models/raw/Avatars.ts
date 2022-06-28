@@ -1,6 +1,6 @@
 import type { IAvatar, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IAvatarsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, DeleteWriteOpResultObject, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
+import type { Collection, Db, DeleteResult, IndexDescription, UpdateResult, Document } from 'mongodb';
 import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
@@ -10,14 +10,20 @@ export class AvatarsRaw extends BaseRaw<IAvatar> implements IAvatarsModel {
 		super(db, getCollectionName('avatars'), trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { name: 1 }, sparse: true },
 			{ key: { rid: 1 }, sparse: true },
 		];
 	}
 
-	insertAvatarFileInit(name: string, userId: string, store: string, file: { name: string }, extra: object): Promise<UpdateWriteOpResult> {
+	insertAvatarFileInit(
+		name: string,
+		userId: string,
+		store: string,
+		file: { name: string },
+		extra: object,
+	): Promise<Document | UpdateResult> {
 		const fileData = {
 			name,
 			userId,
@@ -34,7 +40,7 @@ export class AvatarsRaw extends BaseRaw<IAvatar> implements IAvatarsModel {
 		return this.updateOne({ _id: name }, fileData, { upsert: true });
 	}
 
-	updateFileComplete(fileId: string, userId: string, file: object): Promise<UpdateWriteOpResult> | undefined {
+	updateFileComplete(fileId: string, userId: string, file: object): Promise<Document | UpdateResult> | undefined {
 		if (!fileId) {
 			return;
 		}
@@ -65,7 +71,7 @@ export class AvatarsRaw extends BaseRaw<IAvatar> implements IAvatarsModel {
 		return this.findOne({ rid });
 	}
 
-	async updateFileNameById(fileId: string, name: string): Promise<UpdateWriteOpResult> {
+	async updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult> {
 		const filter = { _id: fileId };
 		const update = {
 			$set: {
@@ -75,7 +81,7 @@ export class AvatarsRaw extends BaseRaw<IAvatar> implements IAvatarsModel {
 		return this.updateOne(filter, update);
 	}
 
-	async deleteFile(fileId: string): Promise<DeleteWriteOpResultObject> {
+	async deleteFile(fileId: string): Promise<DeleteResult> {
 		return this.deleteOne({ _id: fileId });
 	}
 }

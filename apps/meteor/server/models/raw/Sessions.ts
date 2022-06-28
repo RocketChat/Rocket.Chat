@@ -12,14 +12,15 @@ import type {
 import type { ISessionsModel, ModelOptionalId } from '@rocket.chat/model-typings';
 import type {
 	AggregationCursor,
-	BulkWriteOperation,
-	BulkWriteOpResultObject,
+	AnyBulkWriteOperation,
+	BulkWriteResult,
 	Collection,
-	Cursor,
+	Document,
+	FindCursor,
 	Db,
-	FilterQuery,
-	IndexSpecification,
-	UpdateWriteOpResult,
+	Filter,
+	IndexDescription,
+	UpdateResult,
 } from 'mongodb';
 import { getCollectionName } from '@rocket.chat/models';
 
@@ -36,7 +37,7 @@ type DestructuredDateWithType = {
 type DestructuredRange = { start: DestructuredDate; end: DestructuredDate };
 type DateRange = { start: Date; end: Date };
 
-const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): FilterQuery<ISession> => {
+const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): Filter<ISession> => {
 	if (start.year === end.year && start.month === end.month) {
 		return {
 			year: start.year,
@@ -438,7 +439,7 @@ export const aggregates = {
 			.toArray();
 	},
 
-	getMatchOfLastMonthOrWeek({ year, month, day, type = 'month' }: DestructuredDateWithType): FilterQuery<ISession> {
+	getMatchOfLastMonthOrWeek({ year, month, day, type = 'month' }: DestructuredDateWithType): Filter<ISession> {
 		let startOfPeriod;
 
 		if (type === 'month') {
@@ -751,7 +752,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		this.secondaryCollection = db.collection(getCollectionName('sessions'), { readPreference: readSecondaryPreferred(db) });
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { instanceId: 1, sessionId: 1, year: 1, month: 1, day: 1 } },
 			{ key: { instanceId: 1, sessionId: 1, userId: 1 } },
@@ -799,7 +800,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.findOne({ sessionId });
 	}
 
-	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession> {
+	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): FindCursor<ISession> {
 		const query = {
 			year,
 			month,
@@ -1201,7 +1202,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		};
 	}
 
-	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateWriteOpResult | undefined> {
+	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateResult | undefined> {
 		const { year, month, day, sessionId, instanceId } = data;
 
 		if (!year || !month || !day || !sessionId || !instanceId) {
@@ -1222,7 +1223,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		);
 	}
 
-	async closeByInstanceIdAndSessionId(instanceId: string, sessionId: string): Promise<UpdateWriteOpResult> {
+	async closeByInstanceIdAndSessionId(instanceId: string, sessionId: string): Promise<UpdateResult> {
 		const query = {
 			instanceId,
 			sessionId,
@@ -1245,7 +1246,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		instanceId: string,
 		sessions: string[],
 		data = {},
-	): Promise<UpdateWriteOpResult> {
+	): Promise<UpdateResult | Document> {
 		const query = {
 			instanceId,
 			year,
@@ -1262,7 +1263,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.updateMany(query, update);
 	}
 
-	async updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data = {}): Promise<UpdateWriteOpResult> {
+	async updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data = {}): Promise<UpdateResult | Document> {
 		const query = {
 			year,
 			month,
@@ -1279,7 +1280,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.updateMany(query, update);
 	}
 
-	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateWriteOpResult> {
+	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult | Document> {
 		const query = {
 			instanceId,
 			sessionId,
@@ -1297,12 +1298,12 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.updateMany(query, update);
 	}
 
-	async createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteOpResultObject | undefined> {
+	async createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteResult | undefined> {
 		if (!sessions || sessions.length === 0) {
 			return;
 		}
 
-		const ops: BulkWriteOperation<ISession>[] = [];
+		const ops: AnyBulkWriteOperation<ISession>[] = [];
 		sessions.forEach((doc) => {
 			const { year, month, day, sessionId, instanceId } = doc;
 			delete doc._id;

@@ -1,4 +1,4 @@
-import { FilterQuery, SortOptionObject } from 'mongodb';
+import type { Filter, FindOptions } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { ILivechatDepartmentRecord, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
@@ -7,7 +7,7 @@ import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/model
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { callbacks } from '../../../../../lib/callbacks';
 
-type Pagination<T> = { pagination: { offset: number; count: number; sort: SortOptionObject<T> } };
+type Pagination<T> = { pagination: { offset: number; count: number; sort: FindOptions<T>['sort'] } };
 type FindDepartmentParams = {
 	userId: string;
 	onlyMyDepartments?: boolean;
@@ -25,7 +25,7 @@ type FindDepartmentToAutocompleteParams = {
 	uid: string;
 	selector: {
 		exceptions: string[];
-		conditions: FilterQuery<ILivechatDepartmentRecord>;
+		conditions: Filter<ILivechatDepartmentRecord>;
 		term: string;
 	};
 	onlyMyDepartments?: boolean;

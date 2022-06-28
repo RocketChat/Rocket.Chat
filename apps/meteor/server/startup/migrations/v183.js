@@ -69,14 +69,13 @@ const fixSelfDMs = () => {
 
 		// Fix error of upload permission check using Meteor.userId()
 		Meteor.runAsUser(room.uids[0], async () => {
-			await Uploads.update(
+			await Uploads.updateMany(
 				{ rid: room._id },
 				{
 					$set: {
 						rid: correctId,
 					},
 				},
-				{ multi: true },
 			);
 		});
 	});

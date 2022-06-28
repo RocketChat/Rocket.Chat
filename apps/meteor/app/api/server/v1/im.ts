@@ -13,7 +13,6 @@ import {
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Subscriptions, Uploads, Messages, Rooms, Settings } from '@rocket.chat/models';
-import type { FilterQuery } from 'mongodb';
 
 import { Users } from '../../../models/server';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -402,7 +401,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
 			}
 
-			const room = await Rooms.findOneById<IRoom>(roomId, { projection: { _id: 1, t: 1 } });
+			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(roomId, { projection: { _id: 1, t: 1 } });
 			if (!room || room?.t !== 'd') {
 				throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
 			}
@@ -484,7 +483,7 @@ API.v1.addRoute(
 			const { offset, count }: { offset: number; count: number } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const ourQuery = { ...query, t: 'd' } as FilterQuery<IRoom>;
+			const ourQuery = { ...query, t: 'd' };
 
 			const { cursor, totalCount: total } = await Rooms.findPaginated(ourQuery, {
 				sort: sort || { name: 1 },

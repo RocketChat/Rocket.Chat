@@ -1,6 +1,6 @@
 import type { ISetting, ISettingColor, ISettingSelectOption, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
-import type { Collection, Cursor, Db, FilterQuery, UpdateQuery, WriteOpResult } from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, UpdateFilter, UpdateResult, Document } from 'mongodb';
 import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
@@ -16,8 +16,8 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		return setting?.value;
 	}
 
-	findNotHidden({ updatedAfter }: { updatedAfter?: Date } = {}): Cursor<ISetting> {
-		const query: FilterQuery<ISetting> = {
+	findNotHidden({ updatedAfter }: { updatedAfter?: Date } = {}): FindCursor<ISetting> {
+		const query: Filter<ISetting> = {
 			hidden: { $ne: true },
 		};
 
@@ -37,7 +37,7 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		return this.findOne(query);
 	}
 
-	findByIds(_id: string[] | string = []): Cursor<ISetting> {
+	findByIds(_id: string[] | string = []): FindCursor<ISetting> {
 		if (typeof _id === 'string') {
 			_id = [_id];
 		}
@@ -51,7 +51,7 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		return this.find(query);
 	}
 
-	updateValueById<T extends ISetting['value'] = ISetting['value']>(_id: string, value: T): Promise<WriteOpResult> {
+	updateValueById<T extends ISetting['value'] = ISetting['value']>(_id: string, value: T): Promise<Document | UpdateResult> {
 		const query = {
 			blocked: { $ne: true },
 			value: { $ne: value },
@@ -64,10 +64,13 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 			},
 		};
 
-		return this.update(query, update);
+		return this.updateOne(query, update);
 	}
 
-	updateOptionsById<T extends ISetting = ISetting>(_id: ISetting['_id'], options: UpdateQuery<T>['$set']): Promise<WriteOpResult> {
+	updateOptionsById<T extends ISetting = ISetting>(
+		_id: ISetting['_id'],
+		options: UpdateFilter<T>['$set'],
+	): Promise<Document | UpdateResult> {
 		const query = {
 			blocked: { $ne: true },
 			_id,
@@ -75,10 +78,13 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 
 		const update = { $set: options };
 
-		return this.update(query, update);
+		return this.updateOne(query, update);
 	}
 
-	updateValueNotHiddenById<T extends ISetting['value'] = ISetting['value']>(_id: ISetting['_id'], value: T): Promise<WriteOpResult> {
+	updateValueNotHiddenById<T extends ISetting['value'] = ISetting['value']>(
+		_id: ISetting['_id'],
+		value: T,
+	): Promise<Document | UpdateResult> {
 		const query = {
 			_id,
 			hidden: { $ne: true },
@@ -91,14 +97,14 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 			},
 		};
 
-		return this.update(query, update);
+		return this.updateOne(query, update);
 	}
 
 	updateValueAndEditorById<T extends ISetting['value'] = ISetting['value']>(
 		_id: ISetting['_id'],
 		value: T,
 		editor: ISettingColor['editor'],
-	): Promise<WriteOpResult> {
+	): Promise<Document | UpdateResult> {
 		const query = {
 			blocked: { $ne: true },
 			value: { $ne: value },
@@ -112,17 +118,17 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 			},
 		};
 
-		return this.update(query, update);
+		return this.updateOne(query, update);
 	}
 
 	findNotHiddenPublic<T extends ISetting = ISetting>(
 		ids: ISetting['_id'][] = [],
-	): Cursor<
+	): FindCursor<
 		T extends ISettingColor
 			? Pick<T, '_id' | 'value' | 'editor' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>
 			: Pick<T, '_id' | 'value' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>
 	> {
-		const filter: FilterQuery<ISetting> = {
+		const filter: Filter<ISetting> = {
 			hidden: { $ne: true },
 			public: true,
 		};
@@ -144,11 +150,11 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		});
 	}
 
-	findSetupWizardSettings(): Cursor<ISetting> {
+	findSetupWizardSettings(): FindCursor<ISetting> {
 		return this.find({ wizard: { $exists: true } });
 	}
 
-	addOptionValueById(_id: ISetting['_id'], option: ISettingSelectOption): Promise<WriteOpResult> {
+	addOptionValueById(_id: ISetting['_id'], option: ISettingSelectOption): Promise<Document | UpdateResult> {
 		const query = {
 			blocked: { $ne: true },
 			_id,
@@ -164,10 +170,10 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 			},
 		};
 
-		return this.update(query, update);
+		return this.updateOne(query, update);
 	}
 
-	findNotHiddenPublicUpdatedAfter(updatedAt: Date): Cursor<ISetting> {
+	findNotHiddenPublicUpdatedAfter(updatedAt: Date): FindCursor<ISetting> {
 		const filter = {
 			hidden: { $ne: true },
 			public: true,

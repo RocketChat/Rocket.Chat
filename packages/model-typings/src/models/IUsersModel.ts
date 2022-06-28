@@ -1,11 +1,11 @@
-import type { UpdateWriteOpResult, Cursor } from 'mongodb';
+import type { UpdateResult, FindCursor } from 'mongodb';
 import type { IUser, IRole, IRoom, ILivechatAgent } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface IUsersModel extends IBaseModel<IUser> {
-	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateWriteOpResult>;
-	findUsersInRoles(roles: IRole['_id'][], scope?: null, options?: any): Cursor<IUser>;
+	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
+	findUsersInRoles(roles: IRole['_id'][], scope?: null, options?: any): FindCursor<IUser>;
 	findOneByUsername(username: string, options?: any): Promise<IUser>;
 	findOneAgentById(_id: string, options: any): Promise<ILivechatAgent>;
 	findUsersInRolesWithQuery(roles: IRole['_id'] | IRole['_id'][], query: any, options: any): any;
@@ -20,11 +20,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		params?: { startsWith?: boolean; endsWith?: boolean },
 	): any;
 
-	findActive(options?: any): Cursor<IUser>;
+	findActive(options?: any): FindCursor<IUser>;
 
-	findActiveByIds(userIds: any, options?: any): Cursor<IUser>;
+	findActiveByIds(userIds: any, options?: any): FindCursor<IUser>;
 
-	findByIds(userIds: any, options?: any): Cursor<IUser>;
+	findByIds(userIds: any, options?: any): FindCursor<IUser>;
 
 	findOneByUsernameIgnoringCase(username: any, options: any): any;
 
@@ -98,7 +98,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	removeRoomsByRoomIdsAndUserId(rids: any, userId: any): any;
 
-	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateWriteOpResult>;
+	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
 
 	isUserInRoleScope(uid: IUser['_id']): Promise<boolean>;
 
@@ -108,7 +108,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findOneByExtension(extension: any, options?: any): any;
 
-	findByExtensions(extensions: any, options?: any): Cursor<IUser>;
+	findByExtensions(extensions: any, options?: any): FindCursor<IUser>;
 
 	getVoipExtensionByUserId(userId: any, options: any): any;
 
@@ -116,11 +116,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	unsetExtension(userId: any): any;
 
-	getAvailableAgentsIncludingExt(includeExt: any, text: any, options: any): FindPaginated<Cursor<ILivechatAgent>>;
+	getAvailableAgentsIncludingExt(includeExt: any, text: any, options: any): FindPaginated<FindCursor<ILivechatAgent>>;
 
 	findActiveUsersTOTPEnable(options: any): any;
 
 	findActiveUsersEmail2faEnable(options: any): any;
 
-	findActiveByIdsOrUsernames(userIds: string[], options?: any): Cursor<IUser>;
+	findActiveByIdsOrUsernames(userIds: string[], options?: any): FindCursor<IUser>;
 }

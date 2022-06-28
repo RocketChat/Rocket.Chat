@@ -3,15 +3,14 @@ import type { ILivechatVisitorsModel } from '@rocket.chat/model-typings';
 import type {
 	AggregationCursor,
 	Collection,
-	Cursor,
+	FindCursor,
 	Db,
-	FilterQuery,
-	FindOneOptions,
-	UpdateWriteOpResult,
-	IndexSpecification,
-	DeleteWriteOpResultObject,
+	Filter,
+	FindOptions,
+	UpdateResult,
+	IndexDescription,
+	DeleteResult,
 	UpdateQuery,
-	WriteOpResult,
 } from 'mongodb';
 import { getCollectionName, Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -23,7 +22,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		super(db, getCollectionName('livechat_visitor'), trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { token: 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
@@ -54,7 +53,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	 * Find visitors by _id
 	 * @param {string} token - Visitor token
 	 */
-	findById(_id: string, options: FindOneOptions<ILivechatVisitor>): Cursor<ILivechatVisitor> {
+	findById(_id: string, options: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
 		const query = {
 			_id,
 		};
@@ -62,7 +61,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find(query, options);
 	}
 
-	findVisitorByToken(token: string): Cursor<ILivechatVisitor> {
+	findVisitorByToken(token: string): FindCursor<ILivechatVisitor> {
 		const query = {
 			token,
 		};
@@ -70,7 +69,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find(query);
 	}
 
-	getVisitorByToken(token: string, options: FindOneOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
+	getVisitorByToken(token: string, options: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
 		const query = {
 			token,
 		};
@@ -78,7 +77,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query, options);
 	}
 
-	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department: string }): Cursor<ILivechatVisitor> {
+	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department: string }): FindCursor<ILivechatVisitor> {
 		const query = {
 			_updatedAt: {
 				$gte: new Date(start),
@@ -114,8 +113,8 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	findByNameRegexWithExceptionsAndConditions<P = ILivechatVisitor>(
 		searchTerm: string,
 		exceptions: string[] = [],
-		conditions: FilterQuery<ILivechatVisitor> = {},
-		options: FindOneOptions<P extends ILivechatVisitor ? ILivechatVisitor : P> = {},
+		conditions: Filter<ILivechatVisitor> = {},
+		options: FindOptions<P extends ILivechatVisitor ? ILivechatVisitor : P> = {},
 	): AggregationCursor<
 		P & {
 			custom_name: string;
@@ -161,8 +160,8 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	 */
 	findVisitorsByEmailOrPhoneOrNameOrUsername(
 		_emailOrPhoneOrNameOrUsername: string,
-		options: FindOneOptions<ILivechatVisitor>,
-	): Cursor<ILivechatVisitor> {
+		options: FindOptions<ILivechatVisitor>,
+	): FindCursor<ILivechatVisitor> {
 		const filter = new RegExp(_emailOrPhoneOrNameOrUsername, 'i');
 		const query = {
 			$or: [
@@ -184,7 +183,12 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find(query, options);
 	}
 
-	async updateLivechatDataByToken(token: string, key: string, value: unknown, overwrite = true): Promise<WriteOpResult | boolean> {
+	async updateLivechatDataByToken(
+		token: string,
+		key: string,
+		value: unknown,
+		overwrite = true,
+	): Promise<UpdateResult | Document | boolean> {
 		const query = {
 			token,
 		};
@@ -202,10 +206,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			},
 		};
 
-		return this.update(query, update);
+		return this.updateOne(query, update);
 	}
 
-	updateLastAgentByToken(token: string, lastAgent: ILivechatVisitor['lastAgent']): Promise<WriteOpResult> {
+	updateLastAgentByToken(token: string, lastAgent: ILivechatVisitor['lastAgent']): Promise<Document | UpdateResult> {
 		const query = {
 			token,
 		};
@@ -216,17 +220,17 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			},
 		};
 
-		return this.update(query, update);
+		return this.updateOne(query, update);
 	}
 
-	updateById(_id: string, update: UpdateQuery<ILivechatVisitor>): Promise<WriteOpResult> {
-		return this.update({ _id }, update);
+	updateById(_id: string, update: UpdateQuery<ILivechatVisitor>): Promise<Document | UpdateResult> {
+		return this.updateOne({ _id }, update);
 	}
 
 	saveGuestById(
 		_id: string,
 		data: { name?: string; username?: string; email?: string; phone?: string; livechatData: { [k: string]: any } },
-	): Promise<WriteOpResult | boolean> {
+	): Promise<UpdateResult | Document | boolean> {
 		const setData: DeepWriteable<UpdateQuery<ILivechatVisitor>['$set']> = {};
 		const unsetData: DeepWriteable<UpdateQuery<ILivechatVisitor>['$unset']> = {};
 
@@ -274,18 +278,18 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			return Promise.resolve(true);
 		}
 
-		return this.update({ _id }, update);
+		return this.updateOne({ _id }, update);
 	}
 
-	removeDepartmentById(_id: string): Promise<WriteOpResult> {
-		return this.update({ _id }, { $unset: { department: 1 } });
+	removeDepartmentById(_id: string): Promise<UpdateResult> {
+		return this.updateOne({ _id }, { $unset: { department: 1 } });
 	}
 
-	removeById(_id: string): Promise<DeleteWriteOpResultObject> {
+	removeById(_id: string): Promise<DeleteResult> {
 		return this.removeById(_id);
 	}
 
-	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<WriteOpResult | void> {
+	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
 		const update: DeepWriteable<UpdateQuery<ILivechatVisitor>> = {
 			$addToSet: {},
 		};
@@ -312,10 +316,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			return Promise.resolve();
 		}
 
-		return this.update({ _id }, update as UpdateQuery<ILivechatVisitor>);
+		return this.updateOne({ _id }, update as UpdateQuery<ILivechatVisitor>);
 	}
 
-	removeContactManagerByUsername(manager: string): Promise<UpdateWriteOpResult> {
+	removeContactManagerByUsername(manager: string): Promise<Document | UpdateResult> {
 		return this.updateMany(
 			{
 				contactManager: {

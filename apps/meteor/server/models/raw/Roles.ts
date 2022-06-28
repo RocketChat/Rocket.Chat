@@ -1,17 +1,7 @@
 import type { IRole, IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IRolesModel } from '@rocket.chat/model-typings';
 import { getCollectionName, Subscriptions, Users } from '@rocket.chat/models';
-import type {
-	Collection,
-	Cursor,
-	Db,
-	FilterQuery,
-	FindOneOptions,
-	InsertOneWriteOpResult,
-	UpdateWriteOpResult,
-	WithId,
-	WithoutProjection,
-} from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, FindOptions, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -20,7 +10,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		super(db, getCollectionName('roles'), trash);
 	}
 
-	findByUpdatedDate(updatedAfterDate: Date, options?: FindOneOptions<IRole>): Cursor<IRole> {
+	findByUpdatedDate(updatedAfterDate: Date, options?: FindOptions<IRole>): FindCursor<IRole> {
 		const query = {
 			_updatedAt: { $gte: new Date(updatedAfterDate) },
 		};
@@ -111,18 +101,12 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 
 	async findOneByIdOrName(_idOrName: IRole['_id'] | IRole['name'], options?: undefined): Promise<IRole | null>;
 
-	async findOneByIdOrName(
-		_idOrName: IRole['_id'] | IRole['name'],
-		options: WithoutProjection<FindOneOptions<IRole>>,
-	): Promise<IRole | null>;
+	async findOneByIdOrName(_idOrName: IRole['_id'] | IRole['name'], options: FindOptions<IRole>): Promise<IRole | null>;
 
-	async findOneByIdOrName<P>(
-		_idOrName: IRole['_id'] | IRole['name'],
-		options: FindOneOptions<P extends IRole ? IRole : P>,
-	): Promise<P | null>;
+	async findOneByIdOrName<P>(_idOrName: IRole['_id'] | IRole['name'], options: FindOptions<P extends IRole ? IRole : P>): Promise<P | null>;
 
 	findOneByIdOrName<P>(_idOrName: IRole['_id'] | IRole['name'], options?: any): Promise<IRole | P | null> {
-		const query: FilterQuery<IRole> = {
+		const query: Filter<IRole> = {
 			$or: [
 				{
 					_id: _idOrName,
@@ -137,34 +121,34 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	}
 
 	async findOneByName<P = IRole>(name: IRole['name'], options?: any): Promise<IRole | P | null> {
-		const query: FilterQuery<IRole> = {
+		const query: Filter<IRole> = {
 			name,
 		};
 
 		return this.findOne(query, options);
 	}
 
-	findInIds<P>(ids: IRole['_id'][], options?: FindOneOptions<IRole>): P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole> {
-		const query: FilterQuery<IRole> = {
+	findInIds<P>(ids: IRole['_id'][], options?: FindOptions<IRole>): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole> {
+		const query: Filter<IRole> = {
 			name: {
 				$in: ids,
 			},
 		};
 
-		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole>;
+		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
 	}
 
-	findAllExceptIds<P>(ids: IRole['_id'][], options?: FindOneOptions<IRole>): P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole> {
-		const query: FilterQuery<IRole> = {
+	findAllExceptIds<P>(ids: IRole['_id'][], options?: FindOptions<IRole>): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole> {
+		const query: Filter<IRole> = {
 			_id: {
 				$nin: ids,
 			},
 		};
 
-		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole>;
+		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
 	}
 
-	findByScope(scope: IRole['scope'], options?: FindOneOptions<IRole>): Cursor<IRole> {
+	findByScope(scope: IRole['scope'], options?: FindOptions<IRole>): FindCursor<IRole> {
 		const query = {
 			scope,
 		};
@@ -178,7 +162,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		scope: IRole['scope'],
 		description: IRole['description'] = '',
 		mandatory2fa: IRole['mandatory2fa'] = false,
-	): Promise<UpdateWriteOpResult> {
+	): Promise<UpdateResult> {
 		const queryData = {
 			name,
 			scope,
@@ -189,25 +173,21 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return this.updateOne({ _id }, { $set: queryData }, { upsert: true });
 	}
 
-	findUsersInRole(roleId: IRole['_id'], scope?: IRoom['_id']): Promise<Cursor<IUser>>;
+	findUsersInRole(roleId: IRole['_id'], scope?: IRoom['_id']): Promise<FindCursor<IUser>>;
 
-	findUsersInRole(
-		roleId: IRole['_id'],
-		scope: IRoom['_id'] | undefined,
-		options: WithoutProjection<FindOneOptions<IUser>>,
-	): Promise<Cursor<IUser>>;
+	findUsersInRole(roleId: IRole['_id'], scope: IRoom['_id'] | undefined, options: FindOptions<IUser>): Promise<FindCursor<IUser>>;
 
 	findUsersInRole<P>(
 		roleId: IRole['_id'],
 		scope: IRoom['_id'] | undefined,
-		options: FindOneOptions<P extends IUser ? IUser : P>,
-	): Promise<Cursor<P extends IUser ? IUser : P>>;
+		options: FindOptions<P extends IUser ? IUser : P>,
+	): Promise<FindCursor<P extends IUser ? IUser : P>>;
 
 	async findUsersInRole<P>(
 		roleId: IRole['_id'],
 		scope: IRoom['_id'] | undefined,
 		options?: any | undefined,
-	): Promise<Cursor<IUser> | Cursor<P>> {
+	): Promise<FindCursor<IUser> | FindCursor<P>> {
 		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
 			throw new Error('Roles.findUsersInRole method received a role scope instead of a scope value.');
 		}
@@ -233,7 +213,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		description = '',
 		protectedRole = true,
 		mandatory2fa = false,
-	): Promise<InsertOneWriteOpResult<WithId<IRole>>> {
+	): Promise<InsertOneResult<WithId<IRole>>> {
 		const role = {
 			name,
 			scope,
@@ -250,7 +230,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			throw new Error('Roles.canAddUserToRole method received a role scope instead of a scope value.');
 		}
 
-		const role = await this.findOne({ _id: roleId }, { fields: { scope: 1 } } as FindOneOptions<IRole>);
+		const role = await this.findOne({ _id: roleId }, { fields: { scope: 1 } } as FindOptions<IRole>);
 		if (!role) {
 			return false;
 		}

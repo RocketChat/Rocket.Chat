@@ -1,5 +1,5 @@
 import { IEmailInbox } from '@rocket.chat/core-typings';
-import { InsertOneWriteOpResult, UpdateWriteOpResult, WithId } from 'mongodb';
+import { InsertOneResult, UpdateResult, WithId } from 'mongodb';
 import { EmailInbox } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -51,7 +51,7 @@ export const findOneEmailInbox = async ({ userId, _id }: { userId: string; _id: 
 export const insertOneEmailInbox = async (
 	userId: string,
 	emailInboxParams: Pick<IEmailInbox, 'active' | 'name' | 'email' | 'description' | 'senderInfo' | 'department' | 'smtp' | 'imap'>,
-): Promise<InsertOneWriteOpResult<WithId<IEmailInbox>>> => {
+): Promise<InsertOneResult<WithId<IEmailInbox>>> => {
 	const obj = {
 		...emailInboxParams,
 		_createdAt: new Date(),
@@ -64,7 +64,7 @@ export const insertOneEmailInbox = async (
 export const updateEmailInbox = async (
 	userId: string,
 	emailInboxParams: Pick<IEmailInbox, '_id' | 'active' | 'name' | 'email' | 'description' | 'senderInfo' | 'department' | 'smtp' | 'imap'>,
-): Promise<InsertOneWriteOpResult<WithId<IEmailInbox>> | UpdateWriteOpResult> => {
+): Promise<InsertOneResult<WithId<IEmailInbox>> | UpdateResult> => {
 	const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailInboxParams;
 
 	const emailInbox = await findOneEmailInbox({ userId, _id });

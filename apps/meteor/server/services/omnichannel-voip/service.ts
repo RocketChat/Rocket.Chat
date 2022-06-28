@@ -1,4 +1,4 @@
-import { FindOneOptions } from 'mongodb';
+import { FindOptions } from 'mongodb';
 import _ from 'underscore';
 import type {
 	IVoipExtensionBase,
@@ -216,7 +216,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		agent: { agentId: string; username: string },
 		rid: string,
 		direction: IVoipRoom['direction'],
-		options: FindOneOptions<IVoipRoom> = {},
+		options: FindOptions<IVoipRoom> = {},
 	): Promise<IRoomCreationResponse> {
 		this.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
 		let room = await VoipRoom.findOneById(rid, options);

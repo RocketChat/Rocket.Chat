@@ -1,31 +1,30 @@
 import {
+	BulkWriteOptions,
 	ChangeStream,
 	Collection,
-	CollectionInsertOneOptions,
-	CommonOptions,
-	Cursor,
+	CollectionOptions,
 	Db,
-	DbCollectionOptions,
-	DeleteWriteOpResultObject,
-	FilterQuery,
-	FindAndModifyWriteOpResultObject,
-	FindOneAndUpdateOption,
-	FindOneOptions,
-	IndexSpecification,
-	InsertOneWriteOpResult,
-	InsertWriteOpResult,
+	Filter,
+	FindOneAndUpdateOptions,
+	IndexDescription,
+	InsertOneOptions,
+	ModifyResult,
 	ObjectID,
-	OptionalId,
-	UpdateManyOptions,
-	UpdateOneOptions,
-	UpdateQuery,
-	UpdateWriteOpResult,
+	OptionalUnlessRequiredId,
+	UpdateFilter,
 	WithId,
-	WithoutProjection,
-	WriteOpResult,
+	UpdateOptions,
+	Document,
+	FindOptions,
+	FindCursor,
+	UpdateResult,
+	InsertManyResult,
+	InsertOneResult,
+	DeleteResult,
+	DeleteOptions,
 } from 'mongodb';
 import type { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IBaseModel, DefaultFields, ResultFields, InsertionModel, FindPaginated } from '@rocket.chat/model-typings';
+import type { IBaseModel, DefaultFields, ResultFields, FindPaginated } from '@rocket.chat/model-typings';
 
 import { setUpdatedAt } from '../../../app/models/server/lib/setUpdatedAt';
 
@@ -38,7 +37,7 @@ const warnFields =
 
 type ModelOptions = {
 	preventSetUpdatedAt?: boolean;
-	collection?: DbCollectionOptions;
+	collection?: CollectionOptions;
 };
 
 export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseModel<T, C> {
@@ -61,11 +60,11 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
 	}
 
-	protected modelIndexes(): IndexSpecification[] | void {
+	protected modelIndexes(): IndexDescription[] | void {
 		// noop
 	}
 
-	private doNotMixInclusionAndExclusionFields(options: FindOneOptions<T> = {}): FindOneOptions<T> {
+	private doNotMixInclusionAndExclusionFields(options: FindOptions = {}): FindOptions {
 		const optionsDef = this.ensureDefaultFields(options);
 		if (optionsDef?.projection === undefined) {
 			return optionsDef;
@@ -84,13 +83,9 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		};
 	}
 
-	private ensureDefaultFields(options?: undefined): C extends void ? undefined : WithoutProjection<FindOneOptions<T>>;
+	private ensureDefaultFields<P>(options: FindOptions<P>): FindOptions<P>;
 
-	private ensureDefaultFields(options: WithoutProjection<FindOneOptions<T>>): WithoutProjection<FindOneOptions<T>>;
-
-	private ensureDefaultFields<P>(options: FindOneOptions<P>): FindOneOptions<P>;
-
-	private ensureDefaultFields<P>(options?: any): FindOneOptions<P> | undefined | WithoutProjection<FindOneOptions<T>> {
+	private ensureDefaultFields<P>(options?: any): FindOptions<P> | undefined | FindOptions<T> {
 		if (this.defaultFields === undefined) {
 			return options;
 		}
@@ -110,63 +105,59 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		};
 	}
 
-	public findOneAndUpdate(
-		query: FilterQuery<T>,
-		update: UpdateQuery<T> | T,
-		options?: FindOneAndUpdateOption<T>,
-	): Promise<FindAndModifyWriteOpResultObject<T>> {
-		return this.col.findOneAndUpdate(query, update, options);
+	public findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>> {
+		return this.col.findOneAndUpdate(query, update, options || {});
 	}
 
-	async findOneById(_id: string, options?: WithoutProjection<FindOneOptions<T>> | undefined): Promise<T | null>;
+	async findOneById(_id: string, options?: FindOptions<T> | undefined): Promise<WithId<T> | null>;
 
-	async findOneById<P>(_id: string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
+	async findOneById<P = T>(_id: string, options: FindOptions<P>): Promise<P | null>;
 
-	async findOneById<P>(_id: string, options?: any): Promise<T | P | null> {
-		const query = { _id } as FilterQuery<T>;
+	async findOneById(_id: string, options?: any): Promise<WithId<T> | null> {
+		const query = { _id } as unknown as Filter<T>;
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
-		return this.col.findOne(query, optionsDef);
+		if (optionsDef) {
+			return this.col.findOne(query, optionsDef);
+		}
+		return this.col.findOne(query);
 	}
 
-	async findOne(query?: FilterQuery<T> | string, options?: undefined): Promise<T | null>;
+	async findOne(query?: Filter<T> | string, options?: undefined): Promise<T | null>;
 
-	async findOne(query: FilterQuery<T> | string, options: WithoutProjection<FindOneOptions<T>>): Promise<T | null>;
+	async findOne<P>(query: Filter<T> | string, options: FindOptions<P extends T ? T : P>): Promise<P | null>;
 
-	async findOne<P>(query: FilterQuery<T> | string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
-
-	async findOne<P>(query: FilterQuery<T> | string = {}, options?: any): Promise<T | P | null> {
-		const q = typeof query === 'string' ? ({ _id: query } as FilterQuery<T>) : query;
+	async findOne<P>(query: Filter<T> | string = {}, options?: any): Promise<WithId<T> | WithId<P> | null> {
+		const q = typeof query === 'string' ? ({ _id: query } as unknown as Filter<T>) : query;
 
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
-		return this.col.findOne(q, optionsDef);
+		if (optionsDef) {
+			return this.col.findOne(q, optionsDef);
+		}
+		return this.col.findOne(q);
 	}
 
 	// findUsersInRoles(): void {
 	// 	throw new Error('[overwrite-function] You must overwrite this function in the extended classes');
 	// }
 
-	find(query?: FilterQuery<T>): Cursor<ResultFields<T, C>>;
+	find(query?: Filter<T>): FindCursor<ResultFields<T, C>>;
 
-	find(query: FilterQuery<T>, options: WithoutProjection<FindOneOptions<T>>): Cursor<ResultFields<T, C>>;
+	find<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindCursor<P>;
 
-	find<P = T>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P>;
-
-	find<P>(query: FilterQuery<T> | undefined = {}, options?: any): Cursor<P> | Cursor<T> {
+	find<P>(query: Filter<T> | undefined = {}, options?: any): FindCursor<WithId<P>> | FindCursor<WithId<T>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 		return this.col.find(query, optionsDef);
 	}
 
-	findPaginated(query?: FilterQuery<T>): FindPaginated<Cursor<ResultFields<T, C>>>;
+	findPaginated(query?: Filter<T>): FindPaginated<FindCursor<ResultFields<T, C>>>;
 
-	findPaginated(query: FilterQuery<T>, options: WithoutProjection<FindOneOptions<T>>): FindPaginated<Cursor<ResultFields<T, C>>>;
+	findPaginated<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<P>>;
 
-	findPaginated<P = T>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): FindPaginated<Cursor<P>>;
-
-	async findPaginated<P>(query: FilterQuery<T> | undefined = {}, options?: any): FindPaginated<Cursor<P> | Cursor<T>> {
+	async findPaginated<P>(query: Filter<T> | undefined = {}, options?: any): FindPaginated<FindCursor<WithId<P>> | FindCursor<WithId<T>>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 
 		const cursor = optionsDef ? this.col.find(query, optionsDef) : this.col.find(query);
-		const totalCount = await this.col.estimatedDocumentCount(query);
+		const totalCount = await this.col.countDocuments(query);
 
 		return {
 			cursor,
@@ -175,29 +166,34 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 	}
 
 	update(
-		filter: FilterQuery<T>,
-		update: UpdateQuery<T> | Partial<T>,
-		options?: UpdateOneOptions & { multi?: boolean },
-	): Promise<WriteOpResult> {
+		filter: Filter<T>,
+		update: UpdateFilter<T> | Partial<T>,
+		options?: UpdateOptions & { multi?: true },
+	): Promise<UpdateResult> | void {
 		this.setUpdatedAt(update);
-		return this.col.update(filter, update, options);
+		if (options) {
+			return this.col.update(filter, update, options, () => console.log('ignored'));
+		}
+		return this.col.update(filter, update, {}, () => console.log('ignored'));
 	}
 
-	updateOne(
-		filter: FilterQuery<T>,
-		update: UpdateQuery<T> | Partial<T>,
-		options?: UpdateOneOptions & { multi?: boolean },
-	): Promise<UpdateWriteOpResult> {
+	updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult> {
 		this.setUpdatedAt(update);
-		return this.col.updateOne(filter, update, options);
+		if (options) {
+			return this.col.updateOne(filter, update, options);
+		}
+		return this.col.updateOne(filter, update);
 	}
 
-	updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateManyOptions): Promise<UpdateWriteOpResult> {
+	updateMany(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<Document | UpdateResult> {
 		this.setUpdatedAt(update);
-		return this.col.updateMany(filter, update, options);
+		if (options) {
+			return this.col.updateMany(filter, update, options);
+		}
+		return this.col.updateMany(filter, update);
 	}
 
-	insertMany(docs: Array<InsertionModel<T>>, options?: CollectionInsertOneOptions): Promise<InsertWriteOpResult<WithId<T>>> {
+	insertMany(docs: OptionalUnlessRequiredId<T>[], options?: BulkWriteOptions): Promise<InsertManyResult<T>> {
 		docs = docs.map((doc) => {
 			if (!doc._id || typeof doc._id !== 'string') {
 				const oid = new ObjectID();
@@ -208,10 +204,10 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		});
 
 		// TODO reavaluate following type casting
-		return this.col.insertMany(docs as unknown as Array<OptionalId<T>>, options);
+		return this.col.insertMany(docs as unknown as Array<OptionalUnlessRequiredId<T>>, options || {});
 	}
 
-	insertOne(doc: InsertionModel<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {
+	insertOne(doc: OptionalUnlessRequiredId<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>> {
 		if (!doc._id || typeof doc._id !== 'string') {
 			const oid = new ObjectID();
 			doc = { _id: oid.toHexString(), ...doc };
@@ -220,19 +216,19 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		this.setUpdatedAt(doc);
 
 		// TODO reavaluate following type casting
-		return this.col.insertOne(doc as unknown as OptionalId<T>, options);
+		return this.col.insertOne(doc as unknown as OptionalUnlessRequiredId<T>, options || {});
 	}
 
-	removeById(_id: string): Promise<DeleteWriteOpResultObject> {
-		return this.deleteOne({ _id } as FilterQuery<T>);
+	removeById(_id: string): Promise<DeleteResult> {
+		return this.deleteOne({ _id } as unknown as Filter<T>);
 	}
 
-	async deleteOne(
-		filter: FilterQuery<T>,
-		options?: CommonOptions & { bypassDocumentValidation?: boolean },
-	): Promise<DeleteWriteOpResultObject> {
+	async deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult> {
 		if (!this.trash) {
-			return this.col.deleteOne(filter, options);
+			if (options) {
+				return this.col.deleteOne(filter, options);
+			}
+			return this.col.deleteOne(filter);
 		}
 
 		const doc = (await this.findOne(filter)) as unknown as (IRocketChatRecord & T) | undefined;
@@ -249,7 +245,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
 			await this.trash?.updateOne(
-				{ _id } as FilterQuery<RocketChatRecordDeleted<T>>,
+				{ _id } as Filter<RocketChatRecordDeleted<T>>,
 				{ $set: trash },
 				{
 					upsert: true,
@@ -257,12 +253,18 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 			);
 		}
 
-		return this.col.deleteOne(filter, options);
+		if (options) {
+			return this.col.deleteOne(filter, options);
+		}
+		return this.col.deleteOne(filter);
 	}
 
-	async deleteMany(filter: FilterQuery<T>, options?: CommonOptions): Promise<DeleteWriteOpResultObject> {
+	async deleteMany(filter: Filter<T>, options?: DeleteOptions): Promise<DeleteResult> {
 		if (!this.trash) {
-			return this.col.deleteMany(filter, options);
+			if (options) {
+				return this.col.deleteMany(filter, options);
+			}
+			return this.col.deleteMany(filter);
 		}
 
 		const cursor = this.find(filter);
@@ -282,7 +284,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
 			await this.trash?.updateOne(
-				{ _id } as FilterQuery<RocketChatRecordDeleted<T>>,
+				{ _id } as Filter<RocketChatRecordDeleted<T>>,
 				{ $set: trash },
 				{
 					upsert: true,
@@ -290,103 +292,95 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 			);
 		}
 
-		return this.col.deleteMany({ _id: { $in: ids } } as unknown as FilterQuery<T>, options);
+		if (options) {
+			return this.col.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>, options);
+		}
+		return this.col.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>);
 	}
 
 	// Trash
 	trashFind<P extends RocketChatRecordDeleted<T>>(
-		query: FilterQuery<RocketChatRecordDeleted<T>>,
-		options: FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Cursor<RocketChatRecordDeleted<T>> | undefined {
+		query: Filter<RocketChatRecordDeleted<T>>,
+		options?: FindOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+	): FindCursor<WithId<RocketChatRecordDeleted<T>>> | undefined {
 		if (!this.trash) {
 			return undefined;
 		}
 		const { trash } = this;
 
-		return trash.find(
-			{
-				__collection__: this.name,
-				...query,
-			},
-			options,
-		);
+		if (options) {
+			return trash.find(
+				{
+					__collection__: this.name,
+					...query,
+				},
+				options,
+			);
+		}
+		return trash.find({
+			__collection__: this.name,
+			...query,
+		});
 	}
 
 	trashFindOneById(_id: string): Promise<RocketChatRecordDeleted<T> | null>;
 
-	trashFindOneById(
-		_id: string,
-		options: WithoutProjection<RocketChatRecordDeleted<T>>,
-	): Promise<RocketChatRecordDeleted<RocketChatRecordDeleted<T>> | null>;
-
 	trashFindOneById<P>(
 		_id: string,
-		options: FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+		options: FindOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
 	): Promise<P | null>;
 
 	async trashFindOneById<P extends RocketChatRecordDeleted<T>>(
 		_id: string,
-		options?:
-			| undefined
-			| WithoutProjection<RocketChatRecordDeleted<T>>
-			| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Promise<RocketChatRecordDeleted<P> | null> {
+		options?: FindOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+	): Promise<WithId<RocketChatRecordDeleted<P> | RocketChatRecordDeleted<T>> | null> {
 		const query = {
 			_id,
 			__collection__: this.name,
-		} as FilterQuery<RocketChatRecordDeleted<T>>;
+		} as Filter<RocketChatRecordDeleted<T>>;
 
 		if (!this.trash) {
 			return null;
 		}
 		const { trash } = this;
 
-		return trash.findOne(query, options);
+		if (options) {
+			return trash.findOne(query, options);
+		}
+		return trash.findOne(query);
 	}
 
-	private setUpdatedAt(record: UpdateQuery<T> | InsertionModel<T>): void {
+	private setUpdatedAt(record: UpdateFilter<T> | OptionalUnlessRequiredId<T>): void {
 		if (this.preventSetUpdatedAt) {
 			return;
 		}
 		setUpdatedAt(record);
 	}
 
-	trashFindDeletedAfter(deletedAt: Date): Cursor<RocketChatRecordDeleted<T>>;
-
-	trashFindDeletedAfter(
-		deletedAt: Date,
-		query: FilterQuery<RocketChatRecordDeleted<T>>,
-		options: WithoutProjection<RocketChatRecordDeleted<T>>,
-	): Cursor<RocketChatRecordDeleted<T>>;
+	trashFindDeletedAfter(deletedAt: Date): FindCursor<RocketChatRecordDeleted<T>>;
 
 	trashFindDeletedAfter<P = RocketChatRecordDeleted<T>>(
 		deletedAt: Date,
-		query: FilterQuery<P>,
-		options: FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Cursor<RocketChatRecordDeleted<P>>;
-
-	trashFindDeletedAfter<P = RocketChatRecordDeleted<T>>(
-		deletedAt: Date,
-		query?: FilterQuery<RocketChatRecordDeleted<T>>,
-		options?:
-			| WithoutProjection<RocketChatRecordDeleted<T>>
-			| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Cursor<RocketChatRecordDeleted<T>> {
+		query?: Filter<RocketChatRecordDeleted<T>>,
+		options?: FindOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+	): FindCursor<WithId<RocketChatRecordDeleted<T> | RocketChatRecordDeleted<P>>> {
 		const q = {
 			__collection__: this.name,
 			_deletedAt: {
 				$gt: deletedAt,
 			},
 			...query,
-		} as FilterQuery<RocketChatRecordDeleted<T>>;
+		} as Filter<RocketChatRecordDeleted<T>>;
 
 		const { trash } = this;
-
 		if (!trash) {
 			throw new Error('Trash is not enabled for this collection');
 		}
 
-		return trash.find(q, options as any);
+		if (options) {
+			return trash.find(q, options);
+		}
+		return trash.find(q);
 	}
 
 	watch(pipeline?: object[]): ChangeStream<T> {

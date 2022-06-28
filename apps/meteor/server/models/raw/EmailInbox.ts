@@ -1,6 +1,6 @@
 import type { IEmailInbox, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IEmailInboxModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexSpecification } from 'mongodb';
+import type { Collection, Db, IndexDescription } from 'mongodb';
 import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
@@ -10,7 +10,7 @@ export class EmailInboxRaw extends BaseRaw<IEmailInbox> implements IEmailInboxMo
 		super(db, getCollectionName('email_inbox'), trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { email: 1 }, unique: true }];
 	}
 }

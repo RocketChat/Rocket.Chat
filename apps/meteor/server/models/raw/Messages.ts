@@ -3,16 +3,7 @@ import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import { getCollectionName } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type {
-	AggregationCursor,
-	Collection,
-	CollectionAggregationOptions,
-	Cursor,
-	Db,
-	FilterQuery,
-	FindOneOptions,
-	WithoutProjection,
-} from 'mongodb';
+import type { AggregationCursor, Collection, AggregateOptions, FindCursor, Db, Filter, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -24,9 +15,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findVisibleByMentionAndRoomId(
 		username: IUser['username'],
 		rid: IRoom['_id'],
-		options: WithoutProjection<FindOneOptions<IMessage>>,
-	): FindPaginated<Cursor<IMessage>> {
-		const query: FilterQuery<IMessage> = {
+		options: FindOptions<IMessage>,
+	): FindPaginated<FindCursor<IMessage>> {
+		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'mentions.username': username,
 			rid,
@@ -35,12 +26,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findPaginated(query, options);
 	}
 
-	findStarredByUserAtRoom(
-		userId: IUser['_id'],
-		roomId: IRoom['_id'],
-		options: WithoutProjection<FindOneOptions<IMessage>>,
-	): FindPaginated<Cursor<IMessage>> {
-		const query: FilterQuery<IMessage> = {
+	findStarredByUserAtRoom(userId: IUser['_id'], roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'starred._id': userId,
 			'rid': roomId,
@@ -49,12 +36,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findPaginated(query, options);
 	}
 
-	findByRoomIdAndType(
-		roomId: IRoom['_id'],
-		type: IMessage['t'],
-		options: WithoutProjection<FindOneOptions<IMessage>> = {},
-	): Cursor<IMessage> {
-		const query: FilterQuery<IMessage> = {
+	findByRoomIdAndType(roomId: IRoom['_id'], type: IMessage['t'], options: FindOptions<IMessage> = {}): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
 			rid: roomId,
 			t: type,
 		};
@@ -62,8 +45,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findSnippetedByRoom(roomId: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): FindPaginated<Cursor<IMessage>> {
-		const query: FilterQuery<IMessage> = {
+	findSnippetedByRoom(roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+		const query: Filter<IMessage> = {
 			_hidden: { $ne: true },
 			snippeted: true,
 			rid: roomId,
@@ -73,18 +56,14 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	// TODO: do we need this? currently not used anywhere
-	findDiscussionsByRoom(rid: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
-		const query: FilterQuery<IMessage> = { rid, drid: { $exists: true } };
+	findDiscussionsByRoom(rid: IRoom['_id'], options: FindOptions<IMessage>): FindCursor<IMessage> {
+		const query: Filter<IMessage> = { rid, drid: { $exists: true } };
 
 		return this.find(query, options);
 	}
 
-	findDiscussionsByRoomAndText(
-		rid: IRoom['_id'],
-		text: string,
-		options: WithoutProjection<FindOneOptions<IMessage>>,
-	): FindPaginated<Cursor<IMessage>> {
-		const query: FilterQuery<IMessage> = {
+	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+		const query: Filter<IMessage> = {
 			rid,
 			drid: { $exists: true },
 			msg: new RegExp(escapeRegExp(text), 'i'),
@@ -223,7 +202,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findLivechatClosedMessages(rid: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): FindPaginated<Cursor<IMessage>> {
+	findLivechatClosedMessages(rid: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		return this.findPaginated(
 			{
 				rid,
@@ -233,7 +212,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	async countRoomsWithStarredMessages(options: CollectionAggregationOptions): Promise<number> {
+	async countRoomsWithStarredMessages(options: AggregateOptions): Promise<number> {
 		const queryResult = await this.col
 			.aggregate<{ _id: null; total: number }>(
 				[
@@ -253,7 +232,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return queryResult?.total || 0;
 	}
 
-	async countRoomsWithPinnedMessages(options: CollectionAggregationOptions): Promise<number> {
+	async countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number> {
 		const queryResult = await this.col
 			.aggregate<{ _id: null; total: number }>(
 				[
@@ -273,12 +252,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return queryResult?.total || 0;
 	}
 
-	async countE2EEMessages(options: WithoutProjection<FindOneOptions<IMessage>>): Promise<number> {
+	async countE2EEMessages(options: FindOptions<IMessage>): Promise<number> {
 		return this.find({ t: 'e2e' }, options).count();
 	}
 
-	findPinned(options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
-		const query: FilterQuery<IMessage> = {
+	findPinned(options: FindOptions<IMessage>): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' as MessageTypesValues },
 			_hidden: { $ne: true },
 			pinned: true,
@@ -287,8 +266,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findStarred(options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
-		const query: FilterQuery<IMessage> = {
+	findStarred(options: FindOptions<IMessage>): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'starred._id': { $exists: true },
 		};

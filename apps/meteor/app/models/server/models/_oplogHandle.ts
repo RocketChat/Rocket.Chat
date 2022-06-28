@@ -1,7 +1,10 @@
+import { Readable } from 'stream';
+
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals, OplogHandle } from 'meteor/mongo';
 import semver from 'semver';
-import { MongoClient, Cursor, Timestamp, Db } from 'mongodb';
+import { MongoClient } from 'mongodb';
+import type { Timestamp, Db } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { urlParser } from './_oplogUrlParser';
@@ -12,7 +15,7 @@ class CustomOplogHandle {
 
 	client: MongoClient;
 
-	stream: Cursor;
+	stream: Readable;
 
 	db: Db;
 

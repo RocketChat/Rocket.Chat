@@ -1,6 +1,6 @@
 import { INpsVote, INpsVoteStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { INpsVoteModel } from '@rocket.chat/model-typings';
-import type { Collection, Cursor, Db, FindOneOptions, IndexSpecification, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
+import type { Collection, FindCursor, Db, Document, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 import { getCollectionName } from '@rocket.chat/models';
 import { ObjectId } from 'mongodb';
 
@@ -11,11 +11,11 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 		super(db, getCollectionName('nps_vote'), trash);
 	}
 
-	modelIndexes(): IndexSpecification[] {
+	modelIndexes(): IndexDescription[] {
 		return [{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 }, unique: true }];
 	}
 
-	findNotSentByNpsId(npsId: string, options?: WithoutProjection<FindOneOptions<INpsVote>>): Cursor<INpsVote> {
+	findNotSentByNpsId(npsId: string, options?: FindOptions<INpsVote>): FindCursor<INpsVote> {
 		const query = {
 			npsId,
 			status: INpsVoteStatus.NEW,
@@ -23,7 +23,7 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 		return this.col.find(query, options).sort({ ts: 1 }).limit(1000);
 	}
 
-	findByNpsIdAndStatus(npsId: string, status: INpsVoteStatus, options?: WithoutProjection<FindOneOptions<INpsVote>>): Cursor<INpsVote> {
+	findByNpsIdAndStatus(npsId: string, status: INpsVoteStatus, options?: FindOptions<INpsVote>): FindCursor<INpsVote> {
 		const query = {
 			npsId,
 			status,
@@ -31,14 +31,14 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 		return this.col.find(query, options);
 	}
 
-	findByNpsId(npsId: string, options?: WithoutProjection<FindOneOptions<INpsVote>>): Cursor<INpsVote> {
+	findByNpsId(npsId: string, options?: FindOptions<INpsVote>): FindCursor<INpsVote> {
 		const query = {
 			npsId,
 		};
 		return this.col.find(query, options);
 	}
 
-	save(vote: Omit<INpsVote, '_id' | '_updatedAt'>): Promise<UpdateWriteOpResult> {
+	save(vote: Omit<INpsVote, '_id' | '_updatedAt'>): Promise<UpdateResult> {
 		const { npsId, identifier } = vote;
 
 		const query = {
@@ -58,7 +58,7 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 		return this.col.updateOne(query, update, { upsert: true });
 	}
 
-	updateVotesToSent(voteIds: string[]): Promise<UpdateWriteOpResult> {
+	updateVotesToSent(voteIds: string[]): Promise<UpdateResult | Document> {
 		const query = {
 			_id: { $in: voteIds },
 		};
@@ -70,7 +70,7 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 		return this.col.updateMany(query, update);
 	}
 
-	updateOldSendingToNewByNpsId(npsId: string): Promise<UpdateWriteOpResult> {
+	updateOldSendingToNewByNpsId(npsId: string): Promise<UpdateResult | Document> {
 		const fiveMinutes = new Date();
 		fiveMinutes.setMinutes(fiveMinutes.getMinutes() - 5);
 

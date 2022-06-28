@@ -1,17 +1,7 @@
 import type { ICustomUserStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ICustomUserStatusModel } from '@rocket.chat/model-typings';
 import { getCollectionName } from '@rocket.chat/models';
-import type {
-	Collection,
-	Cursor,
-	Db,
-	FindOneOptions,
-	IndexSpecification,
-	InsertOneWriteOpResult,
-	UpdateWriteOpResult,
-	WithId,
-	WithoutProjection,
-} from 'mongodb';
+import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -20,7 +10,7 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 		super(db, getCollectionName('custom_user_status'), trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { name: 1 } }];
 	}
 
@@ -28,12 +18,12 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 
 	async findOneByName(name: string, options?: undefined): Promise<ICustomUserStatus | null>;
 
-	async findOneByName(name: string, options?: WithoutProjection<FindOneOptions<ICustomUserStatus>>): Promise<ICustomUserStatus | null> {
+	async findOneByName(name: string, options?: FindOptions<ICustomUserStatus>): Promise<ICustomUserStatus | null> {
 		return options ? this.findOne({ name }, options) : this.findOne({ name });
 	}
 
 	// find
-	findByName(name: string, options: WithoutProjection<FindOneOptions<ICustomUserStatus>>): Cursor<ICustomUserStatus> {
+	findByName(name: string, options: FindOptions<ICustomUserStatus>): FindCursor<ICustomUserStatus> {
 		const query = {
 			name,
 		};
@@ -41,11 +31,7 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 		return this.find(query, options);
 	}
 
-	findByNameExceptId(
-		name: string,
-		except: string,
-		options: WithoutProjection<FindOneOptions<ICustomUserStatus>>,
-	): Cursor<ICustomUserStatus> {
+	findByNameExceptId(name: string, except: string, options: FindOptions<ICustomUserStatus>): FindCursor<ICustomUserStatus> {
 		const query = {
 			_id: { $nin: [except] },
 			name,
@@ -55,7 +41,7 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 	}
 
 	// update
-	setName(_id: string, name: string): Promise<UpdateWriteOpResult> {
+	setName(_id: string, name: string): Promise<UpdateResult> {
 		const update = {
 			$set: {
 				name,
@@ -65,7 +51,7 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 		return this.updateOne({ _id }, update);
 	}
 
-	setStatusType(_id: string, statusType: string): Promise<UpdateWriteOpResult> {
+	setStatusType(_id: string, statusType: string): Promise<UpdateResult> {
 		const update = {
 			$set: {
 				statusType,
@@ -76,7 +62,7 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 	}
 
 	// INSERT
-	create(data: ICustomUserStatus): Promise<InsertOneWriteOpResult<WithId<ICustomUserStatus>>> {
+	create(data: ICustomUserStatus): Promise<InsertOneResult<WithId<ICustomUserStatus>>> {
 		return this.insertOne(data);
 	}
 }

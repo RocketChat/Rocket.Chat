@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IRoomClosingInfo, IVoipRoom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IVoipRoomModel } from '@rocket.chat/model-typings';
-import type { Collection, Cursor, Db, FilterQuery, FindOneOptions, WithoutProjection, WriteOpResult } from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 import { getCollectionName } from '@rocket.chat/models';
 
 import { Logger } from '../../lib/logger/Logger';
@@ -14,8 +14,8 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 
 	logger = new Logger('VoipRoomsRaw');
 
-	async findOneOpenByVisitorToken(visitorToken: string, options: FindOneOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
-		const query: FilterQuery<IVoipRoom> = {
+	async findOneOpenByVisitorToken(visitorToken: string, options: FindOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
+		const query: Filter<IVoipRoom> = {
 			't': 'v',
 			'open': true,
 			'v.token': visitorToken,
@@ -23,7 +23,7 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		return this.findOne(query, options);
 	}
 
-	findOpenByAgentId(agentId: string): Cursor<IVoipRoom> {
+	findOpenByAgentId(agentId: string): FindCursor<IVoipRoom> {
 		return this.find({
 			't': 'v',
 			'open': true,
@@ -39,8 +39,8 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		});
 	}
 
-	async findOneVoipRoomById(id: string, options: WithoutProjection<FindOneOptions<IVoipRoom>> = {}): Promise<IVoipRoom | null> {
-		const query: FilterQuery<IVoipRoom> = {
+	async findOneVoipRoomById(id: string, options: FindOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
+		const query: Filter<IVoipRoom> = {
 			t: 'v',
 			_id: id,
 		};
@@ -50,9 +50,9 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 	async findOneOpenByRoomIdAndVisitorToken(
 		roomId: string,
 		visitorToken: string,
-		options: FindOneOptions<IVoipRoom> = {},
+		options: FindOptions<IVoipRoom> = {},
 	): Promise<IVoipRoom | null> {
-		const query: FilterQuery<IVoipRoom> = {
+		const query: Filter<IVoipRoom> = {
 			't': 'v',
 			'_id': roomId,
 			'open': true,
@@ -61,8 +61,8 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		return this.findOne(query, options);
 	}
 
-	async findOneByVisitorToken(visitorToken: string, options: FindOneOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
-		const query: FilterQuery<IVoipRoom> = {
+	async findOneByVisitorToken(visitorToken: string, options: FindOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
+		const query: Filter<IVoipRoom> = {
 			't': 'v',
 			'v.token': visitorToken,
 		};
@@ -72,9 +72,9 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 	async findOneByIdAndVisitorToken(
 		_id: IVoipRoom['_id'],
 		visitorToken: string,
-		options: FindOneOptions<IVoipRoom> = {},
+		options: FindOptions<IVoipRoom> = {},
 	): Promise<IVoipRoom | null> {
-		const query: FilterQuery<IVoipRoom> = {
+		const query: Filter<IVoipRoom> = {
 			't': 'v',
 			_id,
 			'v.token': visitorToken,
@@ -82,10 +82,10 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		return this.findOne(query, options);
 	}
 
-	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IRoomClosingInfo): Promise<WriteOpResult> {
+	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IRoomClosingInfo): Promise<Document | UpdateResult> {
 		const { closer, closedBy, closedAt, callDuration, serviceTimeDuration, ...extraData } = closeInfo;
 
-		return this.update(
+		return this.updateOne(
 			{
 				_id: roomId,
 				t: 'v',
@@ -134,8 +134,8 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 			fields?: Record<string, unknown>;
 			offset?: number;
 		};
-	}): FindPaginated<Cursor<IVoipRoom>> {
-		const query: FilterQuery<IVoipRoom> = {
+	}): FindPaginated<FindCursor<IVoipRoom>> {
+		const query: Filter<IVoipRoom> = {
 			t: 'v',
 		};
 

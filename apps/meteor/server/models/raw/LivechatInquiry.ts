@@ -1,5 +1,5 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindOneOptions, MongoDistinctPreferences, UpdateWriteOpResult } from 'mongodb';
+import type { Collection, Db, FindOptions, DistinctOptions, UpdateResult } from 'mongodb';
 import { ILivechatInquiryRecord, IMessage, LivechatInquiryStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { getCollectionName } from '@rocket.chat/models';
 
@@ -20,7 +20,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	findOneByRoomId<T = ILivechatInquiryRecord>(
 		rid: string,
-		options: FindOneOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+		options: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null> {
 		const query = {
 			rid,
@@ -28,7 +28,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query, options);
 	}
 
-	getDistinctQueuedDepartments(options: MongoDistinctPreferences): Promise<string[]> {
+	getDistinctQueuedDepartments(options: DistinctOptions): Promise<string[]> {
 		return this.col.distinct('department', { status: LivechatInquiryStatus.QUEUED }, options);
 	}
 
@@ -37,7 +37,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return updated.value;
 	}
 
-	async setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateWriteOpResult> {
+	async setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateResult> {
 		return this.updateOne({ rid }, { $set: { lastMessage: message } });
 	}
 }

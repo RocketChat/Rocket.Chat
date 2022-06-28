@@ -1,24 +1,24 @@
 import type {
+	BulkWriteOptions,
 	ChangeStream,
 	Collection,
-	CollectionInsertOneOptions,
-	CommonOptions,
-	Cursor,
-	DeleteWriteOpResultObject,
-	FilterQuery,
-	FindAndModifyWriteOpResultObject,
-	FindOneAndUpdateOption,
-	FindOneOptions,
-	InsertOneWriteOpResult,
-	InsertWriteOpResult,
+	DeleteOptions,
+	DeleteResult,
+	Document,
+	Filter,
+	FindCursor,
+	FindOneAndUpdateOptions,
+	FindOptions,
+	InsertManyResult,
+	InsertOneOptions,
+	InsertOneResult,
+	ModifyResult,
 	ObjectId,
-	UpdateManyOptions,
-	UpdateOneOptions,
-	UpdateQuery,
-	UpdateWriteOpResult,
+	OptionalId,
+	UpdateFilter,
+	UpdateOptions,
+	UpdateResult,
 	WithId,
-	WithoutProjection,
-	WriteOpResult,
 } from 'mongodb';
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 
@@ -56,78 +56,68 @@ export type FindPaginated<C> = Promise<{
 export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 	col: Collection<T>;
 
-	findOneAndUpdate(
-		query: FilterQuery<T>,
-		update: UpdateQuery<T> | T,
-		options?: FindOneAndUpdateOption<T>,
-	): Promise<FindAndModifyWriteOpResultObject<T>>;
-	findOneById(_id: string, options?: WithoutProjection<FindOneOptions<T>> | undefined): Promise<T | null>;
-	findOneById<P>(_id: string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
-	findOneById<P>(_id: string, options?: any): Promise<T | P | null>;
-	findOne(query?: FilterQuery<T> | string, options?: undefined): Promise<T | null>;
-	findOne(query: FilterQuery<T> | string, options: WithoutProjection<FindOneOptions<T>>): Promise<T | null>;
-	findOne<P>(query: FilterQuery<T> | string, options?: any): Promise<T | P | null>;
-	find(query?: FilterQuery<T>): Cursor<ResultFields<T, C>>;
-	find(query: FilterQuery<T>, options: WithoutProjection<FindOneOptions<T>>): Cursor<ResultFields<T, C>>;
-	find<P = T>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P>;
-	findPaginated(query?: FilterQuery<T>): FindPaginated<Cursor<ResultFields<T, C>>>;
-	findPaginated(query: FilterQuery<T>, options: WithoutProjection<FindOneOptions<T>>): FindPaginated<Cursor<ResultFields<T, C>>>;
-	findPaginated<P = T>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): FindPaginated<Cursor<P>>;
-	update(
-		filter: FilterQuery<T>,
-		update: UpdateQuery<T> | Partial<T>,
-		options?: UpdateOneOptions & { multi?: boolean },
-	): Promise<WriteOpResult>;
-	updateOne(
-		filter: FilterQuery<T>,
-		update: UpdateQuery<T> | Partial<T>,
-		options?: UpdateOneOptions & { multi?: boolean },
-	): Promise<UpdateWriteOpResult>;
-	updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateManyOptions): Promise<UpdateWriteOpResult>;
-	insertMany(docs: Array<InsertionModel<T>>, options?: CollectionInsertOneOptions): Promise<InsertWriteOpResult<WithId<T>>>;
-	insertOne(doc: InsertionModel<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>>;
-	removeById(_id: string): Promise<DeleteWriteOpResultObject>;
-	deleteOne(filter: FilterQuery<T>, options?: CommonOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteWriteOpResultObject>;
-	deleteMany(filter: FilterQuery<T>, options?: CommonOptions): Promise<DeleteWriteOpResultObject>;
+	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;
+
+	findOneById(_id: string, options?: FindOptions<T> | undefined): Promise<WithId<T> | null>;
+	findOneById<P = T>(_id: string, options: FindOptions<P>): Promise<P | null>;
+	findOneById(_id: string, options?: any): Promise<WithId<T> | null>;
+
+	findOne(query?: Filter<T> | string, options?: undefined): Promise<T | null>;
+
+	findOne<P>(query: Filter<T> | string, options: FindOptions<P extends T ? T : P>): Promise<P | null>;
+
+	findOne<P>(query: Filter<T> | string, options?: any): Promise<WithId<T> | WithId<P> | null>;
+
+	// findUsersInRoles(): void {
+	// 	throw new Error('[overwrite-function] You must overwrite this function in the extended classes');
+	// }
+
+	find(query?: Filter<T>): FindCursor<ResultFields<T, C>>;
+	find<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindCursor<P>;
+	find<P>(query: Filter<T> | undefined, options?: any): FindCursor<WithId<P>> | FindCursor<WithId<T>>;
+
+	findPaginated(query?: Filter<T>): FindPaginated<FindCursor<ResultFields<T, C>>>;
+	findPaginated<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<P>>;
+
+	update(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions & { multi?: true }): Promise<UpdateResult> | void;
+
+	updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult>;
+
+	updateMany(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<Document | UpdateResult>;
+
+	insertMany(docs: OptionalId<T>[], options?: BulkWriteOptions): Promise<InsertManyResult<T>>;
+
+	insertOne(doc: OptionalId<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>>;
+
+	removeById(_id: string): Promise<DeleteResult>;
+
+	deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult>;
+
+	deleteMany(filter: Filter<T>, options?: DeleteOptions): Promise<DeleteResult>;
+
+	// Trash
 	trashFind<P extends RocketChatRecordDeleted<T>>(
-		query: FilterQuery<RocketChatRecordDeleted<T>>,
-		options: FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Cursor<RocketChatRecordDeleted<T>> | undefined;
+		query: Filter<RocketChatRecordDeleted<T>>,
+		options?: FindOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+	): FindCursor<WithId<RocketChatRecordDeleted<T>>> | undefined;
+
 	trashFindOneById(_id: string): Promise<RocketChatRecordDeleted<T> | null>;
-	trashFindOneById(
-		_id: string,
-		options: WithoutProjection<RocketChatRecordDeleted<T>>,
-	): Promise<RocketChatRecordDeleted<RocketChatRecordDeleted<T>> | null>;
+
 	trashFindOneById<P>(
 		_id: string,
-		options: FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+		options: FindOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
 	): Promise<P | null>;
+
 	trashFindOneById<P extends RocketChatRecordDeleted<T>>(
 		_id: string,
-		options?:
-			| undefined
-			| WithoutProjection<RocketChatRecordDeleted<T>>
-			| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Promise<RocketChatRecordDeleted<P> | null>;
-	trashFindDeletedAfter(deletedAt: Date): Cursor<RocketChatRecordDeleted<T>>;
-	trashFindDeletedAfter(
-		deletedAt: Date,
-		query: FilterQuery<RocketChatRecordDeleted<T>>,
-		options: WithoutProjection<RocketChatRecordDeleted<T>>,
-	): Cursor<RocketChatRecordDeleted<T>>;
-	trashFindDeletedAfter<P = RocketChatRecordDeleted<T>>(
-		deletedAt: Date,
-		query: FilterQuery<P>,
-		options: FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Cursor<RocketChatRecordDeleted<P>>;
+		options?: FindOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+	): Promise<WithId<RocketChatRecordDeleted<P> | RocketChatRecordDeleted<T>> | null>;
 
 	trashFindDeletedAfter<P = RocketChatRecordDeleted<T>>(
 		deletedAt: Date,
-		query?: FilterQuery<RocketChatRecordDeleted<T>>,
-		options?:
-			| WithoutProjection<RocketChatRecordDeleted<T>>
-			| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Cursor<RocketChatRecordDeleted<T>>;
+		query?: Filter<RocketChatRecordDeleted<T>>,
+		options?: FindOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+	): FindCursor<WithId<RocketChatRecordDeleted<T> | RocketChatRecordDeleted<P>>>;
 
 	watch(pipeline?: object[]): ChangeStream<T>;
 }

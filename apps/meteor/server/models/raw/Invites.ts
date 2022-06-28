@@ -1,6 +1,6 @@
 import type { IInvite, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IInvitesModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, UpdateWriteOpResult } from 'mongodb';
+import type { Collection, Db, UpdateResult } from 'mongodb';
 import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
@@ -21,7 +21,7 @@ export class InvitesRaw extends BaseRaw<IInvite> implements IInvitesModel {
 		});
 	}
 
-	increaseUsageById(_id: string, uses = 1): Promise<UpdateWriteOpResult> {
+	increaseUsageById(_id: string, uses = 1): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id },
 			{
