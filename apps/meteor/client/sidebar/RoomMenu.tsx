@@ -170,8 +170,6 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				return;
 			}
 
-			await handleThreadsToBeRead();
-
 			RoomManager.close(subscription.t + subscription.name);
 
 			router.push({});
