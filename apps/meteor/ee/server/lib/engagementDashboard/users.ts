@@ -1,7 +1,7 @@
 import moment from 'moment';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users, Analytics, Sessions } from '@rocket.chat/models';
 
-import { Users, Analytics, Sessions } from '../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
 export const handleUserCreated = (user: IUser): IUser => {

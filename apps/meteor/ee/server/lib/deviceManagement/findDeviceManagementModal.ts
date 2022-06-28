@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { ModalDismiss } from '@rocket.chat/models';
 
-import { ModalsDismiss } from '../../../../app/models/server/raw/index';
 import { hasLicense } from '../../../app/license/server/license';
 
 Meteor.methods({
@@ -16,7 +16,7 @@ Meteor.methods({
 			});
 		}
 
-		const modal = await ModalsDismiss.findOne({ _modal: 'device-management', _user: this.userId }, { projection: { _id: 1 } });
+		const modal = await ModalDismiss.findOne({ _modal: 'device-management', _user: this.userId }, { projection: { _id: 1 } });
 
 		return !!modal;
 	},

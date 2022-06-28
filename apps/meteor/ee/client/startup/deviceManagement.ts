@@ -22,6 +22,7 @@ const [registerAccountRouter, unregisterAccountRouter] = registerAccountRoute('/
 const handleDeviceManagementFeatureModal = (): void => {
 	Meteor.call('findDeviceManagementModal', (error: Error, hasUserAcknowledged: boolean) => {
 		if (error) {
+			console.error(error);
 			return;
 		}
 

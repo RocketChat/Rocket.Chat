@@ -54,13 +54,7 @@ const DeviceManagementFeatureModal = ({ close }: { close: () => void }): ReactEl
 				))}
 			</Modal.Content>
 			<Modal.Footer>
-				<Box display='flex' justifyContent='space-between'>
-					<Box>
-						<Box is='span'>{t('Learn_More_In')} </Box>
-						<Box is='a' target='_blank' rel='noopener noreferrer'>
-							{t('Documentation')}
-						</Box>
-					</Box>
+				<Box display='flex' justifyContent='end'>
 					<Button onClick={handleGotit}>{t('Got_it')}</Button>
 				</Box>
 			</Modal.Footer>

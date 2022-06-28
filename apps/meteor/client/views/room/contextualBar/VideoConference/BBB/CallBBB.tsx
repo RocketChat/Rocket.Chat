@@ -38,7 +38,7 @@ const CallBBB: FC<CallBBBProps> = ({ handleClose, canManageCall, live, startCall
 						</Button>
 					)}
 					{live && canManageCall && (
-						<Button danger onClick={endCall}>
+						<Button secondary danger onClick={endCall}>
 							{t('BBB_End_Meeting')}
 						</Button>
 					)}

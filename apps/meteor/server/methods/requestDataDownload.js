@@ -3,8 +3,8 @@ import path from 'path';
 
 import mkdirp from 'mkdirp';
 import { Meteor } from 'meteor/meteor';
+import { ExportOperations, UserDataFiles } from '@rocket.chat/models';
 
-import { ExportOperations, UserDataFiles } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
 import { DataExport } from '../../app/user-data-download/server/DataExport';
 

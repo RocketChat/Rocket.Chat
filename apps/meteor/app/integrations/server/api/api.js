@@ -8,12 +8,12 @@ import Future from 'fibers/future';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
+import { Integrations } from '@rocket.chat/models';
 
 import { incomingLogger } from '../logger';
 import { processWebhookMessage } from '../../../lib/server';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import * as Models from '../../../models/server';
-import { Integrations } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 
 const compiledScripts = {};

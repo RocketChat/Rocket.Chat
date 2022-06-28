@@ -4,7 +4,8 @@ import { useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-con
 import { KJUR } from 'jsrsasign';
 import { useEffect, useState } from 'react';
 
-import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
+import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
+import { EEVoipClient } from '../../../../ee/client/lib/voip/EEVoipClient';
 import { VoIPUser } from '../../../lib/voip/VoIPUser';
 import { useWebRtcServers } from './useWebRtcServers';
 
@@ -28,6 +29,8 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const subscribeToNotifyLoggedIn = useStream('notify-logged');
 	const iceServers = useWebRtcServers();
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
+
+	const isEE = useHasLicense('voip-enterprise');
 
 	useEffect(() => {
 		const voipEnableEventHandler = (enabled: boolean): void => {
@@ -64,16 +67,20 @@ export const useVoipClient = (): UseVoipClientResult => {
 				(async (): Promise<void> => {
 					try {
 						const subscription = await membership({ extension });
-						client = await SimpleVoipUser.create(
-							extension,
-							password,
-							host,
-							websocketPath,
+
+						const config = {
+							authUserName: extension,
+							authPassword: password,
+							sipRegistrarHostnameOrIP: host,
+							webSocketURI: websocketPath,
+							enableVideo: true,
 							iceServers,
-							Number(voipRetryCount),
-							Boolean(enableKeepAlive),
-							'video',
-						);
+							connectionRetryCount: Number(voipRetryCount),
+							enableKeepAliveUsingOptionsForUnstableNetworks: Boolean(enableKeepAlive),
+						};
+
+						client = await (isEE ? EEVoipClient.create(config) : VoIPUser.create(config));
+
 						// Today we are hardcoding workflow mode.
 						// In future, this should be ready from configuration
 						client.setWorkflowMode(WorkflowTypes.CONTACT_CENTER_USER);
@@ -93,7 +100,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 				client.clear();
 			}
 		};
-	}, [iceServers, registrationInfo, setResult, membership, voipEnabled, user?._id, user?.extension, voipRetryCount, enableKeepAlive]);
+	}, [iceServers, registrationInfo, setResult, membership, voipEnabled, user?._id, user?.extension, voipRetryCount, enableKeepAlive, isEE]);
 
 	return result;
 };

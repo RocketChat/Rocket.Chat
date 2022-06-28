@@ -1,7 +1,7 @@
 import { IUser } from '@rocket.chat/core-typings';
+import { Users, Sessions } from '@rocket.chat/models';
 
 import { isSessionsPaginateProps, isSessionsProps } from '../../definition/rest/v1/sessions';
-import { Users, Sessions } from '../../../app/models/server/raw/index';
 import { API } from '../../../app/api/server/api';
 import { hasLicense } from '../../app/license/server/license';
 import { Notifications } from '../../../app/notifications/server';
@@ -149,7 +149,7 @@ API.v1.addRoute(
 			const { sessionId } = this.bodyParams;
 			const sessionObj = await Sessions.findOneBySessionId(sessionId);
 
-			if (!sessionObj) {
+			if (!sessionObj?.loginToken) {
 				return API.v1.notFound('Session not found');
 			}
 
