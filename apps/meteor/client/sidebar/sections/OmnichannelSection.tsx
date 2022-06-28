@@ -7,7 +7,6 @@ import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useOmnichannelAgentAvailable } from '../../hooks/omnichannel/useOmnichannelAgentAvailable';
 import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';
 import { OmnichannelCallToggle } from './components/OmnichannelCallToggle';
-import { OmnichannelMakeCall } from './components/OmnichannelMakeCall';
 
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
@@ -61,7 +60,6 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} onClick={(): void => handleRoute('queue')} />}
 				{isCallEnabled && <OmnichannelCallToggle />}
 				<Sidebar.TopBar.Action {...availableIcon} onClick={handleAvailableStatusChange} />
-				{isCallEnabled && isCallReady && isEnterprise && <OmnichannelMakeCall />}
 				{hasPermission && <Sidebar.TopBar.Action {...directoryIcon} onClick={(): void => handleRoute('directory')} />}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
