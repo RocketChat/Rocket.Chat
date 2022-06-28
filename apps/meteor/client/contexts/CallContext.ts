@@ -75,6 +75,8 @@ export const useIsCallError = (): boolean => {
 	return Boolean(isCallContextError(context));
 };
 
+export const useCallContext = (): CallContextValue => useContext(CallContext);
+
 export const useCallActions = (): CallActionsType => {
 	const context = useContext(CallContext);
 
@@ -145,6 +147,7 @@ export const useCallClient = (): VoIPUser => {
 	if (!isCallContextReady(context)) {
 		throw new Error('useClient only if Calls are enabled and ready');
 	}
+
 	return context.voipClient;
 };
 
