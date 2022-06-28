@@ -17,7 +17,6 @@ API.v1.addRoute(
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
-
 			const { offset, count } = this.getPaginationItems();
 			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
 			const search = this.queryParams?.filter || '';
