@@ -3,10 +3,10 @@
  */
 import type { Collection, Db, Cursor, DeleteWriteOpResultObject, FindOneOptions, IndexSpecification } from 'mongodb';
 import type { IModal, IModalDismiss, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-
-import { BaseRaw } from './BaseRaw';
 import type { IModalDismissModel } from '@rocket.chat/model-typings';
 import { getCollectionName } from '@rocket.chat/models';
+
+import { BaseRaw } from './BaseRaw';
 
 export class ModalDismissRaw extends BaseRaw<IModalDismiss> implements IModalDismissModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IModalDismiss>>) {

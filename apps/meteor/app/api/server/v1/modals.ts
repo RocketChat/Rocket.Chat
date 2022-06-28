@@ -1,5 +1,6 @@
 import { isModalsProps, isModalsInsertProps } from '@rocket.chat/rest-typings';
 import { Modals, ModalDismiss } from '@rocket.chat/models';
+
 import { API } from '../api';
 
 API.v1.addRoute(

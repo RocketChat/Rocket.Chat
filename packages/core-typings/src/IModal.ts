@@ -1,4 +1,3 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 
 export interface IModal {

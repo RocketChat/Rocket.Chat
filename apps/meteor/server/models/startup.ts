@@ -53,3 +53,5 @@ import './Users';
 import './UsersSessions';
 import './VoipRoom';
 import './WebdavAccounts';
+import './Modals';
+import './ModalDismiss';
