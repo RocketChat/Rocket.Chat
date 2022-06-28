@@ -24,6 +24,8 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 		this.tryEnsureIndex({ createdOTR: 1 }, { sparse: true });
 		this.tryEnsureIndex({ encrypted: 1 }, { sparse: true }); // used on statistics
+		this.tryEnsureIndex({ broadcast: 1 }, { sparse: true }); // used on statistics
+		this.tryEnsureIndex({ 'streamingOptions.type': 1 }, { sparse: true }); // used on statistics
 
 		this.tryEnsureIndex(
 			{
@@ -329,7 +331,7 @@ export class Rooms extends Base {
 		let channelName = s.trim(name);
 		try {
 			// TODO evaluate if this function call should be here
-			const { getValidRoomName } = Promise.await(import('../../../utils/lib/getValidRoomName'));
+			const { getValidRoomName } = Promise.await(import('../../../utils/server/lib/getValidRoomName'));
 			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
 		} catch (e) {
 			console.error(e);

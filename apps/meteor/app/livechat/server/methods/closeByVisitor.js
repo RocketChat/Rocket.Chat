@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { settings } from '../../../settings';
-import { LivechatRooms, LivechatVisitors } from '../../../models';
+import { settings } from '../../../settings/server';
+import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	'livechat:closeByVisitor'({ roomId, token }) {
-		const visitor = LivechatVisitors.getVisitorByToken(token);
+	async 'livechat:closeByVisitor'({ roomId, token }) {
+		const visitor = await LivechatVisitors.getVisitorByToken(token);
 
 		const language = (visitor && visitor.language) || settings.get('Language') || 'en';
 

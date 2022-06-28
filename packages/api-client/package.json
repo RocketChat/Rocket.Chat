@@ -14,7 +14,8 @@
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"jest": "jest",
-		"build": "tsc -p tsconfig.json"
+		"build": "tsc -p tsconfig.json",
+		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

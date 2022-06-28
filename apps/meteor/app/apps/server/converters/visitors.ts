@@ -1,10 +1,11 @@
 import { IVisitor as IVisitorFromAppsEngine } from '@rocket.chat/apps-engine/definition/livechat';
 import type { IVisitor } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import LivechatVisitors from '../../../models/server/models/LivechatVisitors';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 import { AppServerOrchestrator } from '../orchestrator';
 
+// TODO: check if functions from this converter can be async
 export class AppVisitorsConverter {
 	orch: AppServerOrchestrator;
 
@@ -17,7 +18,7 @@ export class AppVisitorsConverter {
 				_unmappedProperties_: unknown;
 		  })
 		| undefined {
-		const visitor = LivechatVisitors.findOneById(id);
+		const visitor = Promise.await(LivechatVisitors.findOneById(id));
 
 		return this.convertVisitor(visitor);
 	}
@@ -27,7 +28,7 @@ export class AppVisitorsConverter {
 				_unmappedProperties_: unknown;
 		  })
 		| undefined {
-		const visitor = LivechatVisitors.getVisitorByToken(token, {});
+		const visitor = Promise.await(LivechatVisitors.getVisitorByToken(token));
 
 		return this.convertVisitor(visitor);
 	}

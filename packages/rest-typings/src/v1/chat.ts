@@ -198,12 +198,14 @@ const ChatGetThreadsListSchema = {
 		},
 		offset: {
 			type: 'number',
+			nullable: true,
 		},
 		count: {
 			type: 'number',
+			nullable: true,
 		},
 	},
-	required: ['rid', 'type', 'offset', 'count'],
+	required: ['rid', 'type'],
 	additionalProperties: false,
 };
 

@@ -1,4 +1,4 @@
-name: "JS file preventer"
+name: 'JS file preventer'
 on:
   pull_request:
     types: [opened, synchronize]

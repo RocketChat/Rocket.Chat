@@ -14,10 +14,12 @@ const style = css`
 `;
 export const ToolboxDropdown = <R extends HTMLElement>({
 	reference,
+	container,
 	children,
 	...rest
 }: {
 	reference: React.RefObject<R>;
+	container: Element;
 	children: ReactNode;
 }): ReactElement => {
 	const { isMobile } = useLayout();
@@ -27,7 +29,7 @@ export const ToolboxDropdown = <R extends HTMLElement>({
 	return (
 		<>
 			<Box className={style} position='fixed' />
-			<DropdownTemplate ref={target} reference={reference} {...rest}>
+			<DropdownTemplate ref={target} reference={reference} container={container} {...rest}>
 				{children}
 			</DropdownTemplate>
 		</>

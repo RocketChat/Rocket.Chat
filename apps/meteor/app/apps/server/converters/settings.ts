@@ -1,7 +1,7 @@
 import { SettingType, ISetting as ISettingFromAppsEngine } from '@rocket.chat/apps-engine/definition/settings';
 import type { ISetting } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
-import { Settings } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class AppSettingsConverter {

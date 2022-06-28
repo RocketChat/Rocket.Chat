@@ -5,8 +5,8 @@ import {
 	isSubscriptionsReadProps,
 	isSubscriptionsUnreadProps,
 } from '@rocket.chat/rest-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Subscriptions } from '../../../models/server/raw';
 import { API } from '../api';
 
 API.v1.addRoute(

@@ -3,8 +3,9 @@ import { isLivechatRoom } from '@rocket.chat/apps-engine/definition/livechat/ILi
 import { RoomType, IRoom as IRoomFromAppsEngine } from '@rocket.chat/apps-engine/definition/rooms';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { Rooms, Users, LivechatVisitors, LivechatDepartment } from '../../../models/server';
+import { Rooms, Users, LivechatDepartment } from '../../../models/server';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 import { AppServerOrchestrator } from '../orchestrator';
 
@@ -64,7 +65,7 @@ export class AppRoomsConverter {
 
 		if (isLivechatRoom(room)) {
 			if (room.visitor) {
-				const visitor = LivechatVisitors.findOneById(room.visitor.id);
+				const visitor = Promise.await(LivechatVisitors.findOneById(room.visitor.id));
 				v = {
 					_id: visitor._id,
 					username: visitor.username,

@@ -21,7 +21,7 @@ Example.args = {
 	used: 123,
 	size: 128,
 	label: 'Example label',
-	color: colorTokens.b500,
+	color: colorTokens.p500,
 };
 
 export const Unlimited = Template.bind({});
@@ -29,7 +29,7 @@ Unlimited.args = {
 	used: 123,
 	size: 128,
 	label: 'Example label',
-	color: colorTokens.b500,
+	color: colorTokens.p500,
 };
 
 export const Animated: Story<Pick<ComponentProps<typeof UsagePieGraph>, 'size' | 'label'>> = (args) => {
@@ -37,27 +37,27 @@ export const Animated: Story<Pick<ComponentProps<typeof UsagePieGraph>, 'size' |
 		{
 			total: 100,
 			used: 0,
-			color: colorTokens.g500,
+			color: colorTokens.s500,
 		},
 		{
 			total: 100,
 			used: 25,
-			color: colorTokens.b500,
+			color: colorTokens.p500,
 		},
 		{
 			total: 100,
 			used: 50,
-			color: colorTokens.y500,
+			color: colorTokens.w500,
 		},
 		{
 			total: 100,
 			used: 75,
-			color: colorTokens.o500,
+			color: colorTokens['s1-500'],
 		},
 		{
 			total: 100,
 			used: 100,
-			color: colorTokens.r500,
+			color: colorTokens.d500,
 		},
 	]);
 

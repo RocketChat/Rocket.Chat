@@ -1,8 +1,8 @@
 import type { IRoom, IUser, IVisitor, IUpload } from '@rocket.chat/core-typings';
 import { IUpload as IUploadFromAppsEngine } from '@rocket.chat/apps-engine/definition/uploads';
+import { Uploads } from '@rocket.chat/models';
 
 import { transformMappedData } from '../../lib/misc/transformMappedData';
-import { Uploads } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class AppUploadsConverter {

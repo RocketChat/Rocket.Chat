@@ -3,8 +3,24 @@ const { resolve, relative, join } = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-	stories: ['../app/**/*.stories.{js,tsx}', '../client/**/*.stories.{js,tsx}', '../ee/**/*.stories.{js,tsx}'],
-	addons: ['@storybook/addon-essentials', '@storybook/addon-interactions', '@storybook/addon-postcss'],
+	stories: [
+		'../client/**/*.stories.{js,tsx}',
+		'../app/**/*.stories.{js,tsx}',
+		'../ee/app/**/*.stories.{js,tsx}',
+		'../ee/client/**/*.stories.{js,tsx}',
+	],
+	addons: [
+		'@storybook/addon-essentials',
+		'@storybook/addon-interactions',
+		{
+			name: '@storybook/addon-postcss',
+			options: {
+				postcssLoaderOptions: {
+					implementation: require('postcss'),
+				},
+			},
+		},
+	],
 	webpackFinal: async (config) => {
 		const cssRule = config.module.rules.find(({ test }) => test.test('index.css'));
 

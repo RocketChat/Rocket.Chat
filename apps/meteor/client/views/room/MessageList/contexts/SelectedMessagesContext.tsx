@@ -1,6 +1,5 @@
-import { OffCallbackHandler } from '@rocket.chat/emitter';
-import { createContext, useCallback, useContext, useMemo } from 'react';
-import { useSubscription } from 'use-subscription';
+import { createContext, useCallback, useContext } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { selectedMessageStore } from '../../providers/SelectedMessagesProvider';
 
@@ -14,28 +13,28 @@ export const SelectedMessageContext = createContext({
 
 export const useIsSelectedMessage = (mid: string): boolean => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
-	const subscription = useMemo(
-		() => ({
-			getCurrentValue: (): boolean => selectedMessageStore.isSelected(mid),
-			subscribe: (callback: () => void): OffCallbackHandler => selectedMessageStore.on(mid, callback),
-		}),
-		[mid, selectedMessageStore],
+
+	const subscribe = useCallback(
+		(callback: () => void): (() => void) => selectedMessageStore.on(mid, callback),
+		[selectedMessageStore, mid],
 	);
-	return useSubscription(subscription);
+
+	const getSnapshot = (): boolean => selectedMessageStore.isSelected(mid);
+
+	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
 export const useIsSelecting = (): boolean => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 
-	return useSubscription(
-		useMemo(
-			() => ({
-				getCurrentValue: (): boolean => selectedMessageStore.getIsSelecting(),
-				subscribe: (callback: () => void): OffCallbackHandler => selectedMessageStore.on('toggleIsSelecting', callback),
-			}),
-			[selectedMessageStore],
-		),
+	const subscribe = useCallback(
+		(callback: () => void): (() => void) => selectedMessageStore.on('toggleIsSelecting', callback),
+		[selectedMessageStore],
 	);
+
+	const getSnapshot = (): boolean => selectedMessageStore.getIsSelecting();
+
+	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
 export const useToggleSelect = (mid: string): (() => void) => {
@@ -48,13 +47,12 @@ export const useToggleSelect = (mid: string): (() => void) => {
 export const useCountSelected = (): number => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 
-	return useSubscription(
-		useMemo(
-			() => ({
-				getCurrentValue: (): number => selectedMessageStore.count(),
-				subscribe: (callback: () => void): OffCallbackHandler => selectedMessageStore.on('change', callback),
-			}),
-			[selectedMessageStore],
-		),
+	const subscribe = useCallback(
+		(callback: () => void): (() => void) => selectedMessageStore.on('change', callback),
+		[selectedMessageStore],
 	);
+
+	const getSnapshot = (): number => selectedMessageStore.count();
+
+	return useSyncExternalStore(subscribe, getSnapshot);
 };
