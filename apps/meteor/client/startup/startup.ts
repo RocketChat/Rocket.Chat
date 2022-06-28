@@ -10,7 +10,7 @@ import { hasPermission } from '../../app/authorization/client';
 import { register } from '../../app/markdown/lib/hljs';
 import { settings } from '../../app/settings/client';
 import { getUserPreference, t } from '../../app/utils/client';
-import 'highlight.js/styles/github.css';
+import 'hljs9/styles/github.css';
 import * as banners from '../lib/banners';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';

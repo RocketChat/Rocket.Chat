@@ -10,10 +10,23 @@ import {
 	isVoipEventQueueMemberAdded,
 	isVoipEventQueueMemberRemoved,
 	isVoipEventCallAbandoned,
-	ICallDetails,
 	UserState,
+	ICallDetails,
 } from '@rocket.chat/core-typings';
-import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useRoute,
+	useUser,
+	useSetting,
+	useEndpoint,
+	useStream,
+	useSetOutputMediaDevice,
+	useSetInputMediaDevice,
+	Device,
+	useSetModal,
+	IExperimentalHTMLAudioElement,
+} from '@rocket.chat/ui-contexts';
+// import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -55,9 +68,11 @@ export const CallProvider: FC = ({ children }) => {
 	const result = useVoipClient();
 	const user = useUser();
 	const homeRoute = useRoute('home');
+	const setOutputMediaDevice = useSetOutputMediaDevice();
+	const setInputMediaDevice = useSetInputMediaDevice();
 	const isEnterprise = useHasLicenseModule('voip-enterprise');
 
-	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
+	const remoteAudioMediaRef = useRef<IExperimentalHTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
@@ -84,6 +99,25 @@ export const CallProvider: FC = ({ children }) => {
 	const openWrapUpModal = useCallback((): void => {
 		setModal(() => <WrapUpCallModal closeRoom={closeRoom} />);
 	}, [closeRoom, setModal]);
+
+	const changeAudioOutputDevice = useMutableCallback((selectedAudioDevice: Device): void => {
+		remoteAudioMediaRef?.current &&
+			setOutputMediaDevice({ outputDevice: selectedAudioDevice, HTMLAudioElement: remoteAudioMediaRef.current });
+	});
+
+	const changeAudioInputDevice = useMutableCallback((selectedAudioDevice: Device): void => {
+		if (!result.voipClient) {
+			return;
+		}
+		const constraints = { audio: { deviceId: { exact: selectedAudioDevice.id } } };
+
+		// TODO: Migrate the classes that manage MediaStream to a more react based approach (using contexts/providers perhaps)
+		// For now the MediaStream management is very coupled with the VoIP client,
+		// decoupling it will make it usable by other areas of the project that needs to handle MediaStreams and avoid code duplication
+		result.voipClient.changeAudioInputDevice(constraints);
+
+		setInputMediaDevice(selectedAudioDevice);
+	});
 
 	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
 
@@ -387,10 +421,14 @@ export const CallProvider: FC = ({ children }) => {
 			createRoom,
 			closeRoom,
 			openWrapUpModal,
+			changeAudioOutputDevice,
+			changeAudioInputDevice,
 		};
 	}, [
 		voipEnabled,
-		user?.extension,
+		changeAudioOutputDevice,
+		changeAudioInputDevice,
+		user,
 		result,
 		hasLicenseToMakeVoIPCalls,
 		roomInfo,
