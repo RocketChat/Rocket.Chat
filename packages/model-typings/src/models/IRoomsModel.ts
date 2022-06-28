@@ -1,5 +1,5 @@
-import type { FindCursor, AggregationCursor } from 'mongodb';
-import type { IRoom, IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
+import type { FindCursor, AggregationCursor, Document } from 'mongodb';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -59,7 +59,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findOneByNameOrFname(name: any, options?: any): any;
 
-	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
+	allRoomSourcesCount(): AggregationCursor<Document>; // TODO change back when convert model do TS AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
 	findByBroadcast(options?: any): any;
 

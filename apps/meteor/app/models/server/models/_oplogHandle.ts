@@ -132,7 +132,7 @@ class CustomOplogHandle {
 	}
 
 	_onOplogEntryOplog(query: { collection: string }, callback: Function): void {
-		this.stream.on(
+		this.stream?.on(
 			'data',
 			Meteor.bindEnvironment((buffer) => {
 				const doc = buffer as any;
@@ -173,7 +173,7 @@ class CustomOplogHandle {
 									// o: event.fullDocument,
 									o: {
 										$set: event.updateDescription.updatedFields,
-										$unset: event.updateDescription.removedFields.reduce((obj, field) => {
+										$unset: event.updateDescription.removedFields?.reduce((obj, field) => {
 											obj[field as string] = true;
 											return obj;
 										}, {} as Record<string, true>),

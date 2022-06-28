@@ -10,6 +10,6 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 		options: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null>;
 	getDistinctQueuedDepartments(options: DistinctOptions): Promise<string[]>;
-	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | undefined>;
+	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null>;
 	setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateResult>;
 }

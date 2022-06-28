@@ -32,9 +32,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.col.distinct('department', { status: LivechatInquiryStatus.QUEUED }, options);
 	}
 
-	async setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | undefined> {
+	async setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null> {
 		const updated = await this.findOneAndUpdate({ _id: inquiryId }, { $set: { department } }, { returnDocument: 'after' });
-		return updated.value;
+		return updated?.value;
 	}
 
 	async setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateResult> {

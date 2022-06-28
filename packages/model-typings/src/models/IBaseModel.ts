@@ -113,11 +113,13 @@ export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 		options?: FindOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
 	): Promise<WithId<RocketChatRecordDeleted<P> | RocketChatRecordDeleted<T>> | null>;
 
+	trashFindDeletedAfter(deletedAt: Date): FindCursor<WithId<RocketChatRecordDeleted<T>>>;
+
 	trashFindDeletedAfter<P = RocketChatRecordDeleted<T>>(
 		deletedAt: Date,
 		query?: Filter<RocketChatRecordDeleted<T>>,
 		options?: FindOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): FindCursor<WithId<RocketChatRecordDeleted<T> | RocketChatRecordDeleted<P>>>;
+	): FindCursor<WithId<RocketChatRecordDeleted<T>>>;
 
 	watch(pipeline?: object[]): ChangeStream<T>;
 }

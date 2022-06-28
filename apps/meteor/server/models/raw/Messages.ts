@@ -7,6 +7,7 @@ import type { AggregationCursor, Collection, AggregateOptions, FindCursor, Db, F
 
 import { BaseRaw } from './BaseRaw';
 
+// @ts-ignore
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
 		super(db, getCollectionName('message'), trash);

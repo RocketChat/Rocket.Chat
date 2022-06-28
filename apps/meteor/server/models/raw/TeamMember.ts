@@ -137,6 +137,7 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 			userId,
 			createdAt: new Date(),
 			createdBy,
+			_updatedAt: new Date(),
 		});
 	}
 

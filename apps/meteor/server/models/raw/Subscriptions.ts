@@ -1,6 +1,6 @@
 import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateQuery, UpdateResult } from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult } from 'mongodb';
 import { getCollectionName, Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
 
@@ -13,7 +13,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 	async getBadgeCount(uid: string): Promise<number> {
 		const [result] = await this.col
-			.aggregate<{ total: number } | undefined>([
+			.aggregate<{ total: number }>([
 				{ $match: { 'u._id': uid, 'archived': { $ne: true } } },
 				{
 					$group: {
@@ -105,7 +105,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'u._id': uid,
 		};
 
-		const update: UpdateQuery<ISubscription> = {
+		const update = {
 			$set: {
 				open: true,
 				alert,
@@ -116,7 +116,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.update(query, update, options);
+		return this.updateOne(query, update, options);
 	}
 
 	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid: IRoom['_id']): Promise<UpdateResult> {

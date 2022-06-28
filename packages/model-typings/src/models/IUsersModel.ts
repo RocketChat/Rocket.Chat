@@ -1,4 +1,4 @@
-import type { UpdateResult, FindCursor } from 'mongodb';
+import type { Document, UpdateResult, FindCursor } from 'mongodb';
 import type { IUser, IRole, IRoom, ILivechatAgent } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -54,13 +54,15 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	countAllAgentsStatus({ departmentId }: { departmentId?: any }): any;
 
-	getTotalOfRegisteredUsersByDate({ start, end, options }: { start: any; end: any; options?: any }): Promise<
-		{
-			date: string;
-			users: number;
-			type: 'users';
-		}[]
-	>;
+	getTotalOfRegisteredUsersByDate({ start, end, options }: { start: any; end: any; options?: any }): Promise<Document[]>;
+	// TODO change back to below when convert model to TS
+	// Promise<
+	// 	{
+	// 		date: string;
+	// 		users: number;
+	// 		type: 'users';
+	// 	}[]
+	// >;
 
 	getUserLanguages(): any;
 
