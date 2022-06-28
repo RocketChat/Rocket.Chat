@@ -24,7 +24,7 @@ Meteor.startup(() => {
 
 export const AutoTranslate = {
 	initialized: false,
-	providersMetadata: {},
+	providersMetadata: {} as { [providerNamer: string]: { name: string; displayName: string } },
 	messageIdsToWait: {} as { [messageId: string]: string },
 	supportedLanguages: [] as ISupportedLanguage[],
 
@@ -44,15 +44,31 @@ export const AutoTranslate = {
 		return language;
 	},
 
-	translateAttachments(attachments: MessageAttachmentDefault[], language: string): MessageAttachmentDefault[] {
+	translateAttachments(
+		attachments: MessageAttachmentDefault[],
+		language: string,
+		autoTranslateShowInverse: boolean,
+	): MessageAttachmentDefault[] {
 		for (const attachment of attachments) {
 			if (attachment.author_name !== username) {
 				if (attachment.text && attachment.translations && attachment.translations[language]) {
-					attachment.text = attachment.translations[language];
+					attachment.translations.original = attachment.text;
+
+					if (autoTranslateShowInverse) {
+						attachment.text = attachment.translations.original;
+					} else {
+						attachment.text = attachment.translations[language];
+					}
 				}
 
 				if (attachment.description && attachment.translations && attachment.translations[language]) {
-					attachment.description = attachment.translations[language];
+					attachment.translations.original = attachment.description;
+
+					if (autoTranslateShowInverse) {
+						attachment.description = attachment.translations.original;
+					} else {
+						attachment.description = attachment.translations[language];
+					}
 				}
 
 				// @ts-expect-error - not sure what to do with this
@@ -107,17 +123,30 @@ export const createAutoTranslateMessageRenderer = (): ((message: ITranslatedMess
 				message.translations = {};
 			}
 			if (!!subscription?.autoTranslate !== !!message.autoTranslateShowInverse) {
+				const hasAttachmentsTranslate = _.find(
+					message.attachments as MessageAttachmentDefault[],
+					(attachment) => !!attachment.translations && !!attachment.translations[autoTranslateLanguage],
+				);
+
 				message.translations.original = message.html;
-				if (message.translations[autoTranslateLanguage]) {
+				if (message.translations[autoTranslateLanguage] && !hasAttachmentsTranslate) {
 					message.html = message.translations[autoTranslateLanguage];
 				}
 
 				if (message.attachments && message.attachments.length > 0) {
-					message.attachments = AutoTranslate.translateAttachments(message.attachments, autoTranslateLanguage);
+					message.attachments = AutoTranslate.translateAttachments(
+						message.attachments,
+						autoTranslateLanguage,
+						!!message.autoTranslateShowInverse,
+					);
 				}
 			}
 		} else if (message.attachments && message.attachments.length > 0) {
-			message.attachments = AutoTranslate.translateAttachments(message.attachments, autoTranslateLanguage);
+			message.attachments = AutoTranslate.translateAttachments(
+				message.attachments,
+				autoTranslateLanguage,
+				!!message.autoTranslateShowInverse,
+			);
 		}
 		return message;
 	};
