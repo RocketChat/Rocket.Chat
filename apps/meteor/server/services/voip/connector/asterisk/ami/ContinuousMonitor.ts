@@ -286,6 +286,7 @@ export class ContinuousMonitor extends Command {
 			callUniqueId: event.uniqueid,
 			callUniqueIdFallback: event.linkedid,
 			agentExtension: event.calleridnum,
+			_updatedAt: new Date(),
 		});
 	}
 
