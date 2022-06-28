@@ -768,7 +768,26 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (call.messages.started) {
 			const text = TAPi18n.__('video_direct_started', { username: call.createdBy.username || '' });
-			await Messages.setBlocksById(call.messages.started, [await this.buildMessageBlock(text)]);
+			await Messages.setBlocksById(call.messages.started, [
+				await this.buildMessageBlock(text),
+				{
+					type: 'actions',
+					appId: 'videoconf-core',
+					elements: [
+						{
+							appId: 'videoconf-core',
+							blockId: call._id,
+							actionId: 'join',
+							type: 'button',
+							text: {
+								type: 'plain_text',
+								text: TAPi18n.__('Join'),
+								emoji: true,
+							},
+						},
+					],
+				},
+			]);
 		}
 	}
 }
