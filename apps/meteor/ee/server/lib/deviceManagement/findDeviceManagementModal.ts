@@ -1,11 +1,10 @@
-import { IModal } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { Modals } from '@rocket.chat/models';
+import { ModalDismiss } from '@rocket.chat/models';
 import { hasLicense } from '../../../app/license/server/license';
 
 Meteor.methods({
-	async findDeviceManagementModal(): Promise<Pick<IModal, '_id'> | null> {
+	async findDeviceManagementModal(): Promise<boolean> {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'deviceManagementModal',
@@ -17,7 +16,7 @@ Meteor.methods({
 			});
 		}
 
-		const modal = await Modals.findOneByIdAndUserId('device-management', this.userId, { projection: { _id: 1 } });
-		return modal;
+		const modal = await ModalDismiss.findOneByModalIdAndUserId('device-management', this.userId, { projection: { _id: 1 } });
+		return modal ? true : false;
 	},
 });

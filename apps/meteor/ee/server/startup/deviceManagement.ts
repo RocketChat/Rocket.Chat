@@ -11,6 +11,7 @@ onToggledFeature('device-management', {
 			await createPermissions();
 			await createEmailTemplates();
 			await listenSessionLogin();
+
 			await createDeviceManagementModal();
 			await import('../lib/deviceManagement/findDeviceManagementModal');
 		}),

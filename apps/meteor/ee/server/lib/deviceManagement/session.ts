@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { UAParser } from 'ua-parser-js';
 import { ISocketConnection, IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import * as Mailer from '../../../../app/mailer';
-import { Users } from '../../../../app/models/server/raw/index';
 import { settings } from '../../../../app/settings/server';
 import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/server/lib/UAParserCustom';
 import { deviceManagementEvents } from '../../../../server/services/device-management/events';
