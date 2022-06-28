@@ -16,18 +16,18 @@ const DeviceManagementFeatureModal = ({ close }: { close: () => void }): ReactEl
 	const bulletOptions: bulletOptionType[] = useMemo(
 		() => [
 			{
-				title: t('Receive_notifications_about_suspicious_logins'),
-				subtitle: 'Some descriptive text here some descriptive text here',
+				title: t('Receive_login_notifications'),
+				subtitle: t('Monitor_new_and_suspicious_logins'),
 				icon: 'bell',
 			},
 			{
-				title: t('Check_your_devices_activity'),
-				subtitle: 'Some descriptive text here some descriptive text here',
+				title: t('Check_device_activity'),
+				subtitle: t('Review_devices'),
 				icon: 'computer',
 			},
 			{
-				title: t('Finish_suspicious_sessions_remotely'),
-				subtitle: 'Some descriptive text here some descriptive text here',
+				title: t('Log_out_devices_remotely'),
+				subtitle: t('End_suspicious_sessions'),
 				icon: 'login',
 			},
 		],
@@ -46,14 +46,14 @@ const DeviceManagementFeatureModal = ({ close }: { close: () => void }): ReactEl
 				))}
 			</Modal.Content>
 			<Modal.Footer>
-				<Box display='flex' justifyContent='space-between' alignItems='center'>
+				<Box display='flex' justifyContent='space-between'>
 					<Box>
 						<Box is='span'>{t('Learn_More_In')} </Box>
 						<Box is='a' target='_blank' rel='noopener noreferrer'>
 							{t('Documentation')}
 						</Box>
 					</Box>
-					<Button info onClick={close}>
+					<Button onClick={close}>
 						{t('Got_it')}
 					</Button>
 				</Box>
