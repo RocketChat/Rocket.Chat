@@ -23,10 +23,11 @@ const SidebarFooter = (): ReactElement => {
 		}
 	`;
 
-	const getLicenses = useEndpoint('GET', '/v1/licenses.get');
-	const { data, isSuccess } = useQuery(['licences'], () => getLicenses());
-
 	const t = useTranslation();
+
+	const isEnterpriseEdition = useEndpoint('GET', '/v1/licenses.isEnterprise');
+	const { data, isSuccess } = useQuery(['licences'], () => isEnterpriseEdition());
+	const isCommunityEdition = isSuccess && !data.isEnterprise;
 
 	const isCallEnabled = useIsCallEnabled();
 	const ready = useIsCallReady();
@@ -37,8 +38,6 @@ const SidebarFooter = (): ReactElement => {
 	if (activeCallStatus.includes(callerStatus) && isCallEnabled && ready) {
 		return <VoipFooter />;
 	}
-
-	const isCommunityEdition = isSuccess ? data?.licenses?.length === 0 : false;
 
 	return (
 		<Footer>
