@@ -15,8 +15,8 @@ concurrency:
 
 env:
   CI: true
-  MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0
-  MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0
+  MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
+  MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: --max_old_space_size=4096
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
@@ -304,8 +304,8 @@ jobs:
             --link mongodb \
             -p 3000:3000 \
             -e TEST_MODE=true \
-            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
-            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true \
             ${IMAGE_NAME}
 
       - name: E2E Test API
@@ -489,8 +489,8 @@ jobs:
             --link mongodb \
             --link nats \
             -e TEST_MODE=true \
-            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
-            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             -e ENTERPRISE_LICENSE="${{ secrets.ENTERPRISE_LICENSE }}" \
@@ -503,8 +503,8 @@ jobs:
             --link mongodb \
             --link nats \
             -e PORT=4000 \
-            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
-            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             --label 'traefik.http.services.ddp-streamer.loadbalancer.server.port=4000' \
@@ -518,8 +518,8 @@ jobs:
           docker run --name stream-hub -d \
             --link mongodb \
             --link nats \
-            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
-            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -537,8 +537,8 @@ jobs:
           docker run --name account -d \
             --link mongodb \
             --link nats \
-            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
-            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -556,8 +556,8 @@ jobs:
           docker run --name authorization -d \
             --link mongodb \
             --link nats \
-            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
-            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -575,8 +575,8 @@ jobs:
           docker run --name presence -d \
             --link mongodb \
             --link nats \
-            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0 \
-            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0 \
+            -e MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true \
+            -e MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${{ needs.release-versions.outputs.gh-docker-tag }}
