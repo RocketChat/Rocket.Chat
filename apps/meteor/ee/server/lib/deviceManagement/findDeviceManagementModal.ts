@@ -1,7 +1,7 @@
 import { IModal } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { Modals } from '../../../../app/models/server/raw/index';
+import { Modals } from '@rocket.chat/models';
 import { hasLicense } from '../../../app/license/server/license';
 
 Meteor.methods({

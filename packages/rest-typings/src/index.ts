@@ -167,11 +167,9 @@ export * from './v1/channels/ChannelsModeratorsProps';
 export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
 export * from './v1/channels/ChannelsDeleteProps';
-
 export * from './v1/subscriptionsEndpoints';
 export * from './v1/misc';
 export * from './v1/invites';
-
 export * from './v1/dm';
 export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
@@ -182,16 +180,12 @@ export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
 export * from './helpers/WithItemCount';
 export * from './v1/emojiCustom';
-
 export * from './v1/users';
 export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';
 export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
-<<<<<<< HEAD
-
 export * from './v1/modals';
-=======
 export * from './v1/import/UploadImportFileParamsPOST';
 export * from './v1/import/DownloadPublicImportFileParamsPOST';
 export * from './v1/import/StartImportParamsPOST';
@@ -201,4 +195,3 @@ export * from './v1/import/GetLatestImportOperationsParamsGET';
 export * from './v1/import/DownloadPendingFilesParamsPOST';
 export * from './v1/import/DownloadPendingAvatarsParamsPOST';
 export * from './v1/import/GetCurrentImportOperationParamsGET';
->>>>>>> develop

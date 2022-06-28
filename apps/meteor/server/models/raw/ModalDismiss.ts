@@ -1,12 +1,18 @@
 /**
  * Modals model
  */
-import type { FindOneOptions, Cursor, DeleteWriteOpResultObject } from 'mongodb';
-import type { IModal, IModalDismiss, IUser } from '@rocket.chat/core-typings';
+import type { Collection, Db, Cursor, DeleteWriteOpResultObject, FindOneOptions, IndexSpecification } from 'mongodb';
+import type { IModal, IModalDismiss, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
+import type { IModalDismissModel } from '@rocket.chat/model-typings';
+import { getCollectionName } from '@rocket.chat/models';
 
-export class ModalsDismissRaw extends BaseRaw<IModalDismiss> {
+export class ModalDismissRaw extends BaseRaw<IModalDismiss> implements IModalDismissModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IModalDismiss>>) {
+		super(db, getCollectionName('modals_dismiss'), trash);
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { createdAt: -1 } }, { key: { _modal: 1, _user: 1, createdAt: -1 }, background: true }];
 	}
