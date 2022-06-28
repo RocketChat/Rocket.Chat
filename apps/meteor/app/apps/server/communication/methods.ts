@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { SettingValue } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
-import { Settings } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { AppServerOrchestrator } from '../orchestrator';

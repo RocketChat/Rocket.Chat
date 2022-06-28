@@ -1,4 +1,4 @@
-import { Sessions } from '../../../app/models/server/raw';
+import { Sessions } from '@rocket.chat/models';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({

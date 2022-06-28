@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ActionButton, Skeleton } from '@rocket.chat/fuselage';
+import { Box, IconButton, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { forwardRef, ReactNode, ComponentProps } from 'react';
 
@@ -108,7 +108,7 @@ const UserCard = forwardRef(function UserCard(
 			</Box>
 			{onClose && (
 				<Box>
-					<ActionButton small ghost title={t('Close')} icon='cross' onClick={onClose} />
+					<IconButton small title={t('Close')} icon='cross' onClick={onClose} />
 				</Box>
 			)}
 		</UserCardContainer>

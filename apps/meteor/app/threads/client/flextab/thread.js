@@ -11,7 +11,7 @@ import { chatMessages, ChatMessages } from '../../../ui';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
-import { Messages } from '../../../models';
+import { Messages } from '../../../models/client';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
 import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
 import './thread.html';

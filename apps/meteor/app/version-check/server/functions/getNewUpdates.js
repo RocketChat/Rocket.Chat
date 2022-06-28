@@ -3,7 +3,7 @@ import os from 'os';
 import { HTTP } from 'meteor/http';
 import { check, Match } from 'meteor/check';
 
-import { Settings } from '../../../models';
+import { Settings } from '../../../models/server';
 import { Info } from '../../../utils';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
 

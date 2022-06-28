@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { Integrations } from '@rocket.chat/models';
 
 import { Rooms, Messages, Subscriptions } from '../../../models/server';
-import { Integrations } from '../../../models/server/raw';
 import { getValidRoomName } from '../../../utils/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { checkUsernameAvailability } from '../../../lib/server/functions';
