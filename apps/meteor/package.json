@@ -92,6 +92,7 @@
 		"@types/codemirror": "^5",
 		"@types/cookie-parser": "^1.4.2",
 		"@types/cors": "^2.8.5",
+		"@types/cssom": "^0.4.1",
 		"@types/dompurify": "^2.2.2",
 		"@types/ejson": "^2.2.0",
 		"@types/express": "^4.17.12",
