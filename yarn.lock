@@ -3498,6 +3498,7 @@ __metadata:
     pino-pretty: ^7.6.0
     sharp: ^0.30.6
     typescript: ~4.3.5
+    underscore: ^1.13.4
     uuid: ^7.0.3
     ws: ^8.5.0
   languageName: unknown
@@ -32434,7 +32435,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"underscore@npm:^1.13.3":
+"underscore@npm:^1.13.3, underscore@npm:^1.13.4":
   version: 1.13.4
   resolution: "underscore@npm:1.13.4"
   checksum: 6b04f66cd454e8793a552dc49c71e24e5208a29b9d9c0af988a96948af79103399c36fb15db43f3629bfed152f8b1fe94f44e1249e9d196069c0fc7edfadb636

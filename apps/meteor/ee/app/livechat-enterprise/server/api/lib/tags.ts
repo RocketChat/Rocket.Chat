@@ -6,7 +6,7 @@ import { hasPermissionAsync } from '../../../../../../app/authorization/server/f
 
 type FindTagsParams = {
 	userId: string;
-	text: string;
+	text?: string;
 	pagination: {
 		offset: number;
 		count: number;
@@ -32,8 +32,9 @@ export async function findTags({ userId, text, pagination: { offset, count, sort
 	if (!(await hasPermissionAsync(userId, 'manage-livechat-tags')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
-	const filterReg = new RegExp(escapeRegExp(text), 'i');
-	const query = { ...(text && { $or: [{ name: filterReg }, { description: filterReg }] }) };
+	const query = {
+		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
+	};
 
 	const cursor = LivechatTag.find(query, {
 		sort: sort || { name: 1 },

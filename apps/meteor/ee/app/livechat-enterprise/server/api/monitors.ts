@@ -2,45 +2,41 @@ import { API } from '../../../../../app/api/server';
 import { findMonitors, findMonitorByUsername } from './lib/monitors';
 
 API.v1.addRoute(
-	'livechat/monitors.list',
+	'livechat/monitors',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { text } = this.queryParams;
 
 			return API.v1.success(
-				Promise.await(
-					findMonitors({
-						userId: this.userId,
-						text,
-						pagination: {
-							offset,
-							count,
-							sort,
-						},
-					}),
-				),
+				await findMonitors({
+					userId: this.userId,
+					text,
+					pagination: {
+						offset,
+						count,
+						sort,
+					},
+				}),
 			);
 		},
 	},
 );
 
 API.v1.addRoute(
-	'livechat/monitors.getOne',
+	'livechat/monitors/:username',
 	{ authRequired: true },
 	{
-		get() {
-			const { username } = this.queryParams;
+		async get() {
+			const { username } = this.urlParams;
 
 			return API.v1.success(
-				Promise.await(
-					findMonitorByUsername({
-						userId: this.userId,
-						username,
-					}),
-				),
+				await findMonitorByUsername({
+					userId: this.userId,
+					username,
+				}),
 			);
 		},
 	},

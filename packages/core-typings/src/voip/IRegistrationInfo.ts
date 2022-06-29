@@ -6,7 +6,6 @@
  */
 
 export interface ICallServerConfigData {
-	websocketPort: number;
 	websocketPath: string;
 }
 export interface IExtensionDetails {
