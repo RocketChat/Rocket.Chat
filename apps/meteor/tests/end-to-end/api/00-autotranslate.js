@@ -95,6 +95,7 @@ describe('AutoTranslate', function () {
 							.set(credentials)
 							.send({
 								roomId: 'GENERAL',
+								targetLanguage: 'en',
 								field: 'autoTranslateLanguage',
 								value: 'en',
 							})
