@@ -5,7 +5,8 @@
 	"description": "Rocket.Chat DDP-Streamer service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
 	"keywords": [
 		"rocketchat"
@@ -30,6 +31,7 @@
 		"nats": "^2.4.0",
 		"pino": "^7.9.2",
 		"sharp": "^0.30.6",
+		"underscore": "^1.13.4",
 		"uuid": "^7.0.3",
 		"ws": "^8.5.0"
 	},

@@ -6,15 +6,15 @@ import { slashCommands } from '../../utils/lib/slashCommand';
  * @param {Object} message - The message object
  */
 
-slashCommands.add(
-	'shrug',
-	(_command: 'shrug', params, item): void => {
+slashCommands.add({
+	command: 'shrug',
+	callback: (_command: 'shrug', params, item): void => {
 		const msg = item;
 		msg.msg = `${params} ¯\\_(ツ)_/¯`;
 		Meteor.call('sendMessage', msg);
 	},
-	{
+	options: {
 		description: 'Slash_Shrug_Description',
 		params: 'your_message_optional',
 	},
-);
+});

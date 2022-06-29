@@ -1,7 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatDepartmentAgents, CannedResponse, LivechatUnit } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, CannedResponse } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
+import LivechatUnit from '../../../models/server/models/LivechatUnit';
 
 export async function findAllCannedResponses({ userId }) {
 	if (!(await hasPermissionAsync(userId, 'view-canned-responses'))) {

@@ -1,8 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { ErrorBoundary } from '@rocket.chat/ui-client';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, FC } from 'react';
 
-import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import Announcement from '../Announcement';
 import Header from '../Header';
