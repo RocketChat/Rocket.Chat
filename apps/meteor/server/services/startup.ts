@@ -15,6 +15,7 @@ import { UiKitCoreApp } from './uikit-core-app/service';
 import { OmnichannelVoipService } from './omnichannel-voip/service';
 import { VoipService } from './voip/service';
 import { isRunningMs } from '../lib/isRunningMs';
+import { PushService } from './push/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -31,6 +32,7 @@ api.registerService(new VoipService(db));
 api.registerService(new OmnichannelVoipService());
 api.registerService(new TeamService());
 api.registerService(new UiKitCoreApp());
+api.registerService(new PushService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

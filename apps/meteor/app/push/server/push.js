@@ -8,12 +8,9 @@ import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
 import { logger } from './logger';
 import { settings } from '../../settings/server';
-import { Users } from '../../models/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens');
-
-appTokensCollection._ensureIndex({ userId: 1 });
 
 export class PushClass {
 	options = {};
@@ -78,51 +75,8 @@ export class PushClass {
 		return !!this.options.gateways && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms');
 	}
 
-	_validateAuthTokenByPushToken(pushToken) {
-		const pushTokenQuery = appTokensCollection.findOne({ token: pushToken });
-
-		if (!pushTokenQuery) {
-			return false;
-		}
-
-		const { authToken, userId, expiration, usesLeft, _id } = pushTokenQuery;
-		if (!authToken) {
-			if (expiration && expiration > Date.now()) {
-				return true;
-			}
-			if (usesLeft > 0) {
-				appTokensCollection.rawCollection().updateOne(
-					{
-						_id,
-					},
-					{
-						$inc: {
-							usesLeft: -1,
-						},
-					},
-				);
-
-				return true;
-			}
-		}
-
-		const user = authToken && userId && Users.findOneByIdAndLoginToken(userId, authToken, { projection: { _id: 1 } });
-
-		if (!user) {
-			this._removeToken(pushToken);
-			return false;
-		}
-
-		return true;
-	}
-
 	sendNotificationNative(app, notification, countApn, countGcm) {
 		logger.debug('send to token', app.token);
-
-		const validToken = (app.token.apn || app.token.gcm) && this._validateAuthTokenByPushToken(app.token);
-		if (!validToken) {
-			throw new Error('send got a faulty query');
-		}
 
 		if (app.token.apn) {
 			countApn.push(app._id);
@@ -131,7 +85,7 @@ export class PushClass {
 				notification.topic = app.appName;
 				sendAPN({ userToken: app.token.apn, notification, _removeToken: this._removeToken });
 			}
-		} else {
+		} else if (app.token.gcm) {
 			countGcm.push(app._id);
 
 			// Send to GCM
@@ -146,6 +100,8 @@ export class PushClass {
 					options: this.options,
 				});
 			}
+		} else {
+			throw new Error('send got a faulty query');
 		}
 	}
 
@@ -210,11 +166,6 @@ export class PushClass {
 	sendNotificationGateway(app, notification, countApn, countGcm) {
 		for (const gateway of this.options.gateways) {
 			logger.debug('send to token', app.token);
-
-			const validToken = (app.token.apn || app.token.gcm) && this._validateAuthTokenByPushToken(app.token);
-			if (!validToken) {
-				continue;
-			}
 
 			if (app.token.apn) {
 				countApn.push(app._id);

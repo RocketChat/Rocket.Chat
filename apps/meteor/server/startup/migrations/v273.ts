@@ -4,14 +4,6 @@ import { addMigration } from '../../lib/migrations';
 addMigration({
 	version: 273,
 	async up() {
-		return appTokensCollection.rawCollection().updateMany(
-			{},
-			{
-				$set: {
-					expiration: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-					usesLeft: 7,
-				},
-			},
-		);
+		return appTokensCollection.rawCollection().dropIndex('userId_1');
 	},
 });
