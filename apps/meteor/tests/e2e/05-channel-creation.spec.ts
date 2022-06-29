@@ -1,39 +1,27 @@
 import { test } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
-import { LoginPage, ChannelCreation } from './pageobjects';
-import { validUserInserted, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';
+import { LoginPage, SideNav } from './pageobjects';
+import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Channel]', async () => {
-	let channelCreation: ChannelCreation;
+	let sideNav: SideNav;
 	let loginPage: LoginPage;
 
-	const HELLO = 'Hello';
-
-	test.beforeEach(async ({ page, baseURL }) => {
-		const baseUrl = baseURL as string;
+	test.beforeAll(async ({ browser }) => {
+		const page = await browser.newPage();
 		loginPage = new LoginPage(page);
-		await loginPage.goto(baseUrl);
-		await loginPage.login(validUserInserted);
+		sideNav = new SideNav(page);
 
-		channelCreation = new ChannelCreation(page);
+		await page.goto('/');
+		await loginPage.doLogin(adminLogin);
 	});
 
-	test.describe('[Public and private channel creation]', () => {
-		let channelName: string;
-		test.beforeEach(async () => {
-			channelName = faker.animal.type();
-		});
-
-		test('expect create privateChannel channel', async () => {
-			await channelCreation.createChannel(channelName, true);
-		});
-
-		test('expect create public channel', async () => {
-			await channelCreation.createChannel(channelName, false);
-		});
+	test('expect create private channel', async () => {
+		await sideNav.doCreateChannel(faker.animal.type() + Date.now(), true);
 	});
-	test('expect send message to channel created', async () => {
-		await channelCreation.sendMessage(ROCKET_CAT, HELLO);
+
+	test('expect create public channel', async () => {
+		await sideNav.doCreateChannel(faker.animal.type() + Date.now());
 	});
 });

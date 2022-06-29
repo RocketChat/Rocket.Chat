@@ -4748,7 +4748,7 @@
   "VoIP_Server_Host": "Hoste do servidor",
   "VoIP_Server_Websocket_Port": "Porta do webSocket",
   "VoIP_Server_Name": "Nome do servidor",
-  "VoIP_Server_Websocket_Path": "Caminho do webSocket",
+  "VoIP_Server_Websocket_Path": "URL do webSocket",
   "VoIP_Management_Server": "Servidor de gerenciamento de VoIP",
   "VoIP_Management_Server_Host": "Host de servidor",
   "VoIP_Management_Server_Port": "Porta do servidor",

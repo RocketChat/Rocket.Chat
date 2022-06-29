@@ -1,6 +1,6 @@
 import { IMessage } from '@rocket.chat/core-typings';
 import { useLayout, useCurrentRoute, useRoute, useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useMemo, memo, MouseEvent } from 'react';
+import React, { ReactNode, useMemo, memo, MouseEvent, UIEvent } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
@@ -85,7 +85,7 @@ export const MessageProvider = memo(function MessageProvider({
 				runActionLink,
 				openUserCard:
 					(username: string) =>
-					(e: MouseEvent<HTMLDivElement>): void => {
+					(e: UIEvent): void => {
 						openUserCard({
 							username,
 							rid,
