@@ -4865,7 +4865,7 @@
   "VoIP_Server_Host": "Server Host",
   "VoIP_Server_Websocket_Port": "Websocket Port",
   "VoIP_Server_Name": "Server Name",
-  "VoIP_Server_Websocket_Path": "Websocket Path",
+  "VoIP_Server_Websocket_Path": "Websocket URL",
   "VoIP_Retry_Count": "Retry Count",
   "VoIP_Retry_Count_Description": "Defines the number of times the client will try to reconnect to the VoIP server if the connection is lost.",
   "VoIP_Management_Server": "VoIP Management Server",
