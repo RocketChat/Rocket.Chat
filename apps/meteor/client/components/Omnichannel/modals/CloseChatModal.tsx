@@ -61,6 +61,10 @@ const CloseChatModal = ({
 		return cannotSendTag || cannotSendComment;
 	}, [comment, commentRequired, errors, tagRequired, tags]);
 
+	const onSubmitWithoutCommentsAndTags = useCallback((): void => {
+		onConfirm();
+	}, [onConfirm]);
+
 	useEffect(() => {
 		if (department?.requestTagBeforeClosingChat) {
 			setTagRequired(true);
@@ -113,7 +117,7 @@ const CloseChatModal = ({
 		<GenericModal
 			variant='warning'
 			title={t('Are_you_sure_you_want_to_close_this_chat')}
-			onConfirm={onConfirm}
+			onConfirm={onSubmitWithoutCommentsAndTags}
 			onCancel={onCancel}
 			onClose={onCancel}
 			confirmText={t('Confirm')}
