@@ -26,7 +26,7 @@ type VoipFooterPropsType = {
 	};
 	callsInQueue: string;
 
-	createRoom: (caller: ICallerInfo, callDirection: IVoipRoom['direction']) => IVoipRoom['_id'];
+	createRoom: (caller: ICallerInfo, callDirection?: IVoipRoom['direction']) => IVoipRoom['_id'];
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	openedRoomInfo: { v: { token?: string | undefined }; rid: string };
@@ -154,7 +154,7 @@ export const VoipFooter = ({
 								success
 								onClick={async (): Promise<void> => {
 									callActions.pickUp();
-									const rid = await createRoom(caller, 'inbound');
+									const rid = await createRoom(caller);
 									dispatchEvent({ event: VoipClientEvents['VOIP-CALL-STARTED'], rid });
 								}}
 							>

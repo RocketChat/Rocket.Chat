@@ -136,7 +136,7 @@ export const CallProvider: FC = ({ children }) => {
 	}, []);
 
 	const createRoom = useCallback(
-		async (caller: ICallerInfo, callDirection: IVoipRoom['direction']): Promise<IVoipRoom['_id']> => {
+		async (caller: ICallerInfo, callDirection: IVoipRoom['direction'] = 'inbound'): Promise<IVoipRoom['_id']> => {
 			if (!user) {
 				return '';
 			}
