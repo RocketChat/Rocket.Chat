@@ -136,7 +136,7 @@ export const CallProvider: FC = ({ children }) => {
 	}, []);
 
 	const createRoom = useCallback(
-		async (caller: ICallerInfo, callDirection: IVoipRoom['direction'] = 'inbound'): Promise<IVoipRoom['_id']> => {
+		async (caller: ICallerInfo, direction: IVoipRoom['direction'] = 'inbound'): Promise<IVoipRoom['_id']> => {
 			if (!user) {
 				return '';
 			}
@@ -148,7 +148,7 @@ export const CallProvider: FC = ({ children }) => {
 						name: caller.callerName || caller.callerId,
 					},
 				});
-				const voipRoom = await voipEndpoint({ token: visitor.token, agentId: user._id, direction: callDirection });
+				const voipRoom = await voipEndpoint({ token: visitor.token, agentId: user._id, direction });
 				openRoom(voipRoom.room._id);
 				voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
 				const queueAggregator = result.voipClient?.getAggregator();
