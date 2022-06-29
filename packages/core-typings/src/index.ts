@@ -29,6 +29,8 @@ export * from './IRocketChatAssets';
 export * from './IPushToken';
 export * from './IPushNotificationConfig';
 export * from './SlashCommands';
+export * from './IModal';
+export * from './IModalDismiss';
 
 export * from './IUserDataFile';
 export * from './IUserSession';
@@ -59,6 +61,7 @@ export * from './IEmailMessageHistory';
 export * from './ReadReceipt';
 export * from './IUpload';
 export * from './IOEmbedCache';
+export * from './IOembed';
 // TODO: not sure if this is the right place to put this
 
 export * from './IEmailInbox';

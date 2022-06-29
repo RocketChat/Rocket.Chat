@@ -1,5 +1,6 @@
+import { Statistics } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import { Statistics } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 218,

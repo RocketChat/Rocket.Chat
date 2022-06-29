@@ -143,7 +143,7 @@ function UserInfo({
 									{email}
 								</Box>
 								<Margins inline='x4'>
-									{verified && <Tag variant='primary'>{t('Verified')}</Tag>}
+									{verified && <Tag variant='secondary'>{t('Verified')}</Tag>}
 									{verified || <Tag disabled>{t('Not_verified')}</Tag>}
 								</Margins>
 							</InfoPanel.Text>
