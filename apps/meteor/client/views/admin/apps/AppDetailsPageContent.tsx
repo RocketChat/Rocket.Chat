@@ -1,8 +1,8 @@
 import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import ExternalLink from '../../../components/ExternalLink';
 import ScreenshotCarouselAnchor from './components/ScreenshotCarouselAnchor';
 import { AppInfo } from './definitions/AppInfo';
 

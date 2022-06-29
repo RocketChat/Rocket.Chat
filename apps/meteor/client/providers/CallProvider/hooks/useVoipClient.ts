@@ -62,18 +62,18 @@ export const useVoipClient = (): UseVoipClientResult => {
 
 				const {
 					extensionDetails: { extension, password },
-					host,
 					callServerConfig: { websocketPath },
 				} = parsedData;
 
 				(async (): Promise<void> => {
 					try {
+						const wsURL = new URL(websocketPath);
 						const subscription = await membership({ extension });
 
 						const config = {
 							authUserName: extension,
 							authPassword: password,
-							sipRegistrarHostnameOrIP: host,
+							sipRegistrarHostnameOrIP: wsURL.host,
 							webSocketURI: websocketPath,
 							enableVideo: true,
 							iceServers,
