@@ -57,6 +57,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 					{
 						locked: false,
 					},
+					{
+						locked: { $exists: false },
+					},
 				],
 			},
 			{

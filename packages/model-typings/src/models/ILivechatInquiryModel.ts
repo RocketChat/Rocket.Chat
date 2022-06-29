@@ -12,4 +12,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	getDistinctQueuedDepartments(options: MongoDistinctPreferences): Promise<string[]>;
 	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | undefined>;
 	setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateWriteOpResult>;
+	findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | undefined>;
+	unlock(inquiryId: string): Promise<UpdateWriteOpResult>;
+	unlockAll(): Promise<UpdateWriteOpResult>;
 }
