@@ -701,6 +701,45 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			});
 	}
 
+	private async getCallTitleForUser(call: VideoConference, userId?: IUser['_id']): Promise<string> {
+		if (call.type === 'videoconference' && call.title) {
+			return call.title;
+		}
+
+		if (userId) {
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(call.rid, userId, { projection: { fname: 1, name: 1 } });
+			if (subscription) {
+				return subscription.fname || subscription.name;
+			}
+		}
+
+		const room = await Rooms.findOneById(call.rid);
+		return room?.fname || room?.name || 'Rocket.Chat';
+	}
+
+	private async getCallTitle(call: VideoConference): Promise<string> {
+		if (call.type === 'videoconference') {
+			if (call.title) {
+				return call.title;
+			}
+		}
+
+		const room = await Rooms.findOneById(call.rid);
+		if (room) {
+			if (room.t === 'd') {
+				if (room.usernames?.length) {
+					return room.usernames.join(', ');
+				}
+			} else if (room.fname) {
+				return room.fname;
+			} else if (room.name) {
+				return room.name;
+			}
+		}
+
+		return 'Rocket.Chat';
+	}
+
 	private async getUrl(
 		call: VideoConference,
 		user?: AtLeast<IUser, '_id' | 'username' | 'name'>,
@@ -721,8 +760,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			rid: call.rid,
 			url: call.url,
 			createdBy: call.createdBy as Required<VideoConference['createdBy']>,
-			providerData: call.providerData,
-			...(isGroupVideoConference(call) ? { title: call.title } : {}),
+			providerData: {
+				...(call.providerData || {}),
+				...{ customCallTitle: await this.getCallTitleForUser(call, user?._id) },
+			},
+			title: await this.getCallTitle(call),
 		};
 
 		const userData = user && {
