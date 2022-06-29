@@ -4,7 +4,8 @@ import { check, Match } from 'meteor/check';
 import { settings } from '../../app/settings/server';
 import { hasPermission } from '../../app/authorization/server';
 import { Users, Rooms } from '../../app/models/server';
-import { createRoom, RateLimiter } from '../../app/lib/server';
+import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
+import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { addUser } from '../../app/federation/server/functions/addUser';
 
 export function createDirectMessage(usernames, userId, excludeSelf = false) {
