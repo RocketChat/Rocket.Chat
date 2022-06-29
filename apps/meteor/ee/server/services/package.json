@@ -9,7 +9,6 @@
 		"pm2": "pm2",
 		"start:account": "ts-node --files ./account/service.ts",
 		"start:authorization": "ts-node --files ./authorization/service.ts",
-		"start:ddp-streamer": "ts-node --files ./ddp-streamer/service.ts",
 		"start:presence": "ts-node --files ./presence/service.ts",
 		"start:stream-hub": "ts-node --files ./stream-hub/service.ts",
 		"typecheck": "tsc --noEmit --skipLibCheck",

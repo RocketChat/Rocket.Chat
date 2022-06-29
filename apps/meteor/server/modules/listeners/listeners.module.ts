@@ -4,7 +4,7 @@ import { parse } from '@rocket.chat/message-parser';
 import { IServiceClass } from '../../sdk/types/ServiceClass';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings } from '../../sdk/index';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../../app/settings/server/cached';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
