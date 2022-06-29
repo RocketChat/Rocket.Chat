@@ -5,12 +5,13 @@ type VideoConfButtonProps = {
 	icon?: IconProps['name'];
 	primary?: boolean;
 	danger?: boolean;
+	disabled?: boolean;
 	children: ReactNode;
 } & Omit<ButtonHTMLAttributes<HTMLElement>, 'ref' | 'is' | 'className' | 'size' | 'elevation'>;
 
-const VideoConfButton = ({ primary, danger, icon, children, ...props }: VideoConfButtonProps): ReactElement => {
+const VideoConfButton = ({ primary, danger, disabled, icon, children, ...props }: VideoConfButtonProps): ReactElement => {
 	return (
-		<Button primary={primary} danger={danger} {...props}>
+		<Button width='100%' primary={primary} danger={danger} disabled={disabled} {...props}>
 			{icon && <Icon mie='x4' size='x20' name={icon} />}
 			{children}
 		</Button>
