@@ -108,4 +108,5 @@ export type App = {
 	modifiedAt: string;
 	permissions: AppPermission[];
 	languages: string[];
+	createdDate: string;
 };
