@@ -34,8 +34,8 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='video' />
-				<VerticalBar.Text>{t('Video_Conferences')}</VerticalBar.Text>
+				<VerticalBar.Icon name='phone' />
+				<VerticalBar.Text>{t('Calls')}</VerticalBar.Text>
 				<VerticalBar.Close onClick={onClose} />
 			</VerticalBar.Header>
 
@@ -58,7 +58,6 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 						)}
 					</Box>
 				)}
-
 				{videoConfs.length > 0 && (
 					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 						<Virtuoso
