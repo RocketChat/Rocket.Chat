@@ -1,6 +1,5 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import {
 	isChatDeleteParamsPOST,
 	isChatSyncMessagesParamsGET,
@@ -16,6 +15,10 @@ import {
 	isChatGetMessageReadReceiptsParamsGET,
 	isChatReportMessageParamsPOST,
 	isChatIgnoreUserParamsGET,
+	isChatGetDeletedMessagesParamsGET,
+	isChatGetPinnedMessagesParamsGET,
+	isChatGetThreadsListParamsGET,
+	isChatSyncThreadsListParamsGET,
 } from '@rocket.chat/rest-typings';
 import { IMessage } from '@rocket.chat/core-typings';
 
@@ -84,9 +87,7 @@ API.v1.addRoute(
 		get() {
 			const { roomId, lastUpdate } = this.queryParams;
 
-			if (!lastUpdate) {
-				throw new Meteor.Error('error-lastUpdate-param-not-provided', 'The required "lastUpdate" query param is missing.');
-			} else if (isNaN(Date.parse(lastUpdate))) {
+			if (isNaN(Date.parse(lastUpdate))) {
 				throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
 			}
 
@@ -427,21 +428,21 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getDeletedMessages',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatGetDeletedMessagesParamsGET,
+	},
 	{
 		get() {
 			const { roomId, since } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
-
-			if (!roomId) {
-				throw new Meteor.Error('The required "roomId" query param is missing.');
-			}
 
 			if (!since) {
 				throw new Meteor.Error('The required "since" query param is missing.');
 			} else if (isNaN(Date.parse(since))) {
 				throw new Meteor.Error('The "since" query parameter must be a valid date.');
 			}
+
 			const cursor = Messages.trashFindDeletedAfter(
 				new Date(since),
 				{ rid: roomId },
@@ -468,15 +469,14 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getPinnedMessages',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatGetPinnedMessagesParamsGET,
+	},
 	{
 		get() {
 			const { roomId } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
-
-			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
-			}
 
 			if (!canAccessRoomId(roomId, this.userId)) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
@@ -503,13 +503,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getThreadsList',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatGetThreadsListParamsGET,
+	},
 	{
 		get() {
 			const { rid, type, text } = this.queryParams;
-			check(rid, String);
-			check(type, Match.Maybe(String));
-			check(text, Match.Maybe(String));
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
@@ -555,22 +555,21 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.syncThreadsList',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatSyncThreadsListParamsGET,
+	},
 	{
 		get() {
 			const { rid } = this.queryParams;
 			const { query, fields, sort } = this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
+
 			if (!settings.get('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 			}
-			if (!rid) {
-				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" query param is missing.');
-			}
-			if (!updatedSince) {
-				throw new Meteor.Error('error-updatedSince-param-invalid', 'The required param "updatedSince" is missing.');
-			}
+
 			if (isNaN(Date.parse(updatedSince))) {
 				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 			} else {
@@ -651,6 +650,7 @@ API.v1.addRoute(
 			const { query, fields, sort } = this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
+
 			if (!settings.get('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 			}

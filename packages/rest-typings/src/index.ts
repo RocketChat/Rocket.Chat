@@ -208,3 +208,7 @@ export * from './v1/chat/ChatReactParamsPOST';
 export * from './v1/chat/ChatGetMessageReadReceiptsParamsGET';
 export * from './v1/chat/ChatReportMessageParamsPOST';
 export * from './v1/chat/ChatIgnoreUserParamsGET';
+export * from './v1/chat/ChatGetDeletedMessagesParamsGET';
+export * from './v1/chat/ChatGetPinnedMessagesParamsGET';
+export * from './v1/chat/ChatGetThreadsListParamsGET';
+export * from './v1/chat/ChatSyncThreadsListParamsGET';
