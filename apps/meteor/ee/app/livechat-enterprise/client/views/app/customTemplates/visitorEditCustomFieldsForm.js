@@ -24,6 +24,6 @@ Template.visitorEditCustomFieldsForm.onCreated(async function () {
 	if (priorityId) {
 		this.roomPriority.set(priorityId);
 	}
-	const { priorities } = await APIClient.get('/v1/livechat/priorities.list');
+	const { priorities } = await APIClient.get('/v1/livechat/priorities');
 	this.priorities.set(priorities);
 });
