@@ -24,7 +24,13 @@ export const useEndpointActionExperimental = <TMethod extends Method, TPath exte
 
 				return data;
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				let message = String(error);
+
+				if (typeof error === 'object') {
+					message = (error as any).error;
+				}
+
+				dispatchToastMessage({ type: 'error', message });
 				// return { success: false };
 				throw error;
 			}
