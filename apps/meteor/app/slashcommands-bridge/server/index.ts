@@ -35,7 +35,11 @@ function Bridge(_command: 'bridge', stringParams: string | undefined, item: Reco
 	}
 }
 
-slashCommands.add('bridge', Bridge, {
-	description: 'Invites_an_user_to_a_bridged_room',
-	params: '#command #user',
+slashCommands.add({
+	command: 'bridge',
+	callback: Bridge,
+	options: {
+		description: 'Invites_an_user_to_a_bridged_room',
+		params: '#command #user',
+	},
 });
