@@ -10,11 +10,8 @@
  * mixing of 2 streams in to 2, adding/removing tracks, getting a track information
  * detecting voice energy etc. Which will be implemented as when needed
  */
-
 export default class Stream {
-	private mediaStream: MediaStream | undefined;
-
-	private renderingMediaElement: HTMLMediaElement | undefined;
+	protected mediaStream: MediaStream | undefined;
 
 	constructor(mediaStream: MediaStream) {
 		this.mediaStream = mediaStream;
@@ -53,50 +50,6 @@ export default class Stream {
 	}
 
 	/**
-	 * Called for initializing the class
-	 * @remarks
-	 */
-
-	init(rmElement: HTMLMediaElement): void {
-		if (this.renderingMediaElement) {
-			// Someone already has setup the stream and initializing it once again
-			// Clear the existing stream object
-			this.renderingMediaElement.pause();
-			this.renderingMediaElement.srcObject = null;
-		}
-		this.renderingMediaElement = rmElement;
-	}
-	/**
-	 * Called for playing the stream
-	 * @remarks
-	 * Plays the stream on media element. Stream will be autoplayed and muted based on the settings.
-	 * throws and error if the play fails.
-	 */
-
-	play(autoPlay = true, muteAudio = false): void {
-		if (this.renderingMediaElement && this.mediaStream) {
-			this.renderingMediaElement.autoplay = autoPlay;
-			this.renderingMediaElement.srcObject = this.mediaStream;
-			if (autoPlay) {
-				this.renderingMediaElement.play().catch((error: Error) => {
-					throw error;
-				});
-			}
-			if (muteAudio) {
-				this.renderingMediaElement.volume = 0;
-			}
-		}
-	}
-
-	/**
-	 * Called for pausing the stream
-	 * @remarks
-	 */
-	pause(): void {
-		this.renderingMediaElement?.pause();
-	}
-
-	/**
 	 * Called for clearing the streams and media element.
 	 * @remarks
 	 * This function stops the media element play, clears the srcObject
@@ -106,9 +59,7 @@ export default class Stream {
 	 */
 
 	clear(): void {
-		if (this.renderingMediaElement && this.mediaStream) {
-			this.renderingMediaElement.pause();
-			this.renderingMediaElement.srcObject = null;
+		if (this.mediaStream) {
 			this.stopTracks();
 			this.mediaStream = undefined;
 		}

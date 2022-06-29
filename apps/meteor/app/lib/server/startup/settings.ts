@@ -1716,6 +1716,11 @@ settingsRegistry.addGroup('Logs', function () {
 		},
 	});
 
+	this.add('Uncaught_Exceptions_Count', 0, {
+		hidden: true,
+		type: 'int',
+	});
+
 	this.section('Prometheus', function () {
 		this.add('Prometheus_Enabled', false, {
 			type: 'boolean',
@@ -2925,6 +2930,10 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 		this.add('Organization_Email', '', {
 			type: 'string',
 		});
+		this.add('Triggered_Emails_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
 	});
 
 	this.section('Cloud_Info', function () {
@@ -3201,7 +3210,6 @@ settingsRegistry.addGroup('Call_Center', function () {
 		this.add('VoIP_Enabled', false, {
 			type: 'boolean',
 			public: true,
-			alert: 'Experimental_Feature_Alert',
 			enableQuery: {
 				_id: 'Livechat_enabled',
 				value: true,
@@ -3216,22 +3224,6 @@ settingsRegistry.addGroup('Call_Center', function () {
 			},
 		});
 		this.section('Server_Configuration', function () {
-			this.add('VoIP_Server_Host', '', {
-				type: 'string',
-				public: true,
-				enableQuery: {
-					_id: 'VoIP_Enabled',
-					value: true,
-				},
-			});
-			this.add('VoIP_Server_Websocket_Port', 0, {
-				type: 'int',
-				public: true,
-				enableQuery: {
-					_id: 'VoIP_Enabled',
-					value: true,
-				},
-			});
 			this.add('VoIP_Server_Name', '', {
 				type: 'string',
 				public: true,
