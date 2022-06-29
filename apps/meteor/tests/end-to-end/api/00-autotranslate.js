@@ -75,6 +75,7 @@ describe('AutoTranslate', function () {
 						.send({
 							roomId: 'GENERAL',
 							field: 'autoTranslate',
+							targetLanguage: 'en',
 							value: true,
 						})
 						.expect('Content-Type', 'application/json')
@@ -254,6 +255,7 @@ describe('AutoTranslate', function () {
 						.set(credentials)
 						.send({
 							messageId: 'test',
+							targetLanguage: 'en',
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
