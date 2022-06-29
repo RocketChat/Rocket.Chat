@@ -39,6 +39,9 @@ const runFederationEE = async (): Promise<void> => {
 onToggledFeature('federation', {
 	up: () =>
 		Meteor.startup(async () => {
+			if (!rocketSettingsAdapter.isFederationEnabled()) {
+				return;
+			}
 			await stopFederation();
 			queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 			await runFederationEE();

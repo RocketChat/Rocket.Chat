@@ -31,6 +31,9 @@ export const federationRoomServiceSender = FederationFactory.buildRoomServiceSen
 FederationFactory.setupListeners(federationRoomServiceSender);
 
 export const runFederation = async (): Promise<void> => {
+	if (!rocketSettingsAdapter.isFederationEnabled()) {
+		return;
+	}
 	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 
 	await federation.start();
