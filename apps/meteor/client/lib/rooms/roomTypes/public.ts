@@ -1,7 +1,7 @@
 import type { AtLeast } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { hasAtLeastOnePermission, hasPermission } from '../../../../app/authorization/client';
+import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
