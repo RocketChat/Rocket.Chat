@@ -1,0 +1,15 @@
+{
+	"extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "skipLibCheck": true
+    },
+    "exclude": ["*/**"],
+    "references": [
+        { "path": "./packages/core-typings" },
+        { "path": "./packages/rest-typings" },
+        { "path": "./packages/api-client" },
+        { "path": "./packages/ui-client" },
+        { "path": "./packages/ui-contexts" },
+        // { "path": "./packages/livechat" },
+    ]
+}
