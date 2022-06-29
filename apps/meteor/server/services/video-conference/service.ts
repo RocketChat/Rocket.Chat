@@ -13,6 +13,7 @@ import type {
 	IStats,
 	VideoConference,
 	VideoConferenceCapabilities,
+	VideoConferenceCreateData,
 	Optional,
 } from '@rocket.chat/core-typings';
 import {
@@ -25,9 +26,9 @@ import type { MessageSurfaceLayout, ContextBlock } from '@rocket.chat/ui-kit';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import { Users, VideoConference as VideoConferenceModel, Rooms, Messages } from '@rocket.chat/models';
+import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 
-import type { IVideoConfService, VideoConferenceCreateData, VideoConferenceJoinOptions } from '../../sdk/types/IVideoConfService';
+import type { IVideoConfService, VideoConferenceJoinOptions } from '../../sdk/types/IVideoConfService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Apps } from '../../../app/apps/server';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -85,10 +86,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		{ title, allowRinging }: { title?: string; allowRinging?: boolean },
 	): Promise<VideoConferenceInstructions> {
 		const providerName = await this.getValidatedProvider();
-		const type = await this.getTypeForNewVideoConference(rid, Boolean(allowRinging));
+		const initialData = await this.getTypeForNewVideoConference(rid, Boolean(allowRinging));
 
 		const data = {
-			type,
+			...initialData,
 			createdBy: caller,
 			rid,
 			providerName,
@@ -141,8 +142,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
 		}
 
-		await VideoConferenceModel.setStatusById(call._id, VideoConferenceStatus.DECLINED);
-		await VideoConferenceModel.setEndedById(call._id, { _id: user._id, name: user.name as string, username: user.username as string });
+		await VideoConferenceModel.setDataById(callId, {
+			ringing: false,
+			status: VideoConferenceStatus.DECLINED,
+			endedAt: new Date(),
+			endedBy: {
+				_id: user._id,
+				name: user.name,
+				username: user.username,
+			},
+		});
 	}
 
 	public async get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null> {
@@ -250,8 +259,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
 		}
 
-		await VideoConferenceModel.setStatusById(call._id, VideoConferenceStatus.DECLINED);
-		await VideoConferenceModel.setEndedById(call._id);
+		await VideoConferenceModel.setDataById(call._id, {
+			status: VideoConferenceStatus.DECLINED,
+			endedAt: new Date(),
+		});
 
 		return true;
 	}
@@ -307,7 +318,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (!call.endedAt) {
-			await VideoConferenceModel.setEndedById(call._id);
+			await VideoConferenceModel.setDataById(call._id, { endedAt: new Date() });
 		}
 
 		switch (call.type) {
@@ -330,7 +341,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
-	private async getTypeForNewVideoConference(rid: IRoom['_id'], allowRinging: boolean): Promise<VideoConferenceCreateData['type']> {
+	private async getTypeForNewVideoConference(
+		rid: IRoom['_id'],
+		allowRinging: boolean,
+	): Promise<AtLeast<VideoConferenceCreateData, 'type'>> {
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(rid, {
 			projection: { t: 1 },
 		});
@@ -561,6 +575,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
+	private async notifyUsersOfRoom(rid: IRoom['_id'], uid: IUser['_id'], eventName: string, ...args: any[]): Promise<void> {
+		const subscriptions = Subscriptions.findByRoomIdAndNotUserId(rid, uid, {
+			projection: { 'u._id': 1, '_id': 0 },
+		});
+
+		await subscriptions.forEach(async (subscription) => Notifications.notifyUser(subscription.u._id, eventName, ...args));
+	}
+
 	private async startGroup(
 		providerName: string,
 		user: IUser,
@@ -592,9 +614,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const messageId = await this.createGroupCallMessage(rid, user, callId, title);
 		VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
+		if (call.ringing) {
+			await this.notifyUsersOfRoom(rid, user._id, 'video-conference.ring', { callId, title, createdBy: call.createdBy, providerName });
+		}
+
 		return {
 			type: 'videoconference',
 			callId,
+			rid,
 		};
 	}
 
@@ -767,10 +794,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async updateDirectCall(call: IDirectVideoConference, newUserId: IUser['_id']): Promise<void> {
 		// If it's an user that hasn't joined yet
-		if (!call.users.find(({ _id }) => _id === newUserId)) {
+		if (call.ringing && !call.users.find(({ _id }) => _id === newUserId)) {
 			Notifications.notifyUser(call.createdBy._id, 'video-conference.join', { rid: call.rid, uid: newUserId, callId: call._id });
 			if (newUserId !== call.createdBy._id) {
 				Notifications.notifyUser(newUserId, 'video-conference.join', { rid: call.rid, uid: newUserId, callId: call._id });
+				// If the callee joined the direct call, then we stopped ringing
+				await VideoConferenceModel.setRingingById(call._id, false);
 			}
 		}
 

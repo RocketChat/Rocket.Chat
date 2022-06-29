@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRoom, IUser, VideoConference } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { onLicense } from '../../app/license/server';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
@@ -12,14 +13,36 @@ Meteor.startup(() =>
 	onLicense('videoconference-enterprise', () => {
 		addSettings();
 
-		videoConfTypes.registerVideoConferenceType('direct', async ({ _id, t }, allowRinging) => {
-			if (!allowRinging || t !== 'd') {
+		videoConfTypes.registerVideoConferenceType(
+			{ type: 'direct', status: VideoConferenceStatus.CALLING },
+			async ({ _id, t }, allowRinging) => {
+				if (!allowRinging || t !== 'd') {
+					return false;
+				}
+
+				const room = await Rooms.findOneById<Pick<IRoom, 'uids'>>(_id, { projection: { uids: 1 } });
+
+				return Boolean(room && (!room.uids || room.uids.length === 2));
+			},
+		);
+
+		videoConfTypes.registerVideoConferenceType({ type: 'videoconference', ringing: true }, async ({ _id, t }, allowRinging) => {
+			if (!allowRinging || ['l', 'v'].includes(t)) {
 				return false;
 			}
 
-			const room = await Rooms.findOneById<Pick<IRoom, 'uids'>>(_id, { projection: { uids: 1 } });
+			if (t === 'd') {
+				const room = await Rooms.findOneById<Pick<IRoom, 'uids'>>(_id, { projection: { uids: 1 } });
+				if (room && (!room.uids || room.uids.length <= 2)) {
+					return false;
+				}
+			}
 
-			return Boolean(room && (!room.uids || room.uids.length <= 2));
+			if ((await Subscriptions.findByRoomId(_id).count()) > 10) {
+				return false;
+			}
+
+			return true;
 		});
 
 		callbacks.add('onJoinVideoConference', async (callId: VideoConference['_id'], userId: IUser['_id']) =>

@@ -77,6 +77,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			status: VideoConferenceStatus.CALLING,
 			createdAt: new Date(),
 			providerName: providerName.toLowerCase(),
+			ringing: true,
 			...callDetails,
 		};
 
@@ -86,7 +87,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public async createGroup({
 		providerName,
 		...callDetails
-	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>>): Promise<string> {
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName' | 'ringing'>>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -131,6 +132,20 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			$set: {
 				endedBy,
 				endedAt: endedAt || new Date(),
+			},
+		});
+	}
+
+	public async setDataById(callId: string, data: Partial<Omit<VideoConference, '_id'>>): Promise<void> {
+		await this.updateOneById(callId, {
+			$set: data,
+		});
+	}
+
+	public async setRingingById(callId: string, ringing: boolean): Promise<void> {
+		await this.updateOneById(callId, {
+			$set: {
+				ringing,
 			},
 		});
 	}

@@ -1,13 +1,10 @@
 import type {
-	AtLeast,
-	IDirectVideoConference,
-	IGroupVideoConference,
-	ILivechatVideoConference,
 	IRoom,
 	IStats,
 	IUser,
 	VideoConference,
 	VideoConferenceCapabilities,
+	VideoConferenceCreateData,
 	VideoConferenceInstructions,
 } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -16,15 +13,6 @@ export type VideoConferenceJoinOptions = {
 	mic?: boolean;
 	cam?: boolean;
 };
-
-type GroupVideoConferenceCreateData = Omit<IGroupVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
-type DirectVideoConferenceCreateData = Omit<IDirectVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
-type LivechatVideoConferenceCreateData = Omit<ILivechatVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
-
-export type VideoConferenceCreateData = AtLeast<
-	DirectVideoConferenceCreateData | GroupVideoConferenceCreateData | LivechatVideoConferenceCreateData,
-	'createdBy' | 'type' | 'rid' | 'providerName' | 'providerData'
->;
 
 export interface IVideoConfService {
 	create(data: VideoConferenceCreateData): Promise<VideoConferenceInstructions>;

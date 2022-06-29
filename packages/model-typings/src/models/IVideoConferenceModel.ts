@@ -37,7 +37,11 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		options?: UpdateOneOptions,
 	): Promise<UpdateWriteOpResult>;
 
+	setDataById(callId: string, data: Partial<Omit<VideoConference, '_id'>>): Promise<void>;
+
 	setEndedById(callId: string, endedBy?: { _id: string; name: string; username: string }, endedAt?: Date): Promise<void>;
+
+	setRingingById(callId: string, ringing: boolean): Promise<void>;
 
 	setStatusById(callId: string, status: VideoConference['status']): Promise<void>;
 

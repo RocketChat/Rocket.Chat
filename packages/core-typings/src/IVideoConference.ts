@@ -1,6 +1,16 @@
+import type { AtLeast } from './utils';
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
 import type { IMessage } from './IMessage';
+
+export enum VideoConferenceStatus {
+	CALLING = 0,
+	STARTED = 1,
+	EXPIRED = 2,
+	ENDED = 3,
+	DECLINED = 4,
+}
 
 export type DirectCallInstructions = {
 	type: 'direct';
@@ -11,6 +21,7 @@ export type DirectCallInstructions = {
 export type ConferenceInstructions = {
 	type: 'videoconference';
 	callId: string;
+	rid: IRoom['_id'];
 };
 
 export type LivechatInstructions = {
@@ -19,16 +30,9 @@ export type LivechatInstructions = {
 };
 
 export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'] | LivechatInstructions['type'];
+
 export interface IVideoConferenceUser extends Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'> {
 	ts: Date;
-}
-
-export enum VideoConferenceStatus {
-	CALLING = 0,
-	STARTED = 1,
-	EXPIRED = 2,
-	ENDED = 3,
-	DECLINED = 4,
 }
 
 export interface IVideoConference extends IRocketChatRecord {
@@ -50,6 +54,8 @@ export interface IVideoConference extends IRocketChatRecord {
 
 	providerName: string;
 	providerData?: Record<string, any>;
+
+	ringing?: boolean;
 }
 
 export interface IDirectVideoConference extends IVideoConference {
@@ -81,3 +87,12 @@ export const isGroupVideoConference = (call: VideoConference | undefined | null)
 export const isLivechatVideoConference = (call: VideoConference | undefined | null): call is ILivechatVideoConference => {
 	return call?.type === 'livechat';
 };
+
+type GroupVideoConferenceCreateData = Omit<IGroupVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
+type DirectVideoConferenceCreateData = Omit<IDirectVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
+type LivechatVideoConferenceCreateData = Omit<ILivechatVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
+
+export type VideoConferenceCreateData = AtLeast<
+	DirectVideoConferenceCreateData | GroupVideoConferenceCreateData | LivechatVideoConferenceCreateData,
+	'createdBy' | 'type' | 'rid' | 'providerName' | 'providerData'
+>;
