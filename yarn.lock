@@ -4046,6 +4046,7 @@ __metadata:
     "@rocket.chat/poplib": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.12
+    "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": ~0.31.12
     "@settlin/spacebars-loader": ^1.0.9
@@ -4509,6 +4510,36 @@ __metadata:
   checksum: 73da39fb53a015c39081e0e24d9a3fe871eee4d8147bb3984c059e73ccba63efb9312c58033be5c34b239a063a123589c844c039e2a37b3611ada72efa2c18c4
   languageName: node
   linkType: hard
+
+"@rocket.chat/ui-client@workspace:^, @rocket.chat/ui-client@workspace:packages/ui-client":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
+  dependencies:
+    "@rocket.chat/fuselage": ^0.31.13
+    "@storybook/addon-actions": ^6.5.9
+    "@storybook/addon-docs": ^6.5.9
+    "@storybook/addon-essentials": ^6.5.9
+    "@storybook/addon-interactions": ^6.5.9
+    "@storybook/addon-links": ^6.5.9
+    "@storybook/builder-webpack4": ^6.5.9
+    "@storybook/manager-webpack4": ^6.5.9
+    "@storybook/react": ^6.5.9
+    "@storybook/testing-library": ^0.0.13
+    "@types/jest": ^27.4.1
+    "@types/react": ~17.0.42
+    eslint: ^8.12.0
+    eslint-plugin-anti-trojan-source: ^1.1.0
+    eslint-plugin-react: ^7.30.0
+    eslint-plugin-react-hooks: ^4.6.0
+    jest: ^27.5.1
+    react: ~17.0.2
+    ts-jest: ^27.1.4
+    typescript: ~4.3.4
+  peerDependencies:
+    "@rocket.chat/fuselage": "*"
+    react: ~17.0.2
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/ui-contexts@workspace:^, @rocket.chat/ui-contexts@workspace:packages/ui-contexts":
   version: 0.0.0-use.local
