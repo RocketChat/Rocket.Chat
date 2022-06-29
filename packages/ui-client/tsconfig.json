@@ -3,7 +3,8 @@
 	"compilerOptions": {
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"importsNotUsedAsValues": "preserve"
+		"importsNotUsedAsValues": "preserve",
+		"composite": true
 	},
 	"include": ["./src/**/*"],
 	"exclude": ["**/*.stories.tsx", "**/*.stories.js"]
