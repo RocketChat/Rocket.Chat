@@ -48,7 +48,6 @@
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"typecheck": "tsc -p tsconfig.json --noEmit",
 		"storybook": "start-storybook -p 6006",
 		"build-storybook": "build-storybook"
