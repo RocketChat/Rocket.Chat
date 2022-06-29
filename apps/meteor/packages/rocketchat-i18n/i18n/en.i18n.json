@@ -4864,7 +4864,6 @@
   "VoIP_Enabled": "VoIP Enabled",
   "VoIP_Extension": "VoIP Extension",
   "Voip_Server_Configuration": "Server Configuration",
-  "VoIP_Server_Host": "Server Host",
   "VoIP_Server_Websocket_Port": "Websocket Port",
   "VoIP_Server_Name": "Server Name",
   "VoIP_Server_Websocket_Path": "Websocket URL",
