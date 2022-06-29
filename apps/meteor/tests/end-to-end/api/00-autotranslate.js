@@ -16,7 +16,7 @@ describe('AutoTranslate', function () {
 					request
 						.get(api('autotranslate.getSupportedLanguages'))
 						.set(credentials)
-						.send({
+						.query({
 							targetLanguage: 'en',
 						})
 						.expect('Content-Type', 'application/json')
@@ -34,7 +34,7 @@ describe('AutoTranslate', function () {
 						request
 							.get(api('autotranslate.getSupportedLanguages'))
 							.set(credentials)
-							.send({
+							.query({
 								targetLanguage: 'en',
 							})
 							.expect('Content-Type', 'application/json')
@@ -53,7 +53,7 @@ describe('AutoTranslate', function () {
 					request
 						.get(api('autotranslate.getSupportedLanguages'))
 						.set(credentials)
-						.send({
+						.query({
 							targetLanguage: 'en',
 						})
 						.expect('Content-Type', 'application/json')
