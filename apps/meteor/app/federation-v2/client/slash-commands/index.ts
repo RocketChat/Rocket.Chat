@@ -6,10 +6,10 @@ const providesPreview = false;
 const previewer = undefined;
 const previewCallback = undefined;
 
-slashCommands.add(
-	'federation',
+slashCommands.add({
+	command: 'federation',
 	callback,
-	{
+	options: {
 		description: 'Federation_slash_commands',
 		params: '#command (dm) #user',
 	},
@@ -17,4 +17,4 @@ slashCommands.add(
 	providesPreview,
 	previewer,
 	previewCallback,
-);
+});

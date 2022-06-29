@@ -52,7 +52,11 @@ function federation(providedCommand: string, stringParams: string | undefined, i
 	Promise.await(executeSlashCommand(providedCommand, stringParams, item, FEDERATION_COMMANDS));
 }
 
-slashCommands.add('federation', federation, {
-	description: 'Federation_slash_commands',
-	params: '#command (dm) #user',
+slashCommands.add({
+	command: 'federation',
+	callback: federation,
+	options: {
+		description: 'Federation_slash_commands',
+		params: '#command (dm) #user',
+	},
 });
