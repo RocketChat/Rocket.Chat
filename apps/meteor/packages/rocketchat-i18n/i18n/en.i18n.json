@@ -1652,7 +1652,7 @@
   "EmojiCustomFilesystem": "Custom Emoji Filesystem",
   "EmojiCustomFilesystem_Description": "Specify how emojis are stored.",
   "Empty_title": "Empty title",
-  "Use_Legacy_Message_Template": "Use Legacy Message Template",
+  "Use_Legacy_Message_Template": "Use legacy message template",
   "Use_Legacy_Message_Template_alert": "This is a deprecated feature. It may not work as expected and will not get new updates",
   "See_on_Engagement_Dashboard": "See on Engagement Dashboard",
   "Enable": "Enable",
