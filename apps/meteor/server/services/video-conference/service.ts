@@ -781,7 +781,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 							type: 'button',
 							text: {
 								type: 'plain_text',
-								text: TAPi18n.__('Join'),
+								text: TAPi18n.__('Join_call'),
 								emoji: true,
 							},
 						},
