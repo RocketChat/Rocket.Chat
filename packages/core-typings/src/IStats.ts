@@ -146,6 +146,9 @@ export interface IStats {
 	messageAuditLoad: number;
 	dashboardCount: number;
 	joinJitsiButton: number;
+	totalBroadcastRooms: number;
+	totalRoomsWithActiveLivestream: number;
+	totalTriggeredEmails: number;
 	totalRoomsWithStarred: number;
 	totalRoomsWithPinned: number;
 	totalUserEmail2fa: number;
@@ -154,14 +157,22 @@ export interface IStats {
 	totalPinned: number;
 	totalLinkInvitation: number;
 	totalEmailInvitation: number;
-	roomsWithPinnedMessages: number;
-	roomsWithStarredMessages: number;
 	totalE2ERooms: number;
 	logoChange: boolean;
 	homeTitleChanged: boolean;
+	homeBodyChanged: boolean;
+	customCSSChanged: boolean;
+	onLogoutCustomScriptChanged: boolean;
+	loggedOutCustomScriptChanged: boolean;
+	loggedInCustomScriptChanged: boolean;
 	roomsInsideTeams: number;
 	showHomeButton: boolean;
 	totalEncryptedMessages: number;
 	totalLinkInvitationUses: number;
 	totalManuallyAddedUsers: number;
+	totalSubscriptionRoles: number;
+	totalUserRoles: number;
+	totalWebRTCCalls: number;
+	matrixBridgeEnabled: boolean;
+	uncaughtExceptionsCount: number;
 }

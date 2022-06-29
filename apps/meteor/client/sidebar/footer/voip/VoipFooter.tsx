@@ -1,9 +1,10 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo, VoIpCallerInfo, VoipClientEvents } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, ButtonGroup, Icon, SidebarFooter } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
+import React, { ReactElement, MouseEvent } from 'react';
 
+import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import { CallActionsType } from '../../../contexts/CallContext';
 
 type VoipFooterPropsType = {
@@ -19,6 +20,7 @@ type VoipFooterPropsType = {
 	tooltips: {
 		mute: string;
 		holdCall: string;
+		holdCallEEOnly: string;
 		acceptCall: string;
 		endCall: string;
 	};
@@ -29,6 +31,7 @@ type VoipFooterPropsType = {
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	openedRoomInfo: { v: { token?: string | undefined }; rid: string };
 	anonymousText: string;
+	isEnterprise: boolean;
 };
 
 export const VoipFooter = ({
@@ -48,6 +51,7 @@ export const VoipFooter = ({
 	dispatchEvent,
 	openedRoomInfo,
 	anonymousText,
+	isEnterprise = false,
 }: VoipFooterPropsType): ReactElement => {
 	const cssClickable =
 		callerState === 'IN_CALL' || callerState === 'ON_HOLD'
@@ -55,6 +59,15 @@ export const VoipFooter = ({
 					cursor: pointer;
 			  `
 			: '';
+
+	const options = useVoipFooterMenu();
+
+	const handleHold = (e: MouseEvent<HTMLButtonElement>): void => {
+		e.stopPropagation();
+		const eventName = paused ? 'VOIP-CALL-UNHOLD' : 'VOIP-CALL-ON-HOLD';
+		dispatchEvent({ event: VoipClientEvents[eventName], rid: openedRoomInfo.rid });
+		togglePause(!paused);
+	};
 
 	return (
 		<SidebarFooter elevated>
@@ -74,41 +87,29 @@ export const VoipFooter = ({
 						{title}
 					</Box>
 					{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
-						<ButtonGroup medium>
-							<Button
+						<ButtonGroup medium className='sidebar--custom-colors'>
+							<IconButton
 								disabled={paused}
 								title={tooltips.mute}
+								color={muted ? 'neutral-500' : 'info'}
+								icon='mic'
 								small
 								square
-								secondary
 								onClick={(e): void => {
 									e.stopPropagation();
 									toggleMic(!muted);
 								}}
-							>
-								{muted ? <Icon name='mic' color='neutral-500' size='x24' /> : <Icon name='mic' color='info' size='x24' />}
-							</Button>
-							<Button
-								title={tooltips.holdCall}
+							/>
+							<IconButton
+								title={isEnterprise ? tooltips.holdCall : tooltips.holdCallEEOnly}
+								disabled={!isEnterprise}
+								icon='pause-unfilled'
+								color={paused ? 'neutral-500' : 'info'}
 								small
 								square
-								secondary
-								onClick={(e): void => {
-									e.stopPropagation();
-									if (paused) {
-										dispatchEvent({ event: VoipClientEvents['VOIP-CALL-UNHOLD'], rid: openedRoomInfo.rid });
-									} else {
-										dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ON-HOLD'], rid: openedRoomInfo.rid });
-									}
-									togglePause(!paused);
-								}}
-							>
-								{paused ? (
-									<Icon name='pause-unfilled' color='neutral-500' size='x24' />
-								) : (
-									<Icon name='pause-unfilled' color='info' size='x24' />
-								)}
-							</Button>
+								onClick={handleHold}
+							/>
+							{options && <Menu color='neutral-500' options={options} />}
 						</ButtonGroup>
 					)}
 				</Box>
@@ -130,7 +131,6 @@ export const VoipFooter = ({
 								small
 								square
 								danger
-								primary
 								onClick={(e): unknown => {
 									e.stopPropagation();
 									toggleMic(false);
@@ -152,7 +152,6 @@ export const VoipFooter = ({
 								small
 								square
 								success
-								primary
 								onClick={async (): Promise<void> => {
 									callActions.pickUp();
 									const rid = await createRoom(caller);

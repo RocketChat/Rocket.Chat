@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { LivechatVisitors } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { settings } from '../../../settings/server';
 
 Meteor.methods({
-	sendMessageLivechat({ token, _id, rid, msg, file, attachments }, agent) {
+	async sendMessageLivechat({ token, _id, rid, msg, file, attachments }, agent) {
 		check(token, String);
 		check(_id, String);
 		check(rid, String);
@@ -21,8 +21,8 @@ Meteor.methods({
 			}),
 		);
 
-		const guest = LivechatVisitors.getVisitorByToken(token, {
-			fields: {
+		const guest = await LivechatVisitors.getVisitorByToken(token, {
+			projection: {
 				name: 1,
 				username: 1,
 				department: 1,

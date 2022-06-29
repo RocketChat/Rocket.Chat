@@ -1,7 +1,7 @@
-import type { IRocketChatRecord } from '@rocket.chat/core-typings';
+import type { ILivechatPriority } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
-export interface ILivechatPriorityModel extends IBaseModel<IRocketChatRecord> {
+export interface ILivechatPriorityModel extends IBaseModel<ILivechatPriority> {
 	findOneByIdOrName(_idOrName: string, options?: any): any;
 }
