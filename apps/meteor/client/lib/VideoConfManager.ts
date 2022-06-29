@@ -600,8 +600,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	private onDirectCallConfirmed(params: DirectCallParams): void {
-		if (!params.callId || !this.incomingDirectCalls.has(params.callId)) {
-			debug && console.log(`[VideoConf] User ${params.uid} confirmed we can join ${params.callId} but we don't know that call.`);
+		if (!params.callId || params.callId !== this.acceptingCallId) {
+			debug && console.log(`[VideoConf] User ${params.uid} confirmed we can join ${params.callId} but we aren't trying to join it.`);
 			return;
 		}
 
