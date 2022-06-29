@@ -10,7 +10,6 @@ export function getServerConfigDataFromSettings(type: ServerType): IVoipCallServ
 				host: settings.get<string>('VoIP_Server_Host'),
 				name: settings.get<string>('VoIP_Server_Name'),
 				configData: {
-					websocketPort: Number(settings.get<number>('VoIP_Server_Websocket_Port')),
 					websocketPath: settings.get<string>('VoIP_Server_Websocket_Path'),
 				},
 			};
