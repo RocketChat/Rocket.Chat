@@ -1,7 +1,7 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupContent,
@@ -10,7 +10,9 @@ import {
 	useVideoConfControllers,
 	VideoConfButton,
 	VideoConfPopupFooter,
+	VideoConfPopupFooterButtons,
 	VideoConfPopupTitle,
+	VideoConfPopupUsername,
 } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement } from 'react';
 
@@ -24,11 +26,13 @@ type CallingPopupProps = {
 	onClose: (id: string) => void;
 };
 
-// TODO: Replace RoomAvatar to UserAvatar and avoid using subscription???
 const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement => {
 	const t = useTranslation();
-	const userId = useUserId();
+	const user = useUser();
+	const userId = user?._id;
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
+	const [directUsername] = room.usernames?.filter((username) => username !== user?.username) || [];
+
 	const videoConfPreferences = useVideoConfPreferences();
 	const setPreferences = useVideoConfSetPreferences();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers(videoConfPreferences);
@@ -51,16 +55,11 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 		<VideoConfPopup>
 			<VideoConfPopupContent>
 				<RoomAvatar room={room} size='x40' />
-				<VideoConfPopupTitle text='Calling' icon='phone-out' counter />
+				<VideoConfPopupTitle text={t('Calling')} icon='phone-out' counter />
 				{directUserId && (
 					<Box display='flex' alignItems='center' mbs='x8'>
 						<ReactiveUserStatus uid={directUserId} />
-						<Box mis='x8' display='flex'>
-							<Box>{room.fname}</Box>
-							<Box mis='x4' color='neutral-600'>
-								{`(${room.name})`}
-							</Box>
-						</Box>
+						{directUsername && <VideoConfPopupUsername username={directUsername} />}
 					</Box>
 				)}
 				{(showCam || showMic) && (
@@ -85,14 +84,16 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 						)}
 					</VideoConfPopupControllers>
 				)}
-				<VideoConfPopupFooter>
+			</VideoConfPopupContent>
+			<VideoConfPopupFooter>
+				<VideoConfPopupFooterButtons>
 					{onClose && (
 						<VideoConfButton primary icon='phone-disabled' onClick={(): void => onClose(id)}>
 							{t('Cancel')}
 						</VideoConfButton>
 					)}
-				</VideoConfPopupFooter>
-			</VideoConfPopupContent>
+				</VideoConfPopupFooterButtons>
+			</VideoConfPopupFooter>
 		</VideoConfPopup>
 	);
 };

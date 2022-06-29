@@ -74,6 +74,9 @@ type VideoConfEvents = {
 
 	// The value of `isCalling` may have changed
 	'calling/changed': void;
+
+	'calling/ended': void;
+
 	// When join call
 	'call/join': CurrentCallParams;
 
@@ -82,10 +85,6 @@ type VideoConfEvents = {
 	'start/error': { error: string };
 
 	'capabilities/changed': void;
-
-	'availability/error': string;
-
-	'availability/changed': void;
 };
 export const VideoConfManager = new (class VideoConfManager extends Emitter<VideoConfEvents> {
 	private userId: string | undefined;
@@ -108,8 +107,6 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private _capabilities: ProviderCapabilities;
 
-	private _available: boolean;
-
 	public get preferences(): CallPreferences {
 		return this._preferences;
 	}
@@ -118,17 +115,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		return this._capabilities;
 	}
 
-	public get available(): boolean {
-		return this._available;
-	}
-
 	constructor() {
 		super();
 		this.incomingDirectCalls = new Map<string, IncomingDirectCall>();
-		// this.mutedCalls = new Set<string>();
-		this._preferences = {};
+		this._preferences = { mic: true };
 		this._capabilities = {};
-		this._available = false;
 	}
 
 	public isBusy(): boolean {
@@ -175,6 +166,10 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		this.startingNewCall = false;
 		this.emit('calling/changed');
+
+		if (data.type !== 'direct') {
+			this.emit('calling/ended');
+		}
 
 		switch (data.type) {
 			case 'direct':
@@ -242,20 +237,13 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public async loadCapabilities(): Promise<void> {
-		this._available = false;
 		const { capabilities } = await APIClient.get('/v1/video-conference.capabilities').catch((e: any) => {
 			debug && console.error(`[VideoConf] Failed to load video conference capabilities`);
-
-			if (typeof e === 'object' && e.success === false && typeof e.error === 'string') {
-				this.emit('availability/error', e.error);
-			}
 
 			return Promise.reject(e);
 		});
 
-		this._available = true;
 		this._capabilities = capabilities || {};
-		this.emit('availability/changed');
 		this.emit('capabilities/changed');
 	}
 

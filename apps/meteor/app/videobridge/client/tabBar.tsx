@@ -1,38 +1,31 @@
-import React, { useMemo, lazy, ComponentProps, ReactElement } from 'react';
+import { useMemo, lazy } from 'react';
 import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { Menu } from '@rocket.chat/fuselage';
-import { useSetting, useSetModal, useUser, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
+import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 
-import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
-import { useVideoConfDispatchOutgoing, useVideoConfStartCall } from '../../../client/contexts/VideoConfContext';
+import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../client/contexts/VideoConfContext';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
-import { useTabBarOpen } from '../../../client/views/room/providers/ToolboxProvider';
 import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/useVideoConfWarning';
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 
-addAction('video-conf-list', {
+addAction('calls', {
 	groups: ['channel', 'group', 'team'],
-	id: 'video-conf-list',
-	icon: 'video',
-	title: 'Video_Conferences',
+	id: 'calls',
+	icon: 'phone',
+	title: 'Calls',
 	template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
 	order: 999,
 });
 
-addAction('video-conf', ({ room }) => {
-	const t = useTranslation();
-	const setModal = useSetModal();
-	const startCall = useVideoConfStartCall();
+addAction('start-call', ({ room }) => {
 	const user = useUser();
 	const dispatchWarning = useVideoConfWarning();
-	const hasLicense = useHasLicenseModule('videoconference-enterprise');
-
-	const openTabBar = useTabBarOpen();
-	const { isMobile } = useLayout();
-
 	const dispatchPopup = useVideoConfDispatchOutgoing();
-	const handleCloseVideoConf = useMutableCallback(() => setModal());
+	const isCalling = useVideoConfIsCalling();
+	const isRinging = useVideoConfIsRinging();
+	const hasLicense = useHasLicenseModule('videoconference-enterprise');
+	const ownUser = room.uids && room.uids.length === 1;
+
 	// Only disable video conf if the settings are explicitly FALSE - any falsy value counts as true
 	const enabledDMs = useSetting('VideoConf_Enable_DMs') !== false;
 	const enabledChannel = useSetting('VideoConf_Enable_Channels') !== false;
@@ -56,64 +49,32 @@ addAction('video-conf', ({ room }) => {
 		].filter(Boolean) as ToolboxActionConfig['groups'],
 	);
 
-	const handleStartConference = useMutableCallback((confTitle) => {
-		startCall(room._id, confTitle);
-		handleCloseVideoConf();
-
-		if (room.t === 'd') {
-			dispatchPopup({ rid: room._id });
-		}
-	});
-
 	const handleOpenVideoConf = useMutableCallback(async (): Promise<void> => {
+		if (isCalling || isRinging) {
+			return;
+		}
+
 		try {
 			await VideoConfManager.loadCapabilities();
-			setModal(<StartVideoConfModal onConfirm={handleStartConference} room={room} onClose={handleCloseVideoConf} />);
+			dispatchPopup({ rid: room._id });
 		} catch (error) {
 			dispatchWarning(error.error);
 		}
 	});
 
-	const menuOptions: ComponentProps<typeof Menu>['options'] = useMemo(
-		() => ({
-			header: {
-				type: 'heading',
-				label: t('Video_Conference'),
-			},
-			start: {
-				label: t('Call'),
-				action: (): Promise<void> => handleOpenVideoConf(),
-			},
-			...(['c', 'p'].includes(room.t) && {
-				list: {
-					label: t('See_history'),
-					action: (): void => openTabBar('video-conf-list'),
-				},
-			}),
-		}),
-		[handleOpenVideoConf, openTabBar, room.t, t],
-	);
-
 	return useMemo(
 		() =>
-			enableOption
+			enableOption && hasLicense && !ownUser
 				? {
 						groups,
-						id: 'video-conference',
-						title: 'Video_Conference',
+						id: 'start-call',
+						title: 'Call',
 						icon: 'phone',
-						...(hasLicense && {
-							renderAction: ({ key }): ReactElement => (
-								<Menu key={key} tiny={!isMobile} title={t('Video_Conference')} icon='phone' options={menuOptions} />
-							),
-						}),
-						...(!hasLicense && {
-							action: handleOpenVideoConf,
-						}),
+						action: handleOpenVideoConf,
 						full: true,
 						order: live ? -1 : 4,
 				  }
 				: null,
-		[t, groups, enableOption, live, isMobile, menuOptions, hasLicense, handleOpenVideoConf],
+		[groups, enableOption, live, hasLicense, handleOpenVideoConf, ownUser],
 	);
 });
