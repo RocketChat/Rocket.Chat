@@ -1,4 +1,4 @@
-import { IRoom, IMessage, isTranslatedMessage, isMessageReactionsNormalized } from '@rocket.chat/core-typings';
+import { IRoom, IMessage, isTranslatedMessage, isMessageReactionsNormalized, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint, useUserRoom } from '@rocket.chat/ui-contexts';
 import React, { useMemo, FC, memo } from 'react';
 
@@ -13,7 +13,7 @@ const fields = {};
 export const MessageListProvider: FC<{
 	rid: IRoom['_id'];
 }> = memo(function MessageListProvider({ rid, ...props }) {
-	const reactToMessage = useEndpoint('POST', 'chat.react');
+	const reactToMessage = useEndpoint('POST', '/v1/chat.react');
 	const user = useUser();
 	const uid = user?._id;
 	const username = user?.username;
@@ -48,7 +48,7 @@ export const MessageListProvider: FC<{
 								return [];
 							}
 							if (!isMessageReactionsNormalized(message)) {
-								return (message.reactions && message.reactions[reaction]?.usernames.map((username) => `@${username}`)) || [];
+								return message.reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || [];
 							}
 							if (!username) {
 								return message.reactions[reaction].names;
@@ -64,10 +64,10 @@ export const MessageListProvider: FC<{
 			useUserHasReacted: username
 				? (message) =>
 						(reaction): boolean =>
-							Boolean(message.reactions && message.reactions[reaction].usernames.includes(username))
+							Boolean(message.reactions?.[reaction].usernames.includes(username))
 				: () => (): boolean => false,
 			useShowFollowing: uid
-				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1)
+				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
 				: (): boolean => false,
 			useShowTranslated:
 				uid && autoTranslateEnabled && hasSubscription && autoTranslateLanguage

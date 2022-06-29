@@ -11,9 +11,9 @@ import TabbedGroupPage from './TabbedGroupPage';
 function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const testConnection = useEndpoint('POST', 'ldap.testConnection');
-	const syncNow = useEndpoint('POST', 'ldap.syncNow');
-	const testSearch = useEndpoint('POST', 'ldap.testSearch');
+	const testConnection = useEndpoint('POST', '/v1/ldap.testConnection');
+	const syncNow = useEndpoint('POST', '/v1/ldap.syncNow');
+	const testSearch = useEndpoint('POST', '/v1/ldap.testSearch');
 	const ldapEnabled = useSetting('LDAP_Enable');
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());

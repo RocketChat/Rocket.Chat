@@ -2,12 +2,20 @@
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
 import type { IMessage, IRoom, ISetting, ISubscription, IUpload, IUser } from '@rocket.chat/core-typings';
-import { isDmDeleteProps, isDmFileProps, isDmMemberProps, isDmMessagesProps, isDmCreateProps } from '@rocket.chat/rest-typings';
+import {
+	isDmDeleteProps,
+	isDmFileProps,
+	isDmMemberProps,
+	isDmMessagesProps,
+	isDmCreateProps,
+	isDmHistoryProps,
+} from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Subscriptions, Uploads, Messages, Rooms, Settings } from '@rocket.chat/models';
+import type { FilterQuery } from 'mongodb';
 
 import { Users } from '../../../models/server';
-import { Subscriptions, Uploads, Messages, Rooms, Settings } from '../../../models/server/raw';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -240,7 +248,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	['dm.history', 'im.history'],
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isDmHistoryProps },
 	{
 		async get() {
 			const { offset = 0, count = 20 } = this.getPaginationItems();
@@ -351,7 +359,7 @@ API.v1.addRoute(
 				sort: sortObj,
 				skip: offset,
 				limit: count,
-				...(fields && { fields }),
+				...(fields && { projection: fields }),
 			}).toArray();
 
 			return API.v1.success({
@@ -403,7 +411,7 @@ API.v1.addRoute(
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			}).toArray();
 
 			if (!msgs) {
@@ -470,7 +478,7 @@ API.v1.addRoute(
 			const { offset, count }: { offset: number; count: number } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const ourQuery = { ...query, t: 'd' };
+			const ourQuery = { ...query, t: 'd' } as FilterQuery<IRoom>;
 
 			const rooms = await Rooms.find(ourQuery, {
 				sort: sort || { name: 1 },

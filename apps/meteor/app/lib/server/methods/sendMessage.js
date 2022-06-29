@@ -5,15 +5,16 @@ import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { messageProperties } from '../../../ui-utils';
-import { Users, Messages, Rooms } from '../../../models';
+import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
-import { matrixClient } from '../../../federation-v2/server/matrix-client';
+import { federationRoomServiceSender } from '../../../federation-v2/server';
+import { FederationRoomSenderConverter } from '../../../federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
 
 export function executeSendMessage(uid, message) {
 	if (message.tshow && !message.tmid) {
@@ -106,10 +107,10 @@ Meteor.methods({
 		}
 
 		try {
-			// If the room is bridged, send the message to matrix only
-			const { bridged } = Rooms.findOne({ _id: message.rid }, { fields: { bridged: 1 } });
-			if (bridged) {
-				return matrixClient.message.send({ ...message, u: { _id: uid } });
+			if (Promise.await(federationRoomServiceSender.isAFederatedRoom(message.rid))) {
+				return federationRoomServiceSender.sendMessageFromRocketChat(
+					FederationRoomSenderConverter.toSendExternalMessageDto(uid, message.rid, message),
+				);
 			}
 
 			return executeSendMessage(uid, message);

@@ -54,6 +54,7 @@ export interface IUserServices {
 	resume?: {
 		loginTokens?: LoginToken[];
 	};
+	cloud?: unknown;
 	google?: any;
 	facebook?: any;
 	github?: any;
@@ -116,8 +117,10 @@ export interface IUser extends IRocketChatRecord {
 	status?: UserStatus;
 	statusConnection?: string;
 	lastLogin?: Date;
+	bio?: string;
 	avatarOrigin?: string;
 	avatarETag?: string;
+	avatarUrl?: string;
 	utcOffset?: number;
 	language?: string;
 	statusDefault?: UserStatus;
@@ -168,3 +171,17 @@ export type IUserInRole = Pick<
 	IUser,
 	'_id' | 'name' | 'username' | 'emails' | 'avatarETag' | 'createdAt' | 'roles' | 'type' | 'active' | '_updatedAt'
 >;
+
+export type AvatarUrlObj = {
+	avatarUrl: string;
+};
+
+export type AvatarReset = 'reset';
+
+export type AvatarServiceObject = {
+	blob: Blob;
+	contentType: string;
+	service: string;
+};
+
+export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;

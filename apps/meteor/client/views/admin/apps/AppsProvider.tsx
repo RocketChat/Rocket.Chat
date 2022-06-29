@@ -247,7 +247,7 @@ const AppsProvider: FC = ({ children }) => {
 
 	useEffect(() => {
 		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
-			let marketplaceApp: App | undefined;
+			let marketplaceApp: { app: App; success: boolean } | undefined;
 			let installedApp: App;
 
 			try {
@@ -266,12 +266,13 @@ const AppsProvider: FC = ({ children }) => {
 			if (marketplaceApp !== undefined) {
 				const { status, version, licenseValidation } = installedApp;
 				const record = {
-					...marketplaceApp,
+					...marketplaceApp.app,
+					success: marketplaceApp.success,
 					installed: true,
 					status,
 					version,
 					licenseValidation,
-					marketplaceVersion: marketplaceApp.version,
+					marketplaceVersion: marketplaceApp.app.version,
 				};
 
 				const [, installedApps] = getCurrentData();

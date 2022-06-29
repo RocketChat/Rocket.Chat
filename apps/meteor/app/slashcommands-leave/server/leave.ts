@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { SlashCommand } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
@@ -11,7 +11,7 @@ import { Users } from '../../models/server';
  * Leave is a named function that will replace /leave commands
  * @param {Object} message - The message object
  */
-function Leave(_command: string, _params: string, item: IMessage): void {
+const Leave: SlashCommand<'leave'>['callback'] = function Leave(_command, _params, item): void {
 	try {
 		Meteor.call('leaveRoom', item.rid);
 	} catch ({ error }) {
@@ -24,13 +24,21 @@ function Leave(_command: string, _params: string, item: IMessage): void {
 			msg: TAPi18n.__(error, { lng: user?.language || settings.get('Language') || 'en' }),
 		});
 	}
-}
+};
 
-slashCommands.add('leave', Leave, {
-	description: 'Leave_the_current_channel',
-	permission: ['leave-c', 'leave-p'],
+slashCommands.add({
+	command: 'leave',
+	callback: Leave,
+	options: {
+		description: 'Leave_the_current_channel',
+		permission: ['leave-c', 'leave-p'],
+	},
 });
-slashCommands.add('part', Leave, {
-	description: 'Leave_the_current_channel',
-	permission: ['leave-c', 'leave-p'],
+slashCommands.add({
+	command: 'part',
+	callback: Leave,
+	options: {
+		description: 'Leave_the_current_channel',
+		permission: ['leave-c', 'leave-p'],
+	},
 });

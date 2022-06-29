@@ -20,9 +20,8 @@ export const useRoomsList = (
 } => {
 	const [itemsList, setItemsList] = useState(() => new RecordList<IRoom>());
 	const reload = useCallback(() => setItemsList(new RecordList<IRoom>()), []);
-	const endpoint = 'rooms.autocomplete.channelAndPrivate.withPagination';
 
-	const getRooms = useEndpoint('GET', endpoint);
+	const getRooms = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate.withPagination');
 
 	useComponentDidUpdate(() => {
 		options && reload();

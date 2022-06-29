@@ -137,6 +137,7 @@ describe('miscellaneous', function () {
 			.expect(200)
 			.expect((res) => {
 				const allUserPreferencesKeys = [
+					'alsoSendThreadToChannel',
 					// 'language',
 					'newRoomNotification',
 					'newMessageNotification',
@@ -154,7 +155,6 @@ describe('miscellaneous', function () {
 					'enableAutoAway',
 					'enableNewMessageTemplate',
 					// 'highlights',
-					'showMessageInMainThread',
 					'desktopNotificationRequireInteraction',
 					'messageViewMode',
 					'hideUsernames',
@@ -564,6 +564,12 @@ describe('miscellaneous', function () {
 			updateSetting('API_Enable_Shields', false).then(() => {
 				request
 					.get(api('shield.svg'))
+					.query({
+						type: 'online',
+						icon: true,
+						channel: 'general',
+						name: 'Rocket.Chat',
+					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {

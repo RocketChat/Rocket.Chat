@@ -25,7 +25,7 @@ const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElem
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const { value: data } = useEndpointData(
-		'users.autocomplete',
+		'/v1/users.autocomplete',
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		useMemo(() => query(debouncedFilter, conditions), [filter]),
 	);
@@ -38,9 +38,9 @@ const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElem
 			onChange={props.onChange as any}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ value, label }): ReactElement => {
+			renderSelected={({ value, label }): ReactElement | null => {
 				if (!value) {
-					undefined;
+					return null;
 				}
 
 				return (

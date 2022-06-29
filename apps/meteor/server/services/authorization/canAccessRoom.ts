@@ -1,12 +1,11 @@
 import { TEAM_TYPE, ITeam } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Subscriptions, Rooms, Settings, TeamMember, Team } from '@rocket.chat/models';
 
 import { Authorization } from '../../sdk';
 import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomVoip } from './canAccessRoomVoip';
-import { canAccessRoomTokenpass } from './canAccessRoomTokenpass';
-import { Subscriptions, Rooms, Settings, TeamMembers, Team } from './service';
 
 async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
@@ -39,7 +38,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		// otherwise access is allowed only to members of the team
 		const membership =
 			user?._id &&
-			(await TeamMembers.findOneByUserIdAndTeamId(user._id, room.teamId, {
+			(await TeamMember.findOneByUserIdAndTeamId(user._id, room.teamId, {
 				projection: { _id: 1 },
 			}));
 		return !!membership;
@@ -77,7 +76,6 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	canAccessRoomLivechat,
-	canAccessRoomTokenpass,
 	canAccessRoomVoip,
 ];
 

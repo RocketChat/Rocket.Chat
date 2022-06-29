@@ -5,15 +5,15 @@
 
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { ISubscription, SlashCommand } from '@rocket.chat/core-typings';
 
 import { Rooms, Subscriptions, Users } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { api } from '../../../server/sdk/api';
 
-function inviteAll(type: string): typeof slashCommands.commands[string]['callback'] {
-	return function inviteAll(command: string, params: string, item: IMessage): void {
+function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
+	return function inviteAll(command: T, params: string, item): void {
 		if (!/invite\-all-(to|from)/.test(command)) {
 			return;
 		}
@@ -93,14 +93,22 @@ function inviteAll(type: string): typeof slashCommands.commands[string]['callbac
 	};
 }
 
-slashCommands.add('invite-all-to', inviteAll('to'), {
-	description: 'Invite_user_to_join_channel_all_to',
-	params: '#room',
-	permission: ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'],
+slashCommands.add({
+	command: 'invite-all-to',
+	callback: inviteAll('to'),
+	options: {
+		description: 'Invite_user_to_join_channel_all_to',
+		params: '#room',
+		permission: ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'],
+	},
 });
-slashCommands.add('invite-all-from', inviteAll('from'), {
-	description: 'Invite_user_to_join_channel_all_from',
-	params: '#room',
-	permission: 'add-user-to-joined-room',
+slashCommands.add({
+	command: 'invite-all-from',
+	callback: inviteAll('from'),
+	options: {
+		description: 'Invite_user_to_join_channel_all_from',
+		params: '#room',
+		permission: 'add-user-to-joined-room',
+	},
 });
 module.exports = inviteAll;

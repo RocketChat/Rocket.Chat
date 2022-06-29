@@ -3,11 +3,7 @@ import { v4 as uuid } from 'uuid';
 
 import { BASE_API_URL } from './utils/mocks/urlMock';
 import { adminLogin, validUserInserted, registerUser } from './utils/mocks/userAndPasswordMock';
-import LoginPage from './utils/pageobjects/LoginPage';
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import Administration from './utils/pageobjects/Administration';
-import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
+import { LoginPage, MainContent, SideNav, Administration, PreferencesMainContent } from './pageobjects';
 
 const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
 
@@ -27,9 +23,9 @@ test.describe.skip('[Settings]', async () => {
 		sideNav = new SideNav(page);
 		userPreferences = new PreferencesMainContent(page);
 
-		await loginPage.goto('/');
-		await loginPage.login(validUserInserted);
-		await sideNav.general().click();
+		await page.goto('/');
+		await loginPage.doLogin(validUserInserted);
+		await sideNav.general.click();
 	});
 
 	test.beforeAll(async ({ request }) => {
@@ -140,7 +136,7 @@ test.describe.skip('[Settings]', async () => {
 		test('(UI) expect option(upload audio) not be visible', async () => {
 			await mainContent.doReload();
 
-			expect(await mainContent.recordBtn().isVisible()).toBeFalsy();
+			expect(await mainContent.recordBtn.isVisible()).toBeFalsy();
 		});
 
 		test('(API) expect enable audio files', async ({ request }) => {
@@ -157,7 +153,7 @@ test.describe.skip('[Settings]', async () => {
 		test('(UI) expect option(upload audio) be visible', async () => {
 			await mainContent.doReload();
 
-			expect(await mainContent.recordBtn().isVisible()).toBeTruthy();
+			expect(await mainContent.recordBtn.isVisible()).toBeTruthy();
 		});
 	});
 
@@ -341,13 +337,13 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test.skip('(UI) expect options(update profile) be disabled', async () => {
-			await sideNav.sidebarUserMenu().click();
-			await sideNav.account().click();
+			await sideNav.sidebarUserMenu.click();
+			await sideNav.account.click();
 
-			expect(userPreferences.avatarFileInput().isDisabled()).toBeTruthy();
-			expect(userPreferences.emailTextInput().isDisabled()).toBeTruthy();
-			expect(userPreferences.realNameTextInput().isDisabled()).toBeTruthy();
-			expect(userPreferences.userNameTextInput().isDisabled()).toBeTruthy();
+			expect(userPreferences.avatarFileInput.isDisabled()).toBeTruthy();
+			expect(userPreferences.emailTextInput.isDisabled()).toBeTruthy();
+			expect(userPreferences.inputName.isDisabled()).toBeTruthy();
+			expect(userPreferences.inputUsername.isDisabled()).toBeTruthy();
 		});
 
 		test('(API) expect enable profile change', async ({ request }) => {
@@ -375,10 +371,10 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test.skip('(UI) expect option(update avatar) be disabled', async () => {
-			await sideNav.sidebarUserMenu().click();
-			await sideNav.account().click();
+			await sideNav.sidebarUserMenu.click();
+			await sideNav.account.click();
 
-			expect(userPreferences.avatarFileInput().isDisabled()).toBeTruthy();
+			expect(userPreferences.avatarFileInput.isDisabled()).toBeTruthy();
 		});
 
 		test('(API) expect enable avatar change', async ({ request }) => {
@@ -410,9 +406,9 @@ test.describe.skip('[Settings (admin)]', async () => {
 		sideNav = new SideNav(page);
 		admin = new Administration(page);
 
-		await loginPage.goto('/');
-		await loginPage.login(adminLogin);
-		await sideNav.general().click();
+		await page.goto('/');
+		await loginPage.doLogin(adminLogin);
+		await sideNav.general.click();
 	});
 
 	test.beforeAll(async ({ request }) => {
@@ -477,23 +473,23 @@ test.describe.skip('[Settings (admin)]', async () => {
 
 		test.describe('(UI) expect activate/deactivate flow as admin', () => {
 			test('expect open /users as admin', async () => {
-				await admin.goto('/admin');
-				await admin.usersLink().click();
+				await page.goto('/admin');
+				await admin.usersLink.click();
 			});
 
 			test('expect find registered user', async () => {
-				await admin.usersFilter().type(registerUser.email, { delay: 200 });
+				await admin.usersFilter.type(registerUser.email, { delay: 200 });
 				await admin.userInTable(registerUser.email).click();
 			});
 
 			test('expect activate registered user', async () => {
-				await admin.userInfoActions().locator('button:nth-child(3)').click();
-				await admin.getPage().locator('[value="changeActiveStatus"]').click();
+				await admin.userInfoActions.locator('button:nth-child(3)').click();
+				await admin.page.locator('[value="changeActiveStatus"]').click();
 			});
 
 			test('expect deactivate registered user', async () => {
-				await admin.userInfoActions().locator('button:nth-child(3)').click();
-				await admin.getPage().locator('[value="changeActiveStatus"]').click();
+				await admin.userInfoActions.locator('button:nth-child(3)').click();
+				await admin.page.locator('[value="changeActiveStatus"]').click();
 			});
 		});
 

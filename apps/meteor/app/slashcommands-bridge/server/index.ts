@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { IMessage } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { matrixClient } from '../../federation-v2/server/matrix-client';
+import { federationRoomServiceSender } from '../../federation-v2/server';
+import { FederationRoomSenderConverter } from '../../federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
 
-function Bridge(_command: 'bridge', stringParams: string, item: IMessage): void {
+function Bridge(_command: 'bridge', stringParams: string | undefined, item: Record<string, any>): void {
 	if (_command !== 'bridge' || !Match.test(stringParams, String)) {
 		return;
 	}
@@ -23,14 +23,23 @@ function Bridge(_command: 'bridge', stringParams: string, item: IMessage): void 
 			const currentUserId = Meteor.userId();
 
 			if (currentUserId) {
-				Promise.await(matrixClient.user.invite(currentUserId, roomId, `@${userId.replace('@', '')}`));
+				const invitee = `@${userId.replace('@', '')}`;
+				Promise.await(
+					federationRoomServiceSender.inviteUserToAFederatedRoom(
+						FederationRoomSenderConverter.toRoomInviteUserDto(currentUserId, roomId, invitee),
+					),
+				);
 			}
 
 			break;
 	}
 }
 
-slashCommands.add('bridge', Bridge, {
-	description: 'Invites_an_user_to_a_bridged_room',
-	params: '#command #user',
+slashCommands.add({
+	command: 'bridge',
+	callback: Bridge,
+	options: {
+		description: 'Invites_an_user_to_a_bridged_room',
+		params: '#command #user',
+	},
 });
