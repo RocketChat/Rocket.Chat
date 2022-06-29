@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 type ExternalLinkProps = {
 	to: string;

@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
 
 import { DotLeader } from './DotLeader';
 
