@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import moment from 'moment';
+import { SmarshHistory } from '@rocket.chat/models';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Rooms, Messages, Users } from '../../../models/server';
-import { SmarshHistory } from '../../../models/server/raw';
 import { MessageTypes } from '../../../ui-utils';
 import { smarsh } from '../lib/rocketchat';
 import 'moment-timezone';

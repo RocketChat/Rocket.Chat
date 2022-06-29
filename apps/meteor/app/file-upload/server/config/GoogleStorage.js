@@ -4,7 +4,7 @@ import https from 'https';
 import _ from 'underscore';
 
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import '../../ufs/GoogleStorage/server.js';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 

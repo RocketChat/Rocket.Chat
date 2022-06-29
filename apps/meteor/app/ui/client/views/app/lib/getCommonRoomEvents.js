@@ -9,7 +9,7 @@ import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWi
 import { isURL } from '../../../../../../lib/utils/isURL';
 import { openUserCard } from '../../../lib/UserCard';
 import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
-import { ChatMessage, Rooms, Messages } from '../../../../../models';
+import { ChatMessage, Rooms, Messages } from '../../../../../models/client';
 import { t } from '../../../../../utils/client';
 import { chatMessages } from '../room';
 import { EmojiEvents } from '../../../../../reactions/client/init';

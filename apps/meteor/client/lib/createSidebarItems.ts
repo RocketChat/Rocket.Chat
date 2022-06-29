@@ -1,5 +1,4 @@
 import { IconProps } from '@rocket.chat/fuselage';
-import type { Subscription } from 'use-subscription';
 
 export type SidebarItem = {
 	i18nLabel: string;
@@ -17,19 +16,19 @@ export const createSidebarItems = (
 ): {
 	registerSidebarItem: (item: SidebarItem) => void;
 	unregisterSidebarItem: (i18nLabel: SidebarItem['i18nLabel']) => void;
-	itemsSubscription: Subscription<SidebarItem[]>;
+	getSidebarItems: () => SidebarItem[];
+	subscribeToSidebarItems: (callback: () => void) => () => void;
 } => {
 	const items = initialItems;
 	let updateCb: () => void = () => undefined;
 
-	const itemsSubscription: Subscription<SidebarItem[]> = {
-		subscribe: (cb) => {
-			updateCb = cb;
-			return (): void => {
-				updateCb = (): void => undefined;
-			};
-		},
-		getCurrentValue: () => items,
+	const getSidebarItems = (): SidebarItem[] => items;
+
+	const subscribeToSidebarItems = (cb: () => void): (() => void) => {
+		updateCb = cb;
+		return (): void => {
+			updateCb = (): void => undefined;
+		};
 	};
 
 	const registerSidebarItem = (item: SidebarItem): void => {
@@ -46,6 +45,7 @@ export const createSidebarItems = (
 	return {
 		registerSidebarItem,
 		unregisterSidebarItem,
-		itemsSubscription,
+		getSidebarItems,
+		subscribeToSidebarItems,
 	};
 };

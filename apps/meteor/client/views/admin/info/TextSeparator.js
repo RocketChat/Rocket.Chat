@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
+import { DotLeader } from '@rocket.chat/ui-client';
 import React from 'react';
-
-import DotLeader from '../../../components/DotLeader';
 
 const TextSeparator = ({ label, value }) => (
 	<Box display='flex' flexDirection='row' mb='x4'>

@@ -1,8 +1,8 @@
 import { Match, check } from 'meteor/check';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages } from '../../../models';
+import { Messages } from '../../../models/server';
 import { Apps } from '../../../apps/server';
 import { isURL } from '../../../../lib/utils/isURL';
 import { FileUpload } from '../../../file-upload/server';

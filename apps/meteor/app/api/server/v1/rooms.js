@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { FileUpload } from '../../../file-upload';
-import { Rooms, Messages } from '../../../models';
+import { Rooms, Messages } from '../../../models/server';
 import { API } from '../api';
 import {
 	findAdminRooms,
@@ -85,10 +85,13 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { file, ...fields } = Promise.await(
-				getUploadFormData({
-					request: this.request,
-				}),
+			const [file, fields] = Promise.await(
+				getUploadFormData(
+					{
+						request: this.request,
+					},
+					{ field: 'file' },
+				),
 			);
 
 			if (!file) {

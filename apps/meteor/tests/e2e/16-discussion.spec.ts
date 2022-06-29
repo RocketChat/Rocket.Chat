@@ -2,10 +2,7 @@ import { test, Page } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { v4 as uuid } from 'uuid';
 
-import Discussion from './utils/pageobjects/Discussion';
-import LoginPage from './utils/pageobjects/LoginPage';
-import SideNav from './utils/pageobjects/SideNav';
-import MainContent from './utils/pageobjects/MainContent';
+import { MainContent, Discussion, LoginPage, SideNav } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Discussion]', () => {
@@ -15,39 +12,37 @@ test.describe('[Discussion]', () => {
 	let sideNav: SideNav;
 	let mainContent: MainContent;
 
-	let discussionName: string;
 	let message: string;
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
-		await page.goto('/');
-		await page.waitForLoadState('load');
 		loginPage = new LoginPage(page);
 		discussion = new Discussion(page);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 
-		await loginPage.login(adminLogin);
+		await page.goto('/');
+		await loginPage.doLogin(adminLogin);
 	});
 
 	test.describe('[Create discussion from screen]', () => {
 		test('expect discussion is created', async () => {
-			discussionName = faker.animal.type();
+			const discussionName = faker.animal.type() + Date.now();
 			message = faker.animal.type();
-			await sideNav.newChannelBtnToolbar().click();
-			await discussion.createDiscussion('public channel', discussionName, message);
+			await sideNav.btnSidebarCreate.click();
+			await discussion.doCreateDiscussion('public channel', discussionName, message);
 		});
 	});
 
 	test.describe.skip('[Create discussion from context menu]', () => {
 		test.beforeAll(async () => {
 			message = faker.animal.type() + uuid();
-			await sideNav.findForChat('public channel');
+			await sideNav.doOpenChat('public channel');
 			await mainContent.sendMessage(message);
 		});
 
 		test('expect show a dialog for starting a discussion', async () => {
-			await mainContent.getPage().waitForLoadState('domcontentloaded', { timeout: 3000 });
+			await mainContent.page.waitForLoadState('domcontentloaded', { timeout: 3000 });
 			await mainContent.openMessageActionMenu();
 			await discussion.createDiscussionInContext(message);
 		});

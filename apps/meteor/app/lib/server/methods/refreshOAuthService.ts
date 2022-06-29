@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import { Settings } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
-import { Settings } from '../../../models/server/raw';
 
 Meteor.methods({
 	async refreshOAuthService() {

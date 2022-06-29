@@ -41,7 +41,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 	}, [canCreateChannel, canCreatePrivateChannel]);
 
 	const initialValues = {
-		users: [''],
+		users: [],
 		name: '',
 		description: '',
 		type: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,

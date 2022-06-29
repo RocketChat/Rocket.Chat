@@ -9,7 +9,7 @@ import { t } from '../../utils/client';
 import { chatMessages } from '../../ui';
 import { popover, RoomManager } from '../../ui-utils';
 import { settings } from '../../settings';
-import { ChatSubscription } from '../../models';
+import { ChatSubscription } from '../../models/client';
 import './body.html';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
