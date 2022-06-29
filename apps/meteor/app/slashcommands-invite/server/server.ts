@@ -10,9 +10,9 @@ import { api } from '../../../server/sdk/api';
  * Invite is a named function that will replace /invite commands
  * @param {Object} message - The message object
  */
-slashCommands.add(
-	'invite',
-	(_command: 'invite', params, item): void => {
+slashCommands.add({
+	command: 'invite',
+	callback: (_command: 'invite', params, item): void => {
 		const usernames = params
 			.split(/[\s,]/)
 			.map((username) => username.replace(/(^@)|( @)/, ''))
@@ -76,9 +76,9 @@ slashCommands.add(
 			}
 		});
 	},
-	{
+	options: {
 		description: 'Invite_user_to_join_channel',
 		params: '@username',
 		permission: 'add-user-to-joined-room',
 	},
-);
+});

@@ -7,9 +7,9 @@ import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { api } from '../../../server/sdk/api';
 
-slashCommands.add(
-	'kick',
-	function (_command: 'kick', params, item): void {
+slashCommands.add({
+	command: 'kick',
+	callback: (_command: 'kick', params, item): void => {
 		const username = params.trim().replace('@', '');
 		if (username === '') {
 			return;
@@ -47,9 +47,9 @@ slashCommands.add(
 		const { rid } = item;
 		Meteor.call('removeUserFromRoom', { rid, username });
 	},
-	{
+	options: {
 		description: 'Remove_someone_from_room',
 		params: '@username',
 		permission: 'remove-user',
 	},
-);
+});
