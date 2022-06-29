@@ -4514,6 +4514,15 @@ __metadata:
   resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
   dependencies:
     "@rocket.chat/fuselage": ^0.31.13
+    "@storybook/addon-actions": ^6.5.9
+    "@storybook/addon-docs": ^6.5.9
+    "@storybook/addon-essentials": ^6.5.9
+    "@storybook/addon-interactions": ^6.5.9
+    "@storybook/addon-links": ^6.5.9
+    "@storybook/builder-webpack4": ^6.5.9
+    "@storybook/manager-webpack4": ^6.5.9
+    "@storybook/react": ^6.5.9
+    "@storybook/testing-library": ^0.0.13
     "@types/jest": ^27.4.1
     "@types/react": ~17.0.42
     eslint: ^8.12.0
