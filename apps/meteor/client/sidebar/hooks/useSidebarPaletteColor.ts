@@ -199,7 +199,7 @@ const useSidebarPaletteColorIE11 = (): void => {
 
 				const filterSelectors = (selector: string): boolean => /rcx-(sidebar|button|divider|input)/.test(selector);
 				const insertSelector = (selector: string): string =>
-					selector.replace(/^((html:not\(\.js-focus-visible\)|\.js-focus-visible)|\.)(.*)/, (match, group, g2, g3, offset, text) => {
+					selector.replace(/^((html:not\(\.js-focus-visible\)|\.js-focus-visible)|\.)(.*)/, (match, group, _g2, g3, _offset, text) => {
 						if (group === '.') {
 							return `${modifier} ${text}`;
 						}
