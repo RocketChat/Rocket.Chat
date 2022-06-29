@@ -3887,6 +3887,7 @@ __metadata:
     "@types/cookie": ^0.5.1
     "@types/cookie-parser": ^1.4.2
     "@types/cors": ^2.8.5
+    "@types/cssom": ^0.4.1
     "@types/dompurify": ^2.2.2
     "@types/ejson": ^2.2.0
     "@types/express": ^4.17.12
@@ -6033,6 +6034,13 @@ __metadata:
   version: 2.8.12
   resolution: "@types/cors@npm:2.8.12"
   checksum: 8c45f112c7d1d2d831b4b266f2e6ed33a1887a35dcbfe2a18b28370751fababb7cd045e745ef84a523c33a25932678097bf79afaa367c6cb3fa0daa7a6438257
+  languageName: node
+  linkType: hard
+
+"@types/cssom@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@types/cssom@npm:0.4.1"
+  checksum: 0f44f5ff27f5dfadfb89c8bd00f8d588dc1aaa77ec05ffa3ab732929683aef842f55a6c52c9a75586a28987f009b45f6ea5f63dbc34660f6bb98650eea7f59e9
   languageName: node
   linkType: hard
 
