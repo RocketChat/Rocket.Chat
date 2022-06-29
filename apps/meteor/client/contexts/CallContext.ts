@@ -1,5 +1,6 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo, VoIpCallerInfo } from '@rocket.chat/core-typings';
+import { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -29,6 +30,8 @@ type CallContextReady = {
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	createRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
 	closeRoom: (data?: { comment?: string; tags?: string[] }) => void;
+	changeAudioOutputDevice: (selectedAudioDevices: Device) => void;
+	changeAudioInputDevice: (selectedAudioDevices: Device) => void;
 };
 type CallContextError = {
 	enabled: true;
@@ -187,4 +190,24 @@ export const useOpenedRoomInfo = (): CallContextReady['openedRoomInfo'] => {
 	}
 
 	return context.openedRoomInfo;
+};
+
+export const useChangeAudioOutputDevice = (): CallContextReady['changeAudioOutputDevice'] => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useChangeAudioOutputDevice only if Calls are enabled and ready');
+	}
+
+	return context.changeAudioOutputDevice;
+};
+
+export const useChangeAudioInputDevice = (): CallContextReady['changeAudioOutputDevice'] => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useChangeAudioInputDevice only if Calls are enabled and ready');
+	}
+
+	return context.changeAudioInputDevice;
 };
