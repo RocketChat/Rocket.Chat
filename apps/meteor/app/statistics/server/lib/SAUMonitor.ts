@@ -135,12 +135,14 @@ export class SAUMonitorClass {
 		params: Pick<ISession, 'userId' | 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
 	): Promise<void> {
 		const data = this._getConnectionInfo(connection, params);
+
 		if (!data) {
 			return;
 		}
-		const searchTerm = await this._getSearchTerm(data);
+		const content = await this._getSearchTerm(data);
+		const searchTerm = content ? { searchTerm: content } : {};
 
-		await Sessions.insertOne({ ...data, searchTerm, createdAt: new Date() });
+		await Sessions.insertOne({ ...data, ...searchTerm, createdAt: new Date() });
 	}
 
 	private async _finishSessionsFromDate(yesterday: Date, today: Date): Promise<void> {
@@ -187,7 +189,7 @@ export class SAUMonitorClass {
 		// TODO missing an action to perform on dangling sessions (for example remove sessions not closed one month ago)
 	}
 
-	private async _getSearchTerm(session: Omit<ISession, '_id' | '_updatedAt' | 'createdAt'>): Promise<string> {
+	private async _getSearchTerm(session: Omit<ISession, '_id' | '_updatedAt' | 'createdAt'>): Promise<string | undefined> {
 		const user = await Users.findOneById<IUser>(session.userId, {
 			projection: {
 				_id: 1,
