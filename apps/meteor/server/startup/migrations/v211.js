@@ -1,5 +1,6 @@
+import { Sessions } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import { Sessions } from '../../../app/models/server/raw';
 import { getMostImportantRole } from '../../../lib/roles/getMostImportantRole';
 
 async function migrateSessions() {

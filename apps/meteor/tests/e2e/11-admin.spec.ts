@@ -1,25 +1,27 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
-import { adminLogin, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';
+import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { FlexTab, Administration, LoginPage, SideNav } from './pageobjects';
 import { ROCKET_CAT_SELECTOR } from './utils/mocks/waitSelectorsMock';
-import { Checkbox } from './utils/enums/Checkbox';
 
 test.describe('[Administration]', () => {
+	let page: Page;
 	let loginPage: LoginPage;
 	let sideNav: SideNav;
 	let admin: Administration;
 	let flexTab: FlexTab;
+
 	const checkBoxesSelectors = ['Direct', 'Public', 'Private', 'Omnichannel', 'Discussions', 'Teams'];
-	test.beforeAll(async ({ browser, baseURL }) => {
-		const context = await browser.newContext();
-		const page = await context.newPage();
+
+	test.beforeAll(async ({ browser }) => {
+		page = await browser.newPage();
 		loginPage = new LoginPage(page);
 		sideNav = new SideNav(page);
 		flexTab = new FlexTab(page);
 		admin = new Administration(page);
-		await loginPage.goto(baseURL as string);
-		await loginPage.login(adminLogin);
+
+		await page.goto('/');
+		await loginPage.doLogin(adminLogin);
 	});
 	test.describe('[Admin View]', () => {
 		test.beforeAll(async () => {
@@ -80,43 +82,43 @@ test.describe('[Administration]', () => {
 				});
 
 				test('expect not show the general channel with direct', async () => {
-					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Direct]).click();
+					await admin.adminCheckBox('Direct').click();
 					await admin.roomsGeneralChannel.waitFor({ state: 'detached' });
 					await expect(admin.roomsGeneralChannel).not.toBeVisible();
-					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Direct]).click();
+					await admin.adminCheckBox('Direct').click();
 				});
 
 				test('expect show the general channel with public ', async () => {
-					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Public]).click();
+					await admin.adminCheckBox('Public').click();
 					await admin.roomsGeneralChannel.waitFor({ state: 'visible' });
 					await expect(admin.roomsGeneralChannel).toBeVisible();
-					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Public]).click();
+					await admin.adminCheckBox('Public').click();
 				});
 
 				test('expect not show the general channel with private ', async () => {
-					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Private]).click();
+					await admin.adminCheckBox('Private').click();
 					await admin.roomsGeneralChannel.waitFor({ state: 'detached' });
 					await expect(admin.roomsGeneralChannel).not.toBeVisible();
-					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Private]).click();
+					await admin.adminCheckBox('Private').click();
 				});
 
 				test('expect not show the general channel with omnichannel', async () => {
-					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Omnichannel]).click();
+					await admin.adminCheckBox('Omnichannel').click();
 					await admin.roomsGeneralChannel.waitFor({ state: 'detached' });
 					await expect(admin.roomsGeneralChannel).not.toBeVisible();
-					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Omnichannel]).click();
+					await admin.adminCheckBox('Omnichannel').click();
 				});
 				test('expect not show the general channel with discussion', async () => {
-					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Discussions]).click();
+					await admin.adminCheckBox('Discussions').click();
 					await admin.roomsGeneralChannel.waitFor({ state: 'detached' });
 					await expect(admin.roomsGeneralChannel).not.toBeVisible();
-					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Discussions]).click();
+					await admin.adminCheckBox('Discussions').click();
 				});
 				test('expect not show the general channel with teams', async () => {
-					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Teams]).click();
+					await admin.adminCheckBox('Teams').click();
 					await admin.roomsGeneralChannel.waitFor({ state: 'detached' });
 					await expect(admin.roomsGeneralChannel).not.toBeVisible();
-					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Teams]).click();
+					await admin.adminCheckBox('Teams').click();
 				});
 			});
 			test.describe('[Users]', () => {
@@ -139,8 +141,8 @@ test.describe('[Administration]', () => {
 					});
 
 					test('expect should show rocket.cat', async () => {
-						await admin.usersFilter.type(ROCKET_CAT);
-						await admin.waitForSelector(ROCKET_CAT_SELECTOR);
+						await admin.usersFilter.type('rocket.cat');
+						await page.waitForSelector(ROCKET_CAT_SELECTOR);
 					});
 					test('expect dont user when write wrong name', async () => {
 						await admin.usersFilter.type('any_user_wrong');
@@ -187,6 +189,7 @@ test.describe('[Administration]', () => {
 				test('expect change site url reset button is showed', async () => {
 					await admin.generalSiteUrl.type('something');
 					await expect(admin.generalSiteUrlReset).toBeVisible();
+					await admin.generalSiteUrlReset.click();
 				});
 
 				test('expect change site name reset button is showed', async () => {

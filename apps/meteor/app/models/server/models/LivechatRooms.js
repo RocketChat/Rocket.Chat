@@ -23,6 +23,16 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ t: 1, departmentId: 1, closedAt: 1 }, { partialFilterExpression: { closedAt: { $exists: true } } });
 		this.tryEnsureIndex({ source: 1 }, { sparse: true });
 		this.tryEnsureIndex({ departmentAncestors: 1 }, { sparse: true });
+		this.tryEnsureIndex(
+			{ 't': 1, 'open': 1, 'source.type': 1, 'v.status': 1 },
+			{
+				partialFilterExpression: {
+					't': { $eq: 'l' },
+					'open': { $eq: true },
+					'source.type': { $eq: 'widget' },
+				},
+			},
+		);
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {

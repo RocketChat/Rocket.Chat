@@ -18,7 +18,7 @@ const SeatsCard = (): ReactElement | null => {
 
 	const isNearLimit = seatsCap && seatsCap.activeUsers / seatsCap.maxActiveUsers >= 0.8;
 
-	const color = isNearLimit ? colors.r500 : undefined;
+	const color = isNearLimit ? colors.d500 : undefined;
 
 	if (seatsCap && seatsCap.maxActiveUsers === Infinity) {
 		return null;

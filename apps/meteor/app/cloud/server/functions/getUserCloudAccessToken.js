@@ -4,8 +4,8 @@ import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
 import { userLoggedOut } from './userLoggedOut';
-import { Users } from '../../../models';
-import { settings } from '../../../settings';
+import { Users } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { userScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
