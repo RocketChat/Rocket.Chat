@@ -1,4 +1,3 @@
-import { FederationFactoryEE } from '../../../ee/app/federation-v2/server/infrastructure/Factory';
 import { FederationFactory } from './infrastructure/Factory';
 
 export const FEDERATION_PROCESSING_CONCURRENCY = 1;
@@ -6,8 +5,8 @@ export const FEDERATION_PROCESSING_CONCURRENCY = 1;
 const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapter();
 rocketSettingsAdapter.initialize();
 const queueInstance = FederationFactory.buildQueue();
-const federation = FederationFactoryEE.buildBridge(rocketSettingsAdapter, queueInstance);
-const rocketRoomAdapter = FederationFactoryEE.buildRocketRoomAdapter();
+const federation = FederationFactory.buildBridge(rocketSettingsAdapter, queueInstance);
+const rocketRoomAdapter = FederationFactory.buildRocketRoomAdapter();
 const rocketUserAdapter = FederationFactory.buildRocketUserAdapter();
 const rocketMessageAdapter = FederationFactory.buildRocketMessageAdapter();
 
