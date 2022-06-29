@@ -28,16 +28,14 @@ export const federationRoomServiceSender = FederationFactory.buildRoomServiceSen
 );
 
 FederationFactory.setupListeners(federationRoomServiceSender);
+rocketSettingsAdapter.onFederationEnabledStatusChanged(federation.onFederationAvailabilityChanged.bind(federation));
 
 export const runFederation = async (): Promise<void> => {
 	if (!rocketSettingsAdapter.isFederationEnabled()) {
 		return;
 	}
 	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
-
 	await federation.start();
-
-	await rocketSettingsAdapter.onFederationEnabledStatusChanged(federation.onFederationAvailabilityChanged.bind(federation));
 	require('./infrastructure/rocket-chat/slash-commands');
 };
 

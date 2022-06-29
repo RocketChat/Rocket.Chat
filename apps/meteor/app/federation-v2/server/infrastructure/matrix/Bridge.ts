@@ -1,4 +1,4 @@
-import { AppServiceOutput, Bridge, MatrixUser } from '@rocket.chat/forked-matrix-appservice-bridge';
+import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
 import { IFederationBridge } from '../../domain/IFederationBridge';
 import { bridgeLogger } from '../rocket-chat/adapters/logger';
@@ -7,10 +7,14 @@ import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
+let MatrixUserInstance: any;
+
 export class MatrixBridge implements IFederationBridge {
 	protected bridgeInstance: Bridge;
 
 	protected isRunning = false;
+
+	protected isUpdatingBridgeStatus = false;
 
 	constructor(
 		protected appServiceId: string,
@@ -33,6 +37,10 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async start(): Promise<void> {
+		if (this.isUpdatingBridgeStatus) {
+			return;
+		}
+		this.isUpdatingBridgeStatus = true;
 		try {
 			await this.stop();
 			await this.createInstance();
@@ -41,7 +49,9 @@ export class MatrixBridge implements IFederationBridge {
 				await this.bridgeInstance.run(this.bridgePort);
 				this.isRunning = true;
 			}
+			this.isUpdatingBridgeStatus = false;
 		} catch (e) {
+			this.isUpdatingBridgeStatus = false;
 			bridgeLogger.error('Failed to initialize the matrix-appservice-bridge.', e);
 			bridgeLogger.error('Disabling Matrix Bridge.  Please resolve error and try again');
 		}
@@ -77,8 +87,11 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async createUser(username: string, name: string, domain: string): Promise<string> {
+		if (!MatrixUserInstance) {
+			throw new Error('Error loading the Matrix User instance from the external library');
+		}
 		const matrixUserId = `@${username?.toLowerCase()}:${domain}`;
-		const newUser = new MatrixUser(matrixUserId);
+		const newUser = new MatrixUserInstance(matrixUserId);
 		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})` });
 
 		return matrixUserId;
@@ -146,7 +159,8 @@ export class MatrixBridge implements IFederationBridge {
 		bridgeLogger.info('Performing Dynamic Import of matrix-appservice-bridge');
 
 		// Dynamic import to prevent Rocket.Chat from loading the module until needed and then handle if that fails
-		const { Bridge, AppServiceRegistration } = await import('@rocket.chat/forked-matrix-appservice-bridge');
+		const { Bridge, AppServiceRegistration, MatrixUser } = await import('@rocket.chat/forked-matrix-appservice-bridge');
+		MatrixUserInstance = MatrixUser;
 
 		this.bridgeInstance = new Bridge({
 			homeserverUrl: this.homeServerUrl,
