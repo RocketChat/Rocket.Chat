@@ -1,4 +1,5 @@
 import { Box, Button, Modal, Icon } from '@rocket.chat/fuselage';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, ReactElement, useMemo } from 'react';
 
@@ -10,6 +11,8 @@ type bulletOptionType = {
 	subtitle: string;
 	icon: ComponentProps<typeof Icon>['name'];
 };
+
+const documentationURL = 'https://go.rocket.chat/i/device-management';
 
 const DeviceManagementFeatureModal = ({ close }: { close: () => void }): ReactElement => {
 	const t = useTranslation();
@@ -54,7 +57,8 @@ const DeviceManagementFeatureModal = ({ close }: { close: () => void }): ReactEl
 				))}
 			</Modal.Content>
 			<Modal.Footer>
-				<Box display='flex' justifyContent='end'>
+				<Box display='flex' justifyContent='space-between' alignItems='center'>
+					<ExternalLink to={documentationURL}>{t('Learn_more')}</ExternalLink>
 					<Button onClick={handleGotit}>{t('Got_it')}</Button>
 				</Box>
 			</Modal.Footer>
