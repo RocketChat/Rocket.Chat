@@ -42,6 +42,7 @@ export class IMAPInterceptor extends EventEmitter {
 		this.imap = new IMAP({
 			connTimeout: 300000,
 			keepalive: true,
+			...(imapConfig.tls && { tlsOptions: { servername: imapConfig.host } }),
 			...imapConfig,
 		});
 
@@ -70,7 +71,7 @@ export class IMAPInterceptor extends EventEmitter {
 		});
 
 		this.imap.on('error', (err: Error) => {
-			logger.error('Error occurred: ', err);
+			logger.error('Error occurred ...');
 			throw err;
 		});
 
@@ -96,8 +97,13 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	stop(callback = new Function()): void {
+		logger.info('IMAP stop called');
 		this.imap.end();
-		this.imap.once('end', callback);
+		this.imap.once('end', () => {
+			logger.info('IMAP stopped');
+			callback?.();
+		});
+		callback?.();
 	}
 
 	restart(): void {
