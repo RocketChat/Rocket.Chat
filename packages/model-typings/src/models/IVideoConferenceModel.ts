@@ -56,4 +56,6 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	expireOldVideoConferences(minDate: Date): Promise<void>;
 
 	updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void>;
+
+	increaseAnonymousCount(callId: IGroupVideoConference['_id']): Promise<void>;
 }

@@ -260,4 +260,15 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			},
 		);
 	}
+
+	public async increaseAnonymousCount(callId: IGroupVideoConference['_id']): Promise<void> {
+		await this.updateOne(
+			{ _id: callId },
+			{
+				$inc: {
+					anonymousUsers: 1,
+				},
+			},
+		);
+	}
 }

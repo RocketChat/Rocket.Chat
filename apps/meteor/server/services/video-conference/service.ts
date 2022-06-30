@@ -214,11 +214,20 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
-	public async addUser(callId: VideoConference['_id'], userId: IUser['_id'], ts?: Date): Promise<void> {
+	public async addUser(callId: VideoConference['_id'], userId?: IUser['_id'], ts?: Date): Promise<void> {
 		const call = await this.get(callId);
 		if (!call) {
 			throw new Error('Invalid video conference');
 		}
+
+		if (!userId) {
+			if (call.type === 'videoconference') {
+				return this.addAnonymousUser(call as Omit<IGroupVideoConference, 'providerData'>);
+			}
+
+			throw new Error('Invalid User');
+		}
+
 		const user = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(userId, {
 			projection: { username: 1, name: 1 },
 		});
@@ -661,9 +670,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
-		if (user?._id) {
-			await callbacks.runAsync('onJoinVideoConference', call._id, user._id);
-		}
+		await callbacks.runAsync('onJoinVideoConference', call._id, user?._id);
 
 		return this.getUrl(call, user, options);
 	}
@@ -803,15 +810,19 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
-	private async updateGroupCallMessage(
-		call: Optional<IGroupVideoConference, 'providerData'>,
-		user: Pick<IUser, '_id' | 'username' | 'name'>,
-	): Promise<void> {
-		if (!call.messages.started || !user.username) {
+	private async addAnonymousUser(call: Optional<IGroupVideoConference, 'providerData'>): Promise<void> {
+		await VideoConferenceModel.increaseAnonymousCount(call._id);
+
+		if (!call.messages.started) {
 			return;
 		}
 
-		const message = await Messages.findOneById<IMessage>(call.messages.started, {});
+		const imageUrl = getURL(`/avatar/@a`, { cdn: false, full: true });
+		return this.addAvatarToCallMessage(call.messages.started, imageUrl, TAPi18n.__('Anonymous'));
+	}
+
+	private async addAvatarToCallMessage(messageId: IMessage['_id'], imageUrl: string, altText: string): Promise<void> {
+		const message = await Messages.findOneById<Pick<IMessage, '_id' | 'blocks'>>(messageId, { projection: { blocks: 1 } });
 		if (!message) {
 			return;
 		}
@@ -823,8 +834,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			blocks.push(avatarsBlock);
 		}
 
-		const imageUrl = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
-
 		if (avatarsBlock.elements.find((el) => el.type === 'image' && el.imageUrl === imageUrl)) {
 			return;
 		}
@@ -834,11 +843,23 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			{
 				type: 'image',
 				imageUrl,
-				altText: user.name || user.username,
+				altText,
 			},
 		];
 
-		await Messages.setBlocksById(call.messages.started, blocks);
+		await Messages.setBlocksById(message._id, blocks);
+	}
+
+	private async updateGroupCallMessage(
+		call: Optional<IGroupVideoConference, 'providerData'>,
+		user: Pick<IUser, '_id' | 'username' | 'name'>,
+	): Promise<void> {
+		if (!call.messages.started || !user.username) {
+			return;
+		}
+		const imageUrl = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+
+		return this.addAvatarToCallMessage(call.messages.started, imageUrl, user.name || user.username);
 	}
 
 	private async updateDirectCall(call: IDirectVideoConference, newUserId: IUser['_id']): Promise<void> {
