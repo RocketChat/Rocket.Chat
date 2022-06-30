@@ -1,3 +1,4 @@
+import { SidebarFooter } from '@rocket.chat/fuselage';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
@@ -11,6 +12,8 @@ import {
 	useQueueCounter,
 	useQueueName,
 } from '../../../contexts/CallContext';
+import SidebarFooterDefault from '../SidebarFooterDefault';
+import { SidebarFooterWatermark } from '../SidebarFooterWatermark';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
 export const VoipFooter = (): ReactElement | null => {
@@ -80,7 +83,7 @@ export const VoipFooter = (): ReactElement | null => {
 	}, [queueCounter, t]);
 
 	if (!('caller' in callerInfo)) {
-		return null;
+		return <SidebarFooterDefault />;
 	}
 
 	return (
@@ -102,6 +105,7 @@ export const VoipFooter = (): ReactElement | null => {
 			openedRoomInfo={openedRoomInfo}
 			anonymousText={t('Anonymous')}
 			isEnterprise={isEE === true}
+			children={<SidebarFooterWatermark />}
 		/>
 	);
 };

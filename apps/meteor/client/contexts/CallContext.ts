@@ -87,16 +87,6 @@ export const useCallActions = (): CallActionsType => {
 	return context.actions;
 };
 
-export const useCallerStatus = (): CallStates => {
-	const context = useContext(CallContext);
-
-	if (isCallContextReady(context)) {
-		return context.voipClient.callState;
-	}
-
-	return 'INITIAL';
-};
-
 export const useCallerInfo = (): VoIpCallerInfo => {
 	const context = useContext(CallContext);
 
