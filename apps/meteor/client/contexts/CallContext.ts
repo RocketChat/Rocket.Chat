@@ -12,15 +12,23 @@ export type CallContextValue = CallContextDisabled | CallContextReady | CallCont
 export type CallContextDisabled = {
 	enabled: false;
 	ready: false;
+	outBoundCallsAllowed: undefined;
+	outBoundCallsEnabled: undefined;
+	outBoundCallsEnabledForUser: undefined;
 };
 
 type CallContextEnabled = {
 	enabled: true;
 	ready: unknown;
+	outBoundCallsAllowed: undefined;
+	outBoundCallsEnabled: undefined;
+	outBoundCallsEnabledForUser: undefined;
 };
 
 type CallContextReady = {
-	canMakeCall: boolean;
+	outBoundCallsEnabled: boolean;
+	outBoundCallsAllowed: boolean;
+	outBoundCallsEnabledForUser: boolean;
 	enabled: true;
 	ready: true;
 	voipClient: VoIPUser;
@@ -40,6 +48,9 @@ type CallContextReady = {
 export type CallContextError = {
 	enabled: true;
 	ready: false;
+	outBoundCallsAllowed: undefined;
+	outBoundCallsEnabled: undefined;
+	outBoundCallsEnabledForUser: undefined;
 	error: Error | unknown;
 };
 
@@ -61,6 +72,9 @@ export type CallActionsType = {
 const CallContextValueDefault: CallContextValue = {
 	enabled: false,
 	ready: false,
+	outBoundCallsAllowed: undefined,
+	outBoundCallsEnabled: undefined,
+	outBoundCallsEnabledForUser: undefined,
 };
 
 export const CallContext = createContext<CallContextValue>(CallContextValueDefault);
@@ -242,4 +256,18 @@ export const useCallUnregisterClient = (): (() => void) => {
 	}
 
 	return context.unregister;
+};
+
+export const useVoipOutboundStates = (): {
+	outBoundCallsAllowed: boolean;
+	outBoundCallsEnabled: boolean;
+	outBoundCallsEnabledForUser: boolean;
+} => {
+	const context = useContext(CallContext);
+
+	return {
+		outBoundCallsAllowed: Boolean(context.outBoundCallsAllowed),
+		outBoundCallsEnabled: Boolean(context.outBoundCallsEnabled),
+		outBoundCallsEnabledForUser: Boolean(context.outBoundCallsEnabledForUser),
+	};
 };

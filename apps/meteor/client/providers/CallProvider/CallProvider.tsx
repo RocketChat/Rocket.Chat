@@ -58,6 +58,8 @@ const stopRingback = (): void => {
 type NetworkState = 'online' | 'offline';
 
 export const CallProvider: FC = ({ children }) => {
+	const [clientState, setClientState] = useState<'registered' | 'unregistered'>('unregistered');
+
 	const voipEnabled = useSetting('VoIP_Enabled');
 	const subscribeToNotifyUser = useStream('notify-user');
 	const dispatchEvent = useEndpoint('POST', '/v1/voip/events');
@@ -141,6 +143,7 @@ export const CallProvider: FC = ({ children }) => {
 		voipClient.register();
 
 		setQueueAggregator(voipClient.getAggregator());
+
 		return (): void => voipClient.unregister();
 	}, [result]);
 
@@ -250,6 +253,20 @@ export const CallProvider: FC = ({ children }) => {
 
 		return subscribeToNotifyUser(`${user._id}/call.hangup`, handleCallHangup);
 	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled, dispatchEvent, hasVoIPEnterpriseLicense, closeRoom]);
+
+	useEffect(() => {
+		if (!result.voipClient) {
+			return;
+		}
+
+		const offRegistered = result.voipClient.on('registered', (): void => setClientState('registered'));
+		const offUnregistered = result.voipClient.on('unregistered', (): void => setClientState('unregistered'));
+
+		return (): void => {
+			offRegistered();
+			offUnregistered();
+		};
+	}, [result.voipClient]);
 
 	useEffect(() => {
 		if (!result.voipClient) {
@@ -394,6 +411,9 @@ export const CallProvider: FC = ({ children }) => {
 			return {
 				enabled: false,
 				ready: false,
+				outBoundCallsAllowed: undefined, // set to true only if enterprise license is present.
+				outBoundCallsEnabled: undefined, // set to true even if enterprise license is not present.
+				outBoundCallsEnabledForUser: undefined, // set to true if the user has enterprise license, but is not able to make outbound calls. (busy, or disabled)
 			};
 		}
 
@@ -401,6 +421,9 @@ export const CallProvider: FC = ({ children }) => {
 			return {
 				enabled: false,
 				ready: false,
+				outBoundCallsAllowed: undefined, // set to true only if enterprise license is present.
+				outBoundCallsEnabled: undefined, // set to true even if enterprise license is not present.
+				outBoundCallsEnabledForUser: undefined, // set to true if the user has enterprise license, but is not able to make outbound calls. (busy, or disabled)
 			};
 		}
 
@@ -409,6 +432,9 @@ export const CallProvider: FC = ({ children }) => {
 				enabled: true,
 				ready: false,
 				error: result.error,
+				outBoundCallsAllowed: undefined, // set to true only if enterprise license is present.
+				outBoundCallsEnabled: undefined, // set to true even if enterprise license is not present.
+				outBoundCallsEnabledForUser: undefined, // set to true if the user has enterprise license, but is not able to make outbound calls. (busy, or disabled)
 			};
 		}
 
@@ -416,13 +442,19 @@ export const CallProvider: FC = ({ children }) => {
 			return {
 				enabled: true,
 				ready: false,
+				outBoundCallsAllowed: undefined, // set to true only if enterprise license is present.
+				outBoundCallsEnabled: undefined, // set to true even if enterprise license is not present.
+				outBoundCallsEnabledForUser: undefined, // set to true if the user has enterprise license, but is not able to make outbound calls. (busy, or disabled)
 			};
 		}
 
 		const { registrationInfo, voipClient } = result;
 
 		return {
-			canMakeCall: hasVoIPEnterpriseLicense,
+			outBoundCallsAllowed: hasVoIPEnterpriseLicense, // set to true only if enterprise license is present.
+			outBoundCallsEnabled: hasVoIPEnterpriseLicense, // set to true even if enterprise license is not present.
+			outBoundCallsEnabledForUser: hasVoIPEnterpriseLicense && clientState === 'registered', // set to true if the user has enterprise license, but is not able to make outbound calls. (busy, or disabled)
+
 			enabled: true,
 			ready: true,
 			openedRoomInfo: roomInfo,
@@ -454,6 +486,7 @@ export const CallProvider: FC = ({ children }) => {
 		user?.extension,
 		result,
 		hasVoIPEnterpriseLicense,
+		clientState,
 		roomInfo,
 		queueCounter,
 		queueName,

@@ -747,6 +747,8 @@
 	"Call_Information": "Call Information",
 	"Call_provider": "Call Provider",
 	"Call_Already_Ended": "Call Already Ended",
+  "Call_number": "Call number",
+	"Call_number_enterprise_only": "Call number (Enterprise Edition only)",
 	"call-management": "Call Management",
 	"call-management_description": "Permission to start a meeting",
 	"Caller": "Caller",
