@@ -14,7 +14,7 @@ export class ModalDismissRaw extends BaseRaw<IModalDismiss> implements IModalDis
 	}
 
 	protected modelIndexes(): IndexSpecification[] {
-		return [{ key: { createdAt: -1 } }, { key: { _modal: 1, _user: 1, createdAt: -1 }, background: true }];
+		return [{ key: { createdAt: -1 } }, { key: { modalId: 1, userId: 1, createdAt: -1 }, background: true }];
 	}
 
 	findOneByModalIdAndUserId(
@@ -22,15 +22,15 @@ export class ModalDismissRaw extends BaseRaw<IModalDismiss> implements IModalDis
 		userId: IUser['_id'],
 		options: FindOneOptions<IModalDismiss>,
 	): Promise<IModalDismiss | null> {
-		return this.findOne({ _modal: modalId, _user: userId }, options);
+		return this.findOne({ modalId, userId }, options);
 	}
 
 	findWithUserId(userId: IUser['_id'], options: FindOneOptions<IModalDismiss>): Cursor<IModalDismiss> {
-		const query = { _user: userId };
+		const query = { userId };
 		return this.find(query, options);
 	}
 
 	async removeUserByUserIdAndId(modalId: IModal['_id'], userId: IUser['_id']): Promise<Pick<DeleteWriteOpResultObject, 'deletedCount'>> {
-		return this.deleteOne({ _modal: modalId, _user: userId });
+		return this.deleteOne({ modalId, userId });
 	}
 }

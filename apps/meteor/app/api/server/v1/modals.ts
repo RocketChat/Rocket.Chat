@@ -64,7 +64,7 @@ API.v1.addRoute(
 			if (modalsDismiss) {
 				return API.v1.failure('error-modal-already-dismissed');
 			}
-			await ModalDismiss.insertOne({ _modal: modalId, _user: this.userId, createdAt: new Date() });
+			await ModalDismiss.insertOne({ modalId, userId: this.userId, createdAt: new Date() });
 			return API.v1.success();
 		},
 		async delete() {
