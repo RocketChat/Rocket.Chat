@@ -997,7 +997,11 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			{ key: { type: 1, year: 1, month: 1, day: 1 } },
 			{ key: { sessionId: 1, instanceId: 1, year: 1, month: 1, day: 1 } },
 			{ key: { _computedAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 45 },
-			{ key: { 'loginToken': 1, 'logoutAt': 1, 'userId': 1, 'device.name': 1, 'device.os.name': 1, 'logintAt': -1 } },
+			{
+				key: { 'loginToken': 1, 'logoutAt': 1, 'userId': 1, 'device.name': 1, 'device.os.name': 1, 'logintAt': -1 },
+				partialFilterExpression: { loginToken: { $exists: true } },
+				background: true,
+			},
 		];
 	}
 
