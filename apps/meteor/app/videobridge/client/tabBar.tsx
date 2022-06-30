@@ -8,13 +8,23 @@ import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/useVideoConfWarning';
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 
-addAction('calls', {
-	groups: ['channel', 'group', 'team'],
-	id: 'calls',
-	icon: 'phone',
-	title: 'Calls',
-	template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
-	order: 999,
+addAction('calls', () => {
+	const hasLicense = useHasLicenseModule('videoconference-enterprise');
+
+	return useMemo(
+		() =>
+			hasLicense
+				? {
+						groups: ['channel', 'group', 'team'],
+						id: 'calls',
+						icon: 'phone',
+						title: 'Calls',
+						template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
+						order: 999,
+				  }
+				: null,
+		[hasLicense],
+	);
 });
 
 addAction('start-call', ({ room }) => {
@@ -23,7 +33,7 @@ addAction('start-call', ({ room }) => {
 	const dispatchPopup = useVideoConfDispatchOutgoing();
 	const isCalling = useVideoConfIsCalling();
 	const isRinging = useVideoConfIsRinging();
-	const hasLicense = useHasLicenseModule('videoconference-enterprise');
+
 	const ownUser = room.uids && room.uids.length === 1;
 
 	// Only disable video conf if the settings are explicitly FALSE - any falsy value counts as true
@@ -64,7 +74,7 @@ addAction('start-call', ({ room }) => {
 
 	return useMemo(
 		() =>
-			enableOption && hasLicense && !ownUser
+			enableOption && !ownUser
 				? {
 						groups,
 						id: 'start-call',
@@ -75,6 +85,6 @@ addAction('start-call', ({ room }) => {
 						order: live ? -1 : 4,
 				  }
 				: null,
-		[groups, enableOption, live, hasLicense, handleOpenVideoConf, ownUser],
+		[groups, enableOption, live, handleOpenVideoConf, ownUser],
 	);
 });
