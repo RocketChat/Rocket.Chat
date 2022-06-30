@@ -1,6 +1,6 @@
 import type { ISocketConnection } from '@rocket.chat/core-typings';
 
-export const getClientAddress = (connection: Pick<ISocketConnection, 'clientAddress' | 'httpHeaders'>): string => {
+export function getClientAddress(connection: Pick<ISocketConnection, 'clientAddress' | 'httpHeaders'>): string {
 	if (!connection) {
 		return '';
 	}
