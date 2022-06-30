@@ -26,7 +26,7 @@ type VoipFooterPropsType = {
 	};
 	callsInQueue: string;
 
-	createRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
+	createRoom: (caller: ICallerInfo, callDirection?: IVoipRoom['direction']) => IVoipRoom['_id'];
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	openedRoomInfo: { v: { token?: string | undefined }; rid: string };
