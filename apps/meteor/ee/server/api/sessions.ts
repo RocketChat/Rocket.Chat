@@ -91,13 +91,24 @@ API.v1.addRoute(
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
-			const search: string = this.queryParams?.filter || '';
+			const filter: string = this.queryParams?.filter || '';
+
+			const user = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+				{ $regex: filter, $options: 'i' },
+				[],
+				{},
+				{ projection: { _id: 1 }, limit: 5 },
+			)
+				.map((el) => el._id)
+				.toArray();
+
+			const search = user.length ? `${filter}|${user.join('|')}` : filter;
 
 			const sortKeys = ['loginAt', 'device.name', 'device.os.name', '_user.username', '_user.name'];
 			if (!Object.keys(sort).filter((key) => sortKeys.includes(key)).length) {
 				return API.v1.failure('error-invalid-sort');
 			}
-
+			console.log(search);
 			const sessions = await Sessions.aggregateSessionsAndPopulate({ search, sort, offset, count });
 			return API.v1.success(sessions);
 		},
