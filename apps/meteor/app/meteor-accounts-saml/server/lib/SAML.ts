@@ -7,10 +7,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import fiber from 'fibers';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { IUser, IIncomingMessage } from '@rocket.chat/core-typings';
+import { CredentialTokens } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { Users, Rooms } from '../../../models/server';
-import { CredentialTokens } from '../../../models/server/raw';
 import { saveUserIdentity, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
 import { SAMLServiceProvider } from './ServiceProvider';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';

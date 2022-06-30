@@ -7,6 +7,7 @@ import GenericTable from '../../../../client/components/GenericTable';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import RemoveUnitButton from './RemoveUnitButton';
+import UnitEdit from './UnitEdit';
 import UnitEditWithData from './UnitEditWithData';
 import UnitsPage from './UnitsPage';
 
@@ -59,7 +60,7 @@ function UnitsRoute() {
 			}),
 	);
 
-	const { value: data = {}, reload } = useEndpointData('/v1/livechat/units.list', query);
+	const { value: data = {}, reload } = useEndpointData('/v1/livechat/units', query);
 
 	const header = useMemo(
 		() =>
@@ -94,8 +95,12 @@ function UnitsRoute() {
 		[reload, onRowClick],
 	);
 
-	if (context === 'edit' || context === 'new') {
-		return <UnitEditWithData title={context === 'edit' ? t('Edit_Unit') : t('New_Unit')} unitId={id} reload={reload} allUnits={data} />;
+	if (context === 'edit') {
+		return <UnitEditWithData title={t('Edit_Unit')} unitId={id} reload={reload} allUnits={data} />;
+	}
+
+	if (context === 'new') {
+		return <UnitEdit title={t('New_Unit')} reload={reload} isNew={true} />;
 	}
 
 	if (!canViewUnits) {

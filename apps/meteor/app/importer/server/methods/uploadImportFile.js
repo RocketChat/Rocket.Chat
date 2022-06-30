@@ -6,6 +6,38 @@ import { hasPermission } from '../../../authorization';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Importers } from '..';
 
+export const executeUploadImportFile = (userId, binaryContent, contentType, fileName, importerKey) => {
+	const importer = Importers.get(importerKey);
+	if (!importer) {
+		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, {
+			method: 'uploadImportFile',
+		});
+	}
+
+	importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
+
+	const date = new Date();
+	const dateStr = `${date.getUTCFullYear()}${date.getUTCMonth()}${date.getUTCDate()}${date.getUTCHours()}${date.getUTCMinutes()}${date.getUTCSeconds()}`;
+	const newFileName = `${dateStr}_${userId}_${fileName}`;
+
+	// Store the file name and content type on the imports collection
+	importer.instance.startFileUpload(newFileName, contentType);
+
+	// Save the file on the File Store
+	const file = Buffer.from(binaryContent, 'base64');
+	const readStream = RocketChatFile.bufferToStream(file);
+	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName, contentType);
+
+	writeStream.on(
+		'end',
+		Meteor.bindEnvironment(() => {
+			importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+		}),
+	);
+
+	readStream.pipe(writeStream);
+};
+
 Meteor.methods({
 	uploadImportFile(binaryContent, contentType, fileName, importerKey) {
 		const userId = Meteor.userId();
@@ -20,34 +52,6 @@ Meteor.methods({
 			});
 		}
 
-		const importer = Importers.get(importerKey);
-		if (!importer) {
-			throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, {
-				method: 'uploadImportFile',
-			});
-		}
-
-		importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
-
-		const date = new Date();
-		const dateStr = `${date.getUTCFullYear()}${date.getUTCMonth()}${date.getUTCDate()}${date.getUTCHours()}${date.getUTCMinutes()}${date.getUTCSeconds()}`;
-		const newFileName = `${dateStr}_${userId}_${fileName}`;
-
-		// Store the file name and content type on the imports collection
-		importer.instance.startFileUpload(newFileName, contentType);
-
-		// Save the file on the File Store
-		const file = Buffer.from(binaryContent, 'base64');
-		const readStream = RocketChatFile.bufferToStream(file);
-		const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName, contentType);
-
-		writeStream.on(
-			'end',
-			Meteor.bindEnvironment(() => {
-				importer.instance.updateProgress(ProgressStep.FILE_LOADED);
-			}),
-		);
-
-		readStream.pipe(writeStream);
+		executeUploadImportFile(userId, binaryContent, contentType, fileName, importerKey);
 	},
 });

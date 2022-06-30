@@ -15,7 +15,7 @@ const BusinessHoursTableContainer = () => {
 		phase: state,
 		reload,
 	} = useEndpointData(
-		'/v1/livechat/business-hours.list',
+		'/v1/livechat/business-hours',
 		useMemo(
 			() => ({
 				count: params.itemsPerPage,

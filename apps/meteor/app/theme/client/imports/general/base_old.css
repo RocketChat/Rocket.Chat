@@ -2934,6 +2934,8 @@
 .rc-old .highlight-text {
 	padding: 2px;
 
+	color: inherit;
+
 	border-radius: 15px;
 	background-color: var(--selection-background);
 }
