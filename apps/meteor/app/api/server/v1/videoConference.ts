@@ -15,7 +15,7 @@ import { availabilityErrors } from '../../../../lib/videoConference/constants';
 
 API.v1.addRoute(
 	'video-conference.start',
-	{ authRequired: true, validateParams: isVideoConfStartProps },
+	{ authRequired: true, validateParams: isVideoConfStartProps, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 60000 } },
 	{
 		async post() {
 			const { roomId, title, allowRinging } = this.bodyParams;
@@ -46,7 +46,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'video-conference.join',
-	{ authOrAnonRequired: true, validateParams: isVideoConfJoinProps },
+	{ authOrAnonRequired: true, validateParams: isVideoConfJoinProps, rateLimiterOptions: { numRequestsAllowed: 2, intervalTimeInMS: 5000 } },
 	{
 		async post() {
 			const { callId, state } = this.bodyParams;
@@ -88,7 +88,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'video-conference.cancel',
-	{ authRequired: true, validateParams: isVideoConfCancelProps },
+	{ authRequired: true, validateParams: isVideoConfCancelProps, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 60000 } },
 	{
 		async post() {
 			const { callId } = this.bodyParams;
@@ -111,7 +111,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'video-conference.info',
-	{ authRequired: true, validateParams: isVideoConfInfoProps },
+	{ authRequired: true, validateParams: isVideoConfInfoProps, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 } },
 	{
 		async get() {
 			const { callId } = this.queryParams;
@@ -138,7 +138,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'video-conference.list',
-	{ authRequired: true, validateParams: isVideoConfListProps },
+	{ authRequired: true, validateParams: isVideoConfListProps, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 } },
 	{
 		async get() {
 			const { roomId } = this.queryParams;
@@ -159,7 +159,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'video-conference.providers',
-	{ authRequired: true },
+	{ authRequired: true, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 } },
 	{
 		async get() {
 			const data = await VideoConf.listProviders();
@@ -171,7 +171,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'video-conference.capabilities',
-	{ authRequired: true },
+	{ authRequired: true, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 } },
 	{
 		async get() {
 			const data = await VideoConf.listCapabilities();
