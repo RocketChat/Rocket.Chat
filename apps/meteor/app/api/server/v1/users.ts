@@ -391,14 +391,14 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-d-room') || !hasPermission(this.userId, 'view-user-administration')) {
+			if (!hasPermission(this.userId, 'view-d-room')) {
 				return API.v1.unauthorized();
 			}
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const nonEmptyQuery = getNonEmptyQuery(query);
+			const nonEmptyQuery = getNonEmptyQuery(query, hasPermission(this.userId, 'view-full-other-user-info'));
 			const nonEmptyFields = getNonEmptyFields(fields);
 
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
@@ -413,6 +413,7 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
 						inclusiveFieldsKeys.includes('username') && 'username.*',
 						inclusiveFieldsKeys.includes('name') && 'name.*',
+						inclusiveFieldsKeys.includes('type') && 'type.*',
 					].filter(Boolean) as string[],
 					this.queryOperations,
 				)

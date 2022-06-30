@@ -79,6 +79,7 @@ export function getNonEmptyFields(fields: { [k: string]: 1 | 0 }): { [k: string]
 		active: 1,
 		avatarETag: 1,
 		lastLogin: 1,
+		type: 1,
 	} as const;
 
 	if (!fields || Object.keys(fields).length === 0) {
@@ -102,7 +103,7 @@ const _defaultQuery = {
  */
 
 type Query = { [k: string]: unknown };
-export function getNonEmptyQuery(query: Query): typeof _defaultQuery | (typeof _defaultQuery & Query) {
+export function getNonEmptyQuery(query: Query, canSeeAllUserInfo?: boolean): typeof _defaultQuery | (typeof _defaultQuery & Query) {
 	const defaultQuery = {
 		$or: [
 			{ 'emails.address': { $regex: '', $options: 'i' } },
@@ -110,6 +111,10 @@ export function getNonEmptyQuery(query: Query): typeof _defaultQuery | (typeof _
 			{ name: { $regex: '', $options: 'i' } },
 		],
 	};
+
+	if (!canSeeAllUserInfo) {
+		defaultQuery.$or = defaultQuery.$or.filter((or) => !or['emails.address']);
+	}
 
 	if (!query || Object.keys(query).length === 0) {
 		return defaultQuery;
