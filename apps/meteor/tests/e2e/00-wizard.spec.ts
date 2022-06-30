@@ -49,6 +49,7 @@ test.describe('[Wizard]', () => {
 
 		test('expect have option for standalone server', async () => {
 			await expect(wizard.btnStandaloneServer).toBeVisible();
+			await page.pause();
 		});
 	});
 

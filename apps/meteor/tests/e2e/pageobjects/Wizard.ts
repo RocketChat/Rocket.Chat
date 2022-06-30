@@ -17,7 +17,7 @@ export class Wizard {
 	}
 
 	getBtnPrimary(input: { text: string }): Locator {
-		return this.page.locator(`.rcx-button--primary.rcx-button >> text="${input.text}"`);
+		return this.page.locator('.rcx-button--primary.rcx-button', { hasText: input.text });
 	}
 
 	async doClickAgreementField(): Promise<void> {
@@ -25,7 +25,7 @@ export class Wizard {
 	}
 
 	get btnStandaloneServer(): Locator {
-		return this.page.locator('.rcx-button--nude-info.rcx-button.rcx-button-group__item >> text="Continue as standalone"');
+		return this.page.locator('.rcx-button--nude-info.rcx-button.rcx-button-group__item', { hasText: 'Continue as standalone' });
 	}
 
 	get textStandaloneServerConfirmation(): Locator {
