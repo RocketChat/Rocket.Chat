@@ -171,7 +171,7 @@ Meteor.startup(async function () {
 				if (msgTs != null) {
 					currentTsDiff = moment().diff(msgTs, 'minutes');
 				}
-				return !!currentTsDiff && currentTsDiff < blockEditInMinutes;
+				return (!!currentTsDiff || currentTsDiff === 0) && currentTsDiff < blockEditInMinutes;
 			}
 			return true;
 		},

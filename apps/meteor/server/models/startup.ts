@@ -34,6 +34,7 @@ import './OAuthApps';
 import './OEmbedCache';
 import './OmnichannelQueue';
 import './PbxEvents';
+import './PushToken';
 import './Permissions';
 import './ReadReceipts';
 import './Reports';

@@ -12,7 +12,6 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
-import { hasPermission } from '../../../authorization/server';
 import { Imports } from '../../../models/server';
 import { Importers } from '../../../importer/server';
 import { executeUploadImportFile } from '../../../importer/server/methods/uploadImportFile';
@@ -42,9 +41,7 @@ API.v1.addRoute(
 		post() {
 			const { fileUrl, importerKey } = this.bodyParams;
 
-			Meteor.runAsUser(this.userId, () => {
-				API.v1.success(Meteor.call('downloadPublicImportFile', fileUrl, importerKey));
-			});
+			Meteor.call('downloadPublicImportFile', fileUrl, importerKey);
 
 			return API.v1.success();
 		},
@@ -61,9 +58,7 @@ API.v1.addRoute(
 		post() {
 			const { input } = this.bodyParams;
 
-			Meteor.runAsUser(this.userId, () => {
-				API.v1.success(Meteor.call('startImport', input));
-			});
+			Meteor.call('startImport', input);
 
 			return API.v1.success();
 		},
@@ -78,11 +73,7 @@ API.v1.addRoute(
 	},
 	{
 		get() {
-			let result;
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('getImportFileData');
-			});
-
+			const result = Meteor.call('getImportFileData');
 			return API.v1.success(result);
 		},
 	},
@@ -96,11 +87,7 @@ API.v1.addRoute(
 	},
 	{
 		get() {
-			let result;
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('getImportProgress');
-			});
-
+			const result = Meteor.call('getImportProgress');
 			return API.v1.success(result);
 		},
 	},
@@ -114,11 +101,7 @@ API.v1.addRoute(
 	},
 	{
 		get() {
-			let result;
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('getLatestImportOperations');
-			});
-
+			const result = Meteor.call('getLatestImportOperations');
 			return API.v1.success(result);
 		},
 	},
@@ -129,19 +112,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isDownloadPendingFilesParamsPOST,
+		permissionsRequired: ['run-import'],
 	},
 	{
 		post() {
-			if (!this.userId) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'downloadPendingFiles',
-				});
-			}
-
-			if (!hasPermission(this.userId, 'run-import')) {
-				throw new Meteor.Error('not_authorized');
-			}
-
 			const importer = Importers.get('pending-files');
 			if (!importer) {
 				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', {
@@ -153,7 +127,6 @@ API.v1.addRoute(
 			const count = importer.instance.prepareFileCount();
 
 			return API.v1.success({
-				success: true,
 				count,
 			});
 		},
@@ -165,19 +138,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isDownloadPendingAvatarsParamsPOST,
+		permissionsRequired: ['run-import'],
 	},
 	{
 		post() {
-			if (!this.userId) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'downloadPendingAvatars',
-				});
-			}
-
-			if (!hasPermission(this.userId, 'run-import')) {
-				throw new Meteor.Error('not_authorized');
-			}
-
 			const importer = Importers.get('pending-avatars');
 			if (!importer) {
 				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', {
@@ -189,7 +153,6 @@ API.v1.addRoute(
 			const count = importer.instance.prepareFileCount();
 
 			return API.v1.success({
-				success: true,
 				count,
 			});
 		},
@@ -201,19 +164,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isGetCurrentImportOperationParamsGET,
+		permissionsRequired: ['run-import'],
 	},
 	{
 		get() {
-			if (!this.userId) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'getCurrentImportOperation',
-				});
-			}
-
-			if (!hasPermission(this.userId, 'run-import')) {
-				throw new Meteor.Error('not_authorized');
-			}
-
 			const operation = Imports.findLastImport();
 			return API.v1.success({
 				success: true,

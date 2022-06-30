@@ -40,6 +40,7 @@ import type {
 	IOEmbedCacheModel,
 	IOmnichannelQueueModel,
 	IPbxEventsModel,
+	IPushTokenModel,
 	IPermissionsModel,
 	IReadReceiptsModel,
 	IReportsModel,
@@ -112,6 +113,7 @@ export const OAuthApps = proxify<IOAuthAppsModel>('IOAuthAppsModel');
 export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
 export const OmnichannelQueue = proxify<IOmnichannelQueueModel>('IOmnichannelQueueModel');
 export const PbxEvents = proxify<IPbxEventsModel>('IPbxEventsModel');
+export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
 export const Reports = proxify<IReportsModel>('IReportsModel');
