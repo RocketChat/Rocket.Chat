@@ -5,13 +5,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
-import UserCard from '../../../../../components/UserCard/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
+import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
@@ -113,12 +113,7 @@ const ContactInfo = ({ id, rid, route }) => {
 							<Label>{`${t('Name')} / ${t('Username')}`}</Label>
 							<Info style={{ display: 'flex' }}>
 								<UserAvatar size='x40' title={username} username={username} />
-								<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
-								{username && name && (
-									<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
-										({username})
-									</Box>
-								)}
+								<AgentInfoDetails mis='x10' name={displayName} shortName={username} status={<UserStatus status={status} />} />
 							</Info>
 						</Field>
 					)}

@@ -43,5 +43,3 @@ yarn-error.log*
 
 .nvmrc
 .idea/
-
-*.tsbuildinfo
