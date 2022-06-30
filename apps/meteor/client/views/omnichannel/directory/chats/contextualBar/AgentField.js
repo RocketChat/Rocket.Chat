@@ -1,12 +1,11 @@
-import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import UserCard from '../../../../../components/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
+import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
@@ -35,12 +34,7 @@ const AgentField = ({ agent, isSmall = false }) => {
 			<Label>{t('Agent')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<UserAvatar size={isSmall ? 'x28' : 'x40'} title={username} username={username} />
-				<UserCard.Username mis={isSmall ? 'x8' : 'x10'} name={displayName} status={<UserStatus status={status} />} />
-				{username && name && (
-					<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
-						({username})
-					</Box>
-				)}
+				<AgentInfoDetails mis={isSmall ? 'x8' : 'x10'} name={displayName} shortName={username} status={<UserStatus status={status} />} />
 			</Info>
 		</Field>
 	);
