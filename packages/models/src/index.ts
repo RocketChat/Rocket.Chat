@@ -38,7 +38,6 @@ import type {
 	INpsVoteModel,
 	IOAuthAppsModel,
 	IOEmbedCacheModel,
-	IOmnichannelQueueModel,
 	IPbxEventsModel,
 	IPushTokenModel,
 	IPermissionsModel,
@@ -110,7 +109,6 @@ export const Nps = proxify<INpsModel>('INpsModel');
 export const NpsVote = proxify<INpsVoteModel>('INpsVoteModel');
 export const OAuthApps = proxify<IOAuthAppsModel>('IOAuthAppsModel');
 export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
-export const OmnichannelQueue = proxify<IOmnichannelQueueModel>('IOmnichannelQueueModel');
 export const PbxEvents = proxify<IPbxEventsModel>('IPbxEventsModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
