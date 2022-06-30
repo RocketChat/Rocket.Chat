@@ -189,7 +189,7 @@ export class SAUMonitorClass {
 		// TODO missing an action to perform on dangling sessions (for example remove sessions not closed one month ago)
 	}
 
-	private _getSearchTerm(session: Omit<ISession, '_id' | '_updatedAt' | 'createdAt'>): string {
+	private _getSearchTerm(session: Omit<ISession, '_id' | '_updatedAt' | 'createdAt' | 'searchTerm'>): string {
 		return [session.device?.name, session.device?.type, session.device?.os.name, session.sessionId, session.userId]
 			.filter(Boolean)
 			.join('');
@@ -198,7 +198,7 @@ export class SAUMonitorClass {
 	private _getConnectionInfo(
 		connection: ISocketConnection,
 		params: Pick<ISession, 'userId' | 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
-	): Omit<ISession, '_id' | '_updatedAt' | 'createdAt'> | undefined {
+	): Omit<ISession, '_id' | '_updatedAt' | 'createdAt' | 'searchTerm'> | undefined {
 		if (!connection) {
 			return;
 		}

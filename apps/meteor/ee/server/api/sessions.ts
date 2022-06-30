@@ -1,4 +1,5 @@
 import { Users, Sessions } from '@rocket.chat/models';
+import { IUser } from '@rocket.chat/core-typings';
 
 import { isSessionsPaginateProps, isSessionsProps } from '../../definition/rest/v1/sessions';
 import { API } from '../../../app/api/server/api';
@@ -106,7 +107,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-sort-keys');
 			}
 
-			const user = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+			const user = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<Pick<IUser, '_id'>>(
 				{ $regex: filter, $options: 'i' },
 				[],
 				{},
