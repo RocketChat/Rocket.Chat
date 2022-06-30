@@ -16,7 +16,7 @@ export async function findUsersToAutocomplete({
 		term: string;
 	};
 }): Promise<{
-	items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
+	items: Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>[];
 }> {
 	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
 		return { items: [] };
