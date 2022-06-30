@@ -60,8 +60,6 @@ import type {
 	IUsersModel,
 	IVoipRoomModel,
 	IWebdavAccountsModel,
-	IModalModel,
-	IModalDismissModel,
 } from '@rocket.chat/model-typings';
 
 import { proxify } from './proxify';
@@ -134,5 +132,3 @@ export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel')
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
 export const VoipRoom = proxify<IVoipRoomModel>('IVoipRoomModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
-export const Modals = proxify<IModalModel>('IModalModel');
-export const ModalDismiss = proxify<IModalDismissModel>('IModalDismissModel');
