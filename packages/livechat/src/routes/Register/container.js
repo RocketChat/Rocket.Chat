@@ -61,7 +61,7 @@ export class RegisterContainer extends Component {
 		const { user: prevUser } = prevProps;
 		const { user } = this.props;
 
-		if (!prevUser && user && user._id) {
+		if ((!prevUser || Object.keys(prevUser).length === 0) && user && user._id) {
 			route('/');
 		}
 	}

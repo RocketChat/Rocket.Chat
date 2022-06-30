@@ -4,6 +4,7 @@ import { Router, route } from 'preact-router';
 import { parse } from 'query-string';
 import { withTranslation } from 'react-i18next';
 
+import history from '../../history';
 import Connection from '../../lib/connection';
 import CustomFields from '../../lib/customFields';
 import Hooks from '../../lib/hooks';
@@ -230,7 +231,7 @@ export class App extends Component {
 		};
 
 		return (
-			<Router onChange={this.handleRoute}>
+			<Router history={history} onChange={this.handleRoute}>
 				<ChatConnector default path='/' {...screenProps} />
 				<ChatFinished path='/chat-finished' {...screenProps} />
 				<GDPRAgreement path='/gdpr' {...screenProps} />
