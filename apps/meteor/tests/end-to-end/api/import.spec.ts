@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
@@ -13,9 +14,9 @@ describe('Imports', function () {
 				.get(api('getCurrentImportOperation'))
 				.set(credentials)
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body.success).to.be.true;
-					expect(res.body.operation).to.exist;
+					expect(res.body.operation).not.be.null;
 				})
 				.end(done);
 		});
@@ -27,7 +28,7 @@ describe('Imports', function () {
 					any: 'test',
 				})
 				.expect(400)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body.success).to.be.false;
 				})
 				.end(done);
