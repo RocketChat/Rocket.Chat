@@ -19,7 +19,7 @@ describe('Imports', function () {
 				})
 				.end(done);
 		});
-		it('should return an error if the import if params are not valid', (done) => {
+		it('should return an error if params are not valid', (done) => {
 			request
 				.post(api('getCurrentImportOperation'))
 				.set(credentials)
