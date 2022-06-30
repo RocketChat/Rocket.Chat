@@ -35,7 +35,7 @@ const DeviceManagementFeatureModal = ({ close }: { close: () => void }): ReactEl
 		[t],
 	);
 
-	const modalAcknowledgement = useEndpointAction('POST', '/v1/modals/dismiss', { modalId: 'device-management' });
+	const modalAcknowledgement = useEndpointAction('POST', '/v1/banners.dismiss', { bannerId: 'device-management' });
 
 	const handleGotit = (): void => {
 		modalAcknowledgement();
