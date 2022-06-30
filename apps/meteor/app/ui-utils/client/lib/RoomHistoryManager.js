@@ -306,13 +306,14 @@ export const RoomHistoryManager = new (class extends Emitter {
 		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
 
 		if (surroundingMessage) {
-			const msgElement = $(`[data-id='${message._id}']`, w);
+			await waitUntilWrapperExists(`[data-id='${message._id}']`);
+			const wrapper = $('.messages-box .wrapper');
+			const msgElement = $(`[data-id='${message._id}']`, wrapper);
 
 			if (msgElement.length === 0) {
 				return;
 			}
 
-			const wrapper = $('.messages-box .wrapper');
 			const pos = wrapper.scrollTop() + msgElement.offset().top - wrapper.height() / 2;
 			wrapper.animate(
 				{
@@ -337,6 +338,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 
 		const room = this.getRoom(message.rid);
 		room.isLoading.set(true);
+		room.hasMore.set(false);
 		let typeName = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
@@ -352,7 +354,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 			if (!result || !result.messages) {
 				return;
 			}
-			RoomHistoryManager.clear(message.rid);
+
 			for (const msg of Array.from(result.messages)) {
 				if (msg.t !== 'command') {
 					upsertMessage({ msg, subscription });
