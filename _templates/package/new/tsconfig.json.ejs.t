@@ -5,8 +5,7 @@ to: packages/<%= name %>/tsconfig.json
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
 		"rootDir": "./src",
-		"outDir": "./dist",
-		"composite": true
+		"outDir": "./dist"
 	},
 	"include": ["./src/**/*"]
 }

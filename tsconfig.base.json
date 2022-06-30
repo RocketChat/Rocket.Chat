@@ -12,7 +12,7 @@
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
 		"jsx": "react-jsx",
-		"importsNotUsedAsValues": "error",
+		"importsNotUsedAsValues": "error"
 	},
 	"exclude": ["node_modules", "**/*.spec.ts"]
 }
