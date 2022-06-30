@@ -1,4 +1,4 @@
-import type { CallStates, IVoipRoom } from '@rocket.chat/core-typings';
+import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo, VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext, useMemo } from 'react';
