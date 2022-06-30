@@ -22,7 +22,7 @@ describe('Imports', function () {
 		});
 		it('should return an error if params are not valid', (done) => {
 			request
-				.post(api('getCurrentImportOperation'))
+				.get(api('getCurrentImportOperation'))
 				.set(credentials)
 				.query({
 					any: 'test',
