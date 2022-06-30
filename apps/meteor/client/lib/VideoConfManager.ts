@@ -355,6 +355,15 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.giveUp(this.currentCallData);
 	}
 
+	private rejectIncomingCallsFromUser(userId: string): void {
+		for (const [, { callId, uid }] of this.incomingDirectCalls) {
+			if (userId === uid) {
+				debug && console.log(`[VideoConf] Rejecting old incoming call from user ${userId}`);
+				this.rejectIncomingCall(callId);
+			}
+		}
+	}
+
 	private async callUser({ uid, rid, callId }: DirectCallParams): Promise<void> {
 		if (this.currentCallHandler || this.currentCallData) {
 			throw new Error('Video Conference State Error.');
@@ -507,6 +516,9 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			debug && console.log(`[VideoConf] Ignoring dismissed call.`);
 			return;
 		}
+
+		// Reject any currently ringing call from the user before registering the new one.
+		this.rejectIncomingCallsFromUser(uid);
 
 		debug && console.log(`[VideoConf] Storing this new call information.`);
 		this.incomingDirectCalls.set(callId, {
