@@ -126,14 +126,14 @@ const PreviewList = ({ urls }: PreviewListProps): ReactElement | null => {
 			{metaAndHeaders.map(({ type, data }, index) => {
 				if (isMetaPreview(data, type)) {
 					return (
-						<MessageBlock width={oembedWidth}>
-							<OEmbedResolver meta={data} key={index} />
+						<MessageBlock width={oembedWidth} key={index}>
+							<OEmbedResolver meta={data} />
 						</MessageBlock>
 					);
 				}
 				return (
-					<MessageBlock width={oembedWidth}>
-						<UrlPreview {...data} key={index} />
+					<MessageBlock width={oembedWidth} key={index}>
+						<UrlPreview {...data} />
 					</MessageBlock>
 				);
 			})}
