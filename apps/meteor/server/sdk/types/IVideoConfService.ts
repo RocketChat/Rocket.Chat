@@ -17,7 +17,7 @@ export type VideoConferenceJoinOptions = {
 export interface IVideoConfService {
 	create(data: VideoConferenceCreateData): Promise<VideoConferenceInstructions>;
 	start(caller: IUser['_id'], rid: string, options: { title?: string; allowRinging?: boolean }): Promise<VideoConferenceInstructions>;
-	join(uid: IUser['_id'], callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string>;
+	join(uid: IUser['_id'] | undefined, callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string>;
 	cancel(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null>;
 	getUnfiltered(callId: VideoConference['_id']): Promise<VideoConference | null>;

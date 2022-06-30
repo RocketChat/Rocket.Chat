@@ -102,24 +102,28 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.create(data);
 	}
 
-	public async join(uid: IUser['_id'], callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
+	public async join(uid: IUser['_id'] | undefined, callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
 		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call || call.endedAt) {
 			throw new Error('invalid-call');
 		}
 
-		const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>(uid, {
-			projection: { name: 1, username: 1, avatarETag: 1 },
-		});
-		if (!user) {
-			throw new Error('failed-to-load-own-data');
+		let user: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | null = null;
+
+		if (uid) {
+			user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>(uid, {
+				projection: { name: 1, username: 1, avatarETag: 1 },
+			});
+			if (!user) {
+				throw new Error('failed-to-load-own-data');
+			}
 		}
 
 		if (call.providerName === 'jitsi') {
 			updateCounter({ settingsId: 'Jitsi_Click_To_Join_Count' });
 		}
 
-		return this.joinCall(call, user, options);
+		return this.joinCall(call, user || undefined, options);
 	}
 
 	public async cancel(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
@@ -654,10 +658,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async joinCall(
 		call: VideoConference,
-		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'>,
+		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
-		await callbacks.runAsync('onJoinVideoConference', call._id, user._id);
+		if (user?._id) {
+			await callbacks.runAsync('onJoinVideoConference', call._id, user._id);
+		}
 
 		return this.getUrl(call, user, options);
 	}

@@ -57,7 +57,7 @@ API.v1.addRoute(
 				return API.v1.failure('invalid-params');
 			}
 
-			if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
+			if (!(await canAccessRoomIdAsync(call.rid, userId))) {
 				return API.v1.failure('invalid-params');
 			}
 
@@ -69,7 +69,9 @@ API.v1.addRoute(
 					...(state?.mic !== undefined ? { mic: state.mic } : {}),
 				});
 			} catch (e) {
-				return API.v1.failure(await VideoConf.diagnoseProvider(userId, call.rid, call.providerName));
+				if (userId) {
+					return API.v1.failure(await VideoConf.diagnoseProvider(userId, call.rid, call.providerName));
+				}
 			}
 
 			if (!url) {
