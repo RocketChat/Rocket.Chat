@@ -5,18 +5,14 @@ const ajv = new Ajv({
 });
 
 export type GetLatestImportOperationsParamsGET = {
-	userId: string;
 };
 
 const GetLatestImportOperationsParamsGETSchema = {
 	type: 'object',
 	properties: {
-		userId: {
-			type: 'string',
-		},
 	},
 	additionalProperties: false,
-	required: ['userId'],
+	required: [],
 };
 
 export const isGetLatestImportOperationsParamsGET = ajv.compile<GetLatestImportOperationsParamsGET>(

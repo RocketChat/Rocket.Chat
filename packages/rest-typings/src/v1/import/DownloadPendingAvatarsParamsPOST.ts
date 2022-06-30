@@ -5,22 +5,14 @@ const ajv = new Ajv({
 });
 
 export type DownloadPendingAvatarsParamsPOST = {
-	userId: string;
-	count: number;
 };
 
 const DownloadPendingAvatarsParamsPOSTSchema = {
 	type: 'object',
 	properties: {
-		userId: {
-			type: 'string',
-		},
-		count: {
-			type: 'number',
-		},
 	},
 	additionalProperties: false,
-	required: ['userId', 'count'],
+	required: [],
 };
 
 export const isDownloadPendingAvatarsParamsPOST = ajv.compile<DownloadPendingAvatarsParamsPOST>(DownloadPendingAvatarsParamsPOSTSchema);
