@@ -1,5 +1,5 @@
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
 import React, { useEffect, useReducer, useState } from 'react';
 
@@ -98,19 +98,39 @@ function ConnectedModalBlock(props) {
 		}
 	};
 
+	const debouncedBlockAction = useDebouncedCallback((actionId, appId, value, blockId, mid) => {
+		ActionManager.triggerBlockAction({
+			container: {
+				type: UIKitIncomingInteractionContainerType.VIEW,
+				id: viewId,
+			},
+			actionId,
+			appId,
+			value,
+			blockId,
+			mid,
+		});
+	}, 700);
+
 	const context = {
-		action: ({ actionId, appId, value, blockId, mid = _mid }) =>
-			ActionManager.triggerBlockAction({
-				container: {
-					type: UIKitIncomingInteractionContainerType.VIEW,
-					id: viewId,
-				},
-				actionId,
-				appId,
-				value,
-				blockId,
-				mid,
-			}),
+		action: ({ actionId, appId, value, blockId, mid = _mid, dispatchActionConfig }) => {
+			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes('on_character_entered')) {
+				debouncedBlockAction(actionId, appId, value, blockId, mid);
+			} else {
+				ActionManager.triggerBlockAction({
+					container: {
+						type: UIKitIncomingInteractionContainerType.VIEW,
+						id: viewId,
+					},
+					actionId,
+					appId,
+					value,
+					blockId,
+					mid,
+				});
+			}
+		},
+
 		state: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
 			updateValues({
 				actionId,

@@ -3327,9 +3327,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.33.0-alpha.6451":
-  version: 1.33.0-alpha.6451
-  resolution: "@rocket.chat/apps-engine@npm:1.33.0-alpha.6451"
+"@rocket.chat/apps-engine@npm:1.33.0-alpha.6456":
+  version: 1.33.0-alpha.6456
+  resolution: "@rocket.chat/apps-engine@npm:1.33.0-alpha.6456"
   dependencies:
     adm-zip: ^0.5.9
     cryptiles: ^4.1.3
@@ -3337,7 +3337,7 @@ __metadata:
     semver: ^5.7.1
     stack-trace: 0.0.10
     uuid: ^3.4.0
-  checksum: 9ae8ebf9ba5fdd837cfffa8192ecd6f790aaf7b8b076f9f4f44db8f28f8bbf6074c1b39e909b79792630161da25bb4c7b7fef2f09d43c36925f80efb58cce375
+  checksum: 18a27f4573affb687ec3c0befe2d6282920929f5283f376eddcdbeea30cef385af3a9f0b9d7a7d1bf89545dda4a76ae079d521d604dc0db5d9e3dfd82b63ccc6
   languageName: node
   linkType: hard
 
@@ -3692,27 +3692,27 @@ __metadata:
   linkType: hard
 
 "@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.7":
-  version: 0.32.0-dev.7
-  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.7"
-  checksum: cb5e18d545d741e587d83eb038efed5873b586b4c9bf29d29ec01946c50db67e6612c80de440fe597b3b6c2c13aeed6bb60c2490a1e2151a32cf125390d46f07
+  version: 0.32.0-dev.18
+  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.18"
+  checksum: df66194811a70240af67e20d0ad9d1aa152e1590d89426e6071f5e267a31d6850705569a5ca808b56a8fef5de7e38447c43e984c621c19fba43f7283dcf4bc1f
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-ui-kit@npm:~0.31.14-dev.1":
-  version: 0.31.14-dev.1
-  resolution: "@rocket.chat/fuselage-ui-kit@npm:0.31.14-dev.1"
+"@rocket.chat/fuselage-ui-kit@npm:~0.32.0-dev.15":
+  version: 0.32.0-dev.15
+  resolution: "@rocket.chat/fuselage-ui-kit@npm:0.32.0-dev.15"
   dependencies:
-    "@rocket.chat/ui-kit": ~0.31.14-dev.1
+    "@rocket.chat/ui-kit": ~0.32.0-dev.0
     tslib: ^2.3.1
   peerDependencies:
-    "@rocket.chat/fuselage": ~0.32.0-dev.48
-    "@rocket.chat/fuselage-hooks": ~0.31.14-dev.1
+    "@rocket.chat/fuselage": ~0.32.0-dev.65
+    "@rocket.chat/fuselage-hooks": ~0.31.14-dev.18
     "@rocket.chat/fuselage-polyfills": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/styled": ~0.31.14-dev.1
+    "@rocket.chat/styled": ~0.31.14-dev.18
     react: ^17.0.2
     react-dom: ^17.0.2
-  checksum: 3be924851a2ebe90a5ff61349fc9c02ebcb98035a9a33f42f6f16be282b1687a847845e59523789153ae5476f9b0640885c21827018c5e1d722460e81e15b058
+  checksum: bb803a4821511bfe8a80e8ff60325954ccde8713895269c02e40bd75206e6e2897112e45e7855d087ba3020750dee677669eeba03dcb9d721c3457571d8b8074
   languageName: node
   linkType: hard
 
@@ -4013,7 +4013,7 @@ __metadata:
     "@nivo/pie": 0.73.0
     "@playwright/test": ^1.21.1
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.33.0-alpha.6451
+    "@rocket.chat/apps-engine": 1.33.0-alpha.6456
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.12
     "@rocket.chat/emitter": ~0.31.12
@@ -4026,7 +4026,7 @@ __metadata:
     "@rocket.chat/fuselage-polyfills": ~0.31.12
     "@rocket.chat/fuselage-toastbar": ^0.32.0-dev.22
     "@rocket.chat/fuselage-tokens": ^0.32.0-dev.9
-    "@rocket.chat/fuselage-ui-kit": ~0.31.14-dev.1
+    "@rocket.chat/fuselage-ui-kit": ~0.32.0-dev.15
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/icons": ~0.31.14
     "@rocket.chat/livechat": "workspace:^"
@@ -4042,7 +4042,7 @@ __metadata:
     "@rocket.chat/string-helpers": ~0.31.12
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@rocket.chat/ui-kit": ~0.31.12
+    "@rocket.chat/ui-kit": ~0.32.0-dev.0
     "@settlin/spacebars-loader": ^1.0.9
     "@slack/client": ^4.12.0
     "@slack/rtm-api": ^6.0.0
@@ -4569,17 +4569,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/ui-kit@npm:^0.31.6, @rocket.chat/ui-kit@npm:~0.31.12, @rocket.chat/ui-kit@npm:~0.31.9":
+"@rocket.chat/ui-kit@npm:^0.31.6, @rocket.chat/ui-kit@npm:~0.31.9":
   version: 0.31.13
   resolution: "@rocket.chat/ui-kit@npm:0.31.13"
   checksum: 94926dee4687e69b2a51a3570d09ba051b0638b3364499daed864e36480b56c538a20e3b66b02563492c7c2fe15b101ab03850d86bdac46f3fab442a9f93ef10
   languageName: node
   linkType: hard
 
-"@rocket.chat/ui-kit@npm:~0.31.14-dev.1":
-  version: 0.31.14-dev.1
-  resolution: "@rocket.chat/ui-kit@npm:0.31.14-dev.1"
-  checksum: 9f807601eb6b90a975e61c78fc1af2663fe42998b931f825e694e5843a0bc048f679dfe7c264e772819824a7b57e5c7f6df30048d88bbc797dceab8d6e766e2a
+"@rocket.chat/ui-kit@npm:~0.32.0-dev.0":
+  version: 0.32.0-dev.0
+  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.0"
+  checksum: db4f5191d01da1d9953cecef4135e388f2e5547182a4c600156611978eff40f716d6e23608f6a9914eb6074b4a008c96d0f8abb4cef3326e86670c6764fe0568
   languageName: node
   linkType: hard
 
