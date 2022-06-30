@@ -1550,11 +1550,13 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			userId,
 			logoutAt: { $exists: false },
 		};
-		const session = await this.findOne(query);
+		const session = await this.findOne(query, { projection: { loginToken: 1 } });
+
 		const logoutAt = new Date();
 		const updateObj = {
 			$set: {
 				logoutAt,
+				lastActivityAt: logoutAt,
 				logoutBy: userId,
 			},
 		};

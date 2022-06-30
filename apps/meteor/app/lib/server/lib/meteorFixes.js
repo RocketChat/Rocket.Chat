@@ -46,6 +46,10 @@ Meteor.setInterval(() => {
 		});
 }, interval);
 
+const increaseExceptionCount = Meteor.bindEnvironment(() => {
+	Settings.incrementValueById('Uncaught_Exceptions_Count');
+});
+
 /**
  * If some promise is rejected and doesn't have a catch (unhandledRejection) it may cause this finally
  * here https://github.com/meteor/meteor/blob/be6e529a739f47446950e045f4547ee60e5de7ae/packages/mongo/oplog_tailing.js#L348
@@ -59,9 +63,7 @@ Meteor.setInterval(() => {
  * that are not handled will terminate the Node.js process with a non-zero exit code.
  * we will start respecting this and exit the process to prevent these kind of problems.
  */
-
 process.on('unhandledRejection', (error) => {
-	Settings.incrementValueById('Uncaught_Exceptions_Count');
 	console.error('=== UnHandledPromiseRejection ===');
 	console.error(error);
 	console.error('---------------------------------');
@@ -71,6 +73,8 @@ process.on('unhandledRejection', (error) => {
 	);
 	console.error('Future node.js versions will automatically exit the process');
 	console.error('=================================');
+
+	increaseExceptionCount();
 
 	if (process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
 		process.exit(1);

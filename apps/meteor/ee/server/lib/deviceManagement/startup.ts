@@ -1,5 +1,5 @@
-import { IModal } from '@rocket.chat/core-typings';
-import { Modals, Permissions } from '@rocket.chat/models';
+import { BannerPlatform } from '@rocket.chat/core-typings';
+import { Banners, Permissions } from '@rocket.chat/models';
 
 import { settingsRegistry } from '../../../../app/settings/server/index';
 
@@ -32,17 +32,29 @@ export const createEmailTemplates = async (): Promise<void> => {
 };
 
 export const createDeviceManagementModal = async (): Promise<void> => {
-	const modal = await Modals.findOneById<IModal>('device-management', { projection: { _id: 1 } });
+	const banner = await Banners.findOneById('device-management', { projection: { _id: 1 } });
+	if (!banner) {
+		const today = new Date();
 
-	if (!modal) {
-		Modals.insertOne({
+		const expire = new Date();
+		expire.setMonth(expire.getMonth() + 6);
+
+		Banners.insertOne({
 			_id: 'device-management',
-			title: 'Device Management',
-			content: '',
-			contentType: 'text',
-			createdAt: new Date(),
-			expires: null,
+			platform: [BannerPlatform.Web],
+			roles: ['admin', 'user'],
+			createdAt: today,
+			startAt: today,
+			expireAt: expire,
 			active: true,
+			createdBy: {
+				_id: 'rocket.cat',
+			},
+			view: {
+				viewId: 'mdm',
+				appId: 'mdm',
+				blocks: [],
+			},
 		});
 	}
 };

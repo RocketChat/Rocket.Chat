@@ -14,13 +14,11 @@ import { getClientAddress } from '../../../../server/lib/getClientAddress';
 
 type DateObj = { day: number; month: number; year: number };
 
-const getDateObj = (dateTime = new Date()): DateObj => {
-	return {
-		day: dateTime.getDate(),
-		month: dateTime.getMonth() + 1,
-		year: dateTime.getFullYear(),
-	};
-};
+const getDateObj = (dateTime = new Date()): DateObj => ({
+	day: dateTime.getDate(),
+	month: dateTime.getMonth() + 1,
+	year: dateTime.getFullYear(),
+});
 
 const logger = new Logger('SAUMonitor');
 
@@ -106,7 +104,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		sauEvents.on('accounts.login', async ({ userId, connection }: { userId: string; connection: ISocketConnection }) => {
+		sauEvents.on('accounts.login', async ({ userId, connection }) => {
 			if (!this.isRunning()) {
 				return;
 			}

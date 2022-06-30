@@ -10,6 +10,5 @@ onToggledFeature('device-management', {
 		await listenSessionLogin();
 
 		await createDeviceManagementModal();
-		await import('../lib/deviceManagement/findDeviceManagementModal');
 	},
 });

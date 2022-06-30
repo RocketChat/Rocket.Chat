@@ -60,5 +60,3 @@ export * from './models/IUsersModel';
 export * from './models/IUsersSessionsModel';
 export * from './models/IVoipRoomModel';
 export * from './models/IWebdavAccountsModel';
-export * from './models/IModalModel';
-export * from './models/IModalDismissModel';

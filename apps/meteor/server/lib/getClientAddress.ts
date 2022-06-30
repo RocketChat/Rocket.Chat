@@ -8,4 +8,4 @@ export function getClientAddress(connection: Pick<ISocketConnection, 'clientAddr
 	const { clientAddress, httpHeaders } = connection;
 
 	return clientAddress || (httpHeaders?.['x-real-ip'] as string);
-};
+}

@@ -1,5 +1,6 @@
 import { Users, Sessions } from '@rocket.chat/models';
 import { IUser } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { isSessionsPaginateProps, isSessionsProps } from '../../definition/rest/v1/sessions';
 import { API } from '../../../app/api/server/api';
@@ -21,15 +22,13 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isSessionsPaginateProps },
 	{
 		async get() {
-			if (!this.userId) {
-				API.v1.failure('error-invalid-user');
-			}
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
+
 			const { offset, count } = this.getPaginationItems();
 			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
-			const search = this.queryParams?.filter || '';
+			const search = escapeRegExp(this.queryParams?.filter || '');
 
 			if (!validateSortKeys(Object.keys(sort))) {
 				return API.v1.failure('error-invalid-sort-keys');
@@ -65,10 +64,6 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isSessionsProps },
 	{
 		async post() {
-			if (!this.userId) {
-				API.v1.failure('error-invalid-user');
-			}
-
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
@@ -101,24 +96,30 @@ API.v1.addRoute(
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
-			const filter: string = this.queryParams?.filter || '';
+			const filter = escapeRegExp(this.queryParams?.filter || '');
 
 			if (!validateSortKeys(Object.keys(sort))) {
 				return API.v1.failure('error-invalid-sort-keys');
 			}
 
-			const user = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<Pick<IUser, '_id'>>(
-				{ $regex: filter, $options: 'i' },
-				[],
-				{},
-				{ projection: { _id: 1 }, limit: 5 },
-			)
-				.map((el) => el._id)
-				.toArray();
+			const search: string[] = [];
 
-			const search = user.length ? `${filter}|${user.join('|')}` : filter;
+			if (filter) {
+				search.push(filter);
 
-			const sessions = await Sessions.aggregateSessionsAndPopulate({ search, sort, offset, count });
+				search.push(
+					...(await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<Pick<IUser, '_id'>>(
+						{ $regex: filter, $options: 'i' },
+						[],
+						{},
+						{ projection: { _id: 1 }, limit: 5 },
+					)
+						.map((el) => el._id)
+						.toArray()),
+				);
+			}
+
+			const sessions = await Sessions.aggregateSessionsAndPopulate({ search: search.join('|'), sort, offset, count });
 			return API.v1.success(sessions);
 		},
 	},
