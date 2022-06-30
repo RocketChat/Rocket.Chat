@@ -222,4 +222,42 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			},
 		);
 	}
+
+	public async updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void> {
+		await this.updateMany(
+			{
+				'users._id': userId,
+			},
+			{
+				$set: {
+					'users.$.name': name,
+					'users.$.username': username,
+				},
+			},
+		);
+
+		await this.updateMany(
+			{
+				'createdBy._id': userId,
+			},
+			{
+				$set: {
+					'createdBy.name': name,
+					'createdBy.username': username,
+				},
+			},
+		);
+
+		await this.updateMany(
+			{
+				'endedBy._id': userId,
+			},
+			{
+				$set: {
+					'endedBy.name': name,
+					'endedBy.username': username,
+				},
+			},
+		);
+	}
 }

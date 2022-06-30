@@ -54,4 +54,6 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	setMessageById(callId: string, messageType: keyof VideoConference['messages'], messageId: string): Promise<void>;
 
 	expireOldVideoConferences(minDate: Date): Promise<void>;
+
+	updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void>;
 }
