@@ -1,4 +1,3 @@
-import { IUser } from '@rocket.chat/core-typings';
 import { Users, Sessions } from '@rocket.chat/models';
 
 import { isSessionsPaginateProps, isSessionsProps } from '../../definition/rest/v1/sessions';
