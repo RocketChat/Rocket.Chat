@@ -11,7 +11,6 @@ import { OmnichannelCallToggle } from './actions/OmnichannelCallToggle';
 
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
-
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const isCallEnabled = useIsCallEnabled();
 	const isCallReady = useIsCallReady();

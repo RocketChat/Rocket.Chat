@@ -25,6 +25,7 @@ import {
 	Device,
 	useSetModal,
 	IExperimentalHTMLAudioElement,
+	useTranslation,
 } from '@rocket.chat/ui-contexts';
 // import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
@@ -34,9 +35,10 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { useVoipClient } from '../../../ee/client/hooks/useVoipClient';
+import { isOutboundClient, useVoipClient } from '../../../ee/client/hooks/useVoipClient';
 import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
 import { CallContext, CallContextValue, useIsVoipEnterprise } from '../../contexts/CallContext';
+import { useDialModal } from '../../hooks/useDialModal';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
 
@@ -54,6 +56,7 @@ const stopRingback = (): void => {
 };
 
 type NetworkState = 'online' | 'offline';
+
 export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
 	const subscribeToNotifyUser = useStream('notify-user');
@@ -62,6 +65,7 @@ export const CallProvider: FC = ({ children }) => {
 	const voipEndpoint = useEndpoint('GET', '/v1/voip/room');
 	const voipCloseRoomEndpoint = useEndpoint('POST', '/v1/voip/room.close');
 	const setModal = useSetModal();
+	const t = useTranslation();
 
 	const result = useVoipClient();
 	const user = useUser();
@@ -76,6 +80,8 @@ export const CallProvider: FC = ({ children }) => {
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
 	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>({ v: {}, rid: '' });
+
+	const { openDialModal } = useDialModal();
 
 	const closeRoom = useCallback(
 		async (data = {}): Promise<void> => {
@@ -348,6 +354,10 @@ export const CallProvider: FC = ({ children }) => {
 			startRingback(user);
 		};
 
+		const onCallFailed = (): void => {
+			openDialModal({ errorMessage: t('Something_went_wrong_try_again_later') });
+		};
+
 		result.voipClient.onNetworkEvent('connected', onNetworkConnected);
 		result.voipClient.onNetworkEvent('disconnected', onNetworkDisconnected);
 		result.voipClient.onNetworkEvent('connectionerror', onNetworkDisconnected);
@@ -357,6 +367,10 @@ export const CallProvider: FC = ({ children }) => {
 		result.voipClient.on('ringing', onRinging);
 		result.voipClient.on('incomingcall', onRinging);
 		result.voipClient.on('callterminated', stopRingback);
+
+		if (isOutboundClient(result.voipClient)) {
+			result.voipClient.on('callfailed', onCallFailed);
+		}
 
 		return (): void => {
 			result.voipClient?.offNetworkEvent('connected', onNetworkConnected);
@@ -368,8 +382,12 @@ export const CallProvider: FC = ({ children }) => {
 			result.voipClient?.off('ringing', onRinging);
 			result.voipClient?.off('callestablished', onCallEstablished);
 			result.voipClient?.off('callterminated', stopRingback);
+
+			if (isOutboundClient(result.voipClient)) {
+				result.voipClient.off('callfailed', onCallFailed);
+			}
 		};
-	}, [createRoom, dispatchEvent, networkStatus, result.voipClient, user]);
+	}, [createRoom, dispatchEvent, networkStatus, openDialModal, result.voipClient, t, user]);
 
 	const contextValue: CallContextValue = useMemo(() => {
 		if (!voipEnabled) {

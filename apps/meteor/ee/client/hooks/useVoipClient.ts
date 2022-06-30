@@ -106,3 +106,5 @@ export const useVoipClient = (): UseVoipClientResult => {
 
 	return result;
 };
+
+export const isOutboundClient = (client: VoIPUser | undefined): client is EEVoipClient => client instanceof EEVoipClient;

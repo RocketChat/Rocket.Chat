@@ -2,6 +2,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import { ChangeEvent, RefCallback, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { useDialModal } from '../../../../../../client/hooks/useDialModal';
 import { useOutboundDialer } from '../../../../hooks/useOutboundDialer';
 
 type DialPadStateHandlers = {
@@ -15,9 +16,15 @@ type DialPadStateHandlers = {
 	handleCallButtonClick: () => void;
 };
 
-export const useDialPad = (): DialPadStateHandlers => {
+type DialPadProps = {
+	initialValue?: string;
+	errorMessage?: string;
+};
+
+export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPadStateHandlers => {
 	const t = useTranslation();
-	const outbound = useOutboundDialer();
+	const outboundClient = useOutboundDialer();
+	const { closeDialModal } = useDialModal();
 
 	const {
 		setFocus,
@@ -27,7 +34,11 @@ export const useDialPad = (): DialPadStateHandlers => {
 		clearErrors,
 		watch,
 		formState: { errors },
-	} = useForm<{ PhoneInput: string }>();
+	} = useForm<{ PhoneInput: string }>({
+		defaultValues: {
+			PhoneInput: initialValue,
+		},
+	});
 
 	const { ref, onChange } = register('PhoneInput');
 	const value = watch('PhoneInput');
@@ -46,32 +57,20 @@ export const useDialPad = (): DialPadStateHandlers => {
 	);
 
 	const handleCallButtonClick = useCallback((): void => {
-		if (!outbound || !outbound.outboundDialer) {
+		if (!outboundClient) {
 			return setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
 		}
 
-		outbound.outboundDialer.makeCall(`sip:*${value.replace('+', '')}@${outbound.outboundDialer.userConfig.sipRegistrarHostnameOrIP}`);
-	}, [outbound, setError, t, value]);
+		outboundClient.makeCall(value.replace('+', ''));
+		closeDialModal();
+	}, [outboundClient, setError, t, value, closeDialModal]);
 
 	useEffect(() => {
-		if (!outbound || !outbound.outboundDialer) {
-			return;
-		}
-
-		const onCallFailed = (): void => {
-			setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
-		};
-
-		outbound.outboundDialer.on('callfailed', onCallFailed);
-
-		return (): void => {
-			outbound.outboundDialer?.off('callfailed', onCallFailed);
-		};
-	}, [outbound, outbound.outboundDialer, setError, t]);
+		setError('PhoneInput', { message: errorMessage });
+	}, [setError, errorMessage]);
 
 	useEffect(() => {
 		setDisabled(!value);
-		clearErrors('PhoneInput');
 	}, [clearErrors, value]);
 
 	useEffect(() => {

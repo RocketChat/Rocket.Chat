@@ -6,7 +6,13 @@ import { DialInput } from './DialInput';
 import Pad from './Pad';
 import { useDialPad } from './hooks/useDialPad';
 
-const DialPadModal = ({ handleClose }: { handleClose: () => void }): ReactElement => {
+type DialPadModalProps = {
+	initialValue?: string;
+	errorMessage?: string;
+	handleClose: () => void;
+};
+
+const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalProps): ReactElement => {
 	const {
 		inputName,
 		inputRef,
@@ -16,7 +22,7 @@ const DialPadModal = ({ handleClose }: { handleClose: () => void }): ReactElemen
 		handleBackspaceClick,
 		handlePadButtonClick,
 		handleCallButtonClick,
-	} = useDialPad();
+	} = useDialPad({ initialValue, errorMessage });
 
 	const mask = (rawValue = ''): (string | RegExp)[] => ['+', /[1-9]/].concat(rawValue.split('').map(() => /\d/));
 	return (
