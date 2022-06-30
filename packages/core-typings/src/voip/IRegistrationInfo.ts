@@ -15,7 +15,6 @@ export interface IExtensionDetails {
 	state: string;
 }
 export interface IRegistrationInfo {
-	host: string;
 	callServerConfig: ICallServerConfigData;
 	extensionDetails: IExtensionDetails;
 }

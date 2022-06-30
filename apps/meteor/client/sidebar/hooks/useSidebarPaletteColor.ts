@@ -1,5 +1,6 @@
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useSettings } from '@rocket.chat/ui-contexts';
+import { CSSStyleRule } from 'cssom';
 import { useLayoutEffect, useEffect, useMemo } from 'react';
 
 import { isIE11 } from '../../lib/utils/isIE11';
@@ -37,7 +38,7 @@ const oldPallet = {
 	'color-white': '#ffffff',
 };
 
-const getStyleTag = () => {
+const getStyleTag = (): HTMLStyleElement | HTMLElement => {
 	const style = document.getElementById('sidebar-style');
 	if (style) {
 		return style;
@@ -51,44 +52,7 @@ const getStyleTag = () => {
 	return newElement;
 };
 
-function lightenDarkenColor(col, amt) {
-	let usePound = false;
-
-	if (col[0] === '#') {
-		col = col.slice(1);
-		usePound = true;
-	}
-
-	const num = parseInt(col, 16);
-
-	let r = (num >> 16) + amt;
-
-	if (r > 255) {
-		r = 255;
-	} else if (r < 0) {
-		r = 0;
-	}
-
-	let b = ((num >> 8) & 0x00ff) + amt;
-
-	if (b > 255) {
-		b = 255;
-	} else if (b < 0) {
-		b = 0;
-	}
-
-	let g = (num & 0x0000ff) + amt;
-
-	if (g > 255) {
-		g = 255;
-	} else if (g < 0) {
-		g = 0;
-	}
-
-	return (usePound ? '#' : '') + (g | (b << 8) | (r << 16)).toString(16);
-}
-
-function h2r(hex = '', a) {
+function h2r(hex: string, a: any): string {
 	const [hash, r, g, b] = hex.match(/#([0-f]{2})([0-f]{2})([0-f]{2})/i) || [];
 
 	return hash ? `rgba(${[r, g, b].map((value) => parseInt(value, 16)).join()}, ${a})` : hex;
@@ -97,8 +61,8 @@ function h2r(hex = '', a) {
 const modifier = '.sidebar--custom-colors';
 
 const query = { _id: /theme-color-rc/ };
-const useTheme = () => {
-	const customColors = useSettings(query);
+const useTheme = (): { [key: string]: string } => {
+	const customColors = useSettings(query) as { value: string; _id: string }[];
 	const result = useMemo(() => {
 		const n900 = customColors.find(({ _id }) => _id === 'theme-color-rc-color-primary-darkest');
 		const n800 = customColors.find(({ _id }) => _id === 'theme-color-rc-color-primary-dark');
@@ -116,10 +80,7 @@ const useTheme = () => {
 			...colors,
 			...(n900 && { n900: n900.value }),
 			...(n800 && { n800: n800.value }),
-			...((sibebarSurface || n800) && { sibebarSurface: sibebarSurface.value || n800.value }),
-			...((n700?.value[0] === '#' || n800?.value[0] === '#') && {
-				n700: n700?.value || lightenDarkenColor(n800.value, 10),
-			}),
+			...((sibebarSurface || n800) && { sibebarSurface: sibebarSurface?.value || n800?.value }),
 			...(n700 && { n700: n700.value }),
 			...(n600 && { n600: n600.value }),
 			...(n500 && { n500: n500.value }),
@@ -134,10 +95,12 @@ const useTheme = () => {
 	return result;
 };
 
-const toVar = (color) => (color && color[0] === '#' ? color : oldPallet[color] || `var(--${color})`);
+const toVar = (color: string): string =>
+	color && color[0] === '#' ? color : oldPallet[color as keyof typeof oldPallet] || `var(--${color})`;
 
 const getStyle = (
-	(selector) => (colors) =>
+	(selector) =>
+	(colors: { [key: string]: string }): string =>
 		`
 		${selector} {
 			--rcx-color-neutral-100: ${toVar(colors.n900)};
@@ -205,10 +168,10 @@ const getStyle = (
 		`
 )(isIE11 ? ':root' : modifier);
 
-const useSidebarPaletteColorIE11 = () => {
+const useSidebarPaletteColorIE11 = (): void => {
 	const colors = useTheme();
 	useEffect(() => {
-		(async () => {
+		(async (): Promise<void> => {
 			const [{ default: cssVars }, CSSOM] = await Promise.all([import('css-vars-ponyfill'), import('cssom')]);
 			try {
 				getStyleTag().innerHTML = getStyle(colors);
@@ -218,24 +181,25 @@ const useSidebarPaletteColorIE11 = () => {
 					return;
 				}
 
-				const sidebarStyle = fuselageStyle.cloneNode(true);
+				const sidebarStyle = fuselageStyle.cloneNode(true) as HTMLElement;
 				sidebarStyle.setAttribute('id', 'sidebar-modifier');
 				document.head.appendChild(sidebarStyle);
 
-				const fuselageStyleRules = sidebarStyle.innerText
-					.match(/(.|\n)*?\{((.|\n)*?)\}(.|\n)*?/gi)
-					.filter((text) => /\.rcx-(sidebar|button|divider|input)/.test(text));
+				const fuselageStyleRules: string[] =
+					sidebarStyle.innerText
+						.match(/(.|\n)*?\{((.|\n)*?)\}(.|\n)*?/gi)
+						?.filter((text: string) => /\.rcx-(sidebar|button|divider|input)/.test(text)) || [];
 
 				const sheet = CSSOM.parse(
 					fuselageStyleRules
 						.join(' ')
 						.match(/((?!\}).|\n)*?\{|(.)*(color|background|shadow)(.)*|\}/gi)
-						.join(' '),
+						?.join(' ') || '',
 				);
 
-				const filterSelectors = (selector) => /rcx-(sidebar|button|divider|input)/.test(selector);
-				const insertSelector = (selector) =>
-					selector.replace(/^((html:not\(\.js-focus-visible\)|\.js-focus-visible)|\.)(.*)/, (match, group, g2, g3, offset, text) => {
+				const filterSelectors = (selector: string): boolean => /rcx-(sidebar|button|divider|input)/.test(selector);
+				const insertSelector = (selector: string): string =>
+					selector.replace(/^((html:not\(\.js-focus-visible\)|\.js-focus-visible)|\.)(.*)/, (match, group, _g2, g3, _offset, text) => {
 						if (group === '.') {
 							return `${modifier} ${text}`;
 						}
@@ -244,12 +208,15 @@ const useSidebarPaletteColorIE11 = () => {
 
 				sidebarStyle.innerHTML = sheet.cssRules
 					.map((rule) => {
+						if (!(rule instanceof CSSStyleRule)) {
+							return '';
+						}
 						rule.selectorText = rule.selectorText
 							.split(/,[ \n]/)
 							.filter(filterSelectors)
 							.map(insertSelector)
 							.join();
-						Array.from(rule.style.length)
+						Array.from({ length: rule.style.length })
 							.map((_, index) => rule.style[index])
 							.forEach((key, index) => !/color|background|shadow/.test(key) && rule.style.removeProperty(rule.style[index]));
 						return rule.cssText;
@@ -266,7 +233,7 @@ const useSidebarPaletteColorIE11 = () => {
 				console.log(error);
 			}
 		})();
-		return () => {
+		return (): void => {
 			getStyleTag().remove();
 		};
 	}, [colors]);
@@ -274,12 +241,12 @@ const useSidebarPaletteColorIE11 = () => {
 
 export const useSidebarPaletteColor = isIE11
 	? useSidebarPaletteColorIE11
-	: () => {
+	: (): void => {
 			const colors = useTheme();
 			useLayoutEffect(() => {
 				getStyleTag().innerHTML = getStyle(colors);
 
-				return () => {
+				return (): void => {
 					getStyleTag().innerHTML = '';
 				};
 			}, [colors]);

@@ -1,22 +1,24 @@
 import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import ExternalLink from '../../../components/ExternalLink';
+import APIsDisplay from './APIsDisplay';
 import ScreenshotCarouselAnchor from './components/ScreenshotCarouselAnchor';
 import { AppInfo } from './definitions/AppInfo';
 
-type AppDetailsPageContentProps = {
+type AppDetailsProps = {
 	app: AppInfo;
 };
 
-const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
+const AppDetails: FC<AppDetailsProps> = ({ app }) => {
 	const {
 		author: { homepage, support },
 		detailedDescription,
 		description,
 		categories = [],
 		screenshots,
+		apis,
 	} = app;
 
 	const t = useTranslation();
@@ -90,10 +92,12 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 							</Box>
 						</Box>
 					</Box>
+
+					<Box is='section'>{apis?.length && <APIsDisplay apis={apis || []} />}</Box>
 				</Margins>
 			</Box>
 		</Box>
 	);
 };
 
-export default AppDetailsPageContent;
+export default AppDetails;

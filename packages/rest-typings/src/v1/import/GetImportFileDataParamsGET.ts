@@ -10,13 +10,9 @@ export type GetImportFileDataParamsGET = {
 
 const GetImportFileDataParamsGETSchema = {
 	type: 'object',
-	properties: {
-		userId: {
-			type: 'string',
-		},
-	},
+	properties: {},
 	additionalProperties: false,
-	required: ['userId'],
+	required: [],
 };
 
 export const isGetImportFileDataParamsGET = ajv.compile<GetImportFileDataParamsGET>(GetImportFileDataParamsGETSchema);

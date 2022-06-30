@@ -1,7 +1,9 @@
+import { IMessage, IUser } from '@rocket.chat/core-typings';
+
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 
-const filterStarred = (message, uid) => {
+const filterStarred = (message: IMessage, uid: string): IMessage => {
 	// only return starred field if user has it starred
 	if (message.starred && Array.isArray(message.starred)) {
 		message.starred = message.starred.filter((star) => star._id === uid);
@@ -11,11 +13,11 @@ const filterStarred = (message, uid) => {
 
 // TODO: we should let clients get user names on demand instead of doing this
 
-function getNameOfUsername(users, username) {
+function getNameOfUsername(users: Map<string, string>, username: string): string {
 	return users.get(username) || username;
 }
 
-export const normalizeMessagesForUser = (messages, uid) => {
+export const normalizeMessagesForUser = (messages: IMessage[], uid: string): IMessage[] => {
 	// if not using real names, there is nothing else to do
 	if (!settings.get('UI_Use_Real_Name')) {
 		return messages.map((message) => filterStarred(message, uid));
@@ -40,28 +42,39 @@ export const normalizeMessagesForUser = (messages, uid) => {
 
 	const names = new Map();
 
-	Users.findUsersByUsernames([...usernames.values()], {
-		fields: {
-			username: 1,
-			name: 1,
-		},
-	}).forEach((user) => {
+	(
+		Users.findUsersByUsernames([...usernames.values()], {
+			fields: {
+				username: 1,
+				name: 1,
+			},
+		}) as Pick<IUser, 'username' | 'name'>[]
+	).forEach((user) => {
 		names.set(user.username, user.name);
 	});
 
-	messages.forEach((message) => {
+	messages.forEach((message: IMessage) => {
 		if (!message.u) {
 			return;
 		}
 		message.u.name = getNameOfUsername(names, message.u.username);
 
 		(message.mentions || []).forEach((mention) => {
-			mention.name = getNameOfUsername(names, mention.username);
+			if (mention.username) {
+				mention.name = getNameOfUsername(names, mention.username);
+			}
 		});
 
-		Object.keys(message.reactions || {}).forEach((reaction) => {
-			message.reactions[reaction].names = message.reactions[reaction].usernames.map((username) => getNameOfUsername(names, username));
-		});
+		if (!message.reactions) {
+			return messages;
+		}
+
+		message.reactions = Object.fromEntries(
+			Object.entries(message.reactions).map(([keys, reaction]) => {
+				reaction.names = reaction.usernames.map((username) => getNameOfUsername(names, username));
+				return [keys, reaction];
+			}),
+		);
 	});
 
 	return messages;
