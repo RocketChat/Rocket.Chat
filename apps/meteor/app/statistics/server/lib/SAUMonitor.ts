@@ -139,10 +139,10 @@ export class SAUMonitorClass {
 		if (!data) {
 			return;
 		}
-		const content = await this._getSearchTerm(data);
-		const searchTerm = content ? { searchTerm: content } : {};
 
-		await Sessions.insertOne({ ...data, ...searchTerm, createdAt: new Date() });
+		const searchTerm = this._getSearchTerm(data);
+
+		await Sessions.insertOne({ ...data, searchTerm, createdAt: new Date() });
 	}
 
 	private async _finishSessionsFromDate(yesterday: Date, today: Date): Promise<void> {
@@ -189,12 +189,10 @@ export class SAUMonitorClass {
 		// TODO missing an action to perform on dangling sessions (for example remove sessions not closed one month ago)
 	}
 
-	private async _getSearchTerm(session: Omit<ISession, '_id' | '_updatedAt' | 'createdAt'>): Promise<string | undefined> {
-		const searchTerm = `${session.device?.name || ''}${session.device?.type || ''}${session.device?.os.name || ''}${session.sessionId}${
-			session.userId
-		}`;
-
-		return searchTerm;
+	private _getSearchTerm(session: Omit<ISession, '_id' | '_updatedAt' | 'createdAt'>): string {
+		return [session.device?.name, session.device?.type, session.device?.os.name, session.sessionId, session.userId]
+			.filter(Boolean)
+			.join('');
 	}
 
 	private _getConnectionInfo(

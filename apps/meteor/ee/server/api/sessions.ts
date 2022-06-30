@@ -108,7 +108,6 @@ API.v1.addRoute(
 			if (!Object.keys(sort).filter((key) => sortKeys.includes(key)).length) {
 				return API.v1.failure('error-invalid-sort');
 			}
-			console.log(search);
 			const sessions = await Sessions.aggregateSessionsAndPopulate({ search, sort, offset, count });
 			return API.v1.success(sessions);
 		},
