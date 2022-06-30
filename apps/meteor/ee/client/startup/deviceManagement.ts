@@ -38,29 +38,28 @@ const handleDeviceManagementFeatureModal = (): void => {
 };
 
 onToggledFeature('device-management', {
-	up: () =>
-		Meteor.startup(() => {
-			registerAdminSidebarItem({
-				href: '/admin/device-management',
-				i18nLabel: 'Device_Management',
-				icon: 'mobile',
-				permissionGranted: () => hasAllPermission('view-device-management'),
-			});
-			registerAccountSidebarItem({
-				href: '/account/manage-devices',
-				i18nLabel: 'Manage_Devices',
-				icon: 'mobile',
-			});
-			registerAdminRouter();
-			registerAccountRouter();
+	up: () => {
+		console.log('MDM enabled');
+		registerAdminSidebarItem({
+			href: '/admin/device-management',
+			i18nLabel: 'Device_Management',
+			icon: 'mobile',
+			permissionGranted: () => hasAllPermission('view-device-management'),
+		});
+		registerAccountSidebarItem({
+			href: '/account/manage-devices',
+			i18nLabel: 'Manage_Devices',
+			icon: 'mobile',
+		});
+		registerAdminRouter();
+		registerAccountRouter();
 
-			handleDeviceManagementFeatureModal();
-		}),
-	down: () =>
-		Meteor.startup(() => {
-			unregisterAdminSidebarItem('Device_Management');
-			unregisterSidebarItem('Manage_Devices');
-			unregisterAdminRouter();
-			unregisterAccountRouter();
-		}),
+		handleDeviceManagementFeatureModal();
+	},
+	down: () => {
+		unregisterAdminSidebarItem('Device_Management');
+		unregisterSidebarItem('Manage_Devices');
+		unregisterAdminRouter();
+		unregisterAccountRouter();
+	},
 });
