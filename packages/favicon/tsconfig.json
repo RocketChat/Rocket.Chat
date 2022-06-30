@@ -4,7 +4,6 @@
 		"rootDir": "./src",
 		"outDir": "./dist",
 		"lib": ["DOM"],
-		"composite": true
 	},
 	"include": ["./src/**/*"]
 }

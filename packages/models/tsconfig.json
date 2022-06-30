@@ -5,7 +5,6 @@
 		"outDir": "./dist",
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
-		"composite": true
 	},
 	"include": ["./src/**/*"]
 }
