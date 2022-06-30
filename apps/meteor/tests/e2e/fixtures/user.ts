@@ -1,10 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-interface IUserMock extends IUser {
+interface IUserFixture extends IUser {
 	__rooms: string[];
 }
 
-export const userMock: IUserMock = {
+export const user: IUserFixture = {
 	_id: 'vvsKGW5tKKqP9vj54',
 	createdAt: new Date(),
 	services: {

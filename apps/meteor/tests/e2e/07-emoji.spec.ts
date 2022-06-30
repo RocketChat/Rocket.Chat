@@ -1,21 +1,21 @@
 import { test, expect } from '@playwright/test';
 
-import { SideNav, MainContent, LoginPage } from './pageobjects';
+import { SideNav, MainContent, Login } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Emoji]', () => {
-	let loginPage: LoginPage;
+	let login: Login;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 
 	test.beforeAll(async ({ browser }) => {
 		const page = await browser.newPage();
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 
 		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
+		await login.doLogin(adminLogin);
 		await sideNav.doOpenChat('general');
 	});
 

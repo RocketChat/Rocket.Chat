@@ -1,6 +1,6 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 
-export const subscriptionMock: ISubscription[] = [
+export const subscription: ISubscription[] = [
 	{
 		_id: 'zjHWmhH4go9NoGwTP',
 		open: true,

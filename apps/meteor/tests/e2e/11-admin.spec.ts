@@ -1,12 +1,12 @@
 import { test, expect, Page } from '@playwright/test';
 
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
-import { FlexTab, Administration, LoginPage, SideNav } from './pageobjects';
+import { FlexTab, Administration, Login, SideNav } from './pageobjects';
 import { ROCKET_CAT_SELECTOR } from './utils/mocks/waitSelectorsMock';
 
 test.describe('[Administration]', () => {
 	let page: Page;
-	let loginPage: LoginPage;
+	let login: Login;
 	let sideNav: SideNav;
 	let admin: Administration;
 	let flexTab: FlexTab;
@@ -15,13 +15,13 @@ test.describe('[Administration]', () => {
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		sideNav = new SideNav(page);
 		flexTab = new FlexTab(page);
 		admin = new Administration(page);
 
 		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
+		await login.doLogin(adminLogin);
 	});
 	test.describe('[Admin View]', () => {
 		test.beforeAll(async () => {

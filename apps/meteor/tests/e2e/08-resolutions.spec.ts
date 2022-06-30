@@ -1,24 +1,30 @@
 import { test, expect, Browser } from '@playwright/test';
 
-import { Global, MainContent, SideNav, LoginPage } from './pageobjects';
+import { Global, MainContent, SideNav, Login } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
-let loginPage: LoginPage;
+let login: Login;
 let mainContent: MainContent;
 let sideNav: SideNav;
 let global: Global;
 
-async function initConfig(browser: Browser, options = { viewport: { width: 650, height: 800 } }): Promise<any> {
+type ViewPortConfig = {
+	login: Login;
+	sideNav: SideNav;
+	mainContent: MainContent;
+};
+
+const initConfig = async (browser: Browser, options = { viewport: { width: 650, height: 800 } }): Promise<ViewPortConfig> => {
 	const page = await browser.newPage(options);
-	loginPage = new LoginPage(page);
+	login = new Login(page);
 	sideNav = new SideNav(page);
 	mainContent = new MainContent(page);
 	global = new Global(page);
 
 	await page.goto('/');
-	await loginPage.doLogin(adminLogin);
-	return { loginPage, sideNav, mainContent };
-}
+	await login.doLogin(adminLogin);
+	return { login, sideNav, mainContent };
+};
 
 test.describe('[Resolution]', function () {
 	test.describe('[Mobile Render]', async () => {

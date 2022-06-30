@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import { Global, FlexTab, MainContent, SideNav, LoginPage } from './pageobjects';
+import { Global, FlexTab, MainContent, SideNav, Login } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { publicChannelCreated, setPublicChannelCreated } from './utils/mocks/checks';
 
@@ -11,7 +11,7 @@ let hasUserAddedInChannel = false;
 
 test.describe('[Channel]', () => {
 	let flexTab: FlexTab;
-	let loginPage: LoginPage;
+	let login: Login;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 	let global: Global;
@@ -19,14 +19,14 @@ test.describe('[Channel]', () => {
 	test.beforeAll(async ({ browser }) => {
 		const page = await browser.newPage();
 
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 		flexTab = new FlexTab(page);
 		global = new Global(page);
 
 		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
+		await login.doLogin(adminLogin);
 
 		if (!publicChannelCreated) {
 			await sideNav.doCreateChannel(anyChannelName, false);

@@ -1,11 +1,11 @@
 import { test, expect, Page } from '@playwright/test';
 
-import { LoginPage, FlexTab, SideNav, MainContent } from './pageobjects';
+import { Login, FlexTab, SideNav, MainContent } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Main Elements Render]', function () {
 	let page: Page;
-	let loginPage: LoginPage;
+	let login: Login;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 	let flexTab: FlexTab;
@@ -13,13 +13,13 @@ test.describe('[Main Elements Render]', function () {
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
 
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 		flexTab = new FlexTab(page);
 
 		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
+		await login.doLogin(adminLogin);
 	});
 
 	test.describe('[Side Nav Bar]', () => {

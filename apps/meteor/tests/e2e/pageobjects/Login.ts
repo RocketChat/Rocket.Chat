@@ -2,9 +2,9 @@ import { Locator } from '@playwright/test';
 
 import { ILogin, IRegister } from '../utils/interfaces/Login';
 import { BasePage } from './BasePage';
-import { HOME_SELECTOR, REGISTER_STEP2_BUTTON } from '../utils/mocks/waitSelectorsMock';
+import { REGISTER_STEP2_BUTTON } from '../utils/mocks/waitSelectorsMock';
 
-export class LoginPage extends BasePage {
+export class Login extends BasePage {
 	get btnRegister(): Locator {
 		return this.page.locator('button.register');
 	}
@@ -70,7 +70,7 @@ export class LoginPage extends BasePage {
 
 		await this.page.waitForSelector(REGISTER_STEP2_BUTTON);
 		await this.registerNextButton.click();
-		await this.page.waitForSelector(HOME_SELECTOR);
+		await this.page.waitForSelector('[data-qa="sidebar-avatar-button"]');
 	}
 
 	async doLogin({ email, password }: ILogin, shouldWaitForHomeScreen = true): Promise<void> {

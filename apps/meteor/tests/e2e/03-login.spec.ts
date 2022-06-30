@@ -1,17 +1,16 @@
 import { test, expect, Page } from '@playwright/test';
 
 import { validUser } from './utils/mocks/userAndPasswordMock';
-import { Global, LoginPage } from './pageobjects';
-import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
+import { Global, Login } from './pageobjects';
 
 test.describe('[Login]', () => {
 	let page: Page;
-	let loginPage: LoginPage;
+	let login: Login;
 	let global: Global;
 
 	test.beforeEach(async ({ browser }) => {
 		page = await browser.newPage();
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		global = new Global(page);
 		await page.goto('/');
 	});
@@ -21,12 +20,13 @@ test.describe('[Login]', () => {
 			email: validUser.email,
 			password: 'any_password1',
 		};
-		await loginPage.doLogin(invalidUserPassword, false);
+		await login.doLogin(invalidUserPassword, false);
 		await expect(global.getToastBarError).toBeVisible();
 	});
 
 	test('expect user make login', async () => {
-		await loginPage.doLogin(validUser);
-		await page.waitForSelector(HOME_SELECTOR);
+		await login.doLogin(validUser);
+		await page.waitForSelector('[data-qa="sidebar-avatar-button"]');
+		await expect(login.page.locator('[data-qa="sidebar-avatar-button"]')).toBeVisible();
 	});
 });

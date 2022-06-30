@@ -7,3 +7,5 @@ export const IS_EE = Boolean(process.env.IS_EE);
 export const URL_MONGODB = process.env.MONGO_URL
 	? `${process.env.MONGO_URL}?retryWrites=false`
 	: 'mongodb://localhost:3001/meteor?retryWrites=false';
+
+export const BASE_API_URL = `http://${process.env.TEST_API_URL ?? BASE_URL}/api/v1`;

@@ -1,26 +1,26 @@
 import { test, expect } from '@playwright/test';
 import faker from '@faker-js/faker';
 
-import { PreferencesMainContent, MainContent, SideNav, LoginPage, FlexTab } from './pageobjects';
+import { PreferencesMainContent, MainContent, SideNav, Login, FlexTab } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[User Preferences]', () => {
 	let flexTab: FlexTab;
-	let loginPage: LoginPage;
+	let login: Login;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 	let preferencesMainContent: PreferencesMainContent;
 
 	test.beforeAll(async ({ browser }) => {
 		const page = await browser.newPage();
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 		preferencesMainContent = new PreferencesMainContent(page);
 		flexTab = new FlexTab(page);
 
 		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
+		await login.doLogin(adminLogin);
 		await sideNav.sidebarUserMenu.click();
 		await sideNav.account.click();
 	});

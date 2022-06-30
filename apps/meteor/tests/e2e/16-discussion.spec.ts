@@ -2,12 +2,12 @@ import { test, Page } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { v4 as uuid } from 'uuid';
 
-import { MainContent, Discussion, LoginPage, SideNav } from './pageobjects';
+import { MainContent, Discussion, Login, SideNav } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Discussion]', () => {
 	let page: Page;
-	let loginPage: LoginPage;
+	let login: Login;
 	let discussion: Discussion;
 	let sideNav: SideNav;
 	let mainContent: MainContent;
@@ -16,13 +16,13 @@ test.describe('[Discussion]', () => {
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		discussion = new Discussion(page);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 
 		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
+		await login.doLogin(adminLogin);
 	});
 
 	test.describe('[Create discussion from screen]', () => {

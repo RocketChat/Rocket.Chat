@@ -1,10 +1,10 @@
 import { test, Page, expect } from '@playwright/test';
 
-import { Departments, SideNav, Global, LoginPage } from './pageobjects';
+import { Departments, SideNav, Global, Login } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Department]', () => {
-	let loginPage: LoginPage;
+	let login: Login;
 	let sideNav: SideNav;
 	let departments: Departments;
 	let page: Page;
@@ -12,13 +12,13 @@ test.describe('[Department]', () => {
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		sideNav = new SideNav(page);
 		departments = new Departments(page);
 		global = new Global(page);
 
 		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
+		await login.doLogin(adminLogin);
 		await sideNav.sidebarUserMenu.click();
 		await sideNav.omnichannel.click();
 	});

@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-export const roomMock: IRoom[] = [
+export const roomFixture: IRoom[] = [
 	{
 		_id: '9kc9F8BghhCp5bc3T',
 		fname: 'private channel',

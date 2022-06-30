@@ -1,12 +1,12 @@
 import { Page, test, expect } from '@playwright/test';
 
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
-import { userMock } from './utils/mocks/userMock';
-import { LoginPage, MainContent, SideNav } from './pageobjects';
+import { user } from './fixtures/user';
+import { Login, MainContent, SideNav } from './pageobjects';
 
 test.describe('[Message Popup]', () => {
 	let page: Page;
-	let loginPage: LoginPage;
+	let login: Login;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 
@@ -14,12 +14,12 @@ test.describe('[Message Popup]', () => {
 		const context = await browser.newContext();
 		page = await context.newPage();
 
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		mainContent = new MainContent(page);
 		sideNav = new SideNav(page);
 
 		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
+		await login.doLogin(adminLogin);
 		await sideNav.doOpenChat('public channel');
 	});
 
@@ -36,7 +36,7 @@ test.describe('[Message Popup]', () => {
 
 		test('expect show "userMock.username" in options', async () => {
 			await mainContent.setTextToInput('@');
-			expect(await mainContent.messagePopUpItems.locator(`text=${userMock.username}`).isVisible()).toBeTruthy();
+			expect(await mainContent.messagePopUpItems.locator(`text=${user.username}`).isVisible()).toBeTruthy();
 		});
 
 		test('expect show "all" option', async () => {

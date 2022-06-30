@@ -1,6 +1,6 @@
 import { expect, test, Browser } from '@playwright/test';
 
-import { FlexTab, MainContent, SideNav, LoginPage } from './pageobjects';
+import { FlexTab, MainContent, SideNav, Login } from './pageobjects';
 import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
 
 const createBrowserContextForChat = async (
@@ -12,31 +12,31 @@ const createBrowserContextForChat = async (
 }> => {
 	const page = await browser.newPage();
 
-	const loginPage = new LoginPage(page);
+	const login = new Login(page);
 	const mainContent = new MainContent(page);
 	const sideNav = new SideNav(page);
 
 	await page.goto(baseURL);
-	await loginPage.doLogin(validUserInserted);
+	await login.doLogin(validUserInserted);
 
 	return { mainContent, sideNav };
 };
 
 test.describe('[Messaging]', () => {
-	let loginPage: LoginPage;
+	let login: Login;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 	let flexTab: FlexTab;
 	test.beforeAll(async ({ browser }) => {
 		const page = await browser.newPage();
 
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		mainContent = new MainContent(page);
 		sideNav = new SideNav(page);
 		flexTab = new FlexTab(page);
 
 		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
+		await login.doLogin(adminLogin);
 	});
 
 	test.describe('[Normal messaging]', async () => {

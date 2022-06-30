@@ -2,13 +2,13 @@ import { test, expect, Page } from '@playwright/test';
 import faker from '@faker-js/faker';
 
 import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
-import { SideNav, Administration, LoginPage } from './pageobjects';
+import { SideNav, Administration, Login } from './pageobjects';
 
 test.describe('[Rocket.Chat Settings based permissions]', () => {
 	let page: Page;
 	let admin: Administration;
 	let sideNav: SideNav;
-	let loginPage: LoginPage;
+	let login: Login;
 
 	const newHomeTitle = faker.animal.type();
 
@@ -16,13 +16,13 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 		page = await browser.newPage();
 		sideNav = new SideNav(page);
 		admin = new Administration(page);
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 	});
 
 	test.describe('[Give User Permissions]', async () => {
 		test.beforeAll(async () => {
 			await page.goto('/');
-			await loginPage.doLogin(adminLogin);
+			await login.doLogin(adminLogin);
 			await sideNav.sidebarUserMenu.click();
 			await sideNav.admin.click();
 			await admin.permissionsLink.click();
@@ -58,7 +58,7 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 	test.describe('[Test new user setting permissions]', async () => {
 		test.beforeAll(async () => {
 			await page.goto('/');
-			await loginPage.doLogin(validUserInserted);
+			await login.doLogin(validUserInserted);
 
 			await sideNav.sidebarUserMenu.click();
 			await sideNav.admin.click();
@@ -79,7 +79,7 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 	test.describe('[Verify settings change and cleanup]', async () => {
 		test.beforeAll(async () => {
 			await page.goto('/');
-			await loginPage.doLogin(adminLogin);
+			await login.doLogin(adminLogin);
 			await sideNav.sidebarUserMenu.click();
 			await sideNav.admin.click();
 			await admin.settingsLink.click();

@@ -1,14 +1,13 @@
 import { Page, test, expect } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
-import { LoginPage, FlexTab, Administration, MainContent, SideNav } from './pageobjects';
+import { Login, FlexTab, Administration, MainContent, SideNav } from './pageobjects';
 import { adminLogin, createRegisterUser } from './utils/mocks/userAndPasswordMock';
-import { BACKSPACE } from './utils/mocks/keyboardKeyMock';
 
 test.describe('[Permissions]', () => {
 	let page: Page;
 
-	let loginPage: LoginPage;
+	let login: Login;
 	let admin: Administration;
 	let flexTab: FlexTab;
 	let sideNav: SideNav;
@@ -20,14 +19,14 @@ test.describe('[Permissions]', () => {
 		const context = await browser.newContext();
 		page = await context.newPage();
 
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		admin = new Administration(page);
 		flexTab = new FlexTab(page);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 
 		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
+		await login.doLogin(adminLogin);
 		await sideNav.sidebarUserMenu.click();
 		await sideNav.admin.click();
 		await sideNav.users.click();
@@ -64,7 +63,7 @@ test.describe('[Permissions]', () => {
 
 		test('expect remove "delete message" permission from user', async () => {
 			await admin.inputPermissionsSearch.click({ clickCount: 3 });
-			await page.keyboard.press(BACKSPACE);
+			await page.keyboard.press('Backspace');
 			await admin.inputPermissionsSearch.type('delete');
 
 			if (await admin.getCheckboxPermission('Delete Own Message').locator('input').isChecked()) {
@@ -77,7 +76,7 @@ test.describe('[Permissions]', () => {
 		test.beforeAll(async () => {
 			await sideNav.doLogout();
 			await page.goto('/');
-			await loginPage.doLogin(userToBeCreated);
+			await login.doLogin(userToBeCreated);
 			await sideNav.general.click();
 		});
 

@@ -1,15 +1,15 @@
 import { test, expect, Page } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
-import { BASE_API_URL } from './utils/mocks/urlMock';
+import { BASE_API_URL } from './utils/constants';
 import { adminLogin, validUserInserted, registerUser } from './utils/mocks/userAndPasswordMock';
-import { LoginPage, MainContent, SideNav, Administration, PreferencesMainContent } from './pageobjects';
+import { Login, MainContent, SideNav, Administration, PreferencesMainContent } from './pageobjects';
 
 const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
 
 test.describe.skip('[Settings]', async () => {
 	let page: Page;
-	let loginPage: LoginPage;
+	let login: Login;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 	let userPreferences: PreferencesMainContent;
@@ -18,13 +18,13 @@ test.describe.skip('[Settings]', async () => {
 		const context = await browser.newContext();
 		page = await context.newPage();
 
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		mainContent = new MainContent(page);
 		sideNav = new SideNav(page);
 		userPreferences = new PreferencesMainContent(page);
 
 		await page.goto('/');
-		await loginPage.doLogin(validUserInserted);
+		await login.doLogin(validUserInserted);
 		await sideNav.general.click();
 	});
 
@@ -392,7 +392,7 @@ test.describe.skip('[Settings]', async () => {
 
 test.describe.skip('[Settings (admin)]', async () => {
 	let page: Page;
-	let loginPage: LoginPage;
+	let login: Login;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 	let admin: Administration;
@@ -401,13 +401,13 @@ test.describe.skip('[Settings (admin)]', async () => {
 		const context = await browser.newContext();
 		page = await context.newPage();
 
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		mainContent = new MainContent(page);
 		sideNav = new SideNav(page);
 		admin = new Administration(page);
 
 		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
+		await login.doLogin(adminLogin);
 		await sideNav.general.click();
 	});
 
