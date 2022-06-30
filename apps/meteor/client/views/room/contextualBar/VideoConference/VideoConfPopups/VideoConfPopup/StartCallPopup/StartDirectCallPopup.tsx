@@ -68,7 +68,7 @@ const StartDirectCallPopup = forwardRef(function StartDirectCallPopup(
 					<VideoConfPopupControllers>
 						{showMic && (
 							<VideoConfController
-								primary={controllersConfig.mic}
+								active={controllersConfig.mic}
 								text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
 								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
 								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
@@ -77,7 +77,7 @@ const StartDirectCallPopup = forwardRef(function StartDirectCallPopup(
 						)}
 						{showCam && (
 							<VideoConfController
-								primary={controllersConfig.cam}
+								active={controllersConfig.cam}
 								text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 								icon={controllersConfig.cam ? 'video' : 'video-off'}
