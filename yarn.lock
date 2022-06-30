@@ -3498,6 +3498,7 @@ __metadata:
     pino-pretty: ^7.6.0
     sharp: ^0.30.6
     typescript: ~4.3.5
+    underscore: ^1.13.4
     uuid: ^7.0.3
     ws: ^8.5.0
   languageName: unknown
@@ -4045,6 +4046,7 @@ __metadata:
     "@rocket.chat/poplib": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.12
+    "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": ~0.32.0-dev.0
     "@settlin/spacebars-loader": ^1.0.9
@@ -4073,6 +4075,7 @@ __metadata:
     "@types/cookie": ^0.5.1
     "@types/cookie-parser": ^1.4.2
     "@types/cors": ^2.8.5
+    "@types/cssom": ^0.4.1
     "@types/dompurify": ^2.2.2
     "@types/ejson": ^2.2.0
     "@types/express": ^4.17.12
@@ -4506,6 +4509,36 @@ __metadata:
   checksum: 73da39fb53a015c39081e0e24d9a3fe871eee4d8147bb3984c059e73ccba63efb9312c58033be5c34b239a063a123589c844c039e2a37b3611ada72efa2c18c4
   languageName: node
   linkType: hard
+
+"@rocket.chat/ui-client@workspace:^, @rocket.chat/ui-client@workspace:packages/ui-client":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
+  dependencies:
+    "@rocket.chat/fuselage": ^0.31.13
+    "@storybook/addon-actions": ^6.5.9
+    "@storybook/addon-docs": ^6.5.9
+    "@storybook/addon-essentials": ^6.5.9
+    "@storybook/addon-interactions": ^6.5.9
+    "@storybook/addon-links": ^6.5.9
+    "@storybook/builder-webpack4": ^6.5.9
+    "@storybook/manager-webpack4": ^6.5.9
+    "@storybook/react": ^6.5.9
+    "@storybook/testing-library": ^0.0.13
+    "@types/jest": ^27.4.1
+    "@types/react": ~17.0.42
+    eslint: ^8.12.0
+    eslint-plugin-anti-trojan-source: ^1.1.0
+    eslint-plugin-react: ^7.30.0
+    eslint-plugin-react-hooks: ^4.6.0
+    jest: ^27.5.1
+    react: ~17.0.2
+    ts-jest: ^27.1.4
+    typescript: ~4.3.4
+  peerDependencies:
+    "@rocket.chat/fuselage": "*"
+    react: ~17.0.2
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/ui-contexts@workspace:^, @rocket.chat/ui-contexts@workspace:packages/ui-contexts":
   version: 0.0.0-use.local
@@ -7381,6 +7414,13 @@ __metadata:
   version: 2.8.12
   resolution: "@types/cors@npm:2.8.12"
   checksum: 8c45f112c7d1d2d831b4b266f2e6ed33a1887a35dcbfe2a18b28370751fababb7cd045e745ef84a523c33a25932678097bf79afaa367c6cb3fa0daa7a6438257
+  languageName: node
+  linkType: hard
+
+"@types/cssom@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@types/cssom@npm:0.4.1"
+  checksum: 0f44f5ff27f5dfadfb89c8bd00f8d588dc1aaa77ec05ffa3ab732929683aef842f55a6c52c9a75586a28987f009b45f6ea5f63dbc34660f6bb98650eea7f59e9
   languageName: node
   linkType: hard
 
@@ -32388,7 +32428,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"underscore@npm:^1.13.3":
+"underscore@npm:^1.13.3, underscore@npm:^1.13.4":
   version: 1.13.4
   resolution: "underscore@npm:1.13.4"
   checksum: 6b04f66cd454e8793a552dc49c71e24e5208a29b9d9c0af988a96948af79103399c36fb15db43f3629bfed152f8b1fe94f44e1249e9d196069c0fc7edfadb636
