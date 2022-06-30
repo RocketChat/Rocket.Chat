@@ -48,7 +48,7 @@ export const loadMessageHistory = function loadMessageHistory({
 	if (ls != null) {
 		const firstMessage = messages[messages.length - 1];
 
-		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
+		if (firstMessage && new Date(firstMessage.ts) > new Date(ls)) {
 			// delete options.limit;
 			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 				rid,
