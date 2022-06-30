@@ -46,7 +46,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'video-conference.join',
-	{ authRequired: true, validateParams: isVideoConfJoinProps },
+	{ authOrAnonRequired: true, validateParams: isVideoConfJoinProps },
 	{
 		async post() {
 			const { callId, state } = this.bodyParams;
