@@ -322,12 +322,12 @@ OTR.Room = class {
 								},
 							},
 						});
-					}
 
 					timeout = Meteor.setTimeout(() => {
 						this.setState(OtrRoomState.TIMEOUT);
 						imperativeModal.close();
 					}, 10000);
+				}
 				})();
 				break;
 
