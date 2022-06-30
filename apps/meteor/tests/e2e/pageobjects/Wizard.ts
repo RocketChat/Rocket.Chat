@@ -20,7 +20,6 @@ export class Wizard {
 		return this.page.locator(`.rcx-button--primary.rcx-button >> text="${input.text}"`);
 	}
 
-	// TODO comunicate to ggazzo to put data-qa in fuselage
 	async doClickAgreementField(): Promise<void> {
 		await this.page.$eval('[name="agreement"]', (el) => el.parentElement?.click());
 	}
@@ -33,11 +32,11 @@ export class Wizard {
 		return this.page.locator('.rcx-box.rcx-box--full >> text="Standalone Server Confirmation"');
 	}
 
-	textOrganizationNameInvalidInput(nthPosition: number): Locator {
-		return this.page.locator('.rcx-field__error').nth(nthPosition);
+	textInvalidInput(element: { nthElement: number }): Locator {
+		return this.page.locator('.rcx-field__error').nth(element.nthElement);
 	}
 
-	public async clickInSelectors(select: { selector: string }): Promise<void> {
+	async clickInSelectors(select: { selector: string }): Promise<void> {
 		await this.page.locator(select.selector).click();
 		await this.page.locator('.rcx-option:first-child').first().click();
 	}

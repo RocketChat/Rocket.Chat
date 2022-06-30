@@ -20,8 +20,8 @@ test.describe('[Wizard]', () => {
 
 		test('expect required field alert showed when user not inform data', async () => {
 			await wizard.getBtnPrimary({ text: 'Next' }).click();
-			for await (const index of [0, 1, 2, 3]) {
-				await expect(wizard.textOrganizationNameInvalidInput(index)).toBeVisible();
+			for await (const nthElement of [0, 1, 2, 3]) {
+				await expect(wizard.textInvalidInput({ nthElement })).toBeVisible();
 			}
 		});
 
