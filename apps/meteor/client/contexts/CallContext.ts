@@ -125,7 +125,7 @@ export const useCallCreateRoom = (): CallContextReady['createRoom'] => {
 	const context = useContext(CallContext);
 
 	if (!isCallContextReady(context)) {
-		throw new Error('useCallerInfo only if Calls are enabled and ready');
+		throw new Error('useCallCreateRoom only if Calls are enabled and ready');
 	}
 
 	return context.createRoom;
@@ -135,7 +135,7 @@ export const useCallOpenRoom = (): CallContextReady['openRoom'] => {
 	const context = useContext(CallContext);
 
 	if (!isCallContextReady(context)) {
-		throw new Error('useCallerInfo only if Calls are enabled and ready');
+		throw new Error('useCallOpenRoom only if Calls are enabled and ready');
 	}
 
 	return context.openRoom;
@@ -145,7 +145,7 @@ export const useCallCloseRoom = (): CallContextReady['closeRoom'] => {
 	const context = useContext(CallContext);
 
 	if (!isCallContextReady(context)) {
-		throw new Error('useCallerInfo only if Calls are enabled and ready');
+		throw new Error('useCallCloseRoom only if Calls are enabled and ready');
 	}
 
 	return context.closeRoom;
@@ -155,7 +155,7 @@ export const useCallClient = (): VoIPUser => {
 	const context = useContext(CallContext);
 
 	if (!isCallContextReady(context)) {
-		throw new Error('useClient only if Calls are enabled and ready');
+		throw new Error('useCallClient only if Calls are enabled and ready');
 	}
 
 	return context.voipClient;
@@ -165,7 +165,7 @@ export const useQueueName = (): CallContextReady['queueName'] => {
 	const context = useContext(CallContext);
 
 	if (!isCallContextReady(context)) {
-		throw new Error('useQueueInfo only if Calls are enabled and ready');
+		throw new Error('useQueueName only if Calls are enabled and ready');
 	}
 
 	return context.queueName;
@@ -175,7 +175,7 @@ export const useQueueCounter = (): CallContextReady['queueCounter'] => {
 	const context = useContext(CallContext);
 
 	if (!isCallContextReady(context)) {
-		throw new Error('useQueueInfo only if Calls are enabled and ready');
+		throw new Error('useQueueCounter only if Calls are enabled and ready');
 	}
 
 	return context.queueCounter;
@@ -185,7 +185,7 @@ export const useWrapUpModal = (): CallContextReady['openWrapUpModal'] => {
 	const context = useContext(CallContext);
 
 	if (!isCallContextReady(context)) {
-		throw new Error('useClient only if Calls are enabled and ready');
+		throw new Error('useWrapUpModal only if Calls are enabled and ready');
 	}
 
 	return context.openWrapUpModal;
@@ -195,7 +195,7 @@ export const useOpenedRoomInfo = (): CallContextReady['openedRoomInfo'] => {
 	const context = useContext(CallContext);
 
 	if (!isCallContextReady(context)) {
-		throw new Error('useClient only if Calls are enabled and ready');
+		throw new Error('useOpenedRoomInfo only if Calls are enabled and ready');
 	}
 
 	return context.openedRoomInfo;
