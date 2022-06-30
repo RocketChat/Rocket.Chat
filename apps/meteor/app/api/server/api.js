@@ -393,7 +393,7 @@ export class APIClass extends Restivus {
 								},
 							);
 
-							this.userId = this.user._id;
+							this.userId = this.user?._id;
 						}
 
 						if (!this.user && !settings.get('Accounts_AllowAnonymousRead')) {

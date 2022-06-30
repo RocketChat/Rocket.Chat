@@ -134,6 +134,12 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 			readonly userId: string;
 			readonly token: string;
 	  }
+	: TOptions extends { authOrAnonRequired: true }
+	? {
+			readonly user?: IUser;
+			readonly userId?: string;
+			readonly token?: string;
+	  }
 	: {
 			readonly user: null;
 			readonly userId: undefined;
