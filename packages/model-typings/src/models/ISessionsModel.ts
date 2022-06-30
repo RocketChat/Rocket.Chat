@@ -1,4 +1,3 @@
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { BulkWriteOpResultObject, UpdateWriteOpResult, Cursor } from 'mongodb';
 import type {
 	ISession,
@@ -36,7 +35,7 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 		search?: string | null;
 		offset?: number;
 		count?: number;
-	}): Promise<PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>>;
+	}): Promise<{ sessions: Array<DeviceManagementPopulatedSession>; count: number; offset: number; total: number }>;
 
 	aggregateSessionsByUserId({
 		uid,
@@ -50,7 +49,7 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 		search?: string | null;
 		offset?: number;
 		count?: number;
-	}): Promise<PaginatedResult<{ sessions: DeviceManagementSession[] }>>;
+	}): Promise<{ sessions: Array<DeviceManagementSession>; count: number; offset: number; total: number }>;
 
 	getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]>;
 	findLastLoginByIp(ip: string): Promise<ISession | null>;

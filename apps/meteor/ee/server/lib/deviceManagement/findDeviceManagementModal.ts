@@ -16,7 +16,7 @@ Meteor.methods({
 			});
 		}
 
-		const modal = await ModalDismiss.findOne({ _modal: 'device-management', _user: this.userId }, { projection: { _id: 1 } });
+		const modal = await ModalDismiss.findOneByModalIdAndUserId('device-management', this.userId, { projection: { _id: 1 } });
 
 		return !!modal;
 	},

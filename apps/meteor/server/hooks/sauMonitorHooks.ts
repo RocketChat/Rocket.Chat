@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { sauEvents } from '../services/sauMonitor/events';
 import { ILoginAttempt } from '../../app/authentication/server/ILoginAttempt';
+import { deviceManagementEvents } from '../services/device-management/events';
 
 Accounts.onLogin((info: ILoginAttempt) => {
 	const {
@@ -13,15 +14,14 @@ Accounts.onLogin((info: ILoginAttempt) => {
 		connection: { httpHeaders },
 	} = info;
 
-	// Sometimes there is no resume token
-	// TODO: check what case triggers onLogin that can cause a nonexistent resume token in methodArguments
 	const { resume } = methodArguments.find((arg) => 'resume' in arg) ?? {};
 	const loginToken = resume ? Accounts._hashLoginToken(resume) : '';
-
-	sauEvents.emit('accounts.login', {
+	const eventObject = {
 		userId: info.user._id,
 		connection: { ...info.connection, loginToken, instanceId: InstanceStatus.id(), httpHeaders: httpHeaders as IncomingHttpHeaders },
-	});
+	};
+	sauEvents.emit('accounts.login', eventObject);
+	deviceManagementEvents.emit('device-login', eventObject);
 });
 
 Accounts.onLogout((info: { user: Meteor.User; connection: Meteor.Connection }) => {
