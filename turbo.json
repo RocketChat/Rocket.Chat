@@ -24,9 +24,6 @@
 			"dependsOn": ["build"],
 			"outputs": []
 		},
-		"//#dev:root": {
-			"cache": false
-		},
 		"dev": {
 			"dependsOn": ["^dev"],
 			"cache": false
