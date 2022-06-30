@@ -190,21 +190,9 @@ export class SAUMonitorClass {
 	}
 
 	private async _getSearchTerm(session: Omit<ISession, '_id' | '_updatedAt' | 'createdAt'>): Promise<string | undefined> {
-		const user = await Users.findOneById<IUser>(session.userId, {
-			projection: {
-				_id: 1,
-				username: 1,
-				name: 1,
-			},
-		});
-
-		if (!user) {
-			return;
-		}
-
 		const searchTerm = `${session.device?.name || ''}${session.device?.type || ''}${session.device?.os.name || ''}${session.sessionId}${
-			user.name || ''
-		}${user.username || ''}`;
+			session.userId
+		}`;
 
 		return searchTerm;
 	}
