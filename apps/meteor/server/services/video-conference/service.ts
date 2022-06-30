@@ -506,6 +506,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private buildMessageBlock(text: string): MessageSurfaceLayout[number] {
 		return {
 			type: 'section',
+			appId: 'videoconf-core',
 			text: {
 				type: 'plain_text',
 				text,

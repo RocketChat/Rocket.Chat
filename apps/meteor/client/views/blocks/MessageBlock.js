@@ -4,7 +4,7 @@ import React from 'react';
 
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 import { useBlockRendered } from '../../components/message/hooks/useBlockRendered';
-import { useVideoConfJoinCall } from '../../contexts/VideoConfContext';
+import { useVideoConfJoinCall, useVideoConfSetPreferences } from '../../contexts/VideoConfContext';
 import { renderMessageBody } from '../../lib/utils/renderMessageBody';
 import './textParsers';
 
@@ -15,12 +15,15 @@ messageParser.mrkdwn = mrkdwn;
 function MessageBlock({ mid: _mid, rid, blocks, appId }) {
 	const { ref, className } = useBlockRendered();
 	const joinCall = useVideoConfJoinCall();
+	const setPreferences = useVideoConfSetPreferences();
 
 	const context = {
 		action: ({ actionId, value, blockId, mid = _mid, appId }, event) => {
 			if (appId === 'videoconf-core' && actionId === 'join') {
 				event.preventDefault();
+				setPreferences({ mic: true, cam: false });
 				joinCall(blockId);
+				return;
 			}
 
 			ActionManager.triggerBlockAction({
@@ -29,7 +32,7 @@ function MessageBlock({ mid: _mid, rid, blocks, appId }) {
 				value,
 				mid,
 				rid,
-				appId: blocks[0].appId,
+				appId,
 				container: {
 					type: UIKitIncomingInteractionContainerType.MESSAGE,
 					id: mid,
