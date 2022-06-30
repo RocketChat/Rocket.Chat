@@ -2,7 +2,7 @@ import type { IModal } from './IModal';
 import type { IUser } from './IUser';
 
 export interface IModalDismiss {
-	_modal: IModal['_id'];
-	_user: IUser['_id'];
+	modalId: IModal['_id'];
+	userId: IUser['_id'];
 	createdAt: Date;
 }

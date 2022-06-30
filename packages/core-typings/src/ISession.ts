@@ -33,7 +33,7 @@ export interface ISession {
 	closedAt?: Date;
 	logoutBy?: IUser['_id'];
 	loginToken?: string;
-	searchTerm?: string;
+	searchTerm: string;
 }
 
 type SessionAggregationResult = {

@@ -1,9 +1,20 @@
 import { Users, Sessions } from '@rocket.chat/models';
+import { IUser } from '@rocket.chat/core-typings';
 
 import { isSessionsPaginateProps, isSessionsProps } from '../../definition/rest/v1/sessions';
 import { API } from '../../../app/api/server/api';
 import { hasLicense } from '../../app/license/server/license';
 import { Notifications } from '../../../app/notifications/server';
+
+const validateSortKeys = (sortKeys: string[]): boolean => {
+	const validSortKeys = ['loginAt', 'device.name', 'device.os.name', 'device.os.version', '_user.name', '_user.username'];
+	const invalidSortKeys = sortKeys.filter((key) => !validSortKeys.includes(key));
+
+	if (invalidSortKeys.length) {
+		return false;
+	}
+	return true;
+};
 
 API.v1.addRoute(
 	'sessions/list',
@@ -20,9 +31,8 @@ API.v1.addRoute(
 			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
 			const search = this.queryParams?.filter || '';
 
-			const sortKeys = ['loginAt', 'device.name', 'device.os.name'];
-			if (!Object.keys(sort).filter((key) => sortKeys.includes(key)).length) {
-				return API.v1.failure('error-invalid-sort');
+			if (!validateSortKeys(Object.keys(sort))) {
+				return API.v1.failure('error-invalid-sort-keys');
 			}
 
 			const sessions = await Sessions.aggregateSessionsByUserId({ uid: this.userId, search, sort, offset, count });
@@ -93,7 +103,11 @@ API.v1.addRoute(
 			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
 			const filter: string = this.queryParams?.filter || '';
 
-			const user = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+			if (!validateSortKeys(Object.keys(sort))) {
+				return API.v1.failure('error-invalid-sort-keys');
+			}
+
+			const user = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<Pick<IUser, '_id'>>(
 				{ $regex: filter, $options: 'i' },
 				[],
 				{},
@@ -104,11 +118,6 @@ API.v1.addRoute(
 
 			const search = user.length ? `${filter}|${user.join('|')}` : filter;
 
-			const sortKeys = ['loginAt', 'device.name', 'device.os.name', '_user.username', '_user.name'];
-			if (!Object.keys(sort).filter((key) => sortKeys.includes(key)).length) {
-				return API.v1.failure('error-invalid-sort');
-			}
-			console.log(search);
 			const sessions = await Sessions.aggregateSessionsAndPopulate({ search, sort, offset, count });
 			return API.v1.success(sessions);
 		},
