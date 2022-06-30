@@ -34,10 +34,9 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 import { useVoipClient } from '../../../ee/client/hooks/useVoipClient';
 import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
-import { CallContext, CallContextValue } from '../../contexts/CallContext';
+import { CallContext, CallContextValue, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
 
@@ -70,7 +69,7 @@ export const CallProvider: FC = ({ children }) => {
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
 
-	const isEnterprise = useHasLicenseModule('voip-enterprise') === true;
+	const hasVoIPEnterpriseLicense = useIsVoipEnterprise();
 
 	const remoteAudioMediaRef = useRef<IExperimentalHTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
@@ -233,7 +232,7 @@ export const CallProvider: FC = ({ children }) => {
 		const handleCallHangup = (_event: { roomId: string }): void => {
 			setQueueName(queueAggregator.getCurrentQueueName());
 
-			if (isEnterprise) {
+			if (hasVoIPEnterpriseLicense) {
 				openWrapUpModal();
 				return;
 			}
@@ -244,7 +243,7 @@ export const CallProvider: FC = ({ children }) => {
 		};
 
 		return subscribeToNotifyUser(`${user._id}/call.hangup`, handleCallHangup);
-	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled, dispatchEvent, isEnterprise, closeRoom]);
+	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled, dispatchEvent, hasVoIPEnterpriseLicense, closeRoom]);
 
 	useEffect(() => {
 		if (!result.voipClient) {
@@ -291,8 +290,6 @@ export const CallProvider: FC = ({ children }) => {
 		 */
 		remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 	}, [result.voipClient]);
-
-	const hasLicenseToMakeVoIPCalls = useHasLicenseModule('voip-enterprise') === true;
 
 	useEffect(() => {
 		if (!result.voipClient) {
@@ -407,7 +404,7 @@ export const CallProvider: FC = ({ children }) => {
 		const { registrationInfo, voipClient } = result;
 
 		return {
-			canMakeCall: hasLicenseToMakeVoIPCalls,
+			canMakeCall: hasVoIPEnterpriseLicense,
 			enabled: true,
 			ready: true,
 			openedRoomInfo: roomInfo,
@@ -436,11 +433,9 @@ export const CallProvider: FC = ({ children }) => {
 		};
 	}, [
 		voipEnabled,
-		changeAudioOutputDevice,
-		changeAudioInputDevice,
-		user,
+		user?.extension,
 		result,
-		hasLicenseToMakeVoIPCalls,
+		hasVoIPEnterpriseLicense,
 		roomInfo,
 		queueCounter,
 		queueName,
@@ -448,6 +443,8 @@ export const CallProvider: FC = ({ children }) => {
 		createRoom,
 		closeRoom,
 		openWrapUpModal,
+		changeAudioOutputDevice,
+		changeAudioInputDevice,
 	]);
 
 	return (

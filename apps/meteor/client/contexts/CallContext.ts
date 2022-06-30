@@ -4,6 +4,7 @@ import { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
+import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { VoIPUser } from '../lib/voip/VoIPUser';
 
 export type CallContextValue = CallContextDisabled | CallContextReady | CallContextError | CallContextEnabled;
@@ -63,6 +64,8 @@ const CallContextValueDefault: CallContextValue = {
 };
 
 export const CallContext = createContext<CallContextValue>(CallContextValueDefault);
+
+export const useIsVoipEnterprise = (): boolean => useHasLicenseModule('voip-enterprise') === true;
 
 export const useIsCallEnabled = (): boolean => {
 	const { enabled } = useContext(CallContext);
