@@ -4,13 +4,11 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GetImportProgressParamsGET = {
-};
+export type GetImportProgressParamsGET = {};
 
 const GetImportProgressParamsGETSchema = {
 	type: 'object',
-	properties: {
-	},
+	properties: {},
 	additionalProperties: false,
 	required: [],
 };

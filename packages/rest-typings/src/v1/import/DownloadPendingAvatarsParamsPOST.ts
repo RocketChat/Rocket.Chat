@@ -4,13 +4,11 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type DownloadPendingAvatarsParamsPOST = {
-};
+export type DownloadPendingAvatarsParamsPOST = {};
 
 const DownloadPendingAvatarsParamsPOSTSchema = {
 	type: 'object',
-	properties: {
-	},
+	properties: {},
 	additionalProperties: false,
 	required: [],
 };

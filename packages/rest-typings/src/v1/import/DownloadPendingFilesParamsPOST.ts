@@ -11,8 +11,7 @@ export type DownloadPendingFilesParamsPOST = {
 
 const DownloadPendingFilesParamsPOSTSchema = {
 	type: 'object',
-	properties: {
-	},
+	properties: {},
 	additionalProperties: false,
 	required: [],
 };

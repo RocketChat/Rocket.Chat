@@ -4,13 +4,11 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GetLatestImportOperationsParamsGET = {
-};
+export type GetLatestImportOperationsParamsGET = {};
 
 const GetLatestImportOperationsParamsGETSchema = {
 	type: 'object',
-	properties: {
-	},
+	properties: {},
 	additionalProperties: false,
 	required: [],
 };

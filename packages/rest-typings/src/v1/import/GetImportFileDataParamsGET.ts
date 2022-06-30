@@ -10,8 +10,7 @@ export type GetImportFileDataParamsGET = {
 
 const GetImportFileDataParamsGETSchema = {
 	type: 'object',
-	properties: {
-	},
+	properties: {},
 	additionalProperties: false,
 	required: [],
 };
