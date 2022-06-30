@@ -45,7 +45,7 @@
 		"@types/uuid": "^8.3.4",
 		"@types/ws": "^8.5.3",
 		"pino-pretty": "^7.6.0",
-		"typescript": "~4.3.5"
+		"typescript": "~4.5.5"
 	},
 	"main": "./dist/service.js",
 	"files": [
