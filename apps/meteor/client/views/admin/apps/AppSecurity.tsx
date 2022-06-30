@@ -3,14 +3,14 @@ import { Box, Margins } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-type AppSecurityPageProps = {
+type AppSecurityProps = {
 	privacyPolicySummary: string | undefined;
 	appPermissions: AppPermission[] | undefined;
 	tosLink: string | undefined;
 	privacyLink: string | undefined;
 };
 
-const AppSecurityPage: FC<AppSecurityPageProps> = ({ privacyPolicySummary, appPermissions, tosLink, privacyLink }) => {
+const AppSecurity: FC<AppSecurityProps> = ({ privacyPolicySummary, appPermissions, tosLink, privacyLink }) => {
 	const t = useTranslation();
 
 	const defaultPermissions = [
@@ -89,4 +89,4 @@ const AppSecurityPage: FC<AppSecurityPageProps> = ({ privacyPolicySummary, appPe
 	);
 };
 
-export default AppSecurityPage;
+export default AppSecurity;

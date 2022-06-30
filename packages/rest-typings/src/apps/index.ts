@@ -21,6 +21,13 @@ export type AppsEndpoints = {
 		};
 	};
 
+	'/apps/:id/versions': {
+		GET: () => {
+			apps: App[];
+			success: boolean;
+		};
+	};
+
 	'/apps/actionButtons': {
 		GET: () => IUIActionButton[];
 	};
