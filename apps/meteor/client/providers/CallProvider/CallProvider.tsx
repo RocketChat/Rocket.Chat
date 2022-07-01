@@ -34,7 +34,7 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
+import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
@@ -70,7 +70,7 @@ export const CallProvider: FC = ({ children }) => {
 	const homeRoute = useRoute('home');
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
-	const isEnterprise = useHasLicense('voip-enterprise');
+	const isEnterprise = useHasLicenseModule('voip-enterprise');
 
 	const remoteAudioMediaRef = useRef<IExperimentalHTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
@@ -284,7 +284,7 @@ export const CallProvider: FC = ({ children }) => {
 		remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 	}, [result.voipClient]);
 
-	const hasLicenseToMakeVoIPCalls = useHasLicense('voip-enterprise');
+	const hasLicenseToMakeVoIPCalls = useHasLicenseModule('voip-enterprise');
 
 	useEffect(() => {
 		if (!result.voipClient) {

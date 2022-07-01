@@ -18,6 +18,7 @@ import ToastMessagesProvider from './ToastMessagesProvider';
 import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
 import UserProvider from './UserProvider';
+import VideoConfProvider from './VideoConfProvider';
 
 const MeteorProvider: FC = ({ children }) => (
 	<ConnectionStatusProvider>
@@ -34,13 +35,15 @@ const MeteorProvider: FC = ({ children }) => (
 												<UserProvider>
 													<ModalProvider>
 														<AuthorizationProvider>
-															<DeviceProvider>
-																<CallProvider>
-																	<OmnichannelProvider>
-																		<AttachmentProvider>{children}</AttachmentProvider>
-																	</OmnichannelProvider>
-																</CallProvider>
-															</DeviceProvider>
+															<VideoConfProvider>
+																<DeviceProvider>
+																	<CallProvider>
+																		<OmnichannelProvider>
+																			<AttachmentProvider>{children}</AttachmentProvider>
+																		</OmnichannelProvider>
+																	</CallProvider>
+																</DeviceProvider>
+															</VideoConfProvider>
 														</AuthorizationProvider>
 													</ModalProvider>
 												</UserProvider>

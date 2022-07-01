@@ -3327,20 +3327,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.33.0-alpha.6456":
-  version: 1.33.0-alpha.6456
-  resolution: "@rocket.chat/apps-engine@npm:1.33.0-alpha.6456"
-  dependencies:
-    adm-zip: ^0.5.9
-    cryptiles: ^4.1.3
-    lodash.clonedeep: ^4.5.0
-    semver: ^5.7.1
-    stack-trace: 0.0.10
-    uuid: ^3.4.0
-  checksum: 18a27f4573affb687ec3c0befe2d6282920929f5283f376eddcdbeea30cef385af3a9f0b9d7a7d1bf89545dda4a76ae079d521d604dc0db5d9e3dfd82b63ccc6
-  languageName: node
-  linkType: hard
-
 "@rocket.chat/apps-engine@npm:^1.31.0":
   version: 1.32.0
   resolution: "@rocket.chat/apps-engine@npm:1.32.0"
@@ -3352,6 +3338,20 @@ __metadata:
     stack-trace: 0.0.10
     uuid: ^3.2.1
   checksum: 8cff972fd93bc2a4653614a58533dad442b078dd17c6237bfa3ef5f2194d52a048a99463c644d6e92ea28402effe8c94e44f81b1122362b08e0dd5f918573d74
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/apps-engine@npm:alpha":
+  version: 1.33.0-alpha.6487
+  resolution: "@rocket.chat/apps-engine@npm:1.33.0-alpha.6487"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+  checksum: 218833239b0b3fcd4ec5d185489b910f4376da9cfef3ce19e4cf121bd156c2f23eef0b1c226c6fabae22a7e84d3a196b3a9fdb26fe3d31ab4c404f1785ce5fe5
   languageName: node
   linkType: hard
 
@@ -3384,7 +3384,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-in-js@npm:^0.31.14":
+"@rocket.chat/css-in-js@npm:^0.31.14, @rocket.chat/css-in-js@npm:~0.31.14":
   version: 0.31.14
   resolution: "@rocket.chat/css-in-js@npm:0.31.14"
   dependencies:
@@ -3616,6 +3616,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/fuselage-hooks@npm:~0.31.14":
+  version: 0.31.14
+  resolution: "@rocket.chat/fuselage-hooks@npm:0.31.14"
+  dependencies:
+    use-sync-external-store: ~1.2.0
+  peerDependencies:
+    "@rocket.chat/fuselage-tokens": "*"
+    react: ^17.0.2
+  checksum: 7f298d7094f9afacc48357db0d472d4d4f6f875554f51e5c41e4e202b24e1e3a1ed00c5ec6b8a281fbfde1fd9d4ce7a57e20bad7e87d81fe0bfe942e8e113653
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/fuselage-hooks@npm:~0.31.14-dev.1":
   version: 0.31.14-dev.1
   resolution: "@rocket.chat/fuselage-hooks@npm:0.31.14-dev.1"
@@ -3738,7 +3750,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage@npm:^0.31.14":
+"@rocket.chat/fuselage@npm:^0.31.14, @rocket.chat/fuselage@npm:~0.31.14":
   version: 0.31.14
   resolution: "@rocket.chat/fuselage@npm:0.31.14"
   dependencies:
@@ -4018,7 +4030,7 @@ __metadata:
     "@nivo/pie": 0.73.0
     "@playwright/test": ^1.21.1
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.33.0-alpha.6456
+    "@rocket.chat/apps-engine": alpha
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.12
     "@rocket.chat/emitter": ~0.31.12
@@ -4048,6 +4060,7 @@ __metadata:
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": ~0.32.0-dev.0
+    "@rocket.chat/ui-video-conf": "workspace:^"
     "@settlin/spacebars-loader": ^1.0.9
     "@slack/client": ^4.12.0
     "@slack/rtm-api": ^6.0.0
@@ -4121,6 +4134,7 @@ __metadata:
     "@types/supertest": ^2.0.11
     "@types/ua-parser-js": ^0.7.36
     "@types/underscore.string": 0.0.38
+    "@types/use-subscription": ^1.0.0
     "@types/use-sync-external-store": ^0.0.3
     "@types/uuid": ^8.3.4
     "@types/xml-crypto": ^1.4.1
@@ -4297,6 +4311,7 @@ __metadata:
     underscore.string: ^3.3.6
     universal-perf-hooks: ^1.0.1
     url-polyfill: ^1.1.12
+    use-subscription: ~1.6.0
     use-sync-external-store: ^1.2.0
     uuid: ^8.3.2
     vm2: ^3.9.9
@@ -4431,7 +4446,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:^0.31.14":
+"@rocket.chat/styled@npm:^0.31.14, @rocket.chat/styled@npm:~0.31.14":
   version: 0.31.14
   resolution: "@rocket.chat/styled@npm:0.31.14"
   dependencies:
@@ -4587,6 +4602,30 @@ __metadata:
   checksum: db4f5191d01da1d9953cecef4135e388f2e5547182a4c600156611978eff40f716d6e23608f6a9914eb6074b4a008c96d0f8abb4cef3326e86670c6764fe0568
   languageName: node
   linkType: hard
+
+"@rocket.chat/ui-video-conf@workspace:^, @rocket.chat/ui-video-conf@workspace:packages/ui-video-conf":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-video-conf@workspace:packages/ui-video-conf"
+  dependencies:
+    "@rocket.chat/css-in-js": ~0.31.14
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/fuselage": ~0.31.14
+    "@rocket.chat/fuselage-hooks": ~0.31.14
+    "@rocket.chat/styled": ~0.31.14
+    "@types/jest": ^27.4.1
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.4
+    typescript: ~4.3.5
+  peerDependencies:
+    "@rocket.chat/css-in-js": "*"
+    "@rocket.chat/fuselage": "*"
+    "@rocket.chat/fuselage-hooks": "*"
+    "@rocket.chat/styled": "*"
+    react: ^17.0.2
+    react-dom: ^17.0.2
+  languageName: unknown
+  linkType: soft
 
 "@selderee/plugin-htmlparser2@npm:^0.6.0":
   version: 0.6.0
@@ -8341,6 +8380,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/use-subscription@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@types/use-subscription@npm:1.0.0"
+  checksum: 47fff868682692ecda7110bd04ba4c5b1324854c0bcccc765606a42d4bd9be475207413c8829a883b98e7edd801100df53876da0ff89ac21a8f964e440636ef2
+  languageName: node
+  linkType: hard
+
 "@types/use-sync-external-store@npm:^0.0.3":
   version: 0.0.3
   resolution: "@types/use-sync-external-store@npm:0.0.3"
@@ -9302,7 +9348,7 @@ __metadata:
     human-interval: ~1.0.0
     moment-timezone: ~0.5.27
     mongodb: ~3.5.0
-  checksum: cc8c1bbba7545628d9d039c58e701ff65cf07f241f035b731716eec0d5ef906ce09d60c3b321bbfb9e6c641994d1afd23aaeb92d645b33bf7be9942f13574173
+  checksum: acb4ebb7e7356f6e53e810d821eb6aa3d88bbfb9e85183e707517bee6d1eea1f189f38bdf0dd2b91360492ab7643134d510c320d2523d86596498ab98e59735b
   languageName: node
   linkType: hard
 
@@ -32957,6 +33003,15 @@ __metadata:
   version: 1.0.1
   resolution: "use-strict@npm:1.0.1"
   checksum: e2798c587b8dc95483ac376e1b9b13fbab179bbd498ed7bd55cba2ef72792569621ba25d9aa5df21f884a161d28624d39165070a690fc5f088bf903e097fc267
+  languageName: node
+  linkType: hard
+
+"use-subscription@npm:~1.6.0":
+  version: 1.6.0
+  resolution: "use-subscription@npm:1.6.0"
+  peerDependencies:
+    react: ^18.0.0
+  checksum: 0ce15a3ed1f66f78cb2d7a83ff4980e2ac93054b0bcbdc4e492e77fed599233372aaaf9c9fd9b370484c491c5aee0b980859db1108ad63ee4cdba0f468c4f5d1
   languageName: node
   linkType: hard
 

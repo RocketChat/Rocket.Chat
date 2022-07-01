@@ -57,5 +57,6 @@ export * from './models/IUploadsModel';
 export * from './models/IUserDataFilesModel';
 export * from './models/IUsersModel';
 export * from './models/IUsersSessionsModel';
+export * from './models/IVideoConferenceModel';
 export * from './models/IVoipRoomModel';
 export * from './models/IWebdavAccountsModel';
