@@ -3793,6 +3793,8 @@ __metadata:
     "@rocket.chat/fuselage": next
     "@rocket.chat/fuselage-tokens": ^0.31.13
     "@rocket.chat/message-parser": next
+    "@rocket.chat/styled": ^0.31.13
+    "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@storybook/addon-actions": ^6.5.9
     "@storybook/addon-docs": ^6.5.9
@@ -3829,7 +3831,10 @@ __metadata:
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage": "*"
+    "@rocket.chat/fuselage-tokens": ^0.31.13
     "@rocket.chat/message-parser": "*"
+    "@rocket.chat/styled": ^0.31.13
+    "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     katex: "*"
     react: ~17.0.2
