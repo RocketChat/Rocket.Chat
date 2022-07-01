@@ -100,7 +100,7 @@ export class RestClient implements RestClientInterface {
 			console.warn('Endpoint cannot contain query string', endpoint);
 		}
 		const queryParams = this.getParams(params);
-		return this.send(`${endpoint}${queryParams ? `?${queryParams}` : ''}`, 'GET', options).then(function (response) {
+		return this.send(`${endpoint}${queryParams ? `?${queryParams}` : ''}`, 'GET', { ...options }).then(function (response) {
 			return response.json();
 		});
 	}
@@ -141,7 +141,7 @@ export class RestClient implements RestClientInterface {
 	};
 
 	delete: RestClientInterface['delete'] = (endpoint, params, options) => {
-		return this.send(endpoint, 'DELETE', options).then(function (response) {
+		return this.send(endpoint, 'DELETE', { ...options }).then(function (response) {
 			return response.json();
 		});
 	};

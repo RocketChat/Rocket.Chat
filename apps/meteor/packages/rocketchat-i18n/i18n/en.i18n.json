@@ -2724,7 +2724,7 @@
   "LDAP_Validate_Teams_For_Each_Login_Description": "Determine if users' teams should be updated every time they login to Rocket.Chat. If this is turned off the team will be loaded only on their first login.",
   "Lead_capture_email_regex": "Lead capture email regex",
   "Lead_capture_phone_regex": "Lead capture phone regex",
-  "Learn_More_In": "Learn more in",
+  "Learn_more": "Learn more",
   "Least_recent_updated": "Least recent updated",
   "Leave": "Leave",
   "Leave_a_comment": "Leave a comment",
