@@ -2,7 +2,7 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useCallContext, useCallerInfo } from '../../../contexts/CallContext';
+import { useCallContext } from '../../../contexts/CallContext';
 import { useDialModal } from '../../../hooks/useDialModal';
 
 export const OmniChannelCallDialPad = (): ReactElement => {
@@ -10,12 +10,11 @@ export const OmniChannelCallDialPad = (): ReactElement => {
 
 	const { openDialModal } = useDialModal();
 
-	const voIPcall = useCallContext();
-	const caller = useCallerInfo();
+	const voIPCall = useCallContext();
 
-	const isMakeCallEnabled = voIPcall.enabled && voIPcall.ready && 'outBoundCallsAllowed' in voIPcall && voIPcall.outBoundCallsAllowed;
+	const isMakeCallEnabled = voIPCall.enabled && voIPCall.ready && voIPCall.outBoundCallsAllowed;
 
-	const isDialPadDisabled = !isMakeCallEnabled || ['IN_CALL', 'ON_HOLD', 'UNREGISTERED'].includes(caller.state);
+	const isDialPadDisabled = !voIPCall.outBoundCallsEnabledForUser;
 
 	return (
 		<Sidebar.TopBar.Action
