@@ -12,16 +12,52 @@ import PreferencesNotificationsSection from './PreferencesNotificationsSection';
 import PreferencesSoundSection from './PreferencesSoundSection';
 import PreferencesUserPresenceSection from './PreferencesUserPresenceSection';
 
+type CurrentData = {
+	enableNewMessageTemplate: boolean;
+	language: string;
+	newRoomNotification: string;
+	newMessageNotification: string;
+	clockMode: number;
+	useEmojis: boolean;
+	convertAsciiEmoji: boolean;
+	saveMobileBandwidth: boolean;
+	collapseMediaByDefault: boolean;
+	autoImageLoad: boolean;
+	emailNotificationMode: string;
+	unreadAlert: boolean;
+	notificationsSoundVolume: number;
+	desktopNotifications: string;
+	pushNotifications: string;
+	enableAutoAway: boolean;
+	highlights: string;
+	messageViewMode: number;
+	hideUsernames: boolean;
+	hideRoles: boolean;
+	displayAvatars: boolean;
+	hideFlexTab: boolean;
+	sendOnEnter: string;
+	idleTimeLimit: number;
+	sidebarShowFavorites: boolean;
+	sidebarShowUnread: boolean;
+	sidebarSortby: string;
+	sidebarViewMode: string;
+	sidebarDisplayAvatar: boolean;
+	sidebarGroupByType: boolean;
+	muteFocusedConversations: boolean;
+	dontAskAgainList: [action: string, label: string][];
+};
+
+type FormatedData = Omit<Partial<CurrentData>, 'dontAskAgainList' | 'highlights'>;
+
 const AccountPreferencesPage = (): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [hasAnyChange, setHasAnyChange] = useState(false);
 
-	const saveData = useRef<{ highlights: string; dontAskAgainList: [action: string, label: string][] } | null>(null);
+	const saveData = useRef<Partial<CurrentData>>({});
 	const commitRef = useRef({});
 
-	console.log(saveData);
 	const dataDownloadEnabled = useSetting('UserData_EnableDownload');
 
 	const onChange = useCallback(
@@ -29,13 +65,13 @@ const AccountPreferencesPage = (): ReactElement => {
 			const { current } = saveData;
 			if (current) {
 				if (JSON.stringify(initialValue) !== JSON.stringify(value)) {
-					current[key] = value;
+					current[key as keyof CurrentData] = value;
 				} else {
-					delete current[key];
+					delete current[key as keyof CurrentData];
 				}
 			}
 
-			const anyChange = !!Object.values(current || {}).length;
+			const anyChange = !!Object.values(current).length;
 			if (anyChange !== hasAnyChange) {
 				setHasAnyChange(anyChange);
 			}
@@ -55,7 +91,6 @@ const AccountPreferencesPage = (): ReactElement => {
 						.map((val) => val.trim())
 						.filter(Boolean),
 				});
-				console.log(data);
 			}
 
 			if (data?.dontAskAgainList) {
@@ -66,14 +101,10 @@ const AccountPreferencesPage = (): ReactElement => {
 				Object.assign(data, { dontAskAgainList: list });
 			}
 
-			await saveFn(
-				data as {
-					highlights: string[];
-				},
-			);
-			saveData.current = null;
+			await saveFn(data as FormatedData);
+			saveData.current = {};
 			setHasAnyChange(false);
-			Object.values(commitRef.current).forEach((fn) => fn());
+			Object.values(commitRef.current).forEach((fn) => (fn as () => void)());
 
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
 		} catch (e) {
