@@ -8,6 +8,9 @@ type ModalPortalProps = {
 	children?: ReactNode;
 };
 
+/**
+ * @todo: move to portals folder
+ */
 const ModalPortal = ({ children }: ModalPortalProps): ReactElement => {
 	const [modalRoot] = useState(() => createAnchor('modal-root'));
 	useEffect(() => (): void => deleteAnchor(modalRoot), [modalRoot]);

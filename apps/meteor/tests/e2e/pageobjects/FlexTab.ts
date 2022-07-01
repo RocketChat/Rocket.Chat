@@ -36,7 +36,7 @@ export class FlexTab extends BasePage {
 	}
 
 	get btnTabFiles(): Locator {
-		return this.page.locator('[data-qa-id=ToolBoxAction-clip]');
+		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Files")]');
 	}
 
 	get btnTabMentions(): Locator {

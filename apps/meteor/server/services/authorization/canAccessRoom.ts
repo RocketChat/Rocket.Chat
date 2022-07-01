@@ -7,7 +7,7 @@ import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomVoip } from './canAccessRoomVoip';
 
-async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
+async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
 		// TODO: it was using cached version from /app/settings/server/raw.js
 		const anon = await Settings.getValueById('Accounts_AllowAnonymousRead');

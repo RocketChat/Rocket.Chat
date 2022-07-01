@@ -11,7 +11,8 @@ export type BundleFeature =
 	| 'teams-mention'
 	| 'saml-enterprise'
 	| 'oauth-enterprise'
-	| 'federation';
+	| 'federation'
+	| 'videoconference-enterprise';
 
 interface IBundle {
 	[key: string]: BundleFeature[];
@@ -32,6 +33,7 @@ const bundles: IBundle = {
 		'saml-enterprise',
 		'oauth-enterprise',
 		'federation',
+		'videoconference-enterprise',
 	],
 	pro: [],
 };

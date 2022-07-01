@@ -59,7 +59,7 @@ export const createRoom = function <T extends RoomType>(
 
 	const now = new Date();
 
-	const roomProps: Omit<IRoom, '_id' | '_updatedAt' | 'uids' | 'jitsiTimeout' | 'autoTranslateLanguage'> = {
+	const roomProps: Omit<IRoom, '_id' | '_updatedAt' | 'uids' | 'autoTranslateLanguage'> = {
 		fname: name,
 		...extraData,
 		name: getValidRoomName(name.trim(), undefined, {

@@ -7,7 +7,7 @@ import {
 	isOmnichannelRoom,
 	ISubscription,
 } from '@rocket.chat/core-typings';
-import { Badge, Sidebar } from '@rocket.chat/fuselage';
+import { Badge, Sidebar, SidebarItemAction } from '@rocket.chat/fuselage';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { AllHTMLAttributes, ComponentType, memo, ReactElement, ReactNode } from 'react';
 
@@ -41,7 +41,7 @@ type RoomListRowProps = {
 			icon: ReactNode;
 			title: ReactNode;
 			avatar: ReactNode;
-			// actions: unknown;
+			actions: unknown;
 			href: string;
 			time?: Date;
 			menu?: ReactNode;
@@ -69,6 +69,9 @@ type RoomListRowProps = {
 	selected?: boolean;
 
 	sidebarViewMode?: unknown;
+	videoConfActions?: {
+		[action: string]: () => void;
+	};
 };
 
 function SideBarItemTemplateWithData({
@@ -76,13 +79,13 @@ function SideBarItemTemplateWithData({
 	id,
 	selected,
 	style,
-
 	extended,
 	SideBarItemTemplate,
 	AvatarTemplate,
 	t,
 	// sidebarViewMode,
 	isAnonymous,
+	videoConfActions,
 }: RoomListRowProps): ReactElement {
 	const { sidebar } = useLayout();
 
@@ -108,7 +111,7 @@ function SideBarItemTemplateWithData({
 	const icon = (
 		// TODO: Remove icon='at'
 		<Sidebar.Item.Icon highlighted={highlighted} icon='at'>
-			<RoomIcon room={room} placement='sidebar' />
+			<RoomIcon room={room} placement='sidebar' isIncomingCall={Boolean(videoConfActions)} />
 		</Sidebar.Item.Icon>
 	);
 
@@ -148,6 +151,14 @@ function SideBarItemTemplateWithData({
 			style={style}
 			badges={badges}
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
+			actions={
+				videoConfActions && (
+					<>
+						<SidebarItemAction onClick={videoConfActions.acceptCall} secondary success icon='phone' />
+						<SidebarItemAction onClick={videoConfActions.rejectCall} secondary danger icon='phone-off' />
+					</>
+				)
+			}
 			menu={
 				!isAnonymous &&
 				!isQueued &&

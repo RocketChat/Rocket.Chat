@@ -3,7 +3,7 @@ import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
-import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
+import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 
 export type CreateChannelProps = {
@@ -34,7 +34,7 @@ export type CreateChannelProps = {
 	onClose: () => void;
 };
 
-const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicense>, featureToggle: boolean): TranslationKey => {
+const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModule>, featureToggle: boolean): TranslationKey => {
 	if (licenseModule === 'loading' || !licenseModule) {
 		return 'error-this-is-an-ee-feature';
 	}
@@ -67,7 +67,7 @@ const CreateChannel = ({
 
 	const [nameError, setNameError] = useState<string>();
 
-	const federatedModule = useHasLicense('federation');
+	const federatedModule = useHasLicenseModule('federation');
 
 	const canUseFederation = federatedModule !== 'loading' && federatedModule && federationEnabled;
 

@@ -11,6 +11,7 @@ import type {
 	OmnichannelAgentStatus,
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
+	VideoConference,
 	ParsedUrl,
 	OEmbedMeta,
 	OEmbedUrlContent,
@@ -64,6 +65,7 @@ type EventLikeCallbackSignatures = {
 	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
 	'beforeCreateDirectRoom': (members: IUser[]) => void;
 	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
+	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 };
 
 /**
