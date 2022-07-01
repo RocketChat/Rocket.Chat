@@ -1,7 +1,7 @@
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
+import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import {
 	useCallActions,
 	useCallCreateRoom,
@@ -29,7 +29,7 @@ export const VoipFooter = (): ReactElement | null => {
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
-	const isEE = useHasLicense('voip-enterprise');
+	const isEE = useHasLicenseModule('voip-enterprise');
 
 	const toggleMic = useCallback(
 		(state: boolean) => {
