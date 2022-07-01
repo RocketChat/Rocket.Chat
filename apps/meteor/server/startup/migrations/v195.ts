@@ -66,7 +66,7 @@ const migrateCollection = async (): Promise<void> => {
 	}
 	try {
 		Promise.await(LivechatOfficeHour.rawCollection().drop());
-	} catch (err) {
+	} catch (err: any) {
 		// Ignore if the collection does not exist
 		if (!err.code || err.code !== 26) {
 			throw err;

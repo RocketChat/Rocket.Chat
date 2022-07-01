@@ -32,7 +32,7 @@ const ServerLogs = (): ReactElement => {
 				const { queue } = await getStdoutQueue(undefined);
 				setEntries(queue.map(unserializeEntry).sort(compareEntries));
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 			}
 		};
 
