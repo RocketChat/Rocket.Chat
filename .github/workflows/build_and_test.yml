@@ -220,7 +220,7 @@ jobs:
     strategy:
       matrix:
         node-version: ['14.18.3']
-        mongodb-version: ['3.6', '4.0', '4.2', '4.4', '5.0']
+        mongodb-version: ['4.4', '5.0']
 
     steps:
       - name: Launch MongoDB
@@ -379,13 +379,13 @@ jobs:
     strategy:
       matrix:
         node-version: ['14.18.3']
-        mongodb-version: ['4.4']
+        mongodb-version-ee: ['4.4']
 
     steps:
       - name: Launch MongoDB
         uses: wbari/start-mongoDB@v0.2
         with:
-          mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
+          mongoDBVersion: ${{ matrix.mongodb-version-ee }} --replSet=rs0
 
       - name: Launch NATS
         run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
