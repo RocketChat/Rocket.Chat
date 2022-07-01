@@ -2,34 +2,40 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback } from 'react';
 
-// import { useCallActions, useCallClient } from '../../../contexts/CallContext';
-import { useVoipAgent } from '../hooks/useVoipAgent';
+import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient } from '../../../contexts/CallContext';
 
 export const OmnichannelCallToggleReady = (): ReactElement => {
 	const t = useTranslation();
 
-	const { agentEnabled, networkStatus, registered, voipButtonEnabled, setAgentEnabled } = useVoipAgent();
+	const caller = useCallerInfo();
+	const unregister = useCallUnregisterClient();
+	const register = useCallRegisterClient();
+
+	const networkStatus = ['ERROR', 'INITIAL'].includes(caller.state) ? 'offline' : 'online';
+	const registered = !['ERROR', 'INITIAL', 'UNREGISTERED'].includes(caller.state);
+	const inCall = ['IN_CALL'].includes(caller.state);
 	const onClickVoipButton = useCallback((): void => {
-		if (voipButtonEnabled) {
+		if (registered) {
+			unregister();
 			return;
 		}
-
-		setAgentEnabled(!agentEnabled);
-	}, [agentEnabled, setAgentEnabled, voipButtonEnabled]);
+		register();
+	}, [registered, register, unregister]);
 
 	const getTitle = (): string => {
 		if (networkStatus === 'offline') {
 			return t('Signaling_connection_disconnected');
 		}
-		if (registered) {
-			return t('Enable');
-		}
-		if (!voipButtonEnabled) {
-			// Color for this state still not defined
-			return t('Disable');
+
+		if (inCall) {
+			return t('Cannot_disable_while_on_call');
 		}
 
-		return t('Cannot_disable_while_on_call');
+		if (registered) {
+			return t('Enabled');
+		}
+
+		return t('Disabled');
 	};
 
 	const getIcon = (): 'phone-issue' | 'phone' | 'phone-disabled' => {
@@ -52,5 +58,5 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		color: getColor(),
 	};
 
-	return <Sidebar.TopBar.Action {...voipCallIcon} onClick={onClickVoipButton} disabled={voipButtonEnabled} />;
+	return <Sidebar.TopBar.Action disabled={inCall} {...voipCallIcon} onClick={onClickVoipButton} />;
 };

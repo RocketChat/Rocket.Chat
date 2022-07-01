@@ -26,7 +26,7 @@ type VoipFooterPropsType = {
 	};
 	callsInQueue: string;
 
-	createRoom: (caller: ICallerInfo, callDirection?: IVoipRoom['direction']) => IVoipRoom['_id'];
+	createRoom: (caller: ICallerInfo, callDirection?: IVoipRoom['direction']) => Promise<IVoipRoom['_id']>;
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	openedRoomInfo: { v: { token?: string | undefined }; rid: string };
@@ -126,7 +126,7 @@ export const VoipFooter = ({
 					</Box>
 
 					<ButtonGroup medium>
-						{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
+						{(callerState === 'IN_CALL' || callerState === 'ON_HOLD' || callerState === 'OFFER_SENT') && (
 							<Button
 								title={tooltips.endCall}
 								disabled={paused}

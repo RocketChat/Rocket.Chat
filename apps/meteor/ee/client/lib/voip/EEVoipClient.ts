@@ -39,18 +39,17 @@ export class EEVoipClient extends VoIPUser {
 		this.session = inviter;
 		this.setupSessionEventHandlers(inviter);
 		this._opInProgress = Operation.OP_SEND_INVITE;
+
 		await inviter.invite({
 			requestDelegate: {
 				onReject: (response: IncomingResponse): void => {
-					let reason = 'unknown';
 					if (response.message.reasonPhrase) {
-						reason = response.message.reasonPhrase;
+						this.emit('callfailed', response.message.reasonPhrase || 'unknown');
 					}
-					console.error(response);
-					this.emit('callfailed', reason);
 				},
 			},
 		});
+
 		this._callState = 'OFFER_SENT';
 		const callerInfo: ICallerInfo = {
 			callerId: inviter.remoteIdentity.uri.user ? inviter.remoteIdentity.uri.user : '',
@@ -59,6 +58,7 @@ export class EEVoipClient extends VoIPUser {
 		};
 		this._callerInfo = callerInfo;
 		this._userState = UserState.UAC;
+		this.emit('stateChanged');
 	}
 
 	static async create(config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer): Promise<VoIPUser> {

@@ -6,9 +6,9 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { VoIPUser } from '../lib/voip/VoIPUser';
 
-export type CallContextValue = CallContextDisabled | CallContextEnabled | CallContextReady | CallContextError;
+export type CallContextValue = CallContextDisabled | CallContextReady | CallContextError | CallContextEnabled;
 
-type CallContextDisabled = {
+export type CallContextDisabled = {
 	enabled: false;
 	ready: false;
 };
@@ -17,6 +17,7 @@ type CallContextEnabled = {
 	enabled: true;
 	ready: unknown;
 };
+
 type CallContextReady = {
 	canMakeCall: boolean;
 	enabled: true;
@@ -28,15 +29,17 @@ type CallContextReady = {
 	openedRoomInfo: { v: { token?: string }; rid: string };
 	openWrapUpModal: () => void;
 	openRoom: (rid: IVoipRoom['_id']) => void;
-	createRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
+	createRoom: (caller: ICallerInfo) => Promise<IVoipRoom['_id']>;
 	closeRoom: (data?: { comment?: string; tags?: string[] }) => void;
 	changeAudioOutputDevice: (selectedAudioDevices: Device) => void;
 	changeAudioInputDevice: (selectedAudioDevices: Device) => void;
+	register: () => void;
+	unregister: () => void;
 };
-type CallContextError = {
+export type CallContextError = {
 	enabled: true;
 	ready: false;
-	error: Error;
+	error: Error | unknown;
 };
 
 export const isCallContextReady = (context: CallContextValue): context is CallContextReady => (context as CallContextReady).ready;
@@ -76,7 +79,13 @@ export const useIsCallError = (): boolean => {
 	return Boolean(isCallContextError(context));
 };
 
-export const useCallContext = (): CallContextValue => useContext(CallContext);
+export const useCallContext = (): CallContextValue => {
+	const context = useContext(CallContext);
+	if (!isCallContextReady(context)) {
+		throw new Error('useCallContext only if Calls are enabled and ready');
+	}
+	return context;
+};
 
 export const useCallActions = (): CallActionsType => {
 	const context = useContext(CallContext);
@@ -210,4 +219,24 @@ export const useChangeAudioInputDevice = (): CallContextReady['changeAudioOutput
 	}
 
 	return context.changeAudioInputDevice;
+};
+
+export const useCallRegisterClient = (): (() => void) => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useCallRegisterClient only if Calls are enabled and ready');
+	}
+
+	return context.register;
+};
+
+export const useCallUnregisterClient = (): (() => void) => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useCallUnregisterClient only if Calls are enabled and ready');
+	}
+
+	return context.unregister;
 };
