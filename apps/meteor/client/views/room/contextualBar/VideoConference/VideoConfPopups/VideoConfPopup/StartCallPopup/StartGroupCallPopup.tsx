@@ -1,7 +1,6 @@
 import { IRoom } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupContent,
@@ -10,31 +9,31 @@ import {
 	useVideoConfControllers,
 	VideoConfButton,
 	VideoConfPopupFooter,
-	VideoConfPopupFooterButtons,
 	VideoConfPopupTitle,
-	VideoConfPopupUsername,
+	VideoConfPopupFooterButtons,
 } from '@rocket.chat/ui-video-conf';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, forwardRef, Ref } from 'react';
 
-import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
-import RoomAvatar from '../../../../../../components/avatar/RoomAvatar';
-import { useVideoConfSetPreferences, useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
+import RoomAvatar from '../../../../../../../components/avatar/RoomAvatar';
+import {
+	useVideoConfSetPreferences,
+	useVideoConfCapabilities,
+	useVideoConfPreferences,
+} from '../../../../../../../contexts/VideoConfContext';
 
-type CallingPopupProps = {
-	id: string;
+type StartGroupCallPopup = {
 	room: IRoom;
-	onClose: (id: string) => void;
+	onConfirm: () => void;
+	loading?: boolean;
 };
 
-const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement => {
+const StartGroupCallPopup = forwardRef(function StartGroupCallPopup(
+	{ room, onConfirm, loading }: StartGroupCallPopup,
+	ref: Ref<HTMLDivElement>,
+): ReactElement {
 	const t = useTranslation();
-	const user = useUser();
-	const userId = user?._id;
-	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
-	const [directUsername] = room.usernames?.filter((username) => username !== user?.username) || [];
-
-	const videoConfPreferences = useVideoConfPreferences();
 	const setPreferences = useVideoConfSetPreferences();
+	const videoConfPreferences = useVideoConfPreferences();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers(videoConfPreferences);
 	const capabilities = useVideoConfCapabilities();
 
@@ -51,17 +50,16 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 		setPreferences({ cam: !controllersConfig.cam });
 	});
 
+	const handleStartCall = useMutableCallback(() => {
+		setPreferences(controllersConfig);
+		onConfirm();
+	});
+
 	return (
-		<VideoConfPopup>
+		<VideoConfPopup ref={ref}>
 			<VideoConfPopupContent>
 				<RoomAvatar room={room} size='x40' />
-				<VideoConfPopupTitle text={t('Calling')} icon='phone-out' counter />
-				{directUserId && (
-					<Box display='flex' alignItems='center' mbs='x8'>
-						<ReactiveUserStatus uid={directUserId} />
-						{directUsername && <VideoConfPopupUsername username={directUsername} />}
-					</Box>
-				)}
+				<VideoConfPopupTitle text={t('Start_a_call')} />
 				{(showCam || showMic) && (
 					<VideoConfPopupControllers>
 						{showMic && (
@@ -87,15 +85,13 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 			</VideoConfPopupContent>
 			<VideoConfPopupFooter>
 				<VideoConfPopupFooterButtons>
-					{onClose && (
-						<VideoConfButton primary icon='phone-disabled' onClick={(): void => onClose(id)}>
-							{t('Cancel')}
-						</VideoConfButton>
-					)}
+					<VideoConfButton disabled={loading} primary onClick={handleStartCall}>
+						{t('Start_call')}
+					</VideoConfButton>
 				</VideoConfPopupFooterButtons>
 			</VideoConfPopupFooter>
 		</VideoConfPopup>
 	);
-};
+});
 
-export default CallingPopup;
+export default StartGroupCallPopup;

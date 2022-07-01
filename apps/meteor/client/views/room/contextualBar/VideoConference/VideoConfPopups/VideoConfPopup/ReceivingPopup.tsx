@@ -1,7 +1,7 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupContent,
@@ -10,9 +10,11 @@ import {
 	useVideoConfControllers,
 	VideoConfButton,
 	VideoConfPopupFooter,
+	VideoConfPopupFooterButtons,
 	VideoConfPopupTitle,
 	VideoConfPopupIndicators,
 	VideoConfPopupClose,
+	VideoConfPopupUsername,
 } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement, useMemo } from 'react';
 
@@ -33,11 +35,13 @@ type ReceivingPopupProps = {
 	onConfirm: () => void;
 };
 
-// TODO: Replace RoomAvatar to UserAvatar and avoid using subscription???
 const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, onConfirm }: ReceivingPopupProps): ReactElement => {
 	const t = useTranslation();
-	const userId = useUserId();
+	const user = useUser();
+	const userId = user?._id;
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
+	const [directUsername] = room.usernames?.filter((username) => username !== user?.username) || [];
+
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
 
@@ -61,12 +65,7 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 				{directUserId && (
 					<Box display='flex' alignItems='center' mbs='x8'>
 						<ReactiveUserStatus uid={directUserId} />
-						<Box mis='x8' display='flex'>
-							<Box>{room.fname}</Box>
-							<Box mis='x4' color='neutral-600'>
-								{`(${room.name})`}
-							</Box>
-						</Box>
+						{directUsername && <VideoConfPopupUsername username={directUsername} />}
 					</Box>
 				)}
 				{phase === AsyncStatePhase.LOADING && <Skeleton />}
@@ -74,7 +73,7 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 					<VideoConfPopupControllers>
 						{showMic && (
 							<VideoConfController
-								primary={controllersConfig.mic}
+								active={controllersConfig.mic}
 								text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
 								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
 								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
@@ -83,7 +82,7 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 						)}
 						{showCam && (
 							<VideoConfController
-								primary={controllersConfig.cam}
+								active={controllersConfig.cam}
 								text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 								icon={controllersConfig.cam ? 'video' : 'video-off'}
@@ -92,7 +91,9 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 						)}
 					</VideoConfPopupControllers>
 				)}
-				<VideoConfPopupFooter>
+			</VideoConfPopupContent>
+			<VideoConfPopupFooter>
+				<VideoConfPopupFooterButtons>
 					<VideoConfButton primary onClick={handleJoinCall}>
 						{t('Accept')}
 					</VideoConfButton>
@@ -101,8 +102,8 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 							{t('Decline')}
 						</VideoConfButton>
 					)}
-				</VideoConfPopupFooter>
-			</VideoConfPopupContent>
+				</VideoConfPopupFooterButtons>
+			</VideoConfPopupFooter>
 		</VideoConfPopup>
 	);
 };

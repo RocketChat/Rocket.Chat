@@ -1,15 +1,18 @@
 import { IRoom } from '@rocket.chat/core-typings';
-import React, { ReactElement } from 'react';
+import { useUserRoom } from '@rocket.chat/ui-contexts';
+import React, { ReactElement, useState } from 'react';
 
 import {
 	useVideoConfAcceptCall,
 	useVideoConfAbortCall,
 	useVideoConfRejectIncomingCall,
 	useVideoConfDismissCall,
+	useVideoConfStartCall,
+	useVideoConfDismissOutgoing,
 } from '../../../../../../contexts/VideoConfContext';
-import { useHandleRoom } from '../../../../../../lib/RoomManager';
 import CallingPopup from './CallingPopup';
 import ReceivingPopup from './ReceivingPopup';
+import StartCallPopup from './StartCallPopup/StartCallPopup';
 
 export type TimedVideoConfPopupProps = {
 	id: string;
@@ -31,11 +34,18 @@ const TimedVideoConfPopup = ({
 	current,
 	total,
 }: TimedVideoConfPopupProps): ReactElement | null => {
+	const [starting, setStarting] = useState(false);
 	const acceptCall = useVideoConfAcceptCall();
 	const abortCall = useVideoConfAbortCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
 	const dismissCall = useVideoConfDismissCall();
-	const { value: room } = useHandleRoom(rid);
+	const startCall = useVideoConfStartCall();
+	const dismissOutgoing = useVideoConfDismissOutgoing();
+	const room = useUserRoom(rid);
+
+	if (!room) {
+		return null;
+	}
 
 	const handleConfirm = (): void => {
 		acceptCall(id);
@@ -54,9 +64,10 @@ const TimedVideoConfPopup = ({
 		dismissCall(id);
 	};
 
-	if (!room) {
-		return null;
-	}
+	const handleStartCall = async (): Promise<void> => {
+		setStarting(true);
+		startCall(rid);
+	};
 
 	if (isReceiving) {
 		return (
@@ -77,7 +88,7 @@ const TimedVideoConfPopup = ({
 		return <CallingPopup room={room} id={id} onClose={handleClose} />;
 	}
 
-	return null;
+	return <StartCallPopup loading={starting} room={room} id={id} onClose={dismissOutgoing} onConfirm={handleStartCall} />;
 };
 
 export default TimedVideoConfPopup;

@@ -29,7 +29,10 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 		[setModal],
 	);
 
-	useEffect(() => VideoConfManager.on('direct/stopped', () => setOutgoing(undefined)), []);
+	useEffect(() => {
+		VideoConfManager.on('direct/stopped', () => setOutgoing(undefined));
+		VideoConfManager.on('calling/ended', () => setOutgoing(undefined));
+	}, []);
 
 	const contextValue = useMemo(
 		() => ({
@@ -63,10 +66,6 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			queryPreferences: {
 				getCurrentValue: (): CallPreferences => VideoConfManager.preferences,
 				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('preference/changed', cb),
-			},
-			queryAvailable: {
-				getCurrentValue: (): boolean => VideoConfManager.available,
-				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('availability/changed', cb),
 			},
 		}),
 		[],

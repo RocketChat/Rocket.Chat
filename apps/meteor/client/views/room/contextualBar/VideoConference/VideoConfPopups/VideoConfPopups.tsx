@@ -42,14 +42,14 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 			{(children || popups?.length > 0) && (
 				<VideoConfPopupPortal>
 					<VideoConfPopupBackdrop>
-						{(children ? [children, ...popups] : popups).map(({ id, rid, isReceiving }, index) => (
+						{(children ? [children, ...popups] : popups).map(({ id, rid, isReceiving }, index = 1) => (
 							<VideoConfPopup
 								key={id}
 								id={id}
 								rid={rid}
 								isReceiving={isReceiving}
 								isCalling={isCalling}
-								position={(index + 1) * 10}
+								position={index * 10}
 								current={index}
 								total={popups.length}
 							/>

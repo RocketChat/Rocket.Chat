@@ -52,6 +52,24 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
+	public async findAllLongRunning(minDate: Date): Promise<Cursor<Pick<VideoConference, '_id'>>> {
+		return this.find(
+			{
+				createdAt: {
+					$lte: minDate,
+				},
+				endedAt: {
+					$exists: false,
+				},
+			},
+			{
+				projection: {
+					_id: 1,
+				},
+			},
+		);
+	}
+
 	public async countByTypeAndStatus(
 		type: VideoConference['type'],
 		status: VideoConferenceStatus,
@@ -204,20 +222,50 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		});
 	}
 
-	public async expireOldVideoConferences(minDate: Date): Promise<void> {
+	public async updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void> {
 		await this.updateMany(
 			{
-				createdAt: {
-					$lte: minDate,
-				},
-				endedAt: {
-					$exists: false,
-				},
+				'users._id': userId,
 			},
 			{
 				$set: {
-					endedAt: new Date(),
-					status: VideoConferenceStatus.EXPIRED,
+					'users.$.name': name,
+					'users.$.username': username,
+				},
+			},
+		);
+
+		await this.updateMany(
+			{
+				'createdBy._id': userId,
+			},
+			{
+				$set: {
+					'createdBy.name': name,
+					'createdBy.username': username,
+				},
+			},
+		);
+
+		await this.updateMany(
+			{
+				'endedBy._id': userId,
+			},
+			{
+				$set: {
+					'endedBy.name': name,
+					'endedBy.username': username,
+				},
+			},
+		);
+	}
+
+	public async increaseAnonymousCount(callId: IGroupVideoConference['_id']): Promise<void> {
+		await this.updateOne(
+			{ _id: callId },
+			{
+				$inc: {
+					anonymousUsers: 1,
 				},
 			},
 		);

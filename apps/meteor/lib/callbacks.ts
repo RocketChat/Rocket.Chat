@@ -62,7 +62,7 @@ type EventLikeCallbackSignatures = {
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
 	'onValidateLogin': (login: ILoginAttempt) => void;
-	'onJoinVideoConference': (callId: VideoConference['_id'], userId: IUser['_id']) => Promise<void>;
+	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 };
 
 /**

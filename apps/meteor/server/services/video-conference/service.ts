@@ -102,24 +102,28 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.create(data);
 	}
 
-	public async join(uid: IUser['_id'], callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
+	public async join(uid: IUser['_id'] | undefined, callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
 		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call || call.endedAt) {
 			throw new Error('invalid-call');
 		}
 
-		const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>(uid, {
-			projection: { name: 1, username: 1, avatarETag: 1 },
-		});
-		if (!user) {
-			throw new Error('failed-to-load-own-data');
+		let user: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | null = null;
+
+		if (uid) {
+			user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>(uid, {
+				projection: { name: 1, username: 1, avatarETag: 1 },
+			});
+			if (!user) {
+				throw new Error('failed-to-load-own-data');
+			}
 		}
 
 		if (call.providerName === 'jitsi') {
 			updateCounter({ settingsId: 'Jitsi_Click_To_Join_Count' });
 		}
 
-		return this.joinCall(call, user, options);
+		return this.joinCall(call, user || undefined, options);
 	}
 
 	public async cancel(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
@@ -203,18 +207,30 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	public async setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void> {
-		VideoConferenceModel.setStatusById(callId, status);
-
-		if (status === VideoConferenceStatus.ENDED) {
-			this.endCall(callId);
+		switch (status) {
+			case VideoConferenceStatus.ENDED:
+				return this.endCall(callId);
+			case VideoConferenceStatus.EXPIRED:
+				return this.expireCall(callId);
 		}
+
+		VideoConferenceModel.setStatusById(callId, status);
 	}
 
-	public async addUser(callId: VideoConference['_id'], userId: IUser['_id'], ts?: Date): Promise<void> {
+	public async addUser(callId: VideoConference['_id'], userId?: IUser['_id'], ts?: Date): Promise<void> {
 		const call = await this.get(callId);
 		if (!call) {
 			throw new Error('Invalid video conference');
 		}
+
+		if (!userId) {
+			if (call.type === 'videoconference') {
+				return this.addAnonymousUser(call as Omit<IGroupVideoConference, 'providerData'>);
+			}
+
+			throw new Error('Invalid User');
+		}
+
 		const user = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(userId, {
 			projection: { username: 1, name: 1 },
 		});
@@ -317,8 +333,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		if (!call.endedAt) {
-			await VideoConferenceModel.setDataById(call._id, { endedAt: new Date() });
+		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.ENDED });
+		if (call.messages?.started) {
+			await this.removeJoinButton(call.messages.started);
 		}
 
 		switch (call.type) {
@@ -327,6 +344,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			case 'videoconference':
 				return this.endGroupCall(call);
 		}
+	}
+
+	private async expireCall(callId: VideoConference['_id']): Promise<void> {
+		const call = await VideoConferenceModel.findOneById<Pick<VideoConference, '_id' | 'messages'>>(callId, { projection: { messages: 1 } });
+		if (!call) {
+			return;
+		}
+
+		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.EXPIRED });
+		if (call.messages?.started) {
+			return this.removeJoinButton(call.messages.started);
+		}
+	}
+
+	private async removeJoinButton(messageId: IMessage['_id']): Promise<void> {
+		await Messages.removeVideoConfJoinButton(messageId);
 	}
 
 	private async endDirectCall(call: IDirectVideoConference): Promise<void> {
@@ -506,6 +539,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private buildMessageBlock(text: string): MessageSurfaceLayout[number] {
 		return {
 			type: 'section',
+			appId: 'videoconf-core',
 			text: {
 				type: 'plain_text',
 				text,
@@ -653,10 +687,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async joinCall(
 		call: VideoConference,
-		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'>,
+		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
-		await callbacks.runAsync('onJoinVideoConference', call._id, user._id);
+		await callbacks.runAsync('onJoinVideoConference', call._id, user?._id);
 
 		return this.getUrl(call, user, options);
 	}
@@ -796,15 +830,19 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
-	private async updateGroupCallMessage(
-		call: Optional<IGroupVideoConference, 'providerData'>,
-		user: Pick<IUser, '_id' | 'username' | 'name'>,
-	): Promise<void> {
-		if (!call.messages.started || !user.username) {
+	private async addAnonymousUser(call: Optional<IGroupVideoConference, 'providerData'>): Promise<void> {
+		await VideoConferenceModel.increaseAnonymousCount(call._id);
+
+		if (!call.messages.started) {
 			return;
 		}
 
-		const message = await Messages.findOneById<IMessage>(call.messages.started, {});
+		const imageUrl = getURL(`/avatar/@a`, { cdn: false, full: true });
+		return this.addAvatarToCallMessage(call.messages.started, imageUrl, TAPi18n.__('Anonymous'));
+	}
+
+	private async addAvatarToCallMessage(messageId: IMessage['_id'], imageUrl: string, altText: string): Promise<void> {
+		const message = await Messages.findOneById<Pick<IMessage, '_id' | 'blocks'>>(messageId, { projection: { blocks: 1 } });
 		if (!message) {
 			return;
 		}
@@ -816,8 +854,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			blocks.push(avatarsBlock);
 		}
 
-		const imageUrl = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
-
 		if (avatarsBlock.elements.find((el) => el.type === 'image' && el.imageUrl === imageUrl)) {
 			return;
 		}
@@ -827,11 +863,23 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			{
 				type: 'image',
 				imageUrl,
-				altText: user.name || user.username,
+				altText,
 			},
 		];
 
-		await Messages.setBlocksById(call.messages.started, blocks);
+		await Messages.setBlocksById(message._id, blocks);
+	}
+
+	private async updateGroupCallMessage(
+		call: Optional<IGroupVideoConference, 'providerData'>,
+		user: Pick<IUser, '_id' | 'username' | 'name'>,
+	): Promise<void> {
+		if (!call.messages.started || !user.username) {
+			return;
+		}
+		const imageUrl = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+
+		return this.addAvatarToCallMessage(call.messages.started, imageUrl, user.name || user.username);
 	}
 
 	private async updateDirectCall(call: IDirectVideoConference, newUserId: IUser['_id']): Promise<void> {

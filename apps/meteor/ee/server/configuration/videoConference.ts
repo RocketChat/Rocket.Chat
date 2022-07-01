@@ -45,7 +45,7 @@ Meteor.startup(() =>
 			return true;
 		});
 
-		callbacks.add('onJoinVideoConference', async (callId: VideoConference['_id'], userId: IUser['_id']) =>
+		callbacks.add('onJoinVideoConference', async (callId: VideoConference['_id'], userId?: IUser['_id']) =>
 			VideoConf.addUser(callId, userId),
 		);
 	}),

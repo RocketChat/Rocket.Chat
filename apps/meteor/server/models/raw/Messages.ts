@@ -244,6 +244,20 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		await this.updateOne({ _id }, { $addToSet: { blocks: { $each: blocks } } });
 	}
 
+	async removeVideoConfJoinButton(_id: IMessage['_id']): Promise<void> {
+		await this.updateOne(
+			{ _id },
+			{
+				$pull: {
+					blocks: {
+						appId: 'videoconf-core',
+						type: 'actions',
+					} as Required<IMessage>['blocks'][number],
+				},
+			},
+		);
+	}
+
 	async countRoomsWithStarredMessages(options: CollectionAggregationOptions): Promise<number> {
 		const queryResult = await this.col
 			.aggregate<{ _id: null; total: number }>(

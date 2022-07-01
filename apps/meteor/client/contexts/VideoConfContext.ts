@@ -18,6 +18,7 @@ export type VideoConfIncomingCall = {
 
 type VideoConfContextValue = {
 	dispatchOutgoing: (options: Omit<VideoConfPopupPayload, 'id'>) => void;
+	dismissOutgoing: () => void;
 	startCall: (rid: IRoom['_id'], title?: string) => void;
 	acceptCall: (callId: string) => void;
 	joinCall: (callId: string) => void;
@@ -30,7 +31,6 @@ type VideoConfContextValue = {
 	queryCalling: Subscription<boolean>;
 	queryCapabilities: Subscription<ProviderCapabilities>;
 	queryPreferences: Subscription<CallPreferences>;
-	queryAvailable: Subscription<boolean>;
 };
 
 export const VideoConfContext = createContext<VideoConfContextValue | undefined>(undefined);
@@ -44,6 +44,7 @@ const useVideoConfContext = (): VideoConfContextValue => {
 };
 
 export const useVideoConfDispatchOutgoing = (): VideoConfContextValue['dispatchOutgoing'] => useVideoConfContext().dispatchOutgoing;
+export const useVideoConfDismissOutgoing = (): VideoConfContextValue['dismissOutgoing'] => useVideoConfContext().dismissOutgoing;
 export const useVideoConfStartCall = (): VideoConfContextValue['startCall'] => useVideoConfContext().startCall;
 export const useVideoConfAcceptCall = (): VideoConfContextValue['acceptCall'] => useVideoConfContext().acceptCall;
 export const useVideoConfJoinCall = (): VideoConfContextValue['joinCall'] => useVideoConfContext().joinCall;
@@ -70,8 +71,4 @@ export const useVideoConfCapabilities = (): ProviderCapabilities => {
 export const useVideoConfPreferences = (): CallPreferences => {
 	const { queryPreferences } = useVideoConfContext();
 	return useSubscription(queryPreferences);
-};
-export const useVideoConfAvailable = (): boolean => {
-	const { queryAvailable } = useVideoConfContext();
-	return useSubscription(queryAvailable);
 };

@@ -5,13 +5,13 @@ import { Box, Icon, Throbber } from '@rocket.chat/fuselage';
 type VideoConfPopupTitleProps = {
   text: string;
   counter?: boolean; 
-  icon: ComponentProps<typeof Icon>['name'];
+  icon?: ComponentProps<typeof Icon>['name'];
 };
 
 const VideoConfPopupTitle = ({ text, counter = false, icon }: VideoConfPopupTitleProps) => {
   return (
     <Box mbs='x8' display='flex' alignItems='center'>
-      <Icon size='x20' name={icon} />
+      {icon && <Icon size='x20' name={icon} />}
       <Box mis='x4' fontScale='p1b'>
         {text} 
       </Box>
