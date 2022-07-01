@@ -11,8 +11,6 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 	const unregister = useCallUnregisterClient();
 	const register = useCallRegisterClient();
 
-	// const { agentEnabled, networkStatus, registered, voipButtonEnabled, setAgentEnabled } = useVoipAgent();
-
 	const networkStatus = ['ERROR', 'INITIAL'].includes(caller.state) ? 'offline' : 'online';
 	const registered = !['ERROR', 'INITIAL', 'UNREGISTERED'].includes(caller.state);
 	const inCall = ['IN_CALL'].includes(caller.state);
