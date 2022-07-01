@@ -68,7 +68,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setAsFederated(roomId: any): any;
 
 	setRoomTypeById(roomId: any, roomType: any): any;
-	
+
 	setRoomNameById(roomId: any, name: any, fname: any): any;
 
 	setRoomTopicById(roomId: any, topic: any): any;
@@ -76,5 +76,4 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByE2E(options: any): any;
 
 	findRoomsInsideTeams(autoJoin?: boolean): any;
-
 }
