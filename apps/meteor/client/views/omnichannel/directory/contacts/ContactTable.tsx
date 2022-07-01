@@ -16,6 +16,7 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
@@ -37,6 +38,7 @@ const rowClass = css`
 function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastchat'>('username');
+	const isCallReady = useIsCallReady();
 
 	const [term, setTerm] = useDebouncedState('', 500);
 
@@ -147,9 +149,7 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 									<GenericTableCell withTruncatedText>{phoneNumber}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>
-									<GenericTableCell>
-										<ContactTableDialpadButton phoneNumber={phoneNumber} />
-									</GenericTableCell>
+									<GenericTableCell>{isCallReady && <ContactTableDialpadButton phoneNumber={phoneNumber} />}</GenericTableCell>
 								</GenericTableRow>
 							);
 						})}

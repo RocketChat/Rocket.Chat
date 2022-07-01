@@ -8,9 +8,8 @@ import { useDialModal } from '../../../../hooks/useDialModal';
 export const ContactTableDialpadButton = ({ phoneNumber }: { phoneNumber: string }): ReactElement => {
 	const t = useTranslation();
 
-	const { openDialModal } = useDialModal();
-
 	const { outBoundCallsAllowed, outBoundCallsEnabledForUser } = useVoipOutboundStates();
+	const { openDialModal } = useDialModal();
 
 	const onClick = (event: MouseEvent<HTMLButtonElement>): void => {
 		event.stopPropagation();

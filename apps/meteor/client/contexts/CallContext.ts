@@ -263,11 +263,12 @@ export const useVoipOutboundStates = (): {
 	outBoundCallsEnabled: boolean;
 	outBoundCallsEnabledForUser: boolean;
 } => {
-	const context = useContext(CallContext);
+	const isEnterprise = useIsVoipEnterprise();
+	const callerInfo = useCallerInfo();
 
 	return {
-		outBoundCallsAllowed: Boolean(context.outBoundCallsAllowed),
-		outBoundCallsEnabled: Boolean(context.outBoundCallsEnabled),
-		outBoundCallsEnabledForUser: Boolean(context.outBoundCallsEnabledForUser),
+		outBoundCallsAllowed: isEnterprise,
+		outBoundCallsEnabled: isEnterprise,
+		outBoundCallsEnabledForUser: isEnterprise && !['IN_CALL', 'ON_HOLD', 'UNREGISTERED', 'INITIAL'].includes(callerInfo.state),
 	};
 };
