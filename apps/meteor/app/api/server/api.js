@@ -397,7 +397,13 @@ export class APIClass extends Restivus {
 						}
 
 						if (!this.user && !settings.get('Accounts_AllowAnonymousRead')) {
-							return api.unauthorized();
+							return {
+								statusCode: 401,
+								body: {
+									status: 'error',
+									message: 'You must be logged in to do this.',
+								},
+							};
 						}
 					}
 
