@@ -75,7 +75,7 @@ export const CallProvider: FC = ({ children }) => {
 
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
-	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
+	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>({ v: {}, rid: '' });
 
 	const closeRoom = useCallback(
 		async (data = {}): Promise<void> => {

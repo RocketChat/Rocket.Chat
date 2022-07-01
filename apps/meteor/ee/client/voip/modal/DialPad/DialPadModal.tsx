@@ -57,7 +57,7 @@ const DialPadModal = ({ handleClose }: { handleClose: () => void }): ReactElemen
 						secondary
 						info
 						size='64px'
-						onClick={() => {
+						onClick={(): void => {
 							handleCallButtonClick();
 							handleClose();
 						}}
