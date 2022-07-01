@@ -1,32 +1,18 @@
-import { Sessions, Settings } from '@rocket.chat/models';
+import { MongoInternals } from 'meteor/mongo';
 
 import { addMigration } from '../../lib/migrations';
 
+// Remove Deprecated Omnichannel Queue Collection
 addMigration({
 	version: 274,
 	async up() {
-		await Promise.allSettled(
-			['instanceId_1_sessionId_1_year_1_month_1_day_1', 'instanceId_1_sessionId_1', 'type_1'].map((idx) => Sessions.col.dropIndex(idx)),
-		);
-
-		const oldSettings = await Settings.findOne({ _id: 'email_style' });
-		if (!oldSettings) {
-			return;
+		// Remove collection
+		try {
+			const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+			await mongo.db.dropCollection('rocketchat_omnichannel_queue');
+		} catch (e: any) {
+			// ignore
+			console.warn('Error deleting collection. Perhaps collection was already deleted?');
 		}
-
-		const newValue = `${oldSettings.value} .rc-color { color: #F5455C; }`;
-		const newPackageValue = `${oldSettings.packageValue} .rc-color { color: #F5455C; }`;
-
-		await Settings.updateOne(
-			{
-				_id: 'email_style',
-			},
-			{
-				$set: {
-					value: newValue,
-					packageValue: newPackageValue,
-				},
-			},
-		);
 	},
 });
