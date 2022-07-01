@@ -1,18 +1,18 @@
-import { Settings } from '@rocket.chat/models';
+import { MongoInternals } from 'meteor/mongo';
 
 import { addMigration } from '../../lib/migrations';
-import { Users } from '../../../app/models/server';
 
+// Remove Deprecated Omnichannel Queue Collection
 addMigration({
 	version: 274,
-	up() {
-		Users.update(
-			{ 'settings.preferences.enableNewMessageTemplate': { $exists: 1 } },
-			{
-				$unset: { 'settings.preferences.enableNewMessageTemplate': 1 },
-			},
-			{ multi: true },
-		);
-		return Settings.removeById('Accounts_Default_User_Preferences_enableNewMessageTemplate');
+	async up() {
+		// Remove collection
+		try {
+			const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+			await mongo.db.dropCollection('rocketchat_omnichannel_queue');
+		} catch (e: any) {
+			// ignore
+			console.warn('Error deleting collection. Perhaps collection was already deleted?');
+		}
 	},
 });

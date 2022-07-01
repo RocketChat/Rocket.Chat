@@ -1,3 +1,6 @@
+import { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import { FindOneOptions, Cursor, WriteOpResult, DeleteWriteOpResultObject } from 'mongodb';
+
 import { Base } from './_Base';
 
 export class LivechatInquiry extends Base {
@@ -12,17 +15,18 @@ export class LivechatInquiry extends Base {
 		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
 		this.tryEnsureIndex({ queueOrder: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1 });
 		this.tryEnsureIndex({ 'v.token': 1, 'status': 1 }); // visitor token and status
+		this.tryEnsureIndex({ locked: 1, lockedAt: 1 }, { sparse: true }); // locked and lockedAt
 	}
 
-	findOneById(inquiryId) {
+	findOneById(inquiryId: string): ILivechatInquiryRecord {
 		return this.findOne({ _id: inquiryId });
 	}
 
-	findOneByRoomId(rid, options) {
+	findOneByRoomId(rid: string, options?: FindOneOptions<ILivechatInquiryRecord>): ILivechatInquiryRecord {
 		return this.findOne({ rid }, options);
 	}
 
-	getNextInquiryQueued(department) {
+	getNextInquiryQueued(department?: string): ILivechatInquiryRecord {
 		return this.findOne(
 			{
 				status: 'queued',
@@ -38,14 +42,14 @@ export class LivechatInquiry extends Base {
 		);
 	}
 
-	getQueuedInquiries(options) {
+	getQueuedInquiries(options?: FindOneOptions<ILivechatInquiryRecord>): Cursor<ILivechatInquiryRecord> {
 		return this.find({ status: 'queued' }, options);
 	}
 
 	/*
 	 * mark the inquiry as taken
 	 */
-	takeInquiry(inquiryId) {
+	takeInquiry(inquiryId: string): void {
 		this.update(
 			{
 				_id: inquiryId,
@@ -60,7 +64,7 @@ export class LivechatInquiry extends Base {
 	/*
 	 * mark inquiry as open
 	 */
-	openInquiry(inquiryId) {
+	openInquiry(inquiryId: string): WriteOpResult {
 		return this.update(
 			{
 				_id: inquiryId,
@@ -74,7 +78,7 @@ export class LivechatInquiry extends Base {
 	/*
 	 * mark inquiry as queued
 	 */
-	queueInquiry(inquiryId) {
+	queueInquiry(inquiryId: string): WriteOpResult {
 		return this.update(
 			{
 				_id: inquiryId,
@@ -86,7 +90,7 @@ export class LivechatInquiry extends Base {
 		);
 	}
 
-	queueInquiryAndRemoveDefaultAgent(inquiryId) {
+	queueInquiryAndRemoveDefaultAgent(inquiryId: string): WriteOpResult {
 		return this.update(
 			{
 				_id: inquiryId,
@@ -101,7 +105,7 @@ export class LivechatInquiry extends Base {
 	/*
 	 * mark inquiry as ready
 	 */
-	readyInquiry(inquiryId) {
+	readyInquiry(inquiryId: string): WriteOpResult {
 		return this.update(
 			{
 				_id: inquiryId,
@@ -114,27 +118,27 @@ export class LivechatInquiry extends Base {
 		);
 	}
 
-	changeDepartmentIdByRoomId(rid, department) {
+	changeDepartmentIdByRoomId(rid: string, department: string): void {
 		const query = {
 			rid,
 		};
-		const update = {
+		const updateObj = {
 			$set: {
 				department,
 			},
 		};
 
-		this.update(query, update);
+		this.update(query, updateObj);
 	}
 
 	/*
 	 * return the status of the inquiry (open or taken)
 	 */
-	getStatus(inquiryId) {
+	getStatus(inquiryId: string): ILivechatInquiryRecord['status'] {
 		return this.findOne({ _id: inquiryId }).status;
 	}
 
-	updateVisitorStatus(token, status) {
+	updateVisitorStatus(token: string, status: string): WriteOpResult {
 		const query = {
 			'v.token': token,
 			'status': 'queued',
@@ -149,7 +153,7 @@ export class LivechatInquiry extends Base {
 		return this.update(query, update);
 	}
 
-	setDefaultAgentById(inquiryId, defaultAgent) {
+	setDefaultAgentById(inquiryId: string, defaultAgent: ILivechatInquiryRecord['defaultAgent']): WriteOpResult {
 		return this.update(
 			{
 				_id: inquiryId,
@@ -162,7 +166,7 @@ export class LivechatInquiry extends Base {
 		);
 	}
 
-	setNameByRoomId(rid, name) {
+	setNameByRoomId(rid: string, name: string): WriteOpResult {
 		const query = { rid };
 
 		const update = {
@@ -173,7 +177,7 @@ export class LivechatInquiry extends Base {
 		return this.update(query, update);
 	}
 
-	findOneByToken(token) {
+	findOneByToken(token: string): ILivechatInquiryRecord {
 		const query = {
 			'v.token': token,
 			'status': 'queued',
@@ -181,7 +185,13 @@ export class LivechatInquiry extends Base {
 		return this.findOne(query);
 	}
 
-	async getCurrentSortedQueueAsync({ _id, department }) {
+	async getCurrentSortedQueueAsync({
+		_id,
+		department,
+	}: {
+		_id: string;
+		department: string;
+	}): Promise<Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }> {
 		const collectionObj = this.model.rawCollection();
 		const aggregate = [
 			{
@@ -227,7 +237,7 @@ export class LivechatInquiry extends Base {
 					position: 1,
 				},
 			},
-		];
+		] as any[];
 
 		// To get the current room position in the queue, we need to apply the next $match after the $project
 		if (_id) {
@@ -237,7 +247,7 @@ export class LivechatInquiry extends Base {
 		return collectionObj.aggregate(aggregate).toArray();
 	}
 
-	removeDefaultAgentById(inquiryId) {
+	removeDefaultAgentById(inquiryId: string): WriteOpResult {
 		return this.update(
 			{
 				_id: inquiryId,
@@ -251,54 +261,17 @@ export class LivechatInquiry extends Base {
 	/*
 	 * remove the inquiry by roomId
 	 */
-	removeByRoomId(rid) {
+	removeByRoomId(rid: string): DeleteWriteOpResultObject {
 		return this.remove({ rid });
 	}
 
-	removeByVisitorToken(token) {
+	removeByVisitorToken(token: string): void {
 		const query = {
 			'v.token': token,
 		};
 
 		this.remove(query);
 	}
-
-	getUnnatendedQueueItems(date) {
-		const query = {
-			status: 'queued',
-			estimatedInactivityCloseTimeAt: { $lte: new Date(date) },
-		};
-		return this.find(query);
-	}
-
-	setEstimatedInactivityCloseTime(_id, date) {
-		return this.update(
-			{ _id },
-			{
-				$set: {
-					estimatedInactivityCloseTimeAt: new Date(date),
-				},
-			},
-		);
-	}
-
-	// This is a better solution, but update pipelines are not supported until version 4.2 of mongo
-	// leaving this here for when the time comes
-	/* updateEstimatedInactivityCloseTime(milisecondsToAdd) {
-		return this.model.rawCollection().updateMany(
-			{ status: 'queued' },
-			[{
-				// in case this field doesn't exists, set at the last time the item was modified (updatedAt)
-				$set: { estimatedInactivityCloseTimeAt: '$_updatedAt' },
-			}, {
-				$set: {
-					estimatedInactivityCloseTimeAt: {
-						$add: ['$estimatedInactivityCloseTimeAt', milisecondsToAdd],
-					},
-				},
-			}],
-		);
-	} */
 }
 
 export default new LivechatInquiry();

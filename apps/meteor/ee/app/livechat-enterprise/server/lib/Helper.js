@@ -109,14 +109,9 @@ export const dispatchWaitingQueueStatus = async (department) => {
 // but we don't need to notify _each_ change that takes place, just their final position
 export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
 
-export const processWaitingQueue = async (department) => {
+export const processWaitingQueue = async (department, inquiry) => {
 	const queue = department || 'Public';
 	helperLogger.debug(`Processing items on queue ${queue}`);
-	const inquiry = LivechatInquiry.getNextInquiryQueued(department);
-	if (!inquiry) {
-		helperLogger.debug(`No items to process on queue ${queue}`);
-		return;
-	}
 
 	helperLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);
 	const { defaultAgent } = inquiry;
@@ -132,10 +127,14 @@ export const processWaitingQueue = async (department) => {
 			servedBy: { _id: agentId },
 		} = room;
 		helperLogger.debug(`Inquiry ${inquiry._id} taken successfully by agent ${agentId}. Notifying`);
-		return setTimeout(() => {
+		setTimeout(() => {
 			propagateAgentDelegated(rid, agentId);
 		}, 1000);
+
+		return true;
 	}
+
+	return false;
 };
 
 export const setPredictedVisitorAbandonmentTime = (room) => {
