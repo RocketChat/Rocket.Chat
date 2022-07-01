@@ -35,4 +35,7 @@ export type LicensesEndpoints = {
 	'/v1/licenses.requestSeatsLink': {
 		GET: () => { url: string };
 	};
+	'/v1/licenses.isEnterprise': {
+		GET: () => { isEnterprise: boolean };
+	};
 };

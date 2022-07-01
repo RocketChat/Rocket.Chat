@@ -13,7 +13,11 @@ function LennyFace(_command: 'lennyface', params: string, item: RequiredField<Pa
 	Meteor.call('sendMessage', msg);
 }
 
-slashCommands.add('lennyface', LennyFace, {
-	description: 'Slash_LennyFace_Description',
-	params: 'your_message_optional',
+slashCommands.add({
+	command: 'lennyface',
+	callback: LennyFace,
+	options: {
+		description: 'Slash_LennyFace_Description',
+		params: 'your_message_optional',
+	},
 });

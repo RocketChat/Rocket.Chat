@@ -2,7 +2,7 @@ import type { AtLeast } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { hasAtLeastOnePermission, hasPermission } from '../../../../app/authorization/client';
+import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { Subscriptions, Users, ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
@@ -134,10 +134,6 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	findRoom(identifier) {
-		if (!hasPermission('view-d-room')) {
-			return;
-		}
-
 		const query = {
 			t: 'd',
 			$or: [{ name: identifier }, { rid: identifier }],

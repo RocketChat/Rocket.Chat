@@ -4,7 +4,7 @@ import { useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-con
 import { KJUR } from 'jsrsasign';
 import { useEffect, useState } from 'react';
 
-import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
+import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import { EEVoipClient } from '../../../../ee/client/lib/voip/EEVoipClient';
 import { VoIPUser } from '../../../lib/voip/VoIPUser';
 import { useWebRtcServers } from './useWebRtcServers';
@@ -32,7 +32,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const iceServers = useWebRtcServers();
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
 
-	const isEE = useHasLicense('voip-enterprise');
+	const isEE = useHasLicenseModule('voip-enterprise');
 
 	useEffect(() => {
 		const voipEnableEventHandler = (enabled: boolean): void => {
@@ -62,18 +62,18 @@ export const useVoipClient = (): UseVoipClientResult => {
 
 				const {
 					extensionDetails: { extension, password },
-					host,
 					callServerConfig: { websocketPath },
 				} = parsedData;
 
 				(async (): Promise<void> => {
 					try {
+						const wsURL = new URL(websocketPath);
 						const subscription = await membership({ extension });
 
 						const config = {
 							authUserName: extension,
 							authPassword: password,
-							sipRegistrarHostnameOrIP: host,
+							sipRegistrarHostnameOrIP: wsURL.host,
 							webSocketURI: websocketPath,
 							enableVideo: true,
 							iceServers,

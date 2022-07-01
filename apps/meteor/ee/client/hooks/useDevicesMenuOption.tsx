@@ -3,7 +3,7 @@ import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactNode } from 'react';
 
 import DeviceSettingsModal from '../voip/modals/DeviceSettingsModal';
-import { useHasLicense } from './useHasLicense';
+import { useHasLicenseModule } from './useHasLicenseModule';
 
 type DevicesMenuOption = {
 	type?: 'option' | 'heading' | 'divider';
@@ -12,7 +12,7 @@ type DevicesMenuOption = {
 };
 
 export const useDevicesMenuOption = (): DevicesMenuOption | null => {
-	const isEnterprise = useHasLicense('voip-enterprise');
+	const isEnterprise = useHasLicenseModule('voip-enterprise');
 	const t = useTranslation();
 	const setModal = useSetModal();
 

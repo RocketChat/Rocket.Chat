@@ -47,6 +47,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
+	findByRoomId(roomId: string, options: FindOneOptions<ISubscription> = {}): Cursor<ISubscription> {
+		const query = {
+			rid: roomId,
+		};
+
+		return this.find(query, options);
+	}
+
 	findByRoomIdAndNotUserId(roomId: string, userId: string, options: FindOneOptions<ISubscription> = {}): Cursor<ISubscription> {
 		const query = {
 			'rid': roomId,

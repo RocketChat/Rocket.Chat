@@ -11,7 +11,6 @@ export interface IVoipServerConfigBase {
 }
 
 export interface IVoipCallServerConfig extends IVoipServerConfigBase {
-	host: string;
 	type: ServerType.CALL_SERVER;
 	configData: ICallServerConfigData;
 }

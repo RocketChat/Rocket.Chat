@@ -8,12 +8,18 @@ import { OmnichannelRoomIcon } from './OmnichannelRoomIcon';
 export const RoomIcon = ({
 	room,
 	size = 'x16',
+	isIncomingCall,
 	placement,
 }: {
 	room: IRoom;
 	size?: ComponentProps<typeof Icon>['size'];
+	isIncomingCall?: boolean;
 	placement: 'sidebar' | 'default';
 }): ReactElement | null => {
+	if (isIncomingCall) {
+		return <Icon name='phone' size={size} />;
+	}
+
 	if (room.prid) {
 		return <Icon name='baloons' size={size} />;
 	}

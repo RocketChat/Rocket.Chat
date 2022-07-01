@@ -42,6 +42,7 @@ import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
+import { VideoConf } from '../../../../server/sdk';
 
 const logger = new Logger('Livechat');
 
@@ -553,7 +554,6 @@ export const Livechat = {
 			'Livechat_offline_form_unavailable',
 			'Livechat_display_offline_form',
 			'Omnichannel_call_provider',
-			'Jitsi_Enabled',
 			'Language',
 			'Livechat_enable_transcript',
 			'Livechat_transcript_message',
@@ -1413,6 +1413,10 @@ export const Livechat = {
 	updateCallStatus(callId, rid, status, user) {
 		Rooms.setCallStatus(rid, status);
 		if (status === 'ended' || status === 'declined') {
+			if (Promise.await(VideoConf.declineLivechatCall(callId))) {
+				return;
+			}
+
 			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date() }, user);
 		}
 	},

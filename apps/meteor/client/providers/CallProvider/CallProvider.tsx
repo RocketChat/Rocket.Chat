@@ -34,7 +34,7 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
+import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
@@ -70,7 +70,7 @@ export const CallProvider: FC = ({ children }) => {
 	const homeRoute = useRoute('home');
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
-	const isEnterprise = useHasLicense('voip-enterprise');
+	const isEnterprise = useHasLicenseModule('voip-enterprise');
 
 	const remoteAudioMediaRef = useRef<IExperimentalHTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
@@ -136,7 +136,7 @@ export const CallProvider: FC = ({ children }) => {
 	}, []);
 
 	const createRoom = useCallback(
-		async (caller: ICallerInfo): Promise<IVoipRoom['_id']> => {
+		async (caller: ICallerInfo, direction: IVoipRoom['direction'] = 'inbound'): Promise<IVoipRoom['_id']> => {
 			if (!user) {
 				return '';
 			}
@@ -148,7 +148,7 @@ export const CallProvider: FC = ({ children }) => {
 						name: caller.callerName || caller.callerId,
 					},
 				});
-				const voipRoom = await voipEndpoint({ token: visitor.token, agentId: user._id, direction: 'inbound' });
+				const voipRoom = await voipEndpoint({ token: visitor.token, agentId: user._id, direction });
 				openRoom(voipRoom.room._id);
 				voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
 				const queueAggregator = result.voipClient?.getAggregator();
@@ -284,7 +284,7 @@ export const CallProvider: FC = ({ children }) => {
 		remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 	}, [result.voipClient]);
 
-	const hasLicenseToMakeVoIPCalls = useHasLicense('voip-enterprise');
+	const hasLicenseToMakeVoIPCalls = useHasLicenseModule('voip-enterprise');
 
 	useEffect(() => {
 		if (!result.voipClient) {
@@ -310,7 +310,7 @@ export const CallProvider: FC = ({ children }) => {
 			// do not want it to be attached.
 			// When call gets established, then switch the media renderer.
 			remoteAudioMediaRef.current && result.voipClient?.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
-			const roomId = await createRoom(callInfo);
+			const roomId = await createRoom(callInfo, 'outbound');
 			dispatchEvent({ event: VoipClientEvents['VOIP-CALL-STARTED'], rid: roomId });
 		};
 
