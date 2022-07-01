@@ -26,7 +26,7 @@ type CallContextReady = {
 	actions: CallActionsType;
 	queueName: string;
 	queueCounter: number;
-	openedRoomInfo?: { v: { token?: string }; rid: string };
+	openedRoomInfo: { v: { token?: string }; rid: string };
 	openWrapUpModal: () => void;
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	createRoom: (caller: ICallerInfo) => Promise<IVoipRoom['_id']>;
