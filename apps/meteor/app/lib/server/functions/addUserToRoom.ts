@@ -32,9 +32,7 @@ export const addUserToRoom = function (
 		throw new Meteor.Error((error as any)?.message);
 	}
 
-	const username = typeof user === 'string' ? user.replace('@', '') : user.username;
-
-	const userToBeAdded = Users.findOneByUsername(username);
+	const userToBeAdded = typeof user !== 'string' ? user : Users.findOneByUsername(user.replace('@', ''));
 
 	// Check if user is already in room
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);

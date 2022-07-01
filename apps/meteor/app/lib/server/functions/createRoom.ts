@@ -2,7 +2,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import { IRoom, RoomType } from '@rocket.chat/core-typings';
 
 import { Apps } from '../../../apps/server';
@@ -26,7 +26,7 @@ export const createRoom = function <T extends RoomType>(
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
-): unknown {
+): ICreatedRoom {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 

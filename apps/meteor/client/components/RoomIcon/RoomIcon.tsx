@@ -18,7 +18,7 @@ export const RoomIcon = ({
 }): ReactElement | null => {
 	const iconPropsOrReactNode = useRoomIcon(room);
 	if (isIncomingCall) {
-		return <Icon name='phone' size={size} />
+		return <Icon name='phone' size={size} />;
 	}
 
 	if (isOmnichannelRoom(room)) {

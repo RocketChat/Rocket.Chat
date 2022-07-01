@@ -1,6 +1,3 @@
-// import './infrastructure/rocket-chat/slash-commands';
-import { Meteor } from 'meteor/meteor';
-
 import { FEDERATION_PROCESSING_CONCURRENCY, runFederation, stopFederation } from '../../../../app/federation-v2/server';
 import { FederationFactory } from '../../../../app/federation-v2/server/infrastructure/Factory';
 import { onToggledFeature } from '../../license/server/license';
@@ -37,21 +34,19 @@ const runFederationEE = async (): Promise<void> => {
 };
 
 onToggledFeature('federation', {
-	up: () =>
-		Meteor.startup(async () => {
-			if (!rocketSettingsAdapter.isFederationEnabled()) {
-				return;
-			}
-			await stopFederation();
-			queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
-			await runFederationEE();
-			FederationFactoryEE.setupListeners(federationRoomServiceSenderEE, rocketSettingsAdapter);
-			require('./infrastructure/rocket-chat/slash-commands');
-		}),
-	down: () =>
-		Meteor.startup(async () => {
-			await federationEE.stop();
-			await runFederation();
-			FederationFactoryEE.removeListeners();
-		}),
+	up: async () => {
+		if (!rocketSettingsAdapter.isFederationEnabled()) {
+			return;
+		}
+		await stopFederation();
+		queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
+		await runFederationEE();
+		FederationFactoryEE.setupListeners(federationRoomServiceSenderEE, rocketSettingsAdapter);
+		require('./infrastructure/rocket-chat/slash-commands');
+	},
+	down: async () => {
+		await federationEE.stop();
+		await runFederation();
+		FederationFactoryEE.removeListeners();
+	},
 });

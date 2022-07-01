@@ -90,6 +90,7 @@ export interface IRoomFederated extends IRoom {
 export const isRoomFederated = (room: Partial<IRoom>): room is IRoomFederated => 'federated' in room && (room as any).federated === true;
 export interface ICreatedRoom extends IRoom {
 	rid: string;
+	inserted: boolean;
 }
 
 export interface ITeamRoom extends IRoom {

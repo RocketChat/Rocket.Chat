@@ -32,31 +32,25 @@ export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
 	}
 
 	public async updateRoomType(federatedRoom: FederatedRoomEE): Promise<void> {
-		await Rooms.update({ _id: federatedRoom.internalReference._id }, { $set: { t: federatedRoom.internalReference.t } });
-		await Subscriptions.update(
-			{ rid: federatedRoom.internalReference._id },
-			{ $set: { t: federatedRoom.internalReference.t } },
-			{ multi: true },
-		);
+		await Rooms.setRoomTypeById(federatedRoom.internalReference._id, federatedRoom.internalReference.t);
+		await Subscriptions.updateAllRoomTypesByRoomId(federatedRoom.internalReference._id, federatedRoom.internalReference.t);
 	}
 
 	public async updateRoomName(federatedRoom: FederatedRoom): Promise<void> {
-		await Rooms.update(
-			{ _id: federatedRoom.internalReference._id },
-			{ $set: { name: federatedRoom.internalReference.name, fname: federatedRoom.internalReference.fname } },
+		await Rooms.setRoomNameById(
+			federatedRoom.internalReference._id,
+			federatedRoom.internalReference.name,
+			federatedRoom.internalReference.fname,
 		);
-		await Subscriptions.update(
-			{ rid: federatedRoom.internalReference._id },
-			{ $set: { name: federatedRoom.internalReference.name, fname: federatedRoom.internalReference.fname } },
-			{ multi: true },
+		await Subscriptions.updateAllRoomNamesByRoomId(
+			federatedRoom.internalReference._id,
+			federatedRoom.internalReference.name as string,
+			federatedRoom.internalReference.fname as string,
 		);
 	}
 
 	public async updateRoomTopic(federatedRoom: FederatedRoomEE): Promise<void> {
-		await Rooms.update(
-			{ _id: federatedRoom.internalReference._id },
-			{ $set: { description: federatedRoom.internalReference.description } },
-		);
+		await Rooms.setRoomTopicById(federatedRoom.internalReference._id, federatedRoom.internalReference.description);
 	}
 
 	public async updateFederatedRoomByInternalRoomId(internalRoomId: string, federatedRoom: FederatedRoomEE): Promise<void> {

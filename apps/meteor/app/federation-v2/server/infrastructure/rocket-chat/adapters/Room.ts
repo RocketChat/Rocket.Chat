@@ -97,7 +97,7 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async isUserAlreadyJoined(internalRoomId: string, internalUserId: string): Promise<boolean> {
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(internalRoomId, internalUserId);
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(internalRoomId, internalUserId, { projection: { _id: 1 } });
 
 		return Boolean(subscription);
 	}

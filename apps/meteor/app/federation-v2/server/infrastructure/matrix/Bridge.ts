@@ -49,11 +49,11 @@ export class MatrixBridge implements IFederationBridge {
 				await this.bridgeInstance.run(this.bridgePort);
 				this.isRunning = true;
 			}
-			this.isUpdatingBridgeStatus = false;
 		} catch (e) {
-			this.isUpdatingBridgeStatus = false;
 			bridgeLogger.error('Failed to initialize the matrix-appservice-bridge.', e);
 			bridgeLogger.error('Disabling Matrix Bridge.  Please resolve error and try again');
+		} finally {
+			this.isUpdatingBridgeStatus = false;
 		}
 	}
 

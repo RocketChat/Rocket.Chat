@@ -1,7 +1,7 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 
 import { Users, Rooms } from '../../../models/server';
@@ -32,7 +32,11 @@ const generateSubscription = (fname: string, name: string, user: IUser, extra: {
 const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
 const getName = (members: IUser[]): string => members.map(({ username }) => username).join(', ');
 
-export const createDirectRoom = function (members: IUser[] | string[], roomExtraData = {}, options: ICreateRoomParams['options']): unknown {
+export const createDirectRoom = function (
+	members: IUser[] | string[],
+	roomExtraData = {},
+	options: ICreateRoomParams['options'],
+): ICreatedRoom {
 	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
@@ -51,7 +55,7 @@ export const createDirectRoom = function (members: IUser[] | string[], roomExtra
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const sortedMembers = roomMembers.sort((u1, u2) => (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!));
 
-	const usernames = sortedMembers.map(({ username }) => username);
+	const usernames: string[] = sortedMembers.map(({ username }) => username as string).filter(Boolean);
 	const uids = roomMembers.map(({ _id }) => _id).sort();
 
 	// Deprecated: using users' _id to compose the room _id is deprecated
@@ -151,9 +155,10 @@ export const createDirectRoom = function (members: IUser[] | string[], roomExtra
 	}
 
 	return {
-		_id: rid,
+		_id: String(rid),
 		usernames,
 		t: 'd',
 		inserted: isNewRoom,
+		...room,
 	};
 };
