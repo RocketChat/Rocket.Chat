@@ -20,7 +20,7 @@ const DialPadModal = ({ handleClose }: { handleClose: () => void }): ReactElemen
 
 	const mask = (rawValue = ''): (string | RegExp)[] => ['+', /[1-9]/].concat(rawValue.split('').map(() => /\d/));
 	return (
-		<Modal w='400px'>
+		<Modal maxWidth='400px'>
 			<Modal.Header>
 				<Modal.Title />
 				<Modal.Close onClick={handleClose} />
@@ -57,7 +57,10 @@ const DialPadModal = ({ handleClose }: { handleClose: () => void }): ReactElemen
 						secondary
 						info
 						size='64px'
-						onClick={handleCallButtonClick}
+						onClick={() => {
+							handleCallButtonClick();
+							handleClose();
+						}}
 					/>
 				</Box>
 			</Modal.Footer>

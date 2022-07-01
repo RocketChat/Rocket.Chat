@@ -40,7 +40,6 @@ import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapU
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
-import VoIPAgentProvider from '../VoIPAgentProvider';
 
 const startRingback = (user: IUser): void => {
 	const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
@@ -70,7 +69,7 @@ export const CallProvider: FC = ({ children }) => {
 	const homeRoute = useRoute('home');
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
-	const isEnterprise = useHasLicense('voip-enterprise');
+	const isEnterprise = useHasLicense('voip-enterprise') === true;
 
 	const remoteAudioMediaRef = useRef<IExperimentalHTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
@@ -124,11 +123,19 @@ export const CallProvider: FC = ({ children }) => {
 	const [networkStatus, setNetworkStatus] = useState<NetworkState>('online');
 
 	useEffect(() => {
-		if (!result?.voipClient) {
+		if (!result) {
 			return;
 		}
 
-		setQueueAggregator(result.voipClient.getAggregator());
+		const { voipClient } = result;
+		if (!voipClient) {
+			return;
+		}
+
+		voipClient.register();
+
+		setQueueAggregator(voipClient.getAggregator());
+		return (): void => voipClient.unregister();
 	}, [result]);
 
 	const openRoom = useCallback((rid: IVoipRoom['_id']): void => {
@@ -423,6 +430,8 @@ export const CallProvider: FC = ({ children }) => {
 			openWrapUpModal,
 			changeAudioOutputDevice,
 			changeAudioInputDevice,
+			register: (): void => voipClient.register(),
+			unregister: (): void => voipClient.unregister(),
 		};
 	}, [
 		voipEnabled,
@@ -442,17 +451,10 @@ export const CallProvider: FC = ({ children }) => {
 
 	return (
 		<CallContext.Provider value={contextValue}>
-			{contextValue.ready ? (
-				<VoIPAgentProvider>
-					{children}
-					{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
-				</VoIPAgentProvider>
-			) : (
-				<>
-					{children}
-					{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
-				</>
-			)}
+			<>
+				{children}
+				{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
+			</>
 		</CallContext.Provider>
 	);
 };

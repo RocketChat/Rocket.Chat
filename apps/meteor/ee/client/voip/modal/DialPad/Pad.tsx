@@ -6,7 +6,7 @@ import PadButton from './PadButton';
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, '*', 0, '#'];
 
 const Pad = ({ onClickPadButton }: { onClickPadButton: (digit: string | number) => void }): ReactElement => (
-	<Box display='flex' flexWrap='wrap' m='-8px' mbs='28px'>
+	<Box display='flex' flexWrap='wrap' mi='-8px' mbs='28px'>
 		{digits.map((digit, idx) => (
 			<PadButton key={idx} onClickPadButton={onClickPadButton}>
 				{digit}

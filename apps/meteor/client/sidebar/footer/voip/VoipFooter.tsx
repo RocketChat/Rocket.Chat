@@ -126,7 +126,7 @@ export const VoipFooter = ({
 					</Box>
 
 					<ButtonGroup medium>
-						{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
+						{(callerState === 'IN_CALL' || callerState === 'ON_HOLD' || callerState === 'OFFER_SENT') && (
 							<Button
 								title={tooltips.endCall}
 								disabled={paused}
@@ -135,8 +135,8 @@ export const VoipFooter = ({
 								danger
 								onClick={(e): unknown => {
 									e.stopPropagation();
-									toggleMic(false);
-									togglePause(false);
+									// toggleMic(false);
+									// togglePause(false);
 									return callActions.end();
 								}}
 							>

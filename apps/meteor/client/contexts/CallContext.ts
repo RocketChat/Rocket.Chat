@@ -6,17 +6,17 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { VoIPUser } from '../lib/voip/VoIPUser';
 
-export type CallContextValue = CallContextDisabled | CallContextEnabled | CallContextReady | CallContextError;
+export type CallContextValue = CallContextDisabled | CallContextReady | CallContextError;
 
 type CallContextDisabled = {
 	enabled: false;
 	ready: false;
 };
 
-type CallContextEnabled = {
-	enabled: true;
-	ready: unknown;
-};
+// type CallContextEnabled = {
+// 	enabled: true;
+// 	ready: unknown;
+// };
 type CallContextReady = {
 	canMakeCall: boolean;
 	enabled: true;
@@ -32,6 +32,8 @@ type CallContextReady = {
 	closeRoom: (data?: { comment?: string; tags?: string[] }) => void;
 	changeAudioOutputDevice: (selectedAudioDevices: Device) => void;
 	changeAudioInputDevice: (selectedAudioDevices: Device) => void;
+	register: () => void;
+	unregister: () => void;
 };
 type CallContextError = {
 	enabled: true;
@@ -76,7 +78,13 @@ export const useIsCallError = (): boolean => {
 	return Boolean(isCallContextError(context));
 };
 
-export const useCallContext = (): CallContextValue => useContext(CallContext);
+export const useCallContext = (): CallContextValue => {
+	const context = useContext(CallContext);
+	if (!isCallContextReady(context)) {
+		throw new Error('useCallActions only if Calls are enabled and ready');
+	}
+	return context;
+};
 
 export const useCallActions = (): CallActionsType => {
 	const context = useContext(CallContext);
@@ -210,4 +218,24 @@ export const useChangeAudioInputDevice = (): CallContextReady['changeAudioOutput
 	}
 
 	return context.changeAudioInputDevice;
+};
+
+export const useCallRegisterClient = () => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useCallRegisterClient only if Calls are enabled and ready');
+	}
+
+	return context.register;
+};
+
+export const useCallUnregisterClient = () => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useCallUnregisterClient only if Calls are enabled and ready');
+	}
+
+	return context.unregister;
 };

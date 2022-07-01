@@ -1,33 +1,22 @@
 import { Box, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import {
-	useLayout,
-	useToastMessageDispatch,
-	useRoute,
-	usePermission,
-	useMethod,
-	useTranslation,
-	useSetModal,
-} from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useCallback } from 'react';
+import { useLayout, useToastMessageDispatch, useRoute, usePermission, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { memo, ReactElement } from 'react';
 
-import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
-import DialPadModal from '../../../ee/client/voip/modal/DialPad/DialPadModal';
-import { useIsCallEnabled } from '../../contexts/CallContext';
+import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
 import { useOmnichannelAgentAvailable } from '../../hooks/omnichannel/useOmnichannelAgentAvailable';
 import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';
+import { OmniChannelCallDialPad } from './actions/OmnichannelCallDialPad';
 import { OmnichannelCallToggle } from './actions/OmnichannelCallToggle';
-import { useVoipAgent } from './hooks/useVoipAgent';
 
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
-	const setModal = useSetModal();
+
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const isCallEnabled = useIsCallEnabled();
-	const { agentEnabled, registered } = useVoipAgent();
-	const hasPermission = usePermission('view-omnichannel-contact-center');
+	const isCallReady = useIsCallReady();
+	const hasPermissionToSeeContactCenter = usePermission('view-omnichannel-contact-center');
 	const agentAvailable = useOmnichannelAgentAvailable();
-	const voipLicense = useHasLicense('voip-enterprise');
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
 	const { sidebar } = useLayout();
 	const directoryRoute = useRoute('omnichannel-directory');
@@ -61,14 +50,6 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 		}
 	});
 
-	const openDialModal = useCallback(() => {
-		if (voipLicense) {
-			return setModal(<DialPadModal handleClose={(): void => setModal(null)} />);
-		}
-
-		dispatchToastMessage({ type: 'error', message: t('You_do_not_have_permission_to_do_this') });
-	}, [voipLicense, dispatchToastMessage, t, setModal]);
-
 	// The className is a paliative while we make TopBar.ToolBox optional on fuselage
 	return (
 		<Sidebar.TopBar.ToolBox className='omnichannel-sidebar' {...props}>
@@ -77,17 +58,10 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} onClick={(): void => handleRoute('queue')} />}
 				{isCallEnabled && <OmnichannelCallToggle />}
 				<Sidebar.TopBar.Action {...omnichannelIcon} onClick={handleAvailableStatusChange} />
-				{hasPermission && (
+				{hasPermissionToSeeContactCenter && (
 					<Sidebar.TopBar.Action title={t('Contact_Center')} icon='contact' onClick={(): void => handleRoute('directory')} />
 				)}
-				{isCallEnabled && (
-					<Sidebar.TopBar.Action
-						title={voipLicense ? t('New_Call') : t('New_Call_Enterprise_Edition_Only')}
-						icon='dialpad'
-						onClick={openDialModal}
-						disabled={!agentEnabled || !registered}
-					/>
-				)}
+				{isCallReady && <OmniChannelCallDialPad />}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
 	);

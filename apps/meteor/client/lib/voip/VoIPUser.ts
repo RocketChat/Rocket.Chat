@@ -33,6 +33,7 @@ import {
 	Registerer,
 	SessionInviteOptions,
 	RequestPendingError,
+	Inviter,
 } from 'sip.js';
 import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
@@ -670,7 +671,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	}
 
 	private canEndOrHoldCall(): boolean {
-		return ['ANSWER_SENT', 'ANSWER_RECEIVED', 'IN_CALL', 'ON_HOLD'].includes(this._callState);
+		return ['ANSWER_SENT', 'ANSWER_RECEIVED', 'IN_CALL', 'ON_HOLD', 'OFFER_SENT'].includes(this._callState);
 	}
 
 	/* Helper routines for checking call actions END */
@@ -715,6 +716,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			case SessionState.Establishing:
 				if (this.session instanceof Invitation) {
 					return this.session.reject();
+				}
+				if (this.session instanceof Inviter) {
+					return this.session.cancel();
 				}
 				throw new Error('Session not instance of Invitation.');
 			case SessionState.Established:
