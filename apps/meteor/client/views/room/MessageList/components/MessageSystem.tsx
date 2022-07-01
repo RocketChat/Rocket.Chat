@@ -44,7 +44,12 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 	useCountSelected();
 
 	return (
-		<MessageSystemTemplate onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
+		<MessageSystemTemplate
+			onClick={isSelecting ? toggleSelected : undefined}
+			isSelected={isSelected}
+			data-qa-selected={isSelected}
+			data-qa='system-message'
+		>
 			<MessageSystemLeftContainer>
 				{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
@@ -65,6 +70,7 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 					)}
 					{messageType && (
 						<MessageSystemBody
+							data-qa-type='system-message-body'
 							dangerouslySetInnerHTML={{
 								__html: messageType.render
 									? messageType.render(message)
