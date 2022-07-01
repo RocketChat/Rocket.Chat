@@ -448,7 +448,8 @@ export const CallProvider: FC = ({ children }) => {
 		return {
 			outBoundCallsAllowed: hasVoIPEnterpriseLicense, // set to true only if enterprise license is present.
 			outBoundCallsEnabled: hasVoIPEnterpriseLicense, // set to true even if enterprise license is not present.
-			outBoundCallsEnabledForUser: hasVoIPEnterpriseLicense && clientState === 'registered', // set to true if the user has enterprise license, but is not able to make outbound calls. (busy, or disabled)
+			outBoundCallsEnabledForUser:
+				hasVoIPEnterpriseLicense && clientState === 'registered' && !['IN_CALL', 'ON_HOLD'].includes(voipClient.callerInfo.state), // set to true if the user has enterprise license, but is not able to make outbound calls. (busy, or disabled)
 
 			enabled: true,
 			ready: true,
