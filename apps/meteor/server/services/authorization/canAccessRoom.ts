@@ -56,10 +56,16 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		if (!room?._id || !user?._id) {
 			return false;
 		}
-		if (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) {
+
+		if (!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id))) {
+			return false;
+		}
+
+		if (await Authorization.hasPermission(user._id, 'view-joined-room')) {
 			return true;
 		}
-		return false;
+
+		return Authorization.hasPermission(user._id, `view-${room.t}-room`);
 	},
 
 	async function _validateAccessToDiscussionsParentRoom(room, user): Promise<boolean> {

@@ -139,10 +139,6 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	findRoom(identifier) {
-		if (!hasPermission('view-d-room')) {
-			return;
-		}
-
 		const query = {
 			t: 'd',
 			$or: [{ name: identifier }, { rid: identifier }],
