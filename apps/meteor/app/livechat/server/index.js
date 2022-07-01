@@ -59,7 +59,6 @@ import './methods/sendFileLivechatMessage';
 import './methods/sendOfflineMessage';
 import './methods/setCustomField';
 import './methods/setDepartmentForVisitor';
-import './methods/startVideoCall';
 import './methods/transfer';
 import './methods/webhookTest';
 import './methods/setUpConnection';
@@ -81,7 +80,6 @@ import './sendMessageBySMS';
 import './api';
 import './api/rest';
 import './externalFrame';
-import './lib/messageTypes';
 import './methods/saveBusinessHour';
 
 export { Livechat } from './lib/Livechat';
