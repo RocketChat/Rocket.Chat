@@ -37,9 +37,12 @@ export async function findUsersToAutocomplete({
 		limit: 10,
 	};
 
-	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<
-		Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>
-	>(new RegExp(escapeRegExp(selector.term), 'i'), exceptions, conditions, options).toArray();
+	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+		new RegExp(escapeRegExp(selector.term), 'i'),
+		exceptions,
+		conditions,
+		options,
+	).toArray();
 
 	return {
 		items: users,

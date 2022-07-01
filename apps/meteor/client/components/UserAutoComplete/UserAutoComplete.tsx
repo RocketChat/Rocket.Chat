@@ -30,7 +30,10 @@ const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElem
 		useMemo(() => query(debouncedFilter, conditions), [filter]),
 	);
 
-	const options = useMemo(() => data?.items.map((user) => ({ value: user.username, label: user.name || user.username })) || [], [data]);
+	const options = useMemo(
+		() => data?.items.map((user) => ({ value: user.username || '', label: user.name || user.username || '' })) || [],
+		[data],
+	);
 
 	return (
 		<AutoComplete
