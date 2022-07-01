@@ -131,16 +131,11 @@ export const CallProvider: FC = ({ children }) => {
 	const [networkStatus, setNetworkStatus] = useState<NetworkState>('online');
 
 	useEffect(() => {
-		if (!result) {
-			return;
-		}
+		const { voipClient } = result || {};
 
-		const { voipClient } = result;
 		if (!voipClient) {
 			return;
 		}
-
-		voipClient.register();
 
 		setQueueAggregator(voipClient.getAggregator());
 
@@ -401,7 +396,7 @@ export const CallProvider: FC = ({ children }) => {
 			result.voipClient?.off('callterminated', stopRingback);
 
 			if (isOutboundClient(result.voipClient)) {
-				result.voipClient.off('callfailed', onCallFailed);
+				result.voipClient?.off('callfailed', onCallFailed);
 			}
 		};
 	}, [createRoom, dispatchEvent, networkStatus, openDialModal, result.voipClient, t, user]);
@@ -500,10 +495,8 @@ export const CallProvider: FC = ({ children }) => {
 
 	return (
 		<CallContext.Provider value={contextValue}>
-			<>
-				{children}
-				{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
-			</>
+			{children}
+			{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
 		</CallContext.Provider>
 	);
 };
