@@ -3,7 +3,7 @@ import { Messages } from '@rocket.chat/models';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
-	version: 274,
+	version: 275,
 	async up() {
 		const fieldsToUpdate = ['editedBy', 'editedAt', 'emoji', 'avatar', 'alias', 'customFields', 'groupable', 'attachments', 'reactions'];
 
