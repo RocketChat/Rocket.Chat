@@ -1,6 +1,6 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import React, { MouseEvent, ReactElement } from 'react';
 
 import { useVoipOutboundStates } from '../../../../contexts/CallContext';
 import { useDialModal } from '../../../../hooks/useDialModal';
@@ -12,15 +12,20 @@ export const ContactTableDialpadButton = ({ phoneNumber }: { phoneNumber: string
 
 	const { outBoundCallsAllowed, outBoundCallsEnabledForUser } = useVoipOutboundStates();
 
+	const onClick = (event: MouseEvent<HTMLButtonElement>): void => {
+		event.stopPropagation();
+		openDialModal({ initialValue: phoneNumber });
+	};
+
 	return (
 		<IconButton
-			disabled={!outBoundCallsEnabledForUser}
+			disabled={!outBoundCallsEnabledForUser || !phoneNumber}
 			title={outBoundCallsAllowed ? t('Call_number') : t('Call_number_enterprise_only')}
 			tiny
 			square
 			icon='phone'
 			className='contact-table__call-button'
-			onClick={(): void => openDialModal({ initialValue: phoneNumber })}
+			onClick={onClick}
 		/>
 	);
 };
