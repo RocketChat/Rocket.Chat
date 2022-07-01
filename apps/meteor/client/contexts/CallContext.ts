@@ -6,11 +6,16 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { VoIPUser } from '../lib/voip/VoIPUser';
 
-export type CallContextValue = CallContextDisabled | CallContextReady | CallContextError;
+export type CallContextValue = CallContextDisabled | CallContextReady | CallContextError | CallContextEnabled;
 
-type CallContextDisabled = {
+export type CallContextDisabled = {
 	enabled: false;
 	ready: false;
+};
+
+type CallContextEnabled = {
+	enabled: true;
+	ready: unknown;
 };
 
 type CallContextReady = {
@@ -31,10 +36,10 @@ type CallContextReady = {
 	register: () => void;
 	unregister: () => void;
 };
-type CallContextError = {
+export type CallContextError = {
 	enabled: true;
 	ready: false;
-	error?: Error | unknown;
+	error: Error | unknown;
 };
 
 export const isCallContextReady = (context: CallContextValue): context is CallContextReady => (context as CallContextReady).ready;
