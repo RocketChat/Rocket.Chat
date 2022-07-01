@@ -26,7 +26,7 @@ export interface IVideoConfService {
 	setEndedBy(callId: VideoConference['_id'], endedBy: IUser['_id']): Promise<void>;
 	setEndedAt(callId: VideoConference['_id'], endedAt: Date): Promise<void>;
 	setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void>;
-	addUser(callId: VideoConference['_id'], userId: IUser['_id'], ts?: Date): Promise<void>;
+	addUser(callId: VideoConference['_id'], userId?: IUser['_id'], ts?: Date): Promise<void>;
 	listProviders(): Promise<{ key: string; label: string }[]>;
 	listCapabilities(): Promise<{ providerName: string; capabilities: VideoConferenceCapabilities }>;
 	listProviderCapabilities(providerName: string): Promise<VideoConferenceCapabilities>;
