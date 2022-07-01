@@ -7,6 +7,8 @@ export interface ISocketConnection {
 	onClose(fn: (...args: any[]) => void): void;
 	clientAddress: string | undefined;
 	httpHeaders: IncomingHttpHeaders;
-	// TODO: check if should be optional
+}
+
+export interface ISocketConnectionLogged extends ISocketConnection {
 	loginToken?: string;
 }

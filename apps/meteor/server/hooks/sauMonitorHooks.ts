@@ -14,11 +14,20 @@ Accounts.onLogin((info: ILoginAttempt) => {
 		connection: { httpHeaders },
 	} = info;
 
+	if (!info.user) {
+		return;
+	}
+
 	const { resume } = methodArguments.find((arg) => 'resume' in arg) ?? {};
-	const loginToken = resume ? Accounts._hashLoginToken(resume) : '';
+
 	const eventObject = {
 		userId: info.user._id,
-		connection: { ...info.connection, loginToken, instanceId: InstanceStatus.id(), httpHeaders: httpHeaders as IncomingHttpHeaders },
+		connection: {
+			...info.connection,
+			...(resume && { loginToken: Accounts._hashLoginToken(resume) }),
+			instanceId: InstanceStatus.id(),
+			httpHeaders: httpHeaders as IncomingHttpHeaders,
+		},
 	};
 	sauEvents.emit('accounts.login', eventObject);
 	deviceManagementEvents.emit('device-login', eventObject);

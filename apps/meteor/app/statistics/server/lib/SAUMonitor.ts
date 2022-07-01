@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import UAParser from 'ua-parser-js';
 import mem from 'mem';
-import type { ISession, ISessionDevice, ISocketConnection, IUser } from '@rocket.chat/core-typings';
+import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
 import { Sessions, Users } from '@rocket.chat/models';
 
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
@@ -129,7 +129,7 @@ export class SAUMonitorClass {
 	}
 
 	private async _handleSession(
-		connection: ISocketConnection,
+		connection: ISocketConnectionLogged,
 		params: Pick<ISession, 'userId' | 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
 	): Promise<void> {
 		const data = this._getConnectionInfo(connection, params);
@@ -194,7 +194,7 @@ export class SAUMonitorClass {
 	}
 
 	private _getConnectionInfo(
-		connection: ISocketConnection,
+		connection: ISocketConnectionLogged,
 		params: Pick<ISession, 'userId' | 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
 	): Omit<ISession, '_id' | '_updatedAt' | 'createdAt' | 'searchTerm'> | undefined {
 		if (!connection) {
@@ -204,12 +204,12 @@ export class SAUMonitorClass {
 		const ip = getClientAddress(connection);
 
 		const host = connection.httpHeaders?.host ?? '';
-		const loginToken = connection?.loginToken ? { loginToken: connection?.loginToken } : {};
+
 		return {
 			type: 'session',
 			sessionId: connection.id,
 			instanceId: connection.instanceId,
-			...loginToken,
+			...(connection.loginToken && { loginToken: connection.loginToken }),
 			ip,
 			host,
 			...this._getUserAgentInfo(connection),
@@ -217,7 +217,7 @@ export class SAUMonitorClass {
 		};
 	}
 
-	private _getUserAgentInfo(connection: ISocketConnection): { device: ISessionDevice } | undefined {
+	private _getUserAgentInfo(connection: ISocketConnectionLogged): { device: ISessionDevice } | undefined {
 		if (!connection?.httpHeaders?.['user-agent']) {
 			return;
 		}

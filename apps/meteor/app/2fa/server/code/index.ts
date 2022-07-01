@@ -137,7 +137,7 @@ interface ICheckCodeForUser {
 	code?: string;
 	method?: string;
 	options?: ITwoFactorOptions;
-	connection?: IMethodConnection | null;
+	connection?: IMethodConnection;
 }
 
 const getSecondFactorMethod = (user: IUser, method: string | undefined, options: ITwoFactorOptions): ICodeCheck | undefined => {
