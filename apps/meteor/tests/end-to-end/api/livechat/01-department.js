@@ -16,10 +16,10 @@ describe('LIVECHAT - departments', function () {
 			.then((createdDepartment) => {
 				department = createdDepartment;
 				done();
-			})
-			.catch(console.log);
+			});
 	});
 
+	// TODO: this endpoint has other parameters, like enabled, showOnRegistration, showOnOfflineForm which also needs to be tested here
 	describe('livechat/department', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission ["view-livechat-departments", "view-l-room"]', (done) => {
 			updatePermission('view-l-room', [])
@@ -81,6 +81,7 @@ describe('LIVECHAT - departments', function () {
 		});
 	});
 
+	// PUT and DELETE endpoints also need to be tested here
 	describe('livechat/department/id', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission ["view-livechat-departments", "view-l-room"]', (done) => {
 			updatePermission('view-l-room', [])
@@ -93,7 +94,7 @@ describe('LIVECHAT - departments', function () {
 						.expect(403)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body.error).to.be.equal('error-not-authorized');
+							expect(res.body.error).to.be.equal('unauthorized');
 						})
 						.end(done);
 				});
@@ -152,3 +153,9 @@ describe('LIVECHAT - departments', function () {
 		});
 	});
 });
+
+// TODO:
+// Missing tests for the following endpoints:
+// - livechat/department.autocomplete
+// - livechat/department/:departmentId/agents
+// - livechat/department.listByIds
