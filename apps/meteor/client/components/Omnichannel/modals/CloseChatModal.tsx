@@ -61,7 +61,6 @@ const CloseChatModal = ({
 		return cannotSendTag || cannotSendComment;
 	}, [comment, commentRequired, errors, tagRequired, tags]);
 
-	
 	useEffect(() => {
 		if (department?.requestTagBeforeClosingChat) {
 			setTagRequired(true);
