@@ -14,14 +14,15 @@ addAction('clean-history', ({ room }) => {
 		() =>
 			hasPermission
 				? {
-						groups: ['channel', 'group', 'team', 'direct_multiple', 'direct'],
-						id: 'clean-history',
-						full: true,
-						title: 'Prune_Messages',
-						icon: 'eraser',
-						disabled: federated,
+						'groups': ['channel', 'group', 'team', 'direct_multiple', 'direct'],
+						'id': 'clean-history',
+						'full': true,
+						'title': 'Prune_Messages',
+						'icon': 'eraser',
+						'disabled': federated,
+						'data-tooltip': 'Clean_History_unavailable_for_federation',
 						template,
-						order: 250,
+						'order': 250,
 				  }
 				: null,
 		[hasPermission, federated],
