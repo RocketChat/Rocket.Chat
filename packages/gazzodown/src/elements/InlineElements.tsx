@@ -3,6 +3,7 @@ import { lazy, ReactElement } from 'react';
 
 import ColorElement from '../colors/ColorElement';
 import EmojiElement from '../emoji/EmojiElement';
+import KatexErrorBoundary from '../katex/KatexErrorBoundary';
 import ChannelMentionElement from '../mentions/ChannelMentionElement';
 import UserMentionElement from '../mentions/UserMentionElement';
 import BoldSpan from './BoldSpan';
@@ -57,7 +58,11 @@ const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
 					return <ColorElement key={index} {...child.value} />;
 
 				case 'INLINE_KATEX':
-					return <KatexElement key={index} code={child.value} />;
+					return (
+						<KatexErrorBoundary key={index} code={child.value}>
+							<KatexElement code={child.value} />
+						</KatexErrorBoundary>
+					);
 
 				default:
 					return null;
