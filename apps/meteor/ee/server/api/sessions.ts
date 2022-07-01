@@ -9,12 +9,8 @@ import { Notifications } from '../../../app/notifications/server';
 
 const validateSortKeys = (sortKeys: string[]): boolean => {
 	const validSortKeys = ['loginAt', 'device.name', 'device.os.name', 'device.os.version', '_user.name', '_user.username'];
-	const invalidSortKeys = sortKeys.filter((key) => !validSortKeys.includes(key));
 
-	if (invalidSortKeys.length) {
-		return false;
-	}
-	return true;
+	return sortKeys.some(s => validSortKeys.some(v => s === v) )
 };
 
 API.v1.addRoute(
