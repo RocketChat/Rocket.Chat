@@ -282,7 +282,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	removeById(_id: string): Promise<DeleteWriteOpResultObject> {
-		return this.removeById(_id);
+		return this.deleteOne({ _id });
 	}
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<WriteOpResult | void> {

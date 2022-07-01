@@ -16,6 +16,7 @@ describe('LIVECHAT - dashboards', function () {
 		const expectedMetrics = [
 			'Total_conversations',
 			'Open_conversations',
+			'On_Hold_conversations',
 			'Total_messages',
 			'Busiest_time',
 			'Total_abandoned_chats',

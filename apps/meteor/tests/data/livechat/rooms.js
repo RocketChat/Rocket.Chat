@@ -1,4 +1,4 @@
-import { api, credentials, request } from '../api-data';
+import { api, credentials, methodCall, request } from '../api-data';
 import { adminUsername } from '../user';
 
 export const createLivechatRoom = (visitorToken) =>
@@ -10,8 +10,11 @@ export const createLivechatRoom = (visitorToken) =>
 	});
 
 export const createVisitor = () =>
-	new Promise((resolve) => {
-		request.get(api('livechat/visitor/iNKE8a6k6cjbqWhWd')).end((err, res) => {
+	new Promise((resolve, reject) => {
+		const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+		const email = `${token}@${token}.com`;
+		const phone = `${Math.floor(Math.random() * 10000000000)}`;
+		request.get(api(`livechat/visitor/${token}`)).end((err, res) => {
 			if (!err && res && res.body && res.body.visitor) {
 				return resolve(res.body.visitor);
 			}
@@ -21,36 +24,80 @@ export const createVisitor = () =>
 				.send({
 					visitor: {
 						name: `Visitor ${Date.now()}`,
-						email: 'visitor@rocket.chat',
-						token: 'iNKE8a6k6cjbqWhWd',
-						phone: '55 51 5555-5555',
+						email,
+						token,
+						phone,
 						customFields: [{ key: 'address', value: 'Rocket.Chat street', overwrite: true }],
 					},
 				})
 				.end((err, res) => {
+					if (err) {
+						return reject(err);
+					}
 					resolve(res.body.visitor);
 				});
 		});
 	});
 
 export const createAgent = () =>
-	new Promise((resolve) => {
+	new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/users/agent'))
 			.set(credentials)
 			.send({
 				username: adminUsername,
 			})
-			.end((err, res) => resolve(res.body.user));
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.user);
+			});
 	});
 
 export const createManager = () =>
-	new Promise((resolve) => {
+	new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/users/manager'))
 			.set(credentials)
 			.send({
 				username: adminUsername,
 			})
-			.end((err, res) => resolve(res.body.user));
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.user);
+			});
 	});
+
+export const makeAgentAvailable = () =>
+	new Promise((resolve, reject) => {
+		request.post(api('users.setStatus')).set(credentials).send({
+			message: '',
+			status: 'online',
+		}).end((err, res) => {
+			if (err) {
+				return reject(err);
+			}
+			request
+			.post(methodCall('livechat/changeLivechatStatus'))
+			.set(credentials)
+			.send({
+				message: JSON.stringify({
+					method: 'livechat/changeLivechatStatus',
+					params: ['available'],
+					id: 'id',
+					msg: 'method',
+				}),
+			})
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body);
+			});
+		});
+
+	});
+
