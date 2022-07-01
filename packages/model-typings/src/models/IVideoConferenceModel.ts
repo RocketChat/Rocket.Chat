@@ -13,6 +13,8 @@ import type { IBaseModel } from './IBaseModel';
 export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	findAllByRoomId(rid: IRoom['_id'], { offset, count }: { offset?: number; count?: number }): Promise<Cursor<VideoConference>>;
 
+	findAllLongRunning(minDate: Date): Promise<Cursor<Pick<VideoConference, '_id'>>>;
+
 	countByTypeAndStatus(
 		type: VideoConference['type'],
 		status: VideoConferenceStatus,
@@ -52,8 +54,6 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'> & { ts?: Date }): Promise<void>;
 
 	setMessageById(callId: string, messageType: keyof VideoConference['messages'], messageId: string): Promise<void>;
-
-	expireOldVideoConferences(minDate: Date): Promise<void>;
 
 	updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void>;
 

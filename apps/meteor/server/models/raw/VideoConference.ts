@@ -52,6 +52,24 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
+	public async findAllLongRunning(minDate: Date): Promise<Cursor<Pick<VideoConference, '_id'>>> {
+		return this.find(
+			{
+				createdAt: {
+					$lte: minDate,
+				},
+				endedAt: {
+					$exists: false,
+				},
+			},
+			{
+				projection: {
+					_id: 1,
+				},
+			},
+		);
+	}
+
 	public async countByTypeAndStatus(
 		type: VideoConference['type'],
 		status: VideoConferenceStatus,
@@ -202,25 +220,6 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				[`messages.${messageType}`]: messageId,
 			},
 		});
-	}
-
-	public async expireOldVideoConferences(minDate: Date): Promise<void> {
-		await this.updateMany(
-			{
-				createdAt: {
-					$lte: minDate,
-				},
-				endedAt: {
-					$exists: false,
-				},
-			},
-			{
-				$set: {
-					endedAt: new Date(),
-					status: VideoConferenceStatus.EXPIRED,
-				},
-			},
-		);
 	}
 
 	public async updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void> {

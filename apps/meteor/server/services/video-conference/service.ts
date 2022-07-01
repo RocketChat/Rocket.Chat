@@ -207,11 +207,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	public async setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void> {
-		VideoConferenceModel.setStatusById(callId, status);
-
-		if (status === VideoConferenceStatus.ENDED) {
-			this.endCall(callId);
+		switch (status) {
+			case VideoConferenceStatus.ENDED:
+				return this.endCall(callId);
+			case VideoConferenceStatus.EXPIRED:
+				return this.expireCall(callId);
 		}
+
+		VideoConferenceModel.setStatusById(callId, status);
 	}
 
 	public async addUser(callId: VideoConference['_id'], userId?: IUser['_id'], ts?: Date): Promise<void> {
@@ -330,9 +333,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		if (!call.endedAt) {
-			await VideoConferenceModel.setDataById(call._id, { endedAt: new Date() });
-		}
+		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.ENDED });
 
 		switch (call.type) {
 			case 'direct':
@@ -340,6 +341,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			case 'videoconference':
 				return this.endGroupCall(call);
 		}
+	}
+
+	private async expireCall(callId: VideoConference['_id']): Promise<void> {
+		const call = await VideoConferenceModel.findOneById<Pick<VideoConference, '_id' | 'messages'>>(callId, { projection: { messages: 1 } });
+		if (!call) {
+			return;
+		}
+
+		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.EXPIRED });
+		if (call.messages?.started) {
+			return this.replaceJoinButton(call.messages.started);
+		}
+	}
+
+	private async replaceJoinButton(messageId: IMessage['_id']): Promise<void> {
+		await Messages.removeVideoConfJoinButton(messageId);
 	}
 
 	private async endDirectCall(call: IDirectVideoConference): Promise<void> {

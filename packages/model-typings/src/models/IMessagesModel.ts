@@ -48,4 +48,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void>;
 
 	addBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void>;
+
+	removeVideoConfJoinButton(_id: IMessage['_id']): Promise<void>;
 }
