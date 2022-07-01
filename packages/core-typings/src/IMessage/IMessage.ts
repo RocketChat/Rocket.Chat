@@ -188,7 +188,8 @@ export interface IEditedMessage extends IMessage {
 	editedBy: Pick<IUser, '_id' | 'username'>;
 }
 
-export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
+export const isEditedMessage = (message: IMessage | IEditedMessage): message is IEditedMessage =>
+	'editedAt' in message && 'editedBy' in message && !!message.editedAt && !!message.editedBy;
 
 export interface ITranslatedMessage extends IMessage {
 	translations: { [key: string]: string } & { original?: string };
@@ -196,7 +197,8 @@ export interface ITranslatedMessage extends IMessage {
 	autoTranslateFetching?: boolean;
 }
 
-export const isTranslatedMessage = (message: IMessage): message is ITranslatedMessage => 'translations' in message;
+export const isTranslatedMessage = (message: IMessage | ITranslatedMessage): message is ITranslatedMessage =>
+	'translations' in message && !!message.translations;
 
 export interface IThreadMainMessage extends IMessage {
 	tcount: number;
@@ -285,15 +287,6 @@ export interface IMessageDiscussion extends IMessage {
 
 export const isMessageDiscussion = (message: IMessage): message is IMessageDiscussion => {
 	return 'drid' in message;
-};
-
-export type IMessageEdited = IMessage & {
-	editedAt: Date;
-	editedBy: Pick<IUser, '_id' | 'username'>;
-};
-
-export const isMessageEdited = (message: IMessage): message is IMessageEdited => {
-	return 'editedAt' in message && 'editedBy' in message;
 };
 
 export type IMessageInbox = IMessage & {

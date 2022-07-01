@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import type { IMessage, IMessageEdited, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IEditedMessage, IUser } from '@rocket.chat/core-typings';
 
 import { Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -35,8 +35,8 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 		Messages.cloneAndSaveAsHistoryById(message._id, user);
 	}
 
-	(message as IMessageEdited).editedAt = new Date();
-	(message as IMessageEdited).editedBy = {
+	(message as IEditedMessage).editedAt = new Date();
+	(message as IEditedMessage).editedBy = {
 		_id: user._id,
 		username: user.username,
 	};
