@@ -66,7 +66,7 @@ export class MainContent extends BasePage {
 	}
 
 	get lastMessageFileName(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div a:nth-child(1)');
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
 	}
 
 	get lastMessage(): Locator {
@@ -74,7 +74,7 @@ export class MainContent extends BasePage {
 	}
 
 	get lastMessageRoleAdded(): Locator {
-		return this.page.locator('.message:last-child.subscription-role-added .body');
+		return this.page.locator('[data-qa="system-message"] [data-qa-type="system-message-body"]');
 	}
 
 	get lastMessageUserTag(): Locator {
@@ -270,7 +270,7 @@ export class MainContent extends BasePage {
 	}
 
 	get getFileDescription(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div p');
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-description"]');
 	}
 
 	async selectAction(action: string): Promise<void> {
