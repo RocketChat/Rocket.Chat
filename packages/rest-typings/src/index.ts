@@ -39,7 +39,6 @@ import type { OAuthAppsEndpoint } from './v1/oauthapps';
 import type { CommandsEndpoints } from './v1/commands';
 import type { MeEndpoints } from './v1/me';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
-import type { ModalsEndpoints } from './v1/modals';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
@@ -81,8 +80,7 @@ export interface Endpoints
 		WebdavEndpoints,
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
-		AutoTranslateEndpoints,
-		ModalsEndpoints {}
+		AutoTranslateEndpoints {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>
@@ -185,7 +183,6 @@ export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';
 export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
-export * from './v1/modals';
 export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
 export * from './v1/e2e/e2eSetRoomKeyIDParamsPOST';
 export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
