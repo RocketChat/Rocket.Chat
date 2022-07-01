@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 
-export class HomeTabThread {
+export class FlextabPinned {
 	private readonly page: Page;
 
 	constructor(page: Page) {

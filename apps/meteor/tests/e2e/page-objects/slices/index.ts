@@ -1,4 +1,5 @@
 export * from './account-sidebar';
 export * from './home-content';
 export * from './home-sidebar';
-export * from './home-flextabs';
+export * from './home-flextab';
+export * from './omnichannel-sidebar';

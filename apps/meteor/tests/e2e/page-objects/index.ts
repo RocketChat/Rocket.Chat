@@ -4,4 +4,6 @@ export * from './auth';
 export * from './home-channel';
 export * from './home-direct';
 export * from './home-discussion';
+export * from './omnichannel-agents';
+export * from './omnichannel-departments';
 export * from './setup-wizard';

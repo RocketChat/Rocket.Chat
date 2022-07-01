@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 
-export class HomeTabNotification {
+export class FlextabStared {
 	private readonly page: Page;
 
 	constructor(page: Page) {

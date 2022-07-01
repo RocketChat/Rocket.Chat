@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 
-export class HomeTabFile {
+export class OmnichannelSidebar {
 	private readonly page: Page;
 
 	constructor(page: Page) {
