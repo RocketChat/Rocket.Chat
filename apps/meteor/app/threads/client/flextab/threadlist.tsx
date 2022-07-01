@@ -1,6 +1,6 @@
 import React, { useMemo, lazy, LazyExoticComponent, FC, ReactNode } from 'react';
 import { BadgeProps } from '@rocket.chat/fuselage';
-import { IRoom, isIRoomFederated, ISubscription } from '@rocket.chat/core-typings';
+import { IRoom, isRoomFederated, ISubscription } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
@@ -20,7 +20,7 @@ const template = lazy(() => import('../../../../client/views/room/contextualBar/
 
 addAction('thread', (options) => {
 	const room = options.room as unknown as ISubscription & IRoom;
-	const federated = isIRoomFederated(room);
+	const federated = isRoomFederated(room);
 	const threadsEnabled = useSetting('Threads_enabled');
 	return useMemo(
 		() =>

@@ -1,4 +1,4 @@
-import { isIRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo, lazy } from 'react';
 
@@ -59,7 +59,7 @@ addAction('members-list', ({ room }) => {
 });
 
 addAction('uploaded-files-list', ({ room }) => {
-	const federated = isIRoomFederated(room);
+	const federated = isRoomFederated(room);
 
 	return {
 		'groups': ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],

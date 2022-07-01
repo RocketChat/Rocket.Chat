@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { IRoom, AtLeast, isIRoomFederated } from '@rocket.chat/core-typings';
+import { IRoom, AtLeast, isRoomFederated } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
@@ -39,7 +39,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	allowMemberAction(room: IRoom, action) {
-		if (isIRoomFederated(room)) {
+		if (isRoomFederated(room)) {
 			return Federation.federationActionAllowed(action);
 		}
 		switch (action) {

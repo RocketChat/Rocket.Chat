@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isIRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
 import React, { ComponentProps, ReactElement } from 'react';
 
@@ -15,7 +15,7 @@ export const colors = {
 export const useRoomIcon = (
 	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u'>,
 ): ReactElement | ComponentProps<typeof Icon> | null => {
-	if (isIRoomFederated(room)) {
+	if (isRoomFederated(room)) {
 		return { name: 'globe' };
 	}
 

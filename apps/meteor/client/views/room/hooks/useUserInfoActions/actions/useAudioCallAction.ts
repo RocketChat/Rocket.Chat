@@ -1,4 +1,4 @@
-import { IRoom, isIRoomFederated } from '@rocket.chat/core-typings';
+import { IRoom, isRoomFederated } from '@rocket.chat/core-typings';
 import { useTranslation, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -21,7 +21,7 @@ export const useAudioCallAction = (rid: IRoom['_id']): Action | undefined => {
 
 		const action = callInProgress ? handleJoinCall : handleStartCall;
 
-		return room && !isIRoomFederated(room) && shouldAllowCalls
+		return room && !isRoomFederated(room) && shouldAllowCalls
 			? {
 					label: t(callInProgress ? 'Join_audio_call' : 'Start_audio_call'),
 					icon: 'mic',

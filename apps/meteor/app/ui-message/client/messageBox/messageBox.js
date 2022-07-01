@@ -5,7 +5,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
-import { isIRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { setupAutogrow } from './messageBoxAutogrow';
 import { formattingButtons, applyFormatting } from './messageBoxFormatting';
@@ -261,7 +261,7 @@ Template.messageBox.helpers({
 	isFederatedRoom() {
 		const { rid } = Template.currentData();
 
-		return isIRoomFederated(ChatRoom.findOne(rid));
+		return isRoomFederated(ChatRoom.findOne(rid));
 	},
 });
 

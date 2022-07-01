@@ -2,7 +2,7 @@ import Clipboard from 'clipboard';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { isIRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { popover, MessageAction } from '../../../../../ui-utils/client';
 import { addMessageToList } from '../../../../../ui-utils/client/lib/MessageAction';
@@ -29,7 +29,7 @@ const mountPopover = (e, i, outerContext) => {
 	const messageContext = messageArgs(outerContext);
 
 	const room = Rooms.findOne({ _id: messageContext.msg.rid });
-	const federationContext = isIRoomFederated(room) ? 'federated' : '';
+	const federationContext = isRoomFederated(room) ? 'federated' : '';
 	context = federationContext || context;
 
 	let menuItems = MessageAction.getButtons({ ...messageContext, message: messageContext.msg, user: messageContext.u }, context, 'menu').map(
@@ -328,7 +328,7 @@ export const getCommonRoomEvents = () => ({
 		const messageContext = messageArgs(this);
 		const { msg: message, u: user, context: ctx } = messageContext;
 		const room = Rooms.findOne({ _id: template.data.rid });
-		const federationContext = isIRoomFederated(room) ? 'federated' : '';
+		const federationContext = isRoomFederated(room) ? 'federated' : '';
 		const context = ctx || message.context || message.actionContext || federationContext || 'message';
 		const allItems = MessageAction.getButtons({ ...messageContext, message, user }, context, 'menu').map((item) => ({
 			icon: item.icon,

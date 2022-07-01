@@ -2,7 +2,7 @@ import React, { useMemo, lazy, ReactNode } from 'react';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { Option, Badge } from '@rocket.chat/fuselage';
 import { useUser, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import { isIRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import Header from '../../../client/components/Header';
@@ -12,7 +12,7 @@ const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/
 addAction('bbb_video', ({ room }) => {
 	const enabled = useSetting('bigbluebutton_Enabled');
 	const t = useTranslation();
-	const federated = isIRoomFederated(room);
+	const federated = isRoomFederated(room);
 
 	const live = room?.streamingOptions && room.streamingOptions.type === 'call';
 
@@ -69,7 +69,7 @@ const templateJitsi = lazy(() => import('../../../client/views/room/contextualBa
 addAction('video', ({ room }) => {
 	const enabled = useSetting('Jitsi_Enabled');
 	const t = useTranslation();
-	const federated = isIRoomFederated(room);
+	const federated = isRoomFederated(room);
 
 	const enabledChannel = useSetting('Jitsi_Enable_Channels');
 	const enabledTeams = useSetting('Jitsi_Enable_Teams');

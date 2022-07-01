@@ -1,10 +1,10 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
-import { isIRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
 import { hasAtLeastOnePermission, hasPermission } from '../../../../app/authorization/client';
-import { Federation } from '../../../../app/federation-v2/client/Federation';
+import * as Federation from '../../../../app/federation-v2/client/Federation';
 import { Subscriptions, Users, ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
@@ -37,8 +37,8 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	allowMemberAction(room, action) {
-		if (isIRoomFederated(room as IRoom)) {
-			return Federation.federationActionAllowed(action);
+		if (isRoomFederated(room as IRoom)) {
+			return Federation.actionAllowed(action);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:

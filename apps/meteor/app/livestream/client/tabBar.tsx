@@ -1,7 +1,7 @@
 import React, { ReactNode, useMemo } from 'react';
 import { Option, Badge } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import { isIRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 import Header from '../../../client/components/Header';
@@ -9,7 +9,7 @@ import Header from '../../../client/components/Header';
 addAction('livestream', ({ room }) => {
 	const enabled = useSetting('Livestream_enabled');
 	const t = useTranslation();
-	const federated = isIRoomFederated(room);
+	const federated = isRoomFederated(room);
 	const isLive = room?.streamingOptions?.id && room.streamingOptions.type === 'livestream';
 
 	return useMemo(

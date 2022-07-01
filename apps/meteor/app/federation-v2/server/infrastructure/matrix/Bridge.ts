@@ -121,7 +121,11 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async sendMessage(externalRoomId: string, externaSenderId: string, text: string): Promise<void> {
-		await this.bridgeInstance.getIntent(externaSenderId).sendText(externalRoomId, text);
+		try {
+			await this.bridgeInstance.getIntent(externaSenderId).sendText(externalRoomId, text);
+		} catch (e) {
+			throw new Error('User is not part of the room.');
+		}
 	}
 
 	public isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean {

@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { isIRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
 addAction('pinned-messages', ({ room }) => {
 	const pinningAllowed = useSetting('Message_AllowPinning');
-	const federated = isIRoomFederated(room);
+	const federated = isRoomFederated(room);
 	return useMemo(
 		() =>
 			pinningAllowed

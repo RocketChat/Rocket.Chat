@@ -5,7 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { isIRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { timeAgo } from '../../../client/lib/utils/timeAgo';
 import { formatDateAndTime } from '../../../client/lib/utils/formatDateAndTime';
@@ -451,7 +451,7 @@ Template.message.helpers({
 		if (!context) {
 			const room = Rooms.findOne({ _id: this.msg.rid });
 
-			context = isIRoomFederated(room) ? 'federated' : 'message';
+			context = isRoomFederated(room) ? 'federated' : 'message';
 		}
 
 		return MessageAction.getButtons({ ...this, message: this.msg, user: this.u }, context, messageGroup);

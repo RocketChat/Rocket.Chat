@@ -9,8 +9,6 @@ const allowedActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
 	RoomMemberActions.LEAVE,
 ];
 
-export class Federation {
-	public static federationActionAllowed(action: ValueOf<typeof RoomMemberActions>): boolean {
-		return allowedActionsInFederatedRooms.includes(action);
-	}
-}
+export const actionAllowed = (action: ValueOf<typeof RoomMemberActions>): boolean => {
+	return allowedActionsInFederatedRooms.includes(action);
+};
