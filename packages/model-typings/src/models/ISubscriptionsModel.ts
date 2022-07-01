@@ -10,6 +10,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByUserIdAndRoomIds(userId: string, roomIds: Array<string>, options?: FindOneOptions<ISubscription>): Cursor<ISubscription>;
 
+	findByRoomId(roomId: string, options?: FindOneOptions<ISubscription>): Cursor<ISubscription>;
+
 	findByRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOneOptions<ISubscription>): Cursor<ISubscription>;
 
 	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOneOptions<ISubscription>): Cursor<ISubscription>;

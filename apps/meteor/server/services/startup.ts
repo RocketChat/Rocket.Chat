@@ -14,6 +14,7 @@ import { TeamService } from './team/service';
 import { UiKitCoreApp } from './uikit-core-app/service';
 import { OmnichannelVoipService } from './omnichannel-voip/service';
 import { VoipService } from './voip/service';
+import { VideoConfService } from './video-conference/service';
 import { isRunningMs } from '../lib/isRunningMs';
 import { PushService } from './push/service';
 import { DeviceManagementService } from './device-management/service';
@@ -35,6 +36,7 @@ api.registerService(new TeamService());
 api.registerService(new UiKitCoreApp());
 api.registerService(new PushService());
 api.registerService(new DeviceManagementService());
+api.registerService(new VideoConfService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

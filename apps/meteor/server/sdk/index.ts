@@ -16,6 +16,7 @@ import { IVoipService } from './types/IVoipService';
 import { IOmnichannelVoipService } from './types/IOmnichannelVoipService';
 import { IAnalyticsService } from './types/IAnalyticsService';
 import { ILDAPService } from './types/ILDAPService';
+import { IVideoConfService } from './types/IVideoConfService';
 import { ISAUMonitorService } from './types/ISAUMonitorService';
 import { IDeviceManagementService } from './types/IDeviceManagementService';
 import { FibersContextStore } from './lib/ContextStore';
@@ -38,6 +39,7 @@ export const Analytics = proxifyWithWait<IAnalyticsService>('analytics');
 export const LDAP = proxifyWithWait<ILDAPService>('ldap');
 export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
+export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
