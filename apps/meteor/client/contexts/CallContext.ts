@@ -13,10 +13,6 @@ type CallContextDisabled = {
 	ready: false;
 };
 
-// type CallContextEnabled = {
-// 	enabled: true;
-// 	ready: unknown;
-// };
 type CallContextReady = {
 	canMakeCall: boolean;
 	enabled: true;
@@ -25,10 +21,10 @@ type CallContextReady = {
 	actions: CallActionsType;
 	queueName: string;
 	queueCounter: number;
-	openedRoomInfo: { v: { token?: string }; rid: string };
+	openedRoomInfo?: { v: { token?: string }; rid: string };
 	openWrapUpModal: () => void;
 	openRoom: (rid: IVoipRoom['_id']) => void;
-	createRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
+	createRoom: (caller: ICallerInfo) => Promise<IVoipRoom['_id']>;
 	closeRoom: (data?: { comment?: string; tags?: string[] }) => void;
 	changeAudioOutputDevice: (selectedAudioDevices: Device) => void;
 	changeAudioInputDevice: (selectedAudioDevices: Device) => void;
@@ -38,7 +34,7 @@ type CallContextReady = {
 type CallContextError = {
 	enabled: true;
 	ready: false;
-	error: Error;
+	error?: Error | unknown;
 };
 
 export const isCallContextReady = (context: CallContextValue): context is CallContextReady => (context as CallContextReady).ready;
@@ -81,7 +77,7 @@ export const useIsCallError = (): boolean => {
 export const useCallContext = (): CallContextValue => {
 	const context = useContext(CallContext);
 	if (!isCallContextReady(context)) {
-		throw new Error('useCallActions only if Calls are enabled and ready');
+		throw new Error('useCallContext only if Calls are enabled and ready');
 	}
 	return context;
 };
@@ -220,7 +216,7 @@ export const useChangeAudioInputDevice = (): CallContextReady['changeAudioOutput
 	return context.changeAudioInputDevice;
 };
 
-export const useCallRegisterClient = () => {
+export const useCallRegisterClient = (): (() => void) => {
 	const context = useContext(CallContext);
 
 	if (!isCallContextReady(context)) {
@@ -230,7 +226,7 @@ export const useCallRegisterClient = () => {
 	return context.register;
 };
 
-export const useCallUnregisterClient = () => {
+export const useCallUnregisterClient = (): (() => void) => {
 	const context = useContext(CallContext);
 
 	if (!isCallContextReady(context)) {

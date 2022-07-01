@@ -135,8 +135,8 @@ export const VoipFooter = ({
 								danger
 								onClick={(e): unknown => {
 									e.stopPropagation();
-									// toggleMic(false);
-									// togglePause(false);
+									toggleMic(false);
+									togglePause(false);
 									return callActions.end();
 								}}
 							>
