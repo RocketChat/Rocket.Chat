@@ -15,8 +15,8 @@ export const useTopFivePopularChannels = ({ period }: UseTopFivePopularChannelsO
 			const { start, end } = getPeriodRange(period);
 
 			const response = await getTopFivePopularChannels({
-				start: start.toISOString(),
-				end: end.toISOString(),
+				start,
+				end,
 			});
 
 			return response

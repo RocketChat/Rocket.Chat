@@ -15,8 +15,8 @@ export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) => {
 			const { start, end } = getPeriodRange(period);
 
 			const response = await getMessageOrigins({
-				start: start.toISOString(),
-				end: end.toISOString(),
+				start,
+				end,
 			});
 
 			return response

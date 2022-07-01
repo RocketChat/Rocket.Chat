@@ -15,8 +15,8 @@ export const useNewUsers = ({ period, utc }: UseNewUsersOptions) => {
 			const { start, end } = getPeriodRange(period, utc);
 
 			const response = await getNewUsers({
-				start: start.toISOString(),
-				end: end.toISOString(),
+				start,
+				end,
 			});
 
 			return response

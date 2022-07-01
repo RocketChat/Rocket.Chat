@@ -15,8 +15,8 @@ export const useUsersByTimeOfTheDay = ({ period, utc }: UseUsersByTimeOfTheDayOp
 			const { start, end } = getPeriodRange(period, utc);
 
 			const response = await getUsersByTimeOfTheDay({
-				start: start.toISOString(),
-				end: end.toISOString(),
+				start,
+				end,
 			});
 
 			return response
