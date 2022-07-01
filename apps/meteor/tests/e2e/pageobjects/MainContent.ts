@@ -58,11 +58,11 @@ export class MainContent extends BasePage {
 	}
 
 	get lastUserMessage(): Locator {
-		return this.page.locator('[data-qa-id=UserMessage]').last();
+		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last().locator('[data-qa-type="username"]');
 	}
 
 	get btnLastUserMessage(): Locator {
-		return this.page.locator('[data-qa-id=UserMessage]:not(.sequential) > button').last();
+		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last().locator('[data-qa-type="username"]');
 	}
 
 	get lastMessageFileName(): Locator {
@@ -208,11 +208,11 @@ export class MainContent extends BasePage {
 	}
 
 	async waitForLastMessageEqualsHtml(text: string): Promise<void> {
-		await expect(this.page.locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
+		await expect(this.lastMessageForMessageTest).toContainText(text);
 	}
 
 	async waitForLastMessageEqualsText(text: string): Promise<void> {
-		await expect(this.page.locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
+		await expect(this.lastMessage).toContainText(text);
 	}
 
 	async sendMessage(text: string): Promise<void> {
