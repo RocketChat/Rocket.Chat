@@ -5,9 +5,14 @@ import { addMigration } from '../../lib/migrations';
 addMigration({
 	version: 276,
 	async up() {
-		await Promise.allSettled(
-			['instanceId_1_sessionId_1_year_1_month_1_day_1', 'instanceId_1_sessionId_1', 'type_1'].map((idx) => Sessions.col.dropIndex(idx)),
-		);
+		try {
+			await Promise.allSettled(
+				['instanceId_1_sessionId_1_year_1_month_1_day_1', 'instanceId_1_sessionId_1', 'type_1'].map((idx) => Sessions.col.dropIndex(idx)),
+			);
+		} catch (error: unknown) {
+			console.warn('Error recreating index for rocketchat_sessions, continuing...');
+			console.warn(error);
+		}
 
 		const oldSettings = await Settings.findOne({ _id: 'email_style' });
 		if (!oldSettings) {
