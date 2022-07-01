@@ -2,7 +2,7 @@ import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo, VoIpCallerInfo, VoipClientEvents } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
-import React, { ReactElement, MouseEvent } from 'react';
+import React, { ReactElement, MouseEvent, ReactNode } from 'react';
 
 import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import { CallActionsType } from '../../../contexts/CallContext';
@@ -26,12 +26,13 @@ type VoipFooterPropsType = {
 	};
 	callsInQueue: string;
 
-	createRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
+	createRoom: (caller: ICallerInfo, callDirection?: IVoipRoom['direction']) => IVoipRoom['_id'];
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	openedRoomInfo: { v: { token?: string | undefined }; rid: string };
 	anonymousText: string;
 	isEnterprise: boolean;
+	children?: ReactNode;
 };
 
 export const VoipFooter = ({
@@ -52,6 +53,7 @@ export const VoipFooter = ({
 	openedRoomInfo,
 	anonymousText,
 	isEnterprise = false,
+	children,
 }: VoipFooterPropsType): ReactElement => {
 	const cssClickable =
 		callerState === 'IN_CALL' || callerState === 'ON_HOLD'
@@ -164,6 +166,7 @@ export const VoipFooter = ({
 					</ButtonGroup>
 				</Box>
 			</Box>
+			{children}
 		</SidebarFooter>
 	);
 };
