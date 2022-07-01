@@ -15,7 +15,7 @@ type DialPadStateHandlers = {
 	handleCallButtonClick: () => void;
 };
 
-export const useDialPad = (): DialPadStateHandlers => {
+export const useDialPad = (close: () => void): DialPadStateHandlers => {
 	const t = useTranslation();
 	const outbound = useOutboundDialer();
 
@@ -50,8 +50,10 @@ export const useDialPad = (): DialPadStateHandlers => {
 			return setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
 		}
 
-		outbound.outboundDialer.makeCall(`sip:*${value.replace('+', '')}@${outbound.outboundDialer.userConfig.sipRegistrarHostnameOrIP}`);
-	}, [outbound, setError, t, value]);
+		outbound.outboundDialer
+			.makeCall(`sip:*${value.replace('+', '')}@${outbound.outboundDialer.userConfig.sipRegistrarHostnameOrIP}`)
+			.then(close);
+	}, [outbound, setError, t, value, close]);
 
 	useEffect(() => {
 		if (!outbound || !outbound.outboundDialer) {
