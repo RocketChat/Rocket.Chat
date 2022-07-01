@@ -52,7 +52,7 @@ const AppDetails: FC<AppDetailsProps> = ({ app }) => {
 						<Box fontScale='h4' mbe='x8'>
 							{t('Description')}
 						</Box>
-						<Box dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }} />
+						<Box dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }} withRichContent />
 					</Box>
 
 					<Box is='section'>
