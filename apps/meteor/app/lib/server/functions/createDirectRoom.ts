@@ -63,7 +63,7 @@ export const createDirectRoom = function (members: IUser[], roomExtraData = {}, 
 	};
 
 	if (isNewRoom) {
-		const tmpRoom = {
+		const tmpRoom: { _USERNAMES?: (string | undefined)[] } & typeof roomInfo = {
 			...roomInfo,
 			_USERNAMES: usernames,
 		};
@@ -88,6 +88,8 @@ export const createDirectRoom = function (members: IUser[], roomExtraData = {}, 
 		if (typeof result === 'object') {
 			Object.assign(roomInfo, result);
 		}
+
+		delete tmpRoom._USERNAMES;
 	}
 
 	const rid = room?._id || Rooms.insert(roomInfo);
