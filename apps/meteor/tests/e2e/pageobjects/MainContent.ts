@@ -82,7 +82,7 @@ export class MainContent extends BasePage {
 	}
 
 	get lastMessageForMessageTest(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child div.message-body-wrapper div:nth-child(2)');
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-body"]');
 	}
 
 	get messageOptionsBtns(): Locator {
@@ -316,9 +316,9 @@ export class MainContent extends BasePage {
 	}
 
 	async openMessageActionMenu(): Promise<void> {
-		await this.page.locator('.messages-box [data-qa-type="message"]:last-child').hover();
-		await this.page.locator('[data-qa-type="message"]:last-child div.message-actions__menu').waitFor();
-		await this.page.locator('[data-qa-type="message"]:last-child div.message-actions__menu').click();
+		await this.page.locator('[data-qa-type="message"]:last-child').hover();
+		await this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-action-menu"][data-qa-id="menu"]').waitFor();
+		await this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
 	}
 
 	async openMoreActionMenu(): Promise<void> {
