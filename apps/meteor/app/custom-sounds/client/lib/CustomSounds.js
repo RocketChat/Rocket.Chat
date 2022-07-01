@@ -10,6 +10,7 @@ const getCustomSoundId = (sound) => `custom-sound-${sound}`;
 class CustomSoundsClass {
 	constructor() {
 		this.list = new ReactiveVar({});
+		this.add({ _id: 'calling', name: 'Calling', extension: 'mp3', src: getURL('sounds/calling.mp3') });
 		this.add({ _id: 'chime', name: 'Chime', extension: 'mp3', src: getURL('sounds/chime.mp3') });
 		this.add({ _id: 'door', name: 'Door', extension: 'mp3', src: getURL('sounds/door.mp3') });
 		this.add({ _id: 'beep', name: 'Beep', extension: 'mp3', src: getURL('sounds/beep.mp3') });
@@ -107,6 +108,12 @@ class CustomSoundsClass {
 		if (audio.currentTime !== 0) {
 			audio.currentTime = 0;
 		}
+	};
+
+	isPlaying = (sound) => {
+		const audio = document.querySelector(`#${getCustomSoundId(sound)}`);
+
+		return audio && audio.duration > 0 && !audio.paused;
 	};
 }
 

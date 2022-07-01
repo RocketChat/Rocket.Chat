@@ -69,11 +69,21 @@ type Options = (
 	  }
 ) & {
 	validateParams?: ValidateFunction;
+	authOrAnonRequired?: true;
 };
 
 type PartialThis = {
 	readonly request: Request & { query: Record<string, string> };
 	readonly response: Response;
+};
+
+type UserInfo = IUser & {
+	email?: string;
+	settings: {
+		profile: {};
+		preferences: unknown;
+	};
+	avatarUrl: string;
 };
 
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
@@ -113,16 +123,9 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	/* @deprecated */
 	isUserFromParams(): boolean;
 	/* @deprecated */
-	getUserInfo(me: IUser): TOptions extends { authRequired: true }
-		? IUser & {
-				email?: string;
-				settings: {
-					profile: {};
-					preferences: unknown;
-				};
-				avatarUrl: string;
-		  }
-		: undefined;
+	getUserInfo(
+		me: IUser,
+	): TOptions extends { authRequired: true } ? UserInfo : TOptions extends { authOrAnonRequired: true } ? UserInfo | undefined : undefined;
 	insertUserObject<T>({ object, userId }: { object: { [key: string]: unknown }; userId: string }): { [key: string]: unknown } & T;
 	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
 } & (TOptions extends { authRequired: true }
@@ -130,6 +133,12 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 			readonly user: IUser;
 			readonly userId: string;
 			readonly token: string;
+	  }
+	: TOptions extends { authOrAnonRequired: true }
+	? {
+			readonly user?: IUser;
+			readonly userId?: string;
+			readonly token?: string;
 	  }
 	: {
 			readonly user: null;

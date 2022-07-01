@@ -11,6 +11,7 @@ type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' |
 	className: ComponentProps<typeof Box>['className'];
 	index: number;
 	title: string;
+	key: string;
 };
 
 export type ActionRenderer = (props: ActionRendererProps) => ReactNode;
