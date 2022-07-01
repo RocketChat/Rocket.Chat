@@ -11,7 +11,6 @@ import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
 import LivechatRooms from './models/LivechatRooms';
 import LivechatInquiry from './models/LivechatInquiry';
-import OmnichannelQueue from './models/OmnichannelQueue';
 import ImportData from './models/ImportData';
 import './lib/watchModels';
 
@@ -36,6 +35,5 @@ export {
 	LivechatDepartmentAgents,
 	LivechatRooms,
 	LivechatInquiry,
-	OmnichannelQueue,
 	ImportData,
 };
