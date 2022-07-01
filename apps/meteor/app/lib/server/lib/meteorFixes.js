@@ -46,7 +46,7 @@ Meteor.setInterval(() => {
 }, interval);
 
 const increaseExceptionCount = Meteor.bindEnvironment(() => {
-	Settings.incrementValueById('Uncaught_Exceptions_Count');
+	Promise.await(Settings.incrementValueById('Uncaught_Exceptions_Count'));
 });
 
 /**
