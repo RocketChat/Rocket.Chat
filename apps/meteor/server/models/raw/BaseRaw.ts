@@ -54,7 +54,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		const indexes = this.modelIndexes();
 		if (indexes?.length) {
 			this.col.createIndexes(indexes).catch((e) => {
-				console.warn(`Error creating indexes for ${this.name}`, e);
+				console.warn(`Some indexes for collection '${this.name}' could not be created:\n\t${e.message}`);
 			});
 		}
 
