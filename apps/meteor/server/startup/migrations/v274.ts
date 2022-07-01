@@ -8,19 +8,14 @@ addMigration({
 		const fieldsToUpdate = ['editedBy', 'editedAt', 'emoji', 'avatar', 'alias', 'customFields', 'groupable', 'attachments', 'reactions'];
 
 		fieldsToUpdate.map(async (field) => {
-			await Messages.update(
+			await Messages.updateMany(
 				{
-					[field]: {
-						$in: [null, undefined],
-					},
+					$or: [{ [field]: { $type: 'undefined' } }, { [field]: { $type: 'null' } }],
 				},
 				{
 					$unset: {
 						[field]: '',
 					},
-				},
-				{
-					multi: true,
 				},
 			);
 		});
