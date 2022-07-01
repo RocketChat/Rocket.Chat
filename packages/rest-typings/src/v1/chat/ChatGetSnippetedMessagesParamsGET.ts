@@ -6,7 +6,7 @@ const ajv = new Ajv({
 
 export type ChatGetSnippetedMessagesParamsGET = {
 	roomId: string;
-	sort: string;
+	sort: Record<string, 1 | -1>;
 	offset: number;
 	count: number;
 };
@@ -18,7 +18,11 @@ const ChatGetSnippetedMessagesParamsGETSchema = {
 			type: 'string',
 		},
 		sort: {
-			type: 'string',
+			type: 'object',
+			additionalProperties: {
+				type: 'number',
+			},
+			required: [],
 		},
 		offset: {
 			type: 'number',

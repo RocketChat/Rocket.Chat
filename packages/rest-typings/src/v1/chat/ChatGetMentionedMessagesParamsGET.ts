@@ -6,7 +6,7 @@ const ajv = new Ajv({
 
 export type ChatGetMentionedMessagesParamsGET = {
 	roomId: string;
-	sort: string;
+	sort: Record<string, 1 | -1>;
 	offset: number;
 	count: number;
 };
@@ -18,7 +18,11 @@ const ChatGetMentionedMessagesParamsGETSchema = {
 			type: 'string',
 		},
 		sort: {
-			type: 'string',
+			type: 'object',
+			additionalProperties: {
+				type: 'number',
+			},
+			required: [],
 		},
 		offset: {
 			type: 'number',
