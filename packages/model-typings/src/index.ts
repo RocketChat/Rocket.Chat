@@ -38,7 +38,6 @@ export * from './models/INpsModel';
 export * from './models/INpsVoteModel';
 export * from './models/IOAuthAppsModel';
 export * from './models/IOEmbedCacheModel';
-export * from './models/IOmnichannelQueueModel';
 export * from './models/IPbxEventsModel';
 export * from './models/IPushTokenModel';
 export * from './models/IPermissionsModel';
