@@ -5,7 +5,6 @@ import React, { FC, useMemo } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useDialModal } from '../../../hooks/useDialModal';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { FormSkeleton } from './Skeleton';
 import Call from './calls/Call';
@@ -17,16 +16,11 @@ const CallsContextualBarDirectory: FC = () => {
 	const bar = useRouteParameter('bar') || 'info';
 	const id = useRouteParameter('id');
 	const token = useQueryStringParameter('token');
-	const { openDialModal } = useDialModal();
 
 	const t = useTranslation();
 
 	const handleCallsVerticalBarCloseButtonClick = (): void => {
 		directoryRoute.push({ page: 'calls' });
-	};
-
-	const onClickCall = (phone: string): void => {
-		openDialModal({ initialValue: phone });
 	};
 
 	const query = useMemo(
@@ -59,7 +53,7 @@ const CallsContextualBarDirectory: FC = () => {
 
 	return (
 		<VerticalBar className={'contextual-bar'}>
-			{bar === 'info' && <VoipInfo room={room} onClickClose={handleCallsVerticalBarCloseButtonClick} onClickCall={onClickCall} />}
+			{bar === 'info' && <VoipInfo room={room} onClickClose={handleCallsVerticalBarCloseButtonClick} />}
 		</VerticalBar>
 	);
 };

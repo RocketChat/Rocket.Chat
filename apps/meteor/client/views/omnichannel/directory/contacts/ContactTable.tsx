@@ -14,7 +14,6 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 } from '../../../../components/GenericTable';
-import { GenericTableParams } from '../../../../components/GenericTable/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
@@ -22,20 +21,9 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { ContactTableDialpadButton } from './ContactTableDialpadButton';
 
-type Query = {
-	offset?: number;
-	count?: number;
-	term: string;
-	sort: string;
-};
-
 type ContactTableProps = {
 	setContactReload(fn: () => void): void;
 };
-
-interface IUseQueryHook {
-	(params: GenericTableParams, columnDirection: [string, string]): Query;
-}
 
 const rowClass = css`
 	.contact-table__call-button {

@@ -1,5 +1,5 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
-import { Box, Icon, Chip, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Icon, Chip, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
@@ -17,10 +17,9 @@ type VoipInfoPropsType = {
 	room: IVoipRoom;
 	onClickClose: () => void;
 	onClickReport?: () => void;
-	onClickCall?: (phone: string) => void;
 };
 
-export const VoipInfo = ({ room, onClickClose, onClickCall /* , onClickReport  */ }: VoipInfoPropsType): ReactElement => {
+export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfoPropsType): ReactElement => {
 	const t = useTranslation();
 
 	const { servedBy, queue, v, fname, name, callDuration, callTotalHoldTime, closedAt, callWaitingTime, tags, lastMessage } = room;
