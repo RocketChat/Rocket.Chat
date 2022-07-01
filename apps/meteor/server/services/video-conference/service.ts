@@ -334,6 +334,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.ENDED });
+		if (call.messages?.started) {
+			await this.removeJoinButton(call.messages.started);
+		}
 
 		switch (call.type) {
 			case 'direct':
@@ -351,11 +354,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.EXPIRED });
 		if (call.messages?.started) {
-			return this.replaceJoinButton(call.messages.started);
+			return this.removeJoinButton(call.messages.started);
 		}
 	}
 
-	private async replaceJoinButton(messageId: IMessage['_id']): Promise<void> {
+	private async removeJoinButton(messageId: IMessage['_id']): Promise<void> {
 		await Messages.removeVideoConfJoinButton(messageId);
 	}
 
