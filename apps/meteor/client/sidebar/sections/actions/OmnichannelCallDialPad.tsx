@@ -12,7 +12,7 @@ export const OmniChannelCallDialPad = (): ReactElement => {
 	const voIPcall = useCallContext();
 	const caller = useCallerInfo();
 
-	const isMakeCallEnabled = voIPcall.enabled && voIPcall.ready && voIPcall.canMakeCall;
+	const isMakeCallEnabled = voIPcall.enabled && voIPcall.ready && 'canMakeCall' in voIPcall && voIPcall.canMakeCall;
 
 	const isDialPadDisabled = !isMakeCallEnabled || ['IN_CALL', 'ON_HOLD', 'UNREGISTERED'].includes(caller.state);
 
