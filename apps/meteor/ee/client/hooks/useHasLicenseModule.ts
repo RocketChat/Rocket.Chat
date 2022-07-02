@@ -7,7 +7,12 @@ export const useHasLicenseModule = (licenseName: BundleFeature): 'loading' | boo
 	const [license, setLicense] = useState<'loading' | boolean>('loading');
 
 	useEffect(() => {
-		hasLicense(licenseName).then(setLicense);
+		hasLicense(licenseName).then((enabled) => {
+			if (enabled) {
+				return setLicense(true);
+			}
+			setLicense(false);
+		});
 	}, [licenseName]);
 
 	return license;
