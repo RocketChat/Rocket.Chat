@@ -17,6 +17,7 @@ import { VoipService } from './voip/service';
 import { VideoConfService } from './video-conference/service';
 import { isRunningMs } from '../lib/isRunningMs';
 import { PushService } from './push/service';
+import { DeviceManagementService } from './device-management/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -34,6 +35,7 @@ api.registerService(new OmnichannelVoipService());
 api.registerService(new TeamService());
 api.registerService(new UiKitCoreApp());
 api.registerService(new PushService());
+api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately

@@ -1,8 +1,11 @@
-import type { IMethodConnection } from '@rocket.chat/core-typings';
+import type { ISocketConnection } from '@rocket.chat/core-typings';
 
-export function getClientAddress(connection: IMethodConnection): string {
+export function getClientAddress(connection: Pick<ISocketConnection, 'clientAddress' | 'httpHeaders'>): string {
 	if (!connection) {
 		return '';
 	}
-	return connection.clientAddress || connection.httpHeaders['x-real-ip'];
+
+	const { clientAddress, httpHeaders } = connection;
+
+	return clientAddress || (httpHeaders?.['x-real-ip'] as string);
 }
