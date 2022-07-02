@@ -629,7 +629,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			projection: { 'u._id': 1, '_id': 0 },
 		});
 
-		await subscriptions.forEach(async (subscription) => Notifications.notifyUser(subscription.u._id, eventName, ...args));
+		await subscriptions.forEach((subscription) => Notifications.notifyUser(subscription.u._id, eventName, ...args));
 	}
 
 	private async startGroup(
