@@ -1,4 +1,4 @@
-import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
 import type { Collection, Cursor, Db, FilterQuery, FindOneOptions, UpdateQuery, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
 import { getCollectionName, Users } from '@rocket.chat/models';
@@ -42,6 +42,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'rid': {
 				$in: roomIds,
 			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findByRoomId(roomId: string, options: FindOneOptions<ISubscription> = {}): Cursor<ISubscription> {
+		const query = {
+			rid: roomId,
 		};
 
 		return this.find(query, options);
@@ -200,5 +208,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 		const found = await this.findOne(query, options);
 		return !!found;
+	}
+
+	async updateAllRoomTypesByRoomId(roomId: IRoom['_id'], roomType: RoomType): Promise<void> {
+		await this.update({ rid: roomId }, { $set: { t: roomType } }, { multi: true });
+	}
+
+	async updateAllRoomNamesByRoomId(roomId: IRoom['_id'], name: string, fname: string): Promise<void> {
+		await this.update({ rid: roomId }, { $set: { name, fname } }, { multi: true });
 	}
 }

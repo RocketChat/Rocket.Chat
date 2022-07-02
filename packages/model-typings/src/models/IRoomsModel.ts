@@ -61,7 +61,17 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
+	findByBroadcast(options?: any): any;
+
+	findByActiveLivestream(options?: any): any;
+
 	setAsFederated(roomId: any): any;
+
+	setRoomTypeById(roomId: any, roomType: any): any;
+
+	setRoomNameById(roomId: any, name: any, fname: any): any;
+
+	setRoomTopicById(roomId: any, topic: any): any;
 
 	findByE2E(options: any): any;
 

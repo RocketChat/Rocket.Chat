@@ -39,7 +39,7 @@ Meteor.methods({
 			await client.createDirectory(uploadFolder).catch(() => {});
 			await client.putFileContents(`${uploadFolder}/${name}`, buffer, { overwrite: false });
 			return { success: true };
-		} catch (error) {
+		} catch (error: any) {
 			// @ts-ignore
 			logger.error(error);
 

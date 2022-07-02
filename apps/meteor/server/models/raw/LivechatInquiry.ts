@@ -40,4 +40,52 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	async setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateWriteOpResult> {
 		return this.updateOne({ rid }, { $set: { lastMessage: message } });
 	}
+
+	async findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | undefined> {
+		const date = new Date();
+		const result = await this.col.findOneAndUpdate(
+			{
+				status: LivechatInquiryStatus.QUEUED,
+				...(department && { department }),
+				$or: [
+					{
+						locked: true,
+						lockedAt: {
+							$lte: new Date(date.getTime() - 5000),
+						},
+					},
+					{
+						locked: false,
+					},
+					{
+						locked: { $exists: false },
+					},
+				],
+			},
+			{
+				$set: {
+					locked: true,
+					// apply 5 secs lock lifetime
+					lockedAt: new Date(),
+				},
+			},
+			{
+				sort: {
+					queueOrder: 1,
+					estimatedWaitingTimeQueue: 1,
+					estimatedServiceTimeAt: 1,
+				},
+			},
+		);
+
+		return result.value;
+	}
+
+	async unlock(inquiryId: string): Promise<UpdateWriteOpResult> {
+		return this.updateOne({ _id: inquiryId }, { $unset: { locked: 1, lockedAt: 1 } });
+	}
+
+	async unlockAll(): Promise<UpdateWriteOpResult> {
+		return this.updateMany({}, { $unset: { locked: 1, lockedAt: 1 } });
+	}
 }

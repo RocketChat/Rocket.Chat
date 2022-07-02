@@ -9,8 +9,8 @@ type VariantType = 'danger' | 'warning' | 'info' | 'success';
 type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
 	children?: ReactNode;
-	cancelText?: string;
-	confirmText?: string;
+	cancelText?: ReactNode;
+	confirmText?: ReactNode;
 	title?: string | ReactElement;
 	icon?: ComponentProps<typeof Icon>['name'] | ReactElement | null;
 	confirmDisabled?: boolean;
@@ -31,7 +31,7 @@ const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => 
 		case 'danger':
 			return { danger: true };
 		case 'warning':
-			return { warning: true };
+			return { primary: true };
 		default:
 			return {};
 	}

@@ -59,6 +59,7 @@ export * from './IEmailMessageHistory';
 export * from './ReadReceipt';
 export * from './IUpload';
 export * from './IOEmbedCache';
+export * from './IOembed';
 // TODO: not sure if this is the right place to put this
 
 export * from './IEmailInbox';
@@ -106,5 +107,9 @@ export * from './IVoipServerConfig';
 export * from './IVoipServerConnectivityStatus';
 export * from './IOmnichannelVoipServiceResult';
 export * from './IInquiry';
+export * from './ILivechatPriority';
 
 export * from './IAutoTranslate';
+export * from './IVideoConference';
+export * from './VideoConferenceCapabilities';
+export * from './VideoConferenceOptions';

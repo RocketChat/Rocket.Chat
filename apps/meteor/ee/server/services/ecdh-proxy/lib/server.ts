@@ -104,7 +104,7 @@ app.post('/api/ecdh_proxy/initEncryptedSession', async (req, res) => {
 			publicKeyString: session.publicKeyString,
 		});
 	} catch (e) {
-		res.status(400).send(e.message);
+		res.status(400).send(e instanceof Error ? e.message : String(e));
 	}
 });
 
@@ -124,7 +124,7 @@ app.post('/api/ecdh_proxy/echo', async (req, res) => {
 		res.send(await session.encrypt(result));
 	} catch (e) {
 		console.error(e);
-		res.status(400).send(e.message);
+		res.status(400).send(e instanceof Error ? e.message : String(e));
 	}
 });
 
@@ -193,7 +193,7 @@ app.use('/api/*', async (req, res) => {
 	try {
 		proxy(req, res, session);
 	} catch (e) {
-		res.status(400).send(e.message);
+		res.status(400).send(e instanceof Error ? e.message : String(e));
 	}
 });
 
@@ -229,7 +229,7 @@ app.use('/sockjs/:id1/:id2/xhr_send', async (req, res) => {
 	try {
 		proxy(req, res, session, xhrDataRequestProcess, xhrDataResponseProcess);
 	} catch (e) {
-		res.status(400).send(e.message);
+		res.status(400).send(e instanceof Error ? e.message : String(e));
 	}
 });
 
@@ -245,7 +245,7 @@ app.use('/sockjs/:id1/:id2/xhr', async (req, res) => {
 	try {
 		proxy(req, res, session, undefined, xhrDataResponseProcess);
 	} catch (e) {
-		res.status(400).send(e.message);
+		res.status(400).send(e instanceof Error ? e.message : String(e));
 	}
 });
 

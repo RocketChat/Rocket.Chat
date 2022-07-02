@@ -24,6 +24,8 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 		this.tryEnsureIndex({ createdOTR: 1 }, { sparse: true });
 		this.tryEnsureIndex({ encrypted: 1 }, { sparse: true }); // used on statistics
+		this.tryEnsureIndex({ broadcast: 1 }, { sparse: true }); // used on statistics
+		this.tryEnsureIndex({ 'streamingOptions.type': 1 }, { sparse: true }); // used on statistics
 
 		this.tryEnsureIndex(
 			{
@@ -47,20 +49,6 @@ export class Rooms extends Base {
 		};
 
 		return this.findOne(query, options);
-	}
-
-	setJitsiTimeout(_id, time) {
-		const query = {
-			_id,
-		};
-
-		const update = {
-			$set: {
-				jitsiTimeout: time,
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	setCallStatus(_id, status) {
@@ -1002,6 +990,11 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	/**
+	 * @param {string} _id
+	 * @param {string?} messageId
+	 * @returns {Promise<void>}
+	 */
 	resetLastMessageById(_id, messageId = undefined) {
 		const query = { _id };
 		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
