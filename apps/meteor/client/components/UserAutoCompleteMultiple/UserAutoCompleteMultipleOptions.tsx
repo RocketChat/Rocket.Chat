@@ -4,7 +4,7 @@ import React, { forwardRef, ComponentProps, RefAttributes, ReactElement, Ref } f
 import { UserAutoCompleteOptionType } from './UserAutoCompleteMultipleFederated';
 import UserAutoCompleteMultipleOption from './UserAutoCompleteMultipleOption';
 
-type Options = Array<[string, UserAutoCompleteOptionType]>;
+type Options = Array<[UserAutoCompleteOptionType['username'], UserAutoCompleteOptionType]>;
 
 // This is a hack in order to bypass the MultiSelect filter.
 // The select requires a forwarded ref component in the renderOptions property

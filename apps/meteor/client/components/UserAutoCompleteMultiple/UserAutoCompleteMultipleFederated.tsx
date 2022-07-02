@@ -15,8 +15,8 @@ type UserAutoCompleteMultipleFederatedProps = {
 };
 
 export type UserAutoCompleteOptionType = {
-	name?: string;
-	username?: string;
+	name: string;
+	username: string;
 	_federated?: boolean;
 };
 
@@ -40,7 +40,7 @@ const UserAutoCompleteMultipleFederated = ({
 
 	const { data } = useQuery(['users.autocomplete', debouncedFilter], async () => {
 		const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter }) });
-		const options = users.items.map((item): [string, UserAutoCompleteOptionType] => [item.username || '', item]);
+		const options = users.items.map((item): [string, UserAutoCompleteOptionType] => [item.username, item]);
 
 		// Add extra option if filter text matches `username:server`
 		// Used to add federated users that do not exist yet
@@ -81,7 +81,7 @@ const UserAutoCompleteMultipleFederated = ({
 				);
 			}}
 			renderOptions={renderOptions(options, onAddSelected)}
-			options={options.concat(Object.entries(selectedCache)).map(([, item]) => [item.username || '', item.name || item.username || ''])}
+			options={options.concat(Object.entries(selectedCache)).map(([, item]) => [item.username, item.name || item.username])}
 		/>
 	);
 };
