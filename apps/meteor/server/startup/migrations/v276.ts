@@ -1,37 +1,18 @@
-import { Sessions, Settings } from '@rocket.chat/models';
+import { Settings } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
+import { Users } from '../../../app/models/server';
 
 addMigration({
 	version: 276,
-	async up() {
-		try {
-			await Promise.allSettled(
-				['instanceId_1_sessionId_1_year_1_month_1_day_1', 'instanceId_1_sessionId_1', 'type_1'].map((idx) => Sessions.col.dropIndex(idx)),
-			);
-		} catch (error: unknown) {
-			console.warn('Error recreating index for rocketchat_sessions, continuing...');
-			console.warn(error);
-		}
-
-		const oldSettings = await Settings.findOne({ _id: 'email_style' });
-		if (!oldSettings) {
-			return;
-		}
-
-		const newValue = `${oldSettings.value} .rc-color { color: #F5455C; }`;
-		const newPackageValue = `${oldSettings.packageValue} .rc-color { color: #F5455C; }`;
-
-		await Settings.updateOne(
+	up() {
+		Users.update(
+			{ 'settings.preferences.enableNewMessageTemplate': { $exists: 1 } },
 			{
-				_id: 'email_style',
+				$unset: { 'settings.preferences.enableNewMessageTemplate': 1 },
 			},
-			{
-				$set: {
-					value: newValue,
-					packageValue: newPackageValue,
-				},
-			},
+			{ multi: true },
 		);
+		return Settings.removeById('Accounts_Default_User_Preferences_enableNewMessageTemplate');
 	},
 });

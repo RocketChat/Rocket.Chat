@@ -37,6 +37,7 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 	return (
 		<MessageHeaderTemplate>
 			<MessageName
+				{...(!showUsername && { 'data-qa-type': 'username' })}
 				title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
 				data-username={user.username}
 				onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
@@ -47,6 +48,7 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 			{showUsername && (
 				<MessageUsername
 					data-username={user.username}
+					data-qa-type='username'
 					onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
 					style={{ cursor: 'pointer' }}
 				>
