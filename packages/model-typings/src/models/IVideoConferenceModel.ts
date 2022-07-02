@@ -1,4 +1,4 @@
-import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult, FindOneOptions } from 'mongodb';
+import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
 import type {
 	IGroupVideoConference,
 	ILivechatVideoConference,
@@ -11,14 +11,14 @@ import type {
 import type { IBaseModel } from './IBaseModel';
 
 export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
-	findAllByRoomId(rid: IRoom['_id'], { offset, count }: { offset?: number; count?: number }): Promise<Cursor<VideoConference>>;
+	findAllByRoomId(rid: IRoom['_id'], { offset, count }: { offset?: number; count?: number }): Promise<FindCursor<VideoConference>>;
 
-	findAllLongRunning(minDate: Date): Promise<Cursor<Pick<VideoConference, '_id'>>>;
+	findAllLongRunning(minDate: Date): Promise<FindCursor<Pick<VideoConference, '_id'>>>;
 
 	countByTypeAndStatus(
 		type: VideoConference['type'],
 		status: VideoConferenceStatus,
-		options: FindOneOptions<VideoConference>,
+		options: FindOptions<VideoConference>,
 	): Promise<number>;
 
 	createDirect({ providerName, ...callDetails }: Pick<VideoConference, 'rid' | 'createdBy' | 'providerName'>): Promise<string>;
@@ -35,9 +35,9 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	updateOneById(
 		_id: string,
-		update: UpdateQuery<VideoConference> | Partial<VideoConference>,
-		options?: UpdateOneOptions,
-	): Promise<UpdateWriteOpResult>;
+		update: UpdateFilter<VideoConference> | Partial<VideoConference>,
+		options?: UpdateOptions,
+	): Promise<UpdateResult>;
 
 	setDataById(callId: string, data: Partial<Omit<VideoConference, '_id'>>): Promise<void>;
 

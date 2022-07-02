@@ -1,5 +1,5 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindOptions, DistinctOptions, UpdateResult } from 'mongodb';
+import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult } from 'mongodb';
 import { ILivechatInquiryRecord, IMessage, LivechatInquiryStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { getCollectionName } from '@rocket.chat/models';
 
@@ -41,7 +41,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.updateOne({ rid }, { $set: { lastMessage: message } });
 	}
 
-	async findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | undefined> {
+	async findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | null> {
 		const date = new Date();
 		const result = await this.col.findOneAndUpdate(
 			{
@@ -81,11 +81,11 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return result.value;
 	}
 
-	async unlock(inquiryId: string): Promise<UpdateWriteOpResult> {
+	async unlock(inquiryId: string): Promise<UpdateResult> {
 		return this.updateOne({ _id: inquiryId }, { $unset: { locked: 1, lockedAt: 1 } });
 	}
 
-	async unlockAll(): Promise<UpdateWriteOpResult> {
+	async unlockAll(): Promise<UpdateResult | Document> {
 		return this.updateMany({}, { $unset: { locked: 1, lockedAt: 1 } });
 	}
 }
