@@ -8,7 +8,7 @@ export const useEndpointActionExperimental = <TMethod extends Method, TPath exte
 	path: TPath,
 	successMessage?: string,
 ): ((
-	params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
+	params: OperationParams<TMethod, MatchPathPattern<TPath>>,
 ) => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>) => {
 	const sendData = useEndpoint(method, path);
 	const dispatchToastMessage = useToastMessageDispatch();
