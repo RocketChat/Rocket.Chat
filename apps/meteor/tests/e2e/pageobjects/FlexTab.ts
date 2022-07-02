@@ -244,7 +244,7 @@ export class FlexTab extends BasePage {
 	}
 
 	get chooseUserOptions(): Locator {
-		return this.page.locator('(//div[@role="option"]//ol/li)[1]');
+		return this.page.locator('[data-qa-type="autocomplete-user-option"]');
 	}
 
 	get userMoreActions(): Locator {

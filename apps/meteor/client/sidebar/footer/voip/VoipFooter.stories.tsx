@@ -80,7 +80,7 @@ const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
 				toggleMic={toggleMic}
 				togglePause={togglePause}
 				tooltips={tooltips}
-				createRoom={() => ''}
+				createRoom={async () => ''}
 				openRoom={() => ''}
 				callsInQueue='2 Calls In Queue'
 				dispatchEvent={() => null}
