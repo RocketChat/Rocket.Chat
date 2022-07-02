@@ -4330,7 +4330,6 @@ __metadata:
   resolution: "@rocket.chat/model-typings@workspace:packages/model-typings"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/rest-typings": "workspace:^"
     "@types/jest": ^27.4.1
     "@types/mongodb": ^3.6.10
     "@types/node-rsa": ^1.1.1
