@@ -8,6 +8,6 @@ export interface INpsVoteModel extends IBaseModel<INpsVote> {
 	findByNpsIdAndStatus(npsId: string, status: INpsVoteStatus, options?: FindOptions<INpsVote>): FindCursor<INpsVote>;
 	findByNpsId(npsId: string, options?: FindOptions<INpsVote>): FindCursor<INpsVote>;
 	save(vote: Omit<INpsVote, '_id' | '_updatedAt'>): Promise<UpdateResult>;
-	updateVotesToSent(voteIds: string[]): Promise<UpdateResult>;
+	updateVotesToSent(voteIds: string[]): Promise<UpdateResult | Document>;
 	updateOldSendingToNewByNpsId(npsId: string): Promise<UpdateResult | Document>;
 }

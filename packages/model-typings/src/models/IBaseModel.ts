@@ -14,7 +14,6 @@ import type {
 	InsertOneResult,
 	ModifyResult,
 	ObjectId,
-	OptionalId,
 	UpdateFilter,
 	UpdateOptions,
 	UpdateResult,
@@ -74,7 +73,7 @@ export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 
 	find(query?: Filter<T>): FindCursor<ResultFields<T, C>>;
 	find<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindCursor<P>;
-	find<P>(query: Filter<T> | undefined, options?: any): FindCursor<WithId<P>> | FindCursor<WithId<T>>;
+	find<P>(query: Filter<T> | undefined, options?: FindOptions<P extends T ? T : P>): FindCursor<WithId<P>> | FindCursor<WithId<T>>;
 
 	findPaginated(query?: Filter<T>): FindPaginated<FindCursor<ResultFields<T, C>>>;
 	findPaginated<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<P>>;

@@ -4,7 +4,7 @@ import type { INps, NPSStatus } from '@rocket.chat/core-typings';
 import type { IBaseModel } from './IBaseModel';
 
 export interface INpsModel extends IBaseModel<INps> {
-	getOpenExpiredAndStartSending(): Promise<INps | undefined>;
+	getOpenExpiredAndStartSending(): Promise<INps | null>;
 	getOpenExpiredAlreadySending(): Promise<INps | null>;
 	updateStatusById(_id: INps['_id'], status: INps['status']): Promise<UpdateResult>;
 	save({

@@ -483,14 +483,15 @@ API.v1.addRoute(
 			const { offset, count }: { offset: number; count: number } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const ourQuery = { ...query, t: 'd' };
-
-			const { cursor, totalCount: total } = await Rooms.findPaginated(ourQuery, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
+			const { cursor, totalCount: total } = await Rooms.findPaginated(
+				{ ...query, t: 'd' },
+				{
+					sort: sort || { name: 1 },
+					skip: offset,
+					limit: count,
+					projection: fields,
+				},
+			);
 
 			const rooms = await cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray();
 

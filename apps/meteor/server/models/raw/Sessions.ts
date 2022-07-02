@@ -1549,7 +1549,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 	}: {
 		sessionId: ISession['sessionId'];
 		userId: IUser['_id'];
-	}): Promise<UpdateWriteOpResult> {
+	}): Promise<UpdateResult | Document> {
 		const query = {
 			sessionId,
 			userId,
@@ -1577,7 +1577,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		loginToken: ISession['loginToken'];
 		userId: IUser['_id'];
 		logoutBy?: IUser['_id'];
-	}): Promise<UpdateWriteOpResult> {
+	}): Promise<UpdateResult | Document> {
 		const logoutAt = new Date();
 		const updateObj = {
 			$set: {

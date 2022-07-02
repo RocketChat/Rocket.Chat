@@ -1,4 +1,5 @@
-import { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { FindOptions } from 'mongodb';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Messages, Users } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -11,7 +12,7 @@ export async function findMentionedMessages({
 }: {
 	uid: string;
 	roomId: string;
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: FindOptions<IMessage>['sort'] };
 }): Promise<{
 	messages: IMessage[];
 	count: number;
@@ -50,7 +51,7 @@ export async function findStarredMessages({
 }: {
 	uid: string;
 	roomId: string;
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: FindOptions<IMessage>['sort'] };
 }): Promise<{
 	messages: IMessage[];
 	count: number;
@@ -117,7 +118,7 @@ export async function findSnippetedMessages({
 }: {
 	uid: string;
 	roomId: string;
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: FindOptions<IMessage>['sort'] };
 }): Promise<{
 	messages: IMessage[];
 	count: number;
@@ -158,7 +159,7 @@ export async function findDiscussionsFromRoom({
 	uid: string;
 	roomId: string;
 	text: string;
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: FindOptions<IMessage>['sort'] };
 }): Promise<{
 	messages: IMessage[];
 	count: number;

@@ -129,7 +129,7 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		direction?: IVoipRoom['direction'];
 		roomName?: string;
 		options?: {
-			sort?: Record<string, unknown>;
+			sort?: FindOptions<IVoipRoom>['sort'];
 			count?: number;
 			fields?: Record<string, unknown>;
 			offset?: number;
@@ -137,16 +137,12 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 	}): FindPaginated<FindCursor<IVoipRoom>> {
 		const query: Filter<IVoipRoom> = {
 			t: 'v',
+			...(visitorId && visitorId !== 'undefined' && { 'v._id': visitorId }),
+			...(agents && { $or: [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }] }),
 		};
 
-		if (agents) {
-			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
-		}
 		if (open !== undefined) {
 			query.open = { $exists: open };
-		}
-		if (visitorId && visitorId !== 'undefined') {
-			query['v._id'] = visitorId;
 		}
 		if (createdAt && Object.keys(createdAt).length) {
 			query.ts = {};

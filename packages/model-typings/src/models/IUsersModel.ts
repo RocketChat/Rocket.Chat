@@ -55,7 +55,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		exceptions: any,
 		conditions: any,
 		options: any,
-	): Cursor<T>;
+	): FindCursor<T>;
 
 	countAllAgentsStatus({ departmentId }: { departmentId?: any }): any;
 
@@ -100,7 +100,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	resetTOTPById(userId: any): any;
 
 	unsetLoginTokens(userId: any): any;
-	unsetOneLoginToken(userId: IUser['_id'], token: string): Promise<UpdateWriteOpResult>;
+	unsetOneLoginToken(userId: IUser['_id'], token: string): Promise<UpdateResult>;
 
 	removeNonPATLoginTokensExcept(userId: any, authToken: any): any;
 

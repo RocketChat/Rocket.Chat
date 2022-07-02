@@ -15,12 +15,14 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 		return [{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 }, unique: true }];
 	}
 
-	findNotSentByNpsId(npsId: string, options?: FindOptions<INpsVote>): FindCursor<INpsVote> {
+	findNotSentByNpsId(npsId: string, options?: Omit<FindOptions<INpsVote>, 'sort' | 'limit'>): FindCursor<INpsVote> {
 		const query = {
 			npsId,
 			status: INpsVoteStatus.NEW,
 		};
-		return this.col.find(query, options).sort({ ts: 1 }).limit(1000);
+		const cursor = options ? this.find(query, options) : this.find(query);
+
+		return cursor.sort({ ts: 1 }).limit(1000);
 	}
 
 	findByNpsIdAndStatus(npsId: string, status: INpsVoteStatus, options?: FindOptions<INpsVote>): FindCursor<INpsVote> {
@@ -28,14 +30,20 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 			npsId,
 			status,
 		};
-		return this.col.find(query, options);
+		if (options) {
+			return this.find(query, options);
+		}
+		return this.find(query);
 	}
 
 	findByNpsId(npsId: string, options?: FindOptions<INpsVote>): FindCursor<INpsVote> {
 		const query = {
 			npsId,
 		};
-		return this.col.find(query, options);
+		if (options) {
+			return this.find(query, options);
+		}
+		return this.find(query);
 	}
 
 	save(vote: Omit<INpsVote, '_id' | '_updatedAt'>): Promise<UpdateResult> {
@@ -55,7 +63,7 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 			},
 		};
 
-		return this.col.updateOne(query, update, { upsert: true });
+		return this.updateOne(query, update, { upsert: true });
 	}
 
 	updateVotesToSent(voteIds: string[]): Promise<UpdateResult | Document> {
@@ -67,7 +75,7 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 				status: INpsVoteStatus.SENT,
 			},
 		};
-		return this.col.updateMany(query, update);
+		return this.updateMany(query, update);
 	}
 
 	updateOldSendingToNewByNpsId(npsId: string): Promise<UpdateResult | Document> {
@@ -87,6 +95,6 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 				sentAt: 1 as 1, // why do you do this to me TypeScript?
 			},
 		};
-		return this.col.updateMany(query, update);
+		return this.updateMany(query, update);
 	}
 }
