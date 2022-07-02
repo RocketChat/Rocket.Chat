@@ -19,7 +19,7 @@ const InviteUsers = (props: InviteUsersProps): ReactElement => {
 			await sendInvites(getEmails(text));
 			dispatchToastMessage({ type: 'success', message: t('Emails_sent_successfully!') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error.message });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 		}
 	};
 

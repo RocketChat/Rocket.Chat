@@ -71,7 +71,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'licenses.isEnterprise',
-	{ authRequired: true },
+	{ authOrAnonRequired: true },
 	{
 		get() {
 			const isEnterpriseEdtion = isEnterprise();
