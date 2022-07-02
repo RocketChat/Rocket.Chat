@@ -5,12 +5,13 @@ import type {
 	Collection,
 	FindCursor,
 	Db,
+	Document,
 	Filter,
 	FindOptions,
 	UpdateResult,
 	IndexDescription,
 	DeleteResult,
-	UpdateQuery,
+	UpdateFilter,
 } from 'mongodb';
 import { getCollectionName, Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -94,7 +95,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			_id: 'Livechat_guest_count',
 		};
 
-		const update: UpdateQuery<ISetting> = {
+		const update: UpdateFilter<ISetting> = {
 			$inc: {
 				// @ts-expect-error looks like the typings of ISetting.value conflict with this type of update
 				value: 1,
@@ -223,7 +224,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.updateOne(query, update);
 	}
 
-	updateById(_id: string, update: UpdateQuery<ILivechatVisitor>): Promise<Document | UpdateResult> {
+	updateById(_id: string, update: UpdateFilter<ILivechatVisitor>): Promise<Document | UpdateResult> {
 		return this.updateOne({ _id }, update);
 	}
 
@@ -231,8 +232,8 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		_id: string,
 		data: { name?: string; username?: string; email?: string; phone?: string; livechatData: { [k: string]: any } },
 	): Promise<UpdateResult | Document | boolean> {
-		const setData: DeepWriteable<UpdateQuery<ILivechatVisitor>['$set']> = {};
-		const unsetData: DeepWriteable<UpdateQuery<ILivechatVisitor>['$unset']> = {};
+		const setData: DeepWriteable<UpdateFilter<ILivechatVisitor>['$set']> = {};
+		const unsetData: DeepWriteable<UpdateFilter<ILivechatVisitor>['$unset']> = {};
 
 		if (data.name) {
 			if (data.name?.trim()) {
@@ -269,9 +270,9 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			});
 		}
 
-		const update: UpdateQuery<ILivechatVisitor> = {
-			...(Object.keys(setData).length && { $set: setData as UpdateQuery<ILivechatVisitor>['$set'] }),
-			...(Object.keys(unsetData).length && { $unset: unsetData as UpdateQuery<ILivechatVisitor>['$unset'] }),
+		const update: UpdateFilter<ILivechatVisitor> = {
+			...(Object.keys(setData).length && { $set: setData as UpdateFilter<ILivechatVisitor>['$set'] }),
+			...(Object.keys(unsetData).length && { $unset: unsetData as UpdateFilter<ILivechatVisitor>['$unset'] }),
 		};
 
 		if (!Object.keys(update).length) {
@@ -290,7 +291,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
-		const update: DeepWriteable<UpdateQuery<ILivechatVisitor>> = {
+		const update: DeepWriteable<UpdateFilter<ILivechatVisitor>> = {
 			$addToSet: {},
 		};
 
@@ -316,7 +317,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			return Promise.resolve();
 		}
 
-		return this.updateOne({ _id }, update as UpdateQuery<ILivechatVisitor>);
+		return this.updateOne({ _id }, update as UpdateFilter<ILivechatVisitor>);
 	}
 
 	removeContactManagerByUsername(manager: string): Promise<Document | UpdateResult> {

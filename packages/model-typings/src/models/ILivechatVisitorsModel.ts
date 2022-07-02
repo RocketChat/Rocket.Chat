@@ -21,7 +21,7 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 		_emailOrPhoneOrNameOrUsername: string,
 		options: FindOptions<ILivechatVisitor>,
 	): FindCursor<ILivechatVisitor>;
-	removeContactManagerByUsername(manager: string): Promise<UpdateResult>;
+	removeContactManagerByUsername(manager: string): Promise<UpdateResult | Document>;
 
 	updateLivechatDataByToken(token: string, key: string, value: unknown, overwrite: boolean): Promise<UpdateResult | Document | boolean>;
 

@@ -88,11 +88,11 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 		instanceId: string,
 		sessions: string[],
 		data?: Record<string, any>,
-	): Promise<UpdateResult>;
+	): Promise<UpdateResult | Document>;
 
-	updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data?: Record<string, any>): Promise<UpdateResult>;
+	updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data?: Record<string, any>): Promise<UpdateResult | Document>;
 
-	logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult>;
+	logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult | Document>;
 
 	createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteResult | undefined>;
 }

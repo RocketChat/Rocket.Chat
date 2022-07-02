@@ -16,7 +16,7 @@ export class NpsRaw extends BaseRaw<INps> implements INpsModel {
 	}
 
 	// get expired surveys still in progress
-	async getOpenExpiredAndStartSending(): Promise<INps | undefined> {
+	async getOpenExpiredAndStartSending(): Promise<INps | null> {
 		const today = new Date();
 
 		const query = {

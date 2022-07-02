@@ -1,14 +1,4 @@
-import type {
-	Cursor,
-	UpdateOneOptions,
-	UpdateQuery,
-	UpdateWriteOpResult,
-	IndexSpecification,
-	Collection,
-	Db,
-	FindOneOptions,
-	FilterQuery,
-} from 'mongodb';
+import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, IndexDescription, Collection, Db, FindOptions } from 'mongodb';
 import type {
 	VideoConference,
 	IGroupVideoConference,
@@ -28,7 +18,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		super(db, getCollectionName('video_conference'), trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { rid: 1, createdAt: 1 }, unique: false },
 			{ key: { type: 1, status: 1 }, unique: false },
@@ -38,7 +28,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public async findAllByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
-	): Promise<Cursor<VideoConference>> {
+	): Promise<FindCursor<VideoConference>> {
 		return this.find(
 			{ rid },
 			{
@@ -52,7 +42,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
-	public async findAllLongRunning(minDate: Date): Promise<Cursor<Pick<VideoConference, '_id'>>> {
+	public async findAllLongRunning(minDate: Date): Promise<FindCursor<Pick<VideoConference, '_id'>>> {
 		return this.find(
 			{
 				createdAt: {
@@ -73,13 +63,13 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public async countByTypeAndStatus(
 		type: VideoConference['type'],
 		status: VideoConferenceStatus,
-		options: FindOneOptions<VideoConference>,
+		options: FindOptions<VideoConference>,
 	): Promise<number> {
 		return this.find(
 			{
 				type,
 				status,
-			} as FilterQuery<VideoConference>,
+			},
 			options,
 		).count();
 	}
@@ -139,9 +129,9 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	public updateOneById(
 		_id: string,
-		update: UpdateQuery<VideoConference> | Partial<VideoConference>,
-		options?: UpdateOneOptions,
-	): Promise<UpdateWriteOpResult> {
+		update: UpdateFilter<VideoConference> | Partial<VideoConference>,
+		options?: UpdateOptions,
+	): Promise<UpdateResult> {
 		return this.updateOne({ _id }, update, options);
 	}
 

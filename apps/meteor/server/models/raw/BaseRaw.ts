@@ -10,7 +10,6 @@ import {
 	InsertOneOptions,
 	ModifyResult,
 	ObjectID,
-	OptionalId,
 	OptionalUnlessRequiredId,
 	UpdateFilter,
 	WithId,
@@ -25,7 +24,7 @@ import {
 	DeleteOptions,
 } from 'mongodb';
 import type { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IBaseModel, DefaultFields, ResultFields, FindPaginated } from '@rocket.chat/model-typings';
+import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
 
 import { setUpdatedAt } from '../../../app/models/server/lib/setUpdatedAt';
 
@@ -194,7 +193,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		return this.col.updateMany(filter, update);
 	}
 
-	insertMany(docs: OptionalId<T>[], options?: BulkWriteOptions): Promise<InsertManyResult<T>> {
+	insertMany(docs: InsertionModel<T>[], options?: BulkWriteOptions): Promise<InsertManyResult<T>> {
 		docs = docs.map((doc) => {
 			if (!doc._id || typeof doc._id !== 'string') {
 				const oid = new ObjectID();
@@ -208,7 +207,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		return this.col.insertMany(docs as unknown as Array<OptionalUnlessRequiredId<T>>, options || {});
 	}
 
-	insertOne(doc: OptionalId<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>> {
+	insertOne(doc: InsertionModel<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>> {
 		if (!doc._id || typeof doc._id !== 'string') {
 			const oid = new ObjectID();
 			doc = { _id: oid.toHexString(), ...doc };
@@ -351,7 +350,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		return trash.findOne(query);
 	}
 
-	private setUpdatedAt(record: UpdateFilter<T> | OptionalUnlessRequiredId<T>): void {
+	private setUpdatedAt(record: UpdateFilter<T> | InsertionModel<T>): void {
 		if (this.preventSetUpdatedAt) {
 			return;
 		}

@@ -1,4 +1,4 @@
-import type { SortOptionObject, SchemaMember } from 'mongodb';
+import type { FindOptions, SchemaMember } from 'mongodb';
 import type { IStats } from '@rocket.chat/core-typings';
 import { Statistics } from '@rocket.chat/models';
 
@@ -10,7 +10,7 @@ type GetStatisticsParams = {
 	pagination: {
 		offset: number;
 		count?: number;
-		sort?: SortOptionObject<IStats>;
+		sort?: FindOptions<IStats>['sort'];
 		fields?: SchemaMember<IStats, number | boolean>;
 	};
 };

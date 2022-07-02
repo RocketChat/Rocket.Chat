@@ -37,7 +37,7 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 			...(fileType && fileType !== 'all' && { typeGroup: fileType }),
 		};
 
-		const fileOptions = {
+		return this.find(fileQuery, {
 			limit,
 			sort: {
 				uploadedAt: -1,
@@ -53,9 +53,7 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 				uploadedAt: 1,
 				typeGroup: 1,
 			},
-		};
-
-		return this.find(fileQuery, fileOptions);
+		});
 	}
 
 	async insertFileInit(userId: string, store: string, file: { name: string }, extra: object): Promise<InsertOneResult<WithId<IUpload>>> {
@@ -72,7 +70,7 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 		};
 
 		fillTypeGroup(fileData);
-		return this.insert(fileData);
+		return this.insertOne(fileData);
 	}
 
 	async updateFileComplete(fileId: string, userId: string, file: object): Promise<UpdateResult | undefined> {

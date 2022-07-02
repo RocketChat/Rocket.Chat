@@ -85,9 +85,9 @@ export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 
 	updateMany(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<Document | UpdateResult>;
 
-	insertMany(docs: OptionalId<T>[], options?: BulkWriteOptions): Promise<InsertManyResult<T>>;
+	insertMany(docs: InsertionModel<T>[], options?: BulkWriteOptions): Promise<InsertManyResult<T>>;
 
-	insertOne(doc: OptionalId<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>>;
+	insertOne(doc: InsertionModel<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>>;
 
 	removeById(_id: string): Promise<DeleteResult>;
 

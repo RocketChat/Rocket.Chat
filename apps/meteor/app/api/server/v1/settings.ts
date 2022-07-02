@@ -22,7 +22,7 @@ async function fetchSettings(
 	count: Parameters<typeof Settings.find>[1]['limit'],
 	fields: Parameters<typeof Settings.find>[1]['projection'],
 ): Promise<{ settings: ISetting[]; totalCount: number }> {
-	const { cursor, totalCount } = await Settings.findPaginated(query, {
+	const { cursor, totalCount } = await Settings.findPaginated(query || {}, {
 		sort: sort || { _id: 1 },
 		skip: offset,
 		limit: count,
