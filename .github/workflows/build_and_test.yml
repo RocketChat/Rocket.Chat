@@ -72,6 +72,11 @@ jobs:
           echo "github.event_name: ${{ github.event_name }}"
           cat $GITHUB_EVENT_PATH
 
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 4
+
       - uses: actions/checkout@v3
 
       - name: Use Node.js 14.18.3
