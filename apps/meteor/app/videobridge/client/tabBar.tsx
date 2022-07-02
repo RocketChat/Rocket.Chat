@@ -72,7 +72,7 @@ addAction('start-call', ({ room }) => {
 		try {
 			await VideoConfManager.loadCapabilities();
 			dispatchPopup({ rid: room._id });
-		} catch (error) {
+		} catch (error: any) {
 			dispatchWarning(error.error);
 		}
 	});

@@ -990,6 +990,11 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	/**
+	 * @param {string} _id
+	 * @param {string?} messageId
+	 * @returns {Promise<void>}
+	 */
 	resetLastMessageById(_id, messageId = undefined) {
 		const query = { _id };
 		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
