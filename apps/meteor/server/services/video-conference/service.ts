@@ -602,6 +602,21 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const messageId = await this.createDirectCallMessage(call, user);
 		VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
+		// After 40 seconds if the status is still "calling", we cancel the call automatically.
+		setTimeout(async () => {
+			try {
+				const call = await VideoConferenceModel.findOneById<Pick<VideoConference, '_id' | 'status'>>(callId, { projection: { status: 1 } });
+
+				if (call?.status !== VideoConferenceStatus.CALLING) {
+					return;
+				}
+
+				await this.cancel(user._id, callId);
+			} catch {
+				// Ignore errors on this timeout
+			}
+		}, 40000);
+
 		return {
 			type: 'direct',
 			callId,
