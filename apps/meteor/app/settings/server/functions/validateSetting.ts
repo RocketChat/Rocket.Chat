@@ -37,8 +37,9 @@ export const validateSetting = <T extends ISetting>(_id: T['_id'], type: T['type
 			}
 			break;
 		case 'select':
+		case 'lookup':
 			if (typeof value !== 'string' && typeof value !== 'number') {
-				throw new Error(`Setting ${_id} is of type select but got ${typeof value}`);
+				throw new Error(`Setting ${_id} is of type ${type} but got ${typeof value}`);
 			}
 			break;
 		case 'date':

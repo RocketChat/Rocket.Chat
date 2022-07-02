@@ -166,7 +166,7 @@ const AppsProvider: FC = ({ children }) => {
 		} catch (e) {
 			dispatchMarketplaceApps({
 				type: 'failure',
-				error: e,
+				error: e instanceof Error ? e : new Error(String(e)),
 				reload: fetch,
 			});
 			marketplaceError = true;
@@ -183,7 +183,7 @@ const AppsProvider: FC = ({ children }) => {
 		} catch (e) {
 			dispatchInstalledApps({
 				type: 'failure',
-				error: e,
+				error: e instanceof Error ? e : new Error(String(e)),
 				reload: fetch,
 			});
 			installedAppsError = true;
@@ -252,14 +252,14 @@ const AppsProvider: FC = ({ children }) => {
 
 			try {
 				installedApp = await Apps.getApp(appId);
-			} catch (error) {
+			} catch (error: any) {
 				handleAPIError(error);
 				throw error;
 			}
 
 			try {
 				marketplaceApp = await Apps.getAppFromMarketplace(appId, installedApp.version);
-			} catch (error) {
+			} catch (error: any) {
 				handleAPIError(error);
 			}
 

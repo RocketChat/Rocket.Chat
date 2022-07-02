@@ -91,7 +91,7 @@ const ServerContextMock = ({
 
 				return {
 					match: (method: string, path: string): boolean => _method === method && pathRegexp.test(path[0] === '/' ? path : `/v1/${path}`),
-					handler,
+					handler: handler as any,
 				};
 			},
 		);
@@ -99,7 +99,7 @@ const ServerContextMock = ({
 		const _callEndpoint: ServerContextValue['callEndpoint'] = async <TMethod extends Method, TPath extends PathFor<TMethod>>(
 			method: TMethod,
 			path: TPath,
-			params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
+			params: OperationParams<TMethod, MatchPathPattern<TPath>>,
 		): Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>> => {
 			const mockedEndpoint = mockedEndpoints.find((endpoint) => endpoint.match(method, path));
 			const handler = mockedEndpoint?.handler;

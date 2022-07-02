@@ -72,6 +72,11 @@ jobs:
           echo "github.event_name: ${{ github.event_name }}"
           cat $GITHUB_EVENT_PATH
 
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 4
+
       - uses: actions/checkout@v3
 
       - name: Use Node.js 14.18.3
@@ -220,7 +225,7 @@ jobs:
     strategy:
       matrix:
         node-version: ['14.18.3']
-        mongodb-version: ['3.6', '4.0', '4.2', '4.4', '5.0']
+        mongodb-version: ['4.2', '4.4', '5.0']
 
     steps:
       - name: Launch MongoDB
@@ -379,13 +384,13 @@ jobs:
     strategy:
       matrix:
         node-version: ['14.18.3']
-        mongodb-version: ['4.4']
+        mongodb-version-ee: ['4.4']
 
     steps:
       - name: Launch MongoDB
         uses: wbari/start-mongoDB@v0.2
         with:
-          mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
+          mongoDBVersion: ${{ matrix.mongodb-version-ee }} --replSet=rs0
 
       - name: Launch NATS
         run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
@@ -753,7 +758,7 @@ jobs:
           aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"14.18.3\", \"compatibleMongoVersions\": [\"3.6\", \"4.0\", \"4.2\", \"4.4\", \"5.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"14.18.3\", \"compatibleMongoVersions\": [\"4.2\", \"4.4\", \"5.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there

@@ -1,5 +1,5 @@
 import type { FindOneOptions, Cursor, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
-import type { ISubscription, IRole, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { ISubscription, IRole, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -9,6 +9,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findOneByRoomIdAndUserId(rid: string, uid: string, options?: FindOneOptions<ISubscription>): Promise<ISubscription | null>;
 
 	findByUserIdAndRoomIds(userId: string, roomIds: Array<string>, options?: FindOneOptions<ISubscription>): Cursor<ISubscription>;
+
+	findByRoomId(roomId: string, options?: FindOneOptions<ISubscription>): Cursor<ISubscription>;
 
 	findByRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOneOptions<ISubscription>): Cursor<ISubscription>;
 
@@ -50,4 +52,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateWriteOpResult>;
 
 	isUserInRoleScope(uid: IUser['_id'], rid?: IRoom['_id']): Promise<boolean>;
+
+	updateAllRoomTypesByRoomId(roomId: IRoom['_id'], roomType: RoomType): Promise<void>;
+
+	updateAllRoomNamesByRoomId(roomId: IRoom['_id'], name: string, fname: string): Promise<void>;
 }

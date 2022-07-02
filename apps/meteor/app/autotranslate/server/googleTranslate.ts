@@ -94,7 +94,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 			result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
 				params,
 			});
-		} catch (e) {
+		} catch (e: any) {
 			// Fallback: Get the English names of the target languages
 			if (
 				e.response &&
