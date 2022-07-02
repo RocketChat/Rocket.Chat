@@ -122,7 +122,7 @@ export type UsersEndpoints = {
 	};
 	'/v1/users.autocomplete': {
 		GET: (params: UsersAutocompleteParamsGET) => {
-			items: Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>[];
+			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
 		};
 	};
 

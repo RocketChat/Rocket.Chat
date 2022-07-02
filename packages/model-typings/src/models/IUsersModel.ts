@@ -50,12 +50,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findAllResumeTokensByUserId(userId: any): any;
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions<T>(
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions<T = IUser>(
 		termRegex: any,
 		exceptions: any,
 		conditions: any,
 		options: any,
-	): Cursor<IUser & T>;
+	): Cursor<T>;
 
 	countAllAgentsStatus({ departmentId }: { departmentId?: any }): any;
 
