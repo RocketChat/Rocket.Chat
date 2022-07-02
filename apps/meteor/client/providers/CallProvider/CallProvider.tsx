@@ -43,7 +43,7 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
 
 const startRingback = (user: IUser): void => {
-	const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
+	const audioVolume = getUserPreference(user, 'notificationsSoundVolume', 100) as number;
 	CustomSounds.play('telephone', {
 		volume: Number((audioVolume / 100).toPrecision(2)),
 		loop: true,

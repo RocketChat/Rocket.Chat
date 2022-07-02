@@ -1,5 +1,5 @@
 import { App } from '@rocket.chat/core-typings';
-import { useEndpoint, EndpointFunction } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useContext } from 'react';
 
 import { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
@@ -29,7 +29,7 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 	const getApis = useEndpoint('GET', `/apps/${appId}/apis`);
 
 	// TODO: remove EndpointFunction<'GET', 'apps/:id'>
-	const getBundledIn = useEndpoint('GET', `/apps/${appId}`) as EndpointFunction<'GET', '/apps/:id'>;
+	const getBundledIn = useEndpoint('GET', `/apps/${appId}`) as any;
 
 	useEffect(() => {
 		const apps: App[] = [];
@@ -70,7 +70,7 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 							update: 'true',
 							appVersion: appId,
 					  })
-							.then(({ app }) => {
+							.then(({ app }: any) => {
 								appResult.tosLink = app.tosLink;
 								appResult.privacyLink = app.privacyLink;
 								return getBundledInApp(app);
