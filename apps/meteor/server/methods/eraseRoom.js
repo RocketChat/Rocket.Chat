@@ -26,6 +26,12 @@ Meteor.methods({
 			});
 		}
 
+		if (room.federated) {
+			throw new Meteor.Error('error-cannot-delete-federated-room', 'Cannot delete federated room', {
+				method: 'eraseRoom',
+			});
+		}
+
 		if (
 			!roomCoordinator
 				.getRoomDirectives(room.t)

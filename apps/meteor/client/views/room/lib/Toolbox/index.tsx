@@ -21,18 +21,20 @@ type OptionRendererProps = ComponentProps<typeof Option>;
 export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
 
 export type ToolboxActionConfig = {
-	id: string;
-	icon: string;
-	title: TranslationKey;
-	anonymous?: boolean;
-	renderAction?: ActionRenderer;
-	full?: true;
-	renderOption?: OptionRenderer;
-	order?: number;
-	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team' | 'voip'>;
-	hotkey?: string;
-	action?: (e?: MouseEvent<HTMLElement>) => void;
-	template?: string | FC | LazyExoticComponent<FC<{ rid: string; tabBar: any }>>;
+	'id': string;
+	'icon': string;
+	'title': TranslationKey;
+	'anonymous'?: boolean;
+	'data-tooltip'?: string;
+	'disabled'?: boolean;
+	'renderAction'?: ActionRenderer;
+	'full'?: true;
+	'renderOption'?: OptionRenderer;
+	'order'?: number;
+	'groups': Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team' | 'voip'>;
+	'hotkey'?: string;
+	'action'?: (e?: MouseEvent<HTMLElement>) => void;
+	'template'?: string | FC | LazyExoticComponent<FC<{ rid: string; tabBar: any }>>;
 };
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;
