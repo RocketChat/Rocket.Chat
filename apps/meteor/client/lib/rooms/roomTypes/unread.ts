@@ -8,6 +8,6 @@ export const UnreadRoomType = getUnreadRoomType(roomCoordinator);
 
 roomCoordinator.add(UnreadRoomType, {
 	condition(): boolean {
-		return getUserPreference(Meteor.userId(), 'sidebarShowUnread');
+		return getUserPreference(Meteor.userId(), 'sidebarShowUnread') as boolean;
 	},
 });

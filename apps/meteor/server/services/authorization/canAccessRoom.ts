@@ -7,7 +7,7 @@ import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomVoip } from './canAccessRoomVoip';
 
-async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
+async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
 		// TODO: it was using cached version from /app/settings/server/raw.js
 		const anon = await Settings.getValueById('Accounts_AllowAnonymousRead');
@@ -56,10 +56,16 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		if (!room?._id || !user?._id) {
 			return false;
 		}
-		if (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) {
+
+		if (!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id))) {
+			return false;
+		}
+
+		if (await Authorization.hasPermission(user._id, 'view-joined-room')) {
 			return true;
 		}
-		return false;
+
+		return Authorization.hasPermission(user._id, `view-${room.t}-room`);
 	},
 
 	async function _validateAccessToDiscussionsParentRoom(room, user): Promise<boolean> {

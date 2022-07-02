@@ -67,6 +67,20 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		return this.updateOne(query, update);
 	}
 
+	async incrementValueById(_id: ISetting['_id'], value = 1): Promise<Document | UpdateResult> {
+		return this.updateOne(
+			{
+				blocked: { $ne: true },
+				_id,
+			},
+			{
+				$inc: {
+					value,
+				},
+			} as unknown as UpdateFilter<ISetting>,
+		);
+	}
+
 	updateOptionsById<T extends ISetting = ISetting>(
 		_id: ISetting['_id'],
 		options: UpdateFilter<T>['$set'],

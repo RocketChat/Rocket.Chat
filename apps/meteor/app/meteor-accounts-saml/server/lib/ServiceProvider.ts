@@ -95,7 +95,7 @@ export class SAMLServiceProvider {
 
 				return callback(null, target);
 			} catch (error) {
-				return callback(error);
+				return callback(error instanceof Error ? error : String(error));
 			}
 		});
 	}
@@ -154,7 +154,7 @@ export class SAMLServiceProvider {
 				}
 				callback(null, target);
 			} catch (error) {
-				callback(error);
+				callback(error instanceof Error ? error : String(error));
 			}
 		});
 	}

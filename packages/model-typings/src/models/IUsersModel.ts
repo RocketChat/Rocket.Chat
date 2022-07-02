@@ -125,4 +125,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findActiveUsersEmail2faEnable(options: any): any;
 
 	findActiveByIdsOrUsernames(userIds: string[], options?: any): FindCursor<IUser>;
+
+	setAsFederated(userId: string): any;
 }

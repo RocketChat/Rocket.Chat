@@ -701,7 +701,24 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			roles: member.roles ? member.roles : [],
 		};
 
-		await TeamMember.updateOneByUserIdAndTeamId(member.userId, teamId, memberUpdate);
+		const team = await Team.findOneById(teamId);
+
+		if (!team) {
+			throw new Error('invalid-team');
+		}
+
+		await Promise.all([
+			TeamMember.updateOneByUserIdAndTeamId(member.userId, teamId, memberUpdate),
+			Subscriptions.updateOne(
+				{
+					'rid': team?.roomId,
+					'u._id': member.userId,
+				},
+				{
+					$set: memberUpdate,
+				},
+			),
+		]);
 	}
 
 	async removeMember(teamId: string, userId: string): Promise<void> {

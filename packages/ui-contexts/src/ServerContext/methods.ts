@@ -76,8 +76,6 @@ export interface ServerMethods {
 	'insertOrUpdateSound': (args: { previousName?: string; name?: string; _id?: string; extension: string }) => string;
 	'insertOrUpdateUserStatus': (...args: any[]) => any;
 	'instances/get': (...args: any[]) => any;
-	'jitsi:generateAccessToken': (...args: any[]) => any;
-	'jitsi:updateTimeout': (...args: any[]) => any;
 	'joinRoom': JoinRoomMethod;
 	'leaveRoom': (...args: any[]) => any;
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;

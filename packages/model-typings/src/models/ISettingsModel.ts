@@ -14,6 +14,8 @@ export interface ISettingsModel extends IBaseModel<ISetting> {
 
 	updateValueById<T extends ISetting['value'] = ISetting['value']>(_id: string, value: T): Promise<Document | UpdateResult>;
 
+	incrementValueById(_id: ISetting['_id'], value?: number): Promise<Document | UpdateResult>;
+
 	updateOptionsById<T extends ISetting = ISetting>(
 		_id: ISetting['_id'],
 		options: UpdateFilter<T>['$set'],

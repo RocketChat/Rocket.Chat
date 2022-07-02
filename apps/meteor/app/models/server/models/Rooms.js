@@ -51,20 +51,6 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	setJitsiTimeout(_id, time) {
-		const query = {
-			_id,
-		};
-
-		const update = {
-			$set: {
-				jitsiTimeout: time,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setCallStatus(_id, status) {
 		const query = {
 			_id,
@@ -1004,6 +990,11 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	/**
+	 * @param {string} _id
+	 * @param {string?} messageId
+	 * @returns {Promise<void>}
+	 */
 	resetLastMessageById(_id, messageId = undefined) {
 		const query = { _id };
 		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);

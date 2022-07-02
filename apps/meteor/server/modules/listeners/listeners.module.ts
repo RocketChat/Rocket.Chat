@@ -1,9 +1,10 @@
 import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
-import { parser } from '@rocket.chat/message-parser';
+import { parse } from '@rocket.chat/message-parser';
 
 import { IServiceClass } from '../../sdk/types/ServiceClass';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings } from '../../sdk/index';
+import { settings } from '../../../app/settings/server/cached';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
@@ -36,7 +37,14 @@ export class ListenersModule {
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
 			if (!isMessageParserDisabled && message.msg) {
-				message.md = parser(message.msg);
+				message.md = parse(message.msg, {
+					colors: settings.get('HexColorPreview_Enabled'),
+					emoticons: true,
+					katex: {
+						dollarSyntax: settings.get('Katex_Dollar_Syntax'),
+						parenthesisSyntax: settings.get('Katex_Parenthesis_Syntax'),
+					},
+				});
 			}
 
 			notifications.notifyUserInThisInstance(uid, 'message', {

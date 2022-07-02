@@ -18,6 +18,7 @@ import { AppLivechatBridge } from './livechat';
 import { AppUploadBridge } from './uploads';
 import { UiInteractionBridge } from './uiInteraction';
 import { AppSchedulerBridge } from './scheduler';
+import { AppVideoConferenceBridge } from './videoConferences';
 
 export class RealAppBridges extends AppBridges {
 	constructor(orch) {
@@ -41,6 +42,7 @@ export class RealAppBridges extends AppBridges {
 		this._uiInteractionBridge = new UiInteractionBridge(orch);
 		this._schedulerBridge = new AppSchedulerBridge(orch);
 		this._cloudWorkspaceBridge = new AppCloudBridge(orch);
+		this._videoConfBridge = new AppVideoConferenceBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -113,5 +115,9 @@ export class RealAppBridges extends AppBridges {
 
 	getCloudWorkspaceBridge() {
 		return this._cloudWorkspaceBridge;
+	}
+
+	getVideoConferenceBridge() {
+		return this._videoConfBridge;
 	}
 }

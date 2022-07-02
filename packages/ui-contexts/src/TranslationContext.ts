@@ -5,8 +5,8 @@ import type keys from './en.json';
 export { keys };
 
 export type TranslationLanguage = {
-	name: string;
 	en: string;
+	name: string;
 	key: string;
 };
 

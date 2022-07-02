@@ -33,13 +33,15 @@ import {
 	Registerer,
 	SessionInviteOptions,
 	RequestPendingError,
+	Inviter,
 } from 'sip.js';
 import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
 import { toggleMediaStreamTracks } from './Helper';
+import LocalStream from './LocalStream';
 import { QueueAggregator } from './QueueAggregator';
-import Stream from './Stream';
+import RemoteStream from './RemoteStream';
 
 export class VoIPUser extends Emitter<VoipEvents> {
 	state: IState = {
@@ -47,7 +49,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		enableVideo: false,
 	};
 
-	private remoteStream: Stream | undefined;
+	private remoteStream: RemoteStream | undefined;
 
 	userAgentOptions: UserAgentOptions = {};
 
@@ -227,6 +229,10 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this._connectionState = 'WAITING_FOR_NETWORK';
 	}
 
+	get userConfig(): VoIPUserConfiguration {
+		return this.config;
+	}
+
 	get callState(): CallStates {
 		return this._callState;
 	}
@@ -236,7 +242,12 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	}
 
 	get callerInfo(): VoIpCallerInfo {
-		if (this.callState === 'IN_CALL' || this.callState === 'OFFER_RECEIVED' || this.callState === 'ON_HOLD') {
+		if (
+			this.callState === 'IN_CALL' ||
+			this.callState === 'OFFER_RECEIVED' ||
+			this.callState === 'ON_HOLD' ||
+			this.callState === 'OFFER_SENT'
+		) {
 			if (!this._callerInfo) {
 				throw new Error('[VoIPUser callerInfo] invalid state');
 			}
@@ -408,7 +419,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			throw new Error('Remote media stream is undefined.');
 		}
 
-		this.remoteStream = new Stream(remoteStream);
+		this.remoteStream = new RemoteStream(remoteStream);
 		const mediaElement = this.mediaStreamRendered?.remoteMediaElement;
 		if (mediaElement) {
 			this.remoteStream.init(mediaElement);
@@ -660,7 +671,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	}
 
 	private canEndOrHoldCall(): boolean {
-		return ['ANSWER_SENT', 'ANSWER_RECEIVED', 'IN_CALL', 'ON_HOLD'].includes(this._callState);
+		return ['ANSWER_SENT', 'ANSWER_RECEIVED', 'IN_CALL', 'ON_HOLD', 'OFFER_SENT'].includes(this._callState);
 	}
 
 	/* Helper routines for checking call actions END */
@@ -705,6 +716,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			case SessionState.Establishing:
 				if (this.session instanceof Invitation) {
 					return this.session.reject();
+				}
+				if (this.session instanceof Inviter) {
+					return this.session.cancel();
 				}
 				throw new Error('Session not instance of Invitation.');
 			case SessionState.Established:
@@ -999,8 +1013,56 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		});
 	}
 
+	async changeAudioInputDevice(constraints: MediaStreamConstraints): Promise<boolean> {
+		if (!this.session) {
+			console.warn('changeAudioInputDevice() : No session. Returning');
+			return false;
+		}
+		const newStream = await LocalStream.requestNewStream(constraints, this.session);
+		if (!newStream) {
+			console.warn('changeAudioInputDevice() : Unable to get local stream. Returning');
+			return false;
+		}
+		const { peerConnection } = this.session?.sessionDescriptionHandler as SessionDescriptionHandler;
+		if (!peerConnection) {
+			console.warn('changeAudioInputDevice() : No peer connection. Returning');
+			return false;
+		}
+		LocalStream.replaceTrack(peerConnection, newStream, 'audio');
+		return true;
+	}
+
+	// Commenting this as Video Configuration is not part of the scope for now
+	// async changeVideoInputDevice(selectedVideoDevices: IDevice): Promise<boolean> {
+	// 	if (!this.session) {
+	// 		console.warn('changeVideoInputDevice() : No session. Returning');
+	// 		return false;
+	// 	}
+	// 	if (!this.config.enableVideo || this.deviceManager.hasVideoInputDevice()) {
+	// 		console.warn('changeVideoInputDevice() : Unable change video device. Returning');
+	// 		return false;
+	// 	}
+	// 	this.deviceManager.changeVideoInputDevice(selectedVideoDevices);
+	// 	const newStream = await LocalStream.requestNewStream(this.deviceManager.getConstraints('video'), this.session);
+	// 	if (!newStream) {
+	// 		console.warn('changeVideoInputDevice() : Unable to get local stream. Returning');
+	// 		return false;
+	// 	}
+	// 	const { peerConnection } = this.session?.sessionDescriptionHandler as SessionDescriptionHandler;
+	// 	if (!peerConnection) {
+	// 		console.warn('changeVideoInputDevice() : No peer connection. Returning');
+	// 		return false;
+	// 	}
+	// 	LocalStream.replaceTrack(peerConnection, newStream, 'video');
+	// 	return true;
+	// }
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async makeCall(_callee: string, _mediaRenderer?: IMediaStreamRenderer): Promise<void> {
+
+	async makeCallURI(_callee: string, _mediaRenderer?: IMediaStreamRenderer): Promise<void> {
+		throw new Error('Not implemented');
+	}
+
+	async makeCall(_calleeNumber: string): Promise<void> {
 		throw new Error('Not implemented');
 	}
 }
