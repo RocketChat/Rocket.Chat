@@ -1008,7 +1008,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 
 	async getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]> {
 		return this.col
-			.aggregate([
+			.aggregate<ISession>([
 				{
 					$match: {
 						...matchBasedOnDate(start, end),
@@ -1488,7 +1488,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		{ year, month, day }: Partial<DestructuredDate> = {},
 		instanceId: string,
 		sessions: string[],
-		data = {},
+		data: Record<string, any> = {},
 	): Promise<UpdateResult | Document> {
 		const query = {
 			instanceId,
@@ -1506,7 +1506,10 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.updateMany(query, update);
 	}
 
-	async updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data = {}): Promise<UpdateResult | Document> {
+	async updateActiveSessionsByDate(
+		{ year, month, day }: DestructuredDate,
+		data: Record<string, any> = {},
+	): Promise<UpdateResult | Document> {
 		const update = {
 			$set: data,
 		};
@@ -1524,7 +1527,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		);
 	}
 
-	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult | Document> {
+	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult> {
 		const query = {
 			instanceId,
 			sessionId,

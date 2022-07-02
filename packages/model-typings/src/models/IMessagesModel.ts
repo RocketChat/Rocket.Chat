@@ -47,4 +47,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	addBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void>;
 
 	removeVideoConfJoinButton(_id: IMessage['_id']): Promise<void>;
+
+	countRoomsWithMessageType(type: IMessage['t'], options: AggregateOptions): Promise<number>;
 }

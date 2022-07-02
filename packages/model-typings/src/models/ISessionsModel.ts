@@ -1,4 +1,4 @@
-import type { BulkWriteResult, UpdateResult, FindCursor } from 'mongodb';
+import type { BulkWriteResult, Document, UpdateResult, FindCursor } from 'mongodb';
 import type {
 	ISession,
 	UserSessionAggregationResult,
@@ -119,20 +119,28 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 		params: Partial<DestructuredDate>,
 		instanceId: string,
 		sessions: string[],
-		data?: Record<string, any>,
+		data: Record<string, any>,
 	): Promise<UpdateResult | Document>;
 
-	updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data?: Record<string, any>): Promise<UpdateResult | Document>;
+	updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data: Record<string, any>): Promise<UpdateResult | Document>;
 
-	logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult | Document>;
-	logoutBySessionIdAndUserId({ sessionId, userId }: { sessionId: string; userId: string }): Promise<UpdateResult | Document>;
+	logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult>;
+
+	logoutBySessionIdAndUserId({
+		sessionId,
+		userId,
+	}: {
+		sessionId: ISession['sessionId'];
+		userId: IUser['_id'];
+	}): Promise<UpdateResult | Document>;
+
 	logoutByloginTokenAndUserId({
 		loginToken,
 		userId,
 		logoutBy,
 	}: {
-		loginToken: string;
-		userId: string;
+		loginToken: ISession['loginToken'];
+		userId: IUser['_id'];
 		logoutBy?: IUser['_id'];
 	}): Promise<UpdateResult | Document>;
 

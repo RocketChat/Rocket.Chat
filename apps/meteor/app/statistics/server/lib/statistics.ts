@@ -184,8 +184,8 @@ export const statistics = {
 
 		// Amount of chats placed on hold
 		statsPms.push(
-			MessagesRaw.col.distinct('rid', { t: 'omnichannel_placed_chat_on_hold' }).then((msgs) => {
-				statistics.chatsOnHold = msgs.length;
+			MessagesRaw.countRoomsWithMessageType('omnichannel_placed_chat_on_hold', { readPreference }).then((total) => {
+				statistics.chatsOnHold = total;
 			}),
 		);
 
@@ -194,12 +194,9 @@ export const statistics = {
 
 		// Amount of VoIP Calls
 		statsPms.push(
-			RoomsRaw.col
-				.find({ t: 'v' })
-				.count()
-				.then((count) => {
-					statistics.voipCalls = count;
-				}),
+			RoomsRaw.countByType('v').then((count) => {
+				statistics.voipCalls = count;
+			}),
 		);
 
 		// Amount of VoIP Extensions connected

@@ -116,7 +116,11 @@ export async function findDepartmentsToAutocomplete({
 	const { exceptions = [] } = selector;
 	let { conditions = {} } = selector;
 
-	const options = {
+	if (onlyMyDepartments) {
+		conditions = callbacks.run('livechat.applyDepartmentRestrictions', conditions, { userId: uid });
+	}
+
+	const items = await LivechatDepartment.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, {
 		projection: {
 			_id: 1,
 			name: 1,
@@ -124,18 +128,7 @@ export async function findDepartmentsToAutocomplete({
 		sort: {
 			name: 1,
 		},
-	};
-
-	if (onlyMyDepartments) {
-		conditions = callbacks.run('livechat.applyDepartmentRestrictions', conditions, { userId: uid });
-	}
-
-	const items = await LivechatDepartment.findByNameRegexWithExceptionsAndConditions(
-		selector.term,
-		exceptions,
-		conditions,
-		options,
-	).toArray();
+	}).toArray();
 	return {
 		items,
 	};

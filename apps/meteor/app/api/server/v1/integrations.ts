@@ -9,6 +9,7 @@ import {
 	isIntegrationsUpdateProps,
 } from '@rocket.chat/rest-typings';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+import type { Filter } from 'mongodb';
 
 import { hasAtLeastOnePermission } from '../../../authorization/server';
 import { API } from '../api';
@@ -94,7 +95,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 
-			const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query);
+			const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query) as Filter<IIntegration>;
 
 			const { cursor, totalCount: total } = await Integrations.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },

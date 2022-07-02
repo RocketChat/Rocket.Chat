@@ -76,4 +76,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByE2E(options: any): any;
 
 	findRoomsInsideTeams(autoJoin?: boolean): any;
+
+	countByType(t: IRoom['t']): Promise<number>;
 }

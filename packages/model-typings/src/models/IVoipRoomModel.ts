@@ -37,7 +37,7 @@ export interface IVoipRoomModel extends IBaseModel<IVoipRoom> {
 		direction?: IVoipRoom['direction'];
 		roomName?: string;
 		options?: {
-			sort?: Record<string, unknown>;
+			sort?: FindOptions<IVoipRoom>['sort'];
 			count?: number;
 			fields?: Record<string, unknown>;
 			offset?: number;

@@ -262,6 +262,32 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return queryResult?.total || 0;
 	}
 
+	async countRoomsWithMessageType(type: IMessage['t'], options: AggregateOptions): Promise<number> {
+		const queryResult = await this.col
+			.aggregate<{ _id: null; total: number }>(
+				[
+					{ $match: { t: type } },
+					{ $group: { _id: '$rid' } },
+					{
+						$group: {
+							_id: '$rid',
+							found: 1,
+						},
+					},
+					{
+						$group: {
+							_id: null,
+							total: { $sum: 1 },
+						},
+					},
+				],
+				options,
+			)
+			.next();
+
+		return queryResult?.total || 0;
+	}
+
 	async countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number> {
 		const queryResult = await this.col
 			.aggregate<{ _id: null; total: number }>(

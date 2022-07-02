@@ -63,7 +63,7 @@ export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 
 	findOne(query?: Filter<T> | string, options?: undefined): Promise<T | null>;
 
-	findOne<P>(query: Filter<T> | string, options: FindOptions<P extends T ? T : P>): Promise<P | null>;
+	findOne<P = T>(query: Filter<T> | string, options: FindOptions<P extends T ? T : P>): Promise<P | null>;
 
 	findOne<P>(query: Filter<T> | string, options?: any): Promise<WithId<T> | WithId<P> | null>;
 

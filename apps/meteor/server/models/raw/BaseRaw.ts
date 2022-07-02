@@ -124,7 +124,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 	async findOne(query?: Filter<T> | string, options?: undefined): Promise<T | null>;
 
-	async findOne<P>(query: Filter<T> | string, options: FindOptions<P extends T ? T : P>): Promise<P | null>;
+	async findOne<P = T>(query: Filter<T> | string, options: FindOptions<P extends T ? T : P>): Promise<P | null>;
 
 	async findOne<P>(query: Filter<T> | string = {}, options?: any): Promise<WithId<T> | WithId<P> | null> {
 		const q = typeof query === 'string' ? ({ _id: query } as unknown as Filter<T>) : query;

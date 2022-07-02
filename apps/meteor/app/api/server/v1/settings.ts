@@ -9,6 +9,7 @@ import {
 	isSettingsUpdatePropsColor,
 } from '@rocket.chat/rest-typings';
 import { Settings } from '@rocket.chat/models';
+import type { FindOptions } from 'mongodb';
 
 import { hasPermission } from '../../../authorization/server';
 import { API, ResultFor } from '../api';
@@ -17,10 +18,10 @@ import { setValue } from '../../../settings/server/raw';
 
 async function fetchSettings(
 	query: Parameters<typeof Settings.find>[0],
-	sort: Parameters<typeof Settings.find>[1]['sort'],
-	offset: Parameters<typeof Settings.find>[1]['skip'],
-	count: Parameters<typeof Settings.find>[1]['limit'],
-	fields: Parameters<typeof Settings.find>[1]['projection'],
+	sort: FindOptions<ISetting>['sort'],
+	offset: FindOptions<ISetting>['skip'],
+	count: FindOptions<ISetting>['limit'],
+	fields: FindOptions<ISetting>['projection'],
 ): Promise<{ settings: ISetting[]; totalCount: number }> {
 	const { cursor, totalCount } = await Settings.findPaginated(query || {}, {
 		sort: sort || { _id: 1 },

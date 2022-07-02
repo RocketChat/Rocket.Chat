@@ -15,13 +15,15 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 	}
 
 	async findLast(): Promise<IStats> {
-		const options = {
-			sort: {
-				createdAt: -1,
+		const records = await this.find(
+			{},
+			{
+				sort: {
+					createdAt: -1,
+				},
+				limit: 1,
 			},
-			limit: 1,
-		};
-		const records = await this.find({}, options).toArray();
+		).toArray();
 		return records?.[0];
 	}
 }

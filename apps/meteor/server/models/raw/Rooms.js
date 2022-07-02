@@ -516,4 +516,8 @@ export class RoomsRaw extends BaseRaw {
 			...(autoJoin && { teamDefault: true }),
 		});
 	}
+
+	countByType(t) {
+		return this.col.countDocuments({ t });
+	}
 }

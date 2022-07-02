@@ -141,7 +141,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		}
 		params.push(group);
 		params.push(project);
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate<ILivechatAgentActivity>(params).toArray();
 	}
 
 	findAvailableServiceTimeHistory({
