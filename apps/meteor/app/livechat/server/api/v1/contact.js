@@ -1,15 +1,15 @@
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { Contacts } from '../../lib/Contacts';
-import { LivechatVisitors } from '../../../../models';
 
 API.v1.addRoute(
 	'omnichannel/contact',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			try {
 				check(this.bodyParams, {
 					_id: Match.Maybe(String),
@@ -23,19 +23,19 @@ API.v1.addRoute(
 					}),
 				});
 
-				const contact = Contacts.registerContact(this.bodyParams);
+				const contact = await Contacts.registerContact(this.bodyParams);
 
 				return API.v1.success({ contact });
 			} catch (e) {
 				return API.v1.failure(e);
 			}
 		},
-		get() {
+		async get() {
 			check(this.queryParams, {
 				contactId: String,
 			});
 
-			const contact = Promise.await(LivechatVisitors.findOneById(this.queryParams.contactId));
+			const contact = await LivechatVisitors.findOneById(this.queryParams.contactId);
 
 			return API.v1.success({ contact });
 		},
@@ -46,7 +46,7 @@ API.v1.addRoute(
 	'omnichannel/contact.search',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			try {
 				check(this.queryParams, {
 					email: Match.Maybe(String),
@@ -67,7 +67,7 @@ API.v1.addRoute(
 					},
 				);
 
-				const contact = Promise.await(LivechatVisitors.findOne(query));
+				const contact = await LivechatVisitors.findOne(query);
 				return API.v1.success({ contact });
 			} catch (e) {
 				return API.v1.failure(e);

@@ -1,5 +1,6 @@
-import type { PaginatedRequest } from '@rocket.chat/rest-typings/src/helpers/PaginatedRequest';
 import Ajv from 'ajv';
+
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
 const ajv = new Ajv({
 	coerceTypes: true,

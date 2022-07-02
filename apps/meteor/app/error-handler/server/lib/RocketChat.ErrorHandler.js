@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { Users, Rooms } from '../../../models';
+import { Users, Rooms, Settings } from '../../../models/server';
 import { sendMessage } from '../../../lib';
 
 class ErrorHandler {
@@ -33,6 +33,7 @@ class ErrorHandler {
 		process.on(
 			'uncaughtException',
 			Meteor.bindEnvironment((error) => {
+				Settings.incrementValueById('Uncaught_Exceptions_Count');
 				if (!this.reporting) {
 					return;
 				}

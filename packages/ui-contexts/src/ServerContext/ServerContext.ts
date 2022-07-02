@@ -20,7 +20,7 @@ export type ServerContextValue = {
 	callEndpoint: <TMethod extends Method, TPath extends PathFor<TMethod>>(
 		method: TMethod,
 		path: TPath,
-		params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
+		params: OperationParams<TMethod, MatchPathPattern<TPath>>,
 	) => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>;
 	uploadToEndpoint: (
 		endpoint: PathFor<'POST'>,

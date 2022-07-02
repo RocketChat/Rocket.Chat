@@ -1,5 +1,5 @@
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Livechat } from '../lib/Livechat';
 
 callbacks.add(

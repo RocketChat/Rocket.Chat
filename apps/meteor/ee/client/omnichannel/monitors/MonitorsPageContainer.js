@@ -2,11 +2,11 @@ import React from 'react';
 
 import PageSkeleton from '../../../../client/components/PageSkeleton';
 import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
-import { useHasLicense } from '../../hooks/useHasLicense';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import MonitorsPage from './MonitorsPage';
 
 const MonitorsPageContainer = () => {
-	const license = useHasLicense('livechat-enterprise');
+	const license = useHasLicenseModule('livechat-enterprise');
 
 	if (license === 'loading') {
 		return <PageSkeleton />;

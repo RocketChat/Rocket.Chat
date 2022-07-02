@@ -27,7 +27,7 @@ test.describe('[Permissions]', () => {
 		mainContent = new MainContent(page);
 
 		await page.goto('/');
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 		await sideNav.sidebarUserMenu.click();
 		await sideNav.admin.click();
 		await sideNav.users.click();
@@ -76,15 +76,15 @@ test.describe('[Permissions]', () => {
 	test.describe('assert "userToBeCreated" permissions', () => {
 		test.beforeAll(async () => {
 			await sideNav.doLogout();
-			await loginPage.goto('/');
-			await loginPage.login(userToBeCreated);
+			await page.goto('/');
+			await loginPage.doLogin(userToBeCreated);
 			await sideNav.general.click();
 		});
 
 		test('expect not be abble to "mention all"', async () => {
 			await mainContent.sendMessage('@all any_message');
 
-			await expect(mainContent.lastMessage).toContainText('not allowed');
+			await expect(mainContent.lastMessageForMessageTest).toContainText('not allowed');
 		});
 
 		test('expect not be able to "delete own message"', async () => {

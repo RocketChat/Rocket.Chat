@@ -1,4 +1,4 @@
-import { LivechatRooms, LivechatDepartment } from '../../../../models/server/raw';
+import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
 export async function findRooms({
 	agents,

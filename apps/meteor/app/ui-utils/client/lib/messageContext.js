@@ -17,8 +17,7 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 const fields = {
 	'name': 1,
 	'username': 1,
-	'settings.preferences.enableNewMessageTemplate': 1,
-	'settings.preferences.showMessageInMainThread': 1,
+	'settings.preferences.useLegacyMessageTemplate': 1,
 	'settings.preferences.autoImageLoad': 1,
 	'settings.preferences.saveMobileBandwidth': 1,
 	'settings.preferences.collapseMediaByDefault': 1,
@@ -115,9 +114,8 @@ export function messageContext({ rid } = Template.instance()) {
 		},
 		settings: {
 			translateLanguage: AutoTranslate.getLanguage(rid),
-			showMessageInMainThread: getUserPreference(user, 'showMessageInMainThread'),
 			autoImageLoad: getUserPreference(user, 'autoImageLoad'),
-			enableNewMessageTemplate: getUserPreference(user, 'enableNewMessageTemplate'),
+			useLegacyMessageTemplate: getUserPreference(user, 'useLegacyMessageTemplate'),
 			saveMobileBandwidth: Meteor.Device.isPhone() && getUserPreference(user, 'saveMobileBandwidth'),
 			collapseMediaByDefault: getUserPreference(user, 'collapseMediaByDefault'),
 			showreply: true,

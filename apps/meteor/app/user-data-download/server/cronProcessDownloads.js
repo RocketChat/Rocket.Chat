@@ -8,10 +8,10 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import archiver from 'archiver';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
+import { Avatars, ExportOperations, UserDataFiles, Uploads } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { Subscriptions, Rooms, Users, Messages } from '../../models/server';
-import { Avatars, ExportOperations, UserDataFiles, Uploads } from '../../models/server/raw';
 import { FileUpload } from '../../file-upload/server';
 import { DataExport } from './DataExport';
 import * as Mailer from '../../mailer';

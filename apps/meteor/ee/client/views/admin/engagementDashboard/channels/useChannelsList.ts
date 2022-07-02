@@ -1,6 +1,6 @@
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from 'react-query';
 
-import { getFromRestApi } from '../../../../lib/getFromRestApi';
 import { getPeriodRange, Period } from '../dataView/periods';
 
 type UseChannelsListOptions = {
@@ -10,15 +10,17 @@ type UseChannelsListOptions = {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useChannelsList = ({ period, offset, count }: UseChannelsListOptions) =>
-	useQuery(
+export const useChannelsList = ({ period, offset, count }: UseChannelsListOptions) => {
+	const getChannelsList = useEndpoint('GET', '/v1/engagement-dashboard/channels/list');
+
+	return useQuery(
 		['admin/engagement-dashboard/channels/list', { period, offset, count }],
 		async () => {
 			const { start, end } = getPeriodRange(period);
 
-			const response = await getFromRestApi('/v1/engagement-dashboard/channels/list')({
-				start: start.toISOString(),
-				end: end.toISOString(),
+			const response = await getChannelsList({
+				start,
+				end,
 				offset,
 				count,
 			});
@@ -36,3 +38,4 @@ export const useChannelsList = ({ period, offset, count }: UseChannelsListOption
 			refetchInterval: 5 * 60 * 1000,
 		},
 	);
+};

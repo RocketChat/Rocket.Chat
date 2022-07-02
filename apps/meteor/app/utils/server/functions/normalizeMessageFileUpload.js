@@ -1,6 +1,7 @@
+import { Uploads } from '@rocket.chat/models';
+
 import { getURL } from '../../lib/getURL';
 import { FileUpload } from '../../../file-upload/server';
-import { Uploads } from '../../../models/server/raw';
 
 export const normalizeMessageFileUpload = async (message) => {
 	if (message.file && !message.fileUpload) {
