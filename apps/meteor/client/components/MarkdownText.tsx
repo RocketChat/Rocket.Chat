@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import dompurify from 'dompurify';
-import marked from 'marked';
+import { marked } from 'marked';
 import React, { ComponentProps, FC, useMemo } from 'react';
 
 import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';

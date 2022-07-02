@@ -5020,7 +5020,7 @@ __metadata:
     "@types/lodash.debounce": ^4.0.7
     "@types/lodash.get": ^4.4.7
     "@types/mailparser": ^3.4.0
-    "@types/marked": ^1.2.2
+    "@types/marked": ^4.0.3
     "@types/meteor": 2.0.4
     "@types/mkdirp": ^1.0.2
     "@types/mocha": ^8.2.3
@@ -7542,10 +7542,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/marked@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "@types/marked@npm:1.2.2"
-  checksum: 0fb37a9e3f41ec1fd3ec91553781fd07c21db4adcdda37d2ac18fa648ed7ae8280bd7f4c3a1f37bf2733d7769e959130330357e3fc8535ef10cf684c9570559a
+"@types/marked@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "@types/marked@npm:4.0.3"
+  checksum: 2fc409a6291cb770688731a444f54e7eab6257c9b565dea4e9d2f3b6654b606e9dd8ea4a924e306b2d2f581dedcb7a27f10f2ca7aed828b11642ab85955341f1
   languageName: node
   linkType: hard
 

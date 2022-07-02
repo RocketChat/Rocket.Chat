@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
 import _ from 'underscore';
-import _marked from 'marked';
+import { marked as _marked } from 'marked';
 import createDOMPurify from 'dompurify';
 import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
 
