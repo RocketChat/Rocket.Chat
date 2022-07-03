@@ -4366,6 +4366,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/agenda@workspace:^, @rocket.chat/agenda@workspace:packages/agenda":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/agenda@workspace:packages/agenda"
+  dependencies:
+    "@types/debug": ^4
+    "@types/jest": ^27.4.1
+    cron: ~1.8.0
+    date.js: ~0.3.3
+    debug: ~4.1.1
+    eslint: ^8.12.0
+    human-interval: ^2.0.0
+    jest: ^27.5.1
+    moment-timezone: ~0.5.27
+    ts-jest: ^27.1.4
+    typescript: ~4.3.4
+  peerDependencies:
+    cron: ~1.8.0
+    date.js: ~0.3.3
+    debug: ~4.1.1
+    moment-timezone: ~0.5.27
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/api-client@workspace:^, @rocket.chat/api-client@workspace:packages/api-client":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/api-client@workspace:packages/api-client"
@@ -4944,6 +4967,7 @@ __metadata:
     "@nivo/line": 0.62.0
     "@nivo/pie": 0.73.0
     "@playwright/test": ^1.22.2
+    "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/apps-engine": alpha
     "@rocket.chat/core-typings": "workspace:^"
@@ -4987,7 +5011,6 @@ __metadata:
     "@testing-library/react": ~12.1.5
     "@testing-library/user-event": ^13.5.0
     "@types/adm-zip": ^0.5.0
-    "@types/agenda": ^2.0.9
     "@types/bad-words": ^3.0.1
     "@types/bcrypt": ^5.0.0
     "@types/body-parser": ^1.19.2
@@ -5057,7 +5080,6 @@ __metadata:
     "@typescript-eslint/parser": ^3.10.1
     "@xmldom/xmldom": ^0.8.2
     adm-zip: 0.5.9
-    agenda: "https://github.com/RocketChat/agenda#c2cfcc532b8409561104dca980e6adbbcbdf5442"
     ajv: ^8.11.0
     apn: 2.2.0
     archiver: ^3.1.1
@@ -5089,10 +5111,13 @@ __metadata:
     cookie: ^0.5.0
     cookie-parser: ^1.4.6
     cors: ^2.8.5
+    cron: ~1.8.0
     cross-env: ^7.0.3
     css-vars-ponyfill: ^2.4.7
     csv-parse: ^5.2.0
     date-fns: ^2.28.0
+    date.js: ~0.3.3
+    debug: ~4.1.1
     dompurify: ^2.3.8
     ejson: ^2.2.2
     emailreplyparser: ^0.0.5
@@ -5124,6 +5149,7 @@ __metadata:
     he: ^1.2.0
     hljs9: "npm:highlight.js@^9.18.5"
     http-proxy-agent: ^5.0.0
+    human-interval: ^2.0.0
     i18next: ^20.6.1
     i18next-http-backend: ^1.4.1
     iconv-lite: ^0.6.3
@@ -6994,16 +7020,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/agenda@npm:^2.0.9":
-  version: 2.0.9
-  resolution: "@types/agenda@npm:2.0.9"
-  dependencies:
-    "@types/mongodb": "*"
-    "@types/node": "*"
-  checksum: 576323c8cdd30e505293dd6f5d0908c8182dd570a1ee565a0be61e71f0ce7a3805ec927d652986c7994e98accb528f2f7b38b3d6fe2d5923ea2990f7d61b67de
-  languageName: node
-  linkType: hard
-
 "@types/aria-query@npm:^4.2.0":
   version: 4.2.2
   resolution: "@types/aria-query@npm:4.2.2"
@@ -7207,6 +7223,15 @@ __metadata:
   version: 0.4.1
   resolution: "@types/cssom@npm:0.4.1"
   checksum: 0f44f5ff27f5dfadfb89c8bd00f8d588dc1aaa77ec05ffa3ab732929683aef842f55a6c52c9a75586a28987f009b45f6ea5f63dbc34660f6bb98650eea7f59e9
+  languageName: node
+  linkType: hard
+
+"@types/debug@npm:^4":
+  version: 4.1.7
+  resolution: "@types/debug@npm:4.1.7"
+  dependencies:
+    "@types/ms": "*"
+  checksum: 0a7b89d8ed72526858f0b61c6fd81f477853e8c4415bb97f48b1b5545248d2ae389931680b94b393b993a7cfe893537a200647d93defe6d87159b96812305adc
   languageName: node
   linkType: hard
 
@@ -7639,15 +7664,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mongodb@npm:*":
-  version: 4.0.7
-  resolution: "@types/mongodb@npm:4.0.7"
-  dependencies:
-    mongodb: "*"
-  checksum: 10ebdfed5beaeb9354adcaded3ff31a0597eec96d665155bf029fdf81384534cc054ffd4f3a431911e55055cea8dcea6233b2265d6d90f45fe233fd59a31bd56
-  languageName: node
-  linkType: hard
-
 "@types/mongodb@npm:^3.6.10, @types/mongodb@npm:^3.6.20, @types/mongodb@npm:~3.6.20":
   version: 3.6.20
   resolution: "@types/mongodb@npm:3.6.20"
@@ -7655,6 +7671,13 @@ __metadata:
     "@types/bson": "*"
     "@types/node": "*"
   checksum: e5397ada2ed728997f7c3f5424e8c28f682a635488be967c9c18a5de27b1641cf28bb42bc12026ac6d475c457a880e27097e13c8120350ba13219f4ccc030656
+  languageName: node
+  linkType: hard
+
+"@types/ms@npm:*":
+  version: 0.7.31
+  resolution: "@types/ms@npm:0.7.31"
+  checksum: daadd354aedde024cce6f5aa873fefe7b71b22cd0e28632a69e8b677aeb48ae8caa1c60e5919bb781df040d116b01cb4316335167a3fc0ef6a63fa3614c0f6da
   languageName: node
   linkType: hard
 
@@ -8161,13 +8184,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/webidl-conversions@npm:*":
-  version: 6.1.1
-  resolution: "@types/webidl-conversions@npm:6.1.1"
-  checksum: bd0faad4dfec232010d96a42fbd7b5ac4df557899050a6676a75d30ced8553f19e5a3c747fd2b4317f2810d4cf5d2d6dd47ad22ecfb9e6b21119aba678b8897f
-  languageName: node
-  linkType: hard
-
 "@types/webpack-env@npm:^1.16.0":
   version: 1.16.3
   resolution: "@types/webpack-env@npm:1.16.3"
@@ -8197,16 +8213,6 @@ __metadata:
     anymatch: ^3.0.0
     source-map: ^0.6.0
   checksum: e594a1357cbbc2f7c6ca47785c5a11adb5591a774a69afaeab07cd6f6bff6c6aea2030bd37b32bdd19d0ec2336a346db754e8d8d236ba8effeab542716fb32b7
-  languageName: node
-  linkType: hard
-
-"@types/whatwg-url@npm:^8.2.1":
-  version: 8.2.1
-  resolution: "@types/whatwg-url@npm:8.2.1"
-  dependencies:
-    "@types/node": "*"
-    "@types/webidl-conversions": "*"
-  checksum: 975987a9ca14a8d5a883523acb4fa0df7760cd8ca8dee56cd57753821e56060bfbead94df84f4504fe0b4270776d81cbb40fcd1f8643dab86da3a9abe926fb5c
   languageName: node
   linkType: hard
 
@@ -9017,20 +9023,6 @@ __metadata:
   version: 0.5.9
   resolution: "adm-zip@npm:0.5.9"
   checksum: 4909bc04119fdd5e8f8ba43826e50623e5c427cf0a939c809d4f9456a6a03c6aa0544e82088739de9ba16b7649f71b99ccbbddc7b2c38bd6143f9c4726cc7ed9
-  languageName: node
-  linkType: hard
-
-"agenda@https://github.com/RocketChat/agenda#c2cfcc532b8409561104dca980e6adbbcbdf5442":
-  version: 3.1.2
-  resolution: "agenda@https://github.com/RocketChat/agenda.git#commit=c2cfcc532b8409561104dca980e6adbbcbdf5442"
-  dependencies:
-    cron: ~1.8.0
-    date.js: ~0.3.3
-    debug: ~4.1.1
-    human-interval: ~1.0.0
-    moment-timezone: ~0.5.27
-    mongodb: ~3.5.0
-  checksum: acb4ebb7e7356f6e53e810d821eb6aa3d88bbfb9e85183e707517bee6d1eea1f189f38bdf0dd2b91360492ab7643134d510c320d2523d86596498ab98e59735b
   languageName: node
   linkType: hard
 
@@ -10933,7 +10925,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:*, bson@npm:^4.6.2":
+"bson@npm:*":
   version: 4.6.3
   resolution: "bson@npm:4.6.3"
   dependencies:
@@ -13850,13 +13842,6 @@ __metadata:
   version: 1.5.1
   resolution: "denque@npm:1.5.1"
   checksum: 4375ad19d5cea99f90effa82a8cecdaa10f4eb261fbcd7e47cd753ff2737f037aac8f7f4e031cc77f3966314c491c86a0d3b20c128aeee57f791b4662c45108e
-  languageName: node
-  linkType: hard
-
-"denque@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "denque@npm:2.0.1"
-  checksum: ec398d1e3c6c8d4f5213dcf9ad74d7faa3b461e29a0019c9742b49a97ac5e16aa7134db45fa9d841e318e7722dd1ba670a474fde9a5b0d870b3a5fc6fe914c30
   languageName: node
   linkType: hard
 
@@ -18548,10 +18533,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"human-interval@npm:~1.0.0":
-  version: 1.0.0
-  resolution: "human-interval@npm:1.0.0"
-  checksum: d359fae26e22d6b214a558f24b1e213a673c334e84e0e9b91d2093021835cd41a2bfa4bff159bfd775ee1eff3ab6b009b07233f6e5fa0233af4d78a3d5fa9eea
+"human-interval@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "human-interval@npm:2.0.1"
+  dependencies:
+    numbered: ^1.1.0
+  checksum: 8f1b37485f554d1f7a3fa2cefdbd9cee2df3ff2cfb86ae1db9f58f2db9d524d44863c2d291f04c810317f2fa7ceeda2188281985c7d65b3774d53c9e835ed55c
   languageName: node
   linkType: hard
 
@@ -23335,16 +23322,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb-connection-string-url@npm:^2.5.2":
-  version: 2.5.2
-  resolution: "mongodb-connection-string-url@npm:2.5.2"
-  dependencies:
-    "@types/whatwg-url": ^8.2.1
-    whatwg-url: ^11.0.0
-  checksum: bd13af7d62d33e2d6e5217692961e34b2dafbbba5f41d361417257592754df3e925efc00fa8a5e038624e284245dab39e913d5f06ff962feede86d5f58fc5827
-  languageName: node
-  linkType: hard
-
 "mongodb-memory-server-core@npm:7.6.3":
   version: 7.6.3
   resolution: "mongodb-memory-server-core@npm:7.6.3"
@@ -23381,22 +23358,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:*":
-  version: 4.5.0
-  resolution: "mongodb@npm:4.5.0"
-  dependencies:
-    bson: ^4.6.2
-    denque: ^2.0.1
-    mongodb-connection-string-url: ^2.5.2
-    saslprep: ^1.0.3
-    socks: ^2.6.2
-  dependenciesMeta:
-    saslprep:
-      optional: true
-  checksum: 423974a663c90e6673226a9ad691e8b445ecd43fc4e9e424343644b20c35188bd3d6692dcc2798022cc6b5c6f4391b54747c7543134b46f93cb3da428e5f9246
-  languageName: node
-  linkType: hard
-
 "mongodb@npm:^3.7.3":
   version: 3.7.3
   resolution: "mongodb@npm:3.7.3"
@@ -23424,23 +23385,6 @@ __metadata:
     snappy:
       optional: true
   checksum: ef7690fe6ee7d1752f121b14e59b3fabfddc60ff0536babce6c945703ad0010de9e6fa7de4c91b99275c256876a72a06899ce27893aba0838c2b542088bd1044
-  languageName: node
-  linkType: hard
-
-"mongodb@npm:~3.5.0":
-  version: 3.5.11
-  resolution: "mongodb@npm:3.5.11"
-  dependencies:
-    bl: ^2.2.1
-    bson: ^1.1.4
-    denque: ^1.4.1
-    require_optional: ^1.0.1
-    safe-buffer: ^5.1.2
-    saslprep: ^1.0.0
-  dependenciesMeta:
-    saslprep:
-      optional: true
-  checksum: 4d4fda3cfe3a35ecf40c3e6c0798d044f1f0a6a24ef3a7d1d784d516b9fb97efd729ed291fa8ec1faeda6915bdaeed37fc122eff5de2c8d73b2aa80278805418
   languageName: node
   linkType: hard
 
@@ -24292,6 +24236,13 @@ __metadata:
   version: 1.0.1
   resolution: "number-is-nan@npm:1.0.1"
   checksum: 13656bc9aa771b96cef209ffca31c31a03b507ca6862ba7c3f638a283560620d723d52e626d57892c7fff475f4c36ac07f0600f14544692ff595abff214b9ffb
+  languageName: node
+  linkType: hard
+
+"numbered@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "numbered@npm:1.1.0"
+  checksum: cdc238990fe29818cb603ac8d4050ff82a05b63e10d8848d1ff1e315231e94813c48b405e651b22d32edc8ccf1f323920d1182ea02c081f11d94ea22b1f8c17a
   languageName: node
   linkType: hard
 
@@ -28420,16 +28371,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"require_optional@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "require_optional@npm:1.0.1"
-  dependencies:
-    resolve-from: ^2.0.0
-    semver: ^5.1.0
-  checksum: 64aed45ccff138e3e8abfa104de6f9bd324d27408228dbe0902049f586a2a80caf885e162b4724ee9dd5a2a0369987e8b5c5db86f5eb48a98a9f7c7d00b5c5a5
-  languageName: node
-  linkType: hard
-
 "requires-port@npm:^1.0.0":
   version: 1.0.0
   resolution: "requires-port@npm:1.0.0"
@@ -28469,13 +28410,6 @@ __metadata:
     expand-tilde: ^2.0.0
     global-modules: ^1.0.0
   checksum: ef736b8ed60d6645c3b573da17d329bfb50ec4e1d6c5ffd6df49e3497acef9226f9810ea6823b8ece1560e01dcb13f77a9f6180d4f242d00cc9a8f4de909c65c
-  languageName: node
-  linkType: hard
-
-"resolve-from@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "resolve-from@npm:2.0.0"
-  checksum: 02db4c30fecddef0efafbafb2d66b96c4a80f91d103d9850be3b85d1feb65b6af6c818d137dc546cea7d0288c21e13aa0fb4580af9af34b08052b3516690c5f3
   languageName: node
   linkType: hard
 
@@ -28725,7 +28659,6 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.13
     "@rocket.chat/ui-kit": ~0.31.13
-    "@types/agenda": ^2.0.9
     "@types/cookie": ^0.5.1
     "@types/cookie-parser": ^1.4.3
     "@types/ejson": ^2.2.0
@@ -28894,7 +28827,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"saslprep@npm:^1.0.0, saslprep@npm:^1.0.3":
+"saslprep@npm:^1.0.0":
   version: 1.0.3
   resolution: "saslprep@npm:1.0.3"
   dependencies:
@@ -29673,7 +29606,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socks@npm:^2.3.3, socks@npm:^2.6.1, socks@npm:^2.6.2":
+"socks@npm:^2.3.3, socks@npm:^2.6.1":
   version: 2.6.2
   resolution: "socks@npm:2.6.2"
   dependencies:
@@ -31538,15 +31471,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tr46@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "tr46@npm:3.0.0"
-  dependencies:
-    punycode: ^2.1.1
-  checksum: 44c3cc6767fb800490e6e9fd64fd49041aa4e49e1f6a012b34a75de739cc9ed3a6405296072c1df8b6389ae139c5e7c6496f659cfe13a04a4bff3a1422981270
-  languageName: node
-  linkType: hard
-
 "tr46@npm:~0.0.3":
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
@@ -32133,6 +32057,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:~4.3.4":
+  version: 4.3.5
+  resolution: "typescript@npm:4.3.5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: bab033b5e2b0790dd35b77fd005df976ef80b8d84fd2c6e63cc31808151875beae9216e5a315fe7068e8499905c3c354248fe83272cdfc13b7705635f0c66c97
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~4.5.5":
   version: 4.5.5
   resolution: "typescript@npm:4.5.5"
@@ -32140,6 +32074,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 506f4c919dc8aeaafa92068c997f1d213b9df4d9756d0fae1a1e7ab66b585ab3498050e236113a1c9e57ee08c21ec6814ca7a7f61378c058d79af50a4b1f5a5e
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@~4.3.4#~builtin<compat/typescript>":
+  version: 4.3.5
+  resolution: "typescript@patch:typescript@npm%3A4.3.5#~builtin<compat/typescript>::version=4.3.5&hash=bda367"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 365df18cf979c971ef9543b2acaa8694377a803f98e1804c41d0ede0b09d7046cb0cd98f2eaf3884b0fe923c01a60af1f653841bd8805c9715d5479c09a4ebe4
   languageName: node
   linkType: hard
 
@@ -33198,13 +33142,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webidl-conversions@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "webidl-conversions@npm:7.0.0"
-  checksum: f05588567a2a76428515333eff87200fae6c83c3948a7482ebb109562971e77ef6dc49749afa58abb993391227c5697b3ecca52018793e0cb4620a48f10bd21b
-  languageName: node
-  linkType: hard
-
 "webpack-cli@npm:^3.3.12":
   version: 3.3.12
   resolution: "webpack-cli@npm:3.3.12"
@@ -33461,16 +33398,6 @@ __metadata:
   version: 2.3.0
   resolution: "whatwg-mimetype@npm:2.3.0"
   checksum: 23eb885940bcbcca4ff841c40a78e9cbb893ec42743993a42bf7aed16085b048b44b06f3402018931687153550f9a32d259dfa524e4f03577ab898b6965e5383
-  languageName: node
-  linkType: hard
-
-"whatwg-url@npm:^11.0.0":
-  version: 11.0.0
-  resolution: "whatwg-url@npm:11.0.0"
-  dependencies:
-    tr46: ^3.0.0
-    webidl-conversions: ^7.0.0
-  checksum: ed4826aaa57e66bb3488a4b25c9cd476c46ba96052747388b5801f137dd740b73fde91ad207d96baf9f17fbcc80fc1a477ad65181b5eb5fa718d27c69501d7af
   languageName: node
   linkType: hard
 
