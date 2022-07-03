@@ -5146,6 +5146,7 @@ __metadata:
     he: ^1.2.0
     hljs9: "npm:highlight.js@^9.18.5"
     http-proxy-agent: ^5.0.0
+    human-interval: ^2.0.0
     i18next: ^20.6.1
     i18next-http-backend: ^1.4.1
     iconv-lite: ^0.6.3
