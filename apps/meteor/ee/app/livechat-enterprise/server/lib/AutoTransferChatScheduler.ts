@@ -1,4 +1,4 @@
-import Agenda from 'agenda';
+import { Agenda } from '@rocket.chat/agenda';
 import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 
