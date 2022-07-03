@@ -15,6 +15,8 @@ import type { IJob, IJobRecord } from './definition/IJob';
 
 const debug = debugInitializer('agenda:agenda');
 
+const defaultInterval = 5000;
+
 type JobSort = Partial<Record<keyof IJob, 1 | -1>>;
 
 type AgendaConfig = {
@@ -100,7 +102,7 @@ export class Agenda extends EventEmitter {
 		super();
 
 		this._name = config.name;
-		this._processEvery = humanInterval(config.processEvery) || humanInterval('5 seconds');
+		this._processEvery = humanInterval(config.processEvery) || defaultInterval;
 		this._defaultConcurrency = config.defaultConcurrency || 5;
 		this._maxConcurrency = config.maxConcurrency || 20;
 		this._defaultLockLimit = config.defaultLockLimit || 0;
@@ -213,7 +215,7 @@ export class Agenda extends EventEmitter {
 
 	public processEvery(time: string): Agenda {
 		debug('Agenda.processEvery(%d)', time);
-		this._processEvery = humanInterval(time);
+		this._processEvery = humanInterval(time) || defaultInterval;
 		return this;
 	}
 
@@ -554,7 +556,7 @@ export class Agenda extends EventEmitter {
 
 		await this._ready;
 		debug('Agenda.start called, creating interval to call processJobs every [%dms]', this._processEvery);
-		this._processInterval = setInterval(() => this.processJobs(), this._processEvery);
+		this._processInterval = setInterval(() => this.processJobs(), this._processEvery || defaultInterval);
 		process.nextTick(() => this.processJobs());
 	}
 
@@ -755,8 +757,7 @@ export class Agenda extends EventEmitter {
 		}
 
 		// Set the date of the next time we are going to run _processEvery function
-		const now = new Date();
-		this._nextScanAt = new Date(now.valueOf() + this._processEvery || 0);
+		this._nextScanAt = new Date(Date.now() + this._processEvery || defaultInterval);
 
 		// For this job name, find the next job to run and lock it!
 		try {

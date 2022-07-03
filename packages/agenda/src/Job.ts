@@ -82,11 +82,13 @@ export class Job {
 		} catch (error) {
 			// Nope, humanInterval then!
 			try {
-				if (!this.attrs.lastRunAt && humanInterval(interval)) {
+				const numberInterval = (typeof interval === 'number' ? interval : humanInterval(interval)) || 0;
+
+				if (!this.attrs.lastRunAt && numberInterval) {
 					this.attrs.nextRunAt = new Date(lastRun.valueOf());
 					debug('[%s:%s] nextRunAt set to [%s]', this.attrs.name, this.attrs._id, this.attrs.nextRunAt.toISOString());
 				} else {
-					this.attrs.nextRunAt = new Date(lastRun.valueOf() + humanInterval(interval));
+					this.attrs.nextRunAt = new Date(lastRun.valueOf() + numberInterval);
 					debug('[%s:%s] nextRunAt set to [%s]', this.attrs.name, this.attrs._id, this.attrs.nextRunAt.toISOString());
 				}
 				// Either `xo` linter or Node.js 8 stumble on this line if it isn't just ignored
@@ -250,7 +252,7 @@ export class Job {
 					await definition.fn(this);
 					await jobCallback();
 				}
-			} catch (error) {
+			} catch (error: any) {
 				debug('[%s:%s] unknown error occurred', this.attrs.name, this.attrs._id);
 				await jobCallback(error);
 			}

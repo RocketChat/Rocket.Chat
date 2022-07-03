@@ -4376,7 +4376,7 @@ __metadata:
     date.js: ~0.3.3
     debug: ~4.1.1
     eslint: ^8.12.0
-    human-interval: ~1.0.0
+    human-interval: ^2.0.0
     jest: ^27.5.1
     moment-timezone: ~0.5.27
     ts-jest: ^27.1.4
@@ -18572,10 +18572,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"human-interval@npm:~1.0.0":
-  version: 1.0.0
-  resolution: "human-interval@npm:1.0.0"
-  checksum: d359fae26e22d6b214a558f24b1e213a673c334e84e0e9b91d2093021835cd41a2bfa4bff159bfd775ee1eff3ab6b009b07233f6e5fa0233af4d78a3d5fa9eea
+"human-interval@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "human-interval@npm:2.0.1"
+  dependencies:
+    numbered: ^1.1.0
+  checksum: 8f1b37485f554d1f7a3fa2cefdbd9cee2df3ff2cfb86ae1db9f58f2db9d524d44863c2d291f04c810317f2fa7ceeda2188281985c7d65b3774d53c9e835ed55c
   languageName: node
   linkType: hard
 
@@ -24299,6 +24301,13 @@ __metadata:
   version: 1.0.1
   resolution: "number-is-nan@npm:1.0.1"
   checksum: 13656bc9aa771b96cef209ffca31c31a03b507ca6862ba7c3f638a283560620d723d52e626d57892c7fff475f4c36ac07f0600f14544692ff595abff214b9ffb
+  languageName: node
+  linkType: hard
+
+"numbered@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "numbered@npm:1.1.0"
+  checksum: cdc238990fe29818cb603ac8d4050ff82a05b63e10d8848d1ff1e315231e94813c48b405e651b22d32edc8ccf1f323920d1182ea02c081f11d94ea22b1f8c17a
   languageName: node
   linkType: hard
 
