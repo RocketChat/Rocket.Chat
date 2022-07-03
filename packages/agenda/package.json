@@ -1,5 +1,6 @@
 {
 	"name": "@rocket.chat/agenda",
+	"description": "Fork of https://github.com/agenda/agenda",
 	"version": "0.0.1",
 	"private": true,
 	"dependencies": {
