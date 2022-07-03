@@ -3331,7 +3331,7 @@ describe('[Users]', function () {
 		});
 	});
 
-	describe.only('[/users.listTeams]', () => {
+	describe('[/users.listTeams]', () => {
 		const teamName1 = `team-name-${Date.now()}`;
 		const teamName2 = `team-name-2-${Date.now()}`;
 		let testUser;
