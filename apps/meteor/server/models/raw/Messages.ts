@@ -270,12 +270,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 					{ $group: { _id: '$rid' } },
 					{
 						$group: {
-							_id: '$rid',
-							found: 1,
-						},
-					},
-					{
-						$group: {
 							_id: null,
 							total: { $sum: 1 },
 						},
