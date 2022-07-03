@@ -1,5 +1,5 @@
 import type { IMessage, IRoom, IUser, ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { AggregationCursor, FindCursor, FindOptions, AggregateOptions } from 'mongodb';
+import type { AggregationCursor, CountDocumentsOptions, FindCursor, FindOptions, AggregateOptions } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -36,8 +36,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number>;
 
-	countE2EEMessages(options: FindOptions<IMessage>): Promise<number>;
-
 	findPinned(options: FindOptions<IMessage>): FindCursor<IMessage>;
 
 	findStarred(options: FindOptions<IMessage>): FindCursor<IMessage>;
@@ -49,4 +47,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	removeVideoConfJoinButton(_id: IMessage['_id']): Promise<void>;
 
 	countRoomsWithMessageType(type: IMessage['t'], options: AggregateOptions): Promise<number>;
+
+	countByType(type: IMessage['t'], options: CountDocumentsOptions): Promise<number>;
 }

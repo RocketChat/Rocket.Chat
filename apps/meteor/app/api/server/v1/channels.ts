@@ -270,6 +270,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
+			// @ts-expect-error recursive types are causing issues here
 			const { cursor, totalCount: total } = await Messages.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,

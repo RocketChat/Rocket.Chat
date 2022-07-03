@@ -3,7 +3,7 @@ import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import { getCollectionName } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { AggregationCursor, Collection, AggregateOptions, FindCursor, Db, Filter, FindOptions } from 'mongodb';
+import type { AggregationCursor, Collection, CountDocumentsOptions, AggregateOptions, FindCursor, Db, Filter, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -288,6 +288,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return queryResult?.total || 0;
 	}
 
+	async countByType(type: IMessage['t'], options: CountDocumentsOptions): Promise<number> {
+		return this.col.countDocuments({ t: type }, options);
+	}
+
 	async countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number> {
 		const queryResult = await this.col
 			.aggregate<{ _id: null; total: number }>(
@@ -306,10 +310,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			.next();
 
 		return queryResult?.total || 0;
-	}
-
-	async countE2EEMessages(options: FindOptions<IMessage>): Promise<number> {
-		return this.find({ t: 'e2e' }, options).count();
 	}
 
 	findPinned(options: FindOptions<IMessage>): FindCursor<IMessage> {

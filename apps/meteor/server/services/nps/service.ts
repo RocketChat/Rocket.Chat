@@ -27,14 +27,15 @@ export class NPSService extends ServiceClassInternal implements INPSService {
 
 		const { npsId, startAt, expireAt, createdBy } = nps;
 
-		const { result } = await Nps.save({
-			_id: npsId,
-			startAt,
-			expireAt,
-			createdBy,
-			status: NPSStatus.OPEN,
-		});
-		if (!result) {
+		try {
+			await Nps.save({
+				_id: npsId,
+				startAt,
+				expireAt,
+				createdBy,
+				status: NPSStatus.OPEN,
+			});
+		} catch (e) {
 			throw new Error('Error creating NPS');
 		}
 

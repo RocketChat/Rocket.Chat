@@ -211,27 +211,21 @@ export const statistics = {
 
 		// Amount of Calls that ended properly
 		statsPms.push(
-			MessagesRaw.col
-				.find({ t: 'voip-call-wrapup' })
-				.count()
-				.then((count) => {
-					statistics.voipSuccessfulCalls = count;
-				}),
+			MessagesRaw.countByType('voip-call-wrapup', { readPreference }).then((count) => {
+				statistics.voipSuccessfulCalls = count;
+			}),
 		);
 
 		// Amount of Calls that ended with an error
 		statsPms.push(
-			MessagesRaw.col
-				.find({ t: 'voip-call-ended-unexpectedly' })
-				.count()
-				.then((count) => {
-					statistics.voipErrorCalls = count;
-				}),
+			MessagesRaw.countByType('voip-call-ended-unexpectedly', { readPreference }).then((count) => {
+				statistics.voipErrorCalls = count;
+			}),
 		);
 		// Amount of Calls that were put on hold
 		statsPms.push(
-			MessagesRaw.col.distinct('rid', { t: 'voip-call-on-hold' }).then((msgs) => {
-				statistics.voipOnHoldCalls = msgs.length;
+			MessagesRaw.countRoomsWithMessageType('voip-call-on-hold', { readPreference }).then((count) => {
+				statistics.voipOnHoldCalls = count;
 			}),
 		);
 
@@ -481,7 +475,7 @@ export const statistics = {
 		statistics.totalE2ERooms = await RoomsRaw.findByE2E({ readPreference }).count();
 		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
-		statistics.totalEncryptedMessages = await MessagesRaw.countE2EEMessages({ readPreference });
+		statistics.totalEncryptedMessages = await MessagesRaw.countByType('e2e', { readPreference });
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
 		statistics.totalSubscriptionRoles = await RolesRaw.findByScope('Subscriptions').count();
 		statistics.totalUserRoles = await RolesRaw.findByScope('Users').count();

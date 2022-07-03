@@ -829,8 +829,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			inviterData = { _id: inviter._id, username: inviter.username };
 		}
 
-		const member = (await TeamMember.createOneByTeamIdAndUserId(teamId, userId, inviterData)).ops[0];
-		await this.addMembersToDefaultRooms(inviter, teamId, [member]);
+		await TeamMember.createOneByTeamIdAndUserId(teamId, userId, inviterData);
+
+		await this.addMembersToDefaultRooms(inviter, teamId, [{ userId }]);
 
 		return true;
 	}
@@ -928,7 +929,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	async addMembersToDefaultRooms(
 		inviter: Pick<IUser, '_id' | 'username'>,
 		teamId: string,
-		members: Array<Partial<ITeamMember>>,
+		members: Array<Pick<ITeamMember, 'userId'>>,
 	): Promise<void> {
 		const defaultRooms = await Rooms.findDefaultRoomsForTeam(teamId).toArray();
 		const users = await Users.findActiveByIds(members.map((member) => member.userId)).toArray();
