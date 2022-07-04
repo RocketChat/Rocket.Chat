@@ -36,8 +36,8 @@ Meteor.startup(function () {
 		});
 
 		this.section('CAS_Login_Layout', function () {
-			this.add('CAS_popup_width', '810', { type: 'int', group: 'CAS', public: true });
-			this.add('CAS_popup_height', '610', { type: 'int', group: 'CAS', public: true });
+			this.add('CAS_popup_width', 810, { type: 'int', group: 'CAS', public: true });
+			this.add('CAS_popup_height', 610, { type: 'int', group: 'CAS', public: true });
 			this.add('CAS_button_label_text', 'CAS', { type: 'string', group: 'CAS' });
 			this.add('CAS_button_label_color', '#FFFFFF', { type: 'color', group: 'CAS' });
 			this.add('CAS_button_color', '#1d74f5', { type: 'color', group: 'CAS' });

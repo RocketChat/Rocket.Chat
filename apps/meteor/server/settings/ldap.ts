@@ -19,7 +19,7 @@ settingsRegistry.addGroup('LDAP', function () {
 		});
 
 		this.add('LDAP_Host', '', { type: 'string', enableQuery });
-		this.add('LDAP_Port', '389', { type: 'int', enableQuery });
+		this.add('LDAP_Port', 389, { type: 'int', enableQuery });
 		this.add('LDAP_Reconnect', false, { type: 'boolean', enableQuery });
 
 		this.add('LDAP_Login_Fallback', false, { type: 'boolean', enableQuery });
