@@ -105,15 +105,11 @@ const _defaultQuery = {
 type Query = { [k: string]: unknown };
 export function getNonEmptyQuery(query: Query, canSeeAllUserInfo?: boolean): typeof _defaultQuery | (typeof _defaultQuery & Query) {
 	const defaultQuery = {
-		$or: [
-			{ 'emails.address': { $regex: '', $options: 'i' } },
-			{ username: { $regex: '', $options: 'i' } },
-			{ name: { $regex: '', $options: 'i' } },
-		],
+		$or: [{ username: { $regex: '', $options: 'i' } }, { name: { $regex: '', $options: 'i' } }],
 	};
 
-	if (!canSeeAllUserInfo) {
-		defaultQuery.$or = defaultQuery.$or.filter((or) => !or['emails.address']);
+	if (canSeeAllUserInfo) {
+		defaultQuery.$or.push({ 'emails.address': { $regex: '', $options: 'i' } } as any);
 	}
 
 	if (!query || Object.keys(query).length === 0) {
