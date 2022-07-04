@@ -10,9 +10,9 @@ import { api } from '../../../server/sdk/api';
  * Mute is a named function that will replace /mute commands
  */
 
-slashCommands.add(
-	'mute',
-	function Mute(_command: 'mute', params, item): void {
+slashCommands.add({
+	command: 'mute',
+	callback: function Mute(_command: 'mute', params, item): void {
 		const username = params.trim().replace('@', '');
 		if (username === '') {
 			return;
@@ -47,9 +47,9 @@ slashCommands.add(
 			username,
 		});
 	},
-	{
+	options: {
 		description: 'Mute_someone_in_room',
 		params: '@username',
 		permission: 'mute-user',
 	},
-);
+});

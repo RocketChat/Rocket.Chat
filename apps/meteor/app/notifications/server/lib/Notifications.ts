@@ -4,12 +4,6 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
 import { Streamer } from '../../../../server/modules/streamer/streamer.module';
 import { api } from '../../../../server/sdk/api';
-import {
-	Subscriptions as SubscriptionsRaw,
-	Rooms as RoomsRaw,
-	Users as UsersRaw,
-	Settings as SettingsRaw,
-} from '../../../models/server/raw';
 import './Presence';
 
 export class Stream extends Streamer {
@@ -35,12 +29,7 @@ export class Stream extends Streamer {
 
 const notifications = new NotificationsModule(Stream);
 
-notifications.configure({
-	Rooms: RoomsRaw,
-	Subscriptions: SubscriptionsRaw,
-	Users: UsersRaw,
-	Settings: SettingsRaw,
-});
+notifications.configure();
 
 notifications.streamLocal.on('broadcast', ({ eventName, args }) => {
 	api.broadcastLocal(eventName, ...args);

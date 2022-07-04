@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { ILivechatVisitorDTO, IRoom } from '@rocket.chat/core-typings';
+import { LivechatVisitors as VisitorsRaw } from '@rocket.chat/models';
 
-import { LivechatRooms, LivechatVisitors, LivechatCustomField } from '../../../../models/server';
-import { LivechatVisitors as VisitorsRaw } from '../../../../models/server/raw';
+import { LivechatRooms, LivechatCustomField } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
@@ -37,7 +37,7 @@ API.v1.addRoute('livechat/visitor', {
 		}
 
 		guest.connectionData = normalizeHttpHeaderData(this.request.headers);
-		const visitorId = Livechat.registerGuest(guest as any); // TODO: Rewrite Livechat to TS
+		const visitorId = await Livechat.registerGuest(guest as any); // TODO: Rewrite Livechat to TS
 
 		let visitor = await VisitorsRaw.findOneById(visitorId, {});
 		// If it's updating an existing visitor, it must also update the roomInfo
@@ -55,7 +55,8 @@ API.v1.addRoute('livechat/visitor', {
 					return;
 				}
 				const { key, value, overwrite } = field;
-				if (customField.scope === 'visitor' && !LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite)) {
+				// TODO: refactor this to use normal await
+				if (customField.scope === 'visitor' && !Promise.await(VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
 					return API.v1.failure();
 				}
 			});
@@ -112,7 +113,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 		}
 
 		const { _id } = visitor;
-		const result = Livechat.removeGuest(_id);
+		const result = await Livechat.removeGuest(_id);
 		if (!result) {
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
@@ -156,7 +157,7 @@ API.v1.addRoute('livechat/visitor.callStatus', {
 		});
 
 		const { token, callStatus, rid, callId } = this.bodyParams;
-		const guest = findGuest(token);
+		const guest = await findGuest(token);
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
@@ -174,7 +175,7 @@ API.v1.addRoute('livechat/visitor.status', {
 
 		const { token, status } = this.bodyParams;
 
-		const guest = findGuest(token);
+		const guest = await findGuest(token);
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}

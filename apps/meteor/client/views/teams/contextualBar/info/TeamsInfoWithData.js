@@ -60,9 +60,9 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 
-	const deleteTeam = useEndpointActionExperimental('POST', 'teams.delete');
-	const leaveTeam = useEndpointActionExperimental('POST', 'teams.leave');
-	const convertTeamToChannel = useEndpointActionExperimental('POST', 'teams.convertToChannel');
+	const deleteTeam = useEndpointActionExperimental('POST', '/v1/teams.delete');
+	const leaveTeam = useEndpointActionExperimental('POST', '/V1/teams.leave');
+	const convertTeamToChannel = useEndpointActionExperimental('POST', '/v1/teams.convertToChannel');
 
 	const hideTeam = useMethod('hideRoom');
 

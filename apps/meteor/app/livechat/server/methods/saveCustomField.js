@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
-import { LivechatCustomField } from '../../../models';
+import { LivechatCustomField } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:saveCustomField'(_id, customFieldData) {

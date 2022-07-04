@@ -9,7 +9,7 @@ export const ContactManager = ({ value: username, handler }) => {
 
 	const [userId, setUserId] = useState();
 
-	const getUserData = useEndpoint('GET', 'users.info');
+	const getUserData = useEndpoint('GET', '/v1/users.info');
 
 	const fetchUserId = async () => {
 		const { user } = await getUserData({ username });

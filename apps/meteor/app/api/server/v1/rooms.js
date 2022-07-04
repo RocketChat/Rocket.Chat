@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { FileUpload } from '../../../file-upload';
-import { Rooms, Messages } from '../../../models';
+import { Rooms, Messages } from '../../../models/server';
 import { API } from '../api';
 import {
 	findAdminRooms,

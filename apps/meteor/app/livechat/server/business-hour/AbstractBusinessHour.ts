@@ -1,9 +1,9 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import type { ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
+import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
-import { IWorkHoursCronJobsWrapper, LivechatBusinessHoursRaw } from '../../../models/server/raw/LivechatBusinessHours';
-import { UsersRaw } from '../../../models/server/raw/Users';
-import { LivechatBusinessHours, Users } from '../../../models/server/raw';
+import { IWorkHoursCronJobsWrapper } from '../../../../server/models/raw/LivechatBusinessHours';
 
 export interface IBusinessHourBehavior {
 	findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]>;
@@ -27,9 +27,9 @@ export interface IBusinessHourType {
 }
 
 export abstract class AbstractBusinessHourBehavior {
-	protected BusinessHourRepository: LivechatBusinessHoursRaw = LivechatBusinessHours;
+	protected BusinessHourRepository: ILivechatBusinessHoursModel = LivechatBusinessHours;
 
-	protected UsersRepository: UsersRaw = Users;
+	protected UsersRepository: IUsersModel = Users;
 
 	async findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]> {
 		return this.BusinessHourRepository.findHoursToScheduleJobs();
@@ -54,9 +54,9 @@ export abstract class AbstractBusinessHourBehavior {
 }
 
 export abstract class AbstractBusinessHourType {
-	protected BusinessHourRepository: LivechatBusinessHoursRaw = LivechatBusinessHours;
+	protected BusinessHourRepository: ILivechatBusinessHoursModel = LivechatBusinessHours;
 
-	protected UsersRepository: UsersRaw = Users;
+	protected UsersRepository: IUsersModel = Users;
 
 	protected async baseSaveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<string> {
 		businessHourData.active = Boolean(businessHourData.active);

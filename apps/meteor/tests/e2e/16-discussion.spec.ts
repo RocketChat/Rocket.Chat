@@ -12,34 +12,32 @@ test.describe('[Discussion]', () => {
 	let sideNav: SideNav;
 	let mainContent: MainContent;
 
-	let discussionName: string;
 	let message: string;
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
-		await page.goto('/');
-		await page.waitForLoadState('load');
 		loginPage = new LoginPage(page);
 		discussion = new Discussion(page);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 
-		await loginPage.login(adminLogin);
+		await page.goto('/');
+		await loginPage.doLogin(adminLogin);
 	});
 
 	test.describe('[Create discussion from screen]', () => {
 		test('expect discussion is created', async () => {
-			discussionName = faker.animal.type();
+			const discussionName = faker.animal.type() + Date.now();
 			message = faker.animal.type();
-			await sideNav.newChannelBtnToolbar.click();
-			await discussion.createDiscussion('public channel', discussionName, message);
+			await sideNav.btnSidebarCreate.click();
+			await discussion.doCreateDiscussion('public channel', discussionName, message);
 		});
 	});
 
 	test.describe.skip('[Create discussion from context menu]', () => {
 		test.beforeAll(async () => {
 			message = faker.animal.type() + uuid();
-			await sideNav.findForChat('public channel');
+			await sideNav.doOpenChat('public channel');
 			await mainContent.sendMessage(message);
 		});
 

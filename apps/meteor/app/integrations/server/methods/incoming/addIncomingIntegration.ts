@@ -5,10 +5,10 @@ import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import s from 'underscore.string';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
+import { Integrations, Roles } from '@rocket.chat/models';
 
 import { hasPermission, hasAllPermission } from '../../../../authorization/server';
 import { Users, Rooms, Subscriptions } from '../../../../models/server';
-import { Integrations, Roles } from '../../../../models/server/raw';
 
 const validChannelChars = ['@', '#'];
 
@@ -93,7 +93,7 @@ Meteor.methods({
 				integrationData.scriptError = undefined;
 			} catch (e) {
 				integrationData.scriptCompiled = undefined;
-				integrationData.scriptError = _.pick(e, 'name', 'message', 'stack');
+				integrationData.scriptError = e instanceof Error ? _.pick(e, 'name', 'message', 'stack') : undefined;
 			}
 		}
 

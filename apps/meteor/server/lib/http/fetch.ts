@@ -36,7 +36,7 @@ export function getFetchAgent(
 
 export function fetch(
 	input: string,
-	options?: Parameters<typeof nodeFetch>[1],
+	options?: Parameters<typeof nodeFetch>[1] & { compress?: boolean; follow?: number; size?: number },
 	allowSelfSignedCerts?: boolean,
 ): ReturnType<typeof nodeFetch> {
 	const agent = getFetchAgent(input, allowSelfSignedCerts);

@@ -1,24 +1,22 @@
 import { ServerType, IVoipManagementServerConfig, IVoipCallServerConfig } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../../app/settings/server/cached';
 
 export function getServerConfigDataFromSettings(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
 	switch (type) {
 		case ServerType.CALL_SERVER: {
-			const serverCofig: IVoipCallServerConfig = {
+			const serverConfig: IVoipCallServerConfig = {
 				type: ServerType.CALL_SERVER,
-				host: settings.get<string>('VoIP_Server_Host'),
 				name: settings.get<string>('VoIP_Server_Name'),
 				configData: {
-					websocketPort: Number(settings.get<number>('VoIP_Server_Websocket_Port')),
 					websocketPath: settings.get<string>('VoIP_Server_Websocket_Path'),
 				},
 			};
-			return serverCofig;
+			return serverConfig;
 		}
 
 		case ServerType.MANAGEMENT: {
-			const serverCofig: IVoipManagementServerConfig = {
+			const serverConfig: IVoipManagementServerConfig = {
 				type: ServerType.MANAGEMENT,
 				host: settings.get<string>('VoIP_Management_Server_Host'),
 				name: settings.get<string>('VoIP_Management_Server_Name'),
@@ -28,7 +26,7 @@ export function getServerConfigDataFromSettings(type: ServerType): IVoipCallServ
 					password: settings.get<string>('VoIP_Management_Server_Password'),
 				},
 			};
-			return serverCofig;
+			return serverConfig;
 		}
 	}
 }
