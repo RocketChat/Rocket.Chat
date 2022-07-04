@@ -14,6 +14,7 @@
         "choose_a_department": "Choose a department...",
         "choose_a_department_1": "Choose a department",
         "choose_an_option": "Choose an option...",
+        "choose_an_emoji": "Choose an emoji...",
         "conversation_finished": "Conversation finished",
         "count_new_messages_since_since_one": "One new message since {{val, datetime}}",
         "count_new_messages_since_since_other": "{{count}} new messages since {{val, datetime}}",
