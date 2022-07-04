@@ -220,7 +220,7 @@ class Chat extends Component {
 									</ComposerAction>
 								)}
 								{text.length > 0 && (
-									<ComposerAction onClick={this.handleSendClick}>
+									<ComposerAction onClick={this.handleSendClick} text={t('send_message')}>
 										<SendIcon width={20} height={20} />
 									</ComposerAction>
 								)}

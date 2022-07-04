@@ -73,6 +73,7 @@
         "restore_chat": "Restore chat",
         "room_name_changed": "Room name changed",
         "send": "Send",
+        "send_message": "Send message",
         "sound_is_off": "Sound is off",
         "sound_is_on": "Sound is on",
         "start_chat": "Start chat",
