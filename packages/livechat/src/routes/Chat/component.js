@@ -215,7 +215,7 @@ class Chat extends Component {
 						post={(
 							<ComposerActions>
 								{text.length === 0 && uploads && (
-									<ComposerAction onClick={this.handleUploadClick}>
+									<ComposerAction onClick={this.handleUploadClick} text={t('upload_file')}>
 										<PlusIcon width={20} height={20} />
 									</ComposerAction>
 								)}

@@ -75,6 +75,7 @@
         "transcript_success": "Transcrição enviada",
         "type_your_message_here": "Digite sua mensagem aqui",
         "unread_messages": "Mensagens não lidas",
+        "upload_file": "Enviar arquivo",
         "user_added_by": "Usuário <em>{{user_added}}</em> adicionado à conversa por <em>{{user_by}}</em>.",
         "user_joined": "Usuário entrou",
         "user_left": "Usuário saiu",
