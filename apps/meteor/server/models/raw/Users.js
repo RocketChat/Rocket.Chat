@@ -853,6 +853,16 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	unsetOneLoginToken(_id, token) {
+		const update = {
+			$pull: {
+				'services.resume.loginTokens': { hashedToken: token },
+			},
+		};
+
+		return this.col.updateOne({ _id }, update);
+	}
+
 	unsetLoginTokens(userId) {
 		return this.col.updateOne(
 			{
