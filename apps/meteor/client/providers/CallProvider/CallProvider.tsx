@@ -42,17 +42,20 @@ import { useDialModal } from '../../hooks/useDialModal';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
 
-const startRingback = (user: IUser): void => {
+const startRingback = (user: IUser, soundId: 'telephone' | 'outbound-call-ringing' | 'call-ended', loop = true): void => {
 	const audioVolume = getUserPreference(user, 'notificationsSoundVolume', 100) as number;
-	CustomSounds.play('telephone', {
+	CustomSounds.play(soundId, {
 		volume: Number((audioVolume / 100).toPrecision(2)),
-		loop: true,
+		loop,
 	});
 };
 
 const stopRingback = (): void => {
 	CustomSounds.pause('telephone');
 	CustomSounds.remove('telephone');
+
+	CustomSounds.pause('outbound-call-ringing');
+	CustomSounds.remove('outbound-call-ringing');
 };
 
 type NetworkState = 'online' | 'offline';
@@ -363,7 +366,16 @@ export const CallProvider: FC = ({ children }) => {
 		};
 
 		const onRinging = (): void => {
-			startRingback(user);
+			startRingback(user, 'outbound-call-ringing');
+		};
+
+		const onIncomingCallRinging = (): void => {
+			startRingback(user, 'telephone');
+		};
+
+		const onCallTerminated = (): void => {
+			startRingback(user, 'call-ended', false);
+			stopRingback();
 		};
 
 		const onCallFailed = (): void => {
@@ -376,9 +388,9 @@ export const CallProvider: FC = ({ children }) => {
 		result.voipClient.onNetworkEvent('localnetworkonline', onNetworkConnected);
 		result.voipClient.onNetworkEvent('localnetworkoffline', onNetworkDisconnected);
 		result.voipClient.on('callestablished', onCallEstablished);
-		result.voipClient.on('ringing', onRinging);
-		result.voipClient.on('incomingcall', onRinging);
-		result.voipClient.on('callterminated', stopRingback);
+		result.voipClient.on('ringing', onRinging); // not called for incoming call
+		result.voipClient.on('incomingcall', onIncomingCallRinging);
+		result.voipClient.on('callterminated', onCallTerminated);
 
 		if (isOutboundClient(result.voipClient)) {
 			result.voipClient.on('callfailed', onCallFailed);
@@ -390,10 +402,10 @@ export const CallProvider: FC = ({ children }) => {
 			result.voipClient?.offNetworkEvent('connectionerror', onNetworkDisconnected);
 			result.voipClient?.offNetworkEvent('localnetworkonline', onNetworkConnected);
 			result.voipClient?.offNetworkEvent('localnetworkoffline', onNetworkDisconnected);
-			result.voipClient?.off('incomingcall', onRinging);
+			result.voipClient?.off('incomingcall', onIncomingCallRinging);
 			result.voipClient?.off('ringing', onRinging);
 			result.voipClient?.off('callestablished', onCallEstablished);
-			result.voipClient?.off('callterminated', stopRingback);
+			result.voipClient?.off('callterminated', onCallTerminated);
 
 			if (isOutboundClient(result.voipClient)) {
 				result.voipClient?.off('callfailed', onCallFailed);
