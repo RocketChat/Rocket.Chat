@@ -38,10 +38,14 @@ export async function configureEmailInboxes(): Promise<void> {
 				user: emailInboxRecord.imap.username,
 				host: emailInboxRecord.imap.server,
 				port: emailInboxRecord.imap.port,
-				tls: emailInboxRecord.imap.secure,
-				tlsOptions: {
-					rejectUnauthorized: false,
-				},
+				...(emailInboxRecord.imap.secure
+					? {
+							tls: emailInboxRecord.imap.secure,
+							tlsOptions: {
+								rejectUnauthorized: false,
+							},
+					  }
+					: {}),
 			},
 			{
 				deleteAfterRead: false,
