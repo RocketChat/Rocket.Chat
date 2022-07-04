@@ -1,11 +1,11 @@
 import { PlaywrightTestConfig } from '@playwright/test';
 
-import * as constants from './tests/e2e/utils/constants';
+import * as constants from './tests/e2e/_e2e/utils/constants';
 
 const setupIsLocalhost = constants.IS_LOCALHOST
 	? {
-			globalSetup: require.resolve('./tests/e2e/configs/setup.ts'),
-			globalTeardown: require.resolve('./tests/e2e/configs/teardown.ts'),
+			globalSetup: require.resolve('./tests/e2e/_e2e/configs/setup.ts'),
+			globalTeardown: require.resolve('./tests/e2e/_e2e/configs/teardown.ts'),
 	  }
 	: { testIgnore: '00-wizard.spec.ts' };
 
