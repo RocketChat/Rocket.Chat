@@ -2,17 +2,18 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Apps } from '../../../../../app/apps/client/orchestrator';
-import { CategoryDropdownItem, CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
+import {
+	CategoryDropDownGroups,
+	CategoryDropdownItem,
+	CategoryDropDownListProps,
+	CategoryOnSelected,
+	selectedCategoriesList,
+} from '../definitions/CategoryDropdownDefinitions';
 import { handleAPIError } from '../helpers';
 import { useCategoryFlatList } from './useCategoryFlatList';
 import { useCategoryToggle } from './useCategoryToggle';
 
-export const useCategories = (): [
-	CategoryDropDownListProps['groups'],
-	(CategoryDropdownItem & { checked: true })[],
-	(CategoryDropdownItem & { checked: true })[],
-	CategoryDropDownListProps['onSelected'],
-] => {
+export const useCategories = (): [CategoryDropDownGroups, selectedCategoriesList, selectedCategoriesList, CategoryOnSelected] => {
 	const t = useTranslation();
 	const [categories, setCategories] = useState<CategoryDropDownListProps['groups']>([]);
 

@@ -4,14 +4,18 @@ export type CategoryDropdownItem = {
 	checked?: boolean;
 };
 
+export type CategoryDropDownGroups = {
+	label?: string;
+	items: CategoryDropdownItem[];
+}[];
+
 export type CategoryDropDownListProps = {
-	groups: {
-		label?: string;
-		items: CategoryDropdownItem[];
-	}[];
+	groups: CategoryDropDownGroups;
 	width?: number;
 	onSelected: CategoryOnSelected;
 };
+
+export type selectedCategoriesList = (CategoryDropdownItem & { checked: true })[];
 
 export type CategoryOnSelected = (item: CategoryDropdownItem) => void;
 export type CategoryOnRemoved = (category: CategoryDropdownItem) => void;

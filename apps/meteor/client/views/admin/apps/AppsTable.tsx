@@ -17,7 +17,6 @@ import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo, useState } from 'react';
 
-import FilterByText from '../../../components/FilterByText';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -30,10 +29,8 @@ import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpo
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppRow from './AppRow';
 import { useAppsReload, useAppsResult } from './AppsContext';
+import AppsFilters from './AppsFilters';
 import MarketplaceRow from './MarketplaceRow';
-import CategoryDropDown from './components/CategoryFilter/CategoryDropDown';
-import TagList from './components/CategoryFilter/TagList';
-import RadioDropDown from './components/RadioDropDown/RadioDropDown';
 import { RadioDropDownGroup } from './definitions/RadioDropDownDefinitions';
 import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
@@ -43,24 +40,18 @@ const AppsTable: FC<{
 	isMarketplace: boolean;
 }> = ({ isMarketplace }) => {
 	const t = useTranslation();
-
 	const [ref, onLargeBreakpoint, onMediumBreakpoint] = useResizeInlineBreakpoint([800, 600], 200) as [
 		React.RefObject<HTMLElement>,
 		boolean,
 		boolean,
 	];
-
 	const { marketplaceApps, installedApps } = useAppsResult();
+	const [text, setText] = useDebouncedState('', 500);
+	const reload = useAppsReload();
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const marketplaceRoute = useRoute('admin-marketplace');
-
 	const Row = isMarketplace ? MarketplaceRow : AppRow;
-
-	const [text, setText] = useDebouncedState('', 500);
-
-	const reload = useAppsReload();
-
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState<RadioDropDownGroup>({
 		label: t('Filter_By_Price'),
@@ -70,10 +61,7 @@ const AppsTable: FC<{
 			{ id: 'paid', label: t('Paid_Apps'), checked: false },
 		],
 	});
-
 	const freePaidFilterOnSelected = useRadioToggle(setFreePaidFilterStructure);
-
-	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 
 	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>({
 		label: 'Sort by',
@@ -84,9 +72,9 @@ const AppsTable: FC<{
 			{ id: 'lru', label: t('Least_recent_updated'), checked: false },
 		],
 	});
-
 	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
 
+	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
 		appsData: isMarketplace ? marketplaceApps : installedApps,
 		text,
@@ -97,17 +85,28 @@ const AppsTable: FC<{
 		sortingMethod: useMemo(() => sortFilterStructure.items.find(({ checked }) => checked)?.id, [sortFilterStructure]),
 	});
 
+	const isAppListReadyOrLoading =
+		appsResult.phase === AsyncStatePhase.LOADING || (appsResult.phase === AsyncStatePhase.RESOLVED && Boolean(appsResult.value.count));
+	const noInstalledAppsFound = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total === 0;
+	const noMarketplaceOrInstalledAppMatches = appsResult.phase === AsyncStatePhase.RESOLVED && isMarketplace && appsResult.value.count === 0;
+	const noInstalledAppMatches =
+		appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total !== 0 && appsResult.value.count === 0;
+
 	return (
 		<>
-			{/* TODO Divide into two components: Filters and AppsTable */}
-			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)}>
-				<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} mie='x8' />
-				<CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
-				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} mis='x8' />
-			</FilterByText>
-			<TagList categories={categoryTagList} onClick={onSelected} />
-			{(appsResult.phase === AsyncStatePhase.LOADING ||
-				(appsResult.phase === AsyncStatePhase.RESOLVED && Boolean(appsResult.value.count))) && (
+			<AppsFilters
+				setText={setText}
+				freePaidFilterStructure={freePaidFilterStructure}
+				freePaidFilterOnSelected={freePaidFilterOnSelected}
+				categories={categories}
+				selectedCategories={selectedCategories}
+				onSelected={onSelected}
+				sortFilterStructure={sortFilterStructure}
+				sortFilterOnSelected={sortFilterOnSelected}
+				categoryTagList={categoryTagList}
+			/>
+
+			{isAppListReadyOrLoading && (
 				<>
 					<GenericTable ref={ref}>
 						<GenericTableHeader>
@@ -140,12 +139,13 @@ const AppsTable: FC<{
 					)}
 				</>
 			)}
-			{appsResult.phase === AsyncStatePhase.RESOLVED && isMarketplace && appsResult.value.count === 0 && (
+
+			{noMarketplaceOrInstalledAppMatches && (
 				<Box mbs='x20'>
 					<States>
 						<StatesIcon name='magnifier' />
 						<StatesTitle>{t('No_app_matches')}</StatesTitle>
-						{appsResult.value.shouldShowSearchText ? (
+						{appsResult?.value?.shouldShowSearchText ? (
 							<StatesSubtitle>
 								{t('No_marketplace_matches_for')}: <strong>"{text}"</strong>
 							</StatesSubtitle>
@@ -164,7 +164,8 @@ const AppsTable: FC<{
 					</States>
 				</Box>
 			)}
-			{appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total === 0 && (
+
+			{noInstalledAppsFound && (
 				<Box mbs='x20'>
 					<States>
 						<StatesIcon name='magnifier' />
@@ -176,12 +177,13 @@ const AppsTable: FC<{
 					</States>
 				</Box>
 			)}
-			{appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total !== 0 && appsResult.value.count === 0 && (
+
+			{noInstalledAppMatches && (
 				<Box mbs='x20'>
 					<States>
 						<StatesIcon name='magnifier' />
 						<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>
-						{appsResult.value.shouldShowSearchText ? (
+						{appsResult?.value?.shouldShowSearchText ? (
 							<StatesSubtitle>
 								<span>
 									{t('No_app_matches_for')} <strong>"{text}"</strong>
@@ -199,6 +201,7 @@ const AppsTable: FC<{
 					</States>
 				</Box>
 			)}
+
 			{appsResult.phase === AsyncStatePhase.REJECTED && (
 				<Box mbs='x20'>
 					<States>
