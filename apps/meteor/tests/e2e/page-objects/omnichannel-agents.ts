@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 
-import { OmnichannelSidebar } from './slices';
+import { OmnichannelSidebar } from './fragments';
 
 export class OmnichannelAgents {
 	private readonly page: Page;

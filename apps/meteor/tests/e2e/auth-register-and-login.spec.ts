@@ -13,11 +13,9 @@ test.describe('Register and Login', () => {
 	});
 
 	test.describe('Login', () => {
-		test.beforeEach(async () => {
-			await page.goto('/');
-		});
-
 		test('expect to show a toast if the provided password is incorrect', async () => {
+			await page.goto('/');
+
 			await pageAuth.inputEmailOrUsername.type(faker.internet.email());
 			await pageAuth.inputPassword.type('any_password');
 			await pageAuth.btnSubmit.click();
@@ -27,12 +25,10 @@ test.describe('Register and Login', () => {
 	});
 
 	test.describe('Register New User', () => {
-		test.beforeEach(async () => {
+		test('expect trigger a validation error if no data is provided', async () => {
 			await page.goto('/');
 			await pageAuth.btnRegister.click();
-		});
 
-		test('expect trigger a validation error if no data is provided', async () => {
 			await pageAuth.btnSubmit.click();
 
 			await expect(pageAuth.textErrorName).toBeVisible();
@@ -42,6 +38,9 @@ test.describe('Register and Login', () => {
 		});
 
 		test('expect trigger a validation error if different password is provided', async () => {
+			await page.goto('/');
+			await pageAuth.btnRegister.click();
+
 			await pageAuth.inputName.type(faker.name.firstName());
 			await pageAuth.inputEmail.type(faker.internet.email());
 			await pageAuth.inputPassword.type('any_password');
@@ -52,6 +51,9 @@ test.describe('Register and Login', () => {
 		});
 
 		test('expect create a new user', async () => {
+			await page.goto('/');
+			await pageAuth.btnRegister.click();
+
 			await pageAuth.inputName.type(faker.name.firstName());
 			await pageAuth.inputEmail.type(faker.internet.email());
 			await pageAuth.inputPassword.type('any_password');

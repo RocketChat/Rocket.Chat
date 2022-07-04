@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 
-export class FlextabStared {
+export class HomeFlextab {
 	private readonly page: Page;
 
 	constructor(page: Page) {

@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 
-import { HomeContent, HomeSidebar, HomeFlextab } from './slices';
+import { HomeContent, HomeSidebar, HomeFlextab } from './fragments';
 
 export class HomeDirect {
 	private readonly page: Page;
