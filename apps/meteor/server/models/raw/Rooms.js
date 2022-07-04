@@ -466,8 +466,38 @@ export class RoomsRaw extends BaseRaw {
 		]);
 	}
 
+	findByBroadcast(options) {
+		return this.find(
+			{
+				broadcast: true,
+			},
+			options,
+		);
+	}
+
+	findByActiveLivestream(options) {
+		return this.find(
+			{
+				'streamingOptions.type': 'livestream',
+			},
+			options,
+		);
+	}
+
 	setAsFederated(roomId) {
 		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
+	}
+
+	setRoomTypeById(roomId, roomType) {
+		return this.update({ _id: roomId }, { $set: { t: roomType } });
+	}
+
+	setRoomNameById(roomId, name, fname) {
+		return this.update({ _id: roomId }, { $set: { name, fname } });
+	}
+
+	setRoomTopicById(roomId, topic) {
+		return this.update({ _id: roomId }, { $set: { description: topic } });
 	}
 
 	findByE2E(options) {

@@ -1,12 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { ReactElement, useState } from 'react';
+import { ComponentStory } from '@storybook/react';
+import React, { useState } from 'react';
 
 import { VoipFooter } from './VoipFooter';
-
-export default {
-	title: 'Sidebar/Footer/VoipFooter',
-	component: VoipFooter,
-};
 
 const callActions = {
 	mute: () => ({}),
@@ -21,61 +17,61 @@ const callActions = {
 const tooltips = {
 	mute: 'Mute',
 	holdCall: 'Hold Call',
+	holdCallEEOnly: 'Hold Call (Enterprise Edition only)',
 	acceptCall: 'Accept Call',
 	endCall: 'End Call',
 };
 
-export const IncomingCall = (): ReactElement => {
-	const [muted, toggleMic] = useState(false);
-	const [paused, togglePause] = useState(false);
-
-	return (
-		<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
-			<VoipFooter
-				caller={{
-					callerName: 'Tiago',
-					callerId: 'guest-1',
-					host: '',
-				}}
-				callerState='OFFER_RECEIVED'
-				callActions={callActions}
-				title='Sales Department'
-				subtitle='Calling'
-				muted={muted}
-				paused={paused}
-				toggleMic={toggleMic}
-				togglePause={togglePause}
-				tooltips={tooltips}
-				createRoom={() => ''}
-				openRoom={() => ''}
-				callsInQueue='2 Calls In Queue'
-				dispatchEvent={() => null}
-				openedRoomInfo={{ v: { token: '' }, rid: '' }}
-				anonymousText={'Anonymous'}
-			/>
-		</Box>
-	);
+export default {
+	title: 'Sidebar/Footer/VoipFooter',
+	component: VoipFooter,
+	parameters: {
+		controls: { expanded: true },
+	},
+	args: {
+		isEnterprise: true,
+	},
+	argTypes: {
+		caller: { control: false },
+		callerState: { control: false },
+		callActions: { control: false },
+		title: { control: false },
+		subtitle: { control: false },
+		muted: { control: false },
+		paused: { control: false },
+		toggleMic: { control: false },
+		togglePause: { control: false },
+		tooltips: { control: false },
+		createRoom: { control: false },
+		openRoom: { control: false },
+		callsInQueue: { control: false },
+		dispatchEvent: { control: false },
+		openedRoomInfo: { control: false },
+		anonymousText: { control: false },
+	},
 };
 
-export const InCall = (): ReactElement => {
+const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
 	const [muted, toggleMic] = useState(false);
 	const [paused, togglePause] = useState(false);
+
 	const getSubtitle = () => {
-		if (paused) {
-			return 'On Hold';
+		if (args.callerState === 'OFFER_RECEIVED') {
+			return 'Calling';
 		}
-		return 'In Progress';
+
+		return paused ? 'On Hold' : 'In Progress';
 	};
 
 	return (
 		<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
 			<VoipFooter
+				{...args}
 				caller={{
 					callerName: 'Tiago',
 					callerId: 'guest-1',
 					host: '',
 				}}
-				callerState='IN_CALL'
 				callActions={callActions}
 				title='Sales Department'
 				subtitle={getSubtitle()}
@@ -84,7 +80,7 @@ export const InCall = (): ReactElement => {
 				toggleMic={toggleMic}
 				togglePause={togglePause}
 				tooltips={tooltips}
-				createRoom={() => ''}
+				createRoom={async () => ''}
 				openRoom={() => ''}
 				callsInQueue='2 Calls In Queue'
 				dispatchEvent={() => null}
@@ -93,4 +89,20 @@ export const InCall = (): ReactElement => {
 			/>
 		</Box>
 	);
+};
+
+export const IncomingCall = VoipFooterTemplate.bind({});
+IncomingCall.args = {
+	callerState: 'OFFER_RECEIVED',
+};
+
+export const InCall = VoipFooterTemplate.bind({});
+InCall.args = {
+	callerState: 'IN_CALL',
+};
+
+export const NoEnterpriseLicence = VoipFooterTemplate.bind({});
+NoEnterpriseLicence.args = {
+	callerState: 'IN_CALL',
+	isEnterprise: false,
 };

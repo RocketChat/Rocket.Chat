@@ -7,6 +7,7 @@ import { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
 import { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 
 import { AppServerOrchestrator } from '../orchestrator';
+import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
 const apiServer = express();
 
@@ -14,10 +15,10 @@ apiServer.disable('x-powered-by');
 
 WebApp.connectHandlers.use(apiServer);
 
-type RequestWithPrivateHash = Request & {
+interface IRequestWithPrivateHash extends Request {
 	_privateHash?: string;
 	content?: any;
-};
+}
 
 export class AppApisBridge extends ApiBridge {
 	appRouters: Map<string, IRouter>;
@@ -27,7 +28,7 @@ export class AppApisBridge extends ApiBridge {
 		super();
 		this.appRouters = new Map();
 
-		apiServer.use('/api/apps/private/:appId/:hash', (req: RequestWithPrivateHash, res: Response) => {
+		apiServer.use('/api/apps/private/:appId/:hash', (req: IRequestWithPrivateHash, res: Response) => {
 			const notFound = (): Response => res.sendStatus(404);
 
 			const router = this.appRouters.get(req.params.appId);
@@ -73,7 +74,7 @@ export class AppApisBridge extends ApiBridge {
 		}
 
 		if (router[method] instanceof Function) {
-			router[method](routePath, Meteor.bindEnvironment(this._appApiExecutor(endpoint, appId)));
+			router[method](routePath, this._authMiddleware(endpoint, appId), Meteor.bindEnvironment(this._appApiExecutor(endpoint, appId)));
 		}
 	}
 
@@ -83,6 +84,11 @@ export class AppApisBridge extends ApiBridge {
 		if (this.appRouters.get(appId)) {
 			this.appRouters.delete(appId);
 		}
+	}
+
+	private _authMiddleware(endpoint: IApiEndpoint, _appId: string): RequestHandler {
+		const authFunction = authenticationMiddleware({ rejectUnauthorized: !!endpoint.authRequired });
+		return Meteor.bindEnvironment(authFunction);
 	}
 
 	private _verifyApi(api: IApi, endpoint: IApiEndpoint): void {
@@ -96,7 +102,7 @@ export class AppApisBridge extends ApiBridge {
 	}
 
 	private _appApiExecutor(endpoint: IApiEndpoint, appId: string): RequestHandler {
-		return (req: RequestWithPrivateHash, res: Response): void => {
+		return (req: IRequestWithPrivateHash, res: Response): void => {
 			const request: IApiRequest = {
 				method: req.method.toLowerCase() as RequestMethod,
 				headers: req.headers as { [key: string]: string },
@@ -104,6 +110,7 @@ export class AppApisBridge extends ApiBridge {
 				params: req.params || {},
 				content: req.body,
 				privateHash: req._privateHash,
+				user: req.user && this.orch.getConverters()?.get('users')?.convertToApp(req.user),
 			};
 
 			this.orch

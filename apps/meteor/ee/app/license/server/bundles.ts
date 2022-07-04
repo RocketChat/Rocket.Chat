@@ -3,13 +3,17 @@ export type BundleFeature =
 	| 'canned-responses'
 	| 'ldap-enterprise'
 	| 'livechat-enterprise'
+	| 'voip-enterprise'
 	| 'omnichannel-mobile-enterprise'
 	| 'engagement-dashboard'
 	| 'push-privacy'
 	| 'scalability'
 	| 'teams-mention'
 	| 'saml-enterprise'
-	| 'oauth-enterprise';
+	| 'device-management'
+	| 'oauth-enterprise'
+	| 'federation'
+	| 'videoconference-enterprise';
 
 interface IBundle {
 	[key: string]: BundleFeature[];
@@ -21,6 +25,7 @@ const bundles: IBundle = {
 		'canned-responses',
 		'ldap-enterprise',
 		'livechat-enterprise',
+		'voip-enterprise',
 		'omnichannel-mobile-enterprise',
 		'engagement-dashboard',
 		'push-privacy',
@@ -28,6 +33,9 @@ const bundles: IBundle = {
 		'teams-mention',
 		'saml-enterprise',
 		'oauth-enterprise',
+		'device-management',
+		'federation',
+		'videoconference-enterprise',
 	],
 	pro: [],
 };
