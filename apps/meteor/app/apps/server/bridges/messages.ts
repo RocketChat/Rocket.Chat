@@ -50,7 +50,7 @@ export class AppMessageBridge extends MessageBridge {
 		updateMessage(msg, editor);
 	}
 
-	protected async notifyUser(user: IUser, message: IMessage, appId: string): Promise<void> {
+	protected async notifyUser(user: IUser, message: IMessage, appId: string, messageId?: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is notifying a user.`);
 
 		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
@@ -59,9 +59,15 @@ export class AppMessageBridge extends MessageBridge {
 			return;
 		}
 
-		api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
-			...msg,
-		});
+		api.broadcast(
+			'notify.ephemeralMessage',
+			user.id,
+			msg.rid,
+			{
+				...msg,
+			},
+			messageId,
+		);
 	}
 
 	protected async notifyRoom(room: IRoom, message: IMessage, appId: string): Promise<void> {

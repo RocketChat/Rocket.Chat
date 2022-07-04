@@ -35,7 +35,7 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
+		service.onEvent('notify.ephemeralMessage', (uid, rid, message, id?: string) => {
 			if (!isMessageParserDisabled && message.msg) {
 				message.md = parse(message.msg, {
 					colors: settings.get('HexColorPreview_Enabled'),
@@ -50,7 +50,7 @@ export class ListenersModule {
 			notifications.notifyUserInThisInstance(uid, 'message', {
 				groupable: false,
 				...message,
-				_id: String(Date.now()),
+				_id: id || String(Date.now()),
 				rid,
 				ts: new Date(),
 			});
