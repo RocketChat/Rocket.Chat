@@ -340,7 +340,7 @@ API.v1.addRoute(
 			// Permission checks are already done in the updateMessage method, so no need to duplicate them
 			Meteor.call('updateMessage', { _id: msg._id, msg: text, rid: msg.rid });
 
-			const message = normalizeMessagesForUser([Messages.findOneById(msg._id)], this.userId) as IMessage;
+			const message = normalizeMessagesForUser([Messages.findOneById(msg._id)], this.userId) as IMessage[];
 
 			return API.v1.success({
 				message,
@@ -537,8 +537,7 @@ API.v1.addRoute(
 				_hidden: { $ne: true },
 				...(type === 'following' && { replies: { $in: [this.userId] } }),
 				...(type === 'unread' && { _id: { $in: Subscriptions.findOneByRoomIdAndUserId(room._id, user._id).tunread } }),
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				msg: new RegExp(escapeRegExp(text), 'i')!,
+				msg: new RegExp(escapeRegExp(text), 'i') as string,
 			};
 
 			const threadQuery = { ...query, ...typeThread, rid: room._id, tcount: { $exists: true } };
@@ -842,7 +841,8 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { roomId, text } = this.queryParams;
+			const { roomId } = this.queryParams;
+			const text = this.queryParams.text as string;
 			const { sort } = this.parseJsonQuery();
 			const { offset, count } = this.getPaginationItems();
 
