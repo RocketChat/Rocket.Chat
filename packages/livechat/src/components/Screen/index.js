@@ -1,5 +1,5 @@
 import { useEffect } from 'preact/hooks';
-
+import i18next from 'i18next';
 import ChatIcon from '../../icons/chat.svg';
 import CloseIcon from '../../icons/close.svg';
 import { Button } from '../Button';
@@ -39,6 +39,7 @@ const ChatButton = ({
 	onClick,
 	triggered = false,
 	agent,
+	label,
 }) => (
 	<Button
 		icon={minimized || triggered ? <ChatIcon /> : <CloseIcon />}
@@ -46,6 +47,7 @@ const ChatButton = ({
 		onClick={onClick}
 		className={createClassName(styles, 'screen__chat-button')}
 		img={triggered && agent && agent.avatar.src}
+		label={label}
 	>
 		{text}
 	</Button>
@@ -111,7 +113,7 @@ export const Screen = ({
 }) => (
 	<div className={createClassName(styles, 'screen', { minimized, expanded, windowed, triggered })}>
 		<CssVar theme={theme} />
-		{triggered && <Button onClick={onMinimize} className={createClassName(styles, 'screen__chat-close-button')} icon={<CloseIcon />}>Close</Button>}
+		{triggered && <Button onClick={onMinimize} className={createClassName(styles, 'screen__chat-close-button')} icon={<CloseIcon />} label={i18next.t('close_the_chat')}>Close</Button>}
 		<div className={createClassName(styles, 'screen__inner', { fitTextSize: triggered }, [className])}>
 			<PopoverContainer>
 				{!triggered && <ScreenHeader

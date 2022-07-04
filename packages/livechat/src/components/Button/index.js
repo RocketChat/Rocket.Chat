@@ -21,13 +21,14 @@ export const Button = memo(({
 	style = {},
 	children,
 	img,
+	label,
 }) => (
 	<button
 		type={submit ? 'submit' : 'button'}
 		disabled={disabled}
 		onClick={onClick}
 		onMouseUp={handleMouseUp}
-		aria-label={icon ? children[0] : null}
+		aria-label={label ?? (icon ? children[0] : null)}
 		className={createClassName(styles, 'button', {
 			disabled,
 			outline,
