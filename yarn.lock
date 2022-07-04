@@ -5151,7 +5151,6 @@ __metadata:
     google-libphonenumber: ^3.2.28
     googleapis: ^104.0.0
     grapheme-splitter: ^1.0.4
-    gridfs-stream: ^1.1.1
     he: ^1.2.0
     hljs9: "npm:highlight.js@^9.18.5"
     http-proxy-agent: ^5.0.0
@@ -16403,13 +16402,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flushwritable@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "flushwritable@npm:1.0.0"
-  checksum: 3e94480c1f47d531807c0f1e6cb171f58c1dd213b0365e1d11bf475a9d3a4dc7cdf77d7a9c03f4c41855fd7b494428b7a03df0f1ddb0d30e134ca817df2516c3
-  languageName: node
-  linkType: hard
-
 "fn.name@npm:1.x.x":
   version: 1.1.0
   resolution: "fn.name@npm:1.1.0"
@@ -17630,15 +17622,6 @@ __metadata:
   version: 1.0.4
   resolution: "grapheme-splitter@npm:1.0.4"
   checksum: 0c22ec54dee1b05cd480f78cf14f732cb5b108edc073572c4ec205df4cd63f30f8db8025afc5debc8835a8ddeacf648a1c7992fe3dcd6ad38f9a476d84906620
-  languageName: node
-  linkType: hard
-
-"gridfs-stream@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "gridfs-stream@npm:1.1.1"
-  dependencies:
-    flushwritable: ^1.0.0
-  checksum: 3a6cc6ad3eef37ca5adeb8dae531729a97322ca1955ebb39e92ef937e4bfa7b1e65bce47d1179bd31a0eda1b8612f1b88075f72daf646e02ec9f3b3bed1c5946
   languageName: node
   linkType: hard
 
