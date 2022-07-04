@@ -78,7 +78,11 @@ export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 	findPaginated(query?: Filter<T>): FindPaginated<FindCursor<ResultFields<T, C>>>;
 	findPaginated<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<P>>;
 
-	update(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions & { multi?: true }): Promise<UpdateResult> | void;
+	update(
+		filter: Filter<T>,
+		update: UpdateFilter<T> | Partial<T>,
+		options?: UpdateOptions & { multi?: true },
+	): Promise<UpdateResult | Document>;
 
 	updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult>;
 

@@ -165,16 +165,17 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		};
 	}
 
+	/**
+	 * @deprecated use updateOne or updateAny instead
+	 */
 	update(
 		filter: Filter<T>,
 		update: UpdateFilter<T> | Partial<T>,
 		options?: UpdateOptions & { multi?: true },
-	): Promise<UpdateResult> | void {
-		this.setUpdatedAt(update);
-		if (options) {
-			return this.col.update(filter, update, options, () => console.log('ignored'));
-		}
-		return this.col.update(filter, update, {}, () => console.log('ignored'));
+	): Promise<UpdateResult | Document> {
+		const operation = options?.multi ? 'updateMany' : 'updateOne';
+
+		return this[operation](filter, update, options);
 	}
 
 	updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult> {
