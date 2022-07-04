@@ -853,6 +853,16 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	unsetOneLoginToken(_id, token) {
+		const update = {
+			$pull: {
+				'services.resume.loginTokens': { hashedToken: token },
+			},
+		};
+
+		return this.col.updateOne({ _id }, update);
+	}
+
 	unsetLoginTokens(userId) {
 		return this.col.updateOne(
 			{
@@ -1029,5 +1039,18 @@ export class UsersRaw extends BaseRaw {
 			'services.email2fa.enabled': true,
 		};
 		return this.find(query, options);
+	}
+
+	setAsFederated(uid) {
+		const query = {
+			_id: uid,
+		};
+
+		const update = {
+			$set: {
+				federated: true,
+			},
+		};
+		return this.updateOne(query, update);
 	}
 }

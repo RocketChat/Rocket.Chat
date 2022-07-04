@@ -1,4 +1,4 @@
-import xmldom from 'xmldom';
+import xmldom from '@xmldom/xmldom';
 import xmlenc from 'xml-encryption';
 import xmlCrypto from 'xml-crypto';
 
@@ -62,7 +62,7 @@ export class ResponseParser {
 
 			this.verifySignatures(response, assertionData, xml);
 		} catch (e) {
-			return callback(e, null, false);
+			return callback(e instanceof Error ? e : String(e), null, false);
 		}
 
 		const profile: Record<string, any> = {};
@@ -74,7 +74,7 @@ export class ResponseParser {
 		try {
 			issuer = this.getIssuer(assertion);
 		} catch (e) {
-			return callback(e, null, false);
+			return callback(e instanceof Error ? e : String(e), null, false);
 		}
 
 		if (issuer) {
@@ -95,14 +95,14 @@ export class ResponseParser {
 			try {
 				this.validateSubjectConditions(subject);
 			} catch (e) {
-				return callback(e, null, false);
+				return callback(e instanceof Error ? e : String(e), null, false);
 			}
 		}
 
 		try {
 			this.validateAssertionConditions(assertion);
 		} catch (e) {
-			return callback(e, null, false);
+			return callback(e instanceof Error ? e : String(e), null, false);
 		}
 
 		const authnStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AuthnStatement')[0];

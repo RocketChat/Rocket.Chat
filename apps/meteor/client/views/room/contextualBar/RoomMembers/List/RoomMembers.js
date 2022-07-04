@@ -44,7 +44,7 @@ const RoomMembers = ({
 
 	return (
 		<>
-			<VerticalBar.Header>
+			<VerticalBar.Header data-qa-id='RoomHeader-Members'>
 				<VerticalBar.Icon name='members' />
 				<VerticalBar.Text>{isTeam ? t('Teams_members') : t('Members')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}

@@ -11,9 +11,9 @@ import { api } from '../../../server/sdk/api';
  * @param {Object} message - The message object
  */
 
-slashCommands.add(
-	'hide',
-	(_command: 'hide', param, item): void => {
+slashCommands.add({
+	command: 'hide',
+	callback: (_command: 'hide', param, item): void => {
 		const room = param.trim();
 		const userId = Meteor.userId();
 		if (!userId) {
@@ -71,5 +71,5 @@ slashCommands.add(
 			}
 		});
 	},
-	{ description: 'Hide_room', params: '#room' },
-);
+	options: { description: 'Hide_room', params: '#room' },
+});

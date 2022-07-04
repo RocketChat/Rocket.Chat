@@ -8,10 +8,13 @@ export const download = (href: string, filename: string): void => {
 	document.body.removeChild(anchorElement);
 };
 
+const hasMsSaveOrOpenBlob = (navigator: Navigator): navigator is Navigator & { msSaveOrOpenBlob: (blob: Blob) => void } =>
+	'msSaveOrOpenBlob' in navigator;
+
 export const downloadAs = ({ data, ...options }: { data: BlobPart[] } & BlobPropertyBag, filename: string): void => {
 	const blob = new Blob(data, options);
 
-	if (navigator.msSaveOrOpenBlob) {
+	if (hasMsSaveOrOpenBlob(navigator)) {
 		navigator.msSaveOrOpenBlob(blob);
 		return;
 	}
