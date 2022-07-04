@@ -6,10 +6,12 @@
 		"@babel/core": "^7.18.5",
 		"@mdx-js/react": "^1.6.22",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/css-in-js": "^0.31.13",
+		"@rocket.chat/css-in-js": "^0.31.14",
 		"@rocket.chat/fuselage": "next",
-		"@rocket.chat/fuselage-tokens": "^0.31.13",
+		"@rocket.chat/fuselage-tokens": "^0.31.14",
 		"@rocket.chat/message-parser": "next",
+		"@rocket.chat/styled": "^0.31.14",
+		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-actions": "^6.5.9",
 		"@storybook/addon-docs": "^6.5.9",
@@ -41,7 +43,7 @@
 		"outdent": "^0.8.0",
 		"react-dom": "~17.0.2",
 		"ts-jest": "^27.1.4",
-		"typescript": "~4.3.4"
+		"typescript": "~4.5.5"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -60,8 +62,12 @@
 	],
 	"peerDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/css-in-js": "*",
 		"@rocket.chat/fuselage": "*",
+		"@rocket.chat/fuselage-tokens": "*",
 		"@rocket.chat/message-parser": "*",
+		"@rocket.chat/styled": "*",
+		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"katex": "*",
 		"react": "~17.0.2"

@@ -1,18 +1,20 @@
 import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
-import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
+import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
+import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 
 export type CreateChannelProps = {
 	values: {
 		name: string;
 		type: boolean;
+		federated?: boolean;
 		readOnly?: boolean;
 		encrypted?: boolean;
 		broadcast?: boolean;
-		users?: string[];
+		users: string[];
 		description?: string;
 	};
 	handlers: {
@@ -20,24 +22,36 @@ export type CreateChannelProps = {
 		handleDescription?: () => void;
 		handleEncrypted?: () => void;
 		handleReadOnly?: () => void;
+		handleUsers: (users: Array<string>) => void;
 	};
 	hasUnsavedChanges: boolean;
-	onChangeUsers: (value: string, action: 'remove' | undefined) => void;
 	onChangeType: React.FormEventHandler<HTMLElement>;
 	onChangeBroadcast: React.FormEventHandler<HTMLElement>;
+	onChangeFederated: React.FormEventHandler<HTMLElement>;
 	canOnlyCreateOneType?: false | 'p' | 'c';
 	e2eEnabledForPrivateByDefault?: boolean;
 	onCreate: () => void;
 	onClose: () => void;
 };
+
+const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModule>, featureToggle: boolean): TranslationKey => {
+	if (licenseModule === 'loading' || !licenseModule) {
+		return 'error-this-is-an-ee-feature';
+	}
+	if (!featureToggle) {
+		return 'Federation_Matrix_Federated_Description_disabled';
+	}
+	return 'Federation_Matrix_Federated_Description';
+};
+
 const CreateChannel = ({
 	values,
 	handlers,
 	hasUnsavedChanges,
-	onChangeUsers,
 	onChangeType,
 	onChangeBroadcast,
 	canOnlyCreateOneType,
+	onChangeFederated,
 	e2eEnabledForPrivateByDefault,
 	onCreate,
 	onClose,
@@ -46,11 +60,16 @@ const CreateChannel = ({
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
+	const federationEnabled = useSetting('Federation_Matrix_enabled');
 	const channelNameExists = useMethod('roomNameExists');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 
 	const [nameError, setNameError] = useState<string>();
+
+	const federatedModule = useHasLicenseModule('federation');
+
+	const canUseFederation = federatedModule !== 'loading' && federatedModule && federationEnabled;
 
 	const checkName = useDebouncedCallback(
 		async (name: string) => {
@@ -129,6 +148,15 @@ const CreateChannel = ({
 					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
+								<Field.Label>{t('Federation_Matrix_Federated')}</Field.Label>
+								<Field.Description>{t(getFederationHintKey(federatedModule, Boolean(federationEnabled)))}</Field.Description>
+							</Box>
+							<ToggleSwitch checked={values.federated} onChange={onChangeFederated} disabled={!canUseFederation} />
+						</Box>
+					</Field>
+					<Field>
+						<Box display='flex' justifyContent='space-between' alignItems='start'>
+							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label>{t('Read_only')}</Field.Label>
 								<Field.Description>
 									{values.readOnly
@@ -145,7 +173,7 @@ const CreateChannel = ({
 								<Field.Label>{t('Encrypted')}</Field.Label>
 								<Field.Description>{values.type ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}</Field.Description>
 							</Box>
-							<ToggleSwitch checked={values.encrypted} disabled={e2edisabled} onChange={handlers.handleEncrypted} />
+							<ToggleSwitch checked={values.encrypted} disabled={e2edisabled || values.federated} onChange={handlers.handleEncrypted} />
 						</Box>
 					</Field>
 					<Field>
@@ -154,12 +182,12 @@ const CreateChannel = ({
 								<Field.Label>{t('Broadcast')}</Field.Label>
 								<Field.Description>{t('Broadcast_channel_Description')}</Field.Description>
 							</Box>
-							<ToggleSwitch checked={values.broadcast} onChange={onChangeBroadcast} />
+							<ToggleSwitch checked={values.broadcast} onChange={onChangeBroadcast} disabled={!!values.federated} />
 						</Box>
 					</Field>
 					<Field>
 						<Field.Label>{`${t('Add_members')} (${t('optional')})`}</Field.Label>
-						<UserAutoCompleteMultiple value={values.users} onChange={onChangeUsers} />
+						<UserAutoCompleteMultipleFederated value={values.users} onChange={handlers.handleUsers} />
 					</Field>
 				</FieldGroup>
 			</Modal.Content>

@@ -5,6 +5,7 @@ import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
+type UserAutoComplete = Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>;
 export async function findUsersToAutocomplete({
 	uid,
 	selector,
@@ -16,7 +17,7 @@ export async function findUsersToAutocomplete({
 		term: string;
 	};
 }): Promise<{
-	items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
+	items: UserAutoComplete[];
 }> {
 	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
 		return { items: [] };
@@ -37,7 +38,7 @@ export async function findUsersToAutocomplete({
 		limit: 10,
 	};
 
-	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<UserAutoComplete>(
 		new RegExp(escapeRegExp(selector.term), 'i'),
 		exceptions,
 		conditions,

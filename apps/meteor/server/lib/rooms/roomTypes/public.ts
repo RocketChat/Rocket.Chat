@@ -1,5 +1,6 @@
-import type { AtLeast } from '@rocket.chat/core-typings';
+import { AtLeast, IRoom, isRoomFederated } from '@rocket.chat/core-typings';
 
+import { Federation } from '../../../../app/federation-v2/server/infrastructure/rocket-chat/Federation';
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
@@ -26,6 +27,9 @@ roomCoordinator.add(PublicRoomType, {
 	},
 
 	allowMemberAction(_room, action) {
+		if (isRoomFederated(_room as IRoom)) {
+			return Federation.federationActionAllowed(action);
+		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return false;

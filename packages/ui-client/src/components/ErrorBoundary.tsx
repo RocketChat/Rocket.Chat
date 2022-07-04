@@ -1,6 +1,9 @@
 import { Component, ReactNode, ErrorInfo } from 'react';
 
-export class ErrorBoundary extends Component<{ fallback?: ReactNode }, { hasError: boolean }> {
+export class ErrorBoundary extends Component<
+	{ fallback?: ReactNode; onError?: (error: Error, errorInfo: ErrorInfo) => void },
+	{ hasError: boolean }
+> {
 	state = { hasError: false };
 
 	static getDerivedStateFromError(): { hasError: boolean } {
@@ -8,6 +11,7 @@ export class ErrorBoundary extends Component<{ fallback?: ReactNode }, { hasErro
 	}
 
 	componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+		this.props.onError?.(error, errorInfo);
 		console.error('Uncaught Error:', error, errorInfo);
 	}
 

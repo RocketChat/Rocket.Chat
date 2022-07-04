@@ -34,7 +34,7 @@ class CustomOplogHandle {
 
 			await mongo.db.admin().command({ replSetGetStatus: 1 });
 		} catch (e) {
-			if (e.message.startsWith('not authorized')) {
+			if (e instanceof Error && e.message.startsWith('not authorized')) {
 				console.info(
 					'Change Stream is available for your installation, give admin permissions to your database user to use this improved version.',
 				);
@@ -214,7 +214,7 @@ if (!isRunningMs()) {
 		try {
 			oplogHandle = Promise.await(new CustomOplogHandle().start());
 		} catch (e) {
-			console.error(e.message);
+			console.error(e instanceof Error ? e.message : e);
 		}
 	}
 }

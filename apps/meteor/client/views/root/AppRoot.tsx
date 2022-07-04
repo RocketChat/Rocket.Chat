@@ -14,8 +14,8 @@ const ModalRegion = lazy(() => import('../modal/ModalRegion'));
 
 const AppRoot: FC = () => (
 	<Suspense fallback={<PageLoading />}>
-		<MeteorProvider>
-			<QueryClientProvider client={queryClient}>
+		<QueryClientProvider client={queryClient}>
+			<MeteorProvider>
 				<OmnichannelRoomIconProvider>
 					<ConnectionStatusBar />
 					<BannerRegion />
@@ -23,8 +23,8 @@ const AppRoot: FC = () => (
 					<PortalsWrapper />
 					<ModalRegion />
 				</OmnichannelRoomIconProvider>
-			</QueryClientProvider>
-		</MeteorProvider>
+			</MeteorProvider>
+		</QueryClientProvider>
 	</Suspense>
 );
 

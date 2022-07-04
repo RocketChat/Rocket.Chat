@@ -1,5 +1,5 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
 
 import { LivechatRooms } from '../../../models/server';

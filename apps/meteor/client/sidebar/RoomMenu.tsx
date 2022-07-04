@@ -11,8 +11,8 @@ import {
 	useMethod,
 	useTranslation,
 	TranslationKey,
+	Fields,
 } from '@rocket.chat/ui-contexts';
-import { Fields } from '@rocket.chat/ui-contexts/dist/UserContext';
 import React, { memo, ReactElement, useMemo } from 'react';
 
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';

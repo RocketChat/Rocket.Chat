@@ -31,7 +31,7 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 				message: t(isUserBlocked ? 'User_is_unblocked' : 'User_is_blocked'),
 			});
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 		}
 	});
 
