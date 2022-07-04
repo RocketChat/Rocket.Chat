@@ -22,7 +22,7 @@ addAction('calls', ({ room }) => {
 						'icon': 'phone',
 						'title': 'Calls',
 						'disabled': federated,
-						'data-tooltip': 'Video_Call_unavailable_for_federation',
+						'data-tooltip': federated ? 'Video_Call_unavailable_for_federation' : '',
 						'template': lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
 						'order': 999,
 				  }
@@ -87,7 +87,7 @@ addAction('start-call', ({ room }) => {
 						'icon': 'phone',
 						'action': handleOpenVideoConf,
 						'disabled': federated,
-						'data-tooltip': 'Video_Call_unavailable_for_federation',
+						'data-tooltip': federated ? 'Video_Call_unavailable_for_federation' : '',
 						'full': true,
 						'order': live ? -1 : 4,
 				  }

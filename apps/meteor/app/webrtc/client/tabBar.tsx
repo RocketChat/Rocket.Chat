@@ -25,7 +25,7 @@ addAction('webRTCVideo', ({ room }) => {
 						'title': 'WebRTC_Call',
 						'icon': 'phone',
 						'disabled': federated,
-						'data-tooltip': 'Call_unavailable_for_federation',
+						'data-tooltip': federated ? 'Call_unavailable_for_federation' : '',
 						'action': handleClick,
 						'full': true,
 						'order': 4,

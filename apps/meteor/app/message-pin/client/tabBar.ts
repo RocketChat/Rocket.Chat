@@ -16,7 +16,7 @@ addAction('pinned-messages', ({ room }) => {
 						'title': 'Pinned_Messages',
 						'icon': 'pin',
 						'template': 'pinnedMessages',
-						'data-tooltip': 'Pinned_messages_unavailable_for_federation',
+						'data-tooltip': federated ? 'Pinned_messages_unavailable_for_federation' : '',
 						'disabled': federated,
 						'order': 11,
 				  }

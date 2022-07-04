@@ -32,7 +32,7 @@ addAction('thread', (options) => {
 						'title': 'Threads',
 						'icon': 'thread',
 						template,
-						'data-tooltip': 'Threads_unavailable_for_federation',
+						'data-tooltip': federated ? 'Threads_unavailable_for_federation' : '',
 						'disabled': federated,
 						'renderAction': (props): ReactNode => {
 							const tunread = room.tunread?.length || 0;

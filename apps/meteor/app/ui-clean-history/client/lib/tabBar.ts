@@ -20,7 +20,7 @@ addAction('clean-history', ({ room }) => {
 						'title': 'Prune_Messages',
 						'icon': 'eraser',
 						'disabled': federated,
-						'data-tooltip': 'Clean_History_unavailable_for_federation',
+						'data-tooltip': federated ? 'Clean_History_unavailable_for_federation' : '',
 						template,
 						'order': 250,
 				  }

@@ -67,7 +67,7 @@ addAction('uploaded-files-list', ({ room }) => {
 		'title': 'Files',
 		'icon': 'clip',
 		'disabled': federated,
-		'data-tooltip': 'Files_unavailable_for_federation',
+		'data-tooltip': federated ? 'Files_unavailable_for_federation' : '',
 		'template': lazy(() => import('../../contextualBar/RoomFiles')),
 		'order': 7,
 	};

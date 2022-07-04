@@ -21,7 +21,7 @@ addAction('discussions', ({ room }) => {
 						template,
 						'full': true,
 						'disabled': federated,
-						'data-tooltip': 'Discussions_unavailable_for_federation',
+						'data-tooltip': federated ? 'Discussions_unavailable_for_federation' : '',
 						'order': 3,
 				  }
 				: null,
