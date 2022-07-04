@@ -40,12 +40,16 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 };
 
-export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper') =>
-	document.querySelector(selector) ||
-	new Promise((resolve) => {
+export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper') => {
+	const element = document.querySelector(selector);
+	if (element.length) {
+		return element;
+	}
+	return new Promise((resolve) => {
 		const observer = new MutationObserver(function (mutations, obs) {
 			const element = document.querySelector(selector);
 			if (element) {
+				console.log('element found', { ...element });
 				obs.disconnect(); // stop observing
 				return resolve(element);
 			}
@@ -55,6 +59,7 @@ export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper'
 			subtree: true,
 		});
 	});
+};
 
 export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatMessage) => {
 	const userId = msg.u && msg.u._id;
@@ -350,16 +355,12 @@ export const RoomHistoryManager = new (class extends Emitter {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		return Meteor.call('loadSurroundingMessages', message, limit, function (err, result) {
+		return Meteor.call('loadSurroundingMessages', message, limit, async function (err, result) {
 			if (!result || !result.messages) {
 				return;
 			}
 
-			for (const msg of Array.from(result.messages)) {
-				if (msg.t !== 'command') {
-					upsertMessage({ msg, subscription });
-				}
-			}
+			upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 
 			readMessage.refreshUnreadMark(message.rid);
 			RoomManager.updateMentionsMarksOfRoom(typeName);
