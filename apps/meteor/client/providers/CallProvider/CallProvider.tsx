@@ -42,7 +42,9 @@ import { useDialModal } from '../../hooks/useDialModal';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
 
-const startRingback = (user: IUser, soundId: 'telephone' | 'outbound-call-ringing' | 'call-ended', loop = true): void => {
+type VoipSound = 'telephone' | 'outbound-call-ringing' | 'call-ended';
+
+const startRingback = (user: IUser, soundId: VoipSound, loop = true): void => {
 	const audioVolume = getUserPreference(user, 'notificationsSoundVolume', 100) as number;
 	CustomSounds.play(soundId, {
 		volume: Number((audioVolume / 100).toPrecision(2)),
@@ -50,12 +52,17 @@ const startRingback = (user: IUser, soundId: 'telephone' | 'outbound-call-ringin
 	});
 };
 
-const stopRingback = (): void => {
-	CustomSounds.pause('telephone');
-	CustomSounds.remove('telephone');
+const stopRingBackById = (soundId: VoipSound): void => {
+	CustomSounds.pause(soundId);
+	CustomSounds.remove(soundId);
+};
 
-	CustomSounds.pause('outbound-call-ringing');
-	CustomSounds.remove('outbound-call-ringing');
+const stopTelephoneRingback = (): void => stopRingBackById('telephone');
+const stopOutboundCallRinging = (): void => stopRingBackById('outbound-call-ringing');
+
+const stopAllRingback = (): void => {
+	stopTelephoneRingback();
+	stopOutboundCallRinging();
 };
 
 type NetworkState = 'online' | 'offline';
@@ -325,7 +332,7 @@ export const CallProvider: FC = ({ children }) => {
 			if (!callDetails.callInfo) {
 				return;
 			}
-			stopRingback();
+			stopAllRingback();
 			if (callDetails.userState !== UserState.UAC) {
 				return;
 			}
@@ -375,7 +382,7 @@ export const CallProvider: FC = ({ children }) => {
 
 		const onCallTerminated = (): void => {
 			startRingback(user, 'call-ended', false);
-			stopRingback();
+			stopAllRingback();
 		};
 
 		const onCallFailed = (): void => {
