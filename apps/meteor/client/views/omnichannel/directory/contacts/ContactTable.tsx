@@ -20,7 +20,7 @@ import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
-import { ContactTableDialpadButton } from './ContactTableDialpadButton';
+import { CallDialpadButton } from '../CallDialpadButton';
 
 type ContactTableProps = {
 	setContactReload(fn: () => void): void;
@@ -149,7 +149,9 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 									<GenericTableCell withTruncatedText>{phoneNumber}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>
-									<GenericTableCell>{isCallReady && <ContactTableDialpadButton phoneNumber={phoneNumber} />}</GenericTableCell>
+									<GenericTableCell>
+										{isCallReady && <CallDialpadButton className='contact-table__call-button' phoneNumber={phoneNumber} />}
+									</GenericTableCell>
 								</GenericTableRow>
 							);
 						})}
