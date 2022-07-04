@@ -1,4 +1,4 @@
-import Agenda from 'agenda';
+import { Agenda, Job } from '@rocket.chat/agenda';
 import { ObjectID } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
 import { StartupType, IProcessor, IOnetimeSchedule, IRecurringSchedule } from '@rocket.chat/apps-engine/definition/scheduler';
@@ -6,7 +6,7 @@ import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/Schedul
 
 import { AppServerOrchestrator } from '../orchestrator';
 
-function _callProcessor(processor: Function): (job: Agenda.Job) => void {
+function _callProcessor(processor: Function): (job: Job) => void {
 	return (job): void => {
 		const data = job?.attrs?.data || {};
 

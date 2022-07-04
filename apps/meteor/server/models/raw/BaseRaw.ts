@@ -54,7 +54,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		const indexes = this.modelIndexes();
 		if (indexes?.length) {
 			this.col.createIndexes(indexes).catch((e) => {
-				console.warn(`Error creating indexes for ${this.name}`, e);
+				console.warn(`Some indexes for collection '${this.name}' could not be created:\n\t${e.message}`);
 			});
 		}
 
@@ -65,7 +65,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		// noop
 	}
 
-	private doNotMixInclusionAndExclusionFields(options: FindOneOptions<T> = {}): FindOneOptions<T> {
+	private doNotMixInclusionAndExclusionFields(options: FindOneOptions<T> | WithoutProjection<FindOneOptions<T>> = {}): FindOneOptions<T> {
 		const optionsDef = this.ensureDefaultFields(options);
 		if (optionsDef?.projection === undefined) {
 			return optionsDef;
@@ -118,13 +118,18 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		return this.col.findOneAndUpdate(query, update, options);
 	}
 
-	async findOneById(_id: string, options?: WithoutProjection<FindOneOptions<T>> | undefined): Promise<T | null>;
+	async findOneById(_id: string, options?: WithoutProjection<FindOneOptions<T>>): Promise<T | null>;
 
 	async findOneById<P>(_id: string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
 
-	async findOneById<P>(_id: string, options?: any): Promise<T | P | null> {
+	async findOneById<P>(
+		_id: string,
+		options?: WithoutProjection<FindOneOptions<T>> | FindOneOptions<P extends T ? T : P>,
+	): Promise<T | P | null> {
 		const query = { _id } as FilterQuery<T>;
-		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
+		const optionsDef = this.doNotMixInclusionAndExclusionFields(options as WithoutProjection<FindOneOptions<T>>) as WithoutProjection<
+			FindOneOptions<T>
+		>;
 		return this.col.findOne(query, optionsDef);
 	}
 
@@ -134,10 +139,15 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 	async findOne<P>(query: FilterQuery<T> | string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
 
-	async findOne<P>(query: FilterQuery<T> | string = {}, options?: any): Promise<T | P | null> {
+	async findOne<P>(
+		query: FilterQuery<T> | string = {},
+		options?: WithoutProjection<FindOneOptions<T>> | FindOneOptions<P extends T ? T : P>,
+	): Promise<T | P | null> {
 		const q = typeof query === 'string' ? ({ _id: query } as FilterQuery<T>) : query;
 
-		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
+		const optionsDef = this.doNotMixInclusionAndExclusionFields(options as WithoutProjection<FindOneOptions<T>>) as WithoutProjection<
+			FindOneOptions<T>
+		>;
 		return this.col.findOne(q, optionsDef);
 	}
 
@@ -151,8 +161,13 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 	find<P = T>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P>;
 
-	find<P>(query: FilterQuery<T> | undefined = {}, options?: any): Cursor<P> | Cursor<T> {
-		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
+	find<P>(
+		query: FilterQuery<T> | undefined = {},
+		options?: WithoutProjection<FindOneOptions<T>> | FindOneOptions<P extends T ? T : P>,
+	): Cursor<P> | Cursor<T> {
+		const optionsDef = this.doNotMixInclusionAndExclusionFields(options as WithoutProjection<FindOneOptions<T>>) as WithoutProjection<
+			FindOneOptions<T>
+		>;
 		return this.col.find(query, optionsDef);
 	}
 

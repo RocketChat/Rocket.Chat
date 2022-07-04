@@ -1,4 +1,4 @@
-import google from 'googleapis';
+import { google } from 'googleapis';
 
 import { settings } from '../../settings/server';
 import { Users } from '../../models/server';

@@ -50,7 +50,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findAllResumeTokensByUserId(userId: any): any;
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(termRegex: any, exceptions: any, conditions: any, options: any): any;
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions<T = IUser>(
+		termRegex: any,
+		exceptions: any,
+		conditions: any,
+		options: any,
+	): Cursor<T>;
 
 	countAllAgentsStatus({ departmentId }: { departmentId?: any }): any;
 
@@ -93,6 +98,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	resetTOTPById(userId: any): any;
 
 	unsetLoginTokens(userId: any): any;
+	unsetOneLoginToken(userId: IUser['_id'], token: string): Promise<UpdateWriteOpResult>;
 
 	removeNonPATLoginTokensExcept(userId: any, authToken: any): any;
 
@@ -123,4 +129,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findActiveUsersEmail2faEnable(options: any): any;
 
 	findActiveByIdsOrUsernames(userIds: string[], options?: any): Cursor<IUser>;
+
+	setAsFederated(userId: string): any;
 }

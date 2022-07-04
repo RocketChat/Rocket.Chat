@@ -11,7 +11,7 @@ function getMessageById(messageId: IMessage['_id']): IMessage | undefined {
 		}
 		return Promise.await(getMessageForUser(messageId, user));
 	} catch (e) {
-		throw new Meteor.Error(e.message, 'Invalid message', {
+		throw new Meteor.Error(e instanceof Error ? e.message : String(e), 'Invalid message', {
 			function: 'actionLinks.getMessage',
 		});
 	}
