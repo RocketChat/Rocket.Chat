@@ -1,6 +1,15 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
+import { IRoom } from '@rocket.chat/core-typings';
+import {
+	isRoomsGetParamsGET,
+	isRoomsSaveNotificationParamsPOST,
+	isRoomsFavoriteParamsPOST,
+	isRoomsCleanHistoryParamsPOST,
+	isRoomsCreateDiscussionParamsPOST,
+} from '@rocket.chat/rest-typings';
 
-import { FileUpload } from '../../../file-upload';
+import { FileUpload } from '../../../file-upload/server';
 import { Rooms, Messages } from '../../../models/server';
 import { API } from '../api';
 import {
@@ -17,7 +26,17 @@ import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
-function findRoomByIdOrName({ params, checkedArchived = true }) {
+function findRoomByIdOrName({
+	params,
+	checkedArchived = true,
+}: {
+	params: {
+		roomId: string;
+		roomName: string;
+		[key: string]: unknown;
+	};
+	checkedArchived?: boolean;
+}): IRoom {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
 		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
@@ -42,24 +61,26 @@ function findRoomByIdOrName({ params, checkedArchived = true }) {
 
 API.v1.addRoute(
 	'rooms.get',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsGetParamsGET,
+	},
 	{
 		get() {
 			const { updatedSince } = this.queryParams;
+			const { userId } = this;
 
 			let updatedSinceDate;
-			if (updatedSince) {
-				if (isNaN(Date.parse(updatedSince))) {
-					throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-				} else {
-					updatedSinceDate = new Date(updatedSince);
-				}
+
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
 			}
 
 			let result;
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('rooms/get', updatedSinceDate);
-			});
+
+			result = Meteor.call('rooms/get', updatedSinceDate);
 
 			if (Array.isArray(result)) {
 				result = {
@@ -69,8 +90,8 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				update: result.update.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
-				remove: result.remove.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				update: result.update.map((room: IRoom) => this.composeRoomWithLastMessage(room, userId)),
+				remove: result.remove.map((room: IRoom) => this.composeRoomWithLastMessage(room, userId)),
 			});
 		},
 	},
@@ -129,21 +150,30 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.saveNotification',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsSaveNotificationParamsPOST,
+	},
 	{
 		post() {
-			const saveNotifications = (notifications, roomId) => {
+			const saveNotifications = (
+				notifications: {
+					[x: string]: unknown;
+					disableNotifications: string;
+					muteGroupMentions: string;
+					hideUnreadStatus: string;
+					desktopNotifications: string;
+					audioNotificationValue: string;
+					mobilePushNotifications: string;
+					emailNotifications: string;
+				},
+				roomId: string,
+			): void => {
 				Object.keys(notifications).forEach((notificationKey) =>
-					Meteor.runAsUser(this.userId, () =>
-						Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]),
-					),
+					Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]),
 				);
 			};
 			const { roomId, notifications } = this.bodyParams;
-
-			if (!roomId) {
-				return API.v1.failure("The 'roomId' param is required");
-			}
 
 			if (!notifications || Object.keys(notifications).length === 0) {
 				return API.v1.failure("The 'notifications' param is required");
@@ -151,25 +181,24 @@ API.v1.addRoute(
 
 			saveNotifications(notifications, roomId);
 
-			return API.v1.success();
+			return API.v1.success() as boolean;
 		},
 	},
 );
 
 API.v1.addRoute(
 	'rooms.favorite',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsFavoriteParamsPOST,
+	},
 	{
 		post() {
 			const { favorite } = this.bodyParams;
 
-			if (!this.bodyParams.hasOwnProperty('favorite')) {
-				return API.v1.failure("The 'favorite' param is required");
-			}
-
 			const room = findRoomByIdOrName({ params: this.bodyParams });
 
-			Meteor.runAsUser(this.userId, () => Meteor.call('toggleFavorite', room._id, favorite));
+			Meteor.call('toggleFavorite', room._id, favorite);
 
 			return API.v1.success();
 		},
@@ -178,7 +207,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.cleanHistory',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsCleanHistoryParamsPOST,
+	},
 	{
 		async post() {
 			const { _id } = findRoomByIdOrName({ params: this.bodyParams });
@@ -194,14 +226,6 @@ API.v1.addRoute(
 				ignoreDiscussion,
 				users,
 			} = this.bodyParams;
-
-			if (!latest) {
-				return API.v1.failure('Body parameter "latest" is required.');
-			}
-
-			if (!oldest) {
-				return API.v1.failure('Body parameter "oldest" is required.');
-			}
 
 			const count = await Meteor.call('cleanRoomHistory', {
 				roomId: _id,
@@ -244,9 +268,8 @@ API.v1.addRoute(
 	{
 		post() {
 			const room = findRoomByIdOrName({ params: this.bodyParams });
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('leaveRoom', room._id);
-			});
+
+			Meteor.call('leaveRoom', room._id);
 
 			return API.v1.success();
 		},
@@ -255,34 +278,26 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.createDiscussion',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsCreateDiscussionParamsPOST,
+	},
 	{
 		post() {
 			const { prid, pmid, reply, t_name, users, encrypted } = this.bodyParams;
-			if (!prid) {
-				return API.v1.failure('Body parameter "prid" is required.');
-			}
-			if (!t_name) {
-				return API.v1.failure('Body parameter "t_name" is required.');
-			}
-			if (users && !Array.isArray(users)) {
-				return API.v1.failure('Body parameter "users" must be an array.');
-			}
 
 			if (encrypted !== undefined && typeof encrypted !== 'boolean') {
 				return API.v1.failure('Body parameter "encrypted" must be a boolean when included.');
 			}
 
-			const discussion = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('createDiscussion', {
-					prid,
-					pmid,
-					t_name,
-					reply,
-					users: users || [],
-					encrypted,
-				}),
-			);
+			const discussion = Meteor.call('createDiscussion', {
+				prid,
+				pmid,
+				t_name,
+				reply,
+				users: users || [],
+				encrypted,
+			});
 
 			return API.v1.success({ discussion });
 		},
