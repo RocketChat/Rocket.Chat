@@ -39,6 +39,8 @@ RocketChatFile.GridFS = class {
 		this.transformWrite = transformWrite;
 
 		this.bucket = new mongo.GridFSBucket(db, { bucketName: this.name });
+
+		this.getFileSync = Meteor.wrapAsync(this.getFile.bind(this));
 	}
 
 	findOne(filename) {
