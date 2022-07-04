@@ -49,7 +49,6 @@ export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper'
 		const observer = new MutationObserver(function (mutations, obs) {
 			const element = document.querySelector(selector);
 			if (element) {
-				console.log('element found', { ...element });
 				obs.disconnect(); // stop observing
 				return resolve(element);
 			}
