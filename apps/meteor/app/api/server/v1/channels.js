@@ -507,7 +507,7 @@ API.v1.addRoute(
 	'channels.members',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const findResult = findChannelByIdOrName({
 				params: this.requestParams(),
 				checkedArchived: false,
@@ -529,7 +529,7 @@ API.v1.addRoute(
 			);
 			const { status, filter } = this.queryParams;
 
-			const cursor = findUsersOfRoom({
+			const { cursor, totalCount: total } = findUsersOfRoom({
 				rid: findResult._id,
 				...(status && { status: { $in: status } }),
 				skip,
@@ -538,8 +538,7 @@ API.v1.addRoute(
 				...(sort?.username && { sort: { username: sort.username } }),
 			});
 
-			const total = cursor.count();
-			const members = cursor.fetch();
+			const members = await cursor.toArray();
 
 			return API.v1.success({
 				members,

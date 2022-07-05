@@ -1,7 +1,7 @@
 import type { Mongo } from 'meteor/mongo';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 type FindUsersParam = {
@@ -31,7 +31,7 @@ export function findUsersOfRoom({ rid, status, skip = 0, limit = 0, filter = '',
 		...(limit > 0 && { limit }),
 	};
 
-	return Users.findByActiveUsersExcept(filter, undefined, options, undefined, [
+	return Users.findPaginatedByActiveUsersExcept(filter, undefined, options, undefined, [
 		{
 			__rooms: rid,
 			...(status && { status }),

@@ -3,7 +3,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 import mem from 'mem';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Rooms as RoomsRaw } from '@rocket.chat/models';
+import { Rooms as RoomsRaw, Users as UsersRaw } from '@rocket.chat/models';
 
 import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Users, Subscriptions } from '../../app/models/server';
@@ -149,7 +149,7 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 	};
 };
 
-function findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo }) {
+async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo }) {
 	const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
 
 	const options = {
@@ -168,11 +168,10 @@ function findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo })
 	};
 
 	if (workspace === 'all') {
-		const cursor = Users.findByActiveUsersExcept(text, [], options, forcedSearchFields);
-		const cursorTotal = Users.findByActiveUsersExcept(text, [], null, forcedSearchFields);
+		const { cursor, totalCount: total } = UsersRaw.findPaginatedByActiveUsersExcept(text, [], options, forcedSearchFields);
 		return {
-			total: cursorTotal.count(),
-			results: cursor.fetch(),
+			total,
+			results: await cursor.toArray(),
 		};
 	}
 
@@ -200,7 +199,7 @@ const getUsers = async (user, text, workspace, sort, pagination) => {
 
 	const viewFullOtherUserInfo = hasPermission(user._id, 'view-full-other-user-info');
 
-	const { total, results } = findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo });
+	const { total, results } = await findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo });
 
 	// Try to find federated users, when applicable
 	if (isFederationEnabled() && workspace === 'external' && text.indexOf('@') !== -1) {

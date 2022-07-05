@@ -28,6 +28,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findRoomsWithoutDiscussionsByRoomIds(name: any, roomIds: any, options: any): any;
 
+	findPaginatedRoomsWithoutDiscussionsByRoomIds(name: any, roomIds: any, options: any): any;
+
 	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid: any, name: any, groupsToAccept: any, options: any): any;
 
 	unsetTeamId(teamId: any, options?: any): any;

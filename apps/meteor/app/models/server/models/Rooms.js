@@ -386,16 +386,6 @@ export class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findByTypes(types, discussion = false, options = {}) {
-		const query = {
-			t: {
-				$in: types,
-			},
-			prid: { $exists: discussion },
-		};
-		return this.find(query, options);
-	}
-
 	findByUserId(userId, options) {
 		const query = { 'u._id': userId };
 
@@ -477,41 +467,6 @@ export class Rooms extends Base {
 			],
 		};
 
-		return this.find(query, options);
-	}
-
-	findByNameContaining(name, discussion = false, options = {}) {
-		const nameRegex = new RegExp(s.trim(escapeRegExp(name)), 'i');
-
-		const query = {
-			prid: { $exists: discussion },
-			$or: [
-				{ name: nameRegex },
-				{
-					t: 'd',
-					usernames: nameRegex,
-				},
-			],
-		};
-		return this.find(query, options);
-	}
-
-	findByNameContainingAndTypes(name, types, discussion = false, options = {}) {
-		const nameRegex = new RegExp(s.trim(escapeRegExp(name)), 'i');
-
-		const query = {
-			t: {
-				$in: types,
-			},
-			prid: { $exists: discussion },
-			$or: [
-				{ name: nameRegex },
-				{
-					t: 'd',
-					usernames: nameRegex,
-				},
-			],
-		};
 		return this.find(query, options);
 	}
 

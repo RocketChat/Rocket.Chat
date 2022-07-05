@@ -81,7 +81,7 @@ export class RoomsRaw extends BaseRaw {
 			...teamCondition,
 			...onlyTeamsQuery,
 		};
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findByTypes(types, discussion = false, teams = false, onlyTeams = false, options = {}) {
@@ -103,7 +103,7 @@ export class RoomsRaw extends BaseRaw {
 			...teamCondition,
 			...onlyTeamsCondition,
 		};
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findByNameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
@@ -132,7 +132,7 @@ export class RoomsRaw extends BaseRaw {
 			...onlyTeamsCondition,
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findByTeamId(teamId, options = {}) {
@@ -252,6 +252,38 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	findPaginatedRoomsWithoutDiscussionsByRoomIds(name, roomIds, options) {
+		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
+
+		const query = {
+			_id: {
+				$in: roomIds,
+			},
+			t: {
+				$in: ['c', 'p'],
+			},
+			name: nameRegex,
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: roomIds,
+					},
+				},
+			],
+			prid: { $exists: false },
+		};
+
+		return this.findPaginated(query, options);
 	}
 
 	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, groupsToAccept, options) {

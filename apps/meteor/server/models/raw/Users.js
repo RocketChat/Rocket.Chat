@@ -147,6 +147,62 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findPaginatedByActiveUsersExcept(
+		searchTerm,
+		exceptions,
+		options,
+		searchFields,
+		extraQuery = [],
+		{ startsWith = false, endsWith = false } = {},
+	) {
+		if (exceptions == null) {
+			exceptions = [];
+		}
+		if (options == null) {
+			options = {};
+		}
+		if (!Array.isArray(exceptions)) {
+			exceptions = [exceptions];
+		}
+
+		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+		if (searchTerm === '') {
+			const query = {
+				$and: [
+					{
+						active: true,
+						username: { $exists: true, $nin: exceptions },
+					},
+					...extraQuery,
+				],
+			};
+
+			return this.findPaginated(query, options);
+		}
+
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+
+		// const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
+
+		const orStmt = (searchFields || []).reduce(function (acc, el) {
+			acc.push({ [el.trim()]: termRegex });
+			return acc;
+		}, []);
+
+		const query = {
+			$and: [
+				{
+					active: true,
+					username: { $exists: true, $nin: exceptions },
+					$or: orStmt,
+				},
+				...extraQuery,
+			],
+		};
+
+		return this.findPaginated(query, options);
+	}
+
 	findActive(query, options = {}) {
 		Object.assign(query, { active: true });
 

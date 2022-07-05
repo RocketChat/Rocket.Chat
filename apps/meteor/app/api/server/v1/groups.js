@@ -638,7 +638,7 @@ API.v1.addRoute(
 	'groups.members',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const findResult = findPrivateGroupByIdOrName({
 				params: this.requestParams(),
 				userId: this.userId,
@@ -660,7 +660,7 @@ API.v1.addRoute(
 			);
 			const { status, filter } = this.queryParams;
 
-			const cursor = findUsersOfRoom({
+			const { cursor, totalCount: total } = findUsersOfRoom({
 				rid: findResult.rid,
 				...(status && { status: { $in: status } }),
 				skip,
@@ -669,8 +669,7 @@ API.v1.addRoute(
 				...(sort?.username && { sort: { username: sort.username } }),
 			});
 
-			const total = cursor.count();
-			const members = cursor.fetch();
+			const members = await cursor.toArray();
 
 			return API.v1.success({
 				members,
