@@ -1,8 +1,9 @@
 import { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { SidebarSection } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentType, memo, ReactElement } from 'react';
+import React, { ComponentType, memo, useMemo, ReactElement } from 'react';
 
+import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import OmnichannelSection from '../sections/OmnichannelSection';
@@ -27,6 +28,20 @@ type RoomListRowProps = {
 const Row = ({ data, item }: { data: RoomListRowProps; item: ISubscription & IRoom }): ReactElement => {
 	const { extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
 
+	const acceptCall = useVideoConfAcceptCall();
+	const rejectCall = useVideoConfRejectIncomingCall();
+	const incomingCalls = useVideoConfIncomingCalls();
+	const currentCall = incomingCalls.find((call) => call.rid === item.rid);
+
+	const videoConfActions = useMemo(
+		() =>
+			currentCall && {
+				acceptCall: (): void => acceptCall(currentCall.callId),
+				rejectCall: (): void => rejectCall(currentCall.callId),
+			},
+		[acceptCall, rejectCall, currentCall],
+	);
+
 	if (typeof item === 'string') {
 		const Section = sections[item];
 		return Section ? (
@@ -37,6 +52,7 @@ const Row = ({ data, item }: { data: RoomListRowProps; item: ISubscription & IRo
 			</SidebarSection>
 		);
 	}
+
 	return (
 		<SideBarItemTemplateWithData
 			sidebarViewMode={sidebarViewMode}
@@ -46,6 +62,7 @@ const Row = ({ data, item }: { data: RoomListRowProps; item: ISubscription & IRo
 			extended={extended}
 			SideBarItemTemplate={SideBarItemTemplate}
 			AvatarTemplate={AvatarTemplate}
+			videoConfActions={currentCall && videoConfActions}
 		/>
 	);
 };

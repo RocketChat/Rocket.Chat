@@ -1,5 +1,7 @@
 import type { FilterQuery } from 'mongodb';
 
+import type { IRocketChatAssetConstraint } from './IRocketChatAssets';
+
 export type SettingId = string;
 export type GroupId = SettingId;
 export type TabId = SettingId;
@@ -19,7 +21,7 @@ export interface ISettingSelectOption {
 	i18nLabel: string;
 }
 
-export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction;
+export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset;
 
 export interface ISettingBase {
 	_id: SettingId;
@@ -40,7 +42,8 @@ export interface ISettingBase {
 		| 'asset'
 		| 'roomPick'
 		| 'group'
-		| 'date';
+		| 'date'
+		| 'lookup';
 	public: boolean;
 	env: boolean;
 	group?: GroupId;
@@ -71,6 +74,7 @@ export interface ISettingBase {
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
 	placeholder?: string;
+	lookupEndpoint?: string;
 	wizard?: {
 		step: number;
 		order: number;
@@ -119,6 +123,8 @@ export interface ISettingAction extends ISettingBase {
 export interface ISettingAsset extends ISettingBase {
 	type: 'asset';
 	value: AssetValue;
+	fileConstraints: IRocketChatAssetConstraint;
+	asset: string;
 }
 
 export interface ISettingDate extends ISettingBase {
@@ -164,8 +170,6 @@ export interface ISettingStatistics {
 	pushEnable?: boolean;
 	globalSearchEnabled?: boolean;
 	threadsEnabled?: boolean;
-	bigBlueButton?: boolean;
-	jitsiEnabled?: boolean;
 	webRTCEnableChannel?: boolean;
 	webRTCEnablePrivate?: boolean;
 	webRTCEnableDirect?: boolean;

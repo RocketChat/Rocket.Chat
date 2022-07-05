@@ -1,10 +1,11 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { ILivechatDepartmentRecord, IUser } from '@rocket.chat/core-typings';
 import { FilterQuery } from 'mongodb';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
+type UserAutoComplete = Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>;
 export async function findUsersToAutocomplete({
 	uid,
 	selector,
@@ -16,7 +17,7 @@ export async function findUsersToAutocomplete({
 		term: string;
 	};
 }): Promise<{
-	items: IUser[];
+	items: UserAutoComplete[];
 }> {
 	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
 		return { items: [] };
@@ -37,7 +38,7 @@ export async function findUsersToAutocomplete({
 		limit: 10,
 	};
 
-	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<UserAutoComplete>(
 		new RegExp(escapeRegExp(selector.term), 'i'),
 		exceptions,
 		conditions,
@@ -69,16 +70,7 @@ export function getInclusiveFields(query: { [k: string]: 1 }): {} {
  * get the default fields if **fields** are empty (`{}`) or `undefined`/`null`
  * @param {Object|null|undefined} fields the fields from parsed jsonQuery
  */
-export function getNonEmptyFields(fields: {}): {
-	name: number;
-	username: number;
-	emails: number;
-	roles: number;
-	status: number;
-	active: number;
-	avatarETag: number;
-	lastLogin: number;
-} {
+export function getNonEmptyFields(fields: { [k: string]: 1 | 0 }): { [k: string]: 1 } {
 	const defaultFields = {
 		name: 1,
 		username: 1,
@@ -88,7 +80,7 @@ export function getNonEmptyFields(fields: {}): {
 		active: 1,
 		avatarETag: 1,
 		lastLogin: 1,
-	};
+	} as const;
 
 	if (!fields || Object.keys(fields).length === 0) {
 		return defaultFields;

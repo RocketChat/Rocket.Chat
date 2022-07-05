@@ -6,7 +6,7 @@ import { callbacks } from '../../../lib/callbacks';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		const highlights: (string | undefined)[] | undefined = getUserPreference(Meteor.userId(), 'highlights');
+		const highlights = getUserPreference(Meteor.userId(), 'highlights') as (string | undefined)[] | undefined;
 		const isEnabled = highlights?.some((highlight) => highlight?.trim()) ?? false;
 
 		if (!isEnabled) {

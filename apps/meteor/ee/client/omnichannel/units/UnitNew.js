@@ -19,7 +19,7 @@ function UnitNew({ reload, allUnits }) {
 		value: availableMonitors,
 		phase: availableMonitorsState,
 		error: availableMonitorsError,
-	} = useEndpointData('/v1/livechat/monitors.list');
+	} = useEndpointData('/v1/livechat/monitors');
 
 	if ([availableDepartmentsState, availableMonitorsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

@@ -166,7 +166,7 @@ const AppsProvider: FC = ({ children }) => {
 		} catch (e) {
 			dispatchMarketplaceApps({
 				type: 'failure',
-				error: e,
+				error: e instanceof Error ? e : new Error(String(e)),
 				reload: fetch,
 			});
 			marketplaceError = true;
@@ -183,7 +183,7 @@ const AppsProvider: FC = ({ children }) => {
 		} catch (e) {
 			dispatchInstalledApps({
 				type: 'failure',
-				error: e,
+				error: e instanceof Error ? e : new Error(String(e)),
 				reload: fetch,
 			});
 			installedAppsError = true;
@@ -247,31 +247,32 @@ const AppsProvider: FC = ({ children }) => {
 
 	useEffect(() => {
 		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
-			let marketplaceApp: App | undefined;
+			let marketplaceApp: { app: App; success: boolean } | undefined;
 			let installedApp: App;
 
 			try {
 				installedApp = await Apps.getApp(appId);
-			} catch (error) {
+			} catch (error: any) {
 				handleAPIError(error);
 				throw error;
 			}
 
 			try {
 				marketplaceApp = await Apps.getAppFromMarketplace(appId, installedApp.version);
-			} catch (error) {
+			} catch (error: any) {
 				handleAPIError(error);
 			}
 
 			if (marketplaceApp !== undefined) {
 				const { status, version, licenseValidation } = installedApp;
 				const record = {
-					...marketplaceApp,
+					...marketplaceApp.app,
+					success: marketplaceApp.success,
 					installed: true,
 					status,
 					version,
 					licenseValidation,
-					marketplaceVersion: marketplaceApp.version,
+					marketplaceVersion: marketplaceApp.app.version,
 				};
 
 				const [, installedApps] = getCurrentData();

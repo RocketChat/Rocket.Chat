@@ -2,12 +2,11 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import semver from 'semver';
 
 import getNewUpdates from './getNewUpdates';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
-import { Users } from '../../../models';
+import { Users, Settings } from '../../../models/server';
 import logger from '../logger';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
-import { Settings } from '../../../models/server';
 // import getNewUpdates from '../sampleUpdateData';
 
 export default () => {

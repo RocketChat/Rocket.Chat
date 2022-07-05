@@ -49,15 +49,3 @@ export class FederationRoomSendInternalMessageDto extends BaseRoom {
 
 	text: string;
 }
-
-export class FederationRoomChangeJoinRulesDto extends BaseRoom {
-	roomType: RoomType;
-}
-
-export class FederationRoomChangeNameDto extends BaseRoom {
-	normalizedRoomName: string;
-}
-
-export class FederationRoomChangeTopicDto extends BaseRoom {
-	roomTopic: string;
-}

@@ -1,6 +1,7 @@
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
+import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import {
 	useCallActions,
 	useCallCreateRoom,
@@ -10,6 +11,8 @@ import {
 	useQueueCounter,
 	useQueueName,
 } from '../../../contexts/CallContext';
+import SidebarFooterDefault from '../SidebarFooterDefault';
+import { SidebarFooterWatermark } from '../SidebarFooterWatermark';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
 export const VoipFooter = (): ReactElement | null => {
@@ -26,6 +29,7 @@ export const VoipFooter = (): ReactElement | null => {
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
+	const isEE = useHasLicenseModule('voip-enterprise');
 
 	const toggleMic = useCallback(
 		(state: boolean) => {
@@ -60,6 +64,7 @@ export const VoipFooter = (): ReactElement | null => {
 	const tooltips = {
 		mute: t('Mute'),
 		holdCall: t('Hold_Call'),
+		holdCallEEOnly: t('Hold_Call_EE_only'),
 		acceptCall: t('Accept_Call'),
 		endCall: t('End_Call'),
 	};
@@ -77,7 +82,7 @@ export const VoipFooter = (): ReactElement | null => {
 	}, [queueCounter, t]);
 
 	if (!('caller' in callerInfo)) {
-		return null;
+		return <SidebarFooterDefault />;
 	}
 
 	return (
@@ -98,6 +103,8 @@ export const VoipFooter = (): ReactElement | null => {
 			dispatchEvent={dispatchEvent}
 			openedRoomInfo={openedRoomInfo}
 			anonymousText={t('Anonymous')}
+			isEnterprise={isEE === true}
+			children={<SidebarFooterWatermark />}
 		/>
 	);
 };

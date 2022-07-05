@@ -4,8 +4,8 @@ import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { MessageAttachment, FileAttachmentProps } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Rooms, Uploads } from '@rocket.chat/models';
 
-import { Rooms, Uploads } from '../../../models/server/raw';
 import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
@@ -21,6 +21,9 @@ Meteor.methods({
 		}
 
 		const room = await Rooms.findOneById(roomId);
+		if (!room) {
+			return false;
+		}
 
 		if (user?.type !== 'app' && !canAccessRoom(room, user)) {
 			return false;
@@ -126,12 +129,12 @@ Meteor.methods({
 		const msg = Meteor.call('sendMessage', {
 			rid: roomId,
 			ts: new Date(),
-			msg: '',
 			file: files[0],
 			files,
-			groupable: false,
 			attachments,
 			...msgData,
+			msg: msgData.msg ?? '',
+			groupable: msgData.groupable ?? false,
 		});
 
 		callbacks.runAsync('afterFileUpload', { user, room, message: msg });

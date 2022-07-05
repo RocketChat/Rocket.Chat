@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import { Component } from 'preact';
 import { Router, route } from 'preact-router';
-import queryString from 'query-string';
+import { parse } from 'query-string';
 import { withTranslation } from 'react-i18next';
 
 import history from '../../history';
@@ -160,7 +160,7 @@ export class App extends Component {
 	checkPoppedOutWindow() {
 		// Checking if the window is poppedOut and setting parent minimized if yes for the restore purpose
 		const { dispatch } = this.props;
-		const poppedOut = queryString.parse(window.location.search).mode === 'popout';
+		const poppedOut = parse(window.location.search).mode === 'popout';
 		this.setState({ poppedOut });
 		if (poppedOut) {
 			dispatch({ minimized: false });

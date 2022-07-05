@@ -9,7 +9,7 @@ import type {
 } from '@rocket.chat/rest-typings';
 import type { IUser, IMethodConnection, IRoom } from '@rocket.chat/core-typings';
 import type { ValidateFunction } from 'ajv';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 
 import { ITwoFactorOptions } from '../../2fa/server/code';
 
@@ -69,15 +69,27 @@ type Options = (
 	  }
 ) & {
 	validateParams?: ValidateFunction;
+	authOrAnonRequired?: true;
 };
 
 type PartialThis = {
 	readonly request: Request & { query: Record<string, string> };
+	readonly response: Response;
+};
+
+type UserInfo = IUser & {
+	email?: string;
+	settings: {
+		profile: {};
+		preferences: unknown;
+	};
+	avatarUrl: string;
 };
 
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
+	readonly response: Response;
 	// TODO make it unsafe
 	readonly queryParams: TMethod extends 'GET'
 		? TOptions extends { validateParams: ValidateFunction<infer T> }
@@ -91,6 +103,9 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		? T
 		: Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
+
+	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
+
 	/* @deprecated */
 	requestParams(): OperationParams<TMethod, TPathPattern>;
 	getLoggedInUser(): TOptions extends { authRequired: true } ? IUser : IUser | undefined;
@@ -106,16 +121,11 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	/* @deprecated */
 	getUserFromParams(): IUser;
 	/* @deprecated */
-	getUserInfo(me: IUser): TOptions extends { authRequired: true }
-		? IUser & {
-				email?: string;
-				settings: {
-					profile: {};
-					preferences: unknown;
-				};
-				avatarUrl: string;
-		  }
-		: undefined;
+	isUserFromParams(): boolean;
+	/* @deprecated */
+	getUserInfo(
+		me: IUser,
+	): TOptions extends { authRequired: true } ? UserInfo : TOptions extends { authOrAnonRequired: true } ? UserInfo | undefined : undefined;
 	insertUserObject<T>({ object, userId }: { object: { [key: string]: unknown }; userId: string }): { [key: string]: unknown } & T;
 	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
 } & (TOptions extends { authRequired: true }
@@ -123,6 +133,12 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 			readonly user: IUser;
 			readonly userId: string;
 			readonly token: string;
+	  }
+	: TOptions extends { authOrAnonRequired: true }
+	? {
+			readonly user?: IUser;
+			readonly userId?: string;
+			readonly token?: string;
 	  }
 	: {
 			readonly user: null;
@@ -152,6 +168,8 @@ type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}>
 
 declare class APIClass<TBasePath extends string = '/'> {
 	fieldSeparator: string;
+
+	updateRateLimiterDictionaryForRoute(route: string, rateLimiterDictionary: number): void;
 
 	limitedUserFieldsToExclude(fields: { [x: string]: unknown }, limitedUserFieldsToExclude: unknown): { [x: string]: unknown };
 
