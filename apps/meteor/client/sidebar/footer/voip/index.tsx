@@ -2,6 +2,7 @@ import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
+import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import {
 	useCallActions,
 	useCallCreateRoom,
@@ -26,6 +27,7 @@ export const VoipFooter = (): ReactElement | null => {
 	const queueCounter = useQueueCounter();
 	const queueName = useQueueName();
 	const openedRoomInfo = useOpenedRoomInfo();
+	const options = useVoipFooterMenu();
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
@@ -54,6 +56,8 @@ export const VoipFooter = (): ReactElement | null => {
 				return t('In_progress');
 			case 'OFFER_RECEIVED':
 				return t('Ringing');
+			case 'OFFER_SENT':
+				return t('Calling');
 			case 'ON_HOLD':
 				return t('On_Hold');
 		}
@@ -105,6 +109,7 @@ export const VoipFooter = (): ReactElement | null => {
 			anonymousText={t('Anonymous')}
 			isEnterprise={isEE === true}
 			children={<SidebarFooterWatermark />}
+			options={options}
 		/>
 	);
 };
