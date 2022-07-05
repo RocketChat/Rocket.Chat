@@ -14,7 +14,7 @@ const FEDERATION_COMMANDS: Record<string, Function> = {
 
 export const normalizeUserId = (rawUserId: string): string => `@${rawUserId.replace('@', '')}`;
 
-const validateUserIdFormat = async (rawUserId: string, inviterId: string) => {
+const validateUserIdFormat = async (rawUserId: string, inviterId: string): Promise<void> => {
 	const inviter = await Users.findOneById(inviterId);
 	const isInviterExternal = inviter?.federated === true || inviter?.username?.includes(':');
 	if (!rawUserId.includes(':') && !isInviterExternal) {
