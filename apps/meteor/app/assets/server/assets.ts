@@ -496,8 +496,10 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 	const file = asset?.cache;
 
 	const format = req.url.split('.').pop() || '';
+	const formatOld = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
 
 	if (asset && Array.isArray(asset.constraints.extensions) && !asset.constraints.extensions.includes(format)) {
+		console.log('asset not found', { format, formatOld });
 		res.writeHead(403);
 		return res.end();
 	}
