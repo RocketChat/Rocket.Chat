@@ -32,8 +32,8 @@ export const PoweredBy = withTranslation()(({ className, t, ...props }) => (
 
 const handleMouseUp = ({ target }) => target.blur();
 
-const OptionsTrigger = withTranslation()(({ pop, t }) => (
-	<button className={createClassName(styles, 'footer__options')} onClick={pop} onMouseUp={handleMouseUp}>
+const OptionsTrigger = withTranslation()(({ pop, t, expanded }) => (
+	<button className={createClassName(styles, 'footer__options')} onClick={pop} onMouseUp={handleMouseUp} aria-haspopup='true' aria-expanded={expanded}>
 		{t('options')}
 	</button>
 ));

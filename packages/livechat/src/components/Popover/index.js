@@ -20,6 +20,7 @@ const PopoverOverlay = ({ children, className, visible, ...props }) => (
 export class PopoverContainer extends Component {
 	state = {
 		renderer: null,
+		expanded: false,
 	}
 
 	open = (renderer, props, { currentTarget } = {}) => {
@@ -34,11 +35,11 @@ export class PopoverContainer extends Component {
 			triggerBounds = normalizeDOMRect(currentTarget.getBoundingClientRect());
 		}
 
-		this.setState({ renderer, ...props, overlayBounds, triggerBounds });
+		this.setState({ renderer, ...props, overlayBounds, triggerBounds, expanded: true });
 	}
 
 	dismiss = () => {
-		this.setState({ renderer: null, overlayBounds: null, triggerBounds: null });
+		this.setState({ renderer: null, overlayBounds: null, triggerBounds: null, expanded: false });
 	}
 
 	handleOverlayGesture = ({ currentTarget, target }) => {
@@ -82,8 +83,8 @@ export class PopoverContainer extends Component {
 		window.removeEventListener('keydown', this.handleKeyDown, false);
 	}
 
-	render = ({ children }, { renderer, overlayProps, overlayBounds, triggerBounds }) => (
-		<PopoverContext.Provider value={{ open: this.open }}>
+	render = ({ children }, { renderer, overlayProps, overlayBounds, triggerBounds, expanded }) => (
+		<PopoverContext.Provider value={{ open: this.open, expanded }}>
 			<div className={createClassName(styles, 'popover__container')}>
 				{children}
 				<PopoverOverlay
@@ -103,6 +104,6 @@ export class PopoverContainer extends Component {
 
 export const PopoverTrigger = ({ children, ...props }) => (
 	<PopoverContext.Consumer>
-		{({ open }) => children[0]({ pop: open.bind(null, children[1], props) })}
+		{({ open, expanded }) => children[0]({ pop: open.bind(null, children[1], props), expanded })}
 	</PopoverContext.Consumer>
 );

@@ -13,7 +13,7 @@ export const Menu = ({ children, hidden, placement, ...props }) => (
 
 
 export const Group = ({ children, title, ...props }) => (
-	<div className={createClassName(styles, 'menu__group')} {...props}>
+	<div className={createClassName(styles, 'menu__group')} role='menu' {...props}>
 		{title && <div className={createClassName(styles, 'menu__group-title')}>{title}</div>}
 		{children}
 	</div>
@@ -24,6 +24,7 @@ export const Item = ({ children, primary, danger, disabled, icon, ...props }) =>
 	<button
 		className={createClassName(styles, 'menu__item', { primary, danger, disabled })}
 		disabled={disabled}
+		role='menuitem'
 		{...props}
 	>
 		{icon && (
@@ -75,7 +76,7 @@ class PopoverMenuWrapper extends Component {
 
 			if (e.shiftKey && document.activeElement !== lastElement) {
 				lastElement.focus();
-				e.preventDefault();
+				return e.preventDefault();
 			}
 		}
 	};
