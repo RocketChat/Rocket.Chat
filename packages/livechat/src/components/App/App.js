@@ -167,6 +167,55 @@ export class App extends Component {
 		}
 	}
 
+	handleAppRef = (ref) => {
+		this.appRef = ref;
+	}
+
+	getFocusableElements = () => this.appRef.base.querySelectorAll(
+		'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select, div[contenteditable="true"]',
+	)
+
+	addFocusFirstElement = () => {
+		const focusableElements = this.getFocusableElements();
+		if (focusableElements.length > 0) {
+			focusableElements[0].focus();
+		}
+	}
+
+	handleTabKey = (e) => {
+		const focusableElements = this.getFocusableElements();
+
+		if (focusableElements.length > 0) {
+			const firstElement = focusableElements[0];
+			const lastElement = focusableElements[focusableElements.length - 1];
+
+			if (!e.shiftKey && document.activeElement === lastElement) {
+				firstElement.focus();
+				return e.preventDefault();
+			}
+
+			if (e.shiftKey && document.activeElement === firstElement) {
+				lastElement.focus();
+				return e.preventDefault();
+			}
+		}
+	};
+
+	handleKeyDown = (e) => {
+		const { key } = e;
+		const { minimized } = this.props;
+
+		switch (key) {
+			case 'Tab':
+				if (!minimized) {
+					this.handleTabKey(e);
+				}
+				break;
+			default:
+				break;
+		}
+	}
+
 	async initialize() {
 		// TODO: split these behaviors into composable components
 		await Connection.init();
@@ -178,12 +227,14 @@ export class App extends Component {
 		this.checkPoppedOutWindow();
 		this.setState({ initialized: true });
 		parentCall('ready');
+		window.addEventListener('keydown', this.handleKeyDown, false);
 	}
 
 	async finalize() {
 		CustomFields.reset();
 		userPresence.reset();
 		visibility.removeListener(this.handleVisibilityChange);
+		window.removeEventListener('keydown', this.handleKeyDown, false);
 	}
 
 	componentDidMount() {
@@ -199,6 +250,9 @@ export class App extends Component {
 
 		if (i18n.t) {
 			document.dir = isRTL(i18n.t('yes')) ? 'rtl' : 'ltr';
+		}
+		if (!this.props.minimized) {
+			this.addFocusFirstElement();
 		}
 	}
 
@@ -231,7 +285,7 @@ export class App extends Component {
 		};
 
 		return (
-			<Router history={history} onChange={this.handleRoute}>
+			<Router history={history} onChange={this.handleRoute} ref={this.handleAppRef}>
 				<ChatConnector default path='/' {...screenProps} />
 				<ChatFinished path='/chat-finished' {...screenProps} />
 				<GDPRAgreement path='/gdpr' {...screenProps} />
