@@ -1,6 +1,9 @@
 @import '../../../styles/helpers';
+@import '../../../styles/colors';
 
 $composer-action-margin: 0 6px;
+$composer-action-color: $color-text-dark;
+$composer-action-color-hover: $color-black;
 
 .composer__action {
 	flex: 0 0 auto;
@@ -15,10 +18,16 @@ $composer-action-margin: 0 6px;
 	background: none;
 
 	font-size: 0;
+	color: $composer-action-color;
 
 	&:focus {
 		transform: scale(1.05);
 
+	}
+
+	&:hover,
+	&:focus {
+		color: $composer-action-color-hover;
 	}
 
 	@include pressable-button(1px);

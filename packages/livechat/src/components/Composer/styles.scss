@@ -12,11 +12,11 @@ $composer-focused-border-color: $color-text-grey;
 $composer-input-min-height: 20px;
 $composer-input-max-height: 150px;
 $composer-input-padding: 2px 6px;
-$composer-input-color: $bg-color-dark;
+$composer-input-color: $color-text-darker;
 $composer-input-font-size: 0.875rem;
 $composer-input-font-weight: 500;
 $composer-input-line-height: 1.25rem;
-$composer-input-placeholder-color: $color-text-light;
+$composer-input-placeholder-color: $color-text-grey;
 
 .composer {
 	display: flex;

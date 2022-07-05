@@ -1,6 +1,9 @@
 @import '../../styles/colors';
 @import '../../styles/variables';
 
+$emoji-picker-icon-color: $color-text-dark;
+$emoji-picker-icon-color-hover: $color-black;
+
 .chat {
 	&__messages {
 		position: relative;
@@ -58,11 +61,11 @@
 	}
 
 	.emoji-picker-icon {
-		color: #696969;
+		color: $emoji-picker-icon-color;
 
 		&:hover,
 		&:focus {
-			color: black;
+			color: $emoji-picker-icon-color-hover;
 		}
 	}
 }

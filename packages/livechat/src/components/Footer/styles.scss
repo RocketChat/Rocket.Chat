@@ -2,6 +2,9 @@
 @import '../../styles/helpers';
 @import '../../styles/variables';
 
+$footer-options-text-color: $color-text-grey;
+$footer-options-text-color-hover: $color-black;
+
 .footer {
 	display: flex;
 	flex-direction: column;
@@ -31,7 +34,7 @@
 		text-align: left;
 		letter-spacing: 0.2px;
 
-		color: $color-text-grey;
+		color: $footer-options-text-color;
 		border: none;
 		background: none;
 
@@ -41,7 +44,7 @@
 
 		&:hover,
 		&:focus {
-			color: black;
+			color: $footer-options-text-color-hover;
 		}
 
 		@include pressable-button(2px);
