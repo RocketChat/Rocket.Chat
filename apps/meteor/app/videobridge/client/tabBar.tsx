@@ -21,8 +21,10 @@ addAction('calls', ({ room }) => {
 						'id': 'calls',
 						'icon': 'phone',
 						'title': 'Calls',
-						'disabled': federated,
-						'data-tooltip': federated ? 'Video_Call_unavailable_for_federation' : '',
+						...federated && {
+							'data-tooltip': 'Video_Call_unavailable_for_federation',
+							disabled: true,
+						},
 						'template': lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
 						'order': 999,
 				  }

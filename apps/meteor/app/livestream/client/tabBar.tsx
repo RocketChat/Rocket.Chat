@@ -22,8 +22,10 @@ addAction('livestream', ({ room }) => {
 						'icon': 'podcast',
 						'template': 'liveStreamTab',
 						'order': isLive ? -1 : 15,
-						'disabled': federated,
-						'data-tooltip': federated ? 'Livestream_unavailable_for_federation' : '',
+						...federated && {
+							'data-tooltip': federated ? 'Livestream_unavailable_for_federation' : '',
+							disabled: true,
+						},
 						'renderAction': (props): ReactNode => (
 							<Header.ToolBoxAction {...props}>
 								{isLive ? (

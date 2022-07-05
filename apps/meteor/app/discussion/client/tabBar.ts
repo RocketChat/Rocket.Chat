@@ -20,8 +20,10 @@ addAction('discussions', ({ room }) => {
 						'icon': 'discussion',
 						template,
 						'full': true,
-						'disabled': federated,
-						'data-tooltip': federated ? 'Discussions_unavailable_for_federation' : '',
+						...federated && { 
+							disabled: true,
+							'data-tooltip': 'Discussions_unavailable_for_federation',
+						},
 						'order': 3,
 				  }
 				: null,
