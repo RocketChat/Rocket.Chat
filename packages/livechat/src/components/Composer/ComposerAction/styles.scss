@@ -19,7 +19,6 @@ $composer-action-margin: 0 6px;
 	&:focus {
 		transform: scale(1.05);
 
-		outline: none;
 	}
 
 	@include pressable-button(1px);
