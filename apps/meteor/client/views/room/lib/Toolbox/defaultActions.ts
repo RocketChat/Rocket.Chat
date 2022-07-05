@@ -62,14 +62,16 @@ addAction('uploaded-files-list', ({ room }) => {
 	const federated = isRoomFederated(room);
 
 	return {
-		'groups': ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],
-		'id': 'uploaded-files-list',
-		'title': 'Files',
-		'icon': 'clip',
-		'disabled': federated,
-		'data-tooltip': 'Files_unavailable_for_federation',
-		'template': lazy(() => import('../../contextualBar/RoomFiles')),
-		'order': 7,
+		groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],
+		id: 'uploaded-files-list',
+		title: 'Files',
+		icon: 'clip',
+		...(federated && {
+			'disabled': true,
+			'data-tooltip': 'Files_unavailable_for_federation',
+		}),
+		template: lazy(() => import('../../contextualBar/RoomFiles')),
+		order: 7,
 	};
 });
 
