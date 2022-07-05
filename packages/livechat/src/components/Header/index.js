@@ -36,7 +36,7 @@ export const Content = ({ children, className, ...props }) => (
 );
 
 export const Title = ({ children, className, ...props }) => (
-	<div className={createClassName(styles, 'header__title', {}, [className])} {...props}>
+	<div id='header__title-id' className={createClassName(styles, 'header__title', {}, [className])} {...props}>
 		{children}
 	</div>
 );
