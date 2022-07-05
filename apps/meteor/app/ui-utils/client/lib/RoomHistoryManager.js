@@ -42,7 +42,7 @@ export const normalizeThreadMessage = ({ ...message }) => {
 
 export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper') => {
 	const element = document.querySelector(selector);
-	if (element.length) {
+	if (element?.length) {
 		return element;
 	}
 	return new Promise((resolve) => {
