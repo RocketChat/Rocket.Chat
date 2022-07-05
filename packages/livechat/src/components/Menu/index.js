@@ -49,6 +49,48 @@ class PopoverMenuWrapper extends Component {
 		dismiss();
 	}
 
+	handleKeyDown = (e) => {
+		const { key } = e;
+
+		switch (key) {
+			case 'Tab':
+				this.handleTabKey(e);
+				break;
+			default:
+				break;
+		}
+	}
+
+	handleTabKey = (e) => {
+		const focusableElements = this.getFocusableElements();
+
+		if (focusableElements.length > 0) {
+			const firstElement = focusableElements[0];
+			const lastElement = focusableElements[focusableElements.length - 1];
+
+			if (!e.shiftKey && document.activeElement !== firstElement) {
+				firstElement.focus();
+				return e.preventDefault();
+			}
+
+			if (e.shiftKey && document.activeElement !== lastElement) {
+				lastElement.focus();
+				e.preventDefault();
+			}
+		}
+	};
+
+	addFocusFirstElement = () => {
+		const focusableElements = this.getFocusableElements();
+		if (focusableElements.length > 0) {
+			focusableElements[0].focus();
+		}
+	}
+
+	getFocusableElements = () => this.menuRef.base.querySelectorAll(
+		'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select',
+	)
+
 	componentDidMount() {
 		const { triggerBounds, overlayBounds } = this.props;
 		const menuBounds = normalizeDOMRect(this.menuRef.base.getBoundingClientRect());
@@ -67,11 +109,18 @@ class PopoverMenuWrapper extends Component {
 
 		const placement = `${ menuWidth < rightSpace ? 'right' : 'left' }-${ menuHeight < bottomSpace ? 'bottom' : 'top' }`;
 
+		this.addFocusFirstElement();
+		window.addEventListener('keydown', this.handleKeyDown, false);
+
 		// eslint-disable-next-line react/no-did-mount-set-state
 		this.setState({
 			position: { left, right, top, bottom },
 			placement,
 		});
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('keydown', this.handleKeyDown, false);
 	}
 
 	render = ({ children }) => (

@@ -50,15 +50,26 @@ export class PopoverContainer extends Component {
 	}
 
 	handleKeyDown = ({ key }) => {
-		if (key !== 'Escape') {
-			return;
+		switch (key) {
+			case 'Enter':
+				this.setTriggerElement();
+				break;
+			case 'Escape':
+				this.state.triggerElement.focus();
+				this.dismiss();
+				break;
+			default:
+				break;
 		}
-
-		this.dismiss();
 	}
 
 	handleOverlayRef = (ref) => {
 		this.overlayRef = ref;
+	}
+
+	setTriggerElement = () => {
+		const triggerElement = document.activeElement;
+		this.setState({ ...this.state, triggerElement });
 	}
 
 	componentDidMount() {
