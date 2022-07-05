@@ -11,16 +11,16 @@ addAction('pinned-messages', ({ room }) => {
 		() =>
 			pinningAllowed
 				? {
-						'groups': ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-						'id': 'pinned-messages',
-						'title': 'Pinned_Messages',
-						'icon': 'pin',
-						'template': 'pinnedMessages',
-						...federated && {
+						groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+						id: 'pinned-messages',
+						title: 'Pinned_Messages',
+						icon: 'pin',
+						template: 'pinnedMessages',
+						...(federated && {
 							'data-tooltip': 'Pinned_messages_unavailable_for_federation',
-							disabled: true,
-						},
-						'order': 11,
+							'disabled': true,
+						}),
+						order: 11,
 				  }
 				: null,
 		[pinningAllowed, federated],

@@ -14,17 +14,17 @@ addAction('discussions', ({ room }) => {
 		() =>
 			discussionEnabled && !room.prid
 				? {
-						'groups': ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-						'id': 'discussions',
-						'title': 'Discussions',
-						'icon': 'discussion',
+						groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+						id: 'discussions',
+						title: 'Discussions',
+						icon: 'discussion',
 						template,
-						'full': true,
-						...federated && { 
-							disabled: true,
+						full: true,
+						...(federated && {
+							'disabled': true,
 							'data-tooltip': 'Discussions_unavailable_for_federation',
-						},
-						'order': 3,
+						}),
+						order: 3,
 				  }
 				: null,
 		[discussionEnabled, room.prid, federated],

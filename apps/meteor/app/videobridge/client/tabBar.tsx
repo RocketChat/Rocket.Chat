@@ -17,16 +17,16 @@ addAction('calls', ({ room }) => {
 		() =>
 			hasLicense
 				? {
-						'groups': ['channel', 'group', 'team'],
-						'id': 'calls',
-						'icon': 'phone',
-						'title': 'Calls',
-						...federated && {
+						groups: ['channel', 'group', 'team'],
+						id: 'calls',
+						icon: 'phone',
+						title: 'Calls',
+						...(federated && {
 							'data-tooltip': 'Video_Call_unavailable_for_federation',
-							disabled: true,
-						},
-						'template': lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
-						'order': 999,
+							'disabled': true,
+						}),
+						template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
+						order: 999,
 				  }
 				: null,
 		[hasLicense, federated],
