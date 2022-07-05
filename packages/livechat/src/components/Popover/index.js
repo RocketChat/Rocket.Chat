@@ -21,6 +21,7 @@ export class PopoverContainer extends Component {
 	state = {
 		renderer: null,
 		expanded: false,
+		currentTarget: null,
 	}
 
 	open = (renderer, props, { currentTarget } = {}) => {
@@ -35,11 +36,11 @@ export class PopoverContainer extends Component {
 			triggerBounds = normalizeDOMRect(currentTarget.getBoundingClientRect());
 		}
 
-		this.setState({ renderer, ...props, overlayBounds, triggerBounds, expanded: true });
+		this.setState({ renderer, ...props, overlayBounds, triggerBounds, currentTarget, expanded: true });
 	}
 
 	dismiss = () => {
-		this.setState({ renderer: null, overlayBounds: null, triggerBounds: null, expanded: false });
+		this.setState({ renderer: null, overlayBounds: null, triggerBounds: null, currentTarget: null, expanded: false });
 	}
 
 	handleOverlayGesture = ({ currentTarget, target }) => {
@@ -51,26 +52,16 @@ export class PopoverContainer extends Component {
 	}
 
 	handleKeyDown = ({ key }) => {
-		switch (key) {
-			case 'Enter':
-				this.setTriggerElement();
-				break;
-			case 'Escape':
-				this.state.triggerElement.focus();
-				this.dismiss();
-				break;
-			default:
-				break;
+		if (key !== 'Escape') {
+			return;
 		}
+
+		this.state.currentTarget.focus();
+		this.dismiss();
 	}
 
 	handleOverlayRef = (ref) => {
 		this.overlayRef = ref;
-	}
-
-	setTriggerElement = () => {
-		const triggerElement = document.activeElement;
-		this.setState({ ...this.state, triggerElement });
 	}
 
 	componentDidMount() {

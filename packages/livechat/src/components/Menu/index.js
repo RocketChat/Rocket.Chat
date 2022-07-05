@@ -50,16 +50,14 @@ class PopoverMenuWrapper extends Component {
 		dismiss();
 	}
 
-	handleKeyDown = (e) => {
+	andleKeyDown = (e) => {
 		const { key } = e;
 
-		switch (key) {
-			case 'Tab':
-				this.handleTabKey(e);
-				break;
-			default:
-				break;
+		if (key !== 'Tab') {
+			return;
 		}
+
+		this.handleTabKey(e);
 	}
 
 	handleTabKey = (e) => {
