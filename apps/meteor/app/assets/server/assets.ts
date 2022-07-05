@@ -492,14 +492,22 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 		asset: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')).replace(/\.[^.]*$/, ''),
 	};
 
+	console.time('getAssetByKey');
+
 	const asset = getAssetByKey(params.asset);
 	const file = asset?.cache;
+
+	console.timeEnd('getAssetByKey');
 
 	const format = req.url.split('.').pop() || '';
 	const formatOld = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
 
-	if (asset && Array.isArray(asset.constraints.extensions) && !asset.constraints.extensions.includes(format)) {
-		console.log('asset not found', { format, formatOld });
+	console.time('validFormat');
+	const validFormat = asset && Array.isArray(asset.constraints.extensions) && !asset.constraints.extensions.includes(format);
+	console.timeEnd('validFormat');
+
+	if (validFormat) {
+		console.log('asset not found', { format, formatOld }, req.url, req.headers);
 		res.writeHead(403);
 		return res.end();
 	}
