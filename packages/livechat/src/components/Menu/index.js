@@ -58,6 +58,7 @@ class PopoverMenuWrapper extends Component {
 		}
 
 		this.handleTabKey(e);
+		e.stopPropagation();
 	}
 
 	handleTabKey = (e) => {
@@ -109,7 +110,6 @@ class PopoverMenuWrapper extends Component {
 		const placement = `${ menuWidth < rightSpace ? 'right' : 'left' }-${ menuHeight < bottomSpace ? 'bottom' : 'top' }`;
 
 		this.addFocusFirstElement();
-		window.addEventListener('keydown', this.handleKeyDown, false);
 
 		// eslint-disable-next-line react/no-did-mount-set-state
 		this.setState({
@@ -118,16 +118,13 @@ class PopoverMenuWrapper extends Component {
 		});
 	}
 
-	componentWillUnmount() {
-		window.removeEventListener('keydown', this.handleKeyDown, false);
-	}
-
 	render = ({ children }) => (
 		<Menu
 			ref={this.handleRef}
 			style={{ position: 'absolute', ...this.state.position }}
 			placement={this.state.placement}
 			onClickCapture={this.handleClick}
+			onKeyDown={this.handleKeyDown}
 		>
 			{children}
 		</Menu>

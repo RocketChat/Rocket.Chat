@@ -211,9 +211,15 @@ export class App extends Component {
 					this.handleTabKey(e);
 				}
 				break;
+			case 'Escape':
+				if (!minimized && !this.state.poppedOut) {
+					this.handleMinimize();
+				}
+				break;				
 			default:
 				break;
 		}
+		e.stopPropagation();
 	}
 
 	async initialize() {
@@ -227,14 +233,12 @@ export class App extends Component {
 		this.checkPoppedOutWindow();
 		this.setState({ initialized: true });
 		parentCall('ready');
-		window.addEventListener('keydown', this.handleKeyDown, false);
 	}
 
 	async finalize() {
 		CustomFields.reset();
 		userPresence.reset();
 		visibility.removeListener(this.handleVisibilityChange);
-		window.removeEventListener('keydown', this.handleKeyDown, false);
 	}
 
 	componentDidMount() {
@@ -282,6 +286,7 @@ export class App extends Component {
 			onOpenWindow: this.handleOpenWindow,
 			onDismissAlert: this.handleDismissAlert,
 			dismissNotification: this.dismissNotification,
+			handleKeyDown: this.handleKeyDown,
 		};
 
 		return (
