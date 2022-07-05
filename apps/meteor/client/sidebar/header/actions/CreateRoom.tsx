@@ -1,4 +1,4 @@
-import { Box, Sidebar, Dropdown } from '@rocket.chat/fuselage';
+import { Sidebar, Dropdown, Box } from '@rocket.chat/fuselage';
 import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import React, { HTMLAttributes, useRef, VFC } from 'react';
 import { createPortal } from 'react-dom';
@@ -18,8 +18,8 @@ const CreateRoom: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 	return (
 		<>
 			{showCreate && (
-				<Box ref={reference}>
-					<Sidebar.TopBar.Action {...props} icon='edit-rounded' onClick={(): void => toggle()} />
+				<Box ref={reference} {...props}>
+					<Sidebar.TopBar.Action icon='edit-rounded' onClick={(): void => toggle()} />
 				</Box>
 			)}
 			{isVisible &&
