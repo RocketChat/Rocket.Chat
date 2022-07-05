@@ -171,6 +171,24 @@ class Chat extends Component {
 						sheetSize={64}
 						onSelect={this.handleEmojiSelect}
 						autoFocus={true}
+						i18n={{
+							search: t('search'),
+							clear: t('clear'),
+							notfound: t('no_emoji_found'),
+							categories: {
+								search: t('search_results'),
+								recent: t('frequently_used'),
+								people: t('people_and_body'),
+								nature: t('animals_and_nature'),
+								foods: t('food_and_drink'),
+								activity: t('activity'),
+								places: t('travel_and_places'),
+								objects: t('objects'),
+								symbols: t('symbols'),
+								flags: t('flags'),
+							},
+							categorieslabel: t('emoji_categories'),
+						}}
 					/>}
 				</div>
 			</Screen.Content>
