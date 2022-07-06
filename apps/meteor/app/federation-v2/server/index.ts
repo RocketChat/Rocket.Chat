@@ -36,6 +36,7 @@ export const runFederation = async (): Promise<void> => {
 	}
 	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 	await federation.start();
+	federation.logFederationStartupInfo('Running Federation V2');
 	require('./infrastructure/rocket-chat/slash-commands');
 };
 

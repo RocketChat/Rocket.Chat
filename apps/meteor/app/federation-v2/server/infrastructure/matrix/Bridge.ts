@@ -24,9 +24,7 @@ export class MatrixBridge implements IFederationBridge {
 		protected bridgePort: number,
 		protected homeServerRegistrationFile: Record<string, any>,
 		protected eventHandler: Function,
-	) {
-		this.logInfo();
-	}
+	) {} // eslint-disable-line no-empty-function
 
 	public async onFederationAvailabilityChanged(enabled: boolean): Promise<void> {
 		if (!enabled) {
@@ -138,8 +136,8 @@ export class MatrixBridge implements IFederationBridge {
 		return this;
 	}
 
-	protected logInfo(): void {
-		bridgeLogger.info(`Running Federation V2:
+	public logFederationStartupInfo(info?: string): void {
+		bridgeLogger.info(`${info}:
 			id: ${this.appServiceId}
 			bridgeUrl: ${this.bridgeUrl}
 			homeserverURL: ${this.homeServerUrl}

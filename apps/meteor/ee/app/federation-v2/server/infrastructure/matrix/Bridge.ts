@@ -15,7 +15,6 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		protected eventHandler: Function,
 	) {
 		super(appServiceId, homeServerUrl, homeServerDomain, bridgeUrl, bridgePort, homeServerRegistrationFile, eventHandler);
-		this.logInfo();
 	}
 
 	public async createRoom(externalCreatorId: string, roomType: RoomType, roomName: string, roomTopic?: string): Promise<string> {

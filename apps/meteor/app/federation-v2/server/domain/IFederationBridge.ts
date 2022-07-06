@@ -11,6 +11,7 @@ export interface IFederationBridge {
 	isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean;
 	leaveRoom(externalRoomId: string, externalUserId: string): Promise<void>;
 	kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void>;
+	logFederationStartupInfo(info?: string): void;
 }
 
 export enum EVENT_ORIGIN {

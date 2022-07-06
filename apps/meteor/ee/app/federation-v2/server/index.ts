@@ -31,6 +31,7 @@ export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServic
 const runFederationEE = async (): Promise<void> => {
 	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 	await federationEE.start();
+	federationEE.logFederationStartupInfo('Running Federation Enterprise V2');
 };
 
 onToggledFeature('federation', {
