@@ -1,5 +1,4 @@
 import { IVoipRoom } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
@@ -12,14 +11,6 @@ import GenericTable from '../../../../components/GenericTable';
 import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { CallDialpadButton } from '../CallDialpadButton';
-
-export const rcxCallDialButton = css`
-	&:not(:hover) {
-		.rcx-call-dial-button {
-			display: none !important;
-		}
-	}
-`;
 
 const useQuery = (
 	{
@@ -164,7 +155,7 @@ const CallTable: FC = () => {
 			return (
 				<Table.Row
 					key={_id}
-					className={rcxCallDialButton}
+					rcx-show-call-button-on-hover
 					tabIndex={0}
 					role='link'
 					onClick={(): void => onRowClick(_id, v?.token)}
