@@ -6,6 +6,7 @@ import type { FindPaginated, IBaseModel } from './IBaseModel';
 export interface IUsersModel extends IBaseModel<IUser> {
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
 	findUsersInRoles(roles: IRole['_id'][], scope?: null, options?: any): FindCursor<IUser>;
+	findPaginatedUsersInRoles(roles: IRole['_id'][], options?: any): FindPaginated<FindCursor<IUser>>;
 	findOneByUsername(username: string, options?: any): Promise<IUser>;
 	findOneAgentById(_id: string, options: any): Promise<ILivechatAgent>;
 	findUsersInRolesWithQuery(roles: IRole['_id'] | IRole['_id'][], query: any, options: any): any;
@@ -28,6 +29,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		extraQuery?: any,
 		params?: { startsWith?: boolean; endsWith?: boolean },
 	): any;
+
+	findPaginatedByActiveLocalUsersExcept(searchTerm: any, exceptions: any, options: any, forcedSearchFields: any, localDomain: any): any;
+
+	findPaginatedByActiveExternalUsersExcept(searchTerm: any, exceptions: any, options: any, forcedSearchFields: any, localDomain: any): any;
 
 	findActive(options?: any): FindCursor<IUser>;
 

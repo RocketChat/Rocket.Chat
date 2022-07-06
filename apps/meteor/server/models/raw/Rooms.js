@@ -28,6 +28,15 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findPaginatedByIds(roomIds, options) {
+		return this.findPaginated(
+			{
+				_id: { $in: roomIds },
+			},
+			options,
+		);
+	}
+
 	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {
 		const aggregate = [
 			{
@@ -146,7 +155,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByTeamIdContainingNameAndDefault(teamId, name, teamDefault, ids, options = {}) {
+	findPaginatedByTeamIdContainingNameAndDefault(teamId, name, teamDefault, ids, options = {}) {
 		const query = {
 			teamId,
 			teamMain: {
@@ -551,5 +560,98 @@ export class RoomsRaw extends BaseRaw {
 
 	countByType(t) {
 		return this.col.countDocuments({ t });
+	}
+
+	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, teamIds, roomIds, options) {
+		const query = {
+			$and: [
+				{ teamMain: { $exists: false } },
+				{ prid: { $exists: false } },
+				{
+					$or: [
+						{
+							t: 'c',
+							teamId: { $exists: false },
+						},
+						{
+							t: 'c',
+							teamId: { $in: teamIds },
+						},
+						...(roomIds?.length > 0
+							? [
+									{
+										_id: {
+											$in: roomIds,
+										},
+									},
+							  ]
+							: []),
+					],
+				},
+				...(searchTerm
+					? [
+							{
+								$or: [
+									{
+										name: searchTerm,
+									},
+									{
+										fname: searchTerm,
+									},
+								],
+							},
+					  ]
+					: []),
+			],
+		};
+
+		return this.findPaginated(query, options);
+	}
+
+	findPaginatedContainingNameOrFNameInIdsAsTeamMain(searchTerm, rids, options) {
+		const query = {
+			teamMain: true,
+			$and: [
+				{
+					$or: [
+						{
+							t: 'p',
+							_id: {
+								$in: rids,
+							},
+						},
+						{
+							t: 'c',
+						},
+					],
+				},
+			],
+		};
+
+		if (searchTerm) {
+			query.$and.push({
+				$or: [
+					{
+						name: searchTerm,
+					},
+					{
+						fname: searchTerm,
+					},
+				],
+			});
+		}
+
+		return this.findPaginated(query, options);
+	}
+
+	findPaginatedByTypeAndIds(type, ids, options) {
+		const query = {
+			t: type,
+			_id: {
+				$in: ids,
+			},
+		};
+
+		return this.findPaginated(query, options);
 	}
 }

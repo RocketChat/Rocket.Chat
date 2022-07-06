@@ -183,6 +183,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		options: FindOptions<P extends IUser ? IUser : P>,
 	): Promise<FindCursor<P extends IUser ? IUser : P>>;
 
+	/** @deprecated function getUsersInRole should be used instead */
 	async findUsersInRole<P>(
 		roleId: IRole['_id'],
 		scope: IRoom['_id'] | undefined,
@@ -230,7 +231,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			throw new Error('Roles.canAddUserToRole method received a role scope instead of a scope value.');
 		}
 
-		const role = await this.findOne({ _id: roleId }, { fields: { scope: 1 } } as FindOptions<IRole>);
+		const role = await this.findOne({ _id: roleId }, { projection: { scope: 1 } });
 		if (!role) {
 			return false;
 		}

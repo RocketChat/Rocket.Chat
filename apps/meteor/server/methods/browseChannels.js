@@ -44,48 +44,49 @@ const sortUsers = function (field, direction) {
 	}
 };
 
-const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) => {
+async function getChannelsAndGroups(user, canViewAnon, searchTerm, sort, pagination) {
 	if ((!user && !canViewAnon) || (user && !hasPermission(user._id, 'view-c-room'))) {
 		return;
 	}
 
-	const teams = Promise.await(Team.getAllPublicTeams());
+	const teams = await Team.getAllPublicTeams();
 	const publicTeamIds = teams.map(({ _id }) => _id);
 
-	const userTeamsIds =
-		Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
+	const userTeamsIds = (await Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
 	const userRooms = user.__rooms;
 
-	const cursor = Rooms.findByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms, {
-		...pagination,
-		sort: {
-			featured: -1,
-			...sort,
+	const { cursor, totalCount } = Rooms.findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
+		searchTerm ? new RegExp(searchTerm, 'i') : null,
+		[...userTeamsIds, ...publicTeamIds],
+		userRooms,
+		{
+			...pagination,
+			sort: {
+				featured: -1,
+				...sort,
+			},
+			projection: {
+				t: 1,
+				description: 1,
+				topic: 1,
+				name: 1,
+				fname: 1,
+				lastMessage: 1,
+				ts: 1,
+				archived: 1,
+				default: 1,
+				featured: 1,
+				usersCount: 1,
+				prid: 1,
+				teamId: 1,
+			},
 		},
-		fields: {
-			t: 1,
-			description: 1,
-			topic: 1,
-			name: 1,
-			fname: 1,
-			lastMessage: 1,
-			ts: 1,
-			archived: 1,
-			default: 1,
-			featured: 1,
-			usersCount: 1,
-			prid: 1,
-			teamId: 1,
-		},
-	});
+	);
 
-	const totalCursor = Rooms.findByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms);
-	const total = totalCursor.count(); // TODO use findPaginated
-
-	const result = cursor.fetch();
+	const [result, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	const teamIds = result.filter(({ teamId }) => teamId).map(({ teamId }) => teamId);
-	const teamsMains = Promise.await(Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } }));
+	const teamsMains = await Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } });
 
 	const results = result.map((room) => {
 		if (room.teamId) {
@@ -101,53 +102,62 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 		total,
 		results,
 	};
-};
+}
 
 const getChannelsCountForTeam = mem((teamId) => Promise.await(RoomsRaw.findByTeamId(teamId, { projection: { _id: 1 } }).count()), {
 	maxAge: 2000,
 });
 
-const getTeams = (user, searchTerm, sort, pagination) => {
+async function getTeams(user, searchTerm, sort, pagination) {
 	if (!user) {
 		return;
 	}
 
 	const userSubs = Subscriptions.cachedFindByUserId(user._id).fetch();
 	const ids = userSubs.map((sub) => sub.rid);
-	const result = Rooms.findContainingNameOrFNameInIdsAsTeamMain(searchTerm, ids, {
-		...pagination,
-		sort: {
-			featured: -1,
-			...sort,
+	const { cursor, totalCount } = Rooms.findPaginatedContainingNameOrFNameInIdsAsTeamMain(
+		searchTerm ? new RegExp(searchTerm, 'i') : null,
+		ids,
+		{
+			...pagination,
+			sort: {
+				featured: -1,
+				...sort,
+			},
+			projection: {
+				t: 1,
+				description: 1,
+				topic: 1,
+				name: 1,
+				fname: 1,
+				lastMessage: 1,
+				ts: 1,
+				archived: 1,
+				default: 1,
+				featured: 1,
+				usersCount: 1,
+				prid: 1,
+				teamId: 1,
+				teamMain: 1,
+			},
 		},
-		fields: {
-			t: 1,
-			description: 1,
-			topic: 1,
-			name: 1,
-			fname: 1,
-			lastMessage: 1,
-			ts: 1,
-			archived: 1,
-			default: 1,
-			featured: 1,
-			usersCount: 1,
-			prid: 1,
-			teamId: 1,
-			teamMain: 1,
-		},
-	});
+	);
 
-	const rooms = result.fetch().map((room) => ({
-		...room,
-		roomsCount: getChannelsCountForTeam(room.teamId),
-	}));
+	const [rooms, total] = await Promise.all([
+		cursor
+			.map((room) => ({
+				...room,
+				roomsCount: getChannelsCountForTeam(room.teamId),
+			}))
+			.toArray(),
+		totalCount,
+	]);
 
 	return {
-		total: result.count(), // TODO use findPaginated
+		total,
 		results: rooms,
 	};
-};
+}
 
 async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo }) {
 	const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
@@ -177,19 +187,25 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 	}
 
 	if (workspace === 'external') {
-		const cursor = Users.findByActiveExternalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
-		const cursorTotal = Users.findByActiveExternalUsersExcept(text, [], null, forcedSearchFields, getFederationDomain());
+		const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept(
+			text,
+			[],
+			options,
+			forcedSearchFields,
+			getFederationDomain(),
+		);
+		const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 		return {
-			total: cursorTotal.count(), // TODO use findPaginated
-			results: cursor.fetch(),
+			total,
+			results,
 		};
 	}
 
-	const cursor = Users.findByActiveLocalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
-	const cursorTotal = Users.findByActiveLocalUsersExcept(text, [], null, forcedSearchFields, getFederationDomain());
+	const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
+	const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
-		total: cursorTotal.count(), // TODO use findPaginated
-		results: cursor.fetch(),
+		total,
+		results,
 	};
 }
 

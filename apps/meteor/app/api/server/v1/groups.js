@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Integrations, Messages as MessagesRaw, Uploads, Rooms as RoomsRaw } from '@rocket.chat/models';
+import { Integrations, Messages as MessagesRaw, Uploads, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
@@ -579,26 +579,34 @@ API.v1.addRoute(
 	'groups.list',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
 
-			// TODO: CACHE: Add Breacking notice since we removed the query param
-			const { cursor, totalCount } = Rooms.findBySubscriptionTypeAndUserId('p', this.userId, {
+			const subs = await SubscriptionsRaw.findByUserIdAndTypes(this.userId, ['p'], { projection: { rid: 1 } }).toArray();
+			const rids = subs.map(({ rid }) => rid).filter(Boolean);
+
+			if (rids.length === 0) {
+				return API.v1.notFound();
+			}
+
+			const { cursor, totalCount } = RoomsRaw.findPaginatedByTypeAndIds('p', rids, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			});
 
-			// TODO findPaginated meteor
-			const rooms = cursor.fetch();
+			const [groups, total] = await Promise.all([
+				cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
+				totalCount,
+			]);
 
 			return API.v1.success({
-				groups: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				groups,
 				offset,
-				count: rooms.length,
-				total: totalCount,
+				count: groups.length,
+				total,
 			});
 		},
 	},

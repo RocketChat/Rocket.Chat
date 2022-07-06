@@ -36,6 +36,7 @@ export interface IRolesModel extends IBaseModel<IRole> {
 		options: FindOptions<P extends IUser ? IUser : P>,
 	): Promise<FindCursor<P extends IUser ? IUser : P>>;
 
+	/** @deprecated function getUsersInRole should be used instead */
 	findUsersInRole<P>(
 		roleId: IRole['_id'],
 		scope: IRoom['_id'] | undefined,

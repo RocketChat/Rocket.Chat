@@ -381,6 +381,33 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		return trash.find(q);
 	}
 
+	trashFindPaginatedDeletedAfter<P = RocketChatRecordDeleted<T>>(
+		deletedAt: Date,
+		query?: Filter<RocketChatRecordDeleted<T>>,
+		options?: FindOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+	): FindPaginated<FindCursor<WithId<RocketChatRecordDeleted<T>>>> {
+		const q = {
+			__collection__: this.name,
+			_deletedAt: {
+				$gt: deletedAt,
+			},
+			...query,
+		} as Filter<RocketChatRecordDeleted<T>>;
+
+		const { trash } = this;
+		if (!trash) {
+			throw new Error('Trash is not enabled for this collection');
+		}
+
+		const cursor = options ? trash.find(q, options) : trash.find(q);
+		const totalCount = trash.countDocuments(q);
+
+		return {
+			cursor,
+			totalCount,
+		};
+	}
+
 	watch(pipeline?: object[]): ChangeStream<T> {
 		return this.col.watch(pipeline);
 	}

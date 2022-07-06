@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
-import { Integrations, Uploads, Messages as MessagesRaw } from '@rocket.chat/models';
+import { Integrations, Uploads, Messages as MessagesRaw, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
 import { Rooms, Subscriptions, Messages, Users } from '../../../models/server';
 import { canAccessRoom, hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
@@ -479,25 +479,34 @@ API.v1.addRoute(
 	'channels.list.joined',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
 
-			// TODO: CACHE: Add Breacking notice since we removed the query param
-			const { cursor, totalCount } = Rooms.findBySubscriptionTypeAndUserId('c', this.userId, {
+			const subs = await SubscriptionsRaw.findByUserIdAndTypes(this.userId, ['c'], { projection: { rid: 1 } }).toArray();
+			const rids = subs.map(({ rid }) => rid).filter(Boolean);
+
+			if (rids.length === 0) {
+				return API.v1.notFound();
+			}
+
+			const { cursor, totalCount } = RoomsRaw.findPaginatedByTypeAndIds('c', rids, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			});
 
-			const rooms = cursor.fetch();
+			const [channels, total] = await Promise.all([
+				cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
+				totalCount,
+			]);
 
 			return API.v1.success({
-				channels: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				channels,
 				offset,
-				count: rooms.length,
-				total: totalCount,
+				count: channels.length,
+				total,
 			});
 		},
 	},

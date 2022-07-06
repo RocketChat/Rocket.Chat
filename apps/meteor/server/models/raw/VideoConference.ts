@@ -7,7 +7,7 @@ import type {
 	IRoom,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { getCollectionName } from '@rocket.chat/models';
 
@@ -25,11 +25,11 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		];
 	}
 
-	public async findAllByRoomId(
+	public findPaginatedByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
-	): Promise<FindCursor<VideoConference>> {
-		return this.find(
+	): FindPaginated<FindCursor<VideoConference>> {
+		return this.findPaginated(
 			{ rid },
 			{
 				sort: { createdAt: -1 },

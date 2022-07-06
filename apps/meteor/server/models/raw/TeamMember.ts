@@ -1,5 +1,5 @@
 import type { IRole, ITeamMember, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ITeamMemberModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ITeamMemberModel } from '@rocket.chat/model-typings';
 import { getCollectionName } from '@rocket.chat/models';
 import type {
 	Collection,
@@ -110,17 +110,25 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		return this.col.find(query, options);
 	}
 
-	findMembersInfoByTeamId(teamId: string, limit: number, skip: number, query?: Filter<ITeamMember>): FindCursor<ITeamMember> {
-		return this.col.find({ ...query, teamId }, {
-			limit,
-			skip,
-			projection: {
-				userId: 1,
-				roles: 1,
-				createdBy: 1,
-				createdAt: 1,
+	findPaginatedMembersInfoByTeamId(
+		teamId: string,
+		limit: number,
+		skip: number,
+		query?: Filter<ITeamMember>,
+	): FindPaginated<FindCursor<ITeamMember>> {
+		return this.findPaginated(
+			{ ...query, teamId },
+			{
+				limit,
+				skip,
+				projection: {
+					userId: 1,
+					roles: 1,
+					createdBy: 1,
+					createdAt: 1,
+				},
 			},
-		} as FindOptions<ITeamMember>);
+		);
 	}
 
 	updateOneByUserIdAndTeamId(userId: string, teamId: string, update: Partial<ITeamMember>): Promise<UpdateResult> {

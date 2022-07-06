@@ -512,10 +512,14 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		if (getAllRooms) {
-			const teamRoomsCursor = Rooms.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, undefined, { skip, limit });
+			const { cursor, totalCount } = Rooms.findPaginatedByTeamIdContainingNameAndDefault(teamId, name, isDefault, undefined, {
+				skip,
+				limit,
+			});
+			const [records, total] = await Promise.all([cursor.toArray(), totalCount]);
 			return {
-				total: await teamRoomsCursor.count(), // TODO use findPaginated
-				records: await teamRoomsCursor.toArray(),
+				total,
+				records,
 			};
 		}
 
@@ -523,11 +527,14 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			projection: { __rooms: 1 },
 		});
 		const userRooms = user?.__rooms;
-		const validTeamRoomsCursor = Rooms.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, userRooms, { skip, limit });
+
+		const { cursor, totalCount } = Rooms.findPaginatedByTeamIdContainingNameAndDefault(teamId, name, isDefault, userRooms, { skip, limit });
+
+		const [records, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return {
-			total: await validTeamRoomsCursor.count(), // TODO use findPaginated
-			records: await validTeamRoomsCursor.toArray(),
+			total,
+			records,
 		};
 	}
 
@@ -573,11 +580,13 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const subscriptionsCursor = Subscriptions.findByUserIdAndRoomIds(userId, teamRoomIds);
 		const subscriptionRoomIds = (await subscriptionsCursor.toArray()).map((subscription) => subscription.rid);
-		const availableRoomsCursor = Rooms.findManyByRoomIds(subscriptionRoomIds, {
+		const { cursor, totalCount } = Rooms.findPaginatedByIds(subscriptionRoomIds, {
 			skip,
 			limit,
 		});
-		const rooms = await availableRoomsCursor.toArray();
+
+		const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
+
 		const roomData = getSubscribedRoomsForUserWithDetails(userId, false, teamRoomIds);
 		const records = [];
 
@@ -591,7 +600,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		return {
-			total: await availableRoomsCursor.count(), // TODO use findPaginated
+			total,
 			records,
 		};
 	}
@@ -636,7 +645,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const users = await Users.findActive({ ...query }).toArray();
 		const userIds = users.map((m) => m._id);
-		const cursor = TeamMember.findMembersInfoByTeamId(teamId, count, offset, {
+		const { cursor, totalCount } = TeamMember.findPaginatedMembersInfoByTeamId(teamId, count, offset, {
 			userId: { $in: userIds },
 		});
 
@@ -665,7 +674,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		return {
-			total: await cursor.count(), // TODO use findPaginated
+			total: await totalCount,
 			records: results,
 		};
 	}

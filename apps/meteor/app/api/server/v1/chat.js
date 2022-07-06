@@ -447,7 +447,7 @@ API.v1.addRoute(
 	'chat.getDeletedMessages',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { roomId, since } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
 
@@ -461,20 +461,17 @@ API.v1.addRoute(
 				throw new Meteor.Error('The "since" query parameter must be a valid date.');
 			}
 
-			// TODO use findPaginated - test with trash
-			const cursor = Messages.trashFindDeletedAfter(
+			const { cursor, totalCount } = MessagesRaw.trashFindPaginatedDeletedAfter(
 				new Date(since),
 				{ rid: roomId },
 				{
 					skip: offset,
 					limit: count,
-					fields: { _id: 1 },
+					projection: { _id: 1 },
 				},
 			);
 
-			const total = cursor.count();
-
-			const messages = cursor.fetch();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages,
@@ -502,7 +499,6 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			// TODO add projection and normalize
 			const { cursor, totalCount } = MessagesRaw.findPaginatedPinnedByRoom(roomId, {
 				skip: offset,
 				limit: count,
@@ -511,7 +507,7 @@ API.v1.addRoute(
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				messages,
+				messages: normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
 				total,
@@ -561,7 +557,7 @@ API.v1.addRoute(
 			const [threads, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				threads,
+				threads: normalizeMessagesForUser(threads, this.userId),
 				count: threads.length,
 				offset,
 				total,

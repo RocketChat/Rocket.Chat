@@ -160,7 +160,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			...(rid && { rid }),
 		};
 
-		const subscriptions = await this.find(query).toArray();
+		const subscriptions = await this.find(query, { projection: { 'u._id': 1 } }).toArray();
 
 		const users = compact(subscriptions.map((subscription) => subscription.u?._id).filter(Boolean));
 
@@ -205,10 +205,31 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	async updateAllRoomTypesByRoomId(roomId: IRoom['_id'], roomType: RoomType): Promise<void> {
-		await this.update({ rid: roomId }, { $set: { t: roomType } }, { multi: true });
+		await this.updateMany({ rid: roomId }, { $set: { t: roomType } });
 	}
 
 	async updateAllRoomNamesByRoomId(roomId: IRoom['_id'], name: string, fname: string): Promise<void> {
-		await this.update({ rid: roomId }, { $set: { name, fname } }, { multi: true });
+		await this.updateMany({ rid: roomId }, { $set: { name, fname } });
+	}
+
+	findByRolesAndRoomId({ roles, rid }: { roles: string; rid?: string }, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		return this.find(
+			{
+				roles,
+				...(rid && { rid }),
+			},
+			options || {},
+		);
+	}
+
+	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = {
+			'u._id': userId,
+			't': {
+				$in: types,
+			},
+		};
+
+		return this.find(query, options || {});
 	}
 }
