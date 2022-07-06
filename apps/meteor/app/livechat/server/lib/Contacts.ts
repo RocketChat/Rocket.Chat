@@ -2,11 +2,34 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
+import { MatchKeysAndValues } from 'mongodb';
+import { ILivechatCustomField, ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
 
 import { LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
 
+type RegisterContactProps = {
+	_id?: string;
+	token: string;
+	name: string;
+	username?: string;
+	email?: string;
+	phone?: string;
+	customFields?: Record<string, unknown | string>;
+	contactManager?: {
+		username: string;
+	};
+};
+
 export const Contacts = {
-	async registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
+	async registerContact({
+		token,
+		name,
+		email = '',
+		phone,
+		username,
+		customFields = {},
+		contactManager,
+	}: RegisterContactProps): Promise<string> {
 		check(token, String);
 
 		const visitorEmail = s.trim(email).toLowerCase();
@@ -23,11 +46,6 @@ export const Contacts = {
 		}
 
 		let contactId;
-		const updateUser = {
-			$set: {
-				token,
-			},
-		};
 
 		const user = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
@@ -46,31 +64,38 @@ export const Contacts = {
 				const userData = {
 					username,
 					ts: new Date(),
+					token,
 				};
 
-				contactId = await LivechatVisitors.insertOne(userData);
+				contactId = (await LivechatVisitors.insertOne(userData)).insertedId;
 			}
 		}
 
-		updateUser.$set.name = name;
-		updateUser.$set.phone = (phone && [{ phoneNumber: phone }]) || null;
-		updateUser.$set.visitorEmails = (visitorEmail && [{ address: visitorEmail }]) || null;
-
-		const allowedCF = LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }).map(({ _id }) => _id);
+		const allowedCF: ILivechatCustomField['_id'][] = LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }).map(
+			({ _id }: ILivechatCustomField) => _id,
+		);
 
 		const livechatData = Object.keys(customFields)
 			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)
-			.reduce((obj, key) => {
+			.reduce((obj: Record<string, unknown | string>, key) => {
 				obj[key] = customFields[key];
 				return obj;
 			}, {});
 
-		updateUser.$set.livechatData = livechatData;
-		updateUser.$set.contactManager = (contactManager?.username && { username: contactManager.username }) || null;
+		const updateUser: { $set: MatchKeysAndValues<ILivechatVisitor> } = {
+			$set: {
+				token,
+				name,
+				livechatData,
+				...(phone && { phone: [{ phoneNumber: phone }] }),
+				...(visitorEmail && { visitorEmails: [{ address: visitorEmail }] }),
+				...(contactManager?.username && { contactManager: { username: contactManager.username } }),
+			},
+		};
 
-		await LivechatVisitors.updateById(contactId, updateUser);
+		await LivechatVisitors.updateOne({ _id: contactId }, updateUser);
 
-		const rooms = LivechatRooms.findByVisitorId(contactId).fetch();
+		const rooms: IRoom[] = LivechatRooms.findByVisitorId(contactId).fetch();
 
 		rooms?.length &&
 			rooms.forEach((room) => {

@@ -23,10 +23,10 @@ const AutoCompleteAgent = (props) => {
 			return -1;
 		}
 
-		if (a.usename > b.usename) {
+		if (a.username > b.username) {
 			return 1;
 		}
-		if (a.usename < b.usename) {
+		if (a.username < b.username) {
 			return -1;
 		}
 
