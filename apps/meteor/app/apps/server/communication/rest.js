@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { Settings } from '@rocket.chat/models';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
@@ -7,7 +8,6 @@ import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
 import { Users } from '../../../models/server';
-import { Settings } from '../../../models/server/raw';
 import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
@@ -524,6 +524,38 @@ export class AppsRestApi {
 					info.status = prl.getStatus();
 
 					return API.v1.success({ app: info });
+				},
+			},
+		);
+
+		this.api.addRoute(
+			':id/versions',
+			{ authRequired: true, permissionsRequired: ['manage-apps'] },
+			{
+				get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+
+					const headers = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					let result;
+					try {
+						result = HTTP.get(`${baseUrl}/v1/apps/${this.urlParams.id}`, {
+							headers,
+						});
+					} catch (e) {
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
+					}
+
+					if (!result || result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the App versions from the Marketplace:', result.data);
+						return API.v1.failure();
+					}
+
+					return API.v1.success({ apps: result.data });
 				},
 			},
 		);

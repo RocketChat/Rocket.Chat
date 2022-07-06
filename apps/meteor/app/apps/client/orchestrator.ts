@@ -89,7 +89,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getApps(): Promise<App[]> {
-		const result = await APIClient.get('/apps');
+		const result = await APIClient.get<'/apps'>('/apps');
 
 		if ('apps' in result) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -134,7 +134,7 @@ class AppClientOrchestrator {
 		return app;
 	}
 
-	public async getAppFromMarketplace(appId: string, version: string): Promise<App> {
+	public async getAppFromMarketplace(appId: string, version: string): Promise<{ app: App; success: boolean }> {
 		const result = await APIClient.get(
 			`/apps/${appId}` as any,
 			{

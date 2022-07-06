@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 
 import { callbacks } from '../../../lib/callbacks';
 import { UiTextContext } from '../../../definition/IRoomTypeConfig';
-import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
+import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models/client';
 import { getUserPreference } from '../../utils';
 import { settings } from '../../settings';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
@@ -135,9 +135,9 @@ const mergeSubRoom = (subscription) => {
 			uids: 1,
 			streamingOptions: 1,
 			usernames: 1,
+			usersCount: 1,
 			topic: 1,
 			encrypted: 1,
-			jitsiTimeout: 1,
 			// autoTranslate: 1,
 			// autoTranslateLanguage: 1,
 			description: 1,
@@ -189,8 +189,7 @@ const mergeSubRoom = (subscription) => {
 		teamMain,
 		uids,
 		usernames,
-		jitsiTimeout,
-
+		usersCount,
 		v,
 		transcriptRequest,
 		servedBy,
@@ -228,8 +227,7 @@ const mergeSubRoom = (subscription) => {
 		teamMain,
 		uids,
 		usernames,
-		jitsiTimeout,
-
+		usersCount,
 		v,
 		transcriptRequest,
 		servedBy,
@@ -272,8 +270,7 @@ const mergeRoomSub = (room) => {
 		teamMain,
 		uids,
 		usernames,
-		jitsiTimeout,
-
+		usersCount,
 		v,
 		transcriptRequest,
 		servedBy,
@@ -310,6 +307,7 @@ const mergeRoomSub = (room) => {
 				retention,
 				uids,
 				usernames,
+				usersCount,
 				lastMessage,
 				streamingOptions,
 				teamId,
@@ -327,7 +325,6 @@ const mergeRoomSub = (room) => {
 				priorityId,
 				livechatData,
 				departmentId,
-				jitsiTimeout,
 				ts,
 				source,
 				queuedAt,

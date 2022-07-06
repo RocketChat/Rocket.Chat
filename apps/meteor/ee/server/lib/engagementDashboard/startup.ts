@@ -1,7 +1,8 @@
+import { Permissions } from '@rocket.chat/models';
+
 import { fillFirstDaysOfMessagesIfNeeded, handleMessagesDeleted, handleMessagesSent } from './messages';
 import { fillFirstDaysOfUsersIfNeeded, handleUserCreated } from './users';
 import { callbacks } from '../../../../lib/callbacks';
-import { Permissions } from '../../../../app/models/server/raw';
 
 export const attachCallbacks = (): void => {
 	callbacks.add('afterSaveMessage', handleMessagesSent, callbacks.priority.MEDIUM, 'engagementDashboard.afterSaveMessage');

@@ -1,10 +1,10 @@
-import { ActionButton, Box, Icon, Option, OptionContent, Tag } from '@rocket.chat/fuselage';
+import { Box, Icon, IconButton, Option, OptionContent, Tag } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
-import { usePreventProgation } from '../../../../hooks/usePreventProgation';
+import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import RoomActions from './RoomActions';
 
@@ -24,7 +24,7 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
 	};
 
-	const onClick = usePreventProgation();
+	const onClick = usePreventPropagation();
 
 	return (
 		<Option id={room._id} data-rid={room._id} {...handleMenuEvent} onClick={onClickView}>
@@ -46,7 +46,7 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 			</OptionContent>
 			{(canRemoveTeamChannel || canEditTeamChannel || canDeleteTeamChannel) && (
 				<Option.Menu onClick={onClick}>
-					{showButton ? <RoomActions room={room} reload={reload} /> : <ActionButton ghost tiny icon='kebab' />}
+					{showButton ? <RoomActions room={room} reload={reload} /> : <IconButton tiny icon='kebab' />}
 				</Option.Menu>
 			)}
 		</Option>

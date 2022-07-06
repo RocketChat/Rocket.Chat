@@ -9,8 +9,8 @@ type VariantType = 'danger' | 'warning' | 'info' | 'success';
 type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
 	children?: ReactNode;
-	cancelText?: string;
-	confirmText?: string;
+	cancelText?: ReactNode;
+	confirmText?: ReactNode;
 	title?: string | ReactElement;
 	icon?: ComponentProps<typeof Icon>['name'] | ReactElement | null;
 	confirmDisabled?: boolean;
@@ -29,7 +29,7 @@ const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => {
 	switch (variant) {
 		case 'danger':
-			return { primary: true, danger: true };
+			return { danger: true };
 		case 'warning':
 			return { primary: true };
 		default:
@@ -74,7 +74,7 @@ const GenericModal: FC<GenericModalProps> = ({
 			<Modal.Header>
 				{renderIcon(icon, variant)}
 				<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
+				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
 			<Modal.Footer>
@@ -82,7 +82,7 @@ const GenericModal: FC<GenericModalProps> = ({
 					{dontAskAgain}
 					<ButtonGroup align='end' flexGrow={1} maxWidth='full'>
 						{onCancel && (
-							<Button ghost onClick={onCancel}>
+							<Button secondary onClick={onCancel}>
 								{cancelText ?? t('Cancel')}
 							</Button>
 						)}

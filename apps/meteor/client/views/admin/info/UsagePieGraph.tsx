@@ -8,7 +8,7 @@ import { useLocalePercentage } from '../../../hooks/useLocalePercentage';
 type GraphColorsReturn = { [key: string]: string };
 
 const graphColors = (color: CSSProperties['color']): GraphColorsReturn => ({
-	used: color || colors.b500,
+	used: color || colors.p500,
 	free: colors.n300,
 });
 

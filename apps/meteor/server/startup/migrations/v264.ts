@@ -35,7 +35,12 @@ addMigration({
 			),
 		);
 
-		await npsVote.dropIndex('npsId_1_identifier_1');
-		await npsVote.createIndex({ npsId: 1, identifier: 1 }, { unique: true });
+		try {
+			await npsVote.dropIndex('npsId_1_identifier_1');
+			await npsVote.createIndex({ npsId: 1, identifier: 1 }, { unique: true });
+		} catch (error: unknown) {
+			console.warn('Error recreating index for rocketchat_nps_vote, continuing...');
+			console.warn(error);
+		}
 	},
 });

@@ -130,7 +130,7 @@ export const uploadFileWithMessage = async (
 		if (!Session.get('uploading').length) {
 			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
 		}
-	} catch (error) {
+	} catch (error: any) {
 		const uploads = Session.get('uploading');
 		uploads
 			.filter((u) => u.id === upload.id)

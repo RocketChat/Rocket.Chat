@@ -1,15 +1,11 @@
 import { slashCommands } from '../../utils/lib/slashCommand';
 
-slashCommands.add(
-	'archive',
-	undefined,
-	{
+slashCommands.add({
+	command: 'archive',
+	options: {
 		description: 'Archive',
 		params: '#channel',
 		permission: 'archive-room',
 	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+	providesPreview: false,
+});

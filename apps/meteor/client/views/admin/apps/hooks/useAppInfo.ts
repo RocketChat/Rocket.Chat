@@ -1,5 +1,5 @@
 import { App } from '@rocket.chat/core-typings';
-import { useEndpoint, EndpointFunction } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useContext } from 'react';
 
 import { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
@@ -29,7 +29,7 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 	const getApis = useEndpoint('GET', `/apps/${appId}/apis`);
 
 	// TODO: remove EndpointFunction<'GET', 'apps/:id'>
-	const getBundledIn = useEndpoint('GET', `/apps/${appId}`) as EndpointFunction<'GET', '/apps/:id'>;
+	const getBundledIn = useEndpoint('GET', `/apps/${appId}`) as any;
 
 	useEffect(() => {
 		const apps: App[] = [];
@@ -47,24 +47,13 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 				return;
 			}
 
-			const app = apps.find((app) => app.id === appId) ?? {
+			const appResult = apps.find((app) => app.id === appId) ?? {
 				...(await Apps.getApp(appId)),
 				installed: true,
 				marketplace: false,
 			};
 
-			const [bundledIn, settings, apis, screenshots] = await Promise.all([
-				app.marketplace === false
-					? []
-					: getBundledIn({
-							marketplace: 'true',
-							update: 'true',
-							appVersion: appId,
-					  })
-							.then(({ app }) => getBundledInApp(app))
-							.catch(() => ({
-								settings: {},
-							})),
+			const [settings, apis, screenshots, bundledIn] = await Promise.all([
 				getSettings().catch(() => ({
 					settings: {},
 				})),
@@ -74,10 +63,25 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 				getScreenshots().catch(() => ({
 					screenshots: [],
 				})),
+				appResult.marketplace === false
+					? []
+					: getBundledIn({
+							marketplace: 'true',
+							update: 'true',
+							appVersion: appId,
+					  })
+							.then(({ app }: any) => {
+								appResult.tosLink = app.tosLink;
+								appResult.privacyLink = app.privacyLink;
+								return getBundledInApp(app);
+							})
+							.catch(() => ({
+								settings: {},
+							})),
 			]);
 
 			setAppData({
-				...app,
+				...appResult,
 				bundledIn: bundledIn as App['bundledIn'],
 				settings: settings.settings as ISettings,
 				apis: apis ? apis.apis : [],

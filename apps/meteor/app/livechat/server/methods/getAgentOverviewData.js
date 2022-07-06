@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
 import { Livechat } from '../lib/Livechat';
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:getAgentOverviewData'(options) {

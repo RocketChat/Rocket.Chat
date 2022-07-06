@@ -1,7 +1,7 @@
-import google from 'googleapis';
+import { google } from 'googleapis';
 
-import { settings } from '../../settings';
-import { Users } from '../../models';
+import { settings } from '../../settings/server';
+import { Users } from '../../models/server';
 import { API } from '../../api/server';
 
 const { OAuth2 } = google.auth;

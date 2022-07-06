@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Match, check } from 'meteor/check';
+import { Messages } from '@rocket.chat/models';
 
 import { appTokensCollection } from '../../../push/server';
 import { API } from '../api';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { Users, Rooms } from '../../../models/server';
-import { Messages } from '../../../models/server/raw';
 
 API.v1.addRoute(
 	'push.token',
@@ -38,6 +38,7 @@ API.v1.addRoute(
 				Meteor.call('raix:push-update', {
 					id: deviceId,
 					token: { [type]: value },
+					authToken: this.request.headers['x-auth-token'],
 					appName,
 					userId: this.userId,
 				}),
