@@ -1,12 +1,4 @@
-import type {
-	AggregationCursor,
-	Cursor,
-	FilterQuery,
-	FindOneOptions,
-	WithoutProjection,
-	UpdateWriteOpResult,
-	WriteOpResult,
-} from 'mongodb';
+import type { AggregationCursor, Cursor, FilterQuery, FindOneOptions, UpdateWriteOpResult, WriteOpResult } from 'mongodb';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
