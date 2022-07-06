@@ -1,3 +1,4 @@
+import type { VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
@@ -50,13 +51,16 @@ export const VoipFooter = (): ReactElement | null => {
 		[callActions],
 	);
 
-	const getSubtitle = (state: 'IN_CALL' | 'OFFER_RECEIVED' | 'OFFER_SENT' | 'ON_HOLD'): string =>
-		({
+	const getSubtitle = (state: VoIpCallerInfo['state']): string => {
+		const subtitles: Record<string, string> = {
 			IN_CALL: t('In_progress'),
 			OFFER_RECEIVED: t('Ringing'),
 			OFFER_SENT: t('Calling'),
 			ON_HOLD: t('On_Hold'),
-		}[state]);
+		};
+
+		return subtitles[state] || '';
+	};
 
 	const tooltips = {
 		mute: t('Mute'),

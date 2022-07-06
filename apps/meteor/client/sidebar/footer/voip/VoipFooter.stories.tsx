@@ -64,21 +64,14 @@ const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
 	const [paused, togglePause] = useState(false);
 
 	const getSubtitle = (state: VoIpCallerInfo['state']): string => {
-		const subtitles = {
-			INITIAL: '',
-			REGISTERED: '',
-			IDLE: '',
-			ANSWER_SENT: '',
-			ANSWER_RECEIVED: '',
-			UNREGISTERED: '',
-			ERROR: '',
+		const subtitles: Record<string, string> = {
 			IN_CALL: 'In Progress',
 			OFFER_RECEIVED: 'Ringing',
 			OFFER_SENT: 'Calling',
 			ON_HOLD: 'On Hold',
 		};
 
-		return subtitles[state];
+		return subtitles[state] || '';
 	};
 
 	return (
