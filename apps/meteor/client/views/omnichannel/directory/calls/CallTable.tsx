@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import React, { useState, useMemo, useCallback, FC } from 'react';
 
+import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import GenericTable from '../../../../components/GenericTable';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 
@@ -148,7 +149,9 @@ const CallTable: FC = () => {
 			return (
 				<Table.Row key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id, v?.token)} action qa-user-id={_id}>
 					<Table.Cell withTruncatedText>{fname}</Table.Cell>
-					<Table.Cell withTruncatedText>{Array.isArray(v?.phone) ? v?.phone[0]?.phoneNumber : v?.phone}</Table.Cell>
+					<Table.Cell withTruncatedText>
+						{Array.isArray(v?.phone) ? parseOutboundPhoneNumber(v?.phone[0]?.phoneNumber) : parseOutboundPhoneNumber(v?.phone)}
+					</Table.Cell>
 					<Table.Cell withTruncatedText>{queue}</Table.Cell>
 					<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
 					<Table.Cell withTruncatedText>{duration.isValid() && duration.humanize()}</Table.Cell>

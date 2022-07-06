@@ -4,6 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
+import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
@@ -56,11 +57,11 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 							<InfoPanel.Label>{t('Contact')}</InfoPanel.Label>
 							<Box display='flex'>
 								<UserAvatar size='x28' username={_name} />
-								<AgentInfoDetails mis='x8' name={_name} status={<UserStatus status={v?.status} />} />
+								<AgentInfoDetails mis='x8' name={parseOutboundPhoneNumber(_name)} status={<UserStatus status={v?.status} />} />
 							</Box>
 						</InfoPanel.Field>
 					)}
-					{phoneNumber && <InfoField label={t('Caller_Id')} info={phoneNumber} />}
+					{phoneNumber && <InfoField label={t('Caller_Id')} info={parseOutboundPhoneNumber(phoneNumber)} />}
 					{queue && <InfoField label={t('Queue')} info={queue} />}
 					{endedAt && <InfoField label={t('Last_Call')} info={endedAt} />}
 					<InfoField label={t('Waiting_Time')} info={waiting || t('Not_Available')} />

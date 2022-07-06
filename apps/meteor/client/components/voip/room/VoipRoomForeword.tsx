@@ -1,11 +1,12 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Avatar, Box, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import { getUserAvatarURL } from '../../../../app/utils/client';
+import { parseOutboundPhoneNumber } from '../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 
-export const VoipRoomForeword = ({ room }: { room: IRoom }): ReactElement => {
+export const VoipRoomForeword = ({ room }: { room: IVoipRoom }): ReactElement => {
 	const t = useTranslation();
 
 	const avatarUrl = getUserAvatarURL(room.name || room.fname);
@@ -21,7 +22,7 @@ export const VoipRoomForeword = ({ room }: { room: IRoom }): ReactElement => {
 			<Box is='div' mb='x8' flexGrow={1} display='flex' justifyContent='center'>
 				<Box mi='x4'>
 					<Tag style={{ cursor: 'default' }} variant='primary' medium>
-						{room.name || room.fname}
+						{parseOutboundPhoneNumber(room.name)}
 					</Tag>
 				</Box>
 			</Box>

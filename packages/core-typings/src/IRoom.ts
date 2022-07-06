@@ -193,6 +193,7 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
 	t: 'v';
+	name: string;
 	// The timestamp when call was started
 	callStarted: Date;
 	// The amount of time the call lasted, in milliseconds
