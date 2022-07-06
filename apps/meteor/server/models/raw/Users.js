@@ -151,7 +151,7 @@ export class UsersRaw extends BaseRaw {
 				{
 					active: true,
 					username: { $exists: true, $nin: exceptions },
-					$or: orStmt,
+					...(orStmt.length > 0 && { $or: orStmt }),
 				},
 				...extraQuery,
 			],
@@ -207,7 +207,7 @@ export class UsersRaw extends BaseRaw {
 				{
 					active: true,
 					username: { $exists: true, $nin: exceptions },
-					$or: orStmt,
+					...(orStmt.length > 0 && { $or: orStmt }),
 				},
 				...extraQuery,
 			],
