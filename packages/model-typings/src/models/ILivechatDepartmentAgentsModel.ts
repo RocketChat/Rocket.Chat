@@ -36,9 +36,7 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 
 	findAgentsByDepartmentId(
 		departmentId: string,
-		options?:
-			| undefined
-			| FindOptions<ILivechatDepartmentAgents>,
+		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
 	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
 
 	findActiveDepartmentsByAgentId(agentId: string): FindCursor<ILivechatDepartmentAgents>;
