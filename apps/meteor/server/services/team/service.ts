@@ -647,17 +647,19 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			};
 		}
 
-		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset);
-		const records = await cursor.toArray();
-		const teamUserIds = records.map((m) => m.userId);
+		const teamMembersQuery = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset);
+		const teamMembers = await teamMembersQuery.toArray();
+		const teamUserIds = teamMembers.map((m) => m.userId);
 
-		query._id = {
-			$in: teamUserIds,
-		};
+		if (!query._id) {
+			query._id = {
+				$in: teamUserIds,
+			};
+		}
 
 		const users = await this.Users.findActive({ ...query }).toArray();
 		const activeUserIds = users.map((u) => u._id);
-		const recordsWithActiveUsers = records.filter((record) => activeUserIds.includes(record.userId));
+		const recordsWithActiveUsers = teamMembers.filter((record) => activeUserIds.includes(record.userId));
 		const results: ITeamMemberInfo[] = [];
 		for await (const record of recordsWithActiveUsers) {
 			const user = users.find((u) => u._id === record.userId);
@@ -679,7 +681,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		return {
-			total: await cursor.count(),
+			total: await teamMembersQuery.count(),
 			records: results,
 		};
 	}
