@@ -30,7 +30,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findOneByLDAPId(id: any, attribute?: any): Promise<any>;
 
-	findOneByAppId(appId: string, options: FindOneOptions<IUser>): Promise<IUser | null>;
+	findOneByAppId(appId: string, options?: FindOneOptions<IUser>): Promise<IUser | null>;
 
 	findLDAPUsers(options?: any): any;
 
