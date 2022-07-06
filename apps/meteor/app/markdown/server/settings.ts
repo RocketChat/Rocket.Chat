@@ -19,6 +19,7 @@ settingsRegistry.add('Markdown_Parser', 'original', {
 	group: 'Message',
 	section: 'Markdown',
 	public: true,
+	alert: 'Use_Legacy_Message_Template_alert',
 });
 
 const enableQueryOriginal = { _id: 'Markdown_Parser', value: 'original' };

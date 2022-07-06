@@ -16,7 +16,7 @@ type release = {
 };
 
 const AppReleases = ({ id }: { id: string }): JSX.Element => {
-	const { value, phase, error } = useEndpointData(`/apps/${id}/versions`);
+	const { value, phase, error } = useEndpointData(`/apps/${id}/versions`) as any;
 
 	const [releases, setReleases] = useState([] as release[]);
 
@@ -29,7 +29,7 @@ const AppReleases = ({ id }: { id: string }): JSX.Element => {
 			const { apps } = value;
 
 			setReleases(
-				apps.map((app) => ({
+				apps.map((app: any) => ({
 					version: app.version,
 					createdDate: app.createdDate,
 					detailedChangelog: app.detailedChangelog,

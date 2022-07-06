@@ -35,12 +35,18 @@ const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
 					<Box fontScale='p2m' mie='x16'>
 						{t('By_author', { author: author?.name })}
 					</Box>
-					| <Box mi='x16'>{t('Version_version', { version })}</Box> |{' '}
-					<Box mis='x16'>
-						{t('Marketplace_app_last_updated', {
-							lastUpdated,
-						})}
-					</Box>
+					<Box is='span'> | </Box>
+					<Box mi='x16'>{t('Version_version', { version })}</Box>
+					{lastUpdated && (
+						<>
+							<Box is='span'> | </Box>
+							<Box mis='x16'>
+								{t('Marketplace_app_last_updated', {
+									lastUpdated,
+								})}
+							</Box>
+						</>
+					)}
 				</Box>
 			</Box>
 		</Box>

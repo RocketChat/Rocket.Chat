@@ -59,7 +59,7 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 			commit();
 		} catch (error) {
-			dispatchToastMessage({ type: 'success', message: error });
+			dispatchToastMessage({ type: 'success', message: error instanceof Error ? error : String(error) });
 		}
 	});
 
