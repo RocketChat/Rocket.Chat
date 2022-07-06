@@ -235,9 +235,9 @@ const appsRoutes =
 				};
 
 				try {
-					Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
+					const result = Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
 
-					res.status(200).json({ success: true });
+					res.send(result);
 				} catch (e) {
 					res.status(500).send(e); // e.message
 				}
