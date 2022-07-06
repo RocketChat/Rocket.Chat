@@ -187,7 +187,7 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 	}
 
 	if (workspace === 'external') {
-		const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept(
+		const { cursor, totalCount } = UsersRaw.findPaginatedByActiveLocalUsersExcept(
 			text,
 			[],
 			options,
@@ -201,7 +201,13 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 		};
 	}
 
-	const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
+	const { cursor, totalCount } = UsersRaw.findPaginatedByActiveLocalUsersExcept(
+		text,
+		[],
+		options,
+		forcedSearchFields,
+		getFederationDomain(),
+	);
 	const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
 		total,
