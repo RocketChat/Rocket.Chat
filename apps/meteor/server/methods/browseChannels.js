@@ -3,10 +3,10 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 import mem from 'mem';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Rooms as RoomsRaw, Users as UsersRaw } from '@rocket.chat/models';
+import { Rooms as RoomsRaw, Users } from '@rocket.chat/models';
 
 import { hasPermission } from '../../app/authorization/server';
-import { Rooms, Users, Subscriptions } from '../../app/models/server';
+import { Rooms, Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
@@ -178,7 +178,7 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 	};
 
 	if (workspace === 'all') {
-		const { cursor, totalCount } = UsersRaw.findPaginatedByActiveUsersExcept(text, [], options, forcedSearchFields);
+		const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(text, [], options, forcedSearchFields);
 		const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 		return {
 			total,
@@ -187,7 +187,7 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 	}
 
 	if (workspace === 'external') {
-		const { cursor, totalCount } = UsersRaw.findPaginatedByActiveLocalUsersExcept(
+		const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept(
 			text,
 			[],
 			options,
@@ -201,13 +201,7 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 		};
 	}
 
-	const { cursor, totalCount } = UsersRaw.findPaginatedByActiveLocalUsersExcept(
-		text,
-		[],
-		options,
-		forcedSearchFields,
-		getFederationDomain(),
-	);
+	const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
 	const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
 		total,
