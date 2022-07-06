@@ -50,20 +50,13 @@ export const VoipFooter = (): ReactElement | null => {
 		[callActions],
 	);
 
-	const getSubtitle = (): string => {
-		switch (callerInfo.state) {
-			case 'IN_CALL':
-				return t('In_progress');
-			case 'OFFER_RECEIVED':
-				return t('Ringing');
-			case 'OFFER_SENT':
-				return t('Calling');
-			case 'ON_HOLD':
-				return t('On_Hold');
-		}
-
-		return '';
-	};
+	const getSubtitle = (state: 'IN_CALL' | 'OFFER_RECEIVED' | 'OFFER_SENT' | 'ON_HOLD'): string =>
+		({
+			IN_CALL: t('In_progress'),
+			OFFER_RECEIVED: t('Ringing'),
+			OFFER_SENT: t('Calling'),
+			ON_HOLD: t('On_Hold'),
+		}[state]);
 
 	const tooltips = {
 		mute: t('Mute'),
@@ -95,7 +88,7 @@ export const VoipFooter = (): ReactElement | null => {
 			callerState={callerInfo.state}
 			callActions={callActions}
 			title={queueName || t('Phone_call')}
-			subtitle={getSubtitle()}
+			subtitle={getSubtitle(callerInfo.state)}
 			muted={muted}
 			paused={paused}
 			toggleMic={toggleMic}

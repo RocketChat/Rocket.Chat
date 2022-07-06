@@ -1,3 +1,4 @@
+import { VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { ComponentStory } from '@storybook/react';
 import React, { useState } from 'react';
@@ -62,19 +63,22 @@ const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
 	const [muted, toggleMic] = useState(false);
 	const [paused, togglePause] = useState(false);
 
-	const getSubtitle = () => {
-		switch (args.callerState) {
-			case 'IN_CALL':
-				return 'In Progress';
-			case 'OFFER_RECEIVED':
-				return 'Ringing';
-			case 'OFFER_SENT':
-				return 'Calling';
-			case 'ON_HOLD':
-				return 'On Hold';
-		}
+	const getSubtitle = (state: VoIpCallerInfo['state']): string => {
+		const subtitles = {
+			INITIAL: '',
+			REGISTERED: '',
+			IDLE: '',
+			ANSWER_SENT: '',
+			ANSWER_RECEIVED: '',
+			UNREGISTERED: '',
+			ERROR: '',
+			IN_CALL: 'In Progress',
+			OFFER_RECEIVED: 'Ringing',
+			OFFER_SENT: 'Calling',
+			ON_HOLD: 'On Hold',
+		};
 
-		return '';
+		return subtitles[state];
 	};
 
 	return (
@@ -82,7 +86,7 @@ const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
 			<VoipFooter
 				{...args}
 				callActions={callActions}
-				subtitle={getSubtitle()}
+				subtitle={getSubtitle(args.callerState)}
 				muted={muted}
 				paused={paused}
 				toggleMic={toggleMic}
