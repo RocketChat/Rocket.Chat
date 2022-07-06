@@ -1493,6 +1493,8 @@
   "Devices": "Devices",
   "Devices_Set": "Devices Set",
   "Device_settings": "Device Settings",
+  "Dialed_number_doesnt_exist": "Dialed number doesn't exist",
+  "Dialed_number_is_incomplete": "Dialed number is not complete",
   "Different_Style_For_User_Mentions": "Different style for user mentions",
   "Direct": "Direct",
   "Direction": "Direction",
