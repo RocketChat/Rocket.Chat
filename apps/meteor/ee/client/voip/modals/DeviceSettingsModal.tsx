@@ -47,7 +47,7 @@ const DeviceSettingsModal = (): ReactElement => {
 	return (
 		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
 			<Modal.Header>
-				<Modal.Title>{t('Audio_settings')}</Modal.Title>
+				<Modal.Title>{t('Device_settings')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
