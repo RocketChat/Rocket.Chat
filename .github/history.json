@@ -98631,6 +98631,219 @@
           ]
         }
       ]
+    },
+    "4.6.4": {
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.7.3": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.7.4": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "553",
+          "title": "Load missed messages from opened rooms when reconnect",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "4.8.1": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25723",
+          "title": "[FIX] Wrong argument name preventing Omnichannel Chat Forward to User ",
+          "userLogin": "dudanogueira",
+          "milestone": "4.8.1",
+          "contributors": [
+            "dudanogueira"
+          ]
+        },
+        {
+          "pr": "25669",
+          "title": "[FIX] Bump meteor-node-stubs to version 1.2.3",
+          "userLogin": "Sh0uld",
+          "description": "With meteor-node-stubs version 1.2.3 a bug was fixed, which occured in issue #25460 and probably #25513 (last one not tested).\r\nFor the issue in meteor see: https://github.com/meteor/meteor/issues/11974",
+          "milestone": "4.8.1",
+          "contributors": [
+            "Sh0uld",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "25708",
+          "title": "[FIX] AccountBox checks for condition",
+          "userLogin": "tiagoevanp",
+          "milestone": "4.8.1",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "25781",
+          "title": "[FIX] Fix prom-client new promise usage",
+          "userLogin": "KevLehman",
+          "milestone": "4.8.1",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
+    },
+    "5.0.0-rc.1": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26127",
+          "title": "Regression: Close button on modals created via apps not working",
+          "userLogin": "murtaza98",
+          "milestone": "5.0.0",
+          "contributors": [
+            "murtaza98",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26125",
+          "title": "Regression: Unable to click on UiKit buttons provided by apps",
+          "userLogin": "murtaza98",
+          "milestone": "5.0.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "26140",
+          "title": "Regression: Fix assets format",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "26062",
+          "title": "Regression: Update error message on `useEndpointActionExperimental`",
+          "userLogin": "LucianoPierdona",
+          "description": "This PR changes the way we show an error message to the user on the `useEndpointActionExperimental` hook, previously for `Object` error messages it was being shown as undefined",
+          "contributors": [
+            "LucianoPierdona",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26129",
+          "title": "Regression: All users in members list showing as federated",
+          "userLogin": "gabriellsh",
+          "milestone": "5.0.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "26115",
+          "title": "Regression: Do not show federated tooltip on non-federated rooms",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "5.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26117",
+          "title": "Regression: Users on new sessions are forced to re-configure 2fa",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "5.0.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "26080",
+          "title": "Regression: Fix marketplace app apis visibility problem",
+          "userLogin": "rique223",
+          "description": "Solved a problem that showed an unwanted zero in place of the APIs section for apps that weren't installed/did not have an APIs section.\r\nBefore:\r\n![image](https://user-images.githubusercontent.com/43561537/176743542-8f5d2e97-48e7-4947-a82a-43c3a15ea0ac.png)\r\n\r\nAfter(non installed app):\r\n![image](https://user-images.githubusercontent.com/43561537/176744082-0139e15b-b03b-4c03-9267-9a17d14b70e9.png)\r\n\r\nAfter(installed app)\r\n![image](https://user-images.githubusercontent.com/43561537/176772870-c5382edc-59e6-42e4-8dfa-f1e4fd0267c0.png)",
+          "milestone": "5.0.0",
+          "contributors": [
+            "rique223"
+          ]
+        },
+        {
+          "pr": "26116",
+          "title": "Regression: Changing isEnterprise useQuery name to prevent conflict of queries",
+          "userLogin": "hugocostadev",
+          "description": "Changed the name of useQuery hook to prevent conflict of queries with same name.",
+          "milestone": "5.0.0",
+          "contributors": [
+            "hugocostadev"
+          ]
+        },
+        {
+          "pr": "26101",
+          "title": "Regression: [VideoConference] Callee client behaves improperly when accepting a call from someone who lost the connection",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "If the caller loses connection and the callee accepts the call anyway, the client will wait for five seconds for confirmation that they can join the call. This PR improves the UI behavior during those five seconds.",
+          "milestone": "5.0.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "26113",
+          "title": "Chore: Change stats to daily",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }

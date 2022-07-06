@@ -1,6 +1,65 @@
 
 # 5.0.0 (Under Release Candidate Process)
 
+## 5.0.0-rc.1
+`2022-07-06  ·  11 🔍  ·  9 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Change stats to daily ([#26113](https://github.com/RocketChat/Rocket.Chat/pull/26113))
+
+- Regression: [VideoConference] Callee client behaves improperly when accepting a call from someone who lost the connection ([#26101](https://github.com/RocketChat/Rocket.Chat/pull/26101))
+
+  If the caller loses connection and the callee accepts the call anyway, the client will wait for five seconds for confirmation that they can join the call. This PR improves the UI behavior during those five seconds.
+
+- Regression: All users in members list showing as federated ([#26129](https://github.com/RocketChat/Rocket.Chat/pull/26129))
+
+- Regression: Changing isEnterprise useQuery name to prevent conflict of queries ([#26116](https://github.com/RocketChat/Rocket.Chat/pull/26116))
+
+  Changed the name of useQuery hook to prevent conflict of queries with same name.
+
+- Regression: Close button on modals created via apps not working ([#26127](https://github.com/RocketChat/Rocket.Chat/pull/26127))
+
+- Regression: Do not show federated tooltip on non-federated rooms ([#26115](https://github.com/RocketChat/Rocket.Chat/pull/26115))
+
+- Regression: Fix assets format ([#26140](https://github.com/RocketChat/Rocket.Chat/pull/26140))
+
+- Regression: Fix marketplace app apis visibility problem ([#26080](https://github.com/RocketChat/Rocket.Chat/pull/26080))
+
+  Solved a problem that showed an unwanted zero in place of the APIs section for apps that weren't installed/did not have an APIs section.
+  Before:
+  ![image](https://user-images.githubusercontent.com/43561537/176743542-8f5d2e97-48e7-4947-a82a-43c3a15ea0ac.png)
+
+  After(non installed app):
+  ![image](https://user-images.githubusercontent.com/43561537/176744082-0139e15b-b03b-4c03-9267-9a17d14b70e9.png)
+
+  After(installed app)
+  ![image](https://user-images.githubusercontent.com/43561537/176772870-c5382edc-59e6-42e4-8dfa-f1e4fd0267c0.png)
+
+- Regression: Unable to click on UiKit buttons provided by apps ([#26125](https://github.com/RocketChat/Rocket.Chat/pull/26125))
+
+- Regression: Update error message on `useEndpointActionExperimental` ([#26062](https://github.com/RocketChat/Rocket.Chat/pull/26062))
+
+  This PR changes the way we show an error message to the user on the `useEndpointActionExperimental` hook, previously for `Object` error messages it was being shown as undefined
+
+- Regression: Users on new sessions are forced to re-configure 2fa ([#26117](https://github.com/RocketChat/Rocket.Chat/pull/26117))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@LucianoPierdona](https://github.com/LucianoPierdona)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 5.0.0-rc.0
 `2022-07-04  ·  13 ️️️⚠️  ·  33 🎉  ·  20 🚀  ·  109 🐛  ·  291 🔍  ·  63 👩‍💻👨‍💻`
 
@@ -1573,6 +1632,39 @@
 - [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
+# 4.8.1
+`2022-06-08  ·  4 🐛  ·  5 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- AccountBox checks for condition ([#25708](https://github.com/RocketChat/Rocket.Chat/pull/25708))
+
+- Bump meteor-node-stubs to version 1.2.3 ([#25669](https://github.com/RocketChat/Rocket.Chat/pull/25669) by [@Sh0uld](https://github.com/Sh0uld))
+
+  With meteor-node-stubs version 1.2.3 a bug was fixed, which occured in issue #25460 and probably #25513 (last one not tested).
+  For the issue in meteor see: https://github.com/meteor/meteor/issues/11974
+
+- Fix prom-client new promise usage ([#25781](https://github.com/RocketChat/Rocket.Chat/pull/25781))
+
+- Wrong argument name preventing Omnichannel Chat Forward to User  ([#25723](https://github.com/RocketChat/Rocket.Chat/pull/25723))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Sh0uld](https://github.com/Sh0uld)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@dudanogueira](https://github.com/dudanogueira)
+- [@ggazzo](https://github.com/ggazzo)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 # 4.8.0
 `2022-05-31  ·  16 🎉  ·  13 🚀  ·  55 🐛  ·  151 🔍  ·  52 👩‍💻👨‍💻`
 
@@ -2453,19 +2545,38 @@
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.7.4
-`2022-05-30  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+`2022-05-30  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
 
 ### 🐛 Bug fixes
 
 
 - Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
 
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Load missed messages from opened rooms when reconnect ([#553](https://github.com/RocketChat/Rocket.Chat/pull/553))
+
+</details>
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
 
 # 4.7.3
 `2022-05-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
 
 ### 🐛 Bug fixes
 
