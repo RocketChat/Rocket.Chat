@@ -7,6 +7,14 @@ import {
 	isRoomsFavoriteParamsPOST,
 	isRoomsCleanHistoryParamsPOST,
 	isRoomsCreateDiscussionParamsPOST,
+	isRoomsGetDiscussionsParamsGET,
+	isRoomsAdminRoomsParamsGET,
+	isRoomsAutocompleteAdminRoomsParamsGET,
+	isRoomsAdminRoomsGetRoomParamsGET,
+	isRoomsAutocompleteChannelAndPrivateParamsGET,
+	isRoomsAutocompleteChannelAndPrivateWithPaginationParamsGET,
+	isRoomsAutocompleteAvailableForTeamsParamsGET,
+	isRoomsSaveRoomSettingsParamsPOST,
 } from '@rocket.chat/rest-typings';
 
 import { FileUpload } from '../../../file-upload/server';
@@ -306,7 +314,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.getDiscussions',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsGetDiscussionsParamsGET,
+	},
 	{
 		get() {
 			const room = findRoomByIdOrName({ params: this.requestParams() });
@@ -338,7 +349,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.adminRooms',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsAdminRoomsParamsGET,
+	},
 	{
 		get() {
 			const { offset, count } = this.getPaginationItems();
@@ -365,13 +379,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.autocomplete.adminRooms',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsAutocompleteAdminRoomsParamsGET },
 	{
 		get() {
 			const { selector } = this.queryParams;
-			if (!selector) {
-				return API.v1.failure("The 'selector' param is required");
-			}
 
 			return API.v1.success(
 				Promise.await(
@@ -387,20 +398,20 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.adminRooms.getRoom',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsAdminRoomsGetRoomParamsGET,
+	},
 	{
 		get() {
-			const { rid } = this.requestParams();
+			const { rid } = this.requestParams() as string;
 			const room = Promise.await(
 				findAdminRoom({
 					uid: this.userId,
 					rid,
 				}),
-			);
+			) as IRoom;
 
-			if (!room) {
-				return API.v1.failure('not-allowed', 'Not Allowed');
-			}
 			return API.v1.success(room);
 		},
 	},
@@ -408,13 +419,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.autocomplete.channelAndPrivate',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsAutocompleteChannelAndPrivateParamsGET,
+	},
 	{
 		get() {
 			const { selector } = this.queryParams;
-			if (!selector) {
-				return API.v1.failure("The 'selector' param is required");
-			}
 
 			return API.v1.success(
 				Promise.await(
@@ -430,16 +441,15 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.autocomplete.channelAndPrivate.withPagination',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsAutocompleteChannelAndPrivateWithPaginationParamsGET,
+	},
 	{
 		get() {
 			const { selector } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
-
-			if (!selector) {
-				return API.v1.failure("The 'selector' param is required");
-			}
 
 			return API.v1.success(
 				Promise.await(
@@ -460,14 +470,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.autocomplete.availableForTeams',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsAutocompleteAvailableForTeamsParamsGET,
+	},
 	{
 		get() {
 			const { name } = this.queryParams;
-
-			if (name && typeof name !== 'string') {
-				return API.v1.failure("The 'name' param is invalid");
-			}
 
 			return API.v1.success(
 				Promise.await(
@@ -483,12 +492,15 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.saveRoomSettings',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsSaveRoomSettingsParamsPOST,
+	},
 	{
 		post() {
 			const { rid, ...params } = this.bodyParams;
 
-			const result = Meteor.runAsUser(this.userId, () => Meteor.call('saveRoomSettings', rid, params));
+			const result = Meteor.call('saveRoomSettings', rid, params);
 
 			return API.v1.success({ rid: result.rid });
 		},
