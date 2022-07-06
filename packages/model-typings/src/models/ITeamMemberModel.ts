@@ -63,7 +63,12 @@ export interface ITeamMemberModel extends IBaseModel<ITeamMember> {
 
 	findByUserIdAndTeamIds(userId: string, teamIds: Array<string>, options?: FindOptions<ITeamMember>): FindCursor<ITeamMember>;
 
-	findPaginatedMembersInfoByTeamId(teamId: string, limit: number, skip: number, query?: Filter<ITeamMember>): FindPaginated<FindCursor<ITeamMember>>;
+	findPaginatedMembersInfoByTeamId(
+		teamId: string,
+		limit: number,
+		skip: number,
+		query?: Filter<ITeamMember>,
+	): FindPaginated<FindCursor<ITeamMember>>;
 
 	updateOneByUserIdAndTeamId(userId: string, teamId: string, update: Partial<ITeamMember>): Promise<UpdateResult>;
 	createOneByTeamIdAndUserId(
