@@ -12,7 +12,11 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findStarredByUserAtRoom(userId: IUser['_id'], roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 
-	findByRoomIdAndType(roomId: IRoom['_id'], type: IMessage['t'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findPaginatedByRoomIdAndType(
+		roomId: IRoom['_id'],
+		type: IMessage['t'],
+		options?: FindOptions<IMessage>,
+	): FindPaginated<FindCursor<IMessage>>;
 
 	findSnippetedByRoom(roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 
@@ -49,4 +53,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	countRoomsWithMessageType(type: IMessage['t'], options: AggregateOptions): Promise<number>;
 
 	countByType(type: IMessage['t'], options: CountDocumentsOptions): Promise<number>;
+
+	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 }

@@ -256,7 +256,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	}
 
 	async listAll({ offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamInfo>> {
-		const cursor = Team.find(
+		const { cursor, totalCount } = Team.findPaginated(
 			{},
 			{
 				limit: count,
@@ -264,7 +264,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			},
 		);
 
-		const records = await cursor.toArray();
+		const [records, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		const results: ITeamInfo[] = [];
 		for await (const record of records) {
@@ -278,7 +278,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		return {
-			total: await cursor.count(),
+			total,
 			records: results,
 		};
 	}
@@ -514,7 +514,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		if (getAllRooms) {
 			const teamRoomsCursor = Rooms.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, undefined, { skip, limit });
 			return {
-				total: await teamRoomsCursor.count(),
+				total: await teamRoomsCursor.count(), // TODO use findPaginated
 				records: await teamRoomsCursor.toArray(),
 			};
 		}
@@ -526,7 +526,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const validTeamRoomsCursor = Rooms.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, userRooms, { skip, limit });
 
 		return {
-			total: await validTeamRoomsCursor.count(),
+			total: await validTeamRoomsCursor.count(), // TODO use findPaginated
 			records: await validTeamRoomsCursor.toArray(),
 		};
 	}
@@ -591,7 +591,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		return {
-			total: await availableRoomsCursor.count(),
+			total: await availableRoomsCursor.count(), // TODO use findPaginated
 			records,
 		};
 	}
@@ -665,7 +665,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		return {
-			total: await cursor.count(),
+			total: await cursor.count(), // TODO use findPaginated
 			records: results,
 		};
 	}

@@ -175,6 +175,7 @@ API.v1.addRoute(
 				apiDeprecationLogger.warn(`Querying roles by name is deprecated and will be removed on the next major release of Rocket.Chat`);
 			}
 
+			// TODO use findPaginated here
 			const users = await getUsersInRole(roleData._id, roomId, {
 				limit: count as number,
 				sort: { username: 1 },

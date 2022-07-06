@@ -1,5 +1,5 @@
 import type { ILivechatVisitor, ISetting, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ILivechatVisitorsModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
 import type {
 	AggregationCursor,
 	Collection,
@@ -157,31 +157,30 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	/**
 	 * Find visitors by their email or phone or username or name
-	 * @return [{object}] List of Visitors from db
 	 */
-	findVisitorsByEmailOrPhoneOrNameOrUsername(
-		_emailOrPhoneOrNameOrUsername: string,
+	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsername(
+		emailOrPhone: string,
+		nameOrUsername: RegExp,
 		options: FindOptions<ILivechatVisitor>,
-	): FindCursor<ILivechatVisitor> {
-		const filter = new RegExp(_emailOrPhoneOrNameOrUsername, 'i');
+	): FindPaginated<FindCursor<ILivechatVisitor>> {
 		const query = {
 			$or: [
 				{
-					'visitorEmails.address': _emailOrPhoneOrNameOrUsername,
+					'visitorEmails.address': emailOrPhone,
 				},
 				{
-					'phone.phoneNumber': _emailOrPhoneOrNameOrUsername,
+					'phone.phoneNumber': emailOrPhone,
 				},
 				{
-					name: filter,
+					name: nameOrUsername,
 				},
 				{
-					username: filter,
+					username: nameOrUsername,
 				},
 			],
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	async updateLivechatDataByToken(

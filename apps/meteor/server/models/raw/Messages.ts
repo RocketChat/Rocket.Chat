@@ -37,13 +37,17 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findPaginated(query, options);
 	}
 
-	findByRoomIdAndType(roomId: IRoom['_id'], type: IMessage['t'], options: FindOptions<IMessage> = {}): FindCursor<IMessage> {
-		const query: Filter<IMessage> = {
+	findPaginatedByRoomIdAndType(
+		roomId: IRoom['_id'],
+		type: IMessage['t'],
+		options: FindOptions<IMessage> = {},
+	): FindPaginated<FindCursor<IMessage>> {
+		const query = {
 			rid: roomId,
 			t: type,
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findSnippetedByRoom(roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
@@ -314,6 +318,17 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.find(query, options);
+	}
+
+	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+		const query: Filter<IMessage> = {
+			t: { $ne: 'rm' },
+			_hidden: { $ne: true },
+			pinned: true,
+			rid: roomId,
+		};
+
+		return this.findPaginated(query, options);
 	}
 
 	findStarred(options: FindOptions<IMessage>): FindCursor<IMessage> {

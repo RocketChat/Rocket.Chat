@@ -80,7 +80,7 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 	});
 
 	const totalCursor = Rooms.findByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms);
-	const total = totalCursor.count();
+	const total = totalCursor.count(); // TODO use findPaginated
 
 	const result = cursor.fetch();
 
@@ -144,7 +144,7 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 	}));
 
 	return {
-		total: result.count(), // count ignores the `skip` and `limit` options
+		total: result.count(), // TODO use findPaginated
 		results: rooms,
 	};
 };
@@ -180,7 +180,7 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 		const cursor = Users.findByActiveExternalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
 		const cursorTotal = Users.findByActiveExternalUsersExcept(text, [], null, forcedSearchFields, getFederationDomain());
 		return {
-			total: cursorTotal.count(),
+			total: cursorTotal.count(), // TODO use findPaginated
 			results: cursor.fetch(),
 		};
 	}
@@ -188,7 +188,7 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 	const cursor = Users.findByActiveLocalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
 	const cursorTotal = Users.findByActiveLocalUsersExcept(text, [], null, forcedSearchFields, getFederationDomain());
 	return {
-		total: cursorTotal.count(),
+		total: cursorTotal.count(), // TODO use findPaginated
 		results: cursor.fetch(),
 	};
 }

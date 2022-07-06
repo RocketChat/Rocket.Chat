@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Integrations, Uploads, Rooms as RoomsRaw } from '@rocket.chat/models';
+import { Integrations, Messages as MessagesRaw, Uploads, Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
@@ -689,7 +689,7 @@ API.v1.addRoute(
 	'groups.messages',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const findResult = findPrivateGroupByIdOrName({
 				params: this.requestParams(),
 				userId: this.userId,
@@ -699,18 +699,20 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign({}, query, { rid: findResult.rid });
 
-			const messages = Messages.find(ourQuery, {
+			const { cursor, totalCount } = MessagesRaw.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields,
-			}).fetch();
+				projection: fields,
+			});
+
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
-				total: Messages.find(ourQuery).count(),
+				total,
 			});
 		},
 	},

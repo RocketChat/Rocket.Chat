@@ -1,7 +1,7 @@
 import type { AggregationCursor, FindCursor, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findById(_id: string, options: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
@@ -17,10 +17,12 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 			custom_name: string;
 		}
 	>;
-	findVisitorsByEmailOrPhoneOrNameOrUsername(
-		_emailOrPhoneOrNameOrUsername: string,
+	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsername(
+		emailOrPhone: string,
+		nameOrUsername: RegExp,
 		options: FindOptions<ILivechatVisitor>,
-	): FindCursor<ILivechatVisitor>;
+	): FindPaginated<FindCursor<ILivechatVisitor>>;
+
 	removeContactManagerByUsername(manager: string): Promise<UpdateResult | Document>;
 
 	updateLivechatDataByToken(token: string, key: string, value: unknown, overwrite: boolean): Promise<UpdateResult | Document | boolean>;

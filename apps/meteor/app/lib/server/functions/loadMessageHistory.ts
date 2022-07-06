@@ -66,6 +66,7 @@ export const loadMessageHistory = function loadMessageHistory({
 
 			firstUnread = unreadMessages.fetch()[0];
 			unreadNotLoaded = unreadMessages.count();
+			// TODO use findPaginated
 		}
 	}
 

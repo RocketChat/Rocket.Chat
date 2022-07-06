@@ -173,7 +173,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const cursor = await VideoConferenceModel.findAllByRoomId(roomId, pagination);
 
 		const data = (await cursor.toArray()) as VideoConference[];
-		const total = await cursor.count();
+		const total = await cursor.count(); // TODO use findPaginated
 
 		return {
 			data,

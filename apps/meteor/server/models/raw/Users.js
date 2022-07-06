@@ -76,6 +76,19 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	/**
+	 * @param {IRole['_id'][] | IRole['_id']} roles the list of role ids
+	 * @param {any} query
+	 * @param {any} options
+	 */
+	findPaginatedUsersInRolesWithQuery(roles, query, options) {
+		roles = [].concat(roles);
+
+		Object.assign(query, { roles: { $in: roles } });
+
+		return this.findPaginated(query, options);
+	}
+
 	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');

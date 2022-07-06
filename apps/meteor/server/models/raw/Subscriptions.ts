@@ -83,9 +83,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'u._id': uid,
 		};
 
-		const cursor = this.find(query, { projection: { _id: 0 } });
-
-		return cursor.count();
+		return this.col.countDocuments(query);
 	}
 
 	async isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<ISubscription | null> {

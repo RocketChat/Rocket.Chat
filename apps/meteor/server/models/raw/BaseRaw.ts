@@ -109,17 +109,16 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		return this.col.findOneAndUpdate(query, update, options || {});
 	}
 
-	async findOneById(_id: string, options?: FindOptions<T> | undefined): Promise<WithId<T> | null>;
+	async findOneById(_id: string, options?: FindOptions<T> | undefined): Promise<T | null>;
 
-	async findOneById<P = T>(_id: string, options: FindOptions<P>): Promise<P | null>;
+	async findOneById<P = T>(_id: string, options?: FindOptions<P>): Promise<P | null>;
 
-	async findOneById(_id: string, options?: any): Promise<WithId<T> | null> {
+	async findOneById(_id: string, options?: any): Promise<T | null> {
 		const query = { _id } as unknown as Filter<T>;
-		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
-		if (optionsDef) {
-			return this.col.findOne(query, optionsDef);
+		if (options) {
+			return this.findOne(query, options);
 		}
-		return this.col.findOne(query);
+		return this.findOne(query);
 	}
 
 	async findOne(query?: Filter<T> | string, options?: undefined): Promise<T | null>;

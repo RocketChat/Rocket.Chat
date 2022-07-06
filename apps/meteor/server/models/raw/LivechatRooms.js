@@ -923,6 +923,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findPaginatedByVisitorId(visitorId, options) {
+		const query = {
+			't': 'l',
+			'v._id': visitorId,
+		};
+		return this.findPaginated(query, options);
+	}
+
 	findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, searchText, open, served, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {

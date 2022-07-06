@@ -106,7 +106,7 @@ Meteor.methods({
 					);
 
 					firstUnread = unreadMessages.fetch()[0];
-					unreadNotLoaded = unreadMessages.count();
+					unreadNotLoaded = unreadMessages.count(); // TODO use findPaginated
 				}
 			}
 

@@ -57,14 +57,12 @@ export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 
 	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;
 
-	findOneById(_id: string, options?: FindOptions<T> | undefined): Promise<WithId<T> | null>;
-	findOneById<P = T>(_id: string, options: FindOptions<P>): Promise<P | null>;
-	findOneById(_id: string, options?: any): Promise<WithId<T> | null>;
+	findOneById(_id: string, options?: FindOptions<T> | undefined): Promise<T | null>;
+	findOneById<P = T>(_id: string, options?: FindOptions<P>): Promise<P | null>;
+	findOneById(_id: string, options?: any): Promise<T | null>;
 
 	findOne(query?: Filter<T> | string, options?: undefined): Promise<T | null>;
-
 	findOne<P = T>(query: Filter<T> | string, options: FindOptions<P extends T ? T : P>): Promise<P | null>;
-
 	findOne<P>(query: Filter<T> | string, options?: any): Promise<WithId<T> | WithId<P> | null>;
 
 	// findUsersInRoles(): void {
@@ -76,7 +74,6 @@ export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 	find<P>(query: Filter<T> | undefined, options?: FindOptions<P extends T ? T : P>): FindCursor<WithId<P>> | FindCursor<WithId<T>>;
 
 	findPaginated<P = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
-
 	findPaginated(query: Filter<T>, options?: any): FindPaginated<FindCursor<WithId<T>>>;
 
 	update(

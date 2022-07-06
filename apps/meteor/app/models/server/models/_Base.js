@@ -127,7 +127,7 @@ export class Base {
 
 	findPaginated(...args) {
 		try {
-			const totalCount = this[this.origin].find(args[0]).count();
+			const totalCount = this[this.origin].find(args[0]).count(); // TODO use findPaginated - should this exist here?
 			const cursor = this[this.origin].find(...args);
 			return {
 				totalCount,
