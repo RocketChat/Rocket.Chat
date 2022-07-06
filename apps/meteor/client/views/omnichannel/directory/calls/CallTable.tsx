@@ -1,5 +1,4 @@
 import { IVoipRoom } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
@@ -11,15 +10,6 @@ import GenericTable from '../../../../components/GenericTable';
 import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { CallDialpadButton } from '../CallDialpadButton';
-
-const rowClass = css`
-	.call-table__call-button {
-		display: none;
-	}
-	&:hover .call-table__call-button {
-		display: block !important;
-	}
-`;
 
 const useQuery = (
 	{
@@ -164,7 +154,7 @@ const CallTable: FC = () => {
 			return (
 				<Table.Row
 					key={_id}
-					className={rowClass}
+					rcx-show-call-button-on-hover
 					tabIndex={0}
 					role='link'
 					onClick={(): void => onRowClick(_id, v?.token)}
@@ -178,7 +168,7 @@ const CallTable: FC = () => {
 					<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
 					<Table.Cell withTruncatedText>{duration.isValid() && duration.humanize()}</Table.Cell>
 					<Table.Cell withTruncatedText>{resolveDirectionLabel(direction)}</Table.Cell>
-					<Table.Cell>{isCallReady && <CallDialpadButton className='call-table__call-button' phoneNumber={phoneNumber} />}</Table.Cell>
+					<Table.Cell>{isCallReady && <CallDialpadButton phoneNumber={phoneNumber} />}</Table.Cell>
 				</Table.Row>
 			);
 		},
