@@ -11,6 +11,8 @@ export const VoipRoomForeword = ({ room }: { room: IVoipRoom }): ReactElement =>
 
 	const avatarUrl = getUserAvatarURL(room.name || room.fname);
 
+	const roomName = room.name || room.fname;
+
 	return (
 		<Box is='div' flexGrow={1} display='flex' justifyContent='center' flexDirection='column'>
 			<Box display='flex' justifyContent='center' mbs='x24'>
@@ -22,7 +24,7 @@ export const VoipRoomForeword = ({ room }: { room: IVoipRoom }): ReactElement =>
 			<Box is='div' mb='x8' flexGrow={1} display='flex' justifyContent='center'>
 				<Box mi='x4'>
 					<Tag style={{ cursor: 'default' }} variant='primary' medium>
-						{parseOutboundPhoneNumber(room.name)}
+						{roomName && parseOutboundPhoneNumber(roomName)}
 					</Tag>
 				</Box>
 			</Box>
