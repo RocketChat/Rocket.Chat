@@ -7,6 +7,8 @@ import React, { useState, useCallback, useRef, FC } from 'react';
 import { ISettings } from '../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import Page from '../../../components/Page';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppDetails from './AppDetails';
 import AppDetailsHeader from './AppDetailsHeader';
 import AppLogs from './AppLogs';
@@ -39,7 +41,10 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const router = useRoute(currentRouteName);
 	const handleReturn = useMutableCallback((): void => router.push({}));
 
+	const { value: releases, phase: releasesPhase } = useEndpointData(`/apps/${id}/versions`) as any;
+
 	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink } = appData || {};
+	const isSecurityVisible = privacyPolicySummary || permissions || tosLink || privacyLink;
 
 	const saveAppSettings = useCallback(async () => {
 		const { current } = settingsRef;
@@ -89,12 +94,12 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 								<Tabs.Item onClick={(): void => handleTabClick('details')} selected={!tab || tab === 'details'}>
 									{t('Details')}
 								</Tabs.Item>
-								{Boolean(installed) && (
+								{Boolean(installed) && isSecurityVisible && (
 									<Tabs.Item onClick={(): void => handleTabClick('security')} selected={tab === 'security'}>
 										{t('Security')}
 									</Tabs.Item>
 								)}
-								{Boolean(installed) && (
+								{Boolean(installed) && releasesPhase !== AsyncStatePhase.REJECTED && (
 									<Tabs.Item onClick={(): void => handleTabClick('releases')} selected={tab === 'releases'}>
 										{t('Releases')}
 									</Tabs.Item>
@@ -113,7 +118,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
 
-							{tab === 'security' && (
+							{tab === 'security' && isSecurityVisible && (
 								<AppSecurity
 									privacyPolicySummary={privacyPolicySummary}
 									appPermissions={permissions}
@@ -122,7 +127,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 								/>
 							)}
 
-							{tab === 'releases' && <AppReleases id={id} />}
+							{tab === 'releases' && <AppReleases value={releases} phase={releasesPhase} />}
 
 							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
 								<SettingsDisplay

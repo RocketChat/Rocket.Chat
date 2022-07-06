@@ -1,7 +1,7 @@
+import type { App } from '@rocket.chat/core-typings';
 import { Accordion } from '@rocket.chat/fuselage';
 import React, { useEffect, useState } from 'react';
 
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState/AsyncStatePhase';
 import AccordionLoading from './AccordionLoading';
 import ReleaseItem from './ReleaseItem';
@@ -15,14 +15,16 @@ type release = {
 	};
 };
 
-const AppReleases = ({ id }: { id: string }): JSX.Element => {
-	const { value, phase, error } = useEndpointData(`/apps/${id}/versions`) as any;
+type value = {
+	apps: App[];
+	success: boolean;
+};
 
+const AppReleases = ({ value, phase }: { value: value; phase: AsyncStatePhase }): JSX.Element => {
 	const [releases, setReleases] = useState([] as release[]);
 
 	const isLoading = phase === AsyncStatePhase.LOADING;
 	const isSuccess = phase === AsyncStatePhase.RESOLVED;
-	const didFail = phase === AsyncStatePhase.REJECTED || error;
 
 	useEffect(() => {
 		if (isSuccess && value?.apps) {
@@ -41,7 +43,6 @@ const AppReleases = ({ id }: { id: string }): JSX.Element => {
 	return (
 		<>
 			<Accordion width='100%' alignSelf='center'>
-				{didFail && error}
 				{isLoading && <AccordionLoading />}
 				{isSuccess && releases.length && releases.map((release) => <ReleaseItem release={release} key={release.version} />)}
 			</Accordion>
