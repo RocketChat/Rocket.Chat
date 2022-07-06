@@ -149,8 +149,8 @@ export const CallProvider: FC = ({ children }) => {
 
 		setQueueAggregator(voipClient.getAggregator());
 
-		return (): void => voipClient.unregister();
-	}, [result]);
+		return (): void => (clientState === 'registered' ? voipClient.unregister() : undefined);
+	}, [result, clientState]);
 
 	const openRoom = useCallback((rid: IVoipRoom['_id']): void => {
 		roomCoordinator.openRouteLink('v', { rid });
