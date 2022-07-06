@@ -148,7 +148,7 @@ const CallTable: FC = () => {
 			const duration = moment.duration(callDuration / 1000, 'seconds');
 			return (
 				<Table.Row key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id, v?.token)} action qa-user-id={_id}>
-					<Table.Cell withTruncatedText>{fname}</Table.Cell>
+					<Table.Cell withTruncatedText>{parseOutboundPhoneNumber(fname)}</Table.Cell>
 					<Table.Cell withTruncatedText>
 						{Array.isArray(v?.phone) ? parseOutboundPhoneNumber(v?.phone[0]?.phoneNumber) : parseOutboundPhoneNumber(v?.phone)}
 					</Table.Cell>
