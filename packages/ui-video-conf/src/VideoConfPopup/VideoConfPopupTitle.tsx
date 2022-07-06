@@ -1,21 +1,18 @@
 import React from 'react';
-import type { ComponentProps } from 'react';
 import { Box, Icon, Throbber } from '@rocket.chat/fuselage';
 
 type VideoConfPopupTitleProps = {
   text: string;
   counter?: boolean; 
-  icon?: ComponentProps<typeof Icon>['name'];
 };
 
-const VideoConfPopupTitle = ({ text, counter = false, icon }: VideoConfPopupTitleProps) => {
+const VideoConfPopupTitle = ({ text, counter = false }: VideoConfPopupTitleProps) => {
   return (
-    <Box mbs='x8' display='flex' alignItems='center'>
-      {icon && <Icon size='x20' name={icon} />}
-      <Box mis='x4' fontScale='p1b'>
+    <Box display='flex' alignItems='center'>
+      <Box fontScale='p2b'>
         {text} 
       </Box>
-      {counter && <Throbber size='x8' mis='x4' inheritColor />}
+      {counter && <Throbber size='x8' mis='x4' />}
     </Box>
   );
 }

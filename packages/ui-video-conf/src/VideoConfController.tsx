@@ -8,13 +8,15 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 type VideoConfControllerProps = {
 	icon: IconProps['name'];
 	active?: boolean;
-	text: string;
+  secondary?: boolean;
+  disabled?: boolean;
+  small?: boolean;
 } & Omit<ButtonHTMLAttributes<HTMLElement>, 'ref' | 'is' | 'className' | 'size' | 'elevation'>;
 
-const VideoConfController = ({ active, text, icon, ...props }: VideoConfControllerProps): ReactElement => {
+const VideoConfController = ({ icon, active, secondary, disabled, small = true,  ...props }: VideoConfControllerProps): ReactElement => {
   const id = useUniqueId();
 
-  return <IconButton icon={icon} id={id} info={active} square secondary {...props} />
+  return <IconButton small={small} icon={icon} id={id} info={active} disabled={disabled} secondary={secondary || active || disabled} square {...props} />
 }
 
 export default VideoConfController;
