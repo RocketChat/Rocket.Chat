@@ -1,4 +1,4 @@
-import type { UpdateWriteOpResult, Cursor } from 'mongodb';
+import type { UpdateWriteOpResult, Cursor, FindOneOptions } from 'mongodb';
 import type { IUser, IRole, IRoom, ILivechatAgent } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
@@ -29,6 +29,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneByUsernameIgnoringCase(username: any, options: any): any;
 
 	findOneByLDAPId(id: any, attribute?: any): Promise<any>;
+
+	findOneByAppId(appId: string, options: FindOneOptions<IUser>): Promise<IUser | null>;
 
 	findLDAPUsers(options?: any): any;
 

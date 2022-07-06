@@ -60,8 +60,8 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 		}
 	}
 
-	protected async registerProvider(info: IVideoConfProvider): Promise<void> {
-		videoConfProviders.registerProvider(info.name, info.capabilities || {});
+	protected async registerProvider(info: IVideoConfProvider, appId: string): Promise<void> {
+		videoConfProviders.registerProvider(info.name, info.capabilities || {}, appId);
 	}
 
 	protected async unRegisterProvider(info: IVideoConfProvider): Promise<void> {
