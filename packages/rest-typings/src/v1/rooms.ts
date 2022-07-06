@@ -479,4 +479,17 @@ export type RoomsEndpoints = {
 			success: boolean;
 		};
 	};
+	'/v1/rooms.favorite': {
+		POST: (
+			params:
+				| {
+						roomId: string;
+						favorite: boolean;
+				  }
+				| {
+						roomName: string;
+						favorite: boolean;
+				  },
+		) => void;
+	};
 };
