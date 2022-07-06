@@ -360,6 +360,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async removeJoinButton(messageId: IMessage['_id']): Promise<void> {
 		await Messages.removeVideoConfJoinButton(messageId);
+
+		const text = TAPi18n.__('Conference_call_has_ended');
+		await Messages.addBlocksById(messageId, [this.buildMessageBlock(text)]);
 	}
 
 	private async endDirectCall(call: IDirectVideoConference): Promise<void> {
