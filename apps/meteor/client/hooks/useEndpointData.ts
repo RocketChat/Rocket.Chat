@@ -24,10 +24,12 @@ export const useEndpointData = <TPath extends PathFor<'GET'>>(
 			.then(resolve)
 			.catch((error) => {
 				console.error(error);
-				dispatchToastMessage({
-					type: 'error',
-					message: error,
-				});
+				if (error && typeof error === 'string' && error !== 'undefined') {
+					dispatchToastMessage({
+						type: 'error',
+						message: error,
+					});
+				}
 				reject(error);
 			});
 	}, [reset, getData, params, resolve, dispatchToastMessage, reject]);
