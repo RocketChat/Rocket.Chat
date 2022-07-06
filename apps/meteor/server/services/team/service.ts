@@ -633,7 +633,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			};
 		}
 
-		const teamMembersQuery = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset);
+		const teamMembersQuery = TeamMember.findMembersInfoByTeamId(teamId, count, offset);
 		const teamMembers = await teamMembersQuery.toArray();
 		const teamUserIds = teamMembers.map((m) => m.userId);
 
@@ -643,7 +643,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			};
 		}
 
-		const users = await this.Users.findActive({ ...query }).toArray();
+		const users = await Users.findActive({ ...query }).toArray();
 		const activeUserIds = users.map((u) => u._id);
 		const recordsWithActiveUsers = teamMembers.filter((record) => activeUserIds.includes(record.userId));
 		const results: ITeamMemberInfo[] = [];
