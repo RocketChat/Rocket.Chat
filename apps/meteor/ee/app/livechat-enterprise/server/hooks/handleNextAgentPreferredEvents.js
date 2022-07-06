@@ -1,9 +1,9 @@
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { LivechatRooms, LivechatInquiry, Users } from '../../../../../app/models/server';
+import { LivechatRooms, LivechatInquiry } from '../../../../../app/models/server';
 
 let contactManagerPreferred = false;
 let lastChattedAgentPreferred = false;
@@ -18,7 +18,7 @@ const normalizeDefaultAgent = (agent) => {
 };
 
 const getDefaultAgent = (username) =>
-	username && normalizeDefaultAgent(Users.findOneOnlineAgentByUserList(username, { fields: { _id: 1, username: 1 } }));
+	username && normalizeDefaultAgent(Promise.await(Users.findOneByAgentUsername(username, { projection: { _id: 1, username: 1 } })));
 
 const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	if (defaultAgent || !defaultGuest) {
@@ -60,7 +60,9 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	const {
 		servedBy: { username: usernameByRoom },
 	} = room;
-	const lastRoomAgent = normalizeDefaultAgent(Users.findOneOnlineAgentByUserList(usernameByRoom, { fields: { _id: 1, username: 1 } }));
+	const lastRoomAgent = normalizeDefaultAgent(
+		Promise.await(Users.findOneByAgentUsername(usernameByRoom, { fields: { _id: 1, username: 1 } })),
+	);
 	return lastRoomAgent || defaultAgent;
 };
 
