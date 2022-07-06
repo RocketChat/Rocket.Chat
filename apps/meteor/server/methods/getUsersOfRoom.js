@@ -28,7 +28,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const { cursor, totalCount } = findUsersOfRoom({
+		// TODO this is currently counting deactivated users
+		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
+
+		const { cursor } = findUsersOfRoom({
 			rid,
 			status: !showAll ? { $ne: 'offline' } : undefined,
 			limit,
@@ -36,11 +39,9 @@ Meteor.methods({
 			filter,
 		});
 
-		const [records, total] = await Promise.all([cursor.toArray(), totalCount]);
-
 		return {
 			total,
-			records,
+			records: await cursor.toArray(),
 		};
 	},
 });
