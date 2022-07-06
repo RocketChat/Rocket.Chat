@@ -56,14 +56,14 @@ API.v1.addRoute(
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 			const ourQuery = Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
 
-			const { cursor, totalCount: total } = await IntegrationHistory.findPaginated(ourQuery, {
+			const { cursor, totalCount } = IntegrationHistory.findPaginated(ourQuery, {
 				sort: sort || { _updatedAt: -1 },
 				skip: offset,
 				limit: count,
 				projection,
 			});
 
-			const history = await cursor.toArray();
+			const [history, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				history,
@@ -97,14 +97,14 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query) as Filter<IIntegration>;
 
-			const { cursor, totalCount: total } = await Integrations.findPaginated(ourQuery, {
+			const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
 				projection,
 			});
 
-			const integrations = await cursor.toArray();
+			const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				integrations,

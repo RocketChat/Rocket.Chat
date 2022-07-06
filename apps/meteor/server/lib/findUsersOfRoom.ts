@@ -1,5 +1,6 @@
-import type { Mongo } from 'meteor/mongo';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { FindCursor } from 'mongodb';
+import type { FindPaginated } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
@@ -13,7 +14,14 @@ type FindUsersParam = {
 	sort?: Record<string, any>;
 };
 
-export function findUsersOfRoom({ rid, status, skip = 0, limit = 0, filter = '', sort = {} }: FindUsersParam): Mongo.Cursor<IUser> {
+export function findUsersOfRoom({
+	rid,
+	status,
+	skip = 0,
+	limit = 0,
+	filter = '',
+	sort = {},
+}: FindUsersParam): FindPaginated<FindCursor<IUser>> {
 	const options = {
 		fields: {
 			name: 1,

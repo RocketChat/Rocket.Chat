@@ -46,9 +46,9 @@ export async function findAdminRooms({
 		result = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, options);
 	}
 
-	const { cursor, totalCount: total } = result;
+	const { cursor, totalCount } = result;
 
-	const rooms = await cursor.toArray();
+	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		rooms,
@@ -150,9 +150,9 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 		limit: count,
 	};
 
-	const { cursor, totalCount: total } = Rooms.findPaginatedRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options);
+	const { cursor, totalCount } = Rooms.findPaginatedRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options);
 
-	const rooms = await cursor.toArray();
+	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		items: rooms,

@@ -394,7 +394,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		roomName,
 		options: { offset = 0, count, fields, sort } = {},
 	}: FindVoipRoomsParams): Promise<PaginatedResult<{ rooms: IVoipRoom[] }>> {
-		const { cursor, totalCount: total } = await VoipRoom.findRoomsWithCriteria({
+		const { cursor, totalCount } = VoipRoom.findRoomsWithCriteria({
 			agents,
 			open,
 			createdAt,
@@ -412,7 +412,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			},
 		});
 
-		const rooms = await cursor.toArray();
+		const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return {
 			rooms,
@@ -475,8 +475,9 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		offset?: number,
 		sort?: Record<string, unknown>,
 	): Promise<{ agents: ILivechatAgent[]; total: number }> {
-		const { cursor, totalCount: total } = await Users.getAvailableAgentsIncludingExt(includeExtension, text, { count, skip: offset, sort });
-		const agents = await cursor.toArray();
+		const { cursor, totalCount } = Users.getAvailableAgentsIncludingExt(includeExtension, text, { count, skip: offset, sort });
+
+		const [agents, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return {
 			agents,

@@ -168,10 +168,11 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 	};
 
 	if (workspace === 'all') {
-		const { cursor, totalCount: total } = UsersRaw.findPaginatedByActiveUsersExcept(text, [], options, forcedSearchFields);
+		const { cursor, totalCount } = UsersRaw.findPaginatedByActiveUsersExcept(text, [], options, forcedSearchFields);
+		const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 		return {
 			total,
-			results: await cursor.toArray(),
+			results,
 		};
 	}
 

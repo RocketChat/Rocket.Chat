@@ -226,7 +226,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			};
 		}
 
-		const { cursor, totalCount: total } = await Team.findByIdsPaginated(
+		const { cursor, totalCount } = Team.findByIdsPaginated(
 			teamIds,
 			{
 				...(sort && { sort }),
@@ -236,7 +236,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			query,
 		);
 
-		const records = await cursor.toArray();
+		const [records, total] = await Promise.all([cursor.toArray(), totalCount]);
+
 		const results: ITeamInfo[] = [];
 		for await (const record of records) {
 			const rooms = Rooms.findByTeamId(record._id);

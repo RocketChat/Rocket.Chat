@@ -8,7 +8,7 @@ export async function findLivechatTransferHistory({ userId, rid, pagination: { o
 		throw new Error('error-not-authorized');
 	}
 
-	const { cursor, totalCount: total } = await Messages.findPaginated(
+	const { cursor, totalCount } = Messages.findPaginated(
 		{ rid, t: 'livechat_transfer_history' },
 		{
 			fields: { transferData: 1 },
@@ -18,8 +18,7 @@ export async function findLivechatTransferHistory({ userId, rid, pagination: { o
 		},
 	);
 
-	const messages = await cursor.toArray();
-	const history = messages.map(normalizeTransferHistory);
+	const [history, total] = await Promise.all([cursor.map(normalizeTransferHistory).toArray(), totalCount]);
 
 	return {
 		history,

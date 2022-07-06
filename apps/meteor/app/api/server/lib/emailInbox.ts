@@ -26,13 +26,13 @@ export const findEmailInboxes = async ({
 	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
 		throw new Error('error-not-allowed');
 	}
-	const { cursor, totalCount: total } = await EmailInbox.findPaginated(query, {
+	const { cursor, totalCount } = EmailInbox.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const emailInboxes = await cursor.toArray();
+	const [emailInboxes, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		emailInboxes,

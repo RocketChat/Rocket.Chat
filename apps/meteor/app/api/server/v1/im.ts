@@ -216,24 +216,27 @@ API.v1.addRoute(
 
 			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
 
-			const { cursor, totalCount: total } = await Uploads.findPaginated<IUpload & { userId: string }>(ourQuery, {
+			const { cursor, totalCount } = Uploads.findPaginated<IImFilesObject>(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 				projection: fields,
 			});
 
-			const files = (await cursor.toArray()).map(
-				(file): IImFilesObject | (IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }) => {
-					if (file.userId) {
-						return this.insertUserObject<IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }>({
-							object: { ...file },
-							userId: file.userId,
-						});
-					}
-					return file;
-				},
-			);
+			const [files, total] = await Promise.all([
+				cursor
+					.map((file): IImFilesObject | (IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }) => {
+						if (file.userId) {
+							return this.insertUserObject<IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }>({
+								object: { ...file },
+								userId: file.userId,
+							});
+						}
+						return file;
+					})
+					.toArray(),
+				totalCount,
+			]);
 
 			return API.v1.success({
 				files,
@@ -319,9 +322,9 @@ API.v1.addRoute(
 				limit: count,
 			};
 
-			const { cursor, totalCount: total } = Users.findPaginatedByActiveUsersExcept(filter, [], options, null, [extraQuery]);
+			const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter, [], options, null, [extraQuery]);
 
-			const members = cursor.toArray();
+			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				members,
@@ -354,14 +357,14 @@ API.v1.addRoute(
 			const ourQuery = { rid: room._id, ...query };
 			const sortObj = { ts: sort?.ts ?? -1 };
 
-			const { cursor, totalCount: total } = await Messages.findPaginated(ourQuery, {
+			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sortObj,
 				skip: offset,
 				limit: count,
 				...(fields && { projection: fields }),
 			});
 
-			const messages = await cursor.toArray();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),
@@ -408,14 +411,14 @@ API.v1.addRoute(
 			const { sort, fields, query } = this.parseJsonQuery();
 			const ourQuery = Object.assign({}, query, { rid: room._id });
 
-			const { cursor, totalCount: total } = await Messages.findPaginated<IMessage>(ourQuery, {
+			const { cursor, totalCount } = Messages.findPaginated<IMessage>(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
 				projection: fields,
 			});
 
-			const msgs = await cursor.toArray();
+			const [msgs, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			if (!msgs) {
 				throw new Meteor.Error('error-no-messages', 'No messages found');
@@ -445,7 +448,7 @@ API.v1.addRoute(
 				.map((item) => item.rid)
 				.toArray();
 
-			const { cursor, totalCount: total } = await Rooms.findPaginated(
+			const { cursor, totalCount } = Rooms.findPaginated(
 				{ type: 'd', _id: { $in: subscriptions } },
 				{
 					sort,
@@ -455,9 +458,10 @@ API.v1.addRoute(
 				},
 			);
 
-			const rooms = cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId));
-
-			const ims = await rooms.toArray();
+			const [ims, total] = await Promise.all([
+				cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
+				totalCount,
+			]);
 
 			return API.v1.success({
 				ims,
@@ -481,7 +485,7 @@ API.v1.addRoute(
 			const { offset, count }: { offset: number; count: number } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const { cursor, totalCount: total } = await Rooms.findPaginated(
+			const { cursor, totalCount } = Rooms.findPaginated(
 				{ ...query, t: 'd' },
 				{
 					sort: sort || { name: 1 },
@@ -491,7 +495,10 @@ API.v1.addRoute(
 				},
 			);
 
-			const rooms = await cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray();
+			const [rooms, total] = await Promise.all([
+				cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
+				totalCount,
+			]);
 
 			return API.v1.success({
 				ims: rooms,

@@ -34,13 +34,12 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
 	): FindPaginated<FindCursor<P>>;
 
-	findAgentsByDepartmentId<P>(
+	findAgentsByDepartmentId(
 		departmentId: string,
 		options?:
 			| undefined
-			| FindOptions<ILivechatDepartmentAgents>
-			| FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindPaginated<FindCursor<ILivechatDepartmentAgents> | FindCursor<P>>;
+			| FindOptions<ILivechatDepartmentAgents>,
+	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
 
 	findActiveDepartmentsByAgentId(agentId: string): FindCursor<ILivechatDepartmentAgents>;
 

@@ -26,14 +26,14 @@ export async function getStatistics({
 		throw new Error('error-not-allowed');
 	}
 
-	const { cursor, totalCount: total } = await Statistics.findPaginated(query, {
+	const { cursor, totalCount } = Statistics.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 		projection: fields,
 	});
 
-	const statistics = await cursor.toArray();
+	const [statistics, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		statistics,

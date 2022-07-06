@@ -149,15 +149,13 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		return this.col.find(query, optionsDef);
 	}
 
-	findPaginated(query?: Filter<T>): FindPaginated<FindCursor<ResultFields<T, C>>>;
+	findPaginated<P = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
 
-	findPaginated<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<P>>;
-
-	async findPaginated<P>(query: Filter<T> | undefined = {}, options?: any): FindPaginated<FindCursor<WithId<P>> | FindCursor<WithId<T>>> {
+	findPaginated(query: Filter<T> | undefined = {}, options?: any): FindPaginated<FindCursor<WithId<T>>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 
 		const cursor = optionsDef ? this.col.find(query, optionsDef) : this.col.find(query);
-		const totalCount = await this.col.countDocuments(query);
+		const totalCount = this.col.countDocuments(query);
 
 		return {
 			cursor,

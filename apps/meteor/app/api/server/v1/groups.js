@@ -351,14 +351,14 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign({}, query, { rid: findResult.rid });
 
-			const { cursor, totalCount: total } = await Uploads.findPaginated(ourQuery, {
+			const { cursor, totalCount } = Uploads.findPaginated(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 				projection: fields,
 			});
 
-			const files = await cursor.toArray();
+			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				files: files.map(addUserObjectToEveryObject),
@@ -408,14 +408,14 @@ API.v1.addRoute(
 			const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, {
 				channel: { $in: channelsToSearch },
 			});
-			const { cursor, totalCount: total } = await Integrations.findPaginated(ourQuery, {
+			const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 				sort: sort || { _createdAt: 1 },
 				skip: offset,
 				limit: count,
 				projection,
 			});
 
-			const integrations = await cursor.toArray();
+			const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				integrations,
@@ -591,6 +591,7 @@ API.v1.addRoute(
 				fields,
 			});
 
+			// TODO findPaginated meteor
 			const rooms = cursor.fetch();
 
 			return API.v1.success({
@@ -615,20 +616,23 @@ API.v1.addRoute(
 			const { sort, fields, query } = this.parseJsonQuery();
 			const ourQuery = Object.assign({}, query, { t: 'p' });
 
-			const { cursor, totalCount } = await RoomsRaw.findPaginated(ourQuery, {
+			const { cursor, totalCount } = RoomsRaw.findPaginated(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 				projection: fields,
 			});
 
-			const rooms = await cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray();
+			const [rooms, total] = await Promise.all([
+				cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
+				totalCount,
+			]);
 
 			return API.v1.success({
 				groups: rooms,
 				offset,
 				count: rooms.length,
-				total: totalCount,
+				total,
 			});
 		},
 	},
@@ -660,7 +664,7 @@ API.v1.addRoute(
 			);
 			const { status, filter } = this.queryParams;
 
-			const { cursor, totalCount: total } = findUsersOfRoom({
+			const { cursor, totalCount } = findUsersOfRoom({
 				rid: findResult.rid,
 				...(status && { status: { $in: status } }),
 				skip,
@@ -669,7 +673,7 @@ API.v1.addRoute(
 				...(sort?.username && { sort: { username: sort.username } }),
 			});
 
-			const members = await cursor.toArray();
+			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				members,

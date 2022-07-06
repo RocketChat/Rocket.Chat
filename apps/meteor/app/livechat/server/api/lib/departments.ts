@@ -58,13 +58,13 @@ export async function findDepartments({
 		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
 	}
 
-	const { cursor, totalCount: total } = await LivechatDepartment.findPaginated(query, {
+	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const departments = await cursor.toArray();
+	const [departments, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		departments,
@@ -143,13 +143,13 @@ export async function findDepartmentAgents({
 		throw new Error('error-not-authorized');
 	}
 
-	const { cursor, totalCount: total } = await LivechatDepartmentAgents.findAgentsByDepartmentId<ILivechatDepartmentAgents>(departmentId, {
+	const { cursor, totalCount } = LivechatDepartmentAgents.findAgentsByDepartmentId<ILivechatDepartmentAgents>(departmentId, {
 		sort: sort || { username: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const agents = await cursor.toArray();
+	const [agents, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		agents,

@@ -18,13 +18,13 @@ export async function findBusinessHours(userId: string, { offset, count, sort }:
 		const filterReg = new RegExp(escapeRegExp(name), 'i');
 		Object.assign(query, { name: filterReg });
 	}
-	const { cursor, totalCount: total } = await LivechatBusinessHours.findPaginated(query, {
+	const { cursor, totalCount } = LivechatBusinessHours.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const businessHours = await cursor.toArray();
+	const [businessHours, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		businessHours,

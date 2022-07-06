@@ -28,13 +28,13 @@ API.v1.addRoute(
 				throw new Error('not-allowed');
 			}
 
-			const { cursor, totalCount: total } = await Messages.findLivechatClosedMessages(this.urlParams.rid, {
+			const { cursor, totalCount } = Messages.findLivechatClosedMessages(this.urlParams.rid, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
 			});
 
-			const messages = await cursor.toArray();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),

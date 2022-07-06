@@ -58,13 +58,10 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
 	): FindPaginated<FindCursor<P>>;
 
-	findAgentsByDepartmentId<P>(
+	findAgentsByDepartmentId(
 		departmentId: string,
-		options?:
-			| undefined
-			| FindOptions<ILivechatDepartmentAgents>
-			| FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindPaginated<FindCursor<ILivechatDepartmentAgents> | FindCursor<P>> {
+		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
+	): FindPaginated<FindCursor<ILivechatDepartmentAgents>> {
 		const query = { departmentId };
 
 		if (options === undefined) {

@@ -28,7 +28,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const { cursor, totalCount: total } = findUsersOfRoom({
+		const { cursor, totalCount } = findUsersOfRoom({
 			rid,
 			status: !showAll ? { $ne: 'offline' } : undefined,
 			limit,
@@ -36,9 +36,11 @@ Meteor.methods({
 			filter,
 		});
 
+		const [records, total] = await Promise.all([cursor.toArray(), totalCount]);
+
 		return {
 			total,
-			records: await cursor.toArray(),
+			records,
 		};
 	},
 });

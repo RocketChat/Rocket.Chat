@@ -28,13 +28,13 @@ export async function findMentionedMessages({
 		throw new Error('invalid-user');
 	}
 
-	const { cursor, totalCount: total } = await Messages.findVisibleByMentionAndRoomId(user.username, roomId, {
+	const { cursor, totalCount } = Messages.findVisibleByMentionAndRoomId(user.username, roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const messages = await cursor.toArray();
+	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		messages,
@@ -67,13 +67,13 @@ export async function findStarredMessages({
 		throw new Error('invalid-user');
 	}
 
-	const { cursor, totalCount: total } = await Messages.findStarredByUserAtRoom(uid, roomId, {
+	const { cursor, totalCount } = Messages.findStarredByUserAtRoom(uid, roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const messages = await cursor.toArray();
+	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		messages,
@@ -134,13 +134,13 @@ export async function findSnippetedMessages({
 		throw new Error('error-not-allowed');
 	}
 
-	const { cursor, totalCount: total } = await Messages.findSnippetedByRoom(roomId, {
+	const { cursor, totalCount } = Messages.findSnippetedByRoom(roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const messages = await cursor.toArray();
+	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		messages,
@@ -172,13 +172,13 @@ export async function findDiscussionsFromRoom({
 		throw new Error('error-not-allowed');
 	}
 
-	const { cursor, totalCount: total } = await Messages.findDiscussionsByRoomAndText(roomId, text, {
+	const { cursor, totalCount } = await Messages.findDiscussionsByRoomAndText(roomId, text, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const messages = await cursor.toArray();
+	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		messages,

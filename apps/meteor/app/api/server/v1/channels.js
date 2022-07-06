@@ -292,14 +292,14 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
-			const { cursor, totalCount: total } = await Uploads.findPaginated(ourQuery, {
+			const { cursor, totalCount } = Uploads.findPaginated(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 				projection: fields,
 			});
 
-			const files = await cursor.map(addUserObjectToEveryObject).toArray();
+			const [files, total] = await Promise.all([cursor.map(addUserObjectToEveryObject).toArray(), totalCount]);
 
 			return API.v1.success({
 				files,
@@ -352,14 +352,14 @@ API.v1.addRoute(
 
 			ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
 
-			const { cursor, totalCount: total } = await Integrations.findPaginated(ourQuery, {
+			const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 				sort: sort || { _createdAt: 1 },
 				skip: offset,
 				limit: count,
 				projection,
 			});
 
-			const integrations = await cursor.toArray();
+			const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				integrations,
@@ -529,7 +529,7 @@ API.v1.addRoute(
 			);
 			const { status, filter } = this.queryParams;
 
-			const { cursor, totalCount: total } = findUsersOfRoom({
+			const { cursor, totalCount } = findUsersOfRoom({
 				rid: findResult._id,
 				...(status && { status: { $in: status } }),
 				skip,
@@ -538,7 +538,7 @@ API.v1.addRoute(
 				...(sort?.username && { sort: { username: sort.username } }),
 			});
 
-			const members = await cursor.toArray();
+			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				members,
@@ -929,14 +929,14 @@ API.v1.addRoute(
 				});
 			}
 
-			const { cursor, totalCount: total } = await MessagesRaw.findPaginated(ourQuery, {
+			const { cursor, totalCount } = MessagesRaw.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
 				projection: fields,
 			});
 
-			const messages = await cursor.toArray();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),

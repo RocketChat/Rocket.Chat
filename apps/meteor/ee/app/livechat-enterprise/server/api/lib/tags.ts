@@ -37,13 +37,13 @@ export async function findTags({ userId, text, pagination: { offset, count, sort
 		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
 	};
 
-	const { cursor, totalCount: total } = await LivechatTag.findPaginated(query, {
+	const { cursor, totalCount } = LivechatTag.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const tags = await cursor.toArray();
+	const [tags, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		tags,

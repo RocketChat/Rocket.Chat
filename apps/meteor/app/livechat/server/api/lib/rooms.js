@@ -12,7 +12,7 @@ export async function findRooms({
 	onhold,
 	options: { offset, count, fields, sort },
 }) {
-	const { cursor, totalCount: total } = await LivechatRooms.findRoomsWithCriteria({
+	const { cursor, totalCount } = LivechatRooms.findRoomsWithCriteria({
 		agents,
 		roomName,
 		departmentId,
@@ -30,7 +30,7 @@ export async function findRooms({
 		},
 	});
 
-	const rooms = await cursor.toArray();
+	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	const departmentsIds = [...new Set(rooms.map((room) => room.departmentId).filter(Boolean))];
 	if (departmentsIds.length) {

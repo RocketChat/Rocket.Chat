@@ -23,17 +23,17 @@ async function fetchSettings(
 	count: FindOptions<ISetting>['limit'],
 	fields: FindOptions<ISetting>['projection'],
 ): Promise<{ settings: ISetting[]; totalCount: number }> {
-	const { cursor, totalCount } = await Settings.findPaginated(query || {}, {
+	const { cursor, totalCount } = Settings.findPaginated(query || {}, {
 		sort: sort || { _id: 1 },
 		skip: offset,
 		limit: count,
 		projection: { _id: 1, value: 1, enterprise: 1, invalidValue: 1, modules: 1, ...fields },
 	});
 
-	const settings = await cursor.toArray();
+	const [settings, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	SettingsEvents.emit('fetch-settings', settings);
-	return { settings, totalCount };
+	return { settings, totalCount: total };
 }
 
 // settings endpoints

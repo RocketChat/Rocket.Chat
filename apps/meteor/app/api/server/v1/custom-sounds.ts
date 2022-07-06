@@ -9,13 +9,13 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, query } = this.parseJsonQuery();
-			const { cursor, totalCount: total } = await CustomSounds.findPaginated(query, {
+			const { cursor, totalCount } = CustomSounds.findPaginated(query, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 			});
 
-			const sounds = await cursor.toArray();
+			const [sounds, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				sounds,

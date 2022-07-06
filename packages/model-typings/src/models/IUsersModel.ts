@@ -19,6 +19,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		extraQuery?: any,
 		params?: { startsWith?: boolean; endsWith?: boolean },
 	): any;
+	findPaginatedByActiveUsersExcept(
+		searchTerm: any,
+		exceptions: any,
+		options: any,
+		searchFields: any,
+		extraQuery?: any,
+		params?: { startsWith?: boolean; endsWith?: boolean },
+	): any;
 
 	findActive(options?: any): FindCursor<IUser>;
 

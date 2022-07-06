@@ -271,14 +271,14 @@ API.v1.addRoute(
 			}
 
 			// @ts-expect-error recursive types are causing issues here
-			const { cursor, totalCount: total } = await Messages.findPaginated(ourQuery, {
+			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
 				projection: fields,
 			});
 
-			const messages = await cursor.toArray();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),
