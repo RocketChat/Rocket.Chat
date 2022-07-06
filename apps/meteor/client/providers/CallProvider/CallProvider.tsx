@@ -366,8 +366,17 @@ export const CallProvider: FC = ({ children }) => {
 			startRingback(user);
 		};
 
-		const onCallFailed = (): void => {
-			openDialModal({ errorMessage: t('Something_went_wrong_try_again_later') });
+		const onCallFailed = (reason: 'Not Found' | 'Address Incomplete' | string): void => {
+			switch (reason) {
+				case 'Not Found':
+					openDialModal({ errorMessage: t('Dialed_number_doesnt_exist') });
+					break;
+				case 'Address Incomplete':
+					openDialModal({ errorMessage: t('Dialed_number_is_incomplete') });
+					break;
+				default:
+					openDialModal({ errorMessage: t('Something_went_wrong_try_again_later') });
+			}
 		};
 
 		result.voipClient.onNetworkEvent('connected', onNetworkConnected);
