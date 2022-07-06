@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Icon, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box } from '@rocket.chat/fuselage';
 import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
@@ -25,6 +26,13 @@ type ContactTableProps = {
 	setContactReload(fn: () => void): void;
 };
 
+export const rcxCallDialButton = css`
+	&:not(:hover) {
+		.rcx-call-dial-button {
+			display: none !important;
+		}
+	}
+`;
 function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastchat'>('username');
@@ -131,7 +139,7 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 									role='link'
 									height='40px'
 									qa-user-id={_id}
-									rcx-show-call-button-on-hover
+									className={rcxCallDialButton}
 									onClick={onRowClick(_id)}
 								>
 									<GenericTableCell withTruncatedText>{username}</GenericTableCell>
