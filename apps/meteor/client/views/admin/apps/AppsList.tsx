@@ -17,15 +17,7 @@ import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo, useState } from 'react';
 
-import {
-	GenericTable,
-	GenericTableBody,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-	GenericTableLoadingTable,
-} from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppRow from './AppRow';
 import { useAppsReload, useAppsResult } from './AppsContext';
@@ -36,15 +28,10 @@ import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
 import { useRadioToggle } from './hooks/useRadioToggle';
 
-const AppsTable: FC<{
+const AppsList: FC<{
 	isMarketplace: boolean;
 }> = ({ isMarketplace }) => {
 	const t = useTranslation();
-	const [ref, onLargeBreakpoint, onMediumBreakpoint] = useResizeInlineBreakpoint([800, 600], 200) as [
-		React.RefObject<HTMLElement>,
-		boolean,
-		boolean,
-	];
 	const { marketplaceApps, installedApps } = useAppsResult();
 	const [text, setText] = useDebouncedState('', 500);
 	const reload = useAppsReload();
@@ -87,8 +74,11 @@ const AppsTable: FC<{
 
 	const isAppListReadyOrLoading =
 		appsResult.phase === AsyncStatePhase.LOADING || (appsResult.phase === AsyncStatePhase.RESOLVED && Boolean(appsResult.value.count));
+
 	const noInstalledAppsFound = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total === 0;
+
 	const noMarketplaceOrInstalledAppMatches = appsResult.phase === AsyncStatePhase.RESOLVED && isMarketplace && appsResult.value.count === 0;
+
 	const noInstalledAppMatches =
 		appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total !== 0 && appsResult.value.count === 0;
 
@@ -108,25 +98,10 @@ const AppsTable: FC<{
 
 			{isAppListReadyOrLoading && (
 				<>
-					<GenericTable ref={ref}>
-						<GenericTableHeader>
-							<GenericTableHeaderCell width={onMediumBreakpoint ? 'x240' : 'x180'}>{t('Name')}</GenericTableHeaderCell>
-							{onMediumBreakpoint && <GenericTableHeaderCell>{t('Details')}</GenericTableHeaderCell>}
-							{isMarketplace && <GenericTableHeaderCell>{t('Price')}</GenericTableHeaderCell>}
-
-							<GenericTableHeaderCell width='x160'>{t('Status')}</GenericTableHeaderCell>
-						</GenericTableHeader>
-						<GenericTableBody>
-							{appsResult.phase === AsyncStatePhase.LOADING && (
-								<GenericTableLoadingTable
-									// eslint-disable-next-line no-nested-ternary
-									headerCells={onMediumBreakpoint ? (isMarketplace ? 4 : 3) : 2}
-								/>
-							)}
-							{appsResult.phase === AsyncStatePhase.RESOLVED &&
-								appsResult.value.items.map((app) => <Row key={app.id} large={onLargeBreakpoint} medium={onMediumBreakpoint} {...app} />)}
-						</GenericTableBody>
-					</GenericTable>
+					<Box overflowY='scroll' overflowX='hidden'>
+						{appsResult.phase === AsyncStatePhase.RESOLVED &&
+							appsResult.value.items.map((app) => <Row key={app.id} medium={false} large={false} {...app} />)}
+					</Box>
 					{appsResult.phase === AsyncStatePhase.RESOLVED && (
 						<Pagination
 							current={current}
@@ -165,19 +140,6 @@ const AppsTable: FC<{
 				</Box>
 			)}
 
-			{noInstalledAppsFound && (
-				<Box mbs='x20'>
-					<States>
-						<StatesIcon name='magnifier' />
-						<StatesTitle>{t('No_apps_installed')}</StatesTitle>
-						<StatesSubtitle>{t('Explore_the_marketplace_to_find_awesome_apps')}</StatesSubtitle>
-						<StatesActions>
-							<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>{t('Explore_marketplace')}</StatesAction>
-						</StatesActions>
-					</States>
-				</Box>
-			)}
-
 			{noInstalledAppMatches && (
 				<Box mbs='x20'>
 					<States>
@@ -202,6 +164,19 @@ const AppsTable: FC<{
 				</Box>
 			)}
 
+			{noInstalledAppsFound && (
+				<Box mbs='x20'>
+					<States>
+						<StatesIcon name='magnifier' />
+						<StatesTitle>{t('No_apps_installed')}</StatesTitle>
+						<StatesSubtitle>{t('Explore_the_marketplace_to_find_awesome_apps')}</StatesSubtitle>
+						<StatesActions>
+							<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>{t('Explore_marketplace')}</StatesAction>
+						</StatesActions>
+					</States>
+				</Box>
+			)}
+
 			{appsResult.phase === AsyncStatePhase.REJECTED && (
 				<Box mbs='x20'>
 					<States>
@@ -221,4 +196,4 @@ const AppsTable: FC<{
 	);
 };
 
-export default AppsTable;
+export default AppsList;

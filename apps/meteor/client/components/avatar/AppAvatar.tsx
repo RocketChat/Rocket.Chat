@@ -9,7 +9,7 @@ type AppAvatarProps = {
 	/* @deprecated */
 	size: 'x36' | 'x28' | 'x16' | 'x40' | 'x124';
 	/* @deprecated */
-	mie?: 'x80' | 'x20' | 'x8';
+	mie?: 'x80' | 'x20' | 'x16' | 'x8';
 	/* @deprecated */
 	alignSelf?: 'center';
 

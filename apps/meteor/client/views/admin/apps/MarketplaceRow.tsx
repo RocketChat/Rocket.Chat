@@ -1,35 +1,15 @@
-import { Box, Table, Tag } from '@rocket.chat/fuselage';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { Box } from '@rocket.chat/fuselage';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { useState, memo, FC, KeyboardEvent, MouseEvent } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
 import AppMenu from './AppMenu';
 import AppStatus from './AppStatus';
-import PriceDisplay from './PriceDisplay';
 import { App } from './types';
 
-type MarketplaceRowProps = {
-	medium?: boolean;
-	large?: boolean;
-} & App;
-
-const MarketplaceRow: FC<MarketplaceRowProps> = ({ medium, large, ...props }) => {
-	const {
-		author: { name: authorName },
-		name,
-		id,
-		description,
-		categories,
-		purchaseType,
-		pricingPlans,
-		price,
-		iconFileData,
-		marketplaceVersion,
-		iconFileContent,
-		installed,
-		isSubscribed,
-	} = props;
-	const t = useTranslation();
+const MarketplaceRow: FC<App> = ({ ...props }) => {
+	const { name, id, description, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed } = props;
+	// const t = useTranslation();
 
 	const [isFocused, setFocused] = useState(false);
 	const [isHovered, setHovered] = useState(false);
@@ -58,10 +38,9 @@ const MarketplaceRow: FC<MarketplaceRowProps> = ({ medium, large, ...props }) =>
 	};
 
 	return (
-		<Table.Row
+		<Box
 			key={id}
 			role='link'
-			action
 			tabIndex={0}
 			onClick={handleClick}
 			onKeyDown={handleKeyDown}
@@ -69,46 +48,29 @@ const MarketplaceRow: FC<MarketplaceRowProps> = ({ medium, large, ...props }) =>
 			onBlur={(): void => setFocused(false)}
 			onMouseEnter={(): void => setHovered(true)}
 			onMouseLeave={(): void => setHovered(false)}
+			display='flex'
+			flexDirection='row'
+			justifyContent='space-between'
+			alignItems='center'
+			bg='surface'
+			mbe='x8'
+			pb='x8'
+			pis='x16'
 		>
-			<Table.Cell withTruncatedText display='flex' flexDirection='row'>
-				<AppAvatar size='x40' mie='x8' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
-				<Box display='flex' flexDirection='column' alignSelf='flex-start'>
-					<Box color='default' fontScale='p2m'>
-						{name}
-					</Box>
-					<Box color='default' fontScale='p2m'>{`${t('By')} ${authorName}`}</Box>
+			<Box withTruncatedText display='flex' flexDirection='row'>
+				<AppAvatar size='x40' mie='x16' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+				<Box display='flex' alignItems='center' color='default' fontScale='p2m' mie='x16'>
+					{name}
 				</Box>
-			</Table.Cell>
-			{large && (
-				<Table.Cell>
-					<Box display='flex' flexDirection='column'>
-						<Box color='default' withTruncatedText>
-							{description}
-						</Box>
-						{categories && (
-							<Box color='hint' display='flex' flex-direction='row' withTruncatedText>
-								{categories.map((current) => (
-									<Box key={current} mie='x4'>
-										<Tag disabled>{current}</Tag>
-									</Box>
-								))}
-							</Box>
-						)}
-					</Box>
-				</Table.Cell>
-			)}
-			{medium && (
-				<Table.Cell>
-					<PriceDisplay {...{ purchaseType, pricingPlans, price }} />
-				</Table.Cell>
-			)}
-			<Table.Cell withTruncatedText>
-				<Box display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8' onClick={preventClickPropagation}>
-					<AppStatus app={props} showStatus={isStatusVisible} isAppDetailsPage={false} mis='x4' />
-					{(installed || isSubscribed) && <AppMenu app={props} invisible={!isStatusVisible} mis='x4' />}
+				<Box display='flex' alignItems='center' color='default' withTruncatedText>
+					{description}
 				</Box>
-			</Table.Cell>
-		</Table.Row>
+			</Box>
+			<Box display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8' onClick={preventClickPropagation}>
+				<AppStatus app={props} showStatus={isStatusVisible} isAppDetailsPage={false} mis='x4' />
+				{(installed || isSubscribed) && <AppMenu app={props} invisible={!isStatusVisible} mis='x4' />}
+			</Box>
+		</Box>
 	);
 };
 
