@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { check, Match } from 'meteor/check';
 import { isRoomsExportProps } from '@rocket.chat/rest-typings';
 
 import { FileUpload } from '../../../file-upload';
