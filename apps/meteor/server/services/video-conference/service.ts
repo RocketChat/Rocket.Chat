@@ -551,9 +551,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			type: 'section',
 			appId: 'videoconf-core',
 			text: {
-				type: 'plain_text',
-				text,
-				emoji: true,
+				type: 'mrkdwn',
+				text: `${text}`,
 			},
 		};
 	}

@@ -61,6 +61,7 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 	}
 
 	protected async registerProvider(info: IVideoConfProvider, appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is registering a video conference provider.`);
 		videoConfProviders.registerProvider(info.name, info.capabilities || {}, appId);
 	}
 
