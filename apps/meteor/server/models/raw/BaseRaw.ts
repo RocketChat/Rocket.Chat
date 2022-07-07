@@ -25,7 +25,6 @@ import {
 } from 'mongodb';
 import type { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
 
 import { setUpdatedAt } from '../../../app/models/server/lib/setUpdatedAt';
 
@@ -41,6 +40,10 @@ type ModelOptions = {
 	collectionNameResolver?: (name: string) => string;
 	collection?: CollectionOptions;
 };
+
+function getCollectionName(name: string): string {
+	return `rocketchat_${name}`;
+}
 
 export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseModel<T, C> {
 	public readonly defaultFields: C;
@@ -61,7 +64,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 	 * @param options Model options
 	 */
 	constructor(private db: Db, protected name: string, protected trash?: Collection<RocketChatRecordDeleted<T>>, options?: ModelOptions) {
-		this.collectionName = options?.collectionNameResolver ? options.collectionNameResolver(this.name) : getCollectionName(this.name);
+		this.collectionName = options?.collectionNameResolver ? options.collectionNameResolver(name) : getCollectionName(name);
 
 		this.col = this.db.collection(this.collectionName, options?.collection || {});
 

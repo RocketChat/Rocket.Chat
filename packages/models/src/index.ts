@@ -64,11 +64,6 @@ import type {
 
 import { proxify } from './proxify';
 
-const prefix = 'rocketchat_';
-export function getCollectionName(name: string): string {
-	return `${prefix}${name}`;
-}
-
 export { registerModel } from './proxify';
 
 export const Analytics = proxify<IAnalyticsModel>('IAnalyticsModel');
