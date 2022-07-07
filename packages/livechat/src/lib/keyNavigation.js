@@ -29,6 +29,17 @@ export const handleTabKey = (event, element) => {
 export const addFocusFirstElement = (element) => {
 	const focusableElements = getFocusableElements(element);
 	if (focusableElements.length > 0) {
-		focusableElements[0].focus();
+		// Wait for the next "tick"
+		setTimeout(() => focusableElements[0].focus(), 0);
 	}
 };
+
+export const addFocusMessageField = (element) => {
+	const messageField = element.querySelector('footer div[contenteditable="true"]');
+	if (messageField) {
+		// Wait for the next "tick"
+		setTimeout(() => messageField.focus(), 0);
+		return true;
+	}
+	return false;
+}

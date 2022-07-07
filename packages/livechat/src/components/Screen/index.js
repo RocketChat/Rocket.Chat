@@ -3,7 +3,7 @@ import { useEffect } from 'preact/hooks';
 import i18next from 'i18next';
 import ChatIcon from '../../icons/chat.svg';
 import CloseIcon from '../../icons/close.svg';
-import { addFocusFirstElement, handleTabKey } from '../../lib/keyNavigation';
+import { addFocusFirstElement, addFocusMessageField, handleTabKey } from '../../lib/keyNavigation';
 import { Button } from '../Button';
 import { Footer, FooterContent, PoweredBy } from '../Footer';
 import { PopoverContainer } from '../Popover';
@@ -134,12 +134,7 @@ export class Screen extends Component {
 	}
 
 	handleFirstElementFocused = () => {
-		const inputElement = this.screenRef.querySelector('div[contenteditable="true"]');
-		if (inputElement) {
-			inputElement.focus();
-		} else {
-			addFocusFirstElement(this.screenRef);
-		}
+		addFocusMessageField(this.screenRef) || addFocusFirstElement(this.screenRef);
 	}
 
 	componentDidMount() {
