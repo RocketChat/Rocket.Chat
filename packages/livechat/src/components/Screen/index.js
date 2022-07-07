@@ -1,3 +1,4 @@
+import { Component } from 'preact';
 import { useEffect } from 'preact/hooks';
 import i18next from 'i18next';
 import ChatIcon from '../../icons/chat.svg';
@@ -86,73 +87,147 @@ const CssVar = ({ theme }) => {
 	`}</style>;
 };
 
-export const Screen = ({
-	theme = {},
-	agent,
-	title,
-	notificationsEnabled,
-	minimized = false,
-	expanded = false,
-	windowed = false,
-	children,
-	className,
-	alerts,
-	modal,
-	unread,
-	sound,
-	onDismissAlert,
-	onEnableNotifications,
-	onDisableNotifications,
-	onMinimize,
-	onRestore,
-	onOpenWindow,
-	onSoundStop,
-	queueInfo,
-	dismissNotification,
-	triggered = false,
-	handleKeyDown,
-	handleAppRef,
-}) => (
-	<div className={createClassName(styles, 'screen', { minimized, expanded, windowed, triggered })} ref={handleAppRef} onKeyDown={handleKeyDown}>	
-		<CssVar theme={theme} />
-		{triggered && <Button onClick={onMinimize} className={createClassName(styles, 'screen__chat-close-button')} icon={<CloseIcon />} label={i18next.t('close_the_chat')}>Close</Button>}
-		<div className={createClassName(styles, 'screen__inner', { fitTextSize: triggered }, [className])} role='dialog' aria-modal='true' aria-labelledby='header__title-id'>
-			<PopoverContainer>
-				{!triggered && <ScreenHeader
-					alerts={alerts}
-					agent={agent}
-					title={title}
-					notificationsEnabled={notificationsEnabled}
-					minimized={minimized}
-					expanded={expanded}
-					windowed={windowed}
-					onDismissAlert={onDismissAlert}
-					onEnableNotifications={onEnableNotifications}
-					onDisableNotifications={onDisableNotifications}
-					onMinimize={onMinimize}
-					onRestore={onRestore}
-					onOpenWindow={onOpenWindow}
-					queueInfo={queueInfo}
-				/>}
+export class Screen extends Component {
+	handleScreenRef = (ref) => {
+		this.screenRef = ref;
+	}
 
-				{modal}
-				{children}
-			</PopoverContainer>
+	handleButtonRef = (ref) => {
+		this.buttonRef = ref;
+	}
+
+	getFocusableElements = () => this.screenRef.querySelectorAll(
+		'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select, div[contenteditable="true"]',
+	);
+
+	handleTabKey = (e) => {
+		const focusableElements = this.getFocusableElements();
+
+		if (focusableElements.length > 0) {
+			const firstElement = focusableElements[0];
+			const lastElement = focusableElements[focusableElements.length - 1];
+
+			if (focusableElements.length === 1) {
+				firstElement.focus();
+				return e.preventDefault();
+			}
+
+			if (!e.shiftKey && document.activeElement === lastElement) {
+				firstElement.focus();
+				return e.preventDefault();
+			}
+
+			if (e.shiftKey && document.activeElement === firstElement) {
+				lastElement.focus();
+				return e.preventDefault();
+			}
+		}
+	};
+
+	handleKeyDown = (e) => {
+		const { key } = e;
+		const { minimized, windowed } = this.props;
+
+		switch (key) {
+			case 'Tab':
+				if (!minimized) {
+					this.handleTabKey(e);
+				}
+				break;
+			case 'Escape':
+				if (!minimized && !windowed) {
+					this.handleOnMinimize();
+				}
+				break;
+			default:
+				break;
+		}
+
+		e.stopPropagation();
+	}
+
+	handleOnRestore = () => {
+		this.props.onRestore();
+		this.buttonRef.base.focus();
+	}
+
+	handleOnMinimize = () => {
+		this.props.onMinimize();
+		this.buttonRef.base.focus();
+	}
+
+	componentDidMount() {
+		if (!this.props.minimized) {
+			this.buttonRef.base.focus();
+		}
+	}
+
+	render = ({
+		theme = {},
+		agent,
+		title,
+		notificationsEnabled,
+		minimized = false,
+		expanded = false,
+		windowed = false,
+		children,
+		className,
+		alerts,
+		modal,
+		unread,
+		sound,
+		onDismissAlert,
+		onEnableNotifications,
+		onDisableNotifications,
+		onMinimize,
+		onRestore,
+		onOpenWindow,
+		onSoundStop,
+		queueInfo,
+		dismissNotification,
+		triggered = false,
+	}) => (
+		<div className={createClassName(styles, 'screen', { minimized, expanded, windowed, triggered })} ref={handleAppRef} onKeyDown={handleKeyDown}>	
+			<CssVar theme={theme} />
+			{triggered && <Button onClick={onMinimize} className={createClassName(styles, 'screen__chat-close-button')} icon={<CloseIcon />} label={i18next.t('close_the_chat')}>Close</Button>}
+			<div className={createClassName(styles, 'screen__inner', { fitTextSize: triggered }, [className])} role='dialog' aria-modal='true' aria-labelledby='header__title-id'>
+				<PopoverContainer>
+					{!triggered && <ScreenHeader
+						alerts={alerts}
+						agent={agent}
+						title={title}
+						notificationsEnabled={notificationsEnabled}
+						minimized={minimized}
+						expanded={expanded}
+						windowed={windowed}
+						onDismissAlert={onDismissAlert}
+						onEnableNotifications={onEnableNotifications}
+						onDisableNotifications={onDisableNotifications}
+						onMinimize={this.handleOnMinimize}
+						onRestore={onRestore}
+						onOpenWindow={onOpenWindow}
+						queueInfo={queueInfo}
+					/>}
+
+					{modal}
+					{children}
+				</PopoverContainer>
+			</div>
+
+			<ChatButton
+				agent={agent}
+				triggered={triggered}
+				text={title}
+				badge={unread}
+				minimized={minimized}
+				onClick={minimized ? this.handleOnRestore : this.handleOnMinimize}
+				ref={this.handleButtonRef}
+			/>
+
+			{sound && <Sound src={sound.src} play={sound.play} onStop={onSoundStop} dismissNotification={dismissNotification} />}
 		</div>
-
-		<ChatButton
-			agent={agent}
-			triggered={triggered}
-			text={title}
-			badge={unread}
-			minimized={minimized}
-			onClick={minimized ? onRestore : onMinimize}
-		/>
-
-		{sound && <Sound src={sound.src} play={sound.play} onStop={onSoundStop} dismissNotification={dismissNotification} />}
-	</div>
-);
-
+	)
+}
 
 Screen.Content = ScreenContent;
 Screen.Footer = ScreenFooter;

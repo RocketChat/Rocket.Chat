@@ -68,6 +68,11 @@ class PopoverMenuWrapper extends Component {
 			const firstElement = focusableElements[0];
 			const lastElement = focusableElements[focusableElements.length - 1];
 
+			if (focusableElements.length === 1) {
+				firstElement.focus();
+				return e.preventDefault();
+			}
+
 			if (!e.shiftKey && document.activeElement !== firstElement) {
 				firstElement.focus();
 				return e.preventDefault();
