@@ -7,7 +7,7 @@ import {
 	findChatHistory,
 	searchChats,
 	findVisitorsToAutocomplete,
-	findVisitorsByEmailOrPhoneOrNameOrUsername,
+	findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField,
 } from '../../../server/api/lib/visitors';
 
 API.v1.addRoute(
@@ -152,7 +152,7 @@ API.v1.addRoute(
 
 			return API.v1.success(
 				Promise.await(
-					findVisitorsByEmailOrPhoneOrNameOrUsername({
+					findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
 						userId: this.userId,
 						term,
 						pagination: {

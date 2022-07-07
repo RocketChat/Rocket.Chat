@@ -150,12 +150,12 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 	};
 }
 
-export async function findVisitorsByEmailOrPhoneOrNameOrUsername({ userId, term, pagination: { offset, count, sort } }) {
+export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({ userId, term, pagination: { offset, count, sort } }) {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
-	const cursor = LivechatVisitors.findVisitorsByEmailOrPhoneOrNameOrUsername(term, {
+	const cursor = LivechatVisitors.findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(term, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,

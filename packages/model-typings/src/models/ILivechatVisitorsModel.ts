@@ -25,7 +25,7 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 			custom_name: string;
 		}
 	>;
-	findVisitorsByEmailOrPhoneOrNameOrUsername(
+	findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
 		_emailOrPhoneOrNameOrUsername: string,
 		options: FindOneOptions<ILivechatVisitor>,
 	): Cursor<ILivechatVisitor>;

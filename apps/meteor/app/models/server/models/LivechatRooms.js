@@ -33,6 +33,7 @@ export class LivechatRooms extends Base {
 				},
 			},
 		);
+		this.tryEnsureIndex({ 'livechatData.$**': 1 });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {

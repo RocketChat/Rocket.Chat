@@ -4,6 +4,7 @@ import { LivechatVisitors } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { Contacts } from '../../lib/Contacts';
+import { LivechatCustomField } from '@rocket.chat/models';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -51,19 +52,23 @@ API.v1.addRoute(
 				check(this.queryParams, {
 					email: Match.Maybe(String),
 					phone: Match.Maybe(String),
+					custom: Match.Maybe(String),
 				});
+				const { email, phone, custom } = this.queryParams;
 
-				const { email, phone } = this.queryParams;
-
-				if (!email && !phone) {
+				if (!email && !phone && !custom) {
 					throw new Meteor.Error('error-invalid-params');
 				}
-
+				const allowedCF = LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }, { searchability: true }).map(
+					({ _id }) => _id,
+				);
+				const customObj = Object.fromEntries(Array.from(new URLSearchParams(custom)).filter(([k]) => allowedCF.includes(k)));
 				const query = Object.assign(
 					{},
 					{
 						...(email && { visitorEmails: { address: email } }),
 						...(phone && { phone: { phoneNumber: phone } }),
+						...(custom && { livechatData: customObj }),
 					},
 				);
 

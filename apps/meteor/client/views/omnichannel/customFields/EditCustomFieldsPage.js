@@ -14,6 +14,7 @@ const getInitialValues = (cf) => ({
 	label: cf.label,
 	scope: cf.scope,
 	visibility: cf.visibility === 'visible',
+	searchability: !!cf.searchability,
 	regexp: cf.regexp,
 });
 
