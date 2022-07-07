@@ -2,6 +2,7 @@ import Clipboard from 'clipboard';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { popover, MessageAction } from '../../../../../ui-utils/client';
@@ -327,7 +328,8 @@ export const getCommonRoomEvents = () => ({
 	'click .message-actions__menu'(e, template) {
 		const messageContext = messageArgs(this);
 		const { msg: message, u: user, context: ctx } = messageContext;
-		const room = Rooms.findOne({ _id: template.data.rid });
+		const rid = Session.get('openedRoom');
+		const room = Rooms.findOne({ _id: rid });
 		const federationContext = isRoomFederated(room) ? 'federated' : '';
 		const context = ctx || message.context || message.actionContext || federationContext || 'message';
 		const allItems = MessageAction.getButtons({ ...messageContext, message, user }, context, 'menu').map((item) => ({
