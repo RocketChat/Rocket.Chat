@@ -28,12 +28,11 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 		outputDevice: Device;
 		HTMLAudioElement: IExperimentalHTMLAudioElement;
 	}): void => {
-		if (isSetSinkIdAvailable()) {
-			setSelectedAudioOutputDevice(outputDevice);
-			HTMLAudioElement.setSinkId(outputDevice.id);
-		} else {
+		if (!isSetSinkIdAvailable()) {
 			throw new Error('setSinkId is not available in this browser');
 		}
+		setSelectedAudioOutputDevice(outputDevice);
+		HTMLAudioElement.setSinkId(outputDevice.id);			
 	};
 
 	useEffect(() => {
