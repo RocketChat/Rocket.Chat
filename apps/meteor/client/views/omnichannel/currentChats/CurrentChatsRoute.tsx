@@ -28,6 +28,8 @@ type useQueryType = (
 	debouncedSort: any[],
 ) => any;
 
+type customFieldsType = { [key: string]: string };
+
 const sortDir = (sortDir: string): number => (sortDir === 'asc' ? 1 : -1);
 
 const useQuery: useQueryType = (
@@ -96,6 +98,8 @@ const CurrentChatsRoute = (): ReactElement => {
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const directoryRoute = useRoute('omnichannel-current-chats');
 	const id = useRouteParameter('id');
+	const context = useRouteParameter('context');
+	const [customFields, setCustomFields] = useState<customFieldsType>({});
 
 	const [params, setParams] = useState({
 		guest: '',
@@ -105,14 +109,13 @@ const CurrentChatsRoute = (): ReactElement => {
 		department: '',
 		from: '',
 		to: '',
-		customFields: {},
 		current: 0,
 		itemsPerPage: 25 as 25 | 50 | 100,
 		tags: [] as string[],
 	});
 	const [sort, setSort] = useState<[string, 'asc' | 'desc' | undefined]>(['ts', 'desc']);
 
-	const debouncedParams = useDebouncedValue(params, 500);
+	const debouncedParams = useDebouncedValue({ ...params, customFields }, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
 
@@ -200,16 +203,21 @@ const CurrentChatsRoute = (): ReactElement => {
 		return <NotAuthorizedPage />;
 	}
 
-	return id ? (
+	console.log(id, context);
+
+	return id && id !== 'custom-fields' ? (
 		<Chat rid={id} />
 	) : (
 		<CurrentChatsPage
 			setParams={setParams}
 			params={params}
+			customFields={customFields}
+			setCustomFields={setCustomFields}
 			data={data}
 			header={header}
 			renderRow={renderRow}
 			title={t('Current_Chats')}
+			context={id}
 		></CurrentChatsPage>
 	);
 };
