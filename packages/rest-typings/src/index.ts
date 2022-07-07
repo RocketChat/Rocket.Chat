@@ -246,3 +246,4 @@ export * from './v1/import/DownloadPendingFilesParamsPOST';
 export * from './v1/import/DownloadPendingAvatarsParamsPOST';
 export * from './v1/import/GetCurrentImportOperationParamsGET';
 export * from './v1/voip';
+export * from './v1/rooms';

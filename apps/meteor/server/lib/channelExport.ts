@@ -53,7 +53,7 @@ type ISentViaEmail = {
 };
 
 export const sendViaEmail = (data: ExportEmail, user: IUser): ISentViaEmail => {
-	const emails = data.toEmails.map((email) => email.trim()).filter(Boolean);
+	const emails = data.toEmails.map((email) => email.trim()).filter(Boolean) || [];
 
 	const missing = [...data.toUsers].filter(Boolean);
 

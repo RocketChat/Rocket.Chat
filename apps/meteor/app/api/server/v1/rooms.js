@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
+import { isRoomsExportProps } from '@rocket.chat/rest-typings';
 
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models/server';
@@ -502,10 +503,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.export',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsExportProps },
 	{
 		post() {
-			const { rid, type } = this.bodyParams;
+			const { rid, type, format, toUsers, toEmails, subject, messages } = this.bodyParams;
 
 			if (!rid || !type || !['email', 'file'].includes(type)) {
 				throw new Meteor.Error('error-invalid-params');
@@ -528,7 +529,6 @@ API.v1.addRoute(
 
 			if (type === 'file') {
 				let { dateFrom, dateTo } = this.bodyParams;
-				const { format } = this.bodyParams;
 
 				if (!['html', 'json'].includes(format)) {
 					throw new Meteor.Error('error-invalid-format');
@@ -551,22 +551,9 @@ API.v1.addRoute(
 			}
 
 			if (type === 'email') {
-				const nonEmptyStringArray = Match.Where((x) => {
-					check(x, [String]);
-					return x.length > 0;
-				});
-
-				check(
-					this.bodyParams,
-					Match.ObjectIncluding({
-						subject: String,
-						toUsers: nonEmptyStringArray,
-						toEmails: nonEmptyStringArray,
-						messages: nonEmptyStringArray,
-					}),
-				);
-
-				const { toUsers, toEmails, subject, messages } = this.bodyParams;
+				if ((!toEmails && !toUsers) || (!toUsers?.filter(Boolean).length && !toEmails?.filter(Boolean).length)) {
+					throw new Meteor.Error('error-invalid-params', 'No recipients specified');
+				}
 
 				const result = sendViaEmail(
 					{
