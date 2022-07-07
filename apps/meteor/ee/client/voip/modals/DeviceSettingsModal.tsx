@@ -1,6 +1,6 @@
 import { Modal, Field, Select, ButtonGroup, Button, SelectOption, Box } from '@rocket.chat/fuselage';
 import { useTranslation, useAvailableDevices, useToastMessageDispatch, useSetModal, useSelectedDevices } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 
 import { useChangeAudioInputDevice, useChangeAudioOutputDevice } from '../../../../client/contexts/CallContext';
@@ -24,7 +24,7 @@ const DeviceSettingsModal = (): ReactElement => {
 			outputDevice: selectedAudioDevices?.audioOutput?.id || '',
 		},
 	});
-	const [isSetSinkIdAvailable] = useState(() => isSetSinkIdAvailable());
+	const [setSinkIdAvailable] = useState(() => isSetSinkIdAvailable());
 	const availableDevices = useAvailableDevices();
 	const changeAudioInputDevice = useChangeAudioInputDevice();
 	const changeAudioOutputDevice = useChangeAudioOutputDevice();
@@ -52,7 +52,14 @@ const DeviceSettingsModal = (): ReactElement => {
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
-				{!setSinkIdAvailable && <Box color='danger-600'>{t('Device_Changes_Not_Available')}</Box>}
+				{!setSinkIdAvailable && (
+					<Box color='danger-600' display='flex' flexDirection='column'>
+						{t('Device_Changes_Not_Available')}
+						<Box is='a' href='https://rocket.chat/download'>
+							{t('Desktop_App_Download')}
+						</Box>
+					</Box>
+				)}
 				<Field>
 					<Field.Label>{t('Microphone')}</Field.Label>
 					<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>

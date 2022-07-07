@@ -32,7 +32,7 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 			throw new Error('setSinkId is not available in this browser');
 		}
 		setSelectedAudioOutputDevice(outputDevice);
-		HTMLAudioElement.setSinkId(outputDevice.id);			
+		HTMLAudioElement.setSinkId(outputDevice.id);
 	};
 
 	useEffect(() => {
