@@ -3,4 +3,4 @@ import VideoConfController from './VideoConfController';
 
 export * from './VideoConfPopup';
 export * from './hooks';
-export { VideoConfButton, VideoConfController }
+export { VideoConfButton, VideoConfController };
