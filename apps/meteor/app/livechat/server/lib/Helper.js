@@ -37,9 +37,6 @@ export const allowAgentSkipQueue = (agent) => {
 		}),
 	);
 
-	// most likely need to check offline allowed setting
-	// return true if no agents are online and offline is allowed
-
 	return hasRole(agent.agentId, 'bot');
 };
 
@@ -561,10 +558,6 @@ export const checkServiceStatus = ({ guest, agent }) => {
 	}
 
 	const { agentId } = agent;
-	if (settings.get('Livechat_accept_chats_with_no_agents')) {
-		logger.debug(`checkServiceStatus success for agent ${agentId} since Livechat_accept_chats_with_no_agents is enabled`);
-		return true;
-	}
 	const users = Users.findOnlineAgents(agentId);
 	return users && users.count() > 0;
 };

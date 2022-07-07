@@ -17,9 +17,15 @@ const queryStatusAgentOnline = (extraFilters = {}) => ({
 				$exists: true,
 				$ne: 'offline',
 			},
-			roles: {
-				$ne: 'bot',
-			},
+			...(settings.get('Livechat_enabled_when_agent_idle')
+				? []
+				: [
+						{
+							roles: {
+								$ne: 'bot',
+							},
+						},
+				  ]),
 		},
 		{
 			roles: 'bot',
