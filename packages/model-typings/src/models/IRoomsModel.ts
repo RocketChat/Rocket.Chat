@@ -1,4 +1,4 @@
-import type { Cursor, AggregationCursor } from 'mongodb';
+import type { Cursor, AggregationCursor, UpdateWriteOpResult } from 'mongodb';
 import type { IRoom, IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
@@ -41,6 +41,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setTeamByIds(rids: any, teamId: any, options?: any): any;
 
 	setTeamDefaultById(rid: any, teamDefault: any, options?: any): any;
+
+	setJoinCodeById(rid: string, joinCode: string): Promise<UpdateWriteOpResult>;
 
 	findChannelsWithNumberOfMessagesBetweenDate(params: {
 		start: any;

@@ -305,6 +305,31 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
+	setJoinCodeById(rid, joinCode) {
+		let update;
+		const query = { _id: rid };
+
+		if ((joinCode != null ? joinCode.trim() : undefined) !== '') {
+			update = {
+				$set: {
+					joinCodeRequired: true,
+					joinCode,
+				},
+			};
+		} else {
+			update = {
+				$set: {
+					joinCodeRequired: false,
+				},
+				$unset: {
+					joinCode: 1,
+				},
+			};
+		}
+
+		return this.updateOne(query, update);
+	}
+
 	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
 		const readPreference = ReadPreference.SECONDARY_PREFERRED;
 		const lookup = {
