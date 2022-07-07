@@ -1,10 +1,10 @@
-import type { FindOneOptions, Cursor, DeleteWriteOpResultObject } from 'mongodb';
+import type { FindOptions, FindCursor, DeleteResult } from 'mongodb';
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
 export interface IWebdavAccountsModel extends IBaseModel<IWebdavAccount> {
-	findOneByIdAndUserId(_id: string, userId: string, options: FindOneOptions<IWebdavAccount>): Promise<IWebdavAccount | null>;
+	findOneByIdAndUserId(_id: string, userId: string, options: FindOptions<IWebdavAccount>): Promise<IWebdavAccount | null>;
 	findOneByUserIdServerUrlAndUsername(
 		{
 			userId,
@@ -15,10 +15,10 @@ export interface IWebdavAccountsModel extends IBaseModel<IWebdavAccount> {
 			serverURL: string;
 			username: string;
 		},
-		options: FindOneOptions<IWebdavAccount>,
+		options: FindOptions<IWebdavAccount>,
 	): Promise<IWebdavAccount | null>;
 
-	findWithUserId(userId: string, options: FindOneOptions<IWebdavAccount>): Cursor<IWebdavAccount>;
+	findWithUserId(userId: string, options: FindOptions<IWebdavAccount>): FindCursor<IWebdavAccount>;
 
-	removeByUserAndId(_id: string, userId: string): Promise<DeleteWriteOpResultObject>;
+	removeByUserAndId(_id: string, userId: string): Promise<DeleteResult>;
 }

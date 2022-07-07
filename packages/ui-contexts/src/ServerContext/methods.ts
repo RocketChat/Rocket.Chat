@@ -1,5 +1,5 @@
 import type { IRoom, ISetting, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
-import type { DeleteWriteOpResultObject } from 'mongodb';
+import type { DeleteResult } from 'mongodb';
 
 import type { AddWebdavAccountMethod } from './methods/addWebdavAccount';
 import type { FollowMessageMethod } from './methods/followMessage';
@@ -88,7 +88,7 @@ export interface ServerMethods {
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
-	'removeWebdavAccount': (accountId: string) => DeleteWriteOpResultObject;
+	'removeWebdavAccount': (accountId: string) => DeleteResult;
 	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
 	'requestDataDownload': (...args: any[]) => any;

@@ -15,7 +15,7 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 		});
 	}
 
-	const cursor = Users.findUsersInRolesWithQuery('livechat-monitor', query, {
+	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery('livechat-monitor', query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
@@ -29,9 +29,7 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 		},
 	});
 
-	const total = await cursor.count();
-
-	const monitors = await cursor.toArray();
+	const [monitors, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		monitors,
