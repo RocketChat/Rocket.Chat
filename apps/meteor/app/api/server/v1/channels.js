@@ -413,64 +413,64 @@ API.v1.addRoute(
 	'channels.list',
 	{ authRequired: true },
 	{
-		get: {
-			// This is defined as such only to provide an example of how the routes can be defined :X
-			action() {
-				const { offset, count } = this.getPaginationItems();
-				const { sort, fields, query } = this.parseJsonQuery();
-				const hasPermissionToSeeAllPublicChannels = hasPermission(this.userId, 'view-c-room');
+		async get() {
+			const { offset, count } = this.getPaginationItems();
+			const { sort, fields, query } = this.parseJsonQuery();
+			const hasPermissionToSeeAllPublicChannels = hasPermission(this.userId, 'view-c-room');
 
-				const ourQuery = { ...query, t: 'c' };
+			const ourQuery = { ...query, t: 'c' };
 
-				if (!hasPermissionToSeeAllPublicChannels) {
-					if (!hasPermission(this.userId, 'view-joined-room')) {
-						return API.v1.unauthorized();
-					}
-					const roomIds = Subscriptions.findByUserIdAndType(this.userId, 'c', {
-						fields: { rid: 1 },
-					})
-						.fetch()
-						.map((s) => s.rid);
-					ourQuery._id = { $in: roomIds };
+			if (!hasPermissionToSeeAllPublicChannels) {
+				if (!hasPermission(this.userId, 'view-joined-room')) {
+					return API.v1.unauthorized();
 				}
-
-				// teams filter - I would love to have a way to apply this filter @ db level :(
-				const ids = Subscriptions.cachedFindByUserId(this.userId, { fields: { rid: 1 } })
+				const roomIds = Subscriptions.findByUserIdAndType(this.userId, 'c', {
+					fields: { rid: 1 },
+				})
 					.fetch()
-					.map((item) => item.rid);
+					.map((s) => s.rid);
+				ourQuery._id = { $in: roomIds };
+			}
 
-				ourQuery.$or = [
-					{
-						teamId: {
-							$exists: false,
-						},
+			// teams filter - I would love to have a way to apply this filter @ db level :(
+			const ids = Subscriptions.cachedFindByUserId(this.userId, { fields: { rid: 1 } })
+				.fetch()
+				.map((item) => item.rid);
+
+			ourQuery.$or = [
+				{
+					teamId: {
+						$exists: false,
 					},
-					{
-						teamId: {
-							$exists: true,
-						},
-						_id: {
-							$in: ids,
-						},
+				},
+				{
+					teamId: {
+						$exists: true,
 					},
-				];
+					_id: {
+						$in: ids,
+					},
+				},
+			];
 
-				const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-					fields,
-				});
+			const { cursor, totalCount } = RoomsRaw.findPaginated(ourQuery, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
+			});
 
-				const rooms = cursor.fetch();
+			const [channels, total] = await Promise.all([
+				cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
+				totalCount,
+			]);
 
-				return API.v1.success({
-					channels: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
-					count: rooms.length,
-					offset,
-					total: totalCount,
-				});
-			},
+			return API.v1.success({
+				channels,
+				count: rooms.length,
+				offset,
+				total,
+			});
 		},
 	},
 );
