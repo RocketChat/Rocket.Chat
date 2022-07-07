@@ -24,7 +24,7 @@ const DeviceSettingsModal = (): ReactElement => {
 			outputDevice: selectedAudioDevices?.audioOutput?.id || '',
 		},
 	});
-	const setSinkIdAvailable = useMemo(() => isSetSinkIdAvailable(), []);
+	const [isSetSinkIdAvailable] = useState(() => isSetSinkIdAvailable());
 	const availableDevices = useAvailableDevices();
 	const changeAudioInputDevice = useChangeAudioInputDevice();
 	const changeAudioOutputDevice = useChangeAudioOutputDevice();
