@@ -93,7 +93,11 @@ const AppDetails: FC<AppDetailsProps> = ({ app }) => {
 						</Box>
 					</Box>
 
-					<Box is='section'>{apis?.length && <APIsDisplay apis={apis || []} />}</Box>
+					{apis?.length ? (
+						<Box is='section'>
+							<APIsDisplay apis={apis || []} />
+						</Box>
+					) : null}
 				</Margins>
 			</Box>
 		</Box>
