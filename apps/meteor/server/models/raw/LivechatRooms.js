@@ -1,11 +1,9 @@
-import { getCollectionName } from '@rocket.chat/models';
-
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 
 export class LivechatRoomsRaw extends BaseRaw {
 	constructor(db, trash) {
-		super(db, getCollectionName('room'), trash);
+		super(db, 'room', trash);
 	}
 
 	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {
@@ -923,6 +921,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findPaginatedByVisitorId(visitorId, options) {
+		const query = {
+			't': 'l',
+			'v._id': visitorId,
+		};
+		return this.findPaginated(query, options);
+	}
+
 	findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, searchText, open, served, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
@@ -991,88 +997,6 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 
 		return this.col.aggregate(params);
-	}
-
-	findRoomsWithCriteria({
-		agents,
-		roomName,
-		departmentId,
-		open,
-		served,
-		createdAt,
-		closedAt,
-		tags,
-		customFields,
-		visitorId,
-		roomIds,
-		onhold,
-		options = {},
-	}) {
-		const query = {
-			t: 'l',
-		};
-		if (agents) {
-			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
-		}
-		if (roomName) {
-			query.fname = new RegExp(roomName, 'i');
-		}
-		if (departmentId && departmentId !== 'undefined') {
-			query.departmentId = departmentId;
-		}
-		if (open !== undefined) {
-			query.open = { $exists: open };
-			query.onHold = { $ne: true };
-		}
-		if (served !== undefined) {
-			query.servedBy = { $exists: served };
-		}
-		if (visitorId && visitorId !== 'undefined') {
-			query['v._id'] = visitorId;
-		}
-		if (createdAt) {
-			query.ts = {};
-			if (createdAt.start) {
-				query.ts.$gte = new Date(createdAt.start);
-			}
-			if (createdAt.end) {
-				query.ts.$lte = new Date(createdAt.end);
-			}
-		}
-		if (closedAt) {
-			query.closedAt = {};
-			if (closedAt.start) {
-				query.closedAt.$gte = new Date(closedAt.start);
-			}
-			if (closedAt.end) {
-				query.closedAt.$lte = new Date(closedAt.end);
-			}
-		}
-		if (tags) {
-			query.tags = { $in: tags };
-		}
-		if (customFields) {
-			query.$and = Object.keys(customFields).map((key) => ({
-				[`livechatData.${key}`]: new RegExp(customFields[key], 'i'),
-			}));
-		}
-
-		if (roomIds) {
-			query._id = { $in: roomIds };
-		}
-
-		if (onhold) {
-			query.onHold = {
-				$exists: true,
-				$eq: onhold,
-			};
-		}
-
-		return this.find(query, {
-			sort: options.sort || { name: 1 },
-			skip: options.offset,
-			limit: options.count,
-		});
 	}
 
 	getOnHoldConversationsBetweenDate(from, to, departmentId) {

@@ -1,68 +1,61 @@
-import type { Cursor, WithoutProjection, FindOneOptions } from 'mongodb';
+import type { FindCursor, FindOptions } from 'mongodb';
 import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepartmentAgents> {
-	findUsersInQueue(usersList: string[]): Cursor<ILivechatDepartmentAgents>;
+	findUsersInQueue(usersList: string[]): FindCursor<ILivechatDepartmentAgents>;
 
-	findUsersInQueue(
-		usersList: string[],
-		options: WithoutProjection<FindOneOptions<ILivechatDepartmentAgents>>,
-	): Cursor<ILivechatDepartmentAgents>;
+	findUsersInQueue(usersList: string[], options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
 
 	findUsersInQueue<P>(
 		usersList: string[],
-		options: FindOneOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): Cursor<P>;
+		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
+	): FindCursor<P>;
 
 	findUsersInQueue<P>(
 		usersList: string[],
 		options?:
 			| undefined
-			| WithoutProjection<FindOneOptions<ILivechatDepartmentAgents>>
-			| FindOneOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): Cursor<ILivechatDepartmentAgents> | Cursor<P>;
-	findByAgentId(agentId: string): Cursor<ILivechatDepartmentAgents>;
-	findAgentsByDepartmentId(departmentId: string): Cursor<ILivechatDepartmentAgents>;
+			| FindOptions<ILivechatDepartmentAgents>
+			| FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
+	): FindCursor<ILivechatDepartmentAgents> | FindCursor<P>;
+	findByAgentId(agentId: string): FindCursor<ILivechatDepartmentAgents>;
+
+	findAgentsByDepartmentId(departmentId: string): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
 
 	findAgentsByDepartmentId(
 		departmentId: string,
-		options: WithoutProjection<FindOneOptions<ILivechatDepartmentAgents>>,
-	): Cursor<ILivechatDepartmentAgents>;
+		options: FindOptions<ILivechatDepartmentAgents>,
+	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
 
 	findAgentsByDepartmentId<P>(
 		departmentId: string,
-		options: FindOneOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): Cursor<P>;
+		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
+	): FindPaginated<FindCursor<P>>;
 
-	findAgentsByDepartmentId<P>(
+	findAgentsByDepartmentId(
 		departmentId: string,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ILivechatDepartmentAgents>>
-			| FindOneOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): Cursor<ILivechatDepartmentAgents> | Cursor<P>;
-	findActiveDepartmentsByAgentId(agentId: string): Cursor<ILivechatDepartmentAgents>;
+		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
+	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
 
-	findActiveDepartmentsByAgentId(
-		agentId: string,
-		options: WithoutProjection<FindOneOptions<ILivechatDepartmentAgents>>,
-	): Cursor<ILivechatDepartmentAgents>;
+	findActiveDepartmentsByAgentId(agentId: string): FindCursor<ILivechatDepartmentAgents>;
+
+	findActiveDepartmentsByAgentId(agentId: string, options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
 
 	findActiveDepartmentsByAgentId<P>(
 		agentId: string,
-		options: FindOneOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): Cursor<P>;
+		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
+	): FindCursor<P>;
 
 	findActiveDepartmentsByAgentId<P>(
 		agentId: string,
 		options?:
 			| undefined
-			| WithoutProjection<FindOneOptions<ILivechatDepartmentAgents>>
-			| FindOneOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): Cursor<ILivechatDepartmentAgents> | Cursor<P>;
+			| FindOptions<ILivechatDepartmentAgents>
+			| FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
+	): FindCursor<ILivechatDepartmentAgents> | FindCursor<P>;
 
-	findByDepartmentIds(departmentIds: string[], options?: Record<string, any>): Cursor<ILivechatDepartmentAgents>;
+	findByDepartmentIds(departmentIds: string[], options?: Record<string, any>): FindCursor<ILivechatDepartmentAgents>;
 	findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): [];
 }

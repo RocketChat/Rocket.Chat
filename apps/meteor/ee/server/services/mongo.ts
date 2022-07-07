@@ -17,9 +17,7 @@ export enum Collections {
 
 function connectDb(poolSize: number): Promise<MongoClient> {
 	const client = new MongoClient(MONGO_URL, {
-		useUnifiedTopology: true,
-		useNewUrlParser: true,
-		poolSize,
+		minPoolSize: poolSize,
 	});
 
 	return client.connect().catch((error) => {
