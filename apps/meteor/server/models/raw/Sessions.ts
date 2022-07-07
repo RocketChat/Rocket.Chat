@@ -24,7 +24,8 @@ import type {
 	IUser,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
+import type { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -754,8 +755,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISession>>) {
 		super(db, 'sessions', trash);
 
-		// TODO need to figure out a way to remove hardcoded collection name
-		this.secondaryCollection = db.collection('rocketchat_sessions', { readPreference: readSecondaryPreferred(db) });
+		this.secondaryCollection = db.collection(getCollectionName('sessions'), { readPreference: readSecondaryPreferred(db) });
 	}
 
 	async aggregateSessionsByUserId({

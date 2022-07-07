@@ -151,10 +151,6 @@ export class Agenda extends EventEmitter {
 			url = `mongodb://${url}`;
 		}
 
-		// if (options?.useUnifiedTopology === true) {
-		// 	reconnectOptions = {};
-		// }
-
 		collection = collection || 'agendaJobs';
 
 		options = {

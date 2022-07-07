@@ -11,7 +11,7 @@ export async function findLivechatTransferHistory({ userId, rid, pagination: { o
 	const { cursor, totalCount } = Messages.findPaginated(
 		{ rid, t: 'livechat_transfer_history' },
 		{
-			fields: { transferData: 1 },
+			projection: { transferData: 1 },
 			sort: sort || { ts: 1 },
 			skip: offset,
 			limit: count,

@@ -143,7 +143,6 @@ export class ContinuousMonitor extends Command {
 					uniqueId: `${eventName}-${event.contactstatus}-${now.getTime()}`,
 					ts: now,
 					agentExtension: event.aor,
-					_updatedAt: new Date(),
 				});
 
 				return;
@@ -168,7 +167,6 @@ export class ContinuousMonitor extends Command {
 				callUniqueId: event.uniqueid,
 				callUniqueIdFallback: event.linkedid,
 				agentExtension: event?.connectedlinenum,
-				_updatedAt: new Date(),
 			});
 		} catch (e) {
 			this.logger.debug('Event was handled by other instance');
@@ -286,7 +284,6 @@ export class ContinuousMonitor extends Command {
 			callUniqueId: event.uniqueid,
 			callUniqueIdFallback: event.linkedid,
 			agentExtension: event.calleridnum,
-			_updatedAt: new Date(),
 		});
 	}
 

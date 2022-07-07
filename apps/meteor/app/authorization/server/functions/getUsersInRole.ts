@@ -19,6 +19,7 @@ export function getUsersInRole<P = IUser>(
 	scope: string | undefined,
 	options?: any | undefined,
 ): Promise<FindCursor<IUser | P>> {
+	// TODO move the code from Roles.findUsersInRole to here and change all places to use this function
 	return Roles.findUsersInRole(roleId, scope, options);
 }
 

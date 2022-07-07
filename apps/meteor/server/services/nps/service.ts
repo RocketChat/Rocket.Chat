@@ -8,6 +8,7 @@ import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Banner, NPS } from '../../sdk';
 import { sendNpsResults } from './sendNpsResults';
 import { getBannerForAdmins, notifyAdmins } from './notification';
+import { SystemLogger } from '../../lib/logger/system';
 
 export class NPSService extends ServiceClassInternal implements INPSService {
 	protected name = 'nps';
@@ -35,7 +36,8 @@ export class NPSService extends ServiceClassInternal implements INPSService {
 				createdBy,
 				status: NPSStatus.OPEN,
 			});
-		} catch (e) {
+		} catch (err) {
+			SystemLogger.error({ msg: 'Error creating NPS', err });
 			throw new Error('Error creating NPS');
 		}
 

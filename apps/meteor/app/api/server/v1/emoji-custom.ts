@@ -5,6 +5,7 @@ import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { findEmojisCustom } from '../lib/emoji-custom';
 import { Media } from '../../../../server/sdk';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 API.v1.addRoute(
 	'emoji-custom.list',
@@ -94,7 +95,7 @@ API.v1.addRoute(
 					aliases: fields.aliases || '',
 				});
 			} catch (e) {
-				console.error(e);
+				SystemLogger.error(e);
 				return API.v1.failure();
 			}
 

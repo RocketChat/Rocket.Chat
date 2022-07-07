@@ -9,7 +9,7 @@ import {
 	IndexDescription,
 	InsertOneOptions,
 	ModifyResult,
-	ObjectID,
+	ObjectId,
 	OptionalUnlessRequiredId,
 	UpdateFilter,
 	WithId,
@@ -25,6 +25,7 @@ import {
 } from 'mongodb';
 import type { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { setUpdatedAt } from '../../../app/models/server/lib/setUpdatedAt';
 
@@ -40,10 +41,6 @@ type ModelOptions = {
 	collectionNameResolver?: (name: string) => string;
 	collection?: CollectionOptions;
 };
-
-function getCollectionName(name: string): string {
-	return `rocketchat_${name}`;
-}
 
 export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseModel<T, C> {
 	public readonly defaultFields: C;
@@ -212,7 +209,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 	insertMany(docs: InsertionModel<T>[], options?: BulkWriteOptions): Promise<InsertManyResult<T>> {
 		docs = docs.map((doc) => {
 			if (!doc._id || typeof doc._id !== 'string') {
-				const oid = new ObjectID();
+				const oid = new ObjectId();
 				return { _id: oid.toHexString(), ...doc };
 			}
 			this.setUpdatedAt(doc);
@@ -225,7 +222,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 	insertOne(doc: InsertionModel<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>> {
 		if (!doc._id || typeof doc._id !== 'string') {
-			const oid = new ObjectID();
+			const oid = new ObjectId();
 			doc = { _id: oid.toHexString(), ...doc };
 		}
 

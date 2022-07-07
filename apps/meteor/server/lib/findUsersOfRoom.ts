@@ -23,7 +23,7 @@ export function findUsersOfRoom({
 	sort = {},
 }: FindUsersParam): FindPaginated<FindCursor<IUser>> {
 	const options = {
-		fields: {
+		projection: {
 			name: 1,
 			username: 1,
 			nickname: 1,
