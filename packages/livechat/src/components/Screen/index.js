@@ -88,6 +88,10 @@ const CssVar = ({ theme }) => {
 };
 
 export class Screen extends Component {
+	state = {
+		opened: false,
+	}
+
 	handleScreenRef = (ref) => {
 		this.screenRef = ref;
 	}
@@ -157,8 +161,12 @@ export class Screen extends Component {
 	}
 
 	componentDidMount() {
-		if (!this.props.minimized) {
+		if (!this.props.minimized && !this.props.windowed && this.state.opened !== !this.props.minimized) {
 			this.buttonRef.base.focus();
+		}
+
+		if (this.state.opened !== !this.props.minimized) {
+			this.state.opened = !this.props.minimized;
 		}
 	}
 
