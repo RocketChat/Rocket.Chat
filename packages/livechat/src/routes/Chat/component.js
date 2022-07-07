@@ -36,6 +36,10 @@ class Chat extends Component {
 		this.menuOptionsRef = ref;
 	}
 
+	handleInputRef = (ref) => {
+		this.inputRef = ref;
+	}
+
 	handleMessagesContainerRef = (messagesContainer) => {
 		this.messagesContainer = messagesContainer ? messagesContainer.base : null;
 	}
@@ -63,6 +67,7 @@ class Chat extends Component {
 
 	handleSendClick = (event) => {
 		event.preventDefault();
+		this.inputRef.el.focus();
 		this.handleSubmit(this.state.text);
 	}
 
@@ -227,6 +232,7 @@ class Chat extends Component {
 						value={text}
 						notifyEmojiSelect={(click) => { this.notifyEmojiSelect = click; }}
 						handleEmojiClick={this.handleEmojiClick}
+						ref={this.handleInputRef}
 						pre={(
 							<ComposerActions>
 								<ComposerAction className={createClassName(styles, 'emoji-picker-icon')} onClick={this.toggleEmojiPickerState} text={t('choose_an_emoji')}>
