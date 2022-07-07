@@ -1,6 +1,8 @@
 import { DeviceContext, Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ReactNode, useEffect, useState } from 'react';
 
+import { isSetSinkIdAvailable } from './lib/isSetSinkIdAvailable';
+
 type DeviceProviderProps = {
 	children?: ReactNode | undefined;
 };
@@ -26,8 +28,12 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 		outputDevice: Device;
 		HTMLAudioElement: IExperimentalHTMLAudioElement;
 	}): void => {
-		setSelectedAudioOutputDevice(outputDevice);
-		HTMLAudioElement.setSinkId(outputDevice.id);
+		if (isSetSinkIdAvailable()) {
+			setSelectedAudioOutputDevice(outputDevice);
+			HTMLAudioElement.setSinkId(outputDevice.id);
+		} else {
+			throw new Error('setSinkId is not available in this browser');
+		}
 	};
 
 	useEffect(() => {
