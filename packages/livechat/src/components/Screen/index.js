@@ -125,7 +125,7 @@ export class Screen extends Component {
 	handleOnRestore = () => {
 		this.props.onRestore();
 		this.handleFirstElementFocused();
-		addFocusFirstElement(this.screenRef);
+		// addFocusFirstElement(this.screenRef);
 	}
 
 	handleOnMinimize = () => {
@@ -207,6 +207,7 @@ export class Screen extends Component {
 				minimized={minimized}
 				onClick={minimized ? this.handleOnRestore : this.handleOnMinimize}
 				ref={this.handleButtonRef}
+				label={minimized ? i18next.t('open_chat') : i18next.t('close_chat')}
 			/>
 
 			{sound && <Sound src={sound.src} play={sound.play} onStop={onSoundStop} dismissNotification={dismissNotification} />}
