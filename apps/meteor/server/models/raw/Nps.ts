@@ -2,13 +2,12 @@ import type { INps, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { INpsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, Document, IndexDescription, UpdateResult } from 'mongodb';
 import { NPSStatus } from '@rocket.chat/core-typings';
-import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class NpsRaw extends BaseRaw<INps> implements INpsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INps>>) {
-		super(db, getCollectionName('nps'), trash);
+		super(db, 'nps', trash);
 	}
 
 	modelIndexes(): IndexDescription[] {

@@ -1,14 +1,14 @@
 import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult } from 'mongodb';
-import { getCollectionName, Users } from '@rocket.chat/models';
+import { Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
 
 import { BaseRaw } from './BaseRaw';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
-		super(db, getCollectionName('subscription'), trash);
+		super(db, 'subscription', trash);
 	}
 
 	async getBadgeCount(uid: string): Promise<number> {
@@ -164,6 +164,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 		const users = compact(subscriptions.map((subscription) => subscription.u?._id).filter(Boolean));
 
+		// TODO remove dependency to other models - this logic should be inside a function/service
 		return Users.find<P>({ _id: { $in: users } }, options || {});
 	}
 

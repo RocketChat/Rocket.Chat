@@ -1,14 +1,14 @@
-import { INpsVote, INpsVoteStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { INpsVote, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { INpsVoteModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, Document, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import { INpsVoteStatus } from '@rocket.chat/core-typings';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INpsVote>>) {
-		super(db, getCollectionName('nps_vote'), trash);
+		super(db, 'nps_vote', trash);
 	}
 
 	modelIndexes(): IndexDescription[] {
@@ -59,7 +59,7 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 				_updatedAt: new Date(),
 			},
 			$setOnInsert: {
-				_id: new ObjectId().toHexString(),
+				_id: new ObjectId().toHexString(), // TODO this should be done by BaseRaw
 			},
 		};
 

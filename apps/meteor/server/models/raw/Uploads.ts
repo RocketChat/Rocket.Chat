@@ -1,9 +1,8 @@
 // TODO: Lib imports should not exists inside the raw models
 import type { IUpload, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IUploadsModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Collection, FindCursor, Db, DeleteResult, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -17,7 +16,7 @@ const fillTypeGroup = (fileData: Partial<IUpload>): void => {
 
 export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUpload>>) {
-		super(db, getCollectionName('uploads'), trash);
+		super(db, 'uploads', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

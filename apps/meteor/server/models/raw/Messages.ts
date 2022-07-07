@@ -1,16 +1,15 @@
 import type { ILivechatDepartment, IMessage, IRoom, IUser, MessageTypesValues, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { AggregationCursor, Collection, CountDocumentsOptions, AggregateOptions, FindCursor, Db, Filter, FindOptions } from 'mongodb';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
 // @ts-ignore
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
-		super(db, getCollectionName('message'), trash);
+		super(db, 'message', trash);
 	}
 
 	findVisibleByMentionAndRoomId(

@@ -753,7 +753,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 	private secondaryCollection: Collection<ISession>;
 
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISession>>) {
-		super(db, getCollectionName('sessions'), trash);
+		super(db, 'sessions', trash);
 
 		this.secondaryCollection = db.collection(getCollectionName('sessions'), { readPreference: readSecondaryPreferred(db) });
 	}

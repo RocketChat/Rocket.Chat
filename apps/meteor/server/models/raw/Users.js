@@ -4,7 +4,11 @@ import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
 	constructor(db, trash) {
-		super(db, 'users', trash);
+		super(db, 'users', trash, {
+			collectionNameResolver(name) {
+				return name;
+			},
+		});
 
 		this.defaultFields = {
 			__rooms: 0,

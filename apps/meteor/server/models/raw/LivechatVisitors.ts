@@ -13,14 +13,14 @@ import type {
 	DeleteResult,
 	UpdateFilter,
 } from 'mongodb';
-import { getCollectionName, Settings } from '@rocket.chat/models';
+import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {
-		super(db, getCollectionName('livechat_visitor'), trash);
+		super(db, 'livechat_visitor', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {
@@ -102,6 +102,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			},
 		};
 
+		// TODO remove dependency from another model - this logic should be inside a service/function
 		const livechatCount = await Settings.findOneAndUpdate(query, update, { returnDocument: 'after' });
 
 		if (!livechatCount.value) {

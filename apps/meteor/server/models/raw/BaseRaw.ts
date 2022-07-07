@@ -25,6 +25,7 @@ import {
 } from 'mongodb';
 import type { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { setUpdatedAt } from '../../../app/models/server/lib/setUpdatedAt';
 
@@ -37,6 +38,7 @@ const warnFields =
 
 type ModelOptions = {
 	preventSetUpdatedAt?: boolean;
+	collectionNameResolver?: (name: string) => string;
 	collection?: CollectionOptions;
 };
 
@@ -47,13 +49,26 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 	private preventSetUpdatedAt: boolean;
 
+	/**
+	 * Collection name to store data.
+	 */
+	private collectionName: string;
+
+	/**
+	 * @param db MongoDB instance
+	 * @param name Name of the model without any prefix. Used by trash records to set the `__collection__` field.
+	 * @param trash Trash collection instance
+	 * @param options Model options
+	 */
 	constructor(private db: Db, protected name: string, protected trash?: Collection<RocketChatRecordDeleted<T>>, options?: ModelOptions) {
-		this.col = this.db.collection(name, options?.collection || {});
+		this.collectionName = options?.collectionNameResolver ? options.collectionNameResolver(this.name) : getCollectionName(this.name);
+
+		this.col = this.db.collection(this.collectionName, options?.collection || {});
 
 		const indexes = this.modelIndexes();
 		if (indexes?.length) {
 			this.col.createIndexes(indexes).catch((e) => {
-				console.warn(`Some indexes for collection '${this.name}' could not be created:\n\t${e.message}`);
+				console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);
 			});
 		}
 
@@ -236,7 +251,6 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 			const trash = {
 				...record,
-
 				_deletedAt: new Date(),
 				__collection__: this.name,
 			} as RocketChatRecordDeleted<T>;
@@ -273,7 +287,6 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 			const trash = {
 				...record,
-
 				_deletedAt: new Date(),
 				__collection__: this.name,
 			} as RocketChatRecordDeleted<T>;
@@ -340,12 +353,11 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		if (!this.trash) {
 			return null;
 		}
-		const { trash } = this;
 
 		if (options) {
-			return trash.findOne(query, options);
+			return this.trash.findOne(query, options);
 		}
-		return trash.findOne(query);
+		return this.trash.findOne(query);
 	}
 
 	private setUpdatedAt(record: UpdateFilter<T> | InsertionModel<T>): void {
@@ -370,15 +382,14 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 			...query,
 		} as Filter<RocketChatRecordDeleted<T>>;
 
-		const { trash } = this;
-		if (!trash) {
+		if (!this.trash) {
 			throw new Error('Trash is not enabled for this collection');
 		}
 
 		if (options) {
-			return trash.find(q, options);
+			return this.trash.find(q, options);
 		}
-		return trash.find(q);
+		return this.trash.find(q);
 	}
 
 	trashFindPaginatedDeletedAfter<P = RocketChatRecordDeleted<T>>(
@@ -394,13 +405,12 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 			...query,
 		} as Filter<RocketChatRecordDeleted<T>>;
 
-		const { trash } = this;
-		if (!trash) {
+		if (!this.trash) {
 			throw new Error('Trash is not enabled for this collection');
 		}
 
-		const cursor = options ? trash.find(q, options) : trash.find(q);
-		const totalCount = trash.countDocuments(q);
+		const cursor = options ? this.trash.find(q, options) : this.trash.find(q);
+		const totalCount = this.trash.countDocuments(q);
 
 		return {
 			cursor,

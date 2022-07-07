@@ -1,13 +1,13 @@
 import type { IRole, IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IRolesModel } from '@rocket.chat/model-typings';
-import { getCollectionName, Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 import type { Collection, FindCursor, Db, Filter, FindOptions, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRole>>) {
-		super(db, getCollectionName('roles'), trash);
+		super(db, 'roles', trash);
 	}
 
 	findByUpdatedDate(updatedAfterDate: Date, options?: FindOptions<IRole>): FindCursor<IRole> {
@@ -37,6 +37,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			}
 			switch (role.scope) {
 				case 'Subscriptions':
+					// TODO remove dependency from other models - this logic should be inside a function/service
 					await Subscriptions.addRolesByUserId(userId, [role._id], scope);
 					break;
 				case 'Users':

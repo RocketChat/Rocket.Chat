@@ -1,13 +1,12 @@
 import type { ICustomUserStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ICustomUserStatusModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
 import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements ICustomUserStatusModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICustomUserStatus>>) {
-		super(db, getCollectionName('custom_user_status'), trash);
+		super(db, 'custom_user_status', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

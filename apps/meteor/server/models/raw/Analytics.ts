@@ -1,7 +1,6 @@
 import type { IAnalytic, IRoom } from '@rocket.chat/core-typings';
 import type { IAnalyticsModel } from '@rocket.chat/model-typings';
 import type { AggregationCursor, FindCursor, Db, IndexDescription, FindOptions, UpdateResult, Document } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
 import { Random } from 'meteor/random';
 
 import { BaseRaw } from './BaseRaw';
@@ -9,7 +8,7 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel {
 	constructor(db: Db) {
-		super(db, getCollectionName('analytics'), undefined, {
+		super(db, 'analytics', undefined, {
 			collection: { readPreference: readSecondaryPreferred(db) },
 		});
 	}

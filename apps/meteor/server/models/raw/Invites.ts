@@ -1,13 +1,12 @@
 import type { IInvite, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IInvitesModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, UpdateResult } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class InvitesRaw extends BaseRaw<IInvite> implements IInvitesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IInvite>>) {
-		super(db, getCollectionName('invites'), trash);
+		super(db, 'invites', trash);
 	}
 
 	findOneByUserRoomMaxUsesAndExpiration(userId: string, rid: string, maxUses: number, daysToExpire: number): Promise<IInvite | null> {

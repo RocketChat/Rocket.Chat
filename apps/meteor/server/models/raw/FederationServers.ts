@@ -1,13 +1,13 @@
 import type { IFederationServer, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IFederationServersModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, IndexDescription, UpdateResult } from 'mongodb';
-import { getCollectionName, Users } from '@rocket.chat/models';
+import { Users } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class FederationServersRaw extends BaseRaw<IFederationServer> implements IFederationServersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IFederationServer>>) {
-		super(db, getCollectionName('federation_servers'), trash);
+		super(db, 'federation_servers', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {
@@ -27,6 +27,7 @@ export class FederationServersRaw extends BaseRaw<IFederationServer> implements 
 	}
 
 	async refreshServers(): Promise<void> {
+		// TODO remove model dependency - this logs should be inside a function/service and not in a model
 		const domains = await Users.getDistinctFederationDomains();
 
 		for await (const domain of domains) {

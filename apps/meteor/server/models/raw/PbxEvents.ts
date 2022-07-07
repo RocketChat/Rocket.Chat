@@ -6,7 +6,11 @@ import { BaseRaw } from './BaseRaw';
 
 export class PbxEventsRaw extends BaseRaw<IPbxEvent> implements IPbxEventsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IPbxEvent>>) {
-		super(db, 'pbx_events', trash);
+		super(db, 'pbx_events', trash, {
+			collectionNameResolver(name) {
+				return name;
+			},
+		});
 	}
 
 	protected modelIndexes(): IndexDescription[] {

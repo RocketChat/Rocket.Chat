@@ -1,11 +1,9 @@
-import { getCollectionName } from '@rocket.chat/models';
-
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 
 export class LivechatRoomsRaw extends BaseRaw {
 	constructor(db, trash) {
-		super(db, getCollectionName('room'), trash);
+		super(db, 'room', trash);
 	}
 
 	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {

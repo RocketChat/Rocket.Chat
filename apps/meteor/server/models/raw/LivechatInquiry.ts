@@ -1,13 +1,13 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult } from 'mongodb';
-import { ILivechatInquiryRecord, IMessage, LivechatInquiryStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import { getCollectionName } from '@rocket.chat/models';
+import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
-		super(db, getCollectionName('livechat_inquiry'), trash);
+		super(db, 'livechat_inquiry', trash);
 	}
 
 	findOneQueuedByRoomId(rid: string): Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null> {

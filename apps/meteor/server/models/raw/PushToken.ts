@@ -6,7 +6,11 @@ import { BaseRaw } from './BaseRaw';
 
 export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel {
 	constructor(db: Db) {
-		super(db, '_raix_push_app_tokens');
+		super(db, '_raix_push_app_tokens', undefined, {
+			collectionNameResolver(name) {
+				return name;
+			},
+		});
 	}
 
 	modelIndexes(): IndexDescription[] {

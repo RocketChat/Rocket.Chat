@@ -1,13 +1,12 @@
 import type { IAvatar, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IAvatarsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, DeleteResult, IndexDescription, UpdateResult, Document } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class AvatarsRaw extends BaseRaw<IAvatar> implements IAvatarsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IAvatar>>) {
-		super(db, getCollectionName('avatars'), trash);
+		super(db, 'avatars', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

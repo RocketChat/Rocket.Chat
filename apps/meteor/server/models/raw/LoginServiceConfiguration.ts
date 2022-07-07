@@ -6,6 +6,11 @@ import { BaseRaw } from './BaseRaw';
 
 export class LoginServiceConfigurationRaw extends BaseRaw<ILoginServiceConfiguration> implements ILoginServiceConfigurationModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILoginServiceConfiguration>>) {
-		super(db, 'meteor_accounts_loginServiceConfiguration', trash, { preventSetUpdatedAt: true });
+		super(db, 'meteor_accounts_loginServiceConfiguration', trash, {
+			preventSetUpdatedAt: true,
+			collectionNameResolver(name) {
+				return name;
+			},
+		});
 	}
 }

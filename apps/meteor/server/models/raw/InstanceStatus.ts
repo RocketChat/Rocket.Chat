@@ -8,6 +8,9 @@ export class InstanceStatusRaw extends BaseRaw<IInstanceStatus> implements IInst
 	constructor(db: Db) {
 		super(db, 'instances', undefined, {
 			preventSetUpdatedAt: true,
+			collectionNameResolver(name) {
+				return name;
+			},
 		});
 	}
 }

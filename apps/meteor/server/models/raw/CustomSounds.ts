@@ -1,13 +1,12 @@
 import type { ICustomSound, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ICustomSoundsModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSoundsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICustomSound>>) {
-		super(db, getCollectionName('custom_sounds'), trash);
+		super(db, 'custom_sounds', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

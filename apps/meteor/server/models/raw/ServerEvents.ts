@@ -1,14 +1,13 @@
-import type { IServerEvent, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import { ServerEventType } from '@rocket.chat/core-typings';
 import type { IServerEventsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, IndexDescription } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { IServerEvent, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { ServerEventType } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 
 export class ServerEventsRaw extends BaseRaw<IServerEvent> implements IServerEventsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IServerEvent>>) {
-		super(db, getCollectionName('server_events'), trash);
+		super(db, 'server_events', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {
