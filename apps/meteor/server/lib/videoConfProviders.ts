@@ -50,18 +50,21 @@ export const videoConfProviders = {
 	},
 
 	getProviderCapabilities(name: string): VideoConferenceCapabilities | undefined {
-		if (!providers.has(name)) {
+		const key = name.toLowerCase();
+		if (!providers.has(key)) {
 			return;
 		}
 
-		return providers.get(name)?.capabilities;
+		return providers.get(key)?.capabilities;
 	},
 
 	getProviderAppId(name: string): string | undefined {
-		if (!providers.has(name)) {
+		const key = name.toLowerCase();
+
+		if (!providers.has(key)) {
 			return;
 		}
 
-		return providers.get(name)?.appId;
+		return providers.get(key)?.appId;
 	},
 };
