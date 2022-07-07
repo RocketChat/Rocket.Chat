@@ -11,7 +11,7 @@ import { settings } from '../../../settings/server';
 const queryStatusAgentOnline = (extraFilters = {}) => ({
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
-	...(settings.get('Livechat_query_status_agent_online') && {
+	...(!settings.get('Livechat_enabled_when_agent_idle') && {
 		$or: [
 			{
 				status: {
