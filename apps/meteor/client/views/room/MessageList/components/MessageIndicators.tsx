@@ -4,6 +4,7 @@ import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
+import { isOTRMessage } from '../../../../../lib/isOTRMessage';
 import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from '../contexts/MessageListContext';
 
 // edited() {
@@ -34,6 +35,8 @@ export const MessageIndicators: FC<{
 	const following = useShowFollowing({ message }); // TODO: useMessageFollowing
 
 	const isEncryptedMessage = isE2EEMessage(message);
+	const isOtrMessage = isOTRMessage(message);
+
 	const uid = useUserId();
 
 	const formatter = useMessageDateFormatter(); // TODO: useMessageDateFormatter
@@ -62,6 +65,8 @@ export const MessageIndicators: FC<{
 			{message.pinned && <MessageStatusIndicatorItem name='pin' data-title={t('Message_has_been_pinned')} />}
 
 			{isEncryptedMessage && <MessageStatusIndicatorItem name='key' />}
+
+			{isOtrMessage && <MessageStatusIndicatorItem name='stopwatch' />}
 
 			{starred && <MessageStatusIndicatorItem name='star-filled' data-title={t('Message_has_been_starred')} />}
 		</MessageStatusIndicator>
