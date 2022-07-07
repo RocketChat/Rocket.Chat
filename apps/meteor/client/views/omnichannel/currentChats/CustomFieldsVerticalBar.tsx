@@ -1,6 +1,6 @@
 import { Field, TextInput } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, Dispatch, SetStateAction } from 'react';
+import React, { ReactElement, Dispatch, SetStateAction, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import VerticalBar from '../../../components/VerticalBar';
@@ -15,12 +15,15 @@ const CustomFieldsVerticalBar = ({ customFields, setCustomFields }: CustomFields
 	console.log('CustomFieldsVerticalBar', customFields);
 	const { value: allCustomFields } = useEndpointData('/v1/livechat/custom-fields');
 
-	const { register, handleSubmit } = useForm({ mode: 'onChange' });
+	const { register, watch } = useForm();
 
 	// TODO: When we refactor the other CurrentChat's fields to use react-hook-form, we need to change this to use the form controller
-	const onSubmit = (data: { [key: string]: string }): void => {
-		setCustomFields(data);
-	};
+	const fields = watch();
+
+	useEffect((): void => {
+		console.log(fields);
+		setCustomFields(fields);
+	}, [fields, setCustomFields]);
 
 	const t = useTranslation();
 	const currentChatsRoute = useRoute('omnichannel-current-chats');
@@ -31,7 +34,7 @@ const CustomFieldsVerticalBar = ({ customFields, setCustomFields }: CustomFields
 				{t('Filter_by_Custom_Fields')}
 				<VerticalBar.Close onClick={(): void => currentChatsRoute.push({ context: '' })} />
 			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent is='form' onSubmit={handleSubmit(onSubmit)}>
+			<VerticalBar.ScrollableContent is='form'>
 				{allCustomFields?.customFields.map((customField: { _id: string; label: string }) => (
 					<Field>
 						<Field.Label>{customField.label}</Field.Label>
