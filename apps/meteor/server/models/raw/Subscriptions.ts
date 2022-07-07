@@ -211,10 +211,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	async updateAllRoomTypesByRoomId(roomId: IRoom['_id'], roomType: RoomType): Promise<void> {
-		await this.update({ rid: roomId }, { $set: { t: roomType } }, { multi: true });
+		await this.updateMany({ rid: roomId }, { $set: { t: roomType } });
 	}
 
 	async updateAllRoomNamesByRoomId(roomId: IRoom['_id'], name: string, fname: string): Promise<void> {
-		await this.update({ rid: roomId }, { $set: { name, fname } }, { multi: true });
+		await this.updateMany({ rid: roomId }, { $set: { name, fname } });
 	}
 }
