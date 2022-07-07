@@ -62,20 +62,20 @@ const StartGroupCallPopup = forwardRef(function StartGroupCallPopup(
 				<VideoConfPopupTitle text={t('Start_a_call')} />
 				{(showCam || showMic) && (
 					<VideoConfPopupControllers>
-						{showMic && (
-							<VideoConfController
-								active={controllersConfig.mic}
-								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-								onClick={handleToggleMicPref}
-							/>
-						)}
 						{showCam && (
 							<VideoConfController
 								active={controllersConfig.cam}
 								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 								icon={controllersConfig.cam ? 'video' : 'video-off'}
 								onClick={handleToggleCamPref}
+							/>
+						)}
+						{showMic && (
+							<VideoConfController
+								active={controllersConfig.mic}
+								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+								onClick={handleToggleMicPref}
 							/>
 						)}
 					</VideoConfPopupControllers>
