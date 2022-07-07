@@ -200,9 +200,7 @@ export class App extends Component {
 		if (i18n.t) {
 			document.dir = isRTL(i18n.t('yes')) ? 'rtl' : 'ltr';
 		}
-		if (!this.props.minimized) {
-			this.addFocusFirstElement();
-		}
+	
 	}
 
 	render = ({
