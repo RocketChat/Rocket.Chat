@@ -55,7 +55,7 @@ async function getChannelsAndGroups(user, canViewAnon, searchTerm, sort, paginat
 	const userTeamsIds = (await Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
 	const userRooms = user.__rooms;
 
-	const { cursor, totalCount } = Rooms.findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
+	const { cursor, totalCount } = RoomsRaw.findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
 		searchTerm ? new RegExp(searchTerm, 'i') : null,
 		[...userTeamsIds, ...publicTeamIds],
 		userRooms,
@@ -115,7 +115,7 @@ async function getTeams(user, searchTerm, sort, pagination) {
 
 	const userSubs = Subscriptions.cachedFindByUserId(user._id).fetch();
 	const ids = userSubs.map((sub) => sub.rid);
-	const { cursor, totalCount } = Rooms.findPaginatedContainingNameOrFNameInIdsAsTeamMain(
+	const { cursor, totalCount } = RoomsRaw.findPaginatedContainingNameOrFNameInIdsAsTeamMain(
 		searchTerm ? new RegExp(searchTerm, 'i') : null,
 		ids,
 		{
