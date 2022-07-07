@@ -57,7 +57,7 @@ Meteor.startup(() => {
 
 router.use(authenticationMiddleware({ rejectUnauthorized: false }));
 
-router.use((req, res, next) => {
+router.use((req: Request, res, next) => {
 	const { 'x-visitor-token': visitorToken } = req.headers;
 
 	if (visitorToken) {
