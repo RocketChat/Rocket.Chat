@@ -97,13 +97,17 @@ const getHeaderType = (headers: OembedUrlLegacy['headers']): UrlPreview['type'] 
 	}
 };
 
+const isValidPreviewMeta = ({ siteName, siteUrl, authorName, authorUrl, title, description, image, html }: PreviewMetadata): boolean =>
+	!((!siteName || !siteUrl) && (!authorName || !authorUrl) && !title && !description && !image && !html);
+
 const processMetaAndHeaders = (url: OembedUrlLegacy): PreviewData | false => {
 	if (!url.headers && !url.meta) {
 		return false;
 	}
 
-	if (url.meta && Object.values(url.meta).length) {
-		return { type: 'oembed', data: normalizeMeta(url) };
+	const data = url.meta && Object.values(url.meta) && normalizeMeta(url);
+	if (data && isValidPreviewMeta(data)) {
+		return { type: 'oembed', data };
 	}
 
 	const type = getHeaderType(url.headers);
@@ -129,7 +133,7 @@ const PreviewList = ({ urls }: PreviewListProps): ReactElement | null => {
 	}
 
 	const metaAndHeaders = urls.map(processMetaAndHeaders).filter(isPreviewData);
-
+	console.log(metaAndHeaders);
 	return (
 		<>
 			{metaAndHeaders.map(({ type, data }, index) => {
