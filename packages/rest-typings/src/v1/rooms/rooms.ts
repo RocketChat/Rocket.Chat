@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import type { IMessage, IRoom, IUser, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
