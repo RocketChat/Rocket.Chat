@@ -64,7 +64,7 @@ router.use((req, res, next) => {
 		req.body.visitor = Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
 	}
 
-	if (!req.body.user && !req.body.visitor) {
+	if (!req.user && !req.body.visitor) {
 		return unauthorized(res);
 	}
 
