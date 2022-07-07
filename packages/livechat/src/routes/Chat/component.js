@@ -32,6 +32,10 @@ class Chat extends Component {
 		this.filesDropTarget = ref;
 	}
 
+	handleMenuOptionsRef = (ref) => {
+		this.menuOptionsRef = ref;
+	}
+
 	handleMessagesContainerRef = (messagesContainer) => {
 		this.messagesContainer = messagesContainer ? messagesContainer.base : null;
 	}
@@ -194,7 +198,7 @@ class Chat extends Component {
 			</Screen.Content>
 			<Screen.Footer
 				options={options ? (
-					<FooterOptions>
+					<FooterOptions ref={this.handleMenuOptionsRef}>
 						<Menu.Group>
 							{onChangeDepartment && (
 								<Menu.Item onClick={onChangeDepartment} icon={ChangeIcon}>{t('change_department')}</Menu.Item>
@@ -203,7 +207,7 @@ class Chat extends Component {
 								<Menu.Item onClick={onRemoveUserData} icon={RemoveIcon}>{t('forget_remove_my_data')}</Menu.Item>
 							)}
 							{onFinishChat && (
-								<Menu.Item danger onClick={onFinishChat} icon={FinishIcon}>{t('finish_this_chat')}</Menu.Item>
+								<Menu.Item danger onClick={() => onFinishChat(this.menuOptionsRef.base)} icon={FinishIcon}>{t('finish_this_chat')}</Menu.Item>
 							)}
 						</Menu.Group>
 					</FooterOptions>
