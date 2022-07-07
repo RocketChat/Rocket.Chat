@@ -186,7 +186,7 @@ const appsRoutes =
 
 				const { visitor } = req.body;
 				const room = orch.getConverters()?.get('rooms').convertById(rid);
-				const user = orch.getConverters()?.get('users').convertToApp(req.body.user);
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const message = mid && orch.getConverters()?.get('messages').convertById(mid);
 
 				const action = {
@@ -221,7 +221,7 @@ const appsRoutes =
 					payload: { view, isCleared },
 				} = req.body;
 
-				const user = orch.getConverters()?.get('users').convertToApp(req.body.user);
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 
 				const action = {
 					type,
@@ -247,7 +247,7 @@ const appsRoutes =
 			case UIKitIncomingInteractionType.VIEW_SUBMIT: {
 				const { type, actionId, triggerId, payload } = req.body;
 
-				const user = orch.getConverters()?.get('users').convertToApp(req.body.user);
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 
 				const action = {
 					type,
@@ -279,7 +279,7 @@ const appsRoutes =
 				} = req.body;
 
 				const room = orch.getConverters()?.get('rooms').convertById(rid);
-				const user = orch.getConverters()?.get('users').convertToApp(req.body.user);
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const message = mid && orch.getConverters()?.get('messages').convertById(mid);
 
 				const action = {
