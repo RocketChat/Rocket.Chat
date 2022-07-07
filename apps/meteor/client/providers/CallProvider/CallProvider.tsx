@@ -149,7 +149,11 @@ export const CallProvider: FC = ({ children }) => {
 
 		setQueueAggregator(voipClient.getAggregator());
 
-		return (): void => (clientState === 'registered' ? voipClient.unregister() : undefined);
+		return (): void => {
+			if (clientState === 'registered') {
+				return voipClient.unregister();
+			}
+		};
 	}, [result, clientState]);
 
 	const openRoom = useCallback((rid: IVoipRoom['_id']): void => {
