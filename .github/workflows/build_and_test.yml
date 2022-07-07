@@ -305,6 +305,9 @@ jobs:
 
           IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${IMAGE_TAG}"
 
+          free -h
+          docker stats --no-stream
+
           docker run --name rocketchat -d \
             --link mongodb \
             -p 3000:3000 \
@@ -313,8 +316,22 @@ jobs:
             -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
             ${IMAGE_NAME}
 
+          free -h
+          docker stats --no-stream
+
+          until echo "$(docker logs rocketchat)" | grep -q "SERVER RUNNING"; do
+            echo "Waiting Rocket.Chat to start up"
+            ((c++)) && ((c==10)) && exit 1
+            free -h
+            docker stats --no-stream
+            sleep 10
+          done
+
       - name: E2E Test API
         run: |
+          free -h
+          docker stats --no-stream
+
           docker logs rocketchat --tail=50
 
           cd ./apps/meteor
