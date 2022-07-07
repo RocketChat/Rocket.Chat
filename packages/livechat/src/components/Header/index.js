@@ -30,13 +30,13 @@ export const Picture = ({ children, className, ...props }) => (
 );
 
 export const Content = ({ children, className, ...props }) => (
-	<div className={createClassName(styles, 'header__content', {}, [className])} {...props}>
+	<div id='rocket-chat:header__content__id' className={createClassName(styles, 'header__content', {}, [className])} {...props}>
 		{children}
 	</div>
 );
 
 export const Title = ({ children, className, ...props }) => (
-	<div id='header__title-id' className={createClassName(styles, 'header__title', {}, [className])} {...props}>
+	<div className={createClassName(styles, 'header__title', {}, [className])} {...props}>
 		{children}
 	</div>
 );

@@ -62,7 +62,7 @@ export class Modal extends Component {
 
 
 export const ModalMessage = ({ children }) => (
-	<div className={createClassName(styles, 'modal__message')} id='chat-confirmation-modal'>
+	<div className={createClassName(styles, 'modal__message')} id='rocket-chat:modal__message__id'>
 		{children}
 	</div>
 );
@@ -111,7 +111,7 @@ export class ConfirmationModal extends Component {
 		t,
 		...props
 	}) => (
-	    <Modal open animated dismissByOverlay={false} onkeydown={this.handleKeyDown} ref={this.handleRef} role='dialog' aria-describedby='chat-confirmation-modal' {...props}>
+	    <Modal open animated dismissByOverlay={false} onkeydown={this.handleKeyDown} ref={this.handleRef} role='dialog' aria-describedby='rocket-chat:modal__message__id' {...props}>
 			<Modal.Message>{text}</Modal.Message>
 			<ButtonGroup>
 			<Button outline secondary onClick={this.handleCancel}>{cancelButtonText || t('no')}</Button>
