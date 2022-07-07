@@ -3,10 +3,10 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 import mem from 'mem';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Rooms as RoomsRaw, Users } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
 import { hasPermission } from '../../app/authorization/server';
-import { Rooms, Subscriptions } from '../../app/models/server';
+import { Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
@@ -55,7 +55,7 @@ async function getChannelsAndGroups(user, canViewAnon, searchTerm, sort, paginat
 	const userTeamsIds = (await Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
 	const userRooms = user.__rooms;
 
-	const { cursor, totalCount } = RoomsRaw.findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
+	const { cursor, totalCount } = Rooms.findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
 		searchTerm ? new RegExp(searchTerm, 'i') : null,
 		[...userTeamsIds, ...publicTeamIds],
 		userRooms,
@@ -104,7 +104,7 @@ async function getChannelsAndGroups(user, canViewAnon, searchTerm, sort, paginat
 	};
 }
 
-const getChannelsCountForTeam = mem((teamId) => Promise.await(RoomsRaw.findByTeamId(teamId, { projection: { _id: 1 } }).count()), {
+const getChannelsCountForTeam = mem((teamId) => Promise.await(Rooms.findByTeamId(teamId, { projection: { _id: 1 } }).count()), {
 	maxAge: 2000,
 });
 
@@ -115,7 +115,7 @@ async function getTeams(user, searchTerm, sort, pagination) {
 
 	const userSubs = Subscriptions.cachedFindByUserId(user._id).fetch();
 	const ids = userSubs.map((sub) => sub.rid);
-	const { cursor, totalCount } = RoomsRaw.findPaginatedContainingNameOrFNameInIdsAsTeamMain(
+	const { cursor, totalCount } = Rooms.findPaginatedContainingNameOrFNameInIdsAsTeamMain(
 		searchTerm ? new RegExp(searchTerm, 'i') : null,
 		ids,
 		{
