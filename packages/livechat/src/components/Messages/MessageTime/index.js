@@ -17,7 +17,7 @@ const parseDate = (ts, t) => {
 };
 
 const MessageTime = memo(({ ts, normal, inverted, className, style = {}, t }) => (
-	<div className={createClassName(styles, 'message-time-wrapper')}>
+	<div className={createClassName(styles, 'message-time-wrapper')} aria-hidden='true'>
 		<time
 			dateTime={new Date(ts).toISOString()}
 			className={createClassName(styles, 'message-time', { normal, inverted }, [className])}
