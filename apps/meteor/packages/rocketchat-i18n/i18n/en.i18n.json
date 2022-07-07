@@ -4868,6 +4868,7 @@
   "VideoConf_Enable_Groups": "Enable in private channels",
   "VideoConf_Enable_DMs": "Enable in direct messages",
   "VideoConf_Enable_Teams": "Enable in teams",
+  "videoconf-ring-users": "Ring other users when calling",
   "Videos": "Videos",
   "View_All": "View All Members",
   "View_channels": "View Channels",
