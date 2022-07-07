@@ -27,6 +27,7 @@ import { Voip } from '../../sdk';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { FindVoipRoomsParams, IOmniRoomClosingMessage } from './internalTypes';
 import { api } from '../../sdk/api';
+import { getValidRoomName } from '../../../app/utils/server';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -141,6 +142,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			msgs: 0,
 			usersCount: 1,
 			lm: newRoomAt,
+			name: getValidRoomName(name),
 			fname: name,
 			t: 'v',
 			ts: newRoomAt,
