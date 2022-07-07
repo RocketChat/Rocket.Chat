@@ -1,8 +1,7 @@
 import { Box, Field, Flex, InputBox, Margins, TextInput, Select } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback } from 'react';
 
-import type keys from '../../../../../packages/rocketchat-i18n/i18n/en.i18n.json';
 import ResetSettingButton from '../ResetSettingButton';
 
 type ColorSettingInputProps = {
@@ -10,7 +9,7 @@ type ColorSettingInputProps = {
 	label: string;
 	value: string;
 	editor: string;
-	allowedTypes?: (keyof typeof keys)[];
+	allowedTypes?: TranslationKey[];
 	placeholder?: string;
 	readonly?: boolean;
 	autocomplete?: boolean;
