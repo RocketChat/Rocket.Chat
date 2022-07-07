@@ -165,7 +165,7 @@ export class RoomsRaw extends BaseRaw {
 			...(ids ? { $or: [{ t: 'c' }, { _id: { $in: ids } }] } : {}),
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findByTeamIdAndRoomsId(teamId, rids, options = {}) {
