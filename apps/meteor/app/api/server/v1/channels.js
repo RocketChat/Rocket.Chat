@@ -467,7 +467,7 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				channels,
-				count: rooms.length,
+				count: channels.length,
 				offset,
 				total,
 			});
