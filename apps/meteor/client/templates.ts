@@ -122,8 +122,6 @@ createTemplateForComponent('PruneMessages', () => import('./views/room/contextua
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
 
-createTemplateForComponent('Burger', () => import('./components/BurgerMenu'));
-
 createTemplateForComponent('loginLayoutHeader', () => import('./views/login/LoginLayout/Header'));
 
 createTemplateForComponent('loginLayoutFooter', () => import('./views/login/LoginLayout/Footer'));
