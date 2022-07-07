@@ -1,5 +1,6 @@
 import { Component } from 'preact';
 
+import { addFocusFirstElement, handleTabKey } from '../../lib/keyNavigation';
 import { PopoverTrigger } from '../Popover';
 import { createClassName, normalizeDOMRect } from '../helpers';
 import styles from './styles.scss';
@@ -50,51 +51,16 @@ class PopoverMenuWrapper extends Component {
 		dismiss();
 	}
 
-	andleKeyDown = (e) => {
-		const { key } = e;
+	handleKeyDown = (event) => {
+		const { key } = event;
 
 		if (key !== 'Tab') {
 			return;
 		}
 
-		this.handleTabKey(e);
-		e.stopPropagation();
+		handleTabKey(event, this.menuRef.base);
+		event.stopPropagation();
 	}
-
-	handleTabKey = (e) => {
-		const focusableElements = this.getFocusableElements();
-
-		if (focusableElements.length > 0) {
-			const firstElement = focusableElements[0];
-			const lastElement = focusableElements[focusableElements.length - 1];
-
-			if (focusableElements.length === 1) {
-				firstElement.focus();
-				return e.preventDefault();
-			}
-
-			if (!e.shiftKey && document.activeElement !== firstElement) {
-				firstElement.focus();
-				return e.preventDefault();
-			}
-
-			if (e.shiftKey && document.activeElement !== lastElement) {
-				lastElement.focus();
-				return e.preventDefault();
-			}
-		}
-	};
-
-	addFocusFirstElement = () => {
-		const focusableElements = this.getFocusableElements();
-		if (focusableElements.length > 0) {
-			focusableElements[0].focus();
-		}
-	}
-
-	getFocusableElements = () => this.menuRef.base.querySelectorAll(
-		'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select',
-	)
 
 	componentDidMount() {
 		const { triggerBounds, overlayBounds } = this.props;
@@ -114,7 +80,7 @@ class PopoverMenuWrapper extends Component {
 
 		const placement = `${ menuWidth < rightSpace ? 'right' : 'left' }-${ menuHeight < bottomSpace ? 'bottom' : 'top' }`;
 
-		this.addFocusFirstElement();
+		addFocusFirstElement(this.menuRef.base);
 
 		// eslint-disable-next-line react/no-did-mount-set-state
 		this.setState({

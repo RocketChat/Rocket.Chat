@@ -3,6 +3,7 @@ import { useEffect } from 'preact/hooks';
 import i18next from 'i18next';
 import ChatIcon from '../../icons/chat.svg';
 import CloseIcon from '../../icons/close.svg';
+import { addFocusFirstElement, handleTabKey } from '../../lib/keyNavigation';
 import { Button } from '../Button';
 import { Footer, FooterContent, PoweredBy } from '../Footer';
 import { PopoverContainer } from '../Popover';
@@ -100,42 +101,14 @@ export class Screen extends Component {
 		this.buttonRef = ref;
 	}
 
-	getFocusableElements = () => this.screenRef.querySelectorAll(
-		'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select, div[contenteditable="true"]',
-	);
-
-	handleTabKey = (e) => {
-		const focusableElements = this.getFocusableElements();
-
-		if (focusableElements.length > 0) {
-			const firstElement = focusableElements[0];
-			const lastElement = focusableElements[focusableElements.length - 1];
-
-			if (focusableElements.length === 1) {
-				firstElement.focus();
-				return e.preventDefault();
-			}
-
-			if (!e.shiftKey && document.activeElement === lastElement) {
-				firstElement.focus();
-				return e.preventDefault();
-			}
-
-			if (e.shiftKey && document.activeElement === firstElement) {
-				lastElement.focus();
-				return e.preventDefault();
-			}
-		}
-	};
-
-	handleKeyDown = (e) => {
-		const { key } = e;
+	handleKeyDown = (event) => {
+		const { key } = event;
 		const { minimized, windowed } = this.props;
 
 		switch (key) {
 			case 'Tab':
 				if (!minimized) {
-					this.handleTabKey(e);
+					handleTabKey(event, this.screenRef);
 				}
 				break;
 			case 'Escape':
@@ -146,13 +119,12 @@ export class Screen extends Component {
 			default:
 				break;
 		}
-
-		e.stopPropagation();
+		event.stopPropagation();
 	}
 
 	handleOnRestore = () => {
 		this.props.onRestore();
-		this.buttonRef.base.focus();
+		addFocusFirstElement(this.screenRef);
 	}
 
 	handleOnMinimize = () => {
@@ -162,7 +134,7 @@ export class Screen extends Component {
 
 	componentDidMount() {
 		if (!this.props.minimized && !this.props.windowed && this.state.opened !== !this.props.minimized) {
-			this.buttonRef.base.focus();
+			addFocusFirstElement(this.screenRef);
 		}
 
 		if (this.state.opened !== !this.props.minimized) {

@@ -1,6 +1,6 @@
 import { Component } from 'preact';
 import { withTranslation } from 'react-i18next';
-
+import { addFocusFirstElement, handleTabKey } from '../../lib/keyNavigation';
 import { Button } from '../Button';
 import { ButtonGroup } from '../ButtonGroup';
 import { createClassName } from '../helpers';
@@ -73,16 +73,12 @@ export class ConfirmationModal extends Component {
 		this.confirmationModalRef = ref;
 	}
 
-	getFocusableElements = () => this.confirmationModalRef.base.querySelectorAll(
-		'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select',
-	)
-
-	handleKeyDown = (e) => {
-		const { key } = e;
+	handleKeyDown = (event) => {
+		const { key } = event;
 
 		switch (key) {
 			case 'Tab':
-				this.handleTabKey(e);
+				handleTabKey(event, this.confirmationModalRef.base);
 				break;
 			case 'Escape':
 				this.props.onCancel();
@@ -90,37 +86,11 @@ export class ConfirmationModal extends Component {
 			default:
 				break;
 		}
-
-		e.stopPropagation();
+		event.stopPropagation();
 	}
 
-	handleTabKey = (e) => {
-		const focusableElements = this.getFocusableElements();
-
-		if (focusableElements.length > 0) {
-			const firstElement = focusableElements[0];
-			const lastElement = focusableElements[focusableElements.length - 1];
-
-			if (focusableElements.length === 1) {
-				firstElement.focus();
-				return e.preventDefault();
-			}
-
-			if (!e.shiftKey && document.activeElement !== firstElement) {
-				firstElement.focus();
-				return e.preventDefault();
-			}
-
-			if (e.shiftKey && document.activeElement !== lastElement) {
-				lastElement.focus();
-				return e.preventDefault();
-			}
-		}
-	};
-
 	componentDidMount() {
-		const focusableElements = this.getFocusableElements();
-		focusableElements[0].focus();
+		addFocusFirstElement(this.confirmationModalRef.base);
 	}
 
 	render = ({
