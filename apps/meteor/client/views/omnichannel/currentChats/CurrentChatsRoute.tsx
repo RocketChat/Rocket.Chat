@@ -102,7 +102,13 @@ const useQuery: useQueryType = (
 		}
 
 		if (customFields && Object.keys(customFields).length > 0) {
-			query.customFields = JSON.stringify(customFields);
+			const customFieldsQuery: { [key: string]: string } = {};
+			Object.keys(customFields).forEach((key) => {
+				if (customFields[key] !== '') {
+					customFieldsQuery[key] = customFields[key];
+				}
+			});
+			Object.keys(customFieldsQuery).length > 0 && (query.customFields = JSON.stringify(customFieldsQuery));
 		}
 
 		return query;
@@ -163,14 +169,18 @@ const CurrentChatsRoute = (): ReactElement => {
 			};
 
 			return (
-				<GenericTableRow key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id)} action qa-user-id={_id}>
+				<GenericTableRow key={_id} onClick={(): void => onRowClick(_id)} action>
 					<GenericTableCell withTruncatedText>{fname}</GenericTableCell>
 					<GenericTableCell withTruncatedText>{department ? department.name : ''}</GenericTableCell>
 					<GenericTableCell withTruncatedText>{servedBy?.username}</GenericTableCell>
 					<GenericTableCell withTruncatedText>{moment(ts).format('L LTS')}</GenericTableCell>
 					<GenericTableCell withTruncatedText>{moment(lm).format('L LTS')}</GenericTableCell>
 					<GenericTableCell withTruncatedText>{getStatusText(open, onHold)}</GenericTableCell>
-					{canRemoveClosedChats && !open && <RemoveChatButton _id={_id} reload={reload} />}
+					{canRemoveClosedChats && !open && (
+						<GenericTableCell withTruncatedText>
+							<RemoveChatButton _id={_id} reload={reload} />
+						</GenericTableCell>
+					)}
 				</GenericTableRow>
 			);
 		},
@@ -202,7 +212,6 @@ const CurrentChatsRoute = (): ReactElement => {
 							>
 								{t('Name')}
 							</GenericTableHeaderCell>
-							,
 							<GenericTableHeaderCell
 								key={'departmentId'}
 								direction={sortDirection}
@@ -212,7 +221,6 @@ const CurrentChatsRoute = (): ReactElement => {
 							>
 								{t('Department')}
 							</GenericTableHeaderCell>
-							,
 							<GenericTableHeaderCell
 								key={'servedBy'}
 								direction={sortDirection}
@@ -222,15 +230,12 @@ const CurrentChatsRoute = (): ReactElement => {
 							>
 								{t('Served_By')}
 							</GenericTableHeaderCell>
-							,
 							<GenericTableHeaderCell key={'ts'} direction={sortDirection} active={sortBy === 'ts'} onClick={onHeaderClick} sort='ts'>
 								{t('Started_At')}
 							</GenericTableHeaderCell>
-							,
 							<GenericTableHeaderCell key={'lm'} direction={sortDirection} active={sortBy === 'lm'} onClick={onHeaderClick} sort='lm'>
 								{t('Last_Message')}
 							</GenericTableHeaderCell>
-							,
 							<GenericTableHeaderCell
 								key={'open'}
 								direction={sortDirection}
@@ -241,7 +246,6 @@ const CurrentChatsRoute = (): ReactElement => {
 							>
 								{t('Status')}
 							</GenericTableHeaderCell>
-							,
 							{canRemoveClosedChats && (
 								<GenericTableHeaderCell key={'remove'} w='x60'>
 									{t('Remove')}

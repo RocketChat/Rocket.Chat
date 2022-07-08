@@ -12,18 +12,16 @@ type CustomFieldsVerticalBarProps = {
 };
 
 const CustomFieldsVerticalBar = ({ customFields, setCustomFields }: CustomFieldsVerticalBarProps): ReactElement => {
-	console.log('CustomFieldsVerticalBar', customFields);
 	const { value: allCustomFields } = useEndpointData('/v1/livechat/custom-fields');
 
 	const { register, watch } = useForm();
 
 	// TODO: When we refactor the other CurrentChat's fields to use react-hook-form, we need to change this to use the form controller
-	const fields = watch();
 
-	useEffect((): void => {
-		console.log(fields);
-		setCustomFields(fields);
-	}, [fields, setCustomFields]);
+	useEffect(() => {
+		const subscription = watch((value) => setCustomFields(value));
+		return (): void => subscription.unsubscribe();
+	}, [setCustomFields, watch]);
 
 	const t = useTranslation();
 	const currentChatsRoute = useRoute('omnichannel-current-chats');
