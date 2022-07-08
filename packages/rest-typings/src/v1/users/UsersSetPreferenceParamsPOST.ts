@@ -37,7 +37,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
-		dontAskAgainList?: Array<{ action: string; label: string }>
+		dontAskAgainList?: Array<{ action: string; label: string }>;
 	};
 };
 
@@ -180,7 +180,7 @@ const UsersSetPreferencesParamsPostSchema = {
 						type: 'object',
 						properties: {
 							action: { type: 'string' },
-							label: { type: 'string' }
+							label: { type: 'string' },
 						},
 					},
 					nullable: true,

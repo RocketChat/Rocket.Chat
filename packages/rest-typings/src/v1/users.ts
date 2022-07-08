@@ -304,7 +304,7 @@ export type UsersEndpoints = {
 
 	'/v1/users.setPreferences': {
 		POST: (params: UsersSetPreferencesParamsPOST) => {
-			user: Pick<IUser, '_id' | 'settings'>
+			user: Pick<IUser, '_id' | 'settings'>;
 		};
 	};
 };

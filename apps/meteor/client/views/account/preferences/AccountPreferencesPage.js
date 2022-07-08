@@ -1,8 +1,9 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useRef } from 'react';
 
 import Page from '../../../components/Page';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
 import PreferencesHighlightsSection from './PreferencesHighlightsSection';
 import PreferencesLocalizationSection from './PreferencesLocalizationSection';
@@ -11,7 +12,6 @@ import PreferencesMyDataSection from './PreferencesMyDataSection';
 import PreferencesNotificationsSection from './PreferencesNotificationsSection';
 import PreferencesSoundSection from './PreferencesSoundSection';
 import PreferencesUserPresenceSection from './PreferencesUserPresenceSection';
-import { useEndpointActionExperimental } from '/client/hooks/useEndpointActionExperimental';
 
 const AccountPreferencesPage = () => {
 	const t = useTranslation();

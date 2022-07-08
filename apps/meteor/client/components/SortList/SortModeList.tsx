@@ -2,8 +2,8 @@ import { RadioButton, OptionTitle } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback } from 'react';
 
+import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import ListItem from '../Sidebar/ListItem';
-import { useEndpointActionExperimental } from '/client/hooks/useEndpointActionExperimental';
 
 const style = {
 	textTransform: 'uppercase',
