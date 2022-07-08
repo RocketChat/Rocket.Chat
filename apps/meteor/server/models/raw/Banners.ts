@@ -1,29 +1,19 @@
 import { BannerPlatform, IBanner, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBannersModel } from '@rocket.chat/model-typings';
-import type {
-	Collection,
-	Cursor,
-	Db,
-	FindOneOptions,
-	IndexSpecification,
-	InsertOneWriteOpResult,
-	UpdateWriteOpResult,
-	WithoutProjection,
-} from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IBanner>>) {
-		super(db, getCollectionName('banner'), trash);
+		super(db, 'banner', trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { platform: 1, startAt: 1, expireAt: 1 } }, { key: { platform: 1, startAt: 1, expireAt: 1, active: 1 } }];
 	}
 
-	create(doc: IBanner): Promise<InsertOneWriteOpResult<IBanner>> {
+	create(doc: IBanner): Promise<InsertOneResult<IBanner>> {
 		const invalidPlatform = doc.platform?.some((platform) => !Object.values(BannerPlatform).includes(platform));
 		if (invalidPlatform) {
 			throw new Error('Invalid platform');
@@ -43,12 +33,7 @@ export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 		});
 	}
 
-	findActiveByRoleOrId(
-		roles: string[],
-		platform: BannerPlatform,
-		bannerId?: string,
-		options?: WithoutProjection<FindOneOptions<IBanner>>,
-	): Cursor<IBanner> {
+	findActiveByRoleOrId(roles: string[], platform: BannerPlatform, bannerId?: string, options?: FindOptions<IBanner>): FindCursor<IBanner> {
 		const today = new Date();
 
 		const query = {
@@ -63,7 +48,7 @@ export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 		return this.col.find(query, options);
 	}
 
-	disable(bannerId: string): Promise<UpdateWriteOpResult> {
+	disable(bannerId: string): Promise<UpdateResult> {
 		return this.col.updateOne({ _id: bannerId, active: { $ne: false } }, { $set: { active: false, inactivedAt: new Date() } });
 	}
 }

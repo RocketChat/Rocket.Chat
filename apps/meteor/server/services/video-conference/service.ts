@@ -170,10 +170,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		roomId: IRoom['_id'],
 		pagination: { offset?: number; count?: number } = {},
 	): Promise<PaginatedResult<{ data: VideoConference[] }>> {
-		const cursor = await VideoConferenceModel.findAllByRoomId(roomId, pagination);
+		const { cursor, totalCount } = VideoConferenceModel.findPaginatedByRoomId(roomId, pagination);
 
-		const data = (await cursor.toArray()) as VideoConference[];
-		const total = await cursor.count();
+		const [data, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return {
 			data,
@@ -629,7 +628,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			projection: { 'u._id': 1, '_id': 0 },
 		});
 
-		await subscriptions.forEach(async (subscription) => Notifications.notifyUser(subscription.u._id, eventName, ...args));
+		await subscriptions.forEach((subscription) => Notifications.notifyUser(subscription.u._id, eventName, ...args));
 	}
 
 	private async startGroup(
