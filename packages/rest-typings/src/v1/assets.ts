@@ -4,11 +4,11 @@ import type { IRocketChatAssets } from '@rocket.chat/core-typings';
 export type AssetsUnsetAssetProps = { assetName: keyof IRocketChatAssets; refreshAllClients?: boolean };
 
 export type AssetsEndpoints = {
-	'assets.setAsset': {
+	'/v1/assets.setAsset': {
 		POST: (params: AssetsUnsetAssetProps) => void;
 	};
 
-	'assets.unsetAsset': {
+	'/v1/assets.unsetAsset': {
 		POST: (params: AssetsUnsetAssetProps) => void;
 	};
 };

@@ -1,5 +1,5 @@
 import { Button, Field, Icon } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React, { ChangeEventHandler, DragEvent, ReactElement } from 'react';
 
@@ -17,8 +17,8 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const setAsset = useMethod('setAsset');
-	const unsetAsset = useMethod('unsetAsset');
+	const setAsset = useEndpoint('POST', '/v1/assets.setAsset');
+	const unsetAsset = useEndpoint('POST', '/v1/assets.unsetAsset');
 
 	const isDataTransferEvent = <T,>(event: T): event is T & DragEvent<HTMLInputElement> =>
 		Boolean('dataTransfer' in event && (event as any).dataTransfer.files);

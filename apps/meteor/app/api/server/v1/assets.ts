@@ -6,7 +6,7 @@ import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
 API.v1.addRoute(
-	'assets.setAsset',
+	'/v1/assets.setAsset',
 	{ authRequired: true },
 	{
 		async post() {
@@ -34,7 +34,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'assets.unsetAsset',
+	'/v1/assets.unsetAsset',
 	{
 		authRequired: true,
 		validateParams: isAssetsUnsetAssetProps,
