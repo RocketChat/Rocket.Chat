@@ -3,7 +3,6 @@ import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from 
 import { Random } from 'meteor/random';
 import React, { ChangeEventHandler, DragEvent, ReactElement } from 'react';
 
-import { useEndpointUpload } from '../../../../hooks/useEndpointUpload';
 import './AssetSettingInput.styles.css';
 
 type AssetSettingInputProps = {
