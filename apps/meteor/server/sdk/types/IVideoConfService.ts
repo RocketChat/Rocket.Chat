@@ -33,4 +33,9 @@ export interface IVideoConfService {
 	declineLivechatCall(callId: VideoConference['_id']): Promise<boolean>;
 	diagnoseProvider(uid: string, rid: string, providerName?: string): Promise<string | undefined>;
 	getStatistics(): Promise<IStats['videoConf']>;
+	validateAction(
+		event: string,
+		caller: IUser['_id'],
+		params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] },
+	): Promise<boolean>;
 }
