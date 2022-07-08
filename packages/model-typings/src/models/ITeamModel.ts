@@ -1,94 +1,96 @@
-import type { WithoutProjection, FindOneOptions, Cursor, UpdateWriteOpResult, DeleteWriteOpResultObject, FilterQuery } from 'mongodb';
+import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Filter } from 'mongodb';
 import type { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface ITeamModel extends IBaseModel<ITeam> {
-	findByNames(names: Array<string>): Cursor<ITeam>;
+	findByNames(names: Array<string>): FindCursor<ITeam>;
 
-	findByNames(names: Array<string>, options: WithoutProjection<FindOneOptions<ITeam>>): Cursor<ITeam>;
+	findByNames(names: Array<string>, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
-	findByNames<P>(names: Array<string>, options: FindOneOptions<P extends ITeam ? ITeam : P>): Cursor<P>;
+	findByNames<P>(names: Array<string>, options: FindOptions<P extends ITeam ? ITeam : P>): FindCursor<P>;
 
 	findByNames<P>(
 		names: Array<string>,
-		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
-	): Cursor<P> | Cursor<ITeam>;
+		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+	): FindCursor<P> | FindCursor<ITeam>;
 
-	findByIds(ids: Array<string>, query?: FilterQuery<ITeam>): Cursor<ITeam>;
+	findByIds(ids: Array<string>, query?: Filter<ITeam>): FindCursor<ITeam>;
 
-	findByIds(ids: Array<string>, options: WithoutProjection<FindOneOptions<ITeam>>, query?: FilterQuery<ITeam>): Cursor<ITeam>;
+	findByIds(ids: Array<string>, options: FindOptions<ITeam>, query?: Filter<ITeam>): FindCursor<ITeam>;
 
-	findByIds<P>(ids: Array<string>, options: FindOneOptions<P extends ITeam ? ITeam : P>, query?: FilterQuery<ITeam>): Cursor<P>;
+	findByIds<P>(ids: Array<string>, options: FindOptions<P extends ITeam ? ITeam : P>, query?: Filter<ITeam>): FindCursor<P>;
 
 	findByIds<P>(
 		ids: Array<string>,
-		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
-		query?: FilterQuery<ITeam>,
-	): Cursor<P> | Cursor<ITeam>;
+		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		query?: Filter<ITeam>,
+	): FindCursor<P> | FindCursor<ITeam>;
 
-	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE): Cursor<ITeam>;
+	findByIdsPaginated(ids: Array<string>, options?: undefined | FindOptions<ITeam>, query?: Filter<ITeam>): FindPaginated<FindCursor<ITeam>>;
 
-	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE, options: WithoutProjection<FindOneOptions<ITeam>>): Cursor<ITeam>;
+	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE): FindCursor<ITeam>;
 
-	findByIdsAndType<P>(ids: Array<string>, type: TEAM_TYPE, options: FindOneOptions<P extends ITeam ? ITeam : P>): Cursor<P>;
+	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE, options: FindOptions<ITeam>): FindCursor<ITeam>;
+
+	findByIdsAndType<P>(ids: Array<string>, type: TEAM_TYPE, options: FindOptions<P extends ITeam ? ITeam : P>): FindCursor<P>;
 
 	findByIdsAndType<P>(
 		ids: Array<string>,
 		type: TEAM_TYPE,
-		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
-	): Cursor<P> | Cursor<ITeam>;
+		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+	): FindCursor<P> | FindCursor<ITeam>;
 
-	findByType(type: number): Cursor<ITeam>;
+	findByType(type: number): FindCursor<ITeam>;
 
-	findByType(type: number, options: WithoutProjection<FindOneOptions<ITeam>>): Cursor<ITeam>;
+	findByType(type: number, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
-	findByType<P>(type: number, options: FindOneOptions<P extends ITeam ? ITeam : P>): Cursor<P>;
+	findByType<P>(type: number, options: FindOptions<P extends ITeam ? ITeam : P>): FindCursor<P>;
 
 	findByType<P>(
 		type: number,
-		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
-	): Cursor<ITeam> | Cursor<P>;
+		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+	): FindCursor<ITeam> | FindCursor<P>;
 
-	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>): Cursor<ITeam>;
+	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>): FindCursor<ITeam>;
 
-	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>, options: WithoutProjection<FindOneOptions<ITeam>>): Cursor<ITeam>;
+	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
-	findByNameAndTeamIds<P>(name: string | RegExp, teamIds: Array<string>, options: FindOneOptions<P extends ITeam ? ITeam : P>): Cursor<P>;
+	findByNameAndTeamIds<P>(name: string | RegExp, teamIds: Array<string>, options: FindOptions<P extends ITeam ? ITeam : P>): FindCursor<P>;
 
 	findByNameAndTeamIds<P>(
 		name: string | RegExp,
 		teamIds: Array<string>,
-		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
-	): Cursor<P> | Cursor<ITeam>;
+		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+	): FindCursor<P> | FindCursor<ITeam>;
 
 	findOneByName(name: string | RegExp): Promise<ITeam | null>;
 
-	findOneByName(name: string | RegExp, options: WithoutProjection<FindOneOptions<ITeam>>): Promise<ITeam | null>;
+	findOneByName(name: string | RegExp, options: FindOptions<ITeam>): Promise<ITeam | null>;
 
-	findOneByName<P>(name: string | RegExp, options: FindOneOptions<P>): Promise<P | null>;
+	findOneByName<P>(name: string | RegExp, options: FindOptions<P>): Promise<P | null>;
 
 	findOneByName<P>(
 		name: string | RegExp,
-		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
+		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P | null> | Promise<ITeam | null>;
 
 	findOneByMainRoomId(roomId: string): Promise<ITeam | null>;
 
-	findOneByMainRoomId(roomId: string, options: WithoutProjection<FindOneOptions<ITeam>>): Promise<ITeam | null>;
+	findOneByMainRoomId(roomId: string, options: FindOptions<ITeam>): Promise<ITeam | null>;
 
-	findOneByMainRoomId<P>(roomId: string, options: FindOneOptions<P>): Promise<P | null>;
+	findOneByMainRoomId<P>(roomId: string, options: FindOptions<P>): Promise<P | null>;
 
 	findOneByMainRoomId<P>(
 		roomId: string,
-		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
+		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P | null> | Promise<ITeam | null>;
 
-	updateMainRoomForTeam(id: string, roomId: string): Promise<UpdateWriteOpResult>;
+	updateMainRoomForTeam(id: string, roomId: string): Promise<UpdateResult>;
 
-	deleteOneById(id: string): Promise<DeleteWriteOpResultObject>;
+	deleteOneById(id: string): Promise<DeleteResult>;
 
-	deleteOneByName(name: string): Promise<DeleteWriteOpResultObject>;
+	deleteOneByName(name: string): Promise<DeleteResult>;
 
-	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TEAM_TYPE }): Promise<UpdateWriteOpResult>;
+	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TEAM_TYPE }): Promise<UpdateResult>;
 }

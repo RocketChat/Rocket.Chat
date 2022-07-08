@@ -1,13 +1,12 @@
 import type { IOAuthApps, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IOAuthAppsModel } from '@rocket.chat/model-typings';
 import type { Db, Collection } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOAuthApps>>) {
-		super(db, getCollectionName('oauth_apps'), trash);
+		super(db, 'oauth_apps', trash);
 	}
 
 	findOneAuthAppByIdOrClientId(props: { clientId: string } | { appId: string }): Promise<IOAuthApps | null> {
