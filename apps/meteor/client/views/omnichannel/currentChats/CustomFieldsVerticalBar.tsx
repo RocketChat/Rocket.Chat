@@ -11,7 +11,7 @@ type CustomFieldsVerticalBarProps = {
 	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string }>>;
 };
 
-const CustomFieldsVerticalBar = ({ customFields, setCustomFields }: CustomFieldsVerticalBarProps): ReactElement => {
+const CustomFieldsVerticalBar = ({ setCustomFields }: CustomFieldsVerticalBarProps): ReactElement => {
 	const { value: allCustomFields } = useEndpointData('/v1/livechat/custom-fields');
 
 	const { register, watch } = useForm();

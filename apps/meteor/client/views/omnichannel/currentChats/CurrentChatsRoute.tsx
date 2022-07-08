@@ -1,5 +1,3 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { LivechatRoomsProps } from '@rocket.chat/rest-typings';
@@ -146,7 +144,8 @@ const CurrentChatsRoute = (): ReactElement => {
 	const debouncedSort = useDebouncedValue(
 		useMemo(() => [sortBy, sortDirection], [sortBy, sortDirection]),
 		500,
-	);
+	) as ['fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open', 'asc' | 'desc'];
+
 	const query = useQuery(debouncedParams, debouncedCustomFields, debouncedSort);
 
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
