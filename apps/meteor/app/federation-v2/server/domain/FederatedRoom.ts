@@ -55,6 +55,12 @@ export class FederatedRoom {
 	}
 
 	public static buildRoomIdForDirectMessages(inviter: FederatedUser, invitee: FederatedUser): string {
-		return inviter.internalReference?._id + invitee.internalReference?._id;
+		if (!inviter.internalReference || !invitee.internalReference) {
+			throw new Error('Cannot create room Id without the user ids');
+		}
+		return [inviter.internalReference, invitee.internalReference]
+			.map(({ _id }) => _id)
+			.sort()
+			.join('');
 	}
 }

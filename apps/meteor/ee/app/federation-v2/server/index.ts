@@ -35,11 +35,11 @@ const runFederationEE = async (): Promise<void> => {
 
 onToggledFeature('federation', {
 	up: async () => {
+		queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 		if (!rocketSettingsAdapter.isFederationEnabled()) {
 			return;
 		}
 		await stopFederation();
-		queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 		await runFederationEE();
 		FederationFactoryEE.setupListeners(federationRoomServiceSenderEE, rocketSettingsAdapter);
 		require('./infrastructure/rocket-chat/slash-commands');
