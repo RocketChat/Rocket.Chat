@@ -1,14 +1,15 @@
 import type { ISessionsModel, ModelOptionalId } from '@rocket.chat/model-typings';
 import type {
 	AggregationCursor,
-	BulkWriteOperation,
-	BulkWriteOpResultObject,
+	AnyBulkWriteOperation,
+	BulkWriteResult,
 	Collection,
-	Cursor,
+	Document,
+	FindCursor,
 	Db,
-	FilterQuery,
-	IndexSpecification,
-	UpdateWriteOpResult,
+	Filter,
+	IndexDescription,
+	UpdateResult,
 } from 'mongodb';
 import type {
 	ISession,
@@ -23,7 +24,7 @@ import type {
 	IUser,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
+import type { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
 import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
@@ -42,7 +43,7 @@ type DateRange = { start: Date; end: Date };
 type CustomSortOp = 'loginAt' | 'device.name' | 'device.os.name';
 type CustomSortOpAdmin = CustomSortOp | '_user.username' | '_user.name';
 
-const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): FilterQuery<ISession> => {
+const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): Filter<ISession> => {
 	if (start.year === end.year && start.month === end.month) {
 		return {
 			year: start.year,
@@ -444,7 +445,7 @@ export const aggregates = {
 			.toArray();
 	},
 
-	getMatchOfLastMonthOrWeek({ year, month, day, type = 'month' }: DestructuredDateWithType): FilterQuery<ISession> {
+	getMatchOfLastMonthOrWeek({ year, month, day, type = 'month' }: DestructuredDateWithType): Filter<ISession> {
 		let startOfPeriod;
 
 		if (type === 'month') {
@@ -752,7 +753,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 	private secondaryCollection: Collection<ISession>;
 
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISession>>) {
-		super(db, getCollectionName('sessions'), trash);
+		super(db, 'sessions', trash);
 
 		this.secondaryCollection = db.collection(getCollectionName('sessions'), { readPreference: readSecondaryPreferred(db) });
 	}
@@ -987,7 +988,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return { sessions, total, count, offset };
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { createdAt: -1 } },
 			{ key: { loginAt: -1 } },
@@ -1007,7 +1008,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 
 	async getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]> {
 		return this.col
-			.aggregate([
+			.aggregate<ISession>([
 				{
 					$match: {
 						...matchBasedOnDate(start, end),
@@ -1043,7 +1044,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.findOne({ sessionId, userId, loginToken: { $exists: true, $ne: '' } });
 	}
 
-	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession> {
+	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): FindCursor<ISession> {
 		return this.find({
 			year,
 			month,
@@ -1443,7 +1444,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		};
 	}
 
-	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateWriteOpResult | undefined> {
+	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateResult | undefined> {
 		// TODO: check if we should create a session when there is no loginToken or not
 		const { year, month, day, sessionId, instanceId } = data;
 
@@ -1465,7 +1466,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		);
 	}
 
-	async closeByInstanceIdAndSessionId(instanceId: string, sessionId: string): Promise<UpdateWriteOpResult> {
+	async closeByInstanceIdAndSessionId(instanceId: string, sessionId: string): Promise<UpdateResult> {
 		const query = {
 			instanceId,
 			sessionId,
@@ -1487,8 +1488,8 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		{ year, month, day }: Partial<DestructuredDate> = {},
 		instanceId: string,
 		sessions: string[],
-		data = {},
-	): Promise<UpdateWriteOpResult> {
+		data: Record<string, any> = {},
+	): Promise<UpdateResult | Document> {
 		const query = {
 			instanceId,
 			year,
@@ -1505,7 +1506,10 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.updateMany(query, update);
 	}
 
-	async updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data = {}): Promise<UpdateWriteOpResult> {
+	async updateActiveSessionsByDate(
+		{ year, month, day }: DestructuredDate,
+		data: Record<string, any> = {},
+	): Promise<UpdateResult | Document> {
 		const update = {
 			$set: data,
 		};
@@ -1523,7 +1527,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		);
 	}
 
-	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateWriteOpResult> {
+	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult> {
 		const query = {
 			instanceId,
 			sessionId,
@@ -1548,7 +1552,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 	}: {
 		sessionId: ISession['sessionId'];
 		userId: IUser['_id'];
-	}): Promise<UpdateWriteOpResult> {
+	}): Promise<UpdateResult | Document> {
 		const query = {
 			sessionId,
 			userId,
@@ -1576,7 +1580,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		loginToken: ISession['loginToken'];
 		userId: IUser['_id'];
 		logoutBy?: IUser['_id'];
-	}): Promise<UpdateWriteOpResult> {
+	}): Promise<UpdateResult | Document> {
 		const logoutAt = new Date();
 		const updateObj = {
 			$set: {
@@ -1588,12 +1592,12 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.updateMany({ userId, loginToken }, updateObj);
 	}
 
-	async createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteOpResultObject | undefined> {
+	async createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteResult | undefined> {
 		if (!sessions || sessions.length === 0) {
 			return;
 		}
 
-		const ops: BulkWriteOperation<ISession>[] = [];
+		const ops: AnyBulkWriteOperation<ISession>[] = [];
 		sessions.forEach((doc) => {
 			const { year, month, day, sessionId, instanceId } = doc;
 			delete doc._id;

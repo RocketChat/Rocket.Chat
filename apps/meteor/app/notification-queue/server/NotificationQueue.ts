@@ -92,7 +92,7 @@ class NotificationClass {
 		this.worker(counter++);
 	}
 
-	getNextNotification(): Promise<INotification | undefined> {
+	getNextNotification(): Promise<INotification | null> {
 		const expired = new Date();
 		expired.setMinutes(expired.getMinutes() - 5);
 

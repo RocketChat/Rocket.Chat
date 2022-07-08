@@ -24,15 +24,11 @@ addMigration({
 					},
 				};
 
-				const options = {
-					multi: true,
-				};
-
 				if (scope === 'Subscriptions') {
-					return Subscriptions.update(query, update, options);
+					return Subscriptions.updateMany(query, update);
 				}
 
-				return Users.update(query, update, options);
+				return Users.updateMany(query, update);
 			}),
 		);
 
@@ -49,15 +45,11 @@ addMigration({
 					},
 				};
 
-				const options = {
-					multi: true,
-				};
-
 				if (scope === 'Subscriptions') {
-					return Subscriptions.update(query, update, options);
+					return Subscriptions.updateMany(query, update);
 				}
 
-				return Users.update(query, update, options);
+				return Users.updateMany(query, update);
 			}),
 		);
 	},

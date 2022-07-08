@@ -37,7 +37,7 @@ export const deleteMessage = async function (message: IMessage, user: IUser): Pr
 		}
 
 		for await (const file of files) {
-			file?._id && (await Uploads.update({ _id: file._id }, { $set: { _hidden: true } }));
+			file?._id && (await Uploads.updateOne({ _id: file._id }, { $set: { _hidden: true } }));
 		}
 	} else {
 		if (!showDeletedStatus) {
