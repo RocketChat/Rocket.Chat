@@ -12,8 +12,10 @@ import {
 	StatesTitle,
 	Pagination,
 	Icon,
+	Skeleton,
 } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
+import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo, useState } from 'react';
 
@@ -22,7 +24,6 @@ import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppRow from './AppRow';
 import { useAppsReload, useAppsResult } from './AppsContext';
 import AppsFilters from './AppsFilters';
-import MarketplaceRow from './MarketplaceRow';
 import { RadioDropDownGroup } from './definitions/RadioDropDownDefinitions';
 import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
@@ -38,7 +39,6 @@ const AppsList: FC<{
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const marketplaceRoute = useRoute('admin-marketplace');
-	const Row = isMarketplace ? MarketplaceRow : AppRow;
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState<RadioDropDownGroup>({
 		label: t('Filter_By_Price'),
@@ -82,6 +82,8 @@ const AppsList: FC<{
 	const noInstalledAppMatches =
 		appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total !== 0 && appsResult.value.count === 0;
 
+	const loadingRows = Array.from({ length: 8 }, (_, i) => <Skeleton key={i} height='x56' mbe='x8' width='100%' variant='rect' />);
+
 	return (
 		<>
 			<AppsFilters
@@ -98,9 +100,11 @@ const AppsList: FC<{
 
 			{isAppListReadyOrLoading && (
 				<>
-					<Box overflowY='scroll'>
-						{appsResult.phase === AsyncStatePhase.RESOLVED &&
-							appsResult.value.items.map((app) => <Row key={app.id} medium={false} large={false} {...app} />)}
+					<Box overflowY='auto' height='100%'>
+						{appsResult.phase === AsyncStatePhase.LOADING
+							? loadingRows
+							: appsResult.phase === AsyncStatePhase.RESOLVED &&
+							  appsResult.value.items.map((app) => <AppRow key={app.id} isMarketplace={isMarketplace} {...app} />)}
 					</Box>
 					{appsResult.phase === AsyncStatePhase.RESOLVED && (
 						<Pagination
@@ -109,6 +113,7 @@ const AppsList: FC<{
 							count={appsResult.value.total}
 							onSetItemsPerPage={onSetItemsPerPage}
 							onSetCurrent={onSetCurrent}
+							borderBlockStart={`2px solid ${colors.n300}`}
 							{...paginationProps}
 						/>
 					)}

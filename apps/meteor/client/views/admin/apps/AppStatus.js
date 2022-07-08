@@ -1,8 +1,8 @@
-import { Box, Button, Icon, Throbber } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Throbber, Tooltip, PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, memo } from 'react';
+import React, { useCallback, useState, useRef, memo } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
@@ -37,7 +37,9 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState());
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
+	const [isHovered, setIsHovered] = useState(false);
 	const setModal = useSetModal();
+	const statusRef = useRef();
 
 	const { price, purchaseType, pricingPlans } = app;
 
@@ -153,9 +155,29 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 				</Box>
 			)}
 			{status && (
-				<Box display='flex' alignItems='center' pi='x8' pb='x8' bg={AppStatusStyle.bg} color={AppStatusStyle.color}>
-					<Icon size='x20' name={status.icon} mie='x4' />
-				</Box>
+				<>
+					<Box
+						ref={statusRef}
+						onMouseEnter={() => setIsHovered(true)}
+						onMouseLeave={() => setIsHovered(false)}
+						display='flex'
+						alignItems='center'
+						pi='x8'
+						pb='x8'
+						bg={AppStatusStyle.bg}
+						color={AppStatusStyle.color}
+					>
+						<Icon size='x20' name={status.icon} mie='x4' />
+					</Box>
+					<PositionAnimated
+						anchor={statusRef}
+						placement='top-middle'
+						margin={8}
+						visible={isHovered ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}
+					>
+						<Tooltip bg={colors.n900} color={colors.white}>{`App ${status.label}`}</Tooltip>
+					</PositionAnimated>
+				</>
 			)}
 		</Box>
 	);
