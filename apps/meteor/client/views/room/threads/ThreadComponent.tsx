@@ -87,7 +87,7 @@ const ThreadComponent: FC<{
 			} catch (error) {
 				dispatchToastMessage({
 					type: 'error',
-					message: error,
+					message: error instanceof Error ? error : String(error),
 				});
 			}
 		},

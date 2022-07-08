@@ -152,8 +152,10 @@ class Katex {
 					'\\href': '\\@secondoftwo',
 				},
 			});
-		} catch ({ message }) {
-			return `<div class="katex-error katex-${displayMode ? 'block' : 'inline'}-error">${escapeHTML(message)}</div>`;
+		} catch (e) {
+			return `<div class="katex-error katex-${displayMode ? 'block' : 'inline'}-error">${escapeHTML(
+				e instanceof Error ? e.message : String(e),
+			)}</div>`;
 		}
 	};
 

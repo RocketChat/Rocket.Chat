@@ -11,9 +11,9 @@ import { api } from '../../../server/sdk/api';
  * Msg is a named function that will replace /msg commands
  */
 
-slashCommands.add(
-	'msg',
-	function Msg(_command: 'msg', params, item): void {
+slashCommands.add({
+	command: 'msg',
+	callback: function Msg(_command: 'msg', params, item): void {
 		const trimmedParams = params.trim();
 		const separator = trimmedParams.indexOf(' ');
 		const userId = Meteor.userId() as string;
@@ -46,9 +46,9 @@ slashCommands.add(
 		};
 		Meteor.call('sendMessage', msgObject);
 	},
-	{
+	options: {
 		description: 'Direct_message_someone',
 		params: '@username <message>',
 		permission: 'create-d',
 	},
-);
+});

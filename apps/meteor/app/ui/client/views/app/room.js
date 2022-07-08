@@ -9,6 +9,7 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { t, getUserPreference } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
@@ -160,6 +161,10 @@ export const dropzoneHelpers = {
 	},
 
 	dragAndDropLabel() {
+		const room = Rooms.findOne({ _id: this.rid });
+		if (isRoomFederated(room)) {
+			return 'FileUpload_Disabled_for_federation';
+		}
 		if (!userCanDrop(this._id)) {
 			return 'error-not-allowed';
 		}
@@ -471,11 +476,12 @@ export const dropzoneEvents = {
 		event.currentTarget.parentNode.classList.remove('over');
 
 		const e = event.originalEvent || event;
+		const room = Rooms.findOne({ _id: this.rid });
 
 		e.stopPropagation();
 		e.preventDefault();
 
-		if (!userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
+		if (isRoomFederated(room) || !userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
 			return false;
 		}
 

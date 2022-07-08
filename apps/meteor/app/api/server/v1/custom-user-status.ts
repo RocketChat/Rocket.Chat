@@ -12,15 +12,13 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, query } = this.parseJsonQuery();
 
-			const cursor = await CustomUserStatus.find(query, {
+			const { cursor, totalCount } = CustomUserStatus.findPaginated(query, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 			});
 
-			const total = await cursor.count();
-
-			const statuses = await cursor.toArray();
+			const [statuses, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				statuses,
