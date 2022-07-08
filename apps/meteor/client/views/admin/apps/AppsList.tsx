@@ -98,7 +98,7 @@ const AppsList: FC<{
 
 			{isAppListReadyOrLoading && (
 				<>
-					<Box overflowY='scroll' overflowX='hidden'>
+					<Box overflowY='scroll'>
 						{appsResult.phase === AsyncStatePhase.RESOLVED &&
 							appsResult.value.items.map((app) => <Row key={app.id} medium={false} large={false} {...app} />)}
 					</Box>

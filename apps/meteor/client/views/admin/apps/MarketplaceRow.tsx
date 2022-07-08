@@ -1,4 +1,6 @@
-import { Box } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Table } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { useState, memo, FC, KeyboardEvent, MouseEvent } from 'react';
 
@@ -37,10 +39,20 @@ const MarketplaceRow: FC<App> = ({ ...props }) => {
 		e.stopPropagation();
 	};
 
+	const hover = css`
+		&:hover,
+		&:focus {
+			cursor: pointer;
+			outline: 0;
+			background-color: ${colors.n200} !important;
+		}
+	`;
+
 	return (
-		<Box
+		<Table.Row
 			key={id}
 			role='link'
+			action
 			tabIndex={0}
 			onClick={handleClick}
 			onKeyDown={handleKeyDown}
@@ -56,21 +68,23 @@ const MarketplaceRow: FC<App> = ({ ...props }) => {
 			mbe='x8'
 			pb='x8'
 			pis='x16'
+			pie='x40'
+			className={hover}
 		>
-			<Box withTruncatedText display='flex' flexDirection='row'>
+			<Box display='flex' flexDirection='row' width='80%'>
 				<AppAvatar size='x40' mie='x16' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
-				<Box display='flex' alignItems='center' color='default' fontScale='p2m' mie='x16'>
+				<Box display='flex' alignItems='center' color='default' fontScale='p2m' mie='x16' style={{ whiteSpace: 'nowrap' }}>
 					{name}
 				</Box>
 				<Box display='flex' alignItems='center' color='default' withTruncatedText>
 					{description}
 				</Box>
 			</Box>
-			<Box display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8' onClick={preventClickPropagation}>
+			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
 				<AppStatus app={props} showStatus={isStatusVisible} isAppDetailsPage={false} mis='x4' />
 				{(installed || isSubscribed) && <AppMenu app={props} invisible={!isStatusVisible} mis='x4' />}
 			</Box>
-		</Box>
+		</Table.Row>
 	);
 };
 

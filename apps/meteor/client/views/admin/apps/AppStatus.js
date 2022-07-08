@@ -125,7 +125,15 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 					borderRadius='x2'
 					invisible={!showStatus && !loading}
 				>
-					<Button primary disabled={loading} minHeight='x40' onClick={handleClick}>
+					<Button
+						secondary={button.label !== 'Update'}
+						primary={button.label === 'Update'}
+						fontSize='x12'
+						fontWeight={700}
+						disabled={loading}
+						minHeight='x40'
+						onClick={handleClick}
+					>
 						{loading ? (
 							<Throbber inheritColor />
 						) : (
@@ -145,9 +153,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 				</Box>
 			)}
 			{status && (
-				<Box display='flex' alignItems='center' pi='x14' pb='x8' bg={AppStatusStyle.bg} color={AppStatusStyle.color}>
+				<Box display='flex' alignItems='center' pi='x8' pb='x8' bg={AppStatusStyle.bg} color={AppStatusStyle.color}>
 					<Icon size='x20' name={status.icon} mie='x4' />
-					{t(status.label)}
 				</Box>
 			)}
 		</Box>
