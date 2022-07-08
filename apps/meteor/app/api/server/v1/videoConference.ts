@@ -6,6 +6,7 @@ import {
 	isVideoConfInfoProps,
 	isVideoConfListProps,
 } from '@rocket.chat/rest-typings';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { API } from '../api';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -13,6 +14,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { VideoConf } from '../../../../server/sdk';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import { availabilityErrors } from '../../../../lib/videoConference/constants';
+import { settings } from '../../../settings/server';
 
 API.v1.addRoute(
 	'video-conference.start',
@@ -166,6 +168,13 @@ API.v1.addRoute(
 	{
 		async get() {
 			const data = await VideoConf.listProviders();
+
+			if (settings.get('WebRTC_Enabled')) {
+				data.push({
+					key: 'webrtc',
+					label: TAPi18n.__('Peer_To_Peer_WebRTC'),
+				});
+			}
 
 			return API.v1.success({ data });
 		},

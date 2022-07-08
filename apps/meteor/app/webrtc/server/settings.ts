@@ -7,24 +7,6 @@ settingsRegistry.addGroup('WebRTC', function () {
 		public: true,
 		i18nLabel: 'Enabled',
 	});
-	this.add('WebRTC_Enable_Channel', false, {
-		type: 'boolean',
-		group: 'WebRTC',
-		public: true,
-		enableQuery: { _id: 'WebRTC_Enabled', value: true },
-	});
-	this.add('WebRTC_Enable_Private', false, {
-		type: 'boolean',
-		group: 'WebRTC',
-		public: true,
-		enableQuery: { _id: 'WebRTC_Enabled', value: true },
-	});
-	this.add('WebRTC_Enable_Direct', false, {
-		type: 'boolean',
-		group: 'WebRTC',
-		public: true,
-		enableQuery: { _id: 'WebRTC_Enabled', value: true },
-	});
 	this.add('WebRTC_Calls_Count', 0, {
 		type: 'int',
 		hidden: true,
