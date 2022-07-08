@@ -407,18 +407,14 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	async setLastRoutingTime(userId) {
-		const result = await this.col.findAndModify(
+		const result = await this.findOneAndUpdate(
 			{ _id: userId },
-			{
-				sort: {
-					_id: 1,
-				},
-			},
 			{
 				$set: {
 					lastRoutingTime: new Date(),
 				},
 			},
+			{ returnDocument: 'after' },
 		);
 		return result.value;
 	}
