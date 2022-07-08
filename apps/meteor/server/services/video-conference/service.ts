@@ -43,6 +43,7 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { callbacks } from '../../../lib/callbacks';
 import { Notifications } from '../../../app/notifications/server';
+import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -173,10 +174,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		roomId: IRoom['_id'],
 		pagination: { offset?: number; count?: number } = {},
 	): Promise<PaginatedResult<{ data: VideoConference[] }>> {
-		const cursor = await VideoConferenceModel.findAllByRoomId(roomId, pagination);
+		const { cursor, totalCount } = VideoConferenceModel.findPaginatedByRoomId(roomId, pagination);
 
-		const data = (await cursor.toArray()) as VideoConference[];
-		const total = await cursor.count();
+		const [data, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return {
 			data,
@@ -332,6 +332,43 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
+	public async validateAction(
+		action: string,
+		caller: IUser['_id'],
+		{ callId, uid, rid }: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] },
+	): Promise<boolean> {
+		if (!callId || !uid || !rid) {
+			return false;
+		}
+
+		if (!(await canAccessRoomIdAsync(rid, caller)) || (caller !== uid && !(await canAccessRoomIdAsync(rid, uid)))) {
+			return false;
+		}
+
+		const call = await VideoConferenceModel.findOneById<Pick<VideoConference, '_id' | 'status' | 'endedAt' | 'createdBy'>>(callId, {
+			projection: { status: 1, endedAt: 1, createdBy: 1 },
+		});
+
+		if (!call) {
+			return false;
+		}
+
+		if (action === 'end') {
+			return true;
+		}
+
+		if (call.endedAt || call.status > VideoConferenceStatus.STARTED) {
+			// If the caller is still calling about a call that has already ended, notify it
+			if (action === 'call' && caller === call.createdBy._id) {
+				Notifications.notifyUser(call.createdBy._id, 'video-conference.end', { rid, uid, callId });
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+
 	private async endCall(callId: VideoConference['_id']): Promise<void> {
 		const call = await this.getUnfiltered(callId);
 		if (!call) {
@@ -365,12 +402,27 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async removeJoinButton(messageId: IMessage['_id']): Promise<void> {
 		await Messages.removeVideoConfJoinButton(messageId);
+
+		const text = TAPi18n.__('Conference_call_has_ended');
+		await Messages.addBlocksById(messageId, [this.buildMessageBlock(text)]);
 	}
 
 	private async endDirectCall(call: IDirectVideoConference): Promise<void> {
 		if (!call.messages.ended) {
 			this.createDirectCallEndedMessage(call);
 		}
+
+		const params = { rid: call.rid, uid: call.createdBy._id, callId: call._id };
+
+		// Notify the caller that the call was ended by the server
+		Notifications.notifyUser(call.createdBy._id, 'video-conference.end', params);
+
+		// If the callee hasn't joined the call yet, notify them that it has already ended
+		const subscriptions = Subscriptions.findByRoomIdAndNotUserId(call.rid, call.createdBy._id, {
+			projection: { 'u._id': 1, '_id': 0 },
+		});
+
+		await subscriptions.forEach(async (subscription) => Notifications.notifyUser(subscription.u._id, 'video-conference.end', params));
 	}
 
 	private async endGroupCall(call: IGroupVideoConference): Promise<void> {
@@ -638,7 +690,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			projection: { 'u._id': 1, '_id': 0 },
 		});
 
-		await subscriptions.forEach(async (subscription) => Notifications.notifyUser(subscription.u._id, eventName, ...args));
+		await subscriptions.forEach((subscription) => Notifications.notifyUser(subscription.u._id, eventName, ...args));
 	}
 
 	private async startGroup(
@@ -673,7 +725,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		if (call.ringing) {
-			await this.notifyUsersOfRoom(rid, user._id, 'video-conference.ring', { callId, title, createdBy: call.createdBy, providerName });
+			await this.notifyUsersOfRoom(rid, user._id, 'video-conference.ring', { callId, rid, title, uid: call.createdBy, providerName });
 		}
 
 		return {

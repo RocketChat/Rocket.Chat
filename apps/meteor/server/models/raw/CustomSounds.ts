@@ -1,31 +1,20 @@
 import type { ICustomSound, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ICustomSoundsModel } from '@rocket.chat/model-typings';
-import type {
-	Collection,
-	Cursor,
-	Db,
-	FindOneOptions,
-	IndexSpecification,
-	InsertOneWriteOpResult,
-	UpdateWriteOpResult,
-	WithId,
-	WithoutProjection,
-} from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSoundsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICustomSound>>) {
-		super(db, getCollectionName('custom_sounds'), trash);
+		super(db, 'custom_sounds', trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { name: 1 } }];
 	}
 
 	// find
-	findByName(name: string, options: WithoutProjection<FindOneOptions<ICustomSound>>): Cursor<ICustomSound> {
+	findByName(name: string, options: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
 		const query = {
 			name,
 		};
@@ -33,7 +22,7 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 		return this.find(query, options);
 	}
 
-	findByNameExceptId(name: string, except: string, options: WithoutProjection<FindOneOptions<ICustomSound>>): Cursor<ICustomSound> {
+	findByNameExceptId(name: string, except: string, options: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
 		const query = {
 			_id: { $nin: [except] },
 			name,
@@ -43,7 +32,7 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 	}
 
 	// update
-	setName(_id: string, name: string): Promise<UpdateWriteOpResult> {
+	setName(_id: string, name: string): Promise<UpdateResult> {
 		const update = {
 			$set: {
 				name,
@@ -54,7 +43,7 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 	}
 
 	// INSERT
-	create(data: ICustomSound): Promise<InsertOneWriteOpResult<WithId<ICustomSound>>> {
+	create(data: ICustomSound): Promise<InsertOneResult<WithId<ICustomSound>>> {
 		return this.insertOne(data);
 	}
 }

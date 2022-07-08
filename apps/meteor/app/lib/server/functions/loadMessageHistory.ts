@@ -4,7 +4,7 @@ import { Messages, Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
-export const loadMessageHistory = function loadMessageHistory({
+export function loadMessageHistory({
 	userId,
 	rid,
 	end,
@@ -49,7 +49,6 @@ export const loadMessageHistory = function loadMessageHistory({
 		const firstMessage = messages[messages.length - 1];
 
 		if (firstMessage && new Date(firstMessage.ts) > new Date(ls)) {
-			// delete options.limit;
 			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 				rid,
 				ls,
@@ -64,8 +63,17 @@ export const loadMessageHistory = function loadMessageHistory({
 				showThreadMessages,
 			);
 
+			const totalCursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+				rid,
+				ls,
+				firstMessage.ts,
+				hiddenMessageTypes,
+				{},
+				showThreadMessages,
+			);
+
 			firstUnread = unreadMessages.fetch()[0];
-			unreadNotLoaded = unreadMessages.count();
+			unreadNotLoaded = totalCursor.count();
 		}
 	}
 
@@ -74,4 +82,4 @@ export const loadMessageHistory = function loadMessageHistory({
 		firstUnread,
 		unreadNotLoaded,
 	};
-};
+}

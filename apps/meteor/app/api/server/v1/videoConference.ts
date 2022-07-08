@@ -9,6 +9,7 @@ import {
 
 import { API } from '../api';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { VideoConf } from '../../../../server/sdk';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import { availabilityErrors } from '../../../../lib/videoConference/constants';
@@ -18,7 +19,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isVideoConfStartProps, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 60000 } },
 	{
 		async post() {
-			const { roomId, title, allowRinging } = this.bodyParams;
+			const { roomId, title, allowRinging: requestRinging } = this.bodyParams;
 			const { userId } = this;
 			if (!userId || !(await canAccessRoomIdAsync(roomId, userId))) {
 				return API.v1.failure('invalid-params');
@@ -31,9 +32,11 @@ API.v1.addRoute(
 					throw new Error(availabilityErrors.NOT_ACTIVE);
 				}
 
+				const allowRinging = Boolean(requestRinging) && (await hasPermissionAsync(userId, 'videoconf-ring-users'));
+
 				return API.v1.success({
 					data: {
-						...(await VideoConf.start(userId, roomId, { title, allowRinging: Boolean(allowRinging) })),
+						...(await VideoConf.start(userId, roomId, { title, allowRinging })),
 						providerName,
 					},
 				});

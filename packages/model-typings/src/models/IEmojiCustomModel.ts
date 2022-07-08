@@ -1,13 +1,13 @@
-import type { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
+import type { FindCursor, FindOptions, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
 export interface IEmojiCustomModel extends IBaseModel<IEmojiCustom> {
-	findByNameOrAlias(emojiName: string, options: WithoutProjection<FindOneOptions<IEmojiCustom>>): Cursor<IEmojiCustom>;
-	findByNameOrAliasExceptID(name: string, except: string, options: WithoutProjection<FindOneOptions<IEmojiCustom>>): Cursor<IEmojiCustom>;
-	setName(_id: string, name: string): Promise<UpdateWriteOpResult>;
-	setAliases(_id: string, aliases: string[]): Promise<UpdateWriteOpResult>;
-	setExtension(_id: string, extension: string): Promise<UpdateWriteOpResult>;
-	create(data: IEmojiCustom): Promise<InsertOneWriteOpResult<WithId<IEmojiCustom>>>;
+	findByNameOrAlias(emojiName: string, options: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom>;
+	findByNameOrAliasExceptID(name: string, except: string, options: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom>;
+	setName(_id: string, name: string): Promise<UpdateResult>;
+	setAliases(_id: string, aliases: string[]): Promise<UpdateResult>;
+	setExtension(_id: string, extension: string): Promise<UpdateResult>;
+	create(data: IEmojiCustom): Promise<InsertOneResult<WithId<IEmojiCustom>>>;
 }
