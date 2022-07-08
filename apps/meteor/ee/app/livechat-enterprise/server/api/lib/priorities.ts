@@ -1,6 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatPriority } from '@rocket.chat/models';
 import { ILivechatPriority } from '@rocket.chat/core-typings';
+import type { FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 
@@ -10,7 +11,7 @@ type FindPrioritiesParams = {
 	pagination: {
 		offset: number;
 		count: number;
-		sort: object;
+		sort: FindOptions<ILivechatPriority>['sort'];
 	};
 };
 
@@ -41,15 +42,13 @@ export async function findPriorities({
 		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
 	};
 
-	const cursor = LivechatPriority.find(query, {
+	const { cursor, totalCount } = LivechatPriority.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const priorities = await cursor.toArray();
+	const [priorities, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		priorities,

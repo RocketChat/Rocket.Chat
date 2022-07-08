@@ -1,16 +1,15 @@
 import type { INotification, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { INotificationQueueModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Collection, Db, Document, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class NotificationQueueRaw extends BaseRaw<INotification> implements INotificationQueueModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INotification>>) {
-		super(db, getCollectionName('notification_queue'), trash);
+		super(db, 'notification_queue', trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { uid: 1 } },
 			{ key: { ts: 1 }, expireAfterSeconds: 2 * 60 * 60 },
@@ -20,7 +19,7 @@ export class NotificationQueueRaw extends BaseRaw<INotification> implements INot
 		];
 	}
 
-	unsetSendingById(_id: string): Promise<UpdateWriteOpResult> {
+	unsetSendingById(_id: string): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id },
 			{
@@ -31,7 +30,7 @@ export class NotificationQueueRaw extends BaseRaw<INotification> implements INot
 		);
 	}
 
-	setErrorById(_id: string, error: any): Promise<UpdateWriteOpResult> {
+	setErrorById(_id: string, error: any): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id,
@@ -47,7 +46,7 @@ export class NotificationQueueRaw extends BaseRaw<INotification> implements INot
 		);
 	}
 
-	clearScheduleByUserId(uid: string): Promise<UpdateWriteOpResult> {
+	clearScheduleByUserId(uid: string): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{
 				uid,
@@ -69,7 +68,7 @@ export class NotificationQueueRaw extends BaseRaw<INotification> implements INot
 		return op.deletedCount;
 	}
 
-	async findNextInQueueOrExpired(expired: Date): Promise<INotification | undefined> {
+	async findNextInQueueOrExpired(expired: Date): Promise<INotification | null> {
 		const now = new Date();
 
 		const result = await this.col.findOneAndUpdate(

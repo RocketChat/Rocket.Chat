@@ -1,31 +1,20 @@
 import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IEmojiCustomModel } from '@rocket.chat/model-typings';
-import type {
-	Collection,
-	Cursor,
-	Db,
-	FindOneOptions,
-	IndexSpecification,
-	InsertOneWriteOpResult,
-	UpdateWriteOpResult,
-	WithId,
-	WithoutProjection,
-} from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCustomModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IEmojiCustom>>) {
-		super(db, getCollectionName('custom_emoji'), trash);
+		super(db, 'custom_emoji', trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { name: 1 } }, { key: { aliases: 1 } }, { key: { extension: 1 } }];
 	}
 
 	// find
-	findByNameOrAlias(emojiName: string, options: WithoutProjection<FindOneOptions<IEmojiCustom>>): Cursor<IEmojiCustom> {
+	findByNameOrAlias(emojiName: string, options: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {
 		let name = emojiName;
 
 		if (typeof emojiName === 'string') {
@@ -39,7 +28,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 		return this.find(query, options);
 	}
 
-	findByNameOrAliasExceptID(name: string, except: string, options: WithoutProjection<FindOneOptions<IEmojiCustom>>): Cursor<IEmojiCustom> {
+	findByNameOrAliasExceptID(name: string, except: string, options: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {
 		const query = {
 			_id: { $nin: [except] },
 			$or: [{ name }, { aliases: name }],
@@ -49,7 +38,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 	}
 
 	// update
-	setName(_id: string, name: string): Promise<UpdateWriteOpResult> {
+	setName(_id: string, name: string): Promise<UpdateResult> {
 		const update = {
 			$set: {
 				name,
@@ -59,7 +48,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 		return this.updateOne({ _id }, update);
 	}
 
-	setAliases(_id: string, aliases: string[]): Promise<UpdateWriteOpResult> {
+	setAliases(_id: string, aliases: string[]): Promise<UpdateResult> {
 		const update = {
 			$set: {
 				aliases,
@@ -69,7 +58,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 		return this.updateOne({ _id }, update);
 	}
 
-	setExtension(_id: string, extension: string): Promise<UpdateWriteOpResult> {
+	setExtension(_id: string, extension: string): Promise<UpdateResult> {
 		const update = {
 			$set: {
 				extension,
@@ -80,7 +69,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 	}
 
 	// INSERT
-	create(data: IEmojiCustom): Promise<InsertOneWriteOpResult<WithId<IEmojiCustom>>> {
+	create(data: IEmojiCustom): Promise<InsertOneResult<WithId<IEmojiCustom>>> {
 		return this.insertOne(data);
 	}
 }

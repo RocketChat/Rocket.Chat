@@ -1,9 +1,9 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IOmnichannelBusinessUnit, ILivechatMonitor } from '@rocket.chat/core-typings';
-import { LivechatUnitMonitors } from '@rocket.chat/models';
+import { LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
+import type { FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import LivechatUnit from '../../../../models/server/models/LivechatUnit';
 
 export async function findUnits({
 	userId,
@@ -15,7 +15,7 @@ export async function findUnits({
 	pagination: {
 		offset: number;
 		count: number;
-		sort: Record<string, unknown>;
+		sort: FindOptions<IOmnichannelBusinessUnit>['sort'];
 	};
 }): Promise<{
 	units: IOmnichannelBusinessUnit[];
@@ -30,15 +30,14 @@ export async function findUnits({
 
 	const query = { ...(text && { $or: [{ name: filter }] }) };
 
-	const cursor = LivechatUnit.find(query, {
+	// TODO need to enfore type IOmnichannelBusinessUnit on LivechatUnit model, so don't need to use generic everywhere
+	const { cursor, totalCount } = LivechatUnit.findPaginated<IOmnichannelBusinessUnit>(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = cursor.count();
-
-	const units = cursor.fetch();
+	const [units, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		units,
@@ -55,9 +54,9 @@ export async function findUnitMonitors({ userId, unitId }: { userId: string; uni
 	return LivechatUnitMonitors.find({ unitId }).toArray() as Promise<ILivechatMonitor[]>;
 }
 
-export async function findUnitById({ userId, unitId }: { userId: string; unitId: string }): Promise<IOmnichannelBusinessUnit> {
+export async function findUnitById({ userId, unitId }: { userId: string; unitId: string }): Promise<IOmnichannelBusinessUnit | null> {
 	if (!(await hasPermissionAsync(userId, 'manage-livechat-units'))) {
 		throw new Error('error-not-authorized');
 	}
-	return LivechatUnit.findOneById(unitId);
+	return LivechatUnit.findOneById<IOmnichannelBusinessUnit>(unitId);
 }

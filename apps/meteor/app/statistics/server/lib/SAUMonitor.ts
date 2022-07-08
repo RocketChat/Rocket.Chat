@@ -24,7 +24,7 @@ const logger = new Logger('SAUMonitor');
 
 const getUserRoles = mem(
 	async (userId: string): Promise<string[]> => {
-		const user = await Users.findOneById<IUser>(userId, { projection: { roles: 1 } });
+		const user = await Users.findOneById<Pick<IUser, 'roles'>>(userId, { projection: { roles: 1 } });
 
 		return user?.roles || [];
 	},
