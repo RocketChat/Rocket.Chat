@@ -29,11 +29,11 @@ Meteor.startup(function () {
 		Imports.invalidateOperationsExceptId(idToKeep);
 
 		// Clean up all the raw import data, except for the last operation
-		runDrop(() => RawImports.model.rawCollection().remove({ import: { $ne: idToKeep } }));
+		runDrop(() => RawImports.model.rawCollection().deleteMany({ import: { $ne: idToKeep } }));
 	} else {
 		Imports.invalidateAllOperations();
 
 		// Clean up all the raw import data
-		runDrop(() => RawImports.model.rawCollection().remove({}));
+		runDrop(() => RawImports.model.rawCollection().deleteMany({}));
 	}
 });
