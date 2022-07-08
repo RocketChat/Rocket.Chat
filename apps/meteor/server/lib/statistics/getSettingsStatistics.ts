@@ -129,9 +129,6 @@ export const getSettingsStatistics = async (): Promise<ISettingStatisticsObject>
 			{ key: 'OTR_Enable', alias: 'otrEnable' },
 			{ key: 'Push_enable', alias: 'pushEnable' },
 			{ key: 'Threads_enabled', alias: 'threadsEnabled' },
-			{ key: 'WebRTC_Enable_Channel', alias: 'webRTCEnableChannel' },
-			{ key: 'WebRTC_Enable_Private', alias: 'webRTCEnablePrivate' },
-			{ key: 'WebRTC_Enable_Direct', alias: 'webRTCEnableDirect' },
 			{ key: 'Canned_Responses_Enable', alias: 'cannedResponsesEnabled' },
 		];
 

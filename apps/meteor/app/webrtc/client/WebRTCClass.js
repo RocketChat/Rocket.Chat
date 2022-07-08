@@ -927,33 +927,43 @@ const WebRTC = new (class {
 		this.instancesByRoomId = {};
 	}
 
-	getInstanceByRoomId(rid, visitorId = null) {
-		let enabled = false;
-		if (!visitorId) {
-			const subscription = ChatSubscription.findOne({ rid });
-			if (!subscription) {
-				return;
-			}
-			switch (subscription.t) {
-				case 'd':
-					enabled = settings.get('WebRTC_Enable_Direct');
-					break;
-				case 'p':
-					enabled = settings.get('WebRTC_Enable_Private');
-					break;
-				case 'c':
-					enabled = settings.get('WebRTC_Enable_Channel');
-					break;
-				case 'l':
-					enabled = settings.get('Omnichannel_call_provider') === 'WebRTC';
-			}
-		} else {
-			enabled = settings.get('Omnichannel_call_provider') === 'WebRTC';
+	isEnabledForRoom(rid, visitorId = null) {
+		if (!settings.get('WebRTC_Enabled')) {
+			return false;
 		}
-		enabled = enabled && settings.get('WebRTC_Enabled');
-		if (enabled === false) {
+
+		if (visitorId) {
+			return settings.get('Omnichannel_call_provider') === 'WebRTC';
+		}
+
+		const subscription = ChatSubscription.findOne({ rid });
+		if (!subscription) {
+			return false;
+		}
+
+		if (subscription.t !== 'l' && settings.get('VideoConf_Default_Provider') !== 'webrtc') {
+			return false;
+		}
+
+		switch (subscription.t) {
+			case 'd':
+				return settings.get('VideoConf_Enable_DMs');
+			case 'p':
+				return settings.get('VideoConf_Enable_Groups');
+			case 'c':
+				return settings.get('VideoConf_Enable_Channels');
+			case 'l':
+				return settings.get('Omnichannel_call_provider') === 'WebRTC';
+		}
+
+		return false;
+	}
+
+	getInstanceByRoomId(rid, visitorId = null) {
+		if (!this.isEnabledForRoom(rid, visitorId)) {
 			return;
 		}
+
 		if (this.instancesByRoomId[rid] == null) {
 			let uid = Meteor.userId();
 			let autoAccept = false;
