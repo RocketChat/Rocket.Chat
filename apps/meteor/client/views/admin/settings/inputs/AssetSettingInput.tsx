@@ -3,6 +3,7 @@ import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.ch
 import { Random } from 'meteor/random';
 import React, { ChangeEventHandler, DragEvent, ReactElement } from 'react';
 
+import { useEndpointUpload } from '../../../../hooks/useEndpointUpload';
 import './AssetSettingInput.styles.css';
 
 type AssetSettingInputProps = {
@@ -17,7 +18,7 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const setAsset = useEndpoint('POST', '/v1/assets.setAsset');
+	const setAsset = useEndpointUpload('/v1/assets.setAsset', 'yay');
 	const unsetAsset = useEndpoint('POST', '/v1/assets.unsetAsset');
 
 	const isDataTransferEvent = <T,>(event: T): event is T & DragEvent<HTMLInputElement> =>
@@ -38,7 +39,8 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 			reader.readAsBinaryString(blob);
 			reader.onloadend = async (): Promise<void> => {
 				try {
-					await setAsset(reader.result, blob.type, asset);
+					await setAsset({ asset: reader.result as string, assetName: asset });
+
 					dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: String(error) });
