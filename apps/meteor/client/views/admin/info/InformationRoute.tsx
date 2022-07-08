@@ -21,7 +21,7 @@ const InformationRoute = (): ReactElement => {
 	const [instances, setInstances] = useState([]);
 	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(() => (): void => undefined);
 	const getStatistics = useEndpoint('GET', '/v1/statistics');
-	const getInstances = useMethod('instances/get');
+	const getInstances = useEndpoint('GET', '/v1/instances.get');
 
 	useEffect(() => {
 		let didCancel = false;
