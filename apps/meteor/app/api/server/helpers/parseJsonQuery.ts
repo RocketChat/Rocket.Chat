@@ -11,6 +11,13 @@ const pathAllowConf = {
 	'def': ['$or', '$and', '$regex'],
 };
 
+const warnFields =
+	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'
+		? (...rest: any): void => {
+				console.warn(...rest, new Error().stack);
+		  }
+		: new Function();
+
 API.helperMethods.set(
 	'parseJsonQuery',
 	function _parseJsonQuery(this: {
@@ -48,6 +55,7 @@ API.helperMethods.set(
 
 		let fields: Record<string, 0 | 1> | undefined;
 		if (this.queryParams.fields) {
+			warnFields('attribute fields is deprecated');
 			try {
 				fields = JSON.parse(this.queryParams.fields) as Record<string, 0 | 1>;
 
@@ -98,7 +106,8 @@ API.helperMethods.set(
 
 		let query: Record<string, any> = {};
 		if (this.queryParams.query) {
-			this.logger.warn('attribute query is deprecated');
+			warnFields('attribute query is deprecated');
+
 			try {
 				query = EJSON.parse(this.queryParams.query);
 				query = clean(query, pathAllowConf.def);
