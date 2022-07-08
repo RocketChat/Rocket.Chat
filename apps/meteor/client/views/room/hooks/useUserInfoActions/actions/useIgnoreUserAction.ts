@@ -32,7 +32,7 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 
 	const ignoreUserAction = useMutableCallback(async () => {
 		try {
-			await ignoreUser({ rid, userId: uid, ignore: !isIgnored });
+			await ignoreUser({ rid, userId: uid, ignore: String(!isIgnored) });
 			if (isIgnored) {
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_unignored') });
 			} else {
@@ -47,10 +47,10 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 		() =>
 			roomCanIgnore && uid !== ownUserId
 				? {
-					label: t(isIgnored ? 'Unignore' : 'Ignore'),
-					icon: 'ban',
-					action: ignoreUserAction,
-				}
+						label: t(isIgnored ? 'Unignore' : 'Ignore'),
+						icon: 'ban',
+						action: ignoreUserAction,
+				  }
 				: undefined,
 		[ignoreUserAction, isIgnored, ownUserId, roomCanIgnore, t, uid],
 	);
