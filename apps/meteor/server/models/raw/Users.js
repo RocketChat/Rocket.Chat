@@ -272,6 +272,12 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query);
 	}
 
+	async findOneByAppId(appId, options) {
+		const query = { appId };
+
+		return this.findOne(query, options);
+	}
+
 	findLDAPUsers(options) {
 		const query = { ldap: true };
 
