@@ -11,6 +11,7 @@ import PreferencesMyDataSection from './PreferencesMyDataSection';
 import PreferencesNotificationsSection from './PreferencesNotificationsSection';
 import PreferencesSoundSection from './PreferencesSoundSection';
 import PreferencesUserPresenceSection from './PreferencesUserPresenceSection';
+import { useEndpointActionExperimental } from '/client/hooks/useEndpointActionExperimental';
 
 const AccountPreferencesPage = () => {
 	const t = useTranslation();
@@ -40,7 +41,7 @@ const AccountPreferencesPage = () => {
 		[hasAnyChange],
 	);
 
-	const saveFn = useMethod('saveUserPreferences');
+	const saveFn = useEndpointActionExperimental('POST', '/v1/users.setPreferences');
 
 	const handleSave = useCallback(async () => {
 		try {
@@ -62,7 +63,7 @@ const AccountPreferencesPage = () => {
 				Object.assign(data, { dontAskAgainList: list });
 			}
 
-			await saveFn(data);
+			await saveFn({ data });
 			saveData.current = {};
 			setHasAnyChange(false);
 			Object.values(commitRef.current).forEach((fn) => fn());

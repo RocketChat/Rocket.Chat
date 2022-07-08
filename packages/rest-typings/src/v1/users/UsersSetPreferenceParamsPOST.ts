@@ -176,9 +176,15 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				dontAskAgainList: {
 					type: 'array',
-					items: { action: 'string', label: 'string' },
-					nullable: true
-				}
+					items: {
+						type: 'object',
+						properties: {
+							action: { type: 'string' },
+							label: { type: 'string' }
+						},
+					},
+					nullable: true,
+				},
 			},
 			required: [],
 			additionalProperties: false,
