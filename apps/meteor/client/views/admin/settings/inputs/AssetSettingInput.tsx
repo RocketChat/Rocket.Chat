@@ -1,5 +1,5 @@
 import { Button, Field, Icon } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React, { ChangeEventHandler, DragEvent, ReactElement } from 'react';
 
@@ -18,7 +18,7 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const setAsset = useEndpointUpload('/v1/assets.setAsset', 'yay');
+	const setAsset = useUpload('/v1/assets.setAsset');
 	const unsetAsset = useEndpoint('POST', '/v1/assets.unsetAsset');
 
 	const isDataTransferEvent = <T,>(event: T): event is T & DragEvent<HTMLInputElement> =>
@@ -33,25 +33,20 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 			}
 		}
 
-		Object.values(files ?? []).forEach((blob) => {
+		Object.values(files ?? []).forEach(async (blob) => {
 			dispatchToastMessage({ type: 'info', message: t('Uploading_file') });
-			const reader = new FileReader();
-			reader.readAsBinaryString(blob);
-			reader.onloadend = async (): Promise<void> => {
-				try {
-					await setAsset({ asset: reader.result as string, assetName: asset });
 
-					dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: String(error) });
-				}
-			};
+			const fileData = new FormData();
+			fileData.append('asset', blob, asset);
+			fileData.append('assetName', asset);
+
+			await setAsset(fileData);
 		});
 	};
 
 	const handleDeleteButtonClick = async (): Promise<void> => {
 		try {
-			await unsetAsset(asset);
+			await unsetAsset({ asset });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
