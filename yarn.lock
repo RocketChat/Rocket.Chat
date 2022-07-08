@@ -4379,6 +4379,7 @@ __metadata:
     human-interval: ^2.0.0
     jest: ^27.5.1
     moment-timezone: ~0.5.27
+    mongodb: ^4.3.1
     ts-jest: ^27.1.4
     typescript: ~4.3.4
   languageName: unknown
@@ -4453,8 +4454,8 @@ __metadata:
     "@rocket.chat/icons": ^0.31.13
     "@rocket.chat/message-parser": ^0.32.0-dev.5
     "@rocket.chat/ui-kit": ^0.31.13
-    "@types/mongodb": ^3.6.20
     eslint: ^8.18.0
+    mongodb: ^4.3.1
     prettier: ^2.7.1
     typescript: ~4.5.5
   languageName: unknown
@@ -4518,8 +4519,7 @@ __metadata:
     "@rocket.chat/string-helpers": ~0.31.13
     "@rocket.chat/ui-contexts": "workspace:^"
     "@types/ejson": ^2.2.0
-    "@types/meteor": 1.4.87
-    "@types/mongodb": ^3.6.20
+    "@types/meteor": 2.7.1
     "@types/node": ^14.18.21
     "@types/sharp": ^0.30.4
     "@types/uuid": ^8.3.4
@@ -4530,7 +4530,7 @@ __metadata:
     fibers: ^5.0.1
     jaeger-client: ^3.19.0
     moleculer: ^0.14.21
-    mongodb: ^3.7.3
+    mongodb: ^4.3.1
     nats: ^2.4.0
     pino: ^7.11.0
     pino-pretty: ^7.6.1
@@ -5053,12 +5053,11 @@ __metadata:
     "@types/lodash.get": ^4.4.7
     "@types/mailparser": ^3.4.0
     "@types/marked": ^4.0.3
-    "@types/meteor": 2.0.4
+    "@types/meteor": 2.7.1
     "@types/mkdirp": ^1.0.2
     "@types/mocha": ^8.2.3
     "@types/mock-require": ^2.0.1
     "@types/moment-timezone": ^0.5.30
-    "@types/mongodb": ^3.6.10
     "@types/node": ^14.18.21
     "@types/node-rsa": ^1.1.1
     "@types/nodemailer": ^6.4.4
@@ -5153,7 +5152,6 @@ __metadata:
     google-libphonenumber: ^3.2.28
     googleapis: ^104.0.0
     grapheme-splitter: ^1.0.4
-    gridfs-stream: ^1.1.1
     he: ^1.2.0
     hljs9: "npm:highlight.js@^9.18.5"
     http-proxy-agent: ^5.0.0
@@ -5193,7 +5191,7 @@ __metadata:
     moleculer: ^0.14.21
     moment: ^2.29.3
     moment-timezone: ^0.5.34
-    mongodb: ^3.7.3
+    mongodb: ^4.3.1
     mongodb-memory-server: ^7.6.3
     nats: ^2.6.1
     node-dogstatsd: ^0.0.7
@@ -5280,10 +5278,10 @@ __metadata:
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@types/jest": ^27.4.1
-    "@types/mongodb": ^3.6.10
     "@types/node-rsa": ^1.1.1
     eslint: ^8.12.0
     jest: ^27.5.1
+    mongodb: ^4.3.1
     ts-jest: ^27.1.5
     typescript: ~4.5.5
   languageName: unknown
@@ -5354,10 +5352,10 @@ __metadata:
     "@rocket.chat/message-parser": ^0.32.0-dev.5
     "@rocket.chat/ui-kit": ^0.31.13
     "@types/jest": ^27.4.1
-    "@types/mongodb": ^3.6.20
     ajv: ^8.11.0
     eslint: ^8.18.0
     jest: ^27.5.1
+    mongodb: ^4.3.1
     ts-jest: ^27.1.5
     typescript: ~4.5.5
   languageName: unknown
@@ -5468,11 +5466,11 @@ __metadata:
     "@rocket.chat/fuselage-hooks": ~0.31.13
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/jest": ^27.4.1
-    "@types/mongodb": ~3.6.20
     "@types/react": ^17.0.47
     "@types/use-sync-external-store": ^0.0.3
     eslint: ^8.18.0
     jest: ^27.5.1
+    mongodb: ^4.3.1
     react: ~17.0.2
     ts-jest: ^27.1.5
     typescript: ~4.5.5
@@ -7591,29 +7589,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/meteor@npm:1.4.87":
-  version: 1.4.87
-  resolution: "@types/meteor@npm:1.4.87"
+"@types/meteor@npm:2.7.1":
+  version: 2.7.1
+  resolution: "@types/meteor@npm:2.7.1"
   dependencies:
     "@types/connect": "*"
     "@types/jquery": "*"
-    "@types/mongodb": ^3.6.20
     "@types/react": "*"
     "@types/underscore": "*"
-  checksum: 0229938cc004627c6bedf79af811fb0499a2b9bca39c901e28c441be0f984e300a6761f4bda959769a7134c1d292acee48afbeb4612d8f71d7a895e13f333ae0
-  languageName: node
-  linkType: hard
-
-"@types/meteor@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@types/meteor@npm:2.0.4"
-  dependencies:
-    "@types/connect": "*"
-    "@types/jquery": "*"
-    "@types/mongodb": ^3.6.20
-    "@types/react": "*"
-    "@types/underscore": "*"
-  checksum: 24f3adc0b7c0518779e9f6c408cf8895108205797b63b61539adf14946026fb8807c23a9797dbc367e437704301e397e1a158c34f55a1a10092b42f23d60ec8c
+    mongodb: ^4.3.1
+  checksum: a363cbcdec41e233997f3e05fd616e9ba1840bf7648b265144102769c0afdbeb614bf6d17e969343ed70883396a341ea876149d3f23fd2ea60a07c99f067f91e
   languageName: node
   linkType: hard
 
@@ -7672,7 +7657,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mongodb@npm:^3.6.10, @types/mongodb@npm:^3.6.20, @types/mongodb@npm:~3.6.20":
+"@types/mongodb@npm:^3.6.20":
   version: 3.6.20
   resolution: "@types/mongodb@npm:3.6.20"
   dependencies:
@@ -8192,6 +8177,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/webidl-conversions@npm:*":
+  version: 6.1.1
+  resolution: "@types/webidl-conversions@npm:6.1.1"
+  checksum: bd0faad4dfec232010d96a42fbd7b5ac4df557899050a6676a75d30ced8553f19e5a3c747fd2b4317f2810d4cf5d2d6dd47ad22ecfb9e6b21119aba678b8897f
+  languageName: node
+  linkType: hard
+
 "@types/webpack-env@npm:^1.16.0":
   version: 1.16.3
   resolution: "@types/webpack-env@npm:1.16.3"
@@ -8221,6 +8213,16 @@ __metadata:
     anymatch: ^3.0.0
     source-map: ^0.6.0
   checksum: e594a1357cbbc2f7c6ca47785c5a11adb5591a774a69afaeab07cd6f6bff6c6aea2030bd37b32bdd19d0ec2336a346db754e8d8d236ba8effeab542716fb32b7
+  languageName: node
+  linkType: hard
+
+"@types/whatwg-url@npm:^8.2.1":
+  version: 8.2.2
+  resolution: "@types/whatwg-url@npm:8.2.2"
+  dependencies:
+    "@types/node": "*"
+    "@types/webidl-conversions": "*"
+  checksum: 5dc5afe078dfa1a8a266745586fa3db9baa8ce7cc904789211d1dca1d34d7f3dd17d0b7423c36bc9beab9d98aa99338f1fc60798c0af6cbb8356f20e20d9f243
   languageName: node
   linkType: hard
 
@@ -10949,7 +10951,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^4.6.4":
+"bson@npm:^4.6.3, bson@npm:^4.6.4":
   version: 4.6.4
   resolution: "bson@npm:4.6.4"
   dependencies:
@@ -13812,6 +13814,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"denque@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "denque@npm:2.0.1"
+  checksum: ec398d1e3c6c8d4f5213dcf9ad74d7faa3b461e29a0019c9742b49a97ac5e16aa7134db45fa9d841e318e7722dd1ba670a474fde9a5b0d870b3a5fc6fe914c30
+  languageName: node
+  linkType: hard
+
 "depd@npm:2.0.0, depd@npm:~2.0.0":
   version: 2.0.0
   resolution: "depd@npm:2.0.0"
@@ -16394,13 +16403,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flushwritable@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "flushwritable@npm:1.0.0"
-  checksum: 3e94480c1f47d531807c0f1e6cb171f58c1dd213b0365e1d11bf475a9d3a4dc7cdf77d7a9c03f4c41855fd7b494428b7a03df0f1ddb0d30e134ca817df2516c3
-  languageName: node
-  linkType: hard
-
 "fn.name@npm:1.x.x":
   version: 1.1.0
   resolution: "fn.name@npm:1.1.0"
@@ -17621,15 +17623,6 @@ __metadata:
   version: 1.0.4
   resolution: "grapheme-splitter@npm:1.0.4"
   checksum: 0c22ec54dee1b05cd480f78cf14f732cb5b108edc073572c4ec205df4cd63f30f8db8025afc5debc8835a8ddeacf648a1c7992fe3dcd6ad38f9a476d84906620
-  languageName: node
-  linkType: hard
-
-"gridfs-stream@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "gridfs-stream@npm:1.1.1"
-  dependencies:
-    flushwritable: ^1.0.0
-  checksum: 3a6cc6ad3eef37ca5adeb8dae531729a97322ca1955ebb39e92ef937e4bfa7b1e65bce47d1179bd31a0eda1b8612f1b88075f72daf646e02ec9f3b3bed1c5946
   languageName: node
   linkType: hard
 
@@ -23224,6 +23217,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongodb-connection-string-url@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "mongodb-connection-string-url@npm:2.5.2"
+  dependencies:
+    "@types/whatwg-url": ^8.2.1
+    whatwg-url: ^11.0.0
+  checksum: bd13af7d62d33e2d6e5217692961e34b2dafbbba5f41d361417257592754df3e925efc00fa8a5e038624e284245dab39e913d5f06ff962feede86d5f58fc5827
+  languageName: node
+  linkType: hard
+
 "mongodb-memory-server-core@npm:7.6.3":
   version: 7.6.3
   resolution: "mongodb-memory-server-core@npm:7.6.3"
@@ -23287,6 +23290,22 @@ __metadata:
     snappy:
       optional: true
   checksum: ef7690fe6ee7d1752f121b14e59b3fabfddc60ff0536babce6c945703ad0010de9e6fa7de4c91b99275c256876a72a06899ce27893aba0838c2b542088bd1044
+  languageName: node
+  linkType: hard
+
+"mongodb@npm:^4.3.1":
+  version: 4.7.0
+  resolution: "mongodb@npm:4.7.0"
+  dependencies:
+    bson: ^4.6.3
+    denque: ^2.0.1
+    mongodb-connection-string-url: ^2.5.2
+    saslprep: ^1.0.3
+    socks: ^2.6.2
+  dependenciesMeta:
+    saslprep:
+      optional: true
+  checksum: 6c8ddf1d14a4392d83702aa532e5a1e6deaa501cfd66e352a1226358422716e340465ca4b0f2c5d8f660bf15c06456059953fb99482f714c1dab408ecfe3aeea
   languageName: node
   linkType: hard
 
@@ -28566,7 +28585,6 @@ __metadata:
     "@types/ejson": ^2.2.0
     "@types/express": ^4.17.13
     "@types/fibers": ^3.1.1
-    "@types/mongodb": ^3.6.20
     "@types/node": ^14.18.21
     "@types/ws": ^8.5.3
     ajv: ^8.11.0
@@ -28582,7 +28600,7 @@ __metadata:
     jaeger-client: ^3.19.0
     mem: ^8.1.1
     moleculer: ^0.14.21
-    mongodb: ^3.7.3
+    mongodb: ^4.3.1
     nats: ^2.6.1
     pino: ^7.11.0
     pino-pretty: ^7.6.1
@@ -28729,7 +28747,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"saslprep@npm:^1.0.0":
+"saslprep@npm:^1.0.0, saslprep@npm:^1.0.3":
   version: 1.0.3
   resolution: "saslprep@npm:1.0.3"
   dependencies:
@@ -29508,7 +29526,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socks@npm:^2.3.3, socks@npm:^2.6.1":
+"socks@npm:^2.3.3, socks@npm:^2.6.1, socks@npm:^2.6.2":
   version: 2.6.2
   resolution: "socks@npm:2.6.2"
   dependencies:
@@ -31373,6 +31391,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tr46@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "tr46@npm:3.0.0"
+  dependencies:
+    punycode: ^2.1.1
+  checksum: 44c3cc6767fb800490e6e9fd64fd49041aa4e49e1f6a012b34a75de739cc9ed3a6405296072c1df8b6389ae139c5e7c6496f659cfe13a04a4bff3a1422981270
+  languageName: node
+  linkType: hard
+
 "tr46@npm:~0.0.3":
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
@@ -33044,6 +33071,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"webidl-conversions@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "webidl-conversions@npm:7.0.0"
+  checksum: f05588567a2a76428515333eff87200fae6c83c3948a7482ebb109562971e77ef6dc49749afa58abb993391227c5697b3ecca52018793e0cb4620a48f10bd21b
+  languageName: node
+  linkType: hard
+
 "webpack-cli@npm:^3.3.12":
   version: 3.3.12
   resolution: "webpack-cli@npm:3.3.12"
@@ -33300,6 +33334,16 @@ __metadata:
   version: 2.3.0
   resolution: "whatwg-mimetype@npm:2.3.0"
   checksum: 23eb885940bcbcca4ff841c40a78e9cbb893ec42743993a42bf7aed16085b048b44b06f3402018931687153550f9a32d259dfa524e4f03577ab898b6965e5383
+  languageName: node
+  linkType: hard
+
+"whatwg-url@npm:^11.0.0":
+  version: 11.0.0
+  resolution: "whatwg-url@npm:11.0.0"
+  dependencies:
+    tr46: ^3.0.0
+    webidl-conversions: ^7.0.0
+  checksum: ed4826aaa57e66bb3488a4b25c9cd476c46ba96052747388b5801f137dd740b73fde91ad207d96baf9f17fbcc80fc1a477ad65181b5eb5fa718d27c69501d7af
   languageName: node
   linkType: hard
 

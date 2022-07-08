@@ -1,4 +1,4 @@
-import { Cursor } from 'mongodb';
+import { FindCursor } from 'mongodb';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IMessageDiscussion } from '@rocket.chat/core-typings';
 
@@ -48,7 +48,7 @@ export const cleanRoomHistory = function ({
 				Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
 					fields: { drid: 1 },
 					...(limit && { limit }),
-				}) as Cursor<IMessageDiscussion>
+				}) as FindCursor<IMessageDiscussion>
 			).forEach(({ drid }) => deleteRoom(drid)),
 		);
 	}

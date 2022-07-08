@@ -1,4 +1,4 @@
-import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Margins, ButtonGroup, Button, Icon, Divider } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useCurrentRoute, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -8,6 +8,7 @@ import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactM
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import { useIsCallReady } from '../../../../../contexts/CallContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -17,6 +18,7 @@ import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 import { FormSkeleton } from '../../Skeleton';
+import { VoipInfoCallButton } from '../../calls/contextualBar/VoipInfoCallButton';
 
 const ContactInfo = ({ id, rid, route }) => {
 	const t = useTranslation();
@@ -31,6 +33,8 @@ const ContactInfo = ({ id, rid, route }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
+
+	const isCallReady = useIsCallReady();
 
 	const onEditButtonClick = useMutableCallback(() => {
 		if (!hasPermission('edit-omnichannel-contact')) {
@@ -100,9 +104,11 @@ const ContactInfo = ({ id, rid, route }) => {
 		liveRoute.push({ id: _id, tab: 'contact-chat-history' });
 	};
 
-	const showContactHistory = currentRouteName === 'live';
+	const showContactHistory = currentRouteName === 'live' && lastChat;
 
 	const displayName = name || username;
+
+	const { phoneNumber } = phone?.[0] || {};
 
 	return (
 		<>
@@ -126,7 +132,7 @@ const ContactInfo = ({ id, rid, route }) => {
 					{phone && phone.length && (
 						<Field>
 							<Label>{t('Phone')}</Label>
-							<Info>{phone[0].phoneNumber}</Info>
+							<Info>{phoneNumber}</Info>
 						</Field>
 					)}
 					{ts && (
@@ -157,13 +163,20 @@ const ContactInfo = ({ id, rid, route }) => {
 				</Margins>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
-				<ButtonGroup stretch>
-					{showContactHistory && lastChat && (
-						<Button onClick={onChatHistory}>
+				<ButtonGroup stretch flexWrap='wrap'>
+					{isCallReady && (
+						<>
+							<VoipInfoCallButton phoneNumber={phoneNumber} mi={0} flexBasis='0' />
+							{showContactHistory && <Divider width='100%' />}
+						</>
+					)}
+
+					{showContactHistory && (
+						<Button onClick={onChatHistory} mis={0} flexBasis='0'>
 							<Icon name='history' size='x20' /> {t('Chat_History')}
 						</Button>
 					)}
-					<Button onClick={onEditButtonClick}>
+					<Button onClick={onEditButtonClick} flexBasis='0'>
 						<Icon name='pencil' size='x20' /> {t('Edit')}
 					</Button>
 				</ButtonGroup>

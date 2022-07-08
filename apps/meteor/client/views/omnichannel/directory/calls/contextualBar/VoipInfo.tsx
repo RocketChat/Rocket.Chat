@@ -7,6 +7,7 @@ import React, { ReactElement, useMemo } from 'react';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import { useIsCallReady } from '../../../../../contexts/CallContext';
 import InfoPanel from '../../../../InfoPanel';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import AgentField from '../../chats/contextualBar/AgentField';
@@ -21,6 +22,7 @@ type VoipInfoPropsType = {
 
 export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfoPropsType): ReactElement => {
 	const t = useTranslation();
+	const isCallReady = useIsCallReady();
 
 	const { servedBy, queue, v, fname, name, callDuration, callTotalHoldTime, closedAt, callWaitingTime, tags, lastMessage } = room;
 	const duration = callDuration && moment.utc(callDuration).format('HH:mm:ss');
@@ -90,7 +92,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 							{t('Report_Number')}
 						</Box>
 					</Button> */}
-					<VoipInfoCallButton phoneNumber={phoneNumber} />
+					{isCallReady && <VoipInfoCallButton phoneNumber={phoneNumber} />}
 				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>
