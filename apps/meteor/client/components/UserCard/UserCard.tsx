@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { forwardRef, ReactNode, ComponentProps } from 'react';
+import React, { forwardRef, ReactNode, ComponentProps, MouseEvent } from 'react';
 
 import MarkdownText from '../MarkdownText';
 import * as Status from '../UserStatus';
@@ -22,7 +22,7 @@ const clampStyle = css`
 type UserCardProps = {
 	className?: string;
 	style?: ComponentProps<typeof Box>['style'];
-	open?: () => void;
+	open?: (e: MouseEvent<HTMLElement>) => void;
 	name?: string;
 	username?: string;
 	etag?: string;

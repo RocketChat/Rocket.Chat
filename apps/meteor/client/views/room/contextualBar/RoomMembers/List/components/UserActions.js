@@ -12,6 +12,7 @@ const UserActions = ({ username, _id, rid, reload }) => {
 	return (
 		<Menu
 			flexShrink={0}
+			maxHeight='initial'
 			key='menu'
 			tiny
 			renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
