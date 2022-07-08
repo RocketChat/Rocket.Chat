@@ -1,6 +1,59 @@
 
 # 5.0.0 (Under Release Candidate Process)
 
+## 5.0.0-rc.2
+`2022-07-08  ·  11 🔍  ·  10 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: update avatar colors ([#26153](https://github.com/RocketChat/Rocket.Chat/pull/26153))
+
+- Chore: Update Meteor 2.7.3 ([#25991](https://github.com/RocketChat/Rocket.Chat/pull/25991))
+
+- Regression: Add better error messages when call fails ([#26134](https://github.com/RocketChat/Rocket.Chat/pull/26134))
+
+- Regression: Added missing call button in the contact info contextual bar ([#26135](https://github.com/RocketChat/Rocket.Chat/pull/26135))
+
+- Regression: Added missing call button to contact center calls list ([#26119](https://github.com/RocketChat/Rocket.Chat/pull/26119))
+
+  This PR adds a call button to the contact center calls list rows.
+
+- Regression: Align TypeScript version across workspaces ([#26184](https://github.com/RocketChat/Rocket.Chat/pull/26184))
+
+  Some places were still referring to TypeScript 4.3.4 instead of 4.5.5, so this PR targets it.
+
+- Regression: Broken emoji picker on Livechat ([#26128](https://github.com/RocketChat/Rocket.Chat/pull/26128))
+
+- Regression: Calling info on VoipFooter when performing an outbound call ([#26138](https://github.com/RocketChat/Rocket.Chat/pull/26138))
+
+  ![image](https://user-images.githubusercontent.com/17487063/177395438-a0b2d30a-e0e2-4a31-9b55-2c6c3216bbd7.png)
+
+- Regression: Correct call ringtones ([#26111](https://github.com/RocketChat/Rocket.Chat/pull/26111))
+
+  - outbound-call-ringing ringtone: Should be played when the outbound call is initiated and not yet established(Current implementation is playing the incoming-call ringtone)  
+  - call-ended ringtone: Should be played whenever a call ends.
+
+- Regression: Emojis displaying as `:undefined:` ([#26141](https://github.com/RocketChat/Rocket.Chat/pull/26141))
+
+- Regression: Update message reaction text ([#26097](https://github.com/RocketChat/Rocket.Chat/pull/26097))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 ## 5.0.0-rc.1
 `2022-07-06  ·  11 🔍  ·  9 👩‍💻👨‍💻`
 
