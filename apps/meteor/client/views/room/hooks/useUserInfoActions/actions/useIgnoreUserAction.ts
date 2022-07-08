@@ -1,6 +1,13 @@
 import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useMethod, useUserSubscription, useUserRoom, useUserId, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import {
+	useTranslation,
+	useUserSubscription,
+	useUserRoom,
+	useUserId,
+	useToastMessageDispatch,
+	useEndpoint,
+} from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { Action } from '../../../../hooks/useActionSpread';
@@ -13,7 +20,7 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 	const ownUserId = useUserId();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const currentSubscription = useUserSubscription(rid);
-	const ignoreUser = useMethod('ignoreUser');
+	const ignoreUser = useEndpoint('GET', '/v1/chat.ignoreUser');
 
 	const isIgnored = currentSubscription?.ignored && currentSubscription.ignored.indexOf(uid) > -1;
 
@@ -40,10 +47,10 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 		() =>
 			roomCanIgnore && uid !== ownUserId
 				? {
-						label: t(isIgnored ? 'Unignore' : 'Ignore'),
-						icon: 'ban',
-						action: ignoreUserAction,
-				  }
+					label: t(isIgnored ? 'Unignore' : 'Ignore'),
+					icon: 'ban',
+					action: ignoreUserAction,
+				}
 				: undefined,
 		[ignoreUserAction, isIgnored, ownUserId, roomCanIgnore, t, uid],
 	);
