@@ -7,6 +7,7 @@ import UTCClock from '../../../../components/UTCClock';
 import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
+import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import InfoPanel from '../../../InfoPanel';
 import Avatar from './Avatar';
 
@@ -61,7 +62,7 @@ function UserInfo({
 				{actions && <InfoPanel.Section>{actions}</InfoPanel.Section>}
 
 				<InfoPanel.Section>
-					<InfoPanel.Title title={showRealNames && name ? name : username} icon={status} />
+					<InfoPanel.Title icon={status} title={getUserDisplayName(name, username, !!showRealNames)} />
 
 					<InfoPanel.Text>
 						<MarkdownText content={customStatus} parseEmoji={true} variant='inline' />
