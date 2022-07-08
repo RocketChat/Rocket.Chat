@@ -4,7 +4,6 @@ import { Settings } from '@rocket.chat/models';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
-// import Settings from './Settings';
 
 export class LivechatRooms extends Base {
 	constructor(...args) {
@@ -34,11 +33,6 @@ export class LivechatRooms extends Base {
 				},
 			},
 		);
-	}
-
-	findLivechat(filter = {}, offset = 0, limit = 20) {
-		const query = Object.assign(filter, { t: 'l' });
-		return this.findPaginated(query, { sort: { ts: -1 }, offset, limit });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
