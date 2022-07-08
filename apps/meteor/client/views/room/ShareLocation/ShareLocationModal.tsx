@@ -52,9 +52,8 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 	};
 
 	const onConfirmRequestLocation = async (): Promise<void> => {
-		let position: Awaited<ReturnType<typeof getGeolocationPosition>>;
 		try {
-			position = await getGeolocationPosition();
+			const position = await getGeolocationPosition();
 			queryClient.setQueryData(['geolocationPosition', 'granted'], position);
 			queryClient.setQueryData('geolocationPermission', 'granted');
 		} catch (e: any) {
@@ -83,7 +82,7 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 	}
 
 	return (
-		<GenericModal title={t('Share_Location_Title')} onConfirm={onConfirm} onClose={onClose}>
+		<GenericModal title={t('Share_Location_Title')} confirmText={t('Share')} onConfirm={onConfirm} onClose={onClose} onCancel={onClose}>
 			<MapView latitude={positionData.coords.latitude} longitude={positionData.coords.longitude} />
 		</GenericModal>
 	);
