@@ -1,1 +1,1 @@
-export const parseOutboundPhoneNumber = (phoneNumber: string): string => phoneNumber.replace(/\*/g, '+');
+export const parseOutboundPhoneNumber = (phoneNumber: string): string => (phoneNumber ? phoneNumber.replace(/\*/g, '+') : '');
