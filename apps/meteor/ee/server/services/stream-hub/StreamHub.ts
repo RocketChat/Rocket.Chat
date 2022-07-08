@@ -28,21 +28,21 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const Trash = db.collection('rocketchat__trash');
 
 		const Rooms = new RoomsRaw(db, Trash);
-		const Settings = new SettingsRaw(db, Trash);
+		const Settings = new SettingsRaw(db);
 		const Users = new UsersRaw(db, Trash);
-		const UsersSessions = new UsersSessionsRaw(db, Trash);
-		const Subscriptions = new SubscriptionsRaw(db, Trash);
-		const LivechatInquiry = new LivechatInquiryRaw(db, Trash);
-		const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(db, Trash);
-		const Messages = new MessagesRaw(db, Trash);
-		const Permissions = new PermissionsRaw(db, Trash);
-		const Roles = new RolesRaw(db, Trash);
-		const LoginServiceConfiguration = new LoginServiceConfigurationRaw(db, Trash);
+		const UsersSessions = new UsersSessionsRaw(db);
+		const Subscriptions = new SubscriptionsRaw(db);
+		const LivechatInquiry = new LivechatInquiryRaw(db);
+		const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(db);
+		const Messages = new MessagesRaw(db);
+		const Permissions = new PermissionsRaw(db);
+		const Roles = new RolesRaw(db);
+		const LoginServiceConfiguration = new LoginServiceConfigurationRaw(db);
 		const InstanceStatus = new InstanceStatusRaw(db);
 		const IntegrationHistory = new IntegrationHistoryRaw(db);
-		const Integrations = new IntegrationsRaw(db, Trash);
-		const EmailInbox = new EmailInboxRaw(db, Trash);
-		const PbxEvents = new PbxEventsRaw(db, Trash);
+		const Integrations = new IntegrationsRaw(db);
+		const EmailInbox = new EmailInboxRaw(db);
+		const PbxEvents = new PbxEventsRaw(db);
 
 		const models = {
 			Messages,

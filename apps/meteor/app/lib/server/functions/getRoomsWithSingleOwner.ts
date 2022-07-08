@@ -1,4 +1,4 @@
-import { Cursor } from 'mongodb';
+import { FindCursor } from 'mongodb';
 import type { IUser, ISubscription } from '@rocket.chat/core-typings';
 
 import { subscriptionHasRole } from '../../../authorization/server';
@@ -24,7 +24,8 @@ export function getSubscribedRoomsForUserWithDetails(
 ): SubscribedRoomsForUserWithDetails[] {
 	const subscribedRooms: SubscribedRoomsForUserWithDetails[] = [];
 
-	const cursor: Cursor<ISubscription> =
+	// TODO this is not really a FindCursor since it is using Meteor Models -> migrate to raw models
+	const cursor: FindCursor<ISubscription> =
 		roomIds.length > 0 ? Subscriptions.findByUserIdAndRoomIds(userId, roomIds) : Subscriptions.findByUserIdExceptType(userId, 'd');
 
 	// Iterate through all the rooms the user is subscribed to, to check if he is the last owner of any of them.
@@ -46,7 +47,7 @@ export function getSubscribedRoomsForUserWithDetails(
 			if (numOwners === 1 && assignNewOwner) {
 				// Let's check how many subscribers the room has.
 				const options = { projection: { 'u._id': 1 }, sort: { ts: 1 } };
-				const subscribersCursor: Cursor<ISubscription> = Subscriptions.findByRoomId(subscription.rid, options);
+				const subscribersCursor: FindCursor<ISubscription> = Subscriptions.findByRoomId(subscription.rid, options);
 
 				subscribersCursor.forEach(({ u: { _id: uid } }) => {
 					// If we already changed the owner or this subscription is for the user we are removing, then don't try to give it ownership
