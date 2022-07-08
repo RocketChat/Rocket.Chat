@@ -4,12 +4,10 @@ import {
 	FederationRoomChangeNameDto,
 	FederationRoomChangeTopicDto,
 } from '../../../application/input/RoomReceiverDto';
-import { IMatrixEventEE } from '../definitions/IMatrixEvent';
-import { MatrixEventTypeEE } from '../definitions/MatrixEventType';
 
 export class MatrixRoomReceiverConverterEE extends MatrixRoomReceiverConverter {
 	public static toRoomChangeJoinRulesDto(
-		externalEvent: IMatrixEventEE<MatrixEventTypeEE.ROOM_JOIN_RULES_CHANGED>,
+		externalEvent: any,
 	): FederationRoomChangeJoinRulesDto {
 		return Object.assign(new FederationRoomChangeJoinRulesDto(), {
 			...MatrixRoomReceiverConverterEE.getBasicRoomsFields(externalEvent.room_id),
@@ -17,21 +15,17 @@ export class MatrixRoomReceiverConverterEE extends MatrixRoomReceiverConverter {
 		});
 	}
 
-	public static toRoomChangeNameDto(externalEvent: IMatrixEventEE<MatrixEventTypeEE.ROOM_NAME_CHANGED>): FederationRoomChangeNameDto {
+	public static toRoomChangeNameDto(externalEvent: any): FederationRoomChangeNameDto {
 		return Object.assign(new FederationRoomChangeNameDto(), {
 			...MatrixRoomReceiverConverterEE.getBasicRoomsFields(externalEvent.room_id),
-			normalizedRoomName: MatrixRoomReceiverConverterEE.normalizeRoomNameToRCFormat(externalEvent.content?.name),
+			normalizedRoomName: MatrixRoomReceiverConverterEE.removeMatrixSpecificChars(externalEvent.content?.name),
 		});
 	}
 
-	public static toRoomChangeTopicDto(externalEvent: IMatrixEventEE<MatrixEventTypeEE.ROOM_TOPIC_CHANGED>): FederationRoomChangeTopicDto {
+	public static toRoomChangeTopicDto(externalEvent: any): FederationRoomChangeTopicDto {
 		return Object.assign(new FederationRoomChangeTopicDto(), {
 			...MatrixRoomReceiverConverterEE.getBasicRoomsFields(externalEvent.room_id),
 			roomTopic: externalEvent.content?.topic,
 		});
-	}
-
-	private static normalizeRoomNameToRCFormat(matrixRoomName = ''): string {
-		return matrixRoomName.replace('@', '');
 	}
 }

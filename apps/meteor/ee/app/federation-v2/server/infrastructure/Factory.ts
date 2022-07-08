@@ -1,7 +1,7 @@
 import { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { FederationFactory } from '../../../../../app/federation-v2/server/infrastructure/Factory';
-import { MatrixRoomMessageSentHandler } from '../../../../../app/federation-v2/server/infrastructure/matrix/handlers/Room';
+import { MatrixEventsHandler } from '../../../../../app/federation-v2/server/infrastructure/matrix/handlers';
 import { InMemoryQueue } from '../../../../../app/federation-v2/server/infrastructure/queue/InMemoryQueue';
 import { RocketChatMessageAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Message';
 import { RocketChatSettingsAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
@@ -10,7 +10,6 @@ import { FederationRoomServiceReceiverEE } from '../application/RoomServiceRecei
 import { FederationRoomServiceSenderEE } from '../application/RoomServiceSender';
 import { IFederationBridgeEE } from '../domain/IFederationBridge';
 import { MatrixBridgeEE } from './matrix/Bridge';
-import { MatrixEventsHandlerEE } from './matrix/handlers';
 import { MatrixRoomJoinRulesChangedHandler, MatrixRoomNameChangedHandler, MatrixRoomTopicChangedHandler } from './matrix/handlers/Room';
 import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';
 import { RocketChatRoomAdapterEE } from './rocket-chat/adapters/Room';
@@ -60,16 +59,15 @@ export class FederationFactoryEE {
 	public static buildEventHandlers(
 		roomServiceReceive: FederationRoomServiceReceiverEE,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
-	): MatrixEventsHandlerEE {
+	): MatrixEventsHandler {
 		const EVENT_HANDLERS = [
 			...FederationFactory.getEventHandlers(roomServiceReceive, rocketSettingsAdapter),
 			new MatrixRoomJoinRulesChangedHandler(roomServiceReceive),
 			new MatrixRoomNameChangedHandler(roomServiceReceive),
 			new MatrixRoomTopicChangedHandler(roomServiceReceive),
-			new MatrixRoomMessageSentHandler(roomServiceReceive),
 		];
 
-		return new MatrixEventsHandlerEE(EVENT_HANDLERS);
+		return new MatrixEventsHandler(EVENT_HANDLERS);
 	}
 
 	public static buildRocketRoomAdapter(): RocketChatRoomAdapterEE {

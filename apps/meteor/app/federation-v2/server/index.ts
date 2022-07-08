@@ -2,10 +2,10 @@ import { FederationFactory } from './infrastructure/Factory';
 
 export const FEDERATION_PROCESSING_CONCURRENCY = 1;
 
-const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapter();
+export const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapter();
+export const queueInstance = FederationFactory.buildQueue();
 rocketSettingsAdapter.initialize();
-const queueInstance = FederationFactory.buildQueue();
-const federation = FederationFactory.buildBridge(rocketSettingsAdapter, queueInstance);
+const federationBridge = FederationFactory.buildBridge(rocketSettingsAdapter, queueInstance);
 const rocketRoomAdapter = FederationFactory.buildRocketRoomAdapter();
 const rocketUserAdapter = FederationFactory.buildRocketUserAdapter();
 const rocketMessageAdapter = FederationFactory.buildRocketMessageAdapter();
@@ -15,34 +15,34 @@ const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver
 	rocketUserAdapter,
 	rocketMessageAdapter,
 	rocketSettingsAdapter,
-	federation,
+	federationBridge,
 );
 
-const federationEventsHandler = FederationFactory.buildEventHandlers(federationRoomServiceReceiver, rocketSettingsAdapter);
+const federationEventsHandler = FederationFactory.buildEventHandler(federationRoomServiceReceiver, rocketSettingsAdapter);
 
 export const federationRoomServiceSender = FederationFactory.buildRoomServiceSender(
 	rocketRoomAdapter,
 	rocketUserAdapter,
 	rocketSettingsAdapter,
-	federation,
+	federationBridge,
 );
 
 FederationFactory.setupListeners(federationRoomServiceSender);
-rocketSettingsAdapter.onFederationEnabledStatusChanged(federation.onFederationAvailabilityChanged.bind(federation));
+rocketSettingsAdapter.onFederationEnabledStatusChanged(federationBridge.onFederationAvailabilityChanged.bind(federationBridge));
 
 export const runFederation = async (): Promise<void> => {
 	if (!rocketSettingsAdapter.isFederationEnabled()) {
 		return;
 	}
 	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
-	await federation.start();
-	federation.logFederationStartupInfo('Running Federation V2');
+	await federationBridge.start();
+	federationBridge.logFederationStartupInfo('Running Federation V2');
 	require('./infrastructure/rocket-chat/slash-commands');
 };
 
 export const stopFederation = async (): Promise<void> => {
 	FederationFactory.removeListeners();
-	await federation.stop();
+	await federationBridge.stop();
 };
 
 (async (): Promise<void> => {

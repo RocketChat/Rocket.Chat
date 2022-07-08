@@ -4,6 +4,7 @@ import { FederationRoomServiceReceiver } from '../application/RoomServiceReceive
 import { FederationRoomServiceSender } from '../application/RoomServiceSender';
 import { MatrixBridge } from './matrix/Bridge';
 import { MatrixEventsHandler } from './matrix/handlers';
+import { MatrixBaseEventHandler } from './matrix/handlers/BaseEvent';
 import { MatrixRoomCreatedHandler, MatrixRoomMembershipChangedHandler, MatrixRoomMessageSentHandler } from './matrix/handlers/Room';
 import { InMemoryQueue } from './queue/InMemoryQueue';
 import { RocketChatMessageAdapter } from './rocket-chat/adapters/Message';
@@ -66,7 +67,7 @@ export class FederationFactory {
 		);
 	}
 
-	public static buildEventHandlers(
+	public static buildEventHandler(
 		roomServiceReceive: FederationRoomServiceReceiver,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 	): MatrixEventsHandler {
@@ -76,7 +77,7 @@ export class FederationFactory {
 	public static getEventHandlers(
 		roomServiceReceive: FederationRoomServiceReceiver,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
-	): any[] {
+	): MatrixBaseEventHandler[] {
 		return [
 			new MatrixRoomCreatedHandler(roomServiceReceive),
 			new MatrixRoomMembershipChangedHandler(roomServiceReceive, rocketSettingsAdapter),

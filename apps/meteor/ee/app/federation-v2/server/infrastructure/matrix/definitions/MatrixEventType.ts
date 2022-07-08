@@ -1,7 +1,4 @@
 export enum MatrixEventTypeEE {
-	ROOM_CREATED = 'm.room.create',
-	ROOM_MEMBERSHIP_CHANGED = 'm.room.member',
-	ROOM_MESSAGE_SENT = 'm.room.message',
 	// SET_ROOM_POWER_LEVELS = 'm.room.power_levels',
 	// SET_ROOM_CANONICAL_ALIAS = 'm.room.canonical_alias',
 	ROOM_JOIN_RULES_CHANGED = 'm.room.join_rules',
@@ -10,3 +7,4 @@ export enum MatrixEventTypeEE {
 	ROOM_NAME_CHANGED = 'm.room.name',
 	ROOM_TOPIC_CHANGED = 'm.room.topic',
 }
+

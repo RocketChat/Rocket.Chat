@@ -6,26 +6,25 @@ import {
 	FederationRoomSendInternalMessageDto,
 } from '../../../application/input/RoomReceiverDto';
 import { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
-import { IMatrixEvent } from '../definitions/IMatrixEvent';
-import { AddMemberToRoomMembership } from '../definitions/IMatrixEventContent/IMatrixEventContentAddMemberToRoom';
-import { RoomJoinRules } from '../definitions/IMatrixEventContent/IMatrixEventContentSetRoomJoinRules';
+import { AddMemberToRoomMembership } from '../definitions/events/RoomMembershipChanged';
+import { RoomJoinRules } from '../definitions/RoomJoinRules';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 
 export class MatrixRoomReceiverConverter {
-	public static toRoomCreateDto(externalEvent: IMatrixEvent<MatrixEventType.ROOM_CREATED>): FederationRoomCreateInputDto {
+	public static toRoomCreateDto(externalEvent: any): FederationRoomCreateInputDto {
 		return Object.assign(new FederationRoomCreateInputDto(), {
 			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
 			...MatrixRoomReceiverConverter.tryToGetExternalInfoFromTheRoomState(
 				externalEvent.invite_room_state || externalEvent.unsigned?.invite_room_state,
 			),
 			externalInviterId: externalEvent.sender,
-			normalizedInviterId: MatrixRoomReceiverConverter.convertMatrixUserIdFormatToRCFormat(externalEvent.sender),
+			normalizedInviterId: MatrixRoomReceiverConverter.removeMatrixSpecificChars(externalEvent.sender),
 			wasInternallyProgramaticallyCreated: externalEvent.content?.was_internally_programatically_created || false,
 		});
 	}
 
 	public static toChangeRoomMembershipDto(
-		externalEvent: IMatrixEvent<MatrixEventType.ROOM_MEMBERSHIP_CHANGED>,
+		externalEvent: any,
 		homeServerDomain: string,
 	): FederationRoomChangeMembershipDto {
 		return Object.assign(new FederationRoomChangeMembershipDto(), {
@@ -35,9 +34,9 @@ export class MatrixRoomReceiverConverter {
 				externalEvent.content?.is_direct,
 			),
 			externalInviterId: externalEvent.sender,
-			normalizedInviterId: MatrixRoomReceiverConverter.convertMatrixUserIdFormatToRCFormat(externalEvent.sender),
+			normalizedInviterId: MatrixRoomReceiverConverter.removeMatrixSpecificChars(externalEvent.sender),
 			externalInviteeId: externalEvent.state_key,
-			normalizedInviteeId: MatrixRoomReceiverConverter.convertMatrixUserIdFormatToRCFormat(externalEvent.state_key),
+			normalizedInviteeId: MatrixRoomReceiverConverter.removeMatrixSpecificChars(externalEvent.state_key),
 			inviteeUsernameOnly: MatrixRoomReceiverConverter.formatMatrixUserIdToRCUsernameFormat(externalEvent.state_key),
 			inviterUsernameOnly: MatrixRoomReceiverConverter.formatMatrixUserIdToRCUsernameFormat(externalEvent.sender),
 			eventOrigin: MatrixRoomReceiverConverter.getEventOrigin(externalEvent.sender, homeServerDomain),
@@ -45,17 +44,17 @@ export class MatrixRoomReceiverConverter {
 		});
 	}
 
-	public static toSendRoomMessageDto(externalEvent: IMatrixEvent<MatrixEventType.ROOM_MESSAGE_SENT>): FederationRoomSendInternalMessageDto {
+	public static toSendRoomMessageDto(externalEvent: any): FederationRoomSendInternalMessageDto {
 		return Object.assign(new FederationRoomSendInternalMessageDto(), {
 			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
-			normalizedSenderId: MatrixRoomReceiverConverter.convertMatrixUserIdFormatToRCFormat(externalEvent.sender),
+			normalizedSenderId: MatrixRoomReceiverConverter.removeMatrixSpecificChars(externalEvent.sender),
 			text: externalEvent.content?.body,
 		});
 	}
 
-	protected static convertMatrixUserIdFormatToRCFormat(matrixUserId = ''): string {
-		return matrixUserId.replace('@', '');
+	protected static removeMatrixSpecificChars(matrixProp = ''): string {
+		return matrixProp.replace('@', '').replace('!', '');
 	}
 
 	protected static convertMatrixRoomIdFormatToRCFormat(matrixRoomId = ''): string {

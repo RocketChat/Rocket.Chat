@@ -55,6 +55,6 @@ slashCommands.add({
 	callback: federation,
 	options: {
 		description: 'Federation_slash_commands',
-		params: '#command (dm, setup-room, invite) #user',
+		params: '#command (dm) #users',
 	},
 });

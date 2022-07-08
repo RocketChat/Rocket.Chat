@@ -1,35 +1,43 @@
 import { FederationRoomServiceReceiverEE } from '../../../application/RoomServiceReceiver';
 import { MatrixRoomReceiverConverterEE } from '../converters/RoomReceiver';
-import { IMatrixEventEE } from '../definitions/IMatrixEvent';
 import { MatrixEventTypeEE } from '../definitions/MatrixEventType';
-import { MatrixBaseEventHandlerEE } from './BaseEvent';
+import { MatrixBaseEventHandler } from '../../../../../../../app/federation-v2/server/infrastructure/matrix/handlers/BaseEvent';
+import { MatrixEventRoomJoinRulesChanged } from '../definitions/events/RoomJoinRulesChanged';
+import { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameChanged';
+import { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
 
-export class MatrixRoomJoinRulesChangedHandler extends MatrixBaseEventHandlerEE<MatrixEventTypeEE.ROOM_JOIN_RULES_CHANGED> {
+export class MatrixRoomJoinRulesChangedHandler extends MatrixBaseEventHandler {
+	public eventType: string = MatrixEventTypeEE.ROOM_JOIN_RULES_CHANGED;
+
 	constructor(private roomService: FederationRoomServiceReceiverEE) {
-		super(MatrixEventTypeEE.ROOM_JOIN_RULES_CHANGED);
+		super();
 	}
 
-	public async handle(externalEvent: IMatrixEventEE<MatrixEventTypeEE.ROOM_JOIN_RULES_CHANGED>): Promise<void> {
-		await this.roomService.changeJoinRules(MatrixRoomReceiverConverterEE.toRoomChangeJoinRulesDto(externalEvent));
+	public async handle(externalEvent: MatrixEventRoomJoinRulesChanged): Promise<void> {
+		await this.roomService.changeJoinRules(MatrixRoomReceiverConverterEE.toRoomChangeJoinRulesDto(externalEvent as any));
 	}
 }
 
-export class MatrixRoomNameChangedHandler extends MatrixBaseEventHandlerEE<MatrixEventTypeEE.ROOM_NAME_CHANGED> {
+export class MatrixRoomNameChangedHandler extends MatrixBaseEventHandler {
+	public eventType: string = MatrixEventTypeEE.ROOM_NAME_CHANGED;
+
 	constructor(private roomService: FederationRoomServiceReceiverEE) {
-		super(MatrixEventTypeEE.ROOM_NAME_CHANGED);
+		super();
 	}
 
-	public async handle(externalEvent: IMatrixEventEE<MatrixEventTypeEE.ROOM_NAME_CHANGED>): Promise<void> {
-		await this.roomService.changeRoomName(MatrixRoomReceiverConverterEE.toRoomChangeNameDto(externalEvent));
+	public async handle(externalEvent: MatrixEventRoomNameChanged): Promise<void> {
+		await this.roomService.changeRoomName(MatrixRoomReceiverConverterEE.toRoomChangeNameDto(externalEvent as any));
 	}
 }
 
-export class MatrixRoomTopicChangedHandler extends MatrixBaseEventHandlerEE<MatrixEventTypeEE.ROOM_TOPIC_CHANGED> {
+export class MatrixRoomTopicChangedHandler extends MatrixBaseEventHandler {
+	public eventType: string = MatrixEventTypeEE.ROOM_TOPIC_CHANGED;
+	
 	constructor(private roomService: FederationRoomServiceReceiverEE) {
-		super(MatrixEventTypeEE.ROOM_TOPIC_CHANGED);
+		super();
 	}
 
-	public async handle(externalEvent: IMatrixEventEE<MatrixEventTypeEE.ROOM_TOPIC_CHANGED>): Promise<void> {
-		await this.roomService.changeRoomTopic(MatrixRoomReceiverConverterEE.toRoomChangeTopicDto(externalEvent));
+	public async handle(externalEvent: MatrixEventRoomTopicChanged): Promise<void> {
+		await this.roomService.changeRoomTopic(MatrixRoomReceiverConverterEE.toRoomChangeTopicDto(externalEvent as any));
 	}
 }

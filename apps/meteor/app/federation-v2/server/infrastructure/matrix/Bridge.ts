@@ -2,8 +2,6 @@ import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appser
 
 import { IFederationBridge } from '../../domain/IFederationBridge';
 import { bridgeLogger } from '../rocket-chat/adapters/logger';
-import { IMatrixEvent } from './definitions/IMatrixEvent';
-import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
@@ -172,7 +170,7 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: async (request /* , context*/): Promise<void> => {
 					// Get the event
-					const event = request.getData() as unknown as IMatrixEvent<MatrixEventType>;
+					const event = request.getData();
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {
