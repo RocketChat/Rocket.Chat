@@ -62,7 +62,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 			</GenericTableHeaderCell>,
 			mediaQuery && (
 				<GenericTableHeaderCell key={'loginAt'} direction={sortDirection} active={sortBy === 'loginAt'} onClick={setSort} sort='loginAt'>
-					{t('Last_Login')}
+					{t('Last_login')}
 				</GenericTableHeaderCell>
 			),
 			mediaQuery && <GenericTableHeaderCell key={'_id'}>{t('Device_ID')}</GenericTableHeaderCell>,
