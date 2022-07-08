@@ -3997,7 +3997,7 @@ __metadata:
     "@rocket.chat/message-parser": ~0.32.0-dev.21
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
-    "@rocket.chat/mp3-encoder": ^0.31.15-dev.6
+    "@rocket.chat/mp3-encoder": 0.24.0
     "@rocket.chat/onboarding-ui": ~0.32.0-dev.73
     "@rocket.chat/poplib": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
@@ -4297,12 +4297,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/mp3-encoder@npm:^0.31.15-dev.6":
-  version: 0.31.15-dev.6
-  resolution: "@rocket.chat/mp3-encoder@npm:0.31.15-dev.6"
+"@rocket.chat/mp3-encoder@npm:0.24.0":
+  version: 0.24.0
+  resolution: "@rocket.chat/mp3-encoder@npm:0.24.0"
   dependencies:
-    lamejs: "git+https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
-  checksum: d4f816ba99febb630faf6ffbb5d4ebbb55f02e3fc9a91b31c5270ce99e5ee857b6014f7a299f8dd00c51b2dd46845ffa46ffc21a14541407ea6869bee73a922b
+    lamejs: "git+https://github.com/zhuker/lamejs.git"
+  checksum: 24b819efb2188f69dd95a44a84297b3ae5683e53f4d575648e94ae255d85364976c374a6f06ec6094ffc51e7f9bf3ecc22e3d52c5e925d46315deadb27ad76d1
   languageName: node
   linkType: hard
 
@@ -20171,7 +20171,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lamejs@git+https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675":
+"lamejs@git+https://github.com/zhuker/lamejs.git":
   version: 1.2.1
   resolution: "lamejs@https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
   dependencies:
