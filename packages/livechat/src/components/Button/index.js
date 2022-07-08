@@ -28,7 +28,7 @@ export const Button = memo(({
 		disabled={disabled}
 		onClick={onClick}
 		onMouseUp={handleMouseUp}
-		aria-label={label ?? (icon ? children[0] : null)}
+		aria-label={label || (icon ? children[0] : null)}
 		className={createClassName(styles, 'button', {
 			disabled,
 			outline,
