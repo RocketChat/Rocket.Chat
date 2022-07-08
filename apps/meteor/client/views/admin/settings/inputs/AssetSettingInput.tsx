@@ -46,7 +46,7 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 
 	const handleDeleteButtonClick = async (): Promise<void> => {
 		try {
-			await unsetAsset({ asset });
+			await unsetAsset({ assetName: asset });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
