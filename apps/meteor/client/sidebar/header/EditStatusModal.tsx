@@ -1,12 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Field, TextInput, FieldGroup, Modal, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, ChangeEvent, useCallback, useMemo } from 'react';
+import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import React, { ReactElement, useState, ChangeEvent, useCallback } from 'react';
 
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserStatusMenu from '../../components/UserStatusMenu';
-import { useEndpointAction } from '../../hooks/useEndpointAction';
 
 type EditStatusModalProps = {
 	onClose: () => void;
@@ -23,11 +22,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	const [statusType, setStatusType] = useState(userStatus);
 	const [statusTextError, setStatusTextError] = useState<string | undefined>();
 
-	const setUserStatus = useEndpointAction(
-		'POST',
-		'/v1/users.setStatus',
-		useMemo(() => ({ message: statusText, status: statusType }), [statusText, statusType]),
-	);
+	const setUserStatus = useEndpoint('POST', '/v1/users.setStatus');
 
 	const handleStatusText = useMutableCallback((e: ChangeEvent<HTMLInputElement>): void => {
 		setStatusText(e.currentTarget.value);
@@ -43,14 +38,14 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 
 	const handleSaveStatus = useCallback(async () => {
 		try {
-			await setUserStatus();
+			await setUserStatus({ message: statusText, status: statusType });
 			dispatchToastMessage({ type: 'success', message: t('StatusMessage_Changed_Successfully') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 
 		onClose();
-	}, [dispatchToastMessage, setUserStatus, onClose, t]);
+	}, [dispatchToastMessage, setUserStatus, statusText, statusType, onClose, t]);
 
 	return (
 		<Modal>
