@@ -74,7 +74,6 @@ messageBox.actions.add('Share', 'My_location', {
 	icon: 'map-pin',
 	condition: () => canGetGeolocation.get(),
 	async action({ rid, tmid }) {
-		console.log('oie');
 		imperativeModal.open({ component: ShareLocationModal, props: { rid, tmid, onClose: imperativeModal.close } });
 	},
 });
