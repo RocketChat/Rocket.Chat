@@ -1,13 +1,13 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindOneOptions, MongoDistinctPreferences, UpdateWriteOpResult } from 'mongodb';
-import { ILivechatInquiryRecord, IMessage, LivechatInquiryStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult } from 'mongodb';
+import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
-		super(db, getCollectionName('livechat_inquiry'), trash);
+		super(db, 'livechat_inquiry', trash);
 	}
 
 	findOneQueuedByRoomId(rid: string): Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null> {
@@ -20,7 +20,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	findOneByRoomId<T = ILivechatInquiryRecord>(
 		rid: string,
-		options: FindOneOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+		options: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null> {
 		const query = {
 			rid,
@@ -28,20 +28,20 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query, options);
 	}
 
-	getDistinctQueuedDepartments(options: MongoDistinctPreferences): Promise<string[]> {
+	getDistinctQueuedDepartments(options: DistinctOptions): Promise<string[]> {
 		return this.col.distinct('department', { status: LivechatInquiryStatus.QUEUED }, options);
 	}
 
-	async setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | undefined> {
+	async setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null> {
 		const updated = await this.findOneAndUpdate({ _id: inquiryId }, { $set: { department } }, { returnDocument: 'after' });
-		return updated.value;
+		return updated?.value;
 	}
 
-	async setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateWriteOpResult> {
+	async setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateResult> {
 		return this.updateOne({ rid }, { $set: { lastMessage: message } });
 	}
 
-	async findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | undefined> {
+	async findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | null> {
 		const date = new Date();
 		const result = await this.col.findOneAndUpdate(
 			{
@@ -81,11 +81,11 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return result.value;
 	}
 
-	async unlock(inquiryId: string): Promise<UpdateWriteOpResult> {
+	async unlock(inquiryId: string): Promise<UpdateResult> {
 		return this.updateOne({ _id: inquiryId }, { $unset: { locked: 1, lockedAt: 1 } });
 	}
 
-	async unlockAll(): Promise<UpdateWriteOpResult> {
+	async unlockAll(): Promise<UpdateResult | Document> {
 		return this.updateMany({}, { $unset: { locked: 1, lockedAt: 1 } });
 	}
 }

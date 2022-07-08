@@ -1,20 +1,19 @@
 import type { IUserDataFile, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IUserDataFilesModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindOneOptions, IndexSpecification, InsertOneWriteOpResult, WithId, WithoutProjection } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Collection, Db, FindOptions, IndexDescription, InsertOneResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class UserDataFilesRaw extends BaseRaw<IUserDataFile> implements IUserDataFilesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUserDataFile>>) {
-		super(db, getCollectionName('user_data_files'), trash);
+		super(db, 'user_data_files', trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { userId: 1 } }];
 	}
 
-	findLastFileByUser(userId: string, options: WithoutProjection<FindOneOptions<IUserDataFile>> = {}): Promise<IUserDataFile | null> {
+	findLastFileByUser(userId: string, options: FindOptions<IUserDataFile> = {}): Promise<IUserDataFile | null> {
 		const query = {
 			userId,
 		};
@@ -24,7 +23,7 @@ export class UserDataFilesRaw extends BaseRaw<IUserDataFile> implements IUserDat
 	}
 
 	// INSERT
-	create(data: IUserDataFile): Promise<InsertOneWriteOpResult<WithId<IUserDataFile>>> {
+	create(data: IUserDataFile): Promise<InsertOneResult<WithId<IUserDataFile>>> {
 		const userDataFile = {
 			createdAt: new Date(),
 			...data,

@@ -1,16 +1,15 @@
 import type { IExportOperation, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IExportOperationsModel } from '@rocket.chat/model-typings';
-import type { Collection, Cursor, Db, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Collection, FindCursor, Db, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IExportOperationsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IExportOperation>>) {
-		super(db, getCollectionName('export_operations'), trash);
+		super(db, 'export_operations', trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { userId: 1 } }, { key: { status: 1 } }];
 	}
 
@@ -40,7 +39,7 @@ export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IE
 		return this.findOne(query, { sort: { createdAt: -1 } });
 	}
 
-	findAllPendingBeforeMyRequest(requestDay: Date): Cursor<IExportOperation> {
+	findAllPendingBeforeMyRequest(requestDay: Date): FindCursor<IExportOperation> {
 		const query = {
 			status: { $nin: ['completed', 'skipped'] },
 			createdAt: { $lt: requestDay },
@@ -49,7 +48,7 @@ export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IE
 		return this.find(query);
 	}
 
-	updateOperation(data: IExportOperation): Promise<UpdateWriteOpResult> {
+	updateOperation(data: IExportOperation): Promise<UpdateResult> {
 		const update = {
 			$set: {
 				roomList: data.roomList,
