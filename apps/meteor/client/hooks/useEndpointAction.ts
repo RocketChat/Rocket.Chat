@@ -3,6 +3,10 @@ import type { MatchPathPattern, Method, OperationParams, OperationResult, PathFo
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
+/**
+ * @deprecated use useEndpoint instead. useEndpointAction hook handles and fires messages on every error, encouraging the developer to skip this handling.
+ * We strongly recommend to handle each error properly, considering each error is a different case.
+ */
 export const useEndpointAction = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	method: TMethod,
 	path: TPath,
