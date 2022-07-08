@@ -84,7 +84,7 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 
 	return (
 		<GenericModal title={t('Share_Location_Title')} onConfirm={onConfirm} onClose={onClose}>
-			<MapView latitude={String(positionData.coords.latitude)} longitude={String(positionData.coords.longitude)} />
+			<MapView latitude={positionData.coords.latitude} longitude={positionData.coords.longitude} />
 		</GenericModal>
 	);
 };

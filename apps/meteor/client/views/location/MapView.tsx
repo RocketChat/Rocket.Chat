@@ -6,8 +6,8 @@ import MapViewImage from './MapViewImage';
 import { useAsyncImage } from './useAsyncImage';
 
 type MapViewProps = {
-	latitude: string;
-	longitude: string;
+	latitude: number;
+	longitude: number;
 };
 
 const MapView: FC<MapViewProps> = ({ latitude, longitude }) => {
