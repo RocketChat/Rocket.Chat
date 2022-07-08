@@ -43,7 +43,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 	user.internalReference = {
 		name: 'test',
 		username: 'test',
-	};
+	} as any;
 
 	beforeEach(() => {
 		service = new FederationRoomServiceSender(roomAdapter as any, userAdapter as any, settingsAdapter as any, bridge as any);
