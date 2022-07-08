@@ -1,9 +1,8 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useRef } from 'react';
 
 import Page from '../../../components/Page';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
 import PreferencesHighlightsSection from './PreferencesHighlightsSection';
 import PreferencesLocalizationSection from './PreferencesLocalizationSection';
@@ -41,7 +40,7 @@ const AccountPreferencesPage = () => {
 		[hasAnyChange],
 	);
 
-	const saveFn = useEndpointActionExperimental('POST', '/v1/users.setPreferences');
+	const saveFn = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const handleSave = useCallback(async () => {
 		try {

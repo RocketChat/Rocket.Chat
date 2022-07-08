@@ -1,8 +1,7 @@
 import { RadioButton, OptionTitle } from '@rocket.chat/fuselage';
-import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback } from 'react';
 
-import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import ListItem from '../Sidebar/ListItem';
 
 const style = {
@@ -16,7 +15,7 @@ const checkBoxStyle = {
 
 function SortModeList(): ReactElement {
 	const t = useTranslation();
-	const saveUserPreferences = useEndpointActionExperimental('POST', '/v1/users.setPreferences');
+	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const sidebarSortBy = useUserPreference<'activity' | 'alphabetical'>('sidebarSortby', 'activity');
 
 	const useHandleChange = (value: 'alphabetical' | 'activity'): (() => void) =>

@@ -1,8 +1,7 @@
 import { ToggleSwitch, RadioButton, OptionTitle } from '@rocket.chat/fuselage';
-import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useCallback, ReactElement } from 'react';
 
-import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import ListItem from '../Sidebar/ListItem';
 
 const style = {
@@ -17,7 +16,7 @@ const checkBoxStyle = {
 function ViewModeList(): ReactElement {
 	const t = useTranslation();
 
-	const saveUserPreferences = useEndpointActionExperimental('POST', '/v1/users.setPreferences');
+	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const useHandleChange = (value: 'medium' | 'extended' | 'condensed'): (() => void) =>
 		useCallback(() => saveUserPreferences({ data: { sidebarViewMode: value } }), [value]);

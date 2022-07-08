@@ -1,8 +1,7 @@
 import { CheckBox, OptionTitle } from '@rocket.chat/fuselage';
-import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useCallback, ReactElement } from 'react';
 
-import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import ListItem from '../Sidebar/ListItem';
 
 const style = {
@@ -21,7 +20,7 @@ const GroupingList = function GroupingList(): ReactElement {
 	const sidebarShowFavorites = useUserPreference<boolean>('sidebarShowFavorites');
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread');
 
-	const saveUserPreferences = useEndpointActionExperimental('POST', '/v1/users.setPreferences');
+	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const useHandleChange = (key: 'sidebarGroupByType' | 'sidebarShowFavorites' | 'sidebarShowUnread', value: boolean): (() => void) =>
 		useCallback(() => saveUserPreferences({ data: { [key]: value } }), [key, value]);
