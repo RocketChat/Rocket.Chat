@@ -9,6 +9,7 @@ import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParams
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
+import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -300,6 +301,12 @@ export type UsersEndpoints = {
 			message: string;
 		};
 	};
+
+	'/v1/users.setPreferences': {
+		POST: (params: UsersSetPreferencesParamsPOST) => {
+			user: Pick<IUser, '_id' | 'settings'>
+		};
+	};
 };
 
 export * from './users/UserCreateParamsPOST';
@@ -310,3 +317,4 @@ export * from './users/UserRegisterParamsPOST';
 export * from './users/UserLogoutParamsPOST';
 export * from './users/UsersListTeamsParamsGET';
 export * from './users/UsersAutocompleteParamsGET';
+export * from './users/UsersSetPreferenceParamsPOST';
