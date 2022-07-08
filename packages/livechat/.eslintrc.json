@@ -1,9 +1,7 @@
 {
-	"extends": [
-		"@rocket.chat/eslint-config"
-	],
+	"extends": ["@rocket.chat/eslint-config"],
 	"plugins": ["react", "react-hooks"],
-	"parser": "babel-eslint",
+	"parser": "@babel/eslint-parser",
 	"env": {
 		"jest": true
 	},

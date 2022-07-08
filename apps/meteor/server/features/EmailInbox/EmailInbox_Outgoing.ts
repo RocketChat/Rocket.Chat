@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';

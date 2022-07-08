@@ -34,7 +34,6 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 		registerType: 'registered',
 		updates: false,
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	registrationData: { cloudEmail: '', device_code: '', user_code: '' },
 };
 

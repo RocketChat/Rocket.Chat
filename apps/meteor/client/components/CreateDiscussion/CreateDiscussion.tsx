@@ -49,7 +49,6 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 		try {
 			const result = await createDiscussion({
 				prid: defaultParentRoom || parentRoom,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				t_name: name,
 				users: usernames,
 				reply: encrypted ? undefined : firstMessage,

@@ -100,7 +100,6 @@ FlowRouter.route('/home', {
 		if (queryParams?.saml_idp_credentialToken !== undefined) {
 			const token = queryParams.saml_idp_credentialToken;
 			FlowRouter.setQueryParams({
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				saml_idp_credentialToken: null,
 			});
 			(Meteor as any).loginWithSamlToken(token, (error?: any) => {

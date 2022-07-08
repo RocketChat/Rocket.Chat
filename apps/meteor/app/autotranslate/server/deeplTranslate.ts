@@ -209,9 +209,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 			try {
 				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
-						// eslint-disable-next-line @typescript-eslint/camelcase
 						auth_key: this.apiKey,
-						// eslint-disable-next-line @typescript-eslint/camelcase
 						target_lang: language,
 					},
 					query,
@@ -258,9 +256,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 			try {
 				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
-						// eslint-disable-next-line @typescript-eslint/camelcase
 						auth_key: this.apiKey,
-						// eslint-disable-next-line @typescript-eslint/camelcase
 						target_lang: language,
 					},
 					query,

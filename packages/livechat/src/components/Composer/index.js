@@ -38,14 +38,14 @@ const replaceCaret = (el) => {
 export class Composer extends Component {
 	handleRef = (el) => {
 		this.el = el;
-	}
+	};
 
 	handleInput = (onChange) => () => {
 		if (this.state.inputLock) {
 			return;
 		}
 		onChange && onChange(this.el.innerText);
-	}
+	};
 
 	handleKeypress = (onSubmit) => (event) => {
 		if (event.which === 13 && !event.shiftKey) {
@@ -53,7 +53,7 @@ export class Composer extends Component {
 			onSubmit && onSubmit(this.el.innerText);
 			this.el.innerText = '';
 		}
-	}
+	};
 
 	handlePaste = (onUpload) => async (event) => {
 		if (!event.clipboardData || !event.clipboardData.items) {
@@ -77,7 +77,7 @@ export class Composer extends Component {
 		);
 
 		texts.forEach((text) => this.pasteText(parse(text)));
-	}
+	};
 
 	handleDrop = (onUpload) => async (event) => {
 		if (!event.dataTransfer || !event.dataTransfer.items) {
@@ -100,12 +100,12 @@ export class Composer extends Component {
 				.map((item) => new Promise((resolve) => item.getAsString(resolve))),
 		);
 		texts.forEach((text) => this.pasteText(parse(text)));
-	}
+	};
 
 	handleClick = () => {
 		const { handleEmojiClick } = this.props;
 		handleEmojiClick && handleEmojiClick();
-	}
+	};
 
 	pasteText = (plainText) => {
 		this.el.focus();
@@ -125,7 +125,7 @@ export class Composer extends Component {
 		const selection = window.getSelection();
 		selection.removeAllRanges();
 		selection.addRange(range);
-	}
+	};
 
 	constructor(props) {
 		super(props);

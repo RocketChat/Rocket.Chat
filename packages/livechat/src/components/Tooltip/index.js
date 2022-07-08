@@ -58,16 +58,16 @@ export class TooltipContainer extends Component {
 		activeChild: null,
 		event: null,
 		placement: null,
-	}
+	};
 
 	showTooltip = (event, { content, placement = 'bottom', childIndex }) => {
 		const triggerBounds = event.target.getBoundingClientRect();
 		this.setState({ tooltip: <Tooltip floating placement={placement} triggerBounds={triggerBounds}>{content}</Tooltip>, activeChild: childIndex, event, placement, content });
-	}
+	};
 
 	hideTooltip = () => {
 		this.setState({ tooltip: null });
-	}
+	};
 
 	UNSAFE_componentWillReceiveProps(props) {
 		if (this.state.tooltip) {

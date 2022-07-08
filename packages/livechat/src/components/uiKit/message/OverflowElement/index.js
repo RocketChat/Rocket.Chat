@@ -43,8 +43,8 @@ const OverflowOption = ({ confirm, text, value, url, parser, onClick }) => {
 	}, [confirm, onClick, url, value]);
 
 	return <Menu.Item onClick={handleClick}>
-		 {parser.text(text)}
-	 </Menu.Item>;
+		{parser.text(text)}
+	</Menu.Item>;
 };
 
 const OverflowElement = ({ actionId, confirm, options, parser }) => {

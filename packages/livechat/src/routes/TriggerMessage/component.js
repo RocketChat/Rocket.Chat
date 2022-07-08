@@ -8,7 +8,7 @@ import styles from './styles.scss';
 
 
 class TriggerMessage extends Component {
-	state = { }
+	state = { };
 
 	constructor(props) {
 		super(props);

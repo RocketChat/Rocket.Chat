@@ -171,7 +171,7 @@ class Register extends Component {
 		name: null,
 		email: null,
 		department: null,
-	}
+	};
 
 	handleFieldChange = ({ target }) => {
 		const { name, value } = target;
@@ -185,7 +185,7 @@ class Register extends Component {
 				showError: true,
 			},
 		});
-	}
+	};
 
 	handleSubmit = (event) => {
 		event.preventDefault();
@@ -197,7 +197,7 @@ class Register extends Component {
 				.reduce((values, entry) => ({ ...values, ...entry }), {});
 			this.props.onSubmit(values);
 		}
-	}
+	};
 
 	render({ title, color, message, loading, departments, customFields, t, ...props }, { name, email, department, ...state }) {
 		const defaultTitle = t('need_help');

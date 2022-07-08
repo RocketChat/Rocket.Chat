@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';

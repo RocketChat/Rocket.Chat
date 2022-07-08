@@ -5,6 +5,7 @@ import type { IncomingMessage } from 'http';
 import { load, Cheerio, CheerioAPI } from 'cheerio';
 
 export type CasOptions = {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	base_url: string;
 	service?: string;
 	version: 1.0 | 2.0;
@@ -13,6 +14,7 @@ export type CasOptions = {
 export type CasCallbackExtendedData = {
 	username?: unknown;
 	attributes?: unknown;
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	PGTIOU?: unknown;
 	ticket?: unknown;
 	proxies?: unknown;
@@ -254,6 +256,7 @@ export function validate(options: CasOptions, ticket: string, callback: CasCallb
 					callback(undefined, true, username, {
 						username,
 						attributes,
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						PGTIOU: pgtIOU,
 						ticket,
 						proxies,

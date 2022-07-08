@@ -74,7 +74,6 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public generateRegistrationFileObject(): Record<string, any> {
-		/* eslint-disable @typescript-eslint/camelcase */
 		return {
 			id: this.getApplicationServiceId(),
 			hs_token: this.getApplicationHomeServerToken(),
@@ -102,7 +101,6 @@ export class RocketChatSettingsAdapter {
 				],
 			},
 		};
-		/* eslint-enable @typescript-eslint/camelcase */
 	}
 
 	private async updateRegistrationFile(): Promise<void> {

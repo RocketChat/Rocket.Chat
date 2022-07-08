@@ -11,7 +11,7 @@ class ChatFinished extends Component {
 	handleClick = () => {
 		const { onRedirectChat } = this.props;
 		onRedirectChat && onRedirectChat();
-	}
+	};
 
 	render = ({
 		color,
@@ -42,7 +42,7 @@ class ChatFinished extends Component {
 			</Screen.Content>
 			<Screen.Footer />
 		</Screen>;
-	}
+	};
 }
 
 export default withTranslation()(ChatFinished);

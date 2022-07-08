@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import URL from 'url';
 import QueryString from 'querystring';
 

@@ -7,7 +7,7 @@ import styles from './styles.scss';
 export class Form extends MemoizedComponent {
 	static defaultHandleSubmit = (event) => {
 		event.preventDefault();
-	}
+	};
 
 	render = ({ onSubmit, className, style = {}, children }) => (
 		<form
@@ -18,7 +18,7 @@ export class Form extends MemoizedComponent {
 		>
 			{children}
 		</form>
-	)
+	);
 }
 
 export const Validations = {

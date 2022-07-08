@@ -15,7 +15,7 @@ class ScreenHeader extends Component {
 	largeHeader = () => {
 		const { agent } = this.props;
 		return !!(agent && agent.email && agent.phone);
-	}
+	};
 
 	headerTitle = (t) => {
 		const { agent, queueInfo, title } = this.props;
@@ -28,7 +28,7 @@ class ScreenHeader extends Component {
 		}
 
 		return title;
-	}
+	};
 
 	render = ({
 		alerts,
@@ -111,7 +111,7 @@ class ScreenHeader extends Component {
 				</Header.Actions>
 			</Tooltip.Container>
 		</Header>
-	)
+	);
 }
 
 export default withTranslation()(ScreenHeader);

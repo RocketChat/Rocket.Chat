@@ -14,7 +14,7 @@ import type { UnfollowMessageMethod } from './methods/unfollowMessage';
 
 // TODO: frontend chapter day - define methods
 
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
 	'2fa:checkCodesRemaining': (...args: any[]) => any;
 	'2fa:disable': (...args: any[]) => any;

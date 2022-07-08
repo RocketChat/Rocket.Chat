@@ -2,7 +2,6 @@ import type { ILivechatDepartment, IOmnichannelCannedResponse, IUser } from '@ro
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	interface Endpoints {
 		'/v1/canned-responses': {
 			GET: (

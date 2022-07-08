@@ -107,12 +107,9 @@ export class MatrixBridge implements IFederationBridge {
 			options: {
 				visibility,
 				preset,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				is_direct: true,
 				invite: externalInviteeIds,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				creation_content: {
-					// eslint-disable-next-line @typescript-eslint/camelcase
 					was_internally_programatically_created: true,
 				},
 			},

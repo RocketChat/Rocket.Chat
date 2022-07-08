@@ -159,7 +159,7 @@ export class AppRoomBridge extends RoomBridge {
 
 		const discussion = {
 			prid: rcRoom.prid,
-			t_name: rcRoom.fname, // eslint-disable-line @typescript-eslint/camelcase
+			t_name: rcRoom.fname,
 			pmid: rcMessage ? rcMessage._id : undefined,
 			reply: reply && reply.trim() !== '' ? reply : undefined,
 			users: members.length > 0 ? members : [],

@@ -33,7 +33,6 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 	const changeLeader = useEndpointActionExperimental(
 		'POST',
 		`${endpointPrefix}.${changeLeaderEndpoint}`,
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		t(changeLeaderMessage, { username: user.username, room_name: roomName }),
 	);
 	const changeLeaderAction = useMutableCallback(() => changeLeader({ roomId: rid, userId: uid }));

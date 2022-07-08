@@ -12,7 +12,7 @@ type Next<T extends (...args: any[]) => any> = (...args: Parameters<T>) => Retur
 
 export type Middleware<T extends (...args: any[]) => any> = (context: Parameters<T>, next: Next<T>) => ReturnType<T>;
 
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface RestClientInterface {
 	get<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathWithParamsFor<'GET'> = PathWithParamsFor<'GET'>>(
 		endpoint: TPath,

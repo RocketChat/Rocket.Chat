@@ -92,7 +92,7 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 				status: INpsVoteStatus.NEW,
 			},
 			$unset: {
-				sentAt: 1 as 1, // why do you do this to me TypeScript?
+				sentAt: 1 as const, // why do you do this to me TypeScript?
 			},
 		};
 		return this.updateMany(query, update);

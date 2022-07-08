@@ -36,11 +36,8 @@ export const replace = (str: string, data: { [key: string]: unknown } = {}): str
 	}
 
 	const options = {
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_Name: settings.get<string>('Site_Name'),
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_URL: settings.get<string>('Site_Url'),
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_URL_Slash: settings.get<string>('Site_Url')?.replace(/\/?$/, '/'),
 		...(data.name
 			? {
@@ -61,9 +58,7 @@ export const replaceEscaped = (str: string, data: { [key: string]: unknown } = {
 	const siteUrl = settings.get<string>('Site_Url');
 
 	return replace(str, {
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_Name: siteName ? escapeHTML(siteName) : undefined,
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_Url: siteUrl ? escapeHTML(siteUrl) : undefined,
 		...Object.entries(data).reduce<{ [key: string]: string }>((ret, [key, value]) => {
 			if (value !== undefined && value !== null) {

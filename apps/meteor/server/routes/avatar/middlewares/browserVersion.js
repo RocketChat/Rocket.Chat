@@ -3,7 +3,7 @@ import parser from 'ua-parser-js';
 
 import { getURL } from '../../../../app/utils/lib/getURL';
 
-return WebApp.connectHandlers.use(function (req, res, next) {
+WebApp.connectHandlers.use(function (req, res, next) {
 	if (req.cookies.browser_version_check === 'bypass') {
 		return next();
 	}

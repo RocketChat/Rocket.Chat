@@ -10,12 +10,12 @@ class Alert extends Component {
 	static defaultProps = {
 		timeout: 3000,
 		hideCloseButton: false,
-	}
+	};
 
 	handleDismiss = () => {
 		const { onDismiss, id } = this.props;
 		onDismiss && onDismiss(id);
-	}
+	};
 
 	componentDidMount() {
 		const { timeout } = this.props;
@@ -50,7 +50,7 @@ class Alert extends Component {
 				</button>
 			)}
 		</div>
-	)
+	);
 }
 
 export default withTranslation()(Alert);

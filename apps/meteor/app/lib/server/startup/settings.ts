@@ -843,7 +843,6 @@ settingsRegistry.addGroup('General', function () {
 		],
 	});
 
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	this.add(
 		'Site_Url',
 		typeof (global as any).__meteor_runtime_config__ !== 'undefined' && (global as any).__meteor_runtime_config__ !== null

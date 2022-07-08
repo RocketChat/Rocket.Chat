@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { expect } from 'chai';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 

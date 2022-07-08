@@ -1,4 +1,4 @@
-import { useMemo, lazy } from 'react';
+import { useMemo, lazy, LazyExoticComponent } from 'react';
 
 import type AutoCompleteDepartment from '../../../../client/components/AutoCompleteDepartment';
 import { registerForm } from '../../../../client/views/omnichannel/additionalForms';
@@ -18,23 +18,22 @@ import type MaxChatsPerAgentDisplay from './MaxChatsPerAgentDisplay';
 import type PrioritiesSelect from './PrioritiesSelect';
 
 declare module '../../../../client/views/omnichannel/additionalForms' {
-	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	interface EEFormHooks {
-		useCustomFieldsAdditionalForm: () => React.LazyExoticComponent<typeof CustomFieldsAdditionalFormContainer>;
-		useMaxChatsPerAgent?: () => React.LazyExoticComponent<typeof MaxChatsPerAgentContainer>;
-		useMaxChatsPerAgentDisplay?: () => React.LazyExoticComponent<typeof MaxChatsPerAgentDisplay>;
-		useEeNumberInput?: () => React.LazyExoticComponent<typeof EeNumberInput>;
-		useEeTextAreaInput?: () => React.LazyExoticComponent<typeof EeTextAreaInput>;
-		useBusinessHoursMultiple?: () => React.LazyExoticComponent<typeof BusinessHoursMultipleContainer>;
-		useEeTextInput?: () => React.LazyExoticComponent<typeof EeTextInput>;
-		useBusinessHoursTimeZone?: () => React.LazyExoticComponent<typeof BusinessHoursTimeZone>;
-		useContactManager?: () => React.LazyExoticComponent<typeof ContactManager>;
+		useCustomFieldsAdditionalForm: () => LazyExoticComponent<typeof CustomFieldsAdditionalFormContainer>;
+		useMaxChatsPerAgent?: () => LazyExoticComponent<typeof MaxChatsPerAgentContainer>;
+		useMaxChatsPerAgentDisplay?: () => LazyExoticComponent<typeof MaxChatsPerAgentDisplay>;
+		useEeNumberInput?: () => LazyExoticComponent<typeof EeNumberInput>;
+		useEeTextAreaInput?: () => LazyExoticComponent<typeof EeTextAreaInput>;
+		useBusinessHoursMultiple?: () => LazyExoticComponent<typeof BusinessHoursMultipleContainer>;
+		useEeTextInput?: () => LazyExoticComponent<typeof EeTextInput>;
+		useBusinessHoursTimeZone?: () => LazyExoticComponent<typeof BusinessHoursTimeZone>;
+		useContactManager?: () => LazyExoticComponent<typeof ContactManager>;
 
-		useCurrentChatTags?: () => React.LazyExoticComponent<typeof CurrentChatTags>;
-		useDepartmentBusinessHours?: () => React.LazyExoticComponent<typeof DepartmentBusinessHours>;
-		useDepartmentForwarding?: () => React.LazyExoticComponent<typeof DepartmentForwarding>;
-		usePrioritiesSelect?: () => React.LazyExoticComponent<typeof PrioritiesSelect>;
-		useSelectForwardDepartment?: () => React.LazyExoticComponent<typeof AutoCompleteDepartment>;
+		useCurrentChatTags?: () => LazyExoticComponent<typeof CurrentChatTags>;
+		useDepartmentBusinessHours?: () => LazyExoticComponent<typeof DepartmentBusinessHours>;
+		useDepartmentForwarding?: () => LazyExoticComponent<typeof DepartmentForwarding>;
+		usePrioritiesSelect?: () => LazyExoticComponent<typeof PrioritiesSelect>;
+		useSelectForwardDepartment?: () => LazyExoticComponent<typeof AutoCompleteDepartment>;
 	}
 }
 

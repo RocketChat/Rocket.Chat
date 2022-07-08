@@ -76,7 +76,6 @@ declare module 'meteor/rocketchat:streamer' {
 	}
 
 	interface IStreamerConstructor {
-		// eslint-disable-next-line @typescript-eslint/no-misused-new
 		new (name: string, options?: { retransmit?: boolean; retransmitToSelf?: boolean }): IStreamer;
 	}
 }

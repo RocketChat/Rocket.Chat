@@ -14,7 +14,7 @@ import styles from './styles.scss';
 export class MessageList extends MemoizedComponent {
 	static defaultProps = {
 		typingUsernames: [],
-	}
+	};
 
 	static SCROLL_AT_TOP = 'top';
 
@@ -22,7 +22,8 @@ export class MessageList extends MemoizedComponent {
 
 	static SCROLL_FREE = 'free';
 
-	scrollPosition = MessageList.SCROLL_AT_BOTTOM
+	// eslint-disable-next-line no-use-before-define
+	scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 
 	handleScroll = () => {
 		if (this.isResizingFromBottom) {
@@ -47,7 +48,7 @@ export class MessageList extends MemoizedComponent {
 			const { onScrollTo } = this.props;
 			onScrollTo && onScrollTo(scrollPosition);
 		}
-	}
+	};
 
 	handleResize = () => {
 		if (this.scrollPosition === MessageList.SCROLL_AT_BOTTOM) {
@@ -61,12 +62,12 @@ export class MessageList extends MemoizedComponent {
 			this.scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 			onScrollTo && onScrollTo(MessageList.SCROLL_AT_BOTTOM);
 		}
-	}
+	};
 
 	handleClick = () => {
 		const { handleEmojiClick } = this.props;
 		handleEmojiClick && handleEmojiClick();
-	}
+	};
 
 	componentWillUpdate() {
 		if (this.scrollPosition === MessageList.SCROLL_AT_TOP) {
@@ -188,7 +189,7 @@ export class MessageList extends MemoizedComponent {
 		}
 
 		return items;
-	}
+	};
 
 	render = ({
 		className,
@@ -204,5 +205,5 @@ export class MessageList extends MemoizedComponent {
 				{this.renderItems(this.props)}
 			</ol>
 		</div>
-	)
+	);
 }

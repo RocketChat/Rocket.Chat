@@ -169,7 +169,6 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	const subject = TAPi18n.__('Channel_Export');
 
 	const body = TAPi18n.__('UserDataDownload_EmailBody', {
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		download_link: getURL(DataExport.getPath(file._id), { cdn: false, full: true }),
 	});
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import type { IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 

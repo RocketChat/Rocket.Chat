@@ -19,10 +19,8 @@ declare module 'meteor/rocketchat:tap-i18n' {
 		};
 		function setLanguage(language: string): void;
 
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		const _language_changed_tracker: Tracker.Dependency;
 
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		const _loaded_lang_session_key: string;
 
 		const conf: {

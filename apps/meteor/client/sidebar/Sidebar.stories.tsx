@@ -12,7 +12,6 @@ export default {
 } as Meta;
 
 const settings: Record<string, ISetting> = {
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	UI_Use_Real_Name: {
 		_id: 'UI_Use_Real_Name',
 		blocked: false,

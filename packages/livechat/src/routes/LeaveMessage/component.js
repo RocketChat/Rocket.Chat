@@ -20,7 +20,7 @@ class LeaveMessage extends Component {
 		email: [Validations.nonEmpty, Validations.email],
 		department: [],
 		message: [Validations.nonEmpty],
-	}
+	};
 
 	getDefaultState = () => {
 		const { hasDepartmentField, departments } = this.props;
@@ -40,33 +40,33 @@ class LeaveMessage extends Component {
 
 	getValidableFields = () => Object.keys(this.validations)
 		.map((fieldName) => (this.state[fieldName] ? { fieldName, ...this.state[fieldName] } : null))
-		.filter(Boolean)
+		.filter(Boolean);
 
-	validate = ({ name, value }) => this.validations[name].reduce((error, validation) => error || validation({ value }), undefined)
+	validate = ({ name, value }) => this.validations[name].reduce((error, validation) => error || validation({ value }), undefined);
 
 	validateAll = () => {
 		for (const { fieldName: name, value } of this.getValidableFields()) {
 			const error = this.validate({ name, value });
 			this.setState({ [name]: { ...this.state[name], value, error, showError: false } });
 		}
-	}
+	};
 
 	reset = () => this.setState(this.getDefaultState());
 
-	isValid = () => this.getValidableFields().every(({ error } = {}) => !error)
+	isValid = () => this.getValidableFields().every(({ error } = {}) => !error);
 
 	handleFieldChange = (name) => ({ target: { value } }) => {
 		const error = this.validate({ name, value });
 		this.setState({ [name]: { ...this.state[name], value, error, showError: false } }, () => { this.validateAll(); });
-	}
+	};
 
-	handleNameChange = this.handleFieldChange('name')
+	handleNameChange = this.handleFieldChange('name');
 
-	handleEmailChange = this.handleFieldChange('email')
+	handleEmailChange = this.handleFieldChange('email');
 
-	handleDepartmentChange = this.handleFieldChange('department')
+	handleDepartmentChange = this.handleFieldChange('department');
 
-	handleMessageChange = this.handleFieldChange('message')
+	handleMessageChange = this.handleFieldChange('message');
 
 	handleSubmit = async (event) => {
 		event.preventDefault();
@@ -81,7 +81,7 @@ class LeaveMessage extends Component {
 				this.reset();
 			}
 		}
-	}
+	};
 
 	componentDidMount() {
 		this.validateAll();
@@ -169,7 +169,7 @@ class LeaveMessage extends Component {
 				<Button submit loading={loading} disabled={!valid || loading} stack>{t('send')}</Button>
 			</ButtonGroup>
 		</Form>
-	)
+	);
 
 	render = ({ color, title, message, unavailableMessage, hasForm, t, ...props }) => {
 		const defaultTitle = t('leave_a_message');
@@ -191,7 +191,7 @@ class LeaveMessage extends Component {
 			</Screen.Content>
 			<Screen.Footer />
 		</Screen>;
-	}
+	};
 }
 
 export default withTranslation()(LeaveMessage);

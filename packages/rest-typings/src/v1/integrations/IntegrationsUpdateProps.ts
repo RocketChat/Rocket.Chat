@@ -109,7 +109,6 @@ const integrationsUpdateSchema = {
 					type: 'string',
 					nullable: true,
 				},
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				target_url: {
 					type: 'string',
 					nullable: true,

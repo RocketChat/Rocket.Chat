@@ -34,7 +34,6 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 	const changeModerator = useEndpointActionExperimental(
 		'POST',
 		`${endpointPrefix}.${changeModeratorEndpoint}`,
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		t(changeModeratorMessage, { username: user.username, room_name: roomName }),
 	);
 	const changeModeratorAction = useMutableCallback(() => changeModerator({ roomId: rid, userId: uid }));

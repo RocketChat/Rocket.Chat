@@ -239,7 +239,7 @@ export class MemoizedComponent extends Component {
 
 export const memo = (component) =>
 	class extends MemoizedComponent {
-		render = component
+		render = component;
 	};
 
 export const isActiveSession = () => {

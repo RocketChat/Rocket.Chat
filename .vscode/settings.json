@@ -1,11 +1,11 @@
 {
 	"eslint.workingDirectories": [
 		{
-			"directory": "packages/*",
+			"pattern": "packages/*",
 			"changeProcessCWD": true
 		},
 		{
-			"directory": "apps/meteor",
+			"pattern": "apps/*",
 			"changeProcessCWD": true
 		}
 	],

@@ -16,7 +16,7 @@ export class SelectInput extends Component {
 
 	state = {
 		value: this.props.value,
-	}
+	};
 
 	handleChange = (event) => {
 		const { onChange } = this.props;
@@ -27,7 +27,7 @@ export class SelectInput extends Component {
 		}
 
 		this.setState({ value: event.target.value });
-	}
+	};
 
 	render = ({
 		name,
@@ -66,5 +66,5 @@ export class SelectInput extends Component {
 			</select>
 			<ArrowIcon className={createClassName(styles, 'select-input__arrow')} />
 		</div>
-	)
+	);
 }

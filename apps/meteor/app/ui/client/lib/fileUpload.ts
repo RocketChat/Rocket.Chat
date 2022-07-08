@@ -19,7 +19,6 @@ type Uploading = {
 };
 
 declare module 'meteor/session' {
-	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Session {
 		function get(key: 'uploading'): Uploading[];

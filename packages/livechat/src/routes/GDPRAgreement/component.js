@@ -17,7 +17,7 @@ class GDPR extends Component {
 	handleClick = () => {
 		const { onAgree } = this.props;
 		onAgree && onAgree();
-	}
+	};
 
 	render = ({
 		color,
@@ -66,7 +66,7 @@ class GDPR extends Component {
 			</Screen.Content>
 			<Screen.Footer />
 		</Screen>
-	)
+	);
 }
 
 export default withTranslation()(GDPR);

@@ -9,11 +9,11 @@ import ChatFinished from './component';
 class ChatFinishedContainer extends Component {
 	handleRedirect = () => {
 		route('/');
-	}
+	};
 
 	render = (props) => (
 		<ChatFinished {...props} onRedirectChat={this.handleRedirect} />
-	)
+	);
 }
 
 

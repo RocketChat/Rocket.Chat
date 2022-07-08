@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { expect } from 'chai';
 
 import { validateSetting } from '../../../../../../app/settings/server/functions/validateSetting';

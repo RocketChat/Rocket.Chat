@@ -18,7 +18,7 @@ export class TriggerMessageContainer extends Component {
 	render = (props) => {
 		parentCall('resetDocumentStyle');
 		return <TriggerMessage onStartChat={() => this.handleStart(props)} {...props} />;
-	}
+	};
 }
 
 export const TriggerMessageConnector = ({ ref, ...props }) => (

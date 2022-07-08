@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/interface-name-prefix */
-
 interface Navigator {
 	/** @deprecated */
 	readonly userLanguage?: string;

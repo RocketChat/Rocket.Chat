@@ -29,7 +29,7 @@ export class RegisterContainer extends Component {
 		if (deptDefault) {
 			return deptDefault._id;
 		}
-	}
+	};
 
 	handleSubmit = async ({ name, email, department, ...customFields }) => {
 		const { dispatch, token } = this.props;
@@ -48,7 +48,7 @@ export class RegisterContainer extends Component {
 		} finally {
 			await dispatch({ loading: false });
 		}
-	}
+	};
 
 	getDepartmentDefault() {
 		const { guestDepartment, departments } = this.props;
@@ -68,7 +68,7 @@ export class RegisterContainer extends Component {
 
 	render = (props) => (
 		<Register {...props} onSubmit={this.handleSubmit} departmentDefault={this.getDepartmentDefault()} />
-	)
+	);
 }
 
 export const RegisterConnector = ({ ref, ...props }) => (

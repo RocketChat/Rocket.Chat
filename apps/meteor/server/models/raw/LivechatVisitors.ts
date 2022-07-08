@@ -142,7 +142,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		const project = {
 			$project: {
 				// TODO: move this logic to client
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				custom_name: { $concat: ['$username', ' - ', '$name'] },
 				...projection,
 			},
