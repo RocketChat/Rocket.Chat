@@ -47,7 +47,11 @@ function ContactNewEdit({ id, data, close }) {
 
 	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(getInitialValues(data));
+	const initialValue = getInitialValues(data);
+
+	const { username: initialUsername } = initialValue;
+
+	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(initialValue);
 
 	const eeForms = useFormsSubscription();
 
@@ -136,17 +140,15 @@ function ContactNewEdit({ id, data, close }) {
 		!phone && setPhoneError(null);
 	}, [phone]);
 
-	// if contactManager username is set, then get its corresponding userId when the component is mounted
 	useEffect(() => {
-		if (!username) {
+		if (!initialUsername) {
 			return;
 		}
 
-		getUserData({ username }).then(({ user }) => {
+		getUserData({ username: initialUsername }).then(({ user }) => {
 			setUserId(user._id);
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [getUserData, initialUsername]);
 
 	const handleContactManagerChange = useMutableCallback(async (userId) => {
 		setUserId(userId);
