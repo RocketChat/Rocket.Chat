@@ -418,11 +418,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		Notifications.notifyUser(call.createdBy._id, 'video-conference.end', params);
 
 		// If the callee hasn't joined the call yet, notify them that it has already ended
-		const subscriptions = Subscriptions.findByRoomIdAndNotUserId(call.rid, call.createdBy._id, {
+		const subscriptions = await Subscriptions.findByRoomIdAndNotUserId(call.rid, call.createdBy._id, {
 			projection: { 'u._id': 1, '_id': 0 },
-		});
+		}).toArray();
 
-		await subscriptions.forEach(async (subscription) => Notifications.notifyUser(subscription.u._id, 'video-conference.end', params));
+		for (const subscription of subscriptions) {
+			if (call.users.find(({ _id }) => _id === subscription.u._id)) {
+				continue;
+			}
+
+			Notifications.notifyUser(subscription.u._id, 'video-conference.end', params);
+		}
 	}
 
 	private async endGroupCall(call: IGroupVideoConference): Promise<void> {
