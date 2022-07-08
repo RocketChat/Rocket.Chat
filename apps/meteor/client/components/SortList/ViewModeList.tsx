@@ -1,8 +1,9 @@
 import { ToggleSwitch, RadioButton, OptionTitle } from '@rocket.chat/fuselage';
-import { useUserPreference, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, ReactElement } from 'react';
 
 import ListItem from '../Sidebar/ListItem';
+import { useEndpointActionExperimental } from '/client/hooks/useEndpointActionExperimental';
 
 const style = {
 	textTransform: 'uppercase',
@@ -16,10 +17,10 @@ const checkBoxStyle = {
 function ViewModeList(): ReactElement {
 	const t = useTranslation();
 
-	const saveUserPreferences = useMethod('saveUserPreferences');
+	const saveUserPreferences = useEndpointActionExperimental('POST', '/v1/users.setPreferences');
 
 	const useHandleChange = (value: 'medium' | 'extended' | 'condensed'): (() => void) =>
-		useCallback(() => saveUserPreferences({ sidebarViewMode: value }), [value]);
+		useCallback(() => saveUserPreferences({ data: { sidebarViewMode: value } }), [value]);
 
 	const sidebarViewMode = useUserPreference<'medium' | 'extended' | 'condensed'>('sidebarViewMode', 'extended');
 	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar', false);
@@ -29,7 +30,7 @@ function ViewModeList(): ReactElement {
 	const setToCondensed = useHandleChange('condensed');
 
 	const handleChangeSidebarDisplayAvatar = useCallback(
-		() => saveUserPreferences({ sidebarDisplayAvatar: !sidebarDisplayAvatar }),
+		() => saveUserPreferences({ data: { sidebarDisplayAvatar: !sidebarDisplayAvatar } }),
 		[saveUserPreferences, sidebarDisplayAvatar],
 	);
 
