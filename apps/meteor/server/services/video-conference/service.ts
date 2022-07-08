@@ -386,8 +386,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		switch (call.type) {
 			case 'direct':
 				return this.endDirectCall(call);
-			case 'videoconference':
-				return this.endGroupCall(call);
 		}
 	}
 
@@ -411,10 +409,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async endDirectCall(call: IDirectVideoConference): Promise<void> {
-		if (!call.messages.ended) {
-			this.createDirectCallEndedMessage(call);
-		}
-
 		const params = { rid: call.rid, uid: call.createdBy._id, callId: call._id };
 
 		// Notify the caller that the call was ended by the server
@@ -431,12 +425,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 
 			Notifications.notifyUser(subscription.u._id, 'video-conference.end', params);
-		}
-	}
-
-	private async endGroupCall(call: IGroupVideoConference): Promise<void> {
-		if (!call.messages.ended) {
-			this.createGroupCallEndedMessage(call);
 		}
 	}
 
@@ -549,39 +537,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		api.broadcast('notify.ephemeralMessage', uid, rid, {
 			msg,
 		});
-	}
-
-	private async createDirectCallEndedMessage(call: IDirectVideoConference): Promise<IMessage['_id'] | undefined> {
-		const user = (call.endedBy && (await Users.findOneById(call.endedBy?._id))) || undefined;
-
-		const text =
-			user && user._id === call.endedBy?._id
-				? TAPi18n.__('video_direct_ended_by', {
-						username: (settings.get<boolean>('UI_Use_Real_Name') ? user.name : user.username) || user.username || '',
-				  })
-				: TAPi18n.__('video_direct_ended');
-
-		return this.createMessage(call.rid, call.providerName, {
-			blocks: [this.buildMessageBlock(text)],
-		} as Partial<IMessage>);
-	}
-
-	private async createGroupCallEndedMessage(call: IGroupVideoConference): Promise<IMessage['_id'] | undefined> {
-		const user = (call.endedBy && (await Users.findOneById(call.endedBy?._id))) || undefined;
-
-		const text =
-			user && user._id === call.endedBy?._id
-				? TAPi18n.__('video_conference_ended_by', {
-						conference: call.title,
-						username: (settings.get<boolean>('UI_Use_Real_Name') ? user.name : user.username) || user.username || '',
-				  })
-				: TAPi18n.__('video_conference_ended', {
-						conference: call.title,
-				  });
-
-		return this.createMessage(call.rid, call.providerName, {
-			blocks: [this.buildMessageBlock(text)],
-		} as Partial<IMessage>);
 	}
 
 	private async createLivechatMessage(call: ILivechatVideoConference, user: IUser, url: string): Promise<IMessage['_id']> {
