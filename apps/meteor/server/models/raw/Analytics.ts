@@ -1,7 +1,6 @@
 import type { IAnalytic, IRoom } from '@rocket.chat/core-typings';
 import type { IAnalyticsModel } from '@rocket.chat/model-typings';
-import type { AggregationCursor, Cursor, Db, IndexSpecification, SortOptionObject, UpdateWriteOpResult } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { AggregationCursor, FindCursor, Db, IndexDescription, FindOptions, UpdateResult, Document } from 'mongodb';
 import { Random } from 'meteor/random';
 
 import { BaseRaw } from './BaseRaw';
@@ -9,16 +8,16 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel {
 	constructor(db: Db) {
-		super(db, getCollectionName('analytics'), undefined, {
+		super(db, 'analytics', undefined, {
 			collection: { readPreference: readSecondaryPreferred(db) },
 		});
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
 	}
 
-	saveMessageSent({ room, date }: { room: IRoom; date: IAnalytic['date'] }): Promise<UpdateWriteOpResult> {
+	saveMessageSent({ room, date }: { room: IRoom; date: IAnalytic['date'] }): Promise<Document | UpdateResult> {
 		return this.updateMany(
 			{ date, 'room._id': room._id, 'type': 'messages' },
 			{
@@ -41,7 +40,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 		);
 	}
 
-	saveUserData({ date }: { date: IAnalytic['date'] }): Promise<UpdateWriteOpResult> {
+	saveUserData({ date }: { date: IAnalytic['date'] }): Promise<Document | UpdateResult> {
 		return this.updateMany(
 			{ date, type: 'users' },
 			{
@@ -56,7 +55,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 		);
 	}
 
-	saveMessageDeleted({ room, date }: { room: { _id: string }; date: IAnalytic['date'] }): Promise<UpdateWriteOpResult> {
+	saveMessageDeleted({ room, date }: { room: { _id: string }; date: IAnalytic['date'] }): Promise<Document | UpdateResult> {
 		return this.updateMany(
 			{ date, 'room._id': room._id },
 			{
@@ -72,7 +71,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 	}: {
 		start: IAnalytic['date'];
 		end: IAnalytic['date'];
-		options?: { sort?: SortOptionObject<IAnalytic>; count?: number };
+		options?: { sort?: FindOptions<IAnalytic>['sort']; count?: number };
 	}): AggregationCursor<{
 		_id: IAnalytic['date'];
 		messages: number;
@@ -133,7 +132,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 	}: {
 		start: IAnalytic['date'];
 		end: IAnalytic['date'];
-		options?: { sort?: SortOptionObject<IAnalytic>; count?: number };
+		options?: { sort?: FindOptions<IAnalytic>['sort']; count?: number };
 	}): AggregationCursor<{
 		t: IRoom['t'];
 		name: string;
@@ -174,7 +173,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 	}: {
 		start: IAnalytic['date'];
 		end: IAnalytic['date'];
-		options?: { sort?: SortOptionObject<IAnalytic>; count?: number };
+		options?: { sort?: FindOptions<IAnalytic>['sort']; count?: number };
 	}): AggregationCursor<{
 		_id: IAnalytic['date'];
 		users: number;
@@ -200,7 +199,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 		]);
 	}
 
-	findByTypeBeforeDate({ type, date }: { type: IAnalytic['type']; date: IAnalytic['date'] }): Cursor<IAnalytic> {
+	findByTypeBeforeDate({ type, date }: { type: IAnalytic['type']; date: IAnalytic['date'] }): FindCursor<IAnalytic> {
 		return this.find({ type, date: { $lte: date } });
 	}
 }
