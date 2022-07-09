@@ -28,7 +28,7 @@ describe('[Assets]', function () {
 				.set(credentials)
 				.attach('asset', imgURL)
 
-				.send({
+				.field({
 					assetName: 'logo',
 				})
 				.expect('Content-Type', 'application/json')
