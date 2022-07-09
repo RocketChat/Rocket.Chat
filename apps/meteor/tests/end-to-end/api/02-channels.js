@@ -505,7 +505,6 @@ describe('[Channels]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
-					console.log({ code: res.statusCode, body: res.body });
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-room-not-found');
 				})
