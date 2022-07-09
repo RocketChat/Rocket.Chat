@@ -1,33 +1,45 @@
-import { Button, TextInput, Field, Modal, Box, Throbber } from '@rocket.chat/fuselage';
+import { Button, Field, Modal, Box, Throbber, PasswordInput } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useRouteParameter, useRoute, useUser, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	useRouteParameter,
+	useRoute,
+	useUser,
+	useMethod,
+	useTranslation,
+	TranslationKey,
+	useToastMessageDispatch,
+} from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, ReactElement } from 'react';
+import { useQuery } from 'react-query';
 
-import { useMethodData } from '../../../hooks/useMethodData';
 import LoginLayout from '../LoginLayout';
 
 const getChangePasswordReason = ({
 	requirePasswordChange,
 	requirePasswordChangeReason = requirePasswordChange ? 'You_need_to_change_your_password' : 'Please_enter_your_new_password_below',
-} = {}) => requirePasswordChangeReason;
+}: { requirePasswordChange?: boolean; requirePasswordChangeReason?: TranslationKey } = {}): TranslationKey => requirePasswordChangeReason;
 
-const ResetPassword = () => {
+const ResetPassword = (): ReactElement => {
 	const user = useUser();
 	const t = useTranslation();
 	const setUserPassword = useMethod('setUserPassword');
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
-	const params = useMemo(
-		() => [
-			{
-				token,
-			},
-		],
-		[token],
-	);
 
-	const { value: { enabled: policyEnabled, policy: policies } = {} } = useMethodData('getPasswordPolicy', params);
+	const getPasswordPolicy = useMethod('getPasswordPolicy');
+
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { data: { enabled: policyEnabled, policy: policies } = {} } = useQuery(
+		['login/password-policy', token],
+		async () => getPasswordPolicy(token ? { token } : undefined),
+		{
+			onError: (error: any) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	const router = useRoute('home');
 
@@ -35,7 +47,7 @@ const ResetPassword = () => {
 
 	const [newPassword, setNewPassword] = useState('');
 	const [isLoading, setIsLoading] = useSafely(useState(false));
-	const [error, setError] = useSafely(useState());
+	const [error, setError] = useSafely(useState<string | undefined>());
 
 	const handleOnChange = useCallback((event) => setNewPassword(event.currentTarget.value), [setNewPassword]);
 
@@ -56,8 +68,9 @@ const ResetPassword = () => {
 				} else {
 					await setUserPassword(newPassword);
 				}
-			} catch ({ error, reason = error }) {
-				setError(reason);
+			} catch ({ error, reason }) {
+				const _error = reason ?? error;
+				setError(_error ? String(_error) : undefined);
 			} finally {
 				setIsLoading(false);
 			}
@@ -75,9 +88,8 @@ const ResetPassword = () => {
 					<Field>
 						<Field.Label>{t(changePasswordReason)}</Field.Label>
 						<Field.Row>
-							<TextInput
+							<PasswordInput
 								placeholder={t('Type_your_new_password')}
-								type='password'
 								name='newPassword'
 								id='newPassword'
 								dir='auto'
@@ -89,7 +101,7 @@ const ResetPassword = () => {
 						{error && <Field.Error>{error}</Field.Error>}
 						{policyEnabled && (
 							<Field.Hint>
-								{policies.map((policy, index) => (
+								{policies?.map((policy, index) => (
 									<Box is='p' textAlign='start' key={index}>
 										{t(...policy)}
 									</Box>
