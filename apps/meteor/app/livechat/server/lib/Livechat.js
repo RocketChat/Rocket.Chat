@@ -553,7 +553,6 @@ export const Livechat = {
 			'Livechat_offline_success_message',
 			'Livechat_offline_form_unavailable',
 			'Livechat_display_offline_form',
-			'Omnichannel_call_provider',
 			'Language',
 			'Livechat_enable_transcript',
 			'Livechat_transcript_message',
@@ -568,6 +567,8 @@ export const Livechat = {
 			'Livechat_data_processing_consent_text',
 			'Livechat_show_agent_info',
 			'Livechat_clear_local_storage_when_chat_ended',
+			'VideoConf_Default_Provider',
+			'VideoConf_Enable_Omnichannel',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});

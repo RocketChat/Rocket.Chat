@@ -6,7 +6,11 @@ import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { APIClient } from '../../utils/client';
 
 addAction('webRTCVideo', ({ room }) => {
-	const enabled = useSetting('WebRTC_Enabled') && useSetting('Omnichannel_call_provider') === 'WebRTC' && room.servedBy;
+	const enabled =
+		useSetting('WebRTC_Enabled') &&
+		useSetting('VideoConf_Enable_Omnichannel') &&
+		useSetting('VideoConf_Default_Provider') === 'webrtc' &&
+		room.servedBy;
 	const federated = isRoomFederated(room);
 
 	const handleClick = useCallback(async (): Promise<void> => {

@@ -35,7 +35,10 @@ API.v1.addRoute(
 					throw new Meteor.Error('invalid-room');
 				}
 
-				const webrtcCallingAllowed = rcSettings.get('WebRTC_Enabled') === true && rcSettings.get('Omnichannel_call_provider') === 'WebRTC';
+				const webrtcCallingAllowed =
+					rcSettings.get('WebRTC_Enabled') === true &&
+					rcSettings.get('VideoConf_Enable_Omnichannel') &&
+					rcSettings.get('VideoConf_Default_Provider') === 'webrtc';
 				if (!webrtcCallingAllowed) {
 					throw new Meteor.Error('webRTC calling not enabled');
 				}
