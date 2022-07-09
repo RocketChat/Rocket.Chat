@@ -16,6 +16,13 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOneOptions<ISubscription>): Cursor<ISubscription>;
 
+	findByUserIdAndType(userId: IUser['_id'], type: ISubscription['t'], options?: FindOneOptions<ISubscription>): Cursor<ISubscription>;
+	findByUserIdAndTypes(
+		userId: IUser['_id'],
+		types: Array<ISubscription['t']>,
+		options?: FindOneOptions<ISubscription>,
+	): Cursor<ISubscription>;
+
 	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number>;
 
 	isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<ISubscription | null>;

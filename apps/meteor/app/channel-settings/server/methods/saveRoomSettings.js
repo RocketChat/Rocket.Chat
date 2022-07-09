@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
@@ -211,38 +211,38 @@ const settingSavers = {
 			saveRoomSystemMessages(rid, value, user);
 		}
 	},
-	joinCode({ value, rid }) {
-		Rooms.setJoinCodeById(rid, String(value));
+	async joinCode({ value, rid }) {
+		await Rooms.setJoinCodeById(rid, String(value));
 	},
-	default({ value, rid }) {
-		Rooms.saveDefaultById(rid, value);
+	async default({ value, rid }) {
+		await Rooms.saveDefaultById(rid, value);
 	},
-	featured({ value, rid }) {
-		Rooms.saveFeaturedById(rid, value);
+	async featured({ value, rid }) {
+		await Rooms.saveFeaturedById(rid, value);
 	},
-	retentionEnabled({ value, rid }) {
-		Rooms.saveRetentionEnabledById(rid, value);
+	async retentionEnabled({ value, rid }) {
+		await Rooms.saveRetentionEnabledById(rid, value);
 	},
-	retentionMaxAge({ value, rid }) {
-		Rooms.saveRetentionMaxAgeById(rid, value);
+	async retentionMaxAge({ value, rid }) {
+		await Rooms.saveRetentionMaxAgeById(rid, value);
 	},
-	retentionExcludePinned({ value, rid }) {
-		Rooms.saveRetentionExcludePinnedById(rid, value);
+	async retentionExcludePinned({ value, rid }) {
+		await Rooms.saveRetentionExcludePinnedById(rid, value);
 	},
-	retentionFilesOnly({ value, rid }) {
-		Rooms.saveRetentionFilesOnlyById(rid, value);
+	async retentionFilesOnly({ value, rid }) {
+		await Rooms.saveRetentionFilesOnlyById(rid, value);
 	},
-	retentionIgnoreThreads({ value, rid }) {
-		Rooms.saveRetentionIgnoreThreadsById(rid, value);
+	async retentionIgnoreThreads({ value, rid }) {
+		await Rooms.saveRetentionIgnoreThreadsById(rid, value);
 	},
-	retentionOverrideGlobal({ value, rid }) {
-		Rooms.saveRetentionOverrideGlobalById(rid, value);
+	async retentionOverrideGlobal({ value, rid }) {
+		await Rooms.saveRetentionOverrideGlobalById(rid, value);
 	},
 	encrypted({ value, room, rid, user }) {
 		saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
 	},
-	favorite({ value, rid }) {
-		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
+	async favorite({ value, rid }) {
+		await Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
 	},
 	async roomAvatar({ value, rid, user }) {
 		await setRoomAvatar(rid, value, user);
@@ -276,7 +276,7 @@ Meteor.methods({
 			});
 		}
 
-		const room = Rooms.findOneById(rid);
+		const room = await Rooms.findOneById(rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -340,8 +340,8 @@ Meteor.methods({
 			}
 		}
 
-		Meteor.defer(function () {
-			const room = Rooms.findOneById(rid);
+		Meteor.defer(async function () {
+			const room = await Rooms.findOneById(rid);
 			callbacks.run('afterSaveRoomSettings', room);
 		});
 

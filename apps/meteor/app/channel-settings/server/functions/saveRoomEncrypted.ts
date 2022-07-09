@@ -1,15 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import type { WriteOpResult } from 'mongodb';
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { Rooms, Messages } from '../../../models/server';
+import { Messages, Rooms } from '../../../models/server';
 
-export const saveRoomEncrypted = function (rid: string, encrypted: boolean, user: IUser, sendMessage = true): Promise<WriteOpResult> {
+export function saveRoomEncrypted(rid: string, encrypted: boolean, user: IUser, sendMessage = true): number {
 	if (!Match.test(rid, String)) {
-		throw new Meteor.Error('invalid-room', 'Invalid room', {
-			function: 'RocketChat.saveRoomEncrypted',
-		});
+		throw new Meteor.Error('invalid-room', 'Invalid room', 'RocketChat.saveRoomEncrypted');
 	}
 
 	const update = Rooms.saveEncryptedById(rid, encrypted);
@@ -23,4 +20,4 @@ export const saveRoomEncrypted = function (rid: string, encrypted: boolean, user
 		);
 	}
 	return update;
-};
+}

@@ -77,6 +77,30 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
+	findByUserIdAndType(userId: IUser['_id'], type: ISubscription['t'], options: FindOneOptions<ISubscription> = {}) {
+		const query = {
+			'u._id': userId,
+			't': type,
+		};
+
+		return this.find(query, options);
+	}
+
+	findByUserIdAndTypes(
+		userId: IUser['_id'],
+		types: Array<ISubscription['t']>,
+		options: FindOneOptions<ISubscription> = {},
+	): Cursor<ISubscription> {
+		const query = {
+			'u._id': userId,
+			't': {
+				$in: types,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number> {
 		const query = {
 			rid,

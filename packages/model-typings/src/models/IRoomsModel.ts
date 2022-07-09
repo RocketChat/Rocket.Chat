@@ -1,4 +1,4 @@
-import type { Cursor, AggregationCursor } from 'mongodb';
+import type { Cursor, AggregationCursor, UpdateWriteOpResult, FindOneOptions } from 'mongodb';
 import type { IRoom, IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
@@ -30,6 +30,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid: any, name: any, groupsToAccept: any, options: any): any;
 
+	findBySubscriptionTypeAndUserId<T>(type: string, uid: string, options?: FindOneOptions<IRoom>,): Promise<Cursor<IRoom & T>>;
+
 	unsetTeamId(teamId: any, options?: any): any;
 
 	unsetTeamById(rid: any, options?: any): any;
@@ -42,6 +44,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setTeamDefaultById(rid: any, teamDefault: any, options?: any): any;
 
+	setJoinCodeById(rid: string, joinCode: string): Promise<UpdateWriteOpResult>;
+
 	findChannelsWithNumberOfMessagesBetweenDate(params: {
 		start: any;
 		end: any;
@@ -50,6 +54,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		onlyCount?: boolean;
 		options?: any;
 	}): any;
+
+	findOneByIdOrName(idOrName: string, options?: any): Promise<any>;
 
 	findOneByName(name: any, options?: any): any;
 
@@ -72,6 +78,17 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setRoomNameById(roomId: any, name: any, fname: any): any;
 
 	setRoomTopicById(roomId: any, topic: any): any;
+
+	saveDefaultById(_id: string, defaultValue: boolean): Promise<UpdateWriteOpResult>;
+	saveFeaturedById(_id: string, featured: boolean): Promise<UpdateWriteOpResult>;
+	saveRetentionEnabledById(_id: string, value: boolean | null): Promise<UpdateWriteOpResult>;
+	saveRetentionMaxAgeById(_id: string, value: number | null): Promise<UpdateWriteOpResult>;
+	saveRetentionExcludePinnedById(_id: string, value: boolean | null): Promise<UpdateWriteOpResult>;
+	saveRetentionFilesOnlyById(_id: string, value: boolean | null): Promise<UpdateWriteOpResult>;
+	saveRetentionIgnoreThreadsById(_id: string, value: boolean | null): Promise<UpdateWriteOpResult>;
+	saveRetentionOverrideGlobalById(_id: string, value: boolean | null): Promise<UpdateWriteOpResult>;
+	saveFavoriteById(_id: string, favorite: boolean, defaultValue?: boolean): Promise<UpdateWriteOpResult>;
+	saveEncryptedById(_id: string, encrypted: boolean): Promise<UpdateWriteOpResult>;
 
 	findByE2E(options: any): any;
 
