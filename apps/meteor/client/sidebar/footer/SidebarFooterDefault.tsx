@@ -4,7 +4,7 @@ import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import React, { ReactElement } from 'react';
 
 import { settings } from '../../../app/settings/client';
-import { SidebarFooterWatermark } from './SidebarFooterWatermark';
+import { SidebarFooterWatermark } from '../../../ee/client/sidebar/footer/SidebarFooterWatermark';
 
 const SidebarFooterDefault = (): ReactElement => {
 	const sidebarFooterStyle = css`
