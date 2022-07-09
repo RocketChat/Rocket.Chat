@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { send } from 'process';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { imgURL } from '../../data/interactions.js';
@@ -26,7 +27,11 @@ describe('[Assets]', function () {
 			request
 				.post(api('assets.setAsset'))
 				.set(credentials)
-				.attach('logo', imgURL)
+				.attach('asset', imgURL)
+
+				.send({
+					assetName: 'logo',
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
