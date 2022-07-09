@@ -932,16 +932,16 @@ const WebRTC = new (class {
 			return false;
 		}
 
+		if (settings.get('VideoConf_Default_Provider') !== 'webrtc') {
+			return false;
+		}
+
 		if (visitorId) {
-			return settings.get('Omnichannel_call_provider') === 'WebRTC';
+			return settings.get('VideoConf_Enable_Omnichannel');
 		}
 
 		const subscription = ChatSubscription.findOne({ rid });
 		if (!subscription) {
-			return false;
-		}
-
-		if (subscription.t !== 'l' && settings.get('VideoConf_Default_Provider') !== 'webrtc') {
 			return false;
 		}
 
@@ -953,7 +953,7 @@ const WebRTC = new (class {
 			case 'c':
 				return settings.get('VideoConf_Enable_Channels');
 			case 'l':
-				return settings.get('Omnichannel_call_provider') === 'WebRTC';
+				return settings.get('VideoConf_Enable_Omnichannel');
 		}
 
 		return false;

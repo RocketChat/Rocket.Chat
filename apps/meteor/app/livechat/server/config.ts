@@ -615,18 +615,12 @@ Meteor.startup(function () {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		this.add('Omnichannel_call_provider', 'none', {
-			type: 'select',
+		this.add('VideoConf_Enable_Omnichannel', false, {
+			type: 'boolean',
 			public: true,
 			group: 'Omnichannel',
 			section: 'Video_and_Audio_Call',
-			values: [
-				{ key: 'none', i18nLabel: 'None' },
-				{ key: 'Jitsi', i18nLabel: 'Jitsi' },
-				{ key: 'WebRTC', i18nLabel: 'WebRTC' },
-			],
 			i18nDescription: 'Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings',
-			i18nLabel: 'Call_provider',
 			alert:
 				'The WebRTC provider is currently in alpha!<br/>We recommend using Firefox Browser for this feature since there are some known bugs within other browsers that still need to be fixed.<br/>Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
 			enableQuery: omnichannelEnabledQuery,
