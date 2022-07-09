@@ -4,13 +4,10 @@ import path from 'path';
 
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import Grid from 'gridfs-stream';
 import mkdirp from 'mkdirp';
 
-// Fix problem with usernames being converted to object id
-Grid.prototype.tryParseObjectId = function () {
-	return false;
-};
+const mongo = MongoInternals.NpmModule;
+const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 const RocketChatFile = {};
 
@@ -40,37 +37,30 @@ RocketChatFile.GridFS = class {
 
 		this.name = name;
 		this.transformWrite = transformWrite;
-		const mongo = MongoInternals.NpmModule;
-		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-		this.store = new Grid(db, mongo);
-		this.findOneSync = Meteor.wrapAsync(this.store.collection(this.name).findOne.bind(this.store.collection(this.name)));
-		this.removeSync = Meteor.wrapAsync(this.store.remove.bind(this.store));
-		this.countSync = Meteor.wrapAsync(this.store._col.count.bind(this.store._col));
+
+		this.bucket = new mongo.GridFSBucket(db, { bucketName: this.name });
+
 		this.getFileSync = Meteor.wrapAsync(this.getFile.bind(this));
 	}
 
-	findOne(fileName) {
-		return this.findOneSync({
-			_id: fileName,
-		});
+	findOne(filename) {
+		const file = Promise.await(this.bucket.find({ filename }).limit(1).toArray());
+		if (!file) {
+			return;
+		}
+		return file[0];
 	}
 
-	remove(fileName) {
-		return this.removeSync({
-			_id: fileName,
-			root: this.name,
-		});
+	remove(fileId) {
+		Promise.await(this.bucket.delete(fileId));
 	}
 
 	createWriteStream(fileName, contentType) {
 		const self = this;
-		let ws = this.store.createWriteStream({
-			_id: fileName,
-			filename: fileName,
-			mode: 'w',
-			root: this.name,
-			content_type: contentType,
+		let ws = this.bucket.openUploadStream(fileName, {
+			contentType,
 		});
+
 		if (self.transformWrite != null) {
 			ws = RocketChatFile.addPassThrough(ws, function (rs, ws) {
 				const file = {
@@ -88,10 +78,7 @@ RocketChatFile.GridFS = class {
 	}
 
 	createReadStream(fileName) {
-		return this.store.createReadStream({
-			_id: fileName,
-			root: this.name,
-		});
+		return this.bucket.openDownloadStreamByName(fileName);
 	}
 
 	getFileWithReadStream(fileName) {
@@ -138,7 +125,7 @@ RocketChatFile.GridFS = class {
 		if (file == null) {
 			return undefined;
 		}
-		return this.remove(fileName);
+		return this.remove(file._id);
 	}
 };
 
