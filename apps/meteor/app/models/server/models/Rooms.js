@@ -1127,6 +1127,7 @@ export class Rooms extends Base {
 
 		return this.update(query, update);
 	}
+
 	saveEncryptedById(_id, value) {
 		const query = { _id };
 

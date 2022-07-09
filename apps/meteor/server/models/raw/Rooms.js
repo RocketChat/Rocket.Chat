@@ -329,6 +329,7 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.find(query, options);
 	}
+
 	unsetTeamId(teamId, options = {}) {
 		const query = { teamId };
 		const update = {
@@ -608,6 +609,7 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.updateOne(query, update);
 	}
+
 	saveFeaturedById(_id, featured) {
 		const query = { _id };
 		const set = ['true', true].includes(featured);
@@ -620,6 +622,7 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.updateOne(query, update);
 	}
+
 	saveRetentionEnabledById(_id, value) {
 		const query = { _id };
 
@@ -633,6 +636,7 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.updateOne(query, update);
 	}
+
 	saveRetentionMaxAgeById(_id, value) {
 		const query = { _id };
 
@@ -649,6 +653,7 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.updateOne(query, update);
 	}
+
 	saveRetentionExcludePinnedById(_id, value) {
 		const query = { _id };
 
@@ -660,6 +665,7 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.updateOne(query, update);
 	}
+
 	saveRetentionFilesOnlyById(_id, value) {
 		const query = { _id };
 
@@ -683,6 +689,7 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.updateOne(query, update);
 	}
+
 	saveRetentionOverrideGlobalById(_id, value) {
 		const query = { _id };
 
@@ -694,6 +701,7 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.updateOne(query, update);
 	}
+
 	saveFavoriteById(_id, favorite, defaultValue) {
 		const query = { _id };
 
@@ -704,6 +712,7 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.updateOne(query, update);
 	}
+
 	saveEncryptedById(_id, value) {
 		const query = { _id };
 
@@ -715,6 +724,7 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.updateOne(query, update);
 	}
+
 	findByE2E(options) {
 		return this.find(
 			{

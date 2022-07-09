@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Rooms } from '@rocket.chat/models';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import { hasPermission, canAccessRoom } from '../../../authorization/server';
 import { addUserToRoom } from '../functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import { IRoom } from '@rocket.chat/core-typings';
 
 type RoomJoinCode = (IRoom & { joinCodeRequired: boolean | null; joinCode: boolean | null }) | null;
 
