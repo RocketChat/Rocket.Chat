@@ -16,12 +16,9 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
-	findByUserIdAndType(userId: IUser['_id'], type: ISubscription['t'], options?: FindOneOptions<ISubscription>): Cursor<ISubscription>;
-	findByUserIdAndTypes(
-		userId: IUser['_id'],
-		types: Array<ISubscription['t']>,
-		options?: FindOneOptions<ISubscription>,
-	): Cursor<ISubscription>;
+	findByUserIdAndType(userId: IUser['_id'], type: ISubscription['t'], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+
+	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
 	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number>;
 
@@ -61,6 +58,4 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateAllRoomNamesByRoomId(roomId: IRoom['_id'], name: string, fname: string): Promise<void>;
 
 	findByRolesAndRoomId({ roles, rid }: { roles: string; rid?: string }, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-
-	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 }
