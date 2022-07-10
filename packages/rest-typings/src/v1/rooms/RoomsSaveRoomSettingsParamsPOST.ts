@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -23,7 +23,7 @@ export type RoomsSaveRoomSettingsParamsPOST = {
 	};
 };
 
-const RoomsSaveRoomSettingsParamsPOSTSchema: JSONSchemaType<RoomsSaveRoomSettingsParamsPOST> = {
+const RoomsSaveRoomSettingsParamsPOSTSchema = {
 	type: 'object',
 	properties: {
 		rid: {

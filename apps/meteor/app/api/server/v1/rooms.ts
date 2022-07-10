@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
-import { IRoom } from '@rocket.chat/core-typings';
+import { IRoom, IUser } from '@rocket.chat/core-typings';
 import {
 	isRoomsGetParamsGET,
 	isRoomsSaveNotificationParamsPOST,
@@ -15,6 +15,8 @@ import {
 	isRoomsAutocompleteChannelAndPrivateWithPaginationParamsGET,
 	isRoomsAutocompleteAvailableForTeamsParamsGET,
 	isRoomsSaveRoomSettingsParamsPOST,
+	isRoomsChangeArchivationStateParamsPOST,
+	isRoomsExportParamsPOST,
 } from '@rocket.chat/rest-typings';
 
 import { FileUpload } from '../../../file-upload/server';
@@ -164,19 +166,7 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			const saveNotifications = (
-				notifications: {
-					[x: string]: unknown;
-					disableNotifications: string;
-					muteGroupMentions: string;
-					hideUnreadStatus: string;
-					desktopNotifications: string;
-					audioNotificationValue: string;
-					mobilePushNotifications: string;
-					emailNotifications: string;
-				},
-				roomId: string,
-			): void => {
+			const saveNotifications = (notifications: string, roomId: string): void => {
 				Object.keys(notifications).forEach((notificationKey) =>
 					Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]),
 				);
@@ -189,7 +179,7 @@ API.v1.addRoute(
 
 			saveNotifications(notifications, roomId);
 
-			return API.v1.success() as boolean;
+			return API.v1.success();
 		},
 	},
 );
@@ -258,6 +248,26 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		get() {
+			/*
+			Instead of using this definition from the rooms.d.ts file,
+				declare type RoomsInfoProps = {
+					roomId: string;
+				} | {
+					roomName: string;
+				};
+
+			maybe we could use something like:
+				declare type RoomsInfoProps = {
+					roomId: string;
+					roomName?: string;
+				} | {
+					roomId?: string;
+					roomName: string;
+				};
+
+				to fix the this.requestParams() type error.
+			*/
+
 			const room = findRoomByIdOrName({ params: this.requestParams() });
 			const { fields } = this.parseJsonQuery();
 
@@ -379,7 +389,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.autocomplete.adminRooms',
-	{ authRequired: true, validateParams: isRoomsAutocompleteAdminRoomsParamsGET },
+	{
+		authRequired: true,
+		validateParams: isRoomsAutocompleteAdminRoomsParamsGET,
+	},
 	{
 		get() {
 			const { selector } = this.queryParams;
@@ -451,8 +464,10 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			return API.v1.success(
-				Promise.await(
+			const result = {
+				offset,
+				count,
+				...Promise.await(
 					findChannelAndPrivateAutocompleteWithPagination({
 						uid: this.userId,
 						selector: JSON.parse(selector),
@@ -463,7 +478,9 @@ API.v1.addRoute(
 						},
 					}),
 				),
-			);
+			};
+
+			return API.v1.success(result);
 		},
 	},
 );
@@ -509,16 +526,19 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.changeArchivationState',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsChangeArchivationStateParamsPOST,
+	},
 	{
 		post() {
 			const { rid, action } = this.bodyParams;
 
 			let result;
 			if (action === 'archive') {
-				result = Meteor.runAsUser(this.userId, () => Meteor.call('archiveRoom', rid));
+				result = Meteor.call('archiveRoom', rid);
 			} else {
-				result = Meteor.runAsUser(this.userId, () => Meteor.call('unarchiveRoom', rid));
+				result = Meteor.call('unarchiveRoom', rid);
 			}
 
 			return API.v1.success({ result });
@@ -528,14 +548,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.export',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isRoomsExportParamsPOST,
+	},
 	{
 		post() {
 			const { rid, type } = this.bodyParams;
-
-			if (!rid || !type || !['email', 'file'].includes(type)) {
-				throw new Meteor.Error('error-invalid-params');
-			}
 
 			if (!hasPermission(this.userId, 'mail-messages', rid)) {
 				throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
@@ -546,7 +565,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-room');
 			}
 
-			const user = Meteor.users.findOne({ _id: this.userId });
+			const user = Meteor.users.findOne({ _id: this.userId }) as IUser;
 
 			if (!canAccessRoom(room, user)) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
@@ -583,10 +602,6 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-recipient');
 				}
 
-				if (messages.length === 0) {
-					throw new Meteor.Error('error-invalid-messages');
-				}
-
 				const result = sendViaEmail(
 					{
 						rid,
@@ -594,14 +609,19 @@ API.v1.addRoute(
 						toEmails,
 						subject,
 						messages,
+						language: user.language as string,
 					},
 					user,
 				);
 
-				return API.v1.success(result);
+				return API.v1.success(
+					result as {
+						missing: string[];
+					},
+				);
 			}
 
-			return API.v1.error();
+			return API.v1.failure('Could not export room');
 		},
 	},
 );
