@@ -37,7 +37,7 @@ roomCoordinator.add(LivechatRoomType, {
 			return false;
 		}
 
-		instance.tabBar.openUserInfo();
+		setTimeout(() => instance.tabBar.openUserInfo(), 0);
 		return true;
 	},
 
