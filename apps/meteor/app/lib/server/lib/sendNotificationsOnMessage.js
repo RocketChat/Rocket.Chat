@@ -17,6 +17,7 @@ import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notificatio
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { getMentions } from './notifyUsersOnMessage';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { Team } from '../../../../server/sdk';
 
 let TroubleshootDisableNotifications;
 
@@ -367,6 +368,10 @@ export async function sendAllNotifications(message, room) {
 		Promise.all(
 			mentions.map(async (userId) => {
 				await callJoinRoom(userId, room._id);
+
+				if (room.teamId) {
+					Team.addMember(room.u._id, userId, room.teamId);
+				}
 
 				return userId;
 			}),
