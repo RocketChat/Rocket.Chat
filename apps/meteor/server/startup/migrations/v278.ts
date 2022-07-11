@@ -1,13 +1,13 @@
 import { IMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
-import { BulkWriteOperation } from 'mongodb';
+import { AnyBulkWriteOperation } from 'mongodb';
 
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 278,
 	async up() {
-		const updates: BulkWriteOperation<IMessage>[] = [];
+		const updates: AnyBulkWriteOperation<IMessage>[] = [];
 
 		const fieldsToUpdate = ['editedBy', 'editedAt', 'emoji', 'avatar', 'alias', 'customFields', 'groupable', 'attachments', 'reactions'];
 
