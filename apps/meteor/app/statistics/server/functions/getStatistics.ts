@@ -1,4 +1,4 @@
-import type { SortOptionObject, SchemaMember } from 'mongodb';
+import type { FindOptions, SchemaMember } from 'mongodb';
 import type { IStats } from '@rocket.chat/core-typings';
 import { Statistics } from '@rocket.chat/models';
 
@@ -10,7 +10,7 @@ type GetStatisticsParams = {
 	pagination: {
 		offset: number;
 		count?: number;
-		sort?: SortOptionObject<IStats>;
+		sort?: FindOptions<IStats>['sort'];
 		fields?: SchemaMember<IStats, number | boolean>;
 	};
 };
@@ -26,16 +26,14 @@ export async function getStatistics({
 		throw new Error('error-not-allowed');
 	}
 
-	const cursor = Statistics.find(query, {
+	const { cursor, totalCount } = Statistics.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 		projection: fields,
 	});
 
-	const total = await cursor.count();
-
-	const statistics = await cursor.toArray();
+	const [statistics, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		statistics,
