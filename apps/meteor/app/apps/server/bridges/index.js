@@ -11,6 +11,7 @@ import { AppInternalBridge } from './internal';
 import { AppSettingBridge } from './settings';
 import { AppUserBridge } from './users';
 import { AppSchedulerBridge } from './scheduler';
+import { AppOAuthAppsBridge } from './oauthApps';
 
 export {
 	RealAppBridges,
@@ -26,4 +27,5 @@ export {
 	AppUserBridge,
 	AppInternalBridge,
 	AppSchedulerBridge,
+	AppOAuthAppsBridge,
 };

@@ -1,6 +1,5 @@
 export interface IOAuthApps {
 	_id: string;
-
 	name: string;
 	active: boolean;
 	clientId: string;
@@ -11,4 +10,6 @@ export interface IOAuthApps {
 		_id: string;
 		username: string;
 	};
+	_updatedAt: Date;
+	appId?: string;
 }
