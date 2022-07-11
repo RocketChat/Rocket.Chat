@@ -4,13 +4,13 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type ChatDeleteParamsGET = {
+export type ChatDeleteParamsPOST = {
 	msgId: string;
 	roomId: string;
 	asUser?: boolean;
 };
 
-const ChatDeleteParamsGETSchema = {
+const ChatDeleteParamsPOSTSchema = {
 	type: 'object',
 	properties: {
 		msgId: {
@@ -28,4 +28,4 @@ const ChatDeleteParamsGETSchema = {
 	required: ['msgId', 'roomId'],
 };
 
-export const isChatDeleteParamsGET = ajv.compile<ChatDeleteParamsGET>(ChatDeleteParamsGETSchema);
+export const isChatDeleteParamsPOST = ajv.compile<ChatDeleteParamsPOST>(ChatDeleteParamsPOSTSchema);

@@ -455,7 +455,7 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.update': {
 		POST: (params: ChatUpdate) => {
-			messages: IMessage;
+			message: IMessage;
 		};
 	};
 	'/v1/chat.getMessageReadReceipts': {
