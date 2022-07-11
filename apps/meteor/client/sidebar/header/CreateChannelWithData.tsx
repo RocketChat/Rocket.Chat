@@ -68,7 +68,6 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 	});
 
 	const onChangeFederated = useMutableCallback((value) => {
-		console.log('Running onChangeFederated');
 		// if room is federated, it cannot be encrypted
 		if (encrypted && value) {
 			handleEncrypted(false);
