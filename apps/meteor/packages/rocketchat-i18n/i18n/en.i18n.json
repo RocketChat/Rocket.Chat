@@ -595,7 +595,6 @@
   "Audio_Notification_Value_Description": "Can be any custom sound or the default ones: beep, chelle, ding, droplet, highbell, seasons",
   "Audio_Notifications_Default_Alert": "Audio Notifications Default Alert",
   "Audio_Notifications_Value": "Default Message Notification Audio",
-  "Audio_settings": "Audio Settings",
   "Audios": "Audios",
   "Auditing": "Auditing",
   "Auth_Token": "Auth Token",
