@@ -7,6 +7,7 @@ export interface IMatrixEventContentSetRoomJoinRules {
 }
 
 export class MatrixEventRoomJoinRulesChanged extends AbstractMatrixEvent {
-    public content: IMatrixEventContentSetRoomJoinRules;
-    public type = MatrixEventTypeEE.ROOM_JOIN_RULES_CHANGED;
+	public content: IMatrixEventContentSetRoomJoinRules;
+
+	public type = MatrixEventTypeEE.ROOM_JOIN_RULES_CHANGED;
 }

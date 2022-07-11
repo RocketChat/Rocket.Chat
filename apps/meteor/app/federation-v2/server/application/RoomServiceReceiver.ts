@@ -71,7 +71,7 @@ export class FederationRoomServiceReceiver {
 			inviteeUsernameOnly,
 			inviterUsernameOnly,
 			eventOrigin,
-			roomType,
+			roomType = RoomType.CHANNEL,
 			leave,
 		} = roomChangeMembershipInput;
 		const affectedFederatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);

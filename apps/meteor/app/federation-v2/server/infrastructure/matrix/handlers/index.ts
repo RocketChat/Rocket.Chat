@@ -6,7 +6,7 @@ export class MatrixEventsHandler {
 	constructor(protected handlers: MatrixBaseEventHandler[]) {}
 
 	public async handleEvent(event: AbstractMatrixEvent): Promise<void> {
-		console.log({ event })
+		console.log({ event });
 		const handler = this.handlers.find((handler) => handler.equals(event));
 		if (!handler) {
 			return console.log(`Could not find handler for ${event.type}`, event);

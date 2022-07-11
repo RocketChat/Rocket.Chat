@@ -1,19 +1,45 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-class BaseRoom {
-	externalRoomId: string;
+import {
+	FederationBaseRoomInputDto,
+	IFederationReceiverBaseRoomInputDto,
+} from '../../../../../../app/federation-v2/server/application/input/RoomReceiverDto';
 
-	normalizedRoomId: string;
-}
-
-export class FederationRoomChangeJoinRulesDto extends BaseRoom {
+export interface IFederationCreateInputDto extends IFederationReceiverBaseRoomInputDto {
 	roomType: RoomType;
 }
 
-export class FederationRoomChangeNameDto extends BaseRoom {
+export interface IFederationRoomNameChangeInputDto extends IFederationReceiverBaseRoomInputDto {
 	normalizedRoomName: string;
 }
 
-export class FederationRoomChangeTopicDto extends BaseRoom {
+export interface IFederationRoomChangeTopicInputDto extends IFederationReceiverBaseRoomInputDto {
+	roomTopic: string;
+}
+
+export class FederationRoomChangeJoinRulesDto extends FederationBaseRoomInputDto {
+	constructor({ roomType, externalRoomId, normalizedRoomId }: IFederationCreateInputDto) {
+		super({ externalRoomId, normalizedRoomId });
+		this.roomType = roomType;
+	}
+
+	roomType: RoomType;
+}
+
+export class FederationRoomChangeNameDto extends FederationBaseRoomInputDto {
+	constructor({ externalRoomId, normalizedRoomId, normalizedRoomName }: IFederationRoomNameChangeInputDto) {
+		super({ externalRoomId, normalizedRoomId });
+		this.normalizedRoomName = normalizedRoomName;
+	}
+
+	normalizedRoomName: string;
+}
+
+export class FederationRoomChangeTopicDto extends FederationBaseRoomInputDto {
+	constructor({ externalRoomId, normalizedRoomId, roomTopic }: IFederationRoomChangeTopicInputDto) {
+		super({ externalRoomId, normalizedRoomId });
+		this.roomTopic = roomTopic;
+	}
+
 	roomTopic: string;
 }

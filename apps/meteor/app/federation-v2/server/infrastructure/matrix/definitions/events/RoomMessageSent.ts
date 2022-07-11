@@ -11,6 +11,7 @@ export interface IMatrixEventContentRoomMessageSent extends IBaseEventContent {
 }
 
 export class MatrixEventRoomMessageSent extends AbstractMatrixEvent {
-    public content: IMatrixEventContentRoomMessageSent;
-    public type = MatrixEventType.ROOM_MESSAGE_SENT;
+	public content: IMatrixEventContentRoomMessageSent;
+
+	public type = MatrixEventType.ROOM_MESSAGE_SENT;
 }

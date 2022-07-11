@@ -15,7 +15,7 @@ export class FederationRoomSenderConverter {
 		const normalizedInviteeId = externalInviteeId.replace('@', '');
 		const inviteeUsernameOnly = externalInviteeId.split(':')[0]?.replace('@', '');
 
-		return Object.assign(new FederationCreateDMAndInviteUserDto(), {
+		return new FederationCreateDMAndInviteUserDto({
 			internalInviterId,
 			internalRoomId,
 			rawInviteeId: externalInviteeId,
@@ -29,7 +29,7 @@ export class FederationRoomSenderConverter {
 		internalRoomId: string,
 		message: IMessage,
 	): FederationRoomSendExternalMessageDto {
-		return Object.assign(new FederationRoomSendExternalMessageDto(), {
+		return new FederationRoomSendExternalMessageDto({
 			internalRoomId,
 			internalSenderId,
 			message,
@@ -41,7 +41,7 @@ export class FederationRoomSenderConverter {
 		internalRoomId: string,
 		whoRemovedInternalId?: string,
 	): FederationAfterLeaveRoomDto {
-		return Object.assign(new FederationAfterLeaveRoomDto(), {
+		return new FederationAfterLeaveRoomDto({
 			internalRoomId,
 			internalUserId,
 			whoRemovedInternalId,

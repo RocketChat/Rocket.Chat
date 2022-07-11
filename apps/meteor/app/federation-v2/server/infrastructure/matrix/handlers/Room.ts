@@ -15,7 +15,7 @@ export class MatrixRoomCreatedHandler extends MatrixBaseEventHandler {
 	}
 
 	public async handle(externalEvent: MatrixEventRoomCreated): Promise<void> {
-		await this.roomService.createRoom(MatrixRoomReceiverConverter.toRoomCreateDto(externalEvent as any));
+		await this.roomService.createRoom(MatrixRoomReceiverConverter.toRoomCreateDto(externalEvent));
 	}
 }
 
@@ -28,7 +28,7 @@ export class MatrixRoomMembershipChangedHandler extends MatrixBaseEventHandler {
 
 	public async handle(externalEvent: MatrixEventRoomMembershipChanged): Promise<void> {
 		await this.roomService.changeRoomMembership(
-			MatrixRoomReceiverConverter.toChangeRoomMembershipDto(externalEvent as any, this.rocketSettingsAdapter.getHomeServerDomain()),
+			MatrixRoomReceiverConverter.toChangeRoomMembershipDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
 		);
 	}
 }
@@ -41,6 +41,6 @@ export class MatrixRoomMessageSentHandler extends MatrixBaseEventHandler {
 	}
 
 	public async handle(externalEvent: MatrixEventRoomMessageSent): Promise<void> {
-		await this.roomService.receiveExternalMessage(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent as any));
+		await this.roomService.receiveExternalMessage(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent));
 	}
 }

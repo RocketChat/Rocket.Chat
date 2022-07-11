@@ -1,6 +1,11 @@
-import { FEDERATION_PROCESSING_CONCURRENCY, runFederation, stopFederation } from '../../../../app/federation-v2/server';
+import {
+	FEDERATION_PROCESSING_CONCURRENCY,
+	runFederation,
+	stopFederation,
+	rocketSettingsAdapter,
+	queueInstance,
+} from '../../../../app/federation-v2/server';
 import { FederationFactory } from '../../../../app/federation-v2/server/infrastructure/Factory';
-import { rocketSettingsAdapter, queueInstance } from '../../../../app/federation-v2/server';
 import { onToggledFeature } from '../../license/server/license';
 import { FederationFactoryEE } from './infrastructure/Factory';
 

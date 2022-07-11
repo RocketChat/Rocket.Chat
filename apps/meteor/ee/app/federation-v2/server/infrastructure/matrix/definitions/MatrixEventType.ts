@@ -7,4 +7,3 @@ export enum MatrixEventTypeEE {
 	ROOM_NAME_CHANGED = 'm.room.name',
 	ROOM_TOPIC_CHANGED = 'm.room.topic',
 }
-

@@ -13,8 +13,8 @@ export interface IMatrixEventContentRoomMembershipChanged extends IBaseEventCont
 	is_direct?: boolean;
 }
 
-
 export class MatrixEventRoomMembershipChanged extends AbstractMatrixEvent {
-    public content: IMatrixEventContentRoomMembershipChanged;
-    public type = MatrixEventType.ROOM_MEMBERSHIP_CHANGED;
+	public content: IMatrixEventContentRoomMembershipChanged;
+
+	public type = MatrixEventType.ROOM_MEMBERSHIP_CHANGED;
 }

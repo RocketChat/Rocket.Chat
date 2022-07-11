@@ -8,6 +8,7 @@ export interface IMatrixEventContentRoomCreated extends IBaseEventContent {
 }
 
 export class MatrixEventRoomCreated extends AbstractMatrixEvent {
-    public content: IMatrixEventContentRoomCreated;
-    public type = MatrixEventType.ROOM_CREATED;
+	public content: IMatrixEventContentRoomCreated;
+
+	public type = MatrixEventType.ROOM_CREATED;
 }

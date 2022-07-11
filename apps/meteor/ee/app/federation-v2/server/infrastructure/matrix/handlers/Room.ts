@@ -14,7 +14,7 @@ export class MatrixRoomJoinRulesChangedHandler extends MatrixBaseEventHandler {
 	}
 
 	public async handle(externalEvent: MatrixEventRoomJoinRulesChanged): Promise<void> {
-		await this.roomService.changeJoinRules(MatrixRoomReceiverConverterEE.toRoomChangeJoinRulesDto(externalEvent as any));
+		await this.roomService.changeJoinRules(MatrixRoomReceiverConverterEE.toRoomChangeJoinRulesDto(externalEvent));
 	}
 }
 
@@ -26,18 +26,18 @@ export class MatrixRoomNameChangedHandler extends MatrixBaseEventHandler {
 	}
 
 	public async handle(externalEvent: MatrixEventRoomNameChanged): Promise<void> {
-		await this.roomService.changeRoomName(MatrixRoomReceiverConverterEE.toRoomChangeNameDto(externalEvent as any));
+		await this.roomService.changeRoomName(MatrixRoomReceiverConverterEE.toRoomChangeNameDto(externalEvent));
 	}
 }
 
 export class MatrixRoomTopicChangedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventTypeEE.ROOM_TOPIC_CHANGED;
-	
+
 	constructor(private roomService: FederationRoomServiceReceiverEE) {
 		super();
 	}
 
 	public async handle(externalEvent: MatrixEventRoomTopicChanged): Promise<void> {
-		await this.roomService.changeRoomTopic(MatrixRoomReceiverConverterEE.toRoomChangeTopicDto(externalEvent as any));
+		await this.roomService.changeRoomTopic(MatrixRoomReceiverConverterEE.toRoomChangeTopicDto(externalEvent));
 	}
 }
