@@ -148,18 +148,25 @@ export class FederationRoomServiceSender {
 		}
 	}
 
-	public async canAddUsersToTheRoom(internalUser: IUser | string, internalRoom: IRoom): Promise<void> {
-		const newUserBeingAdded = typeof internalUser === 'string';
-		if (newUserBeingAdded) {
-			return;
-		}
-
+	public async canAddUsersToTheRoom(internalUser: IUser | string, internalInviter: IUser, internalRoom: IRoom): Promise<void> {
 		if (!internalRoom.federated) {
 			return;
 		}
-
-		const user = await this.rocketUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
-		if (user && !user.existsOnlyOnProxyServer && internalRoom.t !== RoomType.DIRECT_MESSAGE) {
+		const invitee = await this.rocketUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
+		const inviter = await this.rocketUserAdapter.getFederatedUserByInternalId((internalInviter as IUser)._id);
+		const externalRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoom._id);
+		if (!externalRoom || !inviter) {
+			return;
+		}
+		
+		const isARoomFromTheProxyServer = this.bridge.isRoomFromTheSameHomeserver(externalRoom.externalId, this.rocketSettingsAdapter.getHomeServerDomain());
+		const isInviterFromTheProxyServer = this.bridge.isUserIdFromTheSameHomeserver(inviter.externalId, this.rocketSettingsAdapter.getHomeServerDomain());
+		
+		if (!isARoomFromTheProxyServer && !isInviterFromTheProxyServer) {
+			return;
+		}
+		const tryingToAddNewFederatedUser = typeof internalUser === 'string'
+		if (tryingToAddNewFederatedUser || (invitee && !invitee.existsOnlyOnProxyServer && internalRoom.t !== RoomType.DIRECT_MESSAGE)) {
 			throw new Error('error-this-is-an-ee-feature');
 		}
 	}

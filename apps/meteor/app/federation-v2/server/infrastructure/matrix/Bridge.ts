@@ -130,6 +130,12 @@ export class MatrixBridge implements IFederationBridge {
 		return userDomain === domain;
 	}
 
+	public isRoomFromTheSameHomeserver(externalRoomId: string, domain: string): boolean {
+		const roomDomain = this.isUserIdFromTheSameHomeserver(externalRoomId, domain);
+
+		return roomDomain === domain;
+	}
+
 	public getInstance(): IFederationBridge {
 		return this;
 	}
