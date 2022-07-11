@@ -1,5 +1,5 @@
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal, ITeam, ITeamMember, ITeamStats, TEAM_TYPE } from '@rocket.chat/core-typings';
-import { FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
+import { Filter, FindOptions } from 'mongodb';
 import type { IRoom, IUser, IRole } from '@rocket.chat/core-typings';
 
 import { ICreateRoomParams } from './IRoomService';
@@ -76,15 +76,15 @@ export interface ITeamService {
 	updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom: boolean): Promise<IRoom>;
 	list(uid: string, paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<ITeam>): Promise<IRecordsWithTotal<ITeam>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
-	listByNames(names: Array<string>, options?: FindOneOptions<ITeam>): Promise<Array<ITeam>>;
-	listByIds(ids: Array<string>, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
-	search(userId: string, term: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
+	listByNames(names: Array<string>, options?: FindOptions<ITeam>): Promise<Array<ITeam>>;
+	listByIds(ids: Array<string>, options?: FindOptions<ITeam>): Promise<ITeam[]>;
+	search(userId: string, term: string | RegExp, options?: FindOptions<ITeam>): Promise<ITeam[]>;
 	members(
 		uid: string,
 		teamId: string,
 		canSeeAll: boolean,
 		options?: IPaginationOptions,
-		queryOptions?: FilterQuery<IUser>,
+		queryOptions?: Filter<IUser>,
 	): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
 	addMember(inviter: Pick<IUser, '_id' | 'username'>, userId: string, teamId: string): Promise<boolean>;
 	addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void>;
@@ -96,17 +96,17 @@ export interface ITeamService {
 	deleteById(teamId: string): Promise<boolean>;
 	deleteByName(teamName: string): Promise<boolean>;
 	unsetTeamIdOfRooms(uid: string, teamId: string): void;
-	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
-	getOneById<P>(teamId: string, options?: FindOneOptions<P extends ITeam ? ITeam : P>): Promise<ITeam | P | null>;
-	getOneByName(teamName: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
+	getOneById(teamId: string, options?: FindOptions<ITeam>): Promise<ITeam | null>;
+	getOneById<P>(teamId: string, options?: FindOptions<P extends ITeam ? ITeam : P>): Promise<ITeam | P | null>;
+	getOneByName(teamName: string | RegExp, options?: FindOptions<ITeam>): Promise<ITeam | null>;
 	getOneByMainRoomId(teamId: string): Promise<Pick<ITeam, '_id'> | null>;
 	getOneByRoomId(teamId: string): Promise<ITeam | null>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
 	autocomplete(uid: string, name: string): Promise<ITeamAutocompleteResult[]>;
-	getAllPublicTeams(options?: WithoutProjection<FindOneOptions<ITeam>>): Promise<Array<ITeam>>;
-	getMembersByTeamIds(teamIds: Array<string>, options: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember>>;
+	getAllPublicTeams(options?: FindOptions<ITeam>): Promise<Array<ITeam>>;
+	getMembersByTeamIds(teamIds: Array<string>, options: FindOptions<ITeamMember>): Promise<Array<ITeamMember>>;
 	update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void>;
-	listTeamsBySubscriberUserId(uid: string, options?: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember> | null>;
+	listTeamsBySubscriberUserId(uid: string, options?: FindOptions<ITeamMember>): Promise<Array<ITeamMember> | null>;
 	insertMemberOnTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeMemberFromTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeAllMembersFromTeam(teamId: string): Promise<void>;

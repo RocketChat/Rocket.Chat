@@ -124,7 +124,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
-				const message: IMessage | null = data ?? (await Messages.findOne({ _id: id }));
+				const message = data ?? (await Messages.findOneById(id));
 				if (!message) {
 					return;
 				}

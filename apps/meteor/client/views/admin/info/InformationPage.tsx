@@ -83,14 +83,13 @@ const InformationPage = memo(function InformationPage({
 						<Grid.Item xl={3}>
 							<LicenseCard />
 						</Grid.Item>
-						<Grid.Item xl={4}>
+						<Grid.Item xl={6} md={8} xs={4} sm={8}>
 							<UsageCard vertical={false} statistics={statistics} />
 						</Grid.Item>
-						<Grid.Item xl={2}></Grid.Item>
 						<Grid.Item xl={6}>
 							<FederationCard />
 						</Grid.Item>
-						<Grid.Item xl={6}>
+						<Grid.Item xl={3}>
 							<SeatsCard />
 						</Grid.Item>
 					</Grid>

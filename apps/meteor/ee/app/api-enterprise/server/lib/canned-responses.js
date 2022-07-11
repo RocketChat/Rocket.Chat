@@ -155,13 +155,12 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 		filter = {};
 	}
 
-	const cursor = CannedResponse.find(filter, {
+	const { cursor, totalCount } = CannedResponse.findPaginated(filter, {
 		sort: options.sort || { shortcut: 1 },
 		skip: options.offset,
 		limit: options.count,
 	});
-	const total = await cursor.count();
-	const cannedResponses = await cursor.toArray();
+	const [cannedResponses, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
 		cannedResponses,
 		total,
