@@ -133,7 +133,7 @@ const PreviewList = ({ urls }: PreviewListProps): ReactElement | null => {
 	}
 
 	const metaAndHeaders = urls.map(processMetaAndHeaders).filter(isPreviewData);
-	console.log(metaAndHeaders);
+
 	return (
 		<>
 			{metaAndHeaders.map(({ type, data }, index) => {
