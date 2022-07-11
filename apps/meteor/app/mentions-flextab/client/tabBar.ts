@@ -1,10 +1,25 @@
+import { useMemo } from 'react';
+import { isRoomFederated } from '@rocket.chat/core-typings';
+
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
-addAction('mentions', {
-	groups: ['channel', 'group', 'team'],
-	id: 'mentions',
-	title: 'Mentions',
-	icon: 'at',
-	template: 'mentionsFlexTab',
-	order: 9,
+addAction('mentions', ({ room }) => {
+	const federated = isRoomFederated(room);
+	console.log({ room });
+	console.log({ federated });
+	return useMemo(
+		() => ({
+			groups: ['channel', 'group', 'team'],
+			id: 'mentions',
+			title: 'Mentions',
+			icon: 'at',
+			template: 'mentionsFlexTab',
+			...(federated && {
+				'disabled': true,
+				'data-tooltip': 'Mentions_unavailable_for_federation',
+			}),
+			order: 9,
+		}),
+		[federated],
+	);
 });
