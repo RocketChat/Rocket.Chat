@@ -308,3 +308,15 @@ export type IMessageInbox = IMessage & {
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
 export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;
+
+export type IE2EEMessage = IMessage & {
+	t: 'e2e';
+	e2e: 'pending' | 'done';
+};
+
+export type IOTRMessage = IMessage & {
+	t: 'otr' | 'otr-ack';
+};
+
+export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
+export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr' || message.t === 'otr-ack';

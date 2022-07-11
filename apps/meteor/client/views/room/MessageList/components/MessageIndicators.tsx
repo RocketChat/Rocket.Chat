@@ -1,10 +1,8 @@
-import { IMessage, isEditedMessage } from '@rocket.chat/core-typings';
+import { IMessage, isEditedMessage, isE2EEMessage, isOTRMessage } from '@rocket.chat/core-typings';
 import { MessageStatusIndicator, MessageStatusIndicatorItem } from '@rocket.chat/fuselage';
 import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
-import { isOTRMessage } from '../../../../../lib/isOTRMessage';
 import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from '../contexts/MessageListContext';
 
 // edited() {

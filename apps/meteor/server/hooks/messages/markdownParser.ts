@@ -1,8 +1,7 @@
+import { isE2EEMessage, isOTRMessage } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
 import { callbacks } from '../../../lib/callbacks';
-import { isE2EEMessage } from '../../../lib/isE2EEMessage';
-import { isOTRMessage } from '../../../lib/isOTRMessage';
 import { SystemLogger } from '../../lib/logger/system';
 import { settings } from '../../../app/settings/server';
 
