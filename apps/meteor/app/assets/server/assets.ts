@@ -495,7 +495,7 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 	const asset = getAssetByKey(params.asset);
 	const file = asset?.cache;
 
-	const format = req.url.split('.').pop() || '';
+	const format = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
 
 	if (asset && Array.isArray(asset.constraints.extensions) && !asset.constraints.extensions.includes(format)) {
 		res.writeHead(403);

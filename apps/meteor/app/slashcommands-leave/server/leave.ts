@@ -26,11 +26,19 @@ const Leave: SlashCommand<'leave'>['callback'] = function Leave(_command, _param
 	}
 };
 
-slashCommands.add('leave', Leave, {
-	description: 'Leave_the_current_channel',
-	permission: ['leave-c', 'leave-p'],
+slashCommands.add({
+	command: 'leave',
+	callback: Leave,
+	options: {
+		description: 'Leave_the_current_channel',
+		permission: ['leave-c', 'leave-p'],
+	},
 });
-slashCommands.add('part', Leave, {
-	description: 'Leave_the_current_channel',
-	permission: ['leave-c', 'leave-p'],
+slashCommands.add({
+	command: 'part',
+	callback: Leave,
+	options: {
+		description: 'Leave_the_current_channel',
+		permission: ['leave-c', 'leave-p'],
+	},
 });

@@ -157,3 +157,7 @@ createTemplateForComponent('roomNotFound', () => import('./views/room/Room/RoomN
 createTemplateForComponent('ComposerNotAvailablePhoneCalls', () => import('./components/voip/composer/NotAvailableOnCall'), {
 	renderContainerView: () => HTML.DIV({ style: 'display: flex; height: 100%; width: 100%' }),
 });
+
+createTemplateForComponent('loggedOutBanner', () => import('../ee/client/components/deviceManagement/LoggedOutBanner'), {
+	renderContainerView: () => HTML.DIV({ style: 'max-width: 520px; margin: 0 auto;' }),
+});

@@ -81,7 +81,7 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 		}
 	});
 
-	const { ldap, lastLogin, services, ...userData } = await APIClient.get('/v1/me');
+	const { ldap, lastLogin, services: rawServices, ...userData } = await APIClient.get('/v1/me');
 
 	// email?: {
 	// 	verificationTokens?: IUserEmailVerificationToken[];
@@ -93,18 +93,38 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 	// }
 
 	if (userData) {
+		const { email, resume, email2fa, emailCode, ...services } = rawServices || {};
+
 		updateUser({
 			...userData,
-			...(services && {
-				...services,
-				...(services.email?.verificationTokens && {
-					email: {
-						verificationTokens: services.email.verificationTokens.map((token) => ({
-							...token,
-							when: new Date(token.when),
-						})),
-					},
-				}),
+			...(rawServices && {
+				services: {
+					...(services ? { ...services } : {}),
+					...(resume
+						? {
+								resume: {
+									...(resume.loginTokens && {
+										loginTokens: resume.loginTokens.map((token) => ({
+											...token,
+											when: new Date(token.when),
+											createdAt: (token.createdAt ? new Date(token.createdAt) : undefined) as Date,
+											twoFactorAuthorizedUntil: token.twoFactorAuthorizedUntil ? new Date(token.twoFactorAuthorizedUntil) : undefined,
+										})),
+									}),
+								},
+						  }
+						: {}),
+					emailCode: emailCode?.map(({ expire, ...data }) => ({ expire: new Date(expire), ...data })) || [],
+					...(email2fa ? { email2fa: { ...email2fa, changedAt: new Date(email2fa.changedAt) } } : {}),
+					...(email?.verificationTokens && {
+						email: {
+							verificationTokens: email.verificationTokens.map((token) => ({
+								...token,
+								when: new Date(token.when),
+							})),
+						},
+					}),
+				},
 			}),
 			...(lastLogin && {
 				lastLogin: new Date(lastLogin),

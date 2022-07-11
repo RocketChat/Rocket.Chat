@@ -6,9 +6,9 @@ import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { api } from '../../../server/sdk/api';
 
-slashCommands.add(
-	'join',
-	(_command: 'join', params, item): void => {
+slashCommands.add({
+	command: 'join',
+	callback: (_command: 'join', params, item): void => {
 		let channel = params.trim();
 		if (channel === '') {
 			return;
@@ -46,9 +46,9 @@ slashCommands.add(
 
 		Meteor.call('joinRoom', room._id);
 	},
-	{
+	options: {
 		description: 'Join_the_given_channel',
 		params: '#channel',
 		permission: 'view-c-room',
 	},
-);
+});

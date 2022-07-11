@@ -1,4 +1,5 @@
 import { FederationRoomServiceReceiver } from '../../../application/RoomServiceReceiver';
+import { RocketChatSettingsAdapter } from '../../rocket-chat/adapters/Settings';
 import { MatrixRoomReceiverConverter } from '../converters/RoomReceiver';
 import { IMatrixEvent } from '../definitions/IMatrixEvent';
 import { MatrixEventType } from '../definitions/MatrixEventType';
@@ -15,42 +16,14 @@ export class MatrixRoomCreatedHandler extends MatrixBaseEventHandler<MatrixEvent
 }
 
 export class MatrixRoomMembershipChangedHandler extends MatrixBaseEventHandler<MatrixEventType.ROOM_MEMBERSHIP_CHANGED> {
-	constructor(private roomService: FederationRoomServiceReceiver) {
+	constructor(private roomService: FederationRoomServiceReceiver, private rocketSettingsAdapter: RocketChatSettingsAdapter) {
 		super(MatrixEventType.ROOM_MEMBERSHIP_CHANGED);
 	}
 
 	public async handle(externalEvent: IMatrixEvent<MatrixEventType.ROOM_MEMBERSHIP_CHANGED>): Promise<void> {
-		await this.roomService.changeRoomMembership(MatrixRoomReceiverConverter.toChangeRoomMembershipDto(externalEvent));
-	}
-}
-
-export class MatrixRoomJoinRulesChangedHandler extends MatrixBaseEventHandler<MatrixEventType.ROOM_JOIN_RULES_CHANGED> {
-	constructor(private roomService: FederationRoomServiceReceiver) {
-		super(MatrixEventType.ROOM_JOIN_RULES_CHANGED);
-	}
-
-	public async handle(externalEvent: IMatrixEvent<MatrixEventType.ROOM_JOIN_RULES_CHANGED>): Promise<void> {
-		await this.roomService.changeJoinRules(MatrixRoomReceiverConverter.toRoomChangeJoinRulesDto(externalEvent));
-	}
-}
-
-export class MatrixRoomNameChangedHandler extends MatrixBaseEventHandler<MatrixEventType.ROOM_NAME_CHANGED> {
-	constructor(private roomService: FederationRoomServiceReceiver) {
-		super(MatrixEventType.ROOM_NAME_CHANGED);
-	}
-
-	public async handle(externalEvent: IMatrixEvent<MatrixEventType.ROOM_NAME_CHANGED>): Promise<void> {
-		await this.roomService.changeRoomName(MatrixRoomReceiverConverter.toRoomChangeNameDto(externalEvent));
-	}
-}
-
-export class MatrixRoomTopicChangedHandler extends MatrixBaseEventHandler<MatrixEventType.ROOM_TOPIC_CHANGED> {
-	constructor(private roomService: FederationRoomServiceReceiver) {
-		super(MatrixEventType.ROOM_TOPIC_CHANGED);
-	}
-
-	public async handle(externalEvent: IMatrixEvent<MatrixEventType.ROOM_TOPIC_CHANGED>): Promise<void> {
-		await this.roomService.changeRoomTopic(MatrixRoomReceiverConverter.toRoomChangeTopicDto(externalEvent));
+		await this.roomService.changeRoomMembership(
+			MatrixRoomReceiverConverter.toChangeRoomMembershipDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+		);
 	}
 }
 

@@ -10,9 +10,9 @@ import { api } from '../../../server/sdk/api';
  * Unmute is a named function that will replace /unmute commands
  */
 
-slashCommands.add(
-	'unmute',
-	function Unmute(_command, params, item): void | Promise<void> {
+slashCommands.add({
+	command: 'unmute',
+	callback: function Unmute(_command, params, item): void | Promise<void> {
 		const username = params.trim().replace('@', '');
 		if (username === '') {
 			return;
@@ -46,9 +46,9 @@ slashCommands.add(
 			username,
 		});
 	},
-	{
+	options: {
 		description: 'Unmute_someone_in_room',
 		params: '@username',
 		permission: 'mute-user',
 	},
-);
+});

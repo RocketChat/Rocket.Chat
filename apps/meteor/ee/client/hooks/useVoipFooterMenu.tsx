@@ -2,7 +2,7 @@ import { ReactNode, useMemo } from 'react';
 
 import { useDevicesMenuOption } from './useDevicesMenuOption';
 
-type VoipFooterMenuOptions = Record<
+export type VoipFooterMenuOptions = Record<
 	string,
 	{
 		type?: 'option' | 'heading' | 'divider';

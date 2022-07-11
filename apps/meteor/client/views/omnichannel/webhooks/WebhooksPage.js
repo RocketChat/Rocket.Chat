@@ -1,9 +1,9 @@
 import { Box, FieldGroup, Field, TextInput, MultiSelect, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import ExternalLink from '../../../components/ExternalLink';
 import Page from '../../../components/Page';
 import { useForm } from '../../../hooks/useForm';
 

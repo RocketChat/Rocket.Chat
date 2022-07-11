@@ -111,7 +111,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	async onRemoveAgentFromDepartment(options: Record<string, any> = {}): Promise<any> {
 		const { departmentId, agentsId } = options;
 		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'businessHourId'>>(departmentId, {
-			fields: { businessHourId: 1 },
+			projection: { businessHourId: 1 },
 		});
 		if (!department || !agentsId.length) {
 			return options;

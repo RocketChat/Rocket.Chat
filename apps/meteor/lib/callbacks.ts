@@ -1,7 +1,7 @@
 import Url from 'url';
 
 import { Meteor } from 'meteor/meteor';
-import { FilterQuery } from 'mongodb';
+import type { FilterOperators } from 'mongodb';
 import type {
 	IMessage,
 	IRoom,
@@ -11,6 +11,7 @@ import type {
 	OmnichannelAgentStatus,
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
+	VideoConference,
 	ParsedUrl,
 	OEmbedMeta,
 	OEmbedUrlContent,
@@ -53,14 +54,18 @@ type EventLikeCallbackSignatures = {
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.afterTakeInquiry': (inq: ILivechatInquiryRecord, agent: ILivechatAgent) => void;
-	'afterAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
+	'afterAddedToRoom': (params: { user: IUser; inviter: IUser }, room: IRoom) => void;
 	'beforeAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
-	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[] }) => void;
+	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
 	'beforeDeleteRoom': (params: IRoom) => void;
 	'beforeJoinDefaultChannels': (user: IUser) => void;
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
 	'onValidateLogin': (login: ILoginAttempt) => void;
+	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
+	'beforeCreateDirectRoom': (members: IUser[]) => void;
+	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
+	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 };
 
 /**
@@ -102,9 +107,9 @@ type ChainedCallbackSignatures = {
 	'livechat.beforeCloseRoom': (params: { room: IRoom; options: unknown }) => { room: IRoom; options: unknown };
 	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent;
 	'livechat.applyDepartmentRestrictions': (
-		query: FilterQuery<ILivechatDepartmentRecord>,
+		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
-	) => FilterQuery<ILivechatDepartmentRecord>;
+	) => FilterOperators<ILivechatDepartmentRecord>;
 	'livechat.onMaxNumberSimultaneousChatsReached': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
