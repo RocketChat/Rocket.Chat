@@ -34,6 +34,8 @@ let processOnChange: (diff: Record<string, any>, id: string) => void;
 const disableOplog = !!(Package as any)['disable-oplog'];
 const serviceConfigCallbacks = new Set<Callbacks>();
 
+const disableMsgRoundtripTracking = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING).toLowerCase());
+
 if (disableOplog) {
 	// Stores the callbacks for the disconnection reactivity bellow
 	const userCallbacks = new Map();
@@ -247,7 +249,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			configureEmailInboxes();
 		});
 
-		if (!process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING) {
+		if (!disableMsgRoundtripTracking) {
 			this.onEvent('watch.messages', ({ message }) => {
 				if (message?._updatedAt) {
 					metrics.messageRoundtripTime.set(Date.now() - message._updatedAt.getDate());

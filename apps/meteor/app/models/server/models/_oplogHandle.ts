@@ -9,6 +9,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 
+const ignoreChangeStream = ['yes', 'true'].includes(String(process.env.IGNORE_CHANGE_STREAM).toLowerCase());
+
 class CustomOplogHandle {
 	dbName: string;
 
@@ -21,7 +23,7 @@ class CustomOplogHandle {
 	usingChangeStream: boolean;
 
 	async isChangeStreamAvailable(): Promise<boolean> {
-		if (process.env.IGNORE_CHANGE_STREAM) {
+		if (ignoreChangeStream) {
 			return false;
 		}
 
