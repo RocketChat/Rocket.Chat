@@ -8,7 +8,7 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import archiver from 'archiver';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import { Avatars, ExportOperations, UserDataFiles, Uploads } from '@rocket.chat/models';
+import { Avatars, ExportOperations, Messages as MessagesRaw, UserDataFiles, Uploads } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { Subscriptions, Rooms, Users, Messages } from '../../models/server';
@@ -290,15 +290,16 @@ export async function exportRoomMessages(
 ) {
 	const query = { ...filter, rid };
 
-	const cursor = Messages.model.rawCollection().find(query, {
+	const readPreference = readSecondaryPreferred(Messages.model.rawDatabase());
+
+	const { cursor, totalCount } = MessagesRaw.findPaginated(query, {
 		sort: { ts: 1 },
 		skip,
 		limit,
-		readPreference: readSecondaryPreferred(Messages.model.rawDatabase()),
+		readPreference,
 	});
 
-	const total = await cursor.count();
-	const results = await cursor.toArray();
+	const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	const result = {
 		total,
@@ -435,7 +436,7 @@ export const exportRoomMessagesToFile = async function (
 	};
 
 	const limit = settings.get('UserData_MessageLimitPerRequest') > 0 ? settings.get('UserData_MessageLimitPerRequest') : 1000;
-	for (const exportOpRoomData of roomList) {
+	for await (const exportOpRoomData of roomList) {
 		const filePath = joinPath(exportPath, exportOpRoomData.targetFile);
 		if (exportOpRoomData.status === 'pending') {
 			exportOpRoomData.status = 'exporting';
@@ -444,13 +445,7 @@ export const exportRoomMessagesToFile = async function (
 
 		const skip = exportOpRoomData.exportedCount;
 
-		const {
-			total,
-			exported,
-			uploads,
-			messages,
-			// eslint-disable-next-line no-await-in-loop
-		} = await exportRoomMessages(
+		const { total, exported, uploads, messages } = await exportRoomMessages(
 			exportOpRoomData.roomId,
 			exportType,
 			skip,
