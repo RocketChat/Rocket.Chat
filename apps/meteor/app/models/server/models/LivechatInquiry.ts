@@ -1,5 +1,5 @@
 import { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
-import { FindOneOptions, Cursor, WriteOpResult, DeleteWriteOpResultObject } from 'mongodb';
+import { FindOptions, FindCursor, UpdateResult, DeleteResult } from 'mongodb';
 
 import { Base } from './_Base';
 
@@ -22,7 +22,7 @@ export class LivechatInquiry extends Base {
 		return this.findOne({ _id: inquiryId });
 	}
 
-	findOneByRoomId(rid: string, options?: FindOneOptions<ILivechatInquiryRecord>): ILivechatInquiryRecord {
+	findOneByRoomId(rid: string, options?: FindOptions<ILivechatInquiryRecord>): ILivechatInquiryRecord {
 		return this.findOne({ rid }, options);
 	}
 
@@ -42,7 +42,7 @@ export class LivechatInquiry extends Base {
 		);
 	}
 
-	getQueuedInquiries(options?: FindOneOptions<ILivechatInquiryRecord>): Cursor<ILivechatInquiryRecord> {
+	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord> {
 		return this.find({ status: 'queued' }, options);
 	}
 
@@ -64,7 +64,7 @@ export class LivechatInquiry extends Base {
 	/*
 	 * mark inquiry as open
 	 */
-	openInquiry(inquiryId: string): WriteOpResult {
+	openInquiry(inquiryId: string): UpdateResult {
 		return this.update(
 			{
 				_id: inquiryId,
@@ -78,7 +78,7 @@ export class LivechatInquiry extends Base {
 	/*
 	 * mark inquiry as queued
 	 */
-	queueInquiry(inquiryId: string): WriteOpResult {
+	queueInquiry(inquiryId: string): UpdateResult {
 		return this.update(
 			{
 				_id: inquiryId,
@@ -90,7 +90,7 @@ export class LivechatInquiry extends Base {
 		);
 	}
 
-	queueInquiryAndRemoveDefaultAgent(inquiryId: string): WriteOpResult {
+	queueInquiryAndRemoveDefaultAgent(inquiryId: string): UpdateResult {
 		return this.update(
 			{
 				_id: inquiryId,
@@ -105,7 +105,7 @@ export class LivechatInquiry extends Base {
 	/*
 	 * mark inquiry as ready
 	 */
-	readyInquiry(inquiryId: string): WriteOpResult {
+	readyInquiry(inquiryId: string): UpdateResult {
 		return this.update(
 			{
 				_id: inquiryId,
@@ -138,7 +138,7 @@ export class LivechatInquiry extends Base {
 		return this.findOne({ _id: inquiryId }).status;
 	}
 
-	updateVisitorStatus(token: string, status: string): WriteOpResult {
+	updateVisitorStatus(token: string, status: string): UpdateResult {
 		const query = {
 			'v.token': token,
 			'status': 'queued',
@@ -153,7 +153,7 @@ export class LivechatInquiry extends Base {
 		return this.update(query, update);
 	}
 
-	setDefaultAgentById(inquiryId: string, defaultAgent: ILivechatInquiryRecord['defaultAgent']): WriteOpResult {
+	setDefaultAgentById(inquiryId: string, defaultAgent: ILivechatInquiryRecord['defaultAgent']): UpdateResult {
 		return this.update(
 			{
 				_id: inquiryId,
@@ -166,7 +166,7 @@ export class LivechatInquiry extends Base {
 		);
 	}
 
-	setNameByRoomId(rid: string, name: string): WriteOpResult {
+	setNameByRoomId(rid: string, name: string): UpdateResult {
 		const query = { rid };
 
 		const update = {
@@ -247,7 +247,7 @@ export class LivechatInquiry extends Base {
 		return collectionObj.aggregate(aggregate).toArray();
 	}
 
-	removeDefaultAgentById(inquiryId: string): WriteOpResult {
+	removeDefaultAgentById(inquiryId: string): UpdateResult {
 		return this.update(
 			{
 				_id: inquiryId,
@@ -261,7 +261,7 @@ export class LivechatInquiry extends Base {
 	/*
 	 * remove the inquiry by roomId
 	 */
-	removeByRoomId(rid: string): DeleteWriteOpResultObject {
+	removeByRoomId(rid: string): DeleteResult {
 		return this.remove({ rid });
 	}
 
