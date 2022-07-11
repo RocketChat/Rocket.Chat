@@ -98,7 +98,7 @@ const InformationRoute = (): ReactElement => {
 				canViewStatistics={canViewStatistics}
 				info={info}
 				statistics={statistics}
-				instances={instances as IInstanceStatus[]}
+				instances={instances || []}
 				onClickRefreshButton={handleClickRefreshButton}
 				onClickDownloadInfo={handleClickDownloadInfo}
 			/>
