@@ -28,6 +28,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/message-parser": "^0.32.0-dev.5",
 		"@rocket.chat/ui-kit": "^0.31.13",
-		"ajv": "^8.11.0"
+		"ajv": "^8.11.0",
+		"ajv-formats": "^2.1.1"
 	}
 }
