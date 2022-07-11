@@ -89,7 +89,7 @@ function UserInfo({
 					{username && username !== name && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Username')}</InfoPanel.Label>
-							<InfoPanel.Text>{username}</InfoPanel.Text>
+							<InfoPanel.Text data-qa='UserInfoUserName'>{username}</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 
@@ -103,7 +103,7 @@ function UserInfo({
 					{name && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Full_Name')}</InfoPanel.Label>
-							<InfoPanel.Text data-qa='UserInfoUserName'>{name}</InfoPanel.Text>
+							<InfoPanel.Text>{name}</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 
