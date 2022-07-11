@@ -10,7 +10,7 @@ import { hasPermission } from '../../app/authorization/client';
 import { register } from '../../app/markdown/lib/hljs';
 import { settings } from '../../app/settings/client';
 import { getUserPreference, t } from '../../app/utils/client';
-import 'highlight.js/styles/github.css';
+import 'hljs9/styles/github.css';
 import * as banners from '../lib/banners';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
@@ -45,7 +45,7 @@ Meteor.startup(() => {
 		}
 
 		if (getUserPreference(user, 'enableAutoAway')) {
-			const idleTimeLimit = getUserPreference(user, 'idleTimeLimit') || 300;
+			const idleTimeLimit = (getUserPreference(user, 'idleTimeLimit') as number | null | undefined) || 300;
 			UserPresence.awayTime = idleTimeLimit * 1000;
 		} else {
 			delete UserPresence.awayTime;

@@ -83,7 +83,7 @@ class NotificationClass {
 			NotificationQueue.removeById(notification._id);
 		} catch (e) {
 			SystemLogger.error(e);
-			await NotificationQueue.setErrorById(notification._id, e.message);
+			await NotificationQueue.setErrorById(notification._id, e instanceof Error ? e.message : String(e));
 		}
 
 		if (counter >= this.maxBatchSize) {
@@ -92,7 +92,7 @@ class NotificationClass {
 		this.worker(counter++);
 	}
 
-	getNextNotification(): Promise<INotification | undefined> {
+	getNextNotification(): Promise<INotification | null> {
 		const expired = new Date();
 		expired.setMinutes(expired.getMinutes() - 5);
 

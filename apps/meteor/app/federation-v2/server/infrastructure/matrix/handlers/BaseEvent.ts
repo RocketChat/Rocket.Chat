@@ -2,7 +2,7 @@ import { IMatrixEvent } from '../definitions/IMatrixEvent';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 
 export abstract class MatrixBaseEventHandler<T extends MatrixEventType> {
-	private type: T;
+	protected type: T;
 
 	public abstract handle(externalEvent: IMatrixEvent<T>): Promise<void>;
 

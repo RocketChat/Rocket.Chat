@@ -1,0 +1,44 @@
+{
+	"name": "@rocket.chat/ui-client",
+	"version": "0.0.1",
+	"private": true,
+	"devDependencies": {
+		"@rocket.chat/fuselage": "^0.31.13",
+		"@storybook/addon-actions": "^6.5.9",
+		"@storybook/addon-docs": "^6.5.9",
+		"@storybook/addon-essentials": "^6.5.9",
+		"@storybook/addon-interactions": "^6.5.9",
+		"@storybook/addon-links": "^6.5.9",
+		"@storybook/builder-webpack4": "^6.5.9",
+		"@storybook/manager-webpack4": "^6.5.9",
+		"@storybook/react": "^6.5.9",
+		"@storybook/testing-library": "^0.0.13",
+		"@types/jest": "^27.4.1",
+		"@types/react": "~17.0.42",
+		"eslint": "^8.12.0",
+		"eslint-plugin-anti-trojan-source": "^1.1.0",
+		"eslint-plugin-react": "^7.30.0",
+		"eslint-plugin-react-hooks": "^4.6.0",
+		"jest": "^27.5.1",
+		"react": "~17.0.2",
+		"ts-jest": "^27.1.4",
+		"typescript": "~4.5.5"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"jest": "jest",
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"storybook": "start-storybook -p 6006",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"peerDependencies": {
+		"@rocket.chat/fuselage": "*",
+		"react": "~17.0.2"
+	}
+}

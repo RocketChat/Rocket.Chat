@@ -1,4 +1,4 @@
-import { FindOneOptions } from 'mongodb';
+import { FindOptions } from 'mongodb';
 import type {
 	IAgentExtensionMap,
 	IRoomCreationResponse,
@@ -21,7 +21,8 @@ export interface IOmnichannelVoipService {
 		guest: ILivechatVisitor,
 		agent: { agentId: string; username: string },
 		rid: string,
-		options: FindOneOptions<IVoipRoom>,
+		direction: IVoipRoom['direction'],
+		options: FindOptions<IVoipRoom>,
 	): Promise<IRoomCreationResponse>;
 	findRoom(token: string, rid: string): Promise<IVoipRoom | null>;
 	closeRoom(

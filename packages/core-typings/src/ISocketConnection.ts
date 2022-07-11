@@ -8,3 +8,7 @@ export interface ISocketConnection {
 	clientAddress: string | undefined;
 	httpHeaders: IncomingHttpHeaders;
 }
+
+export interface ISocketConnectionLogged extends ISocketConnection {
+	loginToken?: string;
+}

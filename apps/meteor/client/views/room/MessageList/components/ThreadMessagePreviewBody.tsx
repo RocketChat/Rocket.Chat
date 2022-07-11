@@ -1,7 +1,7 @@
 import { IMessage } from '@rocket.chat/core-typings';
+import { PreviewMarkup } from '@rocket.chat/gazzodown';
 import React, { ReactElement } from 'react';
 
-import PreviewMarkup from '../../../../components/gazzodown/PreviewMarkup';
 import { useParsedMessage } from '../hooks/useParsedMessage';
 
 type ThreadMessagePreviewBodyProps = {

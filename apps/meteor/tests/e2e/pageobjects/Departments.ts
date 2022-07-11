@@ -20,7 +20,6 @@ export class Departments extends BasePage {
 	}
 
 	get enabledToggle(): Locator {
-		// temporary selector
 		return this.page.locator('[data-qa="DepartmentEditToggle-Enabled"] span label');
 	}
 
@@ -60,7 +59,7 @@ export class Departments extends BasePage {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add"');
 	}
 
-	public virtuosoOptions(option: string): Locator {
+	virtuosoOptions(option: string): Locator {
 		return this.page.locator(`[data-test-id="virtuoso-scroller"] .rcx-option >> text="${option}"`);
 	}
 
@@ -84,7 +83,7 @@ export class Departments extends BasePage {
 		return this.page.locator('#modal-root');
 	}
 
-	public async getAddScreen(): Promise<void> {
+	async getAddScreen(): Promise<void> {
 		const textInputs = [this.nameInput, this.descriptionInput, this.emailInput];
 		const toggleButtons = [this.enabledToggle, this.showOnOfflinePageToggle, this.requestTagBeforeClosingChatToggle];
 		const selects = [this.selectLiveChatDepartmentOfflineMessageToChannel, this.selectAgentsTable];
@@ -94,12 +93,12 @@ export class Departments extends BasePage {
 		await Promise.all(addScreenSelectors.map((addScreenSelector) => expect(addScreenSelector).toBeVisible()));
 	}
 
-	public async doAddAgent(): Promise<void> {
+	async doAddAgent(): Promise<void> {
 		await this.enabledToggle.click();
 		await this.nameInput.type('rocket.cat');
 	}
 
-	public async doAddDepartments(): Promise<void> {
+	async doAddDepartments(): Promise<void> {
 		await this.enabledToggle.click();
 		await this.nameInput.type('any_name');
 		await this.descriptionInput.type('any_description');
@@ -107,12 +106,13 @@ export class Departments extends BasePage {
 		await this.emailInput.type('any_email@mail.com');
 		await this.showOnRegistrationPage.click();
 		await this.selectLiveChatDepartmentOfflineMessageToChannel.click();
+		await this.selectLiveChatDepartmentOfflineMessageToChannel.type('general');
 		await this.virtuosoOptions('general').click();
 		await this.selectAgentsTable.click();
 		await this.btnSaveDepartment.click();
 	}
 
-	public async doEditDepartments(): Promise<void> {
+	async doEditDepartments(): Promise<void> {
 		await this.enabledToggle.click();
 		await this.nameInput.click({ clickCount: 3 });
 		await this.keyboardPress('Backspace');
@@ -123,7 +123,7 @@ export class Departments extends BasePage {
 		await this.btnSaveDepartment.click();
 	}
 
-	public async doBackToPrincipalScreen(): Promise<void> {
+	async doBackToPrincipalScreen(): Promise<void> {
 		await this.departmentAdded.click();
 		await this.btnBack.click();
 	}

@@ -10,9 +10,7 @@ import LivechatCustomField from './models/LivechatCustomField';
 import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
 import LivechatRooms from './models/LivechatRooms';
-import LivechatVisitors from './models/LivechatVisitors';
 import LivechatInquiry from './models/LivechatInquiry';
-import OmnichannelQueue from './models/OmnichannelQueue';
 import ImportData from './models/ImportData';
 import './lib/watchModels';
 
@@ -36,8 +34,6 @@ export {
 	LivechatDepartment,
 	LivechatDepartmentAgents,
 	LivechatRooms,
-	LivechatVisitors,
 	LivechatInquiry,
-	OmnichannelQueue,
 	ImportData,
 };

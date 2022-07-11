@@ -137,6 +137,7 @@ describe('miscellaneous', function () {
 			.expect(200)
 			.expect((res) => {
 				const allUserPreferencesKeys = [
+					'alsoSendThreadToChannel',
 					// 'language',
 					'newRoomNotification',
 					'newMessageNotification',
@@ -152,9 +153,8 @@ describe('miscellaneous', function () {
 					'desktopNotifications',
 					'pushNotifications',
 					'enableAutoAway',
-					'enableNewMessageTemplate',
+					'useLegacyMessageTemplate',
 					// 'highlights',
-					'showMessageInMainThread',
 					'desktopNotificationRequireInteraction',
 					'messageViewMode',
 					'hideUsernames',

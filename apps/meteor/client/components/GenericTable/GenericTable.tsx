@@ -13,7 +13,7 @@ import { usePagination } from './hooks/usePagination';
 const defaultParamsValue = { text: '', current: 0, itemsPerPage: 25 } as const;
 const defaultSetParamsValue = (): void => undefined;
 
-type GenericTableParams = {
+export type GenericTableParams = {
 	text?: string;
 	current?: number;
 	itemsPerPage?: 25 | 50 | 100;
