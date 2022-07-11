@@ -5,8 +5,7 @@ import { addAction } from '../../../client/views/room/lib/Toolbox';
 
 addAction('mentions', ({ room }) => {
 	const federated = isRoomFederated(room);
-	console.log({ room });
-	console.log({ federated });
+
 	return useMemo(
 		() => ({
 			groups: ['channel', 'group', 'team'],
