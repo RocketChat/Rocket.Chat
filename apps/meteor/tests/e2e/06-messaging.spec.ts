@@ -58,7 +58,7 @@ test.describe('[Messaging]', () => {
 			});
 			test('expect received message is visible for two context', async () => {
 				const anotherUserMessage = mainContent.page.locator('[data-qa-type="message"][data-own="false"]').last();
-				const mainUserMessage = anotherContext.mainContent.page.locator('[data-qa-type="message"][data-own="false"]').last();
+				const mainUserMessage = anotherContext.mainContent.page.locator('[data-qa-type="message"][data-own="true"]').last();
 
 				await expect(anotherUserMessage).toBeVisible();
 				await expect(mainUserMessage).toBeVisible();
@@ -77,7 +77,7 @@ test.describe('[Messaging]', () => {
 			});
 			test('expect received message is visible for two context', async () => {
 				const anotherUserMessage = mainContent.page.locator('[data-qa-type="message"][data-own="false"]').last();
-				const mainUserMessage = anotherContext.mainContent.page.locator('[data-qa-type="message"][data-own="false"]').last();
+				const mainUserMessage = anotherContext.mainContent.page.locator('[data-qa-type="message"][data-own="true"]').last();
 
 				await expect(anotherUserMessage).toBeVisible();
 				await expect(mainUserMessage).toBeVisible();
@@ -97,7 +97,7 @@ test.describe('[Messaging]', () => {
 			});
 			test('expect received message is visible for two context', async () => {
 				const anotherUserMessage = mainContent.page.locator('[data-qa-type="message"][data-own="false"]').last();
-				const mainUserMessage = anotherContext.mainContent.page.locator('[data-qa-type="message"][data-own="false"]').last();
+				const mainUserMessage = anotherContext.mainContent.page.locator('[data-qa-type="message"][data-own="true"]').last();
 
 				await expect(anotherUserMessage).toBeVisible();
 				await expect(mainUserMessage).toBeVisible();
