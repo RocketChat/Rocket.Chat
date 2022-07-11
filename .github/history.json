@@ -98954,6 +98954,62 @@
           ]
         }
       ]
+    },
+    "5.0.0-rc.3": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26201",
+          "title": "Chore: Info page",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "26199",
+          "title": "Regression: Fix command previews",
+          "userLogin": "d-gubert",
+          "description": "Fixes slash command previews not being showed",
+          "milestone": "5.0.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "26205",
+          "title": "Chore: Change Apps-Engine version source for info",
+          "userLogin": "d-gubert",
+          "description": "Now that we're using `yarn`, the version stored in the `package.json` is no longer the resolved one, but it matches the input. This means that when we ran `yarn add @rocket.chat/apps-engine@alpha`, yarn saves `\"alpha\"` as the version of the package, while NPM added the resolved version for the tag, e.g. `\"1.33.0-alpha.6507\"`. This ends up breaking a few places where we need the Apps-Engine version for communication with the Marketplace.\r\n\r\nWith this PR we change the source of that info so the problem doesn't happen anymore.",
+          "milestone": "5.0.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "26148",
+          "title": "Regression: moving Community Watermark to  `ee` folder",
+          "userLogin": "hugocostadev",
+          "description": "Due to legal reasons, the Watermark used in community Edition was moved to Enterprise folder `ee`",
+          "contributors": [
+            "hugocostadev"
+          ]
+        },
+        {
+          "pr": "26136",
+          "title": "Regression: Send files with `enter` key",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
     }
   }
 }

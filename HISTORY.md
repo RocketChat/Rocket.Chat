@@ -1,6 +1,40 @@
 
 # 5.0.0 (Under Release Candidate Process)
 
+## 5.0.0-rc.3
+`2022-07-11  ·  5 🔍  ·  4 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Change Apps-Engine version source for info ([#26205](https://github.com/RocketChat/Rocket.Chat/pull/26205))
+
+  Now that we're using `yarn`, the version stored in the `package.json` is no longer the resolved one, but it matches the input. This means that when we ran `yarn add @rocket.chat/apps-engine@alpha`, yarn saves `"alpha"` as the version of the package, while NPM added the resolved version for the tag, e.g. `"1.33.0-alpha.6507"`. This ends up breaking a few places where we need the Apps-Engine version for communication with the Marketplace.
+
+  With this PR we change the source of that info so the problem doesn't happen anymore.
+
+- Chore: Info page ([#26201](https://github.com/RocketChat/Rocket.Chat/pull/26201))
+
+- Regression: Fix command previews ([#26199](https://github.com/RocketChat/Rocket.Chat/pull/26199))
+
+  Fixes slash command previews not being showed
+
+- Regression: moving Community Watermark to  `ee` folder ([#26148](https://github.com/RocketChat/Rocket.Chat/pull/26148))
+
+  Due to legal reasons, the Watermark used in community Edition was moved to Enterprise folder `ee`
+
+- Regression: Send files with `enter` key ([#26136](https://github.com/RocketChat/Rocket.Chat/pull/26136))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@hugocostadev](https://github.com/hugocostadev)
+
 ## 5.0.0-rc.2
 `2022-07-08  ·  11 🔍  ·  10 👩‍💻👨‍💻`
 
