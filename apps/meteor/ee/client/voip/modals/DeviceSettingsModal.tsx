@@ -56,7 +56,7 @@ const DeviceSettingsModal = (): ReactElement => {
 					<Box color='danger-600' display='flex' flexDirection='column'>
 						{t('Device_Changes_Not_Available')}
 						<Box is='a' href='https://rocket.chat/download'>
-							{t('Desktop_App_Download')}
+							{t('Download_Destkop_App')}
 						</Box>
 					</Box>
 				)}
