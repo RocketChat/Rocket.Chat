@@ -49,7 +49,7 @@ export type EventSignatures = {
 	'notify.desktop'(uid: string, data: INotificationDesktop): void;
 	'notify.uiInteraction'(uid: string, data: IUIKitInteraction): void;
 	'notify.updateInvites'(uid: string, data: { invite: IInvite }): void;
-	'notify.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>, messageId?: string): void;
+	'notify.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
 	'notify.webdav'(
 		uid: string,
 		data:
