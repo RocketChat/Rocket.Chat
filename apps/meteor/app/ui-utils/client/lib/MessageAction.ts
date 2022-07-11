@@ -11,16 +11,16 @@ import { TranslationKey } from '@rocket.chat/ui-contexts';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { ToolboxContextValue } from '../../../../client/views/room/lib/Toolbox/ToolboxContext';
+import { APIClient } from '../../../utils/client';
 
-const call = (method: string, ...args: any[]): Promise<any> =>
-	new Promise((resolve, reject) => {
-		Meteor.call(method, ...args, function (err: any, data: any) {
-			if (err) {
-				return reject(err);
-			}
-			resolve(data);
-		});
-	});
+const getMessage = async (msgId: string): Promise<any> => {
+	try {
+		const { message } = await APIClient.get('/v1/chat.getMessage', { msgId });
+		return message;
+	} catch {
+		return null;
+	}
+};
 
 export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
 	// checks if the message is not already on the list
@@ -161,7 +161,7 @@ export const MessageAction = new (class {
 			throw new Error('invalid-parameter');
 		}
 
-		const msg = Messages.findOne(msgId) || (await call('getSingleMessage', msgId));
+		const msg = Messages.findOne(msgId) || (await getMessage(msgId));
 		if (!msg) {
 			throw new Error('message-not-found');
 		}
