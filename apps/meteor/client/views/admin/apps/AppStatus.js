@@ -119,7 +119,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 		<Box {...props}>
 			{button && (
 				<Box
-					bg={colors.p100}
+					bg={isAppDetailsPage ? colors.p100 : 'transparent'}
 					display='flex'
 					flexDirection='row'
 					alignItems='center'
@@ -135,13 +135,14 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 						disabled={loading}
 						minHeight='x40'
 						onClick={handleClick}
+						mie={isAppDetailsPage ? '0' : 'x32'}
 					>
 						{loading ? (
 							<Throbber inheritColor />
 						) : (
 							<>
 								{button.icon && <Icon name={button.icon} mie='x8' />}
-								{t(button.label)}
+								{t(button.label.replace(' ', '_'))}
 							</>
 						)}
 					</Button>

@@ -78,7 +78,7 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 			mbe='x8'
 			pb='x8'
 			pis='x16'
-			pie='x40'
+			pie='x4'
 			className={hover}
 		>
 			<Box display='flex' flexDirection='row' width='80%'>
@@ -86,11 +86,15 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 				<Box display='flex' alignItems='center' color='default' fontScale='p2m' mie='x16' style={{ whiteSpace: 'nowrap' }}>
 					{name}
 				</Box>
-				<Box display='flex' mie='x16' alignItems='center' color='default' withTruncatedText>
-					{description}
-				</Box>
-				<Box display='flex' alignItems='center' color='default'>
-					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
+				<Box display='flex' mie='x16' alignItems='center' color='default'>
+					{bundledIn && Boolean(bundledIn.length) && (
+						<Box display='flex' alignItems='center' color='default' mie='x16'>
+							<BundleChips bundledIn={bundledIn} />
+						</Box>
+					)}
+					<Box is='span' withTruncatedText width='x363'>
+						{description}
+					</Box>
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
