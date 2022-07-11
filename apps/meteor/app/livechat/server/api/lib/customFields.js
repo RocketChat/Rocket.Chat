@@ -14,15 +14,13 @@ export async function findLivechatCustomFields({ userId, text, pagination: { off
 		}),
 	};
 
-	const cursor = await LivechatCustomField.find(query, {
+	const { cursor, totalCount } = LivechatCustomField.findPaginated(query, {
 		sort: sort || { label: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const customFields = await cursor.toArray();
+	const [customFields, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		customFields,

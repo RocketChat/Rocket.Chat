@@ -16,17 +16,17 @@ export function authenticationMiddleware(config: AuthenticationMiddlewareConfig 
 		const { 'x-user-id': userId, 'x-auth-token': authToken } = req.headers;
 
 		if (userId && authToken) {
-			req.user = Users.findOneByIdAndLoginToken(userId, authToken);
+			req.body.user = Users.findOneByIdAndLoginToken(userId, authToken);
 		} else {
-			req.user = oAuth2ServerAuth(req)?.user;
+			req.body.user = oAuth2ServerAuth(req)?.user;
 		}
 
-		if (config.rejectUnauthorized && !req.user) {
+		if (config.rejectUnauthorized && !req.body.user) {
 			res.status(401).send('Unauthorized');
 			return;
 		}
 
-		req.userId = req.user?._id;
+		req.userId = req.body?.user?._id;
 
 		next();
 	};

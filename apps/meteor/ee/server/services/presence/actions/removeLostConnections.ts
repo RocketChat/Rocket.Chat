@@ -1,16 +1,17 @@
 import { Collection } from 'mongodb';
+import { IUserSession } from '@rocket.chat/core-typings';
 
 import { getCollection, Collections } from '../../mongo';
 import { IServiceContext } from '../../../../../server/sdk/types/ServiceClass';
 
-async function getAffectedUsers(model: Collection, query: object): Promise<string[]> {
+async function getAffectedUsers(model: Collection<IUserSession>, query: object): Promise<string[]> {
 	const list = await model.find<{ _id: string }>(query, { projection: { _id: 1 } }).toArray();
 	return list.map(({ _id }) => _id);
 }
 
 // TODO: Change this to use find and modify
 export async function removeLostConnections(nodeID?: string, context?: IServiceContext): Promise<string[]> {
-	const UserSession = await getCollection(Collections.UserSession);
+	const UserSession = await getCollection<IUserSession>(Collections.UserSession);
 
 	if (nodeID) {
 		const query = {
