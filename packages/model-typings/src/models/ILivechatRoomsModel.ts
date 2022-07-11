@@ -62,6 +62,8 @@ export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
 
 	findByVisitorId(visitorId: any, options: any): any;
 
+	findPaginatedByVisitorId(visitorId: any, options: any): any;
+
 	findRoomsByVisitorIdAndMessageWithCriteria(params: {
 		visitorId: any;
 		searchText: any;

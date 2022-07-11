@@ -1,5 +1,4 @@
 import { check } from 'meteor/check';
-import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
@@ -29,15 +28,13 @@ API.v1.addRoute(
 				throw new Error('not-allowed');
 			}
 
-			const cursor = Messages.findLivechatClosedMessages(this.urlParams.rid, {
+			const { cursor, totalCount } = Messages.findLivechatClosedMessages(this.urlParams.rid, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
 			});
 
-			const total = await cursor.count();
-
-			const messages = (await cursor.toArray()) as IMessage[];
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),

@@ -1,22 +1,25 @@
-import type { AggregationCursor, Cursor, FindAndModifyWriteOpResultObject, UpdateWriteOpResult } from 'mongodb';
+import type { AggregationCursor, FindCursor, Document, ModifyResult, UpdateResult } from 'mongodb';
 import type { ILivechatAgentActivity, IServiceHistory } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
 export interface ILivechatAgentActivityModel extends IBaseModel<ILivechatAgentActivity> {
 	findOneByAgendIdAndDate(agentId: string, date: ILivechatAgentActivity['date']): Promise<ILivechatAgentActivity | null>;
+
 	createOrUpdate(
 		data: Partial<Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStartedAt'>>,
-	): Promise<FindAndModifyWriteOpResultObject<ILivechatAgentActivity> | undefined>;
+	): Promise<ModifyResult<ILivechatAgentActivity> | undefined>;
 
 	updateLastStoppedAt(
 		params: Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStoppedAt' | 'availableTime'>,
-	): Promise<UpdateWriteOpResult>;
+	): Promise<UpdateResult | Document>;
+
 	updateServiceHistory(
 		params: Pick<ILivechatAgentActivity, 'date' | 'agentId'> & { serviceHistory: IServiceHistory },
-	): Promise<UpdateWriteOpResult>;
+	): Promise<UpdateResult | Document>;
 
-	findOpenSessions(): Cursor<ILivechatAgentActivity>;
+	findOpenSessions(): FindCursor<ILivechatAgentActivity>;
+
 	findAllAverageAvailableServiceTime(params: { date: Date; departmentId: string }): Promise<ILivechatAgentActivity[]>;
 
 	findAvailableServiceTimeHistory(params: {
