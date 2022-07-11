@@ -12,7 +12,6 @@ import { Template } from 'meteor/templating';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { t, getUserPreference } from '../../../../utils/client';
-import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
@@ -999,18 +998,8 @@ Meteor.startup(() => {
 		readMessage.on(template.data._id, () => this.unreadCount.set(0));
 
 		wrapper.addEventListener('scroll', updateUnreadCount);
-		// salva a data da renderização para exibir alertas de novas mensagens
+		// save the render's date to display new messages alerts
 		$.data(this.firstNode, 'renderedAt', new Date());
-
-		const webrtc = WebRTC.getInstanceByRoomId(template.data._id);
-		if (webrtc) {
-			this.autorun(() => {
-				const remoteItems = webrtc.remoteItems.get();
-				if ((remoteItems && remoteItems.length > 0) || webrtc.localUrl.get()) {
-					return this.tabBar.openUserInfo();
-				}
-			});
-		}
 
 		callbacks.add(
 			'streamNewMessage',
