@@ -168,7 +168,7 @@ export const updatePredictedVisitorAbandonment = async () => {
 	} else {
 		// Eng day: use a promise queue to update the predicted visitor abandonment time instead of all at once
 		const promisesArray = [];
-		LivechatRoomsRaw.find({ t: 'l', open: true }).forEach((room) => promisesArray.push(setPredictedVisitorAbandonmentTime(room)));
+		await LivechatRoomsRaw.findOpen().forEach((room) => promisesArray.push(setPredictedVisitorAbandonmentTime(room)));
 
 		await Promise.all(promisesArray);
 	}
