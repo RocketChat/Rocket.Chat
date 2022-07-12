@@ -106,9 +106,9 @@ function ChannelsTable() {
 
 	const formatDate = useFormatDate();
 	const renderRow = useCallback(
-		async (room) => {
+		(room) => {
 			const { _id, ts, t, name, fname, usersCount, lastMessage, topic, belongsTo } = room;
-			const avatarUrl = await roomCoordinator.getRoomDirectives(t)?.getAvatarPath(room);
+			const avatarUrl = roomCoordinator.getRoomDirectives(t)?.getAvatarPath(room);
 
 			return (
 				<Table.Row key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>

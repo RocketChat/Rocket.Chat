@@ -18,8 +18,8 @@ const AvatarUrlProvider: FC = ({ children }) => {
 				}
 				return (uid: string, etag?: string): string => getURL(`/avatar/${uid}${etag ? `?etag=${etag}` : ''}`);
 			})(),
-			getRoomPathAvatar: async ({ type, ...room }: any): string =>
-				await roomCoordinator.getRoomDirectives(type || room.t)?.getAvatarPath({ username: room._id, ...room }) || '',
+			getRoomPathAvatar: ({ type, ...room }: any): string =>
+				roomCoordinator.getRoomDirectives(type || room.t)?.getAvatarPath({ username: room._id, ...room }) || '',
 		}),
 		[externalProviderUrl, cdnAvatarUrl],
 	);

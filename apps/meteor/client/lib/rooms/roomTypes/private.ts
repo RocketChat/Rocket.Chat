@@ -76,8 +76,8 @@ roomCoordinator.add(PrivateRoomType, {
 		return groupByType && hasPermission('view-p-room');
 	},
 
-	async getAvatarPath(room) {
-		return Promise.resolve(getAvatarURL({ roomId: room._id, cache: room.avatarETag }) as string);
+	getAvatarPath(room) {
+		return getAvatarURL({ roomId: room._id, cache: room.avatarETag }) as string;
 	},
 
 	getIcon(room) {

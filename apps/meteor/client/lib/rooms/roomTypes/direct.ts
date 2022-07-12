@@ -9,7 +9,6 @@ import { Subscriptions, Users, ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
-import { APIClient } from '../../../../app/utils/client';
 import { getUserAvatarURL } from '../../../../app/utils/lib/getUserAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
@@ -96,39 +95,30 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return groupByType && hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
 	},
 
-	async getAvatarPath(room) {
+	getAvatarPath(room) {
 		if (!room) {
-			return Promise.resolve('');
+			return '';
 		}
 
 		// if coming from sidenav search
 		if (room.name && room.avatarETag) {
-			return Promise.resolve(getUserAvatarURL(room.name, room.avatarETag));
+			return getUserAvatarURL(room.name, room.avatarETag);
 		}
 
 		if (this.isGroupChat(room)) {
-			return Promise.resolve(getAvatarURL({
+			return getAvatarURL({
 				username: (room.uids || []).length + (room.usernames || []).join(),
 				cache: room.avatarETag,
-			}) as string);
+			}) as string;
 		}
 
 		const sub = Subscriptions.findOne({ rid: room._id }, { fields: { name: 1 } });
 		if (sub?.name) {
 			const user = Users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } });
-
-			if (!user && !sub.name.includes(',')) {
-				console.log('USER NAME:', sub.name);
-				const params = {
-					username: sub.name,
-				};
-				const otherUser = await APIClient.v1.get('users.info', params);
-				console.error('OTHERUSER: ', otherUser);
-			}
-			return Promise.resolve(getUserAvatarURL(user?.username || sub.name, user?.avatarETag));
+			return getUserAvatarURL(user?.username || sub.name, user?.avatarETag);
 		}
 
-		return Promise.resolve(getUserAvatarURL(room.name || this.roomName(room)));
+		return getUserAvatarURL(room.name || this.roomName(room));
 	},
 
 	getIcon(room) {

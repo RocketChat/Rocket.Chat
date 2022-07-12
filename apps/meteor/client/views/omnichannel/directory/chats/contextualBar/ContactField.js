@@ -12,11 +12,11 @@ import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 import { FormSkeleton } from '../../Skeleton';
 
-const ContactField = async ({ contact, room }) => {
+const ContactField = ({ contact, room }) => {
 	const t = useTranslation();
 	const { status } = contact;
 	const { fname, t: type } = room;
-	const avatarUrl = await roomCoordinator.getRoomDirectives(type)?.getAvatarPath(room);
+	const avatarUrl = roomCoordinator.getRoomDirectives(type)?.getAvatarPath(room);
 
 	const {
 		value: data,

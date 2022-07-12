@@ -82,9 +82,9 @@ function TeamsTable() {
 
 	const formatDate = useFormatDate();
 	const renderRow = useCallback(
-		async (team) => {
+		(team) => {
 			const { _id, ts, t, name, fname, topic, roomsCount } = team;
-			const avatarUrl = await roomCoordinator.getRoomDirectives(t)?.getAvatarPath(team);
+			const avatarUrl = roomCoordinator.getRoomDirectives(t)?.getAvatarPath(team);
 
 			return (
 				<Table.Row key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>

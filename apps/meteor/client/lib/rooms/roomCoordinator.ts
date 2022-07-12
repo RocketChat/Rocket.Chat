@@ -35,8 +35,8 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			condition(): boolean {
 				return true;
 			},
-			async getAvatarPath(_room): Promise<string> {
-				return Promise.resolve('');
+			getAvatarPath(_room): string {
+				return '';
 			},
 			getIcon(_room: Partial<IRoom>): IRoomTypeConfig['icon'] {
 				return this.config.icon;

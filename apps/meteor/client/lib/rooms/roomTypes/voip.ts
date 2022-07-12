@@ -19,8 +19,8 @@ roomCoordinator.add(VoipRoomType, {
 		return settings.get('Livechat_enabled') && hasPermission('view-l-room');
 	},
 
-	async getAvatarPath(room) {
-		return Promise.resolve(getAvatarURL({ username: `@${this.roomName(room)}` }) || '');
+	getAvatarPath(room) {
+		return getAvatarURL({ username: `@${this.roomName(room)}` }) || '';
 	},
 
 	findRoom(identifier) {
