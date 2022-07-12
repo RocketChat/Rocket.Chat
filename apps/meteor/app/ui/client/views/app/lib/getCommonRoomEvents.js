@@ -328,8 +328,7 @@ export const getCommonRoomEvents = () => ({
 	'click .message-actions__menu'(e, template) {
 		const messageContext = messageArgs(this);
 		const { msg: message, u: user, context: ctx } = messageContext;
-		const rid = Session.get('openedRoom');
-		const room = Rooms.findOne({ _id: rid });
+		const room = Rooms.findOne({ _id: message.rid });
 		const federationContext = isRoomFederated(room) ? 'federated' : '';
 		const context = ctx || message.context || message.actionContext || federationContext || 'message';
 		const allItems = MessageAction.getButtons({ ...messageContext, message, user }, context, 'menu').map((item) => ({
