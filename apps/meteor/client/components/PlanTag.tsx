@@ -1,44 +1,28 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
-import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 
-import { ILicenseTag } from '../../ee/app/license/definitions/ILicenseTag';
-
-type PlanTagType = {
-	name: string;
-	color: string;
-};
+import { isTruthy } from '../../lib/isTruthy';
 
 function PlanTag(): ReactElement {
-	const [plans, setPlans] = useSafely(useState<PlanTagType[]>([]));
+	const [plans, setPlans] = useState<string[]>([]);
 
 	const isEnterpriseEdition = useEndpoint('GET', '/v1/licenses.isEnterprise');
-	const { data } = useQuery(['licenses.isEnterprise'], () => isEnterpriseEdition(), {
-		refetchOnWindowFocus: false,
-	});
+	const { data } = useQuery(['licenses.isEnterprise'], () => isEnterpriseEdition());
 
 	useEffect(() => {
-		const developmentTag = process.env.NODE_ENV === 'development' ? { name: 'development', color: '#095ad2' } : null;
-		const enterpriseTag = data?.isEnterprise ? { name: 'enterprise', color: '#095ad2' } : null;
+		const developmentTag = process.env.NODE_ENV === 'development' ? 'Development' : null;
+		const enterpriseTag = data?.isEnterprise ? 'Enterprise' : null;
 
-		setPlans([developmentTag, enterpriseTag].filter(Boolean) as ILicenseTag[]);
+		setPlans([developmentTag, enterpriseTag].filter(isTruthy));
 	}, [setPlans, data?.isEnterprise]);
 
 	return (
 		<>
-			{plans.map(({ name, color }) => (
+			{plans.map((name) => (
 				<Box marginInline='x4' display='inline-block' verticalAlign='middle' key={name}>
-					<Tag
-						style={{
-							color: '#fff',
-							backgroundColor: color,
-							textTransform: 'capitalize',
-						}}
-					>
-						{name}
-					</Tag>
+					<Tag variant='primary'>{name}</Tag>
 				</Box>
 			))}
 		</>
