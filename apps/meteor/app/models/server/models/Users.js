@@ -61,9 +61,6 @@ export class Users extends Base {
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'active': 1, 'services.email2fa.enabled': 1 }, { sparse: true }); // used by statistics
 		this.tryEnsureIndex({ 'active': 1, 'services.totp.enabled': 1 }, { sparse: true }); // used by statistics
-
-		const collectionObj = this.model.rawCollection();
-		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -228,7 +225,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = this.findAndModify(query, sort, update);
+		const user = this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -262,7 +259,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = this.findAndModify(query, sort, update);
+		const user = this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
