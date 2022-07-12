@@ -1,9 +1,9 @@
 import s from 'underscore.string';
 import _ from 'underscore';
+import { Settings } from '@rocket.chat/models';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
-import Settings from './Settings';
 
 export class LivechatRooms extends Base {
 	constructor(...args) {
@@ -33,11 +33,6 @@ export class LivechatRooms extends Base {
 				},
 			},
 		);
-	}
-
-	findLivechat(filter = {}, offset = 0, limit = 20) {
-		const query = Object.assign(filter, { t: 'l' });
-		return this.find(query, { sort: { ts: -1 }, offset, limit });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -258,7 +253,7 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	updateRoomCount = function () {
+	updateRoomCount = async function () {
 		const query = {
 			_id: 'Livechat_Room_Count',
 		};
@@ -269,9 +264,8 @@ export class LivechatRooms extends Base {
 			},
 		};
 
-		const livechatCount = Settings.findAndModify(query, null, update);
-
-		return livechatCount.value.value;
+		const livechatCount = await Settings.findOneAndUpdate(query, update, { returnDocument: 'after' });
+		return livechatCount.value;
 	};
 
 	findOpenByVisitorToken(visitorToken, options) {
@@ -333,15 +327,6 @@ export class LivechatRooms extends Base {
 		};
 
 		return this.find(query, options);
-	}
-
-	findByVisitorId(visitorId) {
-		const query = {
-			't': 'l',
-			'v._id': visitorId,
-		};
-
-		return this.find(query);
 	}
 
 	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, options) {

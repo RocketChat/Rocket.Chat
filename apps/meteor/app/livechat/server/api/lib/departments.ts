@@ -1,4 +1,4 @@
-import { FilterQuery, SortOptionObject } from 'mongodb';
+import type { Filter, FindOptions } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { ILivechatDepartmentRecord, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
@@ -7,7 +7,7 @@ import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/model
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { callbacks } from '../../../../../lib/callbacks';
 
-type Pagination<T> = { pagination: { offset: number; count: number; sort: SortOptionObject<T> } };
+type Pagination<T> = { pagination: { offset: number; count: number; sort: FindOptions<T>['sort'] } };
 type FindDepartmentParams = {
 	userId: string;
 	onlyMyDepartments?: boolean;
@@ -25,7 +25,7 @@ type FindDepartmentToAutocompleteParams = {
 	uid: string;
 	selector: {
 		exceptions: string[];
-		conditions: FilterQuery<ILivechatDepartmentRecord>;
+		conditions: Filter<ILivechatDepartmentRecord>;
 		term: string;
 	};
 	onlyMyDepartments?: boolean;
@@ -58,15 +58,13 @@ export async function findDepartments({
 		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
 	}
 
-	const cursor = LivechatDepartment.find(query, {
+	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const departments = await cursor.toArray();
+	const [departments, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		departments,
@@ -118,7 +116,11 @@ export async function findDepartmentsToAutocomplete({
 	const { exceptions = [] } = selector;
 	let { conditions = {} } = selector;
 
-	const options = {
+	if (onlyMyDepartments) {
+		conditions = callbacks.run('livechat.applyDepartmentRestrictions', conditions, { userId: uid });
+	}
+
+	const items = await LivechatDepartment.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, {
 		projection: {
 			_id: 1,
 			name: 1,
@@ -126,18 +128,7 @@ export async function findDepartmentsToAutocomplete({
 		sort: {
 			name: 1,
 		},
-	};
-
-	if (onlyMyDepartments) {
-		conditions = callbacks.run('livechat.applyDepartmentRestrictions', conditions, { userId: uid });
-	}
-
-	const items = await LivechatDepartment.findByNameRegexWithExceptionsAndConditions(
-		selector.term,
-		exceptions,
-		conditions,
-		options,
-	).toArray();
+	}).toArray();
 	return {
 		items,
 	};
@@ -152,15 +143,13 @@ export async function findDepartmentAgents({
 		throw new Error('error-not-authorized');
 	}
 
-	const cursor = LivechatDepartmentAgents.findAgentsByDepartmentId<ILivechatDepartmentAgents>(departmentId, {
+	const { cursor, totalCount } = LivechatDepartmentAgents.findAgentsByDepartmentId<ILivechatDepartmentAgents>(departmentId, {
 		sort: sort || { username: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const agents = await cursor.toArray();
+	const [agents, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		agents,

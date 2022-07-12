@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import { Rooms as RoomRaw } from '@rocket.chat/models';
+import { Rooms as RoomRaw, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
 
 import { memoizeDebounce } from './debounceByParams';
 import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms, Messages, LivechatCustomField } from '../../../../../app/models/server';
@@ -166,7 +166,7 @@ export const updatePredictedVisitorAbandonment = () => {
 	if (!settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none') {
 		LivechatRooms.unsetPredictedVisitorAbandonment();
 	} else {
-		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
+		LivechatRoomsRaw.findPaginated({ t: 'l', open: true }).cursor.forEach((room) => setPredictedVisitorAbandonmentTime(room));
 	}
 };
 

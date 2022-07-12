@@ -61,9 +61,6 @@ export class Users extends Base {
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'active': 1, 'services.email2fa.enabled': 1 }, { sparse: true }); // used by statistics
 		this.tryEnsureIndex({ 'active': 1, 'services.totp.enabled': 1 }, { sparse: true }); // used by statistics
-
-		const collectionObj = this.model.rawCollection();
-		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -228,7 +225,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = this.findAndModify(query, sort, update);
+		const user = this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -262,7 +259,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = this.findAndModify(query, sort, update);
+		const user = this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -875,81 +872,6 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findByActiveUsersExcept(
-		searchTerm,
-		exceptions,
-		options,
-		forcedSearchFields,
-		extraQuery = [],
-		{ startsWith = false, endsWith = false } = {},
-	) {
-		if (exceptions == null) {
-			exceptions = [];
-		}
-		if (options == null) {
-			options = {};
-		}
-		if (!_.isArray(exceptions)) {
-			exceptions = [exceptions];
-		}
-
-		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-		if (!searchTerm) {
-			const query = {
-				$and: [
-					{
-						active: true,
-						username: { $exists: true, $nin: exceptions },
-					},
-					...extraQuery,
-				],
-			};
-
-			return this._db.find(query, options);
-		}
-
-		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
-
-		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
-
-		const orStmt = _.reduce(
-			searchFields,
-			function (acc, el) {
-				acc.push({ [el.trim()]: termRegex });
-				return acc;
-			},
-			[],
-		);
-
-		const query = {
-			$and: [
-				{
-					active: true,
-					username: { $exists: true, $nin: exceptions },
-					$or: orStmt,
-				},
-				...extraQuery,
-			],
-		};
-
-		// do not use cache
-		return this._db.find(query, options);
-	}
-
-	findByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
-		const extraQuery = [
-			{
-				$or: [{ federation: { $exists: false } }, { 'federation.origin': localDomain }],
-			},
-		];
-		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
-	}
-
-	findByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
-		const extraQuery = [{ federation: { $exists: true } }, { 'federation.origin': { $ne: localDomain } }];
-		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
-	}
-
 	findUsersByNameOrUsername(nameOrUsername, options) {
 		const query = {
 			username: {
@@ -1043,7 +965,7 @@ export class Users extends Base {
 	}
 
 	/**
-	 * @param {import('mongodb').FilterQuery<import('@rocket.chat/core-typings').IStats>} fields
+	 * @param {import('mongodb').Filter<import('@rocket.chat/core-typings').IStats>} fields
 	 */
 	getOldest(fields = { _id: 1 }) {
 		const query = {
