@@ -74,7 +74,8 @@ export class MainContent extends BasePage {
 	}
 
 	get lastMessageRoleAdded(): Locator {
-		return this.page.locator('[data-qa="system-message"] [data-qa-type="system-message-body"]');
+		const roleAddedMessageRegex = new RegExp(/\badded by\b/g);
+		return this.page.locator('[data-qa="system-message"] [data-qa-type="system-message-body"]', { hasText: roleAddedMessageRegex });
 	}
 
 	get lastMessageUserTag(): Locator {
