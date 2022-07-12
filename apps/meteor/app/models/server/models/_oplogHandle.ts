@@ -1,25 +1,29 @@
+import { Readable } from 'stream';
+
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals, OplogHandle } from 'meteor/mongo';
 import semver from 'semver';
-import { MongoClient, Cursor, Timestamp, Db } from 'mongodb';
+import { MongoClient } from 'mongodb';
+import type { Timestamp, Db } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { urlParser } from './_oplogUrlParser';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
+
+const ignoreChangeStream = ['yes', 'true'].includes(String(process.env.IGNORE_CHANGE_STREAM).toLowerCase());
 
 class CustomOplogHandle {
 	dbName: string;
 
 	client: MongoClient;
 
-	stream: Cursor;
+	stream: Readable;
 
 	db: Db;
 
 	usingChangeStream: boolean;
 
 	async isChangeStreamAvailable(): Promise<boolean> {
-		if (process.env.IGNORE_CHANGE_STREAM) {
+		if (ignoreChangeStream) {
 			return false;
 		}
 
@@ -47,36 +51,25 @@ class CustomOplogHandle {
 
 	async start(): Promise<CustomOplogHandle> {
 		this.usingChangeStream = await this.isChangeStreamAvailable();
+
 		const oplogUrl = this.usingChangeStream ? process.env.MONGO_URL : process.env.MONGO_OPLOG_URL;
-
-		let urlParsed;
-		try {
-			urlParsed = await urlParser(oplogUrl);
-		} catch (e) {
-			throw Error(`Error parsing database URL (${oplogUrl})`);
-		}
-
-		if (!this.usingChangeStream && (!oplogUrl || urlParsed.defaultDatabase !== 'local')) {
-			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
-		}
-
-		if (!oplogUrl) {
+		if (!oplogUrl || !process.env.MONGO_URL) {
 			throw Error('$MONGO_URL must be set');
-		}
-
-		if (process.env.MONGO_OPLOG_URL) {
-			const urlParsed = await urlParser(process.env.MONGO_URL);
-			this.dbName = urlParsed.defaultDatabase;
 		}
 
 		const mongoOptions = process.env.MONGO_OPTIONS ? JSON.parse(process.env.MONGO_OPTIONS) : null;
 
 		this.client = new MongoClient(oplogUrl, {
 			...mongoOptions,
-			useUnifiedTopology: true,
-			useNewUrlParser: true,
-			poolSize: this.usingChangeStream ? 15 : 1,
+			minPoolSize: this.usingChangeStream ? 15 : 1,
 		});
+
+		if (!this.usingChangeStream && this.client.options.dbName !== 'local') {
+			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
+		}
+
+		const mongoClient = new MongoClient(process.env.MONGO_URL);
+		this.dbName = mongoClient.options.dbName;
 
 		await this.client.connect();
 		this.db = this.client.db();
@@ -129,7 +122,7 @@ class CustomOplogHandle {
 	}
 
 	_onOplogEntryOplog(query: { collection: string }, callback: Function): void {
-		this.stream.on(
+		this.stream?.on(
 			'data',
 			Meteor.bindEnvironment((buffer) => {
 				const doc = buffer as any;
@@ -170,7 +163,7 @@ class CustomOplogHandle {
 									// o: event.fullDocument,
 									o: {
 										$set: event.updateDescription.updatedFields,
-										$unset: event.updateDescription.removedFields.reduce((obj, field) => {
+										$unset: event.updateDescription.removedFields?.reduce((obj, field) => {
 											obj[field as string] = true;
 											return obj;
 										}, {} as Record<string, true>),

@@ -1,9 +1,9 @@
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
-import { LivechatVisitors, Users } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 
-import { LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
+import { LivechatCustomField, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
 
 export const Contacts = {
 	async registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
@@ -70,7 +70,7 @@ export const Contacts = {
 
 		await LivechatVisitors.updateById(contactId, updateUser);
 
-		const rooms = LivechatRooms.findByVisitorId(contactId).fetch();
+		const rooms = await LivechatRooms.findByVisitorId(contactId).toArray();
 
 		rooms?.length &&
 			rooms.forEach((room) => {

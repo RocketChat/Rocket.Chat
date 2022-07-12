@@ -25,10 +25,14 @@ export const fillFirstDaysOfUsersIfNeeded = async (date: Date): Promise<void> =>
 	}).toArray();
 	if (!usersFromAnalytics.length) {
 		const startOfPeriod = moment(date).subtract(90, 'days').toDate();
-		const users = await Users.getTotalOfRegisteredUsersByDate({
+		const users = (await Users.getTotalOfRegisteredUsersByDate({
 			start: startOfPeriod,
 			end: date,
-		});
+		})) as {
+			date: string;
+			users: number;
+			type: 'users';
+		}[];
 		users.forEach((user) =>
 			Analytics.insertOne({
 				...user,
