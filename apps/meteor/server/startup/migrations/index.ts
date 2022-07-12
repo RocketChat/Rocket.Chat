@@ -1,4 +1,4 @@
-import './minimum_version_required_to_upgrade';
+import './minimumVersion';
 import './v241';
 import './v242';
 import './v243';
