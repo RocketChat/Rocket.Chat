@@ -1,23 +1,8 @@
 // TODO: Lib imports should not exists inside the raw models
 import type { IUpload, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { InsertionModel, IUploadsModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
+import type { IUploadsModel } from '@rocket.chat/model-typings';
+import type { Collection, FindCursor, Db, DeleteResult, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type {
-	Collection,
-	CollectionInsertOneOptions,
-	Cursor,
-	Db,
-	DeleteWriteOpResultObject,
-	FilterQuery,
-	IndexSpecification,
-	InsertOneWriteOpResult,
-	UpdateOneOptions,
-	UpdateQuery,
-	UpdateWriteOpResult,
-	WithId,
-	WriteOpResult,
-} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -31,14 +16,14 @@ const fillTypeGroup = (fileData: Partial<IUpload>): void => {
 
 export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUpload>>) {
-		super(db, getCollectionName('uploads'), trash);
+		super(db, 'uploads', trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { rid: 1 } }, { key: { uploadedAt: 1 } }, { key: { typeGroup: 1 } }];
 	}
 
-	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): Cursor<IUpload> {
+	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): FindCursor<IUpload> {
 		const fileQuery = {
 			rid: roomId,
 			complete: true,
@@ -51,7 +36,7 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 			...(fileType && fileType !== 'all' && { typeGroup: fileType }),
 		};
 
-		const fileOptions = {
+		return this.find(fileQuery, {
 			limit,
 			sort: {
 				uploadedAt: -1,
@@ -67,36 +52,10 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 				uploadedAt: 1,
 				typeGroup: 1,
 			},
-		};
-
-		return this.find(fileQuery, fileOptions);
+		});
 	}
 
-	insert(fileData: InsertionModel<IUpload>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<IUpload>>> {
-		fillTypeGroup(fileData);
-		return super.insertOne(fileData, options);
-	}
-
-	update(
-		filter: FilterQuery<IUpload>,
-		update: UpdateQuery<IUpload> | Partial<IUpload>,
-		options?: UpdateOneOptions & { multi?: boolean },
-	): Promise<WriteOpResult> {
-		if ('$set' in update && update.$set) {
-			fillTypeGroup(update.$set);
-		} else if ('type' in update && update.type) {
-			fillTypeGroup(update);
-		}
-
-		return super.update(filter, update, options);
-	}
-
-	async insertFileInit(
-		userId: string,
-		store: string,
-		file: { name: string },
-		extra: object,
-	): Promise<InsertOneWriteOpResult<WithId<IUpload>>> {
+	async insertFileInit(userId: string, store: string, file: { name: string }, extra: object): Promise<InsertOneResult<WithId<IUpload>>> {
 		const fileData = {
 			userId,
 			store,
@@ -110,10 +69,10 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 		};
 
 		fillTypeGroup(fileData);
-		return this.insert(fileData);
+		return this.insertOne(fileData);
 	}
 
-	async updateFileComplete(fileId: string, userId: string, file: object): Promise<UpdateWriteOpResult | undefined> {
+	async updateFileComplete(fileId: string, userId: string, file: object): Promise<UpdateResult | undefined> {
 		if (!fileId) {
 			return;
 		}
@@ -137,7 +96,7 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 		return this.updateOne(filter, update);
 	}
 
-	async deleteFile(fileId: string): Promise<DeleteWriteOpResultObject> {
+	async deleteFile(fileId: string): Promise<DeleteResult> {
 		return this.deleteOne({ _id: fileId });
 	}
 }
