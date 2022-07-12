@@ -165,7 +165,7 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 	const options = {
 		...pagination,
 		sort,
-		fields: {
+		projection: {
 			username: 1,
 			name: 1,
 			nickname: 1,

@@ -16,6 +16,7 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { addUserToFileObj } from '../helpers/addUserToFileObj';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
@@ -339,12 +340,6 @@ API.v1.addRoute(
 				userId: this.userId,
 				checkedArchived: false,
 			});
-			const addUserObjectToEveryObject = (file) => {
-				if (file.userId) {
-					file = this.insertUserObject({ object: file, userId: file.userId });
-				}
-				return file;
-			};
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
@@ -361,7 +356,7 @@ API.v1.addRoute(
 			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				files: files.map(addUserObjectToEveryObject),
+				files: await addUserToFileObj(files),
 				count: files.length,
 				offset,
 				total,
