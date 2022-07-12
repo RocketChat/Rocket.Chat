@@ -67,7 +67,7 @@ function getIntegrationScript(integration) {
 	const script = integration.scriptCompiled;
 	const { sandbox, store } = buildSandbox();
 	try {
-		incomingLogger.info({ msg: 'Will evaluate script of Trigger', name: integration.name });
+		incomingLogger.info({ msg: 'Will evaluate script of Trigger', integration: integration.name });
 		incomingLogger.debug(script);
 
 		const vmScript = new VMScript(`${script}; Script;`, 'script.js');
@@ -89,20 +89,20 @@ function getIntegrationScript(integration) {
 	} catch (err) {
 		incomingLogger.error({
 			msg: 'Error evaluating Script in Trigger',
-			name: integration.name,
+			integration: integration.name,
 			script,
 			err,
 		});
 		throw API.v1.failure('error-evaluating-script');
 	}
 
-	incomingLogger.error({ msg: 'Class "Script" not in Trigger', name: integration.name });
+	incomingLogger.error({ msg: 'Class "Script" not in Trigger', integration: integration.name });
 	throw API.v1.failure('class-script-not-found');
 }
 
 function createIntegration(options, user) {
-	incomingLogger.info({ msg: 'Add integration', name: options.name });
-	incomingLogger.debug(options);
+	incomingLogger.info({ msg: 'Add integration', integration: options.name });
+	incomingLogger.debug({ options });
 
 	Meteor.runAsUser(user._id, function () {
 		switch (options.event) {
@@ -139,7 +139,7 @@ function createIntegration(options, user) {
 
 function removeIntegration(options, user) {
 	incomingLogger.info('Remove integration');
-	incomingLogger.debug(options);
+	incomingLogger.debug({ options });
 
 	const integrationToRemove = Promise.await(Integrations.findOneByUrl(options.target_url));
 	if (!integrationToRemove) {
@@ -152,7 +152,7 @@ function removeIntegration(options, user) {
 }
 
 function executeIntegrationRest() {
-	incomingLogger.info({ msg: 'Post integration:', name: this.integration.name });
+	incomingLogger.info({ msg: 'Post integration:', integration: this.integration.name });
 	incomingLogger.debug({ urlParams: this.urlParams, bodyParams: this.bodyParams });
 
 	if (this.integration.enabled !== true) {
@@ -230,7 +230,7 @@ function executeIntegrationRest() {
 			if (!result) {
 				incomingLogger.debug({
 					msg: 'Process Incoming Request result of Trigger has no data',
-					name: this.integration.name,
+					integration: this.integration.name,
 				});
 				return API.v1.success();
 			}
@@ -246,13 +246,13 @@ function executeIntegrationRest() {
 
 			incomingLogger.debug({
 				msg: 'Process Incoming Request result of Trigger',
-				name: this.integration.name,
+				integration: this.integration.name,
 				result: this.bodyParams,
 			});
 		} catch (err) {
 			incomingLogger.error({
 				msg: 'Error running Script in Trigger',
-				name: this.integration.name,
+				integration: this.integration.name,
 				script: this.integration.scriptCompiled,
 				err,
 			});
