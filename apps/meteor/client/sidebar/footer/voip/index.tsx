@@ -4,6 +4,7 @@ import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
+import { SidebarFooterWatermark } from '../../../../ee/client/sidebar/footer/SidebarFooterWatermark';
 import {
 	useCallActions,
 	useCallCreateRoom,
@@ -14,7 +15,6 @@ import {
 	useQueueName,
 } from '../../../contexts/CallContext';
 import SidebarFooterDefault from '../SidebarFooterDefault';
-import { SidebarFooterWatermark } from '../SidebarFooterWatermark';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
 export const VoipFooter = (): ReactElement | null => {

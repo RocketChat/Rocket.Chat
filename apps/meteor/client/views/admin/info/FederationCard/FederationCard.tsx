@@ -77,7 +77,7 @@ const FederationCard: FC = () => {
 				</Box>
 			</CardHeader>
 			<Card.Body>
-				<Card.Col span={2}>
+				<Card.Col>
 					<Section status={federationEnabledStatus} title={t('Federation_Enable')} subtitle={t('Federation_Is_working_correctly')} />
 					<Section status={federationSetupStatus} title={t('Federation_Adding_to_your_server')} subtitle={t('Federation_Changes_needed')}>
 						{!federationHealthy && <a onClick={handleModal}>{t('Federation_Fix_now')}</a>}
