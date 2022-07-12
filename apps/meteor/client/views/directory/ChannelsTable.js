@@ -1,7 +1,7 @@
 import { Box, Table, Avatar, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
@@ -23,20 +23,10 @@ function ChannelsTable() {
 	const refAutoFocus = useAutoFocus(true);
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
-	const [avatarUrl, setAvatarUrl] = useState('');
-	const [room, setRoom] = useState({});
 
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 
 	const query = useQuery(params, sort, 'channels');
-
-	useEffect(() => {
-		async function fetchAvatarUrl() {
-			const url = await roomCoordinator.getRoomDirectives(room.t)?.getAvatarPath(room);
-			setAvatarUrl(url);
-		}
-		fetchAvatarUrl();
-	}, [room]);
 
 	const onHeaderClick = useCallback(
 		(id) => {
@@ -116,9 +106,9 @@ function ChannelsTable() {
 
 	const formatDate = useFormatDate();
 	const renderRow = useCallback(
-		(room) => {
+		async (room) => {
 			const { _id, ts, t, name, fname, usersCount, lastMessage, topic, belongsTo } = room;
-			setRoom(room);
+			const avatarUrl = await roomCoordinator.getRoomDirectives(t)?.getAvatarPath(room);
 
 			return (
 				<Table.Row key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
@@ -160,7 +150,7 @@ function ChannelsTable() {
 				</Table.Row>
 			);
 		},
-		[formatDate, mediaQuery, onClick, avatarUrl],
+		[formatDate, mediaQuery, onClick],
 	);
 
 	return (

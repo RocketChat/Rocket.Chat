@@ -2,9 +2,6 @@ import type { RouteOptions } from 'meteor/kadira:flow-router';
 import type { IRoom, RoomType, IRocketChatRecord, IUser, IMessage, ReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
 
 export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
-export type AvatarPathData = AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & {
-	username?: IRoom['_id'];
-};
 export interface IRoomTypeRouteConfig {
 	name: string;
 	path?: string;
@@ -70,7 +67,9 @@ export interface IRoomTypeClientDirectives {
 	openCustomProfileTab: (instance: any, room: IRoom, username: string) => boolean;
 	getUiText: (context: ValueOf<typeof UiTextContext>) => string;
 	condition: () => boolean;
-	getAvatarPath: (data: AvatarPathData) => Promise<string>;
+	getAvatarPath: (
+		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
+	) => Promise<string>;
 	getIcon: (room: Partial<IRoom>) => IRoomTypeConfig['icon'];
 	getUserStatus: (roomId: string) => string | undefined;
 	findRoom: (identifier: string) => IRoom | undefined;

@@ -7,8 +7,9 @@ import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import * as Federation from '../../../../app/federation-v2/client/Federation';
 import { Subscriptions, Users, ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
-import { getUserPreference, APIClient } from '../../../../app/utils/client';
+import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
+import { APIClient } from '../../../../app/utils/client';
 import { getUserAvatarURL } from '../../../../app/utils/lib/getUserAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
@@ -106,12 +107,10 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 
 		if (this.isGroupChat(room)) {
-			return Promise.resolve(
-				getAvatarURL({
-					username: (room.uids || []).length + (room.usernames || []).join(),
-					cache: room.avatarETag,
-				}) as string,
-			);
+			return Promise.resolve(getAvatarURL({
+				username: (room.uids || []).length + (room.usernames || []).join(),
+				cache: room.avatarETag,
+			}) as string);
 		}
 
 		const sub = Subscriptions.findOne({ rid: room._id }, { fields: { name: 1 } });
@@ -119,12 +118,12 @@ roomCoordinator.add(DirectMessageRoomType, {
 			const user = Users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } });
 
 			if (!user && !sub.name.includes(',')) {
+				console.log('USER NAME:', sub.name);
 				const params = {
 					username: sub.name,
 				};
-				const otherUser = await APIClient.get('/v1/users.info', params);
-				const etag = otherUser.user?.avatarETag;
-				return Promise.resolve(getUserAvatarURL(sub.name, etag));
+				const otherUser = await APIClient.v1.get('users.info', params);
+				console.error('OTHERUSER: ', otherUser);
 			}
 			return Promise.resolve(getUserAvatarURL(user?.username || sub.name, user?.avatarETag));
 		}

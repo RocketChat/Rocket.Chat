@@ -1,5 +1,5 @@
 import { useRoomAvatarPath } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useState, useEffect } from 'react';
+import React, { memo, ReactElement } from 'react';
 
 import BaseAvatar from './BaseAvatar';
 
@@ -21,16 +21,8 @@ type RoomAvatarProps = {
 
 const RoomAvatar = function RoomAvatar({ room, ...rest }: RoomAvatarProps): ReactElement {
 	const getRoomPathAvatar = useRoomAvatarPath();
-	const [url, setUrl] = useState('');
-
-	useEffect(() => {
-		async function fetchAvatarUrl(): Promise<void> {
-			setUrl(await getRoomPathAvatar(room));
-		}
-		fetchAvatarUrl();
-	}, [room, getRoomPathAvatar]);
-
-	return <BaseAvatar url={url} size={rest.size} />;
+	const { url = getRoomPathAvatar(room), ...props } = rest;
+	return <BaseAvatar url={url} {...props} />;
 };
 
 export default memo(RoomAvatar);
