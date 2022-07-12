@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { ChatRoom, CachedChatRoom } from '../../../../models';
+import { ChatRoom, CachedChatRoom } from '../../../../models/client';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import './livechatReadOnly.html';
 import { APIClient } from '../../../../utils/client';

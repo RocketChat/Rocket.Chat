@@ -40,7 +40,7 @@ export const useCategories = (): [
 					items: mappedCategories,
 				},
 			]);
-		} catch (e) {
+		} catch (e: any) {
 			handleAPIError(e);
 		}
 	}, [t]);

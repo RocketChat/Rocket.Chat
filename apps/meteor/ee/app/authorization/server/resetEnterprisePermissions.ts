@@ -1,4 +1,5 @@
-import { Permissions } from '../../../../app/models/server/raw';
+import { Permissions } from '@rocket.chat/models';
+
 import { guestPermissions } from '../lib/guestPermissions';
 
 export const resetEnterprisePermissions = async function (): Promise<void> {

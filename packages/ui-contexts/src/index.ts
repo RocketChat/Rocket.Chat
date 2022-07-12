@@ -13,6 +13,7 @@ export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessages
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
 export { UserContext, UserContextValue } from './UserContext';
+export { DeviceContext, Device, IExperimentalHTMLAudioElement } from './DeviceContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
@@ -21,6 +22,7 @@ export { useAttachmentAutoLoadEmbedMedia } from './hooks/useAttachmentAutoLoadEm
 export { useAttachmentDimensions } from './hooks/useAttachmentDimensions';
 export { useAttachmentIsCollapsedByDefault } from './hooks/useAttachmentIsCollapsedByDefault';
 export { useConnectionStatus } from './hooks/useConnectionStatus';
+export { useCurrentModal } from './hooks/useCurrentModal';
 export { useCurrentRoute } from './hooks/useCurrentRoute';
 export { useCustomSound } from './hooks/useCustomSound';
 export { useEndpoint } from './hooks/useEndpoint';
@@ -71,7 +73,13 @@ export { useUserRoom } from './hooks/useUserRoom';
 export { useUserSubscription } from './hooks/useUserSubscription';
 export { useUserSubscriptionByName } from './hooks/useUserSubscriptionByName';
 export { useUserSubscriptions } from './hooks/useUserSubscriptions';
+export { useSelectedDevices } from './hooks/useSelectedDevices';
+export { useDeviceConstraints } from './hooks/useDeviceConstraints';
+export { useAvailableDevices } from './hooks/useAvailableDevices';
+export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
+export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 
 export { ServerMethods, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethodFunction } from './ServerContext/methods';
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
+export { Fields } from './UserContext';

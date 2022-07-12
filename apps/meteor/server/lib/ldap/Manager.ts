@@ -7,9 +7,9 @@ import ldapEscape from 'ldap-escape';
 import _ from 'underscore';
 import { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername } from '@rocket.chat/core-typings';
 import type { IImportUser } from '@rocket.chat/core-typings';
+import { Users as UsersRaw } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
-import { Users as UsersRaw } from '../../../app/models/server/raw';
 import { LDAPConnection } from './Connection';
 import { LDAPDataConverter } from './DataConverter';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';

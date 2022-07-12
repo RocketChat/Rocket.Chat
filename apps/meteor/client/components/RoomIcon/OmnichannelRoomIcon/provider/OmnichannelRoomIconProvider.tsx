@@ -1,28 +1,37 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useSubscription, Subscription } from 'use-subscription';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { AsyncState } from '../../../../lib/asyncState/AsyncState';
 import { AsyncStatePhase } from '../../../../lib/asyncState/AsyncStatePhase';
 import { OmnichannelRoomIconContext } from '../context/OmnichannelRoomIconContext';
 import OmnichannelRoomIcon from '../lib/OmnichannelRoomIcon';
 
+let icons = Array.from(OmnichannelRoomIcon.icons.values());
+
 export const OmnichannelRoomIconProvider: FC = ({ children }) => {
-	const svgIcons = useSubscription(
-		useMemo(
-			() => ({
-				getCurrentValue: (): string[] => Array.from(OmnichannelRoomIcon.icons.values()),
-				subscribe: (callback): (() => void) => OmnichannelRoomIcon.on('change', callback),
-			}),
+	const svgIcons = useSyncExternalStore(
+		useCallback(
+			(callback): (() => void) =>
+				OmnichannelRoomIcon.on('change', () => {
+					icons = Array.from(OmnichannelRoomIcon.icons.values());
+					callback();
+				}),
 			[],
 		),
+		(): string[] => icons,
 	);
+
 	return (
 		<OmnichannelRoomIconContext.Provider
 			value={useMemo(
 				() => ({
-					queryIcon: (app: string, iconName: string): Subscription<AsyncState<string>> => ({
-						getCurrentValue: (): AsyncState<string> => {
+					queryIcon: (
+						app: string,
+						iconName: string,
+					): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => AsyncState<string>] => [
+						(callback): (() => void) => OmnichannelRoomIcon.on(`${app}-${iconName}`, callback),
+						(): AsyncState<string> => {
 							const icon = OmnichannelRoomIcon.get(app, iconName);
 
 							if (!icon) {
@@ -39,8 +48,7 @@ export const OmnichannelRoomIconProvider: FC = ({ children }) => {
 								error: undefined,
 							};
 						},
-						subscribe: (callback): (() => void) => OmnichannelRoomIcon.on(`${app}-${iconName}`, callback),
-					}),
+					],
 				}),
 				[],
 			)}

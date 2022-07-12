@@ -10,6 +10,7 @@ export type LayoutContextValue = {
 	showTopNavbarEmbeddedLayout: boolean;
 	isMobile: boolean;
 	sidebar: any;
+	sidenav: any;
 	size: SizeLayout;
 	contextualBarExpanded: boolean;
 	contextualBarPosition: 'absolute' | 'relative' | 'fixed';
@@ -20,6 +21,7 @@ export const LayoutContext = createContext<LayoutContextValue>({
 	showTopNavbarEmbeddedLayout: false,
 	isMobile: false,
 	sidebar: {},
+	sidenav: {},
 	size: {
 		sidebar: '380px',
 		contextualBar: '380px',

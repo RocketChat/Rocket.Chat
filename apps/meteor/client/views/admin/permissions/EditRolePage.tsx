@@ -51,7 +51,7 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			router.push({});
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	});
 
@@ -68,7 +68,7 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 
 				router.push({});
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 				setModal();
 			}
 		};
@@ -103,7 +103,7 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 						{t('Save')}
 					</Button>
 					{!role?.protected && role?._id && (
-						<Button danger onClick={handleDelete}>
+						<Button secondary danger onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					)}

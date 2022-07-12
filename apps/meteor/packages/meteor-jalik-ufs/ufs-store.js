@@ -380,10 +380,10 @@ export class Store {
 				const tmpFile = UploadFS.getTempFilePath(file._id);
 
 				// Delete the temp file
-				fs.stat(tmpFile, function (err) {
+				fs.stat(tmpFile, (err) => {
 					!err &&
-						fs.unlink(tmpFile, function (err) {
-							err && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err.message})`);
+						fs.unlink(tmpFile, (err2) => {
+							err2 && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err2.message})`);
 						});
 				});
 			});

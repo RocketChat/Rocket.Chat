@@ -8,7 +8,7 @@ export const useEndpointActionExperimental = <TMethod extends Method, TPath exte
 	path: TPath,
 	successMessage?: string,
 ): ((
-	params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
+	params: OperationParams<TMethod, MatchPathPattern<TPath>>,
 ) => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>) => {
 	const sendData = useEndpoint(method, path);
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -24,7 +24,12 @@ export const useEndpointActionExperimental = <TMethod extends Method, TPath exte
 
 				return data;
 			} catch (error) {
+				if (error && typeof error === 'object' && 'error' in error) {
+					dispatchToastMessage({ type: 'error', message: (error as any).error });
+					throw error;
+				}
 				dispatchToastMessage({ type: 'error', message: String(error) });
+
 				// return { success: false };
 				throw error;
 			}

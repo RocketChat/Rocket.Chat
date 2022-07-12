@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
+import { Rooms as RoomRaw, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
 
 import { memoizeDebounce } from './debounceByParams';
 import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms, Messages, LivechatCustomField } from '../../../../../app/models/server';
-import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
-import { settings } from '../../../../../app/settings';
+import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
@@ -109,14 +109,9 @@ export const dispatchWaitingQueueStatus = async (department) => {
 // but we don't need to notify _each_ change that takes place, just their final position
 export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
 
-export const processWaitingQueue = async (department) => {
+export const processWaitingQueue = async (department, inquiry) => {
 	const queue = department || 'Public';
 	helperLogger.debug(`Processing items on queue ${queue}`);
-	const inquiry = LivechatInquiry.getNextInquiryQueued(department);
-	if (!inquiry) {
-		helperLogger.debug(`No items to process on queue ${queue}`);
-		return;
-	}
 
 	helperLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);
 	const { defaultAgent } = inquiry;
@@ -132,10 +127,14 @@ export const processWaitingQueue = async (department) => {
 			servedBy: { _id: agentId },
 		} = room;
 		helperLogger.debug(`Inquiry ${inquiry._id} taken successfully by agent ${agentId}. Notifying`);
-		return setTimeout(() => {
+		setTimeout(() => {
 			propagateAgentDelegated(rid, agentId);
 		}, 1000);
+
+		return true;
 	}
+
+	return false;
 };
 
 export const setPredictedVisitorAbandonmentTime = (room) => {
@@ -167,7 +166,7 @@ export const updatePredictedVisitorAbandonment = () => {
 	if (!settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none') {
 		LivechatRooms.unsetPredictedVisitorAbandonment();
 	} else {
-		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
+		LivechatRoomsRaw.findPaginated({ t: 'l', open: true }).cursor.forEach((room) => setPredictedVisitorAbandonmentTime(room));
 	}
 };
 

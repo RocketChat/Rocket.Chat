@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { Settings } from '@rocket.chat/models';
 
 import { RocketChatFile } from '../../app/file';
 import { FileUpload } from '../../app/file-upload/server';
@@ -8,7 +9,6 @@ import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 import { Users, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib/server';
-import { Settings } from '../../app/models/server/raw';
 import { validateEmail } from '../../lib/emailValidator';
 
 Meteor.startup(async function () {

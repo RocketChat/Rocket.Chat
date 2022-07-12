@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 
 import { callbacks } from '../../../lib/callbacks';
 import { UiTextContext } from '../../../definition/IRoomTypeConfig';
-import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
+import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models/client';
 import { getUserPreference } from '../../utils';
 import { settings } from '../../settings';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
@@ -26,7 +26,6 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarSortby': 1,
 				'settings.preferences.sidebarShowFavorites': 1,
 				'settings.preferences.sidebarShowUnread': 1,
-				'services.tokenpass': 1,
 				'messageViewMode': 1,
 			},
 		});
@@ -72,12 +71,6 @@ Template.roomList.helpers({
 
 			if (this.identifier === 'tokens') {
 				types = ['c', 'p'];
-			}
-
-			if (['c', 'p'].includes(this.identifier)) {
-				query.tokens = { $exists: false };
-			} else if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
-				query.tokens = { $exists: true };
 			}
 
 			if (getUserPreference(user, 'sidebarShowUnread')) {
@@ -142,9 +135,9 @@ const mergeSubRoom = (subscription) => {
 			uids: 1,
 			streamingOptions: 1,
 			usernames: 1,
+			usersCount: 1,
 			topic: 1,
 			encrypted: 1,
-			jitsiTimeout: 1,
 			// autoTranslate: 1,
 			// autoTranslateLanguage: 1,
 			description: 1,
@@ -196,8 +189,7 @@ const mergeSubRoom = (subscription) => {
 		teamMain,
 		uids,
 		usernames,
-		jitsiTimeout,
-
+		usersCount,
 		v,
 		transcriptRequest,
 		servedBy,
@@ -235,8 +227,7 @@ const mergeSubRoom = (subscription) => {
 		teamMain,
 		uids,
 		usernames,
-		jitsiTimeout,
-
+		usersCount,
 		v,
 		transcriptRequest,
 		servedBy,
@@ -279,8 +270,7 @@ const mergeRoomSub = (room) => {
 		teamMain,
 		uids,
 		usernames,
-		jitsiTimeout,
-
+		usersCount,
 		v,
 		transcriptRequest,
 		servedBy,
@@ -317,6 +307,7 @@ const mergeRoomSub = (room) => {
 				retention,
 				uids,
 				usernames,
+				usersCount,
 				lastMessage,
 				streamingOptions,
 				teamId,
@@ -334,7 +325,6 @@ const mergeRoomSub = (room) => {
 				priorityId,
 				livechatData,
 				departmentId,
-				jitsiTimeout,
 				ts,
 				source,
 				queuedAt,

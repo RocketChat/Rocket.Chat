@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import { EmojiCustom } from '@rocket.chat/models';
 
-import { EmojiCustom } from '../../../models/server/raw';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { findEmojisCustom } from '../lib/emoji-custom';
 import { Media } from '../../../../server/sdk';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 API.v1.addRoute(
 	'emoji-custom.list',
@@ -67,13 +68,12 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const { emoji, ...fields } = await getUploadFormData({
-				request: this.request,
-			});
-
-			if (!emoji) {
-				throw new Meteor.Error('invalid-field');
-			}
+			const [emoji, fields] = await getUploadFormData(
+				{
+					request: this.request,
+				},
+				{ field: 'emoji' },
+			);
 
 			const isUploadable = await Media.isImage(emoji.fileBuffer);
 			if (!isUploadable) {
@@ -83,11 +83,21 @@ API.v1.addRoute(
 			const [, extension] = emoji.mimetype.split('/');
 			fields.extension = extension;
 
-			fields.newFile = true;
-			fields.aliases = fields.aliases || '';
-
-			Meteor.call('insertOrUpdateEmoji', fields);
-			Meteor.call('uploadEmojiCustom', emoji.fileBuffer, emoji.mimetype, fields);
+			try {
+				Meteor.call('insertOrUpdateEmoji', {
+					...fields,
+					newFile: true,
+					aliases: fields.aliases || '',
+				});
+				Meteor.call('uploadEmojiCustom', emoji.fileBuffer, emoji.mimetype, {
+					...fields,
+					newFile: true,
+					aliases: fields.aliases || '',
+				});
+			} catch (e) {
+				SystemLogger.error(e);
+				return API.v1.failure();
+			}
 
 			return API.v1.success();
 		},
@@ -99,15 +109,18 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const { emoji, ...fields } = await getUploadFormData({
-				request: this.request,
-			});
+			const [emoji, fields] = await getUploadFormData(
+				{
+					request: this.request,
+				},
+				{ field: 'emoji' },
+			);
 
 			if (!fields._id) {
 				throw new Meteor.Error('The required "_id" query param is missing.');
 			}
 
-			const emojiToUpdate = Promise.await(EmojiCustom.findOneById(fields._id));
+			const emojiToUpdate = await EmojiCustom.findOneById(fields._id);
 			if (!emojiToUpdate) {
 				throw new Meteor.Error('Emoji not found.');
 			}
@@ -115,10 +128,10 @@ API.v1.addRoute(
 			fields.previousName = emojiToUpdate.name;
 			fields.previousExtension = emojiToUpdate.extension;
 			fields.aliases = fields.aliases || '';
-			fields.newFile = Boolean(emoji?.fileBuffer.length);
+			const newFile = Boolean(emoji?.fileBuffer.length);
 
 			if (fields.newFile) {
-				const isUploadable = Promise.await(Media.isImage(emoji.fileBuffer));
+				const isUploadable = await Media.isImage(emoji.fileBuffer);
 				if (!isUploadable) {
 					throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
 				}
@@ -129,9 +142,9 @@ API.v1.addRoute(
 				fields.extension = emojiToUpdate.extension;
 			}
 
-			Meteor.call('insertOrUpdateEmoji', fields);
+			Meteor.call('insertOrUpdateEmoji', { ...fields, newFile });
 			if (fields.newFile) {
-				Meteor.call('uploadEmojiCustom', emoji.fileBuffer, emoji.mimetype, fields);
+				Meteor.call('uploadEmojiCustom', emoji.fileBuffer, emoji.mimetype, { ...fields, newFile });
 			}
 			return API.v1.success();
 		},

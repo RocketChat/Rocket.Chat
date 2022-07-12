@@ -1,10 +1,9 @@
 /* eslint-disable complexity */
-import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } from '@rocket.chat/core-typings';
+import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageBody, MessageBlock } from '@rocket.chat/fuselage';
 import { useTranslation, useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
-import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import Attachments from '../../../../components/message/Attachments';
 import MessageActions from '../../../../components/message/MessageActions';
 import BroadcastMetric from '../../../../components/message/Metrics/Broadcast';
@@ -47,7 +46,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 	return (
 		<>
-			{!message.blocks && (
+			{!message.blocks && (message.md || message.msg) && (
 				<MessageBody data-qa-type='message-body'>
 					{!isEncryptedMessage && <MessageContentBody message={message} />}
 					{isEncryptedMessage && message.e2e === 'done' && <MessageContentBody message={message} />}

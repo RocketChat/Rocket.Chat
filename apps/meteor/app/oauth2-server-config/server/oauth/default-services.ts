@@ -1,4 +1,4 @@
-import { OAuthApps } from '../../../models/server/raw';
+import { OAuthApps } from '@rocket.chat/models';
 
 async function run(): Promise<void> {
 	if (!(await OAuthApps.findOneById('zapier'))) {

@@ -15,8 +15,6 @@ import { settings } from '../../settings/client';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { createDeferredValue } from '../lib/misc/DeferredValue';
 import {
-	IPricingPlan,
-	EAppPurchaseType,
 	// IAppFromMarketplace,
 	IAppLanguage,
 	IAppExternalURL,
@@ -24,52 +22,12 @@ import {
 	// IAppSynced,
 	// IAppScreenshots,
 	// IScreenshot,
-	IAuthor,
-	IDetailedChangelog,
-	IDetailedDescription,
-	ISubscriptionInfo,
 } from './@types/IOrchestrator';
 import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 import { APIClient } from '../../utils/client';
 import { hasAtLeastOnePermission } from '../../authorization/client';
-
-export interface IAppsFromMarketplace {
-	price: number;
-	pricingPlans: IPricingPlan[];
-	purchaseType: EAppPurchaseType;
-	isEnterpriseOnly: boolean;
-	modifiedAt: Date;
-	internalId: string;
-	id: string;
-	name: string;
-	nameSlug: string;
-	version: string;
-	categories: string[];
-	description: string;
-	detailedDescription: IDetailedDescription;
-	detailedChangelog: IDetailedChangelog;
-	requiredApiVersion: string;
-	author: IAuthor;
-	classFile: string;
-	iconFile: string;
-	iconFileData: string;
-	status: string;
-	isVisible: boolean;
-	createdDate: Date;
-	modifiedDate: Date;
-	isPurchased: boolean;
-	isSubscribed: boolean;
-	subscriptionInfo: ISubscriptionInfo;
-	compiled: boolean;
-	compileJobId: string;
-	changesNote: string;
-	languages: string[];
-	privacyPolicySummary: string;
-	internalChangesNote: string;
-	permissions: IPermission[];
-}
 
 class AppClientOrchestrator {
 	private _appClientUIHost: RealAppsEngineUIHost;
@@ -131,7 +89,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getApps(): Promise<App[]> {
-		const result = await APIClient.get('/apps');
+		const result = await APIClient.get<'/apps'>('/apps');
 
 		if ('apps' in result) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -176,7 +134,7 @@ class AppClientOrchestrator {
 		return app;
 	}
 
-	public async getAppFromMarketplace(appId: string, version: string): Promise<App> {
+	public async getAppFromMarketplace(appId: string, version: string): Promise<{ app: App; success: boolean }> {
 		const result = await APIClient.get(
 			`/apps/${appId}` as any,
 			{

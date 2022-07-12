@@ -20,7 +20,7 @@ export const VoipRoomForeword = ({ room }: { room: IRoom }): ReactElement => {
 			</Box>
 			<Box is='div' mb='x8' flexGrow={1} display='flex' justifyContent='center'>
 				<Box mi='x4'>
-					<Tag style={{ cursor: 'default' }} variant='secondary' medium>
+					<Tag style={{ cursor: 'default' }} variant='primary' medium>
 						{room.name || room.fname}
 					</Tag>
 				</Box>

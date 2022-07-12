@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../settings';
-import { ChatMessage, Subscriptions } from '../../models';
+import { ChatMessage, Subscriptions } from '../../models/client';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
 Meteor.methods({

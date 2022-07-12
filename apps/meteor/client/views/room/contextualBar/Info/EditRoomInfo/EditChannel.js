@@ -479,7 +479,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				</Field>
 				<Field>
 					<Field.Row>
-						<Button flexGrow={1} primary danger disabled={!canDelete} onClick={handleDelete}>
+						<Button flexGrow={1} danger disabled={!canDelete} onClick={handleDelete}>
 							<Icon name='trash' size='x16' />
 							{t('Delete')}
 						</Button>

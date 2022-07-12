@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { UploadFS } from 'meteor/jalik:ufs';
 
 import { FileUploadBase } from '../../lib/FileUploadBase';
-import { Uploads, Avatars } from '../../../models';
+import { Uploads, Avatars } from '../../../models/client';
 
 new UploadFS.Store({
 	collection: Uploads.model,

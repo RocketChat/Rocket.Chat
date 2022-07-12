@@ -4,6 +4,12 @@ import React, { FC } from 'react';
 
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
+import AttachmentDescription from '../Attachment/AttachmentDescription';
+import AttachmentDownload from '../Attachment/AttachmentDownload';
+import AttachmentRow from '../Attachment/AttachmentRow';
+import AttachmentSize from '../Attachment/AttachmentSize';
+import AttachmentTitle from '../Attachment/AttachmentTitle';
+import AttachmentTitleLink from '../Attachment/AttachmentTitleLink';
 
 export type GenericFileAttachmentProps = {
 	file?: FileProp;
@@ -25,20 +31,17 @@ export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
 	const getURL = useMediaUrl();
 	return (
 		<Attachment>
-			{description && <MarkdownText parseEmoji content={description} />}
-			<Attachment.Row>
-				{hasDownload && link ? <Attachment.TitleLink link={getURL(link)} title={title} /> : <Attachment.Title>{title}</Attachment.Title>}
-				{size && <Attachment.Size size={size} />}
-				{/* {collapse} */}
-				{hasDownload && link && <Attachment.Download title={title} href={getURL(link)} />}
-			</Attachment.Row>
-			{/* { !collapsed && <Attachment.Content>
-			<Attachment.Details>
-				{hasDownload && link && <Attachment.Download href={link}/>}
-				<Attachment.Row><Attachment.Title { ...hasDownload && link && { is: 'a', href: link } } >{name}</Attachment.Title></Attachment.Row>
-				<Attachment.Row>{size && <Attachment.Size size={size}/>}<Attachment.Title>{format && size && ' | '}{format}</Attachment.Title></Attachment.Row>
-			</Attachment.Details>
-		</Attachment.Content> } */}
+			{description && (
+				<AttachmentDescription>
+					<MarkdownText parseEmoji content={description} />
+				</AttachmentDescription>
+			)}
+			<AttachmentRow>
+				{hasDownload && link ? <AttachmentTitleLink link={getURL(link)} title={title} /> : <AttachmentTitle>{title}</AttachmentTitle>}
+				{size && <AttachmentSize size={size} />}
+
+				{hasDownload && link && <AttachmentDownload title={title} href={getURL(link)} />}
+			</AttachmentRow>
 		</Attachment>
 	);
 };

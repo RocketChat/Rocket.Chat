@@ -1,7 +1,7 @@
 import moment from 'moment';
 import type { IDirectMessageRoom, IRoom, IMessage } from '@rocket.chat/core-typings';
+import { Messages, Analytics } from '@rocket.chat/models';
 
-import { Messages, Analytics } from '../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 

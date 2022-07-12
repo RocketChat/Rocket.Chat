@@ -40,7 +40,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 			await setUserStatus(statusType, statusText);
 			dispatchToastMessage({ type: 'success', message: t('StatusMessage_Changed_Successfully') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 
 		onClose();
@@ -75,7 +75,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end' flexGrow={1} maxWidth='full'>
-					<Button ghost onClick={onClose}>
+					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
 					<Button primary onClick={handleSaveStatus} disabled={!!statusTextError}>

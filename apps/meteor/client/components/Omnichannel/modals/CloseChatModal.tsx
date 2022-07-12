@@ -113,7 +113,7 @@ const CloseChatModal = ({
 		<GenericModal
 			variant='warning'
 			title={t('Are_you_sure_you_want_to_close_this_chat')}
-			onConfirm={onConfirm}
+			onConfirm={(): Promise<void> => onConfirm()}
 			onCancel={onCancel}
 			onClose={onCancel}
 			confirmText={t('Confirm')}

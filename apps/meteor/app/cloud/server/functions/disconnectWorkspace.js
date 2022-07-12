@@ -1,5 +1,5 @@
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { Settings } from '../../../models';
+import { Settings } from '../../../models/server';
 
 export function disconnectWorkspace() {
 	const { connectToCloud } = retrieveRegistrationStatus();

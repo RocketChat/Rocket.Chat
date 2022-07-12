@@ -1,9 +1,9 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
+import { manageFavicon } from '@rocket.chat/favicon';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 
-import { Favico } from '../../app/favico/client';
 import { ChatSubscription, ChatRoom } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { getUserPreference } from '../../app/utils/client';
@@ -75,12 +75,7 @@ Meteor.startup(() => {
 });
 
 Meteor.startup(() => {
-	const favicon = new (Favico as any)({
-		position: 'up',
-		animation: 'none',
-	});
-
-	window.favico = favicon;
+	const updateFavicon = manageFavicon();
 
 	Tracker.autorun(() => {
 		const siteName = settings.get('Site_Name') ?? '';
@@ -88,11 +83,7 @@ Meteor.startup(() => {
 		const unread = Session.get('unread');
 		fireGlobalEvent('unread-changed', unread);
 
-		if (favicon) {
-			favicon.badge(unread, {
-				bgColor: typeof unread !== 'number' ? '#3d8a3a' : '#ac1b1b',
-			});
-		}
+		updateFavicon(unread);
 
 		document.title = unread === '' ? siteName : `(${unread}) ${siteName}`;
 	});

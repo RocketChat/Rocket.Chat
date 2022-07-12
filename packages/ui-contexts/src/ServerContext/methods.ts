@@ -1,5 +1,5 @@
 import type { IRoom, ISetting, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
-import type { DeleteWriteOpResultObject } from 'mongodb';
+import type { DeleteResult } from 'mongodb';
 
 import type { AddWebdavAccountMethod } from './methods/addWebdavAccount';
 import type { FollowMessageMethod } from './methods/followMessage';
@@ -76,8 +76,6 @@ export interface ServerMethods {
 	'insertOrUpdateSound': (args: { previousName?: string; name?: string; _id?: string; extension: string }) => string;
 	'insertOrUpdateUserStatus': (...args: any[]) => any;
 	'instances/get': (...args: any[]) => any;
-	'jitsi:generateAccessToken': (...args: any[]) => any;
-	'jitsi:updateTimeout': (...args: any[]) => any;
 	'joinRoom': JoinRoomMethod;
 	'leaveRoom': (...args: any[]) => any;
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
@@ -90,7 +88,7 @@ export interface ServerMethods {
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
-	'removeWebdavAccount': (accountId: string) => DeleteWriteOpResultObject;
+	'removeWebdavAccount': (accountId: string) => DeleteResult;
 	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
 	'requestDataDownload': (...args: any[]) => any;
@@ -127,6 +125,26 @@ export interface ServerMethods {
 	'livechat:saveAgentInfo': (_id: string, agentData: unknown, agentDepartments: unknown) => unknown;
 	'autoTranslate.getProviderUiMetadata': () => Record<string, { name: string; displayName: string }>;
 	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
+	'spotlight': (
+		...args: (
+			| string
+			| string[]
+			| {
+					users: boolean;
+					rooms: boolean;
+			  }
+		)[]
+	) => {
+		rooms: { _id: string; name: string; t: string; uids?: string[] }[];
+		users: {
+			_id: string;
+			status: 'offline' | 'online' | 'busy' | 'away';
+			name: string;
+			username: string;
+			outside: boolean;
+			avatarETag?: string;
+		}[];
+	};
 }
 
 export type ServerMethodName = keyof ServerMethods;

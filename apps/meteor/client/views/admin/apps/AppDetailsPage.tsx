@@ -7,10 +7,11 @@ import React, { useState, useCallback, useRef, FC } from 'react';
 import { ISettings } from '../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import Page from '../../../components/Page';
-import APIsDisplay from './APIsDisplay';
+import AppDetails from './AppDetails';
 import AppDetailsHeader from './AppDetailsHeader';
-import AppDetailsPageContent from './AppDetailsPageContent';
-import AppLogsPage from './AppLogsPage';
+import AppLogs from './AppLogs';
+import AppReleases from './AppReleases';
+import AppSecurity from './AppSecurity';
 import LoadingDetails from './LoadingDetails';
 import SettingsDisplay from './SettingsDisplay';
 import { handleAPIError } from './helpers';
@@ -25,8 +26,9 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const settingsRef = useRef<Record<string, ISetting['value']>>({});
 	const appData = useAppInfo(id);
 
-	const [, urlParams] = useCurrentRoute();
+	const [routeName, urlParams] = useCurrentRoute();
 	const appsRoute = useRoute('admin-apps');
+	const marketplaceRoute = useRoute('admin-marketplace');
 	const tab = useRouteParameter('tab');
 
 	const [currentRouteName] = useCurrentRoute();
@@ -37,8 +39,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const router = useRoute(currentRouteName);
 	const handleReturn = useMutableCallback((): void => router.push({}));
 
-	const { installed, settings, apis } = appData || {};
-	const showApis = apis?.length;
+	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink } = appData || {};
 
 	const saveAppSettings = useCallback(async () => {
 		const { current } = settingsRef;
@@ -51,14 +52,20 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 					value: current?.[value.id],
 				})),
 			);
-		} catch (e) {
+		} catch (e: any) {
 			handleAPIError(e);
 		}
 		setIsSaving(false);
 	}, [id, settings]);
 
-	const handleTabClick = (tab: 'details' | 'logs' | 'settings'): void => {
-		appsRoute.replace({ ...urlParams, tab });
+	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs'): void => {
+		if (routeName === 'admin-marketplace') {
+			marketplaceRoute.replace({ ...urlParams, tab });
+		}
+
+		if (routeName === 'admin-apps') {
+			appsRoute.replace({ ...urlParams, tab });
+		}
 	};
 
 	return (
@@ -83,8 +90,13 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 									{t('Details')}
 								</Tabs.Item>
 								{Boolean(installed) && (
-									<Tabs.Item onClick={(): void => handleTabClick('logs')} selected={tab === 'logs'}>
-										{t('Logs')}
+									<Tabs.Item onClick={(): void => handleTabClick('security')} selected={tab === 'security'}>
+										{t('Security')}
+									</Tabs.Item>
+								)}
+								{Boolean(installed) && (
+									<Tabs.Item onClick={(): void => handleTabClick('releases')} selected={tab === 'releases'}>
+										{t('Releases')}
 									</Tabs.Item>
 								)}
 								{Boolean(installed && settings && Object.values(settings).length) && (
@@ -92,11 +104,26 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 										{t('Settings')}
 									</Tabs.Item>
 								)}
+								{Boolean(installed) && (
+									<Tabs.Item onClick={(): void => handleTabClick('logs')} selected={tab === 'logs'}>
+										{t('Logs')}
+									</Tabs.Item>
+								)}
 							</Tabs>
 
-							{Boolean(!tab || tab === 'details') && <AppDetailsPageContent app={appData} />}
-							{Boolean((!tab || tab === 'details') && !!showApis) && <APIsDisplay apis={apis || []} />}
-							{tab === 'logs' && <AppLogsPage id={id} />}
+							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
+
+							{tab === 'security' && (
+								<AppSecurity
+									privacyPolicySummary={privacyPolicySummary}
+									appPermissions={permissions}
+									tosLink={tosLink}
+									privacyLink={privacyLink}
+								/>
+							)}
+
+							{tab === 'releases' && <AppReleases id={id} />}
+
 							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
 								<SettingsDisplay
 									settings={settings || ({} as ISettings)}
@@ -104,6 +131,8 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 									settingsRef={settingsRef}
 								/>
 							)}
+
+							{tab === 'logs' && <AppLogs id={id} />}
 						</>
 					)}
 				</Box>

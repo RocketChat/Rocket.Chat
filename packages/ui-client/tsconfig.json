@@ -1,0 +1,10 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"importsNotUsedAsValues": "preserve"
+	},
+	"include": ["./src/**/*"],
+	"exclude": ["**/*.stories.tsx", "**/*.stories.js"]
+}

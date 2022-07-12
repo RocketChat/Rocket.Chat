@@ -12,9 +12,9 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { Avatars, UserDataFiles, Uploads } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Avatars, UserDataFiles, Uploads } from '../../../models/server/raw';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
 import Settings from '../../../models/server/models/Settings';

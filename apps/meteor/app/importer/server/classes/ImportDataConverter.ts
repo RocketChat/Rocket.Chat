@@ -13,8 +13,8 @@ import type {
 	IUser,
 	IUserEmail,
 } from '@rocket.chat/core-typings';
+import { ImportData as ImportDataRaw } from '@rocket.chat/models';
 
-import { ImportData as ImportDataRaw } from '../../../models/server/raw';
 import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
@@ -367,7 +367,7 @@ export class ImportDataConverter {
 				}
 			} catch (e) {
 				this._logger.error(e);
-				this.saveError(_id, e);
+				this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
 		});
 	}
@@ -622,7 +622,7 @@ export class ImportDataConverter {
 					afterImportFn(data, 'message', true);
 				}
 			} catch (e) {
-				this.saveError(_id, e);
+				this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
 		});
 
@@ -932,7 +932,7 @@ export class ImportDataConverter {
 					afterImportFn(data, 'channel', !existingRoom);
 				}
 			} catch (e) {
-				this.saveError(_id, e);
+				this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
 		});
 	}

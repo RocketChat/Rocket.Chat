@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { Livechat } from '../lib/Livechat';
 

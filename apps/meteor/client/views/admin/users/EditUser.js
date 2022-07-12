@@ -14,7 +14,6 @@ const getInitialValue = (data) => ({
 	name: data.name ?? '',
 	password: '',
 	username: data.username,
-	status: data.status,
 	bio: data.bio ?? '',
 	nickname: data.nickname ?? '',
 	email: (data.emails && data.emails.length && data.emails[0].address) || '',

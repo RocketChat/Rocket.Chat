@@ -22,7 +22,7 @@ export const useChangeRole = ({
 			}
 			return !granted;
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 		}
 		return granted;
 	});
