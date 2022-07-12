@@ -57,6 +57,7 @@ import type {
 	IUserDataFilesModel,
 	IUsersSessionsModel,
 	IUsersModel,
+	IVideoConferenceModel,
 	IVoipRoomModel,
 	IWebdavAccountsModel,
 } from '@rocket.chat/model-typings';
@@ -128,5 +129,6 @@ export const Users = proxify<IUsersModel>('IUsersModel');
 export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
+export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
 export const VoipRoom = proxify<IVoipRoomModel>('IVoipRoomModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');

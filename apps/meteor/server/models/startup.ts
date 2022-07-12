@@ -51,5 +51,6 @@ import './Uploads';
 import './UserDataFiles';
 import './Users';
 import './UsersSessions';
+import './VideoConference';
 import './VoipRoom';
 import './WebdavAccounts';

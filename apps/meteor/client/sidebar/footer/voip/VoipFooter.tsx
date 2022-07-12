@@ -4,7 +4,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
 import React, { ReactElement, MouseEvent, ReactNode } from 'react';
 
-import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
+import type { VoipFooterMenuOptions } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import { CallActionsType } from '../../../contexts/CallContext';
 
 type VoipFooterPropsType = {
@@ -26,13 +26,14 @@ type VoipFooterPropsType = {
 	};
 	callsInQueue: string;
 
-	createRoom: (caller: ICallerInfo, callDirection?: IVoipRoom['direction']) => IVoipRoom['_id'];
+	createRoom: (caller: ICallerInfo, callDirection?: IVoipRoom['direction']) => Promise<IVoipRoom['_id']>;
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	openedRoomInfo: { v: { token?: string | undefined }; rid: string };
 	anonymousText: string;
 	isEnterprise: boolean;
 	children?: ReactNode;
+	options: VoipFooterMenuOptions;
 };
 
 export const VoipFooter = ({
@@ -54,6 +55,7 @@ export const VoipFooter = ({
 	anonymousText,
 	isEnterprise = false,
 	children,
+	options,
 }: VoipFooterPropsType): ReactElement => {
 	const cssClickable =
 		callerState === 'IN_CALL' || callerState === 'ON_HOLD'
@@ -61,8 +63,6 @@ export const VoipFooter = ({
 					cursor: pointer;
 			  `
 			: '';
-
-	const options = useVoipFooterMenu();
 
 	const handleHold = (e: MouseEvent<HTMLButtonElement>): void => {
 		e.stopPropagation();
@@ -126,7 +126,7 @@ export const VoipFooter = ({
 					</Box>
 
 					<ButtonGroup medium>
-						{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
+						{(callerState === 'IN_CALL' || callerState === 'ON_HOLD' || callerState === 'OFFER_SENT') && (
 							<Button
 								title={tooltips.endCall}
 								disabled={paused}
@@ -135,8 +135,8 @@ export const VoipFooter = ({
 								danger
 								onClick={(e): unknown => {
 									e.stopPropagation();
-									toggleMic(false);
-									togglePause(false);
+									muted && toggleMic(false);
+									paused && togglePause(false);
 									return callActions.end();
 								}}
 							>

@@ -1,6 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatTag } from '@rocket.chat/models';
 import { ILivechatTag } from '@rocket.chat/core-typings';
+import type { FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 
@@ -10,7 +11,7 @@ type FindTagsParams = {
 	pagination: {
 		offset: number;
 		count: number;
-		sort: object;
+		sort: FindOptions<ILivechatTag>['sort'];
 	};
 };
 
@@ -36,15 +37,13 @@ export async function findTags({ userId, text, pagination: { offset, count, sort
 		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
 	};
 
-	const cursor = LivechatTag.find(query, {
+	const { cursor, totalCount } = LivechatTag.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const tags = await cursor.toArray();
+	const [tags, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		tags,

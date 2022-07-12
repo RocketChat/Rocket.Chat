@@ -93,7 +93,7 @@ Meteor.methods({
 				integrationData.scriptError = undefined;
 			} catch (e) {
 				integrationData.scriptCompiled = undefined;
-				integrationData.scriptError = _.pick(e, 'name', 'message', 'stack');
+				integrationData.scriptError = e instanceof Error ? _.pick(e, 'name', 'message', 'stack') : undefined;
 			}
 		}
 

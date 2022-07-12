@@ -969,7 +969,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/visitor/:token': {
-		GET: (params: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor };
+		GET: (params?: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor };
 		DELETE: (params: LivechatVisitorTokenDelete) => {
 			visitor: { _id: string; ts: string };
 		};
@@ -1022,10 +1022,20 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/webrtc.call/:callId': {
 		PUT: (params: { rid: string; status: 'ended' }) => void;
 	};
+
 	'/v1/livechat/priorities': {
 		GET: (params: LivechatPrioritiesProps) => PaginatedResult<{ priorities: ILivechatPriority[] }>;
 	};
+
 	'/v1/livechat/priorities/:priorityId': {
 		GET: () => ILivechatPriority;
+	};
+
+	'/v1/livechat/visitors.search': {
+		GET: (
+			params: PaginatedRequest<{
+				term: string;
+			}>,
+		) => PaginatedResult<{ visitors: any[] }>;
 	};
 };

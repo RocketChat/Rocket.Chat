@@ -52,7 +52,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 					value: current?.[value.id],
 				})),
 			);
-		} catch (e) {
+		} catch (e: any) {
 			handleAPIError(e);
 		}
 		setIsSaving(false);

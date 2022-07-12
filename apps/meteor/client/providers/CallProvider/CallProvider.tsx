@@ -25,6 +25,7 @@ import {
 	Device,
 	useSetModal,
 	IExperimentalHTMLAudioElement,
+	useTranslation,
 } from '@rocket.chat/ui-contexts';
 // import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
@@ -34,29 +35,41 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
+import { isOutboundClient, useVoipClient } from '../../../ee/client/hooks/useVoipClient';
 import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
-import { CallContext, CallContextValue } from '../../contexts/CallContext';
+import { CallContext, CallContextValue, useIsVoipEnterprise } from '../../contexts/CallContext';
+import { useDialModal } from '../../hooks/useDialModal';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
-import VoIPAgentProvider from '../VoIPAgentProvider';
-import { useVoipClient } from './hooks/useVoipClient';
 
-const startRingback = (user: IUser): void => {
-	const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
-	CustomSounds.play('telephone', {
+type VoipSound = 'telephone' | 'outbound-call-ringing' | 'call-ended';
+
+const startRingback = (user: IUser, soundId: VoipSound, loop = true): void => {
+	const audioVolume = getUserPreference(user, 'notificationsSoundVolume', 100) as number;
+	CustomSounds.play(soundId, {
 		volume: Number((audioVolume / 100).toPrecision(2)),
-		loop: true,
+		loop,
 	});
 };
 
-const stopRingback = (): void => {
-	CustomSounds.pause('telephone');
-	CustomSounds.remove('telephone');
+const stopRingBackById = (soundId: VoipSound): void => {
+	CustomSounds.pause(soundId);
+	CustomSounds.remove(soundId);
+};
+
+const stopTelephoneRingback = (): void => stopRingBackById('telephone');
+const stopOutboundCallRinging = (): void => stopRingBackById('outbound-call-ringing');
+
+const stopAllRingback = (): void => {
+	stopTelephoneRingback();
+	stopOutboundCallRinging();
 };
 
 type NetworkState = 'online' | 'offline';
+
 export const CallProvider: FC = ({ children }) => {
+	const [clientState, setClientState] = useState<'registered' | 'unregistered'>('unregistered');
+
 	const voipEnabled = useSetting('VoIP_Enabled');
 	const subscribeToNotifyUser = useStream('notify-user');
 	const dispatchEvent = useEndpoint('POST', '/v1/voip/events');
@@ -64,19 +77,23 @@ export const CallProvider: FC = ({ children }) => {
 	const voipEndpoint = useEndpoint('GET', '/v1/voip/room');
 	const voipCloseRoomEndpoint = useEndpoint('POST', '/v1/voip/room.close');
 	const setModal = useSetModal();
+	const t = useTranslation();
 
 	const result = useVoipClient();
 	const user = useUser();
 	const homeRoute = useRoute('home');
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
-	const isEnterprise = useHasLicense('voip-enterprise');
+
+	const hasVoIPEnterpriseLicense = useIsVoipEnterprise();
 
 	const remoteAudioMediaRef = useRef<IExperimentalHTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
-	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
+	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>({ v: {}, rid: '' });
+
+	const { openDialModal } = useDialModal();
 
 	const closeRoom = useCallback(
 		async (data = {}): Promise<void> => {
@@ -124,12 +141,20 @@ export const CallProvider: FC = ({ children }) => {
 	const [networkStatus, setNetworkStatus] = useState<NetworkState>('online');
 
 	useEffect(() => {
-		if (!result?.voipClient) {
+		const { voipClient } = result || {};
+
+		if (!voipClient) {
 			return;
 		}
 
-		setQueueAggregator(result.voipClient.getAggregator());
-	}, [result]);
+		setQueueAggregator(voipClient.getAggregator());
+
+		return (): void => {
+			if (clientState === 'registered') {
+				return voipClient.unregister();
+			}
+		};
+	}, [result, clientState]);
 
 	const openRoom = useCallback((rid: IVoipRoom['_id']): void => {
 		roomCoordinator.openRouteLink('v', { rid });
@@ -225,7 +250,7 @@ export const CallProvider: FC = ({ children }) => {
 		const handleCallHangup = (_event: { roomId: string }): void => {
 			setQueueName(queueAggregator.getCurrentQueueName());
 
-			if (isEnterprise) {
+			if (hasVoIPEnterpriseLicense) {
 				openWrapUpModal();
 				return;
 			}
@@ -236,7 +261,21 @@ export const CallProvider: FC = ({ children }) => {
 		};
 
 		return subscribeToNotifyUser(`${user._id}/call.hangup`, handleCallHangup);
-	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled, dispatchEvent, isEnterprise, closeRoom]);
+	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled, dispatchEvent, hasVoIPEnterpriseLicense, closeRoom]);
+
+	useEffect(() => {
+		if (!result.voipClient) {
+			return;
+		}
+
+		const offRegistered = result.voipClient.on('registered', (): void => setClientState('registered'));
+		const offUnregistered = result.voipClient.on('unregistered', (): void => setClientState('unregistered'));
+
+		return (): void => {
+			offRegistered();
+			offUnregistered();
+		};
+	}, [result.voipClient]);
 
 	useEffect(() => {
 		if (!result.voipClient) {
@@ -284,8 +323,6 @@ export const CallProvider: FC = ({ children }) => {
 		remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 	}, [result.voipClient]);
 
-	const hasLicenseToMakeVoIPCalls = useHasLicense('voip-enterprise');
-
 	useEffect(() => {
 		if (!result.voipClient) {
 			return;
@@ -299,7 +336,7 @@ export const CallProvider: FC = ({ children }) => {
 			if (!callDetails.callInfo) {
 				return;
 			}
-			stopRingback();
+			stopAllRingback();
 			if (callDetails.userState !== UserState.UAC) {
 				return;
 			}
@@ -340,7 +377,29 @@ export const CallProvider: FC = ({ children }) => {
 		};
 
 		const onRinging = (): void => {
-			startRingback(user);
+			startRingback(user, 'outbound-call-ringing');
+		};
+
+		const onIncomingCallRinging = (): void => {
+			startRingback(user, 'telephone');
+		};
+
+		const onCallTerminated = (): void => {
+			startRingback(user, 'call-ended', false);
+			stopAllRingback();
+		};
+
+		const onCallFailed = (reason: 'Not Found' | 'Address Incomplete' | string): void => {
+			switch (reason) {
+				case 'Not Found':
+					openDialModal({ errorMessage: t('Dialed_number_doesnt_exist') });
+					break;
+				case 'Address Incomplete':
+					openDialModal({ errorMessage: t('Dialed_number_is_incomplete') });
+					break;
+				default:
+					openDialModal({ errorMessage: t('Something_went_wrong_try_again_later') });
+			}
 		};
 
 		result.voipClient.onNetworkEvent('connected', onNetworkConnected);
@@ -349,9 +408,13 @@ export const CallProvider: FC = ({ children }) => {
 		result.voipClient.onNetworkEvent('localnetworkonline', onNetworkConnected);
 		result.voipClient.onNetworkEvent('localnetworkoffline', onNetworkDisconnected);
 		result.voipClient.on('callestablished', onCallEstablished);
-		result.voipClient.on('ringing', onRinging);
-		result.voipClient.on('incomingcall', onRinging);
-		result.voipClient.on('callterminated', stopRingback);
+		result.voipClient.on('ringing', onRinging); // not called for incoming call
+		result.voipClient.on('incomingcall', onIncomingCallRinging);
+		result.voipClient.on('callterminated', onCallTerminated);
+
+		if (isOutboundClient(result.voipClient)) {
+			result.voipClient.on('callfailed', onCallFailed);
+		}
 
 		return (): void => {
 			result.voipClient?.offNetworkEvent('connected', onNetworkConnected);
@@ -359,18 +422,25 @@ export const CallProvider: FC = ({ children }) => {
 			result.voipClient?.offNetworkEvent('connectionerror', onNetworkDisconnected);
 			result.voipClient?.offNetworkEvent('localnetworkonline', onNetworkConnected);
 			result.voipClient?.offNetworkEvent('localnetworkoffline', onNetworkDisconnected);
-			result.voipClient?.off('incomingcall', onRinging);
+			result.voipClient?.off('incomingcall', onIncomingCallRinging);
 			result.voipClient?.off('ringing', onRinging);
 			result.voipClient?.off('callestablished', onCallEstablished);
-			result.voipClient?.off('callterminated', stopRingback);
+			result.voipClient?.off('callterminated', onCallTerminated);
+
+			if (isOutboundClient(result.voipClient)) {
+				result.voipClient?.off('callfailed', onCallFailed);
+			}
 		};
-	}, [createRoom, dispatchEvent, networkStatus, result.voipClient, user]);
+	}, [createRoom, dispatchEvent, networkStatus, openDialModal, result.voipClient, t, user]);
 
 	const contextValue: CallContextValue = useMemo(() => {
 		if (!voipEnabled) {
 			return {
 				enabled: false,
 				ready: false,
+				outBoundCallsAllowed: undefined, // set to true only if enterprise license is present.
+				outBoundCallsEnabled: undefined, // set to true even if enterprise license is not present.
+				outBoundCallsEnabledForUser: undefined, // set to true if the user has enterprise license, but is not able to make outbound calls. (busy, or disabled)
 			};
 		}
 
@@ -378,6 +448,9 @@ export const CallProvider: FC = ({ children }) => {
 			return {
 				enabled: false,
 				ready: false,
+				outBoundCallsAllowed: undefined, // set to true only if enterprise license is present.
+				outBoundCallsEnabled: undefined, // set to true even if enterprise license is not present.
+				outBoundCallsEnabledForUser: undefined, // set to true if the user has enterprise license, but is not able to make outbound calls. (busy, or disabled)
 			};
 		}
 
@@ -386,6 +459,9 @@ export const CallProvider: FC = ({ children }) => {
 				enabled: true,
 				ready: false,
 				error: result.error,
+				outBoundCallsAllowed: undefined, // set to true only if enterprise license is present.
+				outBoundCallsEnabled: undefined, // set to true even if enterprise license is not present.
+				outBoundCallsEnabledForUser: undefined, // set to true if the user has enterprise license, but is not able to make outbound calls. (busy, or disabled)
 			};
 		}
 
@@ -393,13 +469,20 @@ export const CallProvider: FC = ({ children }) => {
 			return {
 				enabled: true,
 				ready: false,
+				outBoundCallsAllowed: undefined, // set to true only if enterprise license is present.
+				outBoundCallsEnabled: undefined, // set to true even if enterprise license is not present.
+				outBoundCallsEnabledForUser: undefined, // set to true if the user has enterprise license, but is not able to make outbound calls. (busy, or disabled)
 			};
 		}
 
 		const { registrationInfo, voipClient } = result;
 
 		return {
-			canMakeCall: hasLicenseToMakeVoIPCalls,
+			outBoundCallsAllowed: hasVoIPEnterpriseLicense, // set to true only if enterprise license is present.
+			outBoundCallsEnabled: hasVoIPEnterpriseLicense, // set to true even if enterprise license is not present.
+			outBoundCallsEnabledForUser:
+				hasVoIPEnterpriseLicense && clientState === 'registered' && !['IN_CALL', 'ON_HOLD'].includes(voipClient.callerInfo.state), // set to true if the user has enterprise license, but is not able to make outbound calls. (busy, or disabled)
+
 			enabled: true,
 			ready: true,
 			openedRoomInfo: roomInfo,
@@ -423,14 +506,15 @@ export const CallProvider: FC = ({ children }) => {
 			openWrapUpModal,
 			changeAudioOutputDevice,
 			changeAudioInputDevice,
+			register: (): void => voipClient.register(),
+			unregister: (): void => voipClient.unregister(),
 		};
 	}, [
 		voipEnabled,
-		changeAudioOutputDevice,
-		changeAudioInputDevice,
-		user,
+		user?.extension,
 		result,
-		hasLicenseToMakeVoIPCalls,
+		hasVoIPEnterpriseLicense,
+		clientState,
 		roomInfo,
 		queueCounter,
 		queueName,
@@ -438,21 +522,14 @@ export const CallProvider: FC = ({ children }) => {
 		createRoom,
 		closeRoom,
 		openWrapUpModal,
+		changeAudioOutputDevice,
+		changeAudioInputDevice,
 	]);
 
 	return (
 		<CallContext.Provider value={contextValue}>
-			{contextValue.ready ? (
-				<VoIPAgentProvider>
-					{children}
-					{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
-				</VoIPAgentProvider>
-			) : (
-				<>
-					{children}
-					{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
-				</>
-			)}
+			{children}
+			{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
 		</CallContext.Provider>
 	);
 };

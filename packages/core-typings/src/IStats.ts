@@ -170,6 +170,28 @@ export interface IStats {
 	totalEncryptedMessages: number;
 	totalLinkInvitationUses: number;
 	totalManuallyAddedUsers: number;
+	videoConf: {
+		videoConference: {
+			started: number;
+			ended: number;
+		};
+		direct: {
+			calling: number;
+			started: number;
+			ended: number;
+		};
+		livechat: {
+			started: number;
+			ended: number;
+		};
+		settings: {
+			provider: string;
+			dms: boolean;
+			channels: boolean;
+			groups: boolean;
+			teams: boolean;
+		};
+	};
 	totalSubscriptionRoles: number;
 	totalUserRoles: number;
 	totalWebRTCCalls: number;

@@ -1,5 +1,5 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
-import { Box, Icon, Chip } from '@rocket.chat/fuselage';
+import { Box, Icon, Chip, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
@@ -7,20 +7,22 @@ import React, { ReactElement, useMemo } from 'react';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import { useIsCallReady } from '../../../../../contexts/CallContext';
 import InfoPanel from '../../../../InfoPanel';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import AgentField from '../../chats/contextualBar/AgentField';
 import { InfoField } from './InfoField';
+import { VoipInfoCallButton } from './VoipInfoCallButton';
 
 type VoipInfoPropsType = {
 	room: IVoipRoom;
 	onClickClose: () => void;
 	onClickReport?: () => void;
-	onClickCall?: () => void;
 };
 
-export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */ }: VoipInfoPropsType): ReactElement => {
+export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfoPropsType): ReactElement => {
 	const t = useTranslation();
+	const isCallReady = useIsCallReady();
 
 	const { servedBy, queue, v, fname, name, callDuration, callTotalHoldTime, closedAt, callWaitingTime, tags, lastMessage } = room;
 	const duration = callDuration && moment.utc(callDuration).format('HH:mm:ss');
@@ -83,20 +85,15 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				{/* TODO: Introduce this buttons [Not part of MVP] */}
-				{/* <ButtonGroup stretch>
-					<Button danger onClick={onClickReport}>
+				<ButtonGroup stretch>
+					{/* <Button danger onClick={onClickReport}>
 						<Box display='flex' justifyContent='center' fontSize='p2'>
 							<Icon name='ban' size='x20' mie='4px' />
 							{t('Report_Number')}
 						</Box>
-					</Button>
-					<Button onClick={onClickCall}>
-						<Box display='flex' justifyContent='center' fontSize='p2'>
-							<Icon name='phone' size='x20' mie='4px' />
-							{t('Call')}
-						</Box>
-					</Button>
-				</ButtonGroup> */}
+					</Button> */}
+					{isCallReady && <VoipInfoCallButton phoneNumber={phoneNumber} />}
+				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>
 	);

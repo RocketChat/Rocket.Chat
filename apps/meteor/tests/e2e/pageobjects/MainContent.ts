@@ -58,15 +58,15 @@ export class MainContent extends BasePage {
 	}
 
 	get lastUserMessage(): Locator {
-		return this.page.locator('[data-qa-id=UserMessage]').last();
+		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last().locator('[data-qa-type="username"]');
 	}
 
 	get btnLastUserMessage(): Locator {
-		return this.page.locator('[data-qa-id=UserMessage]:not(.sequential) > button').last();
+		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last().locator('[data-qa-type="username"]');
 	}
 
 	get lastMessageFileName(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div a:nth-child(1)');
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
 	}
 
 	get lastMessage(): Locator {
@@ -74,7 +74,8 @@ export class MainContent extends BasePage {
 	}
 
 	get lastMessageRoleAdded(): Locator {
-		return this.page.locator('.message:last-child.subscription-role-added .body');
+		const roleAddedMessageRegex = new RegExp(/\badded by\b/g);
+		return this.page.locator('[data-qa="system-message"] [data-qa-type="system-message-body"]', { hasText: roleAddedMessageRegex });
 	}
 
 	get lastMessageUserTag(): Locator {
@@ -82,7 +83,7 @@ export class MainContent extends BasePage {
 	}
 
 	get lastMessageForMessageTest(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child div.message-body-wrapper div:nth-child(2)');
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-body"]');
 	}
 
 	get messageOptionsBtns(): Locator {
@@ -208,11 +209,11 @@ export class MainContent extends BasePage {
 	}
 
 	async waitForLastMessageEqualsHtml(text: string): Promise<void> {
-		await expect(this.page.locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
+		await expect(this.lastMessageForMessageTest).toContainText(text);
 	}
 
 	async waitForLastMessageEqualsText(text: string): Promise<void> {
-		await expect(this.page.locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
+		await expect(this.lastMessage).toContainText(text);
 	}
 
 	async sendMessage(text: string): Promise<void> {
@@ -270,7 +271,7 @@ export class MainContent extends BasePage {
 	}
 
 	get getFileDescription(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div p');
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-description"]');
 	}
 
 	async selectAction(action: string): Promise<void> {
@@ -316,9 +317,9 @@ export class MainContent extends BasePage {
 	}
 
 	async openMessageActionMenu(): Promise<void> {
-		await this.page.locator('.messages-box [data-qa-type="message"]:last-child').hover();
-		await this.page.locator('[data-qa-type="message"]:last-child div.message-actions__menu').waitFor();
-		await this.page.locator('[data-qa-type="message"]:last-child div.message-actions__menu').click();
+		await this.page.locator('[data-qa-type="message"]:last-child').hover();
+		await this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-action-menu"][data-qa-id="menu"]').waitFor();
+		await this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
 	}
 
 	async openMoreActionMenu(): Promise<void> {
