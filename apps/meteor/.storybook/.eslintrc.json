@@ -1,1 +1,3 @@
-../client/.eslintrc.json
+{
+	"extends": "../client/.eslintrc.json"
+}
