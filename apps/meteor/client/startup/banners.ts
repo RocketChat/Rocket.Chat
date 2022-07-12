@@ -17,17 +17,18 @@ const fetchInitialBanners = async (): Promise<void> => {
 		if (banner._id === 'device-management') {
 			Tracker.autorun((computation) => {
 				const user = Meteor.user();
-				if (user?.username) {
-					setTimeout(() => {
-						imperativeModal.open({
-							component: DeviceManagementFeatureModal,
-							props: {
-								close: imperativeModal.close,
-							},
-						});
-					}, 2000);
-					computation.stop();
+				if (!user?.username) {
+					return;
 				}
+				setTimeout(() => {
+					imperativeModal.open({
+						component: DeviceManagementFeatureModal,
+						props: {
+							close: imperativeModal.close,
+						},
+					});
+				}, 2000);
+				computation.stop();
 			});
 			continue;
 		}
