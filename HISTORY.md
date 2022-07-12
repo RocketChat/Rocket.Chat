@@ -1,6 +1,102 @@
 
 # 5.0.0 (Under Release Candidate Process)
 
+## 5.0.0-rc.4
+`2022-07-12  ·  1 ️️️⚠️  ·  15 🔍  ·  11 👩‍💻👨‍💻`
+
+### ⚠️ BREAKING CHANGES
+
+
+- Remove webRTC for channels/dm/groups ([#26225](https://github.com/RocketChat/Rocket.Chat/pull/26225))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Check for env var values and not just if they are set ([#26219](https://github.com/RocketChat/Rocket.Chat/pull/26219))
+
+- Chore: Do not log integrations using `name` key ([#26163](https://github.com/RocketChat/Rocket.Chat/pull/26163))
+
+- Regression: Cannot logout when CallProvider is unregistered and mounted ([#26158](https://github.com/RocketChat/Rocket.Chat/pull/26158))
+
+- Regression: Change Audio settings for device settings as modal title ([#26159](https://github.com/RocketChat/Rocket.Chat/pull/26159))
+
+- Regression: Empty URL previews in messages. ([#26160](https://github.com/RocketChat/Rocket.Chat/pull/26160))
+
+- Regression: Fix files list endpoints ([#26226](https://github.com/RocketChat/Rocket.Chat/pull/26226))
+
+- Regression: Fix Omnichannel not working after meteor update ([#26194](https://github.com/RocketChat/Rocket.Chat/pull/26194))
+
+  Fixed things:  
+  - Omnichannel Directory  
+  - Omnichannel Current Chats  
+  - Auto Selection Algo  
+  - Load Balance Algo  
+  - Manual Selection Algo  
+  - Livechat New Conversations
+
+  Other fixed things:  
+  - Warning on fields deprecation  
+  - Warning on "remove" deprecation  
+  - Remove findAndModify usage
+
+- Regression: Fix rendered markdown styling on app info page details section ([#26093](https://github.com/RocketChat/Rocket.Chat/pull/26093))
+
+  Fixed two styling problems on the AppDetails markdown. The first one was a misuse of flex and the second was the fact that the withRichContent flag was missing on the box that received the markdown.
+  Demo images:
+  Before:
+  ![image](https://user-images.githubusercontent.com/43561537/177857346-54476879-2618-452f-8585-1922dcbfa9c1.png)
+
+  After:
+  ![image](https://user-images.githubusercontent.com/43561537/177857376-e96e4ad3-3410-4847-89b7-df074ff87b2f.png)
+
+  Clickup task: https://app.clickup.com/t/2rwq0q7
+
+- Regression: Inline code and copyonly tag styles ([#26173](https://github.com/RocketChat/Rocket.Chat/pull/26173))
+
+- Regression: Meteor uses `projection` for its observes ([#26223](https://github.com/RocketChat/Rocket.Chat/pull/26223))
+
+- Regression: OTR with new React Messages ([#26179](https://github.com/RocketChat/Rocket.Chat/pull/26179))
+
+  This PR solves 2 OTR issues with new react message components
+  
+  - disable the server side message parser for OTR messages  
+  - adds the stopwatch icon for otr messages
+
+  ### Before
+  <img width="548" alt="Screenshot 2022-07-08 at 12 58 08 AM" src="https://user-images.githubusercontent.com/58601732/177856565-54854a45-e82c-443b-b77d-66ec69d70522.png">
+
+  ### After
+  <img width="549" alt="Screenshot 2022-07-08 at 12 55 08 AM" src="https://user-images.githubusercontent.com/58601732/177856597-67f7ca01-89ee-4ae9-bcd1-f4b6724db248.png">
+
+- Regression: remove italic from reaction translation ([#26152](https://github.com/RocketChat/Rocket.Chat/pull/26152))
+
+- Regression: Replace contact center icon ([#26216](https://github.com/RocketChat/Rocket.Chat/pull/26216))
+
+- Regression: Reverting @rocket.chat/mp3-encoder version to fix Audio Message ([#26197](https://github.com/RocketChat/Rocket.Chat/pull/26197))
+
+  An unknow breaking change (still investigating) happened when upgrading the [@rocket.chat/mp3-encoder](https://github.com/RocketChat/fuselage/tree/develop/packages/mp3-encoder) package to version 0.25.0, because of that we revert the version to 0.24.0 the last know working version.
+
+- Regression: UIKit buttons auth user validation ([#26171](https://github.com/RocketChat/Rocket.Chat/pull/26171))
+
+  Fix the validation to match the new feature that allows apps to register auth-required routes.
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@murtaza98](https://github.com/murtaza98)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tapiarafael](https://github.com/tapiarafael)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 ## 5.0.0-rc.3
 `2022-07-11  ·  5 🔍  ·  4 👩‍💻👨‍💻`
 

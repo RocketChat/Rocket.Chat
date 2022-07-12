@@ -99010,6 +99010,162 @@
           ]
         }
       ]
+    },
+    "5.0.0-rc.4": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26226",
+          "title": "Regression: Fix files list endpoints",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26194",
+          "title": "Regression: Fix Omnichannel not working after meteor update",
+          "userLogin": "KevLehman",
+          "description": "Fixed things:\r\n- Omnichannel Directory\r\n- Omnichannel Current Chats\r\n- Auto Selection Algo\r\n- Load Balance Algo\r\n- Manual Selection Algo\r\n- Livechat New Conversations\r\n\r\nOther fixed things:\r\n- Warning on fields deprecation\r\n- Warning on \"remove\" deprecation\r\n- Remove findAndModify usage",
+          "milestone": "5.0.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "26160",
+          "title": "Regression: Empty URL previews in messages.",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "26179",
+          "title": "Regression: OTR with new React Messages",
+          "userLogin": "yash-rajpal",
+          "description": "This PR solves 2 OTR issues with new react message components\r\n\r\n- disable the server side message parser for OTR messages\r\n- adds the stopwatch icon for otr messages\r\n\r\n### Before\r\n<img width=\"548\" alt=\"Screenshot 2022-07-08 at 12 58 08 AM\" src=\"https://user-images.githubusercontent.com/58601732/177856565-54854a45-e82c-443b-b77d-66ec69d70522.png\">\r\n\r\n### After\r\n<img width=\"549\" alt=\"Screenshot 2022-07-08 at 12 55 08 AM\" src=\"https://user-images.githubusercontent.com/58601732/177856597-67f7ca01-89ee-4ae9-bcd1-f4b6724db248.png\">",
+          "contributors": [
+            "yash-rajpal",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26216",
+          "title": "Regression: Replace contact center icon",
+          "userLogin": "filipemarins",
+          "milestone": "5.0.0",
+          "contributors": [
+            "filipemarins"
+          ]
+        },
+        {
+          "pr": "26093",
+          "title": "Regression: Fix rendered markdown styling on app info page details section",
+          "userLogin": "rique223",
+          "description": "Fixed two styling problems on the AppDetails markdown. The first one was a misuse of flex and the second was the fact that the withRichContent flag was missing on the box that received the markdown.\r\nDemo images:\r\nBefore:\r\n![image](https://user-images.githubusercontent.com/43561537/177857346-54476879-2618-452f-8585-1922dcbfa9c1.png)\r\n\r\nAfter:\r\n![image](https://user-images.githubusercontent.com/43561537/177857376-e96e4ad3-3410-4847-89b7-df074ff87b2f.png)\r\n\r\nClickup task: https://app.clickup.com/t/2rwq0q7",
+          "milestone": "5.0.0",
+          "contributors": [
+            "rique223"
+          ]
+        },
+        {
+          "pr": "26225",
+          "title": "[BREAK] Remove webRTC for channels/dm/groups",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "26223",
+          "title": "Regression: Meteor uses `projection` for its observes",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26163",
+          "title": "Chore: Do not log integrations using `name` key",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26219",
+          "title": "Chore: Check for env var values and not just if they are set",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26171",
+          "title": "Regression: UIKit buttons auth user validation",
+          "userLogin": "tapiarafael",
+          "description": "Fix the validation to match the new feature that allows apps to register auth-required routes.",
+          "milestone": "5.0.0",
+          "contributors": [
+            "tapiarafael",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26158",
+          "title": "Regression: Cannot logout when CallProvider is unregistered and mounted",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "26159",
+          "title": "Regression: Change Audio settings for device settings as modal title",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.0",
+          "contributors": [
+            "KevLehman",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26173",
+          "title": "Regression: Inline code and copyonly tag styles",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "26152",
+          "title": "Regression: remove italic from reaction translation",
+          "userLogin": "filipemarins",
+          "contributors": [
+            "filipemarins"
+          ]
+        },
+        {
+          "pr": "26197",
+          "title": "Regression: Reverting @rocket.chat/mp3-encoder version to fix Audio Message",
+          "userLogin": "hugocostadev",
+          "description": "An unknow breaking change (still investigating) happened when upgrading the [@rocket.chat/mp3-encoder](https://github.com/RocketChat/fuselage/tree/develop/packages/mp3-encoder) package to version 0.25.0, because of that we revert the version to 0.24.0 the last know working version.",
+          "milestone": "5.0.0",
+          "contributors": [
+            "hugocostadev"
+          ]
+        }
+      ]
     }
   }
 }
