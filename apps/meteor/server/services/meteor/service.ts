@@ -60,7 +60,7 @@ if (disableOplog) {
 		if (callbacks?.added) {
 			const records = Promise.await(mongo.rawCollection(collectionName).find(selector, { projection: options.fields }).toArray());
 			for (const { _id, ...fields } of records) {
-				callbacks.added(_id, fields);
+				callbacks.added(String(_id), fields);
 			}
 
 			if (collectionName === 'users' && selector['services.resume.loginTokens.hashedToken']) {

@@ -335,15 +335,6 @@ export class LivechatRooms extends Base {
 		return this.find(query, options);
 	}
 
-	findByVisitorId(visitorId) {
-		const query = {
-			't': 'l',
-			'v._id': visitorId,
-		};
-
-		return this.find(query);
-	}
-
 	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, options) {
 		const query = {
 			't': 'l',
