@@ -1,6 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { ChangeEvent, RefCallback, useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormHandleSubmit } from 'react-hook-form';
 
 import { useDialModal } from '../../../../../../client/hooks/useDialModal';
 import { useOutboundDialer } from '../../../../hooks/useOutboundDialer';
@@ -14,6 +14,10 @@ type DialPadStateHandlers = {
 	handleBackspaceClick: () => void;
 	handlePadButtonClick: (digit: string | number) => void;
 	handleCallButtonClick: () => void;
+	handleSubmit: UseFormHandleSubmit<{
+		PhoneInput: string;
+	}>;
+	onSubmit: () => void;
 };
 
 type DialPadProps = {
@@ -32,6 +36,7 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 		setValue,
 		setError,
 		clearErrors,
+		handleSubmit,
 		watch,
 		formState: { errors },
 	} = useForm<{ PhoneInput: string }>({
@@ -41,19 +46,22 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 	});
 
 	const { ref, onChange } = register('PhoneInput');
+
 	const value = watch('PhoneInput');
 
 	const [disabled, setDisabled] = useState(true);
 
 	const handleBackspaceClick = useCallback((): void => {
+		clearErrors();
 		setValue('PhoneInput', value.slice(0, -1));
-	}, [setValue, value]);
+	}, [clearErrors, setValue, value]);
 
 	const handlePadButtonClick = useCallback(
 		(digit: string | number): void => {
+			clearErrors();
 			setValue('PhoneInput', value + digit);
 		},
-		[setValue, value],
+		[clearErrors, setValue, value],
 	);
 
 	const handleCallButtonClick = useCallback((): void => {
@@ -65,26 +73,40 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 		closeDialModal();
 	}, [outboundClient, setError, t, value, closeDialModal]);
 
+	const onSubmit = useCallback(() => {
+		handleCallButtonClick();
+	}, [handleCallButtonClick]);
+
+	const handleOnChange = useCallback(
+		(e) => {
+			clearErrors();
+			onChange(e);
+		},
+		[clearErrors, onChange],
+	);
+
 	useEffect(() => {
 		setError('PhoneInput', { message: errorMessage });
 	}, [setError, errorMessage]);
 
 	useEffect(() => {
 		setDisabled(!value);
-	}, [clearErrors, value]);
+	}, [value]);
 
 	useEffect(() => {
 		setFocus('PhoneInput');
-	}, [setFocus]);
+	}, [value, setFocus]);
 
 	return {
 		inputName: 'PhoneInput',
 		inputRef: ref,
 		inputError: errors.PhoneInput?.message,
 		isButtonDisabled: disabled,
-		handleOnChange: onChange,
+		handleOnChange,
 		handleBackspaceClick,
 		handlePadButtonClick,
 		handleCallButtonClick,
+		handleSubmit,
+		onSubmit,
 	};
 };
