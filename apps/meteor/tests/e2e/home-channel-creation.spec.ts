@@ -1,4 +1,4 @@
-import { Page, test } from '@playwright/test';
+import { Page, test, expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
 import { HomeChannel, Auth } from './page-objects';
@@ -15,7 +15,6 @@ test.describe('Channel Creation', () => {
 	});
 
 	test.beforeAll(async () => {
-		await page.goto('/');
 		await pageAuth.doLogin();
 	});
 
@@ -27,6 +26,8 @@ test.describe('Channel Creation', () => {
 		await pageHomeChannel.sidebar.checkboxChannelType.click();
 		await pageHomeChannel.sidebar.inputChannelName.type(name);
 		await pageHomeChannel.sidebar.btnCreateChannel.click();
+
+		await expect(page).toHaveURL(`/channel/${name}`);
 	});
 
 	test('expect create private channel', async () => {
@@ -36,5 +37,7 @@ test.describe('Channel Creation', () => {
 		await pageHomeChannel.sidebar.btnOptionChannel.click();
 		await pageHomeChannel.sidebar.inputChannelName.type(name);
 		await pageHomeChannel.sidebar.btnCreateChannel.click();
+
+		await expect(page).toHaveURL(`/group/${name}`);
 	});
 });

@@ -70,10 +70,31 @@ export class Auth {
 	}
 
 	async doLogin(input = ADMIN_CREDENTIALS): Promise<void> {
+<<<<<<< HEAD
+		await this.page.goto('/');
+
+		await this.page.locator('[name=emailOrUsername]').type(input.email);
+		await this.page.locator('[name=pass]').type(input.password);
+		await this.page.locator('.login').click();
+	}
+
+	async doRegister(input: any): Promise<void> {
+		await this.page.goto('/');
+		await this.btnRegister.click();
+
+		await this.inputName.type(input.name);
+		await this.inputEmail.type(input.email);
+		await this.inputPassword.type(input.password);
+		await this.inputPasswordConfirm.type(input.password);
+		await this.btnSubmit.click();
+		await this.btnRegisterConfirmUsername.click();
+	}
+=======
 		await this.page.goto('/home');
 
 		await this.page.locator('[name=email]').type(input.email);
 		await this.page.locator('[name=pass]').type(input.password);
 		await this.page.locator('.login').click();
 	}
+>>>>>>> feat: add locators, actions and update tests
 }

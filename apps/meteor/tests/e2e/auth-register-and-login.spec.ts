@@ -13,9 +13,17 @@ test.describe('Register and Login', () => {
 	});
 
 	test.describe('Login', () => {
+<<<<<<< HEAD
 		test('expect to show a toast if the provided password is incorrect', async () => {
 			await page.goto('/');
 
+=======
+		test.beforeEach(async () => {
+			await page.goto('/');
+		});
+
+		test('expect to show a toast if the provided password is incorrect', async () => {
+>>>>>>> feat: add locators, actions and update tests
 			await pageAuth.inputEmailOrUsername.type(faker.internet.email());
 			await pageAuth.inputPassword.type('any_password');
 			await pageAuth.btnSubmit.click();
@@ -25,10 +33,19 @@ test.describe('Register and Login', () => {
 	});
 
 	test.describe('Register New User', () => {
+<<<<<<< HEAD
 		test('expect trigger a validation error if no data is provided', async () => {
 			await page.goto('/');
 			await pageAuth.btnRegister.click();
 
+=======
+		test.beforeEach(async () => {
+			await page.goto('/');
+			await pageAuth.btnRegister.click();
+		});
+
+		test('expect trigger a validation error if no data is provided', async () => {
+>>>>>>> feat: add locators, actions and update tests
 			await pageAuth.btnSubmit.click();
 
 			await expect(pageAuth.textErrorName).toBeVisible();
@@ -38,9 +55,12 @@ test.describe('Register and Login', () => {
 		});
 
 		test('expect trigger a validation error if different password is provided', async () => {
+<<<<<<< HEAD
 			await page.goto('/');
 			await pageAuth.btnRegister.click();
 
+=======
+>>>>>>> feat: add locators, actions and update tests
 			await pageAuth.inputName.type(faker.name.firstName());
 			await pageAuth.inputEmail.type(faker.internet.email());
 			await pageAuth.inputPassword.type('any_password');
@@ -51,9 +71,12 @@ test.describe('Register and Login', () => {
 		});
 
 		test('expect create a new user', async () => {
+<<<<<<< HEAD
 			await page.goto('/');
 			await pageAuth.btnRegister.click();
 
+=======
+>>>>>>> feat: add locators, actions and update tests
 			await pageAuth.inputName.type(faker.name.firstName());
 			await pageAuth.inputEmail.type(faker.internet.email());
 			await pageAuth.inputPassword.type('any_password');

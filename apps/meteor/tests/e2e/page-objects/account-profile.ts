@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 
-import { AccountSidebar } from './fragments';
+import { AccountSidebar } from './slices';
 
 export class AccountProfile {
 	private readonly page: Page;

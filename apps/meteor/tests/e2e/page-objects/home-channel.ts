@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 
-import { HomeContent, HomeSidebar, HomeFlextab } from './fragments';
+import { HomeContent, HomeSidebar, HomeTabs } from './slices';
 
 export class HomeChannel {
 	private readonly page: Page;
@@ -9,13 +9,13 @@ export class HomeChannel {
 
 	readonly sidebar: HomeSidebar;
 
-	readonly tabs: HomeFlextab;
+	readonly tabs: HomeTabs;
 
 	constructor(page: Page) {
 		this.page = page;
 
 		this.content = new HomeContent(page);
 		this.sidebar = new HomeSidebar(page);
-		this.tabs = new HomeFlextab(page);
+		this.tabs = new HomeTabs(page);
 	}
 }
