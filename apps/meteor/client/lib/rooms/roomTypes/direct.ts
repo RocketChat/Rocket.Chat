@@ -5,7 +5,7 @@ import { Session } from 'meteor/session';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import * as Federation from '../../../../app/federation-v2/client/Federation';
-import { Subscriptions, Users, ChatRoom } from '../../../../app/models/client';
+import { Subscriptions, ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
@@ -114,8 +114,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 		const sub = Subscriptions.findOne({ rid: room._id }, { fields: { name: 1 } });
 		if (sub?.name) {
-			const user = Users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } });
-			return getUserAvatarURL(user?.username || sub.name, user?.avatarETag);
+			return getUserAvatarURL(sub.name, room.avatarETag);
 		}
 
 		return getUserAvatarURL(room.name || this.roomName(room));
