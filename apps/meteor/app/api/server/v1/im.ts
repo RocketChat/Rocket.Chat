@@ -1,7 +1,7 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IMessage, IRoom, ISetting, ISubscription, IUpload, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISetting, ISubscription, IUpload } from '@rocket.chat/core-typings';
 import {
 	isDmDeleteProps,
 	isDmFileProps,
@@ -20,6 +20,7 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { addUserToFileObj } from '../helpers/addUserToFileObj';
 
 interface IImFilesObject extends IUpload {
 	userId: string;
@@ -223,23 +224,10 @@ API.v1.addRoute(
 				projection: fields,
 			});
 
-			const [files, total] = await Promise.all([
-				cursor
-					.map((file): IImFilesObject | (IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }) => {
-						if (file.userId) {
-							return this.insertUserObject<IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }>({
-								object: { ...file },
-								userId: file.userId,
-							});
-						}
-						return file;
-					})
-					.toArray(),
-				totalCount,
-			]);
+			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				files,
+				files: await addUserToFileObj(files),
 				count: files.length,
 				offset,
 				total,
