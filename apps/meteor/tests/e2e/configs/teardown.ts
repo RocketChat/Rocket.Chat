@@ -1,8 +1,5 @@
 import { MongoHelper } from '../utils/MongoHelper';
-
-const mongoBaseUrl = process.env.MONGO_URL
-	? `${process.env.MONGO_URL}?retryWrites=false`
-	: 'mongodb://localhost:3001/meteor?retryWrites=false';
+import { URL_MONGODB } from '../utils/constants';
 
 const deleteRoom = async (): Promise<void> => {
 	const roomCollection = await MongoHelper.getCollection('rocketchat_room');
@@ -22,7 +19,7 @@ const deleteSubscribeUserInChannels = async (): Promise<void> => {
 };
 
 export default async (): Promise<void> => {
-	await MongoHelper.connect(mongoBaseUrl);
+	await MongoHelper.connect(URL_MONGODB);
 	await deleteRoom();
 	await deleteUser();
 	await deleteSubscribeUserInChannels();

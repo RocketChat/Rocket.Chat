@@ -73,7 +73,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 			return false;
 		}
 
-		const parentRoom = await Rooms.findOne(room.prid);
+		const parentRoom = await Rooms.findOneById(room.prid);
 		if (!parentRoom) {
 			return false;
 		}

@@ -26,15 +26,13 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 	if (!room) {
 		throw new Error('invalid-room');
 	}
-	const cursor = Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history', {
+	const { cursor, totalCount } = Messages.findPaginatedByRoomIdAndType(room._id, 'livechat_navigation_history', {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const pages = await cursor.toArray();
+	const [pages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		pages,
@@ -56,15 +54,13 @@ export async function findChatHistory({ userId, roomId, visitorId, pagination: {
 		throw new Error('error-not-allowed');
 	}
 
-	const cursor = LivechatRooms.findByVisitorId(visitorId, {
+	const { cursor, totalCount } = LivechatRooms.findPaginatedByVisitorId(visitorId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const history = await cursor.toArray();
+	const [history, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		history,
@@ -150,29 +146,35 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 	};
 }
 
-export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({ userId, term, pagination: { offset, count, sort } }) {
+export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
+	userId,
+	emailOrPhone,
+	nameOrUsername,
+	pagination: { offset, count, sort },
+}) {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
-	const cursor = LivechatVisitors.findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(term, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
-		fields: {
-			_id: 1,
-			username: 1,
-			name: 1,
-			phone: 1,
-			livechatData: 1,
-			visitorEmails: 1,
-			lastChat: 1,
+	const { cursor, totalCount } = LivechatVisitors.findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
+		emailOrPhone,
+		nameOrUsername,
+		{
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+			projection: {
+				username: 1,
+				name: 1,
+				phone: 1,
+				livechatData: 1,
+				visitorEmails: 1,
+				lastChat: 1,
+			},
 		},
-	});
+	);
 
-	const total = await cursor.count();
-
-	const visitors = await cursor.toArray();
+	const [visitors, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		visitors,

@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { ILivechatDepartmentRecord, IUser } from '@rocket.chat/core-typings';
-import { FilterQuery } from 'mongodb';
+import { IUser } from '@rocket.chat/core-typings';
+import { Filter } from 'mongodb';
 import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -13,7 +13,7 @@ export async function findUsersToAutocomplete({
 	uid: string;
 	selector: {
 		exceptions: string[];
-		conditions: FilterQuery<ILivechatDepartmentRecord>;
+		conditions: Filter<IUser>;
 		term: string;
 	};
 }): Promise<{

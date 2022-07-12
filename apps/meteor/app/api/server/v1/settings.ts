@@ -9,29 +9,32 @@ import {
 	isSettingsUpdatePropsColor,
 } from '@rocket.chat/rest-typings';
 import { Settings } from '@rocket.chat/models';
+import type { FindOptions } from 'mongodb';
 
 import { hasPermission } from '../../../authorization/server';
 import { API, ResultFor } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
 
-const fetchSettings = async (
+async function fetchSettings(
 	query: Parameters<typeof Settings.find>[0],
-	sort: Parameters<typeof Settings.find>[1]['sort'],
-	offset: Parameters<typeof Settings.find>[1]['skip'],
-	count: Parameters<typeof Settings.find>[1]['limit'],
-	fields: Parameters<typeof Settings.find>[1]['projection'],
-): Promise<ISetting[]> => {
-	const settings = (await Settings.find(query, {
+	sort: FindOptions<ISetting>['sort'],
+	offset: FindOptions<ISetting>['skip'],
+	count: FindOptions<ISetting>['limit'],
+	fields: FindOptions<ISetting>['projection'],
+): Promise<{ settings: ISetting[]; totalCount: number }> {
+	const { cursor, totalCount } = Settings.findPaginated(query || {}, {
 		sort: sort || { _id: 1 },
 		skip: offset,
 		limit: count,
 		projection: { _id: 1, value: 1, enterprise: 1, invalidValue: 1, modules: 1, ...fields },
-	}).toArray()) as unknown as ISetting[];
+	});
+
+	const [settings, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	SettingsEvents.emit('fetch-settings', settings);
-	return settings;
-};
+	return { settings, totalCount: total };
+}
 
 // settings endpoints
 API.v1.addRoute(
@@ -48,13 +51,13 @@ API.v1.addRoute(
 				public: true,
 			};
 
-			const settings = await fetchSettings(ourQuery, sort, offset, count, fields);
+			const { settings, totalCount: total } = await fetchSettings(ourQuery, sort, offset, count, fields);
 
 			return API.v1.success({
 				settings,
 				count: settings.length,
 				offset,
-				total: await Settings.find(ourQuery).count(),
+				total,
 			});
 		},
 	},
@@ -126,13 +129,13 @@ API.v1.addRoute(
 
 			ourQuery = Object.assign({}, query, ourQuery);
 
-			const settings = await fetchSettings(ourQuery, sort, offset, count, fields);
+			const { settings, totalCount: total } = await fetchSettings(ourQuery, sort, offset, count, fields);
 
 			return API.v1.success({
 				settings,
 				count: settings.length,
 				offset,
-				total: Settings.find(ourQuery).count(),
+				total,
 			});
 		},
 	},
