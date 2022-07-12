@@ -13,6 +13,7 @@ type DialPadStateHandlers = {
 	handleOnChange: (e: ChangeEvent<HTMLInputElement>) => void;
 	handleBackspaceClick: () => void;
 	handlePadButtonClick: (digit: string | number) => void;
+	handlePadButtonLongPressed: (digit: string | number) => void;
 	handleCallButtonClick: () => void;
 	handleSubmit: UseFormHandleSubmit<{
 		PhoneInput: string;
@@ -59,9 +60,21 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 	const handlePadButtonClick = useCallback(
 		(digit: string | number): void => {
 			clearErrors();
+
 			setValue('PhoneInput', value + digit);
 		},
 		[clearErrors, setValue, value],
+	);
+
+	const handlePadButtonLongPressed = useCallback(
+		(digit: string | number): void => {
+			if (digit === 0) {
+				return setValue('PhoneInput', `${value}+`);
+			}
+
+			return setValue('PhoneInput', value + digit);
+		},
+		[setValue, value],
 	);
 
 	const handleCallButtonClick = useCallback((): void => {
@@ -105,6 +118,7 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 		handleOnChange,
 		handleBackspaceClick,
 		handlePadButtonClick,
+		handlePadButtonLongPressed,
 		handleCallButtonClick,
 		handleSubmit,
 		onSubmit,

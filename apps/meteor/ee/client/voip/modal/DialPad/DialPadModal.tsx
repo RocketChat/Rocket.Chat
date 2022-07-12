@@ -20,6 +20,7 @@ const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalP
 		handleOnChange,
 		handleBackspaceClick,
 		handlePadButtonClick,
+		handlePadButtonLongPressed,
 		handleCallButtonClick,
 		handleSubmit,
 		onSubmit,
@@ -45,7 +46,7 @@ const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalP
 						{inputError}
 					</Field.Error>
 				</Field>
-				<Pad onClickPadButton={handlePadButtonClick} />
+				<Pad onClickPadButton={handlePadButtonClick} onLongPressPadButton={handlePadButtonLongPressed} />
 			</Modal.Content>
 			<Modal.Footer>
 				<Box display='flex' justifyContent='center'>
