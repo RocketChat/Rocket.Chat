@@ -9,6 +9,7 @@ import {
 	isIntegrationsUpdateProps,
 } from '@rocket.chat/rest-typings';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+import type { Filter } from 'mongodb';
 
 import { hasAtLeastOnePermission } from '../../../authorization/server';
 import { API } from '../api';
@@ -55,15 +56,14 @@ API.v1.addRoute(
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 			const ourQuery = Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
 
-			const cursor = IntegrationHistory.find(ourQuery, {
+			const { cursor, totalCount } = IntegrationHistory.findPaginated(ourQuery, {
 				sort: sort || { _updatedAt: -1 },
 				skip: offset,
 				limit: count,
 				projection,
 			});
 
-			const history = await cursor.toArray();
-			const total = await cursor.count();
+			const [history, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				history,
@@ -80,7 +80,7 @@ API.v1.addRoute(
 	'integrations.list',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (
 				!hasAtLeastOnePermission(this.userId, [
 					'manage-outgoing-integrations',
@@ -95,17 +95,16 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 
-			const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query);
-			const cursor = Integrations.find(ourQuery, {
+			const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query) as Filter<IIntegration>;
+
+			const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
 				projection,
 			});
 
-			const total = Promise.await(cursor.count());
-
-			const integrations = Promise.await(cursor.toArray());
+			const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				integrations,

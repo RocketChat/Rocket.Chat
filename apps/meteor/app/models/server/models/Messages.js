@@ -173,7 +173,7 @@ export class Messages extends Base {
 		);
 	}
 
-	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
+	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -185,7 +185,7 @@ export class Messages extends Base {
 			},
 		};
 
-		return this.find(query, options).count();
+		return this.find(query).count();
 	}
 
 	// FIND
@@ -471,27 +471,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findPinnedByRoom(roomId, options) {
-		const query = {
-			t: { $ne: 'rm' },
-			_hidden: { $ne: true },
-			pinned: true,
-			rid: roomId,
-		};
-
-		return this.find(query, options);
-	}
-
-	findSnippetedByRoom(roomId, options) {
-		const query = {
-			_hidden: { $ne: true },
-			snippeted: true,
-			rid: roomId,
-		};
-
-		return this.find(query, options);
-	}
-
 	getLastTimestamp(options = { fields: { _id: 0, ts: 1 } }) {
 		options.sort = { ts: -1 };
 		options.limit = 1;
@@ -532,19 +511,6 @@ export class Messages extends Base {
 		};
 
 		return this.findOne(query, options);
-	}
-
-	findByRoomIdAndType(roomId, type, options) {
-		const query = {
-			rid: roomId,
-			t: type,
-		};
-
-		if (options == null) {
-			options = {};
-		}
-
-		return this.find(query, options);
 	}
 
 	findByRoomId(roomId, options) {
