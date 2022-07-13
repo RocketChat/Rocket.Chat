@@ -6,10 +6,10 @@ import { WebApp } from 'meteor/webapp';
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Apps, AppServerOrchestrator } from '../orchestrator';
 import { UiKitCoreApp } from '../../../../server/sdk';
+import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
 const apiServer = express();
 
@@ -51,22 +51,20 @@ Meteor.startup(() => {
 			settings.get('API_Enable_Rate_Limiter') !== true ||
 			(process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true),
 	});
+
 	router.use(apiLimiter);
 });
 
-router.use((req, res, next) => {
-	const { 'x-user-id': userId, 'x-auth-token': authToken, 'x-visitor-token': visitorToken } = req.headers;
+router.use(authenticationMiddleware({ rejectUnauthorized: false }));
 
-	if (userId && authToken) {
-		req.body.user = Users.findOneByIdAndLoginToken(userId, authToken);
-		req.body.userId = req.body.user._id;
-	}
+router.use((req: Request, res, next) => {
+	const { 'x-visitor-token': visitorToken } = req.headers;
 
 	if (visitorToken) {
 		req.body.visitor = Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
 	}
 
-	if (!req.body.user && !req.body.visitor) {
+	if (!req.user && !req.body.visitor) {
 		return unauthorized(res);
 	}
 
@@ -188,7 +186,7 @@ const appsRoutes =
 
 				const { visitor } = req.body;
 				const room = orch.getConverters()?.get('rooms').convertById(rid);
-				const user = orch.getConverters()?.get('users').convertToApp(req.body.user);
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const message = mid && orch.getConverters()?.get('messages').convertById(mid);
 
 				const action = {
@@ -223,7 +221,7 @@ const appsRoutes =
 					payload: { view, isCleared },
 				} = req.body;
 
-				const user = orch.getConverters()?.get('users').convertToApp(req.body.user);
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 
 				const action = {
 					type,
@@ -237,9 +235,9 @@ const appsRoutes =
 				};
 
 				try {
-					Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
+					const result = Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
 
-					res.sendStatus(200);
+					res.send(result);
 				} catch (e) {
 					res.status(500).send(e); // e.message
 				}
@@ -249,7 +247,7 @@ const appsRoutes =
 			case UIKitIncomingInteractionType.VIEW_SUBMIT: {
 				const { type, actionId, triggerId, payload } = req.body;
 
-				const user = orch.getConverters()?.get('users').convertToApp(req.body.user);
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 
 				const action = {
 					type,
@@ -281,7 +279,7 @@ const appsRoutes =
 				} = req.body;
 
 				const room = orch.getConverters()?.get('rooms').convertById(rid);
-				const user = orch.getConverters()?.get('users').convertToApp(req.body.user);
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const message = mid && orch.getConverters()?.get('messages').convertById(mid);
 
 				const action = {

@@ -20,6 +20,7 @@ import RemoveIcon from '../../icons/remove.svg';
 import SendIcon from '../../icons/send.svg';
 import EmojiIcon from '../../icons/smile.svg';
 import styles from './styles.scss';
+import 'emoji-mart/css/emoji-mart.css';
 
 class Chat extends Component {
 	state = {

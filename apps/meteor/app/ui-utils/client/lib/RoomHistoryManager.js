@@ -11,10 +11,9 @@ import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from '../../../../client/lib/utils/renderMessageBody';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
-import { getUserPreference } from '../../../utils/client';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import {
 	setHighlightMessage,
@@ -197,8 +196,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
-		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls, showMessageInMainThread);
+		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls);
 
 		this.unqueue();
 
@@ -224,7 +222,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 			room.loaded = 0;
 		}
 
-		const visibleMessages = messages.filter((msg) => !msg.tmid || showMessageInMainThread || msg.tshow);
+		const visibleMessages = messages.filter((msg) => !msg.tmid || msg.tshow);
 
 		room.loaded += visibleMessages.length;
 

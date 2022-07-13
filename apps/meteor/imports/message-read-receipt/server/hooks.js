@@ -1,6 +1,6 @@
 import { ReadReceipt } from './lib/ReadReceipt';
 import { callbacks } from '../../../lib/callbacks';
-import { Subscriptions } from '../../../app/models';
+import { Subscriptions } from '../../../app/models/server';
 
 callbacks.add(
 	'afterSaveMessage',

@@ -80,17 +80,3 @@ declare module 'meteor/rocketchat:streamer' {
 		new (name: string, options?: { retransmit?: boolean; retransmitToSelf?: boolean }): IStreamer;
 	}
 }
-
-declare module 'meteor/meteor' {
-	import { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
-
-	namespace Meteor {
-		const Streamer: IStreamerConstructor & IStreamer;
-
-		namespace StreamerCentral {
-			const instances: {
-				[name: string]: IStreamer;
-			};
-		}
-	}
-}

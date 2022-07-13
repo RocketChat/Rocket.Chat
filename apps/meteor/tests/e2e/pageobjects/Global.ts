@@ -27,12 +27,12 @@ export class Global extends BasePage {
 		return this.page.locator('.flex-nav');
 	}
 
-	public async confirmPopup(): Promise<void> {
+	async confirmPopup(): Promise<void> {
 		await this.modalConfirm.waitFor();
 		await this.modalConfirm.click();
 	}
 
-	public async dismissToastBar(): Promise<void> {
+	async dismissToastBar(): Promise<void> {
 		await this.getToastBar.locator('button').click();
 	}
 

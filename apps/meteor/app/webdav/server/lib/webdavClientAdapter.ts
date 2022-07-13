@@ -23,7 +23,7 @@ export class WebdavClientAdapter {
 	async stat(path: string): Promise<undefined> {
 		try {
 			return await this._client.stat(path);
-		} catch (error) {
+		} catch (error: any) {
 			throw new Error(
 				error.response && error.response.statusText ? error.response.statusText : 'Error checking if directory exists on webdav',
 			);
@@ -33,7 +33,7 @@ export class WebdavClientAdapter {
 	async createDirectory(path: string): Promise<Response> {
 		try {
 			return await this._client.createDirectory(path);
-		} catch (error) {
+		} catch (error: any) {
 			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error creating directory on webdav');
 		}
 	}
@@ -41,7 +41,7 @@ export class WebdavClientAdapter {
 	async deleteFile(path: string): Promise<Response> {
 		try {
 			return await this._client.deleteFile(path);
-		} catch (error) {
+		} catch (error: any) {
 			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error deleting file on webdav');
 		}
 	}
@@ -49,7 +49,7 @@ export class WebdavClientAdapter {
 	async getFileContents(filename: string): Promise<Buffer> {
 		try {
 			return (await this._client.getFileContents(filename)) as Buffer;
-		} catch (error) {
+		} catch (error: any) {
 			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error getting file contents webdav');
 		}
 	}
@@ -57,7 +57,7 @@ export class WebdavClientAdapter {
 	async getDirectoryContents(path: string): Promise<Array<Stat>> {
 		try {
 			return await this._client.getDirectoryContents(path);
-		} catch (error) {
+		} catch (error: any) {
 			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error getting directory contents webdav');
 		}
 	}
@@ -65,7 +65,7 @@ export class WebdavClientAdapter {
 	async putFileContents(path: string, data: Buffer, options: Record<string, any> = {}): Promise<any> {
 		try {
 			return await this._client.putFileContents(path, data, options);
-		} catch (error) {
+		} catch (error: any) {
 			throw new Error(error.response?.statusText ?? 'Error updating file contents.');
 		}
 	}

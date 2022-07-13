@@ -1,5 +1,5 @@
-import { ReactNode, useContext } from 'react';
+import type { ReactNode } from 'react';
 
-import { ModalContext } from '../ModalContext';
+import { useModal } from './useModal';
 
-export const useSetModal = (): ((modal?: ReactNode) => void) => useContext(ModalContext).setModal;
+export const useSetModal = (): ((modal?: ReactNode) => void) => useModal().setModal;

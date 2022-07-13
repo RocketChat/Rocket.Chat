@@ -17,9 +17,9 @@ import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { IExportOperation, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
+import { Users as UsersRaw } from '@rocket.chat/models';
 
 import { Users, Subscriptions } from '../../../models/server';
-import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import {
@@ -390,7 +390,7 @@ API.v1.addRoute(
 		queryOperations: ['$or', '$and'],
 	},
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-d-room')) {
 				return API.v1.unauthorized();
 			}
@@ -431,39 +431,37 @@ API.v1.addRoute(
 					  ]
 					: [];
 
-			const result = Promise.await(
-				UsersRaw.col
-					.aggregate([
-						{
-							$match: nonEmptyQuery,
+			const result = await UsersRaw.col
+				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
+					{
+						$match: nonEmptyQuery,
+					},
+					{
+						$project: inclusiveFields,
+					},
+					{
+						$addFields: {
+							nameInsensitive: {
+								$toLower: '$name',
+							},
 						},
-						{
-							$project: inclusiveFields,
-						},
-						{
-							$addFields: {
-								nameInsensitive: {
-									$toLower: '$name',
+					},
+					{
+						$facet: {
+							sortedResults: [
+								{
+									$sort: actualSort,
 								},
-							},
+								{
+									$skip: offset,
+								},
+								...limit,
+							],
+							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
 						},
-						{
-							$facet: {
-								sortedResults: [
-									{
-										$sort: actualSort,
-									},
-									{
-										$skip: offset,
-									},
-									...limit,
-								],
-								totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
-							},
-						},
-					])
-					.toArray(),
-			);
+					},
+				])
+				.toArray();
 
 			const {
 				sortedResults: users,
@@ -485,7 +483,7 @@ API.v1.addRoute(
 	{
 		authRequired: false,
 		rateLimiterOptions: {
-			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser'),
+			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
 			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 		},
 		validateParams: isUserRegisterParamsPOST,

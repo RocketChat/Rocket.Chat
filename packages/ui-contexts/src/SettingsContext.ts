@@ -2,7 +2,7 @@ import type { SettingId, ISetting, GroupId, SectionName, TabId } from '@rocket.c
 import { createContext } from 'react';
 
 export type SettingsContextQuery = {
-	readonly _id?: SettingId[];
+	readonly _id?: SettingId[] | RegExp;
 	readonly group?: GroupId;
 	readonly section?: SectionName;
 	readonly tab?: TabId;

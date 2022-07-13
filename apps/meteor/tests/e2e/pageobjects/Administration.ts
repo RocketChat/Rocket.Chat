@@ -63,7 +63,7 @@ export class Administration extends BasePage {
 		return this.page.locator('input[placeholder ="Search Rooms"]');
 	}
 
-	public async verifyCheckBoxRendered(checkBoxes: string[]): Promise<void> {
+	async verifyCheckBoxRendered(checkBoxes: string[]): Promise<void> {
 		const expected = [];
 		for (const checkBox of checkBoxes) {
 			expected.push(expect(this.adminCheckBox(checkBox)).toBeVisible());
@@ -87,7 +87,7 @@ export class Administration extends BasePage {
 		return this.page.locator('input[placeholder="Search Users"]');
 	}
 
-	public userInTable(id: string): Locator {
+	userInTable(id: string): Locator {
 		return this.page.locator(`tr > td:has-text("${id}")`);
 	}
 
@@ -347,7 +347,7 @@ export class Administration extends BasePage {
 		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_notificationsSoundVolume"]');
 	}
 
-	public adminCheckBox(checkBox: string): Locator {
+	adminCheckBox(checkBox: string): Locator {
 		return this.page.locator(`//label[text()="${checkBox}"]/preceding-sibling::label/i`);
 	}
 
@@ -355,7 +355,7 @@ export class Administration extends BasePage {
 		return this.page.locator('.main-content input[placeholder="Search"]');
 	}
 
-	public getCheckboxPermission(label: string, column = 6): Locator {
+	getCheckboxPermission(label: string, column = 6): Locator {
 		return this.page.locator(`tr td:has-text("${label}") ~ td:nth-child(${column})`).locator('label').first();
 	}
 

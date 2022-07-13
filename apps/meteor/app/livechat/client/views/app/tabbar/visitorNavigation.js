@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import moment from 'moment';
 import _ from 'underscore';
 
-import { ChatRoom } from '../../../../../models';
+import { ChatRoom } from '../../../../../models/client';
 import { t } from '../../../../../utils';
 import './visitorNavigation.html';
 import { APIClient } from '../../../../../utils/client';

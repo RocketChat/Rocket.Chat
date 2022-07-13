@@ -10,8 +10,8 @@ const TwoFactorEmail = (props) => {
 
 	const isEnabled = user && user.services && user.services.email2fa && user.services.email2fa.enabled;
 
-	const enable2faAction = useEndpointAction('POST', 'users.2fa.enableEmail', undefined, t('Two-factor_authentication_enabled'));
-	const disable2faAction = useEndpointAction('POST', 'users.2fa.disableEmail', undefined, t('Two-factor_authentication_disabled'));
+	const enable2faAction = useEndpointAction('POST', '/v1/users.2fa.enableEmail', undefined, t('Two-factor_authentication_enabled'));
+	const disable2faAction = useEndpointAction('POST', '/v1/users.2fa.disableEmail', undefined, t('Two-factor_authentication_disabled'));
 
 	const handleEnable = useCallback(async () => {
 		await enable2faAction();

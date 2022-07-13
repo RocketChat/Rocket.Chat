@@ -7,7 +7,7 @@ import { Livechat } from '../../lib/Livechat';
 import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFields';
 
 API.v1.addRoute('livechat/custom.field', {
-	post() {
+	async post() {
 		try {
 			check(this.bodyParams, {
 				token: String,
@@ -18,12 +18,12 @@ API.v1.addRoute('livechat/custom.field', {
 
 			const { token, key, value, overwrite } = this.bodyParams;
 
-			const guest = findGuest(token);
+			const guest = await findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
 
-			if (!Livechat.setCustomFields({ token, key, value, overwrite })) {
+			if (!(await Livechat.setCustomFields({ token, key, value, overwrite }))) {
 				return API.v1.failure();
 			}
 
@@ -35,7 +35,7 @@ API.v1.addRoute('livechat/custom.field', {
 });
 
 API.v1.addRoute('livechat/custom.fields', {
-	post() {
+	async post() {
 		check(this.bodyParams, {
 			token: String,
 			customFields: [
@@ -48,19 +48,21 @@ API.v1.addRoute('livechat/custom.fields', {
 		});
 
 		const { token } = this.bodyParams;
-		const guest = findGuest(token);
+		const guest = await findGuest(token);
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
 
-		const fields = this.bodyParams.customFields.map((customField) => {
-			const data = Object.assign({ token }, customField);
-			if (!Livechat.setCustomFields(data)) {
-				return API.v1.failure();
-			}
+		const fields = await Promise.all(
+			this.bodyParams.customFields.map(async (customField) => {
+				const data = Object.assign({ token }, customField);
+				if (!(await Livechat.setCustomFields(data))) {
+					return API.v1.failure();
+				}
 
-			return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
-		});
+				return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
+			}),
+		);
 
 		return API.v1.success({ fields });
 	},

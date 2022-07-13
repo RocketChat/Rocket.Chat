@@ -1,5 +1,5 @@
 import { Db } from 'mongodb';
-import Agenda from 'agenda';
+import { Agenda } from '@rocket.chat/agenda';
 import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';

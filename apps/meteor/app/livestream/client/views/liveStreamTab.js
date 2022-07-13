@@ -12,7 +12,7 @@ import { t } from '../../../utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { hasAllPermission } from '../../../authorization';
-import { Users, Rooms } from '../../../models';
+import { Users, Rooms } from '../../../models/client';
 import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 

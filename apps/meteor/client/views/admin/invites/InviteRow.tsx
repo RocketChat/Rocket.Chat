@@ -56,7 +56,7 @@ const InviteRow = ({ _id, createdAt, expires, uses, maxUses, onRemove }: InviteR
 
 	const handleRemoveButtonClick = async (event: MouseEvent<HTMLElement>): Promise<void> => {
 		event.stopPropagation();
-		onRemove(removeInvite);
+		onRemove(() => removeInvite());
 	};
 
 	const notSmall = useMediaQuery('(min-width: 768px)');

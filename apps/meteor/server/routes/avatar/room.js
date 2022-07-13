@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Cookies } from 'meteor/ostrio:cookies';
+import { Avatars } from '@rocket.chat/models';
 
 import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 import { FileUpload } from '../../../app/file-upload';
 import { Rooms } from '../../../app/models/server';
-import { Avatars } from '../../../app/models/server/raw';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 const cookie = new Cookies();

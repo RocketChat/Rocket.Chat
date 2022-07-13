@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import s from 'underscore.string';
 
-import { ChatMessage, Rooms } from '../../../models';
+import { ChatMessage, Rooms } from '../../../models/client';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils/client';

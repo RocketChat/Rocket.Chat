@@ -1,16 +1,8 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { Locator } from '@playwright/test';
 
 import { BasePage } from './BasePage';
-import { Global } from './Global';
 
 export class FlexTab extends BasePage {
-	private global: Global;
-
-	constructor(page: Page) {
-		super(page);
-		this.global = new Global(page);
-	}
-
 	get mainSideBar(): Locator {
 		return this.page.locator('//main//aside');
 	}
@@ -23,22 +15,74 @@ export class FlexTab extends BasePage {
 		return this.page.locator('//main//aside/h3//i[contains(@class, "rcx-icon--name-cross")]/..');
 	}
 
-	get headerMoreActions(): Locator {
-		return this.page.locator('//main/header//*[contains(@class, "rcx-icon--name-kebab")]/..');
-	}
-
 	get messageInput(): Locator {
 		return this.page.locator('.rcx-vertical-bar .js-input-message');
 	}
 
-	get channelTab(): Locator {
-		return this.page.locator('(//main//*[contains(@class, "rcx-icon--name-info-circled")])[1]/..');
+	get btnTabInfo(): Locator {
+		return this.page.locator('[data-qa-id=ToolBoxAction-info-circled]');
 	}
 
-	get channelSettings(): Locator {
+	get btnTabSearch(): Locator {
+		return this.page.locator('[data-qa-id=ToolBoxAction-magnifier]');
+	}
+
+	get btnTabMembers(): Locator {
+		return this.page.locator('[data-qa-id=ToolBoxAction-members]');
+	}
+
+	get btnTabNotifications(): Locator {
+		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Notifications Preferences")]');
+	}
+
+	get btnTabFiles(): Locator {
+		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Files")]');
+	}
+
+	get btnTabMentions(): Locator {
+		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Mentions")]');
+	}
+
+	get btnTabStared(): Locator {
+		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Starred Messages")]');
+	}
+
+	get btnTabPinned(): Locator {
+		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Pinned Messages")]');
+	}
+
+	get contentTabInfo(): Locator {
 		return this.page.locator(
 			'//aside/h3/div/i[contains(@class,"rcx-icon--name-info-circled") and contains(@class,"rcx-icon--name-info-circled")]',
 		);
+	}
+
+	get contentTabMembers(): Locator {
+		return this.page.locator('[data-qa-id=RoomHeader-Members]');
+	}
+
+	get contentTabNotifications(): Locator {
+		return this.page.locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-bell');
+	}
+
+	get contentTabSearch(): Locator {
+		return this.page.locator('#message-search');
+	}
+
+	get contentTabFiles(): Locator {
+		return this.page.locator('aside > h3 > div > i.rcx-icon--name-attachment');
+	}
+
+	get contentTabMentions(): Locator {
+		return this.page.locator('aside > h3 > div > i.rcx-icon--name-at');
+	}
+
+	get contentTabStared(): Locator {
+		return this.page.locator('aside > h3 > div > i.rcx-icon--name-star');
+	}
+
+	get contentTabPinned(): Locator {
+		return this.page.locator('aside > h3 > div > i.rcx-icon--name-pin');
 	}
 
 	get editNameBtn(): Locator {
@@ -69,14 +113,6 @@ export class FlexTab extends BasePage {
 		return this.page.locator('//aside//button[contains(text(), "Save")]');
 	}
 
-	get membersTab(): Locator {
-		return this.page.locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-members');
-	}
-
-	get membersTabContent(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-members');
-	}
-
 	get setOwnerBtn(): Locator {
 		return this.page.locator('//main//aside//button[contains(text(), "Set as owner")]');
 	}
@@ -89,44 +125,12 @@ export class FlexTab extends BasePage {
 		return this.page.locator('[value="muteUser"]');
 	}
 
-	get avatarImage(): Locator {
-		return this.page.locator('(//aside[contains(@class, "rcx-vertical-bar")]//*[contains(@class, "avatar")])[1]');
-	}
-
-	get memberRealName(): Locator {
+	get userUsername(): Locator {
 		return this.page.locator('[data-qa="UserInfoUserName"]');
-	}
-
-	get searchTab(): Locator {
-		return this.page.locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-magnifier');
-	}
-
-	get searchTabContent(): Locator {
-		return this.page.locator('.rocket-search-result');
-	}
-
-	get messageSearchBar(): Locator {
-		return this.page.locator('#message-search');
 	}
 
 	get searchResult(): Locator {
 		return this.page.locator('.new-day');
-	}
-
-	get notificationsTab(): Locator {
-		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Notifications Preferences")]');
-	}
-
-	get notificationsSettings(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-bell');
-	}
-
-	get filesTab(): Locator {
-		return this.page.locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-clip');
-	}
-
-	get filesTabContent(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-icon--name-attachment');
 	}
 
 	get fileDownload(): Locator {
@@ -137,35 +141,11 @@ export class FlexTab extends BasePage {
 		return this.page.locator('.uploaded-files-list ul:first-child .room-file-item');
 	}
 
-	get mentionsTab(): Locator {
-		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Mentions")]');
-	}
-
-	get mentionsTabContent(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-icon--name-at');
-	}
-
-	get starredTab(): Locator {
-		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Starred Messages")]');
-	}
-
-	get starredTabContent(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-icon--name-star');
-	}
-
-	get pinnedTab(): Locator {
-		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Pinned Messages")]');
-	}
-
-	get pinnedTabContent(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-icon--name-pin');
-	}
-
 	get firstSetting(): Locator {
 		return this.page.locator('//aside//i[contains(@class, "rcx-icon--name-hashtag")]/../div');
 	}
 
-	public secondSetting(topic: string): Locator {
+	secondSetting(topic: string): Locator {
 		return this.page.locator(`//header//*[contains(text(), "${topic}")]`);
 	}
 
@@ -243,7 +223,7 @@ export class FlexTab extends BasePage {
 		return this.page.locator('//html//body//div[1]//div//div[3]//div[1]//main//div//aside//div[2]//div//div//h3//div//div[2]//button[2]');
 	}
 
-	public getUserEl(username: string): Locator {
+	getUserEl(username: string): Locator {
 		return this.page.locator(`[data-qa="MemberItem-${username}"]`);
 	}
 
@@ -264,130 +244,47 @@ export class FlexTab extends BasePage {
 	}
 
 	get chooseUserOptions(): Locator {
-		return this.page.locator('(//div[@role="option"]//ol/li)[1]');
+		return this.page.locator('[data-qa-type="autocomplete-user-option"]');
 	}
 
 	get userMoreActions(): Locator {
 		return this.page.locator('[data-qa="UserUserInfo-menu"]');
 	}
 
-	public async setUserOwner(user: string): Promise<void> {
+	async setUserOwner(user: string): Promise<void> {
 		await this.enterUserView(user);
 		await this.setOwnerBtn.waitFor();
 		await this.setOwnerBtn.click();
 	}
 
-	public async setUserModerator(user: string): Promise<void> {
+	async setUserModerator(user: string): Promise<void> {
 		await this.enterUserView(user);
 		await this.userMoreActions.click();
 		await this.setModeratorBtn.waitFor();
 		await this.setModeratorBtn.click();
 	}
 
-	public async muteUser(user: string): Promise<void> {
+	async muteUser(user: string): Promise<void> {
 		await this.enterUserView(user);
 		await this.userMoreActions.click();
 		await this.muteUserBtn.waitFor();
 		await this.muteUserBtn.click();
-		await this.global.confirmPopup();
+		await this.page.locator('.rcx-modal .rcx-button--danger').click();
 		await this.mainSideBarBack.click();
 	}
 
-	public async enterUserView(user: string): Promise<void> {
+	async enterUserView(user: string): Promise<void> {
 		const userEl = this.getUserEl(user);
 		await userEl.waitFor();
 		await userEl.click();
 	}
 
-	public async addPeopleToChannel(user: string): Promise<void> {
+	async addPeopleToChannel(user: string): Promise<void> {
 		await this.addUserButton.click();
 		await this.chooseUserSearch.type(user);
 		await this.page.waitForTimeout(3000);
 		await this.chooseUserOptions.click();
 		await this.addUserButtonAfterChoose.click();
-	}
-
-	public async operateFlexTab(desiredTab: string, desiredState: boolean): Promise<void> {
-		// desiredState true=open false=closed
-		const locator: { [K: string]: Locator } = {
-			channelSettings: this.channelSettings,
-			messageSearchBar: this.messageSearchBar,
-			avatarImage: this.avatarImage,
-			notificationsSettings: this.notificationsSettings,
-			filesTabContent: this.filesTabContent,
-			mentionsTabContent: this.mentionsTabContent,
-			starredTabContent: this.starredTabContent,
-			pinnedTabContent: this.pinnedTabContent,
-			channelTab: this.channelTab,
-			searchTab: this.searchTab,
-			membersTab: this.membersTab,
-			notificationsTab: this.notificationsTab,
-			filesTab: this.filesTab,
-			mentionsTab: this.mentionsTab,
-			starredTab: this.starredTab,
-			pinnedTab: this.pinnedTab,
-		};
-
-		const operate = async (tab: string, panel: string, more: boolean): Promise<void> => {
-			// this[panel].should(!desiredState ? 'be.visible' : 'not.exist');
-			if (!desiredState) {
-				await expect(locator[panel]).toBeVisible();
-			} else {
-				await expect(locator[panel]).not.toBeVisible();
-			}
-
-			if (more) {
-				await this.headerMoreActions.click();
-			}
-
-			await locator[tab].click();
-
-			if (desiredState) {
-				await expect(locator[panel]).toBeVisible();
-			} else {
-				await expect(locator[panel]).not.toBeVisible();
-			}
-		};
-
-		const tabs: { [K: string]: Function } = {
-			info: async (): Promise<void> => {
-				await operate('channelTab', 'channelSettings', false);
-			},
-
-			search: async (): Promise<void> => {
-				await operate('searchTab', 'messageSearchBar', false);
-			},
-
-			members: async (): Promise<void> => {
-				await operate('membersTab', 'avatarImage', false);
-			},
-
-			notifications: async (): Promise<void> => {
-				await operate('notificationsTab', 'notificationsSettings', true);
-			},
-
-			files: async (): Promise<void> => {
-				await operate('filesTab', 'filesTabContent', false);
-			},
-
-			mentions: async (): Promise<void> => {
-				await operate('mentionsTab', 'mentionsTabContent', true);
-			},
-
-			starred: async (): Promise<void> => {
-				await operate('starredTab', 'starredTabContent', true);
-			},
-
-			pinned: async (): Promise<void> => {
-				await operate('pinnedTab', 'pinnedTabContent', true);
-			},
-		};
-
-		const callFunctionTabs = async (name: string): Promise<void> => {
-			return tabs[name]();
-		};
-
-		await callFunctionTabs(desiredTab);
 	}
 
 	get flexTabViewThreadMessage(): Locator {
@@ -396,8 +293,12 @@ export class FlexTab extends BasePage {
 		);
 	}
 
-	public async doAddRole(role: string): Promise<void> {
+	async doAddRole(role: string): Promise<void> {
 		await this.usersAddUserRoleList.click();
 		await this.page.locator(`li[value=${role}]`).click();
+	}
+
+	async doOpenMoreOptionMenu(): Promise<void> {
+		await this.page.locator('[data-qa-id=ToolBox-Menu]').click({ force: true, clickCount: 3 });
 	}
 }

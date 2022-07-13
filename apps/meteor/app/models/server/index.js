@@ -10,10 +10,9 @@ import LivechatCustomField from './models/LivechatCustomField';
 import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
 import LivechatRooms from './models/LivechatRooms';
-import LivechatVisitors from './models/LivechatVisitors';
 import LivechatInquiry from './models/LivechatInquiry';
-import OmnichannelQueue from './models/OmnichannelQueue';
 import ImportData from './models/ImportData';
+import './lib/watchModels';
 
 export { AppsLogsModel } from './models/apps-logs-model';
 export { AppsPersistenceModel } from './models/apps-persistence-model';
@@ -22,7 +21,6 @@ export { FederationRoomEvents } from './models/FederationRoomEvents';
 
 export { MatrixBridgedRoom } from './models/MatrixBridgedRoom';
 export { MatrixBridgedUser } from './models/MatrixBridgedUser';
-
 export {
 	Base,
 	BaseDb,
@@ -36,8 +34,6 @@ export {
 	LivechatDepartment,
 	LivechatDepartmentAgents,
 	LivechatRooms,
-	LivechatVisitors,
 	LivechatInquiry,
-	OmnichannelQueue,
 	ImportData,
 };

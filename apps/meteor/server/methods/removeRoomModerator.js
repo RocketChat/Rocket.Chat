@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { hasPermission } from '../../app/authorization';
-import { Users, Subscriptions, Messages } from '../../app/models';
-import { settings } from '../../app/settings';
+import { Users, Subscriptions, Messages } from '../../app/models/server';
+import { settings } from '../../app/settings/server';
 import { api } from '../sdk/api';
 import { Team } from '../sdk';
 

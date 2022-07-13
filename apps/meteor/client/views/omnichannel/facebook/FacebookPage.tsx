@@ -64,7 +64,7 @@ const FacebookPage: FC<FacebookPageProps> = ({ pages, enabled, hasToken, onToggl
 							</Box>
 							<ButtonGroup stretch vertical>
 								<Button onClick={onRefresh}>{t('Reload_Pages')}</Button>
-								<Button secondaryDanger onClick={onDisable}>
+								<Button secondary danger onClick={onDisable}>
 									{t('Disable')}
 								</Button>
 							</ButtonGroup>

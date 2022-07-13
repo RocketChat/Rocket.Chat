@@ -23,8 +23,8 @@ test.describe.skip('[Settings]', async () => {
 		sideNav = new SideNav(page);
 		userPreferences = new PreferencesMainContent(page);
 
-		await loginPage.goto('/');
-		await loginPage.login(validUserInserted);
+		await page.goto('/');
+		await loginPage.doLogin(validUserInserted);
 		await sideNav.general.click();
 	});
 
@@ -342,8 +342,8 @@ test.describe.skip('[Settings]', async () => {
 
 			expect(userPreferences.avatarFileInput.isDisabled()).toBeTruthy();
 			expect(userPreferences.emailTextInput.isDisabled()).toBeTruthy();
-			expect(userPreferences.realNameTextInput.isDisabled()).toBeTruthy();
-			expect(userPreferences.userNameTextInput.isDisabled()).toBeTruthy();
+			expect(userPreferences.inputName.isDisabled()).toBeTruthy();
+			expect(userPreferences.inputUsername.isDisabled()).toBeTruthy();
 		});
 
 		test('(API) expect enable profile change', async ({ request }) => {
@@ -406,8 +406,8 @@ test.describe.skip('[Settings (admin)]', async () => {
 		sideNav = new SideNav(page);
 		admin = new Administration(page);
 
-		await loginPage.goto('/');
-		await loginPage.login(adminLogin);
+		await page.goto('/');
+		await loginPage.doLogin(adminLogin);
 		await sideNav.general.click();
 	});
 
@@ -473,7 +473,7 @@ test.describe.skip('[Settings (admin)]', async () => {
 
 		test.describe('(UI) expect activate/deactivate flow as admin', () => {
 			test('expect open /users as admin', async () => {
-				await admin.goto('/admin');
+				await page.goto('/admin');
 				await admin.usersLink.click();
 			});
 

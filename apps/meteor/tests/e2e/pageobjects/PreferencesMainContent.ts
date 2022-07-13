@@ -1,13 +1,13 @@
-import { expect, Locator } from '@playwright/test';
+import { Locator } from '@playwright/test';
 
 import { BasePage } from './BasePage';
 
 export class PreferencesMainContent extends BasePage {
-	get realNameTextInput(): Locator {
+	get inputName(): Locator {
 		return this.page.locator('//label[contains(text(), "Name")]/..//input');
 	}
 
-	get userNameTextInput(): Locator {
+	get inputUsername(): Locator {
 		return this.page.locator('//label[contains(text(), "Username")]/..//input');
 	}
 
@@ -29,18 +29,5 @@ export class PreferencesMainContent extends BasePage {
 
 	get submitBtn(): Locator {
 		return this.page.locator('[data-qa="AccountProfilePageSaveButton"]');
-	}
-
-	public async changeUsername(userName: string): Promise<void> {
-		await this.userNameTextInput.fill(userName);
-	}
-
-	public async changeRealName(realName: string): Promise<void> {
-		await this.realNameTextInput.fill(realName);
-	}
-
-	public async saveChanges(): Promise<void> {
-		await expect(this.submitBtn).toBeEnabled();
-		await this.submitBtn.click();
 	}
 }
