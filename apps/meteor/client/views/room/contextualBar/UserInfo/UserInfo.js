@@ -63,9 +63,11 @@ function UserInfo({
 				<InfoPanel.Section>
 					<InfoPanel.Title title={(showRealNames && name) || username || name} icon={status} />
 
-					<InfoPanel.Text>
-						<MarkdownText content={customStatus} parseEmoji={true} variant='inline' />
-					</InfoPanel.Text>
+					{customStatus && (
+						<InfoPanel.Text>
+							<MarkdownText content={customStatus} parseEmoji={true} variant='inline' />
+						</InfoPanel.Text>
+					)}
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
