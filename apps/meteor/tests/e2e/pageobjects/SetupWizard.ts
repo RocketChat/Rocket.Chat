@@ -2,7 +2,6 @@ import { expect, Locator } from '@playwright/test';
 
 import { BasePage } from './BasePage';
 import { IRegister } from '../utils/interfaces/Login';
-import { BACKSPACE } from '../utils/mocks/keyboardKeyMock';
 
 export class SetupWizard extends BasePage {
 	private get nextStep(): Locator {
@@ -165,7 +164,7 @@ export class SetupWizard extends BasePage {
 	async stepThreeFailedWithInvalidField(): Promise<void> {
 		await this.registeredServer.type('mail');
 		await this.registeredServer.click({ clickCount: 3 });
-		await this.keyboardPress(BACKSPACE);
+		await this.page.keyboard.press('Backspace');
 		await expect(this.stepThreeInputInvalidMail).toBeVisible();
 	}
 }
