@@ -99166,6 +99166,107 @@
           ]
         }
       ]
+    },
+    "5.0.0-rc.5": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26170",
+          "title": "Regression: Burger menu showing arrow instead of burguer",
+          "userLogin": "gabriellsh",
+          "milestone": "5.0.0",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26203",
+          "title": "Regression: Last_login translation key",
+          "userLogin": "dougfabris",
+          "milestone": "5.0.0",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "26209",
+          "title": "Regression: Livechat rooms not opening due to route desync",
+          "userLogin": "aleksandernsilva",
+          "description": "Due to route information only updating on `Tracker.afterFlush` (https://github.com/RocketChat/Rocket.Chat/pull/25990), we found out that calling the `tabBar.openUserInfo()` method at this point will cause a route change to the previous route instead of the current one, preventing livechat rooms from being opened.\r\n\r\nAs a provisory solution, we're delaying the opening of the contextual bar, which then ensures that the route info is up to date. Although this solution works, we need to find a more reliable way of ensuring consistent route changes with up-to-date information.\r\n\r\n### I'm definitely open for better looking alternatives. Please leave a comment if you have a better solution to share.",
+          "milestone": "5.0.0",
+          "contributors": [
+            "aleksandernsilva",
+            "ggazzo",
+            "web-flow",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "26232",
+          "title": "Regression:  Admin Avatar Edit endpoint fix",
+          "userLogin": "hugocostadev",
+          "milestone": "5.0.0",
+          "contributors": [
+            "hugocostadev"
+          ]
+        },
+        {
+          "pr": "26234",
+          "title": "Regression: Don't open mdm feature modal on registration page",
+          "userLogin": "yash-rajpal",
+          "milestone": "5.0.0",
+          "contributors": [
+            "yash-rajpal",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26238",
+          "title": "Regression: Revert replace contact center icon",
+          "userLogin": "filipemarins",
+          "milestone": "5.0.0",
+          "contributors": [
+            "filipemarins"
+          ]
+        },
+        {
+          "pr": "26233",
+          "title": "Regression: Fix routing for public queue and visitor abandonment fiber usage",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "26174",
+          "title": "Regression: Unavailable devices in unsupported browsers",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "26102",
+          "title": "Chore: Remove unused migrations",
+          "userLogin": "debdutdeb",
+          "description": "After giving it some thought:\r\n\r\n- 234 through 240 are not going to be run anymore. Keeping them does not affect behavior of course, but this (removing) makes it easier to quickly glance at and understand what migrations are actually included in 5.x.y (especially in tag compare view or in general just checking the ref).\r\n\r\n- Also changed the file name of 233 to be more explicit at what it does so to not confuse with actual \"migrations\" without having to open the file. \r\n\r\n- The redirect to the documentation page (go.rocket....) is not yet set up, jfyi.",
+          "milestone": "5.0.0",
+          "contributors": [
+            "debdutdeb",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }

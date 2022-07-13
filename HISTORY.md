@@ -1,6 +1,63 @@
 
 # 5.0.0 (Under Release Candidate Process)
 
+## 5.0.0-rc.5
+`2022-07-13  ·  9 🔍  ·  13 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Remove unused migrations ([#26102](https://github.com/RocketChat/Rocket.Chat/pull/26102))
+
+  After giving it some thought:
+  
+  - 234 through 240 are not going to be run anymore. Keeping them does not affect behavior of course, but this (removing) makes it easier to quickly glance at and understand what migrations are actually included in 5.x.y (especially in tag compare view or in general just checking the ref).
+  
+  - Also changed the file name of 233 to be more explicit at what it does so to not confuse with actual "migrations" without having to open the file. 
+  
+  - The redirect to the documentation page (go.rocket....) is not yet set up, jfyi.
+
+- Regression:  Admin Avatar Edit endpoint fix ([#26232](https://github.com/RocketChat/Rocket.Chat/pull/26232))
+
+- Regression: Burger menu showing arrow instead of burguer ([#26170](https://github.com/RocketChat/Rocket.Chat/pull/26170))
+
+- Regression: Don't open mdm feature modal on registration page ([#26234](https://github.com/RocketChat/Rocket.Chat/pull/26234))
+
+- Regression: Fix routing for public queue and visitor abandonment fiber usage ([#26233](https://github.com/RocketChat/Rocket.Chat/pull/26233))
+
+- Regression: Last_login translation key ([#26203](https://github.com/RocketChat/Rocket.Chat/pull/26203))
+
+- Regression: Livechat rooms not opening due to route desync ([#26209](https://github.com/RocketChat/Rocket.Chat/pull/26209))
+
+  Due to route information only updating on `Tracker.afterFlush` (https://github.com/RocketChat/Rocket.Chat/pull/25990), we found out that calling the `tabBar.openUserInfo()` method at this point will cause a route change to the previous route instead of the current one, preventing livechat rooms from being opened.
+
+  As a provisory solution, we're delaying the opening of the contextual bar, which then ensures that the route info is up to date. Although this solution works, we need to find a more reliable way of ensuring consistent route changes with up-to-date information.
+
+  ### I'm definitely open for better looking alternatives. Please leave a comment if you have a better solution to share.
+
+- Regression: Revert replace contact center icon ([#26238](https://github.com/RocketChat/Rocket.Chat/pull/26238))
+
+- Regression: Unavailable devices in unsupported browsers ([#26174](https://github.com/RocketChat/Rocket.Chat/pull/26174))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@dougfabris](https://github.com/dougfabris)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 ## 5.0.0-rc.4
 `2022-07-12  ·  1 ️️️⚠️  ·  15 🔍  ·  11 👩‍💻👨‍💻`
 
