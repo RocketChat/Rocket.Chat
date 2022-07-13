@@ -1,5 +1,4 @@
 import { IRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
@@ -9,48 +8,34 @@ import {
 	useVideoConfControllers,
 	VideoConfButton,
 	VideoConfPopupFooter,
-	VideoConfPopupTitle,
 	VideoConfPopupFooterButtons,
+	VideoConfPopupTitle,
 	VideoConfPopupHeader,
 } from '@rocket.chat/ui-video-conf';
-import React, { ReactElement, forwardRef, Ref } from 'react';
+import React, { ReactElement } from 'react';
 
-import {
-	useVideoConfSetPreferences,
-	useVideoConfCapabilities,
-	useVideoConfPreferences,
-} from '../../../../../../../contexts/VideoConfContext';
-import VideoConfPopupRoomInfo from '../VideoConfPopupRoomInfo';
+import { useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
+import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 
-type StartDirectCallPopup = {
+type OutgoingPopupProps = {
+	id: string;
 	room: IRoom;
-	onConfirm: () => void;
-	loading: boolean;
+	onClose: (id: string) => void;
 };
 
-const StartDirectCallPopup = forwardRef(function StartDirectCallPopup(
-	{ room, onConfirm, loading }: StartDirectCallPopup,
-	ref: Ref<HTMLDivElement>,
-): ReactElement {
+const OutgoingPopup = ({ room, onClose, id }: OutgoingPopupProps): ReactElement => {
 	const t = useTranslation();
-
 	const videoConfPreferences = useVideoConfPreferences();
-	const setPreferences = useVideoConfSetPreferences();
-	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers(videoConfPreferences);
+	const { controllersConfig } = useVideoConfControllers(videoConfPreferences);
 	const capabilities = useVideoConfCapabilities();
 
 	const showCam = !!capabilities.cam;
 	const showMic = !!capabilities.mic;
 
-	const handleStartCall = useMutableCallback(() => {
-		setPreferences(controllersConfig);
-		onConfirm();
-	});
-
 	return (
-		<VideoConfPopup ref={ref}>
+		<VideoConfPopup>
 			<VideoConfPopupHeader>
-				<VideoConfPopupTitle text={t('Start_a_call')} />
+				<VideoConfPopupTitle text={t('Calling')} counter />
 				{(showCam || showMic) && (
 					<VideoConfPopupControllers>
 						{showCam && (
@@ -58,7 +43,7 @@ const StartDirectCallPopup = forwardRef(function StartDirectCallPopup(
 								active={controllersConfig.cam}
 								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 								icon={controllersConfig.cam ? 'video' : 'video-off'}
-								onClick={handleToggleCam}
+								disabled
 							/>
 						)}
 						{showMic && (
@@ -66,7 +51,7 @@ const StartDirectCallPopup = forwardRef(function StartDirectCallPopup(
 								active={controllersConfig.mic}
 								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
 								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-								onClick={handleToggleMic}
+								disabled
 							/>
 						)}
 					</VideoConfPopupControllers>
@@ -77,13 +62,11 @@ const StartDirectCallPopup = forwardRef(function StartDirectCallPopup(
 			</VideoConfPopupContent>
 			<VideoConfPopupFooter>
 				<VideoConfPopupFooterButtons>
-					<VideoConfButton disabled={loading} primary onClick={handleStartCall}>
-						{t('Start_call')}
-					</VideoConfButton>
+					{onClose && <VideoConfButton onClick={(): void => onClose(id)}>{t('Cancel')}</VideoConfButton>}
 				</VideoConfPopupFooterButtons>
 			</VideoConfPopupFooter>
 		</VideoConfPopup>
 	);
-});
+};
 
-export default StartDirectCallPopup;
+export default OutgoingPopup;

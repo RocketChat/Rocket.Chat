@@ -3,6 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
+	VideoConfPopupHeader,
 	VideoConfPopupContent,
 	VideoConfPopupControllers,
 	VideoConfController,
@@ -14,12 +15,12 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement, forwardRef, Ref } from 'react';
 
-import RoomAvatar from '../../../../../../../components/avatar/RoomAvatar';
 import {
 	useVideoConfSetPreferences,
 	useVideoConfCapabilities,
 	useVideoConfPreferences,
 } from '../../../../../../../contexts/VideoConfContext';
+import VideoConfPopupRoomInfo from '../VideoConfPopupRoomInfo';
 
 type StartGroupCallPopup = {
 	room: IRoom;
@@ -57,31 +58,31 @@ const StartGroupCallPopup = forwardRef(function StartGroupCallPopup(
 
 	return (
 		<VideoConfPopup ref={ref}>
-			<VideoConfPopupContent>
-				<RoomAvatar room={room} size='x40' />
+			<VideoConfPopupHeader>
 				<VideoConfPopupTitle text={t('Start_a_call')} />
 				{(showCam || showMic) && (
 					<VideoConfPopupControllers>
-						{showMic && (
-							<VideoConfController
-								active={controllersConfig.mic}
-								text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-								onClick={handleToggleMicPref}
-							/>
-						)}
 						{showCam && (
 							<VideoConfController
 								active={controllersConfig.cam}
-								text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 								icon={controllersConfig.cam ? 'video' : 'video-off'}
 								onClick={handleToggleCamPref}
 							/>
 						)}
+						{showMic && (
+							<VideoConfController
+								active={controllersConfig.mic}
+								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+								onClick={handleToggleMicPref}
+							/>
+						)}
 					</VideoConfPopupControllers>
 				)}
+			</VideoConfPopupHeader>
+			<VideoConfPopupContent>
+				<VideoConfPopupRoomInfo room={room} />
 			</VideoConfPopupContent>
 			<VideoConfPopupFooter>
 				<VideoConfPopupFooterButtons>

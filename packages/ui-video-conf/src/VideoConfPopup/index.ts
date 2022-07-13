@@ -1,23 +1,21 @@
 import VideoConfPopup from './VideoConfPopup';
-import VideoConfPopupContent from './VideoConfPopupContent';
 import VideoConfPopupBackdrop from './VideoConfPopupBackdrop';
+import VideoConfPopupContent from './VideoConfPopupContent';
 import VideoConfPopupControllers from './VideoConfPopupControllers';
 import VideoConfPopupFooter from './VideoConfPopupFooter';
 import VideoConfPopupFooterButtons from './VideoConfPopupFooterButtons';
+import VideoConfPopupHeader from './VideoConfPopupHeader';
+import VideoConfPopupIcon from './VideoConfPopupIcon';
 import VideoConfPopupTitle from './VideoConfPopupTitle';
-import VideoConfPopupIndicators from './VideoConfPopupIndicators';
-import VideoConfPopupClose from './VideoConfPopupClose';
-import VideoConfPopupUsername from './VideoConfPopupUsername';
 
 export {
-  VideoConfPopup,
-  VideoConfPopupContent,
-  VideoConfPopupTitle,
-  VideoConfPopupBackdrop,
-  VideoConfPopupControllers,
-  VideoConfPopupIndicators,
-  VideoConfPopupClose,
-  VideoConfPopupUsername,
-  VideoConfPopupFooter,
-  VideoConfPopupFooterButtons,
-}
+	VideoConfPopup,
+	VideoConfPopupHeader,
+	VideoConfPopupIcon,
+	VideoConfPopupContent,
+	VideoConfPopupTitle,
+	VideoConfPopupBackdrop,
+	VideoConfPopupControllers,
+	VideoConfPopupFooter,
+	VideoConfPopupFooterButtons,
+};
