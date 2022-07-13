@@ -36,7 +36,7 @@ const RoomForeword = ({ _id, rid }: RoomForewordProps): ReactElement | null => {
 	}
 
 	const usernames = room.usernames?.filter((username) => username !== user?.username);
-	const uids = room.uids?.filter((uid) => uid !== user?._id);
+
 	if (!usernames || usernames.length < 1) {
 		return null;
 	}
@@ -47,7 +47,7 @@ const RoomForeword = ({ _id, rid }: RoomForewordProps): ReactElement | null => {
 				<Margins block='x24'>
 					<Avatar.Stack>
 						{usernames.map((username, index) => (
-							<RoomForewordAvatar uid={uids[index]} username={username} key={index} />
+							<RoomForewordAvatar username={username} key={index} />
 						))}
 					</Avatar.Stack>
 				</Margins>

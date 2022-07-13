@@ -25,7 +25,7 @@ type RoomAvatarProps = {
 
 const RoomAvatar = function RoomAvatar({ room, ...rest }: RoomAvatarProps): ReactElement {
 	const getRoomPathAvatar = useRoomAvatarPath();
-	const { avatarETag } = usePresence(room.uids?.filter((uid) => uid !== room.u?._id)[0]) || room;
+	const { avatarETag } = usePresence(room.uids?.find((uid) => uid !== room.u?._id)) || room;
 	const { url = getRoomPathAvatar({ ...room, avatarETag }), ...props } = rest;
 
 	return <BaseAvatar url={url} {...props} />;
