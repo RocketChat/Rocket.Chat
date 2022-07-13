@@ -294,7 +294,7 @@
   "Additional_emails": "Дополнительные адреса электронной почты",
   "Additional_Feedback": "Дополнительная обратная связь",
   "additional_integrations_Bots": "Если вы ищете, как интегрировать собственного бота, посмотрите наш адаптер Hubot. <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\">https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Вы хотите интегрировать другое программное обеспечение или приложения с Rocket.Chat, но у вас нет времени, чтобы сделать это вручную? Мы предлагаем вам использовать Zapier, который мы полностью поддерживаем. Подробнее об этом читайте в нашей документации. <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/ </a>",
+  "additional_integrations_Zapier": "Вы хотите интегрировать другое программное обеспечение или приложения с Rocket.Chat, но у вас нет времени, чтобы сделать это вручную? Мы предлагаем вам использовать Zapier, который мы полностью поддерживаем. Подробнее об этом читайте в нашей документации. <a href=\"https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/\" target=\"_blank\">https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/ </a>",
   "Admin_disabled_encryption": "Ваш администратор не включил шифрование E2E.",
   "Admin_Info": "Информация Администратора",
   "Administration": "Администрирование",

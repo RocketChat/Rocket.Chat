@@ -31,21 +31,5 @@ export default function NewZapier({ ...props }) {
 		return () => script && script.parentNode.removeChild(script);
 	}, [script]);
 
-	return (
-		<>
-			<Box pb='x20' fontScale='h4' dangerouslySetInnerHTML={{ __html: t('additional_integrations_Zapier') }} />
-			{!script && (
-				<Box display='flex' flexDirection='column' alignItems='stretch' mbs={10}>
-					<Margins blockEnd={14}>
-						<Skeleton variant='rect' height={71} />
-						<Skeleton variant='rect' height={71} />
-						<Skeleton variant='rect' height={71} />
-						<Skeleton variant='rect' height={71} />
-						<Skeleton variant='rect' height={71} />
-					</Margins>
-				</Box>
-			)}
-			<Box id='zapier-goes-here' {...props} />
-		</>
-	);
+	return <Box pb='x20' fontScale='h4' dangerouslySetInnerHTML={{ __html: t('additional_integrations_Zapier') }} />;
 }

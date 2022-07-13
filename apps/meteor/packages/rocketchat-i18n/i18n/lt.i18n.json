@@ -248,7 +248,7 @@
   "Additional_emails": "Papildomi el. Laiškai",
   "Additional_Feedback": "Papildoma nuomonė",
   "additional_integrations_Bots": "Jei ieškote, kaip integruoti savo robotą, tada atrodykite ne toliau, kaip mūsų Hubot adapteris. <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Ar norite integruoti kitą programinę įrangą ir programas su \"Rocket.Chat\", bet jūs neturite laiko rankiniu būdu tai padaryti? Tada mes rekomenduojame naudoti \"Zapier\", kurį mes visiškai palaikome. Skaitykite daugiau apie tai mūsų dokumentuose. <a href='https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/' target='_blank'>https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
+  "additional_integrations_Zapier": "Ar norite integruoti kitą programinę įrangą ir programas su \"Rocket.Chat\", bet jūs neturite laiko rankiniu būdu tai padaryti? Tada mes rekomenduojame naudoti \"Zapier\", kurį mes visiškai palaikome. Skaitykite daugiau apie tai mūsų dokumentuose. <a href='https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/' target='_blank'>https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/</a>",
   "Admin_Info": "Administratoriaus informacija",
   "Administration": "Administracija",
   "Adult_images_are_not_allowed": "Suaugusieji vaizdai neleidžiami",

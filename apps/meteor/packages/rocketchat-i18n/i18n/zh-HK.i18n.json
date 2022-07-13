@@ -229,7 +229,7 @@
   "Additional_emails": "其他电子邮件",
   "Additional_Feedback": "其他反馈",
   "additional_integrations_Bots": "如果你正在寻找如何整合你自己的机器人，那么看看我们的Hubot适配器。 <a href ='https：//github.com/RocketChat/hubot-rocketchat'target ='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "您是否希望将其他软件和应用程序与Rocket.Chat集成，但您没有时间手动完成它？那么我们建议使用我们完全支持的Zapier。请阅读我们的文档了解更多信息。 <a href ='https：//rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/'target ='_blank'>https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
+  "additional_integrations_Zapier": "您是否希望将其他软件和应用程序与Rocket.Chat集成，但您没有时间手动完成它？那么我们建议使用我们完全支持的Zapier。请阅读我们的文档了解更多信息。 <a href ='https：//rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/'target ='_blank'>https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/</a>",
   "Admin_Info": "管理员信息",
   "Administration": "管理",
   "Adult_images_are_not_allowed": "成人图像是不允许的",
