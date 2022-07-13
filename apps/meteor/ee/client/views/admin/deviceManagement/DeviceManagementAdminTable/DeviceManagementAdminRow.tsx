@@ -73,7 +73,9 @@ const DeviceManagementAdminRow = ({
 			<TableCell withTruncatedText>{username}</TableCell>
 			{mediaQuery && <TableCell>{formatDateAndTime(loginAt)}</TableCell>}
 			{mediaQuery && <TableCell withTruncatedText>{_id}</TableCell>}
-			{mediaQuery && <TableCell>{ip}</TableCell>}
+			{mediaQuery && <TableCell>
+				<Box style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{ip}</Box>
+			</TableCell>}
 			<TableCell onClick={(e): void => e.stopPropagation()}>
 				<Menu
 					title={t('Options')}

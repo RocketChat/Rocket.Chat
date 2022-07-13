@@ -2,8 +2,10 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import React, { ComponentProps, ReactElement } from 'react';
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
-	browser: 'desktop',
-	mobile: 'mobile',
+	'browser': 'desktop',
+	'mobile': 'mobile',
+	'desktop-app': 'desktop',
+	'mobile-app': 'mobile',
 };
 
 const DeviceIcon = ({ deviceType }: { deviceType: string }): ReactElement => (
