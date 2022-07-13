@@ -1,5 +1,5 @@
 import { IMessage, isEditedMessage, ITranslatedMessage, isE2EEMessage, isOTRMessage } from '@rocket.chat/core-typings';
-import { Box, MessageStatusIndicator, MessageStatusIndicatorItem } from '@rocket.chat/fuselage';
+import { MessageStatusIndicator, MessageStatusIndicatorItem, MessageStatusIndicatorText } from '@rocket.chat/fuselage';
 import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
@@ -30,9 +30,9 @@ export const MessageIndicators: FC<{
 	return (
 		<MessageStatusIndicator>
 			{translated && (
-				<Box is='span' color='info' fontSize='micro' withTruncatedText>
+				<MessageStatusIndicatorText>
 					<MessageStatusIndicatorItem name='language' title={t('Translated')} /> {translateProvider}
-				</Box>
+				</MessageStatusIndicatorText>
 			)}
 
 			{following && <MessageStatusIndicatorItem name='bell' title={t('Following')} />}
