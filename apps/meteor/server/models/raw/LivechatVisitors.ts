@@ -160,12 +160,14 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	/**
 	 * Find visitors by their email or phone or username or name
 	 */
-	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameCustomField(
+	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
 		emailOrPhone: string,
 		nameOrUsername: RegExp,
 		options: FindOptions<ILivechatVisitor>,
 	): FindPaginated<FindCursor<ILivechatVisitor>> {
-		const allowedCF = LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }, { searchability: true }).map(({ _id }) => _id);
+		const allowedCF = LivechatCustomField.find({ scope: 'visitor', searchability: true }, { projection: { fields: { _id: 1 } } }).map(
+			({ _id }) => _id,
+		);
 
 		const filter = new RegExp(emailOrPhone, 'i');
 		const query = {
