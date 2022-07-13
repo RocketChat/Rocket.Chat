@@ -1,4 +1,4 @@
-import { Sidebar, Dropdown, Box } from '@rocket.chat/fuselage';
+import { Sidebar, Dropdown } from '@rocket.chat/fuselage';
 import React, { VFC, useRef, HTMLAttributes } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -12,9 +12,7 @@ const Sort: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 
 	return (
 		<>
-			<Box ref={reference} {...props}>
-				<Sidebar.TopBar.Action icon='sort' onClick={(): void => toggle()} />
-			</Box>
+			<Sidebar.TopBar.Action {...props} icon='sort' onClick={(): void => toggle()} ref={reference} />
 			{isVisible &&
 				createPortal(
 					<Dropdown reference={reference} ref={target}>
