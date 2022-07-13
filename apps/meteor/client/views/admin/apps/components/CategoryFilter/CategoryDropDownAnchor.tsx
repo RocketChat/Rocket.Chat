@@ -35,7 +35,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLInputElement, Partial<ComponentPro
 						{props.selectedCategoriesCount}
 					</Box>
 				)}
-				<Box is='span' fontWeight='500' fontSize='p2b' color={props.selectedCategoriesCount ? 'alternative' : 'hint'} mi='x4'>
+				<Box is='span' fontWeight={400} fontSize='p2b' color={props.selectedCategoriesCount ? 'alternative' : 'hint'} mi='x4'>
 					{props.selectedCategoriesCount > 0 ? t('Categories') : t('All_categories')}
 				</Box>
 				<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>

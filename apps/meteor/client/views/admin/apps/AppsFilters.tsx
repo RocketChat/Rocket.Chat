@@ -24,6 +24,8 @@ type AppsFiltersProps = {
 	sortFilterStructure: RadioDropDownGroup;
 	sortFilterOnSelected: RadioDropDownOnSelected;
 	categoryTagList: selectedCategoriesList;
+	statusFilterStructure: RadioDropDownGroup;
+	statusFilterOnSelected: RadioDropDownOnSelected;
 };
 
 const AppsFilters = ({
@@ -36,6 +38,8 @@ const AppsFilters = ({
 	sortFilterStructure,
 	sortFilterOnSelected,
 	categoryTagList,
+	statusFilterStructure,
+	statusFilterOnSelected,
 }: AppsFiltersProps): ReactElement => {
 	const t = useTranslation();
 
@@ -43,6 +47,7 @@ const AppsFilters = ({
 		<>
 			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)}>
 				<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} mie='x8' />
+				<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} mie='x8' />
 				<CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
 				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} mis='x8' />
 			</FilterByText>

@@ -40,18 +40,28 @@ const AppsList: FC<{
 
 	const marketplaceRoute = useRoute('admin-marketplace');
 
-	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState<RadioDropDownGroup>({
+	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
 		label: t('Filter_By_Price'),
 		items: [
-			{ id: 'all', label: t('All_Apps'), checked: true },
+			{ id: 'all', label: t('All_Prices'), checked: true },
 			{ id: 'free', label: t('Free_Apps'), checked: false },
 			{ id: 'paid', label: t('Paid_Apps'), checked: false },
 		],
 	});
 	const freePaidFilterOnSelected = useRadioToggle(setFreePaidFilterStructure);
 
+	const [statusFilterStructure, setStatusFilterStructure] = useState({
+		label: t('Filter_By_Status'),
+		items: [
+			{ id: 'all', label: t('All_status'), checked: true },
+			{ id: 'enabled', label: t('Enabled'), checked: false },
+			{ id: 'disabled', label: t('Disabled'), checked: false },
+		],
+	});
+	const statusFilterOnSelected = useRadioToggle(setStatusFilterStructure);
+
 	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>({
-		label: 'Sort by',
+		label: t('Sort_By'),
 		items: [
 			{ id: 'az', label: 'A-Z', checked: true },
 			{ id: 'za', label: 'Z-A', checked: false },
@@ -70,6 +80,7 @@ const AppsList: FC<{
 		categories: useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]),
 		purchaseType: useMemo(() => freePaidFilterStructure.items.find(({ checked }) => checked)?.id, [freePaidFilterStructure]),
 		sortingMethod: useMemo(() => sortFilterStructure.items.find(({ checked }) => checked)?.id, [sortFilterStructure]),
+		status: useMemo(() => statusFilterStructure.items.find(({ checked }) => checked)?.id, [statusFilterStructure]),
 	});
 
 	const isAppListReadyOrLoading =
@@ -96,6 +107,8 @@ const AppsList: FC<{
 				sortFilterStructure={sortFilterStructure}
 				sortFilterOnSelected={sortFilterOnSelected}
 				categoryTagList={categoryTagList}
+				statusFilterStructure={statusFilterStructure}
+				statusFilterOnSelected={statusFilterOnSelected}
 			/>
 
 			{isAppListReadyOrLoading && (

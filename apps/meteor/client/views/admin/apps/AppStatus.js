@@ -33,7 +33,7 @@ const actions = {
 	},
 };
 
-const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false, ...props }) => {
+const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, installed = false, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState());
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
@@ -135,7 +135,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 						disabled={loading}
 						minHeight='x40'
 						onClick={handleClick}
-						mie={isAppDetailsPage ? '0' : 'x32'}
+						mie={isAppDetailsPage || isSubscribed ? '0' : 'x32'}
 					>
 						{loading ? (
 							<Throbber inheritColor />

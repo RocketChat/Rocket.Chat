@@ -98,7 +98,7 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
-				<AppStatus app={props} showStatus={isStatusVisible} isAppDetailsPage={false} mis='x4' />
+				<AppStatus app={props} showStatus={isStatusVisible} isSubscribed={isSubscribed} isAppDetailsPage={false} mis='x4' />
 				{(installed || isSubscribed) && <AppMenu app={props} invisible={!isStatusVisible} mis='x4' />}
 			</Box>
 		</Box>

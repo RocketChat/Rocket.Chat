@@ -3,6 +3,7 @@ import { useMemo, ContextType } from 'react';
 
 import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
 import type { AppsContext } from '../AppsContext';
+import { appStatusSpanProps } from '../helpers';
 import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
 import { filterAppsByFree } from '../helpers/filterAppsByFree';
 import { filterAppsByPaid } from '../helpers/filterAppsByPaid';
@@ -21,6 +22,7 @@ export const useFilteredApps = ({
 	categories = [],
 	purchaseType,
 	sortingMethod,
+	status,
 }: {
 	appsData: appsDataType;
 	text: string;
@@ -29,6 +31,7 @@ export const useFilteredApps = ({
 	categories?: string[];
 	purchaseType?: string;
 	sortingMethod?: string;
+	status?: string;
 }): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult> => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {
@@ -62,6 +65,13 @@ export const useFilteredApps = ({
 			}
 		}
 
+		if (status && status !== 'all') {
+			filtered =
+				status === 'enabled'
+					? filtered.filter((app) => appStatusSpanProps(app)?.label === 'Enabled')
+					: filtered.filter((app) => appStatusSpanProps(app)?.label === 'Disabled');
+		}
+
 		if (Boolean(categories.length) && Boolean(text)) {
 			filtered = apps.filter((app) => filterAppsByCategories(app, categories)).filter(({ name }) => filterAppsByText(name, text));
 			shouldShowSearchText = true;
@@ -83,7 +93,7 @@ export const useFilteredApps = ({
 		const slice = filtered.slice(offset, end);
 
 		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText };
-	}, [appsData.value, sortingMethod, purchaseType, categories, text, current, itemsPerPage]);
+	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, current, itemsPerPage]);
 
 	if (appsData.phase === AsyncStatePhase.RESOLVED) {
 		if (!value) {
