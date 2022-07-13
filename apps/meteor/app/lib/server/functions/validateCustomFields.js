@@ -44,9 +44,5 @@ export const validateCustomFields = function (fields) {
 				method: 'registerUser',
 			});
 		}
-
-		if (field.searchable && fieldValue !== true && fieldValue !== false) {
-			throw new Meteor.Error('error-user-registration-custom-field', `Field ${fieldName} is not a boolean`, { method: 'registerUser' });
-		}
 	});
 };

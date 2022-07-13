@@ -61,7 +61,6 @@ export class Users extends Base {
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'active': 1, 'services.email2fa.enabled': 1 }, { sparse: true }); // used by statistics
 		this.tryEnsureIndex({ 'active': 1, 'services.totp.enabled': 1 }, { sparse: true }); // used by statistics
-		this.tryEnsureIndex({ 'customFields.$**': 1 });
 	}
 
 	getLoginTokensByUserId(userId) {

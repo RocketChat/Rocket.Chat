@@ -68,7 +68,7 @@
   "Accounts_BlockedDomainsList_Description": "Comma-separated list of blocked domains",
   "Accounts_BlockedUsernameList": "Blocked Username List",
   "Accounts_BlockedUsernameList_Description": "Comma-separated list of blocked usernames (case-insensitive)",
-  "Accounts_CustomFields_Description": "Should be a valid JSON where keys are the field names containing a dictionary of field settings. Example:```{ \"role\": {  \"type\": \"select\",  \"defaultValue\": \"student\",  \"options\": [\"teacher\", \"student\"],  \"required\": true,  \"modifyRecordField\": {   \"array\": true,   \"field\": \"roles\"  } }, \"twitter\": {  \"type\": \"text\",  \"required\": true,  \"minLength\": 2,  \"maxLength\": 10,  \"searchable\": true }}```",
+  "Accounts_CustomFields_Description": "Should be a valid JSON where keys are the field names containing a dictionary of field settings. Example:<br/><code>{\n \"role\": {\n \"type\": \"select\",\n \"defaultValue\": \"student\",\n \"options\": [\"teacher\", \"student\"],\n \"required\": true,\n \"modifyRecordField\": {\n \"array\": true,\n \"field\": \"roles\"\n }\n },\n \"twitter\": {\n \"type\": \"text\",\n \"required\": true,\n \"minLength\": 2,\n \"maxLength\": 10\n }\n}</code> ",
   "Accounts_CustomFieldsToShowInUserInfo": "Custom Fields to Show in User Info",
   "Accounts_Default_User_Preferences": "Default User Preferences",
   "Accounts_Default_User_Preferences_audioNotifications": "Audio Notifications Default Alert",
