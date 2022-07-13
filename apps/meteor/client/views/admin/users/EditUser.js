@@ -89,7 +89,7 @@ function EditUser({ data, roles, onReload, ...props }) {
 	);
 
 	const saveAction = useEndpointAction('POST', '/v1/users.update', saveQuery, t('User_updated_successfully'));
-	const saveAvatarAction = useEndpointUpload('users.setAvatar', t('Avatar_changed_successfully'));
+	const saveAvatarAction = useEndpointUpload('/v1/users.setAvatar', t('Avatar_changed_successfully'));
 	const saveAvatarUrlAction = useEndpointAction('POST', '/v1/users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
 	const resetAvatarAction = useEndpointAction('POST', '/v1/users.resetAvatar', resetAvatarQuery, t('Avatar_changed_successfully'));
 

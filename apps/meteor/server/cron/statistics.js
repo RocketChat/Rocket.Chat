@@ -53,10 +53,12 @@ export function statsCron(SyncedCron, logger) {
 
 		generateStatistics(logger);
 
+		const now = new Date();
+
 		SyncedCron.add({
 			name,
 			schedule(parser) {
-				return parser.cron('12 * * * *');
+				return parser.cron(`12 ${now.getHours()} * * *`);
 			},
 			job: () => generateStatistics(logger),
 		});

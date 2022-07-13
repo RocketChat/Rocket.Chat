@@ -1,5 +1,3 @@
-import type { FilterQuery } from 'mongodb';
-
 import type { IRocketChatAssetConstraint } from './IRocketChatAssets';
 
 export type SettingId = string;
@@ -22,6 +20,8 @@ export interface ISettingSelectOption {
 }
 
 export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset;
+
+type EnableQuery = string | { _id: string; value: any } | { _id: string; value: any }[];
 
 export interface ISettingBase {
 	_id: SettingId;
@@ -53,8 +53,8 @@ export interface ISettingBase {
 	value: SettingValue;
 	packageValue: SettingValue;
 	blocked: boolean;
-	enableQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
-	displayQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
+	enableQuery?: EnableQuery;
+	displayQuery?: EnableQuery;
 	sorter: number;
 	properties?: unknown;
 	enterprise?: boolean;
@@ -92,7 +92,7 @@ export interface ISettingGroup {
 	ts?: Date;
 	sorter: number;
 	i18nLabel: string;
-	displayQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
+	displayQuery?: EnableQuery;
 	i18nDescription: string;
 	value?: undefined;
 	type: 'group';

@@ -40,6 +40,18 @@ class CustomSoundsClass {
 			extension: 'mp3',
 			src: getURL('sounds/telephone.mp3'),
 		});
+		this.add({
+			_id: 'outbound-call-ringing',
+			name: 'Outbound Call Ringing',
+			extension: 'mp3',
+			src: getURL('sounds/outbound-call-ringing.mp3'),
+		});
+		this.add({
+			_id: 'call-ended',
+			name: 'Call Ended',
+			extension: 'mp3',
+			src: getURL('sounds/call-ended.mp3'),
+		});
 	}
 
 	add(sound) {

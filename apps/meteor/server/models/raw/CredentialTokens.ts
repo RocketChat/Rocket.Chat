@@ -1,16 +1,15 @@
 import type { ICredentialToken, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ICredentialTokensModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexSpecification } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class CredentialTokensRaw extends BaseRaw<ICredentialToken> implements ICredentialTokensModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICredentialToken>>) {
-		super(db, getCollectionName('credential_tokens'), trash);
+		super(db, 'credential_tokens', trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { expireAt: 1 }, sparse: true, expireAfterSeconds: 0 }];
 	}
 
