@@ -597,7 +597,7 @@ export class Agenda extends EventEmitter {
 
 		// Don't try and access MongoDB if we've lost connection to it.
 		// @ts-ignore
-		const s = this._mdb.s || this._mdb.db.s;
+		const s = this._mdb.s.client || this._mdb.db.s.client;
 		if (s.topology.connections && s.topology.connections().length === 0 && !this._mongoUseUnifiedTopology) {
 			if (s.topology.autoReconnect && !s.topology.isDestroyed()) {
 				// Continue processing but notify that Agenda has lost the connection
