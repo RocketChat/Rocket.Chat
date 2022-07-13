@@ -15,7 +15,7 @@ type RoomAvatarProps = {
 
 	room: {
 		_id: string;
-		u: Pick<IUser, '_id' | 'username' | 'name'>;
+		u?: Pick<IUser, '_id' | 'username' | 'name'>;
 		type?: string;
 		t?: string;
 		uids?: string[];
