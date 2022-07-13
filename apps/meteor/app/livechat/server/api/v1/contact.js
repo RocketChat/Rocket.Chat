@@ -58,16 +58,23 @@ API.v1.addRoute(
 				if (!email && !phone && !custom) {
 					throw new Meteor.Error('error-invalid-params');
 				}
-				const allowedCF = LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }, { searchability: true }).map(
-					({ _id }) => _id,
+				const customObj = Object.fromEntries(
+					Array.from(new URLSearchParams(custom)).filter(([k, v]) => typeof k === 'string' && typeof v === 'string'),
 				);
-				const customObj = Object.fromEntries(Array.from(new URLSearchParams(custom)).filter(([k]) => allowedCF.includes(k)));
+
+				const foundCF = Object.fromEntries(
+					LivechatCustomField.find(
+						{ scope: 'visitor', searchability: true, _id: RegExp(Object.keys(customObj).join('|')) },
+						{ fields: { _id: 1 } },
+					).map(({ _id }) => [_id, customObj[_id]]),
+				);
+
 				const query = Object.assign(
 					{},
 					{
 						...(email && { visitorEmails: { address: email } }),
 						...(phone && { phone: { phoneNumber: phone } }),
-						...(custom && { livechatData: customObj }),
+						...(custom && { livechatData: foundCF }),
 					},
 				);
 
