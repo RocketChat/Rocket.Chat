@@ -6,7 +6,7 @@ import { logger } from '../../../../server/features/EmailInbox/logger';
 
 let client: DirectReplyIMAPInterceptor | POP3Helper | undefined;
 const startEmailInterceptor = _.debounce(async function () {
-	logger.log('Email Interceptor...');
+	logger.info('Email Interceptor...');
 	const protocol = settings.get('Direct_Reply_Protocol');
 
 	const isEnabled =
@@ -22,10 +22,10 @@ const startEmailInterceptor = _.debounce(async function () {
 	}
 
 	if (!isEnabled) {
-		logger.log('Email Interceptor Stopped...');
+		logger.info('Email Interceptor Stopped...');
 		return;
 	}
-	logger.log('Starting Email Interceptor...');
+	logger.info('Starting Email Interceptor...');
 
 	if (protocol === 'IMAP') {
 		client = new DirectReplyIMAPInterceptor();
