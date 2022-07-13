@@ -21,7 +21,7 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 		emailOrPhone: string,
 		nameOrUsername: RegExp,
 		options: FindOptions<ILivechatVisitor>,
-	): FindPaginated<FindCursor<ILivechatVisitor>>;
+	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>>;
 
 	removeContactManagerByUsername(manager: string): Promise<UpdateResult | Document>;
 

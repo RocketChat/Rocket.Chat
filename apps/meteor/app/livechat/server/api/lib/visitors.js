@@ -156,7 +156,7 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
 		throw new Error('error-not-authorized');
 	}
 
-	const { cursor, totalCount } = LivechatVisitors.findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
+	const { cursor, totalCount } = await LivechatVisitors.findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
 		emailOrPhone,
 		nameOrUsername,
 		{
