@@ -77,12 +77,12 @@ const AppSecurity: FC<AppSecurityProps> = ({ privacyPolicySummary, appPermission
 						<Box display='flex' flexDirection='column'>
 							{tosLink && (
 								<Box is='a' href={tosLink}>
-									Terms of use
+									{t('Terms_of_use')}
 								</Box>
 							)}
 							{privacyLink && (
 								<Box is='a' href={privacyLink}>
-									Privacy policy
+									{t('Privacy_policy')}
 								</Box>
 							)}
 						</Box>
