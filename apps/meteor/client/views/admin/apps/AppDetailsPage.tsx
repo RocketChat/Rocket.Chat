@@ -7,8 +7,6 @@ import React, { useState, useCallback, useRef, FC } from 'react';
 import { ISettings } from '../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import Page from '../../../components/Page';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppDetails from './AppDetails';
 import AppDetailsHeader from './AppDetailsHeader';
 import AppLogs from './AppLogs';
@@ -41,9 +39,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const router = useRoute(currentRouteName);
 	const handleReturn = useMutableCallback((): void => router.push({}));
 
-	const result = useEndpointData(`/apps/${id}/versions`);
-
-	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink } = appData || {};
+	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, marketplace } = appData || {};
 	const isSecurityVisible = privacyPolicySummary || permissions || tosLink || privacyLink;
 
 	const saveAppSettings = useCallback(async () => {
@@ -99,7 +95,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 										{t('Security')}
 									</Tabs.Item>
 								)}
-								{Boolean(installed) && result.phase !== AsyncStatePhase.REJECTED && (
+								{Boolean(installed) && marketplace !== false && (
 									<Tabs.Item onClick={(): void => handleTabClick('releases')} selected={tab === 'releases'}>
 										{t('Releases')}
 									</Tabs.Item>
@@ -127,7 +123,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 								/>
 							)}
 
-							{tab === 'releases' && <AppReleases result={result} />}
+							{tab === 'releases' && <AppReleases id={id} />}
 
 							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
 								<SettingsDisplay
