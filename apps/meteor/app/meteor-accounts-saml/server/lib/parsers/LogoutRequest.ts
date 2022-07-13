@@ -1,4 +1,4 @@
-import xmldom from 'xmldom';
+import xmldom from '@xmldom/xmldom';
 
 import { SAMLUtils } from '../Utils';
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';

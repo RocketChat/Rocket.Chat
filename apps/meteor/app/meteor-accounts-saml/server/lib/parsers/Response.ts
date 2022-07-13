@@ -1,4 +1,4 @@
-import xmldom from 'xmldom';
+import xmldom from '@xmldom/xmldom';
 import xmlenc from 'xml-encryption';
 import xmlCrypto from 'xml-crypto';
 

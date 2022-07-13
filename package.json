@@ -19,7 +19,7 @@
 		"@types/chart.js": "^2.9.37",
 		"@types/js-yaml": "^4.0.5",
 		"husky": "^7.0.4",
-		"turbo": "~1.2.5"
+		"turbo": "~1.2.16"
 	},
 	"workspaces": [
 		"apps/*",
@@ -40,7 +40,7 @@
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
 		"yarn": "3.2.0",
-		"node": "14.18.3",
+		"node": "14.19.3",
 		"npm": "Use yarn instead"
 	},
 	"packageManager": "yarn@3.2.0",
@@ -54,10 +54,11 @@
 		]
 	},
 	"volta": {
-		"node": "14.18.3",
+		"node": "14.19.3",
 		"yarn": "1.22.18"
 	},
 	"resolutions": {
-		"minimist": "1.2.6"
+		"minimist": "1.2.6",
+		"adm-zip": "0.5.9"
 	}
 }

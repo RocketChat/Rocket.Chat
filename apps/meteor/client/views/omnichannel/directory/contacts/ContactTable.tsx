@@ -20,21 +20,19 @@ import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
-import { ContactTableDialpadButton } from './ContactTableDialpadButton';
+import { CallDialpadButton } from '../CallDialpadButton';
 
 type ContactTableProps = {
 	setContactReload(fn: () => void): void;
 };
 
-const rowClass = css`
-	.contact-table__call-button {
-		display: none;
-	}
-	&:hover .contact-table__call-button {
-		display: block !important;
+export const rcxCallDialButton = css`
+	&:not(:hover) {
+		.rcx-call-dial-button {
+			display: none !important;
+		}
 	}
 `;
-
 function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastchat'>('username');
@@ -135,21 +133,21 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 
 							return (
 								<GenericTableRow
+									action
 									key={_id}
 									tabIndex={0}
 									role='link'
-									onClick={onRowClick(_id)}
-									action
-									qa-user-id={_id}
-									className={rowClass}
 									height='40px'
+									qa-user-id={_id}
+									className={rcxCallDialButton}
+									onClick={onRowClick(_id)}
 								>
 									<GenericTableCell withTruncatedText>{username}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{phoneNumber}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>
-									<GenericTableCell>{isCallReady && <ContactTableDialpadButton phoneNumber={phoneNumber} />}</GenericTableCell>
+									<GenericTableCell>{isCallReady && <CallDialpadButton phoneNumber={phoneNumber} />}</GenericTableCell>
 								</GenericTableRow>
 							);
 						})}

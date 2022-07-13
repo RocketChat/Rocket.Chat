@@ -1,10 +1,12 @@
-import type { BulkWriteOpResultObject, UpdateWriteOpResult, Cursor } from 'mongodb';
+import type { BulkWriteResult, Document, UpdateResult, FindCursor } from 'mongodb';
 import type {
 	ISession,
 	UserSessionAggregationResult,
 	DeviceSessionAggregationResult,
 	OSSessionAggregationResult,
 	IUser,
+	DeviceManagementPopulatedSession,
+	DeviceManagementSession,
 } from '@rocket.chat/core-typings';
 
 import type { IBaseModel, ModelOptionalId } from './IBaseModel';
@@ -19,12 +21,42 @@ export type DestructuredDateWithType = {
 export type DestructuredRange = { start: DestructuredDate; end: DestructuredDate };
 export type DateRange = { start: Date; end: Date };
 
+type CustomSortOp = 'loginAt' | 'device.name' | 'device.os.name';
+type CustomSortOpAdmin = CustomSortOp | '_user.username' | '_user.name';
+
 export interface ISessionsModel extends IBaseModel<ISession> {
+	aggregateSessionsAndPopulate({
+		sort,
+		search,
+		offset,
+		count,
+	}: {
+		sort?: Record<CustomSortOpAdmin, 1 | -1>;
+		search?: string | null;
+		offset?: number;
+		count?: number;
+	}): Promise<{ sessions: Array<DeviceManagementPopulatedSession>; count: number; offset: number; total: number }>;
+
+	aggregateSessionsByUserId({
+		uid,
+		sort,
+		search,
+		offset,
+		count,
+	}: {
+		uid: string;
+		sort?: Record<CustomSortOp, 1 | -1>;
+		search?: string | null;
+		offset?: number;
+		count?: number;
+	}): Promise<{ sessions: Array<DeviceManagementSession>; count: number; offset: number; total: number }>;
+
 	getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]>;
 	findLastLoginByIp(ip: string): Promise<ISession | null>;
 	findOneBySessionId(sessionId: string): Promise<ISession | null>;
+	findOneBySessionIdAndUserId(sessionId: string, userId: string): Promise<ISession | null>;
 
-	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession>;
+	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): FindCursor<ISession>;
 	getActiveUsersOfPeriodByDayBetweenDates({ start, end }: DestructuredRange): Promise<
 		{
 			day: number;
@@ -79,20 +111,38 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 
 	getUniqueOSOfLastWeek(): Promise<OSSessionAggregationResult>;
 
-	createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateWriteOpResult | undefined>;
+	createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateResult | undefined>;
 
-	closeByInstanceIdAndSessionId(instanceId: string, sessionId: string): Promise<UpdateWriteOpResult>;
+	closeByInstanceIdAndSessionId(instanceId: string, sessionId: string): Promise<UpdateResult>;
 
 	updateActiveSessionsByDateAndInstanceIdAndIds(
 		params: Partial<DestructuredDate>,
 		instanceId: string,
 		sessions: string[],
-		data?: Record<string, any>,
-	): Promise<UpdateWriteOpResult>;
+		data: Record<string, any>,
+	): Promise<UpdateResult | Document>;
 
-	updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data?: Record<string, any>): Promise<UpdateWriteOpResult>;
+	updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data: Record<string, any>): Promise<UpdateResult | Document>;
 
-	logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateWriteOpResult>;
+	logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult>;
 
-	createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteOpResultObject | undefined>;
+	logoutBySessionIdAndUserId({
+		sessionId,
+		userId,
+	}: {
+		sessionId: ISession['sessionId'];
+		userId: IUser['_id'];
+	}): Promise<UpdateResult | Document>;
+
+	logoutByloginTokenAndUserId({
+		loginToken,
+		userId,
+		logoutBy,
+	}: {
+		loginToken: ISession['loginToken'];
+		userId: IUser['_id'];
+		logoutBy?: IUser['_id'];
+	}): Promise<UpdateResult | Document>;
+
+	createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteResult | undefined>;
 }

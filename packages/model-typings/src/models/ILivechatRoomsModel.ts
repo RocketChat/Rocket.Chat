@@ -62,6 +62,8 @@ export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
 
 	findByVisitorId(visitorId: any, options: any): any;
 
+	findPaginatedByVisitorId(visitorId: any, options: any): any;
+
 	findRoomsByVisitorIdAndMessageWithCriteria(params: {
 		visitorId: any;
 		searchText: any;
@@ -94,4 +96,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
 	findAllAverageServiceTimeByAgents(params: Period & WithOptions & WithOnlyCount): any;
 
 	setDepartmentByRoomId(roomId: any, departmentId: any): any;
+
+	findOpen(): any;
 }
