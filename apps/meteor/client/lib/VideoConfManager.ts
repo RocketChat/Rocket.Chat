@@ -23,6 +23,7 @@ export type DirectCallParams = {
 	rid: IRoom['_id'];
 	callId: string;
 	dismissed?: boolean;
+	acceptTimeout?: ReturnType<typeof setTimeout> | undefined;
 	// TODO: improve this, nowadays there is not possible check if the video call has finished, but ist a nice improvement
 	// state: 'incoming' | 'outgoing' | 'connected' | 'disconnected' | 'dismissed';
 };
@@ -99,10 +100,6 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private incomingDirectCalls: Map<string, IncomingDirectCall>;
 
-	private acceptingCallId: string | undefined;
-
-	private acceptingCallTimeout = 0;
-
 	private _preferences: CallPreferences;
 
 	private _capabilities: ProviderCapabilities;
@@ -143,7 +140,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public getIncomingDirectCalls(): DirectCallParams[] {
-		return [...this.incomingDirectCalls.values()].map(({ timeout: _, ...call }) => ({ ...call }));
+		return [...this.incomingDirectCalls.values()].map(({ timeout: _, ...call }) => ({ ...call })).filter((call) => !call.acceptTimeout);
 	}
 
 	public async startCall(roomId: IRoom['_id'], title?: string): Promise<void> {
@@ -186,31 +183,37 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		if (!callData) {
 			throw new Error('Unable to find accepted call information.');
 		}
+		if (callData.acceptTimeout) {
+			debug && console.log(`[VideoConf] We're already trying to accept call ${callId}.`);
+			return;
+		}
 
-		debug && console.log(`[VideoConf] Accepting incoming call.`);
+		debug && console.log(`[VideoConf] Accepting incoming call ${callId}.`);
 
 		if (callData.timeout) {
 			clearTimeout(callData.timeout);
+			this.setIncomingCallAttribute(callId, 'timeout', undefined);
 		}
 
 		// Mute this call Id so any lingering notifications don't trigger it again
 		this.dismissIncomingCall(callId);
 
-		this.acceptingCallId = callId;
-		this.acceptingCallTimeout = setTimeout(() => {
-			if (this.acceptingCallId !== callId) {
-				debug && console.warn(`[VideoConf] Accepting call timeout not properly cleared.`);
-				return;
-			}
+		this.setIncomingCallAttribute(
+			callId,
+			'acceptTimeout',
+			setTimeout(() => {
+				const updatedCallData = this.incomingDirectCalls.get(callId);
+				if (!updatedCallData?.acceptTimeout) {
+					return;
+				}
 
-			debug && console.log(`[VideoConf] Attempt to accept call has timed out.`);
-			this.acceptingCallId = undefined;
-			this.acceptingCallTimeout = 0;
+				debug && console.log(`[VideoConf] Attempt to accept call has timed out.`);
+				this.removeIncomingCall(callId);
 
-			this.removeIncomingCall(callId);
-
-			this.emit('direct/failed', { callId, uid: callData.uid, rid: callData.rid });
-		}, ACCEPT_TIMEOUT) as unknown as number;
+				this.emit('direct/failed', { callId, uid: callData.uid, rid: callData.rid });
+			}, ACCEPT_TIMEOUT),
+		);
+		this.emit('incoming/changed');
 
 		debug && console.log(`[VideoConf] Notifying user ${callData.uid} that we accept their call.`);
 		Notifications.notifyUser(callData.uid, 'video-conference.accepted', { callId, uid: this.userId, rid: callData.rid });
@@ -247,23 +250,37 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.emit('capabilities/changed');
 	}
 
+	private setIncomingCallAttribute<T extends keyof IncomingDirectCall>(
+		callId: string,
+		attributeName: T,
+		value: IncomingDirectCall[T] | undefined,
+	): void {
+		const callData = this.incomingDirectCalls.get(callId);
+		if (!callData) {
+			return;
+		}
+
+		const newData: IncomingDirectCall = {
+			...callData,
+		};
+
+		if (value === undefined) {
+			delete newData[attributeName];
+		} else {
+			newData[attributeName] = value;
+		}
+
+		this.incomingDirectCalls.set(callId, newData);
+	}
+
 	private dismissedIncomingCallHelper(callId: string): boolean {
 		// Muting will stop a callId from ringing, but it doesn't affect any part of the existing workflow
 		const callData = this.incomingDirectCalls.get(callId);
 		if (!callData) {
 			return false;
 		}
-		this.incomingDirectCalls.set(callId, { ...callData, dismissed: true });
-		setTimeout(() => {
-			const callData = this.incomingDirectCalls.get(callId);
-
-			if (!callData) {
-				return;
-			}
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { dismissed, ...rest } = callData;
-			this.incomingDirectCalls.set(callId, { ...rest });
-		}, CALL_TIMEOUT * 20);
+		this.setIncomingCallAttribute(callId, 'dismissed', true);
+		setTimeout(() => this.setIncomingCallAttribute(callId, 'dismissed', undefined), CALL_TIMEOUT * 20);
 		return true;
 	}
 
@@ -314,13 +331,12 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	public async joinCall(callId: string): Promise<void> {
 		debug && console.log(`[VideoConf] Joining call ${callId}.`);
 
-		if (this.acceptingCallTimeout && this.acceptingCallId === callId) {
-			clearTimeout(this.acceptingCallTimeout);
-			this.acceptingCallTimeout = 0;
-			this.acceptingCallId = undefined;
-		}
-
 		if (this.incomingDirectCalls.has(callId)) {
+			const data = this.incomingDirectCalls.get(callId);
+			if (data?.acceptTimeout) {
+				debug && console.log('[VideoConf] Clearing acceptance timeout');
+				clearTimeout(data.acceptTimeout);
+			}
 			this.removeIncomingCall(callId);
 		}
 
@@ -429,19 +445,16 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			this.currentCallHandler = undefined;
 		}
 
-		if (this.acceptingCallTimeout) {
-			clearTimeout(this.acceptingCallTimeout);
-			this.acceptingCallTimeout = 0;
-		}
-
 		this.incomingDirectCalls.forEach((call) => {
 			if (call.timeout) {
 				clearTimeout(call.timeout);
 			}
+			if (call.acceptTimeout) {
+				clearTimeout(call.acceptTimeout);
+			}
 		});
 		this.incomingDirectCalls.clear();
 		this.currentCallData = undefined;
-		this.acceptingCallId = undefined;
 		this._preferences = {};
 		this.emit('incoming/changed');
 		this.emit('ringing/changed');
@@ -466,7 +479,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private abortIncomingCall(callId: string): void {
 		// If we just accepted this call, then ignore the timeout
-		if (this.acceptingCallId === callId) {
+		if (this.incomingDirectCalls.get(callId)?.acceptTimeout) {
 			return;
 		}
 
@@ -552,7 +565,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private onDirectCall({ callId, uid, rid }: DirectCallParams): void {
 		// If we already accepted this call, then don't ring again
-		if (this.acceptingCallId === callId) {
+		if (this.incomingDirectCalls.get(callId)?.acceptTimeout) {
 			return;
 		}
 
@@ -568,11 +581,10 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		debug && console.log(`[VideoConf] Call ${callId} was canceled by the remote user.`);
 
 		// We had just accepted this call, but the remote user hang up before they got the notification, so cancel our acceptance
-		if (this.acceptingCallId === callId) {
-			if (this.acceptingCallTimeout) {
-				clearTimeout(this.acceptingCallTimeout);
-			}
-			this.acceptingCallTimeout = 0;
+		const callData = this.incomingDirectCalls.get(callId);
+		if (callData?.acceptTimeout) {
+			clearTimeout(callData.acceptTimeout);
+			this.setIncomingCallAttribute(callId, 'acceptTimeout', undefined);
 		}
 
 		this.loseIncomingCall(callId);
@@ -612,7 +624,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	private onDirectCallConfirmed(params: DirectCallParams): void {
-		if (!params.callId || params.callId !== this.acceptingCallId) {
+		if (!params.callId || !this.incomingDirectCalls.get(params.callId)?.acceptTimeout) {
 			debug && console.log(`[VideoConf] User ${params.uid} confirmed we can join ${params.callId} but we aren't trying to join it.`);
 			return;
 		}

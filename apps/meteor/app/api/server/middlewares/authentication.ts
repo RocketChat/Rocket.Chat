@@ -26,7 +26,7 @@ export function authenticationMiddleware(config: AuthenticationMiddlewareConfig 
 			return;
 		}
 
-		req.userId = req.user?._id;
+		req.userId = req?.user?._id;
 
 		next();
 	};

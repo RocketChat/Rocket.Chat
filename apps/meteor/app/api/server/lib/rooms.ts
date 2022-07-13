@@ -37,18 +37,18 @@ export async function findAdminRooms({
 		limit: count,
 	};
 
-	let cursor;
+	let result;
 	if (name && showTypes.length) {
-		cursor = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else if (showTypes.length) {
-		cursor = Rooms.findByTypes(showTypes, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByTypes(showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else {
-		cursor = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, options);
 	}
 
-	const total = await cursor.count();
+	const { cursor, totalCount } = result;
 
-	const rooms = await cursor.toArray();
+	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		rooms,
@@ -150,10 +150,9 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 		limit: count,
 	};
 
-	const cursor = await Rooms.findRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options);
+	const { cursor, totalCount } = Rooms.findPaginatedRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options);
 
-	const total = await cursor.count();
-	const rooms = await cursor.toArray();
+	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		items: rooms,

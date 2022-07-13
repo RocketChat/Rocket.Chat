@@ -8,6 +8,9 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUserSession>>) {
 		super(db, 'usersSessions', trash, {
 			preventSetUpdatedAt: true,
+			collectionNameResolver(name) {
+				return name;
+			},
 		});
 	}
 
