@@ -36,9 +36,10 @@ function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = 
 
 		return {
 			_id,
-			name: showRealNames && name ? name : username,
+			name,
 			username,
 			lastLogin,
+			showRealNames,
 			roles: roles && getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
 			canViewAllInfo,
