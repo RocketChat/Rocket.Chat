@@ -110,7 +110,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 		})();
 
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
-	}, [content, preserveHtml, sanitizer, markedOptions, parseEmoji, variant]);
+	}, [content, preserveHtml, sanitizer, markedOptions, parseEmoji]);
 
 	return __html ? (
 		<Box

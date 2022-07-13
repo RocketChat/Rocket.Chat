@@ -165,7 +165,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		nameOrUsername: RegExp,
 		options: FindOptions<ILivechatVisitor>,
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
-		const allowedCF = LivechatCustomField.find({ scope: 'visitor', searchability: true }, { projection: { fields: { _id: 1 } } }).map(
+		const allowedCF = LivechatCustomField.find({ scope: 'visitor', searchable: true }, { projection: { fields: { _id: 1 } } }).map(
 			({ _id }) => _id,
 		);
 
