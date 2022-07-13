@@ -1,25 +1,16 @@
 import type { ILivechatAgentActivity, IServiceHistory, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatAgentActivityModel } from '@rocket.chat/model-typings';
-import type {
-	AggregationCursor,
-	Collection,
-	Cursor,
-	Db,
-	FindAndModifyWriteOpResultObject,
-	IndexSpecification,
-	UpdateWriteOpResult,
-} from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { AggregationCursor, Collection, Document, FindCursor, Db, ModifyResult, IndexDescription, UpdateResult } from 'mongodb';
 import moment from 'moment';
 
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> implements ILivechatAgentActivityModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatAgentActivity>>) {
-		super(db, getCollectionName('livechat_agent_activity'), trash);
+		super(db, 'livechat_agent_activity', trash);
 	}
 
-	modelIndexes(): IndexSpecification[] {
+	modelIndexes(): IndexDescription[] {
 		return [{ key: { date: 1 } }, { key: { agentId: 1, date: 1 }, unique: true }];
 	}
 
@@ -29,7 +20,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 
 	async createOrUpdate(
 		data: Partial<Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStartedAt'>> = {},
-	): Promise<FindAndModifyWriteOpResultObject<ILivechatAgentActivity> | undefined> {
+	): Promise<ModifyResult<ILivechatAgentActivity> | undefined> {
 		const { date, agentId, lastStartedAt } = data;
 
 		if (!date || !agentId) {
@@ -58,7 +49,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		date,
 		lastStoppedAt,
 		availableTime,
-	}: Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStoppedAt' | 'availableTime'>): Promise<UpdateWriteOpResult> {
+	}: Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStoppedAt' | 'availableTime'>): Promise<UpdateResult | Document> {
 		const query = {
 			agentId,
 			date,
@@ -76,7 +67,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		agentId,
 		date,
 		serviceHistory,
-	}: Pick<ILivechatAgentActivity, 'date' | 'agentId'> & { serviceHistory: IServiceHistory }): Promise<UpdateWriteOpResult> {
+	}: Pick<ILivechatAgentActivity, 'date' | 'agentId'> & { serviceHistory: IServiceHistory }): Promise<UpdateResult | Document> {
 		const query = {
 			agentId,
 			date,
@@ -89,7 +80,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		return this.updateMany(query, update);
 	}
 
-	findOpenSessions(): Cursor<ILivechatAgentActivity> {
+	findOpenSessions(): FindCursor<ILivechatAgentActivity> {
 		const query = {
 			lastStoppedAt: { $exists: false },
 		};
@@ -149,7 +140,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		}
 		params.push(group);
 		params.push(project);
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate<ILivechatAgentActivity>(params).toArray();
 	}
 
 	findAvailableServiceTimeHistory({

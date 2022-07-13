@@ -1,17 +1,16 @@
 import type { ILivechatDepartmentRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
-import type { Collection, Cursor, Db, FilterQuery, FindOneOptions, WriteOpResult } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> implements ILivechatDepartmentModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartmentRecord>>) {
-		super(db, getCollectionName('livechat_department'), trash);
+		super(db, 'livechat_department', trash);
 	}
 
-	findInIds(departmentsIds: string[], options: FindOneOptions<ILivechatDepartmentRecord>): Cursor<ILivechatDepartmentRecord> {
+	findInIds(departmentsIds: string[], options: FindOptions<ILivechatDepartmentRecord>): FindCursor<ILivechatDepartmentRecord> {
 		const query = { _id: { $in: departmentsIds } };
 		return this.find(query, options);
 	}
@@ -19,9 +18,9 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 	findByNameRegexWithExceptionsAndConditions(
 		searchTerm: string,
 		exceptions: string[] = [],
-		conditions: FilterQuery<ILivechatDepartmentRecord> = {},
-		options: FindOneOptions<ILivechatDepartmentRecord> = {},
-	): Cursor<ILivechatDepartmentRecord> {
+		conditions: Filter<ILivechatDepartmentRecord> = {},
+		options: FindOptions<ILivechatDepartmentRecord> = {},
+	): FindCursor<ILivechatDepartmentRecord> {
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
@@ -39,15 +38,15 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 		return this.find(query, options);
 	}
 
-	findByBusinessHourId(businessHourId: string, options: FindOneOptions<ILivechatDepartmentRecord>): Cursor<ILivechatDepartmentRecord> {
+	findByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartmentRecord>): FindCursor<ILivechatDepartmentRecord> {
 		const query = { businessHourId };
 		return this.find(query, options);
 	}
 
 	findEnabledByBusinessHourId(
 		businessHourId: string,
-		options: FindOneOptions<ILivechatDepartmentRecord>,
-	): Cursor<ILivechatDepartmentRecord> {
+		options: FindOptions<ILivechatDepartmentRecord>,
+	): FindCursor<ILivechatDepartmentRecord> {
 		const query = { businessHourId, enabled: true };
 		return this.find(query, options);
 	}
@@ -55,9 +54,9 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 	findEnabledByListOfBusinessHourIdsAndDepartmentIds(
 		businessHourIds: string[],
 		departmentIds: string[],
-		options: FindOneOptions<ILivechatDepartmentRecord>,
-	): Cursor<ILivechatDepartmentRecord> {
-		const query: FilterQuery<ILivechatDepartmentRecord> = {
+		options: FindOptions<ILivechatDepartmentRecord>,
+	): FindCursor<ILivechatDepartmentRecord> {
+		const query: Filter<ILivechatDepartmentRecord> = {
 			enabled: true,
 			businessHourId: {
 				$in: businessHourIds,
@@ -69,7 +68,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 		return this.find(query, options);
 	}
 
-	addBusinessHourToDepartmentsByIds(ids: string[] = [], businessHourId: string): Promise<WriteOpResult> {
+	addBusinessHourToDepartmentsByIds(ids: string[] = [], businessHourId: string): Promise<Document | UpdateResult> {
 		const query = {
 			_id: { $in: ids },
 		};
@@ -80,10 +79,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 			},
 		};
 
-		return this.col.update(query, update, { multi: true });
+		return this.updateMany(query, update);
 	}
 
-	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(ids: string[] = [], businessHourId: string): Promise<WriteOpResult> {
+	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(ids: string[] = [], businessHourId: string): Promise<Document | UpdateResult> {
 		const query = {
 			_id: { $in: ids },
 			businessHourId,
@@ -95,10 +94,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 			},
 		};
 
-		return this.col.update(query, update, { multi: true });
+		return this.updateMany(query, update);
 	}
 
-	removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId: string): Promise<WriteOpResult> {
+	removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId: string): Promise<Document | UpdateResult> {
 		const query = {
 			businessHourId,
 		};
@@ -109,6 +108,6 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 			},
 		};
 
-		return this.col.update(query, update, { multi: true });
+		return this.updateMany(query, update);
 	}
 }

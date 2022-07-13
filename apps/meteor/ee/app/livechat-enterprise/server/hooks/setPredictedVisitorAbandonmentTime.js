@@ -20,13 +20,13 @@ callbacks.add(
 		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
 			return message;
 		}
-		// if the message has a type means it is a special message (like the closing comment), so skips
+		// if the message has a type means it is a special message (like the closing comment), so skip it
 		if (message.t) {
 			return message;
 		}
 		const sentByAgent = !message.token;
 		if (sentByAgent) {
-			setPredictedVisitorAbandonmentTime(room);
+			Promise.await(setPredictedVisitorAbandonmentTime(room));
 		}
 		return message;
 	},

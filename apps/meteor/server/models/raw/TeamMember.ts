@@ -1,27 +1,25 @@
 import type { IRole, ITeamMember, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ITeamMemberModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
+import type { FindPaginated, ITeamMemberModel } from '@rocket.chat/model-typings';
 import type {
 	Collection,
-	Cursor,
+	FindCursor,
 	Db,
-	DeleteWriteOpResultObject,
-	FilterQuery,
-	FindOneOptions,
-	IndexSpecification,
-	InsertOneWriteOpResult,
-	UpdateWriteOpResult,
-	WithoutProjection,
+	DeleteResult,
+	Filter,
+	FindOptions,
+	IndexDescription,
+	InsertOneResult,
+	UpdateResult,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ITeamMember>>) {
-		super(db, getCollectionName('team_member'), trash);
+		super(db, 'team_member', trash);
 	}
 
-	protected modelIndexes(): IndexSpecification[] {
+	protected modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: { teamId: 1 },
@@ -33,78 +31,74 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		];
 	}
 
-	findByUserId(userId: string): Cursor<ITeamMember>;
+	findByUserId(userId: string): FindCursor<ITeamMember>;
 
-	findByUserId(userId: string, options: WithoutProjection<FindOneOptions<ITeamMember>>): Cursor<ITeamMember>;
+	findByUserId(userId: string, options: FindOptions<ITeamMember>): FindCursor<ITeamMember>;
 
-	findByUserId<P>(userId: string, options: FindOneOptions<P>): Cursor<P>;
+	findByUserId<P>(userId: string, options: FindOptions<P>): FindCursor<P>;
 
 	findByUserId<P>(
 		userId: string,
-		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
-	): Cursor<P> | Cursor<ITeamMember> {
+		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+	): FindCursor<P> | FindCursor<ITeamMember> {
 		return options ? this.col.find({ userId }, options) : this.col.find({ userId }, options);
 	}
 
 	findOneByUserIdAndTeamId(userId: string, teamId: string): Promise<ITeamMember | null>;
 
-	findOneByUserIdAndTeamId(
-		userId: string,
-		teamId: string,
-		options: WithoutProjection<FindOneOptions<ITeamMember>>,
-	): Promise<ITeamMember | null>;
+	findOneByUserIdAndTeamId(userId: string, teamId: string, options: FindOptions<ITeamMember>): Promise<ITeamMember | null>;
 
-	findOneByUserIdAndTeamId<P>(userId: string, teamId: string, options: FindOneOptions<P>): Promise<P | null>;
+	findOneByUserIdAndTeamId<P>(userId: string, teamId: string, options: FindOptions<P>): Promise<P | null>;
 
 	findOneByUserIdAndTeamId<P>(
 		userId: string,
 		teamId: string,
-		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Promise<P | null | ITeamMember> {
 		return options ? this.col.findOne({ userId, teamId }, options) : this.col.findOne({ userId, teamId }, options);
 	}
 
-	findByTeamId(teamId: string): Cursor<ITeamMember>;
+	findByTeamId(teamId: string): FindCursor<ITeamMember>;
 
-	findByTeamId(teamId: string, options: WithoutProjection<FindOneOptions<ITeamMember>>): Cursor<ITeamMember>;
+	findByTeamId(teamId: string, options: FindOptions<ITeamMember>): FindCursor<ITeamMember>;
 
-	findByTeamId<P>(teamId: string, options: FindOneOptions<P>): Cursor<P>;
+	findByTeamId<P>(teamId: string, options: FindOptions<P>): FindCursor<P>;
 
 	findByTeamId<P>(
 		teamId: string,
-		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
-	): Cursor<P> | Cursor<ITeamMember> {
+		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+	): FindCursor<P> | FindCursor<ITeamMember> {
 		return options ? this.col.find({ teamId }, options) : this.col.find({ teamId }, options);
 	}
 
-	findByTeamIds(teamIds: Array<string>): Cursor<ITeamMember>;
+	findByTeamIds(teamIds: Array<string>): FindCursor<ITeamMember>;
 
-	findByTeamIds(teamIds: Array<string>, options: WithoutProjection<FindOneOptions<ITeamMember>>): Cursor<ITeamMember>;
+	findByTeamIds(teamIds: Array<string>, options: FindOptions<ITeamMember>): FindCursor<ITeamMember>;
 
-	findByTeamIds<P>(teamIds: Array<string>, options: FindOneOptions<P>): Cursor<P>;
+	findByTeamIds<P>(teamIds: Array<string>, options: FindOptions<P>): FindCursor<P>;
 
 	findByTeamIds<P>(
 		teamIds: Array<string>,
-		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
-	): Cursor<P> | Cursor<ITeamMember> {
+		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+	): FindCursor<P> | FindCursor<ITeamMember> {
 		return options ? this.col.find({ teamId: { $in: teamIds } }, options) : this.col.find({ teamId: { $in: teamIds } }, options);
 	}
 
-	findByTeamIdAndRole(teamId: string, role: IRole['_id']): Cursor<ITeamMember>;
+	findByTeamIdAndRole(teamId: string, role: IRole['_id']): FindCursor<ITeamMember>;
 
-	findByTeamIdAndRole(teamId: string, role: IRole['_id'], options: WithoutProjection<FindOneOptions<ITeamMember>>): Cursor<ITeamMember>;
+	findByTeamIdAndRole(teamId: string, role: IRole['_id'], options: FindOptions<ITeamMember>): FindCursor<ITeamMember>;
 
-	findByTeamIdAndRole<P>(teamId: string, role: IRole['_id'], options: FindOneOptions<P>): Cursor<P>;
+	findByTeamIdAndRole<P>(teamId: string, role: IRole['_id'], options: FindOptions<P>): FindCursor<P>;
 
 	findByTeamIdAndRole<P>(
 		teamId: string,
 		role: IRole['_id'],
-		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
-	): Cursor<P> | Cursor<ITeamMember> {
+		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+	): FindCursor<P> | FindCursor<ITeamMember> {
 		return options ? this.col.find({ teamId, roles: role }, options) : this.col.find({ teamId, roles: role });
 	}
 
-	findByUserIdAndTeamIds(userId: string, teamIds: Array<string>, options: FindOneOptions<ITeamMember> = {}): Cursor<ITeamMember> {
+	findByUserIdAndTeamIds(userId: string, teamIds: Array<string>, options: FindOptions<ITeamMember> = {}): FindCursor<ITeamMember> {
 		const query = {
 			userId,
 			teamId: {
@@ -115,20 +109,28 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		return this.col.find(query, options);
 	}
 
-	findMembersInfoByTeamId(teamId: string, limit: number, skip: number, query?: FilterQuery<ITeamMember>): Cursor<ITeamMember> {
-		return this.col.find({ ...query, teamId }, {
-			limit,
-			skip,
-			projection: {
-				userId: 1,
-				roles: 1,
-				createdBy: 1,
-				createdAt: 1,
+	findPaginatedMembersInfoByTeamId(
+		teamId: string,
+		limit: number,
+		skip: number,
+		query?: Filter<ITeamMember>,
+	): FindPaginated<FindCursor<ITeamMember>> {
+		return this.findPaginated(
+			{ ...query, teamId },
+			{
+				limit,
+				skip,
+				projection: {
+					userId: 1,
+					roles: 1,
+					createdBy: 1,
+					createdAt: 1,
+				},
 			},
-		} as FindOneOptions<ITeamMember>);
+		);
 	}
 
-	updateOneByUserIdAndTeamId(userId: string, teamId: string, update: Partial<ITeamMember>): Promise<UpdateWriteOpResult> {
+	updateOneByUserIdAndTeamId(userId: string, teamId: string, update: Partial<ITeamMember>): Promise<UpdateResult> {
 		return this.updateOne({ userId, teamId }, { $set: update });
 	}
 
@@ -136,16 +138,17 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		teamId: string,
 		userId: string,
 		createdBy: Pick<IUser, '_id' | 'username'>,
-	): Promise<InsertOneWriteOpResult<ITeamMember>> {
+	): Promise<InsertOneResult<ITeamMember>> {
 		return this.insertOne({
 			teamId,
 			userId,
 			createdAt: new Date(),
 			createdBy,
+			_updatedAt: new Date(),
 		});
 	}
 
-	updateRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<UpdateWriteOpResult> {
+	updateRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				teamId,
@@ -159,7 +162,7 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		);
 	}
 
-	removeRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<UpdateWriteOpResult> {
+	removeRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				teamId,
@@ -173,14 +176,14 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		);
 	}
 
-	deleteByUserIdAndTeamId(userId: string, teamId: string): Promise<DeleteWriteOpResultObject> {
+	deleteByUserIdAndTeamId(userId: string, teamId: string): Promise<DeleteResult> {
 		return this.col.deleteOne({
 			teamId,
 			userId,
 		});
 	}
 
-	deleteByTeamId(teamId: string): Promise<DeleteWriteOpResultObject> {
+	deleteByTeamId(teamId: string): Promise<DeleteResult> {
 		return this.col.deleteMany({
 			teamId,
 		});

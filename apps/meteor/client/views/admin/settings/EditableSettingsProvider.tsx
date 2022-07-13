@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettings, SettingsContextQuery } from '@rocket.chat/ui-contexts';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import { FilterQuery } from 'mongodb';
+import type { FilterOperators } from 'mongodb';
 import React, { useEffect, useMemo, FunctionComponent, useRef, MutableRefObject } from 'react';
 
 import { createReactiveSubscriptionFactory } from '../../../providers/createReactiveSubscriptionFactory';
@@ -38,7 +38,7 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 
 	const queryEditableSetting = useMemo(() => {
 		const validateSettingQueries = (
-			query: undefined | string | FilterQuery<ISetting> | FilterQuery<ISetting>[],
+			query: undefined | string | FilterOperators<ISetting> | FilterOperators<ISetting>[],
 			settingsCollection: Mongo.Collection<EditableSetting>,
 		): boolean => {
 			if (!query) {
