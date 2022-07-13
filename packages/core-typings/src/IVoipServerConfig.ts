@@ -7,7 +7,6 @@ export enum ServerType {
 
 export interface IVoipServerConfigBase {
 	type: ServerType;
-	host: string;
 	name: string;
 }
 
@@ -18,6 +17,7 @@ export interface IVoipCallServerConfig extends IVoipServerConfigBase {
 
 export interface IVoipManagementServerConfig extends IVoipServerConfigBase {
 	type: ServerType.MANAGEMENT;
+	host: string;
 	configData: IManagementConfigData;
 }
 
@@ -27,5 +27,4 @@ export interface IManagementConfigData {
 	password: string;
 }
 
-export const isICallServerConfigData = (obj: any): obj is ICallServerConfigData =>
-	Number.isInteger(obj.websocketPort) && String(obj.websocketPath) === obj.websocketPath;
+export const isICallServerConfigData = (obj: any): obj is ICallServerConfigData => String(obj.websocketPath) === obj.websocketPath;

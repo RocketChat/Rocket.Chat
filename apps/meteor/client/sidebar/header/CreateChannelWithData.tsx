@@ -1,7 +1,7 @@
 import { RoomType } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useCallback, useMemo } from 'react';
+import React, { memo, ReactElement, useCallback, useMemo, ComponentProps } from 'react';
 
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
@@ -22,6 +22,7 @@ type UseFormValues = {
 	readOnly: boolean;
 	encrypted: boolean;
 	broadcast: boolean;
+	federated: boolean;
 };
 
 const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWithDataProps): ReactElement => {
@@ -48,21 +49,12 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 		readOnly: false,
 		encrypted: e2eEnabledForPrivateByDefault ?? false,
 		broadcast: false,
+		federated: false,
 	};
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
-	const { users, name, description, type, readOnly, broadcast, encrypted } = values as UseFormValues;
-	const { handleUsers, handleEncrypted, handleType, handleBroadcast, handleReadOnly } = handlers;
-
-	const onChangeUsers = useMutableCallback((value, action) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return handleUsers([...users, value]);
-		}
-		handleUsers(users.filter((current) => current !== value));
-	});
+	const { users, name, description, type, readOnly, broadcast, encrypted, federated } = values as UseFormValues;
+	const { handleEncrypted, handleType, handleBroadcast, handleReadOnly, handleFederated } = handlers;
 
 	const onChangeType = useMutableCallback((value) => {
 		handleEncrypted(!value);
@@ -73,6 +65,20 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 		handleEncrypted(!value);
 		handleReadOnly(value);
 		return handleBroadcast(value);
+	});
+
+	const onChangeFederated = useMutableCallback((value) => {
+		// if room is federated, it cannot be encrypted
+		if (encrypted && value) {
+			handleEncrypted(false);
+		}
+
+		// if room is federated, it cannot be broadcast
+		if (broadcast && value) {
+			handleBroadcast(false);
+		}
+
+		return handleFederated(value);
 	});
 
 	const onCreate = useCallback(async () => {
@@ -88,6 +94,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 				description,
 				broadcast,
 				encrypted,
+				federated,
 				...(teamId && { teamId }),
 			},
 		};
@@ -104,15 +111,29 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 
 		onClose();
 		reload();
-	}, [broadcast, createChannel, createPrivateChannel, description, encrypted, name, onClose, readOnly, teamId, type, users, reload]);
+	}, [
+		name,
+		users,
+		readOnly,
+		description,
+		broadcast,
+		encrypted,
+		federated,
+		teamId,
+		type,
+		onClose,
+		reload,
+		createPrivateChannel,
+		createChannel,
+	]);
 
 	return (
 		<CreateChannel
 			values={values as CreateChannelProps['values']}
-			handlers={handlers}
+			handlers={handlers as ComponentProps<typeof CreateChannel>['handlers']}
 			hasUnsavedChanges={hasUnsavedChanges}
-			onChangeUsers={onChangeUsers}
 			onChangeType={onChangeType}
+			onChangeFederated={onChangeFederated}
 			onChangeBroadcast={onChangeBroadcast}
 			canOnlyCreateOneType={canOnlyCreateOneType}
 			e2eEnabledForPrivateByDefault={Boolean(e2eEnabledForPrivateByDefault)}

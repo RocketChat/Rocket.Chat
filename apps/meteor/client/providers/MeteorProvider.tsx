@@ -6,6 +6,7 @@ import AvatarUrlProvider from './AvatarUrlProvider';
 import { CallProvider } from './CallProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
+import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import LayoutProvider from './LayoutProvider';
 import ModalProvider from './ModalProvider';
 import OmnichannelProvider from './OmnichannelProvider';
@@ -17,6 +18,7 @@ import ToastMessagesProvider from './ToastMessagesProvider';
 import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
 import UserProvider from './UserProvider';
+import VideoConfProvider from './VideoConfProvider';
 
 const MeteorProvider: FC = ({ children }) => (
 	<ConnectionStatusProvider>
@@ -33,11 +35,15 @@ const MeteorProvider: FC = ({ children }) => (
 												<UserProvider>
 													<ModalProvider>
 														<AuthorizationProvider>
-															<CallProvider>
-																<OmnichannelProvider>
-																	<AttachmentProvider>{children}</AttachmentProvider>
-																</OmnichannelProvider>
-															</CallProvider>
+															<VideoConfProvider>
+																<DeviceProvider>
+																	<CallProvider>
+																		<OmnichannelProvider>
+																			<AttachmentProvider>{children}</AttachmentProvider>
+																		</OmnichannelProvider>
+																	</CallProvider>
+																</DeviceProvider>
+															</VideoConfProvider>
 														</AuthorizationProvider>
 													</ModalProvider>
 												</UserProvider>

@@ -22,7 +22,7 @@ const Tags = ({
 	const t = useTranslation();
 	const forms = useFormsSubscription() as any;
 
-	const { value: tagsResult, phase: stateTags } = useEndpointData('/v1/livechat/tags.list');
+	const { value: tagsResult, phase: stateTags } = useEndpointData('/v1/livechat/tags');
 
 	// TODO: Refactor the formsSubscription to use components instead of hooks (since the only thing the hook does is return a component)
 	const { useCurrentChatTags } = forms;

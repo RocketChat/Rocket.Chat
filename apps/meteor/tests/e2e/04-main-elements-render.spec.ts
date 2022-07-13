@@ -174,8 +174,12 @@ test.describe('[Main Elements Render]', function () {
 			});
 
 			test('expect to show tab files content', async () => {
+				await flexTab.doOpenMoreOptionMenu();
 				await flexTab.btnTabFiles.click();
+
 				await expect(flexTab.contentTabFiles).toBeVisible();
+
+				await flexTab.doOpenMoreOptionMenu();
 				await flexTab.btnTabFiles.click();
 			});
 

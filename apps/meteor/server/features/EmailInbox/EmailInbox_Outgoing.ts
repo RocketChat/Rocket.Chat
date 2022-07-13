@@ -61,9 +61,9 @@ function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): void {
 		});
 }
 
-slashCommands.add(
-	'sendEmailAttachment',
-	(command: any, params: string) => {
+slashCommands.add({
+	command: 'sendEmailAttachment',
+	callback: (command: any, params: string) => {
 		if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
 			return;
 		}
@@ -141,15 +141,12 @@ slashCommands.add(
 			},
 		);
 	},
-	{
+	options: {
 		description: 'Send attachment as email',
 		params: 'msg_id',
 	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+	providesPreview: false,
+});
 
 callbacks.add(
 	'beforeSaveMessage',

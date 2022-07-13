@@ -1,8 +1,10 @@
-import type { AtLeast } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { hasAtLeastOnePermission, hasPermission } from '../../../../app/authorization/client';
+import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
+import * as Federation from '../../../../app/federation-v2/client/Federation';
 import { Subscriptions, Users, ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
@@ -35,6 +37,9 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	allowMemberAction(room, action) {
+		if (isRoomFederated(room as IRoom)) {
+			return Federation.actionAllowed(action);
+		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return !this.isGroupChat(room);
@@ -134,10 +139,6 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	findRoom(identifier) {
-		if (!hasPermission('view-d-room')) {
-			return;
-		}
-
 		const query = {
 			t: 'd',
 			$or: [{ name: identifier }, { rid: identifier }],

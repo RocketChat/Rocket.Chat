@@ -8,14 +8,16 @@ import { getUserPreference } from '../../../app/utils/lib/getUserPreference';
 const dayFormat = ['h:mm A', 'H:mm'];
 
 export const formatTime = (time: MomentInput): string => {
-	const clockMode = Tracker.nonreactive(() => getUserPreference(Meteor.userId(), 'clockMode', false));
+	const clockMode = Tracker.nonreactive(() => getUserPreference(Meteor.userId(), 'clockMode', false) as number | boolean);
 	const messageTimeFormat = Tracker.nonreactive(() => settings.get('Message_TimeFormat'));
-	const sameDay = dayFormat[clockMode - 1] || messageTimeFormat;
 
 	switch (clockMode) {
 		case 1:
-		case 2:
+		case 2: {
+			const sameDay = dayFormat[clockMode - 1] || messageTimeFormat;
 			return moment(time).format(sameDay);
+		}
+
 		default:
 			return moment(time).format(messageTimeFormat);
 	}
