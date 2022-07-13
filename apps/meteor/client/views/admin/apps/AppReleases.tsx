@@ -1,53 +1,32 @@
-import type { App } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import { Accordion } from '@rocket.chat/fuselage';
-import React, { useEffect, useState } from 'react';
+import { MatchPathPattern, OperationResult } from '@rocket.chat/rest-typings';
+import React from 'react';
 
+import { AsyncState } from '../../../lib/asyncState';
 import { AsyncStatePhase } from '../../../lib/asyncState/AsyncStatePhase';
 import AccordionLoading from './AccordionLoading';
 import ReleaseItem from './ReleaseItem';
 
-type release = {
-	version: string;
-	createdDate: string;
-	detailedChangelog: {
-		raw: string;
-		rendered: string;
+const AppReleases = ({
+	result,
+}: {
+	result: AsyncState<Serialized<OperationResult<'GET', MatchPathPattern<`/apps/${string}/versions`>>>> & {
+		reload: () => void;
 	};
-};
-
-type value = {
-	apps: App[];
-	success: boolean;
-};
-
-const AppReleases = ({ value, phase }: { value: value; phase: AsyncStatePhase }): JSX.Element => {
-	const [releases, setReleases] = useState([] as release[]);
-
-	const isLoading = phase === AsyncStatePhase.LOADING;
-	const isSuccess = phase === AsyncStatePhase.RESOLVED;
-
-	useEffect(() => {
-		if (isSuccess && value?.apps) {
-			const { apps } = value;
-
-			setReleases(
-				apps.map((app: any) => ({
-					version: app.version,
-					createdDate: app.createdDate,
-					detailedChangelog: app.detailedChangelog,
-				})),
-			);
-		}
-	}, [isSuccess, value]);
-
-	return (
-		<>
-			<Accordion width='100%' alignSelf='center'>
-				{isLoading && <AccordionLoading />}
-				{isSuccess && releases.length && releases.map((release) => <ReleaseItem release={release} key={release.version} />)}
-			</Accordion>
-		</>
-	);
-};
+}): JSX.Element => (
+	<>
+		<Accordion width='100%' alignSelf='center'>
+			{result.phase === AsyncStatePhase.LOADING && <AccordionLoading />}
+			{result.phase === AsyncStatePhase.RESOLVED && (
+				<>
+					{result.value.apps.map((release) => (
+						<ReleaseItem release={release} key={release.version} />
+					))}
+				</>
+			)}
+		</Accordion>
+	</>
+);
 
 export default AppReleases;

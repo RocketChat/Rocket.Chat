@@ -41,7 +41,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const router = useRoute(currentRouteName);
 	const handleReturn = useMutableCallback((): void => router.push({}));
 
-	const { value: releases, phase: releasesPhase } = useEndpointData(`/apps/${id}/versions`) as any;
+	const result = useEndpointData(`/apps/${id}/versions`);
 
 	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink } = appData || {};
 	const isSecurityVisible = privacyPolicySummary || permissions || tosLink || privacyLink;
@@ -99,7 +99,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 										{t('Security')}
 									</Tabs.Item>
 								)}
-								{Boolean(installed) && releasesPhase !== AsyncStatePhase.REJECTED && (
+								{Boolean(installed) && result.phase !== AsyncStatePhase.REJECTED && (
 									<Tabs.Item onClick={(): void => handleTabClick('releases')} selected={tab === 'releases'}>
 										{t('Releases')}
 									</Tabs.Item>
@@ -127,7 +127,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 								/>
 							)}
 
-							{tab === 'releases' && <AppReleases value={releases} phase={releasesPhase} />}
+							{tab === 'releases' && <AppReleases result={result} />}
 
 							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
 								<SettingsDisplay
