@@ -9,14 +9,14 @@ import { parseOutboundPhoneNumber } from '../../../../ee/client/lib/voip/parseOu
 export const VoipRoomForeword = ({ room }: { room: IVoipRoom }): ReactElement => {
 	const t = useTranslation();
 
-	const avatarUrl = getUserAvatarURL(room.name || room.fname);
+	const avatarUrl = getUserAvatarURL(room.name);
 
-	const roomName = room.name || room.fname;
+	const roomName = room.name;
 
 	return (
 		<Box is='div' flexGrow={1} display='flex' justifyContent='center' flexDirection='column'>
 			<Box display='flex' justifyContent='center' mbs='x24'>
-				<Avatar size='x48' title={room.name || room.fname} url={avatarUrl} />
+				<Avatar size='x48' title={room.name} url={avatarUrl} />
 			</Box>
 			<Box color='default' fontScale='h2' flexGrow={1} mb='x16'>
 				{t('You_have_joined_a_new_call_with')}
