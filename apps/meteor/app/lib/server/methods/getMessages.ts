@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { canAccessRoomId } from '../../../authorization/server';
 import { Messages, Rooms } from '../../../models/server';
@@ -19,7 +19,7 @@ Meteor.methods({
 		const prids = [
 			...new Set(
 				rids.reduce<string[]>((prids, rid) => {
-					return Rooms.findOneById(rid).then((room) => {
+					return Rooms.findOneById(rid).then((room: IRoom) => {
 						if (room.prid) {
 							prids.push(room.prid);
 						}
