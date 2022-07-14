@@ -200,7 +200,7 @@
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/forked-matrix-appservice-bridge": "^4.0.1",
 		"@rocket.chat/forked-matrix-bot-sdk": "^0.6.0-beta.2",
-		"@rocket.chat/fuselage": "^0.32.0-dev.80",
+		"@rocket.chat/fuselage": "^0.32.0-dev.83",
 		"@rocket.chat/fuselage-hooks": "~0.31.15-dev.6",
 		"@rocket.chat/fuselage-polyfills": "~0.31.15-dev.6",
 		"@rocket.chat/fuselage-toastbar": "^0.32.0-dev.47",

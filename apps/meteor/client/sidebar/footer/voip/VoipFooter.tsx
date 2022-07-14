@@ -96,7 +96,6 @@ export const VoipFooter = ({
 								color={muted ? 'neutral-500' : 'info'}
 								icon='mic'
 								small
-								square
 								onClick={(e): void => {
 									e.stopPropagation();
 									toggleMic(!muted);
@@ -108,7 +107,6 @@ export const VoipFooter = ({
 								icon='pause-unfilled'
 								color={paused ? 'neutral-500' : 'info'}
 								small
-								square
 								onClick={handleHold}
 							/>
 							{options && <Menu color='neutral-500' options={options} />}
