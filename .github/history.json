@@ -99267,6 +99267,76 @@
           ]
         }
       ]
+    },
+    "5.0.0-rc.6": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26162",
+          "title": "Regression: Fix marketplace releases tab crash bug",
+          "userLogin": "rique223",
+          "description": "Fixed a bug where RC would crash because the marketplace releases tab was trying to display undefined data from manually installed apps. \r\nDemo gif:\r\n![app-releases-tab-crash-error](https://user-images.githubusercontent.com/43561537/177656489-325790d3-49e0-46c8-8ac2-1f74c6a309ad.gif)",
+          "milestone": "5.0.0",
+          "contributors": [
+            "rique223",
+            "ggazzo",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26257",
+          "title": "Chore: Disabled icon colors on sidebar",
+          "userLogin": "juliajforesti",
+          "contributors": [
+            "juliajforesti",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26256",
+          "title": "Regression: get user from `req` on `ui.interaction` endpoints",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26253",
+          "title": "Chore: Avoid unneeded permission updates when EE license is applied",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.8.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26242",
+          "title": "Regression: Fix scheduler not working",
+          "userLogin": "tapiarafael",
+          "milestone": "5.0.0",
+          "contributors": [
+            "tapiarafael"
+          ]
+        },
+        {
+          "pr": "26073",
+          "title": "Regression: Link not scrolling to message",
+          "userLogin": "filipemarins",
+          "milestone": "5.0.0",
+          "contributors": [
+            "filipemarins",
+            "gabriellsh"
+          ]
+        }
+      ]
     }
   }
 }
