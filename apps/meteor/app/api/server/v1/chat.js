@@ -229,7 +229,7 @@ API.v1.addRoute(
 			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, subscriptionOptions);
 
 			if (!subscription) {
-				return API.v1.unauthorized('Test message for 401');
+				return API.v1.unauthorized();
 			}
 
 			const sent = executeSendMessage(this.userId, this.bodyParams.message);
