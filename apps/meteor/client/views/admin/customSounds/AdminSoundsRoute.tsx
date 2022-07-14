@@ -120,7 +120,6 @@ function CustomSoundsRoute(): ReactElement {
 											<IconButton
 												icon='play'
 												small
-												square
 												aria-label={t('Play')}
 												onClick={(e): void => {
 													e.preventDefault();

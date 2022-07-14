@@ -22,7 +22,6 @@ export const CallDialpadButton = ({ phoneNumber }: { phoneNumber: string }): Rea
 			title={outBoundCallsAllowed ? t('Call_number') : t('Call_number_enterprise_only')}
 			disabled={!outBoundCallsEnabledForUser || !phoneNumber}
 			tiny
-			square
 			icon='phone'
 			onClick={onClick}
 		/>
