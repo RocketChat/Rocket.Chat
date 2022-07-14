@@ -10,10 +10,15 @@ const query = (
 ): {
 	selector: string;
 } => ({ selector: JSON.stringify({ term }) });
-
+type roomType = {
+	label: string;
+	value: string;
+	_id: string;
+	type: string;
+};
 type AutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> &
 	Omit<ComponentProps<typeof Option>, 'value' | 'is' | 'className' | 'onChange'> & {
-		onChange: (value: any, action: 'remove' | undefined) => void;
+		onChange: (room: roomType, action: 'remove' | undefined) => void;
 		value: any;
 		filter?: string;
 	};
@@ -29,19 +34,30 @@ const AutoCompleteMultiple = ({ onChange, ...props }: AutoCompleteMultipleProps)
 		'/v1/rooms.autocomplete.channelAndPrivate',
 		useMemo(() => query(filter), [filter]),
 	);
-	const users = useMemo(() => usersData?.items.map((user) => ({ value: user.username, label: user.name })) || [], [usersData]);
-	const rooms = useMemo(() => usersData?.items.map((room) => ({ value: room.name, label: room.name })) || [], [roomsData]);
+	const users = useMemo(
+		() => usersData?.items.map((user) => ({ _id: user._id, value: user.username, label: user.name, type: 'U' })) || [],
+		[usersData],
+	);
+	const rooms = useMemo(
+		() => roomsData?.items.map((room) => ({ _id: room._id, value: room.name, label: room.name, type: 'C' })) || [],
+		[roomsData],
+	);
 	const options = [...users, ...rooms];
+
 	const onClickRemove = useMutableCallback((e) => {
 		e.stopPropagation();
 		e.preventDefault();
-		onChange?.(e.currentTarget.value, 'remove');
+		const room = options.find((cur) => cur.value === e.currentTarget.value) as roomType;
+		onChange?.(room, 'remove');
 	});
-
+	const onChangeContent = (name: string, action: any) => {
+		const room = options.find((cur) => cur.value === name) as roomType;
+		onChange(room, action);
+	};
 	return (
 		<AutoComplete
 			{...props}
-			onChange={onChange as any}
+			onChange={onChangeContent as any}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ value: selected }): ReactElement =>

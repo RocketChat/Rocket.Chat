@@ -1,7 +1,6 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { Modal, Box, Field, FieldGroup, ButtonGroup, Button, Message, Tabs } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, memo, useState, ChangeEvent } from 'react';
 
 import MarkdownTextEditor from '../../../../../ee/client/omnichannel/components/CannedResponse/MarkdownTextEditor';
@@ -13,7 +12,7 @@ import { formatTime } from '../../../../lib/utils/formatTime';
 
 type ShareMessageFormValue = {
 	optionalMessage: string;
-	usernames: Array<IUser['username']>;
+	rooms: any;
 };
 
 type ShareMessageProps = {
@@ -25,28 +24,34 @@ type ShareMessageProps = {
 	time?: Date;
 	invalidContentType?: boolean;
 };
-
+type roomType = {
+	label: string;
+	value: string;
+	_id: string;
+	type: string;
+};
 const ShareMessageModal = ({ onClose, message, username, name, time }: ShareMessageProps): ReactElement => {
 	const [status, setStatus] = useState(0);
 	const t = useTranslation();
-
+	const dispatchToastMessage = useToastMessageDispatch();
 	const { values, handlers } = useForm({
 		optionalMessage: '',
-		usernames: [],
+		rooms: [],
 	});
 
-	const { usernames, optionalMessage } = values as ShareMessageFormValue;
+	const { rooms, optionalMessage } = values as ShareMessageFormValue;
 
-	const { handleUsernames, handleOptionalMessage } = handlers;
-
-	const onChangeUsers = useMutableCallback((value: any, action: any) => {
+	const { handleRooms, handleOptionalMessage } = handlers;
+	const sendMessage = useEndpoint('POST', '/v1/chat.postMessage');
+	const onChangeUsers = useMutableCallback((room: roomType, action: any) => {
 		if (!action) {
-			if (usernames.includes(value)) {
+			if (rooms.find((cur: roomType) => cur._id === room._id)) {
 				return;
 			}
-			return handleUsernames([...usernames, value]);
+
+			return handleRooms([...rooms, room]);
 		}
-		handleUsernames(usernames.filter((current) => current !== value));
+		handleRooms(rooms.filter((cur: roomType) => cur._id !== room._id));
 	});
 
 	const changeEditView = (e: ChangeEvent<HTMLInputElement> | string): void => {
@@ -57,6 +62,25 @@ const ShareMessageModal = ({ onClose, message, username, name, time }: ShareMess
 		e.preventDefault();
 		setStatus(value);
 	};
+
+	const handleSubmit = (e: any) => {
+		e.preventDefault();
+		let flag = true;
+		rooms.forEach(async (room: any) => {
+			const sendPayload = {
+				roomId: room._id,
+				channel: (room.type === 'C' ? '#' : '@') + room.value,
+				text: optionalMessage,
+			};
+			const result: any = await sendMessage(sendPayload as never);
+			if (!result.success) flag = false;
+		});
+		if (flag) {
+			dispatchToastMessage({ type: 'success', message: 'Message shared successfully' });
+			onClose();
+		}
+	};
+
 	return (
 		<Modal>
 			<Box is='form' display='flex' flexDirection='column' height='100%'>
@@ -69,7 +93,7 @@ const ShareMessageModal = ({ onClose, message, username, name, time }: ShareMess
 						<Field>
 							<Field.Label>{t('Person_Or_Channel')}</Field.Label>
 							<Field.Row>
-								<AutoCompleteMultiple value={usernames} onChange={onChangeUsers} />
+								<AutoCompleteMultiple value={rooms.map((room: any) => room.value)} onChange={onChangeUsers} />
 							</Field.Row>
 							{/* {!name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>} */}
 						</Field>
@@ -112,7 +136,7 @@ const ShareMessageModal = ({ onClose, message, username, name, time }: ShareMess
 				<Modal.Footer>
 					<ButtonGroup align='end'>
 						<Button>{t('Copy_Link')}</Button>
-						<Button primary type='submit'>
+						<Button onClick={handleSubmit} primary type='submit'>
 							{t('Share')}
 						</Button>
 					</ButtonGroup>
