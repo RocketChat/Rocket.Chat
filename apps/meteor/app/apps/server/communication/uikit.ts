@@ -93,7 +93,9 @@ const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request): {}
 	if (type === UIKitIncomingInteractionType.BLOCK) {
 		const { type, actionId, triggerId, mid, rid, payload, container } = req.body;
 
-		const { visitor, user } = req.body;
+		const { visitor } = req.body;
+		const { user } = req;
+
 		const room = rid; // orch.getConverters().get('rooms').convertById(rid);
 		const message = mid;
 
@@ -117,7 +119,7 @@ const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request): {}
 			payload: { view, isCleared },
 		} = req.body;
 
-		const { user } = req.body;
+		const { user } = req;
 
 		return {
 			type,
@@ -133,7 +135,7 @@ const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request): {}
 	if (type === UIKitIncomingInteractionType.VIEW_SUBMIT) {
 		const { type, actionId, triggerId, payload } = req.body;
 
-		const { user } = req.body;
+		const { user } = req;
 
 		return {
 			type,
