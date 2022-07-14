@@ -1,3 +1,5 @@
+import { ILivechatMonitor } from '@rocket.chat/core-typings';
+
 import { API } from '../../../../../app/api/server';
 import { findMonitors, findMonitorByUsername } from './lib/monitors';
 
@@ -33,10 +35,10 @@ API.v1.addRoute(
 			const { username } = this.urlParams;
 
 			return API.v1.success(
-				await findMonitorByUsername({
+				(await findMonitorByUsername({
 					userId: this.userId,
 					username,
-				}),
+				})) as unknown as ILivechatMonitor,
 			);
 		},
 	},

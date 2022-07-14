@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models/server';
@@ -293,7 +294,7 @@ API.v1.addRoute(
 	'rooms.getDiscussions',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const room = findRoomByIdOrName({ params: this.requestParams() });
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
@@ -304,18 +305,20 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign(query, { prid: room._id });
 
-			const discussions = Rooms.find(ourQuery, {
+			const { cursor, totalCount } = RoomsRaw.findPaginated(ourQuery, {
 				sort: sort || { fname: 1 },
 				skip: offset,
 				limit: count,
-				fields,
-			}).fetch();
+				projection: fields,
+			});
+
+			const [discussions, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				discussions,
 				count: discussions.length,
 				offset,
-				total: Rooms.find(ourQuery).count(),
+				total,
 			});
 		},
 	},
