@@ -12,22 +12,20 @@ test.describe('Register', () => {
 		pageAuth = new Auth(page);
 	});
 
-	test('expect trigger a validation error if no data is provided', async () => {
+	test.beforeAll(async () => {
 		await page.goto('/');
 		await pageAuth.btnRegister.click();
+	})
 
+	test('expect trigger a validation error if no data is provided', async () => {
 		await pageAuth.btnSubmit.click();
 
 		await expect(pageAuth.textErrorName).toBeVisible();
 		await expect(pageAuth.textErrorEmail).toBeVisible();
 		await expect(pageAuth.textErrorPassword).toBeVisible();
-		// await expect(pageAuth.textErrorPasswordConfirm).toBeVisible();
 	});
 
 	test('expect trigger a validation error if different password is provided', async () => {
-		await page.goto('/');
-		await pageAuth.btnRegister.click();
-
 		await pageAuth.inputName.type(faker.name.firstName());
 		await pageAuth.inputEmail.type(faker.internet.email());
 		await pageAuth.inputPassword.type('any_password');
@@ -38,9 +36,6 @@ test.describe('Register', () => {
 	});
 
 	test('expect successfully register a new user', async () => {
-		await page.goto('/');
-		await pageAuth.btnRegister.click();
-
 		await pageAuth.inputName.type(faker.name.firstName());
 		await pageAuth.inputEmail.type(faker.internet.email());
 		await pageAuth.inputPassword.type('any_password');
