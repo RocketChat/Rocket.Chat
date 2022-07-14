@@ -47,7 +47,6 @@ export class MatrixBridge implements IFederationBridge {
 			}
 		} catch (e) {
 			bridgeLogger.error('Failed to initialize the matrix-appservice-bridge.', e);
-			bridgeLogger.error('Disabling Matrix Bridge.  Please resolve error and try again');
 		} finally {
 			this.isUpdatingBridgeStatus = false;
 		}
@@ -131,13 +130,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public isRoomFromTheSameHomeserver(externalRoomId: string, domain: string): boolean {
-		const roomDomain = this.isUserIdFromTheSameHomeserver(externalRoomId, domain);
-
-		return roomDomain === domain;
-	}
-
-	public getInstance(): IFederationBridge {
-		return this;
+		return this.isUserIdFromTheSameHomeserver(externalRoomId, domain);
 	}
 
 	public logFederationStartupInfo(info?: string): void {
@@ -158,7 +151,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void> {
-		this.bridgeInstance.getIntent(externalOwnerId).kick(externalRoomId, externalUserId);
+		await this.bridgeInstance.getIntent(externalOwnerId).kick(externalRoomId, externalUserId);
 	}
 
 	protected async createInstance(): Promise<void> {

@@ -1,6 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import { MatrixBridge } from '../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge';
+import { MatrixRoomType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomVisibility';
 import { IFederationBridgeEE } from '../../domain/IFederationBridge';
 
@@ -19,11 +20,11 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 
 	public async createRoom(externalCreatorId: string, roomType: RoomType, roomName: string, roomTopic?: string): Promise<string> {
 		const intent = this.bridgeInstance.getIntent(externalCreatorId);
+		const privateRoomTypes = [RoomType.DIRECT_MESSAGE, RoomType.PRIVATE_GROUP];
 
-		const visibility = roomType === 'p' || roomType === 'd' ? MatrixRoomVisibility.PRIVATE : MatrixRoomVisibility.PUBLIC;
-		const preset = roomType === 'p' || roomType === 'd' ? 'private_chat' : 'public_chat';
+		const visibility = privateRoomTypes.includes(roomType) ? MatrixRoomVisibility.PRIVATE : MatrixRoomVisibility.PUBLIC;
+		const preset = privateRoomTypes.includes(roomType) ? MatrixRoomType.PRIVATE : MatrixRoomType.PUBLIC;
 
-		// Create the matrix room
 		const matrixRoom = await intent.createRoom({
 			createAsClient: true,
 			options: {
@@ -40,9 +41,5 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		});
 
 		return matrixRoom.room_id;
-	}
-
-	public getInstance(): IFederationBridgeEE {
-		return this;
 	}
 }
