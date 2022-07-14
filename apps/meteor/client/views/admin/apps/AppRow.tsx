@@ -1,5 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
+import { useMediaQueries } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { FC, useState, memo, KeyboardEvent, MouseEvent } from 'react';
@@ -13,6 +14,12 @@ import { App } from './types';
 const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 	const { name, id, description, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed, isMarketplace, bundledIn } =
 		props;
+
+	const [isAppNameTruncated, isBundleTextVisible, isDescriptionVisible] = useMediaQueries(
+		'(max-width: 510px)',
+		'(max-width: 887px)',
+		'(min-width: 1200px)',
+	);
 
 	const [isFocused, setFocused] = useState(false);
 	const [isHovered, setHovered] = useState(false);
@@ -84,17 +91,21 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 			<Box display='flex' flexDirection='row' width='80%'>
 				<AppAvatar size='x40' mie='x16' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 				<Box display='flex' alignItems='center' color='default' fontScale='p2m' mie='x16' style={{ whiteSpace: 'nowrap' }}>
-					{name}
+					<Box is='span' withTruncatedText={isAppNameTruncated}>
+						{name}
+					</Box>
 				</Box>
 				<Box display='flex' mie='x16' alignItems='center' color='default'>
 					{bundledIn && Boolean(bundledIn.length) && (
 						<Box display='flex' alignItems='center' color='default' mie='x16'>
-							<BundleChips bundledIn={bundledIn} />
+							<BundleChips bundledIn={bundledIn} isIconOnly={isBundleTextVisible} />
 						</Box>
 					)}
-					<Box is='span' withTruncatedText width='x363'>
-						{description}
-					</Box>
+					{isDescriptionVisible && (
+						<Box is='span' withTruncatedText width='x369'>
+							{description}
+						</Box>
+					)}
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>

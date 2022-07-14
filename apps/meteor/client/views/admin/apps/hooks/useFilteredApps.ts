@@ -60,9 +60,7 @@ export const useFilteredApps = ({
 			filtered =
 				purchaseType === 'paid' ? filtered.filter((app) => filterAppsByPaid(app)) : filtered.filter((app) => filterAppsByFree(app));
 
-			if (!filtered.length) {
-				shouldShowSearchText = false;
-			}
+			if (!filtered.length) shouldShowSearchText = false;
 		}
 
 		if (status && status !== 'all') {
@@ -70,6 +68,8 @@ export const useFilteredApps = ({
 				status === 'enabled'
 					? filtered.filter((app) => appStatusSpanProps(app)?.label === 'Enabled')
 					: filtered.filter((app) => appStatusSpanProps(app)?.label === 'Disabled');
+
+			if (!filtered.length) shouldShowSearchText = false;
 		}
 
 		if (Boolean(categories.length) && Boolean(text)) {

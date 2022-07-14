@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
@@ -43,13 +44,30 @@ const AppsFilters = ({
 }: AppsFiltersProps): ReactElement => {
 	const t = useTranslation();
 
+	const shouldFiltersStack = useMediaQuery('(max-width: 1060px)');
+
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)}>
-				<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} mie='x8' />
-				<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} mie='x8' />
+			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)} shouldFiltersStack={shouldFiltersStack}>
+				<RadioDropDown
+					group={freePaidFilterStructure}
+					onSelected={freePaidFilterOnSelected}
+					mie={shouldFiltersStack ? '' : 'x8'}
+					mb={shouldFiltersStack ? 'x8' : ''}
+				/>
+				<RadioDropDown
+					group={statusFilterStructure}
+					onSelected={statusFilterOnSelected}
+					mie={shouldFiltersStack ? '' : 'x8'}
+					mbe={shouldFiltersStack ? 'x8' : ''}
+				/>
 				<CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
-				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} mis='x8' />
+				<RadioDropDown
+					group={sortFilterStructure}
+					onSelected={sortFilterOnSelected}
+					mis={shouldFiltersStack ? '' : 'x8'}
+					mbs={shouldFiltersStack ? 'x8' : ''}
+				/>
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 		</>
