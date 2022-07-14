@@ -16,15 +16,17 @@ addAction('livestream', ({ room }) => {
 		() =>
 			enabled
 				? {
-						'groups': ['channel', 'group', 'team'],
-						'id': 'livestream',
-						'title': 'Livestream',
-						'icon': 'podcast',
-						'template': 'liveStreamTab',
-						'order': isLive ? -1 : 15,
-						'disabled': federated,
-						'data-tooltip': 'Discussions_unavailable_for_federation',
-						'renderAction': (props): ReactNode => (
+						groups: ['channel', 'group', 'team'],
+						id: 'livestream',
+						title: 'Livestream',
+						icon: 'podcast',
+						template: 'liveStreamTab',
+						order: isLive ? -1 : 15,
+						...(federated && {
+							'data-tooltip': federated ? 'Livestream_unavailable_for_federation' : '',
+							'disabled': true,
+						}),
+						renderAction: (props): ReactNode => (
 							<Header.ToolBoxAction {...props}>
 								{isLive ? (
 									<Header.Badge title={t('Livestream_live_now')} variant='danger'>
@@ -33,7 +35,7 @@ addAction('livestream', ({ room }) => {
 								) : null}
 							</Header.ToolBoxAction>
 						),
-						'renderOption': ({ label: { title, icon }, ...props }: any): ReactNode => (
+						renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => (
 							<Option label={title} title={title} icon={icon} {...props}>
 								{isLive ? (
 									<Badge title={t('Livestream_live_now')} variant='danger'>
