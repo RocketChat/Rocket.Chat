@@ -217,6 +217,21 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
 			}
 
+			const { rid: roomId } = this.bodyParams.message;
+
+			const subscriptionOptions = {
+				projection: {
+					blocked: 1,
+					blocker: 1,
+				},
+			};
+
+			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, subscriptionOptions);
+
+			if (!subscription) {
+				return API.v1.unauthorized('Test message for 401');
+			}
+
 			const sent = executeSendMessage(this.userId, this.bodyParams.message);
 			const [message] = normalizeMessagesForUser([sent], this.userId);
 
