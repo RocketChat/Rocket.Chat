@@ -1,4 +1,4 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import { IMessage, isThreadMessage } from '@rocket.chat/core-typings';
 import { differenceInSeconds } from 'date-fns';
 
 import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
@@ -28,7 +28,7 @@ export const isMessageSequential = (current: IMessage, previous: IMessage | unde
 		return false;
 	}
 
-	if (previous.tshow) {
+	if (isThreadMessage(previous) && previous.tshow) {
 		return false;
 	}
 

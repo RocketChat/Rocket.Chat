@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 
 import Header from '../../../components/Header';
 import MarkdownText from '../../../components/MarkdownText';
-import RoomAvatar from '../../../components/avatar/RoomAvatar';
+import RoomAvatarResolver from '../../../components/avatar/RoomAvatarResolver';
 import ParentRoomWithData from './ParentRoomWithData';
 import ParentTeam from './ParentTeam';
 import RoomTitle from './RoomTitle';
@@ -33,7 +33,7 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => (
 	<Header>
 		{slots?.start}
 		<Header.Avatar>
-			<RoomAvatar room={room} />
+			<RoomAvatarResolver room={room} />
 		</Header.Avatar>
 		{slots?.preContent}
 		<Header.Content>

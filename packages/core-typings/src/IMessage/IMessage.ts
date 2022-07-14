@@ -136,7 +136,6 @@ export interface IMessage extends IRocketChatRecord {
 	pinned?: boolean;
 	unread?: boolean;
 	temp?: boolean;
-	tshow?: boolean;
 	drid?: RoomID;
 	tlm?: Date;
 
@@ -208,6 +207,7 @@ export interface IThreadMainMessage extends IMessage {
 }
 export interface IThreadMessage extends IMessage {
 	tmid: string;
+	tshow: boolean;
 }
 
 export const isThreadMainMessage = (message: IMessage): message is IThreadMainMessage => 'tcount' in message && 'tlm' in message;

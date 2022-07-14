@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { ComponentType, useMemo } from 'react';
 
-import RoomAvatar from '../../components/avatar/RoomAvatar';
+import RoomAvatarResolver from '../../components/avatar/RoomAvatarResolver';
 
 export const useAvatarTemplate = (
 	sidebarViewMode?: 'extended' | 'medium' | 'condensed',
@@ -31,7 +31,7 @@ export const useAvatarTemplate = (
 		})();
 
 		const renderRoomAvatar: ComponentType<IRoom & { rid: string }> = (room) => (
-			<RoomAvatar size={size} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
+			<RoomAvatarResolver size={size} room={{ ...room, _id: room.rid || room._id }} />
 		);
 
 		return renderRoomAvatar;
