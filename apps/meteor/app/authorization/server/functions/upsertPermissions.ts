@@ -293,17 +293,17 @@ export const upsertPermissions = async (): Promise<void> => {
 				_id: permissionId,
 				...permission,
 			},
-			{ fields: { _id: 1 } },
+			{ projection: { _id: 1 } },
 		);
 
 		if (!existent) {
 			try {
-				await Permissions.update({ _id: permissionId }, { $set: permission }, { upsert: true });
+				await Permissions.updateOne({ _id: permissionId }, { $set: permission }, { upsert: true });
 			} catch (e) {
 				if (!(e as Error).message.includes('E11000')) {
 					// E11000 refers to a MongoDB error that can occur when using unique indexes for upserts
 					// https://docs.mongodb.com/manual/reference/method/db.collection.update/#use-unique-indexes
-					await Permissions.update({ _id: permissionId }, { $set: permission }, { upsert: true });
+					await Permissions.updateOne({ _id: permissionId }, { $set: permission }, { upsert: true });
 				}
 			}
 		}
