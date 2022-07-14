@@ -155,7 +155,7 @@ export class LivechatDepartmentAgents extends Base {
 		return this.find(query);
 	}
 
-	getNextBotForDepartment(departmentId, ignoreAgentId) {
+	async getNextBotForDepartment(departmentId, ignoreAgentId) {
 		const agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
@@ -184,7 +184,7 @@ export class LivechatDepartmentAgents extends Base {
 			},
 		};
 
-		const bot = Promise.await(this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnNewDocument: 'after' }));
+		const bot = await this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnNewDocument: 'after' });
 		if (bot && bot.value) {
 			return {
 				agentId: bot.value.agentId,
