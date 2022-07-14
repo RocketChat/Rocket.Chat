@@ -1,6 +1,42 @@
 
 # 5.0.0 (Under Release Candidate Process)
 
+## 5.0.0-rc.6
+`2022-07-14  ·  6 🔍  ·  8 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Avoid unneeded permission updates when EE license is applied ([#26253](https://github.com/RocketChat/Rocket.Chat/pull/26253))
+
+- Chore: Disabled icon colors on sidebar ([#26257](https://github.com/RocketChat/Rocket.Chat/pull/26257))
+
+- Regression: Fix marketplace releases tab crash bug ([#26162](https://github.com/RocketChat/Rocket.Chat/pull/26162))
+
+  Fixed a bug where RC would crash because the marketplace releases tab was trying to display undefined data from manually installed apps. 
+  Demo gif:
+  ![app-releases-tab-crash-error](https://user-images.githubusercontent.com/43561537/177656489-325790d3-49e0-46c8-8ac2-1f74c6a309ad.gif)
+
+- Regression: Fix scheduler not working ([#26242](https://github.com/RocketChat/Rocket.Chat/pull/26242))
+
+- Regression: get user from `req` on `ui.interaction` endpoints ([#26256](https://github.com/RocketChat/Rocket.Chat/pull/26256))
+
+- Regression: Link not scrolling to message ([#26073](https://github.com/RocketChat/Rocket.Chat/pull/26073))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tapiarafael](https://github.com/tapiarafael)
+
 ## 5.0.0-rc.5
 `2022-07-13  ·  9 🔍  ·  13 👩‍💻👨‍💻`
 
