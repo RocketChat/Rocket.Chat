@@ -21,4 +21,14 @@ describe('Federation[Client] - Federation', () => {
 			});
 		});
 	});
+
+	describe('#canEdit()', () => {
+		it('should return true if current user is the room owner', () => {
+			expect(Federation.canEdit({ _id: 'id' } as any, { u: { _id: 'id' } } as any)).to.be.true;
+		});
+
+		it('should return false if current user is NOT the room owner', () => {
+			expect(Federation.canEdit({ _id: 'differentId' } as any, { u: { _id: 'id' } } as any)).to.be.false;
+		});
+	});
 });
