@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
 import mem from 'mem';
 import { IRoom, ISubscription, ISupportedLanguage, ITranslatedMessage, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 
@@ -37,8 +36,8 @@ export const AutoTranslate = {
 		}
 		const language = (subscription?.autoTranslateLanguage || userLanguage || window.defaultUserLanguage?.()) as string;
 		if (language.indexOf('-') !== -1) {
-			if (!_.findWhere(this.supportedLanguages, { language })) {
-				return language.substr(0, 2);
+			if (!this.supportedLanguages.some((supportedLanguage) => supportedLanguage.language === language)) {
+				return language.slice(0, 2);
 			}
 		}
 		return language;
@@ -123,10 +122,13 @@ export const createAutoTranslateMessageRenderer = (): ((message: ITranslatedMess
 				message.translations = {};
 			}
 			if (!!subscription?.autoTranslate !== !!message.autoTranslateShowInverse) {
-				const hasAttachmentsTranslate = _.find(
-					message.attachments as MessageAttachmentDefault[],
-					(attachment) => !!attachment.translations && !!attachment.translations[autoTranslateLanguage],
-				);
+				const hasAttachmentsTranslate =
+					message.attachments?.some(
+						(attachment) =>
+							'translations' in attachment &&
+							typeof attachment.translations === 'object' &&
+							autoTranslateLanguage in attachment.translations,
+					) ?? false;
 
 				message.translations.original = message.html;
 				if (message.translations[autoTranslateLanguage] && !hasAttachmentsTranslate) {
