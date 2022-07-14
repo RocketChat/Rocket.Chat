@@ -5,10 +5,12 @@ import { MatrixBaseEventHandler } from '../../../../../../../../../app/federatio
 describe('Federation - Infrastructure - Matrix - MatrixBaseEventHandler', () => {
 	describe('#equals()', () => {
 		class MyHandler extends MatrixBaseEventHandler {
-			public eventType: string = 'type';
+			public eventType = 'type';
+
 			public constructor() {
 				super();
 			}
+
 			public handle(): Promise<void> {
 				throw new Error('Method not implemented.');
 			}
@@ -24,10 +26,12 @@ describe('Federation - Infrastructure - Matrix - MatrixBaseEventHandler', () => 
 	describe('#handle()', () => {
 		const spyFn = spy();
 		class MyHandler extends MatrixBaseEventHandler {
-			public eventType: string = 'type';
+			public eventType = 'type';
+
 			public constructor() {
 				super();
 			}
+
 			public async handle(): Promise<void> {
 				spyFn();
 			}
