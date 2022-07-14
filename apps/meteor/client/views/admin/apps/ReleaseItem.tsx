@@ -14,10 +14,9 @@ type release = {
 
 type ReleaseItemProps = {
 	release: release;
-	key: string;
 };
 
-const ReleaseItem = ({ release, key, ...props }: ReleaseItemProps): JSX.Element => {
+const ReleaseItem = ({ release, ...props }: ReleaseItemProps): JSX.Element => {
 	const formatDate = useTimeAgo();
 
 	const title = (
@@ -32,7 +31,7 @@ const ReleaseItem = ({ release, key, ...props }: ReleaseItemProps): JSX.Element 
 	);
 
 	return (
-		<Accordion.Item key={key} title={title} {...props}>
+		<Accordion.Item title={title} {...props}>
 			{release.detailedChangelog?.rendered ? (
 				<Box dangerouslySetInnerHTML={{ __html: release.detailedChangelog?.rendered }} />
 			) : (
