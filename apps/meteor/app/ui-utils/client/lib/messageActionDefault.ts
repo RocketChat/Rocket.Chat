@@ -85,7 +85,9 @@ Meteor.startup(async function () {
 				component: ShareMessageModal,
 				props: {
 					message: message.msg,
+					name: message.u.name,
 					username: message.u.username,
+					attachments: message?.attachments,
 					time: message.ts,
 					// 	file: file.file,
 					// 	fileName: file.name,
