@@ -219,14 +219,7 @@ API.v1.addRoute(
 
 			const { rid: roomId } = this.bodyParams.message;
 
-			const subscriptionOptions = {
-				projection: {
-					blocked: 1,
-					blocker: 1,
-				},
-			};
-
-			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, subscriptionOptions);
+			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
 
 			if (!subscription) {
 				return API.v1.unauthorized();
