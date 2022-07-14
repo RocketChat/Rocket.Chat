@@ -7,7 +7,7 @@ import { useQuery } from 'react-query';
 export const SidebarFooterWatermark = (): ReactElement | null => {
 	const t = useTranslation();
 	const isEnterpriseEdition = useEndpoint('GET', '/v1/licenses.isEnterprise');
-	const result = useQuery(['licenses'], () => isEnterpriseEdition(), {
+	const result = useQuery(['licenses.isEnterprise'], () => isEnterpriseEdition(), {
 		refetchOnWindowFocus: false,
 	});
 

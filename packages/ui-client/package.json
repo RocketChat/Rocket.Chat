@@ -30,7 +30,7 @@
 		"jest": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"storybook": "start-storybook -p 6006",
-		"dev": "tsc -p --watch --preserveWatchOutput tsconfig.json"
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

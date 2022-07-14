@@ -141,7 +141,7 @@ API.v1.addRoute(
 	{
 		get() {
 			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { sort, query } = this.parseJsonQuery();
 
 			let commands = Object.values(slashCommands.commands);
 
@@ -151,16 +151,11 @@ API.v1.addRoute(
 
 			const totalCount = commands.length;
 
-			if (fields) {
-				console.warn('commands.list -> fields is deprecated and will be removed in 5.0.0');
-			}
-
 			return API.v1.success({
 				commands: processQueryOptionsOnResult(commands, {
 					sort: sort || { name: 1 },
 					skip: offset,
 					limit: count,
-					fields,
 				}),
 				offset,
 				count: commands.length,

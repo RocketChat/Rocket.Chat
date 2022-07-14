@@ -52,12 +52,7 @@ const AppDetails: FC<AppDetailsProps> = ({ app }) => {
 						<Box fontScale='h4' mbe='x8'>
 							{t('Description')}
 						</Box>
-						<Box
-							display='flex'
-							flexDirection='row'
-							mbe='neg-x16'
-							dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }}
-						/>
+						<Box dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }} withRichContent />
 					</Box>
 
 					<Box is='section'>
@@ -93,7 +88,11 @@ const AppDetails: FC<AppDetailsProps> = ({ app }) => {
 						</Box>
 					</Box>
 
-					<Box is='section'>{apis?.length && <APIsDisplay apis={apis || []} />}</Box>
+					{apis?.length ? (
+						<Box is='section'>
+							<APIsDisplay apis={apis || []} />
+						</Box>
+					) : null}
 				</Margins>
 			</Box>
 		</Box>

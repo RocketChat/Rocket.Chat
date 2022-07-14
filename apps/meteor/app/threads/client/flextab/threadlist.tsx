@@ -26,15 +26,17 @@ addAction('thread', (options) => {
 		() =>
 			threadsEnabled
 				? {
-						'groups': ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-						'id': 'thread',
-						'full': true,
-						'title': 'Threads',
-						'icon': 'thread',
+						groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+						id: 'thread',
+						full: true,
+						title: 'Threads',
+						icon: 'thread',
 						template,
-						'data-tooltip': 'Threads_unavailable_for_federation',
-						'disabled': federated,
-						'renderAction': (props): ReactNode => {
+						...(federated && {
+							'data-tooltip': 'Threads_unavailable_for_federation',
+							'disabled': true,
+						}),
+						renderAction: (props): ReactNode => {
 							const tunread = room.tunread?.length || 0;
 							const tunreadUser = room.tunreadUser?.length || 0;
 							const tunreadGroup = room.tunreadGroup?.length || 0;
@@ -46,7 +48,7 @@ addAction('thread', (options) => {
 								</Header.ToolBoxAction>
 							);
 						},
-						'order': 2,
+						order: 2,
 				  }
 				: null,
 		[threadsEnabled, room.tunread?.length, room.tunreadUser?.length, room.tunreadGroup?.length, federated],

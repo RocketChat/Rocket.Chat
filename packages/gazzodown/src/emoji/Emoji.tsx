@@ -12,7 +12,7 @@ type EmojiProps = MessageParser.Emoji & {
 const Emoji = ({ big = false, preview = false, ...emoji }: EmojiProps): ReactElement => {
 	const { detectEmoji } = useContext(MarkupInteractionContext);
 
-	const fallback = useMemo(() => ('unicode' in emoji ? emoji.unicode : `:${emoji.shortCode}:`), [emoji]);
+	const fallback = useMemo(() => ('unicode' in emoji ? emoji.unicode : `:${emoji.shortCode ?? emoji.value.value}:`), [emoji]);
 
 	const descriptors = useMemo(() => {
 		const detected = detectEmoji?.(fallback);
