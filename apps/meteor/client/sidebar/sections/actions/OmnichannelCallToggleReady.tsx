@@ -4,7 +4,7 @@ import React, { ReactElement, useCallback } from 'react';
 
 import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient } from '../../../contexts/CallContext';
 
-export const OmnichannelCallToggleReady = (): ReactElement => {
+export const OmnichannelCallToggleReady = ({ ...props }): ReactElement => {
 	const t = useTranslation();
 
 	const caller = useCallerInfo();
@@ -59,5 +59,5 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		color: getColor(),
 	};
 
-	return <Sidebar.TopBar.Action disabled={inCall} {...voipCallIcon} onClick={onClickVoipButton} />;
+	return <Sidebar.TopBar.Action disabled={inCall} {...voipCallIcon} {...props} onClick={onClickVoipButton} />;
 };
