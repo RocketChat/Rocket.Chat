@@ -149,10 +149,13 @@ const getStyle = (
 			--rcx-tag-colors-ghost-background-color: ${toVar(colors.n700)};
 			--rcx-color-surface: ${toVar(colors.n900)};
 
+			--rcx-button-colors-icon-disabled-color: ${toVar(colors.n700)};
+			--rcx-button-colors-icon-disabled-background-color: ${toVar(colors.n900)};
+			--rcx-button-colors-icon-disabled-border-color: ${toVar(colors.n900)};
+
 			--rcx-divider-color: ${h2r(toVar(colors.n900), 0.4)};
 			--rcx-color-foreground-alternative: ${toVar(colors.n100)};
 			--rcx-color-foreground-hint: ${toVar(colors.n600)};
-
 		}
 
 		.rcx-badge--danger {

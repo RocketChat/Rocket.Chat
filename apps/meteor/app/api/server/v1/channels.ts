@@ -18,8 +18,9 @@ import {
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
 } from '@rocket.chat/rest-typings';
+import { Messages } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions, Messages } from '../../../models/server';
+import { Rooms, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -247,7 +248,7 @@ API.v1.addRoute(
 		validateParams: isChannelsMessagesProps,
 	},
 	{
-		get() {
+		async get() {
 			const { roomId } = this.queryParams;
 			const findResult = findChannelByIdOrName({
 				params: { roomId },
@@ -269,15 +270,15 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const cursor = Messages.find(ourQuery, {
+			// @ts-expect-error recursive types are causing issues here
+			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			});
 
-			const total = cursor.count();
-			const messages = cursor.fetch();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),
