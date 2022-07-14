@@ -7,6 +7,7 @@ import MarkdownTextEditor from '../../../../../ee/client/omnichannel/components/
 import PreviewText from '../../../../../ee/client/omnichannel/components/CannedResponse/modals/CreateCannedResponse/PreviewText';
 import AutoCompleteMultiple from '../../../../components/AutoCompleteMultiple';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import Attachment from '../../../../components/message/Attachments';
 import { useForm } from '../../../../hooks/useForm';
 import { formatTime } from '../../../../lib/utils/formatTime';
 
@@ -22,6 +23,7 @@ type ShareMessageProps = {
 	username: string;
 	name: string;
 	time?: Date;
+	attachments: any;
 	invalidContentType?: boolean;
 };
 type roomType = {
@@ -30,7 +32,7 @@ type roomType = {
 	_id: string;
 	type: string;
 };
-const ShareMessageModal = ({ onClose, message, username, name, time }: ShareMessageProps): ReactElement => {
+const ShareMessageModal = ({ onClose, message, username, name, time, attachments }: ShareMessageProps): ReactElement => {
 	const [status, setStatus] = useState(0);
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -127,7 +129,16 @@ const ShareMessageModal = ({ onClose, message, username, name, time }: ShareMess
 										<Message.Username>@{username}</Message.Username>
 										<Message.Timestamp>{formatTime(time)}</Message.Timestamp>
 									</Message.Header>
-									<Message.Body style={{ wordBreak: 'break-word' }}>{message}</Message.Body>
+									<Message.Body style={{ wordBreak: 'break-word' }}>
+										{attachments?.[0]?.image_type || attachments?.[0]?.text ? (
+											<Attachment attachments={attachments} />
+										) : (
+											attachments?.[0]?.title
+										)}
+										<br />
+										{!attachments?.[0]?.text ? message : null}
+										{attachments?.[0]?.description}
+									</Message.Body>
 								</Message.Container>
 							</Message>
 						</Field>
