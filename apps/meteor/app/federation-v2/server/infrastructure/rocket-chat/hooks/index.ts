@@ -45,7 +45,7 @@ export class FederationHooks {
 	public static canAddUsersToTheRoom(callback: Function): void {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
-			(params: { user: IUser | string, inviter: IUser }, room: IRoom): void => {
+			(params: { user: IUser | string; inviter: IUser }, room: IRoom): void => {
 				Promise.await(callback(params.user, params.inviter, room));
 			},
 			callbacks.priority.HIGH,

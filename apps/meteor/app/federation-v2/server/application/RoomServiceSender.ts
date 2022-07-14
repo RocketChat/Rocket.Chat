@@ -158,14 +158,20 @@ export class FederationRoomServiceSender {
 		if (!externalRoom || !inviter) {
 			return;
 		}
-		
-		const isARoomFromTheProxyServer = this.bridge.isRoomFromTheSameHomeserver(externalRoom.externalId, this.rocketSettingsAdapter.getHomeServerDomain());
-		const isInviterFromTheProxyServer = this.bridge.isUserIdFromTheSameHomeserver(inviter.externalId, this.rocketSettingsAdapter.getHomeServerDomain());
-		
+
+		const isARoomFromTheProxyServer = this.bridge.isRoomFromTheSameHomeserver(
+			externalRoom.externalId,
+			this.rocketSettingsAdapter.getHomeServerDomain(),
+		);
+		const isInviterFromTheProxyServer = this.bridge.isUserIdFromTheSameHomeserver(
+			inviter.externalId,
+			this.rocketSettingsAdapter.getHomeServerDomain(),
+		);
+
 		if (!isARoomFromTheProxyServer && !isInviterFromTheProxyServer) {
 			return;
 		}
-		const tryingToAddNewFederatedUser = typeof internalUser === 'string'
+		const tryingToAddNewFederatedUser = typeof internalUser === 'string';
 		if (tryingToAddNewFederatedUser || (invitee && !invitee.existsOnlyOnProxyServer && internalRoom.t !== RoomType.DIRECT_MESSAGE)) {
 			throw new Error('error-this-is-an-ee-feature');
 		}

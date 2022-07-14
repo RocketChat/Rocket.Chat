@@ -5,7 +5,7 @@ import { MatrixBaseEventHandler } from './BaseEvent';
 import { MatrixEventRoomCreated } from '../definitions/events/RoomCreated';
 import { MatrixEventRoomMembershipChanged } from '../definitions/events/RoomMembershipChanged';
 import { MatrixEventRoomMessageSent } from '../definitions/events/RoomMessageSent';
-import { MatrixEventType } from '../definitions/events/MatrixEventType';
+import { MatrixEventType } from '../definitions/MatrixEventType';
 
 export class MatrixRoomCreatedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_CREATED;

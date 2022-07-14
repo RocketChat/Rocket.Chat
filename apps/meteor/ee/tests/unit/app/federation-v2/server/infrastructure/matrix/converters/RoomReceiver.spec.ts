@@ -2,13 +2,13 @@
 import { expect } from 'chai';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import { RoomJoinRules } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/IMatrixEventContent/IMatrixEventContentSetRoomJoinRules';
 import { MatrixRoomReceiverConverterEE } from '../../../../../../../../app/federation-v2/server/infrastructure/matrix/converters/RoomReceiver';
 import {
 	FederationRoomChangeJoinRulesDto,
 	FederationRoomChangeNameDto,
 	FederationRoomChangeTopicDto,
 } from '../../../../../../../../app/federation-v2/server/application/input/RoomReceiverDto';
+import { RoomJoinRules } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/RoomJoinRules';
 
 describe('FederationEE - Infrastructure - Matrix - MatrixRoomReceiverConverterEE', () => {
 	describe('#toRoomChangeJoinRulesDto()', () => {

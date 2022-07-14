@@ -1,5 +1,5 @@
 import { AbstractMatrixEvent, IBaseEventContent } from '../AbstractMatrixEvent';
-import { MatrixEventType } from './MatrixEventType';
+import { MatrixEventType } from '../MatrixEventType';
 
 export enum MatrixSendMessageType {
 	'm.text',

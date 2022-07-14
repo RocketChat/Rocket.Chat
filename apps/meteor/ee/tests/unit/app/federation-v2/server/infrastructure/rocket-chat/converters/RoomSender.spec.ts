@@ -4,8 +4,8 @@ import { expect } from 'chai';
 import {
 	FederationRoomInviteUserDto,
 	FederationOnRoomCreationDto,
-} from '../../../../../../../app/federation-v2/server/application/input/RoomSenderDto';
-import { FederationRoomSenderConverterEE } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
+} from '../../../../../../../../app/federation-v2/server/application/input/RoomSenderDto';
+import { FederationRoomSenderConverterEE } from '../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
 
 describe('FederationEE - Infrastructure - Matrix - FederationRoomSenderConverterEE', () => {
 	const inviteeId = '@marcos.defendi:matrix.org';

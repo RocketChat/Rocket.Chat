@@ -9,9 +9,9 @@ import {
 	FederationRoomSendInternalMessageDto,
 } from '../../../../../../../../../app/federation-v2/server/application/input/RoomReceiverDto';
 import { MatrixEventType } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixEventType';
-import { RoomJoinRules } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/IMatrixEventContent/IMatrixEventContentSetRoomJoinRules';
-import { AddMemberToRoomMembership } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/IMatrixEventContent/IMatrixEventContentAddMemberToRoom';
 import { EVENT_ORIGIN } from '../../../../../../../../../app/federation-v2/server/domain/IFederationBridge';
+import { RoomJoinRules } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/RoomJoinRules';
+import { AddMemberToRoomMembership } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/events/RoomMembershipChanged';
 
 describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', () => {
 	describe('#toRoomCreateDto()', () => {
@@ -75,6 +75,8 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 				externalInviterId: '@marcos.defendi:matrix.org',
 				normalizedInviterId: 'marcos.defendi:matrix.org',
 				wasInternallyProgramaticallyCreated: true,
+				externalRoomName: undefined,
+				roomType: undefined,
 			});
 		});
 	});
@@ -200,6 +202,8 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 				inviterUsernameOnly: 'marcos.defendi',
 				eventOrigin: EVENT_ORIGIN.REMOTE,
 				leave: false,
+				externalRoomName: undefined,
+				roomType: undefined,
 			});
 		});
 	});
