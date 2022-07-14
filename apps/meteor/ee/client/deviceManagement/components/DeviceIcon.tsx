@@ -20,7 +20,7 @@ const DeviceIcon = ({ deviceType }: { deviceType: string }): ReactElement => (
 		borderRadius='full'
 		mie='x8'
 	>
-		<Icon name={iconMap[deviceType]} size='x14' color='info' />
+		<Icon name={iconMap[deviceType] || 'globe'} size='x16' color='info' />
 	</Box>
 );
 
