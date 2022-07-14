@@ -67,12 +67,14 @@ export class IMAPInterceptor extends EventEmitter {
 			} else {
 				logger.error('IMAP did not connect.');
 				this.imap.end();
+				this.reconnect();
 			}
 		});
 
 		this.imap.on('error', (err: Error) => {
-			logger.error('Error occurred ...');
-			throw err;
+			logger.error('Error occurred: ', err);
+			this.imap.end();
+			this.reconnect();
 		});
 
 		this.imap.on('close', () => {
@@ -122,6 +124,7 @@ export class IMAPInterceptor extends EventEmitter {
 				this.backoff = setTimeout(loop, this.initialBackoffDurationMS);
 			} else {
 				logger.error('IMAP reconnection failed.');
+				clearTimeout(this.backoff);
 			}
 		};
 		this.backoff = setTimeout(loop, this.initialBackoffDurationMS);
