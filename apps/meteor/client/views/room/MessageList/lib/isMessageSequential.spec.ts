@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-import { IMessage } from '@rocket.chat/core-typings';
+import { IMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
@@ -145,8 +145,9 @@ describe('isMessageSequential', () => {
 	});
 
 	it('should return false if previous message is tshow', () => {
-		const previous: IMessage = {
+		const previous: IThreadMessage = {
 			...baseMessage,
+			tmid: 'threadId',
 			tshow: true,
 		};
 		const current: IMessage = {

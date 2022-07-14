@@ -6,6 +6,7 @@ import MarkdownText from '../../../../components/MarkdownText';
 import UTCClock from '../../../../components/UTCClock';
 import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
+import { usePresence } from '../../../../hooks/usePresence';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import InfoPanel from '../../../InfoPanel';
@@ -52,11 +53,13 @@ function UserInfo({
 		  })
 		: [];
 
+	const presence = usePresence(data._id);
+
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
 			<InfoPanel>
 				<InfoPanel.Avatar>
-					<Avatar size={'x332'} username={username} etag={data?.avatarETag} />
+					<Avatar size={'x332'} username={username} etag={presence?.avatarETag} />
 				</InfoPanel.Avatar>
 
 				{actions && <InfoPanel.Section>{actions}</InfoPanel.Section>}

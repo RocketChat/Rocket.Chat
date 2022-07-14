@@ -11,7 +11,7 @@ type RoomAvatarProps = {
 	size?: 'x16' | 'x20' | 'x28' | 'x36' | 'x40' | 'x124' | 'x332';
 	/* @deprecated */
 	url?: string;
-	room: IRoom;
+	room: Pick<IRoom, '_id' | 't' | 'avatarETag' | 'uids'>;
 };
 
 const RoomAvatar = function RoomAvatar({ room, ...rest }: RoomAvatarProps): ReactElement {

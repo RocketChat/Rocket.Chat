@@ -5,6 +5,7 @@ import React, { ReactElement, useState, MouseEvent } from 'react';
 
 import { ReactiveUserStatus } from '../../../../../../components/UserStatus';
 import UserAvatar from '../../../../../../components/avatar/UserAvatar';
+import { usePresence } from '../../../../../../hooks/usePresence';
 import { usePreventPropagation } from '../../../../../../hooks/usePreventPropagation';
 import UserActions from './UserActions';
 
@@ -21,13 +22,13 @@ export const MemberItem = ({ _id, name, username, federated, onClickView, rid, r
 	const handleMenuEvent = {
 		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
 	};
-
 	const preventPropagation = usePreventPropagation();
+	const presence = usePresence(_id);
 
 	return (
 		<Option id={_id} data-username={username} onClick={onClickView} {...handleMenuEvent}>
 			<OptionAvatar>
-				<UserAvatar username={username || ''} size='x28' />
+				<UserAvatar username={username || ''} etag={presence?.avatarETag} size='x28' />
 			</OptionAvatar>
 			<OptionColumn>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={_id} />}</OptionColumn>
 			<OptionContent data-qa={`MemberItem-${username}`}>

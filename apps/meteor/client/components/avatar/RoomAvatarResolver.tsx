@@ -5,7 +5,7 @@ import DirectRoomAvatar from './DirectRoomAvatar';
 import RoomAvatar from './RoomAvatar';
 
 const RoomAvatarResolver = (props: ComponentProps<typeof RoomAvatar>): ReactElement => {
-	if (isDirectMessageRoom(props.room) && props.room.uids?.length < 2) {
+	if (isDirectMessageRoom(props.room) && props.room.uids?.length < 3) {
 		return <DirectRoomAvatar {...props} />;
 	}
 
