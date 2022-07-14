@@ -6,12 +6,14 @@ import VideoConfPopupFooter from './VideoConfPopupFooter';
 import VideoConfPopupFooterButtons from './VideoConfPopupFooterButtons';
 import VideoConfPopupHeader from './VideoConfPopupHeader';
 import VideoConfPopupIcon from './VideoConfPopupIcon';
+import VideoConfPopupInfo from './VideoConfPopupInfo';
 import VideoConfPopupTitle from './VideoConfPopupTitle';
 
 export {
 	VideoConfPopup,
 	VideoConfPopupHeader,
 	VideoConfPopupIcon,
+	VideoConfPopupInfo,
 	VideoConfPopupContent,
 	VideoConfPopupTitle,
 	VideoConfPopupBackdrop,

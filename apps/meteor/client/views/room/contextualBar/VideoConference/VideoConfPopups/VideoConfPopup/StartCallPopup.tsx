@@ -1,5 +1,5 @@
 import { IRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useOutsideClick, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
@@ -13,25 +13,23 @@ import {
 	VideoConfPopupTitle,
 	VideoConfPopupFooterButtons,
 } from '@rocket.chat/ui-video-conf';
-import React, { ReactElement, forwardRef, Ref } from 'react';
+import React, { ReactElement, useRef } from 'react';
 
-import {
-	useVideoConfSetPreferences,
-	useVideoConfCapabilities,
-	useVideoConfPreferences,
-} from '../../../../../../../contexts/VideoConfContext';
-import VideoConfPopupRoomInfo from '../VideoConfPopupRoomInfo';
+import { useVideoConfSetPreferences, useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
+import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 
-type StartGroupCallPopup = {
+type StartCallPopup = {
+	id: string;
 	room: IRoom;
+	onClose: () => void;
 	onConfirm: () => void;
-	loading?: boolean;
+	loading: boolean;
 };
 
-const StartGroupCallPopup = forwardRef(function StartGroupCallPopup(
-	{ room, onConfirm, loading }: StartGroupCallPopup,
-	ref: Ref<HTMLDivElement>,
-): ReactElement {
+const StartCallPopup = ({ loading, room, onClose, onConfirm }: StartCallPopup): ReactElement => {
+	const ref = useRef<HTMLDivElement>(null);
+	useOutsideClick([ref], !loading ? onClose : (): void => undefined);
+
 	const t = useTranslation();
 	const setPreferences = useVideoConfSetPreferences();
 	const videoConfPreferences = useVideoConfPreferences();
@@ -40,16 +38,6 @@ const StartGroupCallPopup = forwardRef(function StartGroupCallPopup(
 
 	const showCam = !!capabilities.cam;
 	const showMic = !!capabilities.mic;
-
-	const handleToggleMicPref = useMutableCallback(() => {
-		handleToggleMic();
-		setPreferences({ mic: !controllersConfig.mic });
-	});
-
-	const handleToggleCamPref = useMutableCallback(() => {
-		handleToggleCam();
-		setPreferences({ cam: !controllersConfig.cam });
-	});
 
 	const handleStartCall = useMutableCallback(() => {
 		setPreferences(controllersConfig);
@@ -67,7 +55,7 @@ const StartGroupCallPopup = forwardRef(function StartGroupCallPopup(
 								active={controllersConfig.cam}
 								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 								icon={controllersConfig.cam ? 'video' : 'video-off'}
-								onClick={handleToggleCamPref}
+								onClick={handleToggleCam}
 							/>
 						)}
 						{showMic && (
@@ -75,7 +63,7 @@ const StartGroupCallPopup = forwardRef(function StartGroupCallPopup(
 								active={controllersConfig.mic}
 								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
 								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-								onClick={handleToggleMicPref}
+								onClick={handleToggleMic}
 							/>
 						)}
 					</VideoConfPopupControllers>
@@ -93,6 +81,6 @@ const StartGroupCallPopup = forwardRef(function StartGroupCallPopup(
 			</VideoConfPopupFooter>
 		</VideoConfPopup>
 	);
-});
+};
 
-export default StartGroupCallPopup;
+export default StartCallPopup;

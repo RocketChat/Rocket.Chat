@@ -12,7 +12,7 @@ import {
 } from '../../../../../../contexts/VideoConfContext';
 import IncomingPopup from './IncomingPopup';
 import OutgoingPopup from './OutgoingPopup';
-import StartCallPopup from './StartCallPopup/StartCallPopup';
+import StartCallPopup from './StartCallPopup';
 
 export type TimedVideoConfPopupProps = {
 	id: string;
