@@ -259,7 +259,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = Promise.await(this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnDocument: 'after' }));
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,

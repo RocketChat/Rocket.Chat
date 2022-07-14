@@ -184,7 +184,7 @@ export class LivechatDepartmentAgents extends Base {
 			},
 		};
 
-		const bot = this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnNewDocument: 'after' });
+		const bot = Promise.await(this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnNewDocument: 'after' }));
 		if (bot && bot.value) {
 			return {
 				agentId: bot.value.agentId,
