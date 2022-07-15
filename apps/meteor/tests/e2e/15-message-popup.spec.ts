@@ -2,12 +2,10 @@ import { Page, test, expect } from '@playwright/test';
 
 import { Auth, HomeChannel } from './page-objects'
 
-
 test.describe('Message Popup', () => {
 	let page: Page;
 	let pageAuth: Auth;
 	let pageHomeChannel: HomeChannel;
-
 
 	test.beforeAll(async ({ browser }) => {
 		const context = await browser.newContext();

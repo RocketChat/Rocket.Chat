@@ -12,7 +12,7 @@ test.describe('Register', () => {
 		pageAuth = new Auth(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async () => {
 		await page.goto('/');
 		await pageAuth.btnRegister.click();
 	})
