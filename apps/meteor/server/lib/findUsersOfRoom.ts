@@ -30,6 +30,7 @@ export function findUsersOfRoom({
 			status: 1,
 			avatarETag: 1,
 			_updatedAt: 1,
+			federated: 1,
 		},
 		sort: {
 			statusConnection: -1,
