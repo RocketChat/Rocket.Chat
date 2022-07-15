@@ -3,8 +3,7 @@ import { v4 as uuid } from 'uuid';
 
 import { BASE_API_URL } from './utils/constants';
 import { adminLogin, validUserInserted, registerUser } from './utils/mocks/userAndPasswordMock';
-
-import { Auth, HomeChannel, AccountProfile, Administration } from './page-objects'
+import { Auth, HomeChannel, AccountProfile, Administration } from './page-objects';
 
 const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
 
@@ -22,7 +21,7 @@ test.describe.skip('Settings', async () => {
 
 		await page.goto('/');
 		await pageAuth.doLogin(validUserInserted);
-		await pageHomeChannel.sidenav.doOpenChat('general')
+		await pageHomeChannel.sidenav.doOpenChat('general');
 	});
 
 	test.beforeAll(async ({ request }) => {
@@ -401,7 +400,7 @@ test.describe.skip('Settings (admin)', async () => {
 
 		await page.goto('/');
 		await pageAuth.doLogin();
-		await pageHomeChannel.sidenav.doOpenChat('general')
+		await pageHomeChannel.sidenav.doOpenChat('general');
 	});
 
 	test.beforeAll(async ({ request }) => {

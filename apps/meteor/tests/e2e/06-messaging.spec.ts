@@ -1,16 +1,16 @@
 import { expect, test, Browser, Page } from '@playwright/test';
 
 import { validUserInserted } from './utils/mocks/userAndPasswordMock';
-import { Auth, HomeChannel } from './page-objects'
+import { Auth, HomeChannel } from './page-objects';
 
-const createBrowserContextForChat = async (browser: Browser): Promise<{ page: Page, pageHomeChannel: HomeChannel }> => {
+const createBrowserContextForChat = async (browser: Browser): Promise<{ page: Page; pageHomeChannel: HomeChannel }> => {
 	const page = await browser.newPage();
 	const pageLogin = new Auth(page);
 	const pageHomeChannel = new HomeChannel(page);
 	await page.goto('/');
 	await pageLogin.doLogin(validUserInserted);
 
-	return {page, pageHomeChannel};
+	return { page, pageHomeChannel };
 };
 
 test.describe('Messaging', () => {
@@ -27,17 +27,17 @@ test.describe('Messaging', () => {
 	test.beforeAll(async () => {
 		await page.goto('/');
 		await pageLogin.doLogin();
-	})
+	});
 
 	test.describe('Normal messaging', async () => {
-		let anotherContext: { page: Page, pageHomeChannel: HomeChannel };
+		let anotherContext: { page: Page; pageHomeChannel: HomeChannel };
 
 		test.describe('General channel', async () => {
 			test.beforeAll(async ({ browser }) => {
 				anotherContext = await createBrowserContextForChat(browser);
 				await anotherContext.pageHomeChannel.sidenav.doOpenChat('general');
 				await anotherContext.pageHomeChannel.content.doSendMessage('Hello');
-				await pageHomeChannel.sidenav.doOpenChat('general')
+				await pageHomeChannel.sidenav.doOpenChat('general');
 				await pageHomeChannel.content.doSendMessage('Hello');
 			});
 
@@ -137,7 +137,7 @@ test.describe('Messaging', () => {
 
 		test.describe('Messaging actions', async () => {
 			test.beforeAll(async () => {
-				await pageHomeChannel.sidenav.doOpenChat('general')
+				await pageHomeChannel.sidenav.doOpenChat('general');
 			});
 
 			test('expect reply the message', async () => {

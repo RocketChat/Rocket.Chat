@@ -2,7 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 import faker from '@faker-js/faker';
 
 import { validUserInserted } from './utils/mocks/userAndPasswordMock';
-import { Auth, Administration, HomeChannel } from './page-objects'
+import { Auth, Administration, HomeChannel } from './page-objects';
 
 test.describe('Settings Permissions', () => {
 	let page: Page;

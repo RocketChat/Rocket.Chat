@@ -37,7 +37,7 @@ export class HomeSidenav {
 		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
-	createOptionByText(text: string) {
+	createOptionByText(text: string): Locator {
 		return this.page.locator(`li.rcx-option >> text="${text}"`);
 	}
 

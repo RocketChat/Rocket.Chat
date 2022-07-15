@@ -1,20 +1,20 @@
 import { Locator, expect, Page } from '@playwright/test';
 
-import { AdminFlextab, AdminSidenav } from './fragments'
+import { AdminFlextab, AdminSidenav } from './fragments';
 
 export class Administration {
 	private readonly page: Page;
 
 	tabs: AdminFlextab;
-	
+
 	sidenav: AdminSidenav;
 
 	constructor(page: Page) {
 		this.page = page;
-		this.tabs = new AdminFlextab(page)
+		this.tabs = new AdminFlextab(page);
 		this.sidenav = new AdminSidenav(page);
 	}
-	
+
 	get settingsSearch(): Locator {
 		return this.page.locator('input[type=search]');
 	}

@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-import { Auth, OmnichannelAgents } from './page-objects'
+import { Auth, OmnichannelAgents } from './page-objects';
 
 test.describe('Agents', () => {
 	let page: Page;
@@ -11,13 +11,13 @@ test.describe('Agents', () => {
 		page = await browser.newPage();
 		pageAuth = new Auth(page);
 		pageOmnichannelAgents = new OmnichannelAgents(page);
-	})
+	});
 
 	test.beforeAll(async () => {
 		await page.goto('/');
 		await pageAuth.doLogin();
-		await page.goto('/omnichannel')
-	})
+		await page.goto('/omnichannel');
+	});
 
 	test('expect admin/manager is able to add an agent', async () => {
 		await pageOmnichannelAgents.agentsLink.click();

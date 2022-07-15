@@ -42,7 +42,7 @@ export class AdminFlextab {
 	get usersAddUserRandomPassword(): Locator {
 		return this.page.locator('//div[text()="Set random password and send by email"]/following-sibling::label//input');
 	}
-	
+
 	get usersAddUserChangePasswordCheckbox(): Locator {
 		return this.page.locator('//div[text()="Require password change"]/following-sibling::label//input');
 	}
@@ -58,7 +58,7 @@ export class AdminFlextab {
 	get usersButtonCancel(): Locator {
 		return this.page.locator('//button[text()="Cancel"]');
 	}
-	
+
 	get usersAddUserTabClose(): Locator {
 		return this.page.locator('//div[text()="Add User"]//button');
 	}

@@ -1,5 +1,6 @@
-import { Locator, Page } from '@playwright/test';
 import fs from 'fs/promises';
+
+import { Locator, Page } from '@playwright/test';
 
 export class HomeContent {
 	private readonly page: Page;
@@ -23,7 +24,7 @@ export class HomeContent {
 	get lastMessage(): Locator {
 		return this.page.locator('.messages-box [data-qa-type="message"]').last();
 	}
-	
+
 	get lastUserMessage(): Locator {
 		return this.page.locator('[data-qa-type="message"]').last();
 	}
@@ -35,7 +36,7 @@ export class HomeContent {
 	get userCardLinkProfile(): Locator {
 		return this.page.locator('[data-qa="UserCard"] a');
 	}
-	
+
 	get messagePopUp(): Locator {
 		return this.page.locator('.message-popup');
 	}
@@ -47,7 +48,7 @@ export class HomeContent {
 	get messagePopUpItems(): Locator {
 		return this.page.locator('.message-popup-items');
 	}
-	
+
 	get inputMain(): Locator {
 		return this.page.locator('[name="msg"]');
 	}
@@ -89,15 +90,15 @@ export class HomeContent {
 			'//div[@id="modal-root"]//header//following-sibling::div[1]//div//div//img | //div[@id="modal-root"]//header//following-sibling::div[1]//div//div//div//i',
 		);
 	}
-	
+
 	get buttonSend(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 	}
-	
+
 	get descriptionInput(): Locator {
 		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
 	}
-	
+
 	get getFileDescription(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-description"]');
 	}
@@ -137,7 +138,9 @@ export class HomeContent {
 		await this.page.waitForSelector('.rc-popover__content');
 	}
 
-	async doSelectAction(action: 'edit' | 'reply' | 'delete' | 'permalink' | 'copy' | 'quote' | 'star' | 'unread' | 'reaction'): Promise<void> {
+	async doSelectAction(
+		action: 'edit' | 'reply' | 'delete' | 'permalink' | 'copy' | 'quote' | 'star' | 'unread' | 'reaction',
+	): Promise<void> {
 		switch (action) {
 			case 'edit':
 				await this.page.locator('[data-qa-id="edit-message"]').click();

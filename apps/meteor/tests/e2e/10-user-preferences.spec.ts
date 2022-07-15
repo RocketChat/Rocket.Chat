@@ -9,8 +9,8 @@ test.describe('User preferences', () => {
 	let pageHomeChannel: HomeChannel;
 	let pageAccountProfile: AccountProfile;
 
-	let newName = faker.name.findName();
-	let newUsername = faker.internet.userName(newName);
+	const newName = faker.name.findName();
+	const newUsername = faker.internet.userName(newName);
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();

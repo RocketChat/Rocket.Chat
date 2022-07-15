@@ -1,6 +1,6 @@
 import { Page, test, expect } from '@playwright/test';
 
-import { Auth, HomeChannel } from './page-objects'
+import { Auth, HomeChannel } from './page-objects';
 
 test.describe('Message Popup', () => {
 	let page: Page;
@@ -18,7 +18,7 @@ test.describe('Message Popup', () => {
 		await page.goto('/');
 		await pageAuth.doLogin();
 		await pageHomeChannel.sidenav.doOpenChat('public channel');
-	})
+	});
 
 	test.describe('User mentions', () => {
 		test('expect show message popup', async () => {

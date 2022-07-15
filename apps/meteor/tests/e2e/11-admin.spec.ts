@@ -1,23 +1,23 @@
 import { test, expect, Page } from '@playwright/test';
 
-import { Auth, Administration } from './page-objects'
+import { Auth, Administration } from './page-objects';
 
 test.describe('Administration', () => {
 	let page: Page;
 	let pageAuth: Auth;
-	let pageAdmin: Administration
+	let pageAdmin: Administration;
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
 		pageAuth = new Auth(page);
 		pageAdmin = new Administration(page);
 	});
-	
+
 	test.beforeAll(async () => {
 		await page.goto('/');
 		await pageAuth.doLogin();
-		await page.goto('/admin')
-	})
+		await page.goto('/admin');
+	});
 
 	test.describe('Admin View', () => {
 		test.describe('Info', () => {

@@ -19,7 +19,7 @@ export class HomeDiscussion {
 		this.tabs = new HomeFlextab(page);
 	}
 
-  get startDiscussionContextItem(): Locator {
+	get startDiscussionContextItem(): Locator {
 		return this.page.locator('[data-qa-id="start-discussion"][data-qa-type="message-action"]');
 	}
 

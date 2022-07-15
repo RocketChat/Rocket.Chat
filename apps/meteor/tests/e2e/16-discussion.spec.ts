@@ -2,7 +2,7 @@ import { test, Page } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { v4 as uuid } from 'uuid';
 
-import { Auth, HomeDiscussion } from './page-objects'
+import { Auth, HomeDiscussion } from './page-objects';
 
 test.describe('[Discussion]', () => {
 	let page: Page;
@@ -18,7 +18,7 @@ test.describe('[Discussion]', () => {
 	test.beforeAll(async () => {
 		await page.goto('/');
 		await pageAuth.doLogin();
-	})
+	});
 
 	test.describe('[Create discussion from screen]', () => {
 		test('expect discussion is created', async () => {

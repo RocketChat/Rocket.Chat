@@ -22,7 +22,7 @@ test.describe('Channel Creation', () => {
 		const name = faker.animal.type() + Date.now();
 
 		await pageHomeChannel.sidenav.btnCreate.click();
-		await pageHomeChannel.sidenav.createOptionByText("Channel").click();
+		await pageHomeChannel.sidenav.createOptionByText('Channel').click();
 		await pageHomeChannel.sidenav.checkboxChannelType.click();
 		await pageHomeChannel.sidenav.inputChannelName.type(name);
 		await pageHomeChannel.sidenav.btnCreateChannel.click();
@@ -34,7 +34,7 @@ test.describe('Channel Creation', () => {
 		const name = faker.animal.type() + Date.now();
 
 		await pageHomeChannel.sidenav.btnCreate.click();
-		await pageHomeChannel.sidenav.createOptionByText("Channel").click();
+		await pageHomeChannel.sidenav.createOptionByText('Channel').click();
 		await pageHomeChannel.sidenav.inputChannelName.type(name);
 		await pageHomeChannel.sidenav.btnCreateChannel.click();
 

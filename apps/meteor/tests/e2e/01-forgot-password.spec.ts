@@ -14,7 +14,7 @@ test.describe('Forgot Password', () => {
 	test.beforeAll(async () => {
 		await page.goto('/');
 		await pageAuth.btnForgotPassword.click();
-	})
+	});
 
 	test('expect trigger a validation error if no email is provided', async () => {
 		await pageAuth.btnSubmit.click();

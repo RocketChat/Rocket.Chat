@@ -84,7 +84,7 @@ export class OmnichannelAgents {
 	get modal(): Locator {
 		return this.page.locator('#modal-root');
 	}
-	
+
 	get btnModalCancel(): Locator {
 		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--secondary');
 	}

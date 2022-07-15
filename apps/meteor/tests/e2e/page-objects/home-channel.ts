@@ -18,7 +18,7 @@ export class HomeChannel {
 		this.tabs = new HomeFlextab(page);
 	}
 
-	async doDismissToast() {
+	async doDismissToast(): Promise<void> {
 		if (await this.page.locator('.rcx-toastbar').isVisible()) {
 			await this.page.locator('.rcx-toastbar').locator('button').click();
 		}

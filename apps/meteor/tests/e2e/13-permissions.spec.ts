@@ -2,7 +2,7 @@ import { Page, test, expect } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 import faker from '@faker-js/faker';
 
-import { Auth, Administration, HomeChannel } from './page-objects'
+import { Auth, Administration, HomeChannel } from './page-objects';
 
 test.describe('Permissions', () => {
 	let page: Page;
@@ -15,7 +15,7 @@ test.describe('Permissions', () => {
 		password: 'any_password',
 		name: faker.name.findName(),
 		username: faker.internet.userName(),
-	}
+	};
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
@@ -73,10 +73,10 @@ test.describe('Permissions', () => {
 	test.describe('assert "anyUser" permissions', () => {
 		test.beforeAll(async () => {
 			await pageHomeChannel.sidenav.doLogout();
-			
+
 			await page.goto('/');
 			await pageAuth.doLogin(anyUser);
-			await pageHomeChannel.sidenav.doOpenChat('general')
+			await pageHomeChannel.sidenav.doOpenChat('general');
 		});
 
 		test('expect not be abble to "mention all"', async () => {

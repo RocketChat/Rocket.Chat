@@ -1,7 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 
 import { publicChannelCreated, setPublicChannelCreated } from './utils/mocks/checks';
-import { Auth, HomeChannel } from './page-objects'
+import { Auth, HomeChannel } from './page-objects';
 
 const anyUser = 'rocket.cat';
 const anyChannelName = `channel-test-${Date.now()}`;
@@ -238,7 +238,7 @@ test.describe('Channel', () => {
 						await pageHomeChannel.tabs.btnTabInfo.click();
 					}
 				});
-				
+
 				test('expect edit channel name', async () => {
 					await pageHomeChannel.tabs.editNameBtn.click();
 					await pageHomeChannel.tabs.editNameTextInput.fill(`NAME-EDITED-${anyChannelName}`);

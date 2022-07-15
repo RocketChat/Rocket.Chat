@@ -1,87 +1,7 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 
 import { setupWizardStepRegex } from './utils/mocks/urlMock';
-import { Auth } from './page-objects'
-
-test.describe('[Wizard]', () => {
-	let page: Page;
-	let pageAuth: Auth;
-
-	let setupWizard: SetupWizard;
-
-	test.beforeEach(async ({ browser }) => {
-		page = await browser.newPage();
-		pageAuth = new Auth(page);
-		setupWizard = new SetupWizard(page);
-	});
-
-	test.describe('[Step 2]', async () => {
-		test.beforeEach(async () => {
-			await page.goto('/');
-			await pageAuth.doLogin();
-		});
-
-		test('expect required field alert showed when user dont inform data', async () => {
-			await setupWizard.stepTwoFailedWithBlankFields();
-		});
-
-		test('expect go to Step 3 successfully', async () => {
-			await setupWizard.stepTwoSuccess();
-			await expect(page).toHaveURL(setupWizardStepRegex._3);
-		});
-	});
-
-	test.describe('[Step 3]', async () => {
-		test.beforeEach(async () => {
-			await page.goto('');
-			await pageAuth.doLogin();
-			await setupWizard.stepTwoSuccess();
-		});
-
-		test('expect have email field to register the server', async () => {
-			await expect(setupWizard.registeredServer).toBeVisible();
-		});
-
-		test('expect start "Register" button disabled', async () => {
-			await expect(setupWizard.registerButton).toBeDisabled();
-		});
-
-		test('expect show an error on invalid email', async () => {
-			await setupWizard.stepThreeFailedWithInvalidField();
-		});
-
-		test('expect enable "Register" button when email is valid and terms checked', async () => {
-			await setupWizard.registeredServer.type('mail@mail.com');
-			await setupWizard.agreementField.click();
-			await expect(setupWizard.registerButton).toBeEnabled();
-		});
-
-		test('expect have option for standalone server', async () => {
-			await expect(setupWizard.standaloneServer).toBeVisible();
-		});
-	});
-
-	test.describe('[Final Step]', async () => {
-		test.beforeEach(async () => {
-			await page.goto('');
-			await pageAuth.doLogin();
-			await setupWizard.stepTwoSuccess();
-			await setupWizard.stepThreeSuccess();
-		});
-
-		test('expect confirm the standalone option', async () => {
-			await expect(setupWizard.goToWorkspace).toBeVisible();
-			await expect(setupWizard.standaloneConfirmText).toBeVisible();
-		});
-
-		test('expect confirm standalone', async () => {
-			await setupWizard.goToWorkspace.click();
-			// HOME_SELECTOR
-			await page.waitForSelector('//span[@class="rc-header__block"]');
-		});
-	});
-});
-
+import { Auth } from './page-objects';
 
 class SetupWizard {
 	private readonly page: Page;
@@ -230,7 +150,7 @@ class SetupWizard {
 		await expect(this.passwordInvalidText).toBeVisible();
 	}
 
-	async stepOneFailedWithInvalidEmail(adminCredentials: { name: string, password: string }): Promise<void> {
+	async stepOneFailedWithInvalidEmail(adminCredentials: { name: string; password: string }): Promise<void> {
 		await this.fullName.type(adminCredentials.name);
 		await this.userName.type(adminCredentials.name);
 		await this.companyEmail.type('mail');
@@ -254,3 +174,82 @@ class SetupWizard {
 		await expect(this.stepThreeInputInvalidMail).toBeVisible();
 	}
 }
+
+test.describe('[Wizard]', () => {
+	let page: Page;
+	let pageAuth: Auth;
+
+	let setupWizard: SetupWizard;
+
+	test.beforeEach(async ({ browser }) => {
+		page = await browser.newPage();
+		pageAuth = new Auth(page);
+		setupWizard = new SetupWizard(page);
+	});
+
+	test.describe('[Step 2]', async () => {
+		test.beforeEach(async () => {
+			await page.goto('/');
+			await pageAuth.doLogin();
+		});
+
+		test('expect required field alert showed when user dont inform data', async () => {
+			await setupWizard.stepTwoFailedWithBlankFields();
+		});
+
+		test('expect go to Step 3 successfully', async () => {
+			await setupWizard.stepTwoSuccess();
+			await expect(page).toHaveURL(setupWizardStepRegex._3);
+		});
+	});
+
+	test.describe('[Step 3]', async () => {
+		test.beforeEach(async () => {
+			await page.goto('');
+			await pageAuth.doLogin();
+			await setupWizard.stepTwoSuccess();
+		});
+
+		test('expect have email field to register the server', async () => {
+			await expect(setupWizard.registeredServer).toBeVisible();
+		});
+
+		test('expect start "Register" button disabled', async () => {
+			await expect(setupWizard.registerButton).toBeDisabled();
+		});
+
+		test('expect show an error on invalid email', async () => {
+			await setupWizard.stepThreeFailedWithInvalidField();
+		});
+
+		test('expect enable "Register" button when email is valid and terms checked', async () => {
+			await setupWizard.registeredServer.type('mail@mail.com');
+			await setupWizard.agreementField.click();
+			await expect(setupWizard.registerButton).toBeEnabled();
+		});
+
+		test('expect have option for standalone server', async () => {
+			await expect(setupWizard.standaloneServer).toBeVisible();
+		});
+	});
+
+	test.describe('[Final Step]', async () => {
+		test.beforeEach(async () => {
+			await page.goto('');
+			await pageAuth.doLogin();
+			await setupWizard.stepTwoSuccess();
+			await setupWizard.stepThreeSuccess();
+		});
+
+		test('expect confirm the standalone option', async () => {
+			await expect(setupWizard.goToWorkspace).toBeVisible();
+			await expect(setupWizard.standaloneConfirmText).toBeVisible();
+		});
+
+		test('expect confirm standalone', async () => {
+			await setupWizard.goToWorkspace.click();
+			// HOME_SELECTOR
+			await page.waitForSelector('//span[@class="rc-header__block"]');
+		});
+	});
+});

@@ -7,11 +7,11 @@ export class OmnichannelDepartaments {
 		this.page = page;
 	}
 
-  get btnToastClose(): Locator {
-    return this.page.locator('.rcx-toastbar').locator('button')
-  }
+	get btnToastClose(): Locator {
+		return this.page.locator('.rcx-toastbar').locator('button');
+	}
 
-  get departmentsLink(): Locator {
+	get departmentsLink(): Locator {
 		return this.page.locator('a[href="omnichannel/departments"]');
 	}
 

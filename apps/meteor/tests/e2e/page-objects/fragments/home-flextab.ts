@@ -92,22 +92,22 @@ export class HomeFlextab {
 		await this.page.locator('[data-qa-type="autocomplete-user-option"]').click();
 		await this.page.locator('//button[contains(text(), "Add users")]').click();
 	}
-	
+
 	async doMuteUser(username: string): Promise<void> {
-		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click()
+		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
 		await this.page.locator('[data-qa="UserUserInfo-menu"]').click();
 		await this.page.locator('[value="muteUser"]').click();
 		await this.page.locator('.rcx-modal .rcx-button--danger').click();
 		await this.page.locator('(//main//aside/h3//button)[1]').click();
 	}
-	
+
 	async doSetUserOwner(username: string): Promise<void> {
-		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click()
+		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
 		await this.page.locator('//main//aside//button[contains(text(), "Set as owner")]').click();
 	}
 
 	async doSetUserModerator(username: string): Promise<void> {
-		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click()
+		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
 		await this.page.locator('[data-qa="UserUserInfo-menu"]').click();
 		await this.page.locator('[value="changeModerator"]').click();
 	}

@@ -1,17 +1,17 @@
 import { test, expect, Page } from '@playwright/test';
 
-import { Auth, HomeChannel } from './page-objects'
+import { Auth, HomeChannel } from './page-objects';
 
 test.describe('Emoji', () => {
 	let page: Page;
 	let pageAuth: Auth;
 	let pageHomeChannel: HomeChannel;
-	
+
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
-		pageAuth = new Auth(page)
+		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
-	})
+	});
 
 	test.beforeAll(async () => {
 		await page.goto('/');
@@ -82,7 +82,7 @@ test.describe('Emoji', () => {
 			await pageHomeChannel.content.doSendMessage('0 1 2 3 4 5 6 7 8 9');
 			await expect(pageHomeChannel.content.lastUserMessage).toContainText('0 1 2 3 4 5 6 7 8 9');
 		});
-		
+
 		test('should render special characters', async () => {
 			await pageHomeChannel.content.doSendMessage('® © ™ # *');
 			await expect(pageHomeChannel.content.lastUserMessage).toContainText('® © ™ # *');

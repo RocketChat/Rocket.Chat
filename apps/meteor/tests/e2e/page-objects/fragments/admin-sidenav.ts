@@ -7,7 +7,7 @@ export class AdminSidenav {
 		this.page = page;
 	}
 
-  get linkUsers(): Locator {
+	get linkUsers(): Locator {
 		return this.page.locator('.flex-nav [href="/admin/users"]');
 	}
 }

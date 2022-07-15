@@ -15,7 +15,7 @@ test.describe('Register', () => {
 	test.beforeEach(async () => {
 		await page.goto('/');
 		await pageAuth.btnRegister.click();
-	})
+	});
 
 	test('expect trigger a validation error if no data is provided', async () => {
 		await pageAuth.btnSubmit.click();
