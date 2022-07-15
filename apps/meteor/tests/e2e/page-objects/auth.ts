@@ -71,11 +71,9 @@ export class Auth {
 
 	async doLogin(input = ADMIN_CREDENTIALS): Promise<void> {
 		await this.page.goto('/');
-
 		await this.page.locator('[name=emailOrUsername]').type(input.email);
 		await this.page.locator('[name=pass]').type(input.password);
 		await this.page.locator('.login').click();
-
 		await this.page.waitForSelector('text="Welcome to Rocket.Chat!"')
 	}
 }

@@ -18,4 +18,12 @@ export class AccountProfile {
 	get btnSubmit(): Locator {
 		return this.page.locator('[data-qa="AccountProfilePageSaveButton"]');
 	}
+
+	get avatarFileInput(): Locator {
+		return this.page.locator('.avatar-file-input');
+	}
+
+	get emailTextInput(): Locator {
+		return this.page.locator('//label[contains(text(), "Email")]/..//input');
+	}
 }

@@ -1,5 +1,5 @@
 export * from './account-profile'
-export * from './admin'
+export * from './administration'
 export * from './auth'
 export * from './home-channel'
 export * from './home-discussion'
