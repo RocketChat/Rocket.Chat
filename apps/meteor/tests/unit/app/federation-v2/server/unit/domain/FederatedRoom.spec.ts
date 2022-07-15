@@ -78,11 +78,38 @@ describe('Federation - Domain - FederatedRoom', () => {
 	});
 
 	describe('#buildRoomIdForDirectMessages()', () => {
+		it('should throw an error if the inviter does not have the user', () => {
+			expect(() =>
+				FederatedRoom.buildRoomIdForDirectMessages(
+					{ internalReference: undefined } as any,
+					{ internalReference: { _id: 'userId2', name: 'name' } } as any,
+				),
+			).to.throw('Cannot create room Id without the user ids');
+		});
+
+		it('should throw an error if the invitee does not have the user', () => {
+			expect(() =>
+				FederatedRoom.buildRoomIdForDirectMessages(
+					{ internalReference: { _id: 'userId2', name: 'name' } } as any,
+					{ internalReference: undefined } as any,
+				),
+			).to.throw('Cannot create room Id without the user ids');
+		});
+
 		it('should return a string with the users id concatenated', () => {
 			expect(
 				FederatedRoom.buildRoomIdForDirectMessages(
-					{ internalReference: { _id: 'userId1' } } as any,
-					{ internalReference: { _id: 'userId2' } } as any,
+					{ internalReference: { _id: 'userId1', name: 'name' } } as any,
+					{ internalReference: { _id: 'userId2', name: 'name' } } as any,
+				),
+			).to.be.equal('userId1userId2');
+		});
+
+		it('should return a string with the users id concatenated ordering alphabetically', () => {
+			expect(
+				FederatedRoom.buildRoomIdForDirectMessages(
+					{ internalReference: { _id: 'userId1', name: 'name2' } } as any,
+					{ internalReference: { _id: 'userId2', name: 'name1' } } as any,
 				),
 			).to.be.equal('userId1userId2');
 		});

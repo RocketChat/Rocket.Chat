@@ -52,7 +52,6 @@ export class RocketChatUserAdapter {
 	public async createFederatedUser(federatedUser: FederatedUser): Promise<void> {
 		const existingLocalUser = await Users.findOneByUsername(federatedUser.internalReference.username || '');
 		if (existingLocalUser) {
-			await Users.setAsFederated(existingLocalUser._id);
 			return MatrixBridgedUser.upsert(
 				{ uid: existingLocalUser._id },
 				{

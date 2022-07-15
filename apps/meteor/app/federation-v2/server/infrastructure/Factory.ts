@@ -95,6 +95,7 @@ export class FederationFactory {
 		FederationHooks.canAddUsersToTheRoom((user: IUser | string, inviter: IUser, room: IRoom) =>
 			roomServiceSender.canAddUsersToTheRoom(user, inviter, room),
 		);
+		FederationHooks.beforeCreateDirectMessage((members: (IUser | string)[]) => roomServiceSender.beforeCreateDirectMessageFromUI(members));
 	}
 
 	public static removeListeners(): void {

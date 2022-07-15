@@ -4,6 +4,7 @@ import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocke
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useEffect, ReactElement } from 'react';
 
+import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import FilterByText from '../../../../components/FilterByText';
 import {
 	GenericTable,
@@ -143,8 +144,8 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 									onClick={onRowClick(_id)}
 								>
 									<GenericTableCell withTruncatedText>{username}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{phoneNumber}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(name)}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>
 									<GenericTableCell>{isCallReady && <CallDialpadButton phoneNumber={phoneNumber} />}</GenericTableCell>
