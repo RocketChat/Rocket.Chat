@@ -32,7 +32,7 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 };
 
 type MessageActionGroup = 'message' | 'menu';
-type MessageActionContext = 'message' | 'threads' | 'message-mobile' | 'pinned' | 'direct' | 'starred' | 'mentions';
+type MessageActionContext = 'message' | 'threads' | 'message-mobile' | 'pinned' | 'direct' | 'starred' | 'mentions' | 'federated';
 
 type MessageActionConditionProps = {
 	message: IMessage;

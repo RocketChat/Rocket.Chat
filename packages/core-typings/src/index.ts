@@ -110,3 +110,6 @@ export * from './IInquiry';
 export * from './ILivechatPriority';
 
 export * from './IAutoTranslate';
+export * from './IVideoConference';
+export * from './VideoConferenceCapabilities';
+export * from './VideoConferenceOptions';

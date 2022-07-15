@@ -1,4 +1,5 @@
-import type { SlashCommand, SlashCommandPreviews } from '../../../core-typings/dist';
+import type { SlashCommand, SlashCommandPreviews } from '@rocket.chat/core-typings';
+
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -10,7 +11,7 @@ export type CommandsEndpoints = {
 	};
 	'/v1/commands.list': {
 		GET: (
-			params: PaginatedRequest<{
+			params?: PaginatedRequest<{
 				fields?: string;
 			}>,
 		) => PaginatedResult<{

@@ -1,11 +1,9 @@
-import { getCollectionName } from '@rocket.chat/models';
-
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 
 export class LivechatRoomsRaw extends BaseRaw {
 	constructor(db, trash) {
-		super(db, getCollectionName('room'), trash);
+		super(db, 'room', trash);
 	}
 
 	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {
@@ -923,6 +921,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findPaginatedByVisitorId(visitorId, options) {
+		const query = {
+			't': 'l',
+			'v._id': visitorId,
+		};
+		return this.findPaginated(query, options);
+	}
+
 	findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, searchText, open, served, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
@@ -1068,7 +1074,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			};
 		}
 
-		return this.find(query, {
+		return this.findPaginated(query, {
 			sort: options.sort || { name: 1 },
 			skip: options.offset,
 			limit: options.count,
@@ -1185,5 +1191,9 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 	setDepartmentByRoomId(roomId, departmentId) {
 		return this.update({ _id: roomId }, { $set: { departmentId } });
+	}
+
+	findOpen() {
+		return this.find({ t: 'l', open: true });
 	}
 }

@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
+import moment from 'moment';
 
 import { hasPermission } from '../../app/authorization/client';
 import { register } from '../../app/markdown/lib/hljs';
@@ -39,13 +40,17 @@ Meteor.startup(() => {
 		}
 
 		const user = await synchronizeUserData(uid);
-
 		if (!user) {
 			return;
 		}
 
+		const utcOffset = moment().utcOffset() / 60;
+		if (user.utcOffset !== utcOffset) {
+			Meteor.call('userSetUtcOffset', utcOffset);
+		}
+
 		if (getUserPreference(user, 'enableAutoAway')) {
-			const idleTimeLimit = getUserPreference(user, 'idleTimeLimit') || 300;
+			const idleTimeLimit = (getUserPreference(user, 'idleTimeLimit') as number | null | undefined) || 300;
 			UserPresence.awayTime = idleTimeLimit * 1000;
 		} else {
 			delete UserPresence.awayTime;

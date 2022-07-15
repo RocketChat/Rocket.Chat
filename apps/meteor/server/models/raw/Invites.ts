@@ -1,13 +1,12 @@
 import type { IInvite, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IInvitesModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, UpdateWriteOpResult } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Collection, Db, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class InvitesRaw extends BaseRaw<IInvite> implements IInvitesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IInvite>>) {
-		super(db, getCollectionName('invites'), trash);
+		super(db, 'invites', trash);
 	}
 
 	findOneByUserRoomMaxUsesAndExpiration(userId: string, rid: string, maxUses: number, daysToExpire: number): Promise<IInvite | null> {
@@ -21,7 +20,7 @@ export class InvitesRaw extends BaseRaw<IInvite> implements IInvitesModel {
 		});
 	}
 
-	increaseUsageById(_id: string, uses = 1): Promise<UpdateWriteOpResult> {
+	increaseUsageById(_id: string, uses = 1): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id },
 			{
@@ -33,9 +32,7 @@ export class InvitesRaw extends BaseRaw<IInvite> implements IInvitesModel {
 	}
 
 	async countUses(): Promise<number> {
-		const [result] = await this.col
-			.aggregate<{ totalUses: number } | undefined>([{ $group: { _id: null, totalUses: { $sum: '$uses' } } }])
-			.toArray();
+		const [result] = await this.col.aggregate<{ totalUses: number }>([{ $group: { _id: null, totalUses: { $sum: '$uses' } } }]).toArray();
 
 		return result?.totalUses || 0;
 	}

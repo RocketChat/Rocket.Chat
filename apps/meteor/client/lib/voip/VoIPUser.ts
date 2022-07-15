@@ -33,6 +33,7 @@ import {
 	Registerer,
 	SessionInviteOptions,
 	RequestPendingError,
+	Inviter,
 } from 'sip.js';
 import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
@@ -228,6 +229,10 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this._connectionState = 'WAITING_FOR_NETWORK';
 	}
 
+	get userConfig(): VoIPUserConfiguration {
+		return this.config;
+	}
+
 	get callState(): CallStates {
 		return this._callState;
 	}
@@ -237,7 +242,12 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	}
 
 	get callerInfo(): VoIpCallerInfo {
-		if (this.callState === 'IN_CALL' || this.callState === 'OFFER_RECEIVED' || this.callState === 'ON_HOLD') {
+		if (
+			this.callState === 'IN_CALL' ||
+			this.callState === 'OFFER_RECEIVED' ||
+			this.callState === 'ON_HOLD' ||
+			this.callState === 'OFFER_SENT'
+		) {
 			if (!this._callerInfo) {
 				throw new Error('[VoIPUser callerInfo] invalid state');
 			}
@@ -661,7 +671,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	}
 
 	private canEndOrHoldCall(): boolean {
-		return ['ANSWER_SENT', 'ANSWER_RECEIVED', 'IN_CALL', 'ON_HOLD'].includes(this._callState);
+		return ['ANSWER_SENT', 'ANSWER_RECEIVED', 'IN_CALL', 'ON_HOLD', 'OFFER_SENT'].includes(this._callState);
 	}
 
 	/* Helper routines for checking call actions END */
@@ -706,6 +716,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			case SessionState.Establishing:
 				if (this.session instanceof Invitation) {
 					return this.session.reject();
+				}
+				if (this.session instanceof Inviter) {
+					return this.session.cancel();
 				}
 				throw new Error('Session not instance of Invitation.');
 			case SessionState.Established:
@@ -1045,7 +1058,11 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	// }
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-	async makeCall(_callee: string, _mediaRenderer?: IMediaStreamRenderer): Promise<void> {
+	async makeCallURI(_callee: string, _mediaRenderer?: IMediaStreamRenderer): Promise<void> {
+		throw new Error('Not implemented');
+	}
+
+	async makeCall(_calleeNumber: string): Promise<void> {
 		throw new Error('Not implemented');
 	}
 }

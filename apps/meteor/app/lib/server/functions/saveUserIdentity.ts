@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import type { IMessage } from '@rocket.chat/core-typings';
+import { VideoConference } from '@rocket.chat/models';
 
 import { _setUsername } from './setUsername';
 import { _setRealName } from './setRealName';
@@ -87,6 +88,9 @@ export function saveUserIdentity({
 
 			// update name and fname of group direct messages
 			updateGroupDMsName(user);
+
+			// update name and username of users on video conferences
+			Promise.await(VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName));
 		}
 	}
 

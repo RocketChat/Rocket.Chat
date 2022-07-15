@@ -22,7 +22,7 @@
 		"jest": "^27.5.1",
 		"react": "~17.0.2",
 		"ts-jest": "^27.1.4",
-		"typescript": "~4.3.4"
+		"typescript": "~4.5.5"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -30,7 +30,7 @@
 		"jest": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"storybook": "start-storybook -p 6006",
-		"dev": "tsc -p --watch --preserveWatchOutput tsconfig.json"
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

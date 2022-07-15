@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import UAParser from 'ua-parser-js';
 import mem from 'mem';
-import type { ISession, ISessionDevice, ISocketConnection, IUser } from '@rocket.chat/core-typings';
+import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
 import { Sessions, Users } from '@rocket.chat/models';
 
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
@@ -10,6 +10,7 @@ import { aggregates } from '../../../../server/models/raw/Sessions';
 import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
+import { getClientAddress } from '../../../../server/lib/getClientAddress';
 
 type DateObj = { day: number; month: number; year: number };
 
@@ -23,7 +24,7 @@ const logger = new Logger('SAUMonitor');
 
 const getUserRoles = mem(
 	async (userId: string): Promise<string[]> => {
-		const user = await Users.findOneById<IUser>(userId, { projection: { roles: 1 } });
+		const user = await Users.findOneById<Pick<IUser, 'roles'>>(userId, { projection: { roles: 1 } });
 
 		return user?.roles || [];
 	},
@@ -121,20 +122,25 @@ export class SAUMonitorClass {
 			if (!this.isRunning()) {
 				return;
 			}
+			const { id: sessionId } = connection;
 
-			await Sessions.logoutByInstanceIdAndSessionIdAndUserId(connection.instanceId, connection.id, userId);
+			await Sessions.logoutBySessionIdAndUserId({ sessionId, userId });
 		});
 	}
 
 	private async _handleSession(
-		connection: ISocketConnection,
+		connection: ISocketConnectionLogged,
 		params: Pick<ISession, 'userId' | 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
 	): Promise<void> {
 		const data = this._getConnectionInfo(connection, params);
+
 		if (!data) {
 			return;
 		}
-		await Sessions.createOrUpdate(data);
+
+		const searchTerm = this._getSearchTerm(data);
+
+		await Sessions.insertOne({ ...data, searchTerm, createdAt: new Date() });
 	}
 
 	private async _finishSessionsFromDate(yesterday: Date, today: Date): Promise<void> {
@@ -181,30 +187,37 @@ export class SAUMonitorClass {
 		// TODO missing an action to perform on dangling sessions (for example remove sessions not closed one month ago)
 	}
 
+	private _getSearchTerm(session: Omit<ISession, '_id' | '_updatedAt' | 'createdAt' | 'searchTerm'>): string {
+		return [session.device?.name, session.device?.type, session.device?.os.name, session.sessionId, session.userId]
+			.filter(Boolean)
+			.join('');
+	}
+
 	private _getConnectionInfo(
-		connection: ISocketConnection,
+		connection: ISocketConnectionLogged,
 		params: Pick<ISession, 'userId' | 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
-	): Omit<ISession, '_id' | '_updatedAt' | 'createdAt'> | undefined {
+	): Omit<ISession, '_id' | '_updatedAt' | 'createdAt' | 'searchTerm'> | undefined {
 		if (!connection) {
 			return;
 		}
 
-		const ip = connection.clientAddress || connection.httpHeaders?.['x-real-ip'] || connection.httpHeaders?.['x-forwarded-for'];
+		const ip = getClientAddress(connection);
 
-		const host = connection.httpHeaders?.host || '';
+		const host = connection.httpHeaders?.host ?? '';
 
 		return {
 			type: 'session',
 			sessionId: connection.id,
 			instanceId: connection.instanceId,
-			ip: (Array.isArray(ip) ? ip[0] : ip) || '',
+			...(connection.loginToken && { loginToken: connection.loginToken }),
+			ip,
 			host,
 			...this._getUserAgentInfo(connection),
 			...params,
 		};
 	}
 
-	private _getUserAgentInfo(connection: ISocketConnection): { device: ISessionDevice } | undefined {
+	private _getUserAgentInfo(connection: ISocketConnectionLogged): { device: ISessionDevice } | undefined {
 		if (!connection?.httpHeaders?.['user-agent']) {
 			return;
 		}
@@ -315,13 +328,6 @@ export class SAUMonitorClass {
 		date.setDate(date.getDate() - 0); // yesterday
 		const yesterday = getDateObj(date);
 
-		const match = {
-			type: 'session',
-			year: { $lte: yesterday.year },
-			month: { $lte: yesterday.month },
-			day: { $lte: yesterday.day },
-		};
-
 		for await (const record of aggregates.dailySessionsOfYesterday(Sessions.col, yesterday)) {
 			await Sessions.updateOne(
 				{ _id: `${record.userId}-${record.year}-${record.month}-${record.day}` },
@@ -330,11 +336,19 @@ export class SAUMonitorClass {
 			);
 		}
 
-		await Sessions.updateMany(match, {
-			$set: {
-				type: 'computed-session',
-				_computedAt: new Date(),
+		await Sessions.updateMany(
+			{
+				type: 'session',
+				year: { $lte: yesterday.year },
+				month: { $lte: yesterday.month },
+				day: { $lte: yesterday.day },
 			},
-		});
+			{
+				$set: {
+					type: 'computed-session',
+					_computedAt: new Date(),
+				},
+			},
+		);
 	}
 }

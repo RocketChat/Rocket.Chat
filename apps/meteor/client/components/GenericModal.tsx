@@ -9,8 +9,8 @@ type VariantType = 'danger' | 'warning' | 'info' | 'success';
 type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
 	children?: ReactNode;
-	cancelText?: string;
-	confirmText?: string;
+	cancelText?: ReactNode;
+	confirmText?: ReactNode;
 	title?: string | ReactElement;
 	icon?: ComponentProps<typeof Icon>['name'] | ReactElement | null;
 	confirmDisabled?: boolean;
@@ -74,7 +74,7 @@ const GenericModal: FC<GenericModalProps> = ({
 			<Modal.Header>
 				{renderIcon(icon, variant)}
 				<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
+				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
 			<Modal.Footer>

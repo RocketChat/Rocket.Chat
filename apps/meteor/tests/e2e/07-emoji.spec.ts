@@ -147,8 +147,8 @@ test.describe('[Emoji]', () => {
 				await mainContent.waitForLastMessageEqualsHtml('0 1 2 3 4 5 6 7 8 9');
 			});
 			test('should render special characters', async () => {
-				await mainContent.sendMessage('# * ® © ™');
-				await mainContent.waitForLastMessageEqualsHtml('# * ® © ™');
+				await mainContent.sendMessage('® © ™ # *');
+				await mainContent.waitForLastMessageEqualsHtml('® © ™ # *');
 			});
 		});
 	});

@@ -30,7 +30,7 @@ const CloudAccountConfirmation = (): ReactElement => {
 				return setShowSetupWizard('completed');
 			}
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 		}
 	}, [cloudConfirmationPoll, registrationData.device_code, setShowSetupWizard, saveWorkspaceData, dispatchToastMessage, t]);
 

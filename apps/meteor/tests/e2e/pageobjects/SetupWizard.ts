@@ -78,7 +78,7 @@ export class SetupWizard extends BasePage {
 	}
 
 	get standaloneServer(): Locator {
-		return this.page.locator('//button[contains(text(), "Continue as standalone")]');
+		return this.page.locator('//a[contains(text(), "Continue as standalone")]');
 	}
 
 	get standaloneConfirmText(): Locator {

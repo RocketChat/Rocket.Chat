@@ -41,7 +41,7 @@ export const useCategories = (): [CategoryDropDownGroups, selectedCategoriesList
 					items: mappedCategories,
 				},
 			]);
-		} catch (e) {
+		} catch (e: any) {
 			handleAPIError(e);
 		}
 	}, [t]);
