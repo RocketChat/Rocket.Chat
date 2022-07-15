@@ -28,10 +28,13 @@ export const federationRoomServiceSender = FederationFactory.buildRoomServiceSen
 );
 
 FederationFactory.setupListeners(federationRoomServiceSender);
-rocketSettingsAdapter.onFederationEnabledStatusChanged(federation.onFederationAvailabilityChanged.bind(federation));
+let cancelSettingsObserver: Function;
 
 export const runFederation = async (): Promise<void> => {
 	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
+	cancelSettingsObserver = rocketSettingsAdapter.onFederationEnabledStatusChanged(
+		federation.onFederationAvailabilityChanged.bind(federation),
+	);
 	if (!rocketSettingsAdapter.isFederationEnabled()) {
 		return;
 	}
@@ -42,6 +45,7 @@ export const runFederation = async (): Promise<void> => {
 export const stopFederation = async (): Promise<void> => {
 	FederationFactory.removeListeners();
 	await federation.stop();
+	cancelSettingsObserver();
 };
 
 (async (): Promise<void> => {
