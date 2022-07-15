@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMediaQueries } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoute } from '@rocket.chat/ui-contexts';
-import React, { FC, useState, memo, KeyboardEvent, MouseEvent } from 'react';
+import React, { FC, memo, KeyboardEvent, MouseEvent } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
 import AppMenu from './AppMenu';
@@ -20,10 +20,6 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 		'(max-width: 887px)',
 		'(min-width: 1200px)',
 	);
-
-	const [isFocused, setFocused] = useState(false);
-	const [isHovered, setHovered] = useState(false);
-	const isStatusVisible = isFocused || isHovered;
 
 	const appsRoute = useRoute('admin-apps');
 	const marketplaceRoute = useRoute('admin-marketplace');
@@ -73,10 +69,6 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 			tabIndex={0}
 			onClick={handleClick}
 			onKeyDown={handleKeyDown}
-			onFocus={(): void => setFocused(true)}
-			onBlur={(): void => setFocused(false)}
-			onMouseEnter={(): void => setHovered(true)}
-			onMouseLeave={(): void => setHovered(false)}
 			display='flex'
 			flexDirection='row'
 			justifyContent='space-between'
@@ -109,8 +101,8 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
-				<AppStatus app={props} showStatus={isStatusVisible} isSubscribed={isSubscribed} isAppDetailsPage={false} mis='x4' />
-				{(installed || isSubscribed) && <AppMenu app={props} invisible={!isStatusVisible} mis='x4' />}
+				<AppStatus app={props} isSubscribed={isSubscribed} isAppDetailsPage={false} mis='x4' />
+				{(installed || isSubscribed) && <AppMenu app={props} mis='x4' />}
 			</Box>
 		</Box>
 	);

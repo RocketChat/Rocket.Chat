@@ -133,9 +133,11 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 						fontSize='x12'
 						fontWeight={700}
 						disabled={loading}
-						minHeight='x40'
 						onClick={handleClick}
 						mie={isAppDetailsPage || isSubscribed ? '0' : 'x32'}
+						pi='x8'
+						pb='x6'
+						lineHeight='x12'
 					>
 						{loading ? (
 							<Throbber inheritColor />
