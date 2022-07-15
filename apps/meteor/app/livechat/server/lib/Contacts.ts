@@ -95,7 +95,7 @@ export const Contacts = {
 
 		await LivechatVisitors.updateOne({ _id: contactId }, updateUser);
 
-		const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(contactId).toArray();
+		const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(contactId, {}).toArray();
 
 		rooms?.length &&
 			rooms.forEach((room) => {
