@@ -14,10 +14,10 @@ callbacks.add(
 		}
 
 		if (department) {
-			return LivechatDepartmentAgents.getNextBotForDepartment(department);
+			return Promise.await(LivechatDepartmentAgents.getNextBotForDepartment(department));
 		}
 
-		return Users.getNextBotAgent();
+		return Promise.await(Users.getNextBotAgent());
 	},
 	callbacks.priority.HIGH,
 	'livechat-before-delegate-agent',
