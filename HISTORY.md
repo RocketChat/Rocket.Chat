@@ -1,6 +1,60 @@
 
 # 5.0.0 (Under Release Candidate Process)
 
+## 5.0.0-rc.7
+`2022-07-15  ·  8 🔍  ·  7 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Avoid set useless set UTC Offset ([#26270](https://github.com/RocketChat/Rocket.Chat/pull/26270))
+
+- Chore: Hide deprecation query log on production ([#26188](https://github.com/RocketChat/Rocket.Chat/pull/26188))
+
+- Chore: Update Apps-Engine version ([#26258](https://github.com/RocketChat/Rocket.Chat/pull/26258))
+
+  Bumping Apps-Engine version
+
+- Regression: Call toggle missing network disconnection state ([#26237](https://github.com/RocketChat/Rocket.Chat/pull/26237))
+
+  This PR brings back the network disconnection state to the voip call toggle button
+
+  ![image (4)](https://user-images.githubusercontent.com/6494543/178564719-f436505e-3ae3-4d69-ba5a-27ce8e8c5fba.png)
+
+- Regression: Cannot open Menu in searched message. ([#26172](https://github.com/RocketChat/Rocket.Chat/pull/26172))
+
+- Regression: Omni-chats not getting routed automatically to bots ([#26267](https://github.com/RocketChat/Rocket.Chat/pull/26267))
+
+- Regression: REST API calls at Engagement Dashboard ([#26235](https://github.com/RocketChat/Rocket.Chat/pull/26235))
+
+  Parameters for GET requests are *not* serialized as for other methods, therefore sending `Date` objects is not viable due to  the way `Date.prototype.toString` works. This PR uses `Date.prototype.toISOString` explicitly to serialize dates.
+
+- Regression: Sidebar icons spacing ([#26139](https://github.com/RocketChat/Rocket.Chat/pull/26139))
+
+  - Fixed the sidebar icons ('display' and 'create new') spacing issue
+
+  before:
+  ![image](https://user-images.githubusercontent.com/5263975/178897210-50615ea9-28d5-4b35-a93a-c5facea365e5.png)
+
+
+
+  after:
+
+  ![image](https://user-images.githubusercontent.com/5263975/178896945-1bf71112-8a01-4db6-9f9b-20ea778496f7.png)
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@d-gubert](https://github.com/d-gubert)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@guijun13](https://github.com/guijun13)
+- [@murtaza98](https://github.com/murtaza98)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 5.0.0-rc.6
 `2022-07-14  ·  6 🔍  ·  8 👩‍💻👨‍💻`
 
