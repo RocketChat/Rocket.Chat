@@ -17,7 +17,7 @@ export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivi
 			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day')).subtract(displacement, 'weeks').toDate();
 
 			const response = await getWeeklyChatActivity({
-				start: day,
+				start: day.toISOString(),
 			});
 
 			return response

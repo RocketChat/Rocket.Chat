@@ -2,10 +2,11 @@ import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
 import { DirectReplyIMAPInterceptor, POP3Helper } from '../lib/interceptDirectReplyEmails.js';
+import { logger } from '../../../../server/features/EmailInbox/logger';
 
 let client: DirectReplyIMAPInterceptor | POP3Helper | undefined;
-const startEmailIntercepter = _.debounce(async function () {
-	console.log('Email Intercepter...');
+const startEmailInterceptor = _.debounce(async function () {
+	logger.info('Email Interceptor...');
 	const protocol = settings.get('Direct_Reply_Protocol');
 
 	const isEnabled =
@@ -21,10 +22,10 @@ const startEmailIntercepter = _.debounce(async function () {
 	}
 
 	if (!isEnabled) {
-		console.log('Email Intercepter Stopped...');
+		logger.info('Email Interceptor Stopped...');
 		return;
 	}
-	console.log('Starting Email Intercepter...');
+	logger.info('Starting Email Interceptor...');
 
 	if (protocol === 'IMAP') {
 		client = new DirectReplyIMAPInterceptor();
@@ -37,6 +38,6 @@ const startEmailIntercepter = _.debounce(async function () {
 	}
 }, 1000);
 
-settings.watchByRegex(/^Direct_Reply_.+/, startEmailIntercepter);
+settings.watchByRegex(/^Direct_Reply_.+/, startEmailInterceptor);
 
-startEmailIntercepter();
+startEmailInterceptor();
