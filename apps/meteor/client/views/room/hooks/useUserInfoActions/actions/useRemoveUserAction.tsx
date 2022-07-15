@@ -20,17 +20,17 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 	const currentUser = useUser();
 	const { _id: uid } = user;
 
+	if (!room) {
+		throw Error('Room not provided');
+	}
+
 	const hasPermissionToRemove = usePermission('remove-user', rid);
-	const userCanRemove = isRoomFederated(room as Partial<IRoom>)
-		? Federation.canEdit(currentUser as IUser, room as IRoom)
+	const userCanRemove = isRoomFederated(room)
+		? Federation.isEditableByTheUser(currentUser || undefined, room) && hasPermissionToRemove
 		: hasPermissionToRemove;
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
-
-	if (!room) {
-		throw Error('Room not provided');
-	}
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const { roomCanRemove } = getRoomDirectives(room);

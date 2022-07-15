@@ -39,7 +39,9 @@ const RoomMembersWithData = ({ rid }) => {
 		useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]),
 		rid,
 	);
-	const canAddUsers = isRoomFederated(room) ? Federation.canEdit(user, room) : hasPermissionToAddUsers;
+	const canAddUsers = isRoomFederated(room)
+		? Federation.isEditableByTheUser(user, room) && hasPermissionToAddUsers
+		: hasPermissionToAddUsers;
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);

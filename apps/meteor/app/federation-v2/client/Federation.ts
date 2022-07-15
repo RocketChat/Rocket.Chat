@@ -13,6 +13,9 @@ export const actionAllowed = (action: ValueOf<typeof RoomMemberActions>): boolea
 	return allowedActionsInFederatedRooms.includes(action);
 };
 
-export const canEdit = (user: IUser, room: IRoom): boolean => {
+export const isEditableByTheUser = (user: IUser | undefined, room: IRoom | undefined): boolean => {
+	if (!user || !room) {
+		return false;
+	}
 	return user._id === room.u?._id;
 };

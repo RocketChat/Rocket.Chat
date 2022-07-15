@@ -22,13 +22,17 @@ describe('Federation[Client] - Federation', () => {
 		});
 	});
 
-	describe('#canEdit()', () => {
+	describe('#isEditableByTheUser()', () => {
+		it('should return false if the user is null', () => {
+			expect(Federation.isEditableByTheUser(null, { u: { _id: 'id' } } as any)).to.be.false;
+		});
+
 		it('should return true if current user is the room owner', () => {
-			expect(Federation.canEdit({ _id: 'id' } as any, { u: { _id: 'id' } } as any)).to.be.true;
+			expect(Federation.isEditableByTheUser({ _id: 'id' } as any, { u: { _id: 'id' } } as any)).to.be.true;
 		});
 
 		it('should return false if current user is NOT the room owner', () => {
-			expect(Federation.canEdit({ _id: 'differentId' } as any, { u: { _id: 'id' } } as any)).to.be.false;
+			expect(Federation.isEditableByTheUser({ _id: 'differentId' } as any, { u: { _id: 'id' } } as any)).to.be.false;
 		});
 	});
 });
