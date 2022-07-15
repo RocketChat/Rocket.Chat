@@ -96,7 +96,8 @@ const RoomInfo = ({
 				flexShrink={0}
 				mi='x2'
 				key='menu'
-				ghost={false}
+				maxHeight='initial'
+				secondary
 				renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
 				options={menuOptions}
 			/>
