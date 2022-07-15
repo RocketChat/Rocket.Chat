@@ -67,7 +67,16 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 		[clearErrors, setValue, value],
 	);
 
-	const handlePadButtonLongPressed = useCallback((digit: PadDigit): void => setValue('PhoneInput', value + digit[1]), [setValue, value]);
+	const handlePadButtonLongPressed = useCallback(
+		(digit: PadDigit): void => {
+			if (digit[0] === '0') {
+				return setValue('PhoneInput', value + digit[1]);
+			}
+
+			setValue('PhoneInput', value + digit[0]);
+		},
+		[setValue, value],
+	);
 
 	const handleCallButtonClick = useCallback((): void => {
 		if (!outboundClient) {

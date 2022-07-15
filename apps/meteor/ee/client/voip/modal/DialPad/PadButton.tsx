@@ -4,8 +4,6 @@ import React, { ReactElement } from 'react';
 import type { PadDigit } from './Pad';
 import { useLongPress } from './hooks/useLongPress';
 
-const letters = ['+', '', 'ABC', 'DEF', 'GHI', 'JKL', 'MNO', 'PQRS', 'TUV', 'WXYZ'];
-
 const PadButton = ({
 	children,
 	onClickPadButton,
@@ -33,9 +31,9 @@ const PadButton = ({
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
 		>
-			<Box fontSize='h2'>{children}</Box>
+			<Box fontSize='h2'>{children[0]}</Box>
 			<Box fontSize='c1' color='info'>
-				{typeof children === 'number' && letters[children]}
+				{children[1]}
 			</Box>
 		</Button>
 	);
