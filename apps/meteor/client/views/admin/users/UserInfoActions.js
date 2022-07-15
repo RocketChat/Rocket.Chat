@@ -301,7 +301,8 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 				mi='x4'
 				placement='bottom-start'
 				small={false}
-				ghost={false}
+				secondary
+				maxHeight='initial'
 				flexShrink={0}
 				key='menu'
 				renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props} />}
