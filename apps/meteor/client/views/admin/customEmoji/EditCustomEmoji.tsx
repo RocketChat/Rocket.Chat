@@ -152,7 +152,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 				<Field>
 					<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
 						{t('Custom_Emoji')}
-						<IconButton icon='upload' secondary square onClick={clickUpload} />
+						<IconButton icon='upload' secondary onClick={clickUpload} />
 					</Field.Label>
 					{newEmojiPreview && (
 						<Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
