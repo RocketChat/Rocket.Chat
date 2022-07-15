@@ -1,7 +1,7 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IMessage, IRoom, ISetting, ISubscription, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUpload } from '@rocket.chat/core-typings';
 import {
 	isDmDeleteProps,
 	isDmFileProps,
