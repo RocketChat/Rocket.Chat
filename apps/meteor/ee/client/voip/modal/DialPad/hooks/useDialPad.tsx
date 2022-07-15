@@ -4,7 +4,7 @@ import { useForm, UseFormHandleSubmit } from 'react-hook-form';
 
 import { useDialModal } from '../../../../../../client/hooks/useDialModal';
 import { useOutboundDialer } from '../../../../hooks/useOutboundDialer';
-import type { PadDigit } from '../Pad';
+import { PadDigit } from '../Pad';
 
 type DialPadStateHandlers = {
 	inputName: string;
@@ -13,8 +13,8 @@ type DialPadStateHandlers = {
 	isButtonDisabled: boolean;
 	handleOnChange: (e: ChangeEvent<HTMLInputElement>) => void;
 	handleBackspaceClick: () => void;
-	handlePadButtonClick: (digit: PadDigit) => void;
-	handlePadButtonLongPressed: (digit: PadDigit) => void;
+	handlePadButtonClick: (digit: PadDigit[0]) => void;
+	handlePadButtonLongPressed: (digit: PadDigit[1]) => void;
 	handleCallButtonClick: () => void;
 	handleSubmit: UseFormHandleSubmit<{
 		PhoneInput: string;
@@ -59,21 +59,21 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 	}, [clearErrors, setValue, value]);
 
 	const handlePadButtonClick = useCallback(
-		(digit: PadDigit): void => {
+		(digit: PadDigit[0]): void => {
 			clearErrors();
 
-			setValue('PhoneInput', value + digit[0]);
+			setValue('PhoneInput', value + digit);
 		},
 		[clearErrors, setValue, value],
 	);
 
 	const handlePadButtonLongPressed = useCallback(
-		(digit: PadDigit): void => {
-			if (digit[0] === '0') {
-				return setValue('PhoneInput', value + digit[1]);
+		(digit: PadDigit[1]): void => {
+			if (digit !== '+') {
+				return;
 			}
 
-			setValue('PhoneInput', value + digit[0]);
+			setValue('PhoneInput', value + digit);
 		},
 		[setValue, value],
 	);
@@ -109,7 +109,7 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 
 	useEffect(() => {
 		setFocus('PhoneInput');
-	}, [value, setFocus]);
+	}, [setFocus]);
 
 	return {
 		inputName: 'PhoneInput',

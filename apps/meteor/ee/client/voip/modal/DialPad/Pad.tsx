@@ -24,8 +24,8 @@ const Pad = ({
 	onClickPadButton,
 	onLongPressPadButton,
 }: {
-	onClickPadButton: (digit: PadDigit) => void;
-	onLongPressPadButton: (digit: PadDigit) => void;
+	onClickPadButton: (digit: PadDigit[0]) => void;
+	onLongPressPadButton: (digit: PadDigit[1]) => void;
 }): ReactElement => (
 	<Box display='flex' flexWrap='wrap' mi='-8px' mbs='28px'>
 		{digits.map((digit, idx) => (

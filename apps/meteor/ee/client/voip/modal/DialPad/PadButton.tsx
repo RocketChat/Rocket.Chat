@@ -10,11 +10,12 @@ const PadButton = ({
 	onLongPressPadButton,
 }: {
 	children: PadDigit;
-	onClickPadButton: (digit: PadDigit) => void;
-	onLongPressPadButton: (digit: PadDigit) => void;
+	onClickPadButton: (digit: PadDigit[0]) => void;
+	onLongPressPadButton: (digit: PadDigit[1]) => void;
 }): ReactElement => {
-	const { onClick, onMouseDown, onMouseUp, onTouchStart, onTouchEnd } = useLongPress(() => onLongPressPadButton(children), {
-		onClick: () => onClickPadButton(children),
+	const [firstDigit, secondDigit] = children;
+	const { onClick, onMouseDown, onMouseUp, onTouchStart, onTouchEnd } = useLongPress(() => onLongPressPadButton(secondDigit), {
+		onClick: () => onClickPadButton(firstDigit),
 	});
 
 	return (
@@ -31,9 +32,9 @@ const PadButton = ({
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
 		>
-			<Box fontSize='h2'>{children[0]}</Box>
+			<Box fontSize='h2'>{firstDigit}</Box>
 			<Box fontSize='c1' color='info'>
-				{children[1]}
+				{secondDigit}
 			</Box>
 		</Button>
 	);
