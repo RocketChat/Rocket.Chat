@@ -73,6 +73,7 @@ const ShareMessageModal = ({ onClose, message, username, name, time, attachments
 				roomId: room._id,
 				channel: (room.type === 'C' ? '#' : '@') + room.value,
 				text: optionalMessage,
+				attachments,
 			};
 			const result: any = await sendMessage(sendPayload as never);
 			if (!result.success) flag = false;

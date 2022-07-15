@@ -101,8 +101,8 @@ Meteor.startup(async function () {
 				},
 			});
 		},
-		condition() {
-			return true;
+		condition({ message }) {
+			return message.u._id === Meteor.userId();
 		},
 		order: 0,
 		group: ['message', 'menu'],
