@@ -2,12 +2,13 @@ import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, Messa
 import { useTooltipClose, useTooltipOpen, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, useRef } from 'react';
 
+import MarkdownText from '../../../../components/MarkdownText';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 
 const getTranslationKey = (users: string[], mine: boolean): TranslationKey => {
 	if (users.length === 0) {
 		if (mine) {
-			return 'You_have_reacted';
+			return 'You_reacted_with';
 		}
 	}
 
@@ -53,13 +54,14 @@ export const MessageReaction: FC<{
 				e.preventDefault();
 				ref.current &&
 					openTooltip(
-						<>
-							{t(key, {
+						<MarkdownText
+							content={t(key, {
 								counter: names.length,
 								users: names.join(', '),
 								emoji: name,
 							})}
-						</>,
+							variant='inline'
+						/>,
 						ref.current,
 					);
 			}}

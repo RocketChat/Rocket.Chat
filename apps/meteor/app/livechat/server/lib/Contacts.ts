@@ -1,11 +1,11 @@
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
-import { LivechatVisitors, Users } from '@rocket.chat/models';
+import { LivechatVisitors, Users, LivechatRooms } from '@rocket.chat/models';
 import { MatchKeysAndValues } from 'mongodb';
-import { ILivechatCustomField, ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
+import { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
+import { LivechatCustomField, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
 
 type RegisterContactProps = {
 	_id?: string;
@@ -95,7 +95,7 @@ export const Contacts = {
 
 		await LivechatVisitors.updateOne({ _id: contactId }, updateUser);
 
-		const rooms: IRoom[] = LivechatRooms.findByVisitorId(contactId).fetch();
+		const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(contactId).toArray();
 
 		rooms?.length &&
 			rooms.forEach((room) => {

@@ -2,10 +2,10 @@ import { IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { MouseEvent, ReactElement } from 'react';
 
-import { useVoipOutboundStates } from '../../../../contexts/CallContext';
-import { useDialModal } from '../../../../hooks/useDialModal';
+import { useVoipOutboundStates } from '../../../contexts/CallContext';
+import { useDialModal } from '../../../hooks/useDialModal';
 
-export const ContactTableDialpadButton = ({ phoneNumber }: { phoneNumber: string }): ReactElement => {
+export const CallDialpadButton = ({ phoneNumber }: { phoneNumber: string }): ReactElement => {
 	const t = useTranslation();
 
 	const { outBoundCallsAllowed, outBoundCallsEnabledForUser } = useVoipOutboundStates();
@@ -18,12 +18,11 @@ export const ContactTableDialpadButton = ({ phoneNumber }: { phoneNumber: string
 
 	return (
 		<IconButton
-			disabled={!outBoundCallsEnabledForUser || !phoneNumber}
+			rcx-call-dial-button
 			title={outBoundCallsAllowed ? t('Call_number') : t('Call_number_enterprise_only')}
+			disabled={!outBoundCallsEnabledForUser || !phoneNumber}
 			tiny
-			square
 			icon='phone'
-			className='contact-table__call-button'
 			onClick={onClick}
 		/>
 	);

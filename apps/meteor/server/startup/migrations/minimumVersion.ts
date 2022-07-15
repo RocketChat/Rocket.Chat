@@ -11,7 +11,9 @@ addMigration({
 				'',
 				`It seems you're trying to upgrade from an unsupported version!`,
 				'',
-				'To be able to update to version 5.0.x you need to update to version 4.x first.',
+				'To be able to update to version 5.x.y you need to update to version 4.x first.',
+				'',
+				'Read more: https://go.rocket.chat/i/how-to-upgrade',
 			].join('\n'),
 		);
 	},

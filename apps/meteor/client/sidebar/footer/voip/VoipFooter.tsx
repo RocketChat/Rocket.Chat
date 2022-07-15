@@ -4,7 +4,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
 import React, { ReactElement, MouseEvent, ReactNode } from 'react';
 
-import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
+import type { VoipFooterMenuOptions } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import { CallActionsType } from '../../../contexts/CallContext';
 
 type VoipFooterPropsType = {
@@ -33,6 +33,7 @@ type VoipFooterPropsType = {
 	anonymousText: string;
 	isEnterprise: boolean;
 	children?: ReactNode;
+	options: VoipFooterMenuOptions;
 };
 
 export const VoipFooter = ({
@@ -54,6 +55,7 @@ export const VoipFooter = ({
 	anonymousText,
 	isEnterprise = false,
 	children,
+	options,
 }: VoipFooterPropsType): ReactElement => {
 	const cssClickable =
 		callerState === 'IN_CALL' || callerState === 'ON_HOLD'
@@ -61,8 +63,6 @@ export const VoipFooter = ({
 					cursor: pointer;
 			  `
 			: '';
-
-	const options = useVoipFooterMenu();
 
 	const handleHold = (e: MouseEvent<HTMLButtonElement>): void => {
 		e.stopPropagation();
@@ -96,7 +96,6 @@ export const VoipFooter = ({
 								color={muted ? 'neutral-500' : 'info'}
 								icon='mic'
 								small
-								square
 								onClick={(e): void => {
 									e.stopPropagation();
 									toggleMic(!muted);
@@ -108,7 +107,6 @@ export const VoipFooter = ({
 								icon='pause-unfilled'
 								color={paused ? 'neutral-500' : 'info'}
 								small
-								square
 								onClick={handleHold}
 							/>
 							{options && <Menu color='neutral-500' options={options} />}
