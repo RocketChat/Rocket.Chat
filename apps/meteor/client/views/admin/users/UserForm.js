@@ -153,6 +153,8 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 									flexGrow={1}
 									value={nickname}
 									onChange={handleNickname}
+									autoComplete='nickname'
+									name='nickname'
 									addon={<Icon name='edit' size='x20' alignSelf='center' />}
 								/>
 							</Field.Row>
@@ -167,7 +169,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 							<Field.Row>
 								<PasswordInput
 									errors={errors && errors.password}
-									autoComplete='off'
+									autoComplete='new-password'
 									flexGrow={1}
 									value={password}
 									onChange={handlePassword}
