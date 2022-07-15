@@ -327,4 +327,22 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			expect(bridge.leaveRoom.calledWith('externalId', 'externalId')).to.be.true;
 		});
 	});
+
+	describe('#beforeCreateDirectMessageFromUI()', () => {
+		it('should throw an error if there at least one user with federated: true', async () => {
+			try {
+				await service.beforeCreateDirectMessageFromUI([{ federated: true } as any, {} as any]);
+			} catch (e: any) {
+				expect(e.message).to.be.equal('error-this-is-an-ee-feature');
+			}
+		});
+
+		it('should throw an error if there at least one new external user', async () => {
+			try {
+				await service.beforeCreateDirectMessageFromUI(['@myexternal:external.com', {} as any]);
+			} catch (e: any) {
+				expect(e.message).to.be.equal('error-this-is-an-ee-feature');
+			}
+		});
+	});
 });
