@@ -1,13 +1,15 @@
 import type { IImport, IImportChannel, IImportUser } from '@rocket.chat/core-typings';
 
+import type { DownloadPublicImportFileParamsPOST } from './DownloadPublicImportFileParamsPOST';
 import type { StartImportParamsPOST } from './StartImportParamsPOST';
+import type { UploadImportFileParamsPOST } from './UploadImportFileParamsPOST';
 
 export type ImportEndpoints = {
 	'/v1/uploadImportFile': {
-		POST: (params: { binaryContent: string; contentType: string; fileName: string; importerKey: string }) => any;
+		POST: (params: UploadImportFileParamsPOST) => void;
 	};
 	'/v1/downloadPublicImportFile': {
-		POST: (params: { fileUrl: string; importerKey: string }) => void;
+		POST: (params: DownloadPublicImportFileParamsPOST) => void;
 	};
 	'/v1/startImport': {
 		POST: (params: StartImportParamsPOST) => void;
