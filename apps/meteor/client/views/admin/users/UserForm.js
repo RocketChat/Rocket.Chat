@@ -58,7 +58,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 	const onLoadCustomFields = useCallback((hasCustomFields) => setHasCustomFields(hasCustomFields), []);
 
 	return (
-		<VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} {...props}>
+		<VerticalBar.ScrollableContent {...props} is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} autoComplete='off'>
 			<FieldGroup>
 				{prepend}
 				{useMemo(
@@ -153,8 +153,6 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 									flexGrow={1}
 									value={nickname}
 									onChange={handleNickname}
-									autoComplete='nickname'
-									name='nickname'
 									addon={<Icon name='edit' size='x20' alignSelf='center' />}
 								/>
 							</Field.Row>
@@ -162,6 +160,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 					),
 					[nickname, handleNickname, t],
 				)}
+			</FieldGroup>
+
+			<FieldGroup is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} autoComplete='off'>
 				{useMemo(
 					() => (
 						<Field>
@@ -169,11 +170,11 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 							<Field.Row>
 								<PasswordInput
 									errors={errors && errors.password}
-									autoComplete='new-password'
 									flexGrow={1}
 									value={password}
 									onChange={handlePassword}
 									addon={<Icon name='key' size='x20' />}
+									autoComplete='new-password'
 								/>
 							</Field.Row>
 							{errors && errors.password && <Field.Error>{errors.password}</Field.Error>}
