@@ -37,6 +37,7 @@ export * from './IUser';
 
 export * from './ee/ILicense/ILicense';
 
+export * from './IImport';
 export * from './IImportUser';
 export * from './IImportRecord';
 export * from './IImportMessage';
