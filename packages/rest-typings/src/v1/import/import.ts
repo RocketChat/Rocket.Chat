@@ -1,4 +1,5 @@
 import type { IImport, IImportChannel, IImportUser } from '@rocket.chat/core-typings';
+
 import type { StartImportParamsPOST } from './StartImportParamsPOST';
 
 export type ImportEndpoints = {
