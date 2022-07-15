@@ -163,4 +163,19 @@ export class FederationRoomServiceSender {
 			throw new Error('error-this-is-an-ee-feature');
 		}
 	}
+
+	public async beforeCreateDirectMessageFromUI(internalUsers: (IUser | string)[]): Promise<void> {
+		const usernames = internalUsers.map((user) => {
+			if (typeof user === 'string') {
+				return user;
+			}
+			return user.username;
+		});
+		const isThereAnyFederatedUser =
+			usernames.some((username) => username?.includes(':')) ||
+			internalUsers.filter((user) => typeof user !== 'string').some((user) => (user as IUser).federated);
+		if (isThereAnyFederatedUser) {
+			throw new Error('error-this-is-an-ee-feature');
+		}
+	}
 }
