@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Subscriptions, Uploads, Messages, Rooms, Settings, Users } from '@rocket.chat/models';
+import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermission } from '../../../authorization/server';
@@ -21,6 +21,7 @@ import { API } from '../api';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
+import { settings } from '../../../settings/server';
 
 interface IImFilesObject extends IUpload {
 	userId: string;
@@ -310,14 +311,7 @@ API.v1.addRoute(
 				limit: count,
 			};
 
-			const searchFieldsSetting = await Settings.findOne<ISetting>(
-				{ _id: 'Accounts_SearchFields' },
-				{
-					projection: { value: 1 },
-				},
-			);
-
-			const searchFields = (searchFieldsSetting?.value as string | undefined)?.trim().split(',');
+			const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 
 			const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter, [], options, searchFields, [extraQuery]);
 
@@ -378,13 +372,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const settings = await Settings.findOne<ISetting>(
-				{ _id: 'API_Enable_Direct_Message_History_EndPoint' },
-				{
-					projection: { _id: 1, value: 1 },
-				},
-			);
-			if (settings?.value !== true) {
+			if (settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
 				throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
 					route: '/api/v1/im.messages.others',
 				});
