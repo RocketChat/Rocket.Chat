@@ -194,8 +194,8 @@ const MessagesPerChannelSection = (): ReactElement => {
 														<Table.Cell>
 															<Margins inlineEnd='x4'>
 																{(t === 'd' && <Icon name='at' />) ||
-																	(t === 'c' && <Icon name='lock' />) ||
-																	(t === 'p' && <Icon name='hashtag' />)}
+																	(t === 'p' && <Icon name='lock' />) ||
+																	(t === 'c' && <Icon name='hashtag' />)}
 															</Margins>
 															{name}
 														</Table.Cell>
