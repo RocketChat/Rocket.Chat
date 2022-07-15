@@ -24,7 +24,7 @@ type UserAutoCompleteOptions = {
 	[k: string]: UserAutoCompleteOptionType;
 };
 
-const matrixRegex = new RegExp('(.*:.*)', 'gi');
+const matrixRegex = new RegExp('(.*:.*)');
 
 const UserAutoCompleteMultipleFederated = ({
 	onChange,
@@ -35,21 +35,25 @@ const UserAutoCompleteMultipleFederated = ({
 	const [filter, setFilter] = useState('');
 	const [selectedCache, setSelectedCache] = useState<UserAutoCompleteOptions>({});
 
-	const debouncedFilter = useDebouncedValue(filter, 1000);
+	const debouncedFilter = useDebouncedValue(filter, 500);
 	const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
-	const { data } = useQuery(['users.autocomplete', debouncedFilter], async () => {
-		const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter }) });
-		const options = users.items.map((item): [string, UserAutoCompleteOptionType] => [item.username, item]);
+	const { data } = useQuery(
+		['users.autocomplete', debouncedFilter],
+		async () => {
+			const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter }) });
+			const options = users.items.map((item): [string, UserAutoCompleteOptionType] => [item.username, item]);
 
-		// Add extra option if filter text matches `username:server`
-		// Used to add federated users that do not exist yet
-		if (matrixRegex.test(debouncedFilter)) {
-			options.unshift([debouncedFilter, { name: debouncedFilter, username: debouncedFilter, _federated: true }]);
-		}
+			// Add extra option if filter text matches `username:server`
+			// Used to add federated users that do not exist yet
+			if (matrixRegex.test(debouncedFilter)) {
+				options.unshift([debouncedFilter, { name: debouncedFilter, username: debouncedFilter, _federated: true }]);
+			}
 
-		return options;
-	});
+			return options;
+		},
+		{ keepPreviousData: true },
+	);
 
 	const options = data || [];
 
