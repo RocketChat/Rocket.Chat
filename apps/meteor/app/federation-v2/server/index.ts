@@ -31,13 +31,13 @@ FederationFactory.setupListeners(federationRoomServiceSender);
 let cancelSettingsObserver: Function;
 
 export const runFederation = async (): Promise<void> => {
+	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 	cancelSettingsObserver = rocketSettingsAdapter.onFederationEnabledStatusChanged(
 		federation.onFederationAvailabilityChanged.bind(federation),
 	);
 	if (!rocketSettingsAdapter.isFederationEnabled()) {
 		return;
 	}
-	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 	await federation.start();
 	require('./infrastructure/rocket-chat/slash-commands');
 };

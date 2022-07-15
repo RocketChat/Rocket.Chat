@@ -37,6 +37,7 @@ let cancelSettingsObserverEE: Function;
 
 onToggledFeature('federation', {
 	up: async () => {
+		queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged(
 			federationEE.onFederationAvailabilityChanged.bind(federationEE),
 		);
@@ -44,7 +45,6 @@ onToggledFeature('federation', {
 			return;
 		}
 		await stopFederation();
-		queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 		await runFederationEE();
 		FederationFactoryEE.setupListeners(federationRoomServiceSenderEE, rocketSettingsAdapter);
 		require('./infrastructure/rocket-chat/slash-commands');
