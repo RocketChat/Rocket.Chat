@@ -1,16 +1,20 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useCallback, useRef } from 'react';
+import { MouseEvent, MouseEventHandler, TouchEvent, TouchEventHandler, useRef } from 'react';
 
 type UseLongPressResult = {
-	onClick: () => void;
-	onMouseDown: () => void;
-	onMouseUp: () => void;
-	onTouchStart: () => void;
-	onTouchEnd: () => void;
+	onClick: MouseEventHandler<HTMLButtonElement>;
+	onMouseDown: MouseEventHandler<HTMLButtonElement>;
+	onMouseUp: MouseEventHandler<HTMLButtonElement>;
+	onTouchStart: TouchEventHandler<HTMLButtonElement>;
+	onTouchEnd: TouchEventHandler<HTMLButtonElement>;
 };
 
-export function useLongPress(onLongPress: () => void, options?: { onClick?: () => void; threshold?: number }): UseLongPressResult {
-	const action = useRef<'LONG_PRESS' | 'CLICK'>();
+export function useLongPress(
+	onLongPress: () => void,
+	options?: Partial<UseLongPressResult> & {
+		threshold?: number;
+	},
+): UseLongPressResult {
 	const isLongPress = useRef(false);
 	const timerRef = useRef<NodeJS.Timeout>();
 
@@ -18,40 +22,43 @@ export function useLongPress(onLongPress: () => void, options?: { onClick?: () =
 		isLongPress.current = false;
 		timerRef.current = setTimeout(() => {
 			isLongPress.current = true;
-			action.current = 'LONG_PRESS';
 			onLongPress();
 		}, options?.threshold ?? 700);
 	});
 
-	const handleOnClick = useMutableCallback((): void => {
+	const handleOnClick = useMutableCallback((e: MouseEvent<HTMLButtonElement>): void => {
 		if (isLongPress.current || !options?.onClick) {
 			return;
 		}
 
-		action.current = 'CLICK';
-
-		options.onClick();
+		options.onClick(e);
 	});
 
-	const handleOnMouseDown = useCallback((): void => {
+	const handleOnMouseDown = useMutableCallback((e: MouseEvent<HTMLButtonElement>): void => {
 		startPressTimer();
-	}, [startPressTimer]);
 
-	const handleOnMouseUp = useCallback((): void => {
+		options?.onMouseDown?.(e);
+	});
+
+	const handleOnMouseUp = useMutableCallback((e: MouseEvent<HTMLButtonElement>): void => {
 		clearTimeout(timerRef.current);
-	}, []);
 
-	const handleOnTouchStart = useCallback((): void => {
+		options?.onMouseUp?.(e);
+	});
+
+	const handleOnTouchStart = useMutableCallback((e: TouchEvent<HTMLButtonElement>): void => {
 		startPressTimer();
-	}, [startPressTimer]);
 
-	const handleOnTouchEnd = useCallback((): void => {
-		if (action.current === 'LONG_PRESS') {
-			return;
+		options?.onTouchStart?.(e);
+	});
+
+	const handleOnTouchEnd = useMutableCallback((e: TouchEvent<HTMLButtonElement>): void => {
+		clearTimeout(timerRef.current);
+
+		if (options?.onTouchEnd) {
+			options.onTouchEnd(e);
 		}
-
-		clearTimeout(timerRef.current);
-	}, []);
+	});
 
 	return {
 		onClick: handleOnClick,

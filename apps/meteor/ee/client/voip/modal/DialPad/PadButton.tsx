@@ -1,6 +1,7 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
+import type { PadDigit } from './Pad';
 import { useLongPress } from './hooks/useLongPress';
 
 const letters = ['+', '', 'ABC', 'DEF', 'GHI', 'JKL', 'MNO', 'PQRS', 'TUV', 'WXYZ'];
@@ -10,9 +11,9 @@ const PadButton = ({
 	onClickPadButton,
 	onLongPressPadButton,
 }: {
-	children: string | number;
-	onClickPadButton: (digit: string | number) => void;
-	onLongPressPadButton: (digit: string | number) => void;
+	children: PadDigit;
+	onClickPadButton: (digit: PadDigit) => void;
+	onLongPressPadButton: (digit: PadDigit) => void;
 }): ReactElement => {
 	const { onClick, onMouseDown, onMouseUp, onTouchStart, onTouchEnd } = useLongPress(() => onLongPressPadButton(children), {
 		onClick: () => onClickPadButton(children),
