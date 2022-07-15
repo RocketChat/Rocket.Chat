@@ -310,7 +310,16 @@ API.v1.addRoute(
 				limit: count,
 			};
 
-			const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter, [], options, null, [extraQuery]);
+			const searchFieldsSetting = await Settings.findOne<ISetting>(
+				{ _id: 'Accounts_SearchFields' },
+				{
+					projection: { value: 1 },
+				},
+			);
+
+			const searchFields = (searchFieldsSetting?.value as string | undefined)?.trim().split(',');
+
+			const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter, [], options, searchFields, [extraQuery]);
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
