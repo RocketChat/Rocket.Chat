@@ -1,11 +1,17 @@
 import { Modal, Box, ButtonGroup, Button, Scrollable, Callout, Margins, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FormEvent, ReactElement, useState } from 'react';
+import React, { ComponentProps, FormEvent, ReactElement, useState } from 'react';
 
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 
-const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }): ReactElement => {
+type OfflineLicenseModalProps = {
+	onClose: () => void;
+	license: string;
+	licenseStatus: string;
+} & ComponentProps<typeof Modal>;
+
+const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: OfflineLicenseModalProps): ReactElement => {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();

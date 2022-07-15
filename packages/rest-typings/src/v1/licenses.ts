@@ -27,9 +27,7 @@ export type LicensesEndpoints = {
 		GET: () => { licenses: Array<ILicense> };
 	};
 	'/v1/licenses.add': {
-		POST: (params: licensesAddProps) => {
-			success: boolean;
-		};
+		POST: (params: licensesAddProps) => void;
 	};
 	'/v1/licenses.maxActiveUsers': {
 		GET: () => { maxActiveUsers: number | null; activeUsers: number };
