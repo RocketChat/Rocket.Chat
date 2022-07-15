@@ -1,11 +1,11 @@
 import { Modal, Box, ButtonGroup, Button, Scrollable, Callout, Margins, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import React, { FormEvent, ReactElement, useState } from 'react';
 
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 
-const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
+const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }): ReactElement => {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -15,7 +15,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 	const [status, setStatus] = useState(licenseStatus);
 	const [lastSetLicense, setLastSetLicense] = useState(license);
 
-	const handleNewLicense = (e) => {
+	const handleNewLicense = (e: FormEvent<HTMLInputElement>): void => {
 		setNewLicense(e.currentTarget.value);
 	};
 
@@ -35,8 +35,8 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 	const handleApplyLicense = useMutableCallback(async () => {
 		setIsUpdating(true);
 		setLastSetLicense(newLicense);
-		const data = await addLicense({ license: newLicense });
-		if (data.success) {
+		const data = (await addLicense({ license: newLicense })) as unknown as { success: true };
+		if (data?.success) {
 			onClose();
 			return;
 		}
@@ -62,7 +62,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 					pb='x8'
 					flexGrow={1}
 					backgroundColor='neutral-800'
-					mb={status === 'invalid' && 'x8'}
+					mb={status === 'invalid' ? 'x8' : undefined}
 				>
 					<Margins block='x8'>
 						<Scrollable vertical>
