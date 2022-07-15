@@ -24,34 +24,46 @@ export const OmnichannelRoomIconProvider: FC = ({ children }) => {
 
 	return (
 		<OmnichannelRoomIconContext.Provider
-			value={useMemo(
-				() => ({
+			value={useMemo(() => {
+				let snapshot: AsyncState<string> = {
+					phase: AsyncStatePhase.LOADING,
+					value: undefined,
+					error: undefined,
+				};
+
+				return {
 					queryIcon: (
 						app: string,
 						iconName: string,
 					): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => AsyncState<string>] => [
-						(callback): (() => void) => OmnichannelRoomIcon.on(`${app}-${iconName}`, callback),
-						(): AsyncState<string> => {
-							const icon = OmnichannelRoomIcon.get(app, iconName);
+						(callback): (() => void) =>
+							OmnichannelRoomIcon.on(`${app}-${iconName}`, () => {
+								// First, let's update the snapshot
+								const icon = OmnichannelRoomIcon.get(app, iconName);
 
-							if (!icon) {
-								return {
-									phase: AsyncStatePhase.LOADING,
-									value: undefined,
-									error: undefined,
-								};
-							}
+								if (icon) {
+									snapshot = {
+										phase: AsyncStatePhase.RESOLVED,
+										value: icon,
+										error: undefined,
+									};
+								} else {
+									snapshot = {
+										phase: AsyncStatePhase.LOADING,
+										value: undefined,
+										error: undefined,
+									};
+								}
 
-							return {
-								phase: AsyncStatePhase.RESOLVED,
-								value: icon,
-								error: undefined,
-							};
-						},
+								// Then we call the callback (onStoreChange), signaling React to re-render
+								callback();
+							}),
+
+						// React will get the snapshot instead of computing it on demand
+						(): AsyncState<string> => snapshot,
 					],
-				}),
-				[],
-			)}
+				};
+			}, [])}
 		>
 			{createPortal(
 				<svg
