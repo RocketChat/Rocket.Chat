@@ -1194,6 +1194,7 @@ export class Rooms extends Base {
 			ts: new Date(),
 			t: type,
 			name,
+			fname: name,
 			usernames: [],
 			msgs: 0,
 			usersCount: 0,

@@ -42,7 +42,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	room.type = room.t;
 	room.rid = rid;
 
-	const { type, fname, name, prid, joined = true } = room; // TODO implement joined
+	const { type, fname, prid, joined = true } = room; // TODO implement joined
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
 		retentionPolicyEnabled,
@@ -108,7 +108,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 
 		setModal(
 			<WarningModal
-				text={t(warnText, fname || name)}
+				text={t(warnText, fname)}
 				confirmText={t('Leave_room')}
 				close={closeModal}
 				cancel={closeModal}
@@ -133,7 +133,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 
 		setModal(
 			<WarningModal
-				text={t(warnText, fname || name)}
+				text={t(warnText, fname)}
 				confirmText={t('Yes_hide_it')}
 				close={closeModal}
 				cancel={closeModal}
