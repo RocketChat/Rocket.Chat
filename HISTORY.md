@@ -1,6 +1,61 @@
 
 # 5.0.0 (Under Release Candidate Process)
 
+## 5.0.0-rc.8
+`2022-07-18  ·  9 🔍  ·  10 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Plan tag ([#26224](https://github.com/RocketChat/Rocket.Chat/pull/26224))
+
+  Now we only have one plan tag for all plans \/
+  ![image](https://user-images.githubusercontent.com/40830821/178366367-12388c4c-6822-4e41-be8d-ca306718be98.png)
+
+- Regression: AutoTranslate on new message template ([#26049](https://github.com/RocketChat/Rocket.Chat/pull/26049))
+
+- Regression: Device management table missing device icon and ip text ellipsis ([#26255](https://github.com/RocketChat/Rocket.Chat/pull/26255))
+
+- Regression: Federated users not showing as federated in Room Members ([#26249](https://github.com/RocketChat/Rocket.Chat/pull/26249))
+
+- Regression: Parse outbound phone number removing * putting + char ([#26154](https://github.com/RocketChat/Rocket.Chat/pull/26154))
+
+- Regression: Remove alpha tag and fix initialization process ([#26248](https://github.com/RocketChat/Rocket.Chat/pull/26248))
+
+- Regression: Removed CE watermark from VoipFooter ([#26239](https://github.com/RocketChat/Rocket.Chat/pull/26239))
+
+  The objective of this change is to remove the CE watermark **only** during an active call. The CE watermark will be displayed normally in all other scenarios. Bellow you can see a demonstration of the expected behavior:
+
+  ![ce-watermark-removed-voip](https://user-images.githubusercontent.com/6494543/178615342-8049a2a8-d331-46a9-a8f1-8461ae341b50.gif)
+
+- Regression: Search on Member List ([#26273](https://github.com/RocketChat/Rocket.Chat/pull/26273))
+
+- Regression: UserInfo/RoomInfo Menu ([#26252](https://github.com/RocketChat/Rocket.Chat/pull/26252))
+
+  **note**: next fuselage's version needed
+
+  #### before
+  ![Screen Shot 2022-07-13 at 12 24 38](https://user-images.githubusercontent.com/27704687/178771262-d482b300-de80-4961-be2e-8c034480d237.png)
+
+  #### after
+  ![Screen Shot 2022-07-13 at 12 25 39](https://user-images.githubusercontent.com/27704687/178771460-db10883b-aa6d-4254-82d4-8cadd6991ae8.png)
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@csuadev](https://github.com/csuadev)
+- [@dougfabris](https://github.com/dougfabris)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 ## 5.0.0-rc.7
 `2022-07-15  ·  8 🔍  ·  7 👩‍💻👨‍💻`
 
