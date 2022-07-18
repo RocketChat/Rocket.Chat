@@ -90,7 +90,7 @@ export class FederationRoomServiceReceiver {
 
 		if (!(await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviterId))) {
 			const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalInviterId);
-			const name = externalUserProfileInformation.displayname || normalizedInviterId;
+			const name = externalUserProfileInformation?.displayname || normalizedInviterId;
 			const username = isInviterFromTheSameHomeServer ? inviterUsernameOnly : normalizedInviterId;
 			const federatedInviterUser = FederatedUser.createInstance(externalInviterId, {
 				name,
@@ -103,7 +103,7 @@ export class FederationRoomServiceReceiver {
 
 		if (!(await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviteeId))) {
 			const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalInviteeId);
-			const name = externalUserProfileInformation.displayname || normalizedInviteeId;
+			const name = externalUserProfileInformation?.displayname || normalizedInviteeId;
 			const username = isInviteeFromTheSameHomeServer ? inviteeUsernameOnly : normalizedInviteeId;
 			const federatedInviteeUser = FederatedUser.createInstance(externalInviteeId, {
 				name,
