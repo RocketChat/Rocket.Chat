@@ -101,6 +101,7 @@ export class AppRoomsConverter {
 					...room.source,
 				},
 			}),
+			...(room.isArchived && { archived: room.isArchived }),
 		};
 
 		return Object.assign(newRoom, room._unmappedProperties_);
@@ -129,6 +130,7 @@ export class AppRoomsConverter {
 			_USERNAMES: '_USERNAMES',
 			description: 'description',
 			source: 'source',
+			isArchived: 'archived',
 			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;
