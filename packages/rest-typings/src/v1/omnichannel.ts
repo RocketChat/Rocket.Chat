@@ -660,18 +660,17 @@ const LivechatCustomFieldsSchema = {
 
 export const isLivechatCustomFieldsProps = ajv.compile<LivechatCustomFieldsProps>(LivechatCustomFieldsSchema);
 
-type LivechatRoomsProps = {
-	guest: string;
-	fname: string;
-	servedBy: string[];
-	status: string;
-	department: string;
-	from: string;
-	to: string;
-	customFields: any;
-	current: number;
-	itemsPerPage: number;
-	tags: string[];
+export type LivechatRoomsProps = {
+	roomName?: string;
+	offset?: number;
+	createdAt?: string;
+	open?: boolean;
+	agents?: string[];
+	closedAt?: string;
+	departmentId?: string;
+	tags?: string[];
+	customFields?: string;
+	onhold?: boolean;
 };
 
 const LivechatRoomsSchema = {

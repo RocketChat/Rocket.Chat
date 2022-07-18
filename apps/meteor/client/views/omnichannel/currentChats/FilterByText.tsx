@@ -1,38 +1,34 @@
-import { TextInput, Box, MultiSelect, Select, InputBox } from '@rocket.chat/fuselage';
+import { TextInput, Box, Select, InputBox } from '@rocket.chat/fuselage';
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { Dispatch, FC, SetStateAction, useEffect, useMemo } from 'react';
+import React, { Dispatch, FC, SetStateAction, useEffect } from 'react';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useFormsSubscription } from '../additionalForms';
 import Label from './Label';
 import RemoveAllClosed from './RemoveAllClosed';
 
 type FilterByTextType = FC<{
 	setFilter: Dispatch<SetStateAction<any>>;
+	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string }>>;
+	customFields: { [key: string]: string };
 	reload?: () => void;
 }>;
 
-const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
+const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCustomFields, ...props }) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const { value: allCustomFields } = useEndpointData('/v1/livechat/custom-fields');
 	const statusOptions: [string, string][] = [
 		['all', t('All')],
 		['closed', t('Closed')],
 		['opened', t('Open')],
 		['onhold', t('On_Hold_Chats')],
 	];
-	const customFieldsOptions: [string, string][] = useMemo(
-		() => (allCustomFields?.customFields ? allCustomFields.customFields.map(({ _id, label }) => [_id, label]) : []),
-		[allCustomFields],
-	);
 
 	const [guest, setGuest] = useLocalStorage('guest', '');
 	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
@@ -41,7 +37,6 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 	const [from, setFrom] = useLocalStorage('from', '');
 	const [to, setTo] = useLocalStorage('to', '');
 	const [tags, setTags] = useLocalStorage<never | { label: string; value: string }[]>('tags', []);
-	const [customFields, setCustomFields] = useLocalStorage<any[]>('tags', []);
 
 	const handleGuest = useMutableCallback((e) => setGuest(e.target.value));
 	const handleServedBy = useMutableCallback((e) => setServedBy(e));
@@ -50,7 +45,6 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 	const handleFrom = useMutableCallback((e) => setFrom(e.target.value));
 	const handleTo = useMutableCallback((e) => setTo(e.target.value));
 	const handleTags = useMutableCallback((e) => setTags(e));
-	const handleCustomFields = useMutableCallback((e) => setCustomFields(e));
 
 	const reset = useMutableCallback(() => {
 		setGuest('');
@@ -60,7 +54,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 		setFrom('');
 		setTo('');
 		setTags([]);
-		setCustomFields([]);
+		setCustomFields({});
 	});
 
 	const forms = useFormsSubscription() as any;
@@ -72,10 +66,6 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 	const EETagsComponent = useCurrentChatTags();
 
 	const onSubmit = useMutableCallback((e) => e.preventDefault());
-	const reducer = function (acc: any, curr: string): any {
-		acc[curr] = '';
-		return acc;
-	};
 
 	useEffect(() => {
 		setFilter({
@@ -86,7 +76,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			tags: tags.map((tag) => tag.label),
-			customFields: customFields.reduce(reducer, {}),
+			customFields,
 		});
 	}, [setFilter, guest, servedBy, status, department, from, to, tags, customFields]);
 
@@ -154,14 +144,6 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 					<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 						<Label mb='x4'>{t('Tags')}</Label>
 						<EETagsComponent value={tags} handler={handleTags} />
-					</Box>
-				</Box>
-			)}
-			{allCustomFields && (
-				<Box display='flex' flexDirection='row' marginBlockStart='x8' {...props}>
-					<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-						<Label mb='x4'>{t('Custom_Fields')}</Label>
-						<MultiSelect options={customFieldsOptions} value={customFields} onChange={handleCustomFields} flexGrow={1} {...props} />
 					</Box>
 				</Box>
 			)}

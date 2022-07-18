@@ -1,5 +1,5 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 const RemoveAllClosed: FC<{
@@ -7,7 +7,9 @@ const RemoveAllClosed: FC<{
 	handleRemoveClosed: any;
 }> = ({ handleClearFilters, handleRemoveClosed, ...props }) => {
 	const t = useTranslation();
+	const directoryRoute = useRoute('omnichannel-current-chats');
 	const canRemove = usePermission('remove-closed-livechat-rooms');
+	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 
 	const menuOptions = {
 		clearFilters: {
@@ -28,6 +30,17 @@ const RemoveAllClosed: FC<{
 					</Box>
 				),
 				action: handleRemoveClosed,
+			},
+		}),
+		...(canViewCustomFields && {
+			customFields: {
+				label: (
+					<Box>
+						<Icon name='magnifier' size='x16' marginInlineEnd='x4' />
+						{t('Custom_Fields')}
+					</Box>
+				),
+				action: (): void => directoryRoute.push({ context: 'custom-fields' }),
 			},
 		}),
 	};
