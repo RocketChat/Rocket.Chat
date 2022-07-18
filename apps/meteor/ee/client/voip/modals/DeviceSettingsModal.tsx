@@ -1,9 +1,10 @@
-import { Modal, Field, Select, ButtonGroup, Button, SelectOption } from '@rocket.chat/fuselage';
+import { Modal, Field, Select, ButtonGroup, Button, SelectOption, Box } from '@rocket.chat/fuselage';
 import { useTranslation, useAvailableDevices, useToastMessageDispatch, useSetModal, useSelectedDevices } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 
 import { useChangeAudioInputDevice, useChangeAudioOutputDevice } from '../../../../client/contexts/CallContext';
+import { isSetSinkIdAvailable } from '../../../../client/providers/DeviceProvider/lib/isSetSinkIdAvailable';
 
 type FieldValues = {
 	inputDevice: string;
@@ -23,7 +24,7 @@ const DeviceSettingsModal = (): ReactElement => {
 			outputDevice: selectedAudioDevices?.audioOutput?.id || '',
 		},
 	});
-
+	const [setSinkIdAvailable] = useState(() => isSetSinkIdAvailable());
 	const availableDevices = useAvailableDevices();
 	const changeAudioInputDevice = useChangeAudioInputDevice();
 	const changeAudioOutputDevice = useChangeAudioOutputDevice();
@@ -47,17 +48,27 @@ const DeviceSettingsModal = (): ReactElement => {
 	return (
 		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
 			<Modal.Header>
-				<Modal.Title>{t('Audio_settings')}</Modal.Title>
+				<Modal.Title>{t('Device_settings')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
+				{!setSinkIdAvailable && (
+					<Box color='danger-600' display='flex' flexDirection='column'>
+						{t('Device_Changes_Not_Available')}
+						<Box is='a' href='https://rocket.chat/download' target='_blank' rel='noopener noreferrer'>
+							{t('Download_Destkop_App')}
+						</Box>
+					</Box>
+				)}
 				<Field>
 					<Field.Label>{t('Microphone')}</Field.Label>
 					<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
 						<Controller
 							name='inputDevice'
 							control={control}
-							render={({ field }): ReactElement => <Select {...field} options={availableInputDevices || []} />}
+							render={({ field }): ReactElement => (
+								<Select disabled={!setSinkIdAvailable} {...field} options={availableInputDevices || []} />
+							)}
 						/>
 					</Field.Row>
 				</Field>
@@ -67,7 +78,9 @@ const DeviceSettingsModal = (): ReactElement => {
 						<Controller
 							name='outputDevice'
 							control={control}
-							render={({ field }): ReactElement => <Select {...field} options={availableOutputDevices || []} />}
+							render={({ field }): ReactElement => (
+								<Select disabled={!setSinkIdAvailable} {...field} options={availableOutputDevices || []} />
+							)}
 						/>
 					</Field.Row>
 				</Field>
@@ -75,7 +88,7 @@ const DeviceSettingsModal = (): ReactElement => {
 			<Modal.Footer>
 				<ButtonGroup stretch w='full'>
 					<Button onClick={(): void => setModal()}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSubmit(onSubmit)}>
+					<Button disabled={!setSinkIdAvailable} primary onClick={handleSubmit(onSubmit)}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
