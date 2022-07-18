@@ -32,7 +32,7 @@ describe('Federation[Client] - Federation', () => {
 
 	describe('#isEditableByTheUser()', () => {
 		it('should return false if the user is null', () => {
-			expect(Federation.isEditableByTheUser(null, { u: { _id: 'id' } } as any)).to.be.false;
+			expect(Federation.isEditableByTheUser(undefined, { u: { _id: 'id' } } as any)).to.be.false;
 		});
 
 		it('should return true if current user is the room owner', () => {
