@@ -53,7 +53,8 @@ API.v1.addRoute(
 			if (field === 'autoTranslate' && typeof value !== 'boolean') {
 				return API.v1.failure('The bodyParam "autoTranslate" must be a boolean.');
 			}
-			if (field === 'autoTranslateLanguage' && typeof value !== 'string') {
+
+			if (field === 'autoTranslateLanguage' && (typeof value !== 'string' || !Number.isNaN(Number.parseInt(value)))) {
 				return API.v1.failure('The bodyParam "autoTranslateLanguage" must be a string.');
 			}
 
