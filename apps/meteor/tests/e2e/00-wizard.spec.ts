@@ -174,7 +174,7 @@ class SetupWizard {
 	}
 }
 
-test.describe.only('[Wizard]', () => {
+test.describe('[Wizard]', () => {
 	let page: Page;
 	let pageAuth: Auth;
 
