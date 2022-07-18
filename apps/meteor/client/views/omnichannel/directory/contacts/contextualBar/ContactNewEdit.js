@@ -47,7 +47,11 @@ function ContactNewEdit({ id, data, close }) {
 
 	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(getInitialValues(data));
+	const initialValue = getInitialValues(data);
+
+	const { username: initialUsername } = initialValue;
+
+	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(initialValue);
 
 	const eeForms = useFormsSubscription();
 
@@ -73,8 +77,7 @@ function ContactNewEdit({ id, data, close }) {
 	const [emailError, setEmailError] = useState();
 	const [phoneError, setPhoneError] = useState();
 	const [customFieldsError, setCustomFieldsError] = useState([]);
-	const [userId, setUserId] = useState('');
-	const [currentUsername, setCurrentUsername] = useState(username);
+	const [userId, setUserId] = useState('no-agent-selected');
 
 	const { value: allCustomFields, phase: state } = useEndpointData('/v1/livechat/custom-fields');
 
@@ -137,21 +140,27 @@ function ContactNewEdit({ id, data, close }) {
 		!phone && setPhoneError(null);
 	}, [phone]);
 
-	// Put the "userId" in state for the AutoComplete to have it available
 	useEffect(() => {
-		if (!username) {
-			// No contact manager selected, skip population
+		if (!initialUsername) {
 			return;
 		}
 
-		getUserData({ username }).then(({ user }) => {
+		getUserData({ username: initialUsername }).then(({ user }) => {
 			setUserId(user._id);
-			// To avoid having to write a custom handler, lets store the current username on a different place
-			// This way, we can preserve the current username whenever CM changes
-			// All of this because CM is { username: string } instead of { _id: string }
-			setCurrentUsername(user.username);
 		});
-	}, [username, getUserData, setUserId]);
+	}, [getUserData, initialUsername]);
+
+	const handleContactManagerChange = useMutableCallback(async (userId) => {
+		setUserId(userId);
+		if (userId === 'no-agent-selected') {
+			handleUsername('');
+			return;
+		}
+
+		getUserData({ userId }).then(({ user }) => {
+			handleUsername(user.username);
+		});
+	});
 
 	const handleSave = useMutableCallback(async (e) => {
 		e.preventDefault();
@@ -175,7 +184,7 @@ function ContactNewEdit({ id, data, close }) {
 			email,
 			customFields: livechatData || {},
 			token: token || createToken(),
-			...(username && { contactManager: { username: currentUsername } }),
+			...(username && { contactManager: { username } }),
 			...(id && { _id: id }),
 		};
 
@@ -227,7 +236,7 @@ function ContactNewEdit({ id, data, close }) {
 						setCustomFieldsError={setCustomFieldsError}
 					/>
 				)}
-				{ContactManager && <ContactManager value={userId} handler={handleUsername} />}
+				{ContactManager && <ContactManager value={userId} handler={handleContactManagerChange} />}
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>

@@ -11,7 +11,7 @@ export const ContactManager = ({ value: userId, handler }) => {
 		<Field>
 			<Field.Label>{t('Contact_Manager')}</Field.Label>
 			<Field.Row>
-				<AutoCompleteAgent value={userId} onChange={handler} />
+				<AutoCompleteAgent haveNoAgentsSelectedOption value={userId} onChange={handler} />
 			</Field.Row>
 		</Field>
 	);

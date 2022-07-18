@@ -1,8 +1,8 @@
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 import { LivechatVisitors, Users, LivechatRooms } from '@rocket.chat/models';
-import { MatchKeysAndValues } from 'mongodb';
 import { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { LivechatCustomField, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
@@ -82,7 +82,7 @@ export const Contacts = {
 				return obj;
 			}, {});
 
-		const updateUser: { $set: MatchKeysAndValues<ILivechatVisitor> } = {
+		const updateUser: { $set: MatchKeysAndValues<ILivechatVisitor>; $unset?: OnlyFieldsOfType<ILivechatVisitor> } = {
 			$set: {
 				token,
 				name,
@@ -91,6 +91,7 @@ export const Contacts = {
 				...(visitorEmail && { visitorEmails: [{ address: visitorEmail }] }),
 				...(contactManager?.username && { contactManager: { username: contactManager.username } }),
 			},
+			...(!contactManager?.username && { $unset: { contactManager: 1 } }),
 		};
 
 		await LivechatVisitors.updateOne({ _id: contactId }, updateUser);
