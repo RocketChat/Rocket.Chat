@@ -1,6 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../../Ajv';
 
 export type ChannelsSetReadOnlyProps = { roomId: string; readOnly: boolean } | { roomName: string; readOnly: boolean };
 
