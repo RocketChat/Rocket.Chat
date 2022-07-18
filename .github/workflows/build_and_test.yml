@@ -692,7 +692,7 @@ jobs:
           echo $NYC_OUTPUT
           COVERAGE_REPORTS=$(grep -o '[^ ]*%' <<< "$NYC_OUTPUT")
           echo "REPORT_STATEMENTS=$(sed -n 1p <<< "$COVERAGE_REPORTS")" >> $GITHUB_ENV
-          cd ../
+
       - name: Publish e2e:ee:coverage badge to gh-pages
         uses: RocketChat/ghpages-dynamic-badges-action@v3.0.0
         with:
