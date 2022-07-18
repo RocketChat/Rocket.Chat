@@ -14,7 +14,6 @@ test.describe('Agents', () => {
 	});
 
 	test.beforeAll(async () => {
-		await page.goto('/');
 		await pageAuth.doLogin();
 		await page.goto('/omnichannel');
 	});
@@ -56,16 +55,6 @@ test.describe('Agents', () => {
 	});
 
 	test.describe('Edit button', async () => {
-		test.describe('Render', async () => {
-			test.beforeAll(async () => {
-				await pageOmnichannelAgents.btnEdit.click();
-			});
-
-			test('expect show fields', async () => {
-				await pageOmnichannelAgents.getListOfExpectedInputs();
-			});
-		});
-
 		test.describe('Action', async () => {
 			test('expect change user status', async () => {
 				await pageOmnichannelAgents.doChangeUserStatus('not-available');

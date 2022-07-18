@@ -16,7 +16,6 @@ test.describe('[Discussion]', () => {
 	});
 
 	test.beforeAll(async () => {
-		await page.goto('/');
 		await pageAuth.doLogin();
 	});
 

@@ -1,6 +1,5 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 
-import { setupWizardStepRegex } from './utils/mocks/urlMock';
 import { Auth } from './page-objects';
 
 class SetupWizard {
@@ -199,7 +198,7 @@ test.describe('[Wizard]', () => {
 
 		test('expect go to Step 3 successfully', async () => {
 			await setupWizard.stepTwoSuccess();
-			await expect(page).toHaveURL(setupWizardStepRegex._3);
+			await expect(page).toHaveURL(/.*\/setup-wizard\/3/);
 		});
 	});
 
