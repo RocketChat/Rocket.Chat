@@ -160,7 +160,8 @@ async function getTeams(user, searchTerm, sort, pagination) {
 }
 
 async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo }) {
-	const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
+	const searchFields =
+		workspace === 'all' ? ['username', 'name', 'emails.address'] : settings.get('Accounts_SearchFields').trim().split(',');
 
 	const options = {
 		...pagination,
@@ -178,7 +179,7 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 	};
 
 	if (workspace === 'all') {
-		const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(text, [], options, forcedSearchFields);
+		const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(text, [], options, searchFields);
 		const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 		return {
 			total,
@@ -187,13 +188,7 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 	}
 
 	if (workspace === 'external') {
-		const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept(
-			text,
-			[],
-			options,
-			forcedSearchFields,
-			getFederationDomain(),
-		);
+		const { cursor, totalCount } = Users.findPaginatedByActiveExternalUsersExcept(text, [], options, searchFields, getFederationDomain());
 		const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 		return {
 			total,
@@ -201,7 +196,7 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 		};
 	}
 
-	const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
+	const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept(text, [], options, searchFields, getFederationDomain());
 	const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
 		total,
