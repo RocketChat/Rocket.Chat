@@ -18,6 +18,7 @@ const OmnichannelRoomIcon = new (class extends Emitter {
 		if (this.icons.has(`${appId}-${icon}`)) {
 			return `${appId}-${icon}`;
 		}
+		// TODO: update the apps icons to send JSON instead of a string. This will allow us to use APIClient.get()
 		APIClient.send(`/apps/public/${appId}/get-sidebar-icon?icon=${icon}`, 'GET')
 			.then((response: any) => {
 				response.text().then((text: any) => {
