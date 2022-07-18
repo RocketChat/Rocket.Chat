@@ -17,8 +17,9 @@ const UserActions = ({ user, rid, backToList }) => {
 			<Menu
 				key='menu'
 				mi='x4'
-				ghost={false}
+				secondary
 				small={false}
+				maxHeight='initial'
 				renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
 				flexShrink={0}
 				options={menuOptions}

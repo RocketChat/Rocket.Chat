@@ -33,13 +33,18 @@ const runFederationEE = async (): Promise<void> => {
 	await federationEE.start();
 };
 
+let cancelSettingsObserverEE: Function;
+
 onToggledFeature('federation', {
 	up: async () => {
+		queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
+		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged(
+			federationEE.onFederationAvailabilityChanged.bind(federationEE),
+		);
 		if (!rocketSettingsAdapter.isFederationEnabled()) {
 			return;
 		}
 		await stopFederation();
-		queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 		await runFederationEE();
 		FederationFactoryEE.setupListeners(federationRoomServiceSenderEE, rocketSettingsAdapter);
 		require('./infrastructure/rocket-chat/slash-commands');
@@ -48,5 +53,6 @@ onToggledFeature('federation', {
 		await federationEE.stop();
 		await runFederation();
 		FederationFactoryEE.removeListeners();
+		cancelSettingsObserverEE();
 	},
 });

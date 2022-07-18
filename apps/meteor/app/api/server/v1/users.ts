@@ -366,6 +366,7 @@ API.v1.addRoute(
 								t: 1,
 								roles: 1,
 								unread: 1,
+								federated: 1,
 							},
 							sort: {
 								t: 1,
