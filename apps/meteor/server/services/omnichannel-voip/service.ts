@@ -141,6 +141,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			msgs: 0,
 			usersCount: 1,
 			lm: newRoomAt,
+			name,
 			fname: name,
 			t: 'v',
 			ts: newRoomAt,
