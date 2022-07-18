@@ -3,8 +3,9 @@ import { useMemo, ContextType } from 'react';
 
 import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
 import type { AppsContext } from '../AppsContext';
-import { appStatusSpanProps } from '../helpers';
 import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
+import { filterAppsByDisabled } from '../helpers/filterAppsByDisabled';
+import { filterAppsByEnabled } from '../helpers/filterAppsByEnabled';
 import { filterAppsByFree } from '../helpers/filterAppsByFree';
 import { filterAppsByPaid } from '../helpers/filterAppsByPaid';
 import { filterAppsByText } from '../helpers/filterAppsByText';
@@ -57,17 +58,13 @@ export const useFilteredApps = ({
 		}
 
 		if (purchaseType && purchaseType !== 'all') {
-			filtered =
-				purchaseType === 'paid' ? filtered.filter((app) => filterAppsByPaid(app)) : filtered.filter((app) => filterAppsByFree(app));
+			filtered = purchaseType === 'paid' ? filtered.filter(filterAppsByPaid) : filtered.filter(filterAppsByFree);
 
 			if (!filtered.length) shouldShowSearchText = false;
 		}
 
 		if (status && status !== 'all') {
-			filtered =
-				status === 'enabled'
-					? filtered.filter((app) => appStatusSpanProps(app)?.label === 'Enabled')
-					: filtered.filter((app) => appStatusSpanProps(app)?.label === 'Disabled');
+			filtered = status === 'enabled' ? filtered.filter(filterAppsByEnabled) : filtered.filter(filterAppsByDisabled);
 
 			if (!filtered.length) shouldShowSearchText = false;
 		}
