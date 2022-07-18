@@ -1,10 +1,8 @@
-import Ajv, { JSONSchemaType } from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../../Ajv';
 
 export type VideoConfInfoProps = { callId: string };
 
-const videoConfInfoPropsSchema: JSONSchemaType<VideoConfInfoProps> = {
+const videoConfInfoPropsSchema = {
 	type: 'object',
 	properties: {
 		callId: {
@@ -16,4 +14,4 @@ const videoConfInfoPropsSchema: JSONSchemaType<VideoConfInfoProps> = {
 	additionalProperties: false,
 };
 
-export const isVideoConfInfoProps = ajv.compile(videoConfInfoPropsSchema);
+export const isVideoConfInfoProps = ajv.compile<VideoConfInfoProps>(videoConfInfoPropsSchema);

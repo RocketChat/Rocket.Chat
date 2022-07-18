@@ -1,10 +1,6 @@
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsAdminRoomsParamsGET = {
+export type GETAdminRooms = {
 	offset: number;
 	count: number;
 
@@ -13,7 +9,7 @@ export type RoomsAdminRoomsParamsGET = {
 	filter: string;
 };
 
-const RoomsAdminRoomsParamsGETSchema = {
+const GETAdminRoomsSchema = {
 	type: 'object',
 	properties: {
 		offset: {
@@ -40,4 +36,4 @@ const RoomsAdminRoomsParamsGETSchema = {
 	required: ['offset', 'count', 'sort', 'types', 'filter'],
 };
 
-export const isRoomsAdminRoomsParamsGET = ajv.compile<RoomsAdminRoomsParamsGET>(RoomsAdminRoomsParamsGETSchema);
+export const isGETAdminRooms = ajv.compile<GETAdminRooms>(GETAdminRoomsSchema);

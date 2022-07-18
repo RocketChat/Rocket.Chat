@@ -1,14 +1,10 @@
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsFavoriteParamsPOST = {
+export type POSTRoomsFavorite = {
 	favorite: string;
 };
 
-const RoomsFavoriteParamsPOSTSchema = {
+const POSTRoomsFavoriteSchema = {
 	type: 'object',
 	properties: {
 		favorite: {
@@ -19,4 +15,4 @@ const RoomsFavoriteParamsPOSTSchema = {
 	required: ['favorite'],
 };
 
-export const isRoomsFavoriteParamsPOST = ajv.compile<RoomsFavoriteParamsPOST>(RoomsFavoriteParamsPOSTSchema);
+export const isPOSTRoomsFavorite = ajv.compile<POSTRoomsFavorite>(POSTRoomsFavoriteSchema);

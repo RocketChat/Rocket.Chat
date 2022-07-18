@@ -1,10 +1,6 @@
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsGetDiscussionsParamsGET = {
+export type GETGetDiscussions = {
 	offset: number;
 	count: number;
 
@@ -13,7 +9,7 @@ export type RoomsGetDiscussionsParamsGET = {
 	query?: string;
 };
 
-const RoomsGetDiscussionsParamsGETSchema = {
+const GETGetDiscussionsSchema = {
 	type: 'object',
 	properties: {
 		offset: {
@@ -39,4 +35,4 @@ const RoomsGetDiscussionsParamsGETSchema = {
 	required: ['offset', 'count'],
 };
 
-export const isRoomsGetDiscussionsParamsGET = ajv.compile<RoomsGetDiscussionsParamsGET>(RoomsGetDiscussionsParamsGETSchema);
+export const isGETGetDiscussions = ajv.compile<GETGetDiscussions>(GETGetDiscussionsSchema);

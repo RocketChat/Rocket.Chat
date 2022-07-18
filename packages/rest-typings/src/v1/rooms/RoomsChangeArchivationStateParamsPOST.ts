@@ -1,15 +1,11 @@
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsChangeArchivationStateParamsPOST = {
+export type POSTChangeArchivationState = {
 	rid: string;
 	action?: string;
 };
 
-const RoomsChangeArchivationStateParamsPOSTSchema = {
+const POSTChangeArchivationStateSchema = {
 	type: 'object',
 	properties: {
 		rid: {
@@ -24,6 +20,4 @@ const RoomsChangeArchivationStateParamsPOSTSchema = {
 	required: ['rid'],
 };
 
-export const isRoomsChangeArchivationStateParamsPOST = ajv.compile<RoomsChangeArchivationStateParamsPOST>(
-	RoomsChangeArchivationStateParamsPOSTSchema,
-);
+export const isPOSTChangeArchivationState = ajv.compile<POSTChangeArchivationState>(POSTChangeArchivationStateSchema);

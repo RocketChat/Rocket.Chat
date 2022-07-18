@@ -1,14 +1,10 @@
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsAutocompleteChannelAndPrivateParamsGET = {
+export type GETAutocompleteChannelAndPrivate = {
 	selector: string;
 };
 
-const RoomsAutocompleteChannelAndPrivateParamsGETSchema = {
+const GETAutocompleteChannelAndPrivateSchema = {
 	type: 'object',
 	properties: {
 		selector: {
@@ -19,6 +15,4 @@ const RoomsAutocompleteChannelAndPrivateParamsGETSchema = {
 	required: ['selector'],
 };
 
-export const isRoomsAutocompleteChannelAndPrivateParamsGET = ajv.compile<RoomsAutocompleteChannelAndPrivateParamsGET>(
-	RoomsAutocompleteChannelAndPrivateParamsGETSchema,
-);
+export const isGETAutocompleteChannelAndPrivate = ajv.compile<GETAutocompleteChannelAndPrivate>(GETAutocompleteChannelAndPrivateSchema);

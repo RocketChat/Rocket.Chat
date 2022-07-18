@@ -1,9 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../../Ajv';
 
 export type e2eSetUserPublicAndPrivateKeysParamsPOST = {
 	public_key: string;

@@ -261,3 +261,6 @@ export * from './v1/rooms/RoomsAutocompleteAvailableForTeamsParamsGET';
 export * from './v1/rooms/RoomsSaveRoomSettingsParamsPOST';
 export * from './v1/rooms/RoomsChangeArchivationStateParamsPOST';
 export * from './v1/rooms/RoomsExportParamsPOST';
+
+// Ajv JSON Schema validator
+export * from './Ajv';

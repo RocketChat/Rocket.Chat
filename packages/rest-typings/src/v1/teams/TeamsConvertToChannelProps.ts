@@ -1,12 +1,10 @@
-import Ajv, { JSONSchemaType } from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../../Ajv';
 
 export type TeamsConvertToChannelProps = {
 	roomsToRemove?: string[];
 } & ({ teamId: string } | { teamName: string });
 
-const teamsConvertToTeamsPropsSchema: JSONSchemaType<TeamsConvertToChannelProps> = {
+const teamsConvertToTeamsPropsSchema = {
 	oneOf: [
 		{
 			type: 'object',
@@ -46,4 +44,4 @@ const teamsConvertToTeamsPropsSchema: JSONSchemaType<TeamsConvertToChannelProps>
 	],
 };
 
-export const isTeamsConvertToChannelProps = ajv.compile(teamsConvertToTeamsPropsSchema);
+export const isTeamsConvertToChannelProps = ajv.compile<TeamsConvertToChannelProps>(teamsConvertToTeamsPropsSchema);

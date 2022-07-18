@@ -1,10 +1,6 @@
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsCleanHistoryParamsPOST = {
+export type POSTCleanHistory = {
 	roomId: string;
 	latest: string;
 	oldest: string;
@@ -17,7 +13,7 @@ export type RoomsCleanHistoryParamsPOST = {
 	ignoreThreads?: boolean;
 };
 
-const RoomsCleanHistoryParamsPOSTSchema = {
+const POSTCleanHistorySchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -65,4 +61,4 @@ const RoomsCleanHistoryParamsPOSTSchema = {
 	required: ['roomId', 'latest', 'oldest'],
 };
 
-export const isRoomsCleanHistoryParamsPOST = ajv.compile<RoomsCleanHistoryParamsPOST>(RoomsCleanHistoryParamsPOSTSchema);
+export const isPOSTCleanHistory = ajv.compile<POSTCleanHistory>(POSTCleanHistorySchema);

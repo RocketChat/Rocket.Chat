@@ -1,17 +1,13 @@
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsAutocompleteChannelAndPrivateWithPaginationParamsGET = {
+export type GETAutocompleteChannelAndPrivateWithPagination = {
 	selector: string;
 	offset: number;
 	count: number;
 	sort: Record<string, 1 | -1>;
 };
 
-const RoomsAutocompleteChannelAndPrivateWithPaginationParamsGETSchema = {
+const GETAutocompleteChannelAndPrivateWithPaginationSchema = {
 	type: 'object',
 	properties: {
 		selector: {
@@ -35,5 +31,6 @@ const RoomsAutocompleteChannelAndPrivateWithPaginationParamsGETSchema = {
 	required: ['offset', 'count', 'sort', 'selector'],
 };
 
-export const isRoomsAutocompleteChannelAndPrivateWithPaginationParamsGET =
-	ajv.compile<RoomsAutocompleteChannelAndPrivateWithPaginationParamsGET>(RoomsAutocompleteChannelAndPrivateWithPaginationParamsGETSchema);
+export const isGETAutocompleteChannelAndPrivateWithPagination = ajv.compile<GETAutocompleteChannelAndPrivateWithPagination>(
+	GETAutocompleteChannelAndPrivateWithPaginationSchema,
+);

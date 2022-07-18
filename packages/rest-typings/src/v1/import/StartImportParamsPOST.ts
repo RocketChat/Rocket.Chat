@@ -1,14 +1,10 @@
-import Ajv, { JSONSchemaType } from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../../Ajv';
 
 export type StartImportParamsPOST = {
 	input: string;
 };
 
-const StartImportParamsPostSchema: JSONSchemaType<StartImportParamsPOST> = {
+const StartImportParamsPostSchema = {
 	type: 'object',
 	properties: {
 		input: {

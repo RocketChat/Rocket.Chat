@@ -1,12 +1,10 @@
-import Ajv, { JSONSchemaType } from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../../Ajv';
 
 export type VideoConfCancelProps = {
 	callId: string;
 };
 
-const videoConfCancelPropsSchema: JSONSchemaType<VideoConfCancelProps> = {
+const videoConfCancelPropsSchema = {
 	type: 'object',
 	properties: {
 		callId: {
@@ -18,4 +16,4 @@ const videoConfCancelPropsSchema: JSONSchemaType<VideoConfCancelProps> = {
 	additionalProperties: false,
 };
 
-export const isVideoConfCancelProps = ajv.compile(videoConfCancelPropsSchema);
+export const isVideoConfCancelProps = ajv.compile<VideoConfCancelProps>(videoConfCancelPropsSchema);

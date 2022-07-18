@@ -1,10 +1,6 @@
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsSaveRoomSettingsParamsPOST = {
+export type POSTSaveRoomSettings = {
 	rid: string;
 	roomAvatar?: string;
 	featured?: boolean;
@@ -23,7 +19,7 @@ export type RoomsSaveRoomSettingsParamsPOST = {
 	};
 };
 
-const RoomsSaveRoomSettingsParamsPOSTSchema = {
+const POSTSaveRoomSettingsSchema = {
 	type: 'object',
 	properties: {
 		rid: {
@@ -93,4 +89,4 @@ const RoomsSaveRoomSettingsParamsPOSTSchema = {
 	required: ['rid'],
 };
 
-export const isRoomsSaveRoomSettingsParamsPOST = ajv.compile<RoomsSaveRoomSettingsParamsPOST>(RoomsSaveRoomSettingsParamsPOSTSchema);
+export const isPOSTSaveRoomSettings = ajv.compile<POSTSaveRoomSettings>(POSTSaveRoomSettingsSchema);

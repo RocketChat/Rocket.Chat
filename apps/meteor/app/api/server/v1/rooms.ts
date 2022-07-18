@@ -2,21 +2,21 @@
 import { Meteor } from 'meteor/meteor';
 import { IRoom, IUser } from '@rocket.chat/core-typings';
 import {
-	isRoomsGetParamsGET,
-	isRoomsSaveNotificationParamsPOST,
-	isRoomsFavoriteParamsPOST,
-	isRoomsCleanHistoryParamsPOST,
-	isRoomsCreateDiscussionParamsPOST,
-	isRoomsGetDiscussionsParamsGET,
-	isRoomsAdminRoomsParamsGET,
-	isRoomsAutocompleteAdminRoomsParamsGET,
-	isRoomsAdminRoomsGetRoomParamsGET,
-	isRoomsAutocompleteChannelAndPrivateParamsGET,
-	isRoomsAutocompleteChannelAndPrivateWithPaginationParamsGET,
-	isRoomsAutocompleteAvailableForTeamsParamsGET,
-	isRoomsSaveRoomSettingsParamsPOST,
-	isRoomsChangeArchivationStateParamsPOST,
-	isRoomsExportParamsPOST,
+	isGETRoomsGet,
+	isPOSTSaveNotification,
+	isPOSTRoomsFavorite,
+	isPOSTCleanHistory,
+	isPOSTCreateDiscussion,
+	isGETGetDiscussions,
+	isGETAdminRooms,
+	isGETAutocompleteAdminRooms,
+	isGETAdminRoomsGetRoom,
+	isGETAutocompleteChannelAndPrivate,
+	isGETAutocompleteChannelAndPrivateWithPagination,
+	isGETAutocompleteAvailableForTeams,
+	isPOSTSaveRoomSettings,
+	isPOSTChangeArchivationState,
+	isPOSTRoomsExport,
 } from '@rocket.chat/rest-typings';
 import { Rooms as RoomsRaw } from '@rocket.chat/models';
 
@@ -43,7 +43,7 @@ function findRoomByIdOrName({
 }: {
 	params: {
 		roomId: string;
-		roomName: string;
+		roomName?: string;
 		[key: string]: unknown;
 	};
 	checkedArchived?: boolean;
@@ -74,7 +74,7 @@ API.v1.addRoute(
 	'rooms.get',
 	{
 		authRequired: true,
-		validateParams: isRoomsGetParamsGET,
+		validateParams: isGETRoomsGet,
 	},
 	{
 		get() {
@@ -163,7 +163,7 @@ API.v1.addRoute(
 	'rooms.saveNotification',
 	{
 		authRequired: true,
-		validateParams: isRoomsSaveNotificationParamsPOST,
+		validateParams: isPOSTSaveNotification,
 	},
 	{
 		post() {
@@ -189,7 +189,7 @@ API.v1.addRoute(
 	'rooms.favorite',
 	{
 		authRequired: true,
-		validateParams: isRoomsFavoriteParamsPOST,
+		validateParams: isPOSTRoomsFavorite,
 	},
 	{
 		post() {
@@ -208,7 +208,7 @@ API.v1.addRoute(
 	'rooms.cleanHistory',
 	{
 		authRequired: true,
-		validateParams: isRoomsCleanHistoryParamsPOST,
+		validateParams: isPOSTCleanHistory,
 	},
 	{
 		async post() {
@@ -249,26 +249,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		get() {
-			/*
-			Instead of using this definition from the rooms.d.ts file,
-				declare type RoomsInfoProps = {
-					roomId: string;
-				} | {
-					roomName: string;
-				};
-
-			maybe we could use something like:
-				declare type RoomsInfoProps = {
-					roomId: string;
-					roomName?: string;
-				} | {
-					roomId?: string;
-					roomName: string;
-				};
-
-				to fix the this.requestParams() type error.
-			*/
-
+			// type RoomsInfoProps = { roomId: string; roomName?: string } | { roomId?: string; roomName: string }
 			const room = findRoomByIdOrName({ params: this.requestParams() });
 			const { fields } = this.parseJsonQuery();
 
@@ -299,7 +280,7 @@ API.v1.addRoute(
 	'rooms.createDiscussion',
 	{
 		authRequired: true,
-		validateParams: isRoomsCreateDiscussionParamsPOST,
+		validateParams: isPOSTCreateDiscussion,
 	},
 	{
 		post() {
@@ -327,7 +308,7 @@ API.v1.addRoute(
 	'rooms.getDiscussions',
 	{
 		authRequired: true,
-		validateParams: isRoomsGetDiscussionsParamsGET,
+		validateParams: isGETGetDiscussions,
 	},
 	{
 		async get() {
@@ -364,7 +345,7 @@ API.v1.addRoute(
 	'rooms.adminRooms',
 	{
 		authRequired: true,
-		validateParams: isRoomsAdminRoomsParamsGET,
+		validateParams: isGETAdminRooms,
 	},
 	{
 		get() {
@@ -394,7 +375,7 @@ API.v1.addRoute(
 	'rooms.autocomplete.adminRooms',
 	{
 		authRequired: true,
-		validateParams: isRoomsAutocompleteAdminRoomsParamsGET,
+		validateParams: isGETAutocompleteAdminRooms,
 	},
 	{
 		get() {
@@ -416,7 +397,7 @@ API.v1.addRoute(
 	'rooms.adminRooms.getRoom',
 	{
 		authRequired: true,
-		validateParams: isRoomsAdminRoomsGetRoomParamsGET,
+		validateParams: isGETAdminRoomsGetRoom,
 	},
 	{
 		get() {
@@ -437,7 +418,7 @@ API.v1.addRoute(
 	'rooms.autocomplete.channelAndPrivate',
 	{
 		authRequired: true,
-		validateParams: isRoomsAutocompleteChannelAndPrivateParamsGET,
+		validateParams: isGETAutocompleteChannelAndPrivate,
 	},
 	{
 		get() {
@@ -459,7 +440,7 @@ API.v1.addRoute(
 	'rooms.autocomplete.channelAndPrivate.withPagination',
 	{
 		authRequired: true,
-		validateParams: isRoomsAutocompleteChannelAndPrivateWithPaginationParamsGET,
+		validateParams: isGETAutocompleteChannelAndPrivateWithPagination,
 	},
 	{
 		get() {
@@ -492,7 +473,7 @@ API.v1.addRoute(
 	'rooms.autocomplete.availableForTeams',
 	{
 		authRequired: true,
-		validateParams: isRoomsAutocompleteAvailableForTeamsParamsGET,
+		validateParams: isGETAutocompleteAvailableForTeams,
 	},
 	{
 		get() {
@@ -514,7 +495,7 @@ API.v1.addRoute(
 	'rooms.saveRoomSettings',
 	{
 		authRequired: true,
-		validateParams: isRoomsSaveRoomSettingsParamsPOST,
+		validateParams: isPOSTSaveRoomSettings,
 	},
 	{
 		post() {
@@ -531,7 +512,7 @@ API.v1.addRoute(
 	'rooms.changeArchivationState',
 	{
 		authRequired: true,
-		validateParams: isRoomsChangeArchivationStateParamsPOST,
+		validateParams: isPOSTChangeArchivationState,
 	},
 	{
 		post() {
@@ -553,7 +534,7 @@ API.v1.addRoute(
 	'rooms.export',
 	{
 		authRequired: true,
-		validateParams: isRoomsExportParamsPOST,
+		validateParams: isPOSTRoomsExport,
 	},
 	{
 		post() {

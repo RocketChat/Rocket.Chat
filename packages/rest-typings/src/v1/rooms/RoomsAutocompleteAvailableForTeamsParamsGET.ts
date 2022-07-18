@@ -1,14 +1,10 @@
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsAutocompleteAvailableForTeamsParamsGET = {
+export type GETAutocompleteAvailableForTeams = {
 	name: string;
 };
 
-const RoomsAutocompleteAvailableForTeamsParamsGETSchema = {
+const GETAutocompleteAvailableForTeamsSchema = {
 	type: 'object',
 	properties: {
 		name: {
@@ -19,6 +15,4 @@ const RoomsAutocompleteAvailableForTeamsParamsGETSchema = {
 	required: ['name'],
 };
 
-export const isRoomsAutocompleteAvailableForTeamsParamsGET = ajv.compile<RoomsAutocompleteAvailableForTeamsParamsGET>(
-	RoomsAutocompleteAvailableForTeamsParamsGETSchema,
-);
+export const isGETAutocompleteAvailableForTeams = ajv.compile<GETAutocompleteAvailableForTeams>(GETAutocompleteAvailableForTeamsSchema);

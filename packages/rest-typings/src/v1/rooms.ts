@@ -76,7 +76,7 @@ export const isRoomsAutocompleteAvailableForTeamsProps = ajv.compile<RoomsAutoco
 	RoomsAutocompleteAvailableForTeamsSchema,
 );
 
-type RoomsInfoProps = { roomId: string } | { roomName: string };
+type RoomsInfoProps = { roomId: string; roomName?: string } | { roomId?: string; roomName: string };
 
 const RoomsInfoSchema = {
 	oneOf: [
@@ -86,6 +86,10 @@ const RoomsInfoSchema = {
 				roomId: {
 					type: 'string',
 				},
+				roomName: {
+					type: 'string',
+					nullable: true,
+				},
 			},
 			required: ['roomId'],
 			additionalProperties: false,
@@ -93,6 +97,10 @@ const RoomsInfoSchema = {
 		{
 			type: 'object',
 			properties: {
+				roomId: {
+					type: 'string',
+					nullable: true,
+				},
 				roomName: {
 					type: 'string',
 				},

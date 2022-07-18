@@ -1,15 +1,11 @@
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsSaveNotificationParamsPOST = {
+export type POSTSaveNotification = {
 	roomId: string;
 	notifications: string;
 };
 
-const RoomsSaveNotificationParamsPOSTSchema = {
+const POSTSaveNotificationSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -23,4 +19,4 @@ const RoomsSaveNotificationParamsPOSTSchema = {
 	required: ['roomId', 'notifications'],
 };
 
-export const isRoomsSaveNotificationParamsPOST = ajv.compile<RoomsSaveNotificationParamsPOST>(RoomsSaveNotificationParamsPOSTSchema);
+export const isPOSTSaveNotification = ajv.compile<POSTSaveNotification>(POSTSaveNotificationSchema);

@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsCreateDiscussionPOST = {
+export type POSTCreateDiscussion = {
 	prid: string;
 	pmid?: string;
 	t_name: string;
@@ -14,7 +10,7 @@ export type RoomsCreateDiscussionPOST = {
 	reply?: string;
 };
 
-const RoomsCreateDiscussionPOSTSchema = {
+const POSTCreateDiscussionSchema = {
 	type: 'object',
 	properties: {
 		prid: {
@@ -47,4 +43,4 @@ const RoomsCreateDiscussionPOSTSchema = {
 	required: ['prid', 't_name'],
 };
 
-export const isRoomsCreateDiscussionPOST = ajv.compile<RoomsCreateDiscussionPOST>(RoomsCreateDiscussionPOSTSchema);
+export const isPOSTCreateDiscussion = ajv.compile<POSTCreateDiscussion>(POSTCreateDiscussionSchema);

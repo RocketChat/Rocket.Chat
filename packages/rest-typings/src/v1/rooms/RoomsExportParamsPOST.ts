@@ -1,10 +1,6 @@
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsExportParamsPOST = {
+export type POSTRoomsExport = {
 	rid: string;
 	type: 'file' | 'email';
 
@@ -18,7 +14,7 @@ export type RoomsExportParamsPOST = {
 	format?: 'html' | 'json';
 };
 
-const RoomsExportParamsPOSTSchema = {
+const POSTRoomsExportSchema = {
 	type: 'object',
 	properties: {
 		rid: {
@@ -76,4 +72,4 @@ const RoomsExportParamsPOSTSchema = {
 	required: ['rid', 'type'],
 };
 
-export const isRoomsExportParamsPOST = ajv.compile<RoomsExportParamsPOST>(RoomsExportParamsPOSTSchema);
+export const isPOSTRoomsExport = ajv.compile<POSTRoomsExport>(POSTRoomsExportSchema);

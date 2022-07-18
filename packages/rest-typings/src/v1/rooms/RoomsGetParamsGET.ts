@@ -1,17 +1,10 @@
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-addFormats(ajv, ['date', 'time']);
-
-export type RoomsGetParamsGET = {
+export type GETRoomsGet = {
 	updatedSince: string;
 };
 
-const RoomsGetParamsGETSchema = {
+const GETRoomsGetSchema = {
 	type: 'object',
 	properties: {
 		updatedSince: {
@@ -24,4 +17,4 @@ const RoomsGetParamsGETSchema = {
 	required: ['updatedSince'],
 };
 
-export const isRoomsGetParamsGET = ajv.compile<RoomsGetParamsGET>(RoomsGetParamsGETSchema);
+export const isGETRoomsGet = ajv.compile<GETRoomsGet>(GETRoomsGetSchema);

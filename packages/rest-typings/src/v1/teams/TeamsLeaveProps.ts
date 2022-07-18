@@ -1,10 +1,8 @@
-import Ajv, { JSONSchemaType } from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../../Ajv';
 
 export type TeamsLeaveProps = ({ teamId: string } | { teamName: string }) & { rooms?: string[] };
 
-const teamsLeavePropsSchema: JSONSchemaType<TeamsLeaveProps> = {
+const teamsLeavePropsSchema = {
 	oneOf: [
 		{
 			type: 'object',
@@ -47,4 +45,4 @@ const teamsLeavePropsSchema: JSONSchemaType<TeamsLeaveProps> = {
 	],
 };
 
-export const isTeamsLeaveProps = ajv.compile(teamsLeavePropsSchema);
+export const isTeamsLeaveProps = ajv.compile<TeamsLeaveProps>(teamsLeavePropsSchema);

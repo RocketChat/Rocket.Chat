@@ -1,15 +1,11 @@
-import Ajv, { JSONSchemaType } from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../../Ajv';
 
 type DmKickProps = {
 	roomId: string;
 	userId: string;
 };
 
-const DmKickPropsSchema: JSONSchemaType<DmKickProps> = {
+const DmKickPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -23,4 +19,4 @@ const DmKickPropsSchema: JSONSchemaType<DmKickProps> = {
 	additionalProperties: false,
 };
 
-export const isDmKickProps = ajv.compile(DmKickPropsSchema);
+export const isDmKickProps = ajv.compile<DmKickProps>(DmKickPropsSchema);

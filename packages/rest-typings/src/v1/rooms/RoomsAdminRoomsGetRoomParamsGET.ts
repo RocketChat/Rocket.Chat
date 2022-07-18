@@ -1,14 +1,10 @@
-import Ajv from 'ajv';
+import { ajv } from '../../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-export type RoomsAdminRoomsGetRoomParamsGET = {
+export type GETAdminRoomsGetRoom = {
 	rid: string;
 };
 
-const RoomsAdminRoomsGetRoomParamsGETSchema = {
+const GETAdminRoomsGetRoomSchema = {
 	type: 'object',
 	properties: {
 		rid: {
@@ -19,4 +15,4 @@ const RoomsAdminRoomsGetRoomParamsGETSchema = {
 	required: ['rid'],
 };
 
-export const isRoomsAdminRoomsGetRoomParamsGET = ajv.compile<RoomsAdminRoomsGetRoomParamsGET>(RoomsAdminRoomsGetRoomParamsGETSchema);
+export const isGETAdminRoomsGetRoom = ajv.compile<GETAdminRoomsGetRoom>(GETAdminRoomsGetRoomSchema);
