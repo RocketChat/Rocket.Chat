@@ -25,7 +25,6 @@ test.describe('Messaging', () => {
 	});
 
 	test.beforeAll(async () => {
-		await page.goto('/');
 		await pageLogin.doLogin();
 	});
 

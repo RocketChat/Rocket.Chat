@@ -18,7 +18,6 @@ test.describe('Channel', () => {
 		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 
-		await page.goto('/');
 		await pageAuth.doLogin();
 
 		if (!publicChannelCreated) {

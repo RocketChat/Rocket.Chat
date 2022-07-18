@@ -23,7 +23,6 @@ test.describe('Permissions', () => {
 		pageAdmin = new Administration(page);
 		pageHomeChannel = new HomeChannel(page);
 
-		await page.goto('/');
 		await pageAuth.doLogin();
 		await pageHomeChannel.sidenav.btnAvatar.click();
 		await pageHomeChannel.sidenav.linkAdmin.click();

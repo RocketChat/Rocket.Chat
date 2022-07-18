@@ -14,7 +14,6 @@ test.describe('Department', () => {
 	});
 
 	test.beforeAll(async () => {
-		await page.goto('/');
 		await pageAuth.doLogin();
 		await page.goto('/omnichannel');
 	});

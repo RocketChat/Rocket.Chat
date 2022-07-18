@@ -19,7 +19,6 @@ test.describe.skip('Settings', async () => {
 		pageHomeChannel = new HomeChannel(page);
 		pageAccountProfile = new AccountProfile(page);
 
-		await page.goto('/');
 		await pageAuth.doLogin(validUserInserted);
 		await pageHomeChannel.sidenav.doOpenChat('general');
 	});

@@ -8,14 +8,12 @@ test.describe('Message Popup', () => {
 	let pageHomeChannel: HomeChannel;
 
 	test.beforeAll(async ({ browser }) => {
-		const context = await browser.newContext();
-		page = await context.newPage();
+		page = await browser.newPage();
 		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 	});
 
 	test.beforeAll(async () => {
-		await page.goto('/');
 		await pageAuth.doLogin();
 		await pageHomeChannel.sidenav.doOpenChat('public channel');
 	});

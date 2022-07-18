@@ -21,7 +21,6 @@ test.describe('Settings Permissions', () => {
 
 	test.describe('Give User Permissions', async () => {
 		test.beforeAll(async () => {
-			await page.goto('/');
 			await pageAuth.doLogin();
 			await pageHomeChannel.sidenav.btnAvatar.click();
 			await pageHomeChannel.sidenav.linkAdmin.click();
