@@ -7,7 +7,7 @@ const BaseAvatar: FC<BaseAvatarProps> = ({ size, ...props }) => {
 	const [error, setError] = useState<unknown>(false);
 
 	if (error) {
-		return <Skeleton variant='rect' {...props} />;
+		return <Skeleton variant='rect' size={size} {...props} />;
 	}
 
 	return <Avatar onError={setError} size={size} {...props} />;

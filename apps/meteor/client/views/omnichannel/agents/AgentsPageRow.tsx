@@ -7,7 +7,7 @@ import UserAvatar from '../../../components/avatar/UserAvatar';
 import RemoveAgentButton from './RemoveAgentButton';
 
 const AgentsPageRow = ({
-	user: { _id, name, username, avatarETag, emails, statusLivechat },
+	user: { _id, name, username, emails, statusLivechat },
 	mediaQuery,
 	reload,
 }: {
@@ -29,7 +29,7 @@ const AgentsPageRow = ({
 		<GenericTableRow action onClick={onRowClick}>
 			<GenericTableCell>
 				<Box display='flex' alignItems='center'>
-					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />}
+					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} />}
 					<Box display='flex' withTruncatedText mi='x8'>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' withTruncatedText color='default'>

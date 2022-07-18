@@ -12,7 +12,7 @@ type UsersInRoleTableRowProps = {
 };
 
 const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): ReactElement => {
-	const { _id, name, username, avatarETag } = user;
+	const { _id, name, username } = user;
 	const email = getUserEmailAddress(user);
 
 	const handleRemove = useMutableCallback(() => {
@@ -23,7 +23,7 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): Reac
 		<TableRow key={_id} tabIndex={0} role='link'>
 			<TableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
-					<UserAvatar size='x40' username={username ?? ''} etag={avatarETag} />
+					<UserAvatar size='x40' username={username ?? ''} />
 					<Box display='flex' withTruncatedText mi='x8'>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' withTruncatedText color='default'>

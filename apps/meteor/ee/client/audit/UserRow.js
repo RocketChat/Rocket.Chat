@@ -8,7 +8,7 @@ import FilterDisplay from './FilterDisplay';
 const UserRow = ({ u, results, ts, _id, formatDateAndTime, formatDate, fields, mediaQuery }) => {
 	const t = useTranslation();
 
-	const { username, name, avatarETag } = u;
+	const { username, name } = u;
 
 	const { msg, users, room, startDate, endDate } = fields;
 
@@ -18,7 +18,7 @@ const UserRow = ({ u, results, ts, _id, formatDateAndTime, formatDate, fields, m
 		<Table.Row key={_id} tabIndex={0} role='link'>
 			<Table.Cell withTruncatedText>
 				<Box display='flex' alignItems='center'>
-					<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />
+					<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} />
 					<Box display='flex' withTruncatedText mi='x8'>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' withTruncatedText color='default'>

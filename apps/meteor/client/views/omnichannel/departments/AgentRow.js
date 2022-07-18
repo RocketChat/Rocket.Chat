@@ -6,11 +6,11 @@ import Count from './Count';
 import Order from './Order';
 import RemoveAgentButton from './RemoveAgentButton';
 
-const AgentRow = ({ agentId, username, name, avatarETag, mediaQuery, agentList, setAgentList, setAgentsRemoved }) => (
+const AgentRow = ({ agentId, username, name, mediaQuery, agentList, setAgentList, setAgentsRemoved }) => (
 	<Table.Row key={agentId} tabIndex={0} role='link' action qa-user-id={agentId}>
 		<Table.Cell withTruncatedText>
 			<Box display='flex' alignItems='center'>
-				<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />
+				<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} />
 				<Box display='flex' withTruncatedText mi='x8'>
 					<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 						<Box fontScale='p2m' withTruncatedText color='default'>

@@ -15,7 +15,6 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 	const {
 		status = !user ? 'online' : 'offline',
 		username,
-		avatarETag,
 		statusText,
 	} = user || {
 		_id: '',
@@ -41,7 +40,7 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 				`}
 				data-qa='sidebar-avatar-button'
 			>
-				<UserAvatar size='x24' username={username} etag={avatarETag} />
+				<UserAvatar size='x24' username={username} />
 				<Box
 					className={css`
 						bottom: 0;

@@ -6,7 +6,7 @@ import { useFileInput } from '../../../hooks/useFileInput';
 import UserAvatar from '../UserAvatar';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions, disabled, etag }) {
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions, disabled }) {
 	const t = useTranslation();
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
@@ -62,7 +62,6 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 					size='x124'
 					url={url}
 					username={currentUsername}
-					etag={etag}
 					style={{
 						objectFit: 'contain',
 						imageOrientation: rotateImages ? 'from-image' : 'none',

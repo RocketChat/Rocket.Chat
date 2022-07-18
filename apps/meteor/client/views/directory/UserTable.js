@@ -98,13 +98,13 @@ function UserTable({ workspace = 'local' }) {
 	const formatDate = useFormatDate();
 
 	const renderRow = useCallback(
-		({ createdAt, emails, _id, username, name, domain, bio, avatarETag, nickname }) => (
+		({ createdAt, emails, _id, username, name, domain, bio, nickname }) => (
 			<Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
 				<Table.Cell>
 					<Flex.Container>
 						<Box>
 							<Flex.Item>
-								<UserAvatar size='x40' title={username} username={username} etag={avatarETag} />
+								<UserAvatar size='x40' title={username} username={username} />
 							</Flex.Item>
 							<Box withTruncatedText grow={1} mi='x8'>
 								<Box display='flex'>

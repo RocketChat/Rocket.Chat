@@ -68,7 +68,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const logout = useLogout();
 	const { sidebar, isMobile } = useLayout();
 
-	const { username, avatarETag, status, statusText } = user;
+	const { username, status, statusText } = user;
 
 	const displayName = useUserDisplayName(user);
 
@@ -111,7 +111,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 		<Box display='flex' flexDirection='column' w={!isMobile ? '244px' : undefined}>
 			<Box display='flex' flexDirection='row'>
 				<Box mie='x4' mis='x16'>
-					<UserAvatar size='x36' username={username || ''} etag={avatarETag} />
+					<UserAvatar size='x36' username={username || ''} />
 				</Box>
 				<Box
 					mie='x8'

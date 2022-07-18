@@ -3,7 +3,6 @@ import { Avatar, Margins, Flex, Box, Tag } from '@rocket.chat/fuselage';
 import { useUser, useUserRoom, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { Users } from '../../app/models/client';
 import UserAvatar from './avatar/UserAvatar';
 import { VoipRoomForeword } from './voip/room/VoipRoomForeword';
 
@@ -46,14 +45,9 @@ const RoomForeword = ({ _id, rid }: RoomForewordProps): ReactElement | null => {
 			<Flex.Item grow={1}>
 				<Margins block='x24'>
 					<Avatar.Stack>
-						{usernames.map((username, index) => {
-							const user = Users.findOne({ username }, { fields: { avatarETag: 1 } });
-
-							// const avatarUrl = getUserAvatarURL(username, user?.avatarETag);
-
-							// return <Avatar key={index} size='x48' title={username} url={avatarUrl} data-username={username} />;
-							return <UserAvatar key={index} size='x48' username={username} etag={user?.avatarETag} />;
-						})}
+						{usernames.map((username, index) => (
+							<UserAvatar key={index} size='x48' username={username} />
+						))}
 					</Avatar.Stack>
 				</Margins>
 			</Flex.Item>

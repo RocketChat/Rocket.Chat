@@ -56,7 +56,7 @@ function UserInfo({
 		<VerticalBar.ScrollableContent p='x24' {...props}>
 			<InfoPanel>
 				<InfoPanel.Avatar>
-					<Avatar size={'x332'} username={username} etag={data?.avatarETag} />
+					<Avatar size={'x332'} username={username} />
 				</InfoPanel.Avatar>
 
 				{actions && <InfoPanel.Section>{actions}</InfoPanel.Section>}

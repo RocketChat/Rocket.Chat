@@ -15,7 +15,7 @@ type UsersTableRowProps = {
 
 const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
-	const { _id, emails, username, name, roles, status, active, avatarETag } = user;
+	const { _id, emails, username, name, roles, status, active } = user;
 	const statusText = active ? t(capitalize(status as string) as TranslationKey) : t('Disabled');
 
 	const roleNames = (roles || [])
@@ -27,7 +27,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 		<TableRow onKeyDown={(): void => onClick(_id)} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
 			<TableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
-					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
+					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={username} />}
 					<Box display='flex' mi='x8' withTruncatedText>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' color='default' withTruncatedText>

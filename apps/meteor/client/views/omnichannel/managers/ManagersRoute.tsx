@@ -90,7 +90,7 @@ const ManagersRoute = (): ReactElement => {
 									<GenericTableRow key={user._id} tabIndex={0} qa-user-id={user._id}>
 										<GenericTableCell withTruncatedText>
 											<Box display='flex' alignItems='center'>
-												<UserAvatar size='x28' username={user.username || ''} etag={user.avatarETag} />
+												<UserAvatar size='x28' username={user.username || ''} />
 												<Box display='flex' withTruncatedText mi='x8'>
 													<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 														<Box fontScale='p2m' withTruncatedText color='default'>

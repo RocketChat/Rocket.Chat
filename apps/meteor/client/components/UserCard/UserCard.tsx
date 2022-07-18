@@ -25,7 +25,6 @@ type UserCardProps = {
 	open?: () => void;
 	name?: string;
 	username?: string;
-	etag?: string;
 	customStatus?: ReactNode;
 	roles?: ReactNode;
 	bio?: ReactNode;
@@ -43,7 +42,6 @@ const UserCard = forwardRef(function UserCard(
 		open,
 		name,
 		username,
-		etag,
 		customStatus = <Skeleton width='100%' />,
 		roles = (
 			<>
@@ -72,7 +70,7 @@ const UserCard = forwardRef(function UserCard(
 	return (
 		<UserCardContainer data-qa='UserCard' className={className} ref={ref} style={style}>
 			<Box>
-				{!username ? <Skeleton width='x124' height='x124' variant='rect' /> : <UserAvatar username={username} etag={etag} size='x124' />}
+				{!username ? <Skeleton width='x124' height='x124' variant='rect' /> : <UserAvatar username={username} size='x124' />}
 				{actions && (
 					<Box flexGrow={0} display='flex' mb='x12' alignItems='center' justifyContent='center'>
 						{actions}

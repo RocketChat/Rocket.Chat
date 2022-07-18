@@ -162,7 +162,6 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 				() => (
 					<Field>
 						<UserAvatarEditor
-							etag={user?.avatarETag}
 							currentUsername={user?.username}
 							username={username}
 							setAvatarObj={handleAvatar}
@@ -171,7 +170,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 						/>
 					</Field>
 				),
-				[username, user?.username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user?.avatarETag],
+				[username, user?.username, handleAvatar, allowUserAvatarChange, avatarSuggestions],
 			)}
 			<Box display='flex' flexDirection='row' justifyContent='space-between'>
 				{useMemo(

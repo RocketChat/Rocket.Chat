@@ -66,7 +66,7 @@ export { useTooltipOpen } from './hooks/useTooltipOpen';
 export { useTranslation } from './hooks/useTranslation';
 export { useUpload } from './hooks/useUpload';
 export { useUser } from './hooks/useUser';
-export { useUserAvatarPath } from './hooks/useUserAvatarPath';
+export { useUserAvatarURL } from './hooks/useUserAvatarURL';
 export { useUserId } from './hooks/useUserId';
 export { useUserPreference } from './hooks/useUserPreference';
 export { useUserRoom } from './hooks/useUserRoom';

@@ -76,13 +76,7 @@ const VideoConfListItem = ({
 										(user, index) =>
 											user.username &&
 											index + 1 <= VIDEOCONF_STACK_MAX_USERS && (
-												<UserAvatar
-													data-tooltip={user.username}
-													key={user.username}
-													username={user.username}
-													etag={user.avatarETag}
-													size='x28'
-												/>
+												<UserAvatar data-tooltip={user.username} key={user.username} username={user.username} size='x28' />
 											),
 									)}
 								</Avatar.Stack>

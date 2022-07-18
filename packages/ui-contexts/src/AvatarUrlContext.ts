@@ -3,11 +3,13 @@ import { createContext } from 'react';
 const dummy = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg==';
 
 export type AvatarUrlContextValue = {
-	getUserPathAvatar: (uid: string, etag?: string) => string;
+	getUserAvatarURL: (username: string) => string;
+	subscribeToUserAvatarURL: (username: string, callback: () => void) => () => void;
 	getRoomPathAvatar: (...args: any) => string;
 };
 
 export const AvatarUrlContext = createContext<AvatarUrlContextValue>({
-	getUserPathAvatar: () => dummy,
+	getUserAvatarURL: () => dummy,
+	subscribeToUserAvatarURL: () => (): void => undefined,
 	getRoomPathAvatar: () => dummy,
 });
