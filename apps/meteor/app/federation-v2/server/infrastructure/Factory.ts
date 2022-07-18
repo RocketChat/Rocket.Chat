@@ -92,7 +92,9 @@ export class FederationFactory {
 			roomServiceSender.leaveRoom(FederationRoomSenderConverter.toAfterLeaveRoom(user._id, room._id, userWhoRemoved._id)),
 		);
 		FederationHooks.canAddTheUserToTheRoom((user: IUser | string, room: IRoom) => roomServiceSender.canAddThisUserToTheRoom(user, room));
-		FederationHooks.canAddUsersToTheRoom((user: IUser | string, room: IRoom) => roomServiceSender.canAddUsersToTheRoom(user, room));
+		FederationHooks.canAddUsersToTheRoom((user: IUser | string, inviter: IUser, room: IRoom) =>
+			roomServiceSender.canAddUsersToTheRoom(user, inviter, room),
+		);
 		FederationHooks.beforeCreateDirectMessage((members: (IUser | string)[]) => roomServiceSender.beforeCreateDirectMessageFromUI(members));
 	}
 
