@@ -99428,6 +99428,104 @@
           ]
         }
       ]
+    },
+    "5.0.0-rc.8": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26049",
+          "title": "Regression: AutoTranslate on new message template",
+          "userLogin": "filipemarins",
+          "milestone": "5.0.0",
+          "contributors": [
+            "filipemarins",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "26224",
+          "title": "Chore: Plan tag",
+          "userLogin": "gabriellsh",
+          "description": "Now we only have one plan tag for all plans \\/\r\n![image](https://user-images.githubusercontent.com/40830821/178366367-12388c4c-6822-4e41-be8d-ca306718be98.png)",
+          "milestone": "5.0.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "26248",
+          "title": "Regression: Remove alpha tag and fix initialization process",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "5.0.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "26255",
+          "title": "Regression: Device management table missing device icon and ip text ellipsis",
+          "userLogin": "csuadev",
+          "contributors": [
+            "csuadev",
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "26252",
+          "title": "Regression: UserInfo/RoomInfo Menu",
+          "userLogin": "dougfabris",
+          "description": "**note**: next fuselage's version needed\r\n\r\n#### before\r\n![Screen Shot 2022-07-13 at 12 24 38](https://user-images.githubusercontent.com/27704687/178771262-d482b300-de80-4961-be2e-8c034480d237.png)\r\n\r\n#### after\r\n![Screen Shot 2022-07-13 at 12 25 39](https://user-images.githubusercontent.com/27704687/178771460-db10883b-aa6d-4254-82d4-8cadd6991ae8.png)",
+          "milestone": "5.0.0",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "26249",
+          "title": "Regression: Federated users not showing as federated in Room Members",
+          "userLogin": "gabriellsh",
+          "milestone": "5.0.0",
+          "contributors": [
+            "gabriellsh",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "26239",
+          "title": "Regression: Removed CE watermark from VoipFooter",
+          "userLogin": "aleksandernsilva",
+          "description": "The objective of this change is to remove the CE watermark **only** during an active call. The CE watermark will be displayed normally in all other scenarios. Bellow you can see a demonstration of the expected behavior:\r\n\r\n![ce-watermark-removed-voip](https://user-images.githubusercontent.com/6494543/178615342-8049a2a8-d331-46a9-a8f1-8461ae341b50.gif)",
+          "milestone": "5.0.0",
+          "contributors": [
+            "aleksandernsilva"
+          ]
+        },
+        {
+          "pr": "26154",
+          "title": "Regression: Parse outbound phone number removing * putting + char",
+          "userLogin": "tiagoevanp",
+          "milestone": "5.0.0",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "26273",
+          "title": "Regression: Search on Member List",
+          "userLogin": "tassoevan",
+          "milestone": "5.0.0",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
