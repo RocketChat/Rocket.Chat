@@ -174,7 +174,7 @@ class SetupWizard {
 	}
 }
 
-test.describe('[Wizard]', () => {
+test.describe.only('[Wizard]', () => {
 	let page: Page;
 	let pageAuth: Auth;
 
@@ -188,7 +188,6 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Step 2]', async () => {
 		test.beforeEach(async () => {
-			await page.goto('/');
 			await pageAuth.doLogin();
 		});
 
@@ -204,7 +203,6 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Step 3]', async () => {
 		test.beforeEach(async () => {
-			await page.goto('');
 			await pageAuth.doLogin();
 			await setupWizard.stepTwoSuccess();
 		});
@@ -234,7 +232,6 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Final Step]', async () => {
 		test.beforeEach(async () => {
-			await page.goto('');
 			await pageAuth.doLogin();
 			await setupWizard.stepTwoSuccess();
 			await setupWizard.stepThreeSuccess();
