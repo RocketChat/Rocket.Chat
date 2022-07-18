@@ -23,7 +23,7 @@ test.describe('Permissions', () => {
 		pageAdmin = new Administration(page);
 		pageHomeChannel = new HomeChannel(page);
 
-		await pageAuth.doLogin(true);
+		await pageAuth.doLogin();
 		await pageHomeChannel.sidenav.btnAvatar.click();
 		await pageHomeChannel.sidenav.linkAdmin.click();
 		await pageAdmin.sidenav.linkUsers.click();
@@ -74,7 +74,7 @@ test.describe('Permissions', () => {
 			await pageHomeChannel.sidenav.doLogout();
 
 			await page.goto('/');
-			await pageAuth.doLogin(true, anyUser);
+			await pageAuth.doLogin(anyUser);
 			await pageHomeChannel.sidenav.doOpenChat('general');
 		});
 

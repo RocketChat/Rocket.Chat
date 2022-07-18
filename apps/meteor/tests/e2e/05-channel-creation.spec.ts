@@ -15,7 +15,7 @@ test.describe('Channel Creation', () => {
 	});
 
 	test.beforeAll(async () => {
-		await pageAuth.doLogin(true);
+		await pageAuth.doLogin();
 	});
 
 	test('expect create public channel', async () => {

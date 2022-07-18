@@ -7,7 +7,7 @@ const createBrowserContextForChat = async (browser: Browser): Promise<{ page: Pa
 	const page = await browser.newPage();
 	const pageLogin = new Auth(page);
 	const pageHomeChannel = new HomeChannel(page);
-	await pageLogin.doLogin(true, validUserInserted);
+	await pageLogin.doLogin(validUserInserted);
 
 	return { page, pageHomeChannel };
 };
@@ -24,7 +24,7 @@ test.describe('Messaging', () => {
 	});
 
 	test.beforeAll(async () => {
-		await pageLogin.doLogin(true);
+		await pageLogin.doLogin();
 	});
 
 	test.describe('Normal messaging', async () => {

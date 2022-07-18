@@ -14,7 +14,7 @@ test.describe('Agents', () => {
 	});
 
 	test.beforeAll(async () => {
-		await pageAuth.doLogin(true);
+		await pageAuth.doLogin();
 		await page.goto('/omnichannel');
 	});
 

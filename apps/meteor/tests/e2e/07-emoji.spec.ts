@@ -14,7 +14,7 @@ test.describe('Emoji', () => {
 	});
 
 	test.beforeAll(async () => {
-		await pageAuth.doLogin(true);
+		await pageAuth.doLogin();
 		await pageHomeChannel.sidenav.doOpenChat('general');
 	});
 

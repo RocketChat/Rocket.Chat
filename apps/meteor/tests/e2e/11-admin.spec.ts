@@ -14,7 +14,7 @@ test.describe('Administration', () => {
 	});
 
 	test.beforeAll(async () => {
-		await pageAuth.doLogin(true);
+		await pageAuth.doLogin();
 		await page.goto('/admin');
 	});
 

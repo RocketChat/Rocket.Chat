@@ -69,13 +69,13 @@ export class Auth {
 		return this.page.locator('[name=confirm-pass]~.input-error');
 	}
 
-	async doLogin(isNormalLogin = false, input = ADMIN_CREDENTIALS): Promise<void> {
+	async doLogin(input = ADMIN_CREDENTIALS, shouldWaitForHome = true): Promise<void> {
 		await this.page.goto('/');
 		await this.page.locator('[name=emailOrUsername]').type(input.email);
 		await this.page.locator('[name=pass]').type(input.password);
 		await this.page.locator('.login').click();
 
-		if (isNormalLogin) {
+		if (shouldWaitForHome) {
 			await this.page.waitForSelector('text="Welcome to Rocket.Chat!"');
 		}
 	}

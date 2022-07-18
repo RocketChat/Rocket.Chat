@@ -1,6 +1,7 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 
 import { Auth } from './page-objects';
+import { ADMIN_CREDENTIALS } from './utils/constants';
 
 class SetupWizard {
 	private readonly page: Page;
@@ -188,7 +189,7 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Step 2]', async () => {
 		test.beforeEach(async () => {
-			await pageAuth.doLogin();
+			await pageAuth.doLogin(ADMIN_CREDENTIALS, false);
 		});
 
 		test('expect required field alert showed when user dont inform data', async () => {
@@ -203,7 +204,7 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Step 3]', async () => {
 		test.beforeEach(async () => {
-			await pageAuth.doLogin();
+			await pageAuth.doLogin(ADMIN_CREDENTIALS, false);
 			await setupWizard.stepTwoSuccess();
 		});
 
@@ -232,7 +233,7 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Final Step]', async () => {
 		test.beforeEach(async () => {
-			await pageAuth.doLogin();
+			await pageAuth.doLogin(ADMIN_CREDENTIALS, false);
 			await setupWizard.stepTwoSuccess();
 			await setupWizard.stepThreeSuccess();
 		});

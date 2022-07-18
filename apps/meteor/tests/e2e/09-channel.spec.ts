@@ -18,7 +18,7 @@ test.describe('Channel', () => {
 		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 
-		await pageAuth.doLogin(true);
+		await pageAuth.doLogin();
 
 		if (!publicChannelCreated) {
 			await pageHomeChannel.sidenav.doCreateChannel(anyChannelName, false);
