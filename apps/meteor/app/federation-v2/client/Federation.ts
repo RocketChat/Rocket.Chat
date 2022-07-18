@@ -1,5 +1,5 @@
+import { IRoom, IUser, ValueOf } from '@rocket.chat/core-typings';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IRoom, ValueOf } from '@rocket.chat/core-typings';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 
@@ -14,4 +14,11 @@ export const actionAllowed = (room: Partial<IRoom>, action: ValueOf<typeof RoomM
 	return room.t === RoomType.DIRECT_MESSAGE && action === RoomMemberActions.REMOVE_USER
 		? false
 		: allowedActionsInFederatedRooms.includes(action);
+};
+
+export const isEditableByTheUser = (user: IUser | undefined, room: IRoom | undefined): boolean => {
+	if (!user || !room) {
+		return false;
+	}
+	return user._id === room.u?._id;
 };
