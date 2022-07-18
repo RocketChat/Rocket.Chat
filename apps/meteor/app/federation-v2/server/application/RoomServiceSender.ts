@@ -152,6 +152,11 @@ export class FederationRoomServiceSender {
 		if (!internalRoom.federated) {
 			return;
 		}
+		const tryingToAddNewFederatedUser = typeof internalUser === 'string';
+		if (tryingToAddNewFederatedUser) {
+			throw new Error('error-this-is-an-ee-feature');
+		}
+
 		const invitee = await this.rocketUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
 		const inviter = await this.rocketUserAdapter.getFederatedUserByInternalId((internalInviter as IUser)._id);
 		const externalRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoom._id);
@@ -171,8 +176,7 @@ export class FederationRoomServiceSender {
 		if (!isARoomFromTheProxyServer && !isInviterFromTheProxyServer) {
 			return;
 		}
-		const tryingToAddNewFederatedUser = typeof internalUser === 'string';
-		if (tryingToAddNewFederatedUser || (invitee && !invitee.existsOnlyOnProxyServer && internalRoom.t !== RoomType.DIRECT_MESSAGE)) {
+		if (invitee && !invitee.existsOnlyOnProxyServer && internalRoom.t !== RoomType.DIRECT_MESSAGE) {
 			throw new Error('error-this-is-an-ee-feature');
 		}
 	}
