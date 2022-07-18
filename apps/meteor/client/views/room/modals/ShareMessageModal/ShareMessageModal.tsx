@@ -47,31 +47,29 @@ const ShareMessageModal = ({ onClose, message, username, name, time, attachments
 	const sendMessage = useEndpoint('POST', '/v1/chat.postMessage');
 	const onChangeUsers = useMutableCallback((room: roomType, action: any) => {
 		if (!action) {
-			if (rooms.find((cur: roomType) => cur._id === room._id)) {
-				return;
-			}
-
+			if (rooms.find((cur: roomType) => cur._id === room._id)) return;
 			return handleRooms([...rooms, room]);
 		}
 		handleRooms(rooms.filter((cur: roomType) => cur._id !== room._id));
 	});
 
-	const changeEditView = (e: ChangeEvent<HTMLInputElement> | string): void => {
+	const changeEditView = useMutableCallback((e: ChangeEvent<HTMLInputElement> | string): void => {
 		if (typeof e === 'string') handleOptionalMessage(e);
 		else handleOptionalMessage(e.target.value);
-	};
+	});
+
 	const changeStatus = (e: any, value: any) => {
 		e.preventDefault();
 		setStatus(value);
 	};
 
-	const handleSubmit = (e: any) => {
+	const handleSubmit = useMutableCallback((e: any) => {
 		e.preventDefault();
 		let flag = true;
-		rooms.forEach(async (room: any) => {
+		rooms.forEach(async ({ _id, type, value }: any) => {
 			const sendPayload = {
-				roomId: room._id,
-				channel: (room.type === 'C' ? '#' : '@') + room.value,
+				roomId: _id,
+				channel: (type === 'C' ? '#' : '@') + value,
 				text: optionalMessage,
 				attachments,
 			};
@@ -82,7 +80,7 @@ const ShareMessageModal = ({ onClose, message, username, name, time, attachments
 			dispatchToastMessage({ type: 'success', message: 'Message shared successfully' });
 			onClose();
 		}
-	};
+	});
 
 	return (
 		<Modal>
