@@ -3303,9 +3303,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.33.0-alpha.6502":
-  version: 1.33.0-alpha.6502
-  resolution: "@rocket.chat/apps-engine@npm:1.33.0-alpha.6502"
+"@rocket.chat/apps-engine@npm:1.33.0":
+  version: 1.33.0
+  resolution: "@rocket.chat/apps-engine@npm:1.33.0"
   dependencies:
     adm-zip: ^0.5.9
     cryptiles: ^4.1.3
@@ -3313,7 +3313,7 @@ __metadata:
     semver: ^5.7.1
     stack-trace: 0.0.10
     uuid: ^3.4.0
-  checksum: 67e16f7cc2fd98f6551773992cf552999ac0adebac4f70efa8145f060ce00e046ae242cd0b78978839d1a0628d84a512d616695f94ed2a2f8d36d6f6f0ba44ea
+  checksum: d6182c86d88b2b06c2246937c86488663318966f653e17e089dbdd8e46799dec699a85f675dc0c2ec9c2ad9f195a4308443e8abbd2024f1f5ee9fa1b0a193f5d
   languageName: node
   linkType: hard
 
@@ -4010,7 +4010,7 @@ __metadata:
     "@playwright/test": ^1.22.2
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.33.0-alpha.6502
+    "@rocket.chat/apps-engine": 1.33.0
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.15-dev.6
