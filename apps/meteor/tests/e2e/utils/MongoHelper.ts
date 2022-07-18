@@ -5,7 +5,7 @@ type MongoHelperConfig = {
 	client: null | MongoClient;
 	connect(uri: string): Promise<void>;
 	disconnect(): Promise<void>;
-	getCollection(name: string): Promise<Collection>;
+	getCollection<T>(name: string): Promise<Collection<T>>;
 };
 
 export const MongoHelper: MongoHelperConfig = {
@@ -14,10 +14,7 @@ export const MongoHelper: MongoHelperConfig = {
 
 	async connect(uri: string) {
 		this.uri = uri;
-		this.client = await MongoClient.connect(uri, {
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-		});
+		this.client = await MongoClient.connect(uri);
 	},
 
 	async disconnect() {
@@ -27,15 +24,11 @@ export const MongoHelper: MongoHelperConfig = {
 		}
 	},
 
-	async getCollection(name: string) {
+	async getCollection<T>(name: string): Promise<Collection<T>> {
 		if (this.client) {
-			if (!this.client.isConnected() && this.uri) {
-				await this.connect(this.uri);
-			}
-
-			return this.client.db().collection(name);
+			return this.client.db().collection<T>(name);
 		}
 
-		return {} as Collection;
+		return {} as Collection<T>;
 	},
 };

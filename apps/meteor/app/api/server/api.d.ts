@@ -126,7 +126,6 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	getUserInfo(
 		me: IUser,
 	): TOptions extends { authRequired: true } ? UserInfo : TOptions extends { authOrAnonRequired: true } ? UserInfo | undefined : undefined;
-	insertUserObject<T>({ object, userId }: { object: { [key: string]: unknown }; userId: string }): { [key: string]: unknown } & T;
 	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
 } & (TOptions extends { authRequired: true }
 	? {

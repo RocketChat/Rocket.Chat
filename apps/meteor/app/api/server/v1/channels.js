@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
-import { Integrations, Uploads } from '@rocket.chat/models';
+import { Integrations, Uploads, Messages as MessagesRaw, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
 import { Rooms, Subscriptions, Messages, Users } from '../../../models/server';
 import { canAccessRoom, hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
@@ -11,6 +11,7 @@ import { API } from '../api';
 import { settings } from '../../../settings/server';
 import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { addUserToFileObj } from '../helpers/addUserToFileObj';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
@@ -271,17 +272,11 @@ API.v1.addRoute(
 	'channels.files',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const findResult = findChannelByIdOrName({
 				params: this.requestParams(),
 				checkedArchived: false,
 			});
-			const addUserObjectToEveryObject = (file) => {
-				if (file.userId) {
-					file = this.insertUserObject({ object: file, userId: file.userId });
-				}
-				return file;
-			};
 
 			if (!canAccessRoom(findResult, { _id: this.userId })) {
 				return API.v1.unauthorized();
@@ -292,20 +287,20 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
-			const files = Promise.await(
-				Uploads.find(ourQuery, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-					fields,
-				}).toArray(),
-			);
+			const { cursor, totalCount } = Uploads.findPaginated(ourQuery, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
+			});
+
+			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				files: files.map(addUserObjectToEveryObject),
+				files: await addUserToFileObj(files),
 				count: files.length,
 				offset,
-				total: Promise.await(Uploads.find(ourQuery).count()),
+				total,
 			});
 		},
 	},
@@ -315,7 +310,7 @@ API.v1.addRoute(
 	'channels.getIntegrations',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (
 				!hasAtLeastOnePermission(this.userId, [
 					'manage-outgoing-integrations',
@@ -351,15 +346,15 @@ API.v1.addRoute(
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 
 			ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
-			const cursor = Integrations.find(ourQuery, {
+
+			const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 				sort: sort || { _createdAt: 1 },
 				skip: offset,
 				limit: count,
 				projection,
 			});
 
-			const integrations = Promise.await(cursor.toArray());
-			const total = Promise.await(cursor.count());
+			const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				integrations,
@@ -413,66 +408,64 @@ API.v1.addRoute(
 	'channels.list',
 	{ authRequired: true },
 	{
-		get: {
-			// This is defined as such only to provide an example of how the routes can be defined :X
-			action() {
-				const { offset, count } = this.getPaginationItems();
-				const { sort, fields, query } = this.parseJsonQuery();
-				const hasPermissionToSeeAllPublicChannels = hasPermission(this.userId, 'view-c-room');
+		async get() {
+			const { offset, count } = this.getPaginationItems();
+			const { sort, fields, query } = this.parseJsonQuery();
+			const hasPermissionToSeeAllPublicChannels = hasPermission(this.userId, 'view-c-room');
 
-				const ourQuery = { ...query, t: 'c' };
+			const ourQuery = { ...query, t: 'c' };
 
-				if (!hasPermissionToSeeAllPublicChannels) {
-					if (!hasPermission(this.userId, 'view-joined-room')) {
-						return API.v1.unauthorized();
-					}
-					const roomIds = Subscriptions.findByUserIdAndType(this.userId, 'c', {
-						fields: { rid: 1 },
-					})
-						.fetch()
-						.map((s) => s.rid);
-					ourQuery._id = { $in: roomIds };
+			if (!hasPermissionToSeeAllPublicChannels) {
+				if (!hasPermission(this.userId, 'view-joined-room')) {
+					return API.v1.unauthorized();
 				}
-
-				// teams filter - I would love to have a way to apply this filter @ db level :(
-				const ids = Subscriptions.cachedFindByUserId(this.userId, { fields: { rid: 1 } })
+				const roomIds = Subscriptions.findByUserIdAndType(this.userId, 'c', {
+					fields: { rid: 1 },
+				})
 					.fetch()
-					.map((item) => item.rid);
+					.map((s) => s.rid);
+				ourQuery._id = { $in: roomIds };
+			}
 
-				ourQuery.$or = [
-					{
-						teamId: {
-							$exists: false,
-						},
+			// teams filter - I would love to have a way to apply this filter @ db level :(
+			const ids = Subscriptions.cachedFindByUserId(this.userId, { fields: { rid: 1 } })
+				.fetch()
+				.map((item) => item.rid);
+
+			ourQuery.$or = [
+				{
+					teamId: {
+						$exists: false,
 					},
-					{
-						teamId: {
-							$exists: true,
-						},
-						_id: {
-							$in: ids,
-						},
+				},
+				{
+					teamId: {
+						$exists: true,
 					},
-				];
+					_id: {
+						$in: ids,
+					},
+				},
+			];
 
-				const cursor = Rooms.find(ourQuery, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-					fields,
-				});
+			const { cursor, totalCount } = RoomsRaw.findPaginated(ourQuery, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
+			});
 
-				const total = cursor.count();
+			const [channels, total] = await Promise.all([
+				cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
+				totalCount,
+			]);
 
-				const rooms = cursor.fetch();
-
-				return API.v1.success({
-					channels: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
-					count: rooms.length,
-					offset,
-					total,
-				});
-			},
+			return API.v1.success({
+				channels,
+				count: channels.length,
+				offset,
+				total,
+			});
 		},
 	},
 );
@@ -481,26 +474,34 @@ API.v1.addRoute(
 	'channels.list.joined',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
 
-			// TODO: CACHE: Add Breacking notice since we removed the query param
-			const cursor = Rooms.findBySubscriptionTypeAndUserId('c', this.userId, {
+			const subs = await SubscriptionsRaw.findByUserIdAndTypes(this.userId, ['c'], { projection: { rid: 1 } }).toArray();
+			const rids = subs.map(({ rid }) => rid).filter(Boolean);
+
+			if (rids.length === 0) {
+				return API.v1.notFound();
+			}
+
+			const { cursor, totalCount } = RoomsRaw.findPaginatedByTypeAndIds('c', rids, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			});
 
-			const totalCount = cursor.count();
-			const rooms = cursor.fetch();
+			const [channels, total] = await Promise.all([
+				cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
+				totalCount,
+			]);
 
 			return API.v1.success({
-				channels: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				channels,
 				offset,
-				count: rooms.length,
-				total: totalCount,
+				count: channels.length,
+				total,
 			});
 		},
 	},
@@ -510,7 +511,7 @@ API.v1.addRoute(
 	'channels.members',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const findResult = findChannelByIdOrName({
 				params: this.requestParams(),
 				checkedArchived: false,
@@ -532,7 +533,7 @@ API.v1.addRoute(
 			);
 			const { status, filter } = this.queryParams;
 
-			const cursor = findUsersOfRoom({
+			const { cursor, totalCount } = findUsersOfRoom({
 				rid: findResult._id,
 				...(status && { status: { $in: status } }),
 				skip,
@@ -541,8 +542,7 @@ API.v1.addRoute(
 				...(sort?.username && { sort: { username: sort.username } }),
 			});
 
-			const total = cursor.count();
-			const members = cursor.fetch();
+			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				members,
@@ -917,7 +917,7 @@ API.v1.addRoute(
 	'channels.anonymousread',
 	{ authRequired: false },
 	{
-		get() {
+		async get() {
 			const findResult = findChannelByIdOrName({
 				params: this.requestParams(),
 				checkedArchived: false,
@@ -933,15 +933,14 @@ API.v1.addRoute(
 				});
 			}
 
-			const cursor = Messages.find(ourQuery, {
+			const { cursor, totalCount } = MessagesRaw.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			});
 
-			const total = cursor.count();
-			const messages = cursor.fetch();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),
