@@ -14,7 +14,7 @@ type VideoConfControllerProps = {
 const VideoConfController = ({ active, text, icon, ...props }: VideoConfControllerProps): ReactElement => {
   const id = useUniqueId();
 
-  return <IconButton icon={icon} id={id} info={active} square secondary {...props} />
+  return <IconButton icon={icon} id={id} info={active} secondary {...props} />
 }
 
 export default VideoConfController;

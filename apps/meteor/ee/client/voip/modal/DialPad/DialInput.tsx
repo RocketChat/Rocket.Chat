@@ -22,7 +22,7 @@ export const DialInput = forwardRef<HTMLInputElement, DialInputProps>(function D
 			ref={ref}
 			textAlign='center'
 			placeholder={t('Phone_number')}
-			addon={<IconButton icon='backspace' small square size='20px' disabled={isButtonDisabled} onClick={handleBackspaceClick} />}
+			addon={<IconButton icon='backspace' small size='20px' disabled={isButtonDisabled} onClick={handleBackspaceClick} />}
 			error={inputError}
 			onChange={handleOnChange}
 			name={inputName}

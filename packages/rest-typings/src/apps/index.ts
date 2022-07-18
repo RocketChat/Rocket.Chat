@@ -90,6 +90,12 @@ export type AppsEndpoints = {
 		};
 	};
 
+	'/apps/:id/versions': {
+		GET: () => {
+			apps: App[];
+		};
+	};
+
 	'/apps': {
 		GET:
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
