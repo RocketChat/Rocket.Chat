@@ -13,7 +13,7 @@ type MemberItemProps = {
 	onClickView: (e: MouseEvent<HTMLDivElement>) => void;
 	rid: IRoom['_id'];
 	reload: () => void;
-} & IUser;
+} & Pick<IUser, 'federated' | 'username' | 'name' | '_id'>;
 
 export const MemberItem = ({ _id, name, username, federated, onClickView, rid, reload }: MemberItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
