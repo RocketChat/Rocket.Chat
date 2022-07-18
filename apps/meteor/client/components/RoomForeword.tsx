@@ -4,7 +4,7 @@ import { useUser, useUserRoom, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import { Users } from '../../app/models/client';
-import { getUserAvatarURL } from '../../app/utils/client';
+import UserAvatar from './avatar/UserAvatar';
 import { VoipRoomForeword } from './voip/room/VoipRoomForeword';
 
 type RoomForewordProps = { _id: IRoom['_id']; rid?: IRoom['_id'] } | { rid: IRoom['_id']; _id?: IRoom['_id'] };
@@ -49,9 +49,10 @@ const RoomForeword = ({ _id, rid }: RoomForewordProps): ReactElement | null => {
 						{usernames.map((username, index) => {
 							const user = Users.findOne({ username }, { fields: { avatarETag: 1 } });
 
-							const avatarUrl = getUserAvatarURL(username, user?.avatarETag);
+							// const avatarUrl = getUserAvatarURL(username, user?.avatarETag);
 
-							return <Avatar key={index} size='x48' title={username} url={avatarUrl} data-username={username} />;
+							// return <Avatar key={index} size='x48' title={username} url={avatarUrl} data-username={username} />;
+							return <UserAvatar key={index} size='x48' username={username} etag={user?.avatarETag} />;
 						})}
 					</Avatar.Stack>
 				</Margins>
