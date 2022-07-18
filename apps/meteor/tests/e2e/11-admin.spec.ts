@@ -1,5 +1,6 @@
-import { test, expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 
+import { test, expect } from './utils/test';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { FlexTab, Administration, LoginPage, SideNav } from './pageobjects';
 import { ROCKET_CAT_SELECTOR } from './utils/mocks/waitSelectorsMock';

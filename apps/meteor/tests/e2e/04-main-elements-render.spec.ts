@@ -1,5 +1,6 @@
-import { test, expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 
+import { test, expect } from './utils/test';
 import { LoginPage, FlexTab, SideNav, MainContent } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 

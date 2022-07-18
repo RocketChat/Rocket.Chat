@@ -1,7 +1,8 @@
 import fs from 'fs';
 
-import { expect, Locator } from '@playwright/test';
+import { Locator } from '@playwright/test';
 
+import { expect } from '../utils/test';
 import { BasePage } from './BasePage';
 
 export class MainContent extends BasePage {

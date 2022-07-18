@@ -1,6 +1,7 @@
-import { test, expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import faker from '@faker-js/faker';
 
+import { test, expect } from './utils/test';
 import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
 import { SideNav, Administration, LoginPage } from './pageobjects';
 

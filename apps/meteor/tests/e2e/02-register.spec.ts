@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './utils/test';
 import { registerUser } from './utils/mocks/userAndPasswordMock';
 import { LoginPage } from './pageobjects';
 

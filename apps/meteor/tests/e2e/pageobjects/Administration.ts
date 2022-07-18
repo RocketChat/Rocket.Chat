@@ -1,6 +1,7 @@
-import { Locator, expect } from '@playwright/test';
+import { Locator } from '@playwright/test';
 
 import { BasePage } from './BasePage';
+import { expect } from '../utils/test';
 
 export class Administration extends BasePage {
 	get settingsSearch(): Locator {

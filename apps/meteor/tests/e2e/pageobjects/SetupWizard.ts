@@ -1,5 +1,6 @@
-import { expect, Locator } from '@playwright/test';
+import { Locator } from '@playwright/test';
 
+import { expect } from '../utils/test';
 import { BasePage } from './BasePage';
 import { IRegister } from '../utils/interfaces/Login';
 import { BACKSPACE } from '../utils/mocks/keyboardKeyMock';

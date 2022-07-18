@@ -1,5 +1,6 @@
-import { test, expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 
+import { test, expect } from './utils/test';
 import { validUser } from './utils/mocks/userAndPasswordMock';
 import { Global, LoginPage } from './pageobjects';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
