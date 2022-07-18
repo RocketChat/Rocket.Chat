@@ -16,7 +16,7 @@ test.describe('[Discussion]', () => {
 	});
 
 	test.beforeAll(async () => {
-		await pageAuth.doLogin();
+		await pageAuth.doLogin(true);
 	});
 
 	test.describe('[Create discussion from screen]', () => {

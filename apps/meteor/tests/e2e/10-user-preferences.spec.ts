@@ -20,7 +20,7 @@ test.describe('User preferences', () => {
 	});
 
 	test.beforeAll(async () => {
-		await pageAuth.doLogin();
+		await pageAuth.doLogin(true);
 	});
 
 	test('expect update profile with new name and username', async () => {

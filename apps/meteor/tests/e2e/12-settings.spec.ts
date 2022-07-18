@@ -19,7 +19,7 @@ test.describe.skip('Settings', async () => {
 		pageHomeChannel = new HomeChannel(page);
 		pageAccountProfile = new AccountProfile(page);
 
-		await pageAuth.doLogin(validUserInserted);
+		await pageAuth.doLogin(true, validUserInserted);
 		await pageHomeChannel.sidenav.doOpenChat('general');
 	});
 
@@ -398,7 +398,7 @@ test.describe.skip('Settings (admin)', async () => {
 		pageAdmin = new Administration(page);
 
 		await page.goto('/');
-		await pageAuth.doLogin();
+		await pageAuth.doLogin(true);
 		await pageHomeChannel.sidenav.doOpenChat('general');
 	});
 
