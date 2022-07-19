@@ -330,7 +330,7 @@ export class LivechatRooms extends Base {
 		return this.find(query, options);
 	}
 
-	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, source, options) {
+	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, options) {
 		const query = {
 			't': 'l',
 			'_id': roomId,
