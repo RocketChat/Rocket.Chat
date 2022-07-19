@@ -99526,6 +99526,39 @@
           ]
         }
       ]
+    },
+    "5.0.0-rc.9": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26050",
+          "title": "[FIX] Users without the `view-other-user-info` permission can't use the `users.list` endpoint",
+          "userLogin": "LucianoPierdona",
+          "description": "This PR fix the query when a normal users access `users.list`",
+          "milestone": "5.0.0",
+          "contributors": [
+            "LucianoPierdona",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26274",
+          "title": "Chore: Upgrade Fuselage packages to `next` dist-tag",
+          "userLogin": "tassoevan",
+          "description": "Upgrade Fuselage packages to the latest development versions.",
+          "milestone": "5.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }

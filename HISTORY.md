@@ -1,6 +1,31 @@
 
 # 5.0.0 (Under Release Candidate Process)
 
+## 5.0.0-rc.9
+`2022-07-19  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Users without the `view-other-user-info` permission can't use the `users.list` endpoint ([#26050](https://github.com/RocketChat/Rocket.Chat/pull/26050))
+
+  This PR fix the query when a normal users access `users.list`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Upgrade Fuselage packages to `next` dist-tag ([#26274](https://github.com/RocketChat/Rocket.Chat/pull/26274))
+
+  Upgrade Fuselage packages to the latest development versions.
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@LucianoPierdona](https://github.com/LucianoPierdona)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 5.0.0-rc.8
 `2022-07-18  ·  9 🔍  ·  10 👩‍💻👨‍💻`
 
