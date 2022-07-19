@@ -104,9 +104,14 @@ async function getChannelsAndGroups(user, canViewAnon, searchTerm, sort, paginat
 	};
 }
 
-const getChannelsCountForTeam = mem((teamId) => Promise.await(Rooms.findByTeamId(teamId, { projection: { _id: 1 } }).count()), {
-	maxAge: 2000,
-});
+const getChannelsCountForTeam = mem(
+	(teamId) => {
+		return Rooms.findByTeamId(teamId, { projection: { _id: 1 } });
+	},
+	{
+		maxAge: 2000,
+	},
+);
 
 async function getTeams(user, searchTerm, sort, pagination) {
 	if (!user) {
@@ -114,6 +119,7 @@ async function getTeams(user, searchTerm, sort, pagination) {
 	}
 
 	const userSubs = Subscriptions.cachedFindByUserId(user._id).fetch();
+
 	const ids = userSubs.map((sub) => sub.rid);
 	const { cursor, totalCount } = Rooms.findPaginatedContainingNameOrFNameInIdsAsTeamMain(
 		searchTerm ? new RegExp(searchTerm, 'i') : null,
@@ -143,19 +149,23 @@ async function getTeams(user, searchTerm, sort, pagination) {
 		},
 	);
 
-	const [rooms, total] = await Promise.all([
-		cursor
-			.map((room) => ({
-				...room,
-				roomsCount: getChannelsCountForTeam(room.teamId),
-			}))
-			.toArray(),
-		totalCount,
-	]);
+	const roomsPromises = cursor.map((room) => room).toArray();
+
+	const [rooms] = await Promise.all([roomsPromises]);
+
+	const teams = [];
+
+	for await (const room of rooms) {
+		const result = await getChannelsCountForTeam(room.teamId).toArray();
+
+		teams.push({ ...room, roomsCount: result.length });
+	}
+
+	const [total] = await Promise.all([totalCount]);
 
 	return {
 		total,
-		results: rooms,
+		results: teams,
 	};
 }
 
