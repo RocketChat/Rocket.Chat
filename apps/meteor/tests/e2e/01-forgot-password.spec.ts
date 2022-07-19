@@ -1,40 +1,45 @@
-import { test, expect } from '@playwright/test';
+import { Page, test, expect } from '@playwright/test';
 
-import { Global, LoginPage } from './pageobjects';
+import { Auth } from './page-objects';
 
-test.describe('[Forgot Password]', () => {
-	let loginPage: LoginPage;
-	let global: Global;
+test.describe('Forgot Password', () => {
+	let page: Page;
+	let pageAuth: Auth;
 
-	test.beforeEach(async ({ page }) => {
-		loginPage = new LoginPage(page);
-		global = new Global(page);
+	test.beforeAll(async ({ browser }) => {
+		page = await browser.newPage();
+		pageAuth = new Auth(page);
+	});
 
+	test.beforeAll(async () => {
 		await page.goto('/');
-		await loginPage.btnForgotPassword.click();
+		await pageAuth.btnForgotPassword.click();
 	});
 
-	test('expect be required', async () => {
-		loginPage.btnSubmit.click();
+	test('expect trigger a validation error if no email is provided', async () => {
+		await pageAuth.btnSubmit.click();
 
-		await expect(loginPage.emailInvalidText).toBeVisible();
+		await expect(pageAuth.textErrorEmail).toBeVisible();
 	});
 
-	test('expect invalid for email without domain', async () => {
-		await loginPage.emailField.type('mail');
-		await loginPage.btnSubmit.click();
-		await expect(loginPage.emailInvalidText).toBeVisible();
+	test('expect trigger a validation if a invalid email is provided (1)', async () => {
+		await pageAuth.inputEmail.type('mail');
+		await pageAuth.btnSubmit.click();
+
+		await expect(pageAuth.textErrorEmail).toBeVisible();
 	});
 
-	test('expect be invalid for email with invalid domain', async () => {
-		await loginPage.emailField.type('mail@mail');
-		await loginPage.btnSubmit.click();
-		await expect(loginPage.emailInvalidText).toBeVisible();
+	test('expect trigger a validation if a invalid email is provided (2)', async () => {
+		await pageAuth.inputEmail.type('mail@mail');
+		await pageAuth.btnSubmit.click();
+
+		await expect(pageAuth.textErrorEmail).toBeVisible();
 	});
 
-	test('expect user type a valid email', async () => {
-		await loginPage.emailField.type('mail@mail.com');
-		await loginPage.btnSubmit.click();
-		await expect(global.getToastBarSuccess).toBeVisible();
+	test('expect to show a success toast if a valid email is provided', async () => {
+		await pageAuth.inputEmail.type('mail@mail.com');
+		await pageAuth.btnSubmit.click();
+
+		await expect(pageAuth.toastSuccess).toBeVisible();
 	});
 });
