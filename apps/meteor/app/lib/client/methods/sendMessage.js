@@ -18,7 +18,7 @@ Meteor.methods({
 			return dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
 		}
 		const user = Meteor.user();
-		message.ts = Date.now();
+		message.ts = new Date();
 		message.u = {
 			_id: Meteor.userId(),
 			username: user.username,
