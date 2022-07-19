@@ -5,7 +5,7 @@ import * as constants from './tests/e2e/utils/constants';
 export default {
 	globalSetup: require.resolve('./tests/e2e/configs/setup.ts'),
 	use: {
-		headless: true,
+		headless: false,
 		viewport: { width: 1368, height: 768 },
 		ignoreHTTPSErrors: true,
 		video: 'retain-on-failure',
