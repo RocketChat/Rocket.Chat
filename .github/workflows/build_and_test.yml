@@ -683,6 +683,7 @@ jobs:
           docker logs presence --tail=50
 
           cd ./apps/meteor
+
           E2E_COVERAGE=true IS_EE=true npm run test:e2e
 
       - name: Extract e2e:ee:coverage
@@ -706,7 +707,6 @@ jobs:
         with:
           name: e2e-ee-coverage
           path: ./apps/meteor/coverage*
-
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
         if: failure()
