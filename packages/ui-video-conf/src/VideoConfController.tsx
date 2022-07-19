@@ -22,7 +22,6 @@ const VideoConfController = ({ icon, active, secondary, disabled, small = true, 
 			info={active}
 			disabled={disabled}
 			secondary={secondary || active || disabled}
-			square
 			{...props}
 		/>
 	);
