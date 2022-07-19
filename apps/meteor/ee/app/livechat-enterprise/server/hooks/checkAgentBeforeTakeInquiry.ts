@@ -53,7 +53,7 @@ callbacks.add(
 
 		const { department: departmentId } = inquiry;
 
-		const maxNumberSimultaneousChat = getMaxNumberSimultaneousChat({
+		const maxNumberSimultaneousChat = await getMaxNumberSimultaneousChat({
 			agentId,
 			departmentId,
 		});

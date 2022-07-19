@@ -24,6 +24,7 @@ describe('LIVECHAT - Agents', function () {
 			});
 	});
 
+	// TODO: missing test cases for POST method
 	describe('livechat/users/:type', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-l-room', [])
@@ -149,3 +150,9 @@ describe('LIVECHAT - Agents', function () {
 		});
 	});
 });
+
+// TODO:
+// Missing tests for following endpoint:
+// livechat/users/:type/:_id
+// livechat/agent.info/:rid/:token
+// livechat/agent.next/:token

@@ -202,10 +202,10 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	getNextAgent(ignoreAgentId, extraQuery) {
+	async getNextAgent(ignoreAgentId, extraQuery) {
 		// TODO: Create class Agent
 		// fetch all unavailable agents, and exclude them from the selection
-		const unavailableAgents = Promise.await(this.getUnavailableAgents(null, extraQuery)).map((u) => u.username);
+		const unavailableAgents = (await this.getUnavailableAgents(null, extraQuery)).map((u) => u.username);
 		const extraFilters = {
 			...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }),
 			// limit query to remove booked agents
@@ -225,7 +225,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = await this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -239,7 +239,7 @@ export class Users extends Base {
 		return [];
 	}
 
-	getNextBotAgent(ignoreAgentId) {
+	async getNextBotAgent(ignoreAgentId) {
 		// TODO: Create class Agent
 		const query = {
 			roles: {
@@ -259,7 +259,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = await this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,

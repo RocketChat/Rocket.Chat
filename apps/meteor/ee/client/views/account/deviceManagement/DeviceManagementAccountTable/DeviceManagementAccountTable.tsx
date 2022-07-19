@@ -42,7 +42,7 @@ const DeviceManagementAccountTable = (): ReactElement => {
 				{t('OS')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'loginAt'} direction={sortDirection} active={sortBy === 'loginAt'} onClick={setSort} sort={'loginAt'}>
-				{t('Last_Login')}
+				{t('Last_login')}
 			</GenericTableHeaderCell>,
 			mediaQuery && <GenericTableHeaderCell key={'_id'}>{t('Device_ID')}</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'logout'} />,
