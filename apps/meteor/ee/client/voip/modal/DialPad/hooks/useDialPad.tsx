@@ -83,7 +83,7 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 			return setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
 		}
 
-		outboundClient.makeCall(value.replace('+', ''));
+		outboundClient.makeCall(value);
 		closeDialModal();
 	}, [outboundClient, setError, t, value, closeDialModal]);
 
