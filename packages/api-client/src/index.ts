@@ -40,7 +40,8 @@ const checkIfIsFormData = (data: any = {}): boolean => {
 	if (data instanceof FormData) {
 		return true;
 	}
-	return Object.values(data).some((value) => {
+
+	return Object.values(data ?? {}).some((value) => {
 		if (typeof value === 'object' && !(value instanceof File)) {
 			return checkIfIsFormData(value);
 		}
