@@ -33,10 +33,7 @@
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"coverage": "nyc -r html mocha --config ./.mocharc.js",
 		"test:e2e": "playwright test",
-<<<<<<< HEAD
 		"test:e2e:nyc": "nyc report --reporter=text-summary --reporter=lcov",
-=======
->>>>>>> Chore: Tests refactor pageobjects (#26245)
 		"testapi": "mocha --config ./.mocharc.api.js",
 		"testunit": "npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server",
 		".testunit:server": "mocha --config ./.mocharc.js",
