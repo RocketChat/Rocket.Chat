@@ -1,8 +1,6 @@
 import { Page, Locator } from '@playwright/test';
 
 import { test, expect } from './utils/test';
-
-
 import { Auth } from './page-objects';
 import { ADMIN_CREDENTIALS } from './utils/constants';
 

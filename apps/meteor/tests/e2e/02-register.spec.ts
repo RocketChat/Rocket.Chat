@@ -1,8 +1,7 @@
-import { test, expect } from './utils/test';
-
 import { Page } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
+import { test, expect } from './utils/test';
 import { Auth } from './page-objects';
 
 test.describe('Register', () => {

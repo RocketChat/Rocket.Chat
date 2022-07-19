@@ -1,9 +1,7 @@
 import faker from '@faker-js/faker';
-
-import { test, expect } from './utils/test';
 import { Page } from '@playwright/test';
 
-
+import { test, expect } from './utils/test';
 import { Auth, HomeChannel, AccountProfile } from './page-objects';
 
 test.describe('User preferences', () => {

@@ -2,7 +2,6 @@ import { Page } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
 import { test, expect } from './utils/test';
-
 import { BASE_API_URL } from './utils/constants';
 import { adminLogin, validUserInserted, registerUser } from './utils/mocks/userAndPasswordMock';
 import { Auth, HomeChannel, AccountProfile, Administration } from './page-objects';

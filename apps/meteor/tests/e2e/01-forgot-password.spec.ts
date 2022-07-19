@@ -1,6 +1,6 @@
-import { test, expect } from './utils/test';
-import { Page } from '@playwright/test'
+import { Page } from '@playwright/test';
 
+import { test, expect } from './utils/test';
 import { Auth } from './page-objects';
 
 test.describe('Forgot Password', () => {

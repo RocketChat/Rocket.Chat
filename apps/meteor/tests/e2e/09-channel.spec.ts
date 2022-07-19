@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import { test, expect } from './utils/test';
-import { Global, FlexTab, MainContent, SideNav, LoginPage } from './pageobjects';
-import { adminLogin } from './utils/mocks/userAndPasswordMock';
-=======
-import { test, expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 
->>>>>>> Chore: Tests refactor pageobjects (#26245)
+import { test, expect } from './utils/test';
 import { publicChannelCreated, setPublicChannelCreated } from './utils/mocks/checks';
 import { Auth, HomeChannel } from './page-objects';
 

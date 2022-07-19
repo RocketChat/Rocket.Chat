@@ -1,7 +1,6 @@
+import { Page } from '@playwright/test';
+
 import { test, expect } from './utils/test';
-
-import {  Page } from '@playwright/test';
-
 import { Auth, HomeChannel } from './page-objects';
 
 test.describe('Emoji', () => {

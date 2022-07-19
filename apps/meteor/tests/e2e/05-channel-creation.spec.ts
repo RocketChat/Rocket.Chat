@@ -1,10 +1,7 @@
 import { faker } from '@faker-js/faker';
-
-import { test, expect } from './utils/test';
-
 import { Page } from '@playwright/test';
 
-
+import { test, expect } from './utils/test';
 import { HomeChannel, Auth } from './page-objects';
 
 test.describe('Channel Creation', () => {

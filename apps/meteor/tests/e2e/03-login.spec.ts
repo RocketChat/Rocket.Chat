@@ -1,8 +1,7 @@
 import { Page } from '@playwright/test';
-
-import { test, expect } from './utils/test';
 import { faker } from '@faker-js/faker';
 
+import { test, expect } from './utils/test';
 import { Auth } from './page-objects';
 
 test.describe('Login', () => {
