@@ -86,13 +86,13 @@ const MessagesPerChannelSection = (): ReactElement => {
 																			color: colors.w500,
 																		},
 																		{
-																			id: 'c',
+																			id: 'p',
 																			label: t('Private_Channels'),
 																			value: pie.c,
 																			color: colors.s500,
 																		},
 																		{
-																			id: 'p',
+																			id: 'c',
 																			label: t('Public_Channels'),
 																			value: pie.p,
 																			color: colors.p500,
