@@ -88,13 +88,13 @@ const MessagesPerChannelSection = (): ReactElement => {
 																		{
 																			id: 'p',
 																			label: t('Private_Channels'),
-																			value: pie.c,
+																			value: pie.p,
 																			color: colors.s500,
 																		},
 																		{
 																			id: 'c',
 																			label: t('Public_Channels'),
-																			value: pie.p,
+																			value: pie.c,
 																			color: colors.p500,
 																		},
 																	]}
@@ -130,10 +130,9 @@ const MessagesPerChannelSection = (): ReactElement => {
 																			},
 																		},
 																	}}
-																	// @ts-ignore
-																	tooltip={({ value }): ReactElement => (
+																	tooltip={({ datum }): ReactElement => (
 																		<Box fontScale='p1m' color='alternative'>
-																			{t('Value_messages', { value })}
+																			{t('Value_messages', { value: datum.value })}
 																		</Box>
 																	)}
 																/>
