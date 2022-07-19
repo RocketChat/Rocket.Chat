@@ -13,7 +13,6 @@ const IconButton = ({ name, action, title }: IconButtonProps): ReactElement => (
 		size='24px'
 		color='neutral-700'
 		small
-		square
 		display='flex'
 		justifyContent='center'
 		alignItems='center'

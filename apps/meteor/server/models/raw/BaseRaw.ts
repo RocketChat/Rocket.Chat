@@ -30,7 +30,7 @@ import { getCollectionName } from '@rocket.chat/models';
 import { setUpdatedAt } from '../../../app/models/server/lib/setUpdatedAt';
 
 const warnFields =
-	process.env.NODE_ENV !== 'production'
+	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'
 		? (...rest: any): void => {
 				console.warn(...rest, new Error().stack);
 		  }
