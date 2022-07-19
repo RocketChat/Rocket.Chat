@@ -63,9 +63,15 @@ API.v1.addRoute(
 				);
 
 				const foundCF = Object.fromEntries(
-					LivechatCustomField.find(
-						{ scope: 'visitor', searchable: true, _id: { $in: customObj } },
-						{ fields: { _id: 1 } },
+					(
+						await LivechatCustomField.find(
+							{ scope: 'visitor', searchable: true, _id: { $in: Object.keys(customObj) } },
+							{
+								projection: {
+									_id: 1,
+								},
+							},
+						).toArray()
 					).map(({ _id }) => [_id, customObj[_id]]),
 				);
 

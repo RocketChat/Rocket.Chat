@@ -184,11 +184,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 				{
 					username: nameOrUsername,
 				},
-				...(await allowedCF.toArray().then((cf) =>
-					cf.map((c: string) => {
-						return { [`livechatData.${c}`]: filter };
-					}),
-				)),
+				...(await allowedCF.toArray().then((cf) => cf.map((c: string) => ({ [`livechatData.${c}`]: filter })))),
 			],
 		};
 
