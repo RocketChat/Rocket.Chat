@@ -136,7 +136,7 @@
 		"@types/use-sync-external-store": "^0.0.3",
 		"@types/uuid": "^8.3.4",
 		"@types/xml-crypto": "^1.4.2",
-		"@typescript-eslint/eslint-plugin": "^2.34.0",
+		"@typescript-eslint/eslint-plugin": "^5.30.7",
 		"@typescript-eslint/parser": "^3.10.1",
 		"autoprefixer": "^9.8.8",
 		"babel-eslint": "^10.1.0",
