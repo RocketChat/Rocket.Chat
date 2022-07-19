@@ -68,5 +68,5 @@ settings.watch('Canned_Responses_Enable', function (value) {
 		return;
 	}
 
-	callbacks.add('beforeSaveMessage', handleBeforeSaveMessage, callbacks.priority.MEDIUM, 'canned-responses-replace-placeholders');
+	callbacks.add('beforeSaveMessage', handleBeforeSaveMessage, callbacks.priority.HIGH * 2, 'canned-responses-replace-placeholders');
 });
