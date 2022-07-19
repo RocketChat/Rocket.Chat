@@ -76,7 +76,6 @@ meteorhacks:inject-initial@1.0.5
 minifier-css@1.6.0
 minifier-js@2.7.4
 minimongo@1.8.0
-mizzao:timesync@0.3.4
 mobile-experience@1.1.0
 mobile-status-bar@1.1.0
 modern-browsers@0.1.8
