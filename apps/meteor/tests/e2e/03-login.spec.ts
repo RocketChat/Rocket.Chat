@@ -1,32 +1,24 @@
-import { test, expect, Page } from '@playwright/test';
+import { Page, test, expect } from '@playwright/test';
+import { faker } from '@faker-js/faker';
 
-import { validUser } from './utils/mocks/userAndPasswordMock';
-import { Global, LoginPage } from './pageobjects';
-import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
+import { Auth } from './page-objects';
 
-test.describe('[Login]', () => {
+test.describe('Login', () => {
 	let page: Page;
-	let loginPage: LoginPage;
-	let global: Global;
+	let pageAuth: Auth;
 
-	test.beforeEach(async ({ browser }) => {
+	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
-		loginPage = new LoginPage(page);
-		global = new Global(page);
+		pageAuth = new Auth(page);
+	});
+
+	test('expect to show a toast if the provided password is incorrect', async () => {
 		await page.goto('/');
-	});
 
-	test('expect user write a password incorrectly', async () => {
-		const invalidUserPassword = {
-			email: validUser.email,
-			password: 'any_password1',
-		};
-		await loginPage.doLogin(invalidUserPassword, false);
-		await expect(global.getToastBarError).toBeVisible();
-	});
+		await pageAuth.inputEmailOrUsername.type(faker.internet.email());
+		await pageAuth.inputPassword.type('any_password');
+		await pageAuth.btnSubmit.click();
 
-	test('expect user make login', async () => {
-		await loginPage.doLogin(validUser);
-		await page.waitForSelector(HOME_SELECTOR);
+		await expect(pageAuth.toastError).toBeVisible();
 	});
 });

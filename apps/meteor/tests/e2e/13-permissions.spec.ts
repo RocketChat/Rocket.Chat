@@ -1,96 +1,93 @@
 import { Page, test, expect } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
+import faker from '@faker-js/faker';
 
-import { LoginPage, FlexTab, Administration, MainContent, SideNav } from './pageobjects';
-import { adminLogin, createRegisterUser } from './utils/mocks/userAndPasswordMock';
-import { BACKSPACE } from './utils/mocks/keyboardKeyMock';
+import { Auth, Administration, HomeChannel } from './page-objects';
 
-test.describe('[Permissions]', () => {
+test.describe('Permissions', () => {
 	let page: Page;
+	let pageAuth: Auth;
+	let pageAdmin: Administration;
+	let pageHomeChannel: HomeChannel;
 
-	let loginPage: LoginPage;
-	let admin: Administration;
-	let flexTab: FlexTab;
-	let sideNav: SideNav;
-	let mainContent: MainContent;
-
-	const userToBeCreated = createRegisterUser();
+	const anyUser = {
+		email: faker.internet.email(),
+		password: 'any_password',
+		name: faker.name.findName(),
+		username: faker.internet.userName(),
+	};
 
 	test.beforeAll(async ({ browser }) => {
-		const context = await browser.newContext();
-		page = await context.newPage();
+		page = await browser.newPage();
+		pageAuth = new Auth(page);
+		pageAdmin = new Administration(page);
+		pageHomeChannel = new HomeChannel(page);
 
-		loginPage = new LoginPage(page);
-		admin = new Administration(page);
-		flexTab = new FlexTab(page);
-		sideNav = new SideNav(page);
-		mainContent = new MainContent(page);
-
-		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
-		await sideNav.sidebarUserMenu.click();
-		await sideNav.admin.click();
-		await sideNav.users.click();
+		await pageAuth.doLogin();
+		await pageHomeChannel.sidenav.btnAvatar.click();
+		await pageHomeChannel.sidenav.linkAdmin.click();
+		await pageAdmin.sidenav.linkUsers.click();
 	});
 
 	test('expect create a user via admin view', async () => {
-		await flexTab.usersAddUserTab.click();
-		await flexTab.usersAddUserName.type(userToBeCreated.name);
-		await flexTab.usersAddUserUsername.type(userToBeCreated.username ?? '');
-		await flexTab.usersAddUserEmail.type(userToBeCreated.email);
-		await flexTab.usersAddUserVerifiedCheckbox.click();
-		await flexTab.usersAddUserPassword.type(userToBeCreated.password);
-		await flexTab.doAddRole('user');
-		await flexTab.usersButtonSave.click();
+		await pageAdmin.tabs.usersAddUserTab.click();
+		await pageAdmin.tabs.usersAddUserName.type(anyUser.name);
+		await pageAdmin.tabs.usersAddUserUsername.type(anyUser.username);
+		await pageAdmin.tabs.usersAddUserEmail.type(anyUser.email);
+		await pageAdmin.tabs.usersAddUserVerifiedCheckbox.click();
+		await pageAdmin.tabs.usersAddUserPassword.type(anyUser.password);
+		await pageAdmin.tabs.doAddRole('user');
+		await pageAdmin.tabs.usersButtonSave.click();
 	});
 
 	test('expect user be show on list', async () => {
-		await admin.usersFilter.type(userToBeCreated.email, { delay: 200 });
-		await expect(admin.userInTable(userToBeCreated.email)).toBeVisible();
+		await pageAdmin.usersFilter.type(anyUser.email, { delay: 200 });
+		await expect(pageAdmin.userInTable(anyUser.email)).toBeVisible();
 	});
 
-	test.describe('disable "userToBeCreated" permissions', () => {
+	test.describe('disable "anyUser" permissions', () => {
 		test('expect open permissions table', async () => {
-			await admin.permissionsLink.click();
+			await pageAdmin.permissionsLink.click();
 		});
 
 		test('expect remove "mention all" permission from user', async () => {
-			await admin.inputPermissionsSearch.type('all');
+			await pageAdmin.inputPermissionsSearch.type('all');
 
-			if (await admin.getCheckboxPermission('Mention All').locator('input').isChecked()) {
-				await admin.getCheckboxPermission('Mention All').click();
+			if (await pageAdmin.getCheckboxPermission('Mention All').locator('input').isChecked()) {
+				await pageAdmin.getCheckboxPermission('Mention All').click();
 			}
 		});
 
 		test('expect remove "delete message" permission from user', async () => {
-			await admin.inputPermissionsSearch.click({ clickCount: 3 });
-			await page.keyboard.press(BACKSPACE);
-			await admin.inputPermissionsSearch.type('delete');
+			await pageAdmin.inputPermissionsSearch.click({ clickCount: 3 });
+			await page.keyboard.press('Backspace');
+			await pageAdmin.inputPermissionsSearch.type('delete');
 
-			if (await admin.getCheckboxPermission('Delete Own Message').locator('input').isChecked()) {
-				await admin.getCheckboxPermission('Delete Own Message').click();
+			if (await pageAdmin.getCheckboxPermission('Delete Own Message').locator('input').isChecked()) {
+				await pageAdmin.getCheckboxPermission('Delete Own Message').click();
 			}
 		});
 	});
 
-	test.describe('assert "userToBeCreated" permissions', () => {
+	test.describe('assert "anyUser" permissions', () => {
 		test.beforeAll(async () => {
-			await sideNav.doLogout();
+			await pageHomeChannel.sidenav.doLogout();
+
 			await page.goto('/');
-			await loginPage.doLogin(userToBeCreated);
-			await sideNav.general.click();
+			await pageAuth.doLogin(anyUser);
+			await pageHomeChannel.sidenav.doOpenChat('general');
 		});
 
 		test('expect not be abble to "mention all"', async () => {
-			await mainContent.sendMessage('@all any_message');
+			await pageHomeChannel.content.doSendMessage('@all any_message');
 
-			await expect(mainContent.lastMessageForMessageTest).toContainText('not allowed');
+			await expect(pageHomeChannel.content.lastMessageForMessageTest).toContainText('not allowed');
 		});
 
 		test('expect not be able to "delete own message"', async () => {
-			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.doSendMessage(`any_message_${uuid()}`);
+			await pageHomeChannel.content.doOpenMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeFalsy();
 		});
