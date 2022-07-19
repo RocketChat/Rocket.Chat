@@ -4,6 +4,7 @@ import * as constants from './tests/e2e/utils/constants';
 
 export default {
 	globalSetup: require.resolve('./tests/e2e/configs/setup.ts'),
+	globalTeardown: require.resolve('./tests/e2e/configs/teardown.ts'),
 	use: {
 		headless: true,
 		viewport: { width: 1368, height: 768 },

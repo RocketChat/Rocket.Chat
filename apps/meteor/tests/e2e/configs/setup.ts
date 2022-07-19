@@ -1,8 +1,8 @@
 import type { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
-import { chromium, FullConfig } from '@playwright/test';
+import { chromium } from '@playwright/test';
 
 import { MongoHelper } from '../utils/MongoHelper';
-import { URL_MONGODB, ADMIN_CREDENTIALS } from '../utils/constants';
+import { URL_MONGODB, ADMIN_CREDENTIALS, BASE_URL } from '../utils/constants';
 import { roomMock } from '../utils/mocks/roomMock';
 import { userMock } from '../utils/mocks/userMock';
 import { subscriptionMock } from '../utils/mocks/subscriptionMock';
@@ -22,18 +22,17 @@ const subscribeUserInChannels = async (): Promise<void> => {
 	await subscribeCollections.insertMany(subscriptionMock);
 };
 
-export default async (config: FullConfig): Promise<void> => {
+export default async (): Promise<void> => {
 	await MongoHelper.connect(URL_MONGODB);
 	await insertRoom();
 	await insertUser();
 	await subscribeUserInChannels();
 	await MongoHelper.disconnect();
-	const { baseURL } = config.projects[0].use;
 
 	const browser = await chromium.launch();
 	const page = await browser.newPage();
 
-	await page.goto(baseURL as string);
+	await page.goto(BASE_URL);
 
 	await page.locator('[name=emailOrUsername]').type(ADMIN_CREDENTIALS.email);
 	await page.locator('[name=pass]').type(ADMIN_CREDENTIALS.password);
