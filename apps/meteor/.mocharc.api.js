@@ -11,11 +11,9 @@ module.exports = {
 	file: 'tests/end-to-end/teardown.js',
 	spec: [
 		'tests/unit/app/api/server/v1/**/*.spec.ts',
-		'tests/end-to-end/api/*.js',
-		'tests/end-to-end/api/*.ts',
+		'tests/end-to-end/api/**/*.js',
+		'tests/end-to-end/api/**/*.ts',
 		'tests/end-to-end/apps/*.js',
-		'tests/end-to-end/api/livechat/*.js',
-		'tests/end-to-end/api/livechat/*.ts',
 		'tests/end-to-end/apps/*.ts',
 	],
 };
