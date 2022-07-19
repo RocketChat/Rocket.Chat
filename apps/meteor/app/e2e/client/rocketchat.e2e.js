@@ -1,3 +1,6 @@
+import URL from 'url';
+import QueryString from 'querystring';
+
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
@@ -18,9 +21,10 @@ import {
 	importRawKey,
 	deriveKey,
 	generateMnemonicPhrase,
+	parseUrlsInMessage,
 } from './helper';
 import * as banners from '../../../client/lib/banners';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { Rooms, Subscriptions, Messages, ChatMessage } from '../../models/client';
 import './events.js';
 import './tabbar';
 import { log, logError } from './logger';
@@ -29,6 +33,7 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import { call } from '../../../client/lib/utils/call';
+import { APIClient, getUserAvatarURL } from '../../utils/client';
 
 let failedToDecodeKey = false;
 
@@ -370,11 +375,15 @@ class E2E extends Emitter {
 			return message;
 		}
 
-		return {
+		const decryptedMessage = {
 			...message,
 			msg: data.text,
 			e2e: 'done',
 		};
+
+		this.getQuoteMessages(decryptedMessage);
+
+		return decryptedMessage;
 	}
 
 	async decryptPendingMessages() {
@@ -401,6 +410,64 @@ class E2E extends Emitter {
 
 	closeAlert() {
 		banners.closeById('e2e');
+	}
+
+	async getQuoteMessages(message) {
+		const { msg } = message;
+		const urls = parseUrlsInMessage(msg);
+
+		urls.map(async (url) => {
+			if (!url.includes(Meteor.absoluteUrl())) {
+				return;
+			}
+
+			const urlObj = URL.parse(url);
+			// if the URL doesn't have query params (doesn't reference message) skip
+			if (!urlObj.query) {
+				return;
+			}
+
+			const { msg: msgId } = QueryString.parse(urlObj.query);
+
+			if (!msgId) {
+				return;
+			}
+
+			const getQuotedMessage = await APIClient.get('/v1/chat.getMessage', { msgId });
+			const quotedMessage = getQuotedMessage?.message;
+
+			if (!getQuotedMessage?.success || !quotedMessage) {
+				return;
+			}
+
+			const decryptedQuoteMessage = await this.decryptMessage(quotedMessage);
+
+			message.attachments = message.attachments || [];
+
+			const quoteAttachment = {
+				text: decryptedQuoteMessage.msg,
+				translations: decryptedQuoteMessage.translations,
+				message_link: url,
+				author_name: decryptedQuoteMessage.alias || decryptedQuoteMessage.u.username,
+				author_icon: getUserAvatarURL(decryptedQuoteMessage.u.username),
+				attachments: decryptedQuoteMessage.attachments,
+				ts: decryptedQuoteMessage.ts,
+			};
+
+			message.attachments.push(quoteAttachment);
+
+			ChatMessage.update(
+				{
+					_id: message._id,
+					rid: message.rid,
+				},
+				{
+					$set: {
+						attachments: message.attachments,
+					},
+				},
+			);
+		});
 	}
 }
 
