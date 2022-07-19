@@ -642,7 +642,7 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findOneByAppId(appId, options) {
+	findOneByAppId(appId, options = {}) {
 		const query = { appId };
 
 		return this.findOne(query, options);
