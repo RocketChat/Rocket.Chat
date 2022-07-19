@@ -1,7 +1,10 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import {
+	FederationRoomChangeJoinRulesDto,
 	FederationRoomChangeMembershipDto,
+	FederationRoomChangeNameDto,
+	FederationRoomChangeTopicDto,
 	FederationRoomCreateInputDto,
 	FederationRoomSendInternalMessageDto,
 } from '../../../application/input/RoomReceiverDto';
@@ -52,6 +55,35 @@ export class MatrixRoomReceiverConverter {
 			normalizedSenderId: MatrixRoomReceiverConverter.convertMatrixUserIdFormatToRCFormat(externalEvent.sender),
 			text: externalEvent.content?.body,
 		});
+	}
+
+	public static toRoomChangeJoinRulesDto(
+		externalEvent: IMatrixEvent<MatrixEventType.ROOM_JOIN_RULES_CHANGED>,
+	): FederationRoomChangeJoinRulesDto {
+		return Object.assign(new FederationRoomChangeJoinRulesDto(), {
+			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
+			roomType: MatrixRoomReceiverConverter.convertMatrixJoinRuleToRCRoomType(externalEvent.content?.join_rule),
+		});
+	}
+
+	public static toRoomChangeNameDto(externalEvent: IMatrixEvent<MatrixEventType.ROOM_NAME_CHANGED>): FederationRoomChangeNameDto {
+		return Object.assign(new FederationRoomChangeNameDto(), {
+			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
+			externalSenderId: externalEvent.sender,
+			normalizedRoomName: MatrixRoomReceiverConverter.normalizeRoomNameToRCFormat(externalEvent.content?.name),
+		});
+	}
+
+	public static toRoomChangeTopicDto(externalEvent: IMatrixEvent<MatrixEventType.ROOM_TOPIC_CHANGED>): FederationRoomChangeTopicDto {
+		return Object.assign(new FederationRoomChangeTopicDto(), {
+			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
+			externalSenderId: externalEvent.sender,
+			roomTopic: externalEvent.content?.topic,
+		});
+	}
+
+	private static normalizeRoomNameToRCFormat(matrixRoomName = ''): string {
+		return matrixRoomName.replace('@', '');
 	}
 
 	protected static convertMatrixUserIdFormatToRCFormat(matrixUserId = ''): string {

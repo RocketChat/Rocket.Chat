@@ -114,4 +114,44 @@ describe('Federation - Domain - FederatedRoom', () => {
 			).to.be.equal('userId1userId2');
 		});
 	});
+
+	describe('#setRoomType()', () => {
+		it('should set the Room type if its not a direct message room', () => {
+			const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.PRIVATE_GROUP);
+			federatedRoom.setRoomType(RoomType.CHANNEL);
+			expect(federatedRoom.internalReference.t).to.be.equal(RoomType.CHANNEL);
+		});
+
+		it('should throw an error when trying to set the room type if its a direct message room', () => {
+			const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.DIRECT_MESSAGE);
+			expect(() => federatedRoom.setRoomType(RoomType.CHANNEL)).to.be.throw('Its not possible to change a direct message type');
+		});
+	});
+
+	describe('#changeRoomName()', () => {
+		it('should change the Room name if its not a direct message room', () => {
+			const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.PRIVATE_GROUP);
+			federatedRoom.changeRoomName('newName');
+			expect(federatedRoom.internalReference.name).to.be.equal('newName');
+			expect(federatedRoom.internalReference.fname).to.be.equal('newName');
+		});
+
+		it('should throw an error when trying to change the room name if its a direct message room', () => {
+			const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.DIRECT_MESSAGE);
+			expect(() => federatedRoom.changeRoomName('newName')).to.be.throw('Its not possible to change a direct message name');
+		});
+	});
+
+	describe('#changeRoomTopic()', () => {
+		it('should change the Room topic if its not a direct message room', () => {
+			const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.PRIVATE_GROUP);
+			federatedRoom.changeRoomTopic('newName');
+			expect(federatedRoom.internalReference.topic).to.be.equal('newName');
+		});
+
+		it('should throw an error when trying to change the room topic if its a direct message room', () => {
+			const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.DIRECT_MESSAGE);
+			expect(() => federatedRoom.changeRoomTopic('newName')).to.be.throw('Its not possible to change a direct message topic');
+		});
+	});
 });
