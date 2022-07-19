@@ -238,7 +238,7 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByVisitorToken(visitorToken, fields) {
+	findOneByVisitorToken(visitorToken, fields, source) {
 		const options = {};
 
 		if (fields) {
@@ -248,6 +248,7 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
+			'source.type': source,
 		};
 
 		return this.findOne(query, options);
@@ -288,12 +289,17 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
+	findOneOpenByVisitorTokenAndDepartmentIdAndSource(visitorToken, departmentId, source, options) {
 		const query = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
 			departmentId,
+			...(source
+				? {
+						'source.type': source,
+				  }
+				: {}),
 		};
 
 		return this.findOne(query, options);
@@ -329,7 +335,7 @@ export class LivechatRooms extends Base {
 		return this.find(query, options);
 	}
 
-	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, options) {
+	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, source, options) {
 		const query = {
 			't': 'l',
 			'_id': roomId,

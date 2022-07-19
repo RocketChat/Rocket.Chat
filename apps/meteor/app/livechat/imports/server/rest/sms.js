@@ -36,7 +36,7 @@ const defineDepartment = (idOrName) => {
 };
 
 const defineVisitor = async (smsNumber, targetDepartment) => {
-	const visitor = LivechatVisitors.findOneVisitorByPhone(smsNumber);
+	const visitor = await LivechatVisitors.findOneVisitorByPhone(smsNumber);
 	let data = {
 		token: (visitor && visitor.token) || Random.id(),
 	};
@@ -82,7 +82,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		const visitor = await defineVisitor(sms.from, targetDepartment);
 		const { token } = visitor;
-		const room = LivechatRooms.findOneOpenByVisitorTokenAndDepartmentId(token, targetDepartment);
+		const room = LivechatRooms.findOneOpenByVisitorTokenAndDepartmentIdAndSource(token, targetDepartment, OmnichannelSourceType.SMS);
 		const roomExists = !!room;
 		const location = normalizeLocationSharing(sms);
 		const rid = (room && room._id) || Random.id();
