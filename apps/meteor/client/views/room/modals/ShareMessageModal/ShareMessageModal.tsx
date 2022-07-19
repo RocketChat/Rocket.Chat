@@ -1,4 +1,4 @@
-import { Modal, Box, Field, FieldGroup, ButtonGroup, Button, Message, Tabs } from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldGroup, ButtonGroup, Button, Tabs } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, memo, useState, ChangeEvent } from 'react';
@@ -6,10 +6,9 @@ import React, { ReactElement, memo, useState, ChangeEvent } from 'react';
 import MarkdownTextEditor from '../../../../../ee/client/omnichannel/components/CannedResponse/MarkdownTextEditor';
 import PreviewText from '../../../../../ee/client/omnichannel/components/CannedResponse/modals/CreateCannedResponse/PreviewText';
 import AutoCompleteMultiple from '../../../../components/AutoCompleteMultiple';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
-import Attachment from '../../../../components/message/Attachments';
 import { useForm } from '../../../../hooks/useForm';
-import { formatTime } from '../../../../lib/utils/formatTime';
+import { prependReplies } from '../../../../lib/utils/prependReplies';
+import Message from '../../MessageList/components/Message';
 
 type ShareMessageFormValue = {
 	optionalMessage: string;
@@ -19,12 +18,7 @@ type ShareMessageFormValue = {
 type ShareMessageProps = {
 	onClose: () => void;
 	onSubmit?: (name: string, description?: string) => void;
-	message: string;
-	username: string;
-	name: string;
-	time?: Date;
-	attachments: any;
-	invalidContentType?: boolean;
+	message: any;
 };
 type roomType = {
 	label: string;
@@ -32,7 +26,7 @@ type roomType = {
 	_id: string;
 	type: string;
 };
-const ShareMessageModal = ({ onClose, message, username, name, time, attachments }: ShareMessageProps): ReactElement => {
+const ShareMessageModal = ({ onClose, message }: ShareMessageProps): ReactElement => {
 	const [status, setStatus] = useState(0);
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -40,38 +34,38 @@ const ShareMessageModal = ({ onClose, message, username, name, time, attachments
 		optionalMessage: '',
 		rooms: [],
 	});
-
 	const { rooms, optionalMessage } = values as ShareMessageFormValue;
-
 	const { handleRooms, handleOptionalMessage } = handlers;
 	const sendMessage = useEndpoint('POST', '/v1/chat.postMessage');
 	const onChangeUsers = useMutableCallback((room: roomType, action: any) => {
 		if (!action) {
-			if (rooms.find((cur: roomType) => cur._id === room._id)) return;
+			if (rooms.find((cur: roomType) => cur._id === room._id)) {
+				return;
+			}
+
 			return handleRooms([...rooms, room]);
 		}
 		handleRooms(rooms.filter((cur: roomType) => cur._id !== room._id));
 	});
 
-	const changeEditView = useMutableCallback((e: ChangeEvent<HTMLInputElement> | string): void => {
+	const changeEditView = (e: ChangeEvent<HTMLInputElement> | string): void => {
 		if (typeof e === 'string') handleOptionalMessage(e);
 		else handleOptionalMessage(e.target.value);
-	});
-
+	};
 	const changeStatus = (e: any, value: any) => {
 		e.preventDefault();
 		setStatus(value);
 	};
 
-	const handleSubmit = useMutableCallback((e: any) => {
+	const handleSubmit = async (e: any) => {
 		e.preventDefault();
 		let flag = true;
-		rooms.forEach(async ({ _id, type, value }: any) => {
+		const curMsg = await prependReplies(optionalMessage, [message], false);
+		rooms.forEach(async (room: any) => {
 			const sendPayload = {
-				roomId: _id,
-				channel: (type === 'C' ? '#' : '@') + value,
-				text: optionalMessage,
-				attachments,
+				roomId: room._id,
+				channel: (room.type === 'C' ? '#' : '@') + room.value,
+				text: curMsg,
 			};
 			const result: any = await sendMessage(sendPayload as never);
 			if (!result.success) flag = false;
@@ -80,7 +74,7 @@ const ShareMessageModal = ({ onClose, message, username, name, time, attachments
 			dispatchToastMessage({ type: 'success', message: 'Message shared successfully' });
 			onClose();
 		}
-	});
+	};
 
 	return (
 		<Modal>
@@ -100,12 +94,6 @@ const ShareMessageModal = ({ onClose, message, username, name, time, attachments
 						</Field>
 						<Field mbe='x24'>
 							<Field.Label w='full'>
-								{/* <Box w='full' display='flex' flexDirection='row' justifyContent='space-between'>
-									{`${t('Add_Message')} (${t('Optional')})`}
-									<Box color='link' onClick={(): void => setPreview(!preview)}>
-										{preview ? t('Editor') : t('Preview')}
-									</Box>
-								</Box> */}
 								<Tabs>
 									<Tabs.Item onClick={(e) => changeStatus(e, 0)} selected={!status}>
 										Editor
@@ -118,28 +106,18 @@ const ShareMessageModal = ({ onClose, message, username, name, time, attachments
 							</Field.Label>
 						</Field>
 						<Field>
-							<Message className='customclass' clickable>
-								<Message.LeftContainer>
-									<UserAvatar username={username} size='x20' />
-								</Message.LeftContainer>
-								<Message.Container>
-									<Message.Header>
-										<Message.Name>{name}</Message.Name>
-										<Message.Username>@{username}</Message.Username>
-										<Message.Timestamp>{formatTime(time)}</Message.Timestamp>
-									</Message.Header>
-									<Message.Body style={{ wordBreak: 'break-word' }}>
-										{attachments?.[0]?.image_type || attachments?.[0]?.text ? (
-											<Attachment attachments={attachments} />
-										) : (
-											attachments?.[0]?.title
-										)}
-										<br />
-										{!attachments?.[0]?.text ? message : null}
-										{attachments?.[0]?.description}
-									</Message.Body>
-								</Message.Container>
-							</Message>
+							<Message
+								id={message._id}
+								data-id={message._id}
+								data-system-message={Boolean(message.t)}
+								data-mid={message._id}
+								data-unread={false}
+								data-sequential={false}
+								data-own={true}
+								data-qa-type='message'
+								sequential={false}
+								message={message}
+							/>
 						</Field>
 					</FieldGroup>
 				</Modal.Content>

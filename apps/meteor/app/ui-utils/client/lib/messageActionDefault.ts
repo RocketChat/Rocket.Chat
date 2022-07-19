@@ -84,14 +84,7 @@ Meteor.startup(async function () {
 			imperativeModal.open({
 				component: ShareMessageModal,
 				props: {
-					message: message.msg,
-					name: message.u.name,
-					username: message.u.username,
-					attachments: message?.attachments,
-					time: message.ts,
-					// 	file: file.file,
-					// 	fileName: file.name,
-					// 	fileDescription: messageBoxText,
+					message,
 					onClose: (): void => {
 						imperativeModal.close();
 					},
