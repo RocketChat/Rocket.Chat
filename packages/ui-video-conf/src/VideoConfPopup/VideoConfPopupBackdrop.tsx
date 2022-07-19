@@ -5,8 +5,13 @@ import type { ReactNode, ReactElement } from 'react';
 const backdropStyle = css`
 	position: fixed;
 	top: 0;
-	right: 0;
 	min-width: 276px;
+	[dir='ltr'] & {
+		right: 0;
+	}
+	[dir='rtl'] & {
+		left: 0;
+	}
 `;
 
 const VideoConfPopupBackdrop = ({ children }: { children: ReactNode }): ReactElement => (
