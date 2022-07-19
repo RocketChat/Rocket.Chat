@@ -6,13 +6,13 @@ import { settings } from '../../../app/settings/server';
 
 addMigration({
 	version: 278,
-	up() {
+	async up() {
 		const query = {
 			_id: { $in: [/^Accounts_OAuth_Custom-?([^-_]+)$/] },
 			value: true,
 		};
 
-		const isCustomOAuthEnabled = !!Promise.await(Settings.findOne(query));
+		const isCustomOAuthEnabled = !!(await Settings.findOne(query));
 		const LDAPEnabled = settings.get('LDAP_Enable');
 		const SAMLEnabled = settings.get('SAML_Custom_Default');
 
@@ -22,7 +22,7 @@ addMigration({
 			return;
 		}
 
-		Banners.updateOne(
+		await Banners.updateOne(
 			{
 				'view.blocks.0.text.text': /authentication\-changes/,
 				'active': { $ne: false },
