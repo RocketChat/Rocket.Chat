@@ -1,9 +1,12 @@
-import { Locator, expect } from '@playwright/test';
+import { Locator, expect, Page } from '@playwright/test';
 
-import { BACKSPACE } from '../utils/mocks/keyboardKeyMock';
-import { BasePage } from './BasePage';
+export class OmnichannelAgents {
+	private readonly page: Page;
 
-export class Agents extends BasePage {
+	constructor(page: Page) {
+		this.page = page;
+	}
+
 	get agentsLink(): Locator {
 		return this.page.locator('a[href="omnichannel/agents"]');
 	}
@@ -78,6 +81,18 @@ export class Agents extends BasePage {
 		return this.page.locator('[data-qa="AgentEditButtonSave"]');
 	}
 
+	get modal(): Locator {
+		return this.page.locator('#modal-root');
+	}
+
+	get btnModalCancel(): Locator {
+		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--secondary');
+	}
+
+	get btnModalRemove(): Locator {
+		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--danger');
+	}
+
 	getAgentInputs(id: string): Locator {
 		return this.page.locator(`[data-qa="AgentEditTextInput-${id}"]`);
 	}
@@ -87,7 +102,7 @@ export class Agents extends BasePage {
 		await this.inputAgentsUserName.type('rocket.cat', { delay: 100 });
 		// FIXME: temp solution for rocket.chat instability
 		await this.page.waitForTimeout(2000);
-		await this.keyboardPress(BACKSPACE);
+		await this.page.keyboard.press('Backspace');
 
 		await this.userOption.click();
 		await this.btnAddAgents.click();
