@@ -1,460 +1,450 @@
 import { test, expect, Page } from '@playwright/test';
 
-import { adminLogin } from './utils/mocks/userAndPasswordMock';
-import { FlexTab, Administration, LoginPage, SideNav } from './pageobjects';
-import { ROCKET_CAT_SELECTOR } from './utils/mocks/waitSelectorsMock';
+import { Auth, Administration } from './page-objects';
 
-test.describe('[Administration]', () => {
+test.describe('Administration', () => {
 	let page: Page;
-	let loginPage: LoginPage;
-	let sideNav: SideNav;
-	let admin: Administration;
-	let flexTab: FlexTab;
-
-	const checkBoxesSelectors = ['Direct', 'Public', 'Private', 'Omnichannel', 'Discussions', 'Teams'];
+	let pageAuth: Auth;
+	let pageAdmin: Administration;
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
-		loginPage = new LoginPage(page);
-		sideNav = new SideNav(page);
-		flexTab = new FlexTab(page);
-		admin = new Administration(page);
-
-		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
+		pageAuth = new Auth(page);
+		pageAdmin = new Administration(page);
 	});
-	test.describe('[Admin View]', () => {
-		test.beforeAll(async () => {
-			await sideNav.sidebarUserMenu.click();
-			await sideNav.admin.click();
-		});
 
-		test.describe('[Info]', () => {
+	test.beforeAll(async () => {
+		await pageAuth.doLogin();
+		await page.goto('/admin');
+	});
+
+	test.describe('Admin View', () => {
+		test.describe('Info', () => {
 			test('expect admin page is showed', async () => {
-				await admin.infoLink.click();
-				await expect(admin.infoDeployment).toBeVisible();
-				await expect(admin.infoLicense).toBeVisible();
-				await expect(admin.infoUsage).toBeVisible();
-				await expect(admin.infoFederation).toBeVisible();
+				await pageAdmin.infoLink.click();
+				await expect(pageAdmin.infoDeployment).toBeVisible();
+				await expect(pageAdmin.infoLicense).toBeVisible();
+				await expect(pageAdmin.infoUsage).toBeVisible();
+				await expect(pageAdmin.infoFederation).toBeVisible();
 			});
 		});
 
-		test.describe('[Rooms]', () => {
+		test.describe('Rooms', () => {
 			test.beforeAll(async () => {
-				await admin.roomsLink.click();
+				await pageAdmin.roomsLink.click();
 			});
 
 			test.afterAll(async () => {
-				await admin.infoLink.click();
+				await pageAdmin.infoLink.click();
 			});
 
-			test.describe('[Render]', () => {
+			test.describe('Render', () => {
 				test('expect rom page is rendered is rendered', async () => {
-					await admin.verifyCheckBoxRendered(checkBoxesSelectors);
-					await expect(admin.roomsSearchForm).toBeVisible();
+					await pageAdmin.verifyCheckBoxRendered(['Direct', 'Public', 'Private', 'Omnichannel', 'Discussions', 'Teams']);
+					await expect(pageAdmin.roomsSearchForm).toBeVisible();
 				});
 			});
 
-			test.describe('[Filter search input]', () => {
+			test.describe('Filter search input', () => {
 				test.beforeAll(async () => {
-					await admin.roomsSearchForm.click();
+					await pageAdmin.roomsSearchForm.click();
 				});
 
 				test.afterAll(async () => {
-					await admin.roomsSearchForm.click({ clickCount: 3 });
-					await admin.keyboardPress('Backspace');
+					await pageAdmin.roomsSearchForm.click({ clickCount: 3 });
+					await page.keyboard.press('Backspace');
 				});
 
 				test('expect show the general channel', async () => {
-					await admin.roomsSearchForm.type('general');
-					await expect(admin.roomsGeneralChannel).toBeVisible();
+					await pageAdmin.roomsSearchForm.type('general');
+					await expect(pageAdmin.roomsGeneralChannel).toBeVisible();
 				});
 
 				test('expect dont show rooms when room dont exist', async () => {
-					await admin.roomsSearchForm.type('any_room');
-					await expect(admin.notFoundChannelOrUser).toBeVisible();
+					await pageAdmin.roomsSearchForm.type('any_room');
+					await expect(pageAdmin.notFoundChannelOrUser).toBeVisible();
 				});
 			});
-			test.describe('[Filter checkbox]', () => {
+			test.describe('Filter checkbox', () => {
 				test.beforeAll(async () => {
-					await admin.roomsSearchForm.click({ clickCount: 3 });
-					await admin.keyboardPress('Backspace');
+					await pageAdmin.roomsSearchForm.click({ clickCount: 3 });
+					await page.keyboard.press('Backspace');
 				});
 
 				test('expect not show the general channel with direct', async () => {
-					await admin.adminCheckBox('Direct').click();
-					await admin.roomsGeneralChannel.waitFor({ state: 'detached' });
-					await expect(admin.roomsGeneralChannel).not.toBeVisible();
-					await admin.adminCheckBox('Direct').click();
+					await pageAdmin.adminCheckBox('Direct').click();
+					await pageAdmin.roomsGeneralChannel.waitFor({ state: 'detached' });
+					await expect(pageAdmin.roomsGeneralChannel).not.toBeVisible();
+					await pageAdmin.adminCheckBox('Direct').click();
 				});
 
 				test('expect show the general channel with public ', async () => {
-					await admin.adminCheckBox('Public').click();
-					await admin.roomsGeneralChannel.waitFor({ state: 'visible' });
-					await expect(admin.roomsGeneralChannel).toBeVisible();
-					await admin.adminCheckBox('Public').click();
+					await pageAdmin.adminCheckBox('Public').click();
+					await pageAdmin.roomsGeneralChannel.waitFor({ state: 'visible' });
+					await expect(pageAdmin.roomsGeneralChannel).toBeVisible();
+					await pageAdmin.adminCheckBox('Public').click();
 				});
 
 				test('expect not show the general channel with private ', async () => {
-					await admin.adminCheckBox('Private').click();
-					await admin.roomsGeneralChannel.waitFor({ state: 'detached' });
-					await expect(admin.roomsGeneralChannel).not.toBeVisible();
-					await admin.adminCheckBox('Private').click();
+					await pageAdmin.adminCheckBox('Private').click();
+					await pageAdmin.roomsGeneralChannel.waitFor({ state: 'detached' });
+					await expect(pageAdmin.roomsGeneralChannel).not.toBeVisible();
+					await pageAdmin.adminCheckBox('Private').click();
 				});
 
 				test('expect not show the general channel with omnichannel', async () => {
-					await admin.adminCheckBox('Omnichannel').click();
-					await admin.roomsGeneralChannel.waitFor({ state: 'detached' });
-					await expect(admin.roomsGeneralChannel).not.toBeVisible();
-					await admin.adminCheckBox('Omnichannel').click();
+					await pageAdmin.adminCheckBox('Omnichannel').click();
+					await pageAdmin.roomsGeneralChannel.waitFor({ state: 'detached' });
+					await expect(pageAdmin.roomsGeneralChannel).not.toBeVisible();
+					await pageAdmin.adminCheckBox('Omnichannel').click();
 				});
 				test('expect not show the general channel with discussion', async () => {
-					await admin.adminCheckBox('Discussions').click();
-					await admin.roomsGeneralChannel.waitFor({ state: 'detached' });
-					await expect(admin.roomsGeneralChannel).not.toBeVisible();
-					await admin.adminCheckBox('Discussions').click();
+					await pageAdmin.adminCheckBox('Discussions').click();
+					await pageAdmin.roomsGeneralChannel.waitFor({ state: 'detached' });
+					await expect(pageAdmin.roomsGeneralChannel).not.toBeVisible();
+					await pageAdmin.adminCheckBox('Discussions').click();
 				});
 				test('expect not show the general channel with teams', async () => {
-					await admin.adminCheckBox('Teams').click();
-					await admin.roomsGeneralChannel.waitFor({ state: 'detached' });
-					await expect(admin.roomsGeneralChannel).not.toBeVisible();
-					await admin.adminCheckBox('Teams').click();
+					await pageAdmin.adminCheckBox('Teams').click();
+					await pageAdmin.roomsGeneralChannel.waitFor({ state: 'detached' });
+					await expect(pageAdmin.roomsGeneralChannel).not.toBeVisible();
+					await pageAdmin.adminCheckBox('Teams').click();
 				});
 			});
-			test.describe('[Users]', () => {
+			test.describe('Users', () => {
 				test.beforeAll(async () => {
-					await admin.usersLink.click();
+					await pageAdmin.usersLink.click();
 				});
 
 				test.afterAll(async () => {
-					await admin.infoLink.click();
+					await pageAdmin.infoLink.click();
 				});
 
-				test.describe('[Filter text]', async () => {
+				test.describe('Filter text', async () => {
 					test.beforeEach(async () => {
-						await admin.usersFilter.click();
+						await pageAdmin.usersFilter.click();
 					});
 
 					test.afterAll(async () => {
-						await admin.usersFilter.click();
-						await admin.usersFilter.type('');
+						await pageAdmin.usersFilter.click();
+						await pageAdmin.usersFilter.type('');
 					});
 
 					test('expect should show rocket.cat', async () => {
-						await admin.usersFilter.type('rocket.cat');
-						await page.waitForSelector(ROCKET_CAT_SELECTOR);
+						await pageAdmin.usersFilter.type('rocket.cat');
+						await page.waitForSelector('//table//tbody//tr[1]//td//div//div//div//div[text()="Rocket.Cat"]');
 					});
+
 					test('expect dont user when write wrong name', async () => {
-						await admin.usersFilter.type('any_user_wrong');
-						await expect(admin.notFoundChannels).toBeVisible();
+						await pageAdmin.usersFilter.type('any_user_wrong');
+						await expect(pageAdmin.notFoundChannels).toBeVisible();
 					});
 				});
 
-				test.describe('[Create user]', () => {
+				test.describe('Create user', () => {
 					test.beforeAll(async () => {
-						await flexTab.usersAddUserTab.click();
+						await pageAdmin.tabs.usersAddUserTab.click();
 					});
 
 					test('expect tab user add is rendering', async () => {
-						await expect(flexTab.usersAddUserName).toBeVisible();
-						await expect(flexTab.usersAddUserUsername).toBeVisible();
-						await expect(flexTab.usersAddUserEmail).toBeVisible();
-						await expect(flexTab.usersAddUserVerifiedCheckbox).toBeVisible();
-						await expect(flexTab.usersAddUserPassword).toBeVisible();
-						await expect(flexTab.usersAddUserRandomPassword).toBeVisible();
-						await expect(flexTab.usersAddUserChangePasswordCheckbox).toBeVisible();
-						await expect(flexTab.usersAddUserRoleList).toBeVisible();
-						await expect(flexTab.usersAddUserDefaultChannelCheckbox).toBeVisible();
-						await expect(flexTab.usersAddUserWelcomeEmailCheckbox).toBeVisible();
-						await expect(flexTab.usersButtonSave).toBeVisible();
-						await expect(flexTab.usersButtonCancel).toBeVisible();
+						await expect(pageAdmin.tabs.usersAddUserName).toBeVisible();
+						await expect(pageAdmin.tabs.usersAddUserUsername).toBeVisible();
+						await expect(pageAdmin.tabs.usersAddUserEmail).toBeVisible();
+						await expect(pageAdmin.tabs.usersAddUserVerifiedCheckbox).toBeVisible();
+						await expect(pageAdmin.tabs.usersAddUserPassword).toBeVisible();
+						await expect(pageAdmin.tabs.usersAddUserRoleList).toBeVisible();
+						await expect(pageAdmin.tabs.usersAddUserRandomPassword).toBeVisible();
+						await expect(pageAdmin.tabs.usersAddUserChangePasswordCheckbox).toBeVisible();
+						await expect(pageAdmin.tabs.usersAddUserDefaultChannelCheckbox).toBeVisible();
+						await expect(pageAdmin.tabs.usersAddUserWelcomeEmailCheckbox).toBeVisible();
+						await expect(pageAdmin.tabs.usersButtonCancel).toBeVisible();
+						await expect(pageAdmin.tabs.usersButtonSave).toBeVisible();
 
-						await flexTab.usersAddUserTabClose.waitFor();
-						await flexTab.usersAddUserTabClose.click();
+						await pageAdmin.tabs.usersAddUserTabClose.click();
 
-						await expect(flexTab.addUserTable).not.toBeVisible();
+						await expect(pageAdmin.tabs.addUserTable).not.toBeVisible();
 					});
 				});
 			});
 		});
 
-		test.describe('[General Settings]', () => {
+		test.describe('General Settings', () => {
 			test.beforeAll(async () => {
-				await admin.settingsLink.click();
-				await admin.settingsSearch.type('general');
-				await admin.generalSettingsButton.click();
+				await pageAdmin.settingsLink.click();
+				await pageAdmin.settingsSearch.type('general');
+				await pageAdmin.generalSettingsButton.click();
 			});
 
-			test.describe('[General]', () => {
+			test.describe('General', () => {
 				test('expect change site url reset button is showed', async () => {
-					await admin.generalSiteUrl.type('something');
-					await expect(admin.generalSiteUrlReset).toBeVisible();
-					await admin.generalSiteUrlReset.click();
+					await pageAdmin.generalSiteUrl.type('something');
+					await expect(pageAdmin.generalSiteUrlReset).toBeVisible();
+					await pageAdmin.generalSiteUrlReset.click();
 				});
 
 				test('expect change site name reset button is showed', async () => {
-					await admin.generalSiteName.type('something');
-					await expect(admin.generalSiteNameReset).toBeVisible();
+					await pageAdmin.generalSiteName.type('something');
+					await expect(pageAdmin.generalSiteNameReset).toBeVisible();
 				});
 
 				test('expect show language field', async () => {
-					await expect(admin.generalLanguage).toBeVisible();
+					await expect(pageAdmin.generalLanguage).toBeVisible();
 				});
 
 				test('expect aloow invalid self-signed certs reset button is showed', async () => {
-					await admin.generalSelfSignedCerts.click();
-					await expect(admin.generalSelfSignedCertsReset).toBeVisible();
-					await admin.generalSelfSignedCerts.click();
-					await expect(admin.generalSelfSignedCertsReset).not.toBeVisible();
+					await pageAdmin.generalSelfSignedCerts.click();
+					await expect(pageAdmin.generalSelfSignedCertsReset).toBeVisible();
+					await pageAdmin.generalSelfSignedCerts.click();
+					await expect(pageAdmin.generalSelfSignedCertsReset).not.toBeVisible();
 				});
 
 				test('expect reset enable favorite room is showed', async () => {
-					await admin.generalFavoriteRoom.click();
-					await expect(admin.generalFavoriteRoomReset).toBeVisible();
-					await admin.generalFavoriteRoomReset.click();
-					await expect(admin.generalFavoriteRoomReset).not.toBeVisible();
+					await pageAdmin.generalFavoriteRoom.click();
+					await expect(pageAdmin.generalFavoriteRoomReset).toBeVisible();
+					await pageAdmin.generalFavoriteRoomReset.click();
+					await expect(pageAdmin.generalFavoriteRoomReset).not.toBeVisible();
 				});
 
 				test('expect CDN prefix reset not show after reset', async () => {
-					await admin.generalCdnPrefix.type('something');
-					await expect(admin.generalCdnPrefixReset).toBeVisible();
-					await admin.generalCdnPrefixReset.click();
-					await expect(admin.generalCdnPrefixReset).not.toBeVisible();
+					await pageAdmin.generalCdnPrefix.type('something');
+					await expect(pageAdmin.generalCdnPrefixReset).toBeVisible();
+					await pageAdmin.generalCdnPrefixReset.click();
+					await expect(pageAdmin.generalCdnPrefixReset).not.toBeVisible();
 				});
 
 				test('expect SSL reset not showing after reset', async () => {
-					await admin.generalForceSSL.click();
-					await expect(admin.generalForceSSLReset).toBeVisible();
-					await admin.generalForceSSLReset.click();
-					await expect(admin.generalForceSSLReset).not.toBeVisible();
+					await pageAdmin.generalForceSSL.click();
+					await expect(pageAdmin.generalForceSSLReset).toBeVisible();
+					await pageAdmin.generalForceSSLReset.click();
+					await expect(pageAdmin.generalForceSSLReset).not.toBeVisible();
 				});
 
 				test('expect google tag reset is not visible after reset', async () => {
-					await admin.generalGoogleTagId.type('something');
-					await expect(admin.generalGoogleTagIdReset).toBeVisible();
-					await admin.generalGoogleTagIdReset.click();
-					await expect(admin.generalGoogleTagIdReset).not.toBeVisible();
+					await pageAdmin.generalGoogleTagId.type('something');
+					await expect(pageAdmin.generalGoogleTagIdReset).toBeVisible();
+					await pageAdmin.generalGoogleTagIdReset.click();
+					await expect(pageAdmin.generalGoogleTagIdReset).not.toBeVisible();
 				});
 
 				test('expect when change bugsnag API Key dont show reset button after reset', async () => {
-					await admin.generalBugsnagKey.type('something');
-					await expect(admin.generalBugsnagKeyReset).toBeVisible();
-					await admin.generalBugsnagKeyReset.click();
-					await expect(admin.generalBugsnagKeyReset).not.toBeVisible();
+					await pageAdmin.generalBugsnagKey.type('something');
+					await expect(pageAdmin.generalBugsnagKeyReset).toBeVisible();
+					await pageAdmin.generalBugsnagKeyReset.click();
+					await expect(pageAdmin.generalBugsnagKeyReset).not.toBeVisible();
 				});
 				test('expect when change Robots dont show reset button after reset', async () => {
-					await admin.robotsFileContents.type('aa');
-					await expect(admin.robotsFileContentsReset).toBeVisible();
-					await admin.robotsFileContentsReset.click();
-					await expect(admin.robotsFileContentsReset).not.toBeVisible();
+					await pageAdmin.robotsFileContents.type('aa');
+					await expect(pageAdmin.robotsFileContentsReset).toBeVisible();
+					await pageAdmin.robotsFileContentsReset.click();
+					await expect(pageAdmin.robotsFileContentsReset).not.toBeVisible();
 				});
 				test('expect when change Default Referrer Policy dont show reset button after reset', async () => {
-					await admin.defaultReferrerPolicy.click();
-					await admin.defaultReferrerPolicyOptions.click();
-					await expect(admin.defaultReferrerPolicyReset).toBeVisible();
-					await admin.defaultReferrerPolicyReset.click();
-					await expect(admin.defaultReferrerPolicyReset).not.toBeVisible();
+					await pageAdmin.defaultReferrerPolicy.click();
+					await pageAdmin.defaultReferrerPolicyOptions.click();
+					await expect(pageAdmin.defaultReferrerPolicyReset).toBeVisible();
+					await pageAdmin.defaultReferrerPolicyReset.click();
+					await expect(pageAdmin.defaultReferrerPolicyReset).not.toBeVisible();
 				});
 			});
 
-			test.describe('[Iframe]', () => {
+			test.describe('Iframe', () => {
 				test.beforeAll(async () => {
-					await admin.generalSectionIframeIntegration.click();
+					await pageAdmin.generalSectionIframeIntegration.click();
 				});
 
 				test('expect iframe integration is rendering', async () => {
-					await expect(admin.generalIframeSend).toBeVisible();
-					await expect(admin.generalIframeSendTargetOrigin).toBeVisible();
-					await expect(admin.generalIframeReceive).toBeVisible();
-					await expect(admin.generalIframeReceiveOrigin).toBeVisible();
+					await expect(pageAdmin.generalIframeSend).toBeVisible();
+					await expect(pageAdmin.generalIframeSendTargetOrigin).toBeVisible();
+					await expect(pageAdmin.generalIframeReceive).toBeVisible();
+					await expect(pageAdmin.generalIframeReceiveOrigin).toBeVisible();
 				});
 			});
 
-			test.describe('[Notifications]', () => {
+			test.describe('Notifications', () => {
 				test.beforeAll(async () => {
-					await admin.generalSectionNotifications.click();
+					await pageAdmin.generalSectionNotifications.click();
 				});
 
 				test('expect the max room members field', async () => {
-					await expect(admin.generalNotificationsMaxRoomMembers).toBeVisible();
+					await expect(pageAdmin.generalNotificationsMaxRoomMembers).toBeVisible();
 				});
 			});
 
-			test.describe('[Rest api]', async () => {
+			test.describe('Rest api', async () => {
 				test.beforeAll(async () => {
-					await admin.generalSectionRestApi.click();
+					await pageAdmin.generalSectionRestApi.click();
 				});
 
 				test('expect show the API user add limit field', async () => {
-					await expect(admin.generalRestApiUserLimit).toBeVisible();
+					await expect(pageAdmin.generalRestApiUserLimit).toBeVisible();
 				});
 			});
 
-			test.describe('[Reporting]', async () => {
+			test.describe('Reporting', async () => {
 				test.beforeAll(async () => {
-					await admin.generalSectionReporting.click();
+					await pageAdmin.generalSectionReporting.click();
 				});
 
 				test('expect show the report to rocket.chat toggle', async () => {
-					await expect(admin.generalReporting).toBeVisible();
+					await expect(pageAdmin.generalReporting).toBeVisible();
 				});
 			});
 
-			test.describe('[Stream cast]', async () => {
+			test.describe('Stream cast', async () => {
 				test.beforeAll(async () => {
-					await admin.generalSectionStreamCast.click();
+					await pageAdmin.generalSectionStreamCast.click();
 				});
 
 				test('expect show the stream cast address field', async () => {
-					await expect(admin.generalStreamCastAddress).toBeVisible();
+					await expect(pageAdmin.generalStreamCastAddress).toBeVisible();
 				});
 			});
 
 			test.describe('UTF-8', () => {
 				test.beforeAll(async () => {
-					await admin.generalSectionUTF8.click();
+					await pageAdmin.generalSectionUTF8.click();
 				});
 
 				test('expect show the usernames utf8 regex field', async () => {
-					await expect(admin.generalUTF8UsernamesRegex).toBeVisible();
+					await expect(pageAdmin.generalUTF8UsernamesRegex).toBeVisible();
 				});
 
 				test('expect show the channels utf8 regex field', async () => {
-					await expect(admin.generalUTF8ChannelsRegex).toBeVisible();
+					await expect(pageAdmin.generalUTF8ChannelsRegex).toBeVisible();
 				});
 
 				test('expect show the utf8 names slug checkboxes', async () => {
-					await expect(admin.generalUTF8NamesSlug).toBeVisible();
+					await expect(pageAdmin.generalUTF8NamesSlug).toBeVisible();
 				});
 			});
 		});
 
-		test.describe('[Accounts]', () => {
+		test.describe('Accounts', () => {
 			test.beforeAll(async () => {
-				await admin.groupSettingsPageBack.click();
-				await admin.settingsSearch.type('accounts');
-				await admin.accountSettingsButton.click();
+				await pageAdmin.groupSettingsPageBack.click();
+				await pageAdmin.settingsSearch.type('accounts');
+				await pageAdmin.accountSettingsButton.click();
 			});
 
-			test.describe('[Default user preferences]', () => {
+			test.describe('Default user preferences', () => {
 				test.beforeAll(async () => {
-					await admin.accountsSectionDefaultUserPreferences.click();
+					await pageAdmin.accountsSectionDefaultUserPreferences.click();
 				});
 
 				test('expect show the enable auto away field', async () => {
-					await expect(admin.accountsEnableAutoAway).toBeVisible();
+					await expect(pageAdmin.accountsEnableAutoAway).toBeVisible();
 				});
 
 				test('the enable auto away field value should be true', async () => {
-					await admin.accountsEnableAutoAway.check();
+					await pageAdmin.accountsEnableAutoAway.check();
 				});
 
 				test('expect show the idle timeout limit field', async () => {
-					await expect(admin.accountsIdleTimeLimit).toBeVisible();
-					const inputValue = await admin.accountsIdleTimeLimit.inputValue();
+					await expect(pageAdmin.accountsIdleTimeLimit).toBeVisible();
+					const inputValue = await pageAdmin.accountsIdleTimeLimit.inputValue();
 					expect(inputValue).toEqual('300');
 				});
 
 				test('expect show desktop audio notifications to be visible', async () => {
-					await expect(admin.accountsDesktopNotifications).toBeVisible();
-					await expect(admin.accountsDesktopNotifications.locator('.rcx-select__item')).toHaveText('All messages');
+					await expect(pageAdmin.accountsDesktopNotifications).toBeVisible();
+					await expect(pageAdmin.accountsDesktopNotifications.locator('.rcx-select__item')).toHaveText('All messages');
 				});
 
 				test('expect show mobile notifications to be visible and option have value', async () => {
-					await expect(admin.accountsMobileNotifications).toBeVisible();
-					await expect(admin.accountsMobileNotifications.locator('.rcx-select__item')).toHaveText('All messages');
+					await expect(pageAdmin.accountsMobileNotifications).toBeVisible();
+					await expect(pageAdmin.accountsMobileNotifications.locator('.rcx-select__item')).toHaveText('All messages');
 				});
 
 				test('expect show the unread tray icon and icon alert field is true', async () => {
-					await expect(admin.accountsUnreadAlert).toBeVisible();
-					await expect(admin.accountsUnreadAlert.locator('input')).toBeChecked();
+					await expect(pageAdmin.accountsUnreadAlert).toBeVisible();
+					await expect(pageAdmin.accountsUnreadAlert.locator('input')).toBeChecked();
 				});
 
 				test('expect show the convert ascii and check is true', async () => {
-					await expect(admin.accountsConvertAsciiEmoji.locator('input')).toBeVisible();
-					await expect(admin.accountsConvertAsciiEmoji.locator('input')).toBeChecked();
+					await expect(pageAdmin.accountsConvertAsciiEmoji.locator('input')).toBeVisible();
+					await expect(pageAdmin.accountsConvertAsciiEmoji.locator('input')).toBeChecked();
 				});
 
 				test('expect show message is visible and check is true', async () => {
-					await expect(admin.accountsAutoImageLoad).toBeVisible();
-					await expect(admin.accountsAutoImageLoad.locator('input')).toBeChecked();
+					await expect(pageAdmin.accountsAutoImageLoad).toBeVisible();
+					await expect(pageAdmin.accountsAutoImageLoad.locator('input')).toBeChecked();
 				});
 
 				test('expect show image is visible and check is true', async () => {
-					await expect(admin.accountsAutoImageLoad).toBeVisible();
-					await expect(admin.accountsAutoImageLoad.locator('input')).toBeChecked();
+					await expect(pageAdmin.accountsAutoImageLoad).toBeVisible();
+					await expect(pageAdmin.accountsAutoImageLoad.locator('input')).toBeChecked();
 				});
 
 				test('expect account mobile bandwidth is showed ans check is true', async () => {
-					await expect(admin.accountsSaveMobileBandwidth).toBeVisible();
-					await expect(admin.accountsSaveMobileBandwidth.locator('input')).toBeVisible();
+					await expect(pageAdmin.accountsSaveMobileBandwidth).toBeVisible();
+					await expect(pageAdmin.accountsSaveMobileBandwidth.locator('input')).toBeVisible();
 				});
 
 				test('expect show the collapse embedded media by default field and not be checked', async () => {
-					await expect(admin.accountsCollapseMediaByDefault).toBeVisible();
-					await expect(admin.accountsCollapseMediaByDefault).not.toBeChecked();
+					await expect(pageAdmin.accountsCollapseMediaByDefault).toBeVisible();
+					await expect(pageAdmin.accountsCollapseMediaByDefault).not.toBeChecked();
 				});
 
 				test('expect show the hide usernames field', async () => {
-					await expect(admin.accountsHideUsernames).toBeVisible();
-					await expect(admin.accountsHideUsernames).not.toBeChecked();
+					await expect(pageAdmin.accountsHideUsernames).toBeVisible();
+					await expect(pageAdmin.accountsHideUsernames).not.toBeChecked();
 				});
 
 				test('expect show admin hide roles and verify if checked', async () => {
-					await expect(admin.accountsHideRoles).toBeVisible();
-					await expect(admin.accountsHideRoles).not.toBeChecked();
+					await expect(pageAdmin.accountsHideRoles).toBeVisible();
+					await expect(pageAdmin.accountsHideRoles).not.toBeChecked();
 				});
 
 				test('expect show the hide right sidebar with click field and not checked', async () => {
-					await expect(admin.accountsHideFlexTab).toBeVisible();
-					await expect(admin.accountsHideFlexTab.locator('input')).not.toBeChecked();
+					await expect(pageAdmin.accountsHideFlexTab).toBeVisible();
+					await expect(pageAdmin.accountsHideFlexTab.locator('input')).not.toBeChecked();
 				});
 
 				test('expect show display avatars and is checked', async () => {
-					await expect(admin.accountsDisplayAvatars.locator('input')).toBeVisible();
-					await expect(admin.accountsDisplayAvatars.locator('input')).toBeChecked();
+					await expect(pageAdmin.accountsDisplayAvatars.locator('input')).toBeVisible();
+					await expect(pageAdmin.accountsDisplayAvatars.locator('input')).toBeChecked();
 				});
 
 				test('expect show the enter key behavior field', async () => {
-					await expect(admin.accountsSendOnEnter).toBeVisible();
+					await expect(pageAdmin.accountsSendOnEnter).toBeVisible();
 
-					await expect(admin.accountsSendOnEnter.locator('.rcx-select__item')).toHaveText('Normal mode (send with Enter)');
+					await expect(pageAdmin.accountsSendOnEnter.locator('.rcx-select__item')).toHaveText('Normal mode (send with Enter)');
 				});
 
 				test('the view mode field value should be ""', async () => {
-					await expect(admin.accountsMessageViewMode).toHaveText('');
+					await expect(pageAdmin.accountsMessageViewMode).toHaveText('');
 				});
 
 				test('expect show the offline email notification field and field value to be all', async () => {
-					await expect(admin.accountsEmailNotificationMode).toBeVisible();
+					await expect(pageAdmin.accountsEmailNotificationMode).toBeVisible();
 				});
 
 				test('expect the offline email notification field value should be all', async () => {
-					await expect(admin.accountsEmailNotificationMode.locator('.rcx-select__item')).toHaveText('Every Mention/DM');
+					await expect(pageAdmin.accountsEmailNotificationMode.locator('.rcx-select__item')).toHaveText('Every Mention/DM');
 				});
 
 				test('expect show the new room notification field', async () => {
-					await expect(admin.accountsNewRoomNotification).toBeVisible();
+					await expect(pageAdmin.accountsNewRoomNotification).toBeVisible();
 				});
 
 				test('expect the new room notification field value should be door', async () => {
-					await expect(admin.accountsNewRoomNotification.locator('.rcx-select__item')).toHaveText('Default');
+					await expect(pageAdmin.accountsNewRoomNotification.locator('.rcx-select__item')).toHaveText('Default');
 				});
 
 				test('expect show the new message notification field', async () => {
-					await expect(admin.accountsNewMessageNotification).toBeVisible();
+					await expect(pageAdmin.accountsNewMessageNotification).toBeVisible();
 				});
 
 				test('expect the new message notification field value should be chime', async () => {
-					await expect(admin.accountsNewMessageNotification.locator('.rcx-select__item')).toHaveText('Default');
+					await expect(pageAdmin.accountsNewMessageNotification.locator('.rcx-select__item')).toHaveText('Default');
 				});
 
 				test('expect show the notification sound volume field', async () => {
-					await expect(admin.accountsNotificationsSoundVolume).toBeVisible();
+					await expect(pageAdmin.accountsNotificationsSoundVolume).toBeVisible();
 				});
 
 				test('the notification sound volume field value should be 100', async () => {
-					await expect(admin.accountsNotificationsSoundVolume).toHaveValue('100');
+					await expect(pageAdmin.accountsNotificationsSoundVolume).toHaveValue('100');
 				});
 			});
 		});

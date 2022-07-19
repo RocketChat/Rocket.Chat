@@ -1,116 +1,101 @@
 import { test, expect, Page } from '@playwright/test';
 
-import { adminLogin } from './utils/mocks/userAndPasswordMock';
-import { LoginPage, SideNav, Agents, Global } from './pageobjects';
+import { Auth, OmnichannelAgents } from './page-objects';
 
-test.describe('[Agents]', () => {
-	let loginPage: LoginPage;
+test.describe('Agents', () => {
 	let page: Page;
-	let sideNav: SideNav;
-	let agents: Agents;
-	let global: Global;
+	let pageAuth: Auth;
+	let pageOmnichannelAgents: OmnichannelAgents;
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
-		loginPage = new LoginPage(page);
-		sideNav = new SideNav(page);
-		agents = new Agents(page);
-		global = new Global(page);
+		pageAuth = new Auth(page);
+		pageOmnichannelAgents = new OmnichannelAgents(page);
+	});
 
-		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
-		await sideNav.sidebarUserMenu.click();
-		await sideNav.omnichannel.click();
-		await agents.agentsLink.click();
-		await agents.doAddAgent();
+	test.beforeAll(async () => {
+		await pageAuth.doLogin();
+		await page.goto('/omnichannel');
 	});
 
 	test('expect admin/manager is able to add an agent', async () => {
-		await expect(agents.agentAdded).toBeVisible();
-		await expect(agents.agentAdded).toHaveText('Rocket.Cat');
+		await pageOmnichannelAgents.agentsLink.click();
+		await pageOmnichannelAgents.doAddAgent();
+		await expect(pageOmnichannelAgents.agentAdded).toBeVisible();
+		await expect(pageOmnichannelAgents.agentAdded).toHaveText('Rocket.Cat');
 	});
 
 	test('expect open new agent info on tab', async () => {
-		await agents.agentAdded.click();
-		await expect(agents.userInfoTab).toBeVisible();
-		await expect(agents.agentInfo).toBeVisible();
+		await pageOmnichannelAgents.agentAdded.click();
+		await expect(pageOmnichannelAgents.userInfoTab).toBeVisible();
+		await expect(pageOmnichannelAgents.agentInfo).toBeVisible();
 	});
 
 	test('expect close agent info on tab', async () => {
-		await agents.btnClose.click();
-		await expect(agents.userInfoTab).not.toBeVisible();
-		await expect(agents.agentInfo).not.toBeVisible();
-		await agents.agentAdded.click();
+		await pageOmnichannelAgents.btnClose.click();
+		await expect(pageOmnichannelAgents.userInfoTab).not.toBeVisible();
+		await expect(pageOmnichannelAgents.agentInfo).not.toBeVisible();
+		await pageOmnichannelAgents.agentAdded.click();
 	});
 
-	test.describe('[Render]', () => {
+	test.describe('Render', () => {
 		test('expect show profile image', async () => {
-			await expect(agents.userAvatar).toBeVisible();
+			await expect(pageOmnichannelAgents.userAvatar).toBeVisible();
 		});
 
 		test('expect show action buttons', async () => {
-			await expect(agents.btnClose).toBeVisible();
-			await expect(agents.btnEdit).toBeVisible();
-			await expect(agents.btnRemove).toBeVisible();
+			await expect(pageOmnichannelAgents.btnClose).toBeVisible();
+			await expect(pageOmnichannelAgents.btnEdit).toBeVisible();
+			await expect(pageOmnichannelAgents.btnRemove).toBeVisible();
 		});
 
 		test('expect show livechat status', async () => {
-			await expect(agents.agentInfoUserInfoLabel).toBeVisible();
+			await expect(pageOmnichannelAgents.agentInfoUserInfoLabel).toBeVisible();
 		});
 	});
 
-	test.describe('[Edit button]', async () => {
-		test.describe('[Render]', async () => {
-			test.beforeAll(async () => {
-				await agents.btnEdit.click();
-			});
-
-			test('expect show fields', async () => {
-				await agents.getListOfExpectedInputs();
-			});
-		});
-
-		test.describe('[Action]', async () => {
+	test.describe('Edit button', async () => {
+		test.describe('Action', async () => {
 			test('expect change user status', async () => {
-				await agents.doChangeUserStatus('not-available');
-				await expect(agents.agentListStatus).toHaveText('Not Available');
+				await pageOmnichannelAgents.doChangeUserStatus('not-available');
+				await expect(pageOmnichannelAgents.agentListStatus).toHaveText('Not Available');
 			});
 
-			test.describe('[Modal Actions]', async () => {
+			test.describe('Modal Actions', async () => {
 				test.beforeEach(async () => {
-					await agents.doRemoveAgent();
+					await pageOmnichannelAgents.doRemoveAgent();
 				});
 
 				test('expect modal is not visible after cancel delete agent', async () => {
-					await global.btnModalCancel.click();
-					await expect(global.modal).not.toBeVisible();
+					await pageOmnichannelAgents.btnModalCancel.click();
+					await expect(pageOmnichannelAgents.modal).not.toBeVisible();
 				});
 
 				test('expect agent is removed from user info tab', async () => {
-					await global.btnModalRemove.click();
-					await expect(global.modal).not.toBeVisible();
-					await expect(agents.agentAdded).not.toBeVisible();
+					await pageOmnichannelAgents.btnModalRemove.click();
+					await expect(pageOmnichannelAgents.modal).not.toBeVisible();
+					await expect(pageOmnichannelAgents.agentAdded).not.toBeVisible();
 				});
 			});
 
-			test.describe('[Remove from table]', async () => {
+			test.describe('Remove from table', async () => {
 				test.beforeAll(async () => {
-					await agents.doAddAgent();
+					await pageOmnichannelAgents.doAddAgent();
 				});
 
 				test.beforeEach(async () => {
-					await agents.btnTableRemove.click();
+					await pageOmnichannelAgents.btnTableRemove.click();
 				});
 
 				test('expect modal is not visible after cancel delete agent', async () => {
-					await global.btnModalCancel.click();
-					await expect(global.modal).not.toBeVisible();
+					await pageOmnichannelAgents.btnModalCancel.click();
+					await expect(pageOmnichannelAgents.modal).not.toBeVisible();
 				});
 
 				test('expect agent is removed from agents table', async () => {
-					await global.btnModalRemove.click();
-					await expect(global.modal).not.toBeVisible();
-					await expect(agents.agentAdded).not.toBeVisible();
+					await pageOmnichannelAgents.btnModalRemove.click();
+					await expect(pageOmnichannelAgents.modal).not.toBeVisible();
+					await expect(pageOmnichannelAgents.agentAdded).not.toBeVisible();
 				});
 			});
 		});

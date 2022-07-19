@@ -1,73 +1,67 @@
 {
-	"extends": ["@rocket.chat/eslint-config"],
-	"plugins": ["react", "react-hooks"],
-	"parser": "@babel/eslint-parser",
+	"extends": [
+		"plugin:@typescript-eslint/recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"@rocket.chat/eslint-config/original",
+		"prettier",
+		"plugin:anti-trojan-source/recommended",
+		"plugin:react/jsx-runtime"
+	],
+	"parser": "@typescript-eslint/parser",
+	"plugins": ["@typescript-eslint", "react", "react-hooks", "prettier"],
 	"rules": {
+		"@typescript-eslint/ban-ts-ignore": "off",
+		"@typescript-eslint/explicit-function-return-type": "warn",
+		"@typescript-eslint/indent": "off",
+		"@typescript-eslint/no-extra-parens": "off",
+		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/no-unused-vars": [
+			"error",
+			{
+				"argsIgnorePattern": "^_"
+			}
+		],
+		"@typescript-eslint/prefer-optional-chain": "warn",
+		"func-call-spacing": "off",
+		"import/named": "error",
+		"import/order": [
+			"error",
+			{
+				"newlines-between": "always",
+				"groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],
+				"alphabetize": {
+					"order": "asc"
+				}
+			}
+		],
+		"indent": "off",
 		"jsx-quotes": ["error", "prefer-single"],
+		"new-cap": ["error"],
+		"no-extra-parens": "off",
+		"no-spaced-func": "off",
+		"no-undef": "off",
+		"no-unused-vars": "off",
+		"no-useless-constructor": "off",
+		"no-use-before-define": "off",
+		"prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],
+		"prettier/prettier": 2,
 		"react/display-name": "error",
-		"react/self-closing-comp": "error",
-		"react/jsx-uses-react": "error",
 		"react/jsx-uses-vars": "error",
 		"react/jsx-no-undef": "error",
 		"react/jsx-fragments": ["error", "syntax"],
 		"react/no-multi-comp": "error",
-		"react/react-in-jsx-scope": "error",
 		"react-hooks/rules-of-hooks": "error",
 		"react-hooks/exhaustive-deps": "warn"
 	},
 	"settings": {
 		"import/resolver": {
 			"node": {
-				"extensions": [".js", ".jsx", ".ts", ".tsx"]
+				"extensions": [".js", ".ts", ".tsx"]
 			}
 		},
 		"react": {
 			"version": "detect"
 		}
 	},
-	"env": {
-		"browser": true,
-		"es6": true
-	},
-	"overrides": [
-		{
-			"files": ["**/*.ts", "**/*.tsx"],
-			"extends": "../typescript",
-			"parser": "@typescript-eslint/parser",
-			"plugins": ["react", "react-hooks"],
-			"rules": {
-				"jsx-quotes": ["error", "prefer-single"],
-				"react/display-name": "error",
-				"react/jsx-uses-react": "error",
-				"react/jsx-uses-vars": "error",
-				"react/jsx-no-undef": "error",
-				"react/jsx-fragments": ["error", "syntax"],
-				"react/no-multi-comp": "error",
-				"react/react-in-jsx-scope": "error",
-				"react-hooks/rules-of-hooks": "error",
-				"react-hooks/exhaustive-deps": "warn"
-			},
-			"env": {
-				"browser": true,
-				"es6": true
-			},
-			"settings": {
-				"import/resolver": {
-					"node": {
-						"extensions": [".js", ".jsx", ".ts", ".tsx"]
-					}
-				},
-				"react": {
-					"version": "detect"
-				}
-			}
-		},
-		{
-			"files": ["**/*.stories.js", "**/*.stories.jsx", "**/*.stories.ts", "**/*.stories.tsx"],
-			"rules": {
-				"react/display-name": "off",
-				"react/no-multi-comp": "off"
-			}
-		}
-	]
+	"ignorePatterns": ["**/dist"]
 }

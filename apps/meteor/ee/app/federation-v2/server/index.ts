@@ -33,8 +33,13 @@ const runFederationEE = async (): Promise<void> => {
 	await federationEE.start();
 };
 
+let cancelSettingsObserverEE: Function;
+
 onToggledFeature('federation', {
 	up: async () => {
+		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged(
+			federationEE.onFederationAvailabilityChanged.bind(federationEE),
+		);
 		if (!rocketSettingsAdapter.isFederationEnabled()) {
 			return;
 		}
@@ -48,5 +53,6 @@ onToggledFeature('federation', {
 		await federationEE.stop();
 		await runFederation();
 		FederationFactoryEE.removeListeners();
+		cancelSettingsObserverEE();
 	},
 });
