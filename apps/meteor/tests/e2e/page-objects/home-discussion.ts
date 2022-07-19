@@ -1,9 +1,26 @@
-import { Locator } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 
 import { expect } from '../utils/test';
-import { BasePage } from './BasePage';
 
-export class Discussion extends BasePage {
+import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
+
+export class HomeDiscussion {
+	private readonly page: Page;
+
+	readonly content: HomeContent;
+
+	readonly sidenav: HomeSidenav;
+
+	readonly tabs: HomeFlextab;
+
+	constructor(page: Page) {
+		this.page = page;
+
+		this.content = new HomeContent(page);
+		this.sidenav = new HomeSidenav(page);
+		this.tabs = new HomeFlextab(page);
+	}
+
 	get startDiscussionContextItem(): Locator {
 		return this.page.locator('[data-qa-id="start-discussion"][data-qa-type="message-action"]');
 	}
@@ -45,7 +62,7 @@ export class Discussion extends BasePage {
 		await expect(this.discussionCreated(discussionName)).toBeVisible();
 	}
 
-	async createDiscussionInContext(message: string): Promise<void> {
+	async doCreateDiscussionInContext(message: string): Promise<void> {
 		await this.startDiscussionContextItem.waitFor();
 		await this.page.pause();
 		await this.startDiscussionContextItem.click();

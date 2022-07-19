@@ -1,9 +1,16 @@
-import { Locator } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 
-import { expect } from '../utils/test';
-import { BasePage } from './BasePage';
+export class OmnichannelDepartaments {
+	private readonly page: Page;
 
-export class Departments extends BasePage {
+	constructor(page: Page) {
+		this.page = page;
+	}
+
+	get btnToastClose(): Locator {
+		return this.page.locator('.rcx-toastbar').locator('button');
+	}
+
 	get departmentsLink(): Locator {
 		return this.page.locator('a[href="omnichannel/departments"]');
 	}
@@ -84,16 +91,6 @@ export class Departments extends BasePage {
 		return this.page.locator('#modal-root');
 	}
 
-	async getAddScreen(): Promise<void> {
-		const textInputs = [this.nameInput, this.descriptionInput, this.emailInput];
-		const toggleButtons = [this.enabledToggle, this.showOnOfflinePageToggle, this.requestTagBeforeClosingChatToggle];
-		const selects = [this.selectLiveChatDepartmentOfflineMessageToChannel, this.selectAgentsTable];
-		const actionsButtons = [this.btnSaveDepartment, this.btnBack, this.btnAddAgent];
-		const addScreenSelectors = [...textInputs, ...toggleButtons, ...actionsButtons, ...selects];
-
-		await Promise.all(addScreenSelectors.map((addScreenSelector) => expect(addScreenSelector).toBeVisible()));
-	}
-
 	async doAddAgent(): Promise<void> {
 		await this.enabledToggle.click();
 		await this.nameInput.type('rocket.cat');
@@ -116,10 +113,10 @@ export class Departments extends BasePage {
 	async doEditDepartments(): Promise<void> {
 		await this.enabledToggle.click();
 		await this.nameInput.click({ clickCount: 3 });
-		await this.keyboardPress('Backspace');
+		await this.page.keyboard.press('Backspace');
 		await this.nameInput.fill('any_name_edit');
 		await this.descriptionInput.click({ clickCount: 3 });
-		await this.keyboardPress('Backspace');
+		await this.page.keyboard.press('Backspace');
 		await this.descriptionInput.fill('any_description_edited');
 		await this.btnSaveDepartment.click();
 	}

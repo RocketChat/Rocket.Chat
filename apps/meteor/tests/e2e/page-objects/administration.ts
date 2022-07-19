@@ -1,9 +1,21 @@
-import { Locator } from '@playwright/test';
-
-import { BasePage } from './BasePage';
 import { expect } from '../utils/test';
+import { Locator, Page } from '@playwright/test';
 
-export class Administration extends BasePage {
+import { AdminFlextab, AdminSidenav } from './fragments';
+
+export class Administration {
+	private readonly page: Page;
+
+	tabs: AdminFlextab;
+
+	sidenav: AdminSidenav;
+
+	constructor(page: Page) {
+		this.page = page;
+		this.tabs = new AdminFlextab(page);
+		this.sidenav = new AdminSidenav(page);
+	}
+
 	get settingsSearch(): Locator {
 		return this.page.locator('input[type=search]');
 	}
