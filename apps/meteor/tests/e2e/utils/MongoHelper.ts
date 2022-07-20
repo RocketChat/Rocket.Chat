@@ -6,7 +6,7 @@ type MongoHelperConfig = {
 	connect(uri: string): Promise<void>;
 	disconnect(): Promise<void>;
 	getCollection<T>(name: string): Promise<Collection<T>>;
-	dropDatabase(dbName: string): Promise<void>;
+	dropDatabase(): Promise<void>;
 };
 
 export const MongoHelper: MongoHelperConfig = {
@@ -18,9 +18,10 @@ export const MongoHelper: MongoHelperConfig = {
 		this.client = await MongoClient.connect(uri);
 	},
 
-	async dropDatabase(dbName: string): Promise<void> {
+	async dropDatabase(): Promise<void> {
 		if (this.client) {
-			await this.client.db(dbName).dropDatabase();
+			const { databaseName } = this.client.db();
+			await this.client.db(databaseName).dropDatabase();
 		}
 	},
 
