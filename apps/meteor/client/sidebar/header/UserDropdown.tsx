@@ -143,7 +143,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				</Box>
 			</Box>
 			<Option.Divider />
-			<Box pi='x16' fontScale='c1' textTransform='uppercase'>
+			<Box pi='x16' pbs='x8' pbe='x4' fontScale='c1' textTransform='uppercase'>
 				{t('Status')}
 			</Box>
 			{Object.values(userStatus.list)
