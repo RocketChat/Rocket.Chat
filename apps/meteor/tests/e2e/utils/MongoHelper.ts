@@ -20,8 +20,7 @@ export const MongoHelper: MongoHelperConfig = {
 
 	async dropDatabase(): Promise<void> {
 		if (this.client) {
-			const dataBase = this.client.db('meteor');
-			await dataBase.dropDatabase();
+			await this.client.db('meteor').dropDatabase();
 		}
 	},
 
