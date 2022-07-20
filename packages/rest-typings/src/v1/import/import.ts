@@ -41,7 +41,7 @@ export type ImportEndpoints = {
 	'/v1/downloadPendingAvatars': {
 		POST: () => { count: number };
 	};
-	'/v1/getCurrentImportOperations': {
+	'/v1/getCurrentImportOperation': {
 		GET: () => { operation: IImport };
 	};
 };
