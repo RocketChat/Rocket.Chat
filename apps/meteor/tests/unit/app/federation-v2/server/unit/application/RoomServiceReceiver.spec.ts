@@ -17,6 +17,9 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		removeUserFromRoom: sinon.stub(),
 		addUserToRoom: sinon.stub(),
 		isUserAlreadyJoined: sinon.stub(),
+		updateRoomType: sinon.stub(),
+		updateRoomName: sinon.stub(),
+		updateRoomTopic: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -57,6 +60,10 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		settingsAdapter.getHomeServerDomain.reset();
 		bridge.isUserIdFromTheSameHomeserver.reset();
 		bridge.joinRoom.reset();
+		roomAdapter.getFederatedRoomByExternalId.reset();
+		roomAdapter.updateRoomType.reset();
+		roomAdapter.updateRoomName.reset();
+		roomAdapter.updateRoomTopic.reset();
 	});
 
 	describe('#createRoom()', () => {
@@ -343,6 +350,113 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 			} as any);
 
 			expect(messageAdapter.sendMessage.calledWith({}, 'text', {})).to.be.true;
+		});
+	});
+
+	describe('#changeJoinRules()', () => {
+		it('should NOT change the room type if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			await service.changeJoinRules({
+				roomType: RoomType.CHANNEL,
+			} as any);
+
+			expect(roomAdapter.updateRoomType.called).to.be.false;
+		});
+
+		it('should NOT change the room type if it exists and is a direct message', async () => {
+			const room = FederatedRoom.build();
+			room.internalReference = {} as any;
+			room.internalReference.t = RoomType.DIRECT_MESSAGE;
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			await service.changeJoinRules({
+				roomType: RoomType.CHANNEL,
+			} as any);
+
+			expect(roomAdapter.updateRoomType.called).to.be.false;
+		});
+
+		it('should change the room type if it exists and is NOT a direct message', async () => {
+			const room = FederatedRoom.build();
+			room.internalReference = {} as any;
+			room.internalReference.t = RoomType.PRIVATE_GROUP;
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			await service.changeJoinRules({
+				roomType: RoomType.CHANNEL,
+			} as any);
+			room.internalReference.t = RoomType.CHANNEL;
+			expect(roomAdapter.updateRoomType.calledWith(room)).to.be.true;
+		});
+	});
+
+	describe('#changeRoomName()', () => {
+		it('should NOT change the room name if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			await service.changeRoomName({
+				normalizedRoomName: 'normalizedRoomName',
+			} as any);
+
+			expect(roomAdapter.updateRoomName.called).to.be.false;
+		});
+
+		it('should NOT change the room name if it exists and is a direct message', async () => {
+			const room = FederatedRoom.build();
+			room.internalReference = {} as any;
+			room.internalReference.t = RoomType.DIRECT_MESSAGE;
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			await service.changeRoomName({
+				normalizedRoomName: 'normalizedRoomName',
+			} as any);
+
+			expect(roomAdapter.updateRoomName.called).to.be.false;
+		});
+
+		it('should change the room name if it exists and is NOT a direct message', async () => {
+			const room = FederatedRoom.build();
+			room.internalReference = {} as any;
+			room.internalReference.t = RoomType.PRIVATE_GROUP;
+			room.internalReference.name = 'name';
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves({});
+			await service.changeRoomName({
+				normalizedRoomName: 'normalizedRoomName2',
+			} as any);
+			expect(roomAdapter.updateRoomName.called).to.be.true;
+		});
+	});
+
+	describe('#changeRoomTopic()', () => {
+		it('should NOT change the room topic if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			await service.changeRoomTopic({
+				roomTopic: 'roomTopic',
+			} as any);
+
+			expect(roomAdapter.updateRoomTopic.called).to.be.false;
+		});
+
+		it('should NOT change the room topic if it exists and is a direct message', async () => {
+			const room = FederatedRoom.build();
+			room.internalReference = {} as any;
+			room.internalReference.t = RoomType.DIRECT_MESSAGE;
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			await service.changeRoomTopic({
+				roomTopic: 'roomTopic',
+			} as any);
+
+			expect(roomAdapter.updateRoomTopic.called).to.be.false;
+		});
+
+		it('should change the room topic if it exists and is NOT a direct message', async () => {
+			const room = FederatedRoom.build();
+			room.internalReference = {} as any;
+			room.internalReference.t = RoomType.PRIVATE_GROUP;
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves({});
+			await service.changeRoomTopic({
+				roomTopic: 'roomTopic',
+			} as any);
+			room.internalReference.topic = 'roomTopic';
+			expect(roomAdapter.updateRoomTopic.called).to.be.true;
 		});
 	});
 });
