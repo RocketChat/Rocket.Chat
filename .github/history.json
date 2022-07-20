@@ -99559,6 +99559,140 @@
           ]
         }
       ]
+    },
+    "5.0.0-rc.10": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26311",
+          "title": "Regression: Add v1 to licenses.add endpoint",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.0",
+          "contributors": [
+            "KevLehman",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26183",
+          "title": "Chore: VideoConference UX/UI Refactor 1st Interaction ",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "5.0.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow",
+            "debdutdeb",
+            "dougfabris",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "26295",
+          "title": "Regression: Clear user selection filter after selecting desired user.",
+          "userLogin": "gabriellsh",
+          "milestone": "5.0.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "26304",
+          "title": "Regression: Fix permissions page pagination",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26305",
+          "title": "Regression: Fix breaking omnichannel tests",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26251",
+          "title": "Regression: Remove 4.0 version banner",
+          "userLogin": "hugocostadev",
+          "description": "Created a migration to disable and dismiss for all users the old 4.0 version banner.\r\nIt happened when a new admin user has been added.",
+          "milestone": "5.0.0",
+          "contributors": [
+            "hugocostadev",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26092",
+          "title": "Chore: Fix Omnichannel E2E tests not running",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26294",
+          "title": "Chore: Remove TimeSync usage",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "26155",
+          "title": "Regression: Contact manager edit/view not working",
+          "userLogin": "KevLehman",
+          "description": "Basically, the Contact Center was working, but not the right way. This PR fixes:\r\n- Ability to select Contact Managers from dropdown\r\n- Ability to validate Contact Edits without requesting data a ton of times\r\n- Ability to remove Contact manager from a contact\r\n- Ability to see Contacts and Contact Managers on Contact View\r\n- Fix endpoints validation\r\n- Add validators (ajv) to endpoint, thou not being used yet (since we hit a special endpoint)",
+          "milestone": "5.0.0",
+          "contributors": [
+            "KevLehman",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26245",
+          "title": "Chore: Tests refactor pageobjects",
+          "userLogin": "souzaramon",
+          "contributors": [
+            "souzaramon",
+            "weslley543",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26298",
+          "title": "Regression: Adjusted priority to run canned responses replace before new parser",
+          "userLogin": "aleksandernsilva",
+          "description": "Canned responses placeholders were not being replaced properly after we changed to the new md parser. \r\nThis fix changes the priority so that the canned responses replace logic runs before the parser, thus bringing back this functionality.\r\n\r\nBefore:\r\n<img width=\"329\" alt=\"Screen Shot 2022-07-18 at 19 25 07\" src=\"https://user-images.githubusercontent.com/6494543/179627632-754f1269-c0bd-498e-b09c-aeb2942fcae3.png\">\r\n\r\nAfter:\r\n<img width=\"329\" alt=\"Screen Shot 2022-07-18 at 19 26 09\" src=\"https://user-images.githubusercontent.com/6494543/179627663-d0e558fb-2d99-4afe-aec9-14a5d3afae06.png\">",
+          "milestone": "5.0.0",
+          "contributors": [
+            "aleksandernsilva"
+          ]
+        },
+        {
+          "pr": "26278",
+          "title": "Regression: Fix app icons breaking UI",
+          "userLogin": "murtaza98",
+          "milestone": "5.0.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
