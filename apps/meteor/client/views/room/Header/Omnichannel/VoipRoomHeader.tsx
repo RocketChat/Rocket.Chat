@@ -41,7 +41,7 @@ const VoipRoomHeader: FC<VoipRoomHeaderProps> = ({ slots: parentSlot, room }) =>
 				[context],
 			)}
 		>
-			<RoomHeader slots={slots} room={{ ...room, name: parseOutboundPhoneNumber(room.name) }} />
+			<RoomHeader slots={slots} room={{ ...room, name: parseOutboundPhoneNumber(room.fname as string) }} />
 		</ToolboxContext.Provider>
 	);
 };
