@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { Contacts } from '../../lib/Contacts';
@@ -47,12 +47,31 @@ API.v1.addRoute(
 			check(this.queryParams, {
 				email: Match.Maybe(String),
 				phone: Match.Maybe(String),
+				custom: Match.Maybe(String),
 			});
+			const { email, phone, custom } = this.queryParams;
 
-			const { email, phone } = this.queryParams;
-
-			if (!email && !phone) {
+			if (!email && !phone && !custom) {
 				throw new Meteor.Error('error-invalid-params');
+			}
+			let foundCF = {};
+			if (custom) {
+				const customObj = Object.fromEntries(
+					Array.from(new URLSearchParams(custom)).filter(([k, v]) => typeof k === 'string' && typeof v === 'string'),
+				);
+
+				foundCF = Object.fromEntries(
+					(
+						await LivechatCustomField.find(
+							{ scope: 'visitor', searchable: true, _id: { $in: Object.keys(customObj) } },
+							{
+								projection: {
+									_id: 1,
+								},
+							},
+						).toArray()
+					).map(({ _id }) => [_id, customObj[_id]]),
+				);
 			}
 
 			const query = Object.assign(
@@ -60,6 +79,7 @@ API.v1.addRoute(
 				{
 					...(email && { visitorEmails: { address: email } }),
 					...(phone && { phone: { phoneNumber: phone } }),
+					...(custom && { livechatData: foundCF }),
 				},
 			);
 

@@ -13,7 +13,7 @@ import type {
 	DeleteResult,
 	UpdateFilter,
 } from 'mongodb';
-import { Settings } from '@rocket.chat/models';
+import { Settings, LivechatCustomField } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
@@ -31,6 +31,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { name: 1 }, sparse: true },
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
+			{ key: { 'livechatData.$**': 1 } },
 		];
 	}
 
@@ -159,11 +160,16 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	/**
 	 * Find visitors by their email or phone or username or name
 	 */
-	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsername(
+	async findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
 		emailOrPhone: string,
 		nameOrUsername: RegExp,
 		options: FindOptions<ILivechatVisitor>,
-	): FindPaginated<FindCursor<ILivechatVisitor>> {
+	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
+		const allowedCF = LivechatCustomField.find({ scope: 'visitor', searchable: true }, { projection: { fields: { _id: 1 } } }).map(
+			({ _id }) => _id,
+		);
+
+		const filter = new RegExp(emailOrPhone, 'i');
 		const query = {
 			$or: [
 				{
@@ -178,6 +184,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 				{
 					username: nameOrUsername,
 				},
+				...(await allowedCF.toArray().then((cf) => cf.map((c: string) => ({ [`livechatData.${c}`]: filter })))),
 			],
 		};
 

@@ -146,7 +146,7 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 	};
 }
 
-export async function findVisitorsByEmailOrPhoneOrNameOrUsername({
+export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
 	userId,
 	emailOrPhone,
 	nameOrUsername,
@@ -156,19 +156,23 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsername({
 		throw new Error('error-not-authorized');
 	}
 
-	const { cursor, totalCount } = LivechatVisitors.findPaginatedVisitorsByEmailOrPhoneOrNameOrUsername(emailOrPhone, nameOrUsername, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
-		projection: {
-			username: 1,
-			name: 1,
-			phone: 1,
-			livechatData: 1,
-			visitorEmails: 1,
-			lastChat: 1,
+	const { cursor, totalCount } = await LivechatVisitors.findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
+		emailOrPhone,
+		nameOrUsername,
+		{
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+			projection: {
+				username: 1,
+				name: 1,
+				phone: 1,
+				livechatData: 1,
+				visitorEmails: 1,
+				lastChat: 1,
+			},
 		},
-	});
+	);
 
 	const [visitors, total] = await Promise.all([cursor.toArray(), totalCount]);
 
