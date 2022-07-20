@@ -18,20 +18,27 @@ const OmnichannelRoomIcon = new (class extends Emitter {
 		if (this.icons.has(`${appId}-${icon}`)) {
 			return `${appId}-${icon}`;
 		}
-		APIClient.get(`/apps/public/${appId}/get-sidebar-icon`, { icon }).then((response: any) => {
-			this.icons.set(
-				`${appId}-${icon}`,
-				DOMPurify.sanitize(response, {
-					FORBID_ATTR: ['id'],
-					NAMESPACE: 'http://www.w3.org/2000/svg',
-					USE_PROFILES: { svg: true, svgFilters: true },
-				})
-					.replace(`<svg`, `<symbol id="${appId}-${icon}"`)
-					.replace(`</svg>`, '</symbol>'),
-			);
-			this.emit('change');
-			this.emit(`${appId}-${icon}`);
-		});
+		// TODO: update the apps icons to send JSON instead of a string. This will allow us to use APIClient.get()
+		APIClient.send(`/apps/public/${appId}/get-sidebar-icon?icon=${icon}`, 'GET')
+			.then((response: any) => {
+				response.text().then((text: any) => {
+					this.icons.set(
+						`${appId}-${icon}`,
+						DOMPurify.sanitize(text, {
+							FORBID_ATTR: ['id'],
+							NAMESPACE: 'http://www.w3.org/2000/svg',
+							USE_PROFILES: { svg: true, svgFilters: true },
+						})
+							.replace(`<svg`, `<symbol id="${appId}-${icon}"`)
+							.replace(`</svg>`, '</symbol>'),
+					);
+					this.emit('change');
+					this.emit(`${appId}-${icon}`);
+				});
+			})
+			.catch((error: any) => {
+				console.error('error from get-sidebar-icon', error);
+			});
 	}
 })();
 
