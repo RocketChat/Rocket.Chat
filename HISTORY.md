@@ -1,6 +1,75 @@
 
 # 5.0.0 (Under Release Candidate Process)
 
+## 5.0.0-rc.10
+`2022-07-20  ·  12 🔍  ·  13 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Fix Omnichannel E2E tests not running ([#26092](https://github.com/RocketChat/Rocket.Chat/pull/26092))
+
+- Chore: Remove TimeSync usage ([#26294](https://github.com/RocketChat/Rocket.Chat/pull/26294))
+
+- Chore: Tests refactor pageobjects ([#26245](https://github.com/RocketChat/Rocket.Chat/pull/26245))
+
+- Chore: VideoConference UX/UI Refactor 1st Interaction  ([#26183](https://github.com/RocketChat/Rocket.Chat/pull/26183))
+
+- Regression: Add v1 to licenses.add endpoint ([#26311](https://github.com/RocketChat/Rocket.Chat/pull/26311))
+
+- Regression: Adjusted priority to run canned responses replace before new parser ([#26298](https://github.com/RocketChat/Rocket.Chat/pull/26298))
+
+  Canned responses placeholders were not being replaced properly after we changed to the new md parser. 
+  This fix changes the priority so that the canned responses replace logic runs before the parser, thus bringing back this functionality.
+
+  Before:
+  <img width="329" alt="Screen Shot 2022-07-18 at 19 25 07" src="https://user-images.githubusercontent.com/6494543/179627632-754f1269-c0bd-498e-b09c-aeb2942fcae3.png">
+
+  After:
+  <img width="329" alt="Screen Shot 2022-07-18 at 19 26 09" src="https://user-images.githubusercontent.com/6494543/179627663-d0e558fb-2d99-4afe-aec9-14a5d3afae06.png">
+
+- Regression: Clear user selection filter after selecting desired user. ([#26295](https://github.com/RocketChat/Rocket.Chat/pull/26295))
+
+- Regression: Contact manager edit/view not working ([#26155](https://github.com/RocketChat/Rocket.Chat/pull/26155))
+
+  Basically, the Contact Center was working, but not the right way. This PR fixes:  
+  - Ability to select Contact Managers from dropdown  
+  - Ability to validate Contact Edits without requesting data a ton of times  
+  - Ability to remove Contact manager from a contact  
+  - Ability to see Contacts and Contact Managers on Contact View  
+  - Fix endpoints validation  
+  - Add validators (ajv) to endpoint, thou not being used yet (since we hit a special endpoint)
+
+- Regression: Fix app icons breaking UI ([#26278](https://github.com/RocketChat/Rocket.Chat/pull/26278))
+
+- Regression: Fix breaking omnichannel tests ([#26305](https://github.com/RocketChat/Rocket.Chat/pull/26305))
+
+- Regression: Fix permissions page pagination ([#26304](https://github.com/RocketChat/Rocket.Chat/pull/26304))
+
+- Regression: Remove 4.0 version banner ([#26251](https://github.com/RocketChat/Rocket.Chat/pull/26251))
+
+  Created a migration to disable and dismiss for all users the old 4.0 version banner.
+  It happened when a new admin user has been added.
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@souzaramon](https://github.com/souzaramon)
+- [@tassoevan](https://github.com/tassoevan)
+- [@weslley543](https://github.com/weslley543)
+
 ## 5.0.0-rc.9
 `2022-07-19  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
