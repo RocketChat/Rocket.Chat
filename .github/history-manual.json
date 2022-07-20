@@ -161,5 +161,12 @@
 		"contributors": [
 			"ggazzo"
 		]
+	}],
+	"4.7.5": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego"
+		]
 	}]
 }

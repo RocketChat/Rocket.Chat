@@ -74559,10 +74559,82 @@
         "4.4",
         "5.0"
       ],
-      "pull_requests": [
-      ]
+      "pull_requests": []
     },
     "4.7.4": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.1.6": {
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24553",
+          "title": "[FIX] Omnichannel managers can't join chats in progress",
+          "userLogin": "renatobecker",
+          "milestone": "4.5.0",
+          "contributors": [
+            "renatobecker",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24592",
+          "title": "Regression: Fix in-correct room status shown to agents",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        }
+      ]
+    },
+    "4.4.5": {
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.5.7": {
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.6.4": {
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.7.5": {
       "node_version": "14.18.3",
       "npm_version": "6.14.15",
       "mongo_versions": [

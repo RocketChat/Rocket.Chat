@@ -1039,8 +1039,10 @@ describe('[Chat]', function () {
 				.send({
 					userId: user._id,
 				})
-				.end(done);
-			user = undefined;
+				.end(() => {
+					user = undefined;
+					done();
+				});
 		});
 		beforeEach((done) => {
 			request
