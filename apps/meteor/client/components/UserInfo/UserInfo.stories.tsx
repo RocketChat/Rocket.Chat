@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import * as Status from '../../../../components/UserStatus';
-import VerticalBar from '../../../../components/VerticalBar';
+import * as Status from '../UserStatus';
+import VerticalBar from '../VerticalBar';
 import UserInfo from './UserInfo';
 
 export default {

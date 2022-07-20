@@ -5,15 +5,15 @@ import React, { useMemo } from 'react';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import UserCard from '../../../../components/UserCard';
+import UserInfo from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import VerticalBar from '../../../../components/VerticalBar';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
-import UserInfo from './UserInfo';
-import UserActions from './actions/UserActions';
+import UserActions from './UserInfoActions';
 
-function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = onClickClose, video, onClickBack, ...props }) {
+function UserInfoWithData({ uid, username, rid, onClickClose, onClose = onClickClose, onClickBack }) {
 	const t = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const getRoles = useRolesDescription();
@@ -76,9 +76,7 @@ function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = 
 				</VerticalBar.Content>
 			)}
 
-			{!isLoading && !error && (
-				<UserInfo {...user} data={user} actions={<UserActions user={user} rid={rid} backToList={onClickBack} />} {...props} p='x24' />
-			)}
+			{!isLoading && !error && <UserInfo {...user} actions={<UserActions user={user} rid={rid} backToList={onClickBack} />} p='x24' />}
 		</>
 	);
 }

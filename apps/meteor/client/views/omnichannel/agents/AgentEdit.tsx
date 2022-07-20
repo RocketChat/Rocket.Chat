@@ -5,9 +5,9 @@ import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslatio
 import React, { useMemo, useRef, useState, FC, ReactElement } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import UserInfo from '../../../components/UserInfo';
 import VerticalBar from '../../../components/VerticalBar';
 import { useForm } from '../../../hooks/useForm';
-import UserInfo from '../../room/contextualBar/UserInfo';
 import { useFormsSubscription } from '../additionalForms';
 
 // TODO: TYPE:

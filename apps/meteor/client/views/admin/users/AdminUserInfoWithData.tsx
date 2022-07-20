@@ -1,22 +1,29 @@
+import { IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useSetting, useRolesDescription, useRole, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useMemo, ReactElement } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserCard from '../../../components/UserCard';
+import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
-import UserInfo from '../../room/contextualBar/UserInfo/UserInfo';
-import { UserInfoActions } from './UserInfoActions';
+import AdminUserInfoActions from './AdminUserInfoActions';
 
-const AdminUserInfoWithData = ({ uid, onReload, ...props }) => {
+type AdminUserInfoWithDataProps = {
+	uid: IUser['_id'];
+	onReload: () => void;
+};
+
+const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const getRoles = useRolesDescription();
+	const isAdmin = useRole('admin');
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
 	const {
@@ -26,7 +33,7 @@ const AdminUserInfoWithData = ({ uid, onReload, ...props }) => {
 		reload: reloadUserInfo,
 	} = useEndpointData(
 		'/v1/users.info',
-		useMemo(() => ({ ...(uid && { userId: uid }) }), [uid]),
+		useMemo(() => ({ userId: uid }), [uid]),
 	);
 
 	const onChange = useMutableCallback(() => {
@@ -35,31 +42,48 @@ const AdminUserInfoWithData = ({ uid, onReload, ...props }) => {
 	});
 
 	const user = useMemo(() => {
-		const { user } = data || { user: {} };
+		if (!data?.user) {
+			return;
+		}
 
-		const { name, username, roles = [], status, statusText, bio, utcOffset, lastLogin, nickname } = user;
+		const {
+			avatarETag,
+			name,
+			username,
+			phone,
+			createdAt,
+			roles = [],
+			status,
+			statusText,
+			bio,
+			utcOffset,
+			lastLogin,
+			nickname,
+			canViewAllInfo,
+		} = data.user;
 
 		return {
+			avatarETag,
 			name,
 			username,
 			lastLogin,
-			showRealNames,
 			roles: roles && getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
-			phone: user.phone,
+			canViewAllInfo,
+			phone,
 			utcOffset,
 			customFields: {
-				...user.customFields,
-				...(approveManuallyUsers && user.active === false && user.reason && { Reason: user.reason }),
+				...data.user.customFields,
+				...(approveManuallyUsers && data.user.active === false && data.user.reason && { Reason: data.user.reason }),
 			},
-			verified: getUserEmailVerified(user),
-			email: getUserEmailAddress(user),
-			createdAt: user.createdAt,
+			verified: data.user && getUserEmailVerified(data.user),
+			email: getUserEmailAddress(data.user),
+			createdAt,
 			status: <UserStatus status={status} />,
-			customStatus: statusText,
+			statusText,
 			nickname,
 		};
-	}, [approveManuallyUsers, data, showRealNames, getRoles]);
+	}, [approveManuallyUsers, data, getRoles]);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return (
@@ -69,31 +93,24 @@ const AdminUserInfoWithData = ({ uid, onReload, ...props }) => {
 		);
 	}
 
-	if (error) {
+	if (error || !data?.user) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
-
-	const admin = data.user?.roles?.includes('admin');
 
 	return (
 		<UserInfo
 			{...user}
-			data={data.user}
-			onChange={onChange}
+			showRealNames={showRealNames}
 			actions={
-				data &&
-				data.user && (
-					<UserInfoActions
-						isActive={data.user.active}
-						isAdmin={admin}
-						_id={data.user._id}
-						username={data.user.username}
-						onChange={onChange}
-						onReload={onReload}
-					/>
-				)
+				<AdminUserInfoActions
+					isActive={data.user.active}
+					isAdmin={isAdmin}
+					userId={data.user._id}
+					username={data.user.username}
+					onChange={onChange}
+					onReload={onReload}
+				/>
 			}
-			{...props}
 		/>
 	);
 };
