@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"@rocket.chat/fuselage": "next",
+		"@rocket.chat/fuselage": "0.31.15",
 		"@storybook/addon-actions": "^6.5.9",
 		"@storybook/addon-docs": "^6.5.9",
 		"@storybook/addon-essentials": "^6.5.9",
