@@ -154,9 +154,8 @@ async function getTeams(user, searchTerm, sort, pagination) {
 	const teams = [];
 
 	for await (const room of rooms) {
-		const result = await getChannelsCountForTeam(room.teamId).count();
-
-		teams.push({ ...room, roomsCount: result.length });
+		const roomsCount = await getChannelsCountForTeam(room.teamId).count();
+		teams.push({ ...room, roomsCount });
 	}
 
 	return {
