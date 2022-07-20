@@ -22,7 +22,7 @@ export const useEndpointAction = <TMethod extends Method, TPath extends PathFor<
 
 			return data;
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			dispatchToastMessage({ type: 'error', message: error as any });
 			throw error;
 		}
 	}, [dispatchToastMessage, params, sendData, successMessage]);
