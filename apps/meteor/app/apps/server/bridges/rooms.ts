@@ -8,6 +8,7 @@ import type { ISubscription } from '@rocket.chat/core-typings';
 import { AppServerOrchestrator } from '../orchestrator';
 import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { archiveRoom, unarchiveRoom } from '../../../lib/server';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
@@ -113,13 +114,22 @@ export class AppRoomBridge extends RoomBridge {
 	protected async update(room: IRoom, members: Array<string> = [], appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating a room.`);
 
-		if (!room.id || !Rooms.findOneById(room.id)) {
+		const roomBeforeUpdate = Rooms.findOneById(room.id);
+		if (!room.id || !roomBeforeUpdate) {
 			throw new Error('A room must exist to update.');
 		}
 
 		const rm = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
 		Rooms.update(rm._id, rm);
+
+		if (rm.archived !== roomBeforeUpdate.archived) {
+			if (rm.archived) {
+				archiveRoom(rm._id, true);
+			} else {
+				unarchiveRoom(rm._id, true);
+			}
+		}
 
 		for (const username of members) {
 			const member = Users.findOneByUsername(username, {});
