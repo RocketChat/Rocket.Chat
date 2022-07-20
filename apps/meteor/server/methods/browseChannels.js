@@ -149,19 +149,15 @@ async function getTeams(user, searchTerm, sort, pagination) {
 		},
 	);
 
-	const roomsPromises = cursor.map((room) => room).toArray();
-
-	const [rooms] = await Promise.all([roomsPromises]);
+	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	const teams = [];
 
 	for await (const room of rooms) {
-		const result = await getChannelsCountForTeam(room.teamId).toArray();
+		const result = await getChannelsCountForTeam(room.teamId).count();
 
 		teams.push({ ...room, roomsCount: result.length });
 	}
-
-	const [total] = await Promise.all([totalCount]);
 
 	return {
 		total,
