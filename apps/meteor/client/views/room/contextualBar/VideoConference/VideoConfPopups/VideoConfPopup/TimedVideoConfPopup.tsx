@@ -10,9 +10,9 @@ import {
 	useVideoConfStartCall,
 	useVideoConfDismissOutgoing,
 } from '../../../../../../contexts/VideoConfContext';
-import CallingPopup from './CallingPopup';
-import ReceivingPopup from './ReceivingPopup';
-import StartCallPopup from './StartCallPopup/StartCallPopup';
+import IncomingPopup from './IncomingPopup';
+import OutgoingPopup from './OutgoingPopup';
+import StartCallPopup from './StartCallPopup';
 
 export type TimedVideoConfPopupProps = {
 	id: string;
@@ -20,8 +20,6 @@ export type TimedVideoConfPopupProps = {
 	isReceiving?: boolean;
 	isCalling?: boolean;
 	position: number;
-	current: number;
-	total: number;
 	onClose?: (id: string) => void;
 };
 
@@ -31,8 +29,6 @@ const TimedVideoConfPopup = ({
 	isReceiving = false,
 	isCalling = false,
 	position,
-	current,
-	total,
 }: TimedVideoConfPopupProps): ReactElement | null => {
 	const [starting, setStarting] = useState(false);
 	const acceptCall = useVideoConfAcceptCall();
@@ -70,22 +66,11 @@ const TimedVideoConfPopup = ({
 	};
 
 	if (isReceiving) {
-		return (
-			<ReceivingPopup
-				room={room}
-				id={id}
-				position={position}
-				current={current}
-				total={total}
-				onClose={handleClose}
-				onMute={handleMute}
-				onConfirm={handleConfirm}
-			/>
-		);
+		return <IncomingPopup room={room} id={id} position={position} onClose={handleClose} onMute={handleMute} onConfirm={handleConfirm} />;
 	}
 
 	if (isCalling) {
-		return <CallingPopup room={room} id={id} onClose={handleClose} />;
+		return <OutgoingPopup room={room} id={id} onClose={handleClose} />;
 	}
 
 	return <StartCallPopup loading={starting} room={room} id={id} onClose={dismissOutgoing} onConfirm={handleStartCall} />;
