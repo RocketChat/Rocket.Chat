@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 
 import { Rooms, Messages } from '../../../models/server';
+import { callbacks } from '../../../../lib/callbacks';
 
 export const saveRoomTopic = function (rid, roomTopic, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {
@@ -14,5 +15,6 @@ export const saveRoomTopic = function (rid, roomTopic, user, sendMessage = true)
 	if (update && sendMessage) {
 		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', rid, roomTopic, user);
 	}
+	callbacks.run('afterRoomTopicChange', { rid, topic: roomTopic });
 	return update;
 };

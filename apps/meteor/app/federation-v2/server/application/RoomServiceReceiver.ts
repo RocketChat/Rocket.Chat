@@ -11,6 +11,9 @@ import {
 	FederationRoomCreateInputDto,
 	FederationRoomChangeMembershipDto,
 	FederationRoomSendInternalMessageDto,
+	FederationRoomChangeJoinRulesDto,
+	FederationRoomChangeNameDto,
+	FederationRoomChangeTopicDto,
 } from './input/RoomReceiverDto';
 
 export class FederationRoomServiceReceiver {
@@ -188,5 +191,73 @@ export class FederationRoomServiceReceiver {
 		}
 
 		await this.rocketMessageAdapter.sendMessage(senderUser, text, federatedRoom);
+	}
+
+	public async changeJoinRules(roomJoinRulesChangeInput: FederationRoomChangeJoinRulesDto): Promise<void> {
+		const { externalRoomId, roomType } = roomJoinRulesChangeInput;
+
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		if (federatedRoom.isDirectMessage()) {
+			return;
+		}
+
+		federatedRoom.setRoomType(roomType);
+		await this.rocketRoomAdapter.updateRoomType(federatedRoom);
+	}
+
+	public async changeRoomName(roomChangeNameInput: FederationRoomChangeNameDto): Promise<void> {
+		const { externalRoomId, normalizedRoomName, externalSenderId } = roomChangeNameInput;
+
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		if (federatedRoom.isDirectMessage()) {
+			return;
+		}
+
+		if (federatedRoom.internalReference?.name === normalizedRoomName) {
+			return;
+		}
+
+		const federatedUser = await this.rocketUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!federatedUser) {
+			return;
+		}
+
+		federatedRoom.changeRoomName(normalizedRoomName);
+
+		await this.rocketRoomAdapter.updateRoomName(federatedRoom, federatedUser);
+	}
+
+	public async changeRoomTopic(roomChangeTopicInput: FederationRoomChangeTopicDto): Promise<void> {
+		const { externalRoomId, roomTopic, externalSenderId } = roomChangeTopicInput;
+
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		if (federatedRoom.internalReference?.topic === roomTopic) {
+			return;
+		}
+
+		if (federatedRoom.isDirectMessage()) {
+			return;
+		}
+
+		const federatedUser = await this.rocketUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!federatedUser) {
+			return;
+		}
+
+		federatedRoom.changeRoomTopic(roomTopic);
+
+		await this.rocketRoomAdapter.updateRoomTopic(federatedRoom, federatedUser);
 	}
 }
