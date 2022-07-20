@@ -79,6 +79,7 @@ export class AMIConnection implements IConnection {
 		if (!this.connection) {
 			return;
 		}
+		this.connection.disconnect();
 		this.connection.removeAllListeners();
 		this.connection = null;
 	}
@@ -300,7 +301,6 @@ export class AMIConnection implements IConnection {
 	closeConnection(): void {
 		this.logger.info({ msg: 'closeConnection()' });
 		this.nearEndDisconnect = true;
-		this.connection.disconnect();
 		this.cleanup();
 	}
 }
