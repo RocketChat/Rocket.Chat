@@ -38,12 +38,15 @@ jobs:
         with:
           node-version: '14.18.3'
 
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 4
+
       - uses: actions/checkout@v3
 
       - name: Free disk space
         run: |
-          sudo swapoff -a
-          sudo rm -f /swapfile
           sudo apt clean
           docker rmi $(docker image ls -aq)
           df -h
