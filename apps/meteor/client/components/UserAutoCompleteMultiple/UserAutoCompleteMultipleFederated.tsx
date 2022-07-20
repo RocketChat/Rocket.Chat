@@ -54,6 +54,7 @@ const UserAutoCompleteMultipleFederated = ({
 	const options = data || [];
 
 	const onAddSelected: ComponentProps<typeof Options>['onSelect'] = ([value]) => {
+		setFilter('');
 		const cachedOption = options.find(([curVal]) => curVal === value)?.[1];
 		if (!cachedOption) {
 			throw new Error('UserAutoCompleteMultiple - onAddSelected - failed to cache option');

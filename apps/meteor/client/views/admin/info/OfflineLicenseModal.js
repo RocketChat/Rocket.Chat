@@ -21,7 +21,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 
 	const hasChanges = lastSetLicense !== newLicense;
 
-	const addLicense = useEndpointActionExperimental('POST', 'licenses.add', t('Cloud_License_applied_successfully'));
+	const addLicense = useEndpointActionExperimental('POST', '/v1/licenses.add', t('Cloud_License_applied_successfully'));
 
 	const handlePaste = useMutableCallback(async () => {
 		try {
