@@ -5,8 +5,8 @@ import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu, IconButton } from 
 import React, { ReactElement, MouseEvent, ReactNode } from 'react';
 
 import type { VoipFooterMenuOptions } from '../../../../ee/client/hooks/useVoipFooterMenu';
-import { parseOutboundPhoneNumber } from '../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { CallActionsType } from '../../../contexts/CallContext';
+import { useContactName } from '../../../hooks/omnichannel/useContactName';
 
 type VoipFooterPropsType = {
 	caller: ICallerInfo;
@@ -58,6 +58,8 @@ export const VoipFooter = ({
 	children,
 	options,
 }: VoipFooterPropsType): ReactElement => {
+	const contactName = useContactName(caller.callerId);
+
 	const cssClickable =
 		callerState === 'IN_CALL' || callerState === 'ON_HOLD'
 			? css`
@@ -117,7 +119,7 @@ export const VoipFooter = ({
 				<Box display='flex' flexDirection='row' mi='16px' mbe='12px' justifyContent='space-between' alignItems='center'>
 					<Box>
 						<Box color='white' fontScale='p2' withTruncatedText>
-							{caller.callerName || parseOutboundPhoneNumber(caller.callerId) || anonymousText}
+							{caller.callerName || contactName || anonymousText}
 						</Box>
 						<Box color='hint' fontScale='c1' withTruncatedText>
 							{subtitle}
