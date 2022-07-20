@@ -6,6 +6,7 @@ import ListItem from '../Sidebar/ListItem';
 
 const style = {
 	textTransform: 'uppercase',
+	paddingBlockEnd: '0.25rem',
 };
 
 const checkBoxStyle = {

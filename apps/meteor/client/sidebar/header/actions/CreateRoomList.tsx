@@ -17,6 +17,7 @@ const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-oth
 
 const style = {
 	textTransform: 'uppercase',
+	paddingBlockEnd: '0.25rem',
 };
 
 type CreateRoomListProps = {
@@ -56,9 +57,7 @@ const CreateRoomList: FC<CreateRoomListProps> = ({ closeList }) => {
 
 	return (
 		<>
-			<OptionTitle pb='x8' {...({ style } as any)}>
-				{t('Create_new')}
-			</OptionTitle>
+			<OptionTitle {...({ style } as any)}>{t('Create_new')}</OptionTitle>
 			<ul className='rc-popover__list'>
 				{canCreateChannel && (
 					<ListItem
