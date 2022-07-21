@@ -5406,6 +5406,8 @@ __metadata:
   version: 6.5.9
   resolution: "@storybook/postinstall@npm:6.5.9"
   dependencies:
+    "@types/npmlog": ^4.1.2
+    chalk: ^4.1.0
     core-js: ^3.8.2
   checksum: 339e7c87c624d180ba80a7bdf1665831ce71ae9d7687f512f5108d41b01d2f630ff3c4f773e3505437039fb5556741c4f0fba6b288bc0991cc5cfdaa09375df3
   languageName: node
