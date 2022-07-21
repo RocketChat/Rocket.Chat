@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 
+import { parseOutboundPhoneNumber } from '../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { useOmnichannelContacts } from './useOmnichannelContacts';
 
 export const useContactName = (phone: string): string => {
-	const safePhone = `+${phone.replace(/\D/g, '')}`;
+	const safePhone = parseOutboundPhoneNumber(phone);
 	const { getContactByPhone } = useOmnichannelContacts();
 	const [name, setName] = useState(safePhone);
 
