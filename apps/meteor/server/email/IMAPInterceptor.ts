@@ -22,6 +22,8 @@ export declare interface IMAPInterceptor {
 export class IMAPInterceptor extends EventEmitter {
 	private imap: IMAP;
 
+	private config: IMAP.Config;
+
 	private initialBackoffDurationMS = 30000;
 
 	private backoff: NodeJS.Timeout;
@@ -39,6 +41,8 @@ export class IMAPInterceptor extends EventEmitter {
 	) {
 		super();
 
+		this.config = imapConfig;
+
 		this.imap = new IMAP({
 			connTimeout: 300000,
 			keepalive: true,
@@ -53,7 +57,7 @@ export class IMAPInterceptor extends EventEmitter {
 				this.retries = 0;
 				this.openInbox((err) => {
 					if (err) {
-						logger.error('Error occurred during imap inbox opening: ', err);
+						logger.error(`Error occurred during imap on inbox ${this.config.user}: `, err);
 						throw err;
 					}
 					// fetch new emails & wait [IDLE]
@@ -65,14 +69,14 @@ export class IMAPInterceptor extends EventEmitter {
 					});
 				});
 			} else {
-				logger.error('IMAP did not connect.');
+				logger.error(`IMAP did not connect on inbox ${this.config.user}`);
 				this.imap.end();
 				this.reconnect();
 			}
 		});
 
 		this.imap.on('error', (err: Error) => {
-			logger.error('Error occurred: ', err);
+			logger.error(`Error occurred on inbox ${this.config.user}: `, err);
 			this.imap.end();
 			this.reconnect();
 		});
@@ -123,7 +127,7 @@ export class IMAPInterceptor extends EventEmitter {
 				this.initialBackoffDurationMS *= 2;
 				this.backoff = setTimeout(loop, this.initialBackoffDurationMS);
 			} else {
-				logger.error('IMAP reconnection failed.');
+				logger.error(`IMAP reconnection failed on inbox ${this.config.user}`);
 				clearTimeout(this.backoff);
 			}
 		};
@@ -155,7 +159,7 @@ export class IMAPInterceptor extends EventEmitter {
 
 						simpleParser(stream, (_err, email) => {
 							if (this.options.rejectBeforeTS && email.date && email.date < this.options.rejectBeforeTS) {
-								logger.error('Rejecting email', email.subject);
+								logger.error(`Rejecting email on inbox ${this.config.user}`, email.subject);
 								return;
 							}
 							this.emit('email', email);
