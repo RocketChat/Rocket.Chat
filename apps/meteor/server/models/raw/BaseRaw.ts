@@ -79,6 +79,10 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		// noop
 	}
 
+	getCollectionName(): string {
+		return this.collectionName;
+	}
+
 	private doNotMixInclusionAndExclusionFields(options: FindOptions<T> = {}): FindOptions<T> {
 		const optionsDef = this.ensureDefaultFields(options);
 		if (optionsDef?.projection === undefined) {
@@ -419,6 +423,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 	}
 
 	watch(pipeline?: object[]): ChangeStream<T> {
+		console.log('watch ->', this.collectionName, pipeline);
 		return this.col.watch(pipeline);
 	}
 }
