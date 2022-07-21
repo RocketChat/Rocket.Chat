@@ -370,7 +370,7 @@ API.v1.addRoute(
 	{
 		authRequired: false,
 		rateLimiterOptions: {
-			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser'),
+			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
 			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 		},
 	},
