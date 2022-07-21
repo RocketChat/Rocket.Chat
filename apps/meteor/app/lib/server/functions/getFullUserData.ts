@@ -80,8 +80,10 @@ export async function getFullUserDataByIdOrUsername(
 	const fields = getFields(canViewAllInfo);
 
 	const options = {
-		fields,
-		...(myself && { services: 1 }),
+		fields: {
+			...fields,
+			...(myself && { services: 1 }),
+		},
 	};
 
 	const user = Users.findOneByIdOrUsername(targetUser, options);
