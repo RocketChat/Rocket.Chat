@@ -1,4 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
@@ -7,7 +8,6 @@ import Card from '../../../components/Card/Card';
 import CardFooterWrapper from '../../../components/Card/CardFooterWrapper';
 import CardFooter from '../../../components/Card/Footer';
 import CardTitle from '../../../components/Card/Title';
-import ExternalLink from '../../../components/ExternalLink';
 
 const DOCS_URL = 'https://go.rocket.chat/i/hp-documentation';
 
