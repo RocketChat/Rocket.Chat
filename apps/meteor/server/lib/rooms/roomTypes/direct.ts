@@ -40,7 +40,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 	allowMemberAction(room: IRoom, action) {
 		if (isRoomFederated(room)) {
-			return Federation.federationActionAllowed(action);
+			return Federation.actionAllowed(room, action);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:

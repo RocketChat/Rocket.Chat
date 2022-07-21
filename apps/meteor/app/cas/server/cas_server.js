@@ -112,7 +112,7 @@ WebApp.connectHandlers.use(function (req, res, next) {
  * It is call after Accounts.callLoginMethod() is call from client.
  *
  */
-Accounts.registerLoginHandler(function (options) {
+Accounts.registerLoginHandler('cas', function (options) {
 	if (!options.cas) {
 		return undefined;
 	}

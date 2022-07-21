@@ -37,28 +37,6 @@ export class FederatedRoomEE extends FederatedRoom {
 		return this.internalReference?.t === RoomType.DIRECT_MESSAGE;
 	}
 
-	public setRoomType(type: RoomType): void {
-		if (this.isDirectMessage()) {
-			throw new Error('Its not possible to change a direct message type');
-		}
-		this.internalReference.t = type;
-	}
-
-	public changeRoomName(name: string): void {
-		if (this.isDirectMessage()) {
-			throw new Error('Its not possible to change a direct message name');
-		}
-		this.internalReference.name = name;
-		this.internalReference.fname = name;
-	}
-
-	public changeRoomTopic(topic: string): void {
-		if (this.isDirectMessage()) {
-			throw new Error('Its not possible to change a direct message topic');
-		}
-		this.internalReference.description = topic;
-	}
-
 	public getMembers(): IUser[] {
 		return this.isDirectMessage() && this.members && this.members.length > 0 ? this.members.map((user) => user.internalReference) : [];
 	}
