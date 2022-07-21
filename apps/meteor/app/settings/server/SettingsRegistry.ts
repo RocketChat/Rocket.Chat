@@ -135,8 +135,10 @@ export class SettingsRegistry {
 			throw new Error(`Enterprise setting ${_id} is missing the invalidValue option`);
 		}
 
+		const settingFromCodeOverwritten = overwriteSetting(settingFromCode);
+
 		const settingStored = this.store.getSetting(_id);
-		const settingOverwritten = overwriteSetting(settingFromCode);
+		const settingStoredOverwritten = settingStored && overwriteSetting(settingStored);
 
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
@@ -144,14 +146,14 @@ export class SettingsRegistry {
 			IS_DEVELOPMENT && SystemLogger.error(`Invalid setting code ${_id}: ${(e as Error).message}`);
 		}
 
-		const isOverwritten = settingFromCode !== settingOverwritten;
+		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
 
-		const { _id: _, ...settingProps } = settingOverwritten;
+		const { _id: _, ...settingProps } = settingFromCodeOverwritten;
 
-		if (settingStored && !compareSettings(settingStored, settingOverwritten)) {
-			const { value: _value, ...settingOverwrittenProps } = settingOverwritten;
+		if (settingStored && !compareSettings(settingStored, settingFromCodeOverwritten)) {
+			const { value: _value, ...settingOverwrittenProps } = settingFromCodeOverwritten;
 
-			const overwrittenKeys = Object.keys(settingOverwritten);
+			const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
 			const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
 			this.model.upsert(
@@ -168,7 +170,7 @@ export class SettingsRegistry {
 		}
 
 		if (settingStored && isOverwritten) {
-			if (settingStored.value !== settingOverwritten.value) {
+			if (settingStored.value !== settingFromCodeOverwritten.value) {
 				this.model.upsert({ _id }, settingProps);
 			}
 			return;
@@ -185,7 +187,7 @@ export class SettingsRegistry {
 
 		const settingOverwrittenDefault = overrideSetting(settingFromCode);
 
-		const setting = isOverwritten ? settingOverwritten : settingOverwrittenDefault;
+		const setting = isOverwritten ? settingFromCodeOverwritten : settingOverwrittenDefault;
 
 		this.model.insert(setting); // no need to emit unless we remove the oplog
 
