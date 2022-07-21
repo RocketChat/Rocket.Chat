@@ -153,6 +153,58 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 		}
 	}
 
+	public async afterRoomNameChanged(internalRoomId: string, internalRoomName: string): Promise<void> {
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		if (!this.bridge.isRoomFromTheSameHomeserver(federatedRoom.externalId, this.rocketSettingsAdapter.getHomeServerDomain())) {
+			return;
+		}
+
+		if (federatedRoom.isDirectMessage()) {
+			return;
+		}
+
+		const federatedUser = await this.rocketUserAdapter.getFederatedUserByInternalId(federatedRoom.internalReference.u._id);
+		if (!federatedUser) {
+			return;
+		}
+
+		const externalRoomName = await this.bridge.getRoomName(federatedRoom.externalId, federatedUser.externalId);
+		if (externalRoomName === internalRoomName) {
+			return;
+		}
+		await this.bridge.setRoomName(federatedRoom.externalId, federatedUser.externalId, internalRoomName);
+	}
+
+	public async afterRoomTopicChanged(internalRoomId: string, internalRoomTopic: string): Promise<void> {
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		if (!this.bridge.isRoomFromTheSameHomeserver(federatedRoom.externalId, this.rocketSettingsAdapter.getHomeServerDomain())) {
+			return;
+		}
+
+		if (federatedRoom.isDirectMessage()) {
+			return;
+		}
+
+		const federatedUser = await this.rocketUserAdapter.getFederatedUserByInternalId(federatedRoom.internalReference.u._id);
+		if (!federatedUser) {
+			return;
+		}
+
+		const externalRoomTopic = await this.bridge.getRoomTopic(federatedRoom.externalId, federatedUser.externalId);
+		if (externalRoomTopic === internalRoomTopic) {
+			return;
+		}
+		await this.bridge.setRoomTopic(federatedRoom.externalId, federatedUser.externalId, internalRoomTopic);
+	}
+
 	private async createExternalDirectMessageRoomAndInviteUsers(
 		dmRoomOnCreationInput: FederationOnDirectMessageRoomCreationDto,
 	): Promise<void> {

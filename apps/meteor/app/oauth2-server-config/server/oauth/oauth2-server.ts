@@ -16,7 +16,8 @@ const oauth2server = new OAuth2Server({
 	authCodesCollectionName: 'rocketchat_oauth_auth_codes',
 	// TODO: Remove workaround. Used to pass meteor collection reference to a package
 	clientsCollection: new Mongo.Collection(OAuthApps.col.collectionName),
-	debug: true,
+	// If you're developing something related to oauth servers, you should change this to true
+	debug: false,
 });
 
 // https://github.com/RocketChat/rocketchat-oauth2-server/blob/e758fd7ef69348c7ceceabe241747a986c32d036/model.coffee#L27-L27
