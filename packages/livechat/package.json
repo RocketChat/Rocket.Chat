@@ -25,8 +25,8 @@
 	"devDependencies": {
 		"@babel/preset-env": "^7.18.2",
 		"@rocket.chat/eslint-config": "^0.4.0",
-		"@rocket.chat/fuselage-tokens": "0.31.15",
-		"@rocket.chat/logo": "0.31.15",
+		"@rocket.chat/fuselage-tokens": "0.31.16",
+		"@rocket.chat/logo": "0.31.16",
 		"@storybook/addon-actions": "^6.5.9",
 		"@storybook/addon-backgrounds": "^6.5.9",
 		"@storybook/addon-essentials": "^6.5.9",
@@ -86,7 +86,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
-		"@rocket.chat/ui-kit": "0.31.15",
+		"@rocket.chat/ui-kit": "^0.14.1",
 		"crypto-js": "^4.1.1",
 		"css-vars-ponyfill": "^2.4.7",
 		"date-fns": "^2.15.0",
