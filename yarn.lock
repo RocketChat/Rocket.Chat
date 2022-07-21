@@ -3889,7 +3889,6 @@ __metadata:
     "@types/psl": ^1.1.0
     "@types/react": ~17.0.47
     "@types/react-dom": ~17.0.17
-    "@types/react-text-mask": ^5
     "@types/rewire": ^2.5.28
     "@types/semver": ^7.3.10
     "@types/sharp": ^0.30.4
@@ -4048,7 +4047,6 @@ __metadata:
     react-i18next: ^11.16.7
     react-keyed-flatten-children: ^1.3.0
     react-query: ^3.38.0
-    react-text-mask: ^5.4.3
     react-virtuoso: ^1.11.1
     redis: ^4.0.6
     rewire: ^6.0.0
@@ -5408,6 +5406,8 @@ __metadata:
   version: 6.5.9
   resolution: "@storybook/postinstall@npm:6.5.9"
   dependencies:
+    "@types/npmlog": ^4.1.2
+    chalk: ^4.1.0
     core-js: ^3.8.2
   checksum: 339e7c87c624d180ba80a7bdf1665831ce71ae9d7687f512f5108d41b01d2f630ff3c4f773e3505437039fb5556741c4f0fba6b288bc0991cc5cfdaa09375df3
   languageName: node
@@ -6656,15 +6656,6 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 8f4dce3eb5c70178c5ec2f7434983d632d02a0371a80c31ea012e37a2b8b2174bee482c3b85764333cbe3bcba9132b95307e23ac56d05d490e485e371bdcea46
-  languageName: node
-  linkType: hard
-
-"@types/react-text-mask@npm:^5":
-  version: 5.4.11
-  resolution: "@types/react-text-mask@npm:5.4.11"
-  dependencies:
-    "@types/react": "*"
-  checksum: 4defba1467e61b73bfdae74d0b1bea0f27846aabf5283f137fa372ef05bf23accfdf04fffaba33272e9eff5abf00a74863e9c24ca6974c731d73f3fae6efc577
   languageName: node
   linkType: hard
 
@@ -25410,7 +25401,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.0.0, prop-types@npm:^15.5.6, prop-types@npm:^15.5.8, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.0.0, prop-types@npm:^15.5.8, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -26202,17 +26193,6 @@ __metadata:
   peerDependencies:
     react: ">= 0.14.0"
   checksum: c082b48f30f8ba8d0c55ed1d761910630860077c7ff5793c4c912adcb5760df06436ed0ad62be0de28113aac9ad2af55eccd995f8eee98df53382e4ced2072fb
-  languageName: node
-  linkType: hard
-
-"react-text-mask@npm:^5.4.3":
-  version: 5.4.3
-  resolution: "react-text-mask@npm:5.4.3"
-  dependencies:
-    prop-types: ^15.5.6
-  peerDependencies:
-    react: ^0.14.0 || ^15.0.0 || ^16.0.0
-  checksum: ee9c560f47d2f67d0193636eeea36852503d6d7bfd16d75ecb8170256606923d786bbb3511971deedbd01136340acf597fe2b6ba0be3cddb2a17a602767eb7b9
   languageName: node
   linkType: hard
 

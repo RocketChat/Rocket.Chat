@@ -62,8 +62,10 @@ export class EEVoipClient extends VoIPUser {
 	}
 
 	async makeCall(calleeNumber: string): Promise<void> {
-		const digits = calleeNumber.replace(/\D/g, '');
-		this.makeCallURI(`sip:*${digits}@${this.userConfig.sipRegistrarHostnameOrIP}`);
+		const hasPlusChar = calleeNumber.includes('+');
+
+		const digits = calleeNumber.replace('+', '');
+		this.makeCallURI(`sip:${hasPlusChar ? '*' : ''}${digits}@${this.userConfig.sipRegistrarHostnameOrIP}`);
 	}
 
 	static async create(config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer): Promise<VoIPUser> {
