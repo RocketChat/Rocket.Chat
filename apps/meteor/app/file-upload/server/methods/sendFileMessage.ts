@@ -129,12 +129,12 @@ Meteor.methods({
 		const msg = Meteor.call('sendMessage', {
 			rid: roomId,
 			ts: new Date(),
-			msg: '',
 			file: files[0],
 			files,
-			groupable: false,
 			attachments,
 			...msgData,
+			msg: msgData.msg ?? '',
+			groupable: msgData.groupable ?? false,
 		});
 
 		callbacks.runAsync('afterFileUpload', { user, room, message: msg });

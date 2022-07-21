@@ -1,119 +1,101 @@
-import React, { useMemo, lazy, ReactNode } from 'react';
-import { useStableArray } from '@rocket.chat/fuselage-hooks';
-import { Option, Badge } from '@rocket.chat/fuselage';
-import { useUser, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMemo, lazy } from 'react';
+import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
+import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../client/contexts/VideoConfContext';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
-import Header from '../../../client/components/Header';
+import { VideoConfManager } from '../../../client/lib/VideoConfManager';
+import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/useVideoConfWarning';
+import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 
-const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
-
-addAction('bbb_video', ({ room }) => {
-	const enabled = useSetting('bigbluebutton_Enabled');
-	const t = useTranslation();
-
-	const live = room?.streamingOptions && room.streamingOptions.type === 'call';
-
-	const enabledDirect = useSetting('bigbluebutton_enable_d');
-	const enabledGroup = useSetting('bigbluebutton_enable_p');
-	const enabledChannel = useSetting('bigbluebutton_enable_c');
-	const enabledTeams = useSetting('bigbluebutton_enable_teams');
-
-	const groups = useStableArray(
-		[enabledDirect && 'direct', 'direct_multiple', enabledGroup && 'group', enabledTeams && 'team', enabledChannel && 'channel'].filter(
-			Boolean,
-		) as ToolboxActionConfig['groups'],
-	);
-	const user = useUser();
-	const username = user ? user.username : '';
-	const enableOption = enabled && (!username || !room.muted?.includes(username));
+addAction('calls', ({ room }) => {
+	const hasLicense = useHasLicenseModule('videoconference-enterprise');
+	const federated = isRoomFederated(room);
 
 	return useMemo(
 		() =>
-			enableOption
+			hasLicense
 				? {
-						groups,
-						id: 'bbb_video',
-						title: 'BBB_Video_Call',
+						groups: ['channel', 'group', 'team'],
+						id: 'calls',
 						icon: 'phone',
-						template: templateBBB,
-						order: live ? -1 : 4,
-						renderAction: (props): ReactNode => (
-							<Header.ToolBoxAction {...props}>
-								{live ? (
-									<Header.Badge title={t('Started_a_video_call')} variant='primary'>
-										!
-									</Header.Badge>
-								) : null}
-							</Header.ToolBoxAction>
-						),
-						renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => (
-							<Option label={title} title={title} icon={icon} {...props}>
-								<Badge title={t('Started_a_video_call')} variant='primary'>
-									!
-								</Badge>
-							</Option>
-						),
+						title: 'Calls',
+						...(federated && {
+							'data-tooltip': 'Video_Call_unavailable_for_federation',
+							'disabled': true,
+						}),
+						template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
+						order: 999,
 				  }
 				: null,
-		[enableOption, groups, live, t],
+		[hasLicense, federated],
 	);
 });
 
-const templateJitsi = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/Jitsi'));
+addAction('start-call', ({ room }) => {
+	const user = useUser();
+	const dispatchWarning = useVideoConfWarning();
+	const dispatchPopup = useVideoConfDispatchOutgoing();
+	const isCalling = useVideoConfIsCalling();
+	const isRinging = useVideoConfIsRinging();
+	const federated = isRoomFederated(room);
 
-addAction('video', ({ room }) => {
-	const enabled = useSetting('Jitsi_Enabled');
-	const t = useTranslation();
+	const ownUser = room.uids && room.uids.length === 1;
 
-	const enabledChannel = useSetting('Jitsi_Enable_Channels');
-	const enabledTeams = useSetting('Jitsi_Enable_Teams');
+	// Only disable video conf if the settings are explicitly FALSE - any falsy value counts as true
+	const enabledDMs = useSetting('VideoConf_Enable_DMs') !== false;
+	const enabledChannel = useSetting('VideoConf_Enable_Channels') !== false;
+	const enabledTeams = useSetting('VideoConf_Enable_Teams') !== false;
+	const enabledGroups = useSetting('VideoConf_Enable_Groups') !== false;
 	const enabledLiveChat = useSetting('Omnichannel_call_provider') === 'Jitsi';
 
+	const live = room?.streamingOptions && room.streamingOptions.type === 'call';
+	const enabled = enabledDMs || enabledChannel || enabledTeams || enabledGroups || enabledLiveChat;
+
+	const enableOption = enabled && (!user?.username || !room.muted?.includes(user.username));
+
 	const groups = useStableArray(
-		['direct', 'direct_multiple', 'group', enabledLiveChat && 'live', enabledTeams && 'team', enabledChannel && 'channel'].filter(
-			Boolean,
-		) as ToolboxActionConfig['groups'],
+		[
+			enabledDMs && 'direct',
+			enabledDMs && 'direct_multiple',
+			enabledGroups && 'group',
+			enabledLiveChat && 'live',
+			enabledTeams && 'team',
+			enabledChannel && 'channel',
+		].filter(Boolean) as ToolboxActionConfig['groups'],
 	);
 
-	const currentTime = new Date().getTime();
-	const jitsiTimeout = new Date(room?.jitsiTimeout || currentTime).getTime();
-	const live = jitsiTimeout > currentTime || null;
-	const user = useUser();
-	const username = user ? user.username : '';
-	const enableOption = enabled && (!username || !room.muted?.includes(username));
+	const handleOpenVideoConf = useMutableCallback(async (): Promise<void> => {
+		if (isCalling || isRinging) {
+			return;
+		}
+
+		try {
+			await VideoConfManager.loadCapabilities();
+			dispatchPopup({ rid: room._id });
+		} catch (error: any) {
+			dispatchWarning(error.error);
+		}
+	});
 
 	return useMemo(
 		() =>
-			enableOption
+			enableOption && !ownUser
 				? {
 						groups,
-						id: 'video',
+						id: 'start-call',
 						title: 'Call',
 						icon: 'phone',
-						template: templateJitsi,
+						action: handleOpenVideoConf,
+						...(federated && {
+							'disabled': true,
+							'data-tooltip': 'Video_Call_unavailable_for_federation',
+						}),
 						full: true,
 						order: live ? -1 : 4,
-						renderAction: (props): ReactNode => (
-							<Header.ToolBoxAction {...props}>
-								{live && (
-									<Header.Badge title={t('Started_a_video_call')} variant='primary'>
-										!
-									</Header.Badge>
-								)}
-							</Header.ToolBoxAction>
-						),
-						renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => (
-							<Option label={title} title={title} icon={icon} {...props}>
-								{live && (
-									<Badge title={t('Started_a_video_call')} variant='primary'>
-										!
-									</Badge>
-								)}
-							</Option>
-						),
 				  }
 				: null,
-		[enableOption, groups, live, t],
+		[groups, enableOption, live, handleOpenVideoConf, ownUser, federated],
 	);
 });

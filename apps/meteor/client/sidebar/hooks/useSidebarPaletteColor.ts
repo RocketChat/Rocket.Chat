@@ -123,36 +123,39 @@ const getStyle = (
 			--rcx-color-primary-800: ${toVar(colors.b200)};
 			--rcx-color-primary-900: ${toVar(colors.b100)};
 
-			--rcx-button-colors-icon-active-border-color: ${toVar(colors.n900)};
-			--rcx-button-colors-icon-active-background-color: ${toVar(colors.n800)};
-			--rcx-button-colors-icon-color: ${toVar(colors.n600)};
-			--rcx-button-colors-icon-border-color: ${toVar(colors.sibebarSurface)};
-			--rcx-button-colors-icon-background-color: ${toVar(colors.sibebarSurface)};
-			--rcx-button-colors-icon-hover-background-color: ${toVar(colors.n900)};
-			--rcx-button-colors-icon-hover-border-color: ${toVar(colors.n900)};
-			--rcx-button-colors-icon-focus-background-color:  var(--rcx-color-neutral-300);
-			--rcx-button-colors-icon-focus-border-color: var(--rcx-color-neutral-500);
-			--rcx-button-colors-icon-focus-shadow-color: none;
+			--rcx-button-icon-active-border-color: ${toVar(colors.n900)};
+			--rcx-button-icon-active-background-color: ${toVar(colors.n800)};
+			--rcx-button-icon-color: ${toVar(colors.n600)};
+			--rcx-button-icon-border-color: ${toVar(colors.sibebarSurface)};
+			--rcx-button-icon-background-color: ${toVar(colors.sibebarSurface)};
+			--rcx-button-icon-hover-background-color: ${toVar(colors.n900)};
+			--rcx-button-icon-hover-border-color: ${toVar(colors.n900)};
+			--rcx-button-icon-focus-background-color:  var(--rcx-color-neutral-300);
+			--rcx-button-icon-focus-border-color: var(--rcx-color-neutral-500);
+			--rcx-button-icon-focus-shadow-color: none;
 
-			--rcx-button-colors-icon-success-active-border-color: ${toVar(colors.n900)};
-			--rcx-button-colors-icon-success-active-background-color: ${toVar(colors.n800)};
-			--rcx-button-colors-icon-success-color: ${toVar(colors.n600)};
-			--rcx-button-colors-icon-success-border-color: ${toVar(colors.sibebarSurface)};
-			--rcx-button-colors-icon-success-background-color: ${toVar(colors.sibebarSurface)};
-			--rcx-button-colors-icon-success-hover-background-color: ${toVar(colors.n900)};
-			--rcx-button-colors-icon-success-hover-border-color: ${toVar(colors.n900)};
+			--rcx-button-icon-success-active-border-color: ${toVar(colors.n900)};
+			--rcx-button-icon-success-active-background-color: ${toVar(colors.n800)};
+			--rcx-button-icon-success-color: ${toVar(colors.n600)};
+			--rcx-button-icon-success-border-color: ${toVar(colors.sibebarSurface)};
+			--rcx-button-icon-success-background-color: ${toVar(colors.sibebarSurface)};
+			--rcx-button-icon-success-hover-background-color: ${toVar(colors.n900)};
+			--rcx-button-icon-success-hover-border-color: ${toVar(colors.n900)};
 
 
 			--rcx-sidebar-item-background-color-hover: ${toVar(colors.n900)};
 			--rcx-sidebar-item-background-color-selected: ${h2r(toVar(colors.n700 || colors.n800), 0.3)};
 			--rcx-badge-colors-ghost-background-color: ${toVar(colors.n700)};
 			--rcx-tag-colors-ghost-background-color: ${toVar(colors.n700)};
-			--rcx-color-surface: ${toVar(colors.n900)};
+			--rcx-color-surface-light: ${toVar(colors.n900)};
+
+			--rcx-button-icon-disabled-color: ${toVar(colors.n700)};
+			--rcx-button-icon-disabled-background-color: ${toVar(colors.n900)};
+			--rcx-button-icon-disabled-border-color: ${toVar(colors.n900)};
 
 			--rcx-divider-color: ${h2r(toVar(colors.n900), 0.4)};
 			--rcx-color-foreground-alternative: ${toVar(colors.n100)};
 			--rcx-color-foreground-hint: ${toVar(colors.n600)};
-
 		}
 
 		.rcx-badge--danger {
@@ -161,7 +164,7 @@ const getStyle = (
 		.rcx-badge--primary {
 			--rcx-badge-colors-primary-background-color: ${toVar(colors.b500)}
 		}
-		
+
 		.rcx-sidebar {
 			background-color: ${toVar(colors.sibebarSurface)};
 		}

@@ -548,11 +548,11 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
 
-		this.add('Accounts_Default_User_Preferences_enableNewMessageTemplate', false, {
+		this.add('Accounts_Default_User_Preferences_useLegacyMessageTemplate', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Enable_New_Message_Template',
-			alert: 'Enable_New_Message_Template_alert',
+			i18nLabel: 'Use_Legacy_Message_Template',
+			alert: 'Use_Legacy_Message_Template_alert',
 		});
 	});
 

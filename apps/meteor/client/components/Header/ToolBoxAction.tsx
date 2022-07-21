@@ -1,12 +1,11 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-const ToolBoxAction: FC<any> = ({ id, icon, color, title, action, className, index, ...props }) => (
+const ToolBoxAction: FC<any> = ({ id, icon, color, action, className, index, title, 'data-tooltip': tooltip, ...props }) => (
 	<IconButton
 		data-qa-id={`ToolBoxAction-${icon}`}
 		className={className}
 		onClick={action}
-		title={title}
 		data-toolbox={index}
 		key={id}
 		icon={icon}
@@ -14,7 +13,7 @@ const ToolBoxAction: FC<any> = ({ id, icon, color, title, action, className, ind
 		tiny
 		overflow='visible'
 		color={!!color && color}
-		{...props}
+		{...{ ...props, ...(tooltip ? { 'data-tooltip': tooltip, 'title': '' } : { title }) }}
 	/>
 );
 

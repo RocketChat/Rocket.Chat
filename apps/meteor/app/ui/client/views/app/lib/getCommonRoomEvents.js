@@ -2,6 +2,7 @@ import Clipboard from 'clipboard';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { popover, MessageAction } from '../../../../../ui-utils/client';
 import { addMessageToList } from '../../../../../ui-utils/client/lib/MessageAction';
@@ -27,13 +28,19 @@ const mountPopover = (e, i, outerContext) => {
 
 	const messageContext = messageArgs(outerContext);
 
-	let menuItems = MessageAction.getButtons({ ...messageContext, message: messageContext.msg }, context, 'menu').map((item) => ({
-		icon: item.icon,
-		name: t(item.label),
-		type: 'message-action',
-		id: item.id,
-		modifier: item.color,
-	}));
+	const room = Rooms.findOne({ _id: messageContext.msg.rid });
+	const federationContext = isRoomFederated(room) ? 'federated' : '';
+	context = federationContext || context;
+
+	let menuItems = MessageAction.getButtons({ ...messageContext, message: messageContext.msg, user: messageContext.u }, context, 'menu').map(
+		(item) => ({
+			icon: item.icon,
+			name: t(item.label),
+			type: 'message-action',
+			id: item.id,
+			modifier: item.color,
+		}),
+	);
 
 	if (window.matchMedia('(max-width: 500px)').matches) {
 		const messageItems = MessageAction.getButtons(messageContext, context, 'message').map((item) => ({
@@ -320,9 +327,9 @@ export const getCommonRoomEvents = () => ({
 	'click .message-actions__menu'(e, template) {
 		const messageContext = messageArgs(this);
 		const { msg: message, u: user, context: ctx } = messageContext;
-		const context = ctx || message.context || message.actionContext || 'message';
-		const room = Rooms.findOne({ _id: template.data.rid });
-
+		const room = Rooms.findOne({ _id: message.rid });
+		const federationContext = isRoomFederated(room) ? 'federated' : '';
+		const context = ctx || message.context || message.actionContext || federationContext || 'message';
 		const allItems = MessageAction.getButtons({ ...messageContext, message, user }, context, 'menu').map((item) => ({
 			icon: item.icon,
 			name: t(item.label),

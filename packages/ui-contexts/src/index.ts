@@ -82,3 +82,8 @@ export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 export { ServerMethods, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethodFunction } from './ServerContext/methods';
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
+export { Fields } from './UserContext';
+
+export interface ITest {
+	test: string;
+}

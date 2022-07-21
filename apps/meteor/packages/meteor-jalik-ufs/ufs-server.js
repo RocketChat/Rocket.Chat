@@ -189,8 +189,11 @@ if (Meteor.isServer) {
 			);
 			ws.on('error', (err) => {
 				console.error(`ufs: cannot write chunk of file "${fileId}" (${err.message})`);
-				fs.unlink(tmpFile, (err) => {
-					err && console.error(`ufs: cannot delete temp file "${tmpFile}" (${err.message})`);
+				fs.stat(tmpFile, (err) => {
+					!err &&
+						fs.unlink(tmpFile, (err2) => {
+							err2 && console.error(`ufs: cannot delete temp file "${tmpFile}" (${err2.message})`);
+						});
 				});
 				res.writeHead(500);
 				res.end();

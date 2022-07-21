@@ -8,6 +8,7 @@ import QuoteBlock from './blocks/QuoteBlock';
 import TaskList from './blocks/TaskListBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
 import BigEmojiBlock from './emoji/BigEmojiBlock';
+import KatexErrorBoundary from './katex/KatexErrorBoundary';
 
 const CodeBlock = lazy(() => import('./code/CodeBlock'));
 const KatexBlock = lazy(() => import('./katex/KatexBlock'));
@@ -45,7 +46,11 @@ const Markup = ({ tokens }: MarkupProps): ReactElement => (
 					return <CodeBlock key={index} language={block.language} lines={block.value} />;
 
 				case 'KATEX':
-					return <KatexBlock key={index} code={block.value} />;
+					return (
+						<KatexErrorBoundary code={block.value} key={index}>
+							<KatexBlock code={block.value} />
+						</KatexErrorBoundary>
+					);
 
 				case 'LINE_BREAK':
 					return <br key={index} />;

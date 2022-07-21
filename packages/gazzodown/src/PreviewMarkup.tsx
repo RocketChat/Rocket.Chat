@@ -4,6 +4,7 @@ import { memo, ReactElement } from 'react';
 import PreviewCodeBlock from './code/PreviewCodeBlock';
 import PreviewInlineElements from './elements/PreviewInlineElements';
 import PreviewBigEmojiBlock from './emoji/PreviewBigEmojiBlock';
+import KatexErrorBoundary from './katex/KatexErrorBoundary';
 import PreviewKatexBlock from './katex/PreviewKatexBlock';
 
 const isOnlyBigEmojiBlock = (tokens: MessageParser.Root): tokens is [MessageParser.BigEmoji] =>
@@ -67,7 +68,11 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 		}
 
 		case 'KATEX':
-			return <PreviewKatexBlock code={firstBlock.value} />;
+			return (
+				<KatexErrorBoundary code={firstBlock.value}>
+					<PreviewKatexBlock code={firstBlock.value} />
+				</KatexErrorBoundary>
+			);
 
 		default:
 			return null;

@@ -43,7 +43,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 		<>
 			<Flex.Container alignItems='center' justifyContent='center'>
 				<Box>
-					<IconButton icon='chevron-down' square small onClick={onPreviousDateClick} style={{ verticalAlign: 'middle' }} />
+					<IconButton icon='chevron-down' small onClick={onPreviousDateClick} style={{ verticalAlign: 'middle' }} />
 					<Flex.Item basis='50%'>
 						<Margins inline='x8'>
 							<Box is='span' style={{ textAlign: 'center' }}>
@@ -51,7 +51,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 							</Box>
 						</Margins>
 					</Flex.Item>
-					<IconButton icon='chevron-down' square small disabled={displacement === 0} onClick={onNextDateClick} />
+					<IconButton icon='chevron-down' small disabled={displacement === 0} onClick={onNextDateClick} />
 				</Box>
 			</Flex.Container>
 			<Flex.Container>

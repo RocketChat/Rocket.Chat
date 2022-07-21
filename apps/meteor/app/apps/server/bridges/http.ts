@@ -114,7 +114,7 @@ export class AppHttpBridge extends HttpBridge {
 			}
 
 			return result;
-		} catch (e) {
+		} catch (e: any) {
 			return e.response;
 		}
 	}
