@@ -4,16 +4,16 @@ import { faker } from '@faker-js/faker';
 import { Auth } from './page-objects';
 
 test.describe('Register', () => {
-	let page: Page;
+	let pageTestContext: Page;
 	let pageAuth: Auth;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
+		pageTestContext = page;
 		pageAuth = new Auth(page);
 	});
 
 	test.beforeEach(async () => {
-		await page.goto('/');
+		await pageTestContext.goto('/');
 		await pageAuth.btnRegister.click();
 	});
 

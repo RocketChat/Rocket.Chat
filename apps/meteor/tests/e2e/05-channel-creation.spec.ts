@@ -4,17 +4,17 @@ import { faker } from '@faker-js/faker';
 import { HomeChannel, Auth } from './page-objects';
 
 test.describe('Channel Creation', () => {
-	let page: Page;
+	let pageTestContext: Page;
 	let pageAuth: Auth;
 	let pageHomeChannel: HomeChannel;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
+		pageTestContext = page;
 		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async () => {
 		await pageAuth.doLogin();
 	});
 
@@ -27,7 +27,7 @@ test.describe('Channel Creation', () => {
 		await pageHomeChannel.sidenav.inputChannelName.type(name);
 		await pageHomeChannel.sidenav.btnCreateChannel.click();
 
-		await expect(page).toHaveURL(`/channel/${name}`);
+		await expect(pageTestContext).toHaveURL(`/channel/${name}`);
 	});
 
 	test('expect create private channel', async () => {
@@ -38,6 +38,6 @@ test.describe('Channel Creation', () => {
 		await pageHomeChannel.sidenav.inputChannelName.type(name);
 		await pageHomeChannel.sidenav.btnCreateChannel.click();
 
-		await expect(page).toHaveURL(`/group/${name}`);
+		await expect(pageTestContext).toHaveURL(`/group/${name}`);
 	});
 });

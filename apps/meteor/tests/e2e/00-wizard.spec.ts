@@ -1,4 +1,4 @@
-import { test, expect, Page, Locator } from '@playwright/test';
+import { test, expect, Locator, Page } from '@playwright/test';
 
 import { Auth } from './page-objects';
 import { ADMIN_CREDENTIALS } from './utils/constants';
@@ -176,13 +176,13 @@ class SetupWizard {
 }
 
 test.describe('[Wizard]', () => {
-	let page: Page;
 	let pageAuth: Auth;
+	let pageTestContext: Page;
 
 	let setupWizard: SetupWizard;
 
-	test.beforeEach(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
+		pageTestContext = page;
 		pageAuth = new Auth(page);
 		setupWizard = new SetupWizard(page);
 	});
@@ -198,7 +198,7 @@ test.describe('[Wizard]', () => {
 
 		test('expect go to Step 3 successfully', async () => {
 			await setupWizard.stepTwoSuccess();
-			await expect(page).toHaveURL(/.*\/setup-wizard\/3/);
+			await expect(pageTestContext).toHaveURL(/.*\/setup-wizard\/3/);
 		});
 	});
 
@@ -246,7 +246,7 @@ test.describe('[Wizard]', () => {
 		test('expect confirm standalone', async () => {
 			await setupWizard.goToWorkspace.click();
 			// HOME_SELECTOR
-			await page.waitForSelector('//span[@class="rc-header__block"]');
+			await pageTestContext.waitForSelector('//span[@class="rc-header__block"]');
 		});
 	});
 });

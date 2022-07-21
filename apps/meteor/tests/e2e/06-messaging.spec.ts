@@ -13,34 +13,30 @@ const createBrowserContextForChat = async (browser: Browser): Promise<{ page: Pa
 };
 
 test.describe('Messaging', () => {
-	let page: Page;
+	let pageTestContext: Page;
 	let pageLogin: Auth;
 	let pageHomeChannel: HomeChannel;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
+		pageTestContext = page;
 		pageLogin = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async () => {
 		await pageLogin.doLogin();
 	});
 
 	test.describe('Normal messaging', async () => {
-		let anotherContext: { page: Page; pageHomeChannel: HomeChannel };
-
 		test.describe('General channel', async () => {
-			test.beforeAll(async ({ browser }) => {
-				anotherContext = await createBrowserContextForChat(browser);
+			test('expect received message is visible for two context', async ({ browser }) => {
+				const anotherContext = await createBrowserContextForChat(browser);
 				await anotherContext.pageHomeChannel.sidenav.doOpenChat('general');
 				await anotherContext.pageHomeChannel.content.doSendMessage('Hello');
 				await pageHomeChannel.sidenav.doOpenChat('general');
 				await pageHomeChannel.content.doSendMessage('Hello');
-			});
 
-			test('expect received message is visible for two context', async () => {
-				const anotherUserMessage = page.locator('[data-qa-type="message"][data-own="false"]').last();
+				const anotherUserMessage = pageTestContext.locator('[data-qa-type="message"][data-own="false"]').last();
 				const mainUserMessage = anotherContext.page.locator('[data-qa-type="message"][data-own="false"]').last();
 
 				await expect(anotherUserMessage).toBeVisible();
@@ -48,16 +44,14 @@ test.describe('Messaging', () => {
 			});
 		});
 		test.describe('Public channel', async () => {
-			test.beforeAll(async ({ browser }) => {
-				anotherContext = await createBrowserContextForChat(browser);
+			test('expect received message is visible for two context', async ({ browser }) => {
+				const anotherContext = await createBrowserContextForChat(browser);
 				await anotherContext.pageHomeChannel.sidenav.doOpenChat('public channel');
 				await anotherContext.pageHomeChannel.content.doSendMessage('Hello');
 				await pageHomeChannel.sidenav.doOpenChat('public channel');
 				await pageHomeChannel.content.doSendMessage('Hello');
-			});
 
-			test('expect received message is visible for two context', async () => {
-				const anotherUserMessage = page.locator('[data-qa-type="message"][data-own="false"]').last();
+				const anotherUserMessage = pageTestContext.locator('[data-qa-type="message"][data-own="false"]').last();
 				const mainUserMessage = anotherContext.page.locator('[data-qa-type="message"][data-own="false"]').last();
 
 				await expect(anotherUserMessage).toBeVisible();
@@ -66,16 +60,14 @@ test.describe('Messaging', () => {
 		});
 
 		test.describe('Private channel', async () => {
-			test.beforeAll(async ({ browser }) => {
-				anotherContext = await createBrowserContextForChat(browser);
+			test('expect received message is visible for two context', async ({ browser }) => {
+				const anotherContext = await createBrowserContextForChat(browser);
 				await anotherContext.pageHomeChannel.sidenav.doOpenChat('private channel');
 				await anotherContext.pageHomeChannel.content.doSendMessage('Hello');
 				await pageHomeChannel.sidenav.doOpenChat('private channel');
 				await pageHomeChannel.content.doSendMessage('Hello');
-			});
 
-			test('expect received message is visible for two context', async () => {
-				const anotherUserMessage = page.locator('[data-qa-type="message"][data-own="false"]').last();
+				const anotherUserMessage = pageTestContext.locator('[data-qa-type="message"][data-own="false"]').last();
 				const mainUserMessage = anotherContext.page.locator('[data-qa-type="message"][data-own="false"]').last();
 
 				await expect(anotherUserMessage).toBeVisible();
@@ -84,16 +76,14 @@ test.describe('Messaging', () => {
 		});
 
 		test.describe('Direct Message', async () => {
-			test.beforeAll(async ({ browser }) => {
-				anotherContext = await createBrowserContextForChat(browser);
+			test('expect received message is visible for two context', async ({ browser }) => {
+				const anotherContext = await createBrowserContextForChat(browser);
 				await anotherContext.pageHomeChannel.sidenav.doOpenChat('rocketchat.internal.admin.test');
 				await anotherContext.pageHomeChannel.content.doSendMessage('Hello');
 				await pageHomeChannel.sidenav.doOpenChat('user.name.test');
 				await pageHomeChannel.content.doSendMessage('Hello');
-			});
 
-			test('expect received message is visible for two context', async () => {
-				const anotherUserMessage = page.locator('[data-qa-type="message"][data-own="false"]').last();
+				const anotherUserMessage = pageTestContext.locator('[data-qa-type="message"][data-own="false"]').last();
 				const mainUserMessage = anotherContext.page.locator('[data-qa-type="message"][data-own="false"]').last();
 
 				await expect(anotherUserMessage).toBeVisible();
@@ -102,11 +92,8 @@ test.describe('Messaging', () => {
 		});
 
 		test.describe('File Upload', async () => {
-			test.beforeAll(async () => {
-				await pageHomeChannel.sidenav.doOpenChat('general');
-			});
-
 			test.beforeEach(async () => {
+				await pageHomeChannel.sidenav.doOpenChat('general');
 				await pageHomeChannel.content.doDragAndDropFile();
 			});
 
@@ -127,14 +114,14 @@ test.describe('Messaging', () => {
 			});
 
 			test('expect send file with different file name', async () => {
-				await pageHomeChannel.content.fileNameInput.type('any_file1.txt');
+				await pageHomeChannel.content.fileNameInput.fill('any_file1.txt');
 				await pageHomeChannel.content.buttonSend.click();
 				await expect(pageHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
 			});
 		});
 
 		test.describe('Messaging actions', async () => {
-			test.beforeAll(async () => {
+			test.beforeEach(async () => {
 				await pageHomeChannel.sidenav.doOpenChat('general');
 			});
 
@@ -143,7 +130,7 @@ test.describe('Messaging', () => {
 				await pageHomeChannel.content.doOpenMessageActionMenu();
 				await pageHomeChannel.content.doSelectAction('reply');
 				await pageHomeChannel.tabs.messageInput.type('this is a reply message');
-				await page.keyboard.press('Enter');
+				await pageTestContext.keyboard.press('Enter');
 				await expect(pageHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
 				await pageHomeChannel.tabs.closeThreadMessage.click();
 			});

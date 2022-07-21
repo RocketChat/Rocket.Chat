@@ -3,41 +3,29 @@ import { test, expect, Page } from '@playwright/test';
 import { Auth, HomeChannel } from './page-objects';
 
 test.describe('Emoji', () => {
-	let page: Page;
+	let pageTestContext: Page;
 	let pageAuth: Auth;
 	let pageHomeChannel: HomeChannel;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
+		pageTestContext = page;
 		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async () => {
 		await pageAuth.doLogin();
 		await pageHomeChannel.sidenav.doOpenChat('general');
 	});
 
 	test.describe('send emoji via screen:', () => {
-		test.beforeAll(async () => {
+		test('expect select a grinning emoji', async () => {
 			await pageHomeChannel.content.emojiBtn.click();
 			await pageHomeChannel.content.emojiPickerPeopleIcon.click();
-		});
 
-		test('expect select a grinning emoji', async () => {
 			await pageHomeChannel.content.emojiGrinning.first().click();
-		});
-
-		test('expect be that the value on the message input is the same as the emoji clicked', async () => {
 			await expect(pageHomeChannel.content.inputMain).toHaveValue(':grinning: ');
-		});
-
-		test('expect send the emoji', async () => {
-			await pageHomeChannel.content.inputMain.type(' ');
-			await page.keyboard.press('Enter');
-		});
-
-		test('expect be that the value on the message is the same as the emoji clicked', async () => {
+			await pageTestContext.keyboard.press('Enter');
 			await expect(pageHomeChannel.content.lastUserMessage).toContainText('😀');
 		});
 	});
@@ -45,33 +33,13 @@ test.describe('Emoji', () => {
 	test.describe('send emoji via text:', () => {
 		test('expect add emoji text to the message input', async () => {
 			await pageHomeChannel.content.inputMain.type(':smiley');
-		});
-
-		test('expect show the emoji popup bar', async () => {
 			await expect(pageHomeChannel.content.messagePopUp).toBeVisible();
-		});
 
-		test('expect be that the emoji popup bar title is emoji', async () => {
 			await expect(pageHomeChannel.content.messagePopUpTitle).toContainText('Emoji');
-		});
-
-		test('expect show the emoji popup bar items', async () => {
 			await expect(pageHomeChannel.content.messagePopUpItems).toBeVisible();
-		});
-
-		test('expect click the first emoji on the popup list', async () => {
 			await pageHomeChannel.content.messagePopUpFirstItem.click();
-		});
-
-		test('expect be that the value on the message input is the same as the emoji clicked', async () => {
 			await expect(pageHomeChannel.content.inputMain).toHaveValue(':smiley: ');
-		});
-
-		test('expect send the emoji', async () => {
 			await pageHomeChannel.content.btnSend.click();
-		});
-
-		test('expect be that the value on the message is the same as the emoji clicked', async () => {
 			await expect(pageHomeChannel.content.lastUserMessage).toContainText('😃');
 		});
 	});
