@@ -11,7 +11,7 @@ export const VoipRoomForeword = ({ room }: { room: IVoipRoom }): ReactElement =>
 
 	const avatarUrl = getUserAvatarURL(room.name);
 
-	const roomName = room.name;
+	const roomName = room.fname;
 
 	return (
 		<Box is='div' flexGrow={1} display='flex' justifyContent='center' flexDirection='column'>

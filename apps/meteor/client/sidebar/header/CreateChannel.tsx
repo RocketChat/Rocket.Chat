@@ -164,7 +164,7 @@ const CreateChannel = ({
 										: t('All_users_in_the_channel_can_write_new_messages')}
 								</Field.Description>
 							</Box>
-							<ToggleSwitch checked={values.readOnly} disabled={values.broadcast} onChange={handlers.handleReadOnly} />
+							<ToggleSwitch checked={values.readOnly} disabled={values.broadcast || values.federated} onChange={handlers.handleReadOnly} />
 						</Box>
 					</Field>
 					<Field>
