@@ -10,6 +10,9 @@ import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/serv
 import { deviceManagementEvents } from '../../../../server/services/device-management/events';
 import { hasLicense } from '../../../app/license/server/license';
 import { t } from '../../../../app/utils/server';
+import { Logger } from '../../../../app/logger/server';
+
+export const logger = new Logger('device-management');
 
 let mailTemplates: string;
 
@@ -61,8 +64,8 @@ export const listenSessionLogin = async (): Promise<void> => {
 			};
 
 			switch (device.type) {
-				case 'mobile':
 				case 'tablet':
+				case 'mobile':
 				case 'smarttv':
 					mailData.browserInfo = `${browser.name} ${browser.version}`;
 					mailData.osInfo = `${os.name} ${os.version || ''}`;
@@ -92,10 +95,7 @@ export const listenSessionLogin = async (): Promise<void> => {
 					data: mailData,
 				});
 			} catch ({ message }) {
-				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
-					method: 'listenSessionLogin',
-					message,
-				});
+				logger.error(`Failed to send email to ${email}: ${message}`);
 			}
 		}
 	});
