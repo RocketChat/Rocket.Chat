@@ -1139,13 +1139,13 @@ export type OmnichannelEndpoints = {
 			}>,
 		) => PaginatedResult<{ visitors: any[] }>;
 	};
-	'omnichannel/contact': {
+	'/v1/omnichannel/contact': {
 		POST: (params: POSTOmnichannelContactProps) => { contact: string };
 
 		GET: (params: GETOmnichannelContactProps) => { contact: ILivechatVisitor | null };
 	};
 
-	'omnichannel/contact.search': {
+	'/v1/omnichannel/contact.search': {
 		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
 	};
 };
