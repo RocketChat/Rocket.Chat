@@ -1,6 +1,6 @@
 import { check } from 'meteor/check';
 
-import { getLicenses, validateFormat, flatModules, getMaxActiveUsers } from '../../app/license/server/license';
+import { getLicenses, validateFormat, flatModules, getMaxActiveUsers, isEnterprise } from '../../app/license/server/license';
 import { Settings, Users } from '../../../app/models/server';
 import { API } from '../../../app/api/server/api';
 import { hasPermission } from '../../../app/authorization/server';
@@ -65,6 +65,17 @@ API.v1.addRoute(
 			const activeUsers = Users.getActiveLocalUserCount();
 
 			return API.v1.success({ maxActiveUsers, activeUsers });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'licenses.isEnterprise',
+	{ authOrAnonRequired: true },
+	{
+		get() {
+			const isEnterpriseEdtion = isEnterprise();
+			return API.v1.success({ isEnterprise: isEnterpriseEdtion });
 		},
 	},
 );

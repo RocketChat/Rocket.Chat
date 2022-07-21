@@ -41,7 +41,7 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): Reac
 			</TableCell>
 			<TableCell withTruncatedText>{email}</TableCell>
 			<TableCell withTruncatedText>
-				<Button small square secondaryDanger onClick={handleRemove}>
+				<Button small square secondary danger onClick={handleRemove}>
 					<Icon name='trash' size='x20' />
 				</Button>
 			</TableCell>

@@ -9,7 +9,7 @@ export class AuthorizationLivechat extends ServiceClassInternal implements IAuth
 
 	protected internal = true;
 
-	async canAccessRoom(room: IOmnichannelRoom, user: Pick<IUser, '_id'>, extraData?: object): Promise<boolean> {
+	async canAccessRoom(room: IOmnichannelRoom, user?: Pick<IUser, '_id'>, extraData?: object): Promise<boolean> {
 		for (const validator of validators) {
 			if (validator(room, user, extraData)) {
 				return true;

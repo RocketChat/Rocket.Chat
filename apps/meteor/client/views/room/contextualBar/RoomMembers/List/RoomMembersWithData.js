@@ -1,7 +1,9 @@
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useUserRoom, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import { useUserRoom, useAtLeastOnePermission, useUser } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState } from 'react';
 
+import * as Federation from '../../../../../../app/federation-v2/client/Federation';
 import { useRecordList } from '../../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useMembersList } from '../../../../hooks/useMembersList';
@@ -17,6 +19,7 @@ const RoomMembersWithData = ({ rid }) => {
 	const room = useUserRoom(rid);
 	const isTeam = room.teamMain;
 	const isDirect = room.t === 'd';
+	const user = useUser();
 
 	room.type = room.t;
 	room.rid = rid;
@@ -32,10 +35,13 @@ const RoomMembersWithData = ({ rid }) => {
 
 	const { phase, items, itemCount: total } = useRecordList(membersList);
 
-	const canAddUsers = useAtLeastOnePermission(
+	const hasPermissionToAddUsers = useAtLeastOnePermission(
 		useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]),
 		rid,
 	);
+	const canAddUsers = isRoomFederated(room)
+		? Federation.isEditableByTheUser(user, room) && hasPermissionToAddUsers
+		: hasPermissionToAddUsers;
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);

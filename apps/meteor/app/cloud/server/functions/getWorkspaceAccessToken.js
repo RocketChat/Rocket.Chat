@@ -1,8 +1,14 @@
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
-import { Settings } from '../../../models';
-import { settings } from '../../../settings';
+import { Settings } from '../../../models/server';
+import { settings } from '../../../settings/server';
 
+/**
+ * @param {boolean} forceNew
+ * @param {string} scope
+ * @param {boolean} save
+ * @returns string
+ */
 export function getWorkspaceAccessToken(forceNew = false, scope = '', save = true) {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
 

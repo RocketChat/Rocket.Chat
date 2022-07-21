@@ -7,6 +7,7 @@ import UTCClock from '../../../../components/UTCClock';
 import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
+import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import InfoPanel from '../../../InfoPanel';
 import Avatar from './Avatar';
 
@@ -61,11 +62,13 @@ function UserInfo({
 				{actions && <InfoPanel.Section>{actions}</InfoPanel.Section>}
 
 				<InfoPanel.Section>
-					<InfoPanel.Title title={(showRealNames && name) || username || name} icon={status} />
+					<InfoPanel.Title icon={status} title={getUserDisplayName(name, username, !!showRealNames)} />
 
-					<InfoPanel.Text>
-						<MarkdownText content={customStatus} parseEmoji={true} variant='inline' />
-					</InfoPanel.Text>
+					{customStatus && (
+						<InfoPanel.Text>
+							<MarkdownText content={customStatus} parseEmoji={true} variant='inline' />
+						</InfoPanel.Text>
+					)}
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
@@ -88,7 +91,7 @@ function UserInfo({
 					{username && username !== name && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Username')}</InfoPanel.Label>
-							<InfoPanel.Text>{username}</InfoPanel.Text>
+							<InfoPanel.Text data-qa='UserInfoUserName'>{username}</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 
@@ -102,7 +105,7 @@ function UserInfo({
 					{name && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Full_Name')}</InfoPanel.Label>
-							<InfoPanel.Text data-qa='UserInfoUserName'>{name}</InfoPanel.Text>
+							<InfoPanel.Text>{name}</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 

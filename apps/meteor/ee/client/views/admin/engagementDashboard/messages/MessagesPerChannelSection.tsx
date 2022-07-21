@@ -86,15 +86,15 @@ const MessagesPerChannelSection = (): ReactElement => {
 																			color: colors.w500,
 																		},
 																		{
-																			id: 'c',
+																			id: 'p',
 																			label: t('Private_Channels'),
-																			value: pie.c,
+																			value: pie.p,
 																			color: colors.s500,
 																		},
 																		{
-																			id: 'p',
+																			id: 'c',
 																			label: t('Public_Channels'),
-																			value: pie.p,
+																			value: pie.c,
 																			color: colors.p500,
 																		},
 																	]}
@@ -130,10 +130,9 @@ const MessagesPerChannelSection = (): ReactElement => {
 																			},
 																		},
 																	}}
-																	// @ts-ignore
-																	tooltip={({ value }): ReactElement => (
+																	tooltip={({ datum }): ReactElement => (
 																		<Box fontScale='p1m' color='alternative'>
-																			{t('Value_messages', { value })}
+																			{t('Value_messages', { value: datum.value })}
 																		</Box>
 																	)}
 																/>
@@ -194,8 +193,8 @@ const MessagesPerChannelSection = (): ReactElement => {
 														<Table.Cell>
 															<Margins inlineEnd='x4'>
 																{(t === 'd' && <Icon name='at' />) ||
-																	(t === 'c' && <Icon name='lock' />) ||
-																	(t === 'p' && <Icon name='hashtag' />)}
+																	(t === 'p' && <Icon name='lock' />) ||
+																	(t === 'c' && <Icon name='hashtag' />)}
 															</Margins>
 															{name}
 														</Table.Cell>

@@ -43,10 +43,14 @@ const sendResetNotitification = function (uid: string): void {
 					html,
 				} as any);
 			} catch (error) {
-				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
-					function: 'resetUserE2EEncriptionKey',
-					message: error.message,
-				});
+				throw new Meteor.Error(
+					'error-email-send-failed',
+					`Error trying to send email: ${error instanceof Error ? error.message : String(error)}`,
+					{
+						function: 'resetUserE2EEncriptionKey',
+						message: error instanceof Error ? error.message : String(error),
+					},
+				);
 			}
 		});
 	}

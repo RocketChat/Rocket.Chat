@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { createClient } from 'webdav';
+import { WebdavAccounts } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { getWebdavCredentials } from './getWebdavCredentials';
-import { WebdavAccounts } from '../../../models/server/raw';
 
 Meteor.methods({
 	async getWebdavFilePreview(accountId, path) {

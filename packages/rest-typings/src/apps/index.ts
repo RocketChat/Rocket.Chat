@@ -25,6 +25,22 @@ export type AppsEndpoints = {
 		GET: () => IUIActionButton[];
 	};
 
+	'/apps/languages': {
+		GET: () => {
+			apps: {
+				id: string;
+				languages: {
+					[key: string]: {
+						Params: string;
+						Description: string;
+						Setting_Name: string;
+						Setting_Description: string;
+					};
+				};
+			};
+		};
+	};
+
 	'/apps/public/:appId/get-sidebar-icon': {
 		GET: (params: { icon: string }) => unknown;
 	};
@@ -39,6 +55,14 @@ export type AppsEndpoints = {
 	'/apps/:id/screenshots': {
 		GET: () => {
 			screenshots: AppScreenshot[];
+		};
+	};
+
+	'/apps/:id/languages': {
+		GET: () => {
+			languages: {
+				[key: string]: object;
+			};
 		};
 	};
 
@@ -63,6 +87,12 @@ export type AppsEndpoints = {
 	'/apps/:id/status': {
 		POST: (params: { status: AppStatus }) => {
 			status: string;
+		};
+	};
+
+	'/apps/:id/versions': {
+		GET: () => {
+			apps: App[];
 		};
 	};
 
@@ -93,7 +123,8 @@ export type AppsEndpoints = {
 					id: string;
 					modifiedDate: Date;
 					title: string;
-			  }[]);
+			  }[])
+			| (() => { apps: App[] });
 
 		POST: (params: { appId: string; marketplace: boolean; version: string; permissionsGranted: IPermission[] }) => {
 			app: App;

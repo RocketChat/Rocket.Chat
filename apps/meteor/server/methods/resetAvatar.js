@@ -3,7 +3,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { FileUpload } from '../../app/file-upload';
 import { Users } from '../../app/models/server';
-import { settings } from '../../app/settings';
+import { settings } from '../../app/settings/server';
 import { hasPermission } from '../../app/authorization/server';
 import { api } from '../sdk/api';
 

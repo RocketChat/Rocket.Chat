@@ -82,7 +82,7 @@ const NotificationPreferences = ({
 							options={handleOptions.sound}
 							optionDefault={formValues?.desktopSound}
 						>
-							<IconButton icon='play' mis='x4' square onClick={handlePlaySound} />
+							<IconButton icon='play' mis='x4' onClick={handlePlaySound} />
 						</Preferences>
 					</NotificationByDevice>
 					<NotificationByDevice device={t('Mobile')} icon={'mobile'}>

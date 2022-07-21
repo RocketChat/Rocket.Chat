@@ -1,5 +1,6 @@
+import { Settings } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import { Settings } from '../../../app/models/server/raw';
 
 // Removes deprecated RDStation functionality from Omnichannel
 addMigration({

@@ -1,7 +1,8 @@
-import { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { FindOptions } from 'mongodb';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import { Rooms, Messages, Users } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { Rooms, Messages, Users } from '../../../models/server/raw';
 import { getValue } from '../../../settings/server/raw';
 
 export async function findMentionedMessages({
@@ -11,7 +12,7 @@ export async function findMentionedMessages({
 }: {
 	uid: string;
 	roomId: string;
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: FindOptions<IMessage>['sort'] };
 }): Promise<{
 	messages: IMessage[];
 	count: number;
@@ -19,7 +20,7 @@ export async function findMentionedMessages({
 	total: number;
 }> {
 	const room = await Rooms.findOneById(roomId);
-	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
+	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 	const user: IUser | null = await Users.findOneById(uid, { fields: { username: 1 } });
@@ -27,15 +28,13 @@ export async function findMentionedMessages({
 		throw new Error('invalid-user');
 	}
 
-	const cursor = await Messages.findVisibleByMentionAndRoomId(user.username, roomId, {
+	const { cursor, totalCount } = Messages.findVisibleByMentionAndRoomId(user.username, roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const messages = await cursor.toArray();
+	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		messages,
@@ -52,7 +51,7 @@ export async function findStarredMessages({
 }: {
 	uid: string;
 	roomId: string;
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: FindOptions<IMessage>['sort'] };
 }): Promise<{
 	messages: IMessage[];
 	count: number;
@@ -60,7 +59,7 @@ export async function findStarredMessages({
 	total: number;
 }> {
 	const room = await Rooms.findOneById(roomId);
-	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
+	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 	const user = await Users.findOneById(uid, { fields: { username: 1 } });
@@ -68,15 +67,13 @@ export async function findStarredMessages({
 		throw new Error('invalid-user');
 	}
 
-	const cursor = await Messages.findStarredByUserAtRoom(uid, roomId, {
+	const { cursor, totalCount } = Messages.findStarredByUserAtRoom(uid, roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const messages = await cursor.toArray();
+	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		messages,
@@ -121,7 +118,7 @@ export async function findSnippetedMessages({
 }: {
 	uid: string;
 	roomId: string;
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: FindOptions<IMessage>['sort'] };
 }): Promise<{
 	messages: IMessage[];
 	count: number;
@@ -133,19 +130,17 @@ export async function findSnippetedMessages({
 	}
 	const room = await Rooms.findOneById(roomId);
 
-	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
+	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 
-	const cursor = await Messages.findSnippetedByRoom(roomId, {
+	const { cursor, totalCount } = Messages.findSnippetedByRoom(roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const messages = await cursor.toArray();
+	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		messages,
@@ -164,7 +159,7 @@ export async function findDiscussionsFromRoom({
 	uid: string;
 	roomId: string;
 	text: string;
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: FindOptions<IMessage>['sort'] };
 }): Promise<{
 	messages: IMessage[];
 	count: number;
@@ -173,19 +168,17 @@ export async function findDiscussionsFromRoom({
 }> {
 	const room = await Rooms.findOneById(roomId);
 
-	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
+	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 
-	const cursor = Messages.findDiscussionsByRoomAndText(roomId, text, {
+	const { cursor, totalCount } = await Messages.findDiscussionsByRoomAndText(roomId, text, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const messages = await cursor.toArray();
+	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		messages,

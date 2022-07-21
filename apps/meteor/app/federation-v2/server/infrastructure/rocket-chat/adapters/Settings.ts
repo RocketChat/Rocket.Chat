@@ -1,7 +1,8 @@
 import yaml from 'js-yaml';
 import { SHA256 } from 'meteor/sha';
+import { v4 as uuidv4 } from 'uuid';
+import { Settings } from '@rocket.chat/models';
 
-import { Settings } from '../../../../../models/server/raw';
 import { settings, settingsRegistry } from '../../../../../settings/server';
 
 const EVERYTHING_REGEX = '.*';
@@ -32,7 +33,8 @@ export class RocketChatSettingsAdapter {
 	public getBridgePort(): number {
 		const [, , port] = this.getBridgeUrl().split(':');
 
-		return parseInt(port);
+		// The port should be 3300 if none is specified on the URL
+		return parseInt(port || '3300');
 	}
 
 	public getHomeServerUrl(): string {
@@ -51,8 +53,12 @@ export class RocketChatSettingsAdapter {
 		await Settings.updateValueById('Federation_Matrix_enabled', false);
 	}
 
-	public onFederationEnabledStatusChanged(callback: Function): void {
-		settings.watchMultiple(
+	public isFederationEnabled(): boolean {
+		return settings.get('Federation_Matrix_enabled') === true;
+	}
+
+	public onFederationEnabledStatusChanged(callback: Function): Function {
+		return settings.watchMultiple(
 			[
 				'Federation_Matrix_enabled',
 				'Federation_Matrix_id',
@@ -127,9 +133,10 @@ export class RocketChatSettingsAdapter {
 					i18nLabel: 'Federation_Matrix_enabled',
 					i18nDescription: 'Federation_Matrix_enabled_desc',
 					alert: 'Federation_Matrix_Enabled_Alert',
+					public: true,
 				});
 
-				const uniqueId = settings.get('uniqueID');
+				const uniqueId = settings.get('uniqueID') || uuidv4().slice(0, 15).replace(new RegExp('-', 'g'), '_');
 				const hsToken = SHA256(`hs_${uniqueId}`);
 				const asToken = SHA256(`as_${uniqueId}`);
 

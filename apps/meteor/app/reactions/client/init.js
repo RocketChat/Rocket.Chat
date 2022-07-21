@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 
-import { Rooms, Subscriptions } from '../../models';
+import { Rooms, Subscriptions } from '../../models/client';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { EmojiPicker } from '../../emoji';

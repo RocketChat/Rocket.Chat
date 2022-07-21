@@ -11,16 +11,9 @@ export type DownloadPendingFilesParamsPOST = {
 
 const DownloadPendingFilesParamsPOSTSchema = {
 	type: 'object',
-	properties: {
-		userId: {
-			type: 'string',
-		},
-		count: {
-			type: 'number',
-		},
-	},
+	properties: {},
 	additionalProperties: false,
-	required: ['userId', 'count'],
+	required: [],
 };
 
 export const isDownloadPendingFilesParamsPOST = ajv.compile<DownloadPendingFilesParamsPOST>(DownloadPendingFilesParamsPOSTSchema);

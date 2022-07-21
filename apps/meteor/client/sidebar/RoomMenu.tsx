@@ -11,8 +11,8 @@ import {
 	useMethod,
 	useTranslation,
 	TranslationKey,
+	Fields,
 } from '@rocket.chat/ui-contexts';
-import { Fields } from '@rocket.chat/ui-contexts/dist/UserContext';
 import React, { memo, ReactElement, useMemo } from 'react';
 
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
@@ -202,7 +202,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
 			options={menuOptions}
-			renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props} />}
+			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} title={label} icon={icon} {...props} />}
 		/>
 	);
 };

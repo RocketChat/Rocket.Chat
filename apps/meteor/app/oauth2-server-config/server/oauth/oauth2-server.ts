@@ -4,9 +4,10 @@ import { Mongo } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 import { OAuth2Server } from 'meteor/rocketchat:oauth2-server';
 import { Request, Response } from 'express';
+import { IUser } from '@rocket.chat/core-typings';
+import { OAuthApps } from '@rocket.chat/models';
 
 import { Users } from '../../../models/server';
-import { OAuthApps } from '../../../models/server/raw';
 import { API } from '../../../api/server';
 
 const oauth2server = new OAuth2Server({
@@ -15,7 +16,8 @@ const oauth2server = new OAuth2Server({
 	authCodesCollectionName: 'rocketchat_oauth_auth_codes',
 	// TODO: Remove workaround. Used to pass meteor collection reference to a package
 	clientsCollection: new Mongo.Collection(OAuthApps.col.collectionName),
-	debug: true,
+	// If you're developing something related to oauth servers, you should change this to true
+	debug: false,
 });
 
 // https://github.com/RocketChat/rocketchat-oauth2-server/blob/e758fd7ef69348c7ceceabe241747a986c32d036/model.coffee#L27-L27
@@ -23,6 +25,29 @@ function getAccessToken(accessToken: string): any {
 	return oauth2server.oauth.model.AccessTokens.findOne({
 		accessToken,
 	});
+}
+
+export function oAuth2ServerAuth(partialRequest: {
+	headers: Record<string, any>;
+	query: Record<string, any>;
+}): { user: IUser } | undefined {
+	const headerToken = partialRequest.headers.authorization?.replace('Bearer ', '');
+	const queryToken = partialRequest.query.access_token;
+
+	const accessToken = getAccessToken(headerToken || queryToken);
+
+	// If there is no token available or the token has expired, return undefined
+	if (!accessToken || (accessToken.expires != null && accessToken.expires !== 0 && accessToken.expires < new Date())) {
+		return;
+	}
+
+	const user = Users.findOne(accessToken.userId);
+
+	if (user == null) {
+		return;
+	}
+
+	return { user };
 }
 
 oauth2server.app.disable('x-powered-by');
@@ -57,33 +82,5 @@ oauth2server.routes.get('/oauth/userinfo', function (req: Request, res: Response
 });
 
 API.v1.addAuthMethod(function () {
-	const headerToken = this.request.headers.authorization;
-	const getToken = this.request.query.access_token;
-
-	let token: string | undefined;
-	if (headerToken != null) {
-		const matches = headerToken.match(/Bearer\s(\S+)/);
-		if (matches) {
-			token = matches[1];
-		} else {
-			token = undefined;
-		}
-	}
-	const bearerToken = token || getToken;
-	if (bearerToken == null) {
-		return;
-	}
-
-	const accessToken = getAccessToken(bearerToken);
-	if (accessToken == null) {
-		return;
-	}
-	if (accessToken.expires != null && accessToken.expires !== 0 && accessToken.expires < new Date()) {
-		return;
-	}
-	const user = Users.findOne(accessToken.userId);
-	if (user == null) {
-		return;
-	}
-	return { user };
+	return oAuth2ServerAuth(this.request);
 });

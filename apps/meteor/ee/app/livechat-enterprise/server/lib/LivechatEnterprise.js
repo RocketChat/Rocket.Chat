@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { LivechatInquiry } from '@rocket.chat/models';
 
-import { Users } from '../../../../../app/models';
-import { LivechatInquiry, OmnichannelQueue } from '../../../../../app/models/server/raw';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
+import { Users, LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
@@ -230,14 +229,14 @@ const queueWorker = {
 		const activeQueues = await this.getActiveQueues();
 		queueLogger.debug(`Active queues: ${activeQueues.length}`);
 
-		await OmnichannelQueue.initQueue();
 		this.running = true;
 		return this.execute();
 	},
 	async stop() {
 		queueLogger.debug('Stopping queue');
+		await LivechatInquiry.unlockAll();
+
 		this.running = false;
-		return OmnichannelQueue.stopQueue();
 	},
 	async getActiveQueues() {
 		// undefined = public queue(without department)
@@ -266,12 +265,16 @@ const queueWorker = {
 	async checkQueue(queue) {
 		queueLogger.debug(`Processing items for queue ${queue || 'Public'}`);
 		try {
-			if (await OmnichannelQueue.lockQueue()) {
-				await processWaitingQueue(queue);
-				queueLogger.debug(`Queue ${queue || 'Public'} processed. Unlocking`);
-				await OmnichannelQueue.unlockQueue();
-			} else {
-				queueLogger.debug('Queue locked. Waiting');
+			const nextInquiry = await LivechatInquiry.findNextAndLock(queue);
+			if (!nextInquiry) {
+				queueLogger.debug(`No more items for queue ${queue || 'Public'}`);
+				return;
+			}
+
+			const result = await processWaitingQueue(queue, nextInquiry);
+
+			if (!result) {
+				await LivechatInquiry.unlock(nextInquiry._id);
 			}
 		} catch (e) {
 			queueLogger.error({
