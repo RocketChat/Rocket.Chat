@@ -177,12 +177,10 @@ class SetupWizard {
 
 test.describe('[Wizard]', () => {
 	let pageAuth: Auth;
-	let pageTestContext: Page;
 
 	let setupWizard: SetupWizard;
 
 	test.beforeEach(async ({ page }) => {
-		pageTestContext = page;
 		pageAuth = new Auth(page);
 		setupWizard = new SetupWizard(page);
 	});
@@ -196,9 +194,9 @@ test.describe('[Wizard]', () => {
 			await setupWizard.stepTwoFailedWithBlankFields();
 		});
 
-		test('expect go to Step 3 successfully', async () => {
+		test('expect go to Step 3 successfully', async ({ page }) => {
 			await setupWizard.stepTwoSuccess();
-			await expect(pageTestContext).toHaveURL(/.*\/setup-wizard\/3/);
+			await expect(page).toHaveURL(/.*\/setup-wizard\/3/);
 		});
 	});
 
@@ -243,10 +241,10 @@ test.describe('[Wizard]', () => {
 			await expect(setupWizard.standaloneConfirmText).toBeVisible();
 		});
 
-		test('expect confirm standalone', async () => {
+		test('expect confirm standalone', async ({ page }) => {
 			await setupWizard.goToWorkspace.click();
 			// HOME_SELECTOR
-			await pageTestContext.waitForSelector('//span[@class="rc-header__block"]');
+			await page.waitForSelector('//span[@class="rc-header__block"]');
 		});
 	});
 });

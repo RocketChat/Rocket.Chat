@@ -1,15 +1,13 @@
-import { Page, test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
 import { HomeChannel, Auth } from './page-objects';
 
 test.describe('Channel Creation', () => {
-	let pageTestContext: Page;
 	let pageAuth: Auth;
 	let pageHomeChannel: HomeChannel;
 
 	test.beforeEach(async ({ page }) => {
-		pageTestContext = page;
 		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 	});
@@ -18,7 +16,7 @@ test.describe('Channel Creation', () => {
 		await pageAuth.doLogin();
 	});
 
-	test('expect create public channel', async () => {
+	test('expect create public channel', async ({ page }) => {
 		const name = faker.animal.type() + Date.now();
 
 		await pageHomeChannel.sidenav.btnCreate.click();
@@ -27,10 +25,10 @@ test.describe('Channel Creation', () => {
 		await pageHomeChannel.sidenav.inputChannelName.type(name);
 		await pageHomeChannel.sidenav.btnCreateChannel.click();
 
-		await expect(pageTestContext).toHaveURL(`/channel/${name}`);
+		await expect(page).toHaveURL(`/channel/${name}`);
 	});
 
-	test('expect create private channel', async () => {
+	test('expect create private channel', async ({ page }) => {
 		const name = faker.animal.type() + Date.now();
 
 		await pageHomeChannel.sidenav.btnCreate.click();
@@ -38,6 +36,6 @@ test.describe('Channel Creation', () => {
 		await pageHomeChannel.sidenav.inputChannelName.type(name);
 		await pageHomeChannel.sidenav.btnCreateChannel.click();
 
-		await expect(pageTestContext).toHaveURL(`/group/${name}`);
+		await expect(page).toHaveURL(`/group/${name}`);
 	});
 });

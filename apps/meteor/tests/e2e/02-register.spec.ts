@@ -1,19 +1,17 @@
-import { Page, test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
 import { Auth } from './page-objects';
 
 test.describe('Register', () => {
-	let pageTestContext: Page;
 	let pageAuth: Auth;
 
 	test.beforeEach(async ({ page }) => {
-		pageTestContext = page;
 		pageAuth = new Auth(page);
 	});
 
-	test.beforeEach(async () => {
-		await pageTestContext.goto('/');
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/');
 		await pageAuth.btnRegister.click();
 	});
 

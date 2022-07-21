@@ -1,14 +1,12 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 import { Auth, HomeChannel } from './page-objects';
 
 test.describe('Emoji', () => {
-	let pageTestContext: Page;
 	let pageAuth: Auth;
 	let pageHomeChannel: HomeChannel;
 
 	test.beforeEach(async ({ page }) => {
-		pageTestContext = page;
 		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 	});
@@ -19,13 +17,13 @@ test.describe('Emoji', () => {
 	});
 
 	test.describe('send emoji via screen:', () => {
-		test('expect select a grinning emoji', async () => {
+		test('expect select a grinning emoji', async ({ page }) => {
 			await pageHomeChannel.content.emojiBtn.click();
 			await pageHomeChannel.content.emojiPickerPeopleIcon.click();
 
 			await pageHomeChannel.content.emojiGrinning.first().click();
 			await expect(pageHomeChannel.content.inputMain).toHaveValue(':grinning: ');
-			await pageTestContext.keyboard.press('Enter');
+			await page.keyboard.press('Enter');
 			await expect(pageHomeChannel.content.lastUserMessage).toContainText('😀');
 		});
 	});
