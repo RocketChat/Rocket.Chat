@@ -1,10 +1,12 @@
+import { IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useSetting, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
+import { Action } from '../../../hooks/useActionSpread';
 
-export const useResetE2EKeyAction = (_id) => {
+export const useResetE2EKeyAction = (userId: IUser['_id']): Action | undefined => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const handleCloseModal = useMutableCallback(() => setModal());
@@ -14,7 +16,7 @@ export const useResetE2EKeyAction = (_id) => {
 
 	const resetE2EEKey = useCallback(async () => {
 		handleCloseModal();
-		const result = await resetE2EEKeyRequest({ userId: _id });
+		const result = await resetE2EEKeyRequest({ userId });
 
 		if (result) {
 			setModal(
@@ -23,7 +25,7 @@ export const useResetE2EKeyAction = (_id) => {
 				</GenericModal>,
 			);
 		}
-	}, [resetE2EEKeyRequest, setModal, t, _id, handleCloseModal]);
+	}, [resetE2EEKeyRequest, setModal, t, userId, handleCloseModal]);
 
 	const confirmResetE2EEKey = useCallback(() => {
 		setModal(

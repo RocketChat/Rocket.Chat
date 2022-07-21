@@ -1,10 +1,12 @@
+import { IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useSetting, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
+import { Action } from '../../../hooks/useActionSpread';
 
-export const useResetTOTPAction = (_id) => {
+export const useResetTOTPAction = (userId: IUser['_id']): Action | undefined => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const handleCloseModal = useMutableCallback(() => setModal());
@@ -14,7 +16,7 @@ export const useResetTOTPAction = (_id) => {
 
 	const resetTOTP = useCallback(async () => {
 		setModal();
-		const result = await resetTOTPRequest({ userId: _id });
+		const result = await resetTOTPRequest({ userId });
 
 		if (result) {
 			setModal(
@@ -23,7 +25,7 @@ export const useResetTOTPAction = (_id) => {
 				</GenericModal>,
 			);
 		}
-	}, [resetTOTPRequest, setModal, t, _id, handleCloseModal]);
+	}, [resetTOTPRequest, setModal, t, userId, handleCloseModal]);
 
 	const confirmResetTOTP = useCallback(() => {
 		setModal(

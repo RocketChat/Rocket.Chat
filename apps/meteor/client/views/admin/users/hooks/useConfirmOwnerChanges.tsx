@@ -1,14 +1,17 @@
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ComponentProps } from 'react';
 
-import ConfirmOwnerChangeWarningModal from '../../../../components/ConfirmOwnerChangeWarningModal';
+import ConfirmOwnerChangeWarningModal from '../../../../components/ConfirmOwnerChangeModal';
 
-export const confirmOwnerChanges =
-	(action, modalProps = {}, onChange) =>
-	async (): Promise<void> => {
-		const setModal = useSetModal();
-		const dispatchToastMessage = useToastMessageDispatch();
+export const useConfirmOwnerChanges = (): ((
+	action: (confirm?: boolean) => void,
+	modalProps: Pick<ComponentProps<typeof ConfirmOwnerChangeWarningModal>, 'contentTitle' | 'confirmText'>,
+	onChange: () => void,
+) => Promise<void>) => {
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
 
+	return async (action, modalProps, onChange): Promise<void> => {
 		try {
 			return await action();
 		} catch (error) {
@@ -38,3 +41,4 @@ export const confirmOwnerChanges =
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
+};

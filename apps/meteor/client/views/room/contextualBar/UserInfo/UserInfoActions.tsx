@@ -14,7 +14,7 @@ type UserInfoActionsProps = {
 
 const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(
-		useUserInfoActions({ ...user._id, ...user.username }, rid, backToList),
+		useUserInfoActions({ _id: user._id, username: user.username }, rid, backToList),
 	);
 
 	const menu = useMemo(() => {
@@ -28,6 +28,7 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 				mi='x4'
 				secondary
 				small={false}
+				maxHeight='initial'
 				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
 				flexShrink={0}
 				options={menuOptions}
@@ -36,8 +37,9 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 		);
 	}, [menuOptions]);
 
+	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]) => (
+		const mapAction = ([key, { label, icon, action }]: any): ReactElement => (
 			<UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon} />
 		);
 

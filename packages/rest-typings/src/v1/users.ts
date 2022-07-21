@@ -300,6 +300,12 @@ export type UsersEndpoints = {
 			message: string;
 		};
 	};
+
+	'/v1/users.delete': {
+		POST: (params: { userId: IUser['_id']; confirmRelinquish?: boolean }) => {
+			success: boolean;
+		};
+	};
 };
 
 export * from './users/UserCreateParamsPOST';

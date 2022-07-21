@@ -27,7 +27,7 @@ const AdminUserInfoActions = ({ username, userId, isActive, isAdmin, onChange, o
 	const canDirectMessage = usePermission('create-d');
 	const canEditOtherUserInfo = usePermission('edit-other-user-info');
 
-	const changeAdminStatusAction = useChangeAdminStatusAction(userId, isAdmin, username, onChange);
+	const changeAdminStatusAction = useChangeAdminStatusAction(userId, isAdmin, onChange);
 	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onChange);
 	const deleteUserAction = useDeleteUserAction(userId, onChange, onReload);
 	const resetTOTPAction = useResetTOTPAction(userId);
@@ -35,6 +35,7 @@ const AdminUserInfoActions = ({ username, userId, isActive, isAdmin, onChange, o
 
 	const directMessageClick = useCallback(
 		() =>
+			username &&
 			directRoute.push({
 				rid: username,
 			}),
@@ -66,11 +67,11 @@ const AdminUserInfoActions = ({ username, userId, isActive, isAdmin, onChange, o
 					action: editUserClick,
 				},
 			}),
-			makeAdmin: changeAdminStatusAction,
-			resetE2EKey: resetE2EKeyAction,
-			resetTOTP: resetTOTPAction,
-			delete: deleteUserAction,
-			changeActiveStatus: changeUserStatusAction,
+			...(changeAdminStatusAction && { makeAdmin: changeAdminStatusAction }),
+			...(resetE2EKeyAction && { resetE2EKey: resetE2EKeyAction }),
+			...(resetTOTPAction && { resetTOTP: resetTOTPAction }),
+			...(deleteUserAction && { delete: deleteUserAction }),
+			...(changeUserStatusAction && { changeActiveStatus: changeUserStatusAction }),
 		}),
 		[
 			t,
@@ -107,8 +108,9 @@ const AdminUserInfoActions = ({ username, userId, isActive, isAdmin, onChange, o
 		);
 	}, [menuOptions]);
 
+	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]) => (
+		const mapAction = ([key, { label, icon, action }]: any): ReactElement => (
 			<UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon} />
 		);
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

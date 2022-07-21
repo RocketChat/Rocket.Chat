@@ -1,44 +1,49 @@
+import { IUser } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { confirmOwnerChanges } from '../lib/confirmOwnerChanges';
+import { Action } from '../../../hooks/useActionSpread';
+import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
 
-export const useChangeUserStatusAction = (_id, isActive, onChange) => {
+export const useChangeUserStatusAction = (userId: IUser['_id'], isActive: boolean, onChange: () => void): Action | undefined => {
 	const t = useTranslation();
+	const confirmOwnerChanges = useConfirmOwnerChanges();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const changeActiveStatusRequest = useEndpoint('POST', '/v1/users.setActiveStatus');
 	const canEditOtherUserActiveStatus = usePermission('edit-other-user-active-status');
+	const changeActiveStatusMessage = isActive ? 'User_has_been_deactivated' : 'User_has_been_activated';
 
 	const activeStatusQuery = useMemo(
 		() => ({
-			userId: _id,
+			userId,
 			activeStatus: !isActive,
+			confirmRelinquish: false,
 		}),
-		[_id, isActive],
+		[userId, isActive],
 	);
-	const changeActiveStatusMessage = isActive ? 'User_has_been_deactivated' : 'User_has_been_activated';
-	const changeActiveStatusRequest = useEndpoint('POST', '/v1/users.setActiveStatus');
 
-	const changeActiveStatus = confirmOwnerChanges(
-		async (confirm = false) => {
-			if (confirm) {
-				activeStatusQuery.confirmRelinquish = confirm;
-			}
-
-			try {
-				const result = await changeActiveStatusRequest(activeStatusQuery);
-				if (result.success) {
-					dispatchToastMessage({ type: 'success', message: t(changeActiveStatusMessage) });
-					onChange();
+	const changeActiveStatus = (): Promise<void> =>
+		confirmOwnerChanges(
+			async (confirm = false) => {
+				if (confirm) {
+					activeStatusQuery.confirmRelinquish = confirm;
 				}
-			} catch (error) {
-				throw error;
-			}
-		},
-		{
-			confirmLabel: t('Yes_deactivate_it'),
-		},
-		onChange,
-	);
+
+				try {
+					const result = await changeActiveStatusRequest(activeStatusQuery);
+					if (result) {
+						dispatchToastMessage({ type: 'success', message: t(changeActiveStatusMessage) });
+						onChange();
+					}
+				} catch (error) {
+					throw error;
+				}
+			},
+			{
+				confirmText: t('Yes_deactivate_it'),
+			},
+			onChange,
+		);
 
 	return canEditOtherUserActiveStatus
 		? {
