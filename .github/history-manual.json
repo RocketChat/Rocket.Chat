@@ -189,5 +189,12 @@
 		"contributors": [
 			"ggazzo"
 		]
+	}],
+	"4.8.2": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego"
+		]
 	}]
 }

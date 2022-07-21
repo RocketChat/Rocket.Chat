@@ -64,6 +64,7 @@ type EventLikeCallbackSignatures = {
 	'onValidateLogin': (login: ILoginAttempt) => void;
 	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
 	'beforeCreateDirectRoom': (members: IUser[]) => void;
+	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
 	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 };
@@ -147,6 +148,7 @@ type Hook =
 	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
 	| 'afterRoomNameChange'
+	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateLogin'
 	| 'afterValidateNewOAuthUser'
