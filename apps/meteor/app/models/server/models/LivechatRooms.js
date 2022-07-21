@@ -208,7 +208,7 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
-			'email.thread': emailThread,
+			'email.thread': { $in: emailThread },
 			...(departmentId && { departmentId }),
 		};
 

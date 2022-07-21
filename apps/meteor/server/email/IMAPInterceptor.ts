@@ -34,7 +34,7 @@ export class IMAPInterceptor extends EventEmitter {
 		imapConfig: IMAP.Config,
 		private options: IMAPOptions = {
 			deleteAfterRead: false,
-			filter: ['!SEEN'],
+			filter: ['UNSEEN'],
 			markSeen: true,
 			maxRetries: 10,
 		},
