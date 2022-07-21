@@ -15,8 +15,8 @@ export const useMessagesSent = ({ period }: UseMessagesSentOptions) => {
 			const { start, end } = getPeriodRange(period);
 
 			const response = await getMessagesSent({
-				start,
-				end,
+				start: start.toISOString(),
+				end: end.toISOString(),
 			});
 
 			return response

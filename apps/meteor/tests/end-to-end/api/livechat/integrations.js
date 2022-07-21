@@ -8,7 +8,9 @@ describe('LIVECHAT - Integrations', function () {
 
 	before((done) => getCredentials(done));
 
-	before((done) => updateSetting('Livechat_enabled', true).then(done));
+	before((done) => {
+		updateSetting('Livechat_enabled', true).then(done);
+	});
 
 	describe('livechat/integrations.settings', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
