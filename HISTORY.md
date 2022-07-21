@@ -1,4 +1,74 @@
 
+# 4.8.2
+`2022-07-20  ·  4 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Error "numRequestsAllowed" property in rateLimiter for REST API endpoint when upgrading ([#26058](https://github.com/RocketChat/Rocket.Chat/pull/26058))
+
+- Not showing edit message button when blocking edit after N minutes ([#25724](https://github.com/RocketChat/Rocket.Chat/pull/25724) by [@matthias4217](https://github.com/matthias4217))
+
+  Previously, in Rocketchat 4.7.0 and later,  as mentioned in https://github.com/RocketChat/Rocket.Chat/issues/25478, the edit button was not displayed on the interface in the minute after having sent a message. This is now fixed : messages can be edited right after sending them.
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+- Settings not being overwritten to their default values ([#25891](https://github.com/RocketChat/Rocket.Chat/pull/25891))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Avoid unneeded permission updates when EE license is applied ([#26253](https://github.com/RocketChat/Rocket.Chat/pull/26253))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@matthias4217](https://github.com/matthias4217)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 4.8.1
+`2022-06-08  ·  4 🐛  ·  5 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- AccountBox checks for condition ([#25708](https://github.com/RocketChat/Rocket.Chat/pull/25708))
+
+- Bump meteor-node-stubs to version 1.2.3 ([#25669](https://github.com/RocketChat/Rocket.Chat/pull/25669) by [@Sh0uld](https://github.com/Sh0uld))
+
+  With meteor-node-stubs version 1.2.3 a bug was fixed, which occured in issue #25460 and probably #25513 (last one not tested).
+  For the issue in meteor see: https://github.com/meteor/meteor/issues/11974
+
+- Fix prom-client new promise usage ([#25781](https://github.com/RocketChat/Rocket.Chat/pull/25781))
+
+- Wrong argument name preventing Omnichannel Chat Forward to User  ([#25723](https://github.com/RocketChat/Rocket.Chat/pull/25723))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Sh0uld](https://github.com/Sh0uld)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@dudanogueira](https://github.com/dudanogueira)
+- [@ggazzo](https://github.com/ggazzo)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 # 4.8.0
 `2022-05-31  ·  16 🎉  ·  13 🚀  ·  55 🐛  ·  151 🔍  ·  52 👩‍💻👨‍💻`
 
@@ -399,7 +469,7 @@
 
 - Settings listeners not receiving overwritten values from env vars ([#25448](https://github.com/RocketChat/Rocket.Chat/pull/25448))
 
-- Showing Blank Message Inside Report ([#25007](https://github.com/RocketChat/Rocket.Chat/pull/25007) by [@nishant23122000](https://github.com/nishant23122000))
+- Showing Blank Message Inside Report ([#25007](https://github.com/RocketChat/Rocket.Chat/pull/25007))
 
   https://user-images.githubusercontent.com/53515714/161038085-4a86c7ae-6751-4996-9767-b1c9e0331a6c.mp4
 
@@ -536,7 +606,7 @@
 
 - Chore: Convert customUserStatus folder to ts ([#25288](https://github.com/RocketChat/Rocket.Chat/pull/25288))
 
-- Chore: Convert email inbox feature to TypeScript ([#25298](https://github.com/RocketChat/Rocket.Chat/pull/25298))
+- Chore: Convert email inbox feature to TypeScript ([#25298](https://github.com/RocketChat/Rocket.Chat/pull/25298) by [@ujorgeleite](https://github.com/ujorgeleite))
 
 - Chore: Convert federationDashboard folder to ts ([#25343](https://github.com/RocketChat/Rocket.Chat/pull/25343))
 
@@ -857,9 +927,9 @@
 
 - Regression: yarn dev triggers build dependencies ([#25208](https://github.com/RocketChat/Rocket.Chat/pull/25208))
 
-- Release 4.7.0 ([#25390](https://github.com/RocketChat/Rocket.Chat/pull/25390)
+- Release 4.7.0 ([#25390](https://github.com/RocketChat/Rocket.Chat/pull/25390) by [@Himanshu664](https://github.com/Himanshu664) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@lingohub[bot]](https://github.com/lingohub[bot]))
 
-- Release 4.7.1 ([#25510](https://github.com/RocketChat/Rocket.Chat/pull/25510))
+- Release 4.7.1 ([#25510](https://github.com/RocketChat/Rocket.Chat/pull/25510) by [@felipe-menelau](https://github.com/felipe-menelau))
 
 - Release 4.7.2 ([#25580](https://github.com/RocketChat/Rocket.Chat/pull/25580))
 
@@ -875,12 +945,13 @@
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@divinespear](https://github.com/divinespear)
 - [@eduardofcabrera](https://github.com/eduardofcabrera)
+- [@felipe-menelau](https://github.com/felipe-menelau)
 - [@kibonusp](https://github.com/kibonusp)
 - [@lingohub[bot]](https://github.com/lingohub[bot])
-- [@nishant23122000](https://github.com/nishant23122000)
 - [@ostjen](https://github.com/ostjen)
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@sidmohanty11](https://github.com/sidmohanty11)
+- [@ujorgeleite](https://github.com/ujorgeleite)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -898,7 +969,6 @@
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
 - [@dougfabris](https://github.com/dougfabris)
-- [@felipe-menelau](https://github.com/felipe-menelau)
 - [@felipe-rod123](https://github.com/felipe-rod123)
 - [@filipemarins](https://github.com/filipemarins)
 - [@gabriellsh](https://github.com/gabriellsh)
@@ -912,6 +982,7 @@
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
 - [@matheuslc](https://github.com/matheuslc)
 - [@murtaza98](https://github.com/murtaza98)
+- [@nishant23122000](https://github.com/nishant23122000)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@rique223](https://github.com/rique223)
 - [@rodrigok](https://github.com/rodrigok)
@@ -921,7 +992,6 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@tmontini](https://github.com/tmontini)
-- [@ujorgeleite](https://github.com/ujorgeleite)
 - [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
@@ -969,7 +1039,7 @@
 - [@ggazzo](https://github.com/ggazzo)
 
 # 4.7.2
-`2022-05-20  ·  5 🐛  ·  1 🔍  ·  6 👩‍💻👨‍💻`
+`2022-05-20  ·  5 🐛  ·  2 🔍  ·  7 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `14.18.3`
@@ -999,19 +1069,22 @@
 
 - Chore: Add Livechat repo into Monorepo packages ([#25312](https://github.com/RocketChat/Rocket.Chat/pull/25312))
 
+- Release 4.7.2 ([#25580](https://github.com/RocketChat/Rocket.Chat/pull/25580))
+
 </details>
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@cauefcr](https://github.com/cauefcr)
+- [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 
 # 4.7.1
-`2022-05-13  ·  1 🎉  ·  2 🐛  ·  3 👩‍💻👨‍💻`
+`2022-05-13  ·  1 🎉  ·  2 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `14.18.3`
@@ -1021,7 +1094,7 @@
 ### 🎉 New features
 
 
-- Use setting to determine if initial general channel is needed ([#25441](https://github.com/RocketChat/Rocket.Chat/pull/25441))
+- Use setting to determine if initial general channel is needed ([#25441](https://github.com/RocketChat/Rocket.Chat/pull/25441) by [@felipe-menelau](https://github.com/felipe-menelau))
 
   - Adds flag responsible for overwriting #general channel creation
 
@@ -1032,9 +1105,21 @@
 
 - Spotlight results showing usernames instead of real names ([#25471](https://github.com/RocketChat/Rocket.Chat/pull/25471))
 
-### 👩‍💻👨‍💻 Core Team 🤓
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 4.7.1 ([#25510](https://github.com/RocketChat/Rocket.Chat/pull/25510) by [@felipe-menelau](https://github.com/felipe-menelau))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
 
 - [@felipe-menelau](https://github.com/felipe-menelau)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
@@ -1223,7 +1308,7 @@
 
 - room creation fails if app framework is disabled ([#25200](https://github.com/RocketChat/Rocket.Chat/pull/25200))
 
-- Showing Blank Message Inside Report ([#25007](https://github.com/RocketChat/Rocket.Chat/pull/25007) by [@nishant23122000](https://github.com/nishant23122000))
+- Showing Blank Message Inside Report ([#25007](https://github.com/RocketChat/Rocket.Chat/pull/25007))
 
   https://user-images.githubusercontent.com/53515714/161038085-4a86c7ae-6751-4996-9767-b1c9e0331a6c.mp4
 
@@ -1455,7 +1540,6 @@
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@kibonusp](https://github.com/kibonusp)
-- [@nishant23122000](https://github.com/nishant23122000)
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@sidmohanty11](https://github.com/sidmohanty11)
 
@@ -1479,6 +1563,7 @@
 - [@jeanfbrito](https://github.com/jeanfbrito)
 - [@juliajforesti](https://github.com/juliajforesti)
 - [@murtaza98](https://github.com/murtaza98)
+- [@nishant23122000](https://github.com/nishant23122000)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
@@ -1709,7 +1794,7 @@
 
 - German translation for Monitore ([#24785](https://github.com/RocketChat/Rocket.Chat/pull/24785) by [@JMoVS](https://github.com/JMoVS))
 
-- Handle Other Formats inside Upload Avatar ([#24226](https://github.com/RocketChat/Rocket.Chat/pull/24226) by [@nishant23122000](https://github.com/nishant23122000))
+- Handle Other Formats inside Upload Avatar ([#24226](https://github.com/RocketChat/Rocket.Chat/pull/24226))
 
   After resolving issue #24213 :
 
@@ -1746,7 +1831,7 @@
 
 - Prevent call button toggle when user is on call ([#24758](https://github.com/RocketChat/Rocket.Chat/pull/24758))
 
-- Prune Message issue ([#24424](https://github.com/RocketChat/Rocket.Chat/pull/24424) by [@nishant23122000](https://github.com/nishant23122000))
+- Prune Message issue ([#24424](https://github.com/RocketChat/Rocket.Chat/pull/24424))
 
 - Push privacy config to not show username not being respected ([#24606](https://github.com/RocketChat/Rocket.Chat/pull/24606))
 
@@ -1990,7 +2075,6 @@
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@eduardofcabrera](https://github.com/eduardofcabrera)
 - [@gerzonc](https://github.com/gerzonc)
-- [@nishant23122000](https://github.com/nishant23122000)
 - [@ostjen](https://github.com/ostjen)
 - [@tkurz](https://github.com/tkurz)
 
@@ -2011,6 +2095,7 @@
 - [@juliajforesti](https://github.com/juliajforesti)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
 - [@murtaza98](https://github.com/murtaza98)
+- [@nishant23122000](https://github.com/nishant23122000)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
@@ -2317,7 +2402,7 @@
 
 - E2E password generator ([#24114](https://github.com/RocketChat/Rocket.Chat/pull/24114) by [@eduardofcabrera](https://github.com/eduardofcabrera) & [@ostjen](https://github.com/ostjen))
 
-- Marketplace sort filter ([#24567](https://github.com/RocketChat/Rocket.Chat/pull/24567))
+- Marketplace sort filter ([#24567](https://github.com/RocketChat/Rocket.Chat/pull/24567) by [@ujorgeleite](https://github.com/ujorgeleite))
 
   Implemented a sort filter for the marketplace screen. This component sorts the marketplace apps list in 4 ways, alphabetical order(A-Z), inverse alphabetical order(Z-A), most recently updated(MRU), and least recent updated(LRU). Besides that, I've generalized some components and types to increase code reusability, renamed some helpers as well as deleted some useless ones, and inserted the necessary new translations on the English i18n dictionary.
   Demo gif:
@@ -2698,6 +2783,7 @@
 - [@eduardofcabrera](https://github.com/eduardofcabrera)
 - [@ostjen](https://github.com/ostjen)
 - [@pedrogssouza](https://github.com/pedrogssouza)
+- [@ujorgeleite](https://github.com/ujorgeleite)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -2723,18 +2809,13 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
-- [@ujorgeleite](https://github.com/ujorgeleite)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.4.5
-
 `2022-05-30  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
-- Node: `14.18.2`
-- NPM: `6.14.15`
 - MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
-- Apps-Engine: `1.30.0`
 
 ### 🐛 Bug fixes
 
@@ -2752,7 +2833,6 @@
 - Node: `14.18.3`
 - NPM: `6.14.15`
 - MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
-- Apps-Engine: `1.30.0`
 
 ### 🐛 Bug fixes
 
@@ -3085,7 +3165,7 @@
 
   We should not keep `password` as required field when we check set random password field. In this password should not be required
 
-- Solved Report Message Blank  ([#24262](https://github.com/RocketChat/Rocket.Chat/pull/24262) by [@nishant23122000](https://github.com/nishant23122000))
+- Solved Report Message Blank  ([#24262](https://github.com/RocketChat/Rocket.Chat/pull/24262))
 
   After resolving issue #24261  :
 
@@ -3223,7 +3303,6 @@
 - [@eduardofcabrera](https://github.com/eduardofcabrera)
 - [@grahhnt](https://github.com/grahhnt)
 - [@mbreslein-thd](https://github.com/mbreslein-thd)
-- [@nishant23122000](https://github.com/nishant23122000)
 - [@ostjen](https://github.com/ostjen)
 - [@sidmohanty11](https://github.com/sidmohanty11)
 
@@ -3243,6 +3322,7 @@
 - [@juliajforesti](https://github.com/juliajforesti)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
 - [@murtaza98](https://github.com/murtaza98)
+- [@nishant23122000](https://github.com/nishant23122000)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rique223](https://github.com/rique223)
@@ -4109,6 +4189,30 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 4.1.6
+`2022-06-02  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Omnichannel managers can't join chats in progress ([#24553](https://github.com/RocketChat/Rocket.Chat/pull/24553))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix in-correct room status shown to agents ([#24592](https://github.com/RocketChat/Rocket.Chat/pull/24592))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@murtaza98](https://github.com/murtaza98)
+- [@renatobecker](https://github.com/renatobecker)
 
 # 4.1.2
 `2021-11-08  ·  3 🐛  ·  3 👩‍💻👨‍💻`
@@ -5081,10 +5185,7 @@
 `2022-05-30  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
-- Node: `12.22.1`
-- NPM: `6.14.1`
 - MongoDB: `3.4, 3.6, 4.0, 4.2`
-- Apps-Engine: `1.27.1`
 
 ### 🐛 Bug fixes
 
