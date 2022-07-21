@@ -755,20 +755,28 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			}
 
 			const existingMember = await TeamMember.findOneByUserIdAndTeamId(member.userId, team._id);
-			if (!existingMember) {
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(team.roomId, member.userId);
+
+			let removedUser: IUser | undefined;
+
+			if (existingMember) {
+				if (existingMember.roles?.includes('owner')) {
+					const owners = TeamMember.findByTeamIdAndRole(team._id, 'owner');
+					const totalOwners = await owners.count();
+					if (totalOwners === 1) {
+						throw new Error('last-owner-can-not-be-removed');
+					}
+				}
+
+				TeamMember.removeById(existingMember._id);
+				removedUser = usersToRemove.find((u) => u._id === existingMember.userId);
+			} else if (subscription) {
+				// handle old cases where user was not added to team
+				removedUser = usersToRemove.find((u) => u._id === member.userId);
+			} else {
 				throw new Error('member-does-not-exist');
 			}
 
-			if (existingMember.roles?.includes('owner')) {
-				const owners = TeamMember.findByTeamIdAndRole(team._id, 'owner');
-				const totalOwners = await owners.count();
-				if (totalOwners === 1) {
-					throw new Error('last-owner-can-not-be-removed');
-				}
-			}
-
-			TeamMember.removeById(existingMember._id);
-			const removedUser = usersToRemove.find((u) => u._id === existingMember.userId);
 			if (removedUser) {
 				await removeUserFromRoom(
 					team.roomId,
