@@ -83,23 +83,23 @@ const MessagesPerChannelSection = (): ReactElement => {
 																			id: 'd',
 																			label: t('Direct_Messages'),
 																			value: pie.d,
-																			color: colors.y500,
-																		},
-																		{
-																			id: 'c',
-																			label: t('Private_Channels'),
-																			value: pie.c,
-																			color: colors.g500,
+																			color: colors.w500,
 																		},
 																		{
 																			id: 'p',
-																			label: t('Public_Channels'),
+																			label: t('Private_Channels'),
 																			value: pie.p,
-																			color: colors.b500,
+																			color: colors.s500,
+																		},
+																		{
+																			id: 'c',
+																			label: t('Public_Channels'),
+																			value: pie.c,
+																			color: colors.p500,
 																		},
 																	]}
 																	innerRadius={0.6}
-																	colors={[colors.y500, colors.g500, colors.b500]}
+																	colors={[colors.w500, colors.s500, colors.p500]}
 																	// @ts-ignore
 																	enableRadialLabels={false}
 																	enableSlicesLabels={false}
@@ -130,10 +130,9 @@ const MessagesPerChannelSection = (): ReactElement => {
 																			},
 																		},
 																	}}
-																	// @ts-ignore
-																	tooltip={({ value }): ReactElement => (
+																	tooltip={({ datum }): ReactElement => (
 																		<Box fontScale='p1m' color='alternative'>
-																			{t('Value_messages', { value })}
+																			{t('Value_messages', { value: datum.value })}
 																		</Box>
 																	)}
 																/>
@@ -146,15 +145,15 @@ const MessagesPerChannelSection = (): ReactElement => {
 														<Box>
 															<Margins block='x4'>
 																<Box color='info' fontScale='p1'>
-																	<LegendSymbol color={colors.y500} />
+																	<LegendSymbol color={colors.w500} />
 																	{t('Private_Chats')}
 																</Box>
 																<Box color='info' fontScale='p1'>
-																	<LegendSymbol color={colors.g500} />
+																	<LegendSymbol color={colors.s500} />
 																	{t('Private_Channels')}
 																</Box>
 																<Box color='info' fontScale='p1'>
-																	<LegendSymbol color={colors.b500} />
+																	<LegendSymbol color={colors.p500} />
 																	{t('Public_Channels')}
 																</Box>
 															</Margins>
@@ -194,8 +193,8 @@ const MessagesPerChannelSection = (): ReactElement => {
 														<Table.Cell>
 															<Margins inlineEnd='x4'>
 																{(t === 'd' && <Icon name='at' />) ||
-																	(t === 'c' && <Icon name='lock' />) ||
-																	(t === 'p' && <Icon name='hashtag' />)}
+																	(t === 'p' && <Icon name='lock' />) ||
+																	(t === 'c' && <Icon name='hashtag' />)}
 															</Margins>
 															{name}
 														</Table.Cell>

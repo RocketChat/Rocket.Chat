@@ -24,6 +24,6 @@
 		"declaration": false,
 		"declarationMap": false
 	},
-	"include": ["./src/**/*", "../../../apps/meteor/definition", "./definition"],
+	"include": ["./src/**/*", "./definition", "../../../apps/meteor/definition/externals/meteor/rocketchat-streamer.d.ts"],
 	"exclude": ["./dist", "./ecosystem.config.js"]
 }

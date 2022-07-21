@@ -4,11 +4,11 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useState, memo } from 'react';
 
-import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
+import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 
-type Username = IUser['username'];
+type Username = Exclude<IUser['username'], undefined>;
 
 type CreateDirectMessageProps = {
 	onClose: () => void;
@@ -18,17 +18,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	const t = useTranslation();
 	const [users, setUsers] = useState<Array<Username>>([]);
 
-	const createDirect = useEndpointActionExperimental('POST', 'dm.create');
-
-	const onChangeUsers = useMutableCallback((value: Username, action: string) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return setUsers([...users, value]);
-		}
-		setUsers(users.filter((current) => current !== value));
-	});
+	const createDirect = useEndpointActionExperimental('POST', '/v1/dm.create');
 
 	const onCreate = useMutableCallback(async () => {
 		try {
@@ -52,7 +42,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 			<Modal.Content>
 				<Box>{t('Direct_message_creation_description')}</Box>
 				<Box mbs='x16' display='flex' flexDirection='column' width='full'>
-					<UserAutoCompleteMultiple value={users} onChange={onChangeUsers} />
+					<UserAutoCompleteMultipleFederated value={users} onChange={setUsers} />
 				</Box>
 			</Modal.Content>
 			<Modal.Footer>

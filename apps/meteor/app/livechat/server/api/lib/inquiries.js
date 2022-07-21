@@ -1,5 +1,6 @@
+import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '@rocket.chat/models';
+
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '../../../../models/server/raw';
 
 const agentDepartments = async (userId) => {
 	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(({ departmentId }) => departmentId);
@@ -48,9 +49,9 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 		],
 	};
 
-	const cursor = LivechatInquiry.find(filter, options);
-	const total = await cursor.count();
-	const inquiries = await cursor.toArray();
+	const { cursor, totalCount } = LivechatInquiry.findPaginated(filter, options);
+
+	const [inquiries, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		inquiries,

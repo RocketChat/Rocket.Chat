@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Settings } from '../../../models/server';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import Bridge from '../irc-bridge';
 
 Meteor.methods({

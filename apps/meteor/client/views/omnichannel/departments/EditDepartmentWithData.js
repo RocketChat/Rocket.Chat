@@ -11,7 +11,7 @@ import EditDepartmentWithAllowedForwardData from './EditDepartmentWithAllowedFor
 const param = { onlyMyDepartments: true };
 function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`livechat/department/${id}`, param);
+	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/department/${id}`, param);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

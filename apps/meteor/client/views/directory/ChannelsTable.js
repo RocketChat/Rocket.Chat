@@ -93,7 +93,7 @@ function ChannelsTable() {
 	const channelRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
 
-	const { value: data = {} } = useEndpointData('directory', query);
+	const { value: data = {} } = useEndpointData('/v1/directory', query);
 
 	const onClick = useMemo(
 		() => (name, type) => (e) => {

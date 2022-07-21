@@ -34,7 +34,7 @@ const FileExport: FC<FileExportProps> = ({ onCancel, rid }) => {
 		[t],
 	);
 
-	const roomsExport = useEndpoint('POST', 'rooms.export');
+	const roomsExport = useEndpoint('POST', '/v1/rooms.export');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

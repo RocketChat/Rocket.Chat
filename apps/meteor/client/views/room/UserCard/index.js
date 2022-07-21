@@ -23,7 +23,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 
 	const query = useMemo(() => ({ username }), [username]);
 
-	const { value: data, phase: state } = useEndpointData('users.info', query);
+	const { value: data, phase: state } = useEndpointData('/v1/users.info', query);
 
 	ref.current = target;
 

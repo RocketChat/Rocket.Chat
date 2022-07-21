@@ -1,5 +1,4 @@
 import { addDecorator, addParameters } from '@storybook/react';
-import 'loki/configure-react';
 import 'emoji-mart/css/emoji-mart.css';
 import '../src/styles/index.scss';
 

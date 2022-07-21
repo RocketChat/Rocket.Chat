@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
-import { debounce, getAvatarUrl, canRenderMessage, throttle, upsert, parse } from '../../components/helpers';
+import { debounce, getAvatarUrl, canRenderMessage, throttle, upsert } from '../../components/helpers';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
 import { loadConfig } from '../../lib/main';
@@ -116,8 +116,6 @@ class ChatContainer extends Component {
 		if (msg.trim() === '') {
 			return;
 		}
-
-		msg = parse(msg);
 
 		await this.grantUser();
 		const { _id: rid } = await this.getRoom();

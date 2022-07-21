@@ -80,7 +80,7 @@ export const ConfirmationModal = withTranslation()(({
 	<Modal.Message>{text}</Modal.Message>
 	<ButtonGroup>
 		<Button outline secondary onClick={onCancel}>{cancelButtonText || t('no')}</Button>
-		<Button danger onClick={onConfirm}>{confirmButtonText || t('yes')}</Button>
+		<Button secondaryDanger onClick={onConfirm}>{confirmButtonText || t('yes')}</Button>
 	</ButtonGroup>
 </Modal>);
 

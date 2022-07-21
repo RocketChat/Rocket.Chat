@@ -1,46 +1,28 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
-import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 
-import { ILicenseTag } from '../../ee/app/license/definitions/ILicenseTag';
+import { isTruthy } from '../../lib/isTruthy';
 
 function PlanTag(): ReactElement {
-	const [plans, setPlans] = useSafely(
-		useState<
-			{
-				name: string;
-				color: string;
-			}[]
-		>([]),
-	);
+	const [plans, setPlans] = useState<string[]>([]);
 
-	const getTags = useMethod('license:getTags');
+	const isEnterpriseEdition = useEndpoint('GET', '/v1/licenses.isEnterprise');
+	const { data } = useQuery(['licenses.isEnterprise'], () => isEnterpriseEdition());
 
 	useEffect(() => {
-		const developmentTag = process.env.NODE_ENV === 'development' ? { name: 'development', color: '#095ad2' } : null;
+		const developmentTag = process.env.NODE_ENV === 'development' ? 'Development' : null;
+		const enterpriseTag = data?.isEnterprise ? 'Enterprise' : null;
 
-		const fetchTags = async (): Promise<void> => {
-			const tags = await getTags();
-			setPlans([developmentTag, ...tags].filter(Boolean) as ILicenseTag[]);
-		};
-
-		fetchTags();
-	}, [getTags, setPlans]);
+		setPlans([developmentTag, enterpriseTag].filter(isTruthy));
+	}, [setPlans, data?.isEnterprise]);
 
 	return (
 		<>
-			{plans.map(({ name, color }) => (
+			{plans.map((name) => (
 				<Box marginInline='x4' display='inline-block' verticalAlign='middle' key={name}>
-					<Tag
-						style={{
-							color: '#fff',
-							backgroundColor: color,
-							textTransform: 'capitalize',
-						}}
-					>
-						{name}
-					</Tag>
+					<Tag variant='primary'>{name}</Tag>
 				</Box>
 			))}
 		</>

@@ -1,7 +1,7 @@
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
+import { Roles, Users } from '@rocket.chat/models';
 
 import { SystemLogger } from './logger/system';
-import { Roles, Users } from '../../app/models/server/raw';
 import { executeSendMessage } from '../../app/lib/server/methods/sendMessage';
 import { createDirectMessage } from '../methods/createDirectMessage';
 

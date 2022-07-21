@@ -15,7 +15,7 @@ export const JoinCallButton = ({ t, ...props }) => {
 
 	const clickJoinCall = () => {
 		switch (props.callProvider) {
-			case constants.jitsiCallStartedMessageType: {
+			case 'video-conference': {
 				window.open(props.url, room._id);
 				break;
 			}

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
+import { Uploads } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Uploads } from '../../../models/server/raw';
 import { canAccessRoom } from '../../../authorization/server';
 
 let protectedFiles;

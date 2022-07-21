@@ -9,7 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { e2e } from '../../../e2e/client';
-import { Users, ChatSubscription } from '../../../models';
+import { Users, ChatSubscription } from '../../../models/client';
 import { getUserPreference } from '../../../utils';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';

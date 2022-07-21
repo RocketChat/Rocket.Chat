@@ -1,4 +1,5 @@
-import { Permissions, Roles } from '../../../../app/models/server/raw';
+import { Permissions, Roles } from '@rocket.chat/models';
+
 import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 
 export const createPermissions = async (): Promise<void> => {

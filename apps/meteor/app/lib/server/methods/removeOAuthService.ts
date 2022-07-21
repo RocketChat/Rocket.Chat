@@ -1,9 +1,9 @@
 import { capitalize } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Settings } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
-import { Settings } from '../../../models/server/raw';
 
 Meteor.methods({
 	async removeOAuthService(name) {

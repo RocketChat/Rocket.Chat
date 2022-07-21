@@ -1,25 +1,18 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { ComponentProps, createElement, lazy, ReactElement } from 'react';
-import { Subscription, Unsubscribe } from 'use-subscription';
-
-const MainLayout = lazy(() => import('../views/root/MainLayout'));
+import { ReactElement } from 'react';
 
 type AppLayoutDescriptor = ReactElement | null;
 
-class AppLayoutSubscription extends Emitter<{ update: void }> implements Subscription<AppLayoutDescriptor> {
+class AppLayoutSubscription extends Emitter<{ update: void }> {
 	private descriptor: AppLayoutDescriptor = null;
 
-	getCurrentValue = (): AppLayoutDescriptor => this.descriptor;
+	getSnapshot = (): AppLayoutDescriptor => this.descriptor;
 
-	subscribe = (callback: () => void): Unsubscribe => this.on('update', callback);
+	subscribe = (onStoreChange: () => void): (() => void) => this.on('update', onStoreChange);
 
 	setCurrentValue(descriptor: AppLayoutDescriptor): void {
 		this.descriptor = descriptor;
 		this.emit('update');
-	}
-
-	renderMainLayout(props: ComponentProps<typeof MainLayout> = {}): void {
-		this.setCurrentValue(createElement(MainLayout, props));
 	}
 
 	render(element: ReactElement): void {

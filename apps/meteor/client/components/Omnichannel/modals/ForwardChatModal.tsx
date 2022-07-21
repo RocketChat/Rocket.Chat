@@ -22,7 +22,7 @@ const ForwardChatModal = ({
 	room: IOmnichannelRoom;
 }): ReactElement => {
 	const t = useTranslation();
-	const getUserData = useEndpoint('GET', 'users.info');
+	const getUserData = useEndpoint('GET', '/v1/users.info');
 
 	const { getValues, handleSubmit, register, setFocus, setValue, watch } = useForm();
 

@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import type { IEmailInbox } from '@rocket.chat/core-typings';
+import { EmailInbox, EmailMessageHistory } from '@rocket.chat/models';
 
-import { EmailInbox, EmailMessageHistory } from '../../../app/models/server/raw';
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { onEmailReceived } from './EmailInbox_Incoming';
 import { logger } from './logger';

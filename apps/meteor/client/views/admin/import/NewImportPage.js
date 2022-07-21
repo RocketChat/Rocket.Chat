@@ -38,8 +38,8 @@ function NewImportPage() {
 	const newImportRoute = useRoute('admin-import-new');
 	const prepareImportRoute = useRoute('admin-import-prepare');
 
-	const uploadImportFile = useEndpoint('POST', 'uploadImportFile');
-	const downloadPublicImportFile = useEndpoint('POST', 'downloadPublicImportFile');
+	const uploadImportFile = useEndpoint('POST', '/v1/uploadImportFile');
+	const downloadPublicImportFile = useEndpoint('POST', '/v1/downloadPublicImportFile');
 
 	useEffect(() => {
 		if (importerKey && !importer) {
@@ -168,7 +168,7 @@ function NewImportPage() {
 		<Page className='page-settings'>
 			<Page.Header title={t('Import_New_File')}>
 				<ButtonGroup>
-					<Button ghost onClick={handleBackToImportsButtonClick}>
+					<Button secondary onClick={handleBackToImportsButtonClick}>
 						<Icon name='back' /> {t('Back_to_imports')}
 					</Button>
 					{importer && (

@@ -6,8 +6,8 @@ import ResetSettingButton from '../ResetSettingButton';
 type BooleanSettingInputProps = {
 	_id: string;
 	label: string;
-	disabled: boolean;
-	readonly: boolean;
+	disabled?: boolean;
+	readonly?: boolean;
 	value: boolean;
 	hasResetButton: boolean;
 	onChangeValue: (value: boolean) => void;

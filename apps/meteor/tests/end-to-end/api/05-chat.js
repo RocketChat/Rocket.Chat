@@ -2155,6 +2155,26 @@ describe('[Chat]', function () {
 				})
 				.end(done);
 		});
+		it('should return the discussions of a room even requested with count and offset params', (done) => {
+			request
+				.get(api('chat.getDiscussions'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
 
 		function filterDiscussionsByText(text) {
 			it(`should return the room's discussion list filtered by the text '${text}'`, (done) => {
@@ -2164,6 +2184,30 @@ describe('[Chat]', function () {
 					.query({
 						roomId: testChannel._id,
 						text,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('count');
+						expect(res.body.messages).to.have.lengthOf(1);
+						expect(res.body.messages[0].drid).to.be.equal(discussionRoom.rid);
+					})
+					.end(done);
+			});
+
+			it(`should return the room's discussion list filtered by the text '${text}' even requested with count and offset params`, (done) => {
+				request
+					.get(api('chat.getDiscussions'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+						text,
+						count: 5,
+						offset: 0,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -2320,6 +2364,31 @@ describe('Threads', () => {
 			});
 		});
 
+		it("should return the room's thread list even requested with count and offset params", (done) => {
+			updatePermission('view-c-room', ['admin', 'user']).then(() => {
+				request
+					.get(api('chat.getThreadsList'))
+					.set(credentials)
+					.query({
+						rid: testChannel._id,
+						count: 5,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('threads').and.to.be.an('array');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('count');
+						expect(res.body.threads).to.have.lengthOf(1);
+						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
+					})
+					.end(done);
+			});
+		});
+
 		function filterThreadsByText(text) {
 			it(`should return the room's thread list filtered by the text '${text}'`, (done) => {
 				request
@@ -2328,6 +2397,29 @@ describe('Threads', () => {
 					.query({
 						rid: testChannel._id,
 						text,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('threads').and.to.be.an('array');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('count');
+						expect(res.body.threads).to.have.lengthOf(1);
+						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
+					})
+					.end(done);
+			});
+			it(`should return the room's thread list filtered by the text '${text}' even requested with count and offset params`, (done) => {
+				request
+					.get(api('chat.getThreadsList'))
+					.set(credentials)
+					.query({
+						rid: testChannel._id,
+						text,
+						count: 5,
+						offset: 0,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)

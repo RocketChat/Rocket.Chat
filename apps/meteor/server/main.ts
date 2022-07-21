@@ -1,3 +1,5 @@
+import './models/startup';
+import '../ee/server/models/startup';
 import './services/startup';
 import '../app/settings/server';
 import '../lib/oauthRedirectUri';
@@ -72,6 +74,7 @@ import './publications/spotlight';
 import './publications/subscription';
 import './routes/avatar';
 import './routes/i18n';
+import './routes/timesync';
 import './stream/stdout';
 import './stream/streamBroadcast';
 import './settings/index';

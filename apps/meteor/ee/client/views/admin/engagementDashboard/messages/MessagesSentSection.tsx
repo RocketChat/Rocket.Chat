@@ -94,7 +94,7 @@ const MessagesSentSection = (): ReactElement => {
 										}}
 										colors={[
 											// TODO: Get it from theme
-											colors.b500,
+											colors.p500,
 										]}
 										enableLabel={false}
 										enableGridY={false}

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { FileProp } from '@rocket.chat/core-typings';
+import { Integrations, FederationServers, LivechatVisitors } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload/server';
-import { Users, Subscriptions, Messages, Rooms, LivechatDepartmentAgents, LivechatVisitors } from '../../../models/server';
-import { FederationServers, Integrations } from '../../../models/server/raw';
+import { Users, Subscriptions, Messages, Rooms, LivechatDepartmentAgents } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -65,17 +65,17 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 		if (user.roles.includes('livechat-agent')) {
 			// Remove user as livechat agent
 			LivechatDepartmentAgents.removeByAgentId(userId);
-			LivechatVisitors.removeContactManagerByUsername(user.username);
+			await LivechatVisitors.removeContactManagerByUsername(user.username);
 		}
 
 		if (user.roles.includes('livechat-monitor')) {
 			// Remove user as Unit Monitor
 			LivechatUnitMonitors.removeByMonitorId(userId);
-			LivechatVisitors.removeContactManagerByUsername(user.username);
+			await LivechatVisitors.removeContactManagerByUsername(user.username);
 		}
 
 		// removes user's avatar
-		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url') {
+		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url' || user.avatarOrigin === 'rest') {
 			FileUpload.getStore('Avatars').deleteByName(user.username);
 		}
 

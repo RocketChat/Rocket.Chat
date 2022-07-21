@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../../../models';
+import { Users } from '../../../../models/server';
 
 export default async function handleUserRegistered(args) {
 	// Check if there is an user with the given username

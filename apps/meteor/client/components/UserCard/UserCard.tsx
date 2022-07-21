@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ActionButton, Skeleton } from '@rocket.chat/fuselage';
+import { Box, IconButton, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { forwardRef, ReactNode, ComponentProps } from 'react';
 
@@ -80,10 +80,10 @@ const UserCard = forwardRef(function UserCard(
 				)}
 			</Box>
 			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
-				<Box mbe='x4' withTruncatedText display='flex'>
+				<Box mbe='x4' withTruncatedText display='flex' alignItems='center'>
 					{!name ? <Skeleton width='100%' /> : <UserCardUsername status={status} name={name} />}
 					{nickname && (
-						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={t('Nickname')} color='hint' mis='x4' fontScale='p2' withTruncatedText>
+						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={nickname} color='hint' mis='x4' fontScale='p2' withTruncatedText>
 							({nickname})
 						</Box>
 					)}
@@ -108,7 +108,7 @@ const UserCard = forwardRef(function UserCard(
 			</Box>
 			{onClose && (
 				<Box>
-					<ActionButton small ghost title={t('Close')} icon='cross' onClick={onClose} />
+					<IconButton small title={t('Close')} icon='cross' onClick={onClose} />
 				</Box>
 			)}
 		</UserCardContainer>

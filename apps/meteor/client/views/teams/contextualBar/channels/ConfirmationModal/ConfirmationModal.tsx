@@ -32,7 +32,7 @@ const ConfirmationModal: FC<ConfirmationModalProps> = ({ onClose, onConfirmActio
 			<Modal.Footer>
 				<ButtonGroup align='end'>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button onClick={handleConfirm} primary danger>
+					<Button onClick={handleConfirm} danger>
 						{labelButton}
 					</Button>
 				</ButtonGroup>

@@ -25,12 +25,12 @@ const ParentTeam = ({ room }: ParentTeamProps): ReactElement | null => {
 	}
 
 	const { value, phase } = useEndpointData(
-		'teams.info',
+		'/v1/teams.info',
 		useMemo(() => ({ teamId }), [teamId]),
 	);
 
 	const { value: userTeams, phase: userTeamsPhase } = useEndpointData(
-		'users.listTeams',
+		'/v1/users.listTeams',
 		useMemo(() => ({ userId }), [userId]),
 	);
 

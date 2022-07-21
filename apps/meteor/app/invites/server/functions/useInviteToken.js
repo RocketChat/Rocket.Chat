@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { Invites } from '@rocket.chat/models';
 
 import { Users, Subscriptions } from '../../../models/server';
-import { Invites } from '../../../models/server/raw';
 import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';

@@ -5,5 +5,4 @@ export default {
 	livechatDisconnectedAlertId: 'LIVECHAT_DISCONNECTED',
 	livechatQueueMessageId: 'LIVECHAT_QUEUE_MESSAGE',
 	webRTCCallStartedMessageType: 'livechat_webrtc_video_call',
-	jitsiCallStartedMessageType: 'jitsi_call_started',
 };

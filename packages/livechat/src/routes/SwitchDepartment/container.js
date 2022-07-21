@@ -1,9 +1,9 @@
 import { Component } from 'preact';
+import { route } from 'preact-router';
 import { withTranslation } from 'react-i18next';
 
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
-import history from '../../history';
 import { loadConfig } from '../../lib/main';
 import { createToken } from '../../lib/random';
 import SwitchDepartment from './component';
@@ -30,7 +30,7 @@ class SwitchDepartmentContainer extends Component {
 		if (!room) {
 			const user = await Livechat.grantVisitor({ visitor: { department, token } });
 			await dispatch({ user, alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts) });
-			return history.go(-1);
+			return route('/');
 		}
 
 		await dispatch({ loading: true });
@@ -49,7 +49,7 @@ class SwitchDepartmentContainer extends Component {
 				text: t('department_switched'),
 			});
 
-			history.go(-1);
+			route('/');
 		} catch (error) {
 			console.error(error);
 			await dispatch({ alerts: (alerts.push({ id: createToken(), children: t('no_available_agents_to_transfer'), warning: true }), alerts) });
@@ -59,7 +59,7 @@ class SwitchDepartmentContainer extends Component {
 	}
 
 	handleCancel = () => {
-		history.go(-1);
+		route('/');
 	}
 
 	render = (props) => (

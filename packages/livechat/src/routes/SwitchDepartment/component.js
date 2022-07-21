@@ -115,7 +115,7 @@ class SwitchDepartment extends Component {
 
 						<ButtonGroup>
 							<Button submit loading={loading} disabled={!valid || loading} stack>{t('start_chat')}</Button>
-							<Button disabled={loading} stack secondary nude onClick={this.handleCancelClick}>{t('cancel')}</Button>
+							<Button disabled={loading} stack secondary onClick={this.handleCancelClick}>{t('cancel')}</Button>
 						</ButtonGroup>
 					</Form>
 				</Screen.Content>

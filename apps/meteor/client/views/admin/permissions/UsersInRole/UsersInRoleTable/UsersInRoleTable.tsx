@@ -24,7 +24,7 @@ const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total,
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const removeUser = useEndpoint('POST', 'roles.removeUserFromRole');
+	const removeUser = useEndpoint('POST', '/v1/roles.removeUserFromRole');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = paginationData;
 
 	const closeModal = (): void => setModal();
@@ -35,7 +35,7 @@ const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total,
 				await removeUser({ roleId, username, scope: rid });
 				dispatchToastMessage({ type: 'success', message: t('User_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 			} finally {
 				closeModal();
 				reload();

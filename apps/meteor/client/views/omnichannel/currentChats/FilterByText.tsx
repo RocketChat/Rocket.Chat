@@ -3,13 +3,12 @@ import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { Dispatch, FC, SetStateAction, useEffect, useMemo } from 'react';
-import { useSubscription } from 'use-subscription';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { formsSubscription } from '../additionalForms';
+import { useFormsSubscription } from '../additionalForms';
 import Label from './Label';
 import RemoveAllClosed from './RemoveAllClosed';
 
@@ -23,7 +22,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const { value: allCustomFields } = useEndpointData('livechat/custom-fields');
+	const { value: allCustomFields } = useEndpointData('/v1/livechat/custom-fields');
 	const statusOptions: [string, string][] = [
 		['all', t('All')],
 		['closed', t('Closed')],
@@ -64,7 +63,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 		setCustomFields([]);
 	});
 
-	const forms = useSubscription<any>(formsSubscription);
+	const forms = useFormsSubscription() as any;
 
 	// TODO: Refactor the formsSubscription to use components instead of hooks (since the only thing the hook does is return a component)
 	// Conditional hook was required since the whole formSubscription uses hooks in an incorrect manner

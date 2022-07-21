@@ -63,7 +63,7 @@ type UserDropdownProps = {
 
 const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const t = useTranslation();
-	const accountRoute = useRoute('account');
+	const accountRoute = useRoute('account-index');
 	const adminRoute = useRoute('admin-index');
 	const logout = useLogout();
 	const { sidebar, isMobile } = useLayout();

@@ -1,7 +1,8 @@
 import { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 
 import { Utilities } from '../../../apps/lib/misc/Utilities';
-import { MessageAction, messageArgs } from '../../../ui-utils/client';
+import { MessageAction } from '../../../ui-utils/client';
+import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { t } from '../../../utils/client';
 import { triggerActionButtonAction } from '../ActionManager';
 import { applyButtonFilters } from './lib/applyButtonFilters';
