@@ -1,4 +1,4 @@
-import { Users } from '../../../../models';
+import { Users } from '../../../../models/server';
 
 export default function handleNickChanged(args) {
 	const user = Users.findOne({

@@ -2,11 +2,8 @@ import { IUIActionButton, IUActionButtonWhen } from '@rocket.chat/apps-engine/de
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter, Router } from 'meteor/kadira:flow-router';
-import { Session } from 'meteor/session';
 
 import { SideNav } from './SideNav';
-import { appLayout } from '../../../../client/lib/appLayout';
 import { applyDropdownActionButtonFilters } from '../../../ui-message/client/actionButtons/lib/applyButtonFilters';
 
 export interface IAppAccountBoxItem extends IUIActionButton {
@@ -85,44 +82,6 @@ export class AccountBoxBase {
 			}
 
 			return applyDropdownActionButtonFilters(item);
-		});
-	}
-
-	public addRoute(newRoute: any, router: any, wait = async (): Promise<null> => null): Router {
-		if (router == null) {
-			router = FlowRouter;
-		}
-		const container = newRoute.customContainer ? 'pageCustomContainer' : 'pageContainer';
-		const routeConfig = {
-			center: container,
-			pageTemplate: newRoute.pageTemplate,
-			i18nPageTitle: '',
-			pageTitle: '',
-		};
-
-		if (newRoute.i18nPageTitle != null) {
-			routeConfig.i18nPageTitle = newRoute.i18nPageTitle;
-		}
-
-		if (newRoute.pageTitle != null) {
-			routeConfig.pageTitle = newRoute.pageTitle;
-		}
-
-		return router.route(newRoute.path, {
-			name: newRoute.name,
-			async action() {
-				await wait();
-				Session.set('openedRoom', null);
-				appLayout.renderMainLayout(routeConfig);
-			},
-			triggersEnter: [
-				(): void => {
-					if (newRoute.sideNav != null) {
-						SideNav.setFlex(newRoute.sideNav);
-						SideNav.openFlex();
-					}
-				},
-			],
 		});
 	}
 }

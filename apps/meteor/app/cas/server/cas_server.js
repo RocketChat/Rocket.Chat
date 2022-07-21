@@ -6,12 +6,12 @@ import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import _ from 'underscore';
 import fiber from 'fibers';
-import CAS from 'cas';
+import { CredentialTokens } from '@rocket.chat/models';
+import { validate } from '@rocket.chat/cas-validate';
 
 import { logger } from './cas_rocketchat';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 import { Rooms } from '../../models/server';
-import { CredentialTokens } from '../../models/server/raw';
 import { _setRealName } from '../../lib';
 import { createRoom } from '../../lib/server/functions/createRoom';
 
@@ -38,13 +38,12 @@ const casTicket = function (req, token, callback) {
 	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	logger.debug(`Using CAS_base_url: ${baseUrl}`);
 
-	const cas = new CAS({
-		base_url: baseUrl,
-		version: cas_version,
-		service: `${appUrl}/_cas/${token}`,
-	});
-
-	cas.validate(
+	validate(
+		{
+			base_url: baseUrl,
+			version: cas_version,
+			service: `${appUrl}/_cas/${token}`,
+		},
 		ticketId,
 		Meteor.bindEnvironment(async function (err, status, username, details) {
 			if (err) {

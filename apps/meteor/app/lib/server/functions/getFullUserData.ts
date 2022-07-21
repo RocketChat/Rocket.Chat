@@ -20,7 +20,7 @@ const defaultFields = {
 	statusText: 1,
 	avatarETag: 1,
 	extension: 1,
-};
+} as const;
 
 const fullFields = {
 	emails: 1,
@@ -32,12 +32,12 @@ const fullFields = {
 	requirePasswordChange: 1,
 	requirePasswordChangeReason: 1,
 	roles: 1,
-};
+} as const;
 
-let publicCustomFields: Record<string, 1> = {};
-let customFields: Record<string, 1> = {};
+let publicCustomFields: Record<string, 0 | 1> = {};
+let customFields: Record<string, 0 | 1> = {};
 
-settings.watch('Accounts_CustomFields', (settingValue: string) => {
+settings.watch<string>('Accounts_CustomFields', (settingValue) => {
 	publicCustomFields = {};
 	customFields = {};
 
@@ -60,28 +60,33 @@ settings.watch('Accounts_CustomFields', (settingValue: string) => {
 	}
 });
 
-export function getFullUserDataByIdOrUsername({
-	userId,
-	filterId,
-	filterUsername,
-}: {
-	userId: string;
-	filterId?: string;
-	filterUsername?: string;
-}): IUser | null {
+const getCustomFields = (canViewAllInfo: boolean): Record<string, 0 | 1> => (canViewAllInfo ? customFields : publicCustomFields);
+
+const getFields = (canViewAllInfo: boolean): Record<string, 0 | 1> => ({
+	...defaultFields,
+	...(canViewAllInfo && fullFields),
+	...getCustomFields(canViewAllInfo),
+});
+
+export async function getFullUserDataByIdOrUsername(
+	userId: string,
+	{ filterId, filterUsername }: { filterId: string; filterUsername?: undefined } | { filterId?: undefined; filterUsername: string },
+): Promise<IUser | null> {
 	const caller = Users.findOneById(userId, { fields: { username: 1 } });
 	const targetUser = filterId || filterUsername;
 	const myself = (filterId && targetUser === userId) || (filterUsername && targetUser === caller.username);
 	const canViewAllInfo = !!myself || hasPermission(userId, 'view-full-other-user-info');
 
-	const fields = {
-		...defaultFields,
-		...(canViewAllInfo && fullFields),
-		...(canViewAllInfo ? customFields : publicCustomFields),
-		...(myself && { services: 1 }),
+	const fields = getFields(canViewAllInfo);
+
+	const options = {
+		fields: {
+			...fields,
+			...(myself && { services: 1 }),
+		},
 	};
 
-	const user = Users.findOneByIdOrUsername(targetUser, { fields });
+	const user = Users.findOneByIdOrUsername(targetUser, options);
 	if (!user) {
 		return null;
 	}

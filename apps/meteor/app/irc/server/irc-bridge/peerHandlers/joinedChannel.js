@@ -1,4 +1,4 @@
-import { Users, Rooms } from '../../../../models';
+import { Users, Rooms } from '../../../../models/server';
 import { createRoom, addUserToRoom } from '../../../../lib';
 
 export default function handleJoinedChannel(args) {

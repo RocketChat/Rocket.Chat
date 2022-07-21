@@ -1,5 +1,6 @@
+import { WebdavAccounts } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import { WebdavAccounts } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 251,

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
-import { Users } from '../../app/models';
+import { Users } from '../../app/models/server';
 
 Meteor.methods({
 	userSetUtcOffset(utcOffset) {

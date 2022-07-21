@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
+import { Match } from 'meteor/check';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
+import { Rooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
@@ -15,7 +15,6 @@ import { saveRoomType } from '../functions/saveRoomType';
 import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
-import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { Team } from '../../../../server/sdk';
@@ -36,7 +35,6 @@ const fields = [
 	'systemMessages',
 	'default',
 	'joinCode',
-	'tokenpass',
 	'streamingOptions',
 	'retentionEnabled',
 	'retentionMaxAge',
@@ -194,18 +192,6 @@ const settingSavers = {
 			const type = value === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE;
 			Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
-	},
-	tokenpass({ value, rid }) {
-		check(value, {
-			require: String,
-			tokens: [
-				{
-					token: String,
-					balance: String,
-				},
-			],
-		});
-		saveRoomTokenpass(rid, value);
 	},
 	streamingOptions({ value, rid }) {
 		saveStreamingOptions(rid, value);

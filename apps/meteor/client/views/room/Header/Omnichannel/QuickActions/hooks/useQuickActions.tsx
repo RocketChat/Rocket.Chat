@@ -48,7 +48,7 @@ export const useQuickActions = (
 	const uid = useUserId();
 	const roomLastMessage = room.lastMessage;
 
-	const getVisitorInfo = useEndpoint('GET', 'livechat/visitors.info');
+	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 
 	const getVisitorEmail = useMutableCallback(async () => {
 		if (!visitorRoomId) {
@@ -194,7 +194,7 @@ export const useQuickActions = (
 		[closeChat, closeModal, dispatchToastMessage, rid, t],
 	);
 
-	const onHoldChat = useEndpoint('POST', 'livechat/room.onHold');
+	const onHoldChat = useEndpoint('POST', '/v1/livechat/room.onHold');
 
 	const handleOnHoldChat = useCallback(async () => {
 		try {

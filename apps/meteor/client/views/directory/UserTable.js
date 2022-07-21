@@ -84,7 +84,7 @@ function UserTable({ workspace = 'local' }) {
 
 	const directRoute = useRoute('direct');
 
-	const { value: data = {} } = useEndpointData('directory', query);
+	const { value: data = {} } = useEndpointData('/v1/directory', query);
 
 	const onClick = useCallback(
 		(username) => (e) => {

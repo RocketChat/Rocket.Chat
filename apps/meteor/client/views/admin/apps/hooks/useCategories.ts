@@ -1,7 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ICategory } from '../../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import { CategoryDropdownItem, CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
 import { handleAPIError } from '../helpers';
@@ -21,7 +20,7 @@ export const useCategories = (): [
 		try {
 			const fetchedCategories = await Apps.getCategories();
 
-			const mappedCategories = fetchedCategories.map((currentCategory: ICategory) => ({
+			const mappedCategories = fetchedCategories.map((currentCategory) => ({
 				id: currentCategory.id,
 				label: currentCategory.title,
 				checked: false,
@@ -41,7 +40,7 @@ export const useCategories = (): [
 					items: mappedCategories,
 				},
 			]);
-		} catch (e) {
+		} catch (e: any) {
 			handleAPIError(e);
 		}
 	}, [t]);

@@ -10,7 +10,7 @@ import { FormSkeleton } from '../../Skeleton';
 
 const DepartmentField = ({ departmentId }) => {
 	const t = useTranslation();
-	const { value: data, phase: state } = useEndpointData(`livechat/department/${departmentId}`);
+	const { value: data, phase: state } = useEndpointData(`/v1/livechat/department/${departmentId}`);
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}

@@ -19,7 +19,6 @@ export const adminFields: Partial<Record<keyof IRoom, 1>> = {
 	topic: 1,
 	msgs: 1,
 	archived: 1,
-	tokenpass: 1,
 	teamId: 1,
 	teamMain: 1,
 	announcement: 1,

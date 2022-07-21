@@ -48,7 +48,9 @@ const UserProvider: FC = ({ children }) => {
 			user,
 			loginWithPassword,
 			logout,
-			queryPreference: createReactiveSubscriptionFactory((key, defaultValue) => getUserPreference(userId, key, defaultValue)),
+			queryPreference: createReactiveSubscriptionFactory(
+				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
+			),
 			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields) =>
 				Subscriptions.findOne(query, { fields }),
 			),

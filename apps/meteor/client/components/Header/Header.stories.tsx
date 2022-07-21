@@ -30,8 +30,9 @@ export default {
 				value={{
 					hasPrivateAccess: true,
 					isLoading: false,
-					querySetting: (_id) => ({
-						getCurrentValue: () => ({
+					querySetting: (_id) => [
+						() => () => undefined,
+						() => ({
 							_id,
 							type: 'action',
 							value: '',
@@ -44,12 +45,8 @@ export default {
 							sorter: 1,
 							ts: new Date(),
 						}),
-						subscribe: () => () => undefined,
-					}),
-					querySettings: () => ({
-						getCurrentValue: () => [],
-						subscribe: () => () => undefined,
-					}),
+					],
+					querySettings: () => [() => () => undefined, () => []],
 					dispatch: async () => undefined,
 				}}
 			>

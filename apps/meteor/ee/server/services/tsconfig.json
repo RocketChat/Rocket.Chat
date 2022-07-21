@@ -43,6 +43,6 @@
 		// "emitDecoratorMetadata": true,
 		// "experimentalDecorators": true,
 	},
-	"include": ["./**/*", "../../../definition"],
+	"include": ["./**/*", "../../../definition/externals/meteor/rocketchat-streamer.d.ts"],
 	"exclude": ["./dist", "./ecosystem.config.js", "../../../definition/methods"]
 }

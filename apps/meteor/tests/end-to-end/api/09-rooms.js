@@ -333,7 +333,6 @@ describe('[Rooms]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					console.log('rooms.cleanHistory', res.body);
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
@@ -954,6 +953,52 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 	});
+	describe('[/rooms.autocomplete.channelAndPrivate.withPagination]', () => {
+		it('should return an error when the required parameter "selector" is not provided', (done) => {
+			request
+				.get(api('rooms.autocomplete.channelAndPrivate.withPagination'))
+				.set(credentials)
+				.query({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal("The 'selector' param is required");
+				})
+				.end(done);
+		});
+		it('should return the rooms to fill auto complete', (done) => {
+			request
+				.get(api('rooms.autocomplete.channelAndPrivate.withPagination?selector={}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+		it('should return the rooms to fill auto complete even requested with count and offset params', (done) => {
+			request
+				.get(api('rooms.autocomplete.channelAndPrivate.withPagination?selector={}'))
+				.set(credentials)
+				.query({
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/rooms.autocomplete.availableForTeams]', () => {
 		it('should return the rooms to fill auto complete', (done) => {
 			request
@@ -1061,6 +1106,24 @@ describe('[Rooms]', function () {
 			request
 				.get(api('rooms.adminRooms'))
 				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
+		it('should return a list of admin rooms even requested with count and offset params', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					count: 5,
+					offset: 0,
+				})
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);

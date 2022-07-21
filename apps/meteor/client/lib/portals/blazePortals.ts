@@ -1,25 +1,27 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from 'meteor/random';
 import type { ReactNode } from 'react';
-import type { Subscription, Unsubscribe } from 'use-subscription';
 
 type BlazePortalEntry = {
 	key: string;
 	node: ReactNode;
 };
 
-class BlazePortalsSubscriptions extends Emitter<{ update: void }> implements Subscription<BlazePortalEntry[]> {
+class BlazePortalsSubscriptions extends Emitter<{ update: void }> {
 	private map = new Map<Blaze.TemplateInstance, BlazePortalEntry>();
 
-	getCurrentValue = (): BlazePortalEntry[] => Array.from(this.map.values());
+	private cache = Array.from(this.map.values());
 
-	subscribe = (callback: () => void): Unsubscribe => this.on('update', callback);
+	getSnapshot = (): BlazePortalEntry[] => this.cache;
+
+	subscribe = (onStoreChange: () => void): (() => void) => this.on('update', onStoreChange);
 
 	register = (template: Blaze.TemplateInstance, node: ReactNode): void => {
 		const entry = this.map.get(template);
 
 		if (!entry) {
 			this.map.set(template, { key: Random.id(), node });
+			this.cache = Array.from(this.map.values());
 			this.emit('update');
 			return;
 		}
@@ -29,11 +31,13 @@ class BlazePortalsSubscriptions extends Emitter<{ update: void }> implements Sub
 		}
 
 		this.map.set(template, { ...entry, node });
+		this.cache = Array.from(this.map.values());
 		this.emit('update');
 	};
 
 	unregister = (template: Blaze.TemplateInstance): void => {
 		if (this.map.delete(template)) {
+			this.cache = Array.from(this.map.values());
 			this.emit('update');
 		}
 	};

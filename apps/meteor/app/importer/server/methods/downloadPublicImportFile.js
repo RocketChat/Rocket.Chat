@@ -57,7 +57,7 @@ Meteor.methods({
 
 		importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
 
-		const oldFileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+		const oldFileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1).split('?')[0];
 		const date = new Date();
 		const dateStr = `${date.getUTCFullYear()}${date.getUTCMonth()}${date.getUTCDate()}${date.getUTCHours()}${date.getUTCMinutes()}${date.getUTCSeconds()}`;
 		const newFileName = `${dateStr}_${userId}_${oldFileName}`;

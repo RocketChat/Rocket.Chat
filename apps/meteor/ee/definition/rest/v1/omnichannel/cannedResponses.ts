@@ -4,7 +4,7 @@ import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typing
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	interface Endpoints {
-		'canned-responses': {
+		'/v1/canned-responses': {
 			GET: (
 				params: PaginatedRequest<{
 					shortcut?: string;
@@ -27,7 +27,7 @@ declare module '@rocket.chat/rest-typings' {
 			}) => void;
 			DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => void;
 		};
-		'canned-responses/:_id': {
+		'/v1/canned-responses/:_id': {
 			GET: () => {
 				cannedResponse: IOmnichannelCannedResponse;
 			};

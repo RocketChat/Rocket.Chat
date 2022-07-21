@@ -9,7 +9,7 @@ const query = (name = '') => ({ selector: JSON.stringify({ name }) });
 const RoomAutoComplete = (props) => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
-		'rooms.autocomplete.adminRooms',
+		'/v1/rooms.autocomplete.adminRooms',
 		useMemo(() => query(filter), [filter]),
 	);
 	const options = useMemo(

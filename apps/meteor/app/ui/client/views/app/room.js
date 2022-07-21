@@ -9,13 +9,13 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { t, getUserPreference } from '../../../../utils/client';
-import { WebRTC } from '../../../../webrtc/client';
-import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
+import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
-import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../../../client/lib/utils/messageArgs';
 import { settings } from '../../../../settings/client';
 import { callbacks } from '../../../../../lib/callbacks';
 import { hasAllPermission, hasRole } from '../../../../authorization/client';
@@ -160,6 +160,10 @@ export const dropzoneHelpers = {
 	},
 
 	dragAndDropLabel() {
+		const room = Rooms.findOne({ _id: this.rid });
+		if (isRoomFederated(room)) {
+			return 'FileUpload_Disabled_for_federation';
+		}
 		if (!userCanDrop(this._id)) {
 			return 'error-not-allowed';
 		}
@@ -180,7 +184,6 @@ Template.roomOld.helpers({
 		return state.get('subscribed');
 	},
 	messagesHistory() {
-		const showInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 		const { rid } = Template.instance();
 		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
@@ -191,9 +194,7 @@ Template.roomOld.helpers({
 		const query = {
 			rid,
 			_hidden: { $ne: true },
-			...(!showInMainThread && {
-				$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
-			}),
+			$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
 		};
 
 		if (hideMessagesOfType.size) {
@@ -474,11 +475,12 @@ export const dropzoneEvents = {
 		event.currentTarget.parentNode.classList.remove('over');
 
 		const e = event.originalEvent || event;
+		const room = Rooms.findOne({ _id: this.rid });
 
 		e.stopPropagation();
 		e.preventDefault();
 
-		if (!userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
+		if (isRoomFederated(room) || !userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
 			return false;
 		}
 
@@ -996,18 +998,8 @@ Meteor.startup(() => {
 		readMessage.on(template.data._id, () => this.unreadCount.set(0));
 
 		wrapper.addEventListener('scroll', updateUnreadCount);
-		// salva a data da renderização para exibir alertas de novas mensagens
+		// save the render's date to display new messages alerts
 		$.data(this.firstNode, 'renderedAt', new Date());
-
-		const webrtc = WebRTC.getInstanceByRoomId(template.data._id);
-		if (webrtc) {
-			this.autorun(() => {
-				const remoteItems = webrtc.remoteItems.get();
-				if ((remoteItems && remoteItems.length > 0) || webrtc.localUrl.get()) {
-					return this.tabBar.openUserInfo();
-				}
-			});
-		}
 
 		callbacks.add(
 			'streamNewMessage',

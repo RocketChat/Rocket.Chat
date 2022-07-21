@@ -1,9 +1,9 @@
 /* eslint no-multi-spaces: 0 */
 import type { IPermission, ISetting } from '@rocket.chat/core-typings';
+import { Permissions, Settings } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../../lib';
-import { Permissions, Settings } from '../../../models/server/raw';
 import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 
 export const upsertPermissions = async (): Promise<void> => {
@@ -224,6 +224,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'remove-slackbridge-links', roles: ['admin'] },
 		{ _id: 'view-import-operations', roles: ['admin'] },
 		{ _id: 'clear-oembed-cache', roles: ['admin'] },
+		{ _id: 'videoconf-ring-users', roles: ['admin', 'owner', 'moderator', 'user'] },
 	];
 
 	for await (const permission of permissions) {

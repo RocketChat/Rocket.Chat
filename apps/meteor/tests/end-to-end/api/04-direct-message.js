@@ -170,7 +170,6 @@ describe('[Direct Messages]', function () {
 			.set(credentials)
 			.query({
 				roomId: directMessage._id,
-				userId: 'rocket.cat',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -618,6 +617,8 @@ describe('[Direct Messages]', function () {
 					.set(userCredentials)
 					.send({
 						message: JSON.stringify({
+							id: 'id',
+							msg: 'method',
 							method: 'saveUserPreferences',
 							params: [{ emailNotificationMode: 'nothing' }],
 						}),

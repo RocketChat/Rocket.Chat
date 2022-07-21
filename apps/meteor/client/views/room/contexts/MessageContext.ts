@@ -1,9 +1,9 @@
 import { IMessage } from '@rocket.chat/core-typings';
-import { createContext, useContext, MouseEvent } from 'react';
+import { createContext, useContext, MouseEvent, UIEvent } from 'react';
 
 const openUserCard =
 	(_username: string) =>
-	(_e: MouseEvent<HTMLDivElement>): void => {
+	(_e: UIEvent): void => {
 		console.log('openUserCard');
 	};
 
@@ -21,7 +21,7 @@ export type MessageContextValue = {
 	oembedMaxWidth: `${number}px` | '100%';
 	oembedEnabled: boolean;
 	actions: {
-		openUserCard: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
+		openUserCard: (username: string) => (e: UIEvent) => void;
 		openRoom: (id: string) => () => void;
 		openThread: (tmid: string, jump?: string) => (e: MouseEvent) => void;
 		runActionLink: (message: IMessage) => (action: string) => () => void;

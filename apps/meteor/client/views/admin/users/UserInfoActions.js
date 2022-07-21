@@ -75,7 +75,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 		};
 
 	const deleteUserQuery = useMemo(() => ({ userId: _id }), [_id]);
-	const deleteUserEndpoint = useEndpoint('POST', 'users.delete');
+	const deleteUserEndpoint = useEndpoint('POST', '/v1/users.delete');
 
 	const erasureType = useSetting('Message_ErasureType');
 
@@ -119,8 +119,8 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 		}
 	}, [_id, dispatchToastMessage, isAdmin, onChange, setAdminStatus, t]);
 
-	const resetE2EEKeyRequest = useEndpoint('POST', 'users.resetE2EKey');
-	const resetTOTPRequest = useEndpoint('POST', 'users.resetTOTP');
+	const resetE2EEKeyRequest = useEndpoint('POST', '/v1/users.resetE2EKey');
+	const resetTOTPRequest = useEndpoint('POST', '/v1/users.resetTOTP');
 	const resetE2EEKey = useCallback(async () => {
 		setModal();
 		const result = await resetE2EEKeyRequest({ userId: _id });
@@ -171,7 +171,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 		[_id, isActive],
 	);
 	const changeActiveStatusMessage = isActive ? 'User_has_been_deactivated' : 'User_has_been_activated';
-	const changeActiveStatusRequest = useEndpoint('POST', 'users.setActiveStatus');
+	const changeActiveStatusRequest = useEndpoint('POST', '/v1/users.setActiveStatus');
 
 	const changeActiveStatus = confirmOwnerChanges(
 		async (confirm = false) => {
@@ -301,7 +301,8 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 				mi='x4'
 				placement='bottom-start'
 				small={false}
-				ghost={false}
+				secondary
+				maxHeight='initial'
 				flexShrink={0}
 				key='menu'
 				renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props} />}

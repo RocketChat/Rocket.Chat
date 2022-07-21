@@ -3,9 +3,9 @@
 	"version": "0.5.0",
 	"description": "Rocket.Chat's JS ESLint config",
 	"devDependencies": {
-		"@types/prettier": "^2",
+		"@types/prettier": "^2.6.3",
 		"@typescript-eslint/eslint-plugin": "^2.34.0",
-		"@typescript-eslint/parser": "^3.0.0",
+		"@typescript-eslint/parser": "^3.10.1",
 		"babel-eslint": "^10.1.0",
 		"eslint": "^6.8.0",
 		"eslint-config-prettier": "^8.3.0",
@@ -13,7 +13,7 @@
 		"eslint-plugin-import": "^2.24.2",
 		"eslint-plugin-jest": "^26.1.5",
 		"eslint-plugin-prettier": "^3.4.1",
-		"prettier": "2.6.2"
+		"prettier": "2.7.1"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js .",

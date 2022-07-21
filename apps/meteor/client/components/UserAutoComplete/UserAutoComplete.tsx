@@ -1,6 +1,6 @@
 import { AutoComplete, Option, Box, Chip, Options } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { ComponentProps, memo, MouseEventHandler, ReactElement, useMemo, useState } from 'react';
+import React, { ComponentProps, memo, ReactElement, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import UserAvatar from '../avatar/UserAvatar';
@@ -12,12 +12,12 @@ const query = (
 	selector: string;
 } => ({ selector: JSON.stringify({ term, conditions }) });
 
-type UserAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter'> &
-	Omit<ComponentProps<typeof Option>, 'value'> & {
+type UserAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> &
+	Omit<ComponentProps<typeof Option>, 'value' | 'onChange'> & {
 		conditions?: { [key: string]: unknown };
-		onChange?: MouseEventHandler<HTMLButtonElement>;
-		value: any;
 		filter?: string;
+		value: string;
+		onChange?: (value: string) => void;
 	};
 
 const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElement => {
@@ -25,7 +25,7 @@ const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElem
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const { value: data } = useEndpointData(
-		'users.autocomplete',
+		'/v1/users.autocomplete',
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		useMemo(() => query(debouncedFilter, conditions), [filter]),
 	);
@@ -34,17 +34,17 @@ const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElem
 
 	return (
 		<AutoComplete
-			{...props}
-			value={value}
+			value={value as any}
+			onChange={props.onChange as any}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ value, label }): ReactElement => {
+			renderSelected={({ value, label }): ReactElement | null => {
 				if (!value) {
-					undefined;
+					return null;
 				}
 
 				return (
-					<Chip height='x20' value={value} onClick={props.onChange} mie='x4'>
+					<Chip height='x20' value={value} onClick={(_e: any): void => props.onChange?.(value)} mie='x4'>
 						<UserAvatar size='x20' username={value} />
 						<Box verticalAlign='middle' is='span' margin='none' mi='x4'>
 							{label}

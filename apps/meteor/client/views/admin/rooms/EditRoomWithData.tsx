@@ -12,7 +12,7 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 		error,
 		reload,
 	} = useEndpointData(
-		'rooms.adminRooms.getRoom',
+		'/v1/rooms.adminRooms.getRoom',
 		useMemo(() => ({ rid }), [rid]),
 	);
 

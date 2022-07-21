@@ -18,6 +18,7 @@ const BurgerMenuButton = ({ open, badge, onClick }: BurgerMenuButtonProps): Reac
 	return (
 		<Box
 			is='button'
+			data-qa-id='burger-menu'
 			aria-label={open ? t('Close_menu') : t('Open_menu')}
 			type='button'
 			position='relative'

@@ -3,7 +3,7 @@ import { describe, it } from 'mocha';
 
 import { isValidQuery } from '../../../../../../../app/api/server/lib/isValidQuery';
 
-describe.only('isValidQuery', () => {
+describe('isValidQuery', () => {
 	describe('shallow keys', () => {
 		it('should return false if the query contains an operation that is not in the props array', () => {
 			const props = ['_id', 'name'];

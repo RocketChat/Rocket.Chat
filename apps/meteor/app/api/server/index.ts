@@ -5,7 +5,6 @@ import './helpers/getLoggedInUser';
 import './helpers/getPaginationItems';
 import './helpers/getUserFromParams';
 import './helpers/getUserInfo';
-import './helpers/insertUserObject';
 import './helpers/isUserFromParams';
 import './helpers/parseJsonQuery';
 import './helpers/requestParams';

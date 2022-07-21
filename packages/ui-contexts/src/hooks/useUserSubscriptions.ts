@@ -1,11 +1,11 @@
 import { useContext, useMemo } from 'react';
-import { useSubscription } from 'use-subscription';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import type { ISubscription } from '@rocket.chat/core-typings';
 
-import type { ISubscription } from '../../../core-typings/dist';
 import { FindOptions, SubscriptionQuery, UserContext } from '../UserContext';
 
 export const useUserSubscriptions = (query: SubscriptionQuery, options?: FindOptions): Array<ISubscription> | [] => {
 	const { querySubscriptions } = useContext(UserContext);
-	const subscription = useMemo(() => querySubscriptions(query, options), [querySubscriptions, query, options]);
-	return useSubscription(subscription);
+	const [subscribe, getSnapshot] = useMemo(() => querySubscriptions(query, options), [querySubscriptions, query, options]);
+	return useSyncExternalStore(subscribe, getSnapshot);
 };

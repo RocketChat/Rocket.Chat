@@ -30,7 +30,7 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 			return dispatchToastMessage({ type: 'success', message: t('webdav-account-saved') });
 		} catch (error) {
 			console.error(error);
-			return dispatchToastMessage({ type: 'error', message: error });
+			return dispatchToastMessage({ type: 'error', message: String(error) });
 		} finally {
 			onConfirm();
 			setIsLoading(false);
@@ -76,7 +76,7 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button ghost onClick={onClose}>
+					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
 					<Button primary type='submit' disabled={isLoading}>

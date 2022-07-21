@@ -1,6 +1,6 @@
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, LivechatRooms } from '../../../models';
+import { Messages, LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
@@ -41,7 +41,7 @@ function sendToCRM(type, room, includeMessages = true) {
 		return room;
 	}
 
-	const postData = Livechat.getLivechatRoomGuestInfo(room);
+	const postData = Promise.await(Livechat.getLivechatRoomGuestInfo(room));
 
 	postData.type = type;
 

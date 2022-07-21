@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { RoomManager, MessageAction } from '../../ui-utils/client';
-import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { ChatSubscription } from '../../models/client';
 import { handleError } from '../../../client/lib/utils/handleError';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';

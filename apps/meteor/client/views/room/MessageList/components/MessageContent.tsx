@@ -1,21 +1,20 @@
 /* eslint-disable complexity */
-import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } from '@rocket.chat/core-typings';
+import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageBody, MessageBlock } from '@rocket.chat/fuselage';
 import { useTranslation, useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
-import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
-import Attachments from '../../../../components/Message/Attachments';
-import MessageActions from '../../../../components/Message/MessageActions';
-import BroadcastMetric from '../../../../components/Message/Metrics/Broadcast';
-import DiscussionMetric from '../../../../components/Message/Metrics/Discussion';
-import ThreadMetric from '../../../../components/Message/Metrics/Thread';
+import Attachments from '../../../../components/message/Attachments';
+import MessageActions from '../../../../components/message/MessageActions';
+import BroadcastMetric from '../../../../components/message/Metrics/Broadcast';
+import DiscussionMetric from '../../../../components/message/Metrics/Discussion';
+import ThreadMetric from '../../../../components/message/Metrics/Thread';
 import { useUserData } from '../../../../hooks/useUserData';
 import { UserPresence } from '../../../../lib/presence';
 import MessageBlockUiKit from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
+import { useTranslateAttachments, useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 import MessageContentBody from './MessageContentBody';
 import ReactionsList from './MessageReactionsList';
@@ -45,9 +44,11 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 	const isEncryptedMessage = isE2EEMessage(message);
 
+	const messageAttachments = useTranslateAttachments({ message });
+
 	return (
 		<>
-			{!message.blocks && (
+			{!message.blocks && (message.md || message.msg) && (
 				<MessageBody data-qa-type='message-body'>
 					{!isEncryptedMessage && <MessageContentBody message={message} />}
 					{isEncryptedMessage && message.e2e === 'done' && <MessageContentBody message={message} />}
@@ -59,7 +60,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 					<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
 				</MessageBlock>
 			)}
-			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
+			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
 

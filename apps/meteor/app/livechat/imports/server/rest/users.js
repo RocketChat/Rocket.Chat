@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api/server';
-import { Users } from '../../../../models';
+import { Users } from '../../../../models/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
 

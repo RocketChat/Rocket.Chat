@@ -83,20 +83,22 @@ const BaseTeamsChannels = ({
 				)}
 			</VerticalBar.Content>
 
-			<VerticalBar.Footer>
-				<ButtonGroup stretch>
-					{onClickAddExisting && (
-						<Button onClick={onClickAddExisting} width='50%'>
-							{t('Team_Add_existing')}
-						</Button>
-					)}
-					{onClickCreateNew && (
-						<Button onClick={onClickCreateNew} width='50%'>
-							{t('Create_new')}
-						</Button>
-					)}
-				</ButtonGroup>
-			</VerticalBar.Footer>
+			{(onClickAddExisting || onClickCreateNew) && (
+				<VerticalBar.Footer>
+					<ButtonGroup stretch>
+						{onClickAddExisting && (
+							<Button onClick={onClickAddExisting} width='50%'>
+								{t('Team_Add_existing')}
+							</Button>
+						)}
+						{onClickCreateNew && (
+							<Button onClick={onClickCreateNew} width='50%'>
+								{t('Create_new')}
+							</Button>
+						)}
+					</ButtonGroup>
+				</VerticalBar.Footer>
+			)}
 		</>
 	);
 };

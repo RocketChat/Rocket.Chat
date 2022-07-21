@@ -1,3 +1,4 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
@@ -142,7 +143,7 @@ API.v1.addRoute(
 	'livechat/visitors.search',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { term } = this.requestParams();
 
 			check(term, Match.Maybe(String));
@@ -150,18 +151,19 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
+			const nameOrUsername = new RegExp(escapeRegExp(term), 'i');
+
 			return API.v1.success(
-				Promise.await(
-					findVisitorsByEmailOrPhoneOrNameOrUsername({
-						userId: this.userId,
-						term,
-						pagination: {
-							offset,
-							count,
-							sort,
-						},
-					}),
-				),
+				await findVisitorsByEmailOrPhoneOrNameOrUsername({
+					userId: this.userId,
+					emailOrPhone: term,
+					nameOrUsername,
+					pagination: {
+						offset,
+						count,
+						sort,
+					},
+				}),
 			);
 		},
 	},

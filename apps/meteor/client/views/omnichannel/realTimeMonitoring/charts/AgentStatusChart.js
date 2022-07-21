@@ -38,7 +38,7 @@ const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData('livechat/analytics/dashboards/charts/agents-status', params);
+	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/charts/agents-status', params);
 
 	reloadRef.current.agentStatusChart = reload;
 
@@ -52,7 +52,7 @@ const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 	}, [t]);
 
 	useEffect(() => {
-		if (state === AsyncStatePhase.RESOLVED) {
+		if (state === AsyncStatePhase.RESOLVED && context.current) {
 			updateChartData(t('Offline'), [offline]);
 			updateChartData(t('Available'), [available]);
 			updateChartData(t('Away'), [away]);

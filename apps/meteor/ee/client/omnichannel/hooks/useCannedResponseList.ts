@@ -26,8 +26,8 @@ export const useCannedResponseList = (
 		}
 	}, [cannedList, options]);
 
-	const getCannedResponses = useEndpoint('GET', 'canned-responses');
-	const getDepartments = useEndpoint('GET', 'livechat/department');
+	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
+	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
 	const fetchData = useCallback(
 		async (start, end) => {

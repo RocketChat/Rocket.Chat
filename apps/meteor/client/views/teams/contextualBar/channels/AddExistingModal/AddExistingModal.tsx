@@ -22,7 +22,7 @@ type AddExistingModalProps = {
 
 const useAddExistingModalState = (onClose: () => void, teamId: string, reload: () => void): AddExistingModalState => {
 	const t = useTranslation();
-	const addRoomEndpoint = useEndpoint('POST', 'teams.addRooms');
+	const addRoomEndpoint = useEndpoint('POST', '/v1/teams.addRooms');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
@@ -58,7 +58,7 @@ const useAddExistingModalState = (onClose: () => void, teamId: string, reload: (
 			onClose();
 			reload();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 		}
 	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload]);
 

@@ -1,7 +1,8 @@
+import { isLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermission, hasAtLeastOnePermission } from '../../../../authorization/server';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import {
@@ -14,9 +15,13 @@ import {
 
 API.v1.addRoute(
 	'livechat/department',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatDepartmentProps },
 	{
-		get() {
+		async get() {
+			if (!hasAtLeastOnePermission(this.userId, ['view-livechat-departments', 'view-l-room'])) {
+				return API.v1.unauthorized();
+			}
+
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
@@ -26,7 +31,7 @@ API.v1.addRoute(
 				findDepartments({
 					userId: this.userId,
 					text,
-					enabled,
+					enabled: enabled === 'true',
 					onlyMyDepartments: onlyMyDepartments === 'true',
 					excludeDepartmentId,
 					pagination: {
@@ -75,6 +80,10 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			if (!hasAtLeastOnePermission(this.userId, ['view-livechat-departments', 'view-l-room'])) {
+				return API.v1.unauthorized();
+			}
+
 			check(this.urlParams, {
 				_id: String,
 			});
