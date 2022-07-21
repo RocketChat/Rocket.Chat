@@ -8,7 +8,7 @@ type TitleProps = {
 
 const Title: FC<TitleProps> = ({ title, icon }) => (
 	<Box display='flex' title={title} flexShrink={0} alignItems='center' fontScale='h4' color='default' withTruncatedText>
-		{typeof icon === 'string' ? icon && <Icon name={icon} size='x22' /> : icon}
+		{typeof icon === 'string' ? <Icon name={icon} size='x22' /> : icon}
 		<Box mis='x8' flexGrow={1} withTruncatedText>
 			{title}
 		</Box>

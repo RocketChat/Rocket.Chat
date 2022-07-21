@@ -1,11 +1,11 @@
-import { IUser } from '@rocket.chat/core-typings';
+import { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import React, { memo, ReactElement, ReactNode } from 'react';
 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useUserCustomFields } from '../../hooks/useUserCustomFields';
-import { getUserDisplayName } from '../../lib/getUserDisplayName';
+import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import InfoPanel from '../InfoPanel';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
@@ -13,25 +13,30 @@ import UserCard from '../UserCard';
 import VerticalBar from '../VerticalBar';
 import UserInfoAvatar from './UserInfoAvatar';
 
-type UserInfoProps = {
-	username: IUser['username'];
-	name: IUser['name'];
-	lastLogin: IUser['lastLogin'];
-	nickname: IUser['nickname'];
-	bio: IUser['bio'];
-	avatarETag: IUser['avatarETag'];
-	roles: IUser['roles'];
-	utcOffset: IUser['utcOffset'];
-	phone: IUser['phone'];
-	createdAt: IUser['createdAt'];
-	status: ReactElement;
-	statusText: IUser['statusText'];
-	canViewAllInfo: IUser['canViewAllInfo'];
-	email: string;
-	verified: boolean;
+type UserInfoDataProps = Serialized<
+	Pick<
+		IUser,
+		| 'name'
+		| 'username'
+		| 'nickname'
+		| 'bio'
+		| 'lastLogin'
+		| 'avatarETag'
+		| 'utcOffset'
+		| 'phone'
+		| 'createdAt'
+		| 'statusText'
+		| 'canViewAllInfo'
+		| 'customFields'
+	>
+>;
+
+type UserInfoProps = UserInfoDataProps & {
+	status: ReactNode;
+	email?: string;
+	verified?: boolean;
 	actions: ReactElement;
-	showRealNames: unknown;
-	customFields: IUser['customFields'];
+	roles: ReactElement[];
 };
 
 const UserInfo = ({
@@ -52,11 +57,11 @@ const UserInfo = ({
 	customFields,
 	canViewAllInfo,
 	actions,
-	showRealNames,
 	...props
 }: UserInfoProps): ReactElement => {
 	const t = useTranslation();
 	const timeAgo = useTimeAgo();
+	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
 
 	return (
@@ -71,10 +76,12 @@ const UserInfo = ({
 				{actions && <InfoPanel.Section>{actions}</InfoPanel.Section>}
 
 				<InfoPanel.Section>
-					<InfoPanel.Title icon={status} title={getUserDisplayName(name, username, !!showRealNames)} />
-					<InfoPanel.Text>
-						<MarkdownText content={statusText} parseEmoji={true} variant='inline' />
-					</InfoPanel.Text>
+					{userDisplayName && <InfoPanel.Title icon={status} title={userDisplayName} />}
+					{statusText && (
+						<InfoPanel.Text>
+							<MarkdownText content={statusText} parseEmoji={true} variant='inline' />
+						</InfoPanel.Text>
+					)}
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
@@ -150,8 +157,7 @@ const UserInfo = ({
 									{email}
 								</Box>
 								<Margins inline='x4'>
-									{verified && <Tag variant='secondary'>{t('Verified')}</Tag>}
-									{verified || <Tag disabled>{t('Not_verified')}</Tag>}
+									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
 							</InfoPanel.Text>
 						</InfoPanel.Field>

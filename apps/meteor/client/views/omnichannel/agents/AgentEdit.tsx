@@ -108,9 +108,11 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 
 	return (
 		<VerticalBar.ScrollableContent is='form' {...props}>
-			<Box alignSelf='center'>
-				<UserInfo.Avatar data-qa='AgentEdit-Avatar' margin='auto' size={'x332'} title={username} username={username} />
-			</Box>
+			{username && (
+				<Box alignSelf='center'>
+					<UserInfo.Avatar data-qa='AgentEdit-Avatar' username={username} />
+				</Box>
+			)}
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>

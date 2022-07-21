@@ -36,9 +36,11 @@ export const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children
 
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
-			<Box alignSelf='center'>
-				<UserInfo.Avatar data-qa='AgentUserInfoAvatar' size={'x332'} username={username} />
-			</Box>
+			{username && (
+				<Box alignSelf='center'>
+					<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
+				</Box>
+			)}
 
 			<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center'>
 				{children}
