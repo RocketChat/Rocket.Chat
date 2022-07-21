@@ -13,7 +13,7 @@ type Contact = {
 
 const STORAGE_KEY = 'rcOmnichannelContacts';
 
-const createContact = (phone: string, data: ILivechatVisitor | null): Contact => ({
+const createContact = (phone: string, data: Pick<ILivechatVisitor, 'name'> | null): Contact => ({
 	phone,
 	name: data?.name || '',
 });
@@ -49,10 +49,7 @@ export const useOmnichannelContacts = (): ContactsHookAPI => {
 		[contacts],
 	);
 
-	const fetchContactByPhone = useCallback(
-		(phone: string): Promise<ReturnType<typeof getContactBy>> => getContactBy({ phone }),
-		[getContactBy],
-	);
+	const fetchContactByPhone = useCallback((phone: string): ReturnType<typeof getContactBy> => getContactBy({ phone }), [getContactBy]);
 
 	const getContactByPhone = useCallback(
 		async (phone: string): Promise<Contact> => {
