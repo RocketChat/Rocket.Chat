@@ -35,5 +35,5 @@ export function useParsedMessage(message: IMessage & Partial<ITranslatedMessage>
 		}
 
 		return parse(message.msg, parseOptions);
-	}, [colors, katexDollarSyntax, katexParenthesisSyntax, autoTranslateLanguage, message.md, message.msg, message.translations]);
+	}, [colors, katexDollarSyntax, katexParenthesisSyntax, translated, autoTranslateLanguage, message]);
 }
