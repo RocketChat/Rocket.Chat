@@ -90649,6 +90649,183 @@
           ]
         }
       ]
+    },
+    "4.7.5": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.8.2": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26326",
+          "title": "Release 4.8.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "matthias4217"
+          ]
+        },
+        {
+          "pr": "26253",
+          "title": "Chore: Avoid unneeded permission updates when EE license is applied",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.8.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25724",
+          "title": "[FIX] Not showing edit message button when blocking edit after N minutes",
+          "userLogin": "matthias4217",
+          "description": "Previously, in Rocketchat 4.7.0 and later,  as mentioned in https://github.com/RocketChat/Rocket.Chat/issues/25478, the edit button was not displayed on the interface in the minute after having sent a message. This is now fixed : messages can be edited right after sending them.",
+          "milestone": "4.8.2",
+          "contributors": [
+            "matthias4217",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26058",
+          "title": "[FIX] Error \"numRequestsAllowed\" property in rateLimiter for REST API endpoint when upgrading",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.8.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25891",
+          "title": "[FIX] Settings not being overwritten to their default values",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.8.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25814",
+          "title": "Release 4.8.1",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "KevLehman",
+            "ggazzo",
+            "tiagoevanp",
+            "Sh0uld",
+            "dudanogueira"
+          ]
+        }
+      ]
+    },
+    "5.0.0-rc.11": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26310",
+          "title": "Regression: fix `directory` endpoint not listing teams",
+          "userLogin": "carlosrodrigues94",
+          "milestone": "5.0.0",
+          "contributors": [
+            "carlosrodrigues94",
+            "matheusbsilva137",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "26309",
+          "title": "Regression: Options overlapping input in Users Autocomplete",
+          "userLogin": "gabriellsh",
+          "milestone": "5.0.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "26283",
+          "title": "Regression: Matrix Federation regressions",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "5.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow",
+            "carlosrodrigues94",
+            "gabriellsh",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "26319",
+          "title": "Regression: Use fname instead real unique name for Voip",
+          "userLogin": "tiagoevanp",
+          "description": "Affect:\r\n- Voip room header\r\n- Contacts table\r\n- Contact info",
+          "milestone": "5.0.0",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "26269",
+          "title": "Regression: Channel `type` icon on Engagement Dashboard",
+          "userLogin": "LucianoPierdona",
+          "description": "This PR fixes a bug on which the channel type is inverted.",
+          "milestone": "5.0.0",
+          "contributors": [
+            "LucianoPierdona",
+            "tassoevan",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "26315",
+          "title": "Regression: Fix job Id not returned by agenda",
+          "userLogin": "murtaza98",
+          "milestone": "5.0.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26241",
+          "title": "Regression: Special characters on phone number",
+          "userLogin": "tiagoevanp",
+          "description": "PR Includes:\r\n- Keep focus on phone input of dial pad\r\n- Handle submit with \"Enter\" key\r\n- Remove mask and mandatory \"+\" char\r\n- Long press for \"0\"/\"+\" button",
+          "milestone": "5.0.0",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo",
+            "web-flow",
+            "filipemarins",
+            "KevLehman",
+            "aleksandernsilva"
+          ]
+        }
+      ]
     }
   }
 }
