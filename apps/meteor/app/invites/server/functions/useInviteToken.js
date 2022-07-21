@@ -6,6 +6,7 @@ import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { Team } from '../../../../server/sdk';
 
 export const useInviteToken = async (userId, token) => {
 	if (!userId) {
@@ -45,6 +46,10 @@ export const useInviteToken = async (userId, token) => {
 	// If no username is set yet, then the the join will happen on the setUsername method
 	if (user.username) {
 		addUserToRoom(room._id, user);
+
+		if (room.teamId) {
+			Team.addMember(room.u._id, userId, room.teamId);
+		}
 	}
 
 	return {
