@@ -90826,6 +90826,60 @@
           ]
         }
       ]
+    },
+    "5.0.0-rc.12": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26327",
+          "title": "Regression: Livechat not rendering UiKit messages with action buttons",
+          "userLogin": "murtaza98",
+          "milestone": "5.0.0",
+          "contributors": [
+            "murtaza98",
+            "ggazzo",
+            "web-flow",
+            "aleksandernsilva"
+          ]
+        },
+        {
+          "pr": "26325",
+          "title": "Chore: bump fuselage packages",
+          "userLogin": "dougfabris",
+          "milestone": "5.0.0",
+          "contributors": [
+            "dougfabris",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "26322",
+          "title": "Chore: Update useSidebarPalette selectors",
+          "userLogin": "juliajforesti",
+          "milestone": "5.0.0",
+          "contributors": [
+            "juliajforesti",
+            "web-flow",
+            "ggazzo",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "26328",
+          "title": "Regression: Fix get myself user data",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }

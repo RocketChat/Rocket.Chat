@@ -1,6 +1,32 @@
 
 # 5.0.0 (Under Release Candidate Process)
 
+## 5.0.0-rc.12
+`2022-07-21  ·  4 🔍  ·  6 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: bump fuselage packages ([#26325](https://github.com/RocketChat/Rocket.Chat/pull/26325))
+
+- Chore: Update useSidebarPalette selectors ([#26322](https://github.com/RocketChat/Rocket.Chat/pull/26322))
+
+- Regression: Fix get myself user data ([#26328](https://github.com/RocketChat/Rocket.Chat/pull/26328))
+
+- Regression: Livechat not rendering UiKit messages with action buttons ([#26327](https://github.com/RocketChat/Rocket.Chat/pull/26327))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 5.0.0-rc.11
 `2022-07-21  ·  7 🔍  ·  12 👩‍💻👨‍💻`
 
