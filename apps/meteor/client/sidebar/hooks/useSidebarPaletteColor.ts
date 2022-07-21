@@ -147,7 +147,7 @@ const getStyle = (
 			--rcx-sidebar-item-background-color-selected: ${h2r(toVar(colors.n700 || colors.n800), 0.3)};
 			--rcx-badge-colors-ghost-background-color: ${toVar(colors.n700)};
 			--rcx-tag-colors-ghost-background-color: ${toVar(colors.n700)};
-			--rcx-color-surface: ${toVar(colors.n900)};
+			--rcx-color-surface-light: ${toVar(colors.n900)};
 
 			--rcx-button-icon-disabled-color: ${toVar(colors.n700)};
 			--rcx-button-icon-disabled-background-color: ${toVar(colors.n900)};
@@ -164,7 +164,7 @@ const getStyle = (
 		.rcx-badge--primary {
 			--rcx-badge-colors-primary-background-color: ${toVar(colors.b500)}
 		}
-		
+
 		.rcx-sidebar {
 			background-color: ${toVar(colors.sibebarSurface)};
 		}
