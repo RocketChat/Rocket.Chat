@@ -1,8 +1,11 @@
-import { Modal, Box, Field, FieldGroup, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldGroup, TextInput, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, memo, useState, ChangeEvent, FormEventHandler, useEffect } from 'react';
+import React, { ReactElement, memo, useState, ChangeEvent, FormEventHandler, useEffect, useRef } from 'react';
 
+import { EmojiPicker } from '../../../../../app/emoji/client/index';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import FilePreview from './FilePreview';
 
 type FileUploadModalProps = {
@@ -67,6 +70,21 @@ const FileUploadModal = ({
 		}
 	}, [file, dispatchToastMessage, invalidContentType, t, onClose]);
 
+	const inputRef = useRef(null);
+	const handleEmojiPicker = (event: any): void => {
+		event.stopPropagation();
+		event.preventDefault();
+		if (EmojiPicker.isOpened()) {
+			EmojiPicker.close();
+		}
+		EmojiPicker.open(inputRef.current, (emoji: any) => {
+			const emojiValue = `:${emoji}:`;
+			inputRef.current?.focus();
+			if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
+				inputRef.current?.focus();
+			}
+		});
+	};
 	return (
 		<Modal>
 			<Box is='form' display='flex' flexDirection='column' height='100%' onSubmit={handleSubmit}>
@@ -89,7 +107,10 @@ const FileUploadModal = ({
 						<Field>
 							<Field.Label>{t('Upload_file_description')}</Field.Label>
 							<Field.Row>
-								<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
+								<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={inputRef} />
+								<button className='rc-message-box__icon emoji-picker-icon' aria-haspopup='true'>
+									<Icon name='emoji' size={24} onClick={handleEmojiPicker} />
+								</button>
 							</Field.Row>
 						</Field>
 					</FieldGroup>
