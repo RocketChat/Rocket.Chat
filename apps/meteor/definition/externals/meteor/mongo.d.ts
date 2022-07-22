@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/interface-name-prefix */
 import * as mongodb from 'mongodb';
 
 declare module 'meteor/mongo' {
@@ -30,7 +29,6 @@ declare module 'meteor/mongo' {
 	}
 
 	namespace Mongo {
-		// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 		interface CollectionStatic {
 			new <T>(
 				name: string | null,

@@ -4,6 +4,7 @@ import { IMatrixEventContentAddMemberToRoom } from './IMatrixEventContentAddMemb
 import { IMatrixEventContentSendMessage } from './IMatrixEventContentSendMessage';
 import { IMatrixEventContentSetRoomJoinRules } from './IMatrixEventContentSetRoomJoinRules';
 import { IMatrixEventContentSetRoomName } from './IMatrixEventContentSetRoomName';
+import { IMatrixEventContentSetRoomTopic } from './IMatrixEventContentSetRoomTopic';
 
 export type EventContent = {
 	[MatrixEventType.ROOM_CREATED]: IMatrixEventContentCreateRoom;
@@ -11,4 +12,5 @@ export type EventContent = {
 	[MatrixEventType.ROOM_MESSAGE_SENT]: IMatrixEventContentSendMessage;
 	[MatrixEventType.ROOM_JOIN_RULES_CHANGED]: IMatrixEventContentSetRoomJoinRules;
 	[MatrixEventType.ROOM_NAME_CHANGED]: IMatrixEventContentSetRoomName;
+	[MatrixEventType.ROOM_TOPIC_CHANGED]: IMatrixEventContentSetRoomTopic;
 };

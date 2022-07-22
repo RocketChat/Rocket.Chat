@@ -1,3 +1,4 @@
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { IRoom, ValueOf } from '@rocket.chat/core-typings';
 
 import { RoomMemberActions } from '../../../../../definition/IRoomTypeConfig';
@@ -14,8 +15,10 @@ export class Federation {
 		return room.federated === true;
 	}
 
-	public static federationActionAllowed(action: ValueOf<typeof RoomMemberActions>): boolean {
-		return allowedActionsInFederatedRooms.includes(action);
+	public static actionAllowed(room: IRoom, action: ValueOf<typeof RoomMemberActions>): boolean {
+		return room.t === RoomType.DIRECT_MESSAGE && action === RoomMemberActions.REMOVE_USER
+			? false
+			: allowedActionsInFederatedRooms.includes(action);
 	}
 
 	public static isAFederatedUsername(username: string): boolean {

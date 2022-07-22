@@ -78,6 +78,11 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 			handleBroadcast(false);
 		}
 
+		// if room is federated, it cannot be readonly
+		if (readOnly && value) {
+			handleReadOnly(false);
+		}
+
 		return handleFederated(value);
 	});
 
