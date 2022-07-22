@@ -1,10 +1,4 @@
-
-import {
-	runFederation,
-	stopFederation,
-	rocketSettingsAdapter,
-	federationQueueInstance,
-} from '../../../../app/federation-v2/server';
+import { runFederation, stopFederation, rocketSettingsAdapter, federationQueueInstance } from '../../../../app/federation-v2/server';
 import { onToggledFeature } from '../../license/server/license';
 import { FederationFactoryEE } from './infrastructure/Factory';
 

@@ -66,9 +66,7 @@ export class MatrixRoomReceiverConverter {
 		return matrixProp.replace('@', '').replace('!', '');
 	}
 
-	public static toRoomChangeJoinRulesDto(
-		externalEvent: MatrixEventRoomJoinRulesChanged,
-	): FederationRoomChangeJoinRulesDto {
+	public static toRoomChangeJoinRulesDto(externalEvent: MatrixEventRoomJoinRulesChanged): FederationRoomChangeJoinRulesDto {
 		return new FederationRoomChangeJoinRulesDto({
 			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
 			roomType: MatrixRoomReceiverConverter.convertMatrixJoinRuleToRCRoomType(externalEvent.content?.join_rule),

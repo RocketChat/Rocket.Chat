@@ -154,10 +154,6 @@ export class MatrixBridge implements IFederationBridge {
 		await this.bridgeInstance.getIntent(externalOwnerId).kick(externalRoomId, externalUserId);
 	}
 
-	public isRoomFromTheSameHomeserver(externalRoomId: string, domain: string): boolean {
-		return this.isUserIdFromTheSameHomeserver(externalRoomId, domain);
-	}
-
 	protected async createInstance(): Promise<void> {
 		bridgeLogger.info('Performing Dynamic Import of matrix-appservice-bridge');
 

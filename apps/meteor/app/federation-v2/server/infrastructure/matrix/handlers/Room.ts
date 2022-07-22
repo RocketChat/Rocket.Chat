@@ -50,6 +50,7 @@ export class MatrixRoomMessageSentHandler extends MatrixBaseEventHandler {
 
 export class MatrixRoomJoinRulesChangedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_JOIN_RULES_CHANGED;
+
 	constructor(private roomService: FederationRoomServiceReceiver) {
 		super();
 	}
@@ -61,6 +62,7 @@ export class MatrixRoomJoinRulesChangedHandler extends MatrixBaseEventHandler {
 
 export class MatrixRoomNameChangedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_NAME_CHANGED;
+
 	constructor(private roomService: FederationRoomServiceReceiver) {
 		super();
 	}
