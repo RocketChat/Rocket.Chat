@@ -157,8 +157,8 @@ export class FederationRoomServiceSender {
 			throw new Error('error-this-is-an-ee-feature');
 		}
 
-		const invitee = await this.rocketUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
-		const inviter = await this.rocketUserAdapter.getFederatedUserByInternalId((internalInviter as IUser)._id);
+		const invitee = await this.rocketUserAdapter.getFederatedUserByInternalId(internalUser._id);
+		const inviter = await this.rocketUserAdapter.getFederatedUserByInternalId(internalInviter._id);
 		const externalRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoom._id);
 		if (!externalRoom || !inviter) {
 			return;

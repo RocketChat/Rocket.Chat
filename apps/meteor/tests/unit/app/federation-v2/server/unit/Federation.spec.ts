@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { Federation } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/Federation';
+import { Federation } from '../../../../../../app/federation-v2/server/Federation';
 import { RoomMemberActions } from '../../../../../../definition/IRoomTypeConfig';
 
 describe('Federation[Server] - Federation', () => {

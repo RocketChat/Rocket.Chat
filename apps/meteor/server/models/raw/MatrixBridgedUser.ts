@@ -9,7 +9,11 @@ export class MatrixBridgedUserRaw extends BaseRaw<IMatrixBridgedUser> implements
 		super(db, 'matrix_bridged_users', trash);
 	}
 
-	async getExternalUserId(localUserId: string): Promise<string | null> {
+	protected modelIndexes(): IndexDescription[] {
+		return [{ key: { uid: 1, mui: 1 }, unique: true, sparse: true }];
+	}
+
+	async getExternalUserIdByLocalUserId(localUserId: string): Promise<string | null> {
 		const bridgedUser = await this.findOne({ uid: localUserId });
 
 		return bridgedUser ? bridgedUser.mui : null;
@@ -27,9 +31,5 @@ export class MatrixBridgedUserRaw extends BaseRaw<IMatrixBridgedUser> implements
 
 	async getBridgedUserByLocalId(localUserId: string): Promise<IMatrixBridgedUser | null> {
 		return this.findOne({ uid: localUserId });
-	}
-
-	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { uid: 1, mui: 1 }, unique: true, sparse: true }];
 	}
 }

@@ -1,6 +1,6 @@
 import { AtLeast, IRoom, isRoomFederated } from '@rocket.chat/core-typings';
 
-import { Federation } from '../../../../app/federation-v2/server/infrastructure/rocket-chat/Federation';
+import { Federation } from '../../../../app/federation-v2/server/Federation';
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
