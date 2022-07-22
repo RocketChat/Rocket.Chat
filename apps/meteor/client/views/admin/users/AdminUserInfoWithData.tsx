@@ -46,10 +46,8 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 		}
 
 		const {
-			_id,
 			avatarETag,
 			name,
-			active,
 			username,
 			phone,
 			createdAt,
@@ -64,11 +62,8 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 		} = data.user;
 
 		return {
-			_id,
 			avatarETag,
 			name,
-			active,
-			isAdmin: roles.includes('admin'),
 			username,
 			lastLogin,
 			roles: getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
@@ -97,7 +92,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 		);
 	}
 
-	if (error || !user) {
+	if (error || !user || !data?.user) {
 		return (
 			<VerticalBar.Content pb='x16'>
 				<Callout type='danger'>{t('User_not_found')}</Callout>
@@ -110,9 +105,9 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 			{...user}
 			actions={
 				<AdminUserInfoActions
-					isActive={user.active}
-					isAdmin={user.isAdmin}
-					userId={user._id}
+					isActive={data?.user.active}
+					isAdmin={data?.user.roles.includes('admin')}
+					userId={data?.user._id}
 					username={user.username}
 					onChange={onChange}
 					onReload={onReload}

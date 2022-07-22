@@ -4,7 +4,7 @@ import React, { ComponentProps } from 'react';
 import ConfirmOwnerChangeWarningModal from '../../../../components/ConfirmOwnerChangeModal';
 
 export const useConfirmOwnerChanges = (): ((
-	action: (confirm?: boolean) => void,
+	action: (confirm?: boolean) => Promise<void>,
 	modalProps: Pick<ComponentProps<typeof ConfirmOwnerChangeWarningModal>, 'contentTitle' | 'confirmText'>,
 	onChange: () => void,
 ) => Promise<void>) => {
@@ -14,16 +14,12 @@ export const useConfirmOwnerChanges = (): ((
 	return async (action, modalProps, onChange): Promise<void> => {
 		try {
 			return await action();
-		} catch (error) {
-			if (error.xhr?.responseJSON?.errorType === 'user-last-owner') {
-				const { shouldChangeOwner, shouldBeRemoved } = error.xhr.responseJSON.details;
+		} catch (error: any) {
+			if (error.errorType === 'user-last-owner') {
+				const { shouldChangeOwner, shouldBeRemoved } = error.details;
 
 				const handleConfirm = async (): Promise<void> => {
 					await action(true);
-					setModal();
-				};
-
-				const handleCancel = (): void => {
 					setModal();
 					onChange();
 				};
@@ -34,11 +30,11 @@ export const useConfirmOwnerChanges = (): ((
 						shouldChangeOwner={shouldChangeOwner}
 						shouldBeRemoved={shouldBeRemoved}
 						onConfirm={handleConfirm}
-						onCancel={handleCancel}
+						onCancel={(): void => setModal()}
 					/>,
 				);
 			}
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error as Error });
 		}
 	};
 };

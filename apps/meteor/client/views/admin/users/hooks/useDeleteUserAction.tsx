@@ -24,10 +24,9 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 	const erasureType = useSetting('Message_ErasureType');
 	const confirmOwnerChanges = useConfirmOwnerChanges();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const handleCloseModal = useMutableCallback((): void => setModal());
 
 	const handleDeletedUser = (): void => {
-		handleCloseModal();
+		setModal();
 		userRoute.push({});
 		onReload();
 	};
@@ -42,12 +41,12 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 					deleteUserQuery.confirmRelinquish = confirm;
 				}
 
-				const result = await deleteUserEndpoint(deleteUserQuery);
-				if (result.success) {
-					handleDeletedUser();
+				try {
+					await deleteUserEndpoint(deleteUserQuery);
 					dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
-				} else {
-					handleCloseModal();
+					handleDeletedUser();
+				} catch (error) {
+					throw error;
 				}
 			},
 			{
@@ -59,7 +58,7 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 
 	const confirmDeleteUser = useMutableCallback(() => {
 		setModal(
-			<GenericModal variant='danger' onConfirm={deleteUser} onCancel={handleCloseModal} confirmText={t('Delete')}>
+			<GenericModal variant='danger' onConfirm={deleteUser} onCancel={(): void => setModal()} confirmText={t('Delete')}>
 				{t(`Delete_User_Warning_${erasureType}` as TranslationKey)}
 			</GenericModal>,
 		);

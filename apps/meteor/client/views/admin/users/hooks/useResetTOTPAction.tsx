@@ -1,6 +1,5 @@
 import { IUser } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useSetting, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useSetting, usePermission, useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
@@ -9,31 +8,29 @@ import { Action } from '../../../hooks/useActionSpread';
 export const useResetTOTPAction = (userId: IUser['_id']): Action | undefined => {
 	const t = useTranslation();
 	const setModal = useSetModal();
-	const handleCloseModal = useMutableCallback(() => setModal());
+	const dispatchToastMessage = useToastMessageDispatch();
 	const canResetTOTP = usePermission('edit-other-user-totp');
 	const resetTOTPRequest = useEndpoint('POST', '/v1/users.resetTOTP');
 	const enforcePassword = useSetting('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback');
 
 	const resetTOTP = useCallback(async () => {
-		setModal();
-		const result = await resetTOTPRequest({ userId });
-
-		if (result) {
-			setModal(
-				<GenericModal variant='success' onClose={handleCloseModal} onConfirm={handleCloseModal}>
-					{t('Users_TOTP_has_been_reset')}
-				</GenericModal>,
-			);
+		try {
+			await resetTOTPRequest({ userId });
+			dispatchToastMessage({ type: 'success', message: t('Users_TOTP_has_been_reset') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error as Error });
+		} finally {
+			setModal();
 		}
-	}, [resetTOTPRequest, setModal, t, userId, handleCloseModal]);
+	}, [resetTOTPRequest, setModal, t, userId, dispatchToastMessage]);
 
 	const confirmResetTOTP = useCallback(() => {
 		setModal(
-			<GenericModal variant='danger' onConfirm={resetTOTP} onCancel={handleCloseModal} confirmText={t('Reset')}>
+			<GenericModal variant='danger' onConfirm={resetTOTP} onCancel={(): void => setModal()} confirmText={t('Reset')}>
 				{t('TOTP_Reset_Other_Key_Warning')}
 			</GenericModal>,
 		);
-	}, [resetTOTP, t, setModal, handleCloseModal]);
+	}, [resetTOTP, t, setModal]);
 
 	return canResetTOTP && enforcePassword
 		? {

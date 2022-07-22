@@ -30,11 +30,9 @@ export const useChangeUserStatusAction = (userId: IUser['_id'], isActive: boolea
 				}
 
 				try {
-					const result = await changeActiveStatusRequest(activeStatusQuery);
-					if (result) {
-						dispatchToastMessage({ type: 'success', message: t(changeActiveStatusMessage) });
-						onChange();
-					}
+					await changeActiveStatusRequest(activeStatusQuery);
+					dispatchToastMessage({ type: 'success', message: t(changeActiveStatusMessage) });
+					onChange();
 				} catch (error) {
 					throw error;
 				}

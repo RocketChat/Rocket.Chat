@@ -302,9 +302,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.delete': {
-		POST: (params: { userId: IUser['_id']; confirmRelinquish?: boolean }) => {
-			success: boolean;
-		};
+		POST: (params: { userId: IUser['_id']; confirmRelinquish?: boolean }) => void;
 	};
 };
 

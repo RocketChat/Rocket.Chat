@@ -8,7 +8,7 @@ import { useActionSpread } from '../../hooks/useActionSpread';
 import { useChangeAdminStatusAction } from './hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from './hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from './hooks/useDeleteUserAction';
-import { useResetE2EKeyAction } from './hooks/useResetE2EKeyAction';
+import { useResetE2EEKeyAction } from './hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from './hooks/useResetTOTPAction';
 
 type AdminUserInfoActionsProps = {
@@ -31,7 +31,7 @@ const AdminUserInfoActions = ({ username, userId, isActive, isAdmin, onChange, o
 	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onChange);
 	const deleteUserAction = useDeleteUserAction(userId, onChange, onReload);
 	const resetTOTPAction = useResetTOTPAction(userId);
-	const resetE2EKeyAction = useResetE2EKeyAction(userId);
+	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
 
 	const directMessageClick = useCallback(
 		() =>
