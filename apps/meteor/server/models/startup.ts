@@ -54,5 +54,3 @@ import './UsersSessions';
 import './VideoConference';
 import './VoipRoom';
 import './WebdavAccounts';
-import './MatrixBridgedRoom';
-import './MatrixBridgedUser';

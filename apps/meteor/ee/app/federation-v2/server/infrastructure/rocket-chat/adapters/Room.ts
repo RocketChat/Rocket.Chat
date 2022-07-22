@@ -1,14 +1,13 @@
 import { ICreatedRoom, IRoom } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, MatrixBridgedRoom } from '@rocket.chat/models';
 
 import { RocketChatRoomAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Room';
-import { MatrixBridgedRoom } from '../../../../../../../app/models/server';
 import { createDirectMessage } from '../../../../../../../server/methods/createDirectMessage';
 import { FederatedRoomEE } from '../../../domain/FederatedRoom';
 
 export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
 	public async getFederatedRoomByExternalId(externalRoomId: string): Promise<FederatedRoomEE | undefined> {
-		const internalBridgedRoomId = MatrixBridgedRoom.getId(externalRoomId);
+		const internalBridgedRoomId = await MatrixBridgedRoom.getLocalRoomId(externalRoomId);
 		if (!internalBridgedRoomId) {
 			return;
 		}
@@ -19,7 +18,7 @@ export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
 	}
 
 	public async getFederatedRoomByInternalId(internalRoomId: string): Promise<FederatedRoomEE | undefined> {
-		const externalRoomId = MatrixBridgedRoom.getMatrixId(internalRoomId);
+		const externalRoomId = await MatrixBridgedRoom.getExternalRoomId(internalRoomId);
 		if (!externalRoomId) {
 			return;
 		}
@@ -31,7 +30,7 @@ export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
 	}
 
 	public async updateFederatedRoomByInternalRoomId(internalRoomId: string, federatedRoom: FederatedRoomEE): Promise<void> {
-		MatrixBridgedRoom.upsert({ rid: internalRoomId }, { rid: internalRoomId, mri: federatedRoom.externalId });
+		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(internalRoomId, federatedRoom.externalId);
 		await Rooms.setAsFederated(internalRoomId);
 	}
 

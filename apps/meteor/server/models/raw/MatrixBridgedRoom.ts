@@ -24,4 +24,12 @@ export class MatrixBridgedRoomRaw extends BaseRaw<IMatrixBridgedRoom> implements
 
 		return bridgedRoom ? bridgedRoom.rid : null;
 	}
+
+	async removeByLocalRoomId(localRoomId: string): Promise<void> {
+		this.deleteOne({ rid: localRoomId });
+	}
+
+	async createOrUpdateByLocalRoomId(localRoomId: string, externalRoomId: string): Promise<void> {
+		await this.updateOne({ rid: localRoomId }, { rid: localRoomId, mri: externalRoomId }, { upsert: true });
+	}
 }

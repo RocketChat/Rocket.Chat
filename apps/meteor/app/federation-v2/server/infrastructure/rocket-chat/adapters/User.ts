@@ -1,12 +1,11 @@
 import { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 
-import { MatrixBridgedUser } from '../../../../../models/server';
 import { FederatedUser } from '../../../domain/FederatedUser';
 
 export class RocketChatUserAdapter {
 	public async getFederatedUserByExternalId(externalUserId: string): Promise<FederatedUser | undefined> {
-		const internalBridgedUserId = MatrixBridgedUser.getId(externalUserId);
+		const internalBridgedUserId = await MatrixBridgedUser.getLocalUserIdByExternalId(externalUserId);
 		if (!internalBridgedUserId) {
 			return;
 		}
@@ -19,11 +18,11 @@ export class RocketChatUserAdapter {
 	}
 
 	public async getFederatedUserByInternalId(internalUserId: string): Promise<FederatedUser | undefined> {
-		const internalBridgedUserId = MatrixBridgedUser.getById(internalUserId);
-		if (!internalBridgedUserId) {
+		const internalBridgedUser = await MatrixBridgedUser.getBridgedUserByLocalId(internalUserId);
+		if (!internalBridgedUser) {
 			return;
 		}
-		const { uid: userId, mui: externalUserId, remote } = internalBridgedUserId;
+		const { uid: userId, mui: externalUserId, remote } = internalBridgedUser;
 		const user = await Users.findOneById(userId);
 
 		if (user) {
@@ -36,11 +35,11 @@ export class RocketChatUserAdapter {
 		if (!user) {
 			return;
 		}
-		const internalBridgedUserId = MatrixBridgedUser.getById(user._id);
-		if (!internalBridgedUserId) {
+		const internalBridgedUser = await MatrixBridgedUser.getBridgedUserByLocalId(user._id);
+		if (!internalBridgedUser) {
 			return;
 		}
-		const { mui: externalUserId, remote } = internalBridgedUserId;
+		const { mui: externalUserId, remote } = internalBridgedUser;
 
 		return this.createFederatedUserInstance(externalUserId, user, remote);
 	}
@@ -52,13 +51,10 @@ export class RocketChatUserAdapter {
 	public async createFederatedUser(federatedUser: FederatedUser): Promise<void> {
 		const existingLocalUser = await Users.findOneByUsername(federatedUser.internalReference.username || '');
 		if (existingLocalUser) {
-			return MatrixBridgedUser.upsert(
-				{ uid: existingLocalUser._id },
-				{
-					uid: existingLocalUser._id,
-					mui: federatedUser.externalId,
-					remote: !federatedUser.existsOnlyOnProxyServer,
-				},
+			return MatrixBridgedUser.createOrUpdateByLocalId(
+				existingLocalUser._id,
+				federatedUser.externalId,
+				!federatedUser.existsOnlyOnProxyServer,
 			);
 		}
 		const { insertedId } = await Users.insertOne({
@@ -72,14 +68,7 @@ export class RocketChatUserAdapter {
 			createdAt: new Date(),
 			federated: true,
 		});
-		MatrixBridgedUser.upsert(
-			{ uid: insertedId },
-			{
-				uid: insertedId,
-				mui: federatedUser.externalId,
-				remote: !federatedUser.existsOnlyOnProxyServer,
-			},
-		);
+		return MatrixBridgedUser.createOrUpdateByLocalId(insertedId, federatedUser.externalId, !federatedUser.existsOnlyOnProxyServer);
 	}
 
 	private createFederatedUserInstance(externalUserId: string, user: IUser, remote = true): FederatedUser {

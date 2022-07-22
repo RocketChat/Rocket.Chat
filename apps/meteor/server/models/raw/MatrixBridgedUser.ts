@@ -32,4 +32,16 @@ export class MatrixBridgedUserRaw extends BaseRaw<IMatrixBridgedUser> implements
 	async getBridgedUserByLocalId(localUserId: string): Promise<IMatrixBridgedUser | null> {
 		return this.findOne({ uid: localUserId });
 	}
+
+	async createOrUpdateByLocalId(localUserId: string, externalUserId: string, remote: boolean): Promise<void> {
+		await this.updateOne(
+			{ uid: localUserId },
+			{
+				uid: localUserId,
+				mui: externalUserId,
+				remote,
+			},
+			{ upsert: true },
+		);
+	}
 }
