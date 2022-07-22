@@ -371,7 +371,7 @@ export const Livechat = {
 			});
 		}
 
-		const user = await LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+		const user = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 		if (user) {
 			return LivechatVisitors.updateById(user._id, updateUser);
 		}

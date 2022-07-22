@@ -34,6 +34,22 @@ export interface IFederationSendInternalMessageInputDto extends IFederationRecei
 	text: string;
 }
 
+export interface IFederationRoomChangeJoinRulesDtoInputDto extends IFederationReceiverBaseRoomInputDto {
+	roomType: RoomType;
+}
+
+export interface IFederationRoomNameChangeInputDto extends IFederationReceiverBaseRoomInputDto {
+	normalizedRoomName: string;
+
+	externalSenderId: string;
+}
+
+export interface IFederationRoomTopicChangeInputDto extends IFederationReceiverBaseRoomInputDto {
+	roomTopic: string;
+
+	externalSenderId: string;
+}
+
 export class FederationBaseRoomInputDto {
 	constructor({ externalRoomId, normalizedRoomId }: IFederationReceiverBaseRoomInputDto) {
 		this.externalRoomId = externalRoomId;
@@ -136,4 +152,37 @@ export class FederationRoomSendInternalMessageDto extends FederationBaseRoomInpu
 	normalizedSenderId: string;
 
 	text: string;
+}
+
+export class FederationRoomChangeJoinRulesDto extends FederationBaseRoomInputDto {
+	constructor({ externalRoomId, normalizedRoomId, roomType }: IFederationRoomChangeJoinRulesDtoInputDto) {
+		super({ externalRoomId, normalizedRoomId });
+		this.roomType = roomType;
+	}
+
+	roomType: RoomType;
+}
+
+export class FederationRoomChangeNameDto extends FederationBaseRoomInputDto {
+	constructor({ externalRoomId, normalizedRoomId, normalizedRoomName, externalSenderId }: IFederationRoomNameChangeInputDto) {
+		super({ externalRoomId, normalizedRoomId });
+		this.normalizedRoomName = normalizedRoomName;
+		this.externalSenderId = externalSenderId;
+	}
+
+	normalizedRoomName: string;
+
+	externalSenderId: string;
+}
+
+export class FederationRoomChangeTopicDto extends FederationBaseRoomInputDto {
+	constructor({ externalRoomId, normalizedRoomId, roomTopic, externalSenderId }: IFederationRoomTopicChangeInputDto) {
+		super({ externalRoomId, normalizedRoomId });
+		this.roomTopic = roomTopic;
+		this.externalSenderId = externalSenderId;
+	}
+
+	roomTopic: string;
+
+	externalSenderId: string;
 }

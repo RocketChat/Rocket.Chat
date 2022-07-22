@@ -1,0 +1,12 @@
+import { AbstractMatrixEvent, IBaseEventContent } from '../AbstractMatrixEvent';
+import { MatrixEventType } from '../MatrixEventType';
+
+export interface IMatrixEventContentSetRoomTopic extends IBaseEventContent {
+	topic: string;
+}
+
+export class MatrixEventRoomTopicChanged extends AbstractMatrixEvent {
+	public content: IMatrixEventContentSetRoomTopic;
+
+	public type = MatrixEventType.ROOM_TOPIC_CHANGED;
+}

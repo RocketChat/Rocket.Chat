@@ -1,7 +1,10 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import {
+	FederationRoomChangeJoinRulesDto,
 	FederationRoomChangeMembershipDto,
+	FederationRoomChangeNameDto,
+	FederationRoomChangeTopicDto,
 	FederationRoomCreateInputDto,
 	FederationRoomSendInternalMessageDto,
 	IFederationReceiverBaseRoomInputDto,
@@ -12,6 +15,9 @@ import { RoomJoinRules } from '../definitions/RoomJoinRules';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 import { MatrixEventRoomCreated } from '../definitions/events/RoomCreated';
 import { MatrixEventRoomMessageSent } from '../definitions/events/RoomMessageSent';
+import { MatrixEventRoomJoinRulesChanged } from '../definitions/events/RoomJoinRulesChanged';
+import { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameChanged';
+import { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
 
 export class MatrixRoomReceiverConverter {
 	public static toRoomCreateDto(externalEvent: MatrixEventRoomCreated): FederationRoomCreateInputDto {
@@ -58,6 +64,39 @@ export class MatrixRoomReceiverConverter {
 
 	protected static removeMatrixSpecificChars(matrixProp = ''): string {
 		return matrixProp.replace('@', '').replace('!', '');
+	}
+
+	public static toRoomChangeJoinRulesDto(
+		externalEvent: MatrixEventRoomJoinRulesChanged,
+	): FederationRoomChangeJoinRulesDto {
+		return new FederationRoomChangeJoinRulesDto({
+			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
+			roomType: MatrixRoomReceiverConverter.convertMatrixJoinRuleToRCRoomType(externalEvent.content?.join_rule),
+		});
+	}
+
+	public static toRoomChangeNameDto(externalEvent: MatrixEventRoomNameChanged): FederationRoomChangeNameDto {
+		return new FederationRoomChangeNameDto({
+			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
+			externalSenderId: externalEvent.sender,
+			normalizedRoomName: MatrixRoomReceiverConverter.normalizeRoomNameToRCFormat(externalEvent.content?.name),
+		});
+	}
+
+	public static toRoomChangeTopicDto(externalEvent: MatrixEventRoomTopicChanged): FederationRoomChangeTopicDto {
+		return new FederationRoomChangeTopicDto({
+			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
+			externalSenderId: externalEvent.sender,
+			roomTopic: externalEvent.content?.topic,
+		});
+	}
+
+	private static normalizeRoomNameToRCFormat(matrixRoomName = ''): string {
+		return matrixRoomName.replace('@', '');
+	}
+
+	protected static convertMatrixUserIdFormatToRCFormat(matrixUserId = ''): string {
+		return matrixUserId.replace('@', '');
 	}
 
 	protected static convertMatrixRoomIdFormatToRCFormat(matrixRoomId = ''): string {

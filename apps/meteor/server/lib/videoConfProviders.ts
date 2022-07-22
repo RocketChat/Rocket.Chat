@@ -2,11 +2,11 @@ import { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 
 import { settings } from '../../app/settings/server';
 
-const providers = new Map<string, { capabilities: VideoConferenceCapabilities; label: string }>();
+const providers = new Map<string, { capabilities: VideoConferenceCapabilities; label: string; appId: string }>();
 
 export const videoConfProviders = {
-	registerProvider(providerName: string, capabilities: VideoConferenceCapabilities): void {
-		providers.set(providerName.toLowerCase(), { capabilities, label: providerName });
+	registerProvider(providerName: string, capabilities: VideoConferenceCapabilities, appId: string): void {
+		providers.set(providerName.toLowerCase(), { capabilities, label: providerName, appId });
 	},
 
 	unRegisterProvider(providerName: string): void {
@@ -50,10 +50,21 @@ export const videoConfProviders = {
 	},
 
 	getProviderCapabilities(name: string): VideoConferenceCapabilities | undefined {
-		if (!providers.has(name)) {
+		const key = name.toLowerCase();
+		if (!providers.has(key)) {
 			return;
 		}
 
-		return providers.get(name)?.capabilities;
+		return providers.get(key)?.capabilities;
+	},
+
+	getProviderAppId(name: string): string | undefined {
+		const key = name.toLowerCase();
+
+		if (!providers.has(key)) {
+			return;
+		}
+
+		return providers.get(key)?.appId;
 	},
 };

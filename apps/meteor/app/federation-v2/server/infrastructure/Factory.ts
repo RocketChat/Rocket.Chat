@@ -5,7 +5,14 @@ import { FederationRoomServiceSender } from '../application/RoomServiceSender';
 import { MatrixBridge } from './matrix/Bridge';
 import { MatrixEventsHandler } from './matrix/handlers';
 import { MatrixBaseEventHandler } from './matrix/handlers/BaseEvent';
-import { MatrixRoomCreatedHandler, MatrixRoomMembershipChangedHandler, MatrixRoomMessageSentHandler } from './matrix/handlers/Room';
+import {
+	MatrixRoomCreatedHandler,
+	MatrixRoomJoinRulesChangedHandler,
+	MatrixRoomMembershipChangedHandler,
+	MatrixRoomMessageSentHandler,
+	MatrixRoomNameChangedHandler,
+	MatrixRoomTopicChangedHandler,
+} from './matrix/handlers/Room';
 import { InMemoryQueue } from './queue/InMemoryQueue';
 import { RocketChatMessageAdapter } from './rocket-chat/adapters/Message';
 import { RocketChatRoomAdapter } from './rocket-chat/adapters/Room';
@@ -75,13 +82,16 @@ export class FederationFactory {
 	}
 
 	public static getEventHandlers(
-		roomServiceReceive: FederationRoomServiceReceiver,
+		roomServiceReceiver: FederationRoomServiceReceiver,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 	): MatrixBaseEventHandler[] {
 		return [
-			new MatrixRoomCreatedHandler(roomServiceReceive),
-			new MatrixRoomMembershipChangedHandler(roomServiceReceive, rocketSettingsAdapter),
-			new MatrixRoomMessageSentHandler(roomServiceReceive),
+			new MatrixRoomCreatedHandler(roomServiceReceiver),
+			new MatrixRoomMembershipChangedHandler(roomServiceReceiver, rocketSettingsAdapter),
+			new MatrixRoomMessageSentHandler(roomServiceReceiver),
+			new MatrixRoomJoinRulesChangedHandler(roomServiceReceiver),
+			new MatrixRoomNameChangedHandler(roomServiceReceiver),
+			new MatrixRoomTopicChangedHandler(roomServiceReceiver),
 		];
 	}
 
@@ -96,6 +106,7 @@ export class FederationFactory {
 		FederationHooks.canAddUsersToTheRoom((user: IUser | string, inviter: IUser, room: IRoom) =>
 			roomServiceSender.canAddUsersToTheRoom(user, inviter, room),
 		);
+		FederationHooks.beforeCreateDirectMessage((members: (IUser | string)[]) => roomServiceSender.beforeCreateDirectMessageFromUI(members));
 	}
 
 	public static removeListeners(): void {

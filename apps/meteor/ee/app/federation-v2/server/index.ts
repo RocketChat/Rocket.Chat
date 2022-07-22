@@ -1,28 +1,17 @@
+
 import {
-	FEDERATION_PROCESSING_CONCURRENCY,
 	runFederation,
 	stopFederation,
 	rocketSettingsAdapter,
-	queueInstance,
+	federationQueueInstance,
 } from '../../../../app/federation-v2/server';
-import { FederationFactory } from '../../../../app/federation-v2/server/infrastructure/Factory';
 import { onToggledFeature } from '../../license/server/license';
 import { FederationFactoryEE } from './infrastructure/Factory';
 
-const federationBridgeEE = FederationFactoryEE.buildBridge(rocketSettingsAdapter, queueInstance);
+const federationBridgeEE = FederationFactoryEE.buildBridge(rocketSettingsAdapter, federationQueueInstance);
 const rocketRoomAdapterEE = FederationFactoryEE.buildRocketRoomAdapter();
 const rocketUserAdapterEE = FederationFactoryEE.buildRocketUserAdapter();
-const rocketMessageAdapterEE = FederationFactory.buildRocketMessageAdapter();
 const rocketNotificationAdapterEE = FederationFactoryEE.buildRocketNotificationdapter();
-
-const federationRoomServiceReceiverEE = FederationFactoryEE.buildRoomServiceReceiver(
-	rocketRoomAdapterEE,
-	rocketUserAdapterEE,
-	rocketMessageAdapterEE,
-	rocketSettingsAdapter,
-	federationBridgeEE,
-);
-const federationEventsHandlerEE = FederationFactoryEE.buildEventHandlers(federationRoomServiceReceiverEE, rocketSettingsAdapter);
 
 export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSender(
 	rocketRoomAdapterEE,
@@ -33,13 +22,17 @@ export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServic
 );
 
 const runFederationEE = async (): Promise<void> => {
-	queueInstance.setHandler(federationEventsHandlerEE.handleEvent.bind(federationEventsHandlerEE), FEDERATION_PROCESSING_CONCURRENCY);
 	await federationBridgeEE.start();
 	federationBridgeEE.logFederationStartupInfo('Running Federation Enterprise V2');
 };
 
+let cancelSettingsObserverEE: Function;
+
 onToggledFeature('federation', {
 	up: async () => {
+		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged(
+			federationBridgeEE.onFederationAvailabilityChanged.bind(federationBridgeEE),
+		);
 		if (!rocketSettingsAdapter.isFederationEnabled()) {
 			return;
 		}
@@ -52,5 +45,6 @@ onToggledFeature('federation', {
 		await federationBridgeEE.stop();
 		await runFederation();
 		FederationFactoryEE.removeListeners();
+		cancelSettingsObserverEE();
 	},
 });
