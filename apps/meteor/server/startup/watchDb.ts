@@ -44,7 +44,8 @@ const watchCollections = [
 
 if (!isRunningMs()) {
 	const watcher = new DatabaseWatcher(db, watchCollections);
-	watcher.watch();
 
 	initWatchers(watcher, api.broadcastLocal.bind(api));
+
+	watcher.watch();
 }
