@@ -1,1 +1,0 @@
-export const VIDEOCONF_STACK_MAX_USERS = 6;
