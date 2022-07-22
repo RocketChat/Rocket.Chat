@@ -2,7 +2,7 @@ import {
 	Messages,
 	Users,
 	Subscriptions,
-	// Settings,
+	Settings,
 	LivechatInquiry,
 	LivechatDepartmentAgents,
 	Rooms,
@@ -39,6 +39,7 @@ const watchCollections = [
 	Integrations.getCollectionName(),
 	EmailInbox.getCollectionName(),
 	PbxEvents.getCollectionName(),
+	Settings.getCollectionName(),
 ];
 
 if (!isRunningMs()) {
