@@ -4,7 +4,6 @@ import { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { Timestamp, Db } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { MongoClient } from 'mongodb';
-import semver from 'semver';
 
 import { convertChangeStreamPayload } from './convertChangeStreamPayload';
 import { convertOplogPayload } from './convertOplogPayload';
@@ -49,9 +48,9 @@ export class DatabaseWatcher extends EventEmitter {
 		}
 
 		try {
-			const { version, storageEngine } = await this.db.command({ serverStatus: 1 });
+			const { storageEngine } = await this.db.command({ serverStatus: 1 });
 
-			if (!storageEngine || storageEngine.name !== 'wiredTiger' || !semver.satisfies(semver.coerce(version) || '', '>=3.6.0')) {
+			if (!storageEngine || storageEngine.name !== 'wiredTiger') {
 				return false;
 			}
 
