@@ -49,26 +49,12 @@ const hasKeys =
 const hasRoomFields = hasKeys(Object.keys(roomFields));
 const hasSubscriptionFields = hasKeys(Object.keys(subscriptionFields));
 
-export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallback): void {
-	// const {
-	// 	Messages,
-	// 	Users,
-	// 	Settings,
-	// 	Subscriptions,
-	// 	UsersSessions,
-	// 	Roles,
-	// 	Permissions,
-	// 	LivechatInquiry,
-	// 	LivechatDepartmentAgents,
-	// 	Rooms,
-	// 	LoginServiceConfiguration,
-	// 	InstanceStatus,
-	// 	IntegrationHistory,
-	// 	Integrations,
-	// 	EmailInbox,
-	// 	PbxEvents,
-	// } = models;
+let watcherStarted = false;
+export function isWatcherRunning(): boolean {
+	return watcherStarted;
+}
 
+export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallback): void {
 	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
 	const getUserNameCached = mem(
@@ -390,4 +376,6 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 			broadcast('watch.pbxevents', { clientAction, data, id });
 		}
 	});
+
+	watcherStarted = true;
 }

@@ -1,10 +1,11 @@
 import { MongoInternals } from 'meteor/mongo';
 
+import { isWatcherRunning } from '../../../../server/modules/watchers/watchers.module';
+
 export function getOplogInfo() {
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
-	// TODO define oplogEnabled
-	const oplogEnabled = true;
+	const oplogEnabled = isWatcherRunning();
 
 	return { oplogEnabled, mongo };
 }
