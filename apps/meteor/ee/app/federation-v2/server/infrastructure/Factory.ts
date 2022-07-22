@@ -1,17 +1,10 @@
 import { IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { FederationFactory } from '../../../../../app/federation-v2/server/infrastructure/Factory';
-import { MatrixRoomMessageSentHandler } from '../../../../../app/federation-v2/server/infrastructure/matrix/handlers/Room';
 import { InMemoryQueue } from '../../../../../app/federation-v2/server/infrastructure/queue/InMemoryQueue';
-import { RocketChatMessageAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Message';
 import { RocketChatSettingsAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
-import { RocketChatUserAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/User';
-import { FederationRoomServiceReceiverEE } from '../application/RoomServiceReceiver';
 import { FederationRoomServiceSenderEE } from '../application/RoomServiceSender';
 import { IFederationBridgeEE } from '../domain/IFederationBridge';
 import { MatrixBridgeEE } from './matrix/Bridge';
-import { MatrixEventsHandlerEE } from './matrix/handlers';
-import { MatrixRoomJoinRulesChangedHandler, MatrixRoomNameChangedHandler, MatrixRoomTopicChangedHandler } from './matrix/handlers/Room';
 import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';
 import { RocketChatRoomAdapterEE } from './rocket-chat/adapters/Room';
 import { RocketChatUserAdapterEE } from './rocket-chat/adapters/User';
@@ -19,16 +12,6 @@ import { FederationRoomSenderConverterEE } from './rocket-chat/converters/RoomSe
 import { FederationHooksEE } from './rocket-chat/hooks';
 
 export class FederationFactoryEE {
-	public static buildRoomServiceReceiver(
-		rocketRoomAdapter: RocketChatRoomAdapterEE,
-		rocketUserAdapter: RocketChatUserAdapter,
-		rocketMessageAdapter: RocketChatMessageAdapter,
-		rocketSettingsAdapter: RocketChatSettingsAdapter,
-		bridge: IFederationBridgeEE,
-	): FederationRoomServiceReceiverEE {
-		return new FederationRoomServiceReceiverEE(rocketRoomAdapter, rocketUserAdapter, rocketMessageAdapter, rocketSettingsAdapter, bridge);
-	}
-
 	public static buildRoomServiceSender(
 		rocketRoomAdapter: RocketChatRoomAdapterEE,
 		rocketUserAdapter: RocketChatUserAdapterEE,
@@ -55,21 +38,6 @@ export class FederationFactoryEE {
 			rocketSettingsAdapter.generateRegistrationFileObject(),
 			queue.addToQueue.bind(queue),
 		);
-	}
-
-	public static buildEventHandlers(
-		roomServiceReceive: FederationRoomServiceReceiverEE,
-		rocketSettingsAdapter: RocketChatSettingsAdapter,
-	): MatrixEventsHandlerEE {
-		const EVENT_HANDLERS = [
-			...FederationFactory.getEventHandlers(roomServiceReceive, rocketSettingsAdapter),
-			new MatrixRoomJoinRulesChangedHandler(roomServiceReceive),
-			new MatrixRoomNameChangedHandler(roomServiceReceive),
-			new MatrixRoomTopicChangedHandler(roomServiceReceive),
-			new MatrixRoomMessageSentHandler(roomServiceReceive),
-		];
-
-		return new MatrixEventsHandlerEE(EVENT_HANDLERS);
 	}
 
 	public static buildRocketRoomAdapter(): RocketChatRoomAdapterEE {
@@ -114,6 +82,12 @@ export class FederationFactoryEE {
 		);
 		FederationHooksEE.beforeAddUserToARoom(async (user: IUser | string, room: IRoom) =>
 			roomServiceSender.beforeAddUserToARoom(FederationRoomSenderConverterEE.toBeforeAddUserToARoomDto([user], room, homeServerDomain)),
+		);
+		FederationHooksEE.afterRoomNameChanged(async (roomId: string, roomName: string) =>
+			roomServiceSender.afterRoomNameChanged(roomId, roomName),
+		);
+		FederationHooksEE.afterRoomTopicChanged(async (roomId: string, roomTopic: string) =>
+			roomServiceSender.afterRoomTopicChanged(roomId, roomTopic),
 		);
 	}
 

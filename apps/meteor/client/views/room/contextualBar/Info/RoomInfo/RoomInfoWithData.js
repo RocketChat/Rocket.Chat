@@ -1,3 +1,4 @@
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
@@ -9,9 +10,11 @@ import {
 	useEndpoint,
 	useMethod,
 	useTranslation,
+	useUser,
 } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import * as Federation from '../../../../../../app/federation-v2/client/Federation';
 import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManager';
 import { UiTextContext } from '../../../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../../../components/GenericModal';
@@ -37,6 +40,7 @@ const retentionPolicyAppliesTo = {
 const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetState }) => {
 	const onClickClose = useTabBarClose();
 	const t = useTranslation();
+	const user = useUser();
 
 	const room = useUserRoom(rid);
 	room.type = room.t;
@@ -68,9 +72,13 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 		t('Success'),
 	);
 
-	const canDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
-	const canEdit = usePermission('edit-room', rid);
-	const canConvertRoomToTeam = usePermission('create-team');
+	const isFederated = isRoomFederated(room);
+	const hasPermissionToDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
+	const hasPermissionToEdit = usePermission('edit-room', rid);
+	const hasPermissionToConvertRoomToTeam = usePermission('create-team');
+	const canDelete = isFederated ? Federation.isEditableByTheUser(user, room) && hasPermissionToDelete : hasPermissionToDelete;
+	const canEdit = isFederated ? Federation.isEditableByTheUser(user, room) && hasPermissionToEdit : hasPermissionToEdit;
+	const canConvertRoomToTeam = isFederated ? false : hasPermissionToConvertRoomToTeam;
 	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 
 	const handleDelete = useMutableCallback(() => {
@@ -198,7 +206,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			onClickDelete={canDelete && handleDelete}
 			onClickLeave={canLeave && handleLeave}
 			onClickHide={joined && handleHide}
-			onClickMoveToTeam={!room.teamId && !prid && canEdit && onMoveToTeam}
+			onClickMoveToTeam={!isRoomFederated(room) && !room.teamId && !prid && canEdit && onMoveToTeam}
 			onClickConvertToTeam={allowConvertToTeam && onConvertToTeam}
 			onClickEnterRoom={onEnterRoom && onClickEnterRoom}
 		/>

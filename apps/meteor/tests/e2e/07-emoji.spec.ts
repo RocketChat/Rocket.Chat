@@ -1,155 +1,90 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
-import { SideNav, MainContent, LoginPage } from './pageobjects';
-import { adminLogin } from './utils/mocks/userAndPasswordMock';
+import { Auth, HomeChannel } from './page-objects';
 
-test.describe('[Emoji]', () => {
-	let loginPage: LoginPage;
-	let mainContent: MainContent;
-	let sideNav: SideNav;
+test.describe('Emoji', () => {
+	let page: Page;
+	let pageAuth: Auth;
+	let pageHomeChannel: HomeChannel;
 
 	test.beforeAll(async ({ browser }) => {
-		const page = await browser.newPage();
-		loginPage = new LoginPage(page);
-		sideNav = new SideNav(page);
-		mainContent = new MainContent(page);
-
-		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
-		await sideNav.doOpenChat('general');
+		page = await browser.newPage();
+		pageAuth = new Auth(page);
+		pageHomeChannel = new HomeChannel(page);
 	});
 
-	test.describe('Render:', () => {
+	test.beforeAll(async () => {
+		await pageAuth.doLogin();
+		await pageHomeChannel.sidenav.doOpenChat('general');
+	});
+
+	test.describe('send emoji via screen:', () => {
 		test.beforeAll(async () => {
-			await mainContent.emojiBtn.click();
+			await pageHomeChannel.content.emojiBtn.click();
+			await pageHomeChannel.content.emojiPickerPeopleIcon.click();
 		});
 
-		test.afterAll(async () => {
-			await mainContent.emojiSmile.first().click();
-			await mainContent.setTextToInput('');
+		test('expect select a grinning emoji', async () => {
+			await pageHomeChannel.content.emojiGrinning.first().click();
 		});
 
-		test('expect show the emoji picker menu', async () => {
-			await expect(mainContent.emojiPickerMainScreen).toBeVisible();
+		test('expect be that the value on the message input is the same as the emoji clicked', async () => {
+			await expect(pageHomeChannel.content.inputMain).toHaveValue(':grinning: ');
 		});
 
-		test('expect click the emoji picker people tab', async () => {
-			await mainContent.emojiPickerPeopleIcon.click();
+		test('expect send the emoji', async () => {
+			await pageHomeChannel.content.inputMain.type(' ');
+			await page.keyboard.press('Enter');
 		});
 
-		test('expect show the emoji picker people tab', async () => {
-			await expect(mainContent.emojiPickerPeopleIcon).toBeVisible();
-		});
-
-		test('expect show the emoji picker nature tab', async () => {
-			await expect(mainContent.emojiPickerNatureIcon).toBeVisible();
-		});
-
-		test('expect show the emoji picker food tab', async () => {
-			await expect(mainContent.emojiPickerFoodIcon).toBeVisible();
-		});
-
-		test('expect show the emoji picker activity tab', async () => {
-			await expect(mainContent.emojiPickerActivityIcon).toBeVisible();
-		});
-
-		test('expect show the emoji picker travel tab', async () => {
-			await expect(mainContent.emojiPickerTravelIcon).toBeVisible();
-		});
-
-		test('expect show the emoji picker objects tab', async () => {
-			await expect(mainContent.emojiPickerObjectsIcon).toBeVisible();
-		});
-
-		test('expect show the emoji picker symbols tab', async () => {
-			await expect(mainContent.emojiPickerSymbolsIcon).toBeVisible();
-		});
-
-		test('expect show the emoji picker flags tab', async () => {
-			await expect(mainContent.emojiPickerFlagsIcon).toBeVisible();
-		});
-
-		test('expect show the emoji picker custom tab', async () => {
-			await expect(mainContent.emojiPickerCustomIcon).toBeVisible();
-		});
-
-		test('expect show the emoji picker change tone button', async () => {
-			await expect(mainContent.emojiPickerChangeTone).toBeVisible();
-		});
-
-		test('expect show the emoji picker search bar', async () => {
-			await expect(mainContent.emojiPickerFilter).toBeVisible();
+		test('expect be that the value on the message is the same as the emoji clicked', async () => {
+			await expect(pageHomeChannel.content.lastUserMessage).toContainText('😀');
 		});
 	});
 
-	test.describe('[Usage]', () => {
-		test.describe('send emoji via screen:', () => {
-			test.beforeAll(async () => {
-				await mainContent.emojiBtn.click();
-				await mainContent.emojiPickerPeopleIcon.click();
-			});
-
-			test('expect select a grinning emoji', async () => {
-				await mainContent.emojiGrinning.first().click();
-			});
-
-			test('expect be that the value on the message input is the same as the emoji clicked', async () => {
-				await expect(mainContent.messageInput).toHaveValue(':grinning: ');
-			});
-
-			test('expect send the emoji', async () => {
-				await mainContent.addTextToInput(' ');
-				await mainContent.page.keyboard.press('Enter');
-			});
-
-			test('expect be that the value on the message is the same as the emoji clicked', async () => {
-				await expect(mainContent.lastMessage).toContainText('😀');
-			});
+	test.describe('send emoji via text:', () => {
+		test('expect add emoji text to the message input', async () => {
+			await pageHomeChannel.content.inputMain.type(':smiley');
 		});
 
-		test.describe('send emoji via text:', () => {
-			test('expect add emoji text to the message input', async () => {
-				await mainContent.addTextToInput(':smiley');
-			});
-
-			test('expect show the emoji popup bar', async () => {
-				await expect(mainContent.messagePopUp).toBeVisible();
-			});
-
-			test('expect be that the emoji popup bar title is emoji', async () => {
-				await expect(mainContent.messagePopUpTitle).toContainText('Emoji');
-			});
-
-			test('expect show the emoji popup bar items', async () => {
-				await expect(mainContent.messagePopUpItems).toBeVisible();
-			});
-
-			test('expect click the first emoji on the popup list', async () => {
-				await mainContent.messagePopUpFirstItem.click();
-			});
-
-			test('expect be that the value on the message input is the same as the emoji clicked', async () => {
-				await expect(mainContent.messageInput).toHaveValue(':smiley: ');
-			});
-
-			test('expect send the emoji', async () => {
-				await mainContent.sendBtn.click();
-			});
-
-			test('expect be that the value on the message is the same as the emoji clicked', async () => {
-				await expect(mainContent.lastMessage).toContainText('😃');
-			});
+		test('expect show the emoji popup bar', async () => {
+			await expect(pageHomeChannel.content.messagePopUp).toBeVisible();
 		});
 
-		test.describe("send texts and make sure they're not converted to emojis:", () => {
-			test('should render numbers', async () => {
-				await mainContent.sendMessage('0 1 2 3 4 5 6 7 8 9');
-				await mainContent.waitForLastMessageEqualsHtml('0 1 2 3 4 5 6 7 8 9');
-			});
-			test('should render special characters', async () => {
-				await mainContent.sendMessage('® © ™ # *');
-				await mainContent.waitForLastMessageEqualsHtml('® © ™ # *');
-			});
+		test('expect be that the emoji popup bar title is emoji', async () => {
+			await expect(pageHomeChannel.content.messagePopUpTitle).toContainText('Emoji');
+		});
+
+		test('expect show the emoji popup bar items', async () => {
+			await expect(pageHomeChannel.content.messagePopUpItems).toBeVisible();
+		});
+
+		test('expect click the first emoji on the popup list', async () => {
+			await pageHomeChannel.content.messagePopUpFirstItem.click();
+		});
+
+		test('expect be that the value on the message input is the same as the emoji clicked', async () => {
+			await expect(pageHomeChannel.content.inputMain).toHaveValue(':smiley: ');
+		});
+
+		test('expect send the emoji', async () => {
+			await pageHomeChannel.content.btnSend.click();
+		});
+
+		test('expect be that the value on the message is the same as the emoji clicked', async () => {
+			await expect(pageHomeChannel.content.lastUserMessage).toContainText('😃');
+		});
+	});
+
+	test.describe("send texts and make sure they're not converted to emojis:", () => {
+		test('should render numbers', async () => {
+			await pageHomeChannel.content.doSendMessage('0 1 2 3 4 5 6 7 8 9');
+			await expect(pageHomeChannel.content.lastUserMessage).toContainText('0 1 2 3 4 5 6 7 8 9');
+		});
+
+		test('should render special characters', async () => {
+			await pageHomeChannel.content.doSendMessage('® © ™ # *');
+			await expect(pageHomeChannel.content.lastUserMessage).toContainText('® © ™ # *');
 		});
 	});
 });
