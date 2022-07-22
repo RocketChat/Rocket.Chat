@@ -389,6 +389,60 @@ describe('miscellaneous', function () {
 				})
 				.end(done);
 		});
+
+		before((done) => {
+			const teamName = `new-team-name-${Date.now()}`;
+			request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('team');
+					expect(res.body).to.have.nested.property('team._id');
+				})
+				.end(done);
+		});
+
+		it('should return an object containing rooms and totalCount from teams', (done) => {
+			request
+				.get(api('directory'))
+				.set(credentials)
+				.query({
+					query: JSON.stringify({
+						text: '',
+						type: 'teams',
+					}),
+					sort: JSON.stringify({
+						name: 1,
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('result');
+					expect(res.body.result).to.be.an(`array`);
+					expect(res.body).to.have.property('total');
+					expect(res.body.total).to.be.an('number');
+					expect(res.body.result[0]).to.have.property('_id');
+					expect(res.body.result[0]).to.have.property('fname');
+					expect(res.body.result[0]).to.have.property('description');
+					expect(res.body.result[0]).to.have.property('teamMain');
+					expect(res.body.result[0]).to.have.property('name');
+					expect(res.body.result[0]).to.have.property('t');
+					expect(res.body.result[0]).to.have.property('usersCount');
+					expect(res.body.result[0]).to.have.property('ts');
+					expect(res.body.result[0]).to.have.property('teamId');
+					expect(res.body.result[0]).to.have.property('default');
+					expect(res.body.result[0]).to.have.property('roomsCount');
+				})
+				.end(done);
+		});
 	});
 	describe('[/spotlight]', () => {
 		let user;
