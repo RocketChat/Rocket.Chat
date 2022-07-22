@@ -16,6 +16,7 @@ import {
 	PbxEvents,
 	Permissions,
 } from '@rocket.chat/models';
+import { MongoInternals } from 'meteor/mongo';
 
 import { DatabaseWatcher } from '../database/DatabaseWatcher';
 import { db } from '../database/utils';
@@ -43,7 +44,9 @@ const watchCollections = [
 ];
 
 if (!isRunningMs()) {
-	const watcher = new DatabaseWatcher(db, watchCollections);
+	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+
+	const watcher = new DatabaseWatcher(db, watchCollections, (mongo as any)._oplogHandle);
 
 	initWatchers(watcher, api.broadcastLocal.bind(api));
 

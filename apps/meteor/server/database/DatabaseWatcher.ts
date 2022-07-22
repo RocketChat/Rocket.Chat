@@ -2,7 +2,6 @@ import EventEmitter from 'events';
 
 import { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { Timestamp, Db } from 'mongodb';
-import { MongoInternals } from 'meteor/mongo';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { MongoClient } from 'mongodb';
 import semver from 'semver';
@@ -26,7 +25,7 @@ const useCustomOplog = !!(global.Package as any)['disable-oplog'];
 
 // TODO change to a typed event emitter
 export class DatabaseWatcher extends EventEmitter {
-	constructor(private db: Db, private watchCollections: string[]) {
+	constructor(private db: Db, private watchCollections: string[], private _oplogHandle?: any) {
 		super();
 	}
 
@@ -49,16 +48,14 @@ export class DatabaseWatcher extends EventEmitter {
 			return false;
 		}
 
-		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-
 		try {
-			const { version, storageEngine } = await mongo.db.command({ serverStatus: 1 });
+			const { version, storageEngine } = await this.db.command({ serverStatus: 1 });
 
 			if (!storageEngine || storageEngine.name !== 'wiredTiger' || !semver.satisfies(semver.coerce(version) || '', '>=3.6.0')) {
 				return false;
 			}
 
-			await mongo.db.admin().command({ replSetGetStatus: 1 });
+			await this.db.admin().command({ replSetGetStatus: 1 });
 		} catch (e) {
 			if (e instanceof Error && e.message.startsWith('not authorized')) {
 				console.info(
@@ -128,10 +125,12 @@ export class DatabaseWatcher extends EventEmitter {
 	}
 
 	private watchMeteorOplog(): void {
-		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+		if (!this._oplogHandle) {
+			throw new Error('no-oplog-handle');
+		}
 		this.watchCollections.forEach((collection) => {
 			// TODO fix any
-			(mongo as any)._oplogHandle.onOplogEntry({ collection }, (event: any) => {
+			this._oplogHandle.onOplogEntry({ collection }, (event: any) => {
 				this.emitDoc(collection, convertOplogPayload(event));
 			});
 		});
