@@ -1,12 +1,12 @@
-import type { UpdateWriteOpResult } from 'mongodb';
+import type { Document, UpdateResult } from 'mongodb';
 import type { INotification } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
 export interface INotificationQueueModel extends IBaseModel<INotification> {
-	unsetSendingById(_id: string): Promise<UpdateWriteOpResult>;
-	setErrorById(_id: string, error: any): Promise<UpdateWriteOpResult>;
-	clearScheduleByUserId(uid: string): Promise<UpdateWriteOpResult>;
+	unsetSendingById(_id: string): Promise<UpdateResult>;
+	setErrorById(_id: string, error: any): Promise<UpdateResult>;
+	clearScheduleByUserId(uid: string): Promise<UpdateResult | Document>;
 	clearQueueByUserId(uid: string): Promise<number | undefined>;
-	findNextInQueueOrExpired(expired: Date): Promise<INotification | undefined>;
+	findNextInQueueOrExpired(expired: Date): Promise<INotification | null>;
 }

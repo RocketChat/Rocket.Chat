@@ -31,24 +31,24 @@ export async function findAdminRooms({
 	const typesToRemove = ['discussions', 'teams'];
 	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
 	const options = {
-		fields: adminFields,
+		projection: adminFields,
 		sort: sort || { default: -1, name: 1 },
 		skip: offset,
 		limit: count,
 	};
 
-	let cursor;
+	let result;
 	if (name && showTypes.length) {
-		cursor = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else if (showTypes.length) {
-		cursor = Rooms.findByTypes(showTypes, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByTypes(showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else {
-		cursor = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, options);
 	}
 
-	const total = await cursor.count();
+	const { cursor, totalCount } = result;
 
-	const rooms = await cursor.toArray();
+	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		rooms,
@@ -63,14 +63,14 @@ export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }):
 		throw new Error('error-not-authorized');
 	}
 
-	return Rooms.findOneById(rid, { fields: adminFields });
+	return Rooms.findOneById(rid, { projection: adminFields });
 }
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<{
 	items: IRoom[];
 }> {
 	const options = {
-		fields: {
+		projection: {
 			_id: 1,
 			fname: 1,
 			name: 1,
@@ -101,7 +101,7 @@ export async function findAdminRoomsAutocomplete({ uid, selector }: { uid: strin
 		throw new Error('error-not-authorized');
 	}
 	const options = {
-		fields: {
+		projection: {
 			_id: 1,
 			fname: 1,
 			name: 1,
@@ -138,7 +138,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 		.map((item: Pick<ISubscription, 'rid'>) => item.rid);
 
 	const options = {
-		fields: {
+		projection: {
 			_id: 1,
 			fname: 1,
 			name: 1,
@@ -150,10 +150,9 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 		limit: count,
 	};
 
-	const cursor = await Rooms.findRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options);
+	const { cursor, totalCount } = Rooms.findPaginatedRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options);
 
-	const total = await cursor.count();
-	const rooms = await cursor.toArray();
+	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		items: rooms,
@@ -165,7 +164,7 @@ export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; n
 	items: IRoom[];
 }> {
 	const options = {
-		fields: {
+		projection: {
 			_id: 1,
 			fname: 1,
 			name: 1,

@@ -1,6 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Messages as MessagesRaw } from '@rocket.chat/models';
 
 import { Messages } from '../../../models/server';
 import { canAccessRoom, canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
@@ -446,7 +447,7 @@ API.v1.addRoute(
 	'chat.getDeletedMessages',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { roomId, since } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
 
@@ -459,19 +460,18 @@ API.v1.addRoute(
 			} else if (isNaN(Date.parse(since))) {
 				throw new Meteor.Error('The "since" query parameter must be a valid date.');
 			}
-			const cursor = Messages.trashFindDeletedAfter(
+
+			const { cursor, totalCount } = MessagesRaw.trashFindPaginatedDeletedAfter(
 				new Date(since),
 				{ rid: roomId },
 				{
 					skip: offset,
 					limit: count,
-					fields: { _id: 1 },
+					projection: { _id: 1 },
 				},
 			);
 
-			const total = cursor.count();
-
-			const messages = cursor.fetch();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages,
@@ -487,7 +487,7 @@ API.v1.addRoute(
 	'chat.getPinnedMessages',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { roomId } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
 
@@ -499,17 +499,15 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			const cursor = Messages.findPinnedByRoom(roomId, {
+			const { cursor, totalCount } = MessagesRaw.findPaginatedPinnedByRoom(roomId, {
 				skip: offset,
 				limit: count,
 			});
 
-			const total = cursor.count();
-
-			const messages = cursor.fetch();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				messages,
+				messages: normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
 				total,
@@ -522,7 +520,7 @@ API.v1.addRoute(
 	'chat.getThreadsList',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { rid, type, text } = this.queryParams;
 			check(rid, String);
 			check(type, Match.Maybe(String));
@@ -549,19 +547,17 @@ API.v1.addRoute(
 			};
 
 			const threadQuery = { ...query, ...typeThread, rid: room._id, tcount: { $exists: true } };
-			const cursor = Messages.find(threadQuery, {
+			const { cursor, totalCount } = MessagesRaw.findPaginated(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			});
 
-			const total = cursor.count();
-
-			const threads = cursor.fetch();
+			const [threads, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				threads,
+				threads: normalizeMessagesForUser(threads, this.userId),
 				count: threads.length,
 				offset,
 				total,
@@ -614,7 +610,7 @@ API.v1.addRoute(
 	'chat.getThreadMessages',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { tmid } = this.queryParams;
 			const { query, fields, sort } = this.parseJsonQuery();
 			const { offset, count } = this.getPaginationItems();
@@ -635,19 +631,17 @@ API.v1.addRoute(
 			if (!canAccessRoom(room, user)) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
-			const cursor = Messages.find(
+			const { cursor, totalCount } = MessagesRaw.findPaginated(
 				{ ...query, tmid },
 				{
 					sort: sort || { ts: 1 },
 					skip: offset,
 					limit: count,
-					fields,
+					projection: fields,
 				},
 			);
 
-			const total = cursor.count();
-
-			const messages = cursor.fetch();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages,

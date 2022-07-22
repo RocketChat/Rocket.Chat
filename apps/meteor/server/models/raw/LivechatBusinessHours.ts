@@ -1,7 +1,7 @@
-import { ILivechatBusinessHour, LivechatBusinessHourTypes, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
-import { Collection, Db, FindOneOptions, ObjectId, WithoutProjection } from 'mongodb';
+import type { Collection, Db, FindOptions } from 'mongodb';
+import type { ILivechatBusinessHour, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -17,18 +17,14 @@ export interface IWorkHoursCronJobsWrapper {
 
 export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> implements ILivechatBusinessHoursModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatBusinessHour>>) {
-		super(db, getCollectionName('livechat_business_hours'), trash);
+		super(db, 'livechat_business_hours', trash);
 	}
 
 	async findOneDefaultBusinessHour(options?: undefined): Promise<ILivechatBusinessHour | null>;
 
-	async findOneDefaultBusinessHour(
-		options: WithoutProjection<FindOneOptions<ILivechatBusinessHour>>,
-	): Promise<ILivechatBusinessHour | null>;
+	async findOneDefaultBusinessHour(options: FindOptions<ILivechatBusinessHour>): Promise<ILivechatBusinessHour | null>;
 
-	async findOneDefaultBusinessHour<P>(
-		options: FindOneOptions<P extends ILivechatBusinessHour ? ILivechatBusinessHour : P>,
-	): Promise<P | null>;
+	async findOneDefaultBusinessHour<P>(options: FindOptions<P extends ILivechatBusinessHour ? ILivechatBusinessHour : P>): Promise<P | null>;
 
 	findOneDefaultBusinessHour<P>(options?: any): Promise<ILivechatBusinessHour | P | null> {
 		return this.findOne({ type: LivechatBusinessHourTypes.DEFAULT }, options);
@@ -66,10 +62,9 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 	}
 
 	async insertOne(data: Omit<ILivechatBusinessHour, '_id'>): Promise<any> {
-		return this.col.insertOne({
-			_id: new ObjectId().toHexString(),
-			...{ ts: new Date() },
+		return super.insertOne({
 			...data,
+			ts: new Date(),
 		});
 	}
 
