@@ -20,7 +20,7 @@ export type RealTimeData<T> = {
 
 const ignoreChangeStream = ['yes', 'true'].includes(String(process.env.IGNORE_CHANGE_STREAM).toLowerCase());
 
-const useCustomOplog = !!(global.Package as any)['disable-oplog'];
+const useCustomOplog = !['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
 
 // TODO change to a typed event emitter
 export class DatabaseWatcher extends EventEmitter {
@@ -35,7 +35,7 @@ export class DatabaseWatcher extends EventEmitter {
 		}
 
 		if (useCustomOplog) {
-			this.watchCustomOplog();
+			this.watchOplog();
 			return;
 		}
 
@@ -67,7 +67,9 @@ export class DatabaseWatcher extends EventEmitter {
 		return true;
 	}
 
-	private async watchCustomOplog(): Promise<void> {
+	private async watchOplog(): Promise<void> {
+		console.log('[DatabaseWatcher] Using oplog');
+
 		const isMasterDoc = await this.db.admin().command({ ismaster: 1 });
 		if (!isMasterDoc || !isMasterDoc.setName) {
 			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
@@ -124,6 +126,8 @@ export class DatabaseWatcher extends EventEmitter {
 	}
 
 	private watchMeteorOplog(): void {
+		console.log('[DatabaseWatcher] Using Meteor oplog');
+
 		if (!this._oplogHandle) {
 			throw new Error('no-oplog-handle');
 		}
@@ -136,6 +140,8 @@ export class DatabaseWatcher extends EventEmitter {
 	}
 
 	private watchChangeStream(): void {
+		console.log('[DatabaseWatcher] Using change streams');
+
 		const changeStream = this.db.watch<IRocketChatRecord>([{ $match: { 'ns.coll': { $in: this.watchCollections } } }]);
 		changeStream.on('change', (event) => {
 			// TODO fix as any

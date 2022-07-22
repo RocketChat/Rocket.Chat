@@ -24,7 +24,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 	protected name = 'hub';
 
 	async created(): Promise<void> {
-		const db = await getConnection(15);
+		const db = await getConnection(1);
 
 		const Rooms = new RoomsRaw(db);
 		const Settings = new SettingsRaw(db);
