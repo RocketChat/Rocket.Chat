@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { Facts } from 'meteor/facts-base';
 import { Statistics } from '@rocket.chat/models';
 
-import { Info, getOplogInfo } from '../../../utils/server';
+import { Info } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -44,8 +44,9 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.totalAppsEnabled.set(totalActive || 0);
 	metrics.totalAppsFailed.set(totalFailed || 0);
 
-	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
-	metrics.oplogQueue.set(oplogQueue);
+	// TODO no oplogQueue anymore?
+	// const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
+	// metrics.oplogQueue.set(oplogQueue);
 
 	const statistics = await Statistics.findLast();
 	if (!statistics) {

@@ -1,126 +1,28 @@
 import EventEmitter from 'events';
 
 import { IRocketChatRecord } from '@rocket.chat/core-typings';
-import { ChangeStreamDocument, Db } from 'mongodb';
+import type { Timestamp, Db } from 'mongodb';
+import { MongoInternals } from 'meteor/mongo';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { MongoClient } from 'mongodb';
+import semver from 'semver';
 
-type RealTimeData<T> = {
+import { convertChangeStreamPayload } from './convertChangeStreamPayload';
+import { convertOplogPayload } from './convertOplogPayload';
+
+export type RealTimeData<T> = {
 	id: string;
 	action: 'insert' | 'update' | 'remove';
 	clientAction: 'inserted' | 'updated' | 'removed';
 	data?: T;
 	diff?: Record<string, any>;
 	unset?: Record<string, number>;
+	oplog?: true;
 };
 
-// oplog converter
-// if (action === 'insert') {
-// 	this.emit('change', {
-// 		action,
-// 		clientAction: 'inserted',
-// 		id: op.o._id,
-// 		data: op.o,
-// 		oplog: true,
-// 	});
-// 	return;
-// }
+const ignoreChangeStream = ['yes', 'true'].includes(String(process.env.IGNORE_CHANGE_STREAM).toLowerCase());
 
-// if (action === 'update') {
-// 	if (!op.o.$set && !op.o.$unset) {
-// 		this.emit('change', {
-// 			action,
-// 			clientAction: 'updated',
-// 			id,
-// 			data: op.o,
-// 			oplog: true,
-// 		});
-// 		return;
-// 	}
-
-// 	const diff = {};
-// 	if (op.o.$set) {
-// 		for (const key in op.o.$set) {
-// 			if (op.o.$set.hasOwnProperty(key)) {
-// 				diff[key] = op.o.$set[key];
-// 			}
-// 		}
-// 	}
-// 	const unset = {};
-// 	if (op.o.$unset) {
-// 		for (const key in op.o.$unset) {
-// 			if (op.o.$unset.hasOwnProperty(key)) {
-// 				diff[key] = undefined;
-// 				unset[key] = 1;
-// 			}
-// 		}
-// 	}
-
-// 	this.emit('change', {
-// 		action,
-// 		clientAction: 'updated',
-// 		id,
-// 		diff,
-// 		unset,
-// 		oplog: true,
-// 	});
-// 	return;
-// }
-
-// if (action === 'remove') {
-// 	this.emit('change', {
-// 		action,
-// 		clientAction: 'removed',
-// 		id,
-// 		oplog: true,
-// 	});
-// }
-// }
-
-function convertChangeStreamPayload(event: ChangeStreamDocument<IRocketChatRecord>): RealTimeData<IRocketChatRecord> | void {
-	switch (event.operationType) {
-		case 'insert':
-			return {
-				action: 'insert',
-				clientAction: 'inserted',
-				id: event.documentKey._id,
-				data: event.fullDocument,
-			};
-		case 'update':
-			const diff: Record<string, any> = {};
-
-			if (event.updateDescription?.updatedFields) {
-				for (const key in event.updateDescription.updatedFields) {
-					if (event.updateDescription.updatedFields.hasOwnProperty(key)) {
-						// TODO fix as any
-						diff[key] = (event.updateDescription as any).updatedFields[key];
-					}
-				}
-			}
-
-			const unset: Record<string, number> = {};
-			if (event.updateDescription.removedFields) {
-				for (const key in event.updateDescription.removedFields) {
-					if (event.updateDescription.removedFields.hasOwnProperty(key)) {
-						diff[key] = undefined;
-						unset[key] = 1;
-					}
-				}
-			}
-
-			return {
-				action: 'update',
-				clientAction: 'updated',
-				id: event.documentKey._id,
-				diff,
-				unset,
-			};
-		case 'delete':
-			return {
-				action: 'remove',
-				clientAction: 'removed',
-				id: event.documentKey._id,
-			};
-	}
-}
+const useCustomOplog = !!(global.Package as any)['disable-oplog'];
 
 // TODO change to a typed event emitter
 export class DatabaseWatcher extends EventEmitter {
@@ -128,22 +30,131 @@ export class DatabaseWatcher extends EventEmitter {
 		super();
 	}
 
-	watch(): void {
-		// TODO add oplog support
-		this.watchChangeStream();
+	async watch(): Promise<void> {
+		if (await this.isChangeStreamAvailable()) {
+			this.watchChangeStream();
+			return;
+		}
+
+		if (useCustomOplog) {
+			this.watchCustomOplog();
+			return;
+		}
+
+		this.watchMeteorOplog();
+	}
+
+	private async isChangeStreamAvailable(): Promise<boolean> {
+		if (ignoreChangeStream) {
+			return false;
+		}
+
+		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+
+		try {
+			const { version, storageEngine } = await mongo.db.command({ serverStatus: 1 });
+
+			if (!storageEngine || storageEngine.name !== 'wiredTiger' || !semver.satisfies(semver.coerce(version) || '', '>=3.6.0')) {
+				return false;
+			}
+
+			await mongo.db.admin().command({ replSetGetStatus: 1 });
+		} catch (e) {
+			if (e instanceof Error && e.message.startsWith('not authorized')) {
+				console.info(
+					'Change Stream is available for your installation, give admin permissions to your database user to use this improved version.',
+				);
+			}
+			return false;
+		}
+
+		return true;
+	}
+
+	private async watchCustomOplog(): Promise<void> {
+		const isMasterDoc = await this.db.admin().command({ ismaster: 1 });
+		if (!isMasterDoc || !isMasterDoc.setName) {
+			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
+		}
+
+		if (!process.env.MONGO_OPLOG_URL) {
+			throw Error('no-mongo-url');
+		}
+		const dbName = this.db.databaseName;
+
+		const client = new MongoClient(process.env.MONGO_OPLOG_URL, {
+			maxPoolSize: 1,
+		});
+		await client.connect();
+
+		const db = client.db();
+
+		const oplogCollection = db.collection('oplog.rs');
+
+		const lastOplogEntry = await oplogCollection.findOne<{ ts: Timestamp }>({}, { sort: { $natural: -1 }, projection: { _id: 0, ts: 1 } });
+
+		const oplogSelector = {
+			ns: new RegExp(
+				`^(?:${[
+					escapeRegExp(`${dbName}.`),
+					// escapeRegExp('admin.$cmd'),
+				].join('|')})`,
+			),
+			op: { $in: ['i', 'u', 'd'] },
+			...(lastOplogEntry && { ts: { $gt: lastOplogEntry.ts } }),
+		};
+
+		const stream = oplogCollection
+			.find(oplogSelector, {
+				tailable: true,
+				awaitData: true,
+			})
+			.stream();
+
+		stream.on('data', (doc) => {
+			const doesMatter = this.watchCollections.some((collection) => doc.ns === `${dbName}.${collection}`);
+			if (!doesMatter) {
+				return;
+			}
+
+			this.emitDoc(
+				doc.ns.slice(dbName.length + 1),
+				convertOplogPayload({
+					id: doc.op === 'u' ? doc.o2._id : doc.o._id,
+					op: doc,
+				}),
+			);
+		});
+	}
+
+	private watchMeteorOplog(): void {
+		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+		this.watchCollections.forEach((collection) => {
+			// TODO fix any
+			(mongo as any)._oplogHandle.onOplogEntry({ collection }, (event: any) => {
+				this.emitDoc(collection, convertOplogPayload(event));
+			});
+		});
 	}
 
 	private watchChangeStream(): void {
 		const changeStream = this.db.watch<IRocketChatRecord>([{ $match: { 'ns.coll': { $in: this.watchCollections } } }]);
 		changeStream.on('change', (event) => {
-			// TODO add metrics
-			// metrics.oplog.inc({
-			// 	collection: this.collectionName,
-			// 	op: action,
-			// });
-
 			// TODO fix as any
-			this.emit((event as any).ns.coll, convertChangeStreamPayload(event));
+			this.emitDoc((event as any).ns.coll, convertChangeStreamPayload(event));
 		});
+	}
+
+	private emitDoc(collection: string, doc: RealTimeData<IRocketChatRecord> | void): void {
+		if (!doc) {
+			return;
+		}
+		// TODO add metrics
+		// metrics.oplog.inc({
+		// 	collection: this.collectionName,
+		// 	op: action,
+		// });
+
+		this.emit(collection, doc);
 	}
 }
