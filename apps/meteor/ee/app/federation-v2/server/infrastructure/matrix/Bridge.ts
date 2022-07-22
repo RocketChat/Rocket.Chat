@@ -33,9 +33,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 				topic: roomTopic,
 				visibility,
 				preset,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				creation_content: {
-					// eslint-disable-next-line @typescript-eslint/camelcase
 					was_internally_programatically_created: true,
 				},
 			},
