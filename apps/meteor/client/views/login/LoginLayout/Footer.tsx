@@ -4,11 +4,6 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 
 import { filterLanguage } from '../../../lib/utils/filterLanguage';
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-declare namespace Window {
-	function setLanguage(language: string): void;
-}
-
 const Footer = (): ReactElement => {
 	const t = useTranslation();
 	const loadLanguage = useLoadLanguage();
