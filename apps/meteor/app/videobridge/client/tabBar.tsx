@@ -1,6 +1,7 @@
 import { useMemo, lazy } from 'react';
 import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../client/contexts/VideoConfContext';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
@@ -8,8 +9,9 @@ import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/useVideoConfWarning';
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 
-addAction('calls', () => {
+addAction('calls', ({ room }) => {
 	const hasLicense = useHasLicenseModule('videoconference-enterprise');
+	const federated = isRoomFederated(room);
 
 	return useMemo(
 		() =>
@@ -19,11 +21,15 @@ addAction('calls', () => {
 						id: 'calls',
 						icon: 'phone',
 						title: 'Calls',
+						...(federated && {
+							'data-tooltip': 'Video_Call_unavailable_for_federation',
+							'disabled': true,
+						}),
 						template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
 						order: 999,
 				  }
 				: null,
-		[hasLicense],
+		[hasLicense, federated],
 	);
 });
 
@@ -33,6 +39,7 @@ addAction('start-call', ({ room }) => {
 	const dispatchPopup = useVideoConfDispatchOutgoing();
 	const isCalling = useVideoConfIsCalling();
 	const isRinging = useVideoConfIsRinging();
+	const federated = isRoomFederated(room);
 
 	const ownUser = room.uids && room.uids.length === 1;
 
@@ -67,7 +74,7 @@ addAction('start-call', ({ room }) => {
 		try {
 			await VideoConfManager.loadCapabilities();
 			dispatchPopup({ rid: room._id });
-		} catch (error) {
+		} catch (error: any) {
 			dispatchWarning(error.error);
 		}
 	});
@@ -81,10 +88,14 @@ addAction('start-call', ({ room }) => {
 						title: 'Call',
 						icon: 'phone',
 						action: handleOpenVideoConf,
+						...(federated && {
+							'disabled': true,
+							'data-tooltip': 'Video_Call_unavailable_for_federation',
+						}),
 						full: true,
 						order: live ? -1 : 4,
 				  }
 				: null,
-		[groups, enableOption, live, handleOpenVideoConf, ownUser],
+		[groups, enableOption, live, handleOpenVideoConf, ownUser, federated],
 	);
 });

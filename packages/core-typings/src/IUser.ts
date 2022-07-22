@@ -143,6 +143,7 @@ export interface IUser extends IRocketChatRecord {
 	ldap?: boolean;
 	extension?: string;
 	inviteToken?: string;
+	federated?: boolean;
 }
 
 export interface IRegisterUser extends IUser {

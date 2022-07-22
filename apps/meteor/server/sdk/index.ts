@@ -18,6 +18,7 @@ import { IAnalyticsService } from './types/IAnalyticsService';
 import { ILDAPService } from './types/ILDAPService';
 import { IVideoConfService } from './types/IVideoConfService';
 import { ISAUMonitorService } from './types/ISAUMonitorService';
+import { IDeviceManagementService } from './types/IDeviceManagementService';
 import { FibersContextStore } from './lib/ContextStore';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -37,6 +38,7 @@ export const LivechatVoip = proxifyWithWait<IOmnichannelVoipService>('omnichanne
 export const Analytics = proxifyWithWait<IAnalyticsService>('analytics');
 export const LDAP = proxifyWithWait<ILDAPService>('ldap');
 export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
+export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
 export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
 
 // Calls without wait. Means that the service is optional and the result may be an error

@@ -63,7 +63,6 @@ import '../app/apps/server';
 import '../app/slackbridge/server';
 import '../app/slashcommands-archiveroom/server';
 import '../app/slashcommand-asciiarts/server';
-import '../app/slashcommands-bridge/server';
 import '../app/slashcommands-create/server';
 import '../app/slashcommands-help/server';
 import '../app/slashcommands-hide/server';

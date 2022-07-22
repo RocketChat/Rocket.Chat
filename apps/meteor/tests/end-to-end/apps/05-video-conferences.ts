@@ -61,6 +61,8 @@ describe('Apps - Video Conferences', function () {
 
 	describe('[With Test App]', () => {
 		before(async () => {
+			await updateSetting('Apps_Framework_enabled', true);
+			await updateSetting('Apps_Framework_Development_Mode', true);
 			await cleanupApps();
 			await installTestApp();
 		});

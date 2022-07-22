@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
@@ -129,12 +128,12 @@ Meteor.methods({
 		const msg = Meteor.call('sendMessage', {
 			rid: roomId,
 			ts: new Date(),
-			msg: '',
 			file: files[0],
 			files,
-			groupable: false,
 			attachments,
 			...msgData,
+			msg: msgData.msg ?? '',
+			groupable: msgData.groupable ?? false,
 		});
 
 		callbacks.runAsync('afterFileUpload', { user, room, message: msg });

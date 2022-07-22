@@ -308,6 +308,7 @@ export abstract class AutoTranslate {
 						const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
 						if (!_.isEmpty(translations)) {
 							Messages.addAttachmentTranslations(message._id, index, translations);
+							Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider]);
 						}
 					}
 				}

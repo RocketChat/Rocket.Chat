@@ -2,7 +2,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import { IRoom, RoomType } from '@rocket.chat/core-typings';
 
 import { Apps } from '../../../apps/server';
@@ -26,12 +26,12 @@ export const createRoom = function <T extends RoomType>(
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
-): unknown {
+): ICreatedRoom {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 
 	if (type === 'd') {
-		return createDirectRoom(members as IUser[], extraData, options);
+		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });
 	}
 
 	if (!isValidName(name)) {
@@ -114,28 +114,46 @@ export const createRoom = function <T extends RoomType>(
 		callbacks.run('beforeCreateChannel', owner, roomProps);
 	}
 	const room = Rooms.createWithFullRoomData(roomProps);
-
-	for (const username of [...new Set(members as string[])]) {
-		const member = Users.findOneByUsername(username, {
-			fields: { 'username': 1, 'settings.preferences': 1 },
-		});
-		if (!member) {
-			continue;
-		}
-
+	const shouldBeHandledByFederation = room.federated === true || ownerUsername.includes(':');
+	if (shouldBeHandledByFederation) {
 		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-
 		extra.open = true;
+		extra.ls = now;
 
 		if (room.prid) {
 			extra.prid = room.prid;
 		}
 
-		if (username === owner.username) {
-			extra.ls = now;
-		}
+		Subscriptions.createWithRoomAndUser(room, owner, extra);
+	} else {
+		for (const username of [...new Set(members as string[])]) {
+			const member = Users.findOneByUsername(username, {
+				fields: { 'username': 1, 'settings.preferences': 1, 'federated': 1 },
+			});
+			if (!member) {
+				continue;
+			}
 
-		Subscriptions.createWithRoomAndUser(room, member, extra);
+			try {
+				callbacks.run('federation.beforeAddUserAToRoom', { user: member, inviter: owner }, room);
+			} catch (error) {
+				throw new Meteor.Error((error as any)?.message);
+			}
+
+			const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
+
+			extra.open = true;
+
+			if (room.prid) {
+				extra.prid = room.prid;
+			}
+
+			if (username === owner.username) {
+				extra.ls = now;
+			}
+
+			Subscriptions.createWithRoomAndUser(room, member, extra);
+		}
 	}
 
 	addUserRoles(owner._id, ['owner'], room._id);
@@ -150,6 +168,9 @@ export const createRoom = function <T extends RoomType>(
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
+	if (shouldBeHandledByFederation) {
+		callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
+	}
 
 	Apps.triggerEvent('IPostRoomCreate', room);
 

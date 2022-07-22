@@ -1,8 +1,8 @@
-import { IRoom, isDirectMessageRoom, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { IRoom, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import React, { ComponentProps, ReactElement, isValidElement } from 'react';
 
-import { ReactiveUserStatus } from '../UserStatus';
+import { useRoomIcon } from '../../hooks/useRoomIcon';
 import { OmnichannelRoomIcon } from './OmnichannelRoomIcon';
 
 export const RoomIcon = ({
@@ -16,37 +16,22 @@ export const RoomIcon = ({
 	isIncomingCall?: boolean;
 	placement: 'sidebar' | 'default';
 }): ReactElement | null => {
+	const iconPropsOrReactNode = useRoomIcon(room);
 	if (isIncomingCall) {
 		return <Icon name='phone' size={size} />;
-	}
-
-	if (room.prid) {
-		return <Icon name='baloons' size={size} />;
-	}
-
-	if (room.teamMain) {
-		return <Icon name={room.t === 'p' ? 'team-lock' : 'team'} size={size} />;
 	}
 
 	if (isOmnichannelRoom(room)) {
 		return <OmnichannelRoomIcon placement={placement} room={room} size={size} />;
 	}
-	if (isDirectMessageRoom(room)) {
-		if (room.uids && room.uids.length > 2) {
-			return <Icon name='balloon' size={size} />;
-		}
-		if (room.uids && room.uids.length > 0) {
-			return <ReactiveUserStatus uid={room.uids.filter((uid) => uid !== room.u._id)[0] || room.u._id} />;
-		}
-		return <Icon name='at' size={size} />;
+
+	if (isValidElement(iconPropsOrReactNode)) {
+		return iconPropsOrReactNode;
 	}
 
-	switch (room.t) {
-		case 'p':
-			return <Icon name='hashtag-lock' size={size} />;
-		case 'c':
-			return <Icon name='hash' size={size} />;
-		default:
-			return null;
+	if (!iconPropsOrReactNode) {
+		return null;
 	}
+
+	return <Icon {...iconPropsOrReactNode} size={size} />;
 };
