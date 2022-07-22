@@ -475,6 +475,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.hookNotification('video-conference.rejected', (params: DirectCallParams) => this.onDirectCallRejected(params));
 		this.hookNotification('video-conference.confirmed', (params: DirectCallParams) => this.onDirectCallConfirmed(params));
 		this.hookNotification('video-conference.join', (params: DirectCallParams) => this.onDirectCallJoined(params));
+		this.hookNotification('video-conference.end', (params: DirectCallParams) => this.onDirectCallEnded(params));
 	}
 
 	private abortIncomingCall(callId: string): void {
@@ -656,6 +657,41 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		debug && console.log(`[VideoConf] User ${params.uid} has joined a call we started ${params.callId}.`);
 		this.onDirectCallAccepted(params, true);
+	}
+
+	private onDirectCallEnded(params: DirectCallParams): void {
+		if (!params.callId) {
+			debug && console.log(`[VideoConf] Invalid 'video-conference.end' event received: ${params.callId}, ${params.uid}.`);
+			return;
+		}
+
+		const callData = this.incomingDirectCalls.get(params.callId);
+		if (callData) {
+			debug && console.log(`[VideoConf] Incoming call ended by the server: ${params.callId}.`);
+			if (callData.acceptTimeout) {
+				clearTimeout(callData.acceptTimeout);
+				this.setIncomingCallAttribute(params.callId, 'acceptTimeout', undefined);
+			}
+
+			this.loseIncomingCall(params.callId);
+			return;
+		}
+
+		if (this.currentCallData?.callId !== params.callId) {
+			debug && console.log(`[VideoConf] Server sent a call ended event for a call we're not aware of: ${params.callId}.`);
+			return;
+		}
+
+		debug && console.log(`[VideoConf] Outgoing call ended by the server: ${params.callId}.`);
+
+		// Stop ringing
+		this.currentCallData = undefined;
+		if (this.currentCallHandler) {
+			clearInterval(this.currentCallHandler);
+			this.currentCallHandler = undefined;
+			this.emit('calling/changed');
+			this.emit('direct/stopped', params);
+		}
 	}
 
 	private onDirectCallRejected(params: DirectCallParams): void {

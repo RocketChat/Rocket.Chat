@@ -5,7 +5,7 @@ import React, { ReactElement } from 'react';
 import { useVoipOutboundStates } from '../../../contexts/CallContext';
 import { useDialModal } from '../../../hooks/useDialModal';
 
-export const OmniChannelCallDialPad = (): ReactElement => {
+export const OmniChannelCallDialPad = ({ ...props }): ReactElement => {
 	const t = useTranslation();
 
 	const { openDialModal } = useDialModal();
@@ -18,6 +18,7 @@ export const OmniChannelCallDialPad = (): ReactElement => {
 			icon='dialpad'
 			onClick={(): void => openDialModal()}
 			disabled={!outBoundCallsEnabledForUser}
+			{...props}
 		/>
 	);
 };
