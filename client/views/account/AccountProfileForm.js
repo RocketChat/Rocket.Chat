@@ -151,7 +151,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		[statusText, t],
 	);
 
-	const verified = (user.emails && user.emails.length && user.emails[0].verified) || false;
+	const verified = user?.emails?.[0]?.verified || false;
 
 	const canSave = !![
 		!!passwordError,
