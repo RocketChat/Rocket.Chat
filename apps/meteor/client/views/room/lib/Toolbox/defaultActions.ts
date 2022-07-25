@@ -35,7 +35,7 @@ addAction('user-info-group', {
 	groups: ['direct_multiple'],
 	id: 'user-info-group',
 	title: 'Members',
-	icon: 'team',
+	icon: 'members',
 	template: lazy(() => import('../../MemberListRouter')),
 	order: 1,
 });

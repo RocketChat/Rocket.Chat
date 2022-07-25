@@ -23,7 +23,7 @@ export async function findMentionedMessages({
 	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
-	const user: IUser | null = await Users.findOneById(uid, { fields: { username: 1 } });
+	const user = await Users.findOneById<Pick<IUser, 'username'>>(uid, { projection: { username: 1 } });
 	if (!user) {
 		throw new Error('invalid-user');
 	}
@@ -62,7 +62,7 @@ export async function findStarredMessages({
 	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
-	const user = await Users.findOneById(uid, { fields: { username: 1 } });
+	const user = await Users.findOneById<Pick<IUser, 'username'>>(uid, { projection: { username: 1 } });
 	if (!user) {
 		throw new Error('invalid-user');
 	}
