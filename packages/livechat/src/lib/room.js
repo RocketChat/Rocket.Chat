@@ -34,7 +34,8 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 	route('/chat-finished');
 };
 
-const getVideoConfMessageData = (message) => message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
+const getVideoConfMessageData = (message) =>
+	message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
 
 const isVideoCallMessage = (message) => {
 	if (message.t === constants.webRTCCallStartedMessageType) {
@@ -121,7 +122,12 @@ export const initRoom = async () => {
 
 	Livechat.unsubscribeAll();
 
-	const { token, agent, queueInfo, room: { _id: rid, servedBy } } = state;
+	const {
+		token,
+		agent,
+		queueInfo,
+		room: { _id: rid, servedBy },
+	} = state;
 	Livechat.subscribeRoom(rid);
 
 	let roomAgent = agent;
@@ -226,13 +232,14 @@ export const getGreetingMessages = (messages) => messages && messages.filter((ms
 export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {
-	const { ongoingCall } = store.state;
+	const { ongoingCall, messages: storedMessages, room } = store.state;
 
-	const { messages: storedMessages, room: { _id: rid, callStatus } = {} } = store.state;
-	const previousMessages = getGreetingMessages(storedMessages);
-	if (!rid) {
+	if (!room?._id) {
 		return;
 	}
+
+	const { _id: rid, callStatus } = room;
+	const previousMessages = getGreetingMessages(storedMessages);
 
 	await store.setState({ loading: true });
 	const rawMessages = (await Livechat.loadMessages(rid)).concat(previousMessages);
@@ -263,8 +270,7 @@ export const loadMessages = async () => {
 			},
 			incomingCallAlert: {
 				show: false,
-				callProvider:
-				latestCallMessage.t,
+				callProvider: latestCallMessage.t,
 				url: videoConfJoinBlock.url,
 			},
 		});

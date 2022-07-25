@@ -23,9 +23,7 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.info.set(
 		{
 			version: Info.version,
-			// eslint-disable-next-line @typescript-eslint/camelcase
 			unique_id: settings.get<string>('uniqueID'),
-			// eslint-disable-next-line @typescript-eslint/camelcase
 			site_url: settings.get<string>('Site_Url'),
 		},
 		1,
