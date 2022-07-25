@@ -1,11 +1,18 @@
 import { test, expect, Page } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
+import faker from '@faker-js/faker';
 
 import { BASE_API_URL } from './utils/constants';
-import { adminLogin, validUserInserted, registerUser } from './utils/mocks/userAndPasswordMock';
+import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
 import { Auth, HomeChannel, AccountProfile, Administration } from './page-objects';
 
 const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
+
+const registerUser = {
+	email: faker.internet.email(),
+	password: 'any_password',
+	name: faker.name.findName(),
+};
 
 test.describe.skip('Settings', async () => {
 	let page: Page;
