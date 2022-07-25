@@ -154,7 +154,7 @@ Template.messageBoxAudioMessage.events({
 		const { rid, tmid } = this;
 		const blob = await cancelRecording(instance, rid, tmid);
 
-		const fileName = `${t('Audio record')}.mp3`
+		const fileName = `${t('Audio record')}.mp3`;
 		const file = new File([blob], fileName, { type: 'audio/mpeg' });
 
 		await fileUpload([{ file, type: 'audio/mpeg', name: fileName }], { input: blob }, { rid, tmid });
