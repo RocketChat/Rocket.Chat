@@ -20,7 +20,7 @@ import {
 } from '../../app/user-data-download/server/cronProcessDownloads';
 import { getMomentLocale } from './getMomentLocale';
 import { getURL } from '../../app/utils/lib/getURL';
-import { DataExport } from '../../app/user-data-download/server/DataExport';
+import { DataExport } from './DataExport';
 
 type ExportEmail = {
 	rid: string;

@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { ExportOperations, UserDataFiles } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
-import { DataExport } from '../../app/user-data-download/server/DataExport';
+import { DataExport } from '../lib/DataExport';
 
 let tempFolder = '/tmp/userData';
 if (settings.get('UserData_FileSystemPath') != null) {

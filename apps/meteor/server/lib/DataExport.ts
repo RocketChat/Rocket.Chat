@@ -1,8 +1,11 @@
-import { Cookies } from 'meteor/ostrio:cookies';
+import type { ServerResponse } from 'http';
 
-import Users from '../../models/server/models/Users';
-import { FileUpload } from '../../file-upload/server';
-import { getURL } from '../../utils/lib/getURL';
+import { Cookies } from 'meteor/ostrio:cookies';
+import type { IIncomingMessage, IUser } from '@rocket.chat/core-typings';
+
+import Users from '../../app/models/server/models/Users';
+import { FileUpload } from '../../app/file-upload/server';
+import { getURL } from '../../app/utils/lib/getURL';
 
 const cookie = new Cookies();
 const userDataStore = FileUpload.getStore('UserDataFiles');
@@ -14,7 +17,8 @@ export const DataExport = {
 		return `/data-export/${path}`;
 	},
 
-	requestCanAccessFiles({ headers = {}, query = {} }, userId) {
+	requestCanAccessFiles({ headers = {}, query = {} }: IIncomingMessage, userId?: IUser['_id']) {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		let { rc_uid, rc_token } = query;
 
 		if (!rc_uid && headers.cookie) {
@@ -35,16 +39,17 @@ export const DataExport = {
 		return false;
 	},
 
-	get(file, req, res, next) {
-		if (userDataStore && userDataStore.get) {
+	get(file: any, req: IIncomingMessage, res: ServerResponse, next: () => void) {
+		if (userDataStore?.get) {
 			return userDataStore.get(file, req, res, next);
 		}
+
 		res.writeHead(404);
 		res.end();
 	},
 
-	getErrorPage(errorType, errorDescription) {
-		let errorHtml = Assets.getText('errors/error_template.html');
+	getErrorPage(errorType: string, errorDescription: string): string {
+		let errorHtml = Assets.getText('errors/error_template.html') ?? '';
 		errorHtml = errorHtml.replace('$ERROR_TYPE$', errorType);
 		errorHtml = errorHtml.replace('$ERROR_DESCRIPTION$', errorDescription);
 		errorHtml = errorHtml.replace('$SERVER_URL$', getURL('/', { full: true, cdn: false }));
