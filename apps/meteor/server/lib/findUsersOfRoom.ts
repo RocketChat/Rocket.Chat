@@ -30,6 +30,7 @@ export function findUsersOfRoom({
 			status: 1,
 			avatarETag: 1,
 			_updatedAt: 1,
+			federated: 1,
 		},
 		sort: {
 			statusConnection: -1,
@@ -39,7 +40,9 @@ export function findUsersOfRoom({
 		...(limit > 0 && { limit }),
 	};
 
-	return Users.findPaginatedByActiveUsersExcept(filter, undefined, options, undefined, [
+	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
+
+	return Users.findPaginatedByActiveUsersExcept(filter, undefined, options, searchFields, [
 		{
 			__rooms: rid,
 			...(status && { status }),

@@ -56,8 +56,8 @@ const ResetPassword = () => {
 				} else {
 					await setUserPassword(newPassword);
 				}
-			} catch ({ error, reason = error }) {
-				setError(reason);
+			} catch ({ error, reason }) {
+				setError(reason ?? error);
 			} finally {
 				setIsLoading(false);
 			}

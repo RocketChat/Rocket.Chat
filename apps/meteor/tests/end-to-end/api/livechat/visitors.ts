@@ -1,9 +1,10 @@
 import { expect } from 'chai';
-import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { createVisitor } from '../../../data/livechat/rooms.js';
+import { makeAgentAvailable, createAgent, createLivechatRoom, createVisitor } from '../../../data/livechat/rooms.js';
 
 describe('LIVECHAT - visitors', function () {
 	this.retries(0);
@@ -12,12 +13,18 @@ describe('LIVECHAT - visitors', function () {
 	before((done) => getCredentials(done));
 
 	before((done) => {
-		updateSetting('Livechat_enabled', true)
-			.then(() => createVisitor())
-			.then((createdVisitor) => {
-				visitor = createdVisitor;
-				done();
-			});
+		updateSetting('Livechat_enabled', true).then(() =>
+			updatePermission('view-livechat-manager', ['admin']).then(() =>
+				createAgent().then(() =>
+					makeAgentAvailable().then(() =>
+						createVisitor().then((createdVisitor) => {
+							visitor = createdVisitor;
+							done();
+						}),
+					),
+				),
+			),
+		);
 	});
 
 	describe('livechat/visitors.info', () => {
@@ -28,7 +35,7 @@ describe('LIVECHAT - visitors', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('error-not-authorized');
 					})
@@ -42,7 +49,7 @@ describe('LIVECHAT - visitors', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('visitor-not-found');
 					})
@@ -55,7 +62,7 @@ describe('LIVECHAT - visitors', function () {
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.visitor._id).to.be.equal(visitor._id);
 				})
@@ -71,7 +78,7 @@ describe('LIVECHAT - visitors', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('error-not-authorized');
 					})
@@ -85,7 +92,7 @@ describe('LIVECHAT - visitors', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 					})
 					.end(done);
@@ -93,19 +100,23 @@ describe('LIVECHAT - visitors', function () {
 		});
 		it('should return an array of pages', (done) => {
 			updatePermission('view-l-room', ['admin']).then(() => {
-				request
-					.get(api('livechat/visitors.pagesVisited/GENERAL'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.pages).to.be.an('array');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('count');
-					})
-					.end(done);
+				createVisitor().then((createdVisitor: ILivechatVisitor) => {
+					createLivechatRoom(createdVisitor.token).then((createdRoom: IOmnichannelRoom) => {
+						request
+							.get(api(`livechat/visitors.pagesVisited/${createdRoom._id}`))
+							.set(credentials)
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res: Response) => {
+								expect(res.body).to.have.property('success', true);
+								expect(res.body.pages).to.be.an('array');
+								expect(res.body).to.have.property('offset');
+								expect(res.body).to.have.property('total');
+								expect(res.body).to.have.property('count');
+							})
+							.end(done);
+					});
+				});
 			});
 		});
 	});
@@ -118,7 +129,7 @@ describe('LIVECHAT - visitors', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('error-not-authorized');
 					})
@@ -132,7 +143,7 @@ describe('LIVECHAT - visitors', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 					})
 					.end(done);
@@ -140,150 +151,24 @@ describe('LIVECHAT - visitors', function () {
 		});
 		it('should return an array of chat history', (done) => {
 			updatePermission('view-l-room', ['admin']).then(() => {
-				request
-					.get(api(`livechat/visitors.chatHistory/room/GENERAL/visitor/${visitor._id}`))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.history).to.be.an('array');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('count');
-					})
-					.end(done);
+				createVisitor().then((createdVisitor: ILivechatVisitor) => {
+					createLivechatRoom(createdVisitor.token).then((createdRoom: IOmnichannelRoom) => {
+						request
+							.get(api(`livechat/visitors.chatHistory/room/${createdRoom._id}/visitor/${createdVisitor._id}`))
+							.set(credentials)
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res: Response) => {
+								expect(res.body).to.have.property('success', true);
+								expect(res.body.history).to.be.an('array');
+								expect(res.body).to.have.property('offset');
+								expect(res.body).to.have.property('total');
+								expect(res.body).to.have.property('count');
+							})
+							.end(done);
+					});
+				});
 			});
-		});
-	});
-
-	describe('livechat/visitor', () => {
-		it("should return a 'failure error' when scope of the custom field is equal to 'visitor' and livechatDataByToken cannot by updated", (done) => {
-			request
-				.get(api('livechat/visitor'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('failure');
-				})
-				.end(done);
-		});
-
-		it('should return an error when the "token" query parameter is not valid', (done) => {
-			request
-				.get(api('livechat/visitor?token=invalid'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
-		});
-
-		it('should return an error when the "name" query parameter is not valid', (done) => {
-			request
-				.get(api('livechat/visitor?name=invalid'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
-		});
-
-		it('should return an error when the "email" query parameter is not valid', (done) => {
-			request
-				.get(api('livechat/visitor?email=invalid'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
-		});
-
-		it('should return an error when the "department" query parameter is not valid', (done) => {
-			request
-				.get(api('livechat/visitor?department=invalid'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
-		});
-
-		it('should return an error when the "phone" query parameter is not valid', (done) => {
-			request
-				.get(api('livechat/visitor?phone=invalid'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
-		});
-
-		it('should return an error when the "username" query parameter is not valid', (done) => {
-			request
-				.get(api('livechat/visitor?username=invalid'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
-		});
-
-		it('should return an error when the "customFields" query parameter is not valid', (done) => {
-			request
-				.get(api('livechat/visitor?customFields=invalid'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
-		});
-
-		it('should return nothing when there is no customField', (done) => {
-			request
-				.get(api(`livechat/visitor?token=123&name=John&email=test@gmail.com&department=test&phone=123456789&customFields={}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.rooms).to.equal(null);
-				})
-				.end(done);
-		});
-
-		it('should return a visitor when the query params is all valid', (done) => {
-			request
-				.get(
-					api(
-						`livechat/visitor?token=123&name=John&email=test@gmail.com&department=test&phone=123456789&customFields={"key": "123", "value": "test", "overwrite": "false"}`,
-					),
-				)
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.rooms).to.be.an('object');
-					expect(res.body).to.have.property('visitor');
-				})
-				.end(done);
 		});
 	});
 
@@ -291,24 +176,24 @@ describe('LIVECHAT - visitors', function () {
 		// get
 		it("should return a 'invalid token' error when visitor with given token does not exist ", (done) => {
 			request
-				.get(api('livechat/visitor/:token=invalid'))
+				.get(api('livechat/visitor/invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
+				.expect(400)
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('invalid-token');
+					expect(res.body.error).to.be.equal('[invalid-token]');
 				})
 				.end(done);
 		});
 
 		it('should return an error when the "token" query parameter is not valid', (done) => {
 			request
-				.get(api('livechat/visitor/:token=invalid'))
+				.get(api('livechat/visitor/invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
@@ -316,13 +201,12 @@ describe('LIVECHAT - visitors', function () {
 
 		it('should return a visitor when the query params is all valid', (done) => {
 			request
-				.get(api(`livechat/visitor/:token=123`))
+				.get(api(`livechat/visitor/${visitor.token}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.rooms).to.be.an('object');
 					expect(res.body).to.have.property('visitor');
 				})
 				.end(done);
@@ -331,69 +215,80 @@ describe('LIVECHAT - visitors', function () {
 		// delete
 		it("should return a 'invalid token' error when visitor with given token does not exist ", (done) => {
 			request
-				.delete(api('livechat/visitor/:token=invalid'))
+				.delete(api('livechat/visitor/invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
+				.expect(400)
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('invalid-token');
+					expect(res.body.error).to.be.equal('[invalid-token]');
 				})
 				.end(done);
 		});
 
 		it('should return an error when the "token" query parameter is not valid', (done) => {
 			request
-				.delete(api('livechat/visitor/:token=invalid'))
+				.delete(api('livechat/visitor/invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
 		});
 
 		it("should return a 'visitor-has-open-rooms' error when there are open rooms", (done) => {
-			request
-				.delete(api('livechat/visitor/:token=123'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('visitor-has-open-rooms');
-				})
-				.end(done);
+			createVisitor().then((createdVisitor: ILivechatVisitor) => {
+				createLivechatRoom(createdVisitor.token).then(() => {
+					request
+						.delete(api(`livechat/visitor/${createdVisitor.token}`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.error).to.be.equal('Cannot remove visitors with opened rooms [visitor-has-open-rooms]');
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should return a visitor when the query params is all valid', (done) => {
+			createVisitor().then((createdVisitor: ILivechatVisitor) => {
+				request
+					.delete(api(`livechat/visitor/${createdVisitor.token}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('visitor');
+						expect(res.body.visitor).to.have.property('_id');
+						expect(res.body.visitor).to.have.property('ts');
+						expect(res.body.visitor._id).to.be.equal(createdVisitor._id);
+					})
+					.end(done);
+			});
 		});
 
 		it("should return a 'error-removing-visitor' error when removeGuest's result is false", (done) => {
 			request
-				.delete(api('livechat/visitor/:token=123'))
+				.delete(api('livechat/visitor/123'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
+				.expect(400)
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('visitor-has-open-rooms');
-				})
-				.end(done);
-		});
-
-		it('should return a visitor when the query params is all valid', (done) => {
-			request
-				.delete(api(`livechat/visitor/:token=123`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.rooms).to.be.an('object');
-					expect(res.body).to.have.property('visitor');
-					expect(res.body).to.have.property('visitor').that.includes('_id');
-					expect(res.body).to.have.property('visitor').that.includes('ts');
 				})
 				.end(done);
 		});
 	});
 });
+
+// TODO: Missing tests for the following endpoints:
+// - /v1/livechat/visitor.status
+// - /v1/livechat/visitor.callStatus
+// - /v1/livechat/visitor/:token/room
+// - /v1/livechat/visitor
