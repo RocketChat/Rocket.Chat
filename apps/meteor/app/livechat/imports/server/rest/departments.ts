@@ -44,31 +44,27 @@ API.v1.addRoute(
 
 			return API.v1.success({ departments, count: departments.length, offset, total });
 		},
-		post() {
+		async post() {
 			if (!hasPermission(this.userId, 'manage-livechat-departments')) {
 				return API.v1.unauthorized();
 			}
 
-			try {
-				check(this.bodyParams, {
-					department: Object,
-					agents: Match.Maybe(Array),
+			check(this.bodyParams, {
+				department: Object,
+				agents: Match.Maybe(Array),
+			});
+
+			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
+			const department = Livechat.saveDepartment(null, this.bodyParams.department, agents);
+
+			if (department) {
+				return API.v1.success({
+					department,
+					agents: LivechatDepartmentAgents.find({ departmentId: department._id }).fetch(),
 				});
-
-				const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
-				const department = Livechat.saveDepartment(null, this.bodyParams.department, agents);
-
-				if (department) {
-					return API.v1.success({
-						department,
-						agents: LivechatDepartmentAgents.find({ departmentId: department._id }).fetch(),
-					});
-				}
-
-				return API.v1.failure();
-			} catch (e) {
-				return API.v1.failure(e);
 			}
+
+			return API.v1.failure();
 		},
 	},
 );
