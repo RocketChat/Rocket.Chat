@@ -5,7 +5,7 @@ import faker from '@faker-js/faker';
 import { Auth, Administration, HomeChannel } from './page-objects';
 
 test.describe('Permissions', () => {
-	let page: Page;
+	let pageTestContext: Page;
 	let pageAuth: Auth;
 	let pageAdmin: Administration;
 	let pageHomeChannel: HomeChannel;
@@ -17,8 +17,8 @@ test.describe('Permissions', () => {
 		username: faker.internet.userName(),
 	};
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
+		pageTestContext = page;
 		pageAuth = new Auth(page);
 		pageAdmin = new Administration(page);
 		pageHomeChannel = new HomeChannel(page);
@@ -60,7 +60,7 @@ test.describe('Permissions', () => {
 
 		test('expect remove "delete message" permission from user', async () => {
 			await pageAdmin.inputPermissionsSearch.click({ clickCount: 3 });
-			await page.keyboard.press('Backspace');
+			await pageTestContext.keyboard.press('Backspace');
 			await pageAdmin.inputPermissionsSearch.type('delete');
 
 			if (await pageAdmin.getCheckboxPermission('Delete Own Message').locator('input').isChecked()) {
@@ -73,7 +73,7 @@ test.describe('Permissions', () => {
 		test.beforeAll(async () => {
 			await pageHomeChannel.sidenav.doLogout();
 
-			await page.goto('/');
+			await pageTestContext.goto('/');
 			await pageAuth.doLogin(anyUser);
 			await pageHomeChannel.sidenav.doOpenChat('general');
 		});
@@ -89,7 +89,7 @@ test.describe('Permissions', () => {
 			await pageHomeChannel.content.doSendMessage(`any_message_${uuid()}`);
 			await pageHomeChannel.content.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeFalsy();
+			expect(await pageTestContext.isVisible('[data-qa-id="delete-message"]')).toBeFalsy();
 		});
 	});
 });

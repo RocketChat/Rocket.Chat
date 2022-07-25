@@ -5,12 +5,12 @@ import { v4 as uuid } from 'uuid';
 import { Auth, HomeDiscussion } from './page-objects';
 
 test.describe('[Discussion]', () => {
-	let page: Page;
+	let pageTestContext: Page;
 	let pageAuth: Auth;
 	let pageHomeDiscussion: HomeDiscussion;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
+		pageTestContext = page;
 		pageAuth = new Auth(page);
 		pageHomeDiscussion = new HomeDiscussion(page);
 	});
@@ -38,7 +38,7 @@ test.describe('[Discussion]', () => {
 		});
 
 		test('expect show a dialog for starting a discussion', async () => {
-			await page.waitForLoadState('domcontentloaded', { timeout: 3000 });
+			await pageTestContext.waitForLoadState('domcontentloaded', { timeout: 3000 });
 			await pageHomeDiscussion.content.doOpenMessageActionMenu();
 			await pageHomeDiscussion.doCreateDiscussionInContext(anyMessage);
 		});

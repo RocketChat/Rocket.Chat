@@ -5,15 +5,15 @@ import { validUserInserted } from './utils/mocks/userAndPasswordMock';
 import { Auth, Administration, HomeChannel } from './page-objects';
 
 test.describe('Settings Permissions', () => {
-	let page: Page;
+	let pageTestContext: Page;
 	let pageAuth: Auth;
 	let pageAdmin: Administration;
 	let pageHomeChannel: HomeChannel;
 
 	const newHomeTitle = faker.animal.type();
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
+		pageTestContext = page;
 		pageAuth = new Auth(page);
 		pageAdmin = new Administration(page);
 		pageHomeChannel = new HomeChannel(page);
@@ -33,30 +33,30 @@ test.describe('Settings Permissions', () => {
 
 		test('Set permission for user to manage settings', async () => {
 			await pageAdmin.rolesSettingsFindInput.type('settings');
-			await page.locator('table tbody tr:first-child td:nth-child(1) >> text="Change some settings"').waitFor();
-			const isOptionChecked = await page.isChecked('table tbody tr:first-child td:nth-child(6) label input');
+			await pageTestContext.locator('table tbody tr:first-child td:nth-child(1) >> text="Change some settings"').waitFor();
+			const isOptionChecked = await pageTestContext.isChecked('table tbody tr:first-child td:nth-child(6) label input');
 
 			if (!isOptionChecked) {
-				await page.click('table tbody tr:first-child td:nth-child(6) label');
+				await pageTestContext.click('table tbody tr:first-child td:nth-child(6) label');
 			}
 		});
 
 		test('Set Permission for user to change title page title', async () => {
 			await pageAdmin.rolesSettingsTab.click();
 			await pageAdmin.rolesSettingsFindInput.fill('Layout');
-			await page.locator('table tbody tr:first-child td:nth-child(1) >> text="Layout"').waitFor();
-			const isOptionChecked = await page.isChecked('table tbody tr:first-child td:nth-child(6) label input');
-			const changeHomeTitleSelected = await page.isChecked('table tbody tr:nth-child(3) td:nth-child(6) label input');
+			await pageTestContext.locator('table tbody tr:first-child td:nth-child(1) >> text="Layout"').waitFor();
+			const isOptionChecked = await pageTestContext.isChecked('table tbody tr:first-child td:nth-child(6) label input');
+			const changeHomeTitleSelected = await pageTestContext.isChecked('table tbody tr:nth-child(3) td:nth-child(6) label input');
 			if (!isOptionChecked && !changeHomeTitleSelected) {
-				await page.click('table tbody tr:first-child td:nth-child(6) label');
-				await page.click('table tbody tr:nth-child(3) td:nth-child(6) label');
+				await pageTestContext.click('table tbody tr:first-child td:nth-child(6) label');
+				await pageTestContext.click('table tbody tr:nth-child(3) td:nth-child(6) label');
 			}
 		});
 	});
 
 	test.describe('Test new user setting permissions', async () => {
 		test.beforeAll(async () => {
-			await page.goto('/');
+			await pageTestContext.goto('/');
 			await pageAuth.doLogin(validUserInserted);
 
 			await pageHomeChannel.sidenav.btnAvatar.click();
@@ -77,7 +77,7 @@ test.describe('Settings Permissions', () => {
 
 	test.describe('Verify settings change and cleanup', async () => {
 		test.beforeAll(async () => {
-			await page.goto('/');
+			await pageTestContext.goto('/');
 			await pageAuth.doLogin();
 			await pageHomeChannel.sidenav.btnAvatar.click();
 			await pageHomeChannel.sidenav.linkAdmin.click();
@@ -91,7 +91,7 @@ test.describe('Settings Permissions', () => {
 		});
 
 		test('New settings value visible for admin as well', async () => {
-			await page.locator('[data-qa-section="Content"]').click();
+			await pageTestContext.locator('[data-qa-section="Content"]').click();
 			await pageAdmin.homeTitleInput.waitFor();
 			const text = await pageAdmin.homeTitleInput.inputValue();
 			await pageAdmin.generalHomeTitleReset.click();
@@ -102,14 +102,14 @@ test.describe('Settings Permissions', () => {
 		test('Clear all user permissions', async () => {
 			await pageAdmin.permissionsLink.click();
 			await pageAdmin.rolesSettingsFindInput.type('settings');
-			await page.locator('table tbody tr:first-child td:nth-child(1) >> text="Change some settings"').waitFor();
-			await page.click('table tbody tr:first-child td:nth-child(6) label');
+			await pageTestContext.locator('table tbody tr:first-child td:nth-child(1) >> text="Change some settings"').waitFor();
+			await pageTestContext.click('table tbody tr:first-child td:nth-child(6) label');
 
 			await pageAdmin.rolesSettingsTab.click();
 			await pageAdmin.rolesSettingsFindInput.fill('Layout');
-			await page.locator('table tbody tr:first-child td:nth-child(1) >> text="Layout"').waitFor();
-			await page.click('table tbody tr td:nth-child(6) label');
-			await page.click('table tbody tr:nth-child(3) td:nth-child(6) label');
+			await pageTestContext.locator('table tbody tr:first-child td:nth-child(1) >> text="Layout"').waitFor();
+			await pageTestContext.click('table tbody tr td:nth-child(6) label');
+			await pageTestContext.click('table tbody tr:nth-child(3) td:nth-child(6) label');
 		});
 	});
 });

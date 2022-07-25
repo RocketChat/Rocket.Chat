@@ -23,7 +23,7 @@ export default {
 	outputDir: 'tests/e2e/test-failures',
 	reporter: process.env.CI ? 'github' : 'list',
 	testDir: 'tests/e2e',
-	retries: 3,
+	// retries: 1,
 	workers: 1,
 	timeout: 42 * 1000,
 } as PlaywrightTestConfig;
