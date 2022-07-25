@@ -38,6 +38,11 @@ export default async (): Promise<void> => {
 	await page.locator('[name=pass]').type(ADMIN_CREDENTIALS.password);
 	await page.locator('.login').click();
 
+	if(page.url().match(/.*\/setup-wizard\/2/)){
+		await browser.close();
+		return;
+	}
+
 	await page.locator('[name="organizationName"]').type('any_name');
 	await page.locator('[name="organizationType"]').click();
 	await page.locator('.rcx-options .rcx-option:first-child >> text="Community"').click();

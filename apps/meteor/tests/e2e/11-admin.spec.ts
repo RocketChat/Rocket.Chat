@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 import { Auth, Administration } from './page-objects';
 
-test.describe.only('Administration', () => {
+test.describe('Administration', () => {
 	let pageAuth: Auth;
 	let pageAdmin: Administration;
 
