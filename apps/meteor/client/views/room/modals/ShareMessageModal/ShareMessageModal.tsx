@@ -1,24 +1,20 @@
+import { IMessage } from '@rocket.chat/core-typings';
 import { Modal, Box, Field, FieldGroup, ButtonGroup, Button, Tabs } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, memo, useState, ChangeEvent } from 'react';
+import React, { ReactElement, memo, useState, ChangeEvent, MouseEventHandler } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 import MarkdownTextEditor from '../../../../../ee/client/omnichannel/components/CannedResponse/MarkdownTextEditor';
 import PreviewText from '../../../../../ee/client/omnichannel/components/CannedResponse/modals/CreateCannedResponse/PreviewText';
-import AutoCompleteMultiple from '../../../../components/AutoCompleteMultiple';
-import { useForm } from '../../../../hooks/useForm';
+import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple.tsx';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
 import Message from '../../MessageList/components/Message';
-
-type ShareMessageFormValue = {
-	optionalMessage: string;
-	rooms: any;
-};
 
 type ShareMessageProps = {
 	onClose: () => void;
 	onSubmit?: (name: string, description?: string) => void;
-	message: any;
+	message: IMessage;
 };
 type roomType = {
 	label: string;
@@ -27,41 +23,41 @@ type roomType = {
 	type: string;
 };
 const ShareMessageModal = ({ onClose, message }: ShareMessageProps): ReactElement => {
-	const [status, setStatus] = useState(0);
+	const [status, setStatus] = useState<number>(0);
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { values, handlers } = useForm({
-		optionalMessage: '',
-		rooms: [],
+	const { control, watch } = useForm({
+		defaultValues: {
+			optionalMessage: '',
+			rooms: [],
+		},
 	});
-	const { rooms, optionalMessage } = values as ShareMessageFormValue;
-	const { handleRooms, handleOptionalMessage } = handlers;
+	const rooms = watch('rooms');
 	const sendMessage = useEndpoint('POST', '/v1/chat.postMessage');
-	const onChangeUsers = useMutableCallback((room: roomType, action: any) => {
-		if (!action) {
-			if (rooms.find((cur: roomType) => cur._id === room._id)) {
-				return;
-			}
 
-			return handleRooms([...rooms, room]);
+	const onChangeUserOrRoom = useMutableCallback((handleRoomsAndUsers: (rooms: roomType[]) => void, room: roomType, action?: string) => {
+		if (!action) {
+			if (rooms.find((cur: roomType) => cur._id === room._id)) return;
+			return handleRoomsAndUsers([...rooms, room]);
 		}
-		handleRooms(rooms.filter((cur: roomType) => cur._id !== room._id));
+		handleRoomsAndUsers(rooms.filter((cur: roomType) => cur._id !== room._id));
 	});
 
-	const changeEditView = (e: ChangeEvent<HTMLInputElement> | string): void => {
+	const changeEditView = (e: ChangeEvent<HTMLInputElement> | string, handleOptionalMessage: (val: string) => void): void => {
 		if (typeof e === 'string') handleOptionalMessage(e);
 		else handleOptionalMessage(e.target.value);
 	};
-	const changeStatus = (e: any, value: any) => {
+	const changeStatus = (e: any, value: number): void => {
 		e.preventDefault();
 		setStatus(value);
 	};
 
-	const handleSubmit = async (e: any) => {
+	const handleShareMessage: MouseEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
+		const optionalMessage = watch('optionalMessage');
 		let flag = true;
 		const curMsg = await prependReplies(optionalMessage, [message], false);
-		rooms.forEach(async (room: any) => {
+		rooms.map(async (room: roomType) => {
 			const sendPayload = {
 				roomId: room._id,
 				channel: (room.type === 'C' ? '#' : '@') + room.value,
@@ -88,21 +84,40 @@ const ShareMessageModal = ({ onClose, message }: ShareMessageProps): ReactElemen
 						<Field>
 							<Field.Label>{t('Person_Or_Channel')}</Field.Label>
 							<Field.Row>
-								<AutoCompleteMultiple value={rooms.map((room: any) => room.value)} onChange={onChangeUsers} />
+								<Controller
+									name='rooms'
+									control={control}
+									render={({ field }): ReactElement => (
+										<UserAndRoomAutoCompleteMultiple
+											value={field.value.map((room: roomType) => room.value)}
+											onChange={(room, action): void => onChangeUserOrRoom(field.onChange, room, action)}
+										/>
+									)}
+								/>
 							</Field.Row>
-							{/* {!name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>} */}
+							{!rooms.length && <Field.Hint>{t('Select_atleast_one_channel_to_share_the_messsage')}</Field.Hint>}
 						</Field>
 						<Field mbe='x24'>
 							<Field.Label w='full'>
 								<Tabs>
-									<Tabs.Item onClick={(e) => changeStatus(e, 0)} selected={!status}>
+									<Tabs.Item onClick={(e): void => changeStatus(e, 0)} selected={!status}>
 										Editor
 									</Tabs.Item>
-									<Tabs.Item onClick={(e) => changeStatus(e, 1)} selected={status === 1}>
+									<Tabs.Item onClick={(e): void => changeStatus(e, 1)} selected={status === 1}>
 										Preview
 									</Tabs.Item>
 								</Tabs>
-								{status ? <PreviewText text={optionalMessage} /> : <MarkdownTextEditor value={optionalMessage} onChange={changeEditView} />}
+								<Controller
+									name='optionalMessage'
+									control={control}
+									render={({ field }): ReactElement =>
+										status ? (
+											<PreviewText text={field.value} />
+										) : (
+											<MarkdownTextEditor value={field.value} onChange={(e: any): void => changeEditView(e, field.onChange)} />
+										)
+									}
+								/>
 							</Field.Label>
 						</Field>
 						<Field>
@@ -124,7 +139,7 @@ const ShareMessageModal = ({ onClose, message }: ShareMessageProps): ReactElemen
 				<Modal.Footer>
 					<ButtonGroup align='end'>
 						<Button>{t('Copy_Link')}</Button>
-						<Button onClick={handleSubmit} primary type='submit'>
+						<Button disabled={!rooms.length} onClick={handleShareMessage} primary type='submit'>
 							{t('Share')}
 						</Button>
 					</ButtonGroup>

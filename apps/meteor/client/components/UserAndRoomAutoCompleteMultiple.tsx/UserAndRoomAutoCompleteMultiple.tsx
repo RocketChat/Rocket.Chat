@@ -16,14 +16,14 @@ type roomType = {
 	_id: string;
 	type: string;
 };
-type AutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> &
+type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> &
 	Omit<ComponentProps<typeof Option>, 'value' | 'is' | 'className' | 'onChange'> & {
 		onChange: (room: roomType, action: 'remove' | undefined) => void;
 		value: any;
 		filter?: string;
 	};
 
-const AutoCompleteMultiple = ({ onChange, ...props }: AutoCompleteMultipleProps): ReactElement => {
+const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAutoCompleteMultipleProps): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const { value: usersData } = useEndpointData(
@@ -50,7 +50,7 @@ const AutoCompleteMultiple = ({ onChange, ...props }: AutoCompleteMultipleProps)
 		const room = options.find((cur) => cur.value === e.currentTarget.value) as roomType;
 		onChange?.(room, 'remove');
 	});
-	const onChangeContent = (name: string, action: any) => {
+	const onChangeContent = (name: string, action: any): void => {
 		const room = options.find((cur) => cur.value === name) as roomType;
 		onChange(room, action);
 	};
@@ -85,4 +85,4 @@ const AutoCompleteMultiple = ({ onChange, ...props }: AutoCompleteMultipleProps)
 	);
 };
 
-export default memo(AutoCompleteMultiple);
+export default memo(UserAndRoomAutoCompleteMultiple);
