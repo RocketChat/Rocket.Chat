@@ -1,8 +1,16 @@
-/* eslint-disable @typescript-eslint/interface-name-prefix */
 import 'meteor/meteor';
+import { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
 
 declare module 'meteor/meteor' {
 	namespace Meteor {
+		const Streamer: IStreamerConstructor & IStreamer;
+
+		namespace StreamerCentral {
+			const instances: {
+				[name: string]: IStreamer;
+			};
+		}
+
 		interface ErrorStatic {
 			new (error: string | number, reason?: string, details?: any): Error;
 		}
@@ -41,7 +49,6 @@ declare module 'meteor/meteor' {
 
 			_methodInvokers: Record<string, any>;
 
-			// eslint-disable-next-line @typescript-eslint/camelcase
 			_livedata_data(message: IDDPUpdatedMessage): void;
 
 			_stream: {

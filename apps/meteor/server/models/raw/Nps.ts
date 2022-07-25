@@ -1,22 +1,21 @@
 import type { INps, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { INpsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
+import type { Collection, Db, Document, IndexDescription, UpdateResult } from 'mongodb';
 import { NPSStatus } from '@rocket.chat/core-typings';
-import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class NpsRaw extends BaseRaw<INps> implements INpsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INps>>) {
-		super(db, getCollectionName('nps'), trash);
+		super(db, 'nps', trash);
 	}
 
-	modelIndexes(): IndexSpecification[] {
+	modelIndexes(): IndexDescription[] {
 		return [{ key: { status: 1, expireAt: 1 } }];
 	}
 
 	// get expired surveys still in progress
-	async getOpenExpiredAndStartSending(): Promise<INps | undefined> {
+	async getOpenExpiredAndStartSending(): Promise<INps | null> {
 		const today = new Date();
 
 		const query = {
@@ -45,7 +44,7 @@ export class NpsRaw extends BaseRaw<INps> implements INpsModel {
 		return this.col.findOne(query);
 	}
 
-	updateStatusById(_id: INps['_id'], status: INps['status']): Promise<UpdateWriteOpResult> {
+	updateStatusById(_id: INps['_id'], status: INps['status']): Promise<UpdateResult> {
 		const update = {
 			$set: {
 				status,
@@ -60,7 +59,7 @@ export class NpsRaw extends BaseRaw<INps> implements INpsModel {
 		expireAt,
 		createdBy,
 		status,
-	}: Pick<INps, '_id' | 'startAt' | 'expireAt' | 'createdBy' | 'status'>): Promise<UpdateWriteOpResult> {
+	}: Pick<INps, '_id' | 'startAt' | 'expireAt' | 'createdBy' | 'status'>): Promise<UpdateResult> {
 		return this.col.updateOne(
 			{
 				_id,
@@ -83,7 +82,7 @@ export class NpsRaw extends BaseRaw<INps> implements INpsModel {
 		);
 	}
 
-	closeAllByStatus(status: NPSStatus): Promise<UpdateWriteOpResult> {
+	closeAllByStatus(status: NPSStatus): Promise<UpdateResult | Document> {
 		const query = {
 			status,
 		};

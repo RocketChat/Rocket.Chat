@@ -14,7 +14,7 @@ import styles from './styles.scss';
 export class MessageList extends MemoizedComponent {
 	static defaultProps = {
 		typingUsernames: [],
-	}
+	};
 
 	static SCROLL_AT_TOP = 'top';
 
@@ -22,7 +22,8 @@ export class MessageList extends MemoizedComponent {
 
 	static SCROLL_FREE = 'free';
 
-	scrollPosition = MessageList.SCROLL_AT_BOTTOM
+	// eslint-disable-next-line no-use-before-define
+	scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 
 	handleScroll = () => {
 		if (this.isResizingFromBottom) {
@@ -47,7 +48,7 @@ export class MessageList extends MemoizedComponent {
 			const { onScrollTo } = this.props;
 			onScrollTo && onScrollTo(scrollPosition);
 		}
-	}
+	};
 
 	handleResize = () => {
 		if (this.scrollPosition === MessageList.SCROLL_AT_BOTTOM) {
@@ -61,12 +62,12 @@ export class MessageList extends MemoizedComponent {
 			this.scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 			onScrollTo && onScrollTo(MessageList.SCROLL_AT_BOTTOM);
 		}
-	}
+	};
 
 	handleClick = () => {
 		const { handleEmojiClick } = this.props;
 		handleEmojiClick && handleEmojiClick();
-	}
+	};
 
 	componentWillUpdate() {
 		if (this.scrollPosition === MessageList.SCROLL_AT_TOP) {
@@ -98,6 +99,10 @@ export class MessageList extends MemoizedComponent {
 		window.removeEventListener('resize', this.handleResize);
 	}
 
+	isVideoConfMessage(message) {
+		return Boolean(message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat'));
+	}
+
 	renderItems = ({
 		attachmentResolver = getAttachmentUrl,
 		avatarResolver,
@@ -116,7 +121,7 @@ export class MessageList extends MemoizedComponent {
 			const message = messages[i];
 			const nextMessage = messages[i + 1];
 
-			if ((message.t === constants.webRTCCallStartedMessageType || message.t === constants.jitsiCallStartedMessageType)
+			if ((message.t === constants.webRTCCallStartedMessageType)
 				&& message.actionLinks && message.actionLinks.length
 				&& ongoingCall && isCallOngoing(ongoingCall.callStatus)
 				&& !message.webRtcCallEndTs) {
@@ -125,6 +130,14 @@ export class MessageList extends MemoizedComponent {
 					<JoinCallButton callStatus={ongoingCall.callStatus} url={url} callProvider={callProvider} rid={rid} />,
 				);
 				continue;
+			}
+
+			const videoConfJoinBlock = message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
+			if (videoConfJoinBlock) {
+				// If the call is not accepted yet, don't render the message.
+				if (!ongoingCall || !isCallOngoing(ongoingCall.callStatus)) {
+					continue;
+				}
 			}
 
 			const showDateSeparator = !previousMessage || !isSameDay(parseISO(message.ts), parseISO(previousMessage.ts));
@@ -176,7 +189,7 @@ export class MessageList extends MemoizedComponent {
 		}
 
 		return items;
-	}
+	};
 
 	render = ({
 		className,
@@ -192,5 +205,5 @@ export class MessageList extends MemoizedComponent {
 				{this.renderItems(this.props)}
 			</ol>
 		</div>
-	)
+	);
 }

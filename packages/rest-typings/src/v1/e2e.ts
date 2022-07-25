@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import type { IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
@@ -98,10 +97,10 @@ export type E2eEndpoints = {
 		};
 	};
 	'/v1/e2e.updateGroupKey': {
-		POST: (params: E2eUpdateGroupKeyProps) => {};
+		POST: (params: E2eUpdateGroupKeyProps) => void;
 	};
 	'/v1/e2e.setRoomKeyID': {
-		POST: (params: E2eSetRoomKeyIdProps) => {};
+		POST: (params: E2eSetRoomKeyIdProps) => void;
 	};
 	'/v1/e2e.fetchMyKeys': {
 		GET: () => { public_key: string; private_key: string };

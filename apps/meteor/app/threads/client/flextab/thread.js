@@ -77,6 +77,8 @@ Template.thread.helpers({
 		} = Template.currentData();
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
+		const alsoSendPreferenceState = getUserPreference(Meteor.userId(), 'alsoSendThreadToChannel');
+
 		return {
 			showFormattingTips,
 			tshow: instance.state.get('sendToChannel'),
@@ -85,7 +87,9 @@ Template.thread.helpers({
 			tmid,
 			onSend: (...args) => {
 				instance.sendToBottom();
-				instance.state.set('sendToChannel', false);
+				if (alsoSendPreferenceState === 'default') {
+					instance.state.set('sendToChannel', false);
+				}
 				return instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args);
 			},
 			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
@@ -243,8 +247,22 @@ Template.thread.onRendered(function () {
 Template.thread.onCreated(async function () {
 	this.Threads = new Mongo.Collection(null);
 
+	const preferenceState = getUserPreference(Meteor.userId(), 'alsoSendThreadToChannel');
+
+	let sendToChannel;
+	switch (preferenceState) {
+		case 'always':
+			sendToChannel = true;
+			break;
+		case 'never':
+			sendToChannel = false;
+			break;
+		default:
+			sendToChannel = !this.data.mainMessage.tcount;
+	}
+
 	this.state = new ReactiveDict({
-		sendToChannel: !this.data.mainMessage.tcount,
+		sendToChannel,
 	});
 
 	this.loadMore = async () => {

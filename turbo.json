@@ -7,8 +7,7 @@
 		},
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": ["dist/**"],
-			"inputs": ["!tests/**"]
+			"outputs": ["dist/**"]
 		},
 		"testunit": {
 			"dependsOn": ["build"],
@@ -22,7 +21,7 @@
 			"outputs": []
 		},
 		"typecheck": {
-			"dependsOn": ["build"],
+			"dependsOn": ["^build"],
 			"outputs": []
 		},
 		"dev": {

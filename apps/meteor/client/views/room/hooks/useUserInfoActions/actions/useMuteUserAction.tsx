@@ -76,7 +76,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 						}),
 					});
 				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
+					dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 				} finally {
 					closeModal();
 				}

@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import { formatDistanceStrict } from 'date-fns';
+import moment from 'moment';
 import React, { ReactElement } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
@@ -12,7 +12,7 @@ import { App } from './types';
 const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
 	const t = useTranslation();
 	const { iconFileData, name, author, version, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn, description } = app;
-	const lastUpdated = modifiedAt && formatDistanceStrict(new Date(modifiedAt), new Date(), { addSuffix: false });
+	const lastUpdated = modifiedAt && moment(modifiedAt).fromNow();
 
 	return (
 		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
@@ -35,12 +35,18 @@ const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
 					<Box fontScale='p2m' mie='x16'>
 						{t('By_author', { author: author?.name })}
 					</Box>
-					| <Box mi='x16'>{t('Version_version', { version })}</Box> |{' '}
-					<Box mis='x16'>
-						{t('Marketplace_app_last_updated', {
-							lastUpdated,
-						})}
-					</Box>
+					<Box is='span'> | </Box>
+					<Box mi='x16'>{t('Version_version', { version })}</Box>
+					{lastUpdated && (
+						<>
+							<Box is='span'> | </Box>
+							<Box mis='x16'>
+								{t('Marketplace_app_last_updated', {
+									lastUpdated,
+								})}
+							</Box>
+						</>
+					)}
 				</Box>
 			</Box>
 		</Box>

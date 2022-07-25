@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { LivechatRooms, LivechatVisitors, LivechatCustomField } from '../../../models/server';
+import { LivechatRooms, LivechatCustomField } from '../../../models/server';
 
 Meteor.methods({
-	'livechat:setCustomField'(token, key, value, overwrite = true) {
+	async 'livechat:setCustomField'(token, key, value, overwrite = true) {
 		const customField = LivechatCustomField.findOneById(key);
 		if (customField) {
 			if (customField.scope === 'room') {

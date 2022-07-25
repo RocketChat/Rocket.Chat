@@ -41,7 +41,7 @@ function sendToCRM(type, room, includeMessages = true) {
 		return room;
 	}
 
-	const postData = Livechat.getLivechatRoomGuestInfo(room);
+	const postData = Promise.await(Livechat.getLivechatRoomGuestInfo(room));
 
 	postData.type = type;
 
