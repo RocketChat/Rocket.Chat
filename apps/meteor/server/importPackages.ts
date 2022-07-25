@@ -84,7 +84,7 @@ import '../app/threads/server';
 import '../app/tokenpass/server';
 import '../app/ui-master/server';
 import '../app/ui-vrecord/server';
-import '../app/user-data-download';
+import '../app/user-data-download/server';
 import '../app/webdav/server';
 import '../app/webrtc/server';
 import '../app/wordpress/server';
