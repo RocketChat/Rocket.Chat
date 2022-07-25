@@ -431,7 +431,6 @@ describe('miscellaneous', function () {
 					expect(res.body.total).to.be.an('number');
 					expect(res.body.result[0]).to.have.property('_id');
 					expect(res.body.result[0]).to.have.property('fname');
-					expect(res.body.result[0]).to.have.property('description');
 					expect(res.body.result[0]).to.have.property('teamMain');
 					expect(res.body.result[0]).to.have.property('name');
 					expect(res.body.result[0]).to.have.property('t');
