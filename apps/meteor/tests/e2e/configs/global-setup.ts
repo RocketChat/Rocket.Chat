@@ -4,7 +4,7 @@ import { ADMIN_CREDENTIALS, BASE_URL } from '../utils/constants';
 import populateDatabase from '../utils/fixtures/populate-database';
 
 export default async (): Promise<void> => {
-	await populateDatabase.up()
+	await populateDatabase.up();
 
 	const browser = await chromium.launch();
 	const page = await browser.newPage();
