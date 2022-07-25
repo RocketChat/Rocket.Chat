@@ -2,6 +2,7 @@ import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appser
 
 import { IFederationBridge } from '../../domain/IFederationBridge';
 import { bridgeLogger } from '../rocket-chat/adapters/logger';
+import { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
@@ -19,11 +20,11 @@ interface IRegistrationFileNamespaces {
 }
 
 export interface IFederationBridgeRegistrationFile {
-	id: string; // this.getApplicationServiceId(),
-	homeserverToken: string; // this.getApplicationHomeServerToken(),
-	applicationServiceToken: string; // this.getApplicationApplicationServiceToken(),
-	bridgeUrl: string; // this.getBridgeUrl(),
-	botName: string; // this.getBridgeBotUsername(),
+	id: string;
+	homeserverToken: string;
+	applicationServiceToken: string;
+	bridgeUrl: string;
+	botName: string;
 	listenTo: IRegistrationFileNamespaces;
 }
 
@@ -41,7 +42,7 @@ export class MatrixBridge implements IFederationBridge {
 		protected bridgeUrl: string,
 		protected bridgePort: number,
 		protected homeServerRegistrationFile: IFederationBridgeRegistrationFile,
-		protected eventHandler: Function,
+		protected eventHandler: (event: AbstractMatrixEvent) => void,
 	) {} // eslint-disable-line no-empty-function
 
 	public async onFederationAvailabilityChanged(enabled: boolean): Promise<void> {
@@ -184,9 +185,8 @@ export class MatrixBridge implements IFederationBridge {
 			registration: AppServiceRegistration.fromObject(this.convertRegistrationFileToMatrixFormat()),
 			disableStores: true,
 			controller: {
-				onEvent: async (request /* , context*/): Promise<void> => {
-					// Get the event
-					const event = request.getData();
+				onEvent: async (request): Promise<void> => {
+					const event = request.getData() as unknown as AbstractMatrixEvent;
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {

@@ -1,6 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import { IFederationBridgeRegistrationFile, MatrixBridge } from '../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge';
+import { AbstractMatrixEvent } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/AbstractMatrixEvent';
 import { MatrixEventType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixEventType';
 import { MatrixRoomType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomVisibility';
@@ -14,7 +15,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		protected bridgeUrl: string,
 		protected bridgePort: number,
 		protected homeServerRegistrationFile: IFederationBridgeRegistrationFile,
-		protected eventHandler: Function,
+		protected eventHandler: (event: AbstractMatrixEvent) => void,
 	) {
 		super(appServiceId, homeServerUrl, homeServerDomain, bridgeUrl, bridgePort, homeServerRegistrationFile, eventHandler);
 	}

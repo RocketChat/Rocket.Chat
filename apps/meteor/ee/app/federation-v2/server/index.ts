@@ -20,7 +20,7 @@ const runFederationEE = async (): Promise<void> => {
 	federationBridgeEE.logFederationStartupInfo('Running Federation Enterprise V2');
 };
 
-let cancelSettingsObserverEE: Function;
+let cancelSettingsObserverEE: () => void;
 
 onToggledFeature('federation', {
 	up: async () => {
