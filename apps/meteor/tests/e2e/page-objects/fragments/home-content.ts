@@ -180,7 +180,7 @@ export class HomeContent {
 	}
 
 	async doDragAndDropFile(): Promise<void> {
-		const contract = await fs.readFile('./tests/e2e/utils/fixtures/any_file.txt', 'utf-8');
+		const contract = await fs.readFile('./tests/e2e/utils/fixtures/files/text.txt', 'utf-8');
 
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();

@@ -25,7 +25,7 @@ test.describe('[Discussion]', () => {
 			const anyMessage = faker.animal.type();
 
 			await pageHomeDiscussion.sidenav.btnCreate.click();
-			await pageHomeDiscussion.doCreateDiscussion('public channel', anyDiscussionName, anyMessage);
+			await pageHomeDiscussion.doCreateDiscussion('room_public_1', anyDiscussionName, anyMessage);
 		});
 	});
 
@@ -33,7 +33,7 @@ test.describe('[Discussion]', () => {
 		const anyMessage = faker.animal.type() + uuid();
 
 		test.beforeAll(async () => {
-			await pageHomeDiscussion.sidenav.doOpenChat('public channel');
+			await pageHomeDiscussion.sidenav.doOpenChat('room_public_1');
 			await pageHomeDiscussion.content.doSendMessage(anyMessage);
 		});
 

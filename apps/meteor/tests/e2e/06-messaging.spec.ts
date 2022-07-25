@@ -47,12 +47,12 @@ test.describe('Messaging', () => {
 				await expect(mainUserMessage).toBeVisible();
 			});
 		});
-		test.describe('Public channel', async () => {
+		test.describe('room_public_1', async () => {
 			test.beforeAll(async ({ browser }) => {
 				anotherContext = await createBrowserContextForChat(browser);
-				await anotherContext.pageHomeChannel.sidenav.doOpenChat('public channel');
+				await anotherContext.pageHomeChannel.sidenav.doOpenChat('room_public_1');
 				await anotherContext.pageHomeChannel.content.doSendMessage('Hello');
-				await pageHomeChannel.sidenav.doOpenChat('public channel');
+				await pageHomeChannel.sidenav.doOpenChat('room_public_1');
 				await pageHomeChannel.content.doSendMessage('Hello');
 			});
 
@@ -65,12 +65,12 @@ test.describe('Messaging', () => {
 			});
 		});
 
-		test.describe('Private channel', async () => {
+		test.describe('room_private_1', async () => {
 			test.beforeAll(async ({ browser }) => {
 				anotherContext = await createBrowserContextForChat(browser);
-				await anotherContext.pageHomeChannel.sidenav.doOpenChat('private channel');
+				await anotherContext.pageHomeChannel.sidenav.doOpenChat('room_private_1');
 				await anotherContext.pageHomeChannel.content.doSendMessage('Hello');
-				await pageHomeChannel.sidenav.doOpenChat('private channel');
+				await pageHomeChannel.sidenav.doOpenChat('room_private_1');
 				await pageHomeChannel.content.doSendMessage('Hello');
 			});
 

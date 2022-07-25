@@ -15,7 +15,7 @@ test.describe('Message Popup', () => {
 
 	test.beforeAll(async () => {
 		await pageAuth.doLogin();
-		await pageHomeChannel.sidenav.doOpenChat('public channel');
+		await pageHomeChannel.sidenav.doOpenChat('room_public_1');
 	});
 
 	test.describe('User mentions', () => {

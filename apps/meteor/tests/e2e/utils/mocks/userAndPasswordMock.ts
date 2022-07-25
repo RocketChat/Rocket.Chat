@@ -8,7 +8,7 @@ export const adminLogin: ILogin = {
 };
 
 export const validUserInserted: ILogin = {
-	email: 'user.name.test@email.com',
+	email: 'user_simple_1@email.com',
 	password: 'any_password',
 };
 
