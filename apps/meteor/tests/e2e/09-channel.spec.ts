@@ -1,6 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
 
-import { publicChannelCreated, setPublicChannelCreated } from './utils/mocks/checks';
 import { Auth, HomeChannel } from './page-objects';
 
 const anyUser = 'rocket.cat';
@@ -19,12 +18,7 @@ test.describe('Channel', () => {
 		pageHomeChannel = new HomeChannel(page);
 
 		await pageAuth.doLogin();
-
-		if (!publicChannelCreated) {
-			await pageHomeChannel.sidenav.doCreateChannel(anyChannelName, false);
-			setPublicChannelCreated(true);
-		}
-
+		await pageHomeChannel.sidenav.doCreateChannel(anyChannelName, false);
 		await pageHomeChannel.sidenav.doOpenChat('general');
 	});
 
