@@ -68,7 +68,7 @@ type Options = (
 			twoFactorOptions?: ITwoFactorOptions;
 	  }
 ) & {
-	validateParams?: ValidateFunction;
+	validateParams?: ValidateFunction | { [key in Method]?: ValidateFunction };
 	authOrAnonRequired?: true;
 };
 
