@@ -5,10 +5,6 @@ import { settings } from '../../settings/server';
 import { Rooms } from '../../models/server';
 import { cleanRoomHistory } from '../../lib/server';
 
-interface IParser {
-	cron(val: string): string;
-}
-
 const maxTimes = {
 	c: 0,
 	p: 0,
@@ -88,12 +84,11 @@ function getSchedule(precision: '0' | '1' | '2' | '3'): string {
 const pruneCronName = 'Prune old messages by retention policy';
 
 function deployCron(precision: string): void {
-	const schedule = (parser: IParser): string => parser.cron(precision);
-
 	SyncedCron.remove(pruneCronName);
+
 	SyncedCron.add({
 		name: pruneCronName,
-		schedule,
+		schedule: (parser) => parser.cron(precision),
 		job,
 	});
 }

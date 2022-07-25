@@ -4371,6 +4371,7 @@ __metadata:
     "@testing-library/react": ~12.1.5
     "@testing-library/user-event": ^13.5.0
     "@types/adm-zip": ^0.5.0
+    "@types/archiver": ^5.3.1
     "@types/bad-words": ^3.0.1
     "@types/bcrypt": ^5.0.0
     "@types/body-parser": ^1.19.2
@@ -4397,6 +4398,7 @@ __metadata:
     "@types/jsdom-global": ^3.0.2
     "@types/jsrsasign": ^9.0.3
     "@types/katex": ^0.14.0
+    "@types/later": ^1.2.7
     "@types/ldapjs": ^2.2.2
     "@types/less": ^3.0.3
     "@types/lodash": ^4.14.182
@@ -6324,6 +6326,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/archiver@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "@types/archiver@npm:5.3.1"
+  dependencies:
+    "@types/glob": "*"
+  checksum: 1c6babc7f50acf5bf7fa3d5fa76bb68702e4463e6a412d259cdddff611dbbb9832ea4b2f41d675fd95ac1aa8b087daa882423073e41db9e296f14d41f2ea88e6
+  languageName: node
+  linkType: hard
+
 "@types/aria-query@npm:^4.2.0":
   version: 4.2.2
   resolution: "@types/aria-query@npm:4.2.2"
@@ -6803,6 +6814,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: e009a2bfb50e90ca9b7c6e8f648f8464067271fd99116f881073fa6fa76dc8d0133181dd65e6614d5fb1220d671d67b0124aef7d97dc02d7e342ab143a47779d
+  languageName: node
+  linkType: hard
+
+"@types/later@npm:^1.2.7":
+  version: 1.2.7
+  resolution: "@types/later@npm:1.2.7"
+  checksum: 247f10e3e39bf50d78cdeb95f854e73b8378fdb2de542a0b632d892377098b438c2596dd99657d2ca0ca9370b07a2c112b29e5fbde636c91e4292f9a82b04572
   languageName: node
   linkType: hard
 
