@@ -57,7 +57,7 @@ API.v1.addRoute(
 			let foundCF = {};
 			if (custom) {
 				const customObj = Object.fromEntries(
-					Array.from(new URLSearchParams(custom)).filter(([k, v]) => typeof k === 'string' && typeof v === 'string'),
+					Array.from(new URLSearchParams(custom)),
 				);
 
 				foundCF = Object.fromEntries(
