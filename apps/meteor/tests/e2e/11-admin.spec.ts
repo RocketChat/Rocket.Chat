@@ -299,8 +299,9 @@ test.describe('Administration', () => {
 			});
 		});
 
-		test.describe.only('Accounts', () => {
+		test.describe('Accounts', () => {
 			test.beforeEach(async () => {
+				await pageAdmin.settingsLink.click()
 				await pageAdmin.settingsSearch.type('accounts');
 				await pageAdmin.accountSettingsButton.click();
 			});

@@ -4,7 +4,7 @@ import faker from '@faker-js/faker';
 
 import { Auth, Administration, HomeChannel } from './page-objects';
 
-test.describe('Permissions', () => {
+test.describe.only('Permissions', () => {
 	let pageTestContext: Page;
 	let pageAuth: Auth;
 	let pageAdmin: Administration;
@@ -26,29 +26,36 @@ test.describe('Permissions', () => {
 		await pageAuth.doLogin();
 		await pageHomeChannel.sidenav.btnAvatar.click();
 		await pageHomeChannel.sidenav.linkAdmin.click();
-		await pageAdmin.sidenav.linkUsers.click();
 	});
 
-	test('expect create a user via admin view', async () => {
-		await pageAdmin.tabs.usersAddUserTab.click();
-		await pageAdmin.tabs.usersAddUserName.type(anyUser.name);
-		await pageAdmin.tabs.usersAddUserUsername.type(anyUser.username);
-		await pageAdmin.tabs.usersAddUserEmail.type(anyUser.email);
-		await pageAdmin.tabs.usersAddUserVerifiedCheckbox.click();
-		await pageAdmin.tabs.usersAddUserPassword.type(anyUser.password);
-		await pageAdmin.tabs.doAddRole('user');
-		await pageAdmin.tabs.usersButtonSave.click();
-	});
+	test.describe('Create User', async () => {
+		test.beforeEach(async () => {
+			await pageAdmin.sidenav.linkUsers.click();
+		})
+		test('expect create a user via admin view', async () => {
+			await pageAdmin.tabs.usersAddUserTab.click();
+			await pageAdmin.tabs.usersAddUserName.type(anyUser.name);
+			await pageAdmin.tabs.usersAddUserUsername.type(anyUser.username);
+			await pageAdmin.tabs.usersAddUserEmail.type(anyUser.email);
+			await pageAdmin.tabs.usersAddUserVerifiedCheckbox.click();
+			await pageAdmin.tabs.usersAddUserPassword.type(anyUser.password);
+			await pageAdmin.tabs.doAddRole('user');
+			await pageAdmin.tabs.usersButtonSave.click();
+		});
 
-	test('expect user be show on list', async () => {
-		await pageAdmin.usersFilter.type(anyUser.email, { delay: 200 });
-		await expect(pageAdmin.userInTable(anyUser.email)).toBeVisible();
-	});
+		test('expect user be show on list', async () => {
+			await pageAdmin.usersFilter.type(anyUser.email, { delay: 200 });
+			await expect(pageAdmin.userInTable(anyUser.email)).toBeVisible();
+		});
+	})
+
+
 
 	test.describe('disable "anyUser" permissions', () => {
-		test('expect open permissions table', async () => {
+
+		test.beforeEach(async () => {
 			await pageAdmin.permissionsLink.click();
-		});
+		})
 
 		test('expect remove "mention all" permission from user', async () => {
 			await pageAdmin.inputPermissionsSearch.type('all');
@@ -70,7 +77,7 @@ test.describe('Permissions', () => {
 	});
 
 	test.describe('assert "anyUser" permissions', () => {
-		test.beforeAll(async () => {
+		test.beforeEach(async () => {
 			await pageHomeChannel.sidenav.doLogout();
 
 			await pageTestContext.goto('/');
