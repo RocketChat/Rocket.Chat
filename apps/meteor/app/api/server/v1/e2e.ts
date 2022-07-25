@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
 import {
 	ise2eGetUsersOfRoomWithoutKeyParamsGET,
@@ -134,6 +133,7 @@ API.v1.addRoute(
 	},
 	{
 		post() {
+			// eslint-disable-next-line @typescript-eslint/naming-convention
 			const { public_key, private_key } = Meteor.call('e2e.fetchMyKeys');
 
 			Meteor.call('e2e.setUserPublicAndPrivateKeys', {

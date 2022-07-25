@@ -89,7 +89,7 @@ const ContactInfo = ({ id, rid, route }) => {
 	}
 
 	const {
-		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
+		contact: { fname, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
 	} = data;
 
 	const checkIsVisibleAndScopeVisitor = (key) => {
@@ -107,7 +107,7 @@ const ContactInfo = ({ id, rid, route }) => {
 
 	const showContactHistory = currentRouteName === 'live' && lastChat;
 
-	const displayName = parseOutboundPhoneNumber(name) || username;
+	const displayName = parseOutboundPhoneNumber(fname) || username;
 
 	const { phoneNumber } = phone?.[0] || {};
 
