@@ -7,6 +7,26 @@ import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
 let MatrixUserInstance: any;
 
+interface IRegistrationFileNamespaceRule {
+	exclusive: boolean;
+	regex: string;
+}
+
+interface IRegistrationFileNamespaces {
+	users: IRegistrationFileNamespaceRule[];
+	rooms: IRegistrationFileNamespaceRule[];
+	aliases: IRegistrationFileNamespaceRule[];
+}
+
+export interface IFederationBridgeRegistrationFile {
+	id: string; // this.getApplicationServiceId(),
+	homeserverToken: string; // this.getApplicationHomeServerToken(),
+	applicationServiceToken: string; // this.getApplicationApplicationServiceToken(),
+	bridgeUrl: string; // this.getBridgeUrl(),
+	botName: string; // this.getBridgeBotUsername(),
+	listenTo: IRegistrationFileNamespaces;
+}
+
 export class MatrixBridge implements IFederationBridge {
 	protected bridgeInstance: Bridge;
 
@@ -20,7 +40,7 @@ export class MatrixBridge implements IFederationBridge {
 		protected homeServerDomain: string,
 		protected bridgeUrl: string,
 		protected bridgePort: number,
-		protected homeServerRegistrationFile: Record<string, any>,
+		protected homeServerRegistrationFile: IFederationBridgeRegistrationFile,
 		protected eventHandler: Function,
 	) {} // eslint-disable-line no-empty-function
 
@@ -161,7 +181,7 @@ export class MatrixBridge implements IFederationBridge {
 		this.bridgeInstance = new Bridge({
 			homeserverUrl: this.homeServerUrl,
 			domain: this.homeServerDomain,
-			registration: AppServiceRegistration.fromObject(this.homeServerRegistrationFile as AppServiceOutput),
+			registration: AppServiceRegistration.fromObject(this.convertRegistrationFileToMatrixFormat()),
 			disableStores: true,
 			controller: {
 				onEvent: async (request /* , context*/): Promise<void> => {
@@ -174,5 +194,16 @@ export class MatrixBridge implements IFederationBridge {
 				},
 			},
 		});
+	}
+
+	private convertRegistrationFileToMatrixFormat(): AppServiceOutput {
+		return {
+			id: this.homeServerRegistrationFile.id,
+			hs_token: this.homeServerRegistrationFile.homeserverToken,
+			as_token: this.homeServerRegistrationFile.applicationServiceToken,
+			url: this.homeServerRegistrationFile.bridgeUrl,
+			sender_localpart: this.homeServerRegistrationFile.botName,
+			namespaces: this.homeServerRegistrationFile.listenTo,
+		};
 	}
 }

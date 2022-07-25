@@ -1,4 +1,4 @@
-import { ICreatedRoom, IRoom } from '@rocket.chat/core-typings';
+import { IRoom } from '@rocket.chat/core-typings';
 import { Rooms, MatrixBridgedRoom } from '@rocket.chat/models';
 
 import { RocketChatRoomAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Room';
@@ -35,7 +35,7 @@ export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
 	}
 
 	public async createLocalDirectMessageRoom(members: string[], creatorId: string): Promise<void> {
-		createDirectMessage(members, creatorId) as ICreatedRoom;
+		createDirectMessage(members, creatorId);
 	}
 
 	private createFederatedRoomEEInstance(externalRoomId: string, room: IRoom): FederatedRoomEE {

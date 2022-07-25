@@ -25,15 +25,18 @@ export class FederationRoomServiceSender {
 		const { normalizedInviteeId, rawInviteeId, internalInviterId, inviteeUsernameOnly } = roomCreateDMAndInviteUserInput;
 
 		if (!(await this.rocketUserAdapter.getFederatedUserByInternalId(internalInviterId))) {
-			const internalUser = (await this.rocketUserAdapter.getInternalUserById(internalInviterId)) as IUser;
+			const internalUser = await this.rocketUserAdapter.getInternalUserById(internalInviterId);
+			if (!internalUser || !internalUser?.username) {
+				throw new Error(`Could not find user id for ${internalInviterId}`);
+			}
 			const externalInviterId = await this.bridge.createUser(
-				internalUser.username as string,
-				internalUser.name as string,
+				internalUser.username,
+				internalUser.name || internalUser.username,
 				this.rocketSettingsAdapter.getHomeServerDomain(),
 			);
 			const federatedInviterUser = FederatedUser.createInstance(externalInviterId, {
-				name: internalUser.name as string,
-				username: internalUser.username as string,
+				name: internalUser.name || internalUser.username,
+				username: internalUser.username,
 				existsOnlyOnProxyServer: true,
 			});
 			await this.rocketUserAdapter.createFederatedUser(federatedInviterUser);
@@ -50,8 +53,12 @@ export class FederationRoomServiceSender {
 
 			await this.rocketUserAdapter.createFederatedUser(federatedInviteeUser);
 		}
-		const federatedInviterUser = (await this.rocketUserAdapter.getFederatedUserByInternalId(internalInviterId)) as FederatedUser;
-		const federatedInviteeUser = (await this.rocketUserAdapter.getFederatedUserByInternalUsername(normalizedInviteeId)) as FederatedUser;
+		const federatedInviterUser = await this.rocketUserAdapter.getFederatedUserByInternalId(internalInviterId);
+		const federatedInviteeUser = await this.rocketUserAdapter.getFederatedUserByInternalUsername(normalizedInviteeId);
+		if (!federatedInviterUser || !federatedInviteeUser) {
+			throw new Error('Could not find inviter or invitee user');
+		}
+
 		const isInviteeFromTheSameHomeServer = this.bridge.isUserIdFromTheSameHomeserver(
 			rawInviteeId,
 			this.rocketSettingsAdapter.getHomeServerDomain(),
@@ -66,12 +73,15 @@ export class FederationRoomServiceSender {
 				federatedInviterUser,
 				RoomType.DIRECT_MESSAGE,
 				'',
-				[federatedInviterUser, federatedInviteeUser] as any[],
+				[federatedInviterUser, federatedInviteeUser],
 			);
 			await this.rocketRoomAdapter.createFederatedRoom(newFederatedRoom);
 		}
 
-		const federatedRoom = (await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId)) as FederatedRoom;
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			throw new Error(`Could not find room id for ${internalRoomId}`);
+		}
 		if (isInviteeFromTheSameHomeServer) {
 			await this.bridge.createUser(
 				inviteeUsernameOnly,
@@ -99,7 +109,10 @@ export class FederationRoomServiceSender {
 
 		if (whoRemovedInternalId) {
 			const who = await this.rocketUserAdapter.getFederatedUserByInternalId(whoRemovedInternalId);
-			await this.bridge.kickUserFromRoom(federatedRoom.externalId, federatedUser.externalId, who?.externalId as string);
+			if (!who) {
+				return;
+			}
+			await this.bridge.kickUserFromRoom(federatedRoom.externalId, federatedUser.externalId, who?.externalId);
 			return;
 		}
 
@@ -142,7 +155,7 @@ export class FederationRoomServiceSender {
 			return;
 		}
 
-		const user = await this.rocketUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
+		const user = await this.rocketUserAdapter.getFederatedUserByInternalId(internalUser._id);
 		if (user && !user.existsOnlyOnProxyServer) {
 			throw new Error('error-cant-add-federated-users');
 		}

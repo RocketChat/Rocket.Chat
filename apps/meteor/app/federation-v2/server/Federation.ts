@@ -10,7 +10,6 @@ const allowedActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
 ];
 
 export class Federation {
-
 	public static actionAllowed(room: IRoom, action: ValueOf<typeof RoomMemberActions>): boolean {
 		return isDirectMessageRoom(room) && action === RoomMemberActions.REMOVE_USER ? false : allowedActionsInFederatedRooms.includes(action);
 	}

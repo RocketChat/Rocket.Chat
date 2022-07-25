@@ -1,4 +1,4 @@
-import { ICreatedRoom, IRoom } from '@rocket.chat/core-typings';
+import { IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions as SubscriptionsRaw, MatrixBridgedRoom } from '@rocket.chat/models';
 
 import { Subscriptions } from '../../../../../models/server';
@@ -41,12 +41,12 @@ export class RocketChatRoomAdapter {
 		const { rid, _id } = createRoom(
 			federatedRoom.internalReference.t,
 			federatedRoom.internalReference.name,
-			federatedRoom.internalReference.u.username as string,
+			federatedRoom.internalReference?.u?.username || '',
 			members,
 			false,
 			undefined,
-			{ creator: members[0]?._id as string },
-		) as ICreatedRoom;
+			{ creator: members[0]?._id },
+		);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.externalId);
 		await Rooms.setAsFederated(roomId);
@@ -63,30 +63,26 @@ export class RocketChatRoomAdapter {
 		const { rid, _id } = createRoom(
 			federatedRoom.internalReference.t,
 			federatedRoom.internalReference.name,
-			federatedRoom.internalReference.u.username as string,
+			federatedRoom.internalReference?.u?.username || '',
 			membersUsernames,
 			false,
 			undefined,
 			{ creator: federatedRoom.internalReference.u._id },
-		) as ICreatedRoom;
+		);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.externalId);
 		await Rooms.setAsFederated(roomId);
 	}
 
 	public async addUserToRoom(federatedRoom: FederatedRoom, inviteeUser: FederatedUser, inviterUser?: FederatedUser): Promise<void> {
-		return new Promise((resolve) =>
-			resolve(addUserToRoom(federatedRoom.internalReference._id, inviteeUser.internalReference, inviterUser?.internalReference) as any),
-		);
+		Promise.resolve(addUserToRoom(federatedRoom.internalReference._id, inviteeUser.internalReference, inviterUser?.internalReference));
 	}
 
 	public async removeUserFromRoom(federatedRoom: FederatedRoom, affectedUser: FederatedUser, byUser: FederatedUser): Promise<void> {
-		return new Promise((resolve) =>
-			resolve(
-				removeUserFromRoom(federatedRoom.internalReference._id, affectedUser.internalReference, {
-					byUser: byUser.internalReference,
-				}) as any,
-			),
+		Promise.resolve(
+			removeUserFromRoom(federatedRoom.internalReference._id, affectedUser.internalReference, {
+				byUser: byUser.internalReference,
+			}),
 		);
 	}
 

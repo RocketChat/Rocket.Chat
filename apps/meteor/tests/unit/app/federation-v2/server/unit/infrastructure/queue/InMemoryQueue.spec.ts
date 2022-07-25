@@ -18,7 +18,7 @@ describe('Federation - Infrastructure - Queue - InMemoryQueue', () => {
 		});
 
 		it('should push the task to the queue instance to be handled when the instance was properly defined', () => {
-			const spiedCb = spy();
+			const spiedCb = spy(() => Promise.resolve());
 			const concurrency = 1;
 			queue.setHandler(spiedCb, concurrency);
 			queue.addToQueue({ task: 'my-task' });

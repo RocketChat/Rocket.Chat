@@ -157,12 +157,14 @@ export class FederationRoomSenderConverterEE {
 	}
 
 	private static getInviteesUsername(externalInvitees: (IUser | string)[]): string[] {
-		return externalInvitees.map((invitee) => {
-			if (typeof invitee === 'string') {
-				return invitee;
-			}
-			return invitee.username as string;
-		});
+		return externalInvitees
+			.map((invitee) => {
+				if (typeof invitee === 'string') {
+					return invitee;
+				}
+				return invitee.username || '';
+			})
+			.filter(Boolean);
 	}
 
 	private static getExternalUsersToBeInvited(invitees: (IUser | string)[]): (IUser | string)[] {
@@ -177,7 +179,7 @@ export class FederationRoomSenderConverterEE {
 	private static getInternalUsernames(invitees: (IUser | string)[]): string[] {
 		return invitees
 			.filter((invitee) => typeof invitee !== 'string')
-			.map((invitee) => (invitee as IUser).username as string)
+			.map((invitee) => (invitee as IUser).username || '')
 			.filter(Boolean);
 	}
 }

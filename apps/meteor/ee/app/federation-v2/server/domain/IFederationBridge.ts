@@ -1,4 +1,4 @@
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { RoomType } from '@rocket.chat/core-typings';
 
 import { IFederationBridge } from '../../../../../app/federation-v2/server/domain/IFederationBridge';
 

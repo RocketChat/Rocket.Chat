@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../../../../settings/server';
+import { IFederationBridgeRegistrationFile } from '../../matrix/Bridge';
 
 const EVERYTHING_REGEX = '.*';
 const LISTEN_RULES = EVERYTHING_REGEX;
@@ -73,14 +74,14 @@ export class RocketChatSettingsAdapter {
 		);
 	}
 
-	public generateRegistrationFileObject(): Record<string, any> {
+	public generateRegistrationFileObject(): IFederationBridgeRegistrationFile {
 		return {
 			id: this.getApplicationServiceId(),
-			hs_token: this.getApplicationHomeServerToken(),
-			as_token: this.getApplicationApplicationServiceToken(),
-			url: this.getBridgeUrl(),
-			sender_localpart: this.getBridgeBotUsername(),
-			namespaces: {
+			homeserverToken: this.getApplicationHomeServerToken(),
+			applicationServiceToken: this.getApplicationApplicationServiceToken(),
+			bridgeUrl: this.getBridgeUrl(),
+			botName: this.getBridgeBotUsername(),
+			listenTo: {
 				users: [
 					{
 						exclusive: false,

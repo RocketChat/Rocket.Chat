@@ -52,10 +52,13 @@ export class FederationRoomServiceReceiver {
 			await this.rocketUserAdapter.createFederatedUser(federatedCreatorUser);
 		}
 		const creator = await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviterId);
+		if (!creator) {
+			throw new Error('Creator user not found');
+		}
 		const newFederatedRoom = FederatedRoom.createInstance(
 			externalRoomId,
 			normalizedRoomId,
-			creator as FederatedUser,
+			creator,
 			roomType || RoomType.CHANNEL,
 			externalRoomName,
 		);
@@ -116,15 +119,17 @@ export class FederationRoomServiceReceiver {
 
 			await this.rocketUserAdapter.createFederatedUser(federatedInviteeUser);
 		}
-
 		const federatedInviteeUser = await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviteeId);
 		const federatedInviterUser = await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviterId);
+		if (!federatedInviteeUser || !federatedInviterUser) {
+			throw new Error('Invitee or inviter user not found');
+		}
 		if (!affectedFederatedRoom && eventOrigin === EVENT_ORIGIN.REMOTE) {
-			const members = [federatedInviterUser, federatedInviteeUser] as FederatedUser[];
+			const members = [federatedInviterUser, federatedInviteeUser];
 			const newFederatedRoom = FederatedRoom.createInstance(
 				externalRoomId,
 				normalizedRoomId,
-				federatedInviterUser as FederatedUser,
+				federatedInviterUser,
 				roomType,
 				externalRoomName,
 				members,
@@ -134,31 +139,31 @@ export class FederationRoomServiceReceiver {
 			await this.bridge.joinRoom(externalRoomId, externalInviteeId);
 		}
 		const federatedRoom = affectedFederatedRoom || (await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId));
+		if (!federatedRoom) {
+			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
+		}
+
 		if (leave) {
 			if (
 				!(await this.rocketRoomAdapter.isUserAlreadyJoined(
-					federatedRoom?.internalReference?._id as string,
-					federatedInviteeUser?.internalReference._id as string,
+					federatedRoom.internalReference?._id,
+					federatedInviteeUser?.internalReference._id,
 				))
 			) {
 				return;
 			}
 
-			return this.rocketRoomAdapter.removeUserFromRoom(
-				federatedRoom as FederatedRoom,
-				federatedInviteeUser as FederatedUser,
-				federatedInviterUser as FederatedUser,
-			);
+			return this.rocketRoomAdapter.removeUserFromRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 		}
 		if (affectedFederatedRoom?.isDirectMessage() && eventOrigin === EVENT_ORIGIN.REMOTE) {
-			const membersUsernames = [
+			const membersUsernames: string[] = [
 				...(affectedFederatedRoom.internalReference?.usernames || []),
-				federatedInviteeUser?.internalReference.username as string,
+				federatedInviteeUser?.internalReference?.username || '',
 			];
 			const newFederatedRoom = FederatedRoom.createInstance(
 				externalRoomId,
 				normalizedRoomId,
-				federatedInviterUser as FederatedUser,
+				federatedInviterUser,
 				RoomType.DIRECT_MESSAGE,
 				externalRoomName,
 			);
@@ -166,15 +171,11 @@ export class FederationRoomServiceReceiver {
 				return;
 			}
 			await this.rocketRoomAdapter.removeDirectMessageRoom(affectedFederatedRoom);
-			await this.rocketRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom, membersUsernames);
+			await this.rocketRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom, membersUsernames.filter(Boolean));
 			return;
 		}
 
-		await this.rocketRoomAdapter.addUserToRoom(
-			federatedRoom as FederatedRoom,
-			federatedInviteeUser as FederatedUser,
-			federatedInviterUser as FederatedUser,
-		);
+		await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 	}
 
 	public async receiveExternalMessage(roomSendInternalMessageInput: FederationRoomSendInternalMessageDto): Promise<void> {

@@ -1,5 +1,4 @@
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import { IRoom, isDirectMessageRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 
 import { FederatedRoom } from '../../../../../app/federation-v2/server/domain/FederatedRoom';
 import { FederatedUser } from '../../../../../app/federation-v2/server/domain/FederatedUser';
@@ -23,7 +22,7 @@ export class FederatedRoomEE extends FederatedRoom {
 		const roomName = name || FederatedRoom.generateTemporaryName(normalizedExternalId);
 		return Object.assign(new FederatedRoomEE(), {
 			externalId,
-			...(type === RoomType.DIRECT_MESSAGE ? { members } : {}),
+			...(isDirectMessageRoom({ t: type }) ? { members } : {}),
 			internalReference: {
 				t: type,
 				name: roomName,
@@ -34,7 +33,7 @@ export class FederatedRoomEE extends FederatedRoom {
 	}
 
 	public isDirectMessage(): boolean {
-		return this.internalReference?.t === RoomType.DIRECT_MESSAGE;
+		return isDirectMessageRoom({ t: this.internalReference.t });
 	}
 
 	public getMembers(): IUser[] {

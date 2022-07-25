@@ -4,7 +4,6 @@ import { Federation } from '../../../../../../app/federation-v2/server/Federatio
 import { RoomMemberActions } from '../../../../../../definition/IRoomTypeConfig';
 
 describe('Federation[Server] - Federation', () => {
-
 	describe('#actionAllowed()', () => {
 		const allowedActions = [RoomMemberActions.REMOVE_USER, RoomMemberActions.INVITE, RoomMemberActions.JOIN, RoomMemberActions.LEAVE];
 
