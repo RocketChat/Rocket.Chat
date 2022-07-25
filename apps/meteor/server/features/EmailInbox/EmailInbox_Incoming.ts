@@ -171,15 +171,13 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	logger.debug(`Sending email message to room ${rid} for visitor ${guest._id}. Conversation assigned to department ${department}`);
 
-	if (room?.onHold && (LivechatRooms as any)?.unsetOnHold) {
-		(LivechatRooms as any).unsetOnHold(rid);
-	}
 	Livechat.sendMessage({
 		guest,
 		message: {
 			_id: msgId,
 			groupable: false,
 			msg,
+			token: thread,
 			attachments: [
 				{
 					actions: [
