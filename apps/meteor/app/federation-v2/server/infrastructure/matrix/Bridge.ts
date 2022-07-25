@@ -107,12 +107,9 @@ export class MatrixBridge implements IFederationBridge {
 			options: {
 				visibility,
 				preset,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				is_direct: true,
 				invite: externalInviteeIds,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				creation_content: {
-					// eslint-disable-next-line @typescript-eslint/camelcase
 					was_internally_programatically_created: true,
 				},
 			},
@@ -157,6 +154,10 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void> {
 		this.bridgeInstance.getIntent(externalOwnerId).kick(externalRoomId, externalUserId);
+	}
+
+	public isRoomFromTheSameHomeserver(externalRoomId: string, domain: string): boolean {
+		return this.isUserIdFromTheSameHomeserver(externalRoomId, domain);
 	}
 
 	protected async createInstance(): Promise<void> {

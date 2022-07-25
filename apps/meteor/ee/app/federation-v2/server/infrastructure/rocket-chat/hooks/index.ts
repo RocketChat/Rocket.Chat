@@ -64,11 +64,35 @@ export class FederationHooksEE {
 		);
 	}
 
+	public static afterRoomNameChanged(callback: Function): void {
+		callbacks.add(
+			'afterRoomNameChange',
+			({ rid: roomId, name }: Record<string, any>): void => {
+				Promise.await(callback(roomId, name));
+			},
+			callbacks.priority.HIGH,
+			'federation-v2-after-room-name-changed',
+		);
+	}
+
+	public static afterRoomTopicChanged(callback: Function): void {
+		callbacks.add(
+			'afterRoomTopicChange',
+			({ rid: roomId, topic }: Record<string, any>): void => {
+				Promise.await(callback(roomId, topic));
+			},
+			callbacks.priority.HIGH,
+			'federation-v2-after-room-topic-changed',
+		);
+	}
+
 	public static removeAll(): void {
 		callbacks.remove('beforeCreateDirectRoom', 'federation-v2-before-create-direct-message-room');
 		callbacks.remove('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room');
 		callbacks.remove('afterAddedToRoom', 'federation-v2-after-add-users-to-a-room');
 		callbacks.remove('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room');
 		callbacks.remove('federation.beforeAddUserAToRoom', 'federation-v2-before-add-user-to-the-room');
+		callbacks.remove('afterRoomNameChange', 'federation-v2-after-room-name-changed');
+		callbacks.remove('afterRoomTopicChange', 'federation-v2-after-room-topic-changed');
 	}
 }

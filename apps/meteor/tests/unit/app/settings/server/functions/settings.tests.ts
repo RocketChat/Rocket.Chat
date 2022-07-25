@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { expect, spy } from 'chai';
 
 import { Settings } from '../../../../../../app/settings/server/functions/settings.mocks';
