@@ -9,25 +9,25 @@ const escapeForRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'
 export class FilesDropTarget extends Component {
 	state = {
 		dragLevel: 0,
-	}
+	};
 
 	handleInputRef = (ref) => {
 		this.input = ref;
-	}
+	};
 
 	handleDragOver = (event) => {
 		event.preventDefault();
-	}
+	};
 
 	handleDragEnter = (event) => {
 		event.preventDefault();
 		this.setState({ dragLevel: this.state.dragLevel + 1 });
-	}
+	};
 
 	handleDragLeave = (event) => {
 		event.preventDefault();
 		this.setState({ dragLevel: this.state.dragLevel - 1 });
-	}
+	};
 
 	handleDrop = (event) => {
 		event.preventDefault();
@@ -41,11 +41,11 @@ export class FilesDropTarget extends Component {
 		this.setState({ dragLevel });
 
 		this.handleUpload(event.dataTransfer.files);
-	}
+	};
 
 	handleInputChange = (event) => {
 		this.handleUpload(event.currentTarget.files);
-	}
+	};
 
 	handleUpload = (files) => {
 		const { accept, multiple, onUpload } = this.props;
@@ -79,11 +79,11 @@ export class FilesDropTarget extends Component {
 		}
 
 		filteredFiles.length && onUpload(filteredFiles);
-	}
+	};
 
 	browse = () => {
 		this.input.click();
-	}
+	};
 
 	render = ({
 		overlayed,
@@ -113,5 +113,5 @@ export class FilesDropTarget extends Component {
 			/>
 			{children}
 		</div>
-	)
+	);
 }
