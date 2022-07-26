@@ -6,7 +6,7 @@ import mkdirp from 'mkdirp';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { getURL } from '../../../app/utils/lib/getURL';
-import { DataExport } from '../DataExport';
+import { getPath } from './getPath';
 import { copyFile } from './copyFile';
 import { getRoomData } from './getRoomData';
 import { exportRoomMessagesToFile } from './exportRoomMessagesToFile';
@@ -76,7 +76,7 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	const subject = TAPi18n.__('Channel_Export');
 
 	const body = TAPi18n.__('UserDataDownload_EmailBody', {
-		download_link: getURL(DataExport.getPath(file._id), { cdn: false, full: true }),
+		download_link: getURL(getPath(file._id), { cdn: false, full: true }),
 	});
 
 	sendEmail(user, subject, body);

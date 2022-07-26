@@ -28,15 +28,13 @@ export const uploadZipFile = async (filePath: string, userId: IUser['_id'], expo
 		name: newFileName,
 	};
 
-	const { fd, close } = await open(filePath);
+	const { fd } = await open(filePath);
 
 	const stream = createReadStream('', { fd }); // @todo once upgrades to Node.js v16.x, use createReadStream from fs.promises.open
 
 	const userDataStore = FileUpload.getStore('UserDataFiles');
 
 	const file = userDataStore.insertSync(details, stream);
-
-	await close();
 
 	return file;
 };

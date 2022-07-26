@@ -11,7 +11,7 @@ import type { FindCursor } from 'mongodb';
 import { settings } from '../../../app/settings/server';
 import { Subscriptions } from '../../../app/models/server';
 import { FileUpload } from '../../../app/file-upload/server';
-import { DataExport } from '../DataExport';
+import { getPath } from './getPath';
 import { joinPath } from '../fileUtils';
 import { getURL } from '../../../app/utils/lib/getURL';
 import { getRoomData } from './getRoomData';
@@ -273,7 +273,7 @@ export async function processDataDownloads(): Promise<void> {
 
 		const subject = TAPi18n.__('UserDataDownload_EmailSubject');
 		const body = TAPi18n.__('UserDataDownload_EmailBody', {
-			download_link: getURL(DataExport.getPath(file._id), { cdn: false, full: true }),
+			download_link: getURL(getPath(file._id), { cdn: false, full: true }),
 		});
 
 		sendEmail(operation.userData, subject, body);

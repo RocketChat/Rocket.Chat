@@ -1,34 +1,86 @@
+import { ServerResponse } from 'http';
+
 import { WebApp } from 'meteor/webapp';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { UserDataFiles } from '@rocket.chat/models';
-import type { IIncomingMessage } from '@rocket.chat/core-typings';
+import type { IIncomingMessage, IUser } from '@rocket.chat/core-typings';
+import { Cookies } from 'meteor/ostrio:cookies';
 
-import { DataExport } from '../lib/DataExport';
+import { FileUpload } from '../../app/file-upload/server';
+import { getPath } from '../lib/dataExport/getPath';
 import { settings } from '../../app/settings/server';
+import { getURL } from '../../app/utils/server';
+import Users from '../../app/models/server/models/Users';
 
-WebApp.connectHandlers.use(DataExport.getPath(), async function (req, res, next) {
-	const match = req.url ? /^\/([^\/]+)/.exec(req.url) : undefined;
+const getErrorPage = (errorType: string, errorDescription: string): string => {
+	let errorHtml = Assets.getText('errors/error_template.html') ?? ''; // @todo server-side rendering?
+	errorHtml = errorHtml.replace('$ERROR_TYPE$', errorType);
+	errorHtml = errorHtml.replace('$ERROR_DESCRIPTION$', errorDescription);
+	errorHtml = errorHtml.replace('$SERVER_URL$', getURL('/', { full: true, cdn: false }));
+	return errorHtml;
+};
 
-	if (!settings.get('UserData_EnableDownload')) {
-		res.setHeader('Content-Type', 'text/html; charset=UTF-8');
-		res.writeHead(403);
-		return res.end(DataExport.getErrorPage(TAPi18n.__('Feature_Disabled'), TAPi18n.__('UserDataDownload_FeatureDisabled')));
+const cookie = new Cookies();
+
+const requestCanAccessFiles = ({ headers = {}, query = {} }: IIncomingMessage, userId?: IUser['_id']) => {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	let { rc_uid, rc_token } = query;
+
+	if (!rc_uid && headers.cookie) {
+		rc_uid = cookie.get('rc_uid', headers.cookie);
+		rc_token = cookie.get('rc_token', headers.cookie);
 	}
 
-	if (match?.[1]) {
-		const file = await UserDataFiles.findOneById(match[1]);
-		if (file) {
-			if (!DataExport.requestCanAccessFiles(req as IIncomingMessage, file.userId)) {
-				res.setHeader('Content-Type', 'text/html; charset=UTF-8');
-				res.writeHead(403);
-				return res.end(DataExport.getErrorPage(TAPi18n.__('403'), TAPi18n.__('UserDataDownload_LoginNeeded')));
-			}
+	const options = { fields: { _id: 1 } };
 
-			res.setHeader('Content-Security-Policy', "default-src 'none'");
-			res.setHeader('Cache-Control', 'max-age=31536000');
-			return DataExport.get(file, req as IIncomingMessage, res, next);
-		}
+	if (rc_uid && rc_token && rc_uid === userId) {
+		return !!Users.findOneByIdAndLoginToken(rc_uid, rc_token, options);
 	}
+
+	if (headers['x-user-id'] && headers['x-auth-token'] && headers['x-user-id'] === userId) {
+		return !!Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token'], options);
+	}
+
+	return false;
+};
+
+const userDataStore = FileUpload.getStore('UserDataFiles');
+const get = (file: any, req: IIncomingMessage, res: ServerResponse, next: () => void) => {
+	if (userDataStore?.get) {
+		return userDataStore.get(file, req, res, next);
+	}
+
 	res.writeHead(404);
 	res.end();
+};
+
+WebApp.connectHandlers.use(getPath(), async (req, res, next) => {
+	const downloadEnabled = settings.get<boolean>('UserData_EnableDownload');
+
+	if (!downloadEnabled) {
+		res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+		res.writeHead(403);
+		res.end(getErrorPage(TAPi18n.__('Feature_Disabled'), TAPi18n.__('UserDataDownload_FeatureDisabled')));
+		return;
+	}
+
+	const fileId = req.url ? /^\/([^\/]+)/.exec(req.url)?.[1] : undefined;
+	const file = fileId ? await UserDataFiles.findOneById(fileId) : undefined;
+
+	if (!file) {
+		res.writeHead(404);
+		res.end();
+		return;
+	}
+
+	if (!requestCanAccessFiles(req as IIncomingMessage, file.userId)) {
+		res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+		res.writeHead(403);
+		res.end(getErrorPage(TAPi18n.__('403'), TAPi18n.__('UserDataDownload_LoginNeeded')));
+		return;
+	}
+
+	res.setHeader('Content-Security-Policy', "default-src 'none'");
+	res.setHeader('Cache-Control', 'max-age=31536000');
+	get(file, req as IIncomingMessage, res, next);
 });

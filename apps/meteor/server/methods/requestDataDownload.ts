@@ -4,20 +4,24 @@ import path from 'path';
 import mkdirp from 'mkdirp';
 import { Meteor } from 'meteor/meteor';
 import { ExportOperations, UserDataFiles } from '@rocket.chat/models';
+import type { IExportOperation, IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../app/settings/server';
-import { DataExport } from '../lib/DataExport';
+import { getPath } from '../lib/dataExport/getPath';
 
 let tempFolder = '/tmp/userData';
-if (settings.get('UserData_FileSystemPath') != null) {
-	if (settings.get('UserData_FileSystemPath').trim() !== '') {
-		tempFolder = settings.get('UserData_FileSystemPath');
-	}
+if (settings.get<string | undefined>('UserData_FileSystemPath')?.trim() !== '') {
+	tempFolder = settings.get('UserData_FileSystemPath');
 }
 
 Meteor.methods({
 	async requestDataDownload({ fullExport = false }) {
-		const currentUserData = Meteor.user();
+		const currentUserData = Meteor.user() as IUser | null;
+
+		if (!currentUserData) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+
 		const userId = currentUserData._id;
 
 		const lastOperation = await ExportOperations.findLastOperationByUser(userId, fullExport);
@@ -37,7 +41,7 @@ Meteor.methods({
 						return {
 							requested: false,
 							exportOperation: lastOperation,
-							url: DataExport.getPath(file._id),
+							url: getPath(file._id),
 							pendingOperationsBeforeMyRequest: pendingOperationsBeforeMyRequestCount,
 						};
 					}
@@ -57,14 +61,14 @@ Meteor.methods({
 		}
 
 		const exportOperation = {
-			userId: currentUserData._id,
-			roomList: null,
 			status: 'preparing',
+			userId: currentUserData._id,
+			roomList: undefined,
 			fileList: [],
-			generatedFile: null,
+			generatedFile: undefined,
 			fullExport,
 			userData: currentUserData,
-		};
+		} as unknown as IExportOperation; // @todo yikes!
 
 		const id = await ExportOperations.create(exportOperation);
 		exportOperation._id = id;
