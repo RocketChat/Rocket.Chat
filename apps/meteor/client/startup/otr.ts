@@ -26,7 +26,7 @@ Meteor.startup(() => {
 	onClientBeforeSendMessage.use(async (message: IMessage) => {
 		const instanceByRoomId = OTR.getInstanceByRoomId(message.rid);
 
-		if (message.rid && instanceByRoomId && instanceByRoomId.state.get() === OtrRoomState.ESTABLISHED) {
+		if (message.rid && instanceByRoomId && instanceByRoomId.getState() === OtrRoomState.ESTABLISHED) {
 			const msg = await instanceByRoomId.encrypt(message);
 			return { ...message, msg, t: 'otr' };
 		}
@@ -36,7 +36,7 @@ Meteor.startup(() => {
 	onClientMessageReceived.use(async (message: IMessage & { notification?: boolean }) => {
 		const instanceByRoomId = OTR.getInstanceByRoomId(message.rid);
 
-		if (message.rid && instanceByRoomId && instanceByRoomId.state.get() === OtrRoomState.ESTABLISHED) {
+		if (message.rid && instanceByRoomId && instanceByRoomId.getState() === OtrRoomState.ESTABLISHED) {
 			if (message.notification) {
 				message.msg = t('Encrypted_message');
 				return message;

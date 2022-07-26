@@ -6,9 +6,9 @@ import { Subscriptions } from '../../models/client';
 import { OTRRoom } from './OTRRoom';
 
 class OTR implements IOTR {
-	enabled: ReactiveVar<boolean>;
+	private enabled: ReactiveVar<boolean>;
 
-	instancesByRoomId: { [rid: string]: OTRRoom };
+	private instancesByRoomId: { [rid: string]: OTRRoom };
 
 	constructor() {
 		this.enabled = new ReactiveVar(false);
@@ -17,6 +17,10 @@ class OTR implements IOTR {
 
 	isEnabled(): boolean {
 		return this.enabled.get();
+	}
+
+	setEnabled(enabled: boolean): void {
+		this.enabled.set(enabled);
 	}
 
 	getInstanceByRoomId(roomId: string): OTRRoom | undefined {

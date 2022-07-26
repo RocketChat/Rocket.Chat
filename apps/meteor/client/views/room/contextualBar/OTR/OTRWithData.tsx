@@ -11,8 +11,8 @@ import OTR from './OTR';
 const OTRWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const closeTabBar = useTabBarClose();
 	const otr = useMemo(() => ORTInstance.getInstanceByRoomId(rid), [rid]);
-	const otrState = useReactiveValue(useCallback(() => (otr ? otr.state.get() : OtrRoomState.ERROR), [otr]));
-	const peerUserPresence = usePresence(otr?.peerId);
+	const otrState = useReactiveValue(useCallback(() => (otr ? otr.getState() : OtrRoomState.ERROR), [otr]));
+	const peerUserPresence = usePresence(otr?.getPeerId());
 	const userStatus = peerUserPresence?.status;
 	const peerUsername = peerUserPresence?.username;
 	const isOnline = !['offline', 'loading'].includes(userStatus || '');
@@ -36,7 +36,7 @@ const OTRWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		}
 
 		const timeout = setTimeout(() => {
-			otr?.state.set(OtrRoomState.TIMEOUT);
+			otr?.setState(OtrRoomState.TIMEOUT);
 		}, 10000);
 
 		return (): void => {

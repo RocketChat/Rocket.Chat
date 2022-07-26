@@ -1,5 +1,4 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { ReactiveVar } from 'meteor/reactive-var';
 
 import { OtrRoomState } from './OtrRoomState';
 import type { OTRRoom } from '../client/OTRRoom';
@@ -20,9 +19,8 @@ export interface IOTRDecrypt {
 }
 
 export interface IOTRRoom {
-	peerId: IUser['_id'];
-	isFirstOTR: boolean;
-	state: ReactiveVar<OtrRoomState>;
+	getPeerId(): string;
+	getState(): OtrRoomState;
 	setState(nextState: OtrRoomState): void;
 	handshake(refresh?: boolean): Promise<void>;
 	acknowledge(): void;
@@ -38,9 +36,8 @@ export interface IOTRRoom {
 }
 
 export interface IOTR {
-	enabled: ReactiveVar<boolean>;
-	instancesByRoomId: { [rid: string]: OTRRoom };
 	isEnabled(): boolean;
+	setEnabled(enabled: boolean): void;
 	getInstanceByRoomId(roomId: IRoom['_id']): OTRRoom | undefined;
 }
 

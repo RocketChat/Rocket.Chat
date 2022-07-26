@@ -7,16 +7,12 @@ import { addAction } from '../../../client/views/room/lib/Toolbox';
 const template = lazy(() => import('../../../client/views/room/contextualBar/OTR'));
 
 addAction('otr', () => {
-	const enabled = useSetting('OTR_Enable');
+	const enabled = useSetting('OTR_Enable') as boolean;
 
-	const shouldAddAction = enabled && global.crypto;
+	const shouldAddAction = enabled && Boolean(global.crypto);
 
 	useEffect(() => {
-		if (shouldAddAction) {
-			OTR.enabled.set(true);
-		} else {
-			OTR.enabled.set(false);
-		}
+		OTR.setEnabled(shouldAddAction);
 	}, [shouldAddAction]);
 
 	return useMemo(

@@ -42,11 +42,11 @@ export class OTRRoom implements IOTRRoom {
 
 	private _userOnlineComputation: Tracker.Computation;
 
-	peerId: string;
+	private peerId: string;
 
-	state: ReactiveVar<OtrRoomState> = new ReactiveVar(OtrRoomState.NOT_STARTED);
+	private state: ReactiveVar<OtrRoomState> = new ReactiveVar(OtrRoomState.NOT_STARTED);
 
-	isFirstOTR: boolean;
+	private isFirstOTR: boolean;
 
 	constructor(userId: string, roomId: string) {
 		this._userId = userId;
@@ -55,6 +55,14 @@ export class OTRRoom implements IOTRRoom {
 		this._sessionKey = null;
 		this.peerId = getUidDirectMessage(roomId) as string;
 		this.isFirstOTR = true;
+	}
+
+	getPeerId(): string {
+		return this.peerId;
+	}
+
+	getState(): OtrRoomState {
+		return this.state.get();
 	}
 
 	setState(nextState: OtrRoomState): void {
