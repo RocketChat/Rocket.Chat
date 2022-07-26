@@ -16,8 +16,8 @@ export const useActiveUsers = ({ utc }: UseActiveUsersOptions) => {
 			const { start, end } = getPeriodRange('last 30 days', utc);
 
 			const response = await getActiveUsers({
-				start: (utc ? moment.utc(start) : moment(start)).subtract(29, 'days').toDate(),
-				end,
+				start: (utc ? moment.utc(start) : moment(start)).subtract(29, 'days').toISOString(),
+				end: end.toISOString(),
 			});
 
 			return response

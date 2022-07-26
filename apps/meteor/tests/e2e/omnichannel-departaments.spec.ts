@@ -1,77 +1,61 @@
 import { test, Page, expect } from '@playwright/test';
 
-import { Departments, SideNav, Global, LoginPage } from './pageobjects';
-import { adminLogin } from './utils/mocks/userAndPasswordMock';
+import { Auth, OmnichannelDepartaments } from './page-objects';
 
-test.describe('[Department]', () => {
-	let loginPage: LoginPage;
-	let sideNav: SideNav;
-	let departments: Departments;
+test.describe('Department', () => {
 	let page: Page;
-	let global: Global;
+	let pageAuth: Auth;
+	let pageOmnichannelDepartaments: OmnichannelDepartaments;
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
-		loginPage = new LoginPage(page);
-		sideNav = new SideNav(page);
-		departments = new Departments(page);
-		global = new Global(page);
-
-		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
-		await sideNav.sidebarUserMenu.click();
-		await sideNav.omnichannel.click();
+		pageAuth = new Auth(page);
+		pageOmnichannelDepartaments = new OmnichannelDepartaments(page);
 	});
 
-	test.describe('[Render]', async () => {
-		test.beforeEach(async () => {
-			await departments.departmentsLink.click();
-			await departments.btnNewDepartment.click();
-		});
-
-		test('expect show all inputs', async () => {
-			await departments.getAddScreen();
-		});
+	test.beforeAll(async () => {
+		await pageAuth.doLogin();
+		await page.goto('/omnichannel');
 	});
 
-	test.describe('[Actions]', async () => {
+	test.describe('Actions', async () => {
 		test.beforeEach(async () => {
-			await departments.departmentsLink.click();
+			await pageOmnichannelDepartaments.departmentsLink.click();
 		});
 
-		test.describe('[Create and Edit]', async () => {
+		test.describe('Create and Edit', async () => {
 			test.afterEach(async () => {
-				await global.dismissToastBar();
+				await pageOmnichannelDepartaments.btnToastClose.click();
 			});
 
 			test('expect new department is created', async () => {
-				await departments.btnNewDepartment.click();
-				await departments.doAddDepartments();
-				await expect(departments.departmentAdded).toBeVisible();
+				await pageOmnichannelDepartaments.btnNewDepartment.click();
+				await pageOmnichannelDepartaments.doAddDepartments();
+				await expect(pageOmnichannelDepartaments.departmentAdded).toBeVisible();
 			});
 
 			test('expect department is edited', async () => {
-				await departments.departmentAdded.click();
-				await departments.doEditDepartments();
-				await expect(departments.departmentAdded).toHaveText('any_name_edit');
+				await pageOmnichannelDepartaments.departmentAdded.click();
+				await pageOmnichannelDepartaments.doEditDepartments();
+				await expect(pageOmnichannelDepartaments.departmentAdded).toHaveText('any_name_edit');
 			});
 		});
 
-		test.describe('[Delete department]', () => {
+		test.describe('Delete department', () => {
 			test.beforeEach(async () => {
-				await departments.btnTableDeleteDepartment.click();
+				await pageOmnichannelDepartaments.btnTableDeleteDepartment.click();
 			});
 
 			test('expect dont show dialog on cancel delete department', async () => {
-				await departments.btnModalCancelDeleteDepartment.click();
-				await expect(departments.modalDepartment).not.toBeVisible();
-				await expect(departments.departmentAdded).toBeVisible();
+				await pageOmnichannelDepartaments.btnModalCancelDeleteDepartment.click();
+				await expect(pageOmnichannelDepartaments.modalDepartment).not.toBeVisible();
+				await expect(pageOmnichannelDepartaments.departmentAdded).toBeVisible();
 			});
 
 			test('expect delete departments', async () => {
-				await departments.btnModalDeleteDepartment.click();
-				await expect(departments.modalDepartment).not.toBeVisible();
-				await expect(departments.departmentAdded).not.toBeVisible();
+				await pageOmnichannelDepartaments.btnModalDeleteDepartment.click();
+				await expect(pageOmnichannelDepartaments.modalDepartment).not.toBeVisible();
+				await expect(pageOmnichannelDepartaments.departmentAdded).not.toBeVisible();
 			});
 		});
 	});

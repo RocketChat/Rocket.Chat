@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"@rocket.chat/fuselage": "^0.31.13",
+		"@rocket.chat/fuselage": "0.31.16",
 		"@storybook/addon-actions": "^6.5.9",
 		"@storybook/addon-docs": "^6.5.9",
 		"@storybook/addon-essentials": "^6.5.9",
@@ -14,10 +14,10 @@
 		"@storybook/react": "^6.5.9",
 		"@storybook/testing-library": "^0.0.13",
 		"@types/jest": "^27.4.1",
-		"@types/react": "~17.0.42",
-		"eslint": "^8.12.0",
+		"@types/react": "~17.0.47",
+		"eslint": "^8.20.0",
 		"eslint-plugin-anti-trojan-source": "^1.1.0",
-		"eslint-plugin-react": "^7.30.0",
+		"eslint-plugin-react": "^7.30.1",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"jest": "^27.5.1",
 		"react": "~17.0.2",
@@ -30,7 +30,7 @@
 		"jest": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"storybook": "start-storybook -p 6006",
-		"dev": "tsc -p --watch --preserveWatchOutput tsconfig.json"
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

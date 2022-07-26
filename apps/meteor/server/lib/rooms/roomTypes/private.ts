@@ -29,7 +29,7 @@ roomCoordinator.add(PrivateRoomType, {
 
 	allowMemberAction(_room, action) {
 		if (isRoomFederated(_room as IRoom)) {
-			return Federation.federationActionAllowed(action);
+			return Federation.actionAllowed(_room, action);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
