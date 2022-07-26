@@ -1,11 +1,10 @@
-import { Page, test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 import faker from '@faker-js/faker';
 
 import { Auth, Administration, HomeChannel } from './page-objects';
 
-test.describe.only('Permissions', () => {
-	let pageTestContext: Page;
+test.describe('Permissions', () => {
 	let pageAuth: Auth;
 	let pageAdmin: Administration;
 	let pageHomeChannel: HomeChannel;
@@ -18,20 +17,18 @@ test.describe.only('Permissions', () => {
 	};
 
 	test.beforeEach(async ({ page }) => {
-		pageTestContext = page;
 		pageAuth = new Auth(page);
 		pageAdmin = new Administration(page);
 		pageHomeChannel = new HomeChannel(page);
-
-		await pageAuth.doLogin();
-		await pageHomeChannel.sidenav.btnAvatar.click();
-		await pageHomeChannel.sidenav.linkAdmin.click();
 	});
 
 	test.describe('Create User', async () => {
 		test.beforeEach(async () => {
+			await pageAuth.doLogin();
+			await pageHomeChannel.sidenav.btnAvatar.click();
+			await pageHomeChannel.sidenav.linkAdmin.click();
 			await pageAdmin.sidenav.linkUsers.click();
-		})
+		});
 		test('expect create a user via admin view', async () => {
 			await pageAdmin.tabs.usersAddUserTab.click();
 			await pageAdmin.tabs.usersAddUserName.type(anyUser.name);
@@ -47,15 +44,15 @@ test.describe.only('Permissions', () => {
 			await pageAdmin.usersFilter.type(anyUser.email, { delay: 200 });
 			await expect(pageAdmin.userInTable(anyUser.email)).toBeVisible();
 		});
-	})
-
-
+	});
 
 	test.describe('disable "anyUser" permissions', () => {
-
 		test.beforeEach(async () => {
+			await pageAuth.doLogin();
+			await pageHomeChannel.sidenav.btnAvatar.click();
+			await pageHomeChannel.sidenav.linkAdmin.click();
 			await pageAdmin.permissionsLink.click();
-		})
+		});
 
 		test('expect remove "mention all" permission from user', async () => {
 			await pageAdmin.inputPermissionsSearch.type('all');
@@ -65,9 +62,9 @@ test.describe.only('Permissions', () => {
 			}
 		});
 
-		test('expect remove "delete message" permission from user', async () => {
+		test('expect remove "delete message" permission from user', async ({ page }) => {
 			await pageAdmin.inputPermissionsSearch.click({ clickCount: 3 });
-			await pageTestContext.keyboard.press('Backspace');
+			await page.keyboard.press('Backspace');
 			await pageAdmin.inputPermissionsSearch.type('delete');
 
 			if (await pageAdmin.getCheckboxPermission('Delete Own Message').locator('input').isChecked()) {
@@ -78,9 +75,6 @@ test.describe.only('Permissions', () => {
 
 	test.describe('assert "anyUser" permissions', () => {
 		test.beforeEach(async () => {
-			await pageHomeChannel.sidenav.doLogout();
-
-			await pageTestContext.goto('/');
 			await pageAuth.doLogin(anyUser);
 			await pageHomeChannel.sidenav.doOpenChat('general');
 		});
@@ -91,12 +85,12 @@ test.describe.only('Permissions', () => {
 			await expect(pageHomeChannel.content.lastMessageForMessageTest).toContainText('not allowed');
 		});
 
-		test('expect not be able to "delete own message"', async () => {
+		test('expect not be able to "delete own message"', async ({ page }) => {
 			await pageHomeChannel.content.doReload();
 			await pageHomeChannel.content.doSendMessage(`any_message_${uuid()}`);
 			await pageHomeChannel.content.doOpenMessageActionMenu();
 
-			expect(await pageTestContext.isVisible('[data-qa-id="delete-message"]')).toBeFalsy();
+			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeFalsy();
 		});
 	});
 });

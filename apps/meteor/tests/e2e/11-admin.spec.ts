@@ -301,7 +301,7 @@ test.describe('Administration', () => {
 
 		test.describe('Accounts', () => {
 			test.beforeEach(async () => {
-				await pageAdmin.settingsLink.click()
+				await pageAdmin.settingsLink.click();
 				await pageAdmin.settingsSearch.type('accounts');
 				await pageAdmin.accountSettingsButton.click();
 			});

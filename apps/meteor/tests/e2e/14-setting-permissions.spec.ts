@@ -20,7 +20,7 @@ test.describe('Settings Permissions', () => {
 	});
 
 	test.describe('Give User Permissions', async () => {
-		test.beforeAll(async () => {
+		test.beforeEach(async () => {
 			await pageAuth.doLogin();
 			await pageHomeChannel.sidenav.btnAvatar.click();
 			await pageHomeChannel.sidenav.linkAdmin.click();
@@ -55,7 +55,7 @@ test.describe('Settings Permissions', () => {
 	});
 
 	test.describe('Test new user setting permissions', async () => {
-		test.beforeAll(async () => {
+		test.beforeEach(async () => {
 			await pageTestContext.goto('/');
 			await pageAuth.doLogin(validUserInserted);
 
@@ -76,7 +76,7 @@ test.describe('Settings Permissions', () => {
 	});
 
 	test.describe('Verify settings change and cleanup', async () => {
-		test.beforeAll(async () => {
+		test.beforeEach(async () => {
 			await pageTestContext.goto('/');
 			await pageAuth.doLogin();
 			await pageHomeChannel.sidenav.btnAvatar.click();

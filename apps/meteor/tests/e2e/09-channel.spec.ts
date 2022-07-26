@@ -159,18 +159,16 @@ test.describe('Channel', () => {
 				});
 			});
 
+			test('expect edit channel name', async () => {
+				await pageHomeChannel.tabs.btnTabInfo.click();
+				await pageHomeChannel.tabs.editNameBtn.click();
+				await pageHomeChannel.tabs.editNameTextInput.fill(`NAME-EDITED-${anyChannelName}`);
+				await pageHomeChannel.tabs.editNameSave.click();
+			});
 
-				test('expect edit channel name', async () => {
-					await pageHomeChannel.tabs.btnTabInfo.click();
-					await pageHomeChannel.tabs.editNameBtn.click();
-					await pageHomeChannel.tabs.editNameTextInput.fill(`NAME-EDITED-${anyChannelName}`);
-					await pageHomeChannel.tabs.editNameSave.click();
-				});
-
-				test('expect to find and open with new name', async () => {
-					await pageHomeChannel.sidenav.doOpenChat(`NAME-EDITED-${anyChannelName}`);
-				});
+			test('expect to find and open with new name', async () => {
+				await pageHomeChannel.sidenav.doOpenChat(`NAME-EDITED-${anyChannelName}`);
 			});
 		});
-
+	});
 });
