@@ -1,5 +1,6 @@
-import yaml from 'js-yaml';
 import crypto from 'crypto';
+
+import yaml from 'js-yaml';
 import { v4 as uuidv4 } from 'uuid';
 import { Settings } from '@rocket.chat/models';
 
