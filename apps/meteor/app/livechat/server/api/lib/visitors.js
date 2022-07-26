@@ -147,15 +147,10 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 }
 
 export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
-	userId,
 	emailOrPhone,
 	nameOrUsername,
 	pagination: { offset, count, sort },
 }) {
-	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
-
 	const { cursor, totalCount } = await LivechatVisitors.findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
 		emailOrPhone,
 		nameOrUsername,

@@ -164,11 +164,8 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		nameOrUsername: RegExp,
 		options: FindOptions<ILivechatVisitor>,
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
-		const allowedCF = LivechatCustomField.find({ scope: 'visitor', searchable: true }, { projection: { _id: 1 } }).map(
-			({ _id }) => _id,
-		);
+		const allowedCF = LivechatCustomField.find({ scope: 'visitor', searchable: true }, { projection: { _id: 1 } }).map(({ _id }) => _id);
 
-		const filter = new RegExp(emailOrPhone, 'i');
 		const query = {
 			$or: [
 				{
@@ -183,7 +180,8 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 				{
 					username: nameOrUsername,
 				},
-				...(await allowedCF.toArray().then((cf) => cf.map((c: string) => ({ [`livechatData.${c}`]: filter })))),
+				// nameorusername is a clean regex, so we should be good
+				...(await allowedCF.toArray().then((cf) => cf.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })))),
 			],
 		};
 
