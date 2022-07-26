@@ -45,6 +45,8 @@ const AppsFilters = ({
 	const t = useTranslation();
 
 	const shouldFiltersStack = useMediaQuery('(max-width: 1060px)');
+	const hasFilterStackMargin = shouldFiltersStack ? '' : 'x8';
+	const hasNotFilterStackMargin = shouldFiltersStack ? 'x8' : '';
 
 	return (
 		<>
@@ -52,21 +54,21 @@ const AppsFilters = ({
 				<RadioDropDown
 					group={freePaidFilterStructure}
 					onSelected={freePaidFilterOnSelected}
-					mie={shouldFiltersStack ? '' : 'x8'}
-					mb={shouldFiltersStack ? 'x8' : ''}
+					mie={hasFilterStackMargin}
+					mb={hasNotFilterStackMargin}
 				/>
 				<RadioDropDown
 					group={statusFilterStructure}
 					onSelected={statusFilterOnSelected}
-					mie={shouldFiltersStack ? '' : 'x8'}
-					mbe={shouldFiltersStack ? 'x8' : ''}
+					mie={hasFilterStackMargin}
+					mbe={hasNotFilterStackMargin}
 				/>
 				<CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
 				<RadioDropDown
 					group={sortFilterStructure}
 					onSelected={sortFilterOnSelected}
-					mis={shouldFiltersStack ? '' : 'x8'}
-					mbs={shouldFiltersStack ? 'x8' : ''}
+					mis={hasFilterStackMargin}
+					mbs={hasNotFilterStackMargin}
 				/>
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
