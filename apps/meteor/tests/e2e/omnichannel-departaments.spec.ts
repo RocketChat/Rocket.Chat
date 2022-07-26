@@ -1,21 +1,19 @@
-import { test, Page, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 import { Auth, OmnichannelDepartaments } from './page-objects';
 
 test.describe('Department', () => {
-	let pageTestContext: Page;
 	let pageAuth: Auth;
 	let pageOmnichannelDepartaments: OmnichannelDepartaments;
 
 	test.beforeEach(async ({ page }) => {
-		pageTestContext = page;
 		pageAuth = new Auth(page);
 		pageOmnichannelDepartaments = new OmnichannelDepartaments(page);
 	});
 
-	test.beforeEach(async () => {
+	test.beforeEach(async ({ page }) => {
 		await pageAuth.doLogin();
-		await pageTestContext.goto('/omnichannel');
+		await page.goto('/omnichannel');
 	});
 
 	test.describe('Actions', async () => {
