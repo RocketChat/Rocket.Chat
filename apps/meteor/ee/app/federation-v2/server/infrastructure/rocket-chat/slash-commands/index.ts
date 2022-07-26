@@ -3,7 +3,7 @@ import { Users } from '@rocket.chat/models';
 
 import { slashCommands } from '../../../../../../../app/utils/lib/slashCommand';
 import { federationRoomServiceSenderEE } from '../../..';
-import { normalizeUserId } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands';
+import { normalizeExternalInviteeId } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands';
 import { FederationRoomSenderConverterEE } from '../converters/RoomSender';
 
 const EE_FEDERATION_COMMANDS = {
@@ -39,7 +39,7 @@ const executeSlashCommand = async (
 
 	await validateInvitees(externalUserIdsToInvite, currentUserId);
 
-	const invitees = externalUserIdsToInvite.map((rawUserId) => normalizeUserId(rawUserId));
+	const invitees = externalUserIdsToInvite.map((rawUserId) => normalizeExternalInviteeId(rawUserId));
 
 	const { rid: roomId } = item;
 
