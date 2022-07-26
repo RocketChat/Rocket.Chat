@@ -1,5 +1,5 @@
 import yaml from 'js-yaml';
-import { SHA256 } from 'meteor/sha';
+import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import { Settings } from '@rocket.chat/models';
 
@@ -136,8 +136,8 @@ export class RocketChatSettingsAdapter {
 				});
 
 				const uniqueId = settings.get('uniqueID') || uuidv4().slice(0, 15).replace(new RegExp('-', 'g'), '_');
-				const hsToken = SHA256(`hs_${uniqueId}`);
-				const asToken = SHA256(`as_${uniqueId}`);
+				const homeserverToken = crypto.createHash('sha256').update(`hs_${uniqueId}`).digest('hex');
+				const applicationServiceToken = crypto.createHash('sha256').update(`as_${uniqueId}`).digest('hex');
 
 				this.add('Federation_Matrix_id', `rocketchat_${uniqueId}`, {
 					readonly: true,
@@ -146,14 +146,14 @@ export class RocketChatSettingsAdapter {
 					i18nDescription: 'Federation_Matrix_id_desc',
 				});
 
-				this.add('Federation_Matrix_hs_token', hsToken, {
+				this.add('Federation_Matrix_hs_token', homeserverToken, {
 					readonly: true,
 					type: 'string',
 					i18nLabel: 'Federation_Matrix_hs_token',
 					i18nDescription: 'Federation_Matrix_hs_token_desc',
 				});
 
-				this.add('Federation_Matrix_as_token', asToken, {
+				this.add('Federation_Matrix_as_token', applicationServiceToken, {
 					readonly: true,
 					type: 'string',
 					i18nLabel: 'Federation_Matrix_as_token',

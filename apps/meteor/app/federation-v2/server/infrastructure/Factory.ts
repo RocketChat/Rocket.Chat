@@ -39,7 +39,7 @@ export class FederationFactory {
 		return new RocketChatMessageAdapter();
 	}
 
-	public static buildQueue(): InMemoryQueue {
+	public static buildFederationQueue(): InMemoryQueue {
 		return new InMemoryQueue();
 	}
 
@@ -62,7 +62,7 @@ export class FederationFactory {
 		return new FederationRoomServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, bridge);
 	}
 
-	public static buildBridge(rocketSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridge {
+	public static buildFederationBridge(rocketSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridge {
 		return new MatrixBridge(
 			rocketSettingsAdapter.getApplicationServiceId(),
 			rocketSettingsAdapter.getHomeServerUrl(),
@@ -74,7 +74,7 @@ export class FederationFactory {
 		);
 	}
 
-	public static buildEventHandler(
+	public static buildFederationEventHandler(
 		roomServiceReceive: FederationRoomServiceReceiver,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 	): MatrixEventsHandler {
