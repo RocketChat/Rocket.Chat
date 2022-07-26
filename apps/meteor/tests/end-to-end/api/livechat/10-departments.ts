@@ -7,7 +7,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { makeAgentAvailable, createAgent, createDepartment } from '../../../data/livechat/rooms.js';
 
-describe.only('LIVECHAT - Departments', function () {
+describe('LIVECHAT - Departments', function () {
 	before((done) => getCredentials(done));
 
 	before((done) => {
