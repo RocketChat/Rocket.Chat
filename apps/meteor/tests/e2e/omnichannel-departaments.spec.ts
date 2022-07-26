@@ -7,13 +7,13 @@ test.describe('Department', () => {
 	let pageAuth: Auth;
 	let pageOmnichannelDepartaments: OmnichannelDepartaments;
 
-	test.beforeAll(async ({ page }) => {
+	test.beforeEach(async ({ page }) => {
 		pageTestContext = page;
 		pageAuth = new Auth(page);
 		pageOmnichannelDepartaments = new OmnichannelDepartaments(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async () => {
 		await pageAuth.doLogin();
 		await pageTestContext.goto('/omnichannel');
 	});
@@ -24,10 +24,6 @@ test.describe('Department', () => {
 		});
 
 		test.describe('Create and Edit', async () => {
-			test.afterEach(async () => {
-				await pageOmnichannelDepartaments.btnToastClose.click();
-			});
-
 			test('expect new department is created', async () => {
 				await pageOmnichannelDepartaments.btnNewDepartment.click();
 				await pageOmnichannelDepartaments.doAddDepartments();

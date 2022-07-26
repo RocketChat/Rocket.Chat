@@ -15,7 +15,7 @@ test.describe('[Discussion]', () => {
 		pageHomeDiscussion = new HomeDiscussion(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async () => {
 		await pageAuth.doLogin();
 	});
 
@@ -32,7 +32,7 @@ test.describe('[Discussion]', () => {
 	test.describe.skip('[Create discussion from context menu]', () => {
 		const anyMessage = faker.animal.type() + uuid();
 
-		test.beforeAll(async () => {
+		test.beforeEach(async () => {
 			await pageHomeDiscussion.sidenav.doOpenChat('public channel');
 			await pageHomeDiscussion.content.doSendMessage(anyMessage);
 		});

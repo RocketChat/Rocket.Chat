@@ -39,6 +39,7 @@ test.describe('Messaging', () => {
 
 				await expect(anotherUserMessage).toBeVisible();
 				await expect(mainUserMessage).toBeVisible();
+				await anotherContext.page.close();
 			});
 		});
 		test.describe('Public channel', async () => {
@@ -54,6 +55,7 @@ test.describe('Messaging', () => {
 
 				await expect(anotherUserMessage).toBeVisible();
 				await expect(mainUserMessage).toBeVisible();
+				await anotherContext.page.close();
 			});
 		});
 
@@ -70,6 +72,7 @@ test.describe('Messaging', () => {
 
 				await expect(anotherUserMessage).toBeVisible();
 				await expect(mainUserMessage).toBeVisible();
+				await anotherContext.page.close();
 			});
 		});
 
@@ -86,6 +89,7 @@ test.describe('Messaging', () => {
 
 				await expect(anotherUserMessage).toBeVisible();
 				await expect(mainUserMessage).toBeVisible();
+				await anotherContext.page.close();
 			});
 		});
 

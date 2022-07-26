@@ -106,11 +106,6 @@ test.describe('Channel', () => {
 					await pageHomeChannel.tabs.btnTabMembers.click();
 				});
 
-				test.afterEach(async () => {
-					await pageHomeChannel.doDismissToast();
-					await pageHomeChannel.tabs.btnTabMembers.click();
-				});
-
 				test('expect mute "anyUser"', async () => {
 					await pageHomeChannel.tabs.doMuteUser(anyUser);
 				});
@@ -123,11 +118,6 @@ test.describe('Channel', () => {
 						await pageHomeChannel.tabs.doAddPeopleToChannel(anyUser);
 						await pageHomeChannel.tabs.btnTabMembers.click();
 					}
-					await pageHomeChannel.tabs.btnTabMembers.click();
-				});
-
-				test.afterEach(async () => {
-					await pageHomeChannel.doDismissToast();
 					await pageHomeChannel.tabs.btnTabMembers.click();
 				});
 
@@ -159,15 +149,14 @@ test.describe('Channel', () => {
 				});
 			});
 
-			test('expect edit channel name', async () => {
+			test('expect edit channel name', async ({ page }) => {
+				await pageHomeChannel.sidenav.doOpenChat(anyChannelName);
 				await pageHomeChannel.tabs.btnTabInfo.click();
 				await pageHomeChannel.tabs.editNameBtn.click();
 				await pageHomeChannel.tabs.editNameTextInput.fill(`NAME-EDITED-${anyChannelName}`);
 				await pageHomeChannel.tabs.editNameSave.click();
-			});
-
-			test('expect to find and open with new name', async () => {
 				await pageHomeChannel.sidenav.doOpenChat(`NAME-EDITED-${anyChannelName}`);
+				await expect(page).toHaveURL(`/channel/NAME-EDITED-${anyChannelName}`);
 			});
 		});
 	});

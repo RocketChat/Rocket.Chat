@@ -16,11 +16,11 @@ test.describe('Agents', () => {
 	test.beforeEach(async () => {
 		await pageAuth.doLogin();
 		await pageTestContext.goto('/omnichannel');
+		await pageOmnichannelAgents.agentsLink.click();
+		await pageOmnichannelAgents.doAddAgent();
 	});
 
 	test('expect admin/manager is able to add an agent', async () => {
-		await pageOmnichannelAgents.agentsLink.click();
-		await pageOmnichannelAgents.doAddAgent();
 		await expect(pageOmnichannelAgents.agentAdded).toBeVisible();
 		await expect(pageOmnichannelAgents.agentAdded).toHaveText('Rocket.Cat');
 	});
@@ -32,26 +32,11 @@ test.describe('Agents', () => {
 	});
 
 	test('expect close agent info on tab', async () => {
+		await pageOmnichannelAgents.agentAdded.click();
 		await pageOmnichannelAgents.btnClose.click();
 		await expect(pageOmnichannelAgents.userInfoTab).not.toBeVisible();
 		await expect(pageOmnichannelAgents.agentInfo).not.toBeVisible();
 		await pageOmnichannelAgents.agentAdded.click();
-	});
-
-	test.describe('Render', () => {
-		test('expect show profile image', async () => {
-			await expect(pageOmnichannelAgents.userAvatar).toBeVisible();
-		});
-
-		test('expect show action buttons', async () => {
-			await expect(pageOmnichannelAgents.btnClose).toBeVisible();
-			await expect(pageOmnichannelAgents.btnEdit).toBeVisible();
-			await expect(pageOmnichannelAgents.btnRemove).toBeVisible();
-		});
-
-		test('expect show livechat status', async () => {
-			await expect(pageOmnichannelAgents.agentInfoUserInfoLabel).toBeVisible();
-		});
 	});
 
 	test.describe('Edit button', async () => {
@@ -79,7 +64,7 @@ test.describe('Agents', () => {
 			});
 
 			test.describe('Remove from table', async () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					await pageOmnichannelAgents.doAddAgent();
 				});
 
