@@ -5,6 +5,10 @@ import {
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
 } from '../../../application/input/RoomSenderDto';
+import {
+	formatExternalUserIdToInternalUsernameFormat,
+	removeExternalSpecificCharsFromExternalIdentifier,
+} from '../../matrix/converters/RoomReceiver';
 
 export class FederationRoomSenderConverter {
 	public static toCreateDirectMessageRoomDto(
@@ -12,8 +16,8 @@ export class FederationRoomSenderConverter {
 		internalRoomId: string,
 		externalInviteeId: string,
 	): FederationCreateDMAndInviteUserDto {
-		const normalizedInviteeId = externalInviteeId.replace('@', '');
-		const inviteeUsernameOnly = externalInviteeId.split(':')[0]?.replace('@', '');
+		const normalizedInviteeId = removeExternalSpecificCharsFromExternalIdentifier(externalInviteeId);
+		const inviteeUsernameOnly = formatExternalUserIdToInternalUsernameFormat(externalInviteeId);
 
 		return new FederationCreateDMAndInviteUserDto({
 			internalInviterId,

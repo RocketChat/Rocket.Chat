@@ -13,7 +13,7 @@ export abstract class AbstractMatrixEvent {
 
 	public state_key: string;
 
-	public unsigned: { age: number; invite_room_state: Record<string, any>[] };
+	public unsigned: { age: number; invite_room_state: AbstractMatrixEvent[] };
 
 	public user_id: string;
 

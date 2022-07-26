@@ -409,7 +409,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 	private async createFederatedUserIfNecessary(username: string, rawUsername: string, existsOnlyOnProxyServer = false): Promise<void> {
 		if (!(await this.rocketUserAdapter.getFederatedUserByInternalUsername(username))) {
 			const externalUserProfileInformation = await this.bridge.getUserProfileInformation(rawUsername);
-			const name = externalUserProfileInformation?.displayname || username;
+			const name = externalUserProfileInformation?.displayName || username;
 			const newFederatedInviteeUser = FederatedUser.createInstance(rawUsername, {
 				name,
 				username,

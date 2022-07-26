@@ -1,6 +1,6 @@
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
-import { IFederationBridge } from '../../domain/IFederationBridge';
+import { IExternalUserProfileInformation, IFederationBridge } from '../../domain/IFederationBridge';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
 import { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
@@ -82,9 +82,13 @@ export class MatrixBridge implements IFederationBridge {
 		await this.bridgeInstance?.close();
 	}
 
-	public async getUserProfileInformation(externalUserId: string): Promise<any> {
+	public async getUserProfileInformation(externalUserId: string): Promise<IExternalUserProfileInformation | undefined> {
 		try {
-			return await this.bridgeInstance.getIntent(externalUserId).getProfileInfo(externalUserId);
+			const externalInformation = await this.bridgeInstance.getIntent(externalUserId).getProfileInfo(externalUserId);
+
+			return {
+				displayName: externalInformation.displayname || '',
+			};
 		} catch (err) {
 			// no-op
 		}
@@ -95,11 +99,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void> {
-		try {
-			await this.bridgeInstance.getIntent(externalInviterId).invite(externalRoomId, externalInviteeId);
-		} catch (e) {
-			// no-op
-		}
+		await this.bridgeInstance.getIntent(externalInviterId).invite(externalRoomId, externalInviteeId);
 	}
 
 	public async createUser(username: string, name: string, domain: string): Promise<string> {

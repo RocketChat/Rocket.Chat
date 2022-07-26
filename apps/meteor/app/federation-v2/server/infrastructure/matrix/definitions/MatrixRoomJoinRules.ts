@@ -1,4 +1,4 @@
-export enum RoomJoinRules {
+export enum MatrixRoomJoinRules {
 	JOIN = 'public',
 	INVITE = 'invite',
 }

@@ -44,7 +44,7 @@ export class FederationRoomServiceSender {
 
 		if (!(await this.rocketUserAdapter.getFederatedUserByInternalUsername(normalizedInviteeId))) {
 			const externalUserProfileInformation = await this.bridge.getUserProfileInformation(rawInviteeId);
-			const name = externalUserProfileInformation?.displayname || normalizedInviteeId;
+			const name = externalUserProfileInformation?.displayName || normalizedInviteeId;
 			const federatedInviteeUser = FederatedUser.createInstance(rawInviteeId, {
 				name,
 				username: normalizedInviteeId,

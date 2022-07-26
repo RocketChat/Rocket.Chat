@@ -2,6 +2,8 @@ import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import { IFederationBridgeRegistrationFile, MatrixBridge } from '../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge';
 import { AbstractMatrixEvent } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/AbstractMatrixEvent';
+import { MatrixEventRoomNameChanged } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/events/RoomNameChanged';
+import { MatrixEventRoomTopicChanged } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/events/RoomTopicChanged';
 import { MatrixEventType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixEventType';
 import { MatrixRoomType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomVisibility';
@@ -25,7 +27,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		const privateRoomTypes = [RoomType.DIRECT_MESSAGE, RoomType.PRIVATE_GROUP];
 
 		const visibility = privateRoomTypes.includes(roomType) ? MatrixRoomVisibility.PRIVATE : MatrixRoomVisibility.PUBLIC;
-		const preset = privateRoomTypes.includes(roomType) ? MatrixRoomType.PRIVATE : MatrixRoomType.PUBLIC;
+		const matrixRoomType = privateRoomTypes.includes(roomType) ? MatrixRoomType.PRIVATE : MatrixRoomType.PUBLIC;
 
 		const matrixRoom = await intent.createRoom({
 			createAsClient: true,
@@ -33,7 +35,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 				name: roomName,
 				topic: roomTopic,
 				visibility,
-				preset,
+				preset: matrixRoomType,
 				creation_content: {
 					was_internally_programatically_created: true,
 				},
@@ -44,14 +46,20 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 	}
 
 	public async getRoomName(externalRoomId: string, externalUserId: string): Promise<string> {
-		const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as Record<string, any>[];
+		const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as AbstractMatrixEvent[];
 
-		return (roomState || []).find((event) => event?.type === MatrixEventType.ROOM_NAME_CHANGED)?.content?.name || '';
+		return (
+			((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_NAME_CHANGED) as MatrixEventRoomNameChanged)?.content?.name ||
+			''
+		);
 	}
 
 	public async getRoomTopic(externalRoomId: string, externalUserId: string): Promise<string> {
-		const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as Record<string, any>[];
-		return (roomState || []).find((event) => event?.type === MatrixEventType.ROOM_TOPIC_CHANGED)?.content?.topic || '';
+		const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as AbstractMatrixEvent[];
+		return (
+			((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_TOPIC_CHANGED) as MatrixEventRoomTopicChanged)?.content
+				?.topic || ''
+		);
 	}
 
 	public async setRoomName(externalRoomId: string, externalUserId: string, roomName: string): Promise<void> {
@@ -60,9 +68,5 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 
 	public async setRoomTopic(externalRoomId: string, externalUserId: string, roomTopic: string): Promise<void> {
 		await this.bridgeInstance.getIntent(externalUserId).setRoomTopic(externalRoomId, roomTopic);
-	}
-
-	public getInstance(): IFederationBridgeEE {
-		return this;
 	}
 }

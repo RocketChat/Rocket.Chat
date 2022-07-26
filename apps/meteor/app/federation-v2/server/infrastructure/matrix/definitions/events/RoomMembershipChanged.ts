@@ -1,7 +1,7 @@
 import { AbstractMatrixEvent, IBaseEventContent } from '../AbstractMatrixEvent';
 import { MatrixEventType } from '../MatrixEventType';
 
-export enum AddMemberToRoomMembership {
+export enum RoomMembershipChangedEventType {
 	JOIN = 'join',
 	INVITE = 'invite',
 	LEAVE = 'leave',
@@ -9,7 +9,7 @@ export enum AddMemberToRoomMembership {
 
 export interface IMatrixEventContentRoomMembershipChanged extends IBaseEventContent {
 	displayname: string;
-	membership: AddMemberToRoomMembership;
+	membership: RoomMembershipChangedEventType;
 	is_direct?: boolean;
 }
 
