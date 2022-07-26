@@ -15,11 +15,6 @@ const CREATE_TEAM_PERMISSIONS = ['create-team'];
 const CREATE_DIRECT_PERMISSIONS = ['create-d'];
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
 
-const style = {
-	textTransform: 'uppercase',
-	paddingBlockEnd: '0.25rem',
-};
-
 type CreateRoomListProps = {
 	closeList: () => void;
 };
@@ -57,7 +52,7 @@ const CreateRoomList: FC<CreateRoomListProps> = ({ closeList }) => {
 
 	return (
 		<>
-			<OptionTitle {...({ style } as any)}>{t('Create_new')}</OptionTitle>
+			<OptionTitle>{t('Create_new')}</OptionTitle>
 			<ul className='rc-popover__list'>
 				{canCreateChannel && (
 					<ListItem

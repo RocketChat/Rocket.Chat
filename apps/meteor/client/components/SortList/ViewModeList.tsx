@@ -4,11 +4,6 @@ import React, { useCallback, ReactElement } from 'react';
 
 import ListItem from '../Sidebar/ListItem';
 
-const style = {
-	textTransform: 'uppercase',
-	paddingBlockEnd: '0.25rem',
-};
-
 const checkBoxStyle = {
 	paddingLeft: '24px',
 	paddingInlineStart: '24px',
@@ -36,7 +31,7 @@ function ViewModeList(): ReactElement {
 
 	return (
 		<>
-			<OptionTitle {...({ style } as any)}>{t('Display')}</OptionTitle>
+			<OptionTitle>{t('Display')}</OptionTitle>
 			<ul className='rc-popover__list'>
 				<ListItem
 					icon={'extended-view'}

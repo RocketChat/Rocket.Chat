@@ -4,10 +4,6 @@ import React, { useCallback, ReactElement } from 'react';
 
 import ListItem from '../Sidebar/ListItem';
 
-const style = {
-	textTransform: 'uppercase',
-};
-
 const checkBoxStyle = {
 	paddingLeft: '24px',
 	paddingInlineStart: '24px',
@@ -33,7 +29,7 @@ const GroupingList = function GroupingList(): ReactElement {
 
 	return (
 		<>
-			<OptionTitle {...({ style } as any)}>{t('Group_by')}</OptionTitle>
+			<OptionTitle>{t('Group_by')}</OptionTitle>
 			<ul className='rc-popover__list'>
 				<ListItem
 					icon={'flag'}

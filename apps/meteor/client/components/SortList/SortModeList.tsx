@@ -4,10 +4,6 @@ import React, { ReactElement, useCallback } from 'react';
 
 import ListItem from '../Sidebar/ListItem';
 
-const style = {
-	textTransform: 'uppercase',
-};
-
 const checkBoxStyle = {
 	paddingLeft: '24px',
 	paddingInlineStart: '24px',
@@ -26,7 +22,7 @@ function SortModeList(): ReactElement {
 
 	return (
 		<>
-			<OptionTitle {...({ style } as any)}>{t('Sort_By')}</OptionTitle>
+			<OptionTitle>{t('Sort_By')}</OptionTitle>
 			<ul className='rc-popover__list'>
 				<ListItem
 					icon={'clock'}
