@@ -389,13 +389,19 @@ export const CallProvider: FC = ({ children }) => {
 			stopAllRingback();
 		};
 
-		const onCallFailed = (reason: 'Not Found' | 'Address Incomplete' | string): void => {
+		const onCallFailed = (reason: 'Not Found' | 'Address Incomplete' | 'Request Terminated' | string): void => {
 			switch (reason) {
 				case 'Not Found':
+					// This happens when the call matches dialplan and goes to the world, but the trunk doesnt find the number.
 					openDialModal({ errorMessage: t('Dialed_number_doesnt_exist') });
 					break;
 				case 'Address Incomplete':
+					// This happens when the dialed number doesnt match a valid asterisk dialplan pattern or the number is invalid.
 					openDialModal({ errorMessage: t('Dialed_number_is_incomplete') });
+					break;
+				case 'Request Terminated':
+					// This happens when the user is the one hanging up the call.
+					openDialModal();
 					break;
 				default:
 					openDialModal({ errorMessage: t('Something_went_wrong_try_again_later') });
