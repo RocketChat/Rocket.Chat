@@ -15,8 +15,8 @@ concurrency:
 
 env:
   CI: true
-  MONGO_URL: mongodb://localhost:27017/rocketchat
-  MONGO_OPLOG_URL: mongodb://mongo:27017/local
+  MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
+  MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: --max_old_space_size=4096
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
@@ -79,16 +79,14 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Use Node.js 14.18.3
+      - name: Use Node.js 14.19.3
         uses: actions/setup-node@v3
         with:
-          node-version: '14.18.3'
+          node-version: '14.19.3'
           cache: 'yarn'
 
       - name: Free disk space
         run: |
-          sudo swapoff -a
-          sudo rm -f /swapfile
           sudo apt clean
           docker rmi $(docker image ls -aq)
           df -h
@@ -224,14 +222,15 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['14.18.3']
+        node-version: ['14.19.3']
         mongodb-version: ['4.2', '4.4', '5.0']
 
     steps:
       - name: Launch MongoDB
-        uses: wbari/start-mongoDB@v0.2
+        uses: supercharge/mongodb-github-action@1.7.0
         with:
-          mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
+          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-replica-set: rs0
 
       - uses: actions/checkout@v3
 
@@ -243,11 +242,6 @@ jobs:
 
       - name: Setup Chrome
         run: npm i chromedriver
-
-      - name: Configure Replica Set
-        run: |
-          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-          docker exec mongo mongo --eval 'rs.status()'
 
       - name: yarn install
         run: yarn
@@ -310,12 +304,18 @@ jobs:
           IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${IMAGE_TAG}"
 
           docker run --name rocketchat -d \
-            --link mongo \
+            --link mongodb \
             -p 3000:3000 \
             -e TEST_MODE=true \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
             ${IMAGE_NAME}
+
+          until echo "$(docker logs rocketchat)" | grep -q "SERVER RUNNING"; do
+            echo "Waiting Rocket.Chat to start up"
+            ((c++)) && ((c==10)) && exit 1
+            sleep 10
+          done
 
       - name: E2E Test API
         run: |
@@ -324,7 +324,7 @@ jobs:
           cd ./apps/meteor
           for i in $(seq 1 5); do
             docker stop rocketchat
-            docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+            docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
             echo $NOW
@@ -354,7 +354,7 @@ jobs:
           docker logs rocketchat --tail=50
 
           docker stop rocketchat
-          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+          docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
           echo $NOW
@@ -368,7 +368,7 @@ jobs:
           done
 
           cd ./apps/meteor
-          npm run test:playwright
+          npm run test:e2e
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
@@ -383,14 +383,15 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['14.18.3']
+        node-version: ['14.19.3']
         mongodb-version-ee: ['4.4']
 
     steps:
       - name: Launch MongoDB
-        uses: wbari/start-mongoDB@v0.2
+        uses: supercharge/mongodb-github-action@1.7.0
         with:
-          mongoDBVersion: ${{ matrix.mongodb-version-ee }} --replSet=rs0
+          mongodb-version: ${{ matrix.mongodb-version-ee }}
+          mongodb-replica-set: rs0
 
       - name: Launch NATS
         run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
@@ -405,11 +406,6 @@ jobs:
 
       - name: Setup Chrome
         run: npm i chromedriver
-
-      - name: Configure Replica Set
-        run: |
-          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-          docker exec mongo mongo --eval 'rs.status()'
 
       - name: TurboRepo local server
         uses: felixmosh/turborepo-gh-artifacts@v1
@@ -499,11 +495,11 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           docker run --name rocketchat -d \
-            --link mongo \
+            --link mongodb \
             --link nats \
             -e TEST_MODE=true \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             -e ENTERPRISE_LICENSE="${{ secrets.ENTERPRISE_LICENSE }}" \
@@ -513,11 +509,11 @@ jobs:
 
           # spin up all micro services
           docker run --name ddp-streamer -d \
-            --link mongo \
+            --link mongodb \
             --link nats \
             -e PORT=4000 \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             --label 'traefik.http.services.ddp-streamer.loadbalancer.server.port=4000' \
@@ -529,10 +525,10 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           docker run --name stream-hub -d \
-            --link mongo \
+            --link mongodb \
             --link nats \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -548,10 +544,10 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           docker run --name account -d \
-            --link mongo \
+            --link mongodb \
             --link nats \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -567,10 +563,10 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           docker run --name authorization -d \
-            --link mongo \
+            --link mongodb \
             --link nats \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -586,10 +582,10 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           docker run --name presence -d \
-            --link mongo \
+            --link mongodb \
             --link nats \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -611,7 +607,7 @@ jobs:
             docker stop ddp-streamer
             docker stop presence
 
-            docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+            docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
             echo $NOW
@@ -659,7 +655,7 @@ jobs:
           docker stop ddp-streamer
           docker stop presence
 
-          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+          docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
           echo $NOW
@@ -685,7 +681,7 @@ jobs:
           docker logs presence --tail=50
 
           cd ./apps/meteor
-          IS_EE=true npm run test:playwright
+          IS_EE=true npm run test:e2e
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
@@ -758,7 +754,7 @@ jobs:
           aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"14.18.3\", \"compatibleMongoVersions\": [\"4.2\", \"4.4\", \"5.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"14.19.3\", \"compatibleMongoVersions\": [\"4.2\", \"4.4\", \"5.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there

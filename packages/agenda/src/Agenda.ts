@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import humanInterval from 'human-interval';
 import { MongoClient } from 'mongodb';
-import type { MongoClientOptions, Db, Collection, FindAndModifyWriteOpResultObject, InsertOneWriteOpResult } from 'mongodb';
+import type { MongoClientOptions, Db, Document, Collection, ModifyResult, InsertOneResult } from 'mongodb';
 import debugInitializer from 'debug';
 
 import { hasMongoProtocol } from './lib/hasMongoProtocol';
@@ -11,7 +11,7 @@ import { noCallback } from './lib/noCallback';
 import { Job } from './Job';
 import { JobProcessingQueue } from './JobProcessingQueue';
 import type { JobDefinition, JobOptions } from './definition/JobDefinition';
-import type { IJob, IJobRecord } from './definition/IJob';
+import type { IJob } from './definition/IJob';
 
 const debug = debugInitializer('agenda:agenda');
 
@@ -151,25 +151,14 @@ export class Agenda extends EventEmitter {
 			url = `mongodb://${url}`;
 		}
 
-		let reconnectOptions: MongoClientOptions = {
-			autoReconnect: true,
-			reconnectTries: Number.MAX_SAFE_INTEGER,
-			reconnectInterval: this._processEvery,
-		};
-
-		if (options?.useUnifiedTopology === true) {
-			reconnectOptions = {};
-		}
-
 		collection = collection || 'agendaJobs';
 
 		options = {
-			...reconnectOptions,
 			...options,
 		};
 
 		MongoClient.connect(url, options, (error, client) => {
-			if (error) {
+			if (error || !client) {
 				debug('error connecting to MongoDB using collection: [%s]', collection);
 				if (cb) {
 					cb(error, null);
@@ -269,7 +258,7 @@ export class Agenda extends EventEmitter {
 	}
 
 	public async jobs(query = {}, sort = {}, limit = 0, skip = 0): Promise<Job[]> {
-		const result = await this._collection.find(query).sort(sort).limit(limit).skip(skip).toArray();
+		const result = await this._collection.find<IJob>(query).sort(sort).limit(limit).skip(skip).toArray();
 
 		return result.map((job) => createJob(this, job));
 	}
@@ -349,7 +338,7 @@ export class Agenda extends EventEmitter {
 
 	private async _createScheduledJob(when: string | Date, name: string, data: IJob['data']): Promise<Job> {
 		const job = this.create(name, data);
-		job.schedule(when).save();
+		await job.schedule(when).save();
 		return job;
 	}
 
@@ -401,29 +390,36 @@ export class Agenda extends EventEmitter {
 	public async cancel(query: Record<string, any>): Promise<number> {
 		debug('attempting to cancel all Agenda jobs', query);
 		try {
-			const { result } = await this._collection.deleteMany(query);
-			debug('%s jobs cancelled', result.n || 0);
-			return result.n || 0;
+			const { deletedCount } = await this._collection.deleteMany(query);
+			debug('%s jobs cancelled', deletedCount || 0);
+			return deletedCount || 0;
 		} catch (error) {
 			debug('error trying to delete jobs from MongoDB');
 			throw error;
 		}
 	}
 
-	private _processDbResult(job: Job, result: FindAndModifyWriteOpResultObject<IJobRecord> | InsertOneWriteOpResult<IJobRecord>): void {
+	private async _processDbResult(job: Job, result: ModifyResult | InsertOneResult): Promise<void> {
 		debug('processDbResult() called with success, checking whether to process job immediately or not');
 
 		// We have a result from the above calls
 		// findOneAndUpdate() returns different results than insertOne() so check for that
+		const res = await (async (): Promise<Document | null> => {
+			if ('value' in result) {
+				return result.value;
+			}
 
-		const results = (result as any).ops
-			? (result as InsertOneWriteOpResult<IJobRecord>).ops
-			: (result as FindAndModifyWriteOpResultObject<IJobRecord>).value;
-		if (!results) {
+			if ('insertedId' in result) {
+				return this._collection.findOne({ _id: result.insertedId });
+			}
+
+			return null;
+		})();
+
+		if (!res) {
+			debug('job not found');
 			return;
 		}
-
-		const res = Array.isArray(results) ? results[0] : results;
 
 		job.attrs._id = res._id;
 		job.attrs.nextRunAt = res.nextRunAt;
@@ -443,7 +439,7 @@ export class Agenda extends EventEmitter {
 
 		// Update the job and process the resulting data'
 		debug('job already has _id, calling findOneAndUpdate() using _id as query');
-		const result = await this._collection.findOneAndUpdate({ _id: id }, update, { returnOriginal: false });
+		const result = await this._collection.findOneAndUpdate({ _id: id }, update, { returnDocument: 'after' });
 
 		return this._processDbResult(job, result);
 	}
@@ -477,7 +473,7 @@ export class Agenda extends EventEmitter {
 			update,
 			{
 				upsert: true,
-				returnOriginal: false,
+				returnDocument: 'after',
 			},
 		);
 
@@ -496,7 +492,7 @@ export class Agenda extends EventEmitter {
 
 		// Use the 'unique' query object to find an existing job or create a new one
 		debug('calling findOneAndUpdate() with unique object as query: \n%O', query);
-		const result = await this._collection.findOneAndUpdate(query, update, { upsert: true, returnOriginal: false });
+		const result = await this._collection.findOneAndUpdate(query, update, { upsert: true, returnDocument: 'after' });
 		return this._processDbResult(job, result);
 	}
 
@@ -601,7 +597,7 @@ export class Agenda extends EventEmitter {
 
 		// Don't try and access MongoDB if we've lost connection to it.
 		// @ts-ignore
-		const s = this._mdb.s || this._mdb.db.s;
+		const s = this._mdb.s.client || this._mdb.db.s.client;
 		if (s.topology.connections && s.topology.connections().length === 0 && !this._mongoUseUnifiedTopology) {
 			if (s.topology.autoReconnect && !s.topology.isDestroyed()) {
 				// Continue processing but notify that Agenda has lost the connection
@@ -638,15 +634,17 @@ export class Agenda extends EventEmitter {
 			};
 
 			const JOB_PROCESS_SET_QUERY = { $set: { lockedAt: now } };
-			const JOB_RETURN_QUERY = { returnOriginal: false, sort: this._sort };
 
 			// Find ONE and ONLY ONE job and set the 'lockedAt' time so that job begins to be processed
-			const result = await this._collection.findOneAndUpdate(JOB_PROCESS_WHERE_QUERY, JOB_PROCESS_SET_QUERY, JOB_RETURN_QUERY);
+			const result = await this._collection.findOneAndUpdate(JOB_PROCESS_WHERE_QUERY, JOB_PROCESS_SET_QUERY, {
+				returnDocument: 'after',
+				sort: this._sort,
+			});
 
 			let job;
 			if (result.value) {
 				debug('found a job available to lock, creating a new job on Agenda with id [%s]', result.value._id);
-				job = createJob(this, result.value);
+				job = createJob(this, result.value as unknown as IJob);
 			}
 
 			return job;
@@ -728,13 +726,12 @@ export class Agenda extends EventEmitter {
 
 		// Update / options for the MongoDB query
 		const update = { $set: { lockedAt: now } };
-		const options = { returnOriginal: false };
 
 		// Lock the job in MongoDB!
-		const resp = await this._collection.findOneAndUpdate(criteria, update, options);
+		const resp = await this._collection.findOneAndUpdate(criteria, update, { returnDocument: 'after' });
 
 		if (resp.value) {
-			const job = createJob(this, resp.value);
+			const job = createJob(this, resp.value as unknown as IJob);
 			debug('found job [%s] that can be locked on the fly', job.attrs.name);
 			this._lockedJobs.push(job);
 			this._definitions[job.attrs.name].locked++;

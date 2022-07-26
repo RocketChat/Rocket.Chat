@@ -4,6 +4,7 @@ import { useToastMessageDispatch, useCurrentRoute, useRoute, useTranslation } fr
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
+import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
@@ -88,7 +89,7 @@ const ContactInfo = ({ id, rid, route }) => {
 	}
 
 	const {
-		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
+		contact: { fname, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
 	} = data;
 
 	const checkIsVisibleAndScopeVisitor = (key) => {
@@ -106,7 +107,7 @@ const ContactInfo = ({ id, rid, route }) => {
 
 	const showContactHistory = currentRouteName === 'live' && lastChat;
 
-	const displayName = name || username;
+	const displayName = parseOutboundPhoneNumber(fname) || username;
 
 	const { phoneNumber } = phone?.[0] || {};
 
@@ -132,7 +133,7 @@ const ContactInfo = ({ id, rid, route }) => {
 					{phone && phone.length && (
 						<Field>
 							<Label>{t('Phone')}</Label>
-							<Info>{phoneNumber}</Info>
+							<Info>{parseOutboundPhoneNumber(phoneNumber)}</Info>
 						</Field>
 					)}
 					{ts && (

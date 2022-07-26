@@ -149,8 +149,12 @@ export const CallProvider: FC = ({ children }) => {
 
 		setQueueAggregator(voipClient.getAggregator());
 
-		return (): void => voipClient.unregister();
-	}, [result]);
+		return (): void => {
+			if (clientState === 'registered') {
+				return voipClient.unregister();
+			}
+		};
+	}, [result, clientState]);
 
 	const openRoom = useCallback((rid: IVoipRoom['_id']): void => {
 		roomCoordinator.openRouteLink('v', { rid });
@@ -499,6 +503,7 @@ export const CallProvider: FC = ({ children }) => {
 			openRoom,
 			createRoom,
 			closeRoom,
+			networkStatus,
 			openWrapUpModal,
 			changeAudioOutputDevice,
 			changeAudioInputDevice,
@@ -520,6 +525,7 @@ export const CallProvider: FC = ({ children }) => {
 		openWrapUpModal,
 		changeAudioOutputDevice,
 		changeAudioInputDevice,
+		networkStatus,
 	]);
 
 	return (

@@ -28,13 +28,3 @@ export const createRegisterUser = (): IRegister => {
 		username: faker.internet.userName(),
 	};
 };
-
-export const validUser: ILogin = {
-	email: registerUser.email,
-	password: 'any_password',
-};
-
-export const incorrectUser: ILogin = {
-	email: faker.internet.email(),
-	password: 'any_password',
-};

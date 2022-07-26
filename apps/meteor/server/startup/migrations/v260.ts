@@ -1,11 +1,11 @@
 import { ILivechatVisitor } from '@rocket.chat/core-typings';
-import { BulkWriteOperation, Cursor } from 'mongodb';
+import { AnyBulkWriteOperation, FindCursor } from 'mongodb';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
 import { Users } from '../../../app/models/server';
 
-const getNextPageCursor = (skip: number, limit: number): Cursor<ILivechatVisitor> => {
+const getNextPageCursor = (skip: number, limit: number): FindCursor<ILivechatVisitor> => {
 	return LivechatVisitors.find({ 'visitorEmails.address': /[A-Z]/ }, { skip, limit, sort: { _id: 1 } });
 };
 
@@ -13,7 +13,7 @@ const getNextPageCursor = (skip: number, limit: number): Cursor<ILivechatVisitor
 addMigration({
 	version: 260,
 	async up() {
-		const updates: BulkWriteOperation<ILivechatVisitor>[] = [];
+		const updates: AnyBulkWriteOperation<ILivechatVisitor>[] = [];
 		const count = await LivechatVisitors.find({ 'visitorEmails.address': /[A-Z]/ }).count();
 		const limit = 5000;
 		let skip = 0;
