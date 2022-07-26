@@ -62,7 +62,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			Settings.getCollectionName(),
 		];
 
-		const watcher = new DatabaseWatcher(db, watchCollections);
+		const watcher = new DatabaseWatcher({ db, watchCollections });
 
 		initWatchers(watcher, api.broadcast.bind(api));
 
