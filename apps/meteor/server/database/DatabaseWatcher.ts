@@ -29,13 +29,13 @@ export class DatabaseWatcher extends EventEmitter {
 	}
 
 	async watch(): Promise<void> {
-		if (await this.isChangeStreamAvailable()) {
-			this.watchChangeStream();
+		if (useCustomOplog) {
+			this.watchOplog();
 			return;
 		}
 
-		if (useCustomOplog) {
-			this.watchOplog();
+		if (await this.isChangeStreamAvailable()) {
+			this.watchChangeStream();
 			return;
 		}
 
