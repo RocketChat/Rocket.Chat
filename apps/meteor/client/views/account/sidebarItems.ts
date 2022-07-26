@@ -5,7 +5,8 @@ import { createSidebarItems } from '../../lib/createSidebarItems';
 export const {
 	registerSidebarItem: registerAccountSidebarItem,
 	unregisterSidebarItem,
-	itemsSubscription,
+	getSidebarItems: getAccountSidebarItems,
+	subscribeToSidebarItems: subscribeToAccountSidebarItems,
 } = createSidebarItems([
 	{
 		href: 'preferences',

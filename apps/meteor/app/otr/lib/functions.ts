@@ -33,8 +33,14 @@ export const digest = async (bits: ArrayBuffer): Promise<ArrayBuffer> =>
 		},
 		bits,
 	);
-export const deriveBits = async ({ ecdhObj, _keyPair }: { ecdhObj: IOTRAlgorithm; _keyPair: CryptoKeyPair }): Promise<ArrayBuffer> =>
-	subtle.deriveBits(ecdhObj, _keyPair.privateKey, 256);
+export const deriveBits = async ({ ecdhObj, _keyPair }: { ecdhObj: IOTRAlgorithm; _keyPair: CryptoKeyPair }): Promise<ArrayBuffer> => {
+	if (!_keyPair.privateKey) {
+		throw new Error('No private key');
+	}
+
+	return subtle.deriveBits(ecdhObj, _keyPair.privateKey, 256);
+};
+
 export const importKey = async (publicKeyObject: JsonWebKey): Promise<CryptoKey> =>
 	subtle.importKey(
 		'jwk',

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import type { IMessage } from '@rocket.chat/core-typings';
+import { VideoConference } from '@rocket.chat/models';
 
 import { _setUsername } from './setUsername';
 import { _setRealName } from './setRealName';
@@ -70,9 +71,13 @@ export function saveUserIdentity({
 			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
 			const fileStore = FileUpload.getStore('Avatars');
-			const file = fileStore.model.findOneByName(previousUsername);
+			const previousFile = Promise.await(fileStore.model.findOneByName(previousUsername));
+			const file = Promise.await(fileStore.model.findOneByName(username));
 			if (file) {
-				fileStore.model.updateFileNameById(file._id, username);
+				fileStore.model.deleteFile(file._id);
+			}
+			if (previousFile) {
+				fileStore.model.updateFileNameById(previousFile._id, username);
 			}
 		}
 
@@ -83,6 +88,9 @@ export function saveUserIdentity({
 
 			// update name and fname of group direct messages
 			updateGroupDMsName(user);
+
+			// update name and username of users on video conferences
+			Promise.await(VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName));
 		}
 	}
 

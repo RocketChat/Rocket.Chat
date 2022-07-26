@@ -5,9 +5,9 @@ import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { Subscriptions, ChatSubscription } from '../../models/client';
 
-slashCommands.add(
-	'open',
-	function Open(_command, params): void {
+slashCommands.add({
+	command: 'open',
+	callback: function Open(_command, params): void {
 		const dict: Record<string, string[]> = {
 			'#': ['c', 'p'],
 			'@': ['d'],
@@ -38,10 +38,10 @@ slashCommands.add(
 			roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 		});
 	},
-	{
+	options: {
 		description: 'Opens_a_channel_group_or_direct_message',
 		params: 'room_name',
 		clientOnly: true,
 		permission: ['view-c-room', 'view-c-room', 'view-d-room', 'view-joined-room', 'create-d'],
 	},
-);
+});

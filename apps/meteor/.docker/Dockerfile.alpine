@@ -1,4 +1,4 @@
-FROM node:14.18.3-alpine3.15
+FROM node:14.19.3-alpine3.15
 
 RUN apk add --no-cache ttf-dejavu
 
@@ -12,7 +12,7 @@ RUN set -x \
     && npm install --production \
     # Start hack for sharp...
     && rm -rf npm/node_modules/sharp \
-    && npm install sharp@0.29.3 \
+    && npm install sharp@0.30.4 \
     && mv node_modules/sharp npm/node_modules/sharp \
     # End hack for sharp
     && cd npm \

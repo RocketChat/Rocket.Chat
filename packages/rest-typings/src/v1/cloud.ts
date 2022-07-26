@@ -81,6 +81,6 @@ export type CloudEndpoints = {
 		};
 	};
 	'/v1/cloud.registrationStatus': {
-		GET: (params: void) => { registrationStatus: CloudRegistrationStatus };
+		GET: () => { registrationStatus: CloudRegistrationStatus };
 	};
 };

@@ -7,20 +7,10 @@ import _ from 'underscore';
 import { setUpdatedAt } from '../lib/setUpdatedAt';
 import { metrics } from '../../../metrics/server/lib/metrics';
 import { getOplogHandle } from './_oplogHandle';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
+import { trash } from '../../../../server/database/trash';
 
 const baseName = 'rocketchat_';
-
-export const trash = new Mongo.Collection(`${baseName}_trash`);
-try {
-	trash._ensureIndex({ __collection__: 1 });
-	trash._ensureIndex({ _deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
-
-	trash._ensureIndex({ rid: 1, __collection__: 1, _deletedAt: 1 });
-} catch (e) {
-	SystemLogger.error(e);
-}
 
 const actions = {
 	i: 'insert',

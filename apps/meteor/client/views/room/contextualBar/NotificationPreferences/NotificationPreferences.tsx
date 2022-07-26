@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, FieldGroup, Icon } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, FieldGroup, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
@@ -82,9 +82,7 @@ const NotificationPreferences = ({
 							options={handleOptions.sound}
 							optionDefault={formValues?.desktopSound}
 						>
-							<Button mis='x4' square ghost onClick={handlePlaySound}>
-								<Icon name='play' size='x18' />
-							</Button>
+							<IconButton icon='play' mis='x4' onClick={handlePlaySound} />
 						</Preferences>
 					</NotificationByDevice>
 					<NotificationByDevice device={t('Mobile')} icon={'mobile'}>

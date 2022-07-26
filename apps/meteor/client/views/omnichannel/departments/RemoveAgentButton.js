@@ -1,4 +1,4 @@
-import { Icon, Button } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -23,11 +23,7 @@ function RemoveAgentButton({ agentId, setAgentList, agentList, setAgentsRemoved 
 		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
-	return (
-		<Button small ghost title={t('Remove')} onClick={handleDelete}>
-			<Icon name='trash' size='x16' />
-		</Button>
-	);
+	return <IconButton icon='trash' mini title={t('Remove')} onClick={handleDelete} />;
 }
 
 export default RemoveAgentButton;

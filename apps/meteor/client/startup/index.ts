@@ -29,7 +29,6 @@ import './theme';
 import './unread';
 import './UserDeleted';
 import './userRoles';
-import './userSetUtcOffset';
 import './usersObserve';
 import './userStatusManuallySet';
 import '../lib/rooms/roomTypes';

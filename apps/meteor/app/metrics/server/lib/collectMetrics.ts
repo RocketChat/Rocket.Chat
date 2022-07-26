@@ -6,11 +6,11 @@ import _ from 'underscore';
 import gcStats from 'prometheus-gc-stats';
 import { Meteor } from 'meteor/meteor';
 import { Facts } from 'meteor/facts-base';
+import { Statistics } from '@rocket.chat/models';
 
 import { Info, getOplogInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
 import { settings } from '../../../settings/server';
-import { Statistics } from '../../../models/server/raw';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { metrics } from './metrics';
 import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
@@ -23,9 +23,7 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.info.set(
 		{
 			version: Info.version,
-			// eslint-disable-next-line @typescript-eslint/camelcase
 			unique_id: settings.get<string>('uniqueID'),
-			// eslint-disable-next-line @typescript-eslint/camelcase
 			site_url: settings.get<string>('Site_Url'),
 		},
 		1,

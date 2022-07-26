@@ -1,124 +1,51 @@
-import { test, expect } from '@playwright/test';
-import faker from '@faker-js/faker';
+import { Page, test, expect } from '@playwright/test';
+import { faker } from '@faker-js/faker';
 
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import LoginPage from './utils/pageobjects/LoginPage';
-import FlexTab from './utils/pageobjects/FlexTab';
-import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
-import { adminLogin } from './utils/mocks/userAndPasswordMock';
-import { clearMessages } from './utils/helpers/clearMessages';
-import { verifyTestBaseUrl } from './utils/configs/verifyTestBaseUrl';
+import { Auth, HomeChannel, AccountProfile } from './page-objects';
 
-test.describe('[User Preferences]', () => {
-	test.beforeAll(async () => {
-		const { isLocal } = verifyTestBaseUrl();
-		if (isLocal) {
-			await clearMessages(['GENERAL']);
-		}
+test.describe('User preferences', () => {
+	let page: Page;
+	let pageAuth: Auth;
+	let pageHomeChannel: HomeChannel;
+	let pageAccountProfile: AccountProfile;
+
+	const newName = faker.name.findName();
+	const newUsername = faker.internet.userName(newName);
+
+	test.beforeAll(async ({ browser }) => {
+		page = await browser.newPage();
+		pageAuth = new Auth(page);
+		pageHomeChannel = new HomeChannel(page);
+		pageAccountProfile = new AccountProfile(page);
 	});
-	test.describe('default', () => {
-		let flexTab: FlexTab;
-		let loginPage: LoginPage;
-		let mainContent: MainContent;
-		let sideNav: SideNav;
-		let preferencesMainContent: PreferencesMainContent;
 
-		test.beforeAll(async ({ browser, baseURL }) => {
-			const context = await browser.newContext();
-			const page = await context.newPage();
-			const URL = baseURL as string;
-			loginPage = new LoginPage(page);
-			await loginPage.goto(URL);
+	test.beforeAll(async () => {
+		await pageAuth.doLogin();
+	});
 
-			await loginPage.login(adminLogin);
-			sideNav = new SideNav(page);
-			mainContent = new MainContent(page);
-			preferencesMainContent = new PreferencesMainContent(page);
-			flexTab = new FlexTab(page);
+	test('expect update profile with new name and username', async () => {
+		await pageHomeChannel.sidenav.doOpenProfile();
 
-			await sideNav.sidebarUserMenu().click();
-			await sideNav.account().click();
-		});
+		await pageAccountProfile.inputName.fill(newName);
+		await pageAccountProfile.inputUsername.fill(newUsername);
+		await pageAccountProfile.btnSubmit.click();
+		await page.goto('/');
+	});
 
-		test.describe('render:', () => {
-			test('expect show the preferences link', async () => {
-				await expect(sideNav.preferences()).toBeVisible();
-			});
+	test('expect show new username in the last message', async () => {
+		await pageHomeChannel.sidenav.doOpenChat('general');
+		await pageHomeChannel.content.doSendMessage('any_message');
 
-			test('expect show the profile link', async () => {
-				await expect(sideNav.profile()).toBeVisible();
-			});
+		await expect(pageHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);
+	});
 
-			test('expect click on the profile link', async () => {
-				await sideNav.profile().click();
-			});
+	test('expect show new username in card and profile', async () => {
+		await pageHomeChannel.sidenav.doOpenChat('general');
+		await pageHomeChannel.content.doSendMessage('any_message');
 
-			test('expect show the username input', async () => {
-				await expect(preferencesMainContent.userNameTextInput()).toBeVisible();
-			});
+		await pageHomeChannel.content.lastUserMessageNotSequential.locator('figure').click();
+		await pageHomeChannel.content.userCardLinkProfile.click();
 
-			test('expect show the real name input', async () => {
-				await expect(preferencesMainContent.realNameTextInput()).toBeVisible();
-			});
-
-			test('expect show the email input', async () => {
-				await expect(preferencesMainContent.emailTextInput()).toBeVisible(); // .scrollIntoView()
-			});
-
-			test('expect show the password input', async () => {
-				await expect(preferencesMainContent.passwordTextInput()).toBeVisible(); // .scrollIntoView()
-			});
-
-			test('expect show the submit button', async () => {
-				await expect(preferencesMainContent.submitBtn()).toBeVisible();
-				await expect(preferencesMainContent.submitBtn()).toBeDisabled();
-			});
-		});
-
-		test.describe('[User Info Change]', () => {
-			const newName = faker.name.findName();
-			const newUserName = `${faker.name.lastName()}${faker.name.firstName()}`;
-
-			test('expect click on the profile link', async () => {
-				await sideNav.profile().click();
-			});
-
-			test('expect change the name field', async () => {
-				await preferencesMainContent.changeRealName(newName);
-			});
-
-			test('expect change the Username field', async () => {
-				await preferencesMainContent.changeUsername(newUserName);
-			});
-
-			test('expect save the settings', async () => {
-				await preferencesMainContent.saveChanges();
-			});
-
-			test('expect close the preferences menu', async () => {
-				await sideNav.preferencesClose().click();
-				await sideNav.getChannelFromList('general').scrollIntoViewIfNeeded();
-				await sideNav.getChannelFromList('general').click();
-			});
-
-			test('send message with different user name', async () => {
-				await mainContent.sendMessage('HI');
-			});
-
-			test('expect be that the name on the last message is the edited one', async () => {
-				await expect(mainContent.lastMessageUser()).toContainText(newUserName);
-			});
-
-			test('expect be that the user name on the members flex tab is the edited one', async () => {
-				await mainContent.lastMessageUser().click();
-				await expect(mainContent.userCard()).toBeVisible();
-			});
-
-			test('expect that the real name on the members flex tab is the edited one', async () => {
-				await mainContent.viewUserProfile().click();
-				await expect(flexTab.memberRealName()).toHaveText(newUserName);
-			});
-		});
+		await expect(pageHomeChannel.tabs.userInfoUsername).toHaveText(newUsername);
 	});
 });

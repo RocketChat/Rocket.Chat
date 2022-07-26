@@ -21,7 +21,7 @@ export const useTagsList = (
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatTagRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatTagRecord>()), []);
 
-	const getTags = useEndpoint('GET', '/v1/livechat/tags.list');
+	const getTags = useEndpoint('GET', '/v1/livechat/tags');
 
 	useComponentDidUpdate(() => {
 		options && reload();

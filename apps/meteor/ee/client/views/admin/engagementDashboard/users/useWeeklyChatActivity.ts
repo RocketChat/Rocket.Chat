@@ -1,7 +1,6 @@
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import { useQuery } from 'react-query';
-
-import { getFromRestApi } from '../../../../lib/getFromRestApi';
 
 type UseWeeklyChatActivityOptions = {
 	displacement: number;
@@ -9,13 +8,15 @@ type UseWeeklyChatActivityOptions = {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivityOptions) =>
-	useQuery(
+export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivityOptions) => {
+	const getWeeklyChatActivity = useEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/weekly-data');
+
+	return useQuery(
 		['admin/engagement-dashboard/users/weekly-chat-activity', { displacement, utc }],
 		async () => {
 			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day')).subtract(displacement, 'weeks').toDate();
 
-			const response = await getFromRestApi('/v1/engagement-dashboard/users/chat-busier/weekly-data')({
+			const response = await getWeeklyChatActivity({
 				start: day.toISOString(),
 			});
 
@@ -30,3 +31,4 @@ export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivi
 			refetchInterval: 5 * 60 * 1000,
 		},
 	);
+};

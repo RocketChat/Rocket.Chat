@@ -7,7 +7,7 @@ import { MessagesMock } from './mocks/models/Messages.mock';
 import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
 
-mock('../../../../../app/models', './mocks/models');
+mock('../../../../../app/models/server', './mocks/models');
 mock('meteor/random', {
 	id: () => 1,
 });

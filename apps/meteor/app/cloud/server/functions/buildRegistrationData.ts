@@ -1,8 +1,8 @@
 import { SettingValue } from '@rocket.chat/core-typings';
+import { Statistics } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
-import { Statistics } from '../../../models/server/raw';
 import { statistics } from '../../../statistics/server';
 import { LICENSE_VERSION } from '../license';
 

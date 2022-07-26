@@ -11,7 +11,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 
 	const settings = {
 		unreadAlert: useUserPreference('unreadAlert'),
-		showMessageInMainThread: useUserPreference('showMessageInMainThread'),
+		alsoSendThreadToChannel: useUserPreference('alsoSendThreadToChannel'),
 		useEmojis: useUserPreference('useEmojis'),
 		convertAsciiEmoji: useUserPreference('convertAsciiEmoji'),
 		autoImageLoad: useUserPreference('autoImageLoad'),
@@ -30,7 +30,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 
 	const {
 		unreadAlert,
-		showMessageInMainThread,
+		alsoSendThreadToChannel,
 		useEmojis,
 		convertAsciiEmoji,
 		autoImageLoad,
@@ -47,7 +47,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 
 	const {
 		handleUnreadAlert,
-		handleShowMessageInMainThread,
+		handleAlsoSendThreadToChannel,
 		handleUseEmojis,
 		handleConvertAsciiEmoji,
 		handleAutoImageLoad,
@@ -61,6 +61,15 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 		handleSendOnEnter,
 		handleMessageViewMode,
 	} = handlers;
+
+	const alsoSendThreadMessageToChannelOptions = useMemo(
+		() => [
+			['default', t('Default')],
+			['always', t('Always')],
+			['never', t('Never')],
+		],
+		[t],
+	);
 
 	const timeFormatOptions = useMemo(
 		() => [
@@ -109,14 +118,19 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 				)}
 				{useMemo(
 					() => (
-						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Show_Message_In_Main_Thread')}</Field.Label>
+						<Field>
+							<Field.Label>{t('Also_send_thread_message_to_channel_behavior')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch checked={showMessageInMainThread} onChange={handleShowMessageInMainThread} />
+								<Select
+									value={alsoSendThreadToChannel}
+									onChange={handleAlsoSendThreadToChannel}
+									options={alsoSendThreadMessageToChannelOptions}
+								/>
 							</Field.Row>
+							<Field.Hint>{t('Accounts_Default_User_Preferences_alsoSendThreadToChannel_Description')}</Field.Hint>
 						</Field>
 					),
-					[handleShowMessageInMainThread, showMessageInMainThread, t],
+					[alsoSendThreadToChannel, handleAlsoSendThreadToChannel, t, alsoSendThreadMessageToChannelOptions],
 				)}
 				{useMemo(
 					() => (

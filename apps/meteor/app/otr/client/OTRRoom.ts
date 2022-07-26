@@ -1,7 +1,6 @@
 import { IMessage } from '@rocket.chat/core-typings';
 import { EJSON } from 'meteor/ejson';
 import { Meteor } from 'meteor/meteor';
-import { TimeSync } from 'meteor/mizzao:timesync';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -146,6 +145,10 @@ export class OTRRoom implements IOTRRoom {
 			// Generate an ephemeral key pair.
 			this._keyPair = await generateKeyPair();
 
+			if (!this._keyPair.publicKey) {
+				throw new Error('Public key is not generated');
+			}
+
 			this._exportedPublicKey = await exportKey(this._keyPair.publicKey);
 
 			// Once we have generated new keys, it's safe to delete old messages
@@ -198,12 +201,6 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	async encrypt(message: IMessage): Promise<string> {
-		let ts;
-		if (isNaN(TimeSync.serverOffset())) {
-			ts = new Date();
-		} else {
-			ts = new Date(Date.now() + TimeSync.serverOffset());
-		}
 		try {
 			const data = new TextEncoder().encode(
 				EJSON.stringify({
@@ -211,7 +208,7 @@ export class OTRRoom implements IOTRRoom {
 					text: message.msg,
 					userId: this._userId,
 					ack: Random.id((Random.fraction() + 1) * 20),
-					ts,
+					ts: new Date(),
 				}),
 			);
 			const enc = await this.encryptText(data);

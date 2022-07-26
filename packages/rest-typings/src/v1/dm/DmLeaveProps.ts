@@ -1,20 +1,38 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
-export type DmLeaveProps = {
-	roomId: string;
-};
+export type DmLeaveProps =
+	| {
+			roomId: string;
+	  }
+	| { roomName: string };
 
-const DmLeavePropsSchema: JSONSchemaType<DmLeaveProps> = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
+const DmLeavePropsSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
 		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
+		{
+			type: 'object',
+			properties: {
+				roomName: {
+					type: 'string',
+				},
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
 };
 
-export const isDmLeaveProps = ajv.compile(DmLeavePropsSchema);
+export const isDmLeaveProps = ajv.compile<DmLeaveProps>(DmLeavePropsSchema);

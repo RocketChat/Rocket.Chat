@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
-import { LivechatRooms } from '../../../models';
+import { LivechatRooms } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:discardTranscript'(rid) {

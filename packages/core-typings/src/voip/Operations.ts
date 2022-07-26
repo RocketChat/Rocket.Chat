@@ -10,5 +10,6 @@ export enum Operation {
 	OP_REGISTER,
 	OP_UNREGISTER,
 	OP_PROCESS_INVITE,
+	OP_SEND_INVITE,
 	OP_CLEANUP,
 }

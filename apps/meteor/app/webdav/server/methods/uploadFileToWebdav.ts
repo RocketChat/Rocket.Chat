@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { WebdavAccounts } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { Logger } from '../../../logger/server';
 import { getWebdavCredentials } from './getWebdavCredentials';
-import { WebdavAccounts } from '../../../models/server/raw';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
 const logger = new Logger('WebDAV_Upload');
@@ -39,7 +39,7 @@ Meteor.methods({
 			await client.createDirectory(uploadFolder).catch(() => {});
 			await client.putFileContents(`${uploadFolder}/${name}`, buffer, { overwrite: false });
 			return { success: true };
-		} catch (error) {
+		} catch (error: any) {
 			// @ts-ignore
 			logger.error(error);
 

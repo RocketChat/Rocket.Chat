@@ -58,7 +58,7 @@ const useAddExistingModalState = (onClose: () => void, teamId: string, reload: (
 			onClose();
 			reload();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 		}
 	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload]);
 

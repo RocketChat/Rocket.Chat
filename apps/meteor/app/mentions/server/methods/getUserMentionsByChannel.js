@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Rooms, Users, Messages } from '../../../models';
+import { Rooms, Users, Messages } from '../../../models/server';
 import { canAccessRoom } from '../../../authorization/server';
 
 Meteor.methods({

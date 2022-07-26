@@ -84,3 +84,4 @@ coverage
 /data
 tests/e2e/test-failures/
 out.txt
+dist

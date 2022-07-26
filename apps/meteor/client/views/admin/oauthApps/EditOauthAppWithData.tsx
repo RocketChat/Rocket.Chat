@@ -33,7 +33,7 @@ const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement 
 					</Button>
 				</ButtonGroup>
 				<ButtonGroup stretch w='full' mbs='x8'>
-					<Button primary danger disabled>
+					<Button danger disabled>
 						<Throbber inheritColor />
 					</Button>
 				</ButtonGroup>

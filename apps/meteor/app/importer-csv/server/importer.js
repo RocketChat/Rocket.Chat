@@ -7,7 +7,9 @@ export class CsvImporter extends Base {
 	constructor(info, importRecord) {
 		super(info, importRecord);
 
-		this.csvParser = require('csv-parse/lib/sync');
+		const { parse } = require('csv-parse/lib/sync');
+
+		this.csvParser = parse;
 	}
 
 	prepareUsingLocalFile(fullFilePath) {

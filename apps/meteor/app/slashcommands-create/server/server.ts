@@ -6,9 +6,9 @@ import { Rooms } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { api } from '../../../server/sdk/api';
 
-slashCommands.add(
-	'create',
-	function Create(_command: 'create', params, item): void {
+slashCommands.add({
+	command: 'create',
+	callback: function Create(_command: 'create', params, item): void {
 		function getParams(str: string): string[] {
 			const regex = /(--(\w+))+/g;
 			const result = [];
@@ -54,9 +54,9 @@ slashCommands.add(
 
 		Meteor.call('createChannel', channelStr, []);
 	},
-	{
+	options: {
 		description: 'Create_A_New_Channel',
 		params: '#channel',
 		permission: ['create-c', 'create-p'],
 	},
-);
+});
