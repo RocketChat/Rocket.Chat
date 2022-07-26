@@ -23,22 +23,14 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar }: RoomAvatarEditor
 	const handleChangeAvatar = useMutableCallback(async (file) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
-		const dataURL = await new Promise<string>((resolve) => {
-			reader.onloadend = (): void => {
-				if (typeof reader.result === 'string') {
-					return resolve(reader.result);
-				}
-			};
-		});
-
-		const isValidFormat = await isValidImageFormat(dataURL);
-
-		if (isValidFormat) {
-			onChangeAvatar(dataURL);
-			return;
-		}
-
-		dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+		reader.onloadend = async (): Promise<void> => {
+			const { result } = reader;
+			if (typeof result === 'string' && (await isValidImageFormat(result))) {
+				onChangeAvatar(result);
+				return;
+			}
+			dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+		};
 	});
 
 	const [clickUpload, reset] = useFileInput(handleChangeAvatar);
