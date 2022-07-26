@@ -1,7 +1,6 @@
 import { IRoom } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions as SubscriptionsRaw, MatrixBridgedRoom } from '@rocket.chat/models';
+import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
 
-import { Subscriptions } from '../../../../../models/server';
 import { FederatedRoom } from '../../../domain/FederatedRoom';
 import { createRoom, addUserToRoom, removeUserFromRoom } from '../../../../../lib/server';
 import { FederatedUser } from '../../../domain/FederatedUser';
@@ -102,7 +101,7 @@ export class RocketChatRoomAdapter {
 
 	public async updateRoomType(federatedRoom: FederatedRoom): Promise<void> {
 		await Rooms.setRoomTypeById(federatedRoom.internalReference._id, federatedRoom.internalReference.t);
-		await SubscriptionsRaw.updateAllRoomTypesByRoomId(federatedRoom.internalReference._id, federatedRoom.internalReference.t);
+		await Subscriptions.updateAllRoomTypesByRoomId(federatedRoom.internalReference._id, federatedRoom.internalReference.t);
 	}
 
 	public async updateRoomName(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {

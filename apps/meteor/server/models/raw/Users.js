@@ -1126,4 +1126,16 @@ export class UsersRaw extends BaseRaw {
 		};
 		return this.updateOne(query, update);
 	}
+
+	removeRoomByRoomId(rid) {
+		return this.update(
+			{
+				__rooms: rid,
+			},
+			{
+				$pull: { __rooms: rid },
+			},
+			{ multi: true },
+		);
+	}
 }

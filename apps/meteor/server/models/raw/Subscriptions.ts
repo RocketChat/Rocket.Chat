@@ -1,7 +1,7 @@
 import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult } from 'mongodb';
-import { Users } from '@rocket.chat/models';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, DeleteResult } from 'mongodb';
+import { Rooms, Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
 
 import { BaseRaw } from './BaseRaw';
@@ -232,5 +232,21 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		return this.find(query, options || {});
+	}
+
+	async removeByRoomId(roomId: string): Promise<DeleteResult> {
+		const query = {
+			rid: roomId,
+		};
+
+		const result = this.deleteMany(query);
+
+		if (Match.test(result, Number) && result > 0) {
+			Rooms.incUsersCountByIds([roomId], -result);
+		}
+
+		Users.removeRoomByRoomId(roomId);
+
+		return result;
 	}
 }

@@ -149,4 +149,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findActiveByIdsOrUsernames(userIds: string[], options?: any): FindCursor<IUser>;
 
 	setAsFederated(userId: string): any;
+
+	removeRoomByRoomId(rid: any): any;
 }
