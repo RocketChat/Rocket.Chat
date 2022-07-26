@@ -32,7 +32,7 @@ Meteor.startup(() => {
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
 				condition({ message, user }) {
-					return Boolean(message?.u && message.u._id !== user._id && isTranslatedMessage(message) && !message.translations.original);
+					return Boolean(message?.u && message.u._id !== user._id && isTranslatedMessage(message) && message.autoTranslateShowInverse);
 				},
 				order: 90,
 			});
@@ -54,7 +54,7 @@ Meteor.startup(() => {
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
 				condition({ message, user }) {
-					return Boolean(message?.u && message.u._id !== user._id && isTranslatedMessage(message) && message.translations.original);
+					return Boolean(message?.u && message.u._id !== user._id && isTranslatedMessage(message) && !message.autoTranslateShowInverse);
 				},
 				order: 90,
 			});
