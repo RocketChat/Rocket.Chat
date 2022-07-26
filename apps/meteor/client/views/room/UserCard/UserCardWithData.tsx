@@ -1,7 +1,8 @@
+import { IRoom } from '@rocket.chat/core-typings';
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useRef } from 'react';
+import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
+import React, { useMemo, useRef, ReactElement } from 'react';
 
 import { Backdrop } from '../../../components/Backdrop';
 import LocalTime from '../../../components/LocalTime';
@@ -12,17 +13,20 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useActionSpread } from '../../hooks/useActionSpread';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
 
-const UserCardWithData = ({ username, onClose, target, open, rid }) => {
+type UserCardWithDataProps = {
+	username: string;
+	onClose: () => void;
+	target: Element;
+	open: (e: Event) => void;
+	rid: IRoom['_id'];
+};
+
+const UserCardWithData = ({ username, onClose, target, open, rid }: UserCardWithDataProps): ReactElement => {
 	const ref = useRef(target);
-
 	const getRoles = useRolesDescription();
-
-	const t = useTranslation();
-
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
 	const query = useMemo(() => ({ username }), [username]);
-
 	const { value: data, phase: state } = useEndpointData('/v1/users.info', query);
 
 	ref.current = target;
@@ -31,19 +35,16 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 		const loading = state === AsyncStatePhase.LOADING;
 		const defaultValue = loading ? undefined : null;
 
-		const { user } = data || { user: {} };
-
 		const {
 			_id,
 			name = username,
 			roles = defaultValue,
-			status = null,
-			statusText = status,
+			statusText,
 			bio = defaultValue,
 			utcOffset = defaultValue,
 			nickname,
 			avatarETag,
-		} = user;
+		} = data?.user || {};
 
 		return {
 			_id,
@@ -52,19 +53,20 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			roles: roles && getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
 			etag: avatarETag,
-			localTime: Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
-			status: <ReactiveUserStatus uid={_id} />,
+			localTime: utcOffset && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
+			status: _id && <ReactiveUserStatus uid={_id} />,
 			customStatus: statusText,
 			nickname,
 		};
 	}, [data, username, showRealNames, state, getRoles]);
 
 	const handleOpen = useMutableCallback((e) => {
-		open && open(e);
-		onClose && onClose();
+		open?.(e);
+		onClose?.();
 	});
 
-	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(useUserInfoActions(user, rid));
+	const userActions = useUserInfoActions({ _id: user._id ?? '', username: user.username }, rid);
+	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(userActions);
 
 	const menu = useMemo(() => {
 		if (!menuOptions) {
@@ -74,17 +76,17 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 		return (
 			<Menu
 				flexShrink={0}
+				maxHeight='initial'
 				mi='x2'
 				key='menu'
-				ghost={false}
-				renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
+				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
 				options={menuOptions}
 			/>
 		);
 	}, [menuOptions]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]) => (
+		const mapAction = ([key, { label, icon, action }]: any): ReactElement => (
 			<UserCard.Action key={key} label={label} aria-label={label} onClick={action} icon={icon} />
 		);
 
@@ -95,7 +97,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 		<>
 			<Backdrop bg='transparent' onClick={onClose} />
 			<PositionAnimated anchor={ref} placement='top-start' margin={8} visible={AnimatedVisibility.UNHIDING}>
-				<UserCard {...user} onClose={onClose} open={handleOpen} actions={actions} t={t} />
+				<UserCard {...user} onClose={onClose} open={handleOpen} actions={actions} />
 			</PositionAnimated>
 		</>
 	);
