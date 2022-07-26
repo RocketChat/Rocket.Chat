@@ -27,7 +27,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 		const day = currentTime.format('dddd');
 		const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
-			fields: {
+			projection: {
 				workHours: 1,
 				timezone: 1,
 				type: 1,
@@ -42,7 +42,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
 		const businessHours = await this.BusinessHourRepository.findActiveBusinessHoursToOpen(day, hour, undefined, {
-			fields: {
+			projection: {
 				_id: 1,
 				type: 1,
 			},
@@ -54,7 +54,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
 		const businessHours = await this.BusinessHourRepository.findActiveBusinessHoursToClose(day, hour, undefined, {
-			fields: {
+			projection: {
 				_id: 1,
 				type: 1,
 			},
@@ -143,7 +143,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 		const day = currentTime.format('dddd');
 		const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
-			fields: {
+			projection: {
 				workHours: 1,
 				timezone: 1,
 				type: 1,
@@ -179,7 +179,10 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 				// check if this agent has any departments that is connected to any non-default business hour
 				// if no such departments found then check default BH and if it is active, then allow the agent to change service status
-				const hasAtLeastOneDepartmentWithNonDefaultBH = departmentsWithActiveBH.some(({ businessHourId }) => !!businessHourId);
+				const hasAtLeastOneDepartmentWithNonDefaultBH = departments.some(({ businessHourId }) => {
+					// check if business hour is active
+					return businessHourId && activeBusinessHours.findIndex(({ _id }) => _id === businessHourId) !== -1;
+				});
 				if (!hasAtLeastOneDepartmentWithNonDefaultBH) {
 					const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
 					if (isDefaultBHActive?._id) {
@@ -218,8 +221,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	private async handleRemoveAgentsFromDepartments(department: Record<string, any>, agentsIds: string[], options: any): Promise<any> {
-		const agentIdsWithoutDepartment = [];
-		const agentIdsToRemoveCurrentBusinessHour = [];
+		const agentIdsWithoutDepartment: string[] = [];
+		const agentIdsToRemoveCurrentBusinessHour: string[] = [];
 		for await (const agentId of agentsIds) {
 			if ((await LivechatDepartmentAgents.findByAgentId(agentId).count()) === 0) {
 				agentIdsWithoutDepartment.push(agentId);
