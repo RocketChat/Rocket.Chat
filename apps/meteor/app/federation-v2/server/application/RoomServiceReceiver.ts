@@ -147,7 +147,7 @@ export class FederationRoomServiceReceiver {
 			if (
 				!(await this.rocketRoomAdapter.isUserAlreadyJoined(
 					federatedRoom.internalReference?._id,
-					federatedInviteeUser?.internalReference._id,
+					federatedInviteeUser?.internalReference?._id,
 				))
 			) {
 				return;

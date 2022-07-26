@@ -40,6 +40,7 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 	const user = FederatedUserEE.build();
 	user.internalReference = {
 		_id: 'id',
+		username: 'marcos.defendi',
 	} as any;
 	const invitees = [
 		{
@@ -248,6 +249,7 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 		it('should create the external room with all the invitees when the inviter is from the same homeserver', async () => {
 			bridge.isUserIdFromTheSameHomeserver.returns(true);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
+			userAdapter.getFederatedUserByInternalUsername.resolves(user);
 			room.externalId = 'externalRoomId';
 			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
 			await service.onDirectMessageRoomCreation({ invitees } as any);
