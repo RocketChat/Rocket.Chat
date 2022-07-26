@@ -38,6 +38,7 @@ API.v1.addRoute(
 				Meteor.call('raix:push-update', {
 					id: deviceId,
 					token: { [type]: value },
+					authToken: this.request.headers['x-auth-token'],
 					appName,
 					userId: this.userId,
 				}),

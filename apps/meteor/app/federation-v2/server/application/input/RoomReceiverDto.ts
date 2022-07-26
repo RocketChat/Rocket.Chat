@@ -56,8 +56,12 @@ export class FederationRoomChangeJoinRulesDto extends BaseRoom {
 
 export class FederationRoomChangeNameDto extends BaseRoom {
 	normalizedRoomName: string;
+
+	externalSenderId: string;
 }
 
 export class FederationRoomChangeTopicDto extends BaseRoom {
 	roomTopic: string;
+
+	externalSenderId: string;
 }

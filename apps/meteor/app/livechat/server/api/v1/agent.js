@@ -6,14 +6,14 @@ import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
-	get() {
+	async get() {
 		try {
 			check(this.urlParams, {
 				rid: String,
 				token: String,
 			});
 
-			const visitor = findGuest(this.urlParams.token);
+			const visitor = await findGuest(this.urlParams.token);
 			if (!visitor) {
 				throw new Meteor.Error('invalid-token');
 			}

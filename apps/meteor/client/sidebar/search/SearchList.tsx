@@ -45,6 +45,7 @@ const shortcut = ((): string => {
 	return '(\u2303+K)';
 })();
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const useSpotlight = (filterText: string, usernames: string[]) => {
 	const expression = /(@|#)?(.*)/i;
 	const [, mention, name] = filterText.match(expression) || [];

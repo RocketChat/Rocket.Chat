@@ -1,7 +1,7 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IMessage, IRoom, ISetting, ISubscription, IUpload, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUpload } from '@rocket.chat/core-typings';
 import {
 	isDmDeleteProps,
 	isDmFileProps,
@@ -12,16 +12,16 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Subscriptions, Uploads, Messages, Rooms, Settings } from '@rocket.chat/models';
-import type { FilterQuery } from 'mongodb';
+import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { addUserToFileObj } from '../helpers/addUserToFileObj';
+import { settings } from '../../../settings/server';
 
 interface IImFilesObject extends IUpload {
 	userId: string;
@@ -218,26 +218,17 @@ API.v1.addRoute(
 
 			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
 
-			const files = (
-				await Uploads.find<IUpload & { userId: string }>(ourQuery, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-					projection: fields,
-				}).toArray()
-			).map((file): IImFilesObject | (IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }) => {
-				if (file.userId) {
-					return this.insertUserObject<IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }>({
-						object: { ...file },
-						userId: file.userId,
-					});
-				}
-				return file;
+			const { cursor, totalCount } = Uploads.findPaginated<IImFilesObject>(ourQuery, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
 			});
 
-			const total = await Uploads.find(ourQuery).count();
+			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
+
 			return API.v1.success({
-				files,
+				files: await addUserToFileObj(files),
 				count: files.length,
 				offset,
 				total,
@@ -315,15 +306,16 @@ API.v1.addRoute(
 
 			const options = {
 				sort: { username: sort?.username ? sort.username : 1 },
-				projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
+				projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1, federated: 1 },
 				skip: offset,
 				limit: count,
 			};
 
-			const cursor = Users.findByActiveUsersExcept(filter, [], options, null, [extraQuery]);
+			const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 
-			const members = cursor.fetch();
-			const total = cursor.count();
+			const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter, [], options, searchFields, [extraQuery]);
+
+			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				members,
@@ -355,18 +347,21 @@ API.v1.addRoute(
 
 			const ourQuery = { rid: room._id, ...query };
 			const sortObj = { ts: sort?.ts ?? -1 };
-			const messages = await Messages.find(ourQuery, {
+
+			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sortObj,
 				skip: offset,
 				limit: count,
 				...(fields && { projection: fields }),
-			}).toArray();
+			});
+
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
-				total: await Messages.find(ourQuery).count(),
+				total,
 			});
 		},
 	},
@@ -377,13 +372,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const settings = await Settings.findOne<ISetting>(
-				{ _id: 'API_Enable_Direct_Message_History_EndPoint' },
-				{
-					projection: { _id: 1, value: 1 },
-				},
-			);
-			if (settings?.value !== true) {
+			if (settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
 				throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
 					route: '/api/v1/im.messages.others',
 				});
@@ -398,7 +387,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
 			}
 
-			const room = await Rooms.findOneById<IRoom>(roomId, { projection: { _id: 1, t: 1 } });
+			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(roomId, { projection: { _id: 1, t: 1 } });
 			if (!room || room?.t !== 'd') {
 				throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
 			}
@@ -407,17 +396,18 @@ API.v1.addRoute(
 			const { sort, fields, query } = this.parseJsonQuery();
 			const ourQuery = Object.assign({}, query, { rid: room._id });
 
-			const msgs = await Messages.find<IMessage>(ourQuery, {
+			const { cursor, totalCount } = Messages.findPaginated<IMessage>(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
 				projection: fields,
-			}).toArray();
+			});
+
+			const [msgs, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			if (!msgs) {
 				throw new Meteor.Error('error-no-messages', 'No messages found');
 			}
-			const total = await Messages.find(ourQuery).count();
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(msgs, this.userId),
@@ -443,7 +433,7 @@ API.v1.addRoute(
 				.map((item) => item.rid)
 				.toArray();
 
-			const rooms = Rooms.find(
+			const { cursor, totalCount } = Rooms.findPaginated(
 				{ type: 'd', _id: { $in: subscriptions } },
 				{
 					sort,
@@ -451,10 +441,12 @@ API.v1.addRoute(
 					limit: count,
 					projection: fields,
 				},
-			).map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId));
+			);
 
-			const total = await rooms.count();
-			const ims = await rooms.toArray();
+			const [ims, total] = await Promise.all([
+				cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
+				totalCount,
+			]);
 
 			return API.v1.success({
 				ims,
@@ -478,22 +470,26 @@ API.v1.addRoute(
 			const { offset, count }: { offset: number; count: number } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const ourQuery = { ...query, t: 'd' } as FilterQuery<IRoom>;
+			const { cursor, totalCount } = Rooms.findPaginated(
+				{ ...query, t: 'd' },
+				{
+					sort: sort || { name: 1 },
+					skip: offset,
+					limit: count,
+					projection: fields,
+				},
+			);
 
-			const rooms = await Rooms.find(ourQuery, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			})
-				.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId))
-				.toArray();
+			const [rooms, total] = await Promise.all([
+				cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
+				totalCount,
+			]);
 
 			return API.v1.success({
 				ims: rooms,
 				offset,
 				count: rooms.length,
-				total: await Rooms.find(ourQuery).count(),
+				total,
 			});
 		},
 	},

@@ -1,12 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
-import UserCard from '../../../client/components/UserCard';
 import { UserStatus } from '../../../client/components/UserStatus';
 import UserAvatar from '../../../client/components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../client/hooks/useEndpointData';
+import AgentInfoDetails from '../../../client/views/omnichannel/components/AgentInfoDetails';
+import Info from '../../../client/views/omnichannel/components/Info';
 
 const wordBreak = css`
 	word-break: break-word;
@@ -27,13 +27,10 @@ function ContactManagerInfo({ username }) {
 
 	return (
 		<>
-			<UserCard.Info className={wordBreak} flexShrink={0} style={{ display: 'flex' }}>
+			<Info className={wordBreak} style={{ display: 'flex' }}>
 				<UserAvatar title={username} username={username} />
-				<UserCard.Username mis='x10' name={username} status={<UserStatus status={status} />} />
-				<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
-					({name})
-				</Box>
-			</UserCard.Info>
+				<AgentInfoDetails mis='x10' name={name} shortName={username} status={<UserStatus status={status} />} />
+			</Info>
 		</>
 	);
 }

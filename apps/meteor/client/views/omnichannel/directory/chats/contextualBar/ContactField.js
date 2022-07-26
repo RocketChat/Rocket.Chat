@@ -2,11 +2,11 @@ import { Avatar, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import UserCard from '../../../../../components/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
+import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
@@ -46,12 +46,7 @@ const ContactField = ({ contact, room }) => {
 			<Label>{t('Contact')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<Avatar size='x40' title={fname} url={avatarUrl} />
-				<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
-				{username && name && (
-					<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
-						({username})
-					</Box>
-				)}
+				<AgentInfoDetails mis='x10' name={displayName} shortName={username} status={<UserStatus status={status} />} />
 			</Info>
 		</Field>
 	);

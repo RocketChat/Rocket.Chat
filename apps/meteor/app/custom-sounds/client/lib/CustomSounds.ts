@@ -48,6 +48,20 @@ class CustomSoundsClass {
 			extension: 'mp3',
 			src: getURL('sounds/telephone.mp3'),
 		});
+		this.add({
+			_id: 'outbound-call-ringing',
+			name: 'Outbound Call Ringing',
+			extension: 'mp3',
+			src: getURL('sounds/outbound-call-ringing.mp3'),
+		});
+		this.add({
+			_id: 'call-ended',
+			name: 'Call Ended',
+			extension: 'mp3',
+			src: getURL('sounds/call-ended.mp3'),
+		});
+		this.add({ _id: 'dialtone', name: 'Dialtone', extension: 'mp3', src: getURL('sounds/dialtone.mp3') });
+		this.add({ _id: 'ringtone', name: 'Ringtone', extension: 'mp3', src: getURL('sounds/ringtone.mp3') });
 	}
 
 	add(sound: CustomSound): void {
@@ -59,9 +73,9 @@ class CustomSoundsClass {
 		$('body').append(audio);
 	}
 
-	remove(sound: CustomSound): void {
-		this.list.delete(sound._id);
-		$(`#${sound._id}`).remove();
+	remove(sound: string): void {
+		this.list.delete(sound);
+		$(`#${sound}`).remove();
 	}
 
 	update(sound: CustomSound): void {
@@ -119,6 +133,12 @@ class CustomSoundsClass {
 		if (audio.currentTime !== 0) {
 			audio.currentTime = 0;
 		}
+	}
+
+	isPlaying = (sound: string): boolean => {
+		const audio = document.querySelector(`#${getCustomSoundId(sound)}`) as HTMLAudioElement;
+
+		return audio && audio.duration > 0 && !audio.paused;
 	}
 }
 

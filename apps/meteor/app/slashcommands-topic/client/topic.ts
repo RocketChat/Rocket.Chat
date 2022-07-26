@@ -6,9 +6,9 @@ import { callbacks } from '../../../lib/callbacks';
 import { hasPermission } from '../../authorization/client';
 import { handleError } from '../../../client/lib/utils/handleError';
 
-slashCommands.add(
-	'topic',
-	function Topic(_command: 'topic', params, item): void {
+slashCommands.add({
+	command: 'topic',
+	callback: function Topic(_command: 'topic', params, item): void {
 		if (Meteor.isClient && hasPermission('edit-room', item.rid)) {
 			Meteor.call('saveRoomSettings', item.rid, 'roomTopic', params, (err: Meteor.Error) => {
 				if (err) {
@@ -24,9 +24,9 @@ slashCommands.add(
 			});
 		}
 	},
-	{
+	options: {
 		description: 'Slash_Topic_Description',
 		params: 'Slash_Topic_Params',
 		permission: 'edit-room',
 	},
-);
+});

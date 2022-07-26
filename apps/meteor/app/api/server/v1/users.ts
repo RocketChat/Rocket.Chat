@@ -366,6 +366,7 @@ API.v1.addRoute(
 								t: 1,
 								roles: 1,
 								unread: 1,
+								federated: 1,
 							},
 							sort: {
 								t: 1,
@@ -398,7 +399,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const nonEmptyQuery = getNonEmptyQuery(query);
+			const nonEmptyQuery = getNonEmptyQuery(query, hasPermission(this.userId, 'view-full-other-user-info'));
 			const nonEmptyFields = getNonEmptyFields(fields);
 
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
@@ -413,6 +414,7 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
 						inclusiveFieldsKeys.includes('username') && 'username.*',
 						inclusiveFieldsKeys.includes('name') && 'name.*',
+						inclusiveFieldsKeys.includes('type') && 'type.*',
 					].filter(Boolean) as string[],
 					this.queryOperations,
 				)
@@ -483,7 +485,7 @@ API.v1.addRoute(
 	{
 		authRequired: false,
 		rateLimiterOptions: {
-			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser'),
+			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
 			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 		},
 		validateParams: isUserRegisterParamsPOST,

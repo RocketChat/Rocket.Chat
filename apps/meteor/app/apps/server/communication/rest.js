@@ -529,6 +529,38 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
+			':id/versions',
+			{ authRequired: true, permissionsRequired: ['manage-apps'] },
+			{
+				get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+
+					const headers = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					let result;
+					try {
+						result = HTTP.get(`${baseUrl}/v1/apps/${this.urlParams.id}`, {
+							headers,
+						});
+					} catch (e) {
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
+					}
+
+					if (!result || result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the App versions from the Marketplace:', result.data);
+						return API.v1.failure();
+					}
+
+					return API.v1.success({ apps: result.data });
+				},
+			},
+		);
+
+		this.api.addRoute(
 			':id/sync',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{

@@ -9,7 +9,7 @@ const createSubscription = function <T>(getValue: () => T): [subscribe: (onStore
 		(callback: () => void): (() => void) => {
 			const computation = Tracker.autorun(() => {
 				currentValue = getValue();
-				callback();
+				Tracker.afterFlush(callback);
 			});
 
 			return (): void => {
