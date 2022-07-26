@@ -79,7 +79,7 @@ const UserInfo = ({
 					{userDisplayName && <InfoPanel.Title icon={status} title={userDisplayName} />}
 					{statusText && (
 						<InfoPanel.Text>
-							<MarkdownText content={statusText} parseEmoji={true} variant='inline' />
+							<MarkdownText content={statusText} parseEmoji={true} />
 						</InfoPanel.Text>
 					)}
 				</InfoPanel.Section>
@@ -92,12 +92,10 @@ const UserInfo = ({
 						</InfoPanel.Field>
 					)}
 
-					{utcOffset && Number.isInteger(utcOffset) && (
+					{Number.isInteger(utcOffset) && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Local_Time')}</InfoPanel.Label>
-							<InfoPanel.Text>
-								<UTCClock utcOffset={utcOffset} />
-							</InfoPanel.Text>
+							<InfoPanel.Text>{utcOffset && <UTCClock utcOffset={utcOffset} />}</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 

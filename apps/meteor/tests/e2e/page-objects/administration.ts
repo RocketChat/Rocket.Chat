@@ -100,7 +100,31 @@ export class Administration {
 	}
 
 	userInTable(id: string): Locator {
-		return this.page.locator(`tr > td:has-text("${id}")`);
+		return this.page.locator(`tr[qa-user-id="${id}"]`);
+	}
+
+	get userInfoActions(): Locator {
+		return this.page.locator('[data-qa-id="UserInfoActions"]');
+	}
+
+	get userInfoUsername(): Locator {
+		return this.page.locator('[data-qa="UserInfoUserName"]');
+	}
+
+	userActionsInList(id: string): Locator {
+		return this.page.locator(`ol > li[title="${id}"]`);
+	}
+
+	async verifyUserActionsInList(actions: string[]): Promise<void> {
+		const expected = [];
+		for (const action of actions) {
+			expected.push(expect(this.userActionsInList(action)).toBeVisible());
+		}
+		await Promise.all(expected);
+	}
+
+	get userInfoActionsMoreMenu(): Locator {
+		return this.userInfoActions.locator('button[data-testid="menu"]');
 	}
 
 	get rolesSettingsFindInput(): Locator {
@@ -369,9 +393,5 @@ export class Administration {
 
 	getCheckboxPermission(label: string, column = 6): Locator {
 		return this.page.locator(`tr td:has-text("${label}") ~ td:nth-child(${column})`).locator('label').first();
-	}
-
-	get userInfoActions(): Locator {
-		return this.page.locator('[data-qa-id="UserInfoActions"]');
 	}
 }

@@ -65,6 +65,7 @@ test.describe('Administration', () => {
 					await expect(pageAdmin.notFoundChannelOrUser).toBeVisible();
 				});
 			});
+
 			test.describe('Filter checkbox', () => {
 				test.beforeAll(async () => {
 					await pageAdmin.roomsSearchForm.click({ clickCount: 3 });
@@ -111,59 +112,74 @@ test.describe('Administration', () => {
 					await pageAdmin.adminCheckBox('Teams').click();
 				});
 			});
-			test.describe('Users', () => {
-				test.beforeAll(async () => {
-					await pageAdmin.usersLink.click();
+		});
+
+		test.describe('Users', () => {
+			test.beforeAll(async () => {
+				await pageAdmin.usersLink.click();
+			});
+
+			test.describe('Filter text', async () => {
+				test.beforeEach(async () => {
+					await pageAdmin.usersFilter.click({ clickCount: 3 });
+					await pageAdmin.usersFilter.type('');
 				});
 
 				test.afterAll(async () => {
-					await pageAdmin.infoLink.click();
+					await pageAdmin.usersFilter.click({ clickCount: 3 });
+					await pageAdmin.usersFilter.type('');
 				});
 
-				test.describe('Filter text', async () => {
-					test.beforeEach(async () => {
-						await pageAdmin.usersFilter.click();
-					});
-
-					test.afterAll(async () => {
-						await pageAdmin.usersFilter.click();
-						await pageAdmin.usersFilter.type('');
-					});
-
-					test('expect should show rocket.cat', async () => {
-						await pageAdmin.usersFilter.type('rocket.cat');
-						await page.waitForSelector('//table//tbody//tr[1]//td//div//div//div//div[text()="Rocket.Cat"]');
-					});
-
-					test('expect dont user when write wrong name', async () => {
-						await pageAdmin.usersFilter.type('any_user_wrong');
-						await expect(pageAdmin.notFoundChannels).toBeVisible();
-					});
+				test('expect show rocket.cat user item', async () => {
+					await pageAdmin.usersFilter.type('rocket.cat');
+					await expect(pageAdmin.userInTable('rocket.cat')).toBeVisible();
 				});
 
-				test.describe('Create user', () => {
-					test.beforeAll(async () => {
-						await pageAdmin.tabs.usersAddUserTab.click();
-					});
+				test('expect not show user when write wrong name', async () => {
+					await pageAdmin.usersFilter.type('any_user_wrong');
+					await expect(pageAdmin.notFoundChannels).toBeVisible();
+				});
+			});
 
-					test('expect tab user add is rendering', async () => {
-						await expect(pageAdmin.tabs.usersAddUserName).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserUsername).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserEmail).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserVerifiedCheckbox).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserPassword).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserRoleList).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserRandomPassword).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserChangePasswordCheckbox).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserDefaultChannelCheckbox).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserWelcomeEmailCheckbox).toBeVisible();
-						await expect(pageAdmin.tabs.usersButtonCancel).toBeVisible();
-						await expect(pageAdmin.tabs.usersButtonSave).toBeVisible();
+			test.describe('User info', () => {
+				test.beforeAll(async () => {
+					await pageAdmin.usersFilter.type('rocket.cat');
+				});
 
-						await pageAdmin.tabs.usersAddUserTabClose.click();
+				test('expect show rocket.cat info panel', async () => {
+					await pageAdmin.userInTable('rocket.cat').click();
+					await expect(pageAdmin.userInfoActions).toBeVisible();
+				});
 
-						await expect(pageAdmin.tabs.addUserTable).not.toBeVisible();
-					});
+				test('expect show rocket.cat actions', async () => {
+					await pageAdmin.userInTable('rocket.cat').click();
+					await pageAdmin.userInfoActionsMoreMenu.click();
+					await pageAdmin.verifyUserActionsInList(['Make Admin', 'Reset E2E Key', 'Reset TOTP', 'Delete', 'Deactivate']);
+				});
+			});
+
+			test.describe('Create user', () => {
+				test.beforeAll(async () => {
+					await pageAdmin.tabs.usersAddUserTab.click();
+				});
+
+				test('expect tab user add is rendering', async () => {
+					await expect(pageAdmin.tabs.usersAddUserName).toBeVisible();
+					await expect(pageAdmin.tabs.usersAddUserUsername).toBeVisible();
+					await expect(pageAdmin.tabs.usersAddUserEmail).toBeVisible();
+					await expect(pageAdmin.tabs.usersAddUserVerifiedCheckbox).toBeVisible();
+					await expect(pageAdmin.tabs.usersAddUserPassword).toBeVisible();
+					await expect(pageAdmin.tabs.usersAddUserRoleList).toBeVisible();
+					await expect(pageAdmin.tabs.usersAddUserRandomPassword).toBeVisible();
+					await expect(pageAdmin.tabs.usersAddUserChangePasswordCheckbox).toBeVisible();
+					await expect(pageAdmin.tabs.usersAddUserDefaultChannelCheckbox).toBeVisible();
+					await expect(pageAdmin.tabs.usersAddUserWelcomeEmailCheckbox).toBeVisible();
+					await expect(pageAdmin.tabs.usersButtonCancel).toBeVisible();
+					await expect(pageAdmin.tabs.usersButtonSave).toBeVisible();
+
+					await pageAdmin.tabs.usersAddUserTabClose.click();
+
+					await expect(pageAdmin.tabs.addUserTable).not.toBeVisible();
 				});
 			});
 		});
