@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus as UserStatusEnum, ValueOf } from '@rocket.chat/core-typings';
-import { Box, Margins, Option } from '@rocket.chat/fuselage';
+import { Box, Margins, Option, OptionTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, useLogout, useSetting, useAtLeastOnePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -143,9 +143,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				</Box>
 			</Box>
 			<Option.Divider />
-			<Box pi='x16' pbs='x8' pbe='x4' fontScale='c1' textTransform='uppercase'>
-				{t('Status')}
-			</Box>
+			<OptionTitle>{t('Status')}</OptionTitle>
 			{Object.values(userStatus.list)
 				.filter(filterInvisibleStatus)
 				.map((status, i) => {
