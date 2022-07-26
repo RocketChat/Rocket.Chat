@@ -22,7 +22,6 @@ const ignoreChangeStream = ['yes', 'true'].includes(String(process.env.IGNORE_CH
 
 const useCustomOplog = !['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
 
-// TODO change to a typed event emitter
 export class DatabaseWatcher extends EventEmitter {
 	private db: Db;
 
@@ -105,22 +104,18 @@ export class DatabaseWatcher extends EventEmitter {
 		const lastOplogEntry = await oplogCollection.findOne<{ ts: Timestamp }>({}, { sort: { $natural: -1 }, projection: { _id: 0, ts: 1 } });
 
 		const oplogSelector = {
-			ns: new RegExp(
-				`^(?:${[
-					escapeRegExp(`${dbName}.`),
-					// escapeRegExp('admin.$cmd'),
-				].join('|')})`,
-			),
+			ns: new RegExp(`^(?:${[escapeRegExp(`${dbName}.`)].join('|')})`),
 			op: { $in: ['i', 'u', 'd'] },
 			...(lastOplogEntry && { ts: { $gt: lastOplogEntry.ts } }),
 		};
 
-		const stream = oplogCollection
-			.find(oplogSelector, {
-				tailable: true,
-				awaitData: true,
-			})
-			.stream();
+		const cursor = oplogCollection.find(oplogSelector);
+
+		cursor.addCursorFlag('tailable', true);
+		cursor.addCursorFlag('awaitData', true);
+		cursor.addCursorFlag('oplogReplay', true);
+
+		const stream = cursor.stream();
 
 		stream.on('data', (doc) => {
 			const doesMatter = this.watchCollections.some((collection) => doc.ns === `${dbName}.${collection}`);
@@ -172,5 +167,9 @@ export class DatabaseWatcher extends EventEmitter {
 		});
 
 		this.emit(collection, doc);
+	}
+
+	on<T>(collection: string, callback: (event: RealTimeData<T>) => void): this {
+		return super.on(collection, callback);
 	}
 }
