@@ -24,8 +24,21 @@ const useCustomOplog = !['yes', 'true'].includes(String(process.env.USE_NATIVE_O
 
 // TODO change to a typed event emitter
 export class DatabaseWatcher extends EventEmitter {
-	constructor(private db: Db, private watchCollections: string[], private _oplogHandle?: any) {
+	private db: Db;
+
+	private watchCollections: string[];
+
+	private _oplogHandle?: any;
+
+	private metrics?: any;
+
+	constructor({ db, watchCollections, _oplogHandle, metrics }: { db: Db; watchCollections: string[]; _oplogHandle?: any; metrics?: any }) {
 		super();
+
+		this.db = db;
+		this.watchCollections = watchCollections;
+		this._oplogHandle = _oplogHandle;
+		this.metrics = metrics;
 	}
 
 	async watch(): Promise<void> {
@@ -153,11 +166,10 @@ export class DatabaseWatcher extends EventEmitter {
 		if (!doc) {
 			return;
 		}
-		// TODO add metrics
-		// metrics.oplog.inc({
-		// 	collection: this.collectionName,
-		// 	op: action,
-		// });
+		this.metrics?.oplog.inc({
+			collection,
+			op: doc.action,
+		});
 
 		this.emit(collection, doc);
 	}
