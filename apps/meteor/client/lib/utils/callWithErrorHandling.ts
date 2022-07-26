@@ -9,8 +9,8 @@ export const callWithErrorHandling = async <M extends ServerMethodName>(
 ): Promise<ServerMethodReturn<M>> => {
 	try {
 		return await call(method, ...params);
-	} catch (error) {
-		handleError(error instanceof Error ? error : String(error));
+	} catch (error: any) {
+		handleError(error);
 		throw error;
 	}
 };

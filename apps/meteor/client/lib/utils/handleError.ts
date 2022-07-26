@@ -24,7 +24,7 @@ export const handleError = (error: {}, useToastr = true): JQuery<HTMLElement> | 
 		return handleError(error.xhr.responseJSON, useToastr);
 	}
 
-	const message = (hasError(error) && error.error) || (hasMessage(error) && error.message) || undefined;
+	const message = (hasError(error) && error.error) || (hasMessage(error) && error.message) || String(error);
 	const details = hasDetails(error) ? error.details : {};
 
 	if (useToastr) {

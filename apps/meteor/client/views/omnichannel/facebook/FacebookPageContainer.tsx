@@ -64,8 +64,8 @@ const FacebookPageContainer: FC = () => {
 				action,
 				page: id,
 			});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: any) {
+			dispatchToastMessage({ type: 'error', message: error });
 			setSubscribed(isSubscribed);
 		}
 	});
@@ -76,8 +76,8 @@ const FacebookPageContainer: FC = () => {
 			dispatchToastMessage({ type: 'success', message: t('Integration_disabled') });
 			reloadInitial();
 			reloadData();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: any) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
@@ -102,8 +102,8 @@ const FacebookPageContainer: FC = () => {
 				reloadInitial();
 				reloadData();
 			}
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: any) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
