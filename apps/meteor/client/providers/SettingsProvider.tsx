@@ -1,4 +1,4 @@
-import { SettingsContext, SettingsContextValue, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
+import { SettingsContext, SettingsContextValue, useAtLeastOnePermission, useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
 import { Tracker } from 'meteor/tracker';
 import React, { useCallback, useEffect, useMemo, useState, FunctionComponent } from 'react';
 
@@ -80,7 +80,7 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({ children, 
 		[cachedCollection],
 	);
 
-	const saveSettings = useMethod('saveSettings');
+	const saveSettings = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
 	const dispatch = useCallback(
 		async (changes) => {
 			await saveSettings(changes);
