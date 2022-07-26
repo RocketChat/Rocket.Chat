@@ -165,6 +165,10 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			if (!hasAtLeastOnePermission(this.userId, ['view-livechat-departments', 'view-l-room'])) {
+				return API.v1.unauthorized();
+			}
+
 			const { selector, onlyMyDepartments } = this.queryParams;
 			if (!selector) {
 				return API.v1.failure("The 'selector' param is required");
@@ -232,6 +236,10 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			if (!hasAtLeastOnePermission(this.userId, ['view-livechat-departments', 'view-l-room'])) {
+				return API.v1.unauthorized();
+			}
+
 			const { ids } = this.queryParams;
 			const { fields } = this.parseJsonQuery();
 			if (!ids) {

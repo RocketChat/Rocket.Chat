@@ -110,9 +110,6 @@ export async function findDepartmentsToAutocomplete({
 	selector,
 	onlyMyDepartments = false,
 }: FindDepartmentToAutocompleteParams): Promise<{ items: ILivechatDepartmentRecord[] }> {
-	if (!(await hasPermissionAsync(uid, 'view-livechat-departments')) && !(await hasPermissionAsync(uid, 'view-l-room'))) {
-		return { items: [] };
-	}
 	const { exceptions = [] } = selector;
 	let { conditions = {} } = selector;
 
@@ -160,7 +157,6 @@ export async function findDepartmentAgents({
 }
 
 export async function findDepartmentsBetweenIds({
-	uid,
 	ids,
 	fields,
 }: {
@@ -168,10 +164,6 @@ export async function findDepartmentsBetweenIds({
 	ids: string[];
 	fields: Record<string, unknown>;
 }): Promise<{ departments: ILivechatDepartmentRecord[] }> {
-	if (!(await hasPermissionAsync(uid, 'view-livechat-departments')) && !(await hasPermissionAsync(uid, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
-
 	const departments = await LivechatDepartment.findInIds(ids, fields).toArray();
 	return { departments };
 }
