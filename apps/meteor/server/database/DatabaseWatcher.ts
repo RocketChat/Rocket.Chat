@@ -20,7 +20,7 @@ export type RealTimeData<T> = {
 
 const ignoreChangeStream = ['yes', 'true'].includes(String(process.env.IGNORE_CHANGE_STREAM).toLowerCase());
 
-const useCustomOplog = !['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
+const useMeteorOplog = ['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
 
 export class DatabaseWatcher extends EventEmitter {
 	private db: Db;
@@ -41,8 +41,8 @@ export class DatabaseWatcher extends EventEmitter {
 	}
 
 	async watch(): Promise<void> {
-		if (useCustomOplog) {
-			this.watchOplog();
+		if (useMeteorOplog) {
+			this.watchMeteorOplog();
 			return;
 		}
 
@@ -51,7 +51,7 @@ export class DatabaseWatcher extends EventEmitter {
 			return;
 		}
 
-		this.watchMeteorOplog();
+		this.watchOplog();
 	}
 
 	private async isChangeStreamAvailable(): Promise<boolean> {
