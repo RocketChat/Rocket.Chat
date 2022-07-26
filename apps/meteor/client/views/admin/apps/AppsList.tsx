@@ -107,7 +107,15 @@ const AppsList: FC<{
 			/>
 
 			{isAppListReadyOrLoading && (
-				<AppsListMain appsResult={appsResult} current={current} itemsPerPage={itemsPerPage} onSetItemsPerPage={onSetItemsPerPage} onSetCurrent={onSetCurrent} paginationProps={paginationProps} isMarketplace={isMarketplace} />
+				<AppsListMain
+					appsResult={appsResult}
+					current={current}
+					itemsPerPage={itemsPerPage}
+					onSetItemsPerPage={onSetItemsPerPage}
+					onSetCurrent={onSetCurrent}
+					paginationProps={paginationProps}
+					isMarketplace={isMarketplace}
+				/>
 			)}
 
 			{noMarketplaceOrInstalledAppMatches && (
