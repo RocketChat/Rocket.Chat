@@ -10,7 +10,7 @@ import {
 	useMergedRefs,
 } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useUserPreference, useUserSubscriptions, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, {
 	forwardRef,
@@ -29,7 +29,7 @@ import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
-import { useMethodData } from '../../hooks/useMethodData';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from './Row';
@@ -63,9 +63,9 @@ const useSpotlight = (filterText: string, usernames: string[]) => {
 		return { users: true, rooms: true };
 	}, [searchForChannels, searchForDMs]);
 
-	const args = useMemo(() => [name, usernames, type], [type, name, usernames]);
+	const query = useMemo(() => ({ query: JSON.stringify([name, usernames, type]) }), [type, name, usernames]);
 
-	const { value: data, phase: status } = useMethodData('spotlight', args);
+	const { value: data, phase: status } = useEndpointData('/v1/spotlight', query);
 
 	return useMemo(() => {
 		if (!data) {

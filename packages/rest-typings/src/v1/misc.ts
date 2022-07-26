@@ -40,21 +40,13 @@ const ShieldSvgSchema = {
 
 export const isShieldSvgProps = ajv.compile<ShieldSvg>(ShieldSvgSchema);
 
-type Spotlight = { query: string; limit: number; offset: number };
+type Spotlight = { query: string };
 
 const SpotlightSchema = {
 	type: 'object',
 	properties: {
 		query: {
 			type: 'string',
-		},
-		limit: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
 		},
 	},
 	required: ['query'],
