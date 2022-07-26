@@ -1,7 +1,7 @@
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
 import { IFederationBridge } from '../../domain/IFederationBridge';
-import { bridgeLogger } from '../rocket-chat/adapters/logger';
+import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
 import { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
@@ -67,7 +67,7 @@ export class MatrixBridge implements IFederationBridge {
 				this.isRunning = true;
 			}
 		} catch (e) {
-			bridgeLogger.error('Failed to initialize the matrix-appservice-bridge.', e);
+			federationBridgeLogger.error('Failed to initialize the matrix-appservice-bridge.', e);
 		} finally {
 			this.isUpdatingBridgeStatus = false;
 		}
@@ -152,7 +152,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public logFederationStartupInfo(info?: string): void {
-		bridgeLogger.info(`${info}:
+		federationBridgeLogger.info(`${info}:
 			id: ${this.appServiceId}
 			bridgeUrl: ${this.bridgeUrl}
 			homeserverURL: ${this.homeServerUrl}
@@ -173,7 +173,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	protected async createInstance(): Promise<void> {
-		bridgeLogger.info('Performing Dynamic Import of matrix-appservice-bridge');
+		federationBridgeLogger.info('Performing Dynamic Import of matrix-appservice-bridge');
 
 		// Dynamic import to prevent Rocket.Chat from loading the module until needed and then handle if that fails
 		const { Bridge, AppServiceRegistration, MatrixUser } = await import('@rocket.chat/forked-matrix-appservice-bridge');

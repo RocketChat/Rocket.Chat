@@ -12,12 +12,12 @@ const FEDERATION_COMMANDS: Record<string, (currentUserId: string, roomId: string
 		),
 };
 
-export const normalizeUserId = (rawUserId: string): string => `@${rawUserId.replace('@', '')}`;
+export const normalizeExternalInviteeId = (rawInviteeId: string): string => `@${rawInviteeId.replace('@', '')}`;
 
-const validateUserIdFormat = async (rawUserId: string, inviterId: string): Promise<void> => {
+const validateExternalInviteeIdFormat = async (rawInviteeId: string, inviterId: string): Promise<void> => {
 	const inviter = await Users.findOneById(inviterId);
 	const isInviterExternal = inviter?.federated === true || inviter?.username?.includes(':');
-	if (!rawUserId.includes(':') && !isInviterExternal) {
+	if (!rawInviteeId.includes(':') && !isInviterExternal) {
 		throw new Error('Invalid userId format for federation command.');
 	}
 };
@@ -39,9 +39,9 @@ const executeSlashCommand = async (
 		return;
 	}
 
-	await validateUserIdFormat(rawUserId, currentUserId);
+	await validateExternalInviteeIdFormat(rawUserId, currentUserId);
 
-	const invitee = normalizeUserId(rawUserId);
+	const invitee = normalizeExternalInviteeId(rawUserId);
 
 	const { rid: roomId } = item;
 
