@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { access } from 'fs/promises';
 
 import mkdirp from 'mkdirp';
 import { Meteor } from 'meteor/meteor';
@@ -8,11 +9,6 @@ import type { IExportOperation, IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../app/settings/server';
 import { getPath } from '../lib/dataExport/getPath';
-
-let tempFolder = '/tmp/userData';
-if (settings.get<string | undefined>('UserData_FileSystemPath')?.trim() !== '') {
-	tempFolder = settings.get('UserData_FileSystemPath');
-}
 
 Meteor.methods({
 	async requestDataDownload({ fullExport = false }) {
@@ -56,8 +52,12 @@ Meteor.methods({
 			}
 		}
 
-		if (!fs.existsSync(tempFolder)) {
-			mkdirp.sync(tempFolder);
+		const tempFolder = settings.get<string | undefined>('UserData_FileSystemPath')?.trim() || '/tmp/userData';
+
+		try {
+			access(tempFolder, fs.constants.R_OK | fs.constants.W_OK);
+		} catch (e) {
+			await mkdirp(tempFolder);
 		}
 
 		const exportOperation = {
@@ -74,13 +74,17 @@ Meteor.methods({
 		exportOperation._id = id;
 
 		const folderName = path.join(tempFolder, id);
-		if (!fs.existsSync(folderName)) {
-			mkdirp.sync(folderName);
+		try {
+			access(folderName, fs.constants.R_OK | fs.constants.W_OK);
+		} catch (e) {
+			await mkdirp(folderName);
 		}
 
 		const assetsFolder = path.join(folderName, 'assets');
-		if (!fs.existsSync(assetsFolder)) {
-			mkdirp.sync(assetsFolder);
+		try {
+			access(assetsFolder, fs.constants.R_OK | fs.constants.W_OK);
+		} catch (e) {
+			await mkdirp(assetsFolder);
 		}
 
 		exportOperation.exportPath = folderName;
