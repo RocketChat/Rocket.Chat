@@ -175,6 +175,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 			_id: msgId,
 			groupable: false,
 			msg,
+			token: guest.token,
 			attachments: [
 				{
 					actions: [
