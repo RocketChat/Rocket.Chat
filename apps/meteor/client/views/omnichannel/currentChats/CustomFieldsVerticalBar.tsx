@@ -14,7 +14,7 @@ type CustomFieldsVerticalBarProps = {
 const CustomFieldsVerticalBar = ({ setCustomFields }: CustomFieldsVerticalBarProps): ReactElement => {
 	const { value: allCustomFields } = useEndpointData('/v1/livechat/custom-fields');
 
-	const { register, watch } = useForm();
+	const { register, watch } = useForm({ mode: 'onChange' });
 
 	// TODO: When we refactor the other CurrentChat's fields to use react-hook-form, we need to change this to use the form controller
 
