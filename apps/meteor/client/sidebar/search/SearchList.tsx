@@ -10,7 +10,7 @@ import {
 	useMergedRefs,
 } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useUserSubscriptions, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, {
 	forwardRef,
