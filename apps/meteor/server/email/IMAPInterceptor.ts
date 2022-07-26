@@ -44,7 +44,7 @@ export class IMAPInterceptor extends EventEmitter {
 		this.config = imapConfig;
 
 		this.imap = new IMAP({
-			connTimeout: 300000,
+			connTimeout: 10000,
 			keepalive: true,
 			...(imapConfig.tls && { tlsOptions: { servername: imapConfig.host } }),
 			...imapConfig,
@@ -77,8 +77,7 @@ export class IMAPInterceptor extends EventEmitter {
 
 		this.imap.on('error', (err: Error) => {
 			logger.error(`Error occurred on inbox ${this.config.user}: `, err);
-			this.imap.end();
-			this.reconnect();
+			this.stop(() => this.reconnect());
 		});
 
 		this.imap.on('close', () => {
