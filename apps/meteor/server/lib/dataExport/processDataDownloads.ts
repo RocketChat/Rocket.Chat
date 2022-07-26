@@ -8,12 +8,12 @@ import { Avatars, ExportOperations, UserDataFiles } from '@rocket.chat/models';
 import type { IExportOperation, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
 import type { FindCursor } from 'mongodb';
 
-import { settings } from '../../settings/server';
-import { Subscriptions } from '../../models/server';
-import { FileUpload } from '../../file-upload/server';
-import { DataExport } from '../../../server/lib/DataExport';
-import { joinPath } from '../../../server/lib/fileUtils';
-import { getURL } from '../../utils/lib/getURL';
+import { settings } from '../../../app/settings/server';
+import { Subscriptions } from '../../../app/models/server';
+import { FileUpload } from '../../../app/file-upload/server';
+import { DataExport } from '../DataExport';
+import { joinPath } from '../fileUtils';
+import { getURL } from '../../../app/utils/lib/getURL';
 import { getRoomData } from './getRoomData';
 import { sendEmail } from './sendEmail';
 import { makeZipFile } from './makeZipFile';

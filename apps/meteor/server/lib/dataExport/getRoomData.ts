@@ -1,6 +1,6 @@
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 
-import { Rooms } from '../../models/server';
+import { Rooms } from '../../../app/models/server';
 
 export const getRoomData = (
 	roomId: IRoom['_id'],

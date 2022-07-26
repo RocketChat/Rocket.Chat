@@ -2,7 +2,7 @@ import { SettingValue } from '@rocket.chat/core-typings';
 import type { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { settings } from '../../app/settings/server';
-import { processDataDownloads } from '../../app/user-data-download/server/cronProcessDownloads';
+import { processDataDownloads } from '../lib/dataExport/processDataDownloads';
 
 export const userDataDownloadsCron = (cron: typeof SyncedCron): void => {
 	const jobName = 'Generate download files for user data';

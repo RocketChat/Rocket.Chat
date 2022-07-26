@@ -12,11 +12,12 @@ import {
 	findRoomsAvailableForTeams,
 	findChannelAndPrivateAutocompleteWithPagination,
 } from '../lib/rooms';
-import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
+import { sendFile } from '../../../../server/lib/dataExport/sendFile';
 import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { sendViaEmail } from '../../../../server/lib/dataExport/sendViaEmail';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {

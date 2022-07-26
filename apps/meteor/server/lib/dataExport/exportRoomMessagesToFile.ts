@@ -2,10 +2,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Messages as MessagesRaw } from '@rocket.chat/models';
 import type { IMessage, IRoom, IUser, MessageAttachment, FileProp, RoomType } from '@rocket.chat/core-typings';
 
-import { settings } from '../../settings/server';
-import { joinPath } from '../../../server/lib/fileUtils';
-import { readSecondaryPreferred } from '../../../server/database/readSecondaryPreferred';
-import { Messages } from '../../models/server';
+import { settings } from '../../../app/settings/server';
+import { joinPath } from '../fileUtils';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { Messages } from '../../../app/models/server';
 import { startFile } from './startFile';
 import { writeToFile } from './writeToFile';
 import { createDir } from './createDir';

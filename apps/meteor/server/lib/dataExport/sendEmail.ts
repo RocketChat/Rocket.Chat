@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-import * as Mailer from '../../mailer';
-import { settings } from '../../settings/server';
+import * as Mailer from '../../../app/mailer';
+import { settings } from '../../../app/settings/server';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 
 export const sendEmail = (userData: Pick<IUser, 'name' | 'emails'>, subject: string, body: string): void => {
