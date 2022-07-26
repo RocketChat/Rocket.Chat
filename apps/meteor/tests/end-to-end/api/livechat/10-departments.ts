@@ -97,7 +97,7 @@ describe.only('LIVECHAT - Departments', function () {
 		});
 	});
 
-	describe('GET livechat/department:_id', () => {
+	describe('GET livechat/department/:_id', () => {
 		it('should return unauthorized error when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-departments', []).then(() => {
 				request
