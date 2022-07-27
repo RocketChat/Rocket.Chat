@@ -2,6 +2,7 @@ import { IMessage } from '@rocket.chat/core-typings';
 
 import {
 	FederationAfterLeaveRoomDto,
+	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
 } from '../../../application/input/RoomSenderDto';
@@ -40,15 +41,25 @@ export class FederationRoomSenderConverter {
 		});
 	}
 
-	public static toAfterLeaveRoom(
+	public static toOnUserLeftRoom(
 		internalUserId: string,
 		internalRoomId: string,
-		whoRemovedInternalId?: string,
 	): FederationAfterLeaveRoomDto {
 		return new FederationAfterLeaveRoomDto({
 			internalRoomId,
 			internalUserId,
-			whoRemovedInternalId,
+		});
+	}
+
+	public static toOnUserRemovedFromRoom(
+		internalUserId: string,
+		internalRoomId: string,
+		actionDoneByInternalId: string,
+	): FederationAfterRemoveUserFromRoomDto {
+		return new FederationAfterRemoveUserFromRoomDto({
+			internalRoomId,
+			internalUserId,
+			actionDoneByInternalId,
 		});
 	}
 }

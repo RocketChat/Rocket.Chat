@@ -4,7 +4,7 @@ import mock from 'mock-require';
 import { InMemoryQueue } from '../../../../../../../../app/federation-v2/server/infrastructure/queue/InMemoryQueue';
 
 mock('fastq', {
-	promise: (handler: Function) => ({
+	promise: (handler: (task: any) => Promise<void>) => ({
 		push: async (task: any): Promise<void> => handler(task),
 	}),
 });

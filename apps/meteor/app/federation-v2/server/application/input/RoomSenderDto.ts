@@ -18,7 +18,11 @@ export interface IFederationRoomSendExternalMessageDto extends IFederationSender
 
 export interface IFederationAfterLeaveRoomDto extends IFederationSenderBaseRoomInputDto {
 	internalUserId: string;
-	whoRemovedInternalId?: string;
+}
+
+export interface IFederationAfterRemoveUserFromRoomDto extends IFederationSenderBaseRoomInputDto {
+	internalUserId: string;
+	actionDoneByInternalId: string;
 }
 
 export class FederationSenderBaseRoomInputDto {
@@ -66,13 +70,22 @@ export class FederationRoomSendExternalMessageDto extends FederationSenderBaseRo
 }
 
 export class FederationAfterLeaveRoomDto extends FederationSenderBaseRoomInputDto {
-	constructor({ internalRoomId, internalUserId, whoRemovedInternalId }: IFederationAfterLeaveRoomDto) {
+	constructor({ internalRoomId, internalUserId }: IFederationAfterLeaveRoomDto) {
 		super({ internalRoomId });
 		this.internalUserId = internalUserId;
-		this.whoRemovedInternalId = whoRemovedInternalId;
+	}
+	internalUserId: string;
+
+}
+
+export class FederationAfterRemoveUserFromRoomDto extends FederationSenderBaseRoomInputDto {
+	constructor({ internalRoomId, internalUserId, actionDoneByInternalId }: IFederationAfterRemoveUserFromRoomDto) {
+		super({ internalRoomId });
+		this.internalUserId = internalUserId;
+		this.actionDoneByInternalId = actionDoneByInternalId;
 	}
 
 	internalUserId: string;
 
-	whoRemovedInternalId?: string;
+	actionDoneByInternalId: string;
 }

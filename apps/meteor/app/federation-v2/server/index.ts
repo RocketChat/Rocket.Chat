@@ -28,7 +28,14 @@ export const federationRoomServiceSender = FederationFactory.buildRoomServiceSen
 	federationBridge,
 );
 
-FederationFactory.setupListeners(federationRoomServiceSender);
+const federationRoomInternalHooksValidator = FederationFactory.buildRoomInternalHooksValidator(
+	rocketRoomAdapter,
+	rocketUserAdapter,
+	rocketSettingsAdapter,
+	federationBridge,
+);
+
+FederationFactory.setupListeners(federationRoomServiceSender, federationRoomInternalHooksValidator);
 let cancelSettingsObserver: () => void;
 
 export const runFederation = async (): Promise<void> => {

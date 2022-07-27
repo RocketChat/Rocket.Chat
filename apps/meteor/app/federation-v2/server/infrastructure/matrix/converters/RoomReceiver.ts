@@ -6,7 +6,7 @@ import {
 	FederationRoomChangeNameDto,
 	FederationRoomChangeTopicDto,
 	FederationRoomCreateInputDto,
-	FederationRoomSendInternalMessageDto,
+	FederationRoomReceiveExternalMessageDto,
 } from '../../../application/input/RoomReceiverDto';
 import { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
 import { RoomMembershipChangedEventType, MatrixEventRoomMembershipChanged } from '../definitions/events/RoomMembershipChanged';
@@ -127,13 +127,13 @@ export class MatrixRoomReceiverConverter {
 		});
 	}
 
-	public static toSendRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomSendInternalMessageDto {
-		return new FederationRoomSendInternalMessageDto({
+	public static toSendRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomReceiveExternalMessageDto {
+		return new FederationRoomReceiveExternalMessageDto({
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			text: externalEvent.content?.body,
+			messageText: externalEvent.content?.body,
 		});
 	}
 

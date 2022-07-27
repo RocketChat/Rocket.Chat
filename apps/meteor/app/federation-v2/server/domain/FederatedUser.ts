@@ -32,6 +32,18 @@ export class FederatedUser {
 		});
 	}
 
+	public getUsername(): string | undefined {
+		return this.internalReference?.username;
+	}
+
+	public getName(): string | undefined {
+		return this.internalReference?.name;
+	}
+
+	public static isAnInternalUser(fromOriginName: string, localOriginName: string): boolean {
+		return fromOriginName === localOriginName;
+	}
+
 	public static build(): FederatedUser {
 		return new FederatedUser();
 	}

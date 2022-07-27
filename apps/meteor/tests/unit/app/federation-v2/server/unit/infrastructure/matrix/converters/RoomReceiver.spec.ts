@@ -5,7 +5,7 @@ import { MatrixRoomReceiverConverter } from '../../../../../../../../../app/fede
 import {
 	FederationRoomCreateInputDto,
 	FederationRoomChangeMembershipDto,
-	FederationRoomSendInternalMessageDto,
+	FederationRoomReceiveExternalMessageDto,
 	FederationRoomChangeTopicDto,
 	FederationRoomChangeNameDto,
 	FederationRoomChangeJoinRulesDto,
@@ -217,8 +217,8 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 			sender: '@marcos.defendi:matrix.org',
 		};
 
-		it('should return an instance of FederationRoomSendInternalMessageDto', () => {
-			expect(MatrixRoomReceiverConverter.toSendRoomMessageDto({} as any)).to.be.instanceOf(FederationRoomSendInternalMessageDto);
+		it('should return an instance of FederationRoomReceiveExternalMessageDto', () => {
+			expect(MatrixRoomReceiverConverter.toSendRoomMessageDto({} as any)).to.be.instanceOf(FederationRoomReceiveExternalMessageDto);
 		});
 
 		it('should return the basic room properties correctly (normalizedRoomId without any "!" and only the part before the ":") if any', () => {

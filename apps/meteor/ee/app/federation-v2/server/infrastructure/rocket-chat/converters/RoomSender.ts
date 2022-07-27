@@ -143,7 +143,7 @@ export class FederationRoomSenderConverterEE {
 		const allExceptOwner = getAllUsersExceptOwnerByUserId(externalInvitees, internalInviterId);
 		const externalUsernamesToBeInvited: string[] = getInviteesUsername(getExternalUsersToBeInvited(allExceptOwner));
 		const internalUsernamesToBeInvited: string[] = getInternalUsernames(allExceptOwner).filter(
-			(internal) => !allUsernamesToBeInvited.includes(internal),
+			(internal) => !externalUsernamesToBeInvited.includes(internal),
 		);
 		const allUsernamesToBeInvited: string[] = [...externalUsernamesToBeInvited, ...internalUsernamesToBeInvited];
 

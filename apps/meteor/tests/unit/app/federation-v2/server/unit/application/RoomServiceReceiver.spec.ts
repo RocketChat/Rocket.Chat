@@ -4,13 +4,13 @@ import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import '../../../../lib/server.mocks';
 
-import { FederationRoomServiceReceiver } from '../../../../../../../app/federation-v2/server/application/RoomServiceReceiver';
+import { FederationRoomServiceListener } from '../../../../../../../app/federation-v2/server/application/RoomServiceReceiver';
 import { FederatedUser } from '../../../../../../../app/federation-v2/server/domain/FederatedUser';
 import { FederatedRoom } from '../../../../../../../app/federation-v2/server/domain/FederatedRoom';
 import { EVENT_ORIGIN } from '../../../../../../../app/federation-v2/server/domain/IFederationBridge';
 
-describe('Federation - Application - FederationRoomServiceReceiver', () => {
-	let service: FederationRoomServiceReceiver;
+describe('Federation - Application - FederationRoomServiceListener', () => {
+	let service: FederationRoomServiceListener;
 	const roomAdapter = {
 		getFederatedRoomByExternalId: sinon.stub(),
 		createFederatedRoom: sinon.stub(),
@@ -38,7 +38,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 	};
 
 	beforeEach(() => {
-		service = new FederationRoomServiceReceiver(
+		service = new FederationRoomServiceListener(
 			roomAdapter as any,
 			userAdapter as any,
 			messageAdapter as any,

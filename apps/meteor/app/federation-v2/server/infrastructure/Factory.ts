@@ -1,6 +1,6 @@
 import { IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { FederationRoomServiceReceiver } from '../application/RoomServiceReceiver';
+import { FederationRoomServiceListener } from '../application/RoomServiceListener';
 import { FederationRoomServiceSender } from '../application/RoomServiceSender';
 import { MatrixBridge } from './matrix/Bridge';
 import { MatrixEventsHandler } from './matrix/handlers';
@@ -21,6 +21,7 @@ import { RocketChatUserAdapter } from './rocket-chat/adapters/User';
 import { IFederationBridge } from '../domain/IFederationBridge';
 import { FederationHooks } from './rocket-chat/hooks';
 import { FederationRoomSenderConverter } from './rocket-chat/converters/RoomSender';
+import { FederationRoomInternalHooksValidator } from '../application/RoomInternalHooksService';
 
 export class FederationFactory {
 	public static buildRocketSettingsAdapter(): RocketChatSettingsAdapter {
@@ -49,8 +50,8 @@ export class FederationFactory {
 		rocketMessageAdapter: RocketChatMessageAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		bridge: IFederationBridge,
-	): FederationRoomServiceReceiver {
-		return new FederationRoomServiceReceiver(rocketRoomAdapter, rocketUserAdapter, rocketMessageAdapter, rocketSettingsAdapter, bridge);
+	): FederationRoomServiceListener {
+		return new FederationRoomServiceListener(rocketRoomAdapter, rocketUserAdapter, rocketMessageAdapter, rocketSettingsAdapter, bridge);
 	}
 
 	public static buildRoomServiceSender(
@@ -60,6 +61,15 @@ export class FederationFactory {
 		bridge: IFederationBridge,
 	): FederationRoomServiceSender {
 		return new FederationRoomServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, bridge);
+	}
+
+	public static buildRoomInternalHooksValidator(
+		rocketRoomAdapter: RocketChatRoomAdapter,
+		rocketUserAdapter: RocketChatUserAdapter,
+		rocketSettingsAdapter: RocketChatSettingsAdapter,
+		bridge: IFederationBridge,
+	): FederationRoomInternalHooksValidator {
+		return new FederationRoomInternalHooksValidator(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, bridge);
 	}
 
 	public static buildFederationBridge(rocketSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridge {
@@ -75,14 +85,14 @@ export class FederationFactory {
 	}
 
 	public static buildFederationEventHandler(
-		roomServiceReceive: FederationRoomServiceReceiver,
+		roomServiceReceive: FederationRoomServiceListener,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 	): MatrixEventsHandler {
 		return new MatrixEventsHandler(FederationFactory.getEventHandlers(roomServiceReceive, rocketSettingsAdapter));
 	}
 
 	public static getEventHandlers(
-		roomServiceReceiver: FederationRoomServiceReceiver,
+		roomServiceReceiver: FederationRoomServiceListener,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 	): MatrixBaseEventHandler[] {
 		return [
@@ -95,18 +105,23 @@ export class FederationFactory {
 		];
 	}
 
-	public static setupListeners(roomServiceSender: FederationRoomServiceSender): void {
-		FederationHooks.afterLeaveRoom(async (user: IUser, room: IRoom) =>
-			roomServiceSender.leaveRoom(FederationRoomSenderConverter.toAfterLeaveRoom(user._id, room._id)),
+	public static setupListeners(roomServiceSender: FederationRoomServiceSender, roomInternalHooksValidator: FederationRoomInternalHooksValidator): void {
+		FederationHooks.onUserLeftRoom((user: IUser, room: IRoom) =>
+			roomServiceSender.onUserLeftRoom(FederationRoomSenderConverter.toOnUserLeftRoom(user._id, room._id)),
 		);
-		FederationHooks.afterRemoveFromRoom(async (user: IUser, room: IRoom, userWhoRemoved: IUser) =>
-			roomServiceSender.leaveRoom(FederationRoomSenderConverter.toAfterLeaveRoom(user._id, room._id, userWhoRemoved._id)),
+		FederationHooks.onUserRemovedFromRoom((user: IUser, room: IRoom, userWhoRemoved: IUser) =>
+			roomServiceSender.onUserRemovedFromRoom(FederationRoomSenderConverter.toOnUserRemovedFromRoom(user._id, room._id, userWhoRemoved._id)),
 		);
-		FederationHooks.canAddTheUserToTheRoom((user: IUser | string, room: IRoom) => roomServiceSender.canAddThisUserToTheRoom(user, room));
-		FederationHooks.canAddUsersToTheRoom((user: IUser | string, inviter: IUser, room: IRoom) =>
-			roomServiceSender.canAddUsersToTheRoom(user, inviter, room),
+
+		FederationHooks.canAddFederatedUserToNonFederatedRoom((user: IUser | string, room: IRoom) =>
+			roomInternalHooksValidator.canAddFederatedUserToNonFederatedRoom(user, room)
 		);
-		FederationHooks.beforeCreateDirectMessage((members: (IUser | string)[]) => roomServiceSender.beforeCreateDirectMessageFromUI(members));
+		FederationHooks.canAddFederatedUserToFederatedRoom((user: IUser | string, inviter: IUser, room: IRoom) =>
+			roomInternalHooksValidator.canAddFederatedUserToFederatedRoom(user, inviter, room),
+		);
+		FederationHooks.canCreateDirectMessageFromUI((members: (IUser | string)[]) =>
+			roomInternalHooksValidator.canCreateDirectMessageFromUI(members)
+		);
 	}
 
 	public static removeListeners(): void {

@@ -31,7 +31,7 @@ export interface IFederationChangeMembershipInputDto extends IFederationReceiver
 export interface IFederationSendInternalMessageInputDto extends IFederationReceiverBaseRoomInputDto {
 	externalSenderId: string;
 	normalizedSenderId: string;
-	text: string;
+	messageText: string;
 }
 
 export interface IFederationRoomChangeJoinRulesDtoInputDto extends IFederationReceiverBaseRoomInputDto {
@@ -139,19 +139,19 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 	externalRoomName?: string;
 }
 
-export class FederationRoomSendInternalMessageDto extends FederationBaseRoomInputDto {
-	constructor({ externalRoomId, normalizedRoomId, externalSenderId, normalizedSenderId, text }: IFederationSendInternalMessageInputDto) {
+export class FederationRoomReceiveExternalMessageDto extends FederationBaseRoomInputDto {
+	constructor({ externalRoomId, normalizedRoomId, externalSenderId, normalizedSenderId, messageText }: IFederationSendInternalMessageInputDto) {
 		super({ externalRoomId, normalizedRoomId });
 		this.externalSenderId = externalSenderId;
 		this.normalizedSenderId = normalizedSenderId;
-		this.text = text;
+		this.messageText = messageText;
 	}
 
 	externalSenderId: string;
 
 	normalizedSenderId: string;
 
-	text: string;
+	messageText: string;
 }
 
 export class FederationRoomChangeJoinRulesDto extends FederationBaseRoomInputDto {

@@ -7,7 +7,7 @@ import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
 import { settings } from '../../../settings/server';
 import { messageProperties } from '../../../ui-utils';
-import { Users, Messages } from '../../../models';
+import { Users, Messages, Rooms } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
@@ -15,6 +15,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
 import { federationRoomServiceSender } from '../../../federation-v2/server';
 import { FederationRoomSenderConverter } from '../../../federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 export function executeSendMessage(uid, message) {
 	if (message.tshow && !message.tmid) {
@@ -107,8 +108,9 @@ Meteor.methods({
 		}
 
 		try {
-			if (Promise.await(federationRoomServiceSender.isAFederatedRoom(message.rid))) {
-				return federationRoomServiceSender.sendMessageFromRocketChat(
+			const room = Rooms.findOneById(message.rid);
+			if (isRoomFederated(room)) {
+				return federationRoomServiceSender.sendExternalMessage(
 					FederationRoomSenderConverter.toSendExternalMessageDto(uid, message.rid, message),
 				);
 			}

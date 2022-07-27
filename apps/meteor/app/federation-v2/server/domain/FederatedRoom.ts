@@ -46,12 +46,22 @@ export class FederatedRoom {
 		return this.members && this.members.length > 0 ? this.members.map((user) => user.internalReference) : [];
 	}
 
-	public isFederated(): boolean {
-		return this.internalReference?.federated === true;
-	}
-
 	public isDirectMessage(): boolean {
 		return this.internalReference?.t === RoomType.DIRECT_MESSAGE;
+	}
+
+	public getMembersUsernames(): string[] {
+		return this.internalReference?.usernames || [];
+	}
+
+	public isUserPartOfTheRoom(federatedUser: FederatedUser): boolean {
+		if (!federatedUser.internalReference?.username) {
+			return false;
+		}
+		if (!this.internalReference?.usernames) {
+			return false;
+		}
+		return this.internalReference.usernames.includes(federatedUser.internalReference.username);
 	}
 
 	public static buildRoomIdForDirectMessages(inviter: FederatedUser, invitee: FederatedUser): string {
@@ -84,5 +94,13 @@ export class FederatedRoom {
 			throw new Error('Its not possible to change a direct message topic');
 		}
 		this.internalReference.topic = topic;
+	}
+
+	public shouldUpdateRoomName(newRoomName: string): boolean {
+		return this.internalReference?.name !== newRoomName && !this.isDirectMessage();
+	}
+
+	public shouldUpdateRoomTopic(newRoomTopic: string): boolean {
+		return this.internalReference?.topic !== newRoomTopic && !this.isDirectMessage();
 	}
 }
