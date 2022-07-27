@@ -1,8 +1,9 @@
 /* eslint-env mocha */
 
-import { expect } from 'chai';
 import fs from 'fs';
 import path from 'path';
+import { expect } from 'chai';
+
 import { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Response } from 'supertest';
 
@@ -328,7 +329,7 @@ describe('LIVECHAT - rooms', function () {
 	describe('livechat/upload/:rid', () => {
 		it('should throw an error if x-visitor-token header is not present', (done) => {
 			request
-				.post(api('livechat/upload/test' + room._id))
+				.post(api('livechat/upload/test'))
 				.set(credentials)
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
@@ -338,7 +339,7 @@ describe('LIVECHAT - rooms', function () {
 
 		it('should throw an error if x-visitor-token is present but with an invalid value', (done) => {
 			request
-				.post(api('livechat/upload/test' + room._id))
+				.post(api('livechat/upload/test'))
 				.set(credentials)
 				.set('x-visitor-token', 'invalid-token')
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
