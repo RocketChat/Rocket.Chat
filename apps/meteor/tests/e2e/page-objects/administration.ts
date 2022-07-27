@@ -100,7 +100,7 @@ export class Administration {
 	}
 
 	userInTable(id: string): Locator {
-		return this.page.locator(`tr[qa-user-id="${id}"]`);
+		return this.page.locator(`tr > td:has-text("${id}") >> nth=0`);
 	}
 
 	get userInfoActions(): Locator {
