@@ -15,8 +15,8 @@ export const userSimple1Subscriptions: ISubscription[] = [
 		lr: new Date(),
 		t: 'c',
 		u: {
-			_id: 'simple_user_1',
-			username: 'simple_user_1',
+			_id: 'user_simple_1',
+			username: 'user_simple_1',
 		},
 		_updatedAt: new Date(),
 	},
@@ -33,8 +33,8 @@ export const userSimple1Subscriptions: ISubscription[] = [
 		lr: new Date(),
 		t: 'c',
 		u: {
-			_id: 'simple_user_1',
-			username: 'simple_user_1',
+			_id: 'user_simple_1',
+			username: 'user_simple_1',
 		},
 		ls: new Date(),
 		_updatedAt: new Date(),
@@ -53,8 +53,8 @@ export const userSimple1Subscriptions: ISubscription[] = [
 		lr: new Date(),
 		t: 'p',
 		u: {
-			_id: 'simple_user_1',
-			username: 'simple_user_1',
+			_id: 'user_simple_1',
+			username: 'user_simple_1',
 		},
 		ls: new Date(),
 		_updatedAt: new Date(),
