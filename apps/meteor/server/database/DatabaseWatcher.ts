@@ -1,7 +1,14 @@
 import EventEmitter from 'events';
 
 import { IRocketChatRecord } from '@rocket.chat/core-typings';
-import type { Timestamp, Db } from 'mongodb';
+import type {
+	Timestamp,
+	Db,
+	ChangeStreamDeleteDocument,
+	ChangeStreamInsertDocument,
+	ChangeStreamReplaceDocument,
+	ChangeStreamUpdateDocument,
+} from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { MongoClient } from 'mongodb';
 
@@ -138,7 +145,6 @@ export class DatabaseWatcher extends EventEmitter {
 			throw new Error('no-oplog-handle');
 		}
 		watchCollections.forEach((collection) => {
-			// TODO fix any
 			this._oplogHandle.onOplogEntry({ collection }, (event: any) => {
 				this.emitDoc(collection, convertOplogPayload(event));
 			});
@@ -148,10 +154,22 @@ export class DatabaseWatcher extends EventEmitter {
 	private watchChangeStream(): void {
 		console.log('[DatabaseWatcher] Using change streams');
 
-		const changeStream = this.db.watch<IRocketChatRecord>([{ $match: { 'ns.coll': { $in: watchCollections } } }]);
+		const changeStream = this.db.watch<
+			IRocketChatRecord,
+			| ChangeStreamInsertDocument<IRocketChatRecord>
+			| ChangeStreamUpdateDocument<IRocketChatRecord>
+			| ChangeStreamDeleteDocument<IRocketChatRecord>
+			| ChangeStreamReplaceDocument<IRocketChatRecord>
+		>([
+			{
+				$match: {
+					'operationType': { $in: ['insert', 'update', 'delete', 'replace'] },
+					'ns.coll': { $in: watchCollections },
+				},
+			},
+		]);
 		changeStream.on('change', (event) => {
-			// TODO fix as any
-			this.emitDoc((event as any).ns.coll, convertChangeStreamPayload(event));
+			this.emitDoc(event.ns.coll, convertChangeStreamPayload(event));
 		});
 	}
 

@@ -1,9 +1,20 @@
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
-import type { ChangeStreamDocument } from 'mongodb';
+import type {
+	ChangeStreamDeleteDocument,
+	ChangeStreamInsertDocument,
+	ChangeStreamReplaceDocument,
+	ChangeStreamUpdateDocument,
+} from 'mongodb';
 
 import type { RealTimeData } from './DatabaseWatcher';
 
-export function convertChangeStreamPayload(event: ChangeStreamDocument<IRocketChatRecord>): RealTimeData<IRocketChatRecord> | void {
+export function convertChangeStreamPayload(
+	event:
+		| ChangeStreamInsertDocument<IRocketChatRecord>
+		| ChangeStreamUpdateDocument<IRocketChatRecord>
+		| ChangeStreamDeleteDocument<IRocketChatRecord>
+		| ChangeStreamReplaceDocument<IRocketChatRecord>,
+): RealTimeData<IRocketChatRecord> | void {
 	switch (event.operationType) {
 		case 'insert':
 			return {
@@ -13,26 +24,22 @@ export function convertChangeStreamPayload(event: ChangeStreamDocument<IRocketCh
 				data: event.fullDocument,
 			};
 		case 'update':
-			const diff: Record<string, any> = {};
+			const diff: Record<string, any> = {
+				...(event.updateDescription.updatedFields && event.updateDescription.updatedFields),
+				...(event.updateDescription.removedFields || []).reduce((unset, removedField) => {
+					return {
+						...unset,
+						[removedField]: undefined,
+					};
+				}, {}),
+			};
 
-			if (event.updateDescription?.updatedFields) {
-				for (const key in event.updateDescription.updatedFields) {
-					if (event.updateDescription.updatedFields.hasOwnProperty(key)) {
-						// TODO fix as any
-						diff[key] = (event.updateDescription as any).updatedFields[key];
-					}
-				}
-			}
-
-			const unset: Record<string, number> = {};
-			if (event.updateDescription.removedFields) {
-				for (const key in event.updateDescription.removedFields) {
-					if (event.updateDescription.removedFields.hasOwnProperty(key)) {
-						diff[key] = undefined;
-						unset[key] = 1;
-					}
-				}
-			}
+			const unset: Record<string, number> = (event.updateDescription.removedFields || []).reduce((unset, removedField) => {
+				return {
+					...unset,
+					[removedField]: 1,
+				};
+			}, {});
 
 			return {
 				action: 'update',
