@@ -135,7 +135,7 @@ class CustomSoundsClass {
 		}
 	}
 
-	isPlaying = (sound: string): boolean => {
+	isPlaying(sound: string): boolean {
 		const audio = document.querySelector(`#${getCustomSoundId(sound)}`) as HTMLAudioElement;
 
 		return audio && audio.duration > 0 && !audio.paused;
