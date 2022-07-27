@@ -19,7 +19,7 @@ export function convertChangeStreamPayload(
 			};
 		case 'update':
 			const diff: Record<string, any> = {
-				...(event.updateDescription.updatedFields && event.updateDescription.updatedFields),
+				...event.updateDescription.updatedFields,
 				...(event.updateDescription.removedFields || []).reduce((unset, removedField) => {
 					return {
 						...unset,
