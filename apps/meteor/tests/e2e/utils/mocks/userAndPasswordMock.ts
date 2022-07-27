@@ -4,6 +4,6 @@ export const adminLogin = {
 };
 
 export const validUserInserted = {
-	email: 'user_simple_1@email.com',
+	email: 'user1@email.com',
 	password: 'any_password',
 };

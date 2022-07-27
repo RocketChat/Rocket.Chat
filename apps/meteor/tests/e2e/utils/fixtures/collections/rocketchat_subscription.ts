@@ -2,7 +2,7 @@ import type { ISubscription } from '@rocket.chat/core-typings';
 
 export const userSimple1Subscriptions: ISubscription[] = [
 	{
-		_id: 'user_simple_1_to_general',
+		_id: 'user1_to_general',
 		rid: 'GENERAL',
 		name: 'general',
 		open: true,
@@ -15,15 +15,15 @@ export const userSimple1Subscriptions: ISubscription[] = [
 		lr: new Date(),
 		t: 'c',
 		u: {
-			_id: 'user_simple_1',
-			username: 'user_simple_1',
+			_id: 'user1',
+			username: 'user1',
 		},
 		_updatedAt: new Date(),
 	},
 	{
-		_id: 'user_simple_1_to_public_1',
-		rid: 'room_public_1',
-		name: 'room_public_1',
+		_id: 'user1_to_public1',
+		rid: 'room_public1',
+		name: 'room_public1',
 		open: true,
 		alert: true,
 		unread: 0,
@@ -33,17 +33,17 @@ export const userSimple1Subscriptions: ISubscription[] = [
 		lr: new Date(),
 		t: 'c',
 		u: {
-			_id: 'user_simple_1',
-			username: 'user_simple_1',
+			_id: 'user1',
+			username: 'user1',
 		},
 		ls: new Date(),
 		_updatedAt: new Date(),
 		roles: ['owner'],
 	},
 	{
-		_id: 'user_simple_1_to_private_1',
-		rid: 'room_private_1',
-		name: 'room_private_1',
+		_id: 'user1_to_private1',
+		rid: 'room_private1',
+		name: 'room_private1',
 		open: true,
 		alert: false,
 		unread: 0,
@@ -53,8 +53,8 @@ export const userSimple1Subscriptions: ISubscription[] = [
 		lr: new Date(),
 		t: 'p',
 		u: {
-			_id: 'user_simple_1',
-			username: 'user_simple_1',
+			_id: 'user1',
+			username: 'user1',
 		},
 		ls: new Date(),
 		_updatedAt: new Date(),
@@ -64,9 +64,9 @@ export const userSimple1Subscriptions: ISubscription[] = [
 
 export const userAdmin1Subscriptions: ISubscription[] = [
 	{
-		_id: 'user_admin_1_to_private_1',
-		rid: 'room_private_1',
-		name: 'room_private_1',
+		_id: 'user_admin_1_to_private1',
+		rid: 'room_private1',
+		name: 'room_private1',
 		open: true,
 		alert: false,
 		unread: 0,
@@ -83,9 +83,9 @@ export const userAdmin1Subscriptions: ISubscription[] = [
 		ls: new Date(),
 	},
 	{
-		_id: 'user_admin_1_to_public_1',
-		rid: 'room_public_1',
-		name: 'room_public_1',
+		_id: 'user_admin_1_to_public1',
+		rid: 'room_public1',
+		name: 'room_public1',
 		open: true,
 		alert: true,
 		unread: 0,

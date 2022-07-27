@@ -1,14 +1,14 @@
 import { MongoClient } from 'mongodb';
 import { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
 
-import { URL_MONGODB } from '../constants';
+import * as constants from '../constants';
 import * as rooms from './collections/rocketchat_room';
 import * as users from './collections/users';
 import * as subscriptions from './collections/rocketchat_subscription';
 
 export default {
 	async up() {
-		const connection = await MongoClient.connect(URL_MONGODB);
+		const connection = await MongoClient.connect(constants.URL_MONGODB);
 
 		await connection.db().collection<IRoom>('rocketchat_room').insertMany([rooms.roomPublic1, rooms.roomPrivate1]);
 
@@ -23,7 +23,7 @@ export default {
 	},
 
 	async down() {
-		const connection = await MongoClient.connect(URL_MONGODB);
+		const connection = await MongoClient.connect(constants.URL_MONGODB);
 
 		await connection
 			.db()

@@ -39,12 +39,12 @@ test.describe('Messaging', () => {
 		await auxContext.page.close();
 	});
 
-	test('expect show "hello word" in both contexts (room_private_1)', async ({ browser }) => {
-		await pageHomeChannel.sidenav.doOpenChat('room_private_1');
+	test('expect show "hello word" in both contexts (room_private1)', async ({ browser }) => {
+		await pageHomeChannel.sidenav.doOpenChat('room_private1');
 		await pageHomeChannel.content.doSendMessage('hello world');
 
 		const auxContext = await createAuxContext(browser);
-		await auxContext.pageHomeChannel.sidenav.doOpenChat('room_private_1');
+		await auxContext.pageHomeChannel.sidenav.doOpenChat('room_private1');
 
 		await expect(auxContext.pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
 		await expect(pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
@@ -53,7 +53,7 @@ test.describe('Messaging', () => {
 	});
 
 	test('expect show "hello word" in both contexts (direct)', async ({ browser }) => {
-		await pageHomeChannel.sidenav.doOpenChat('user.name.test');
+		await pageHomeChannel.sidenav.doOpenChat('user1');
 		await pageHomeChannel.content.doSendMessage('hello world');
 
 		const auxContext = await createAuxContext(browser);
