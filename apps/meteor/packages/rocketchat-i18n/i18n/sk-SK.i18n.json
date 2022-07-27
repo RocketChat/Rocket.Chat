@@ -1,5 +1,4 @@
 {
-  "403": "Zakázané",
   "500": "Interná chyba servera",
   "__username__is_no_longer__role__defined_by__user_by_": "používateľovi __username__ bola zrušená funkcia __role__ používateľom __user_by__",
   "__username__was_set__role__by__user_by_": "používateľovi __username__ bola nastavená funkcia __role__ používateľom __user_by__",

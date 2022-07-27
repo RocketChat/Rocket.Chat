@@ -1,5 +1,4 @@
 {
-  "403": "Забранен",
   "500": "Вътрешна грешка на сървъра",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ вече не е __role__ от __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ бе зададено __role__ от __user_by__",

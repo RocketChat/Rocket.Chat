@@ -1,5 +1,4 @@
 {
-  "403": "Kielletty",
   "500": "Sisäinen palvelinvirhe",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ ei ole enää __role__ (__user_by__ toimesta)",
   "__username__was_set__role__by__user_by_": "__user_by__ muutti käyttäjän __username__ rooliksi __role__ ",

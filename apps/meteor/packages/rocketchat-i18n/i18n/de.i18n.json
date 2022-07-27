@@ -1,5 +1,4 @@
 {
-  "403": "Verboten",
   "500": "Interner Serverfehler",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ leere Räume werden automatisch entfernt.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ leere Räume werden automatisch entfernt:<br/> __rooms__.",
@@ -1883,7 +1882,6 @@
   "Feature_Limiting": "Funktionsbegrenzung",
   "Features": "Funktionen",
   "Features_Enabled": "Aktivierte Funktionen",
-  "Feature_Disabled": "Funktion deaktiviert",
   "Federation": "Föderation",
   "Federation_Adding_to_your_server": "Ihrem Server eine Föderation hinzufügen",
   "Federation_Inviting_users_from_another_server": "Benutzer von einem anderen Server einladen",
@@ -4573,8 +4571,6 @@
   "UserDataDownload_CompletedRequestExistedWithLink_Text": "Ihre Datendatei ist jetzt zum Herunterladen bereit. Klicken Sie <a href=\"__download_link__\" target=\"_blank\">hier</a>, um sie herunterzuladen.",
   "UserDataDownload_EmailBody": "Ihre Datendatei ist jetzt zum Herunterladen bereit. Klicken Sie <a href=\"__download_link__\">hier</a>, um sie herunterzuladen.",
   "UserDataDownload_EmailSubject": "Ihre Datendatei ist bereit zum Herunterladen",
-  "UserDataDownload_FeatureDisabled": "Der Export von Benutzerdaten ist auf diesem Server leider nicht möglich!",
-  "UserDataDownload_LoginNeeded": "Sie müssen sich bei Ihrem Rocket.Chat-Konto anmelden, damit Sie diesen Datenexport herunterladen können. Klicken Sie dazu auf den untenstehenden Link und versuchen Sie es anschließend erneut.",
   "UserDataDownload_Requested": "Datei-Download angefordert",
   "UserDataDownload_Requested_Text": "Ihre Datendatei wird generiert. Wenn sie bereit ist, wird ein entsprechender Download-Link an Ihre E-Mail-Adresse gesendet. Vor Ihrer Anforderung stehen <strong>__pending_operations__</strong>  Prozesse in der Warteschlange.",
   "UserDataDownload_RequestExisted_Text": "Ihre Datei wird bereits generiert. Ein Link zum Herunterladen wird nach Fertigstellung an Ihre E-Mail-Adresse gesendet. Es gibt <strong>__pending_operations__</strong>Operationen in der Warteschlange, die vor Ihren ausgeführt werden können.",

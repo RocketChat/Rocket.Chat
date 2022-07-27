@@ -1,5 +1,4 @@
 {
-  "403": "Förbjuden",
   "500": "Internt serverfel",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ är inte längre __role__, av __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ sattes __role__ av __user_by__",

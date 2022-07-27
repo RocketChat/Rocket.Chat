@@ -1,5 +1,4 @@
 {
-  "403": "Prohibido",
   "500": "Error interno del servidor",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ salas vacías se eliminarán automáticamente.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ salas vacías se eliminarán automáticamente.<br/> __rooms__.",
@@ -1883,7 +1882,6 @@
   "Feature_Limiting": "Limitación de funciones",
   "Features": "Funciones",
   "Features_Enabled": "Funcionalidades habilitadas",
-  "Feature_Disabled": "Función deshabilitada",
   "Federation": "Federación",
   "Federation_Adding_to_your_server": "Adición de federación a tu servidor",
   "Federation_Inviting_users_from_another_server": "Invitación de usuarios de un servidor diferente",
@@ -4573,8 +4571,6 @@
   "UserDataDownload_CompletedRequestExistedWithLink_Text": "Tu archivo de datos ya se ha generado. Haz clic <a href=\"__download_link__\" target=\"_blank\">aquí</a> para descargarlo.",
   "UserDataDownload_EmailBody": "Tu archivo de datos está listo. Haz clic <a href=\"__download_link__\">aquí</a> para descargarlo.",
   "UserDataDownload_EmailSubject": "Tu archivo de datos está listo para descargar",
-  "UserDataDownload_FeatureDisabled": "Lo sentimos, las exportaciones de datos de usuario no están habilitadas en este servidor",
-  "UserDataDownload_LoginNeeded": "Debes iniciar sesión en tu cuenta de Rocket.Chat para descargar esta exportación de datos. Haz clic en el enlace de abajo para hacerlo e inténtalo de nuevo.",
   "UserDataDownload_Requested": "Descargar archivo solicitado",
   "UserDataDownload_Requested_Text": "Se generará tu archivo de datos. Se enviará un enlace para descargarlo a tu dirección de correo electrónico cuando esté listo. Hay <strong>__pending_operations__</strong> operaciones pendientes de ejecución en cola por delante de la tuya.",
   "UserDataDownload_RequestExisted_Text": "Tu archivo de datos se está generando. Se enviará un enlace para descargarlo a tu dirección de correo electrónico cuando esté listo. Hay <strong>__pending_operations__</strong> operaciones pendientes de ejecución en cola por delante de la tuya.",
