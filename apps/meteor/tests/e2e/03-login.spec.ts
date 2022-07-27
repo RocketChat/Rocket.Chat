@@ -8,6 +8,9 @@ test.describe('Login', () => {
 
 	test.beforeEach(async ({ page }) => {
 		pageAuth = new Auth(page);
+	});
+
+	test.beforeEach(async ({ page }) => {
 		await page.goto('/');
 	});
 

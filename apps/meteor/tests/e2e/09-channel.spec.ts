@@ -14,35 +14,23 @@ test.describe('Channel', () => {
 	test.beforeEach(async ({ page }) => {
 		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
+	});
 
+	test.beforeEach(async () => {
 		await pageAuth.doLogin();
 		await pageHomeChannel.sidenav.doCreateChannel(anyChannelName, false);
 		await pageHomeChannel.sidenav.doOpenChat('general');
 	});
 
 	test.describe('Search', () => {
-		test.describe('SpotlightSearch', async () => {
-			test('expect go to general', async () => {
-				await pageHomeChannel.sidenav.doOpenChat('general');
-				await expect(pageHomeChannel.content.channelTitle('general')).toContainText('general');
-			});
-
-			test('expect go to the user created channel', async () => {
-				await pageHomeChannel.sidenav.doOpenChat(anyChannelName);
-				await expect(pageHomeChannel.content.channelTitle(anyChannelName)).toContainText(anyChannelName);
-			});
+		test('expect go to general', async () => {
+			await pageHomeChannel.sidenav.doOpenChat('general');
+			await expect(pageHomeChannel.content.channelTitle('general')).toContainText('general');
 		});
 
-		test.describe('SideNav Channel List', () => {
-			test('expect go to the general channel', async () => {
-				await pageHomeChannel.content.inputMain.click();
-				await pageHomeChannel.sidenav.doOpenChat('general');
-			});
-
-			test('expect go to the user created channel', async () => {
-				await pageHomeChannel.content.inputMain.click();
-				await pageHomeChannel.sidenav.doOpenChat(anyChannelName);
-			});
+		test('expect go to the user created channel', async () => {
+			await pageHomeChannel.sidenav.doOpenChat(anyChannelName);
+			await expect(pageHomeChannel.content.channelTitle(anyChannelName)).toContainText(anyChannelName);
 		});
 	});
 
