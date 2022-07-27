@@ -1,14 +1,7 @@
 import EventEmitter from 'events';
 
 import { IRocketChatRecord } from '@rocket.chat/core-typings';
-import type {
-	Timestamp,
-	Db,
-	ChangeStreamDeleteDocument,
-	ChangeStreamInsertDocument,
-	ChangeStreamReplaceDocument,
-	ChangeStreamUpdateDocument,
-} from 'mongodb';
+import type { Timestamp, Db, ChangeStreamDeleteDocument, ChangeStreamInsertDocument, ChangeStreamUpdateDocument } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { MongoClient } from 'mongodb';
 
@@ -159,11 +152,10 @@ export class DatabaseWatcher extends EventEmitter {
 			| ChangeStreamInsertDocument<IRocketChatRecord>
 			| ChangeStreamUpdateDocument<IRocketChatRecord>
 			| ChangeStreamDeleteDocument<IRocketChatRecord>
-			| ChangeStreamReplaceDocument<IRocketChatRecord>
 		>([
 			{
 				$match: {
-					'operationType': { $in: ['insert', 'update', 'delete', 'replace'] },
+					'operationType': { $in: ['insert', 'update', 'delete'] },
 					'ns.coll': { $in: watchCollections },
 				},
 			},

@@ -1,10 +1,5 @@
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
-import type {
-	ChangeStreamDeleteDocument,
-	ChangeStreamInsertDocument,
-	ChangeStreamReplaceDocument,
-	ChangeStreamUpdateDocument,
-} from 'mongodb';
+import type { ChangeStreamDeleteDocument, ChangeStreamInsertDocument, ChangeStreamUpdateDocument } from 'mongodb';
 
 import type { RealTimeData } from './DatabaseWatcher';
 
@@ -12,8 +7,7 @@ export function convertChangeStreamPayload(
 	event:
 		| ChangeStreamInsertDocument<IRocketChatRecord>
 		| ChangeStreamUpdateDocument<IRocketChatRecord>
-		| ChangeStreamDeleteDocument<IRocketChatRecord>
-		| ChangeStreamReplaceDocument<IRocketChatRecord>,
+		| ChangeStreamDeleteDocument<IRocketChatRecord>,
 ): RealTimeData<IRocketChatRecord> | void {
 	switch (event.operationType) {
 		case 'insert':

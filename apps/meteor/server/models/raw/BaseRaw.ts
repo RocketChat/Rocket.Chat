@@ -423,7 +423,6 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 	}
 
 	watch(pipeline?: object[]): ChangeStream<T> {
-		console.log('watch ->', this.collectionName, pipeline);
 		return this.col.watch(pipeline);
 	}
 }
