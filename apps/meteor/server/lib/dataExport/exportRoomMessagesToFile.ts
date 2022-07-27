@@ -205,7 +205,6 @@ const exportRoomMessages = async (
 ) => {
 	const readPreference = readSecondaryPreferred(Messages.model.rawDatabase());
 
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore Circular reference on field 'attachments'
 	const { cursor, totalCount } = MessagesRaw.findPaginated(
 		{ ...filter, rid },

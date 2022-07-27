@@ -10,7 +10,7 @@ export const makeZipFile = (folderToZip: string, targetFile: string): Promise<vo
 
 		output.on('close', () => resolve());
 
-		archive.on('error', (err) => reject(err));
+		archive.on('error', (error) => reject(error));
 
 		archive.pipe(output);
 		archive.directory(folderToZip, false);

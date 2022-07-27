@@ -12,12 +12,11 @@ import {
 	findRoomsAvailableForTeams,
 	findChannelAndPrivateAutocompleteWithPagination,
 } from '../lib/rooms';
-import { sendFile } from '../../../../server/lib/dataExport/sendFile';
+import * as dataExport from '../../../../server/lib/dataExport';
 import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
-import { sendViaEmail } from '../../../../server/lib/dataExport/sendViaEmail';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -541,7 +540,7 @@ API.v1.addRoute(
 				dateTo = new Date(dateTo);
 				dateTo.setDate(dateTo.getDate() + 1);
 
-				sendFile(
+				dataExport.sendFile(
 					{
 						rid,
 						format,
@@ -564,7 +563,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-messages');
 				}
 
-				const result = sendViaEmail(
+				const result = dataExport.sendViaEmail(
 					{
 						rid,
 						toUsers,

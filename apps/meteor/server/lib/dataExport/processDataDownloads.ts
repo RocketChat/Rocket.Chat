@@ -22,13 +22,6 @@ import { copyFileUpload } from './copyFileUpload';
 import { uploadZipFile } from './uploadZipFile';
 import { exportRoomMessagesToFile } from './exportRoomMessagesToFile';
 
-let zipFolder = '/tmp/zipFiles';
-if (settings.get<string>('UserData_FileSystemZipPath')) {
-	if (settings.get<string>('UserData_FileSystemZipPath').trim() !== '') {
-		zipFolder = settings.get('UserData_FileSystemZipPath');
-	}
-}
-
 const loadUserSubscriptions = (_exportOperation: IExportOperation, fileType: 'json' | 'html', userId: IUser['_id']) => {
 	const roomList: (
 		| {
@@ -197,6 +190,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 		}
 
 		const generatedFileName = uuidv4();
+		const zipFolder = settings.get<string>('UserData_FileSystemZipPath')?.trim() || '/tmp/zipFiles';
 
 		if (exportOperation.status === 'downloading') {
 			for await (const attachmentData of exportOperation.fileList) {

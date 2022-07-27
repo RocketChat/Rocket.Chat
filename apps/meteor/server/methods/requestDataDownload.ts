@@ -7,7 +7,7 @@ import { ExportOperations, UserDataFiles } from '@rocket.chat/models';
 import type { IExportOperation, IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../app/settings/server';
-import { getPath } from '../lib/dataExport/getPath';
+import * as dataExport from '../lib/dataExport';
 
 Meteor.methods({
 	async requestDataDownload({ fullExport = false }) {
@@ -36,7 +36,7 @@ Meteor.methods({
 						return {
 							requested: false,
 							exportOperation: lastOperation,
-							url: getPath(file._id),
+							url: dataExport.getPath(file._id),
 							pendingOperationsBeforeMyRequest: pendingOperationsBeforeMyRequestCount,
 						};
 					}
