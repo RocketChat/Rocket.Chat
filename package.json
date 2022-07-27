@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "5.0.0-develop",
+	"version": "5.1.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -40,7 +40,7 @@
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
 		"yarn": "3.2.0",
-		"node": "14.18.3",
+		"node": "14.19.3",
 		"npm": "Use yarn instead"
 	},
 	"packageManager": "yarn@3.2.0",
@@ -54,7 +54,7 @@
 		]
 	},
 	"volta": {
-		"node": "14.18.3",
+		"node": "14.19.3",
 		"yarn": "1.22.18"
 	},
 	"resolutions": {

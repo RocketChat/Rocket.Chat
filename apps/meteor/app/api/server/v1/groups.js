@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Integrations, Uploads } from '@rocket.chat/models';
+import { Integrations, Messages as MessagesRaw, Uploads, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
@@ -16,6 +16,7 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { addUserToFileObj } from '../helpers/addUserToFileObj';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
@@ -333,38 +334,32 @@ API.v1.addRoute(
 	'groups.files',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const findResult = findPrivateGroupByIdOrName({
 				params: this.requestParams(),
 				userId: this.userId,
 				checkedArchived: false,
 			});
-			const addUserObjectToEveryObject = (file) => {
-				if (file.userId) {
-					file = this.insertUserObject({ object: file, userId: file.userId });
-				}
-				return file;
-			};
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
 			const ourQuery = Object.assign({}, query, { rid: findResult.rid });
 
-			const files = Promise.await(
-				Uploads.find(ourQuery, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-					fields,
-				}).toArray(),
-			);
+			const { cursor, totalCount } = Uploads.findPaginated(ourQuery, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
+			});
+
+			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				files: files.map(addUserObjectToEveryObject),
+				files: await addUserToFileObj(files),
 				count: files.length,
 				offset,
-				total: Promise.await(Uploads.find(ourQuery).count()),
+				total,
 			});
 		},
 	},
@@ -374,7 +369,7 @@ API.v1.addRoute(
 	'groups.getIntegrations',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (
 				!hasAtLeastOnePermission(this.userId, [
 					'manage-outgoing-integrations',
@@ -408,15 +403,14 @@ API.v1.addRoute(
 			const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, {
 				channel: { $in: channelsToSearch },
 			});
-			const cursor = Integrations.find(ourQuery, {
+			const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 				sort: sort || { _createdAt: 1 },
 				skip: offset,
 				limit: count,
 				projection,
 			});
 
-			const integrations = Promise.await(cursor.toArray());
-			const total = Promise.await(cursor.count());
+			const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				integrations,
@@ -580,26 +574,34 @@ API.v1.addRoute(
 	'groups.list',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
 
-			// TODO: CACHE: Add Breacking notice since we removed the query param
-			const cursor = Rooms.findBySubscriptionTypeAndUserId('p', this.userId, {
+			const subs = await SubscriptionsRaw.findByUserIdAndTypes(this.userId, ['p'], { projection: { rid: 1 } }).toArray();
+			const rids = subs.map(({ rid }) => rid).filter(Boolean);
+
+			if (rids.length === 0) {
+				return API.v1.notFound();
+			}
+
+			const { cursor, totalCount } = RoomsRaw.findPaginatedByTypeAndIds('p', rids, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			});
 
-			const totalCount = cursor.count();
-			const rooms = cursor.fetch();
+			const [groups, total] = await Promise.all([
+				cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
+				totalCount,
+			]);
 
 			return API.v1.success({
-				groups: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				groups,
 				offset,
-				count: rooms.length,
-				total: totalCount,
+				count: groups.length,
+				total,
 			});
 		},
 	},
@@ -609,7 +611,7 @@ API.v1.addRoute(
 	'groups.listAll',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-room-administration')) {
 				return API.v1.unauthorized();
 			}
@@ -617,21 +619,23 @@ API.v1.addRoute(
 			const { sort, fields, query } = this.parseJsonQuery();
 			const ourQuery = Object.assign({}, query, { t: 'p' });
 
-			const cursor = Rooms.find(ourQuery, {
+			const { cursor, totalCount } = RoomsRaw.findPaginated(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			});
 
-			const totalCount = cursor.count();
-			const rooms = cursor.fetch();
+			const [rooms, total] = await Promise.all([
+				cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
+				totalCount,
+			]);
 
 			return API.v1.success({
-				groups: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				groups: rooms,
 				offset,
 				count: rooms.length,
-				total: totalCount,
+				total,
 			});
 		},
 	},
@@ -641,7 +645,7 @@ API.v1.addRoute(
 	'groups.members',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const findResult = findPrivateGroupByIdOrName({
 				params: this.requestParams(),
 				userId: this.userId,
@@ -663,7 +667,7 @@ API.v1.addRoute(
 			);
 			const { status, filter } = this.queryParams;
 
-			const cursor = findUsersOfRoom({
+			const { cursor, totalCount } = findUsersOfRoom({
 				rid: findResult.rid,
 				...(status && { status: { $in: status } }),
 				skip,
@@ -672,8 +676,7 @@ API.v1.addRoute(
 				...(sort?.username && { sort: { username: sort.username } }),
 			});
 
-			const total = cursor.count();
-			const members = cursor.fetch();
+			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				members,
@@ -689,7 +692,7 @@ API.v1.addRoute(
 	'groups.messages',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const findResult = findPrivateGroupByIdOrName({
 				params: this.requestParams(),
 				userId: this.userId,
@@ -699,18 +702,20 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign({}, query, { rid: findResult.rid });
 
-			const messages = Messages.find(ourQuery, {
+			const { cursor, totalCount } = MessagesRaw.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields,
-			}).fetch();
+				projection: fields,
+			});
+
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
-				total: Messages.find(ourQuery).count(),
+				total,
 			});
 		},
 	},

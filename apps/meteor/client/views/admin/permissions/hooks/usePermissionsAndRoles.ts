@@ -1,5 +1,6 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useCallback } from 'react';
 
 import { ChatPermissions } from '../../../../../app/authorization/client/lib/ChatPermissions';
@@ -13,27 +14,32 @@ export const usePermissionsAndRoles = (
 	limit = 25,
 	skip = 0,
 ): { permissions: IPermission[]; total: number; roleList: IRole[]; reload: () => void } => {
-	const getPermissions = useCallback(() => {
-		const filterRegExp = new RegExp(filter, 'i');
+	const getFilter = useCallback(() => {
+		const filterRegExp = new RegExp(escapeRegExp(filter), 'i');
 
-		return ChatPermissions.find(
-			{
-				level: type === 'permissions' ? { $ne: CONSTANTS.SETTINGS_LEVEL } : CONSTANTS.SETTINGS_LEVEL,
-				_id: filterRegExp,
-			},
-			{
+		return {
+			level: type === 'permissions' ? { $ne: CONSTANTS.SETTINGS_LEVEL } : CONSTANTS.SETTINGS_LEVEL,
+			_id: filterRegExp,
+		};
+	}, [type, filter]);
+
+	const getPermissions = useCallback(
+		() =>
+			ChatPermissions.find(getFilter(), {
 				sort: {
 					_id: 1,
 				},
 				skip,
 				limit,
-			},
-		);
-	}, [filter, limit, skip, type]);
+			}),
+		[limit, skip, getFilter],
+	);
+	const getTotalPermissions = useCallback(() => ChatPermissions.find(getFilter()).count(), [getFilter]);
 
 	const permissions = useReactiveValue(getPermissions);
+	const permissionsTotal = useReactiveValue(getTotalPermissions);
 	const getRoles = useMutableCallback(() => Roles.find().fetch());
 	const roles = useReactiveValue(getRoles);
 
-	return { permissions: permissions.fetch(), total: permissions.count(false), roleList: roles, reload: getRoles };
+	return { permissions: permissions.fetch(), total: permissionsTotal, roleList: roles, reload: getRoles };
 };

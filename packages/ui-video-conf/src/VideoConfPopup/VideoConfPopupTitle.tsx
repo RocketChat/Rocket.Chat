@@ -1,23 +1,16 @@
-import React from 'react';
-import type { ComponentProps } from 'react';
-import { Box, Icon, Throbber } from '@rocket.chat/fuselage';
+import { Box, Throbber } from '@rocket.chat/fuselage';
+import type { ReactElement } from 'react';
 
 type VideoConfPopupTitleProps = {
-  text: string;
-  counter?: boolean; 
-  icon?: ComponentProps<typeof Icon>['name'];
+	text: string;
+	counter?: boolean;
 };
 
-const VideoConfPopupTitle = ({ text, counter = false, icon }: VideoConfPopupTitleProps) => {
-  return (
-    <Box mbs='x8' display='flex' alignItems='center'>
-      {icon && <Icon size='x20' name={icon} />}
-      <Box mis='x4' fontScale='p1b'>
-        {text} 
-      </Box>
-      {counter && <Throbber size='x8' mis='x4' inheritColor />}
-    </Box>
-  );
-}
+const VideoConfPopupTitle = ({ text, counter = false }: VideoConfPopupTitleProps): ReactElement => (
+	<Box display='flex' alignItems='center'>
+		<Box fontScale='p2b'>{text}</Box>
+		{counter && <Throbber size='x8' mis='x4' />}
+	</Box>
+);
 
 export default VideoConfPopupTitle;

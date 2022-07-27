@@ -1,39 +1,46 @@
-import { test, expect } from '@playwright/test';
+import { Page, test, expect } from '@playwright/test';
+import { faker } from '@faker-js/faker';
 
-import { registerUser } from './utils/mocks/userAndPasswordMock';
-import { LoginPage } from './pageobjects';
+import { Auth } from './page-objects';
 
-test.describe('[Register]', () => {
-	let loginPage: LoginPage;
+test.describe('Register', () => {
+	let page: Page;
+	let pageAuth: Auth;
 
-	test.beforeEach(async ({ page }) => {
-		loginPage = new LoginPage(page);
+	test.beforeAll(async ({ browser }) => {
+		page = await browser.newPage();
+		pageAuth = new Auth(page);
+	});
+
+	test.beforeEach(async () => {
 		await page.goto('/');
+		await pageAuth.btnRegister.click();
 	});
 
-	test('expect user click in register button without data', async () => {
-		await loginPage.btnRegister.click();
-		await loginPage.btnSubmit.click();
+	test('expect trigger a validation error if no data is provided', async () => {
+		await pageAuth.btnSubmit.click();
 
-		await expect(loginPage.nameInvalidText).toBeVisible();
-		await expect(loginPage.emailInvalidText).toBeVisible();
-		await expect(loginPage.passwordInvalidText).toBeVisible();
+		await expect(pageAuth.textErrorName).toBeVisible();
+		await expect(pageAuth.textErrorEmail).toBeVisible();
+		await expect(pageAuth.textErrorPassword).toBeVisible();
 	});
 
-	test('expect user click in register button with different password', async () => {
-		await loginPage.btnRegister.click();
-		await loginPage.passwordField.type(registerUser.password);
-		await loginPage.emailField.type(registerUser.email);
-		await loginPage.nameField.type(registerUser.name);
-		await loginPage.confirmPasswordField.type('wrong_password');
+	test('expect trigger a validation error if different password is provided', async () => {
+		await pageAuth.inputName.type(faker.name.firstName());
+		await pageAuth.inputEmail.type(faker.internet.email());
+		await pageAuth.inputPassword.type('any_password');
+		await pageAuth.inputPasswordConfirm.type('any_password_2');
+		await pageAuth.btnSubmit.click();
 
-		await loginPage.btnSubmit.click();
-		await expect(loginPage.confirmPasswordInvalidText).toBeVisible();
-		await expect(loginPage.confirmPasswordInvalidText).toHaveText('The password confirmation does not match password');
+		await expect(pageAuth.textErrorPasswordConfirm).toBeVisible();
 	});
 
-	test('expect new user is created', async () => {
-		await loginPage.btnRegister.click();
-		await loginPage.registerNewUser(registerUser);
+	test('expect successfully register a new user', async () => {
+		await pageAuth.inputName.type(faker.name.firstName());
+		await pageAuth.inputEmail.type(faker.internet.email());
+		await pageAuth.inputPassword.type('any_password');
+		await pageAuth.inputPasswordConfirm.type('any_password');
+		await pageAuth.btnSubmit.click();
+		await pageAuth.btnRegisterConfirmUsername.click();
 	});
 });

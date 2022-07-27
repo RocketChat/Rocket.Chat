@@ -1,10 +1,12 @@
 import { ICreatedRoom, IRoom } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
 import { MatrixBridgedRoom, Subscriptions } from '../../../../../models/server';
 import { FederatedRoom } from '../../../domain/FederatedRoom';
 import { createRoom, addUserToRoom, removeUserFromRoom } from '../../../../../lib/server';
 import { FederatedUser } from '../../../domain/FederatedUser';
+import { saveRoomName } from '../../../../../channel-settings/server/functions/saveRoomName';
+import { saveRoomTopic } from '../../../../../channel-settings/server/functions/saveRoomTopic';
 
 export class RocketChatRoomAdapter {
 	public async getFederatedRoomByExternalId(externalRoomId: string): Promise<FederatedRoom | undefined> {
@@ -100,5 +102,18 @@ export class RocketChatRoomAdapter {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(internalRoomId, internalUserId, { projection: { _id: 1 } });
 
 		return Boolean(subscription);
+	}
+
+	public async updateRoomType(federatedRoom: FederatedRoom): Promise<void> {
+		await Rooms.setRoomTypeById(federatedRoom.internalReference._id, federatedRoom.internalReference.t);
+		await SubscriptionsRaw.updateAllRoomTypesByRoomId(federatedRoom.internalReference._id, federatedRoom.internalReference.t);
+	}
+
+	public async updateRoomName(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
+		await saveRoomName(federatedRoom.internalReference._id, federatedRoom.internalReference.name, federatedUser.internalReference);
+	}
+
+	public async updateRoomTopic(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
+		await saveRoomTopic(federatedRoom.internalReference._id, federatedRoom.internalReference.topic, federatedUser.internalReference);
 	}
 }

@@ -1,41 +1,37 @@
-import type {
-	AggregationCursor,
-	Cursor,
-	FilterQuery,
-	FindOneOptions,
-	WithoutProjection,
-	UpdateWriteOpResult,
-	WriteOpResult,
-} from 'mongodb';
+import type { AggregationCursor, FindCursor, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 
-import type { IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
-	findById(_id: string, options: FindOneOptions<ILivechatVisitor>): Cursor<ILivechatVisitor>;
-	getVisitorByToken(token: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>>): Promise<ILivechatVisitor | null>;
-	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department: string }): Cursor<ILivechatVisitor>;
+	findById(_id: string, options: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
+	getVisitorByToken(token: string, options: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
+	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department: string }): FindCursor<ILivechatVisitor>;
 	findByNameRegexWithExceptionsAndConditions<P = ILivechatVisitor>(
 		searchTerm: string,
 		exceptions: string[],
-		conditions: FilterQuery<ILivechatVisitor>,
-		options: FindOneOptions<P extends ILivechatVisitor ? ILivechatVisitor : P>,
+		conditions: Filter<ILivechatVisitor>,
+		options: FindOptions<P extends ILivechatVisitor ? ILivechatVisitor : P>,
 	): AggregationCursor<
 		P & {
 			custom_name: string;
 		}
 	>;
-	findVisitorsByEmailOrPhoneOrNameOrUsername(
-		_emailOrPhoneOrNameOrUsername: string,
-		options: FindOneOptions<ILivechatVisitor>,
-	): Cursor<ILivechatVisitor>;
-	removeContactManagerByUsername(manager: string): Promise<UpdateWriteOpResult>;
+	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsername(
+		emailOrPhone: string,
+		nameOrUsername: RegExp,
+		options: FindOptions<ILivechatVisitor>,
+	): FindPaginated<FindCursor<ILivechatVisitor>>;
 
-	updateLivechatDataByToken(token: string, key: string, value: unknown, overwrite: boolean): Promise<WriteOpResult | boolean>;
+	removeContactManagerByUsername(manager: string): Promise<UpdateResult | Document>;
+
+	updateLivechatDataByToken(token: string, key: string, value: unknown, overwrite: boolean): Promise<UpdateResult | Document | boolean>;
 
 	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null>;
 
 	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null>;
 
-	removeDepartmentById(_id: string): Promise<WriteOpResult>;
+	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
+
+	getNextVisitorUsername(): Promise<string>;
 }
