@@ -141,7 +141,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/visitors.search',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async get() {
 			const { term } = this.requestParams();

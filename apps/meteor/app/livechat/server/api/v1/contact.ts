@@ -7,7 +7,7 @@ import { Contacts } from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async post() {
 			check(this.bodyParams, {
@@ -41,7 +41,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'omnichannel/contact.search',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async get() {
 			check(this.queryParams, {
@@ -56,9 +56,7 @@ API.v1.addRoute(
 			}
 			let foundCF = {};
 			if (custom) {
-				const customObj = Object.fromEntries(
-					Array.from(new URLSearchParams(custom)),
-				);
+				const customObj = Object.fromEntries(Array.from(new URLSearchParams(custom)));
 
 				foundCF = Object.fromEntries(
 					(
@@ -79,11 +77,12 @@ API.v1.addRoute(
 				{
 					...(email && { visitorEmails: { address: email } }),
 					...(phone && { phone: { phoneNumber: phone } }),
-					...(custom && { livechatData: foundCF }),
+					...(Object.keys(foundCF).length && { livechatData: foundCF }),
 				},
 			);
 
-			const contact = await LivechatVisitors.findOne(query);
+			// If no valid query items are provided, return null (to avoid returning a random visitor)
+			const contact = Object.keys(query).length ? await LivechatVisitors.findOne(query) : null;
 			return API.v1.success({ contact });
 		},
 	},
