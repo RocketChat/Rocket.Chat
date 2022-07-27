@@ -348,41 +348,45 @@ describe('LIVECHAT - rooms', function () {
 		});
 
 		it('should throw unauthorized if visitor with token exists but room is invalid', (done) => {
-			createVisitor().then((visitor) => {
-				request
-					.post(api('livechat/upload/test'))
-					.set(credentials)
-					.set('x-visitor-token', visitor.token)
-					.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
-					.expect('Content-Type', 'application/json')
-					.expect(403);
-			}).then(() => done());;
+			createVisitor()
+				.then((visitor) => {
+					request
+						.post(api('livechat/upload/test'))
+						.set(credentials)
+						.set('x-visitor-token', visitor.token)
+						.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+						.expect('Content-Type', 'application/json')
+						.expect(403);
+				})
+				.then(() => done());
 		});
 
 		it('should throw an error if the file is not attached', (done) => {
-			createVisitor().then((visitor) => {
-				request
-					.post(api('livechat/upload/test'))
-					.set(credentials)
-					.set('x-visitor-token', visitor.token)
-					.expect('Content-Type', 'application/json')
-					.expect(400);
-			}).then(() => done());;
+			createVisitor()
+				.then((visitor) => {
+					request
+						.post(api('livechat/upload/test'))
+						.set(credentials)
+						.set('x-visitor-token', visitor.token)
+						.expect('Content-Type', 'application/json')
+						.expect(400);
+				})
+				.then(() => done());
 		});
 
 		it('should upload an image on the room if all params are valid', (done) => {
 			createVisitor()
-			.then((visitor) => Promise.all([visitor, createLivechatRoom(visitor.token)]))
-			.then(([visitor, room]) => {
-				request
-					.post(api(`livechat/upload/${room._id}`))
-					.set(credentials)
-					.set('x-visitor-token', visitor.token)
-					.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
-					.expect('Content-Type', 'application/json')
-					.expect(200);
-			}).then(() => done());
+				.then((visitor) => Promise.all([visitor, createLivechatRoom(visitor.token)]))
+				.then(([visitor, room]) => {
+					request
+						.post(api(`livechat/upload/${room._id}`))
+						.set(credentials)
+						.set('x-visitor-token', visitor.token)
+						.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+						.expect('Content-Type', 'application/json')
+						.expect(200);
+				})
+				.then(() => done());
 		});
-
 	});
 });
