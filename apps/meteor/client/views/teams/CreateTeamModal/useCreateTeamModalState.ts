@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, usePermission, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetting, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
