@@ -1,13 +1,13 @@
 /* eslint-env mocha */
 import { expect } from 'chai';
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { makeAgentAvailable, createAgent, createDepartment } from '../../../data/livechat/rooms.js';
 
-describe.only('LIVECHAT - Departments', function () {
+describe('LIVECHAT - Departments', function () {
 	before((done) => getCredentials(done));
 
 	before((done) => {
@@ -333,6 +333,175 @@ describe.only('LIVECHAT - Departments', function () {
 						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error');
+						})
+						.end(done);
+				});
+		});
+	});
+
+	describe('GET livechat/department/:departmentId/agents', () => {
+		it('should throw an error if the user doesnt have the permission to view the departments', (done) => {
+			updatePermission('view-livechat-departments', [])
+				.then(() => updatePermission('view-l-room', []))
+				.then(() => {
+					request
+						.get(api('livechat/department/test/agents'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(403)
+						.end(done);
+				});
+		});
+
+		it('should return an empty array when the departmentId is not valid', (done) => {
+			updatePermission('view-livechat-departments', ['admin'])
+				.then(() => updatePermission('view-l-room', ['admin', 'livechat-agent']))
+				.then(() => {
+					request
+						.get(api('livechat/department/test/agents'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('agents');
+							expect(res.body.agents).to.be.an('array');
+							expect(res.body.agents).to.have.lengthOf(0);
+							expect(res.body.total).to.be.equal(0);
+						})
+						.end(done);
+				});
+		});
+
+		it('should return an emtpy array for a department without agents', (done) => {
+			updatePermission('view-livechat-departments', ['admin'])
+				.then(() => updatePermission('view-l-room', ['admin', 'livechat-agent']))
+				.then(() => createDepartment())
+				.then((dep: ILivechatDepartment) => {
+					request
+						.get(api(`livechat/department/${dep._id}/agents`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('agents');
+							expect(res.body.agents).to.be.an('array');
+							expect(res.body.agents).to.have.lengthOf(0);
+							expect(res.body.total).to.be.equal(0);
+						})
+						.end(done);
+				});
+		});
+
+		it('should return the agents of the department', (done) => {
+			updatePermission('view-livechat-departments', ['admin'])
+				.then(() => updatePermission('view-l-room', ['admin', 'livechat-agent']))
+				.then(() => createAgent())
+				.then((agent: ILivechatAgent) => createDepartment([{ agentId: agent._id }]))
+				.then((dep: ILivechatDepartment) => {
+					request
+						.get(api(`livechat/department/${dep._id}/agents`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('agents');
+							expect(res.body.agents).to.be.an('array');
+							expect(res.body.agents).to.have.lengthOf(1);
+							expect(res.body.agents[0]).to.have.property('_id');
+							expect(res.body.agents[0]).to.have.property('departmentId', dep._id);
+							expect(res.body.agents[0]).to.have.property('departmentEnabled', true);
+							expect(res.body.count).to.be.equal(1);
+						})
+						.end(done);
+				});
+		});
+	});
+
+	describe('POST livechat/department/:departmentId/agents', () => {
+		it('should throw an error if the user doesnt have the permission to manage the departments', (done) => {
+			updatePermission('manage-livechat-departments', [])
+				.then(() => updatePermission('add-livechat-department-agents', []))
+				.then(() => {
+					request
+						.post(api('livechat/department/test/agents'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(403)
+						.end(done);
+				});
+		});
+
+		it('should throw an error if the departmentId is not valid', (done) => {
+			updatePermission('manage-livechat-departments', ['admin'])
+				.then(() => updatePermission('add-livechat-department-agents', ['admin', 'livechat-manager']))
+				.then(() => {
+					request
+						.post(api('livechat/department/test/agents'))
+						.set(credentials)
+						.send({ upsert: [], remove: [] })
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'Department not found [error-department-not-found]');
+						})
+						.end(done);
+				});
+		});
+
+		it('should throw an error if body doesnt contain { upsert: [], remove: [] }', (done) => {
+			updatePermission('manage-livechat-departments', ['admin'])
+				.then(() => updatePermission('add-livechat-department-agents', ['admin', 'livechat-manager']))
+				.then(() => createDepartment())
+				.then((dep: ILivechatDepartment) => {
+					request
+						.post(api(`livechat/department/${dep._id}/agents`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', "Match error: Missing key 'upsert'");
+						})
+						.end(done);
+				});
+		});
+
+		it('should throw an error if upsert or remove in body doesnt contain agentId and username', (done) => {
+			updatePermission('manage-livechat-departments', ['admin'])
+				.then(() => updatePermission('add-livechat-department-agents', ['admin', 'livechat-manager']))
+				.then(() => createDepartment())
+				.then((dep: ILivechatDepartment) => {
+					request
+						.post(api(`livechat/department/${dep._id}/agents`))
+						.set(credentials)
+						.send({ upsert: [{}], remove: [] })
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', "Match error: Missing key 'agentId' in field upsert[0]");
+						})
+						.end(done);
+				});
+		});
+
+		it('should sucessfully add an agent to a department', (done) => {
+			updatePermission('manage-livechat-departments', ['admin'])
+				.then(() => updatePermission('add-livechat-department-agents', ['admin', 'livechat-manager']))
+				.then(() => Promise.all([createDepartment(), createAgent()]))
+				.then(([dep, agent]: [ILivechatDepartment, ILivechatAgent]) => {
+					request
+						.post(api(`livechat/department/${dep._id}/agents`))
+						.set(credentials)
+						.send({ upsert: [{ agentId: agent._id, username: agent.username }], remove: [] })
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
 						})
 						.end(done);
 				});

@@ -996,6 +996,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			params.push({ $limit: options.limit });
 		}
 
+		console.log('params', JSON.stringify(params, null, 2));
 		return this.col.aggregate(params);
 	}
 

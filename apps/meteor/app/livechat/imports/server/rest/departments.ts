@@ -190,6 +190,10 @@ API.v1.addRoute<'livechat/department/:departmentId/agents', { authRequired: true
 	{ authRequired: true },
 	{
 		async get() {
+			if (!hasAtLeastOnePermission(this.userId, ['view-livechat-departments', 'view-l-room'])) {
+				return API.v1.unauthorized();
+			}
+
 			check(this.urlParams, {
 				departmentId: String,
 			});
@@ -210,9 +214,10 @@ API.v1.addRoute<'livechat/department/:departmentId/agents', { authRequired: true
 			return API.v1.success(agents);
 		},
 		post() {
-			if (!hasPermission(this.userId, 'manage-livechat-departments') || !hasPermission(this.userId, 'add-livechat-department-agents')) {
+			if (!hasAtLeastOnePermission(this.userId, ['manage-livechat-departments', 'add-livechat-department-agents'])) {
 				return API.v1.unauthorized();
 			}
+
 			check(this.urlParams, {
 				departmentId: String,
 			});

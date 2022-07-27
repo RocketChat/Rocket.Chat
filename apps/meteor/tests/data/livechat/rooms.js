@@ -39,12 +39,34 @@ export const createVisitor = () =>
 		});
 	});
 
-export const createDepartment = () => {
+export const takeInquiry = (roomId, agentId) => {
+	return new Promise((resolve, reject) => {
+		request
+			.post(methodCall(`livechat:takeInquiry`))
+			.set(credentials)
+			.send({
+				message: JSON.stringify({
+					method: 'livechat:takeInquiry',
+					params: [roomId, { clientAction: true }],
+					id: '101',
+					msg: 'method',
+				}),
+			})
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body);
+			});
+	});
+};
+
+export const createDepartment = (agents) => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/department'))
 			.set(credentials)
-			.send({ department: { name: `Department ${Date.now()}`, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'a@b.com' } })
+			.send({ department: { name: `Department ${Date.now()}`, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'a@b.com' }, agents })
 			.end((err, res) => {
 				if (err) {
 					return reject(err);

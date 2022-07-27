@@ -242,4 +242,84 @@ describe('LIVECHAT - rooms', function () {
 				.end(done);
 		});
 	});
+
+	describe('livechat/room.survey', () => {
+		it('should return an "invalid-token" error when the visitor is not found due to an invalid token', (done) => {
+			request
+				.post(api('livechat/room.survey'))
+				.set(credentials)
+				.send({
+					token: 'invalid-token',
+					rid: room._id,
+					data: [{ name: 'question', value: 'answer' }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('[invalid-token]');
+				})
+				.end(done);
+		});
+
+		it('should return an "invalid-room" error when the room is not found due to invalid token and/or rid', (done) => {
+			request
+				.post(api('livechat/room.survey'))
+				.set(credentials)
+				.send({
+					token: visitor.token,
+					rid: 'invalid-rid',
+					data: [{ name: 'question', value: 'answer' }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('[invalid-room]');
+				})
+				.end(done);
+		});
+
+		it('should return "invalid-data" when the items answered are not part of config.survey.items', (done) => {
+			request
+				.post(api('livechat/room.survey'))
+				.set(credentials)
+				.send({
+					token: visitor.token,
+					rid: room._id,
+					data: [{ name: 'question', value: 'answer' }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('[invalid-data]');
+				})
+				.end(done);
+		});
+
+		it('should return the room id and the answers when the query params is all valid', (done) => {
+			request
+				.post(api('livechat/room.survey'))
+				.set(credentials)
+				.send({
+					token: visitor.token,
+					rid: room._id,
+					data: [
+						{ name: 'satisfaction', value: '5' },
+						{ name: 'agentKnowledge', value: '3' },
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rid');
+					expect(res.body).to.have.property('data');
+					expect(res.body.data.satisfaction).to.be.equal('5');
+					expect(res.body.data.agentKnowledge).to.be.equal('3');
+				})
+				.end(done);
+		});
+	});
 });
