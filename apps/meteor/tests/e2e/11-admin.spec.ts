@@ -1,20 +1,16 @@
-import { Page } from '@playwright/test';
-
 import { test, expect } from './utils/test';
 import { Auth, Administration } from './page-objects';
 
 test.describe('Administration', () => {
-	let page: Page;
 	let pageAuth: Auth;
 	let pageAdmin: Administration;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
 		pageAuth = new Auth(page);
 		pageAdmin = new Administration(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async ({ page }) => {
 		await pageAuth.doLogin();
 		await page.goto('/admin');
 	});
@@ -31,12 +27,8 @@ test.describe('Administration', () => {
 		});
 
 		test.describe('Rooms', () => {
-			test.beforeAll(async () => {
+			test.beforeEach(async () => {
 				await pageAdmin.roomsLink.click();
-			});
-
-			test.afterAll(async () => {
-				await pageAdmin.infoLink.click();
 			});
 
 			test.describe('Render', () => {
@@ -47,13 +39,8 @@ test.describe('Administration', () => {
 			});
 
 			test.describe('Filter search input', () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					await pageAdmin.roomsSearchForm.click();
-				});
-
-				test.afterAll(async () => {
-					await pageAdmin.roomsSearchForm.click({ clickCount: 3 });
-					await page.keyboard.press('Backspace');
 				});
 
 				test('expect show the general channel', async () => {
@@ -67,7 +54,7 @@ test.describe('Administration', () => {
 				});
 			});
 			test.describe('Filter checkbox', () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async ({ page }) => {
 					await pageAdmin.roomsSearchForm.click({ clickCount: 3 });
 					await page.keyboard.press('Backspace');
 				});
@@ -113,12 +100,8 @@ test.describe('Administration', () => {
 				});
 			});
 			test.describe('Users', () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					await pageAdmin.usersLink.click();
-				});
-
-				test.afterAll(async () => {
-					await pageAdmin.infoLink.click();
 				});
 
 				test.describe('Filter text', async () => {
@@ -126,12 +109,7 @@ test.describe('Administration', () => {
 						await pageAdmin.usersFilter.click();
 					});
 
-					test.afterAll(async () => {
-						await pageAdmin.usersFilter.click();
-						await pageAdmin.usersFilter.type('');
-					});
-
-					test('expect should show rocket.cat', async () => {
+					test('expect should show rocket.cat', async ({ page }) => {
 						await pageAdmin.usersFilter.type('rocket.cat');
 						await page.waitForSelector('//table//tbody//tr[1]//td//div//div//div//div[text()="Rocket.Cat"]');
 					});
@@ -143,7 +121,7 @@ test.describe('Administration', () => {
 				});
 
 				test.describe('Create user', () => {
-					test.beforeAll(async () => {
+					test.beforeEach(async () => {
 						await pageAdmin.tabs.usersAddUserTab.click();
 					});
 
@@ -170,7 +148,7 @@ test.describe('Administration', () => {
 		});
 
 		test.describe('General Settings', () => {
-			test.beforeAll(async () => {
+			test.beforeEach(async () => {
 				await pageAdmin.settingsLink.click();
 				await pageAdmin.settingsSearch.type('general');
 				await pageAdmin.generalSettingsButton.click();
@@ -249,7 +227,7 @@ test.describe('Administration', () => {
 			});
 
 			test.describe('Iframe', () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					await pageAdmin.generalSectionIframeIntegration.click();
 				});
 
@@ -262,7 +240,7 @@ test.describe('Administration', () => {
 			});
 
 			test.describe('Notifications', () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					await pageAdmin.generalSectionNotifications.click();
 				});
 
@@ -272,7 +250,7 @@ test.describe('Administration', () => {
 			});
 
 			test.describe('Rest api', async () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					await pageAdmin.generalSectionRestApi.click();
 				});
 
@@ -282,7 +260,7 @@ test.describe('Administration', () => {
 			});
 
 			test.describe('Reporting', async () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					await pageAdmin.generalSectionReporting.click();
 				});
 
@@ -292,7 +270,7 @@ test.describe('Administration', () => {
 			});
 
 			test.describe('Stream cast', async () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					await pageAdmin.generalSectionStreamCast.click();
 				});
 
@@ -302,7 +280,7 @@ test.describe('Administration', () => {
 			});
 
 			test.describe('UTF-8', () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					await pageAdmin.generalSectionUTF8.click();
 				});
 
@@ -321,14 +299,14 @@ test.describe('Administration', () => {
 		});
 
 		test.describe('Accounts', () => {
-			test.beforeAll(async () => {
-				await pageAdmin.groupSettingsPageBack.click();
+			test.beforeEach(async () => {
+				await pageAdmin.settingsLink.click();
 				await pageAdmin.settingsSearch.type('accounts');
 				await pageAdmin.accountSettingsButton.click();
 			});
 
 			test.describe('Default user preferences', () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					await pageAdmin.accountsSectionDefaultUserPreferences.click();
 				});
 

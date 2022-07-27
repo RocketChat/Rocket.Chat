@@ -1,4 +1,3 @@
-import { Page } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { v4 as uuid } from 'uuid';
 
@@ -6,17 +5,15 @@ import { test } from './utils/test';
 import { Auth, HomeDiscussion } from './page-objects';
 
 test.describe('[Discussion]', () => {
-	let page: Page;
 	let pageAuth: Auth;
 	let pageHomeDiscussion: HomeDiscussion;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
 		pageAuth = new Auth(page);
 		pageHomeDiscussion = new HomeDiscussion(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async () => {
 		await pageAuth.doLogin();
 	});
 
@@ -33,12 +30,12 @@ test.describe('[Discussion]', () => {
 	test.describe.skip('[Create discussion from context menu]', () => {
 		const anyMessage = faker.animal.type() + uuid();
 
-		test.beforeAll(async () => {
+		test.beforeEach(async () => {
 			await pageHomeDiscussion.sidenav.doOpenChat('public channel');
 			await pageHomeDiscussion.content.doSendMessage(anyMessage);
 		});
 
-		test('expect show a dialog for starting a discussion', async () => {
+		test('expect show a dialog for starting a discussion', async ({ page }) => {
 			await page.waitForLoadState('domcontentloaded', { timeout: 3000 });
 			await pageHomeDiscussion.content.doOpenMessageActionMenu();
 			await pageHomeDiscussion.doCreateDiscussionInContext(anyMessage);

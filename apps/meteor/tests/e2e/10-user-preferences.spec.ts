@@ -1,11 +1,9 @@
-import faker from '@faker-js/faker';
-import { Page } from '@playwright/test';
+import { faker } from '@faker-js/faker';
 
 import { test, expect } from './utils/test';
 import { Auth, HomeChannel, AccountProfile } from './page-objects';
 
 test.describe('User preferences', () => {
-	let page: Page;
 	let pageAuth: Auth;
 	let pageHomeChannel: HomeChannel;
 	let pageAccountProfile: AccountProfile;
@@ -13,18 +11,17 @@ test.describe('User preferences', () => {
 	const newName = faker.name.findName();
 	const newUsername = faker.internet.userName(newName);
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
 		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 		pageAccountProfile = new AccountProfile(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async () => {
 		await pageAuth.doLogin();
 	});
 
-	test('expect update profile with new name and username', async () => {
+	test('expect update profile with new name and username', async ({ page }) => {
 		await pageHomeChannel.sidenav.doOpenProfile();
 
 		await pageAccountProfile.inputName.fill(newName);

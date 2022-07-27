@@ -1,4 +1,3 @@
-import { Page } from '@playwright/test';
 import faker from '@faker-js/faker';
 
 import { test, expect } from './utils/test';
@@ -6,22 +5,20 @@ import { Auth, Administration, HomeChannel } from './page-objects';
 import { validUserInserted } from './utils/mocks/userAndPasswordMock';
 
 test.describe('Settings Permissions', () => {
-	let page: Page;
 	let pageAuth: Auth;
 	let pageAdmin: Administration;
 	let pageHomeChannel: HomeChannel;
 
 	const newHomeTitle = faker.animal.type();
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
 		pageAuth = new Auth(page);
 		pageAdmin = new Administration(page);
 		pageHomeChannel = new HomeChannel(page);
 	});
 
 	test.describe('Give User Permissions', async () => {
-		test.beforeAll(async () => {
+		test.beforeEach(async () => {
 			await pageAuth.doLogin();
 			await pageHomeChannel.sidenav.btnAvatar.click();
 			await pageHomeChannel.sidenav.linkAdmin.click();
@@ -32,7 +29,7 @@ test.describe('Settings Permissions', () => {
 			await pageHomeChannel.sidenav.doLogout();
 		});
 
-		test('Set permission for user to manage settings', async () => {
+		test('Set permission for user to manage settings', async ({ page }) => {
 			await pageAdmin.rolesSettingsFindInput.type('settings');
 			await page.locator('table tbody tr:first-child td:nth-child(1) >> text="Change some settings"').waitFor();
 			const isOptionChecked = await page.isChecked('table tbody tr:first-child td:nth-child(6) label input');
@@ -42,7 +39,7 @@ test.describe('Settings Permissions', () => {
 			}
 		});
 
-		test('Set Permission for user to change title page title', async () => {
+		test('Set Permission for user to change title page title', async ({ page }) => {
 			await pageAdmin.rolesSettingsTab.click();
 			await pageAdmin.rolesSettingsFindInput.fill('Layout');
 			await page.locator('table tbody tr:first-child td:nth-child(1) >> text="Layout"').waitFor();
@@ -56,7 +53,7 @@ test.describe('Settings Permissions', () => {
 	});
 
 	test.describe('Test new user setting permissions', async () => {
-		test.beforeAll(async () => {
+		test.beforeEach(async ({ page }) => {
 			await page.goto('/');
 			await pageAuth.doLogin(validUserInserted);
 
@@ -77,7 +74,7 @@ test.describe('Settings Permissions', () => {
 	});
 
 	test.describe('Verify settings change and cleanup', async () => {
-		test.beforeAll(async () => {
+		test.beforeEach(async ({ page }) => {
 			await page.goto('/');
 			await pageAuth.doLogin();
 			await pageHomeChannel.sidenav.btnAvatar.click();
@@ -91,7 +88,7 @@ test.describe('Settings Permissions', () => {
 			await pageHomeChannel.sidenav.doLogout();
 		});
 
-		test('New settings value visible for admin as well', async () => {
+		test('New settings value visible for admin as well', async ({ page }) => {
 			await page.locator('[data-qa-section="Content"]').click();
 			await pageAdmin.homeTitleInput.waitFor();
 			const text = await pageAdmin.homeTitleInput.inputValue();
@@ -100,7 +97,7 @@ test.describe('Settings Permissions', () => {
 			expect(text).toEqual(newHomeTitle);
 		});
 
-		test('Clear all user permissions', async () => {
+		test('Clear all user permissions', async ({ page }) => {
 			await pageAdmin.permissionsLink.click();
 			await pageAdmin.rolesSettingsFindInput.type('settings');
 			await page.locator('table tbody tr:first-child td:nth-child(1) >> text="Change some settings"').waitFor();

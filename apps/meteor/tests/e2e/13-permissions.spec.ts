@@ -1,4 +1,3 @@
-import { Page } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 import faker from '@faker-js/faker';
 
@@ -6,7 +5,6 @@ import { test, expect } from './utils/test';
 import { Auth, Administration, HomeChannel } from './page-objects';
 
 test.describe('Permissions', () => {
-	let page: Page;
 	let pageAuth: Auth;
 	let pageAdmin: Administration;
 	let pageHomeChannel: HomeChannel;
@@ -18,36 +16,41 @@ test.describe('Permissions', () => {
 		username: faker.internet.userName(),
 	};
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
 		pageAuth = new Auth(page);
 		pageAdmin = new Administration(page);
 		pageHomeChannel = new HomeChannel(page);
-
-		await pageAuth.doLogin();
-		await pageHomeChannel.sidenav.btnAvatar.click();
-		await pageHomeChannel.sidenav.linkAdmin.click();
-		await pageAdmin.sidenav.linkUsers.click();
 	});
 
-	test('expect create a user via admin view', async () => {
-		await pageAdmin.tabs.usersAddUserTab.click();
-		await pageAdmin.tabs.usersAddUserName.type(anyUser.name);
-		await pageAdmin.tabs.usersAddUserUsername.type(anyUser.username);
-		await pageAdmin.tabs.usersAddUserEmail.type(anyUser.email);
-		await pageAdmin.tabs.usersAddUserVerifiedCheckbox.click();
-		await pageAdmin.tabs.usersAddUserPassword.type(anyUser.password);
-		await pageAdmin.tabs.doAddRole('user');
-		await pageAdmin.tabs.usersButtonSave.click();
-	});
+	test.describe('Create User', async () => {
+		test.beforeEach(async () => {
+			await pageAuth.doLogin();
+			await pageHomeChannel.sidenav.btnAvatar.click();
+			await pageHomeChannel.sidenav.linkAdmin.click();
+			await pageAdmin.sidenav.linkUsers.click();
+		});
+		test('expect create a user via admin view', async () => {
+			await pageAdmin.tabs.usersAddUserTab.click();
+			await pageAdmin.tabs.usersAddUserName.type(anyUser.name);
+			await pageAdmin.tabs.usersAddUserUsername.type(anyUser.username);
+			await pageAdmin.tabs.usersAddUserEmail.type(anyUser.email);
+			await pageAdmin.tabs.usersAddUserVerifiedCheckbox.click();
+			await pageAdmin.tabs.usersAddUserPassword.type(anyUser.password);
+			await pageAdmin.tabs.doAddRole('user');
+			await pageAdmin.tabs.usersButtonSave.click();
+		});
 
-	test('expect user be show on list', async () => {
-		await pageAdmin.usersFilter.type(anyUser.email, { delay: 200 });
-		await expect(pageAdmin.userInTable(anyUser.email)).toBeVisible();
+		test('expect user be show on list', async () => {
+			await pageAdmin.usersFilter.type(anyUser.email, { delay: 200 });
+			await expect(pageAdmin.userInTable(anyUser.email)).toBeVisible();
+		});
 	});
 
 	test.describe('disable "anyUser" permissions', () => {
-		test('expect open permissions table', async () => {
+		test.beforeEach(async () => {
+			await pageAuth.doLogin();
+			await pageHomeChannel.sidenav.btnAvatar.click();
+			await pageHomeChannel.sidenav.linkAdmin.click();
 			await pageAdmin.permissionsLink.click();
 		});
 
@@ -59,7 +62,7 @@ test.describe('Permissions', () => {
 			}
 		});
 
-		test('expect remove "delete message" permission from user', async () => {
+		test('expect remove "delete message" permission from user', async ({ page }) => {
 			await pageAdmin.inputPermissionsSearch.click({ clickCount: 3 });
 			await page.keyboard.press('Backspace');
 			await pageAdmin.inputPermissionsSearch.type('delete');
@@ -71,10 +74,7 @@ test.describe('Permissions', () => {
 	});
 
 	test.describe('assert "anyUser" permissions', () => {
-		test.beforeAll(async () => {
-			await pageHomeChannel.sidenav.doLogout();
-
-			await page.goto('/');
+		test.beforeEach(async () => {
 			await pageAuth.doLogin(anyUser);
 			await pageHomeChannel.sidenav.doOpenChat('general');
 		});
@@ -85,7 +85,7 @@ test.describe('Permissions', () => {
 			await expect(pageHomeChannel.content.lastMessageForMessageTest).toContainText('not allowed');
 		});
 
-		test('expect not be able to "delete own message"', async () => {
+		test('expect not be able to "delete own message"', async ({ page }) => {
 			await pageHomeChannel.content.doReload();
 			await pageHomeChannel.content.doSendMessage(`any_message_${uuid()}`);
 			await pageHomeChannel.content.doOpenMessageActionMenu();
