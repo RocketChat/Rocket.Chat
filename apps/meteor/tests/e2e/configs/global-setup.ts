@@ -15,6 +15,8 @@ export default async (): Promise<void> => {
 	await page.locator('[name=pass]').type(ADMIN_CREDENTIALS.password);
 	await page.locator('.login').click();
 
+	await page.waitForNavigation();
+
 	if (page.url().match(/.*\/setup-wizard/)) {
 		await page.locator('[name="organizationName"]').type('any_name');
 		await page.locator('[name="organizationType"]').click();
