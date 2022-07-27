@@ -19,6 +19,7 @@ env:
   MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: --max_old_space_size=4096
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  RUNNER_DEBUG: 1
 
 jobs:
   release-versions:
