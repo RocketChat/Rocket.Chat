@@ -1,10 +1,13 @@
 import { expect } from 'chai';
-import { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
+import { IOmnichannelRoom, IUser, IVisitor } from '@rocket.chat/core-typings';
 import { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
-import { createVisitor, createLivechatRoom, createAgent, makeAgentAvailable } from '../../../data/livechat/rooms.js';
+import { createVisitor, createLivechatRoom, createAgent, makeAgentAvailable, getLivechatRoomInfo } from '../../../data/livechat/rooms.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { createUser, login } from '../../../data/users.helper.js';
+import { adminUsername, password } from '../../../data/user.js';
+import { createDepartment } from '../../../data/livechat/department.js';
 
 describe('LIVECHAT - rooms', function () {
 	this.retries(0);
@@ -238,6 +241,122 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body.error).to.be.equal('room-closed');
 				})
 				.end(done);
+		});
+	});
+
+	describe('livechat/room.forward', () => {
+		it('should return an "unauthorized error" when the user does not have "view-l-room" permission', async () => {
+			await updatePermission('transfer-livechat-guest', ['admin']);
+			await updatePermission('view-l-room', []);
+
+			await request
+				.post(api('livechat/room.forward'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.have.string('unauthorized');
+				});
+		});
+
+		it('should return an "unauthorized error" when the user does not have "transfer-livechat-guest" permission', async () => {
+			await updatePermission('transfer-livechat-guest', []);
+			await updatePermission('view-l-room', ['admin']);
+
+			await request
+				.post(api('livechat/room.forward'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.have.string('unauthorized');
+				});
+		});
+
+		it('should not be successful when no target (userId or departmentId) was specified', async () => {
+			await updatePermission('transfer-livechat-guest', ['admin']);
+			await updatePermission('view-l-room', ['admin']);
+
+			await request
+				.post(api('livechat/room.forward'))
+				.set(credentials)
+				.send({
+					roomId: room._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should return a success message when transferred successfully to agent', async () => {
+			const user: IUser = await createUser();
+			const createdUserCredentials = await login(user.username, password);
+			await createAgent(user.username);
+			await makeAgentAvailable(createdUserCredentials);
+
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			await request
+				.post(api('livechat/room.forward'))
+				.set(credentials)
+				.send({
+					roomId: newRoom._id,
+					userId: user._id,
+					clientAction: true,
+					comment: 'test comment',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+
+			expect(latestRoom).to.have.property('lastMessage');
+			expect(latestRoom.lastMessage?.t).to.be.equal('livechat_transfer_history');
+			expect(latestRoom.lastMessage?.u?.username).to.be.equal(adminUsername);
+			expect((latestRoom.lastMessage as any)?.transferData?.comment).to.be.equal('test comment');
+			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('agent');
+			expect((latestRoom.lastMessage as any)?.transferData?.transferredTo?.username).to.be.equal(user.username);
+		});
+
+		it('should return a success message when transferred successfully to a department', async () => {
+			const department = await createDepartment();
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			await request
+				.post(api('livechat/room.forward'))
+				.set(credentials)
+				.send({
+					roomId: newRoom._id,
+					departmentId: department._id,
+					clientAction: true,
+					comment: 'test comment',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+
+			expect(latestRoom).to.have.property('departmentId');
+			expect(latestRoom.departmentId).to.be.equal(department._id);
+
+			expect(latestRoom).to.have.property('lastMessage');
+			expect(latestRoom.lastMessage?.t).to.be.equal('livechat_transfer_history');
+			expect(latestRoom.lastMessage?.u?.username).to.be.equal(adminUsername);
+			expect((latestRoom.lastMessage as any)?.transferData?.comment).to.be.equal('test comment');
+			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
+			expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(department._id);
 		});
 	});
 });

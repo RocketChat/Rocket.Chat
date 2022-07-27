@@ -710,7 +710,22 @@ export const Livechat = {
 			},
 		};
 
-		return Messages.createTransferHistoryWithRoomIdMessageAndUser(room._id, '', { _id, username }, transfer);
+		const type = 'livechat_transfer_history';
+		const transferMessage = {
+			t: type,
+			rid: room._id,
+			ts: new Date(),
+			msg: '',
+			u: {
+				_id,
+				username,
+			},
+			groupable: false,
+		};
+
+		Object.assign(transferMessage, transfer);
+
+		sendMessage(transferredBy, transferMessage, room);
 	},
 
 	async transfer(room, guest, transferData) {

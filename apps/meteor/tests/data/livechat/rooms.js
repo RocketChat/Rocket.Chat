@@ -9,6 +9,20 @@ export const createLivechatRoom = (visitorToken) =>
 			.end((err, res) => resolve(res.body.room));
 	});
 
+export const getLivechatRoomInfo = (roomId) => {
+	return new Promise((resolve /* , reject*/) => {
+		request
+			.get(api('channels.info'))
+			.set(credentials)
+			.query({
+				roomId,
+			})
+			.end((_err, req) => {
+				resolve(req.body.channel);
+			});
+	});
+}
+
 export const createVisitor = () =>
 	new Promise((resolve, reject) => {
 		const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -39,13 +53,13 @@ export const createVisitor = () =>
 		});
 	});
 
-export const createAgent = () =>
+export const createAgent = (overrideUsername) =>
 	new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/users/agent'))
 			.set(credentials)
 			.send({
-				username: adminUsername,
+				username: overrideUsername || adminUsername,
 			})
 			.end((err, res) => {
 				if (err) {
@@ -71,9 +85,9 @@ export const createManager = () =>
 			});
 	});
 
-export const makeAgentAvailable = () =>
+export const makeAgentAvailable = (overrideCredentials) =>
 	new Promise((resolve, reject) => {
-		request.post(api('users.setStatus')).set(credentials).send({
+		request.post(api('users.setStatus')).set(overrideCredentials || credentials).send({
 			message: '',
 			status: 'online',
 		}).end((err, res) => {
@@ -82,7 +96,7 @@ export const makeAgentAvailable = () =>
 			}
 			request
 			.post(methodCall('livechat/changeLivechatStatus'))
-			.set(credentials)
+			.set(overrideCredentials || credentials)
 			.send({
 				message: JSON.stringify({
 					method: 'livechat/changeLivechatStatus',
