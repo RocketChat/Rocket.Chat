@@ -492,7 +492,7 @@ export type RoomsEndpoints = {
 				  },
 		) => void;
 	};
-	'/v1/room.nameExists': {
+	'/v1/rooms.nameExists': {
 		GET: {
 			roomName: string;
 		};

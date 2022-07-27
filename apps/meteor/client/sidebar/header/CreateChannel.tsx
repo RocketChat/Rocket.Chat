@@ -61,7 +61,7 @@ const CreateChannel = ({
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const federationEnabled = useSetting('Federation_Matrix_enabled');
-	const channelNameExists = useEndpoint('GET', '/v1/room.nameExists');
+	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 
