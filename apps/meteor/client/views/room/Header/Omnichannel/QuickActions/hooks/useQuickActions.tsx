@@ -10,8 +10,8 @@ import {
 	useEndpoint,
 	useMethod,
 	useTranslation,
+	useRoute,
 } from '@rocket.chat/ui-contexts';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import React, { useCallback, useState, useEffect } from 'react';
 
@@ -35,6 +35,7 @@ export const useQuickActions = (
 	getAction: (id: string) => void;
 } => {
 	const setModal = useSetModal();
+	const route = useRoute('home');
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -84,11 +85,11 @@ export const useQuickActions = (
 			await methodReturn(rid);
 			closeModal();
 			Session.set('openedRoom', null);
-			FlowRouter.go('/home');
+			route.push();
 		} catch (error: any) {
 			handleError(error);
 		}
-	}, [closeModal, methodReturn, rid]);
+	}, [closeModal, methodReturn, rid, route]);
 
 	const requestTranscript = useMethod('livechat:requestTranscript');
 
@@ -97,7 +98,6 @@ export const useQuickActions = (
 			try {
 				await requestTranscript(rid, email, subject);
 				closeModal();
-				RoomManager.close(`l${rid}`);
 				dispatchToastMessage({
 					type: 'success',
 					message: t('Livechat_transcript_has_been_requested'),
@@ -170,13 +170,13 @@ export const useQuickActions = (
 					throw new Error(departmentId ? t('error-no-agents-online-in-department') : t('error-forwarding-chat'));
 				}
 				dispatchToastMessage({ type: 'success', message: t('Transferred') });
-				FlowRouter.go('/');
+				route.push();
 				closeModal();
 			} catch (error: any) {
 				handleError(error);
 			}
 		},
-		[closeModal, dispatchToastMessage, forwardChat, rid, t],
+		[closeModal, dispatchToastMessage, forwardChat, rid, route, t],
 	);
 
 	const closeChat = useMethod('livechat:closeRoom');
