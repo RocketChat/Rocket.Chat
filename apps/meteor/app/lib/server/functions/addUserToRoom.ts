@@ -112,9 +112,11 @@ export const addUserToRoom = function (
 		});
 	}
 
-	if (room.teamMain && room.teamId && inviter) {
+	if (room.teamMain && room.teamId) {
+		const inviterId = inviter ? inviter._id : room.u._id;
+
 		// if user is joining to main team channel, create a membership
-		Promise.await(Team.addMember(inviter, userToBeAdded._id, room.teamId));
+		Promise.await(Team.addMember(inviterId, userToBeAdded._id, room.teamId));
 	}
 
 	return true;
