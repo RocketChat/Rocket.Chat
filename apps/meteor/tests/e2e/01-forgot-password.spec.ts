@@ -1,7 +1,7 @@
 import { test, expect } from './utils/test';
 import { Auth } from './page-objects';
 
-test.describe('Forgot Password', () => {
+test.describe.only('Forgot Password', () => {
 	let pageAuth: Auth;
 
 	test.beforeEach(async ({ page }) => {
