@@ -19,7 +19,6 @@ env:
   MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: --max_old_space_size=4096
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
-  RUNNER_DEBUG: 1
 
 jobs:
   release-versions:
@@ -146,14 +145,14 @@ jobs:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
 
-      # - name: Lint
-      #   run: yarn lint --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+      - name: Lint
+        run: yarn lint --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
-      # - name: Translation check
-      #   run: yarn turbo run translation-check --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+      - name: Translation check
+        run: yarn turbo run translation-check --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
-      # - name: TS typecheck
-      #   run: yarn turbo run typecheck --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+      - name: TS typecheck
+        run: yarn turbo run typecheck --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
@@ -224,7 +223,7 @@ jobs:
     strategy:
       matrix:
         node-version: ['14.19.3']
-        mongodb-version: ['4.2']
+        mongodb-version: ['4.2', '4.4', '5.0']
 
     steps:
       - name: Launch MongoDB
@@ -369,28 +368,7 @@ jobs:
           done
 
           cd ./apps/meteor
-          E2E_COVERAGE=true npm run test:e2e
-
-      - name: Extract e2e:ee:coverage
-        run: |
-          cd ./apps/meteor
-          yarn test:e2e:nyc
-          # NYC_OUTPUT=$(yarn test:e2e:nyc)
-          # echo $NYC_OUTPUT
-          # COVERAGE_REPORTS=$(grep -o '[^ ]*%' <<< "$NYC_OUTPUT")
-          # echo "REPORT_STATEMENTS=$(sed -n 1p <<< "$COVERAGE_REPORTS")" >> $GITHUB_ENV
-
-      - uses: codecov/codecov-action@v3
-        with:
-          directory: ./apps/meteor
-          flags: e2e
-          verbose: true
-
-      - name: Store e2e-ee-coverage
-        uses: actions/upload-artifact@v2
-        with:
-          name: e2e-ee-coverage
-          path: ./apps/meteor/coverage*
+          npm run test:e2e
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
@@ -704,7 +682,24 @@ jobs:
 
           cd ./apps/meteor
 
-          IS_EE=true npm run test:e2e
+          E2E_COVERAGE=true IS_EE=true npm run test:e2e
+
+      - name: Extract e2e:ee:coverage
+        run: |
+          cd ./apps/meteor
+          yarn test:e2e:nyc
+
+      - uses: codecov/codecov-action@v3
+        with:
+          directory: ./apps/meteor
+          flags: e2e
+          verbose: true
+
+      - name: Store e2e-ee-coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: e2e-ee-coverage
+          path: ./apps/meteor/coverage*
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
