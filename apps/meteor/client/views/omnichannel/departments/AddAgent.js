@@ -30,7 +30,7 @@ function AddAgent({ agentList, setAgentsAdded, setAgentList, ...props }) {
 	});
 	return (
 		<Box display='flex' alignItems='center' {...props}>
-			<AutoCompleteAgent empty value={userId} onChange={handleAgent} />
+			<AutoCompleteAgent haveAll value={userId} onChange={handleAgent} />
 			<Button disabled={!userId} onClick={handleSave} mis='x8' primary>
 				{t('Add')}
 			</Button>
