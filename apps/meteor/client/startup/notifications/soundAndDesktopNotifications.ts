@@ -41,7 +41,7 @@ Meteor.startup(() => {
 		 * 2. The user should be notified through sound
 		 */
 		Notifications.onUser('notification', (notification: NotificationEvent) => {
-			const hasFocus = readMessage.isEnabled();
+			const hasFocus = readMessage.isEnable();
 			const muteFocusedConversations = getUserPreference(Meteor.userId(), 'muteFocusedConversations');
 			const { rid } = notification.payload;
 			const messageIsInOpenedRoom = hasFocus && Session.get('openedRoom') === notification.payload.rid;

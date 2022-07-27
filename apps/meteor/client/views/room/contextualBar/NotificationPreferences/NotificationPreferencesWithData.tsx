@@ -48,7 +48,7 @@ const NotificationPreferencesWithData = ({ rid }: { rid: string }): ReactElement
 		['nothing', t('Nothing')],
 	];
 
-	const customSoundAsset = customSound.list.entries().map((value) => [value[0], value[1].name]);
+	const customSoundAsset = customSound.getList()?.map((value) => [value._id, value.name]) as [string, string][];
 
 	const handleOptions = {
 		alerts: defaultOption,
