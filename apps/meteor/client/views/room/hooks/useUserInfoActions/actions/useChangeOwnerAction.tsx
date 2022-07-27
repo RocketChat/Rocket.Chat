@@ -32,7 +32,6 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const changeOwner = useEndpointActionExperimental(
 		'POST',
 		`${endpointPrefix}.${changeOwnerEndpoint}`,
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		t(changeOwnerMessage, { username: user.username, room_name: roomName }),
 	);
 

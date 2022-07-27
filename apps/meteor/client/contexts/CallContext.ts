@@ -35,6 +35,7 @@ type CallContextReady = {
 	actions: CallActionsType;
 	queueName: string;
 	queueCounter: number;
+	networkStatus: 'online' | 'offline';
 	openedRoomInfo: { v: { token?: string }; rid: string };
 	openWrapUpModal: () => void;
 	openRoom: (rid: IVoipRoom['_id']) => void;
@@ -271,4 +272,14 @@ export const useVoipOutboundStates = (): {
 		outBoundCallsEnabled: isEnterprise,
 		outBoundCallsEnabledForUser: isEnterprise && !['IN_CALL', 'ON_HOLD', 'UNREGISTERED', 'INITIAL'].includes(callerInfo.state),
 	};
+};
+
+export const useVoipNetworkStatus = (): 'online' | 'offline' => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useVoipNetworkStatus only if Calls are enabled and ready');
+	}
+
+	return context.networkStatus;
 };

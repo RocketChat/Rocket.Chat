@@ -62,7 +62,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 					)}
 
 					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Last_Login')}</InfoPanel.Label>
+						<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
 						<InfoPanel.Text>{formatDateAndTime(loginAt)}</InfoPanel.Text>
 					</InfoPanel.Field>
 

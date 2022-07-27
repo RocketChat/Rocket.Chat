@@ -58,10 +58,7 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 
 			{shouldShowRolesList && <RolesList roles={roles} isBot={message.bot} />}
 			<MessageTimestamp title={formatters.dateAndTime(message.ts)}>{formatters.time(message.ts)}</MessageTimestamp>
-			{message.private && (
-				// The MessageStatusPrivateIndicator component should not have name prop, it should be fixed on fuselage
-				<MessageStatusPrivateIndicator name='message'>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>
-			)}
+			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
 			<MessageIndicators message={message} />
 		</MessageHeaderTemplate>
 	);
