@@ -242,10 +242,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const result = this.deleteMany(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			Rooms.incUsersCountByIds([roomId], -result);
+			await Rooms.incUsersCountByIds([roomId], -result);
 		}
 
-		Users.removeRoomByRoomId(roomId);
+		await Users.removeRoomByRoomId(roomId);
 
 		return result;
 	}
