@@ -1,19 +1,17 @@
-import { test, Page, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 import { Auth, OmnichannelDepartaments } from './page-objects';
 
 test.describe('Department', () => {
-	let page: Page;
 	let pageAuth: Auth;
 	let pageOmnichannelDepartaments: OmnichannelDepartaments;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
 		pageAuth = new Auth(page);
 		pageOmnichannelDepartaments = new OmnichannelDepartaments(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async ({ page }) => {
 		await pageAuth.doLogin();
 		await page.goto('/omnichannel');
 	});
@@ -24,10 +22,6 @@ test.describe('Department', () => {
 		});
 
 		test.describe('Create and Edit', async () => {
-			test.afterEach(async () => {
-				await pageOmnichannelDepartaments.btnToastClose.click();
-			});
-
 			test('expect new department is created', async () => {
 				await pageOmnichannelDepartaments.btnNewDepartment.click();
 				await pageOmnichannelDepartaments.doAddDepartments();

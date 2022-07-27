@@ -1,19 +1,17 @@
-import { Page, test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 import { Auth, HomeChannel } from './page-objects';
 
 test.describe('Message Popup', () => {
-	let page: Page;
 	let pageAuth: Auth;
 	let pageHomeChannel: HomeChannel;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
 		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async () => {
 		await pageAuth.doLogin();
 		await pageHomeChannel.sidenav.doOpenChat('room_public_1');
 	});
