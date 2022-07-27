@@ -7,6 +7,7 @@ import { MongoClient } from 'mongodb';
 
 import { convertChangeStreamPayload } from './convertChangeStreamPayload';
 import { convertOplogPayload } from './convertOplogPayload';
+import { watchCollections } from './watchCollections';
 
 export type RealTimeData<T> = {
 	id: string;
@@ -25,17 +26,14 @@ const useMeteorOplog = ['yes', 'true'].includes(String(process.env.USE_NATIVE_OP
 export class DatabaseWatcher extends EventEmitter {
 	private db: Db;
 
-	private watchCollections: string[];
-
 	private _oplogHandle?: any;
 
 	private metrics?: any;
 
-	constructor({ db, watchCollections, _oplogHandle, metrics }: { db: Db; watchCollections: string[]; _oplogHandle?: any; metrics?: any }) {
+	constructor({ db, _oplogHandle, metrics }: { db: Db; _oplogHandle?: any; metrics?: any }) {
 		super();
 
 		this.db = db;
-		this.watchCollections = watchCollections;
 		this._oplogHandle = _oplogHandle;
 		this.metrics = metrics;
 	}
@@ -118,7 +116,7 @@ export class DatabaseWatcher extends EventEmitter {
 		const stream = cursor.stream();
 
 		stream.on('data', (doc) => {
-			const doesMatter = this.watchCollections.some((collection) => doc.ns === `${dbName}.${collection}`);
+			const doesMatter = watchCollections.some((collection) => doc.ns === `${dbName}.${collection}`);
 			if (!doesMatter) {
 				return;
 			}
@@ -139,7 +137,7 @@ export class DatabaseWatcher extends EventEmitter {
 		if (!this._oplogHandle) {
 			throw new Error('no-oplog-handle');
 		}
-		this.watchCollections.forEach((collection) => {
+		watchCollections.forEach((collection) => {
 			// TODO fix any
 			this._oplogHandle.onOplogEntry({ collection }, (event: any) => {
 				this.emitDoc(collection, convertOplogPayload(event));
@@ -150,7 +148,7 @@ export class DatabaseWatcher extends EventEmitter {
 	private watchChangeStream(): void {
 		console.log('[DatabaseWatcher] Using change streams');
 
-		const changeStream = this.db.watch<IRocketChatRecord>([{ $match: { 'ns.coll': { $in: this.watchCollections } } }]);
+		const changeStream = this.db.watch<IRocketChatRecord>([{ $match: { 'ns.coll': { $in: watchCollections } } }]);
 		changeStream.on('change', (event) => {
 			// TODO fix as any
 			this.emitDoc((event as any).ns.coll, convertChangeStreamPayload(event));
@@ -161,6 +159,7 @@ export class DatabaseWatcher extends EventEmitter {
 		if (!doc) {
 			return;
 		}
+
 		this.metrics?.oplog.inc({
 			collection,
 			op: doc.action,
