@@ -6,10 +6,10 @@ import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { VIDEOCONF_STACK_MAX_USERS } from '..';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useVideoConfJoinCall } from '../../../../../contexts/VideoConfContext';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
+import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
 
 const VideoConfListItem = ({
 	videoConfData,

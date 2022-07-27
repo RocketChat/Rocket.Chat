@@ -84,7 +84,7 @@ const ChannelsTab = (): ReactElement => {
 									<Table.Cell>{i + 1}.</Table.Cell>
 									<Table.Cell>
 										<Margins inlineEnd='x4'>
-											{(t === 'd' && <Icon name='at' />) || (t === 'c' && <Icon name='lock' />) || (t === 'p' && <Icon name='hashtag' />)}
+											{(t === 'd' && <Icon name='at' />) || (t === 'p' && <Icon name='lock' />) || (t === 'c' && <Icon name='hashtag' />)}
 										</Margins>
 										{name}
 									</Table.Cell>
