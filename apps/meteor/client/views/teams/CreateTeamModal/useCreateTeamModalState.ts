@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, usePermission, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, usePermission, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
@@ -70,7 +70,8 @@ export const useCreateTeamModalState = (onClose: () => void): CreateTeamModalSta
 
 	const [nameError, setNameError] = useState<string>();
 
-	const teamNameExists = useMethod('roomNameExists');
+	const teamNameExists = useEndpoint('GET', '/v1/room.nameExists');
+	// const teamNameExists = useMethod('roomNameExists');
 
 	const checkName = useDebouncedCallback(
 		async (name: string) => {
@@ -90,7 +91,7 @@ export const useCreateTeamModalState = (onClose: () => void): CreateTeamModalSta
 				return;
 			}
 
-			const isNotAvailable = await teamNameExists(name);
+			const isNotAvailable = await teamNameExists({ roomName: name });
 			if (isNotAvailable) {
 				setNameError(t('Teams_Errors_team_name', { name }));
 			}
