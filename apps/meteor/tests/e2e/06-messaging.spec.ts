@@ -3,179 +3,150 @@ import { expect, test, Browser, Page } from '@playwright/test';
 import { validUserInserted } from './utils/mocks/userAndPasswordMock';
 import { Auth, HomeChannel } from './page-objects';
 
-const createBrowserContextForChat = async (browser: Browser): Promise<{ page: Page; pageHomeChannel: HomeChannel }> => {
+async function createAuxContext(browser: Browser): Promise<{ page: Page; pageHomeChannel: HomeChannel }> {
 	const page = await browser.newPage();
-	const pageLogin = new Auth(page);
+	const pageAuth = new Auth(page);
 	const pageHomeChannel = new HomeChannel(page);
-	await pageLogin.doLogin(validUserInserted);
+
+	await pageAuth.doLogin(validUserInserted);
 
 	return { page, pageHomeChannel };
-};
+}
 
 test.describe('Messaging', () => {
-	let pageLogin: Auth;
+	let pageAuth: Auth;
 	let pageHomeChannel: HomeChannel;
 
 	test.beforeEach(async ({ page }) => {
-		pageLogin = new Auth(page);
+		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 	});
 
 	test.beforeEach(async () => {
-		await pageLogin.doLogin();
+		await pageAuth.doLogin();
 	});
 
-	test.describe('Normal messaging', async () => {
-		test.describe('General channel', async () => {
-			test('expect received message is visible for two context', async ({ browser, page }) => {
-				const anotherContext = await createBrowserContextForChat(browser);
-				await anotherContext.pageHomeChannel.sidenav.doOpenChat('general');
-				await anotherContext.pageHomeChannel.content.doSendMessage('Hello');
-				await pageHomeChannel.sidenav.doOpenChat('general');
-				await pageHomeChannel.content.doSendMessage('Hello');
+	test('expect show "hello word" in both contexts (general)', async ({ browser }) => {
+		await pageHomeChannel.sidenav.doOpenChat('general');
+		await pageHomeChannel.content.doSendMessage('hello world');
 
-				const anotherUserMessage = page.locator('[data-qa-type="message"][data-own="false"]').last();
-				const mainUserMessage = anotherContext.page.locator('[data-qa-type="message"][data-own="false"]').last();
+		const auxContext = await createAuxContext(browser);
+		await auxContext.pageHomeChannel.sidenav.doOpenChat('general');
 
-				await expect(anotherUserMessage).toBeVisible();
-				await expect(mainUserMessage).toBeVisible();
-				await anotherContext.page.close();
-			});
-		});
-		test.describe('Public channel', async () => {
-			test('expect received message is visible for two context', async ({ browser, page }) => {
-				const anotherContext = await createBrowserContextForChat(browser);
-				await anotherContext.pageHomeChannel.sidenav.doOpenChat('public channel');
-				await anotherContext.pageHomeChannel.content.doSendMessage('Hello');
-				await pageHomeChannel.sidenav.doOpenChat('public channel');
-				await pageHomeChannel.content.doSendMessage('Hello');
+		await expect(auxContext.pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+		await expect(pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
 
-				const anotherUserMessage = page.locator('[data-qa-type="message"][data-own="false"]').last();
-				const mainUserMessage = anotherContext.page.locator('[data-qa-type="message"][data-own="false"]').last();
+		await auxContext.page.close();
+	});
 
-				await expect(anotherUserMessage).toBeVisible();
-				await expect(mainUserMessage).toBeVisible();
-				await anotherContext.page.close();
-			});
-		});
+	test('expect show "hello word" in both contexts (private channel)', async ({ browser }) => {
+		await pageHomeChannel.sidenav.doOpenChat('private channel');
+		await pageHomeChannel.content.doSendMessage('hello world');
 
-		test.describe('Private channel', async () => {
-			test('expect received message is visible for two context', async ({ browser, page }) => {
-				const anotherContext = await createBrowserContextForChat(browser);
-				await anotherContext.pageHomeChannel.sidenav.doOpenChat('private channel');
-				await anotherContext.pageHomeChannel.content.doSendMessage('Hello');
-				await pageHomeChannel.sidenav.doOpenChat('private channel');
-				await pageHomeChannel.content.doSendMessage('Hello');
+		const auxContext = await createAuxContext(browser);
+		await auxContext.pageHomeChannel.sidenav.doOpenChat('private channel');
 
-				const anotherUserMessage = page.locator('[data-qa-type="message"][data-own="false"]').last();
-				const mainUserMessage = anotherContext.page.locator('[data-qa-type="message"][data-own="false"]').last();
+		await expect(auxContext.pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+		await expect(pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
 
-				await expect(anotherUserMessage).toBeVisible();
-				await expect(mainUserMessage).toBeVisible();
-				await anotherContext.page.close();
-			});
+		await auxContext.page.close();
+	});
+
+	test('expect show "hello word" in both contexts (direct)', async ({ browser }) => {
+		await pageHomeChannel.sidenav.doOpenChat('user.name.test');
+		await pageHomeChannel.content.doSendMessage('hello world');
+
+		const auxContext = await createAuxContext(browser);
+		await auxContext.pageHomeChannel.sidenav.doOpenChat('rocketchat.internal.admin.test');
+
+		await expect(auxContext.pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+		await expect(pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+
+		await auxContext.page.close();
+	});
+
+	test.describe('File Upload', async () => {
+		test.beforeEach(async () => {
+			await pageHomeChannel.sidenav.doOpenChat('general');
+			await pageHomeChannel.content.doDragAndDropFile();
 		});
 
-		test.describe('Direct Message', async () => {
-			test('expect received message is visible for two context', async ({ browser, page }) => {
-				const anotherContext = await createBrowserContextForChat(browser);
-				await anotherContext.pageHomeChannel.sidenav.doOpenChat('rocketchat.internal.admin.test');
-				await anotherContext.pageHomeChannel.content.doSendMessage('Hello');
-				await pageHomeChannel.sidenav.doOpenChat('user.name.test');
-				await pageHomeChannel.content.doSendMessage('Hello');
-
-				const anotherUserMessage = page.locator('[data-qa-type="message"][data-own="false"]').last();
-				const mainUserMessage = anotherContext.page.locator('[data-qa-type="message"][data-own="false"]').last();
-
-				await expect(anotherUserMessage).toBeVisible();
-				await expect(mainUserMessage).toBeVisible();
-				await anotherContext.page.close();
-			});
+		test('expect not show modal after click in cancel button', async () => {
+			await pageHomeChannel.content.modalCancelButton.click();
+			await expect(pageHomeChannel.content.modalFilePreview).not.toBeVisible();
 		});
 
-		test.describe('File Upload', async () => {
-			test.beforeEach(async () => {
-				await pageHomeChannel.sidenav.doOpenChat('general');
-				await pageHomeChannel.content.doDragAndDropFile();
-			});
-
-			test('expect not show modal after click in cancel button', async () => {
-				await pageHomeChannel.content.modalCancelButton.click();
-				await expect(pageHomeChannel.content.modalFilePreview).not.toBeVisible();
-			});
-
-			test('expect send file not show modal', async () => {
-				await pageHomeChannel.content.buttonSend.click();
-				await expect(pageHomeChannel.content.modalFilePreview).not.toBeVisible();
-			});
-
-			test('expect send file with description', async () => {
-				await pageHomeChannel.content.descriptionInput.type('any_description');
-				await pageHomeChannel.content.buttonSend.click();
-				await expect(pageHomeChannel.content.getFileDescription).toHaveText('any_description');
-			});
-
-			test('expect send file with different file name', async () => {
-				await pageHomeChannel.content.fileNameInput.fill('any_file1.txt');
-				await pageHomeChannel.content.buttonSend.click();
-				await expect(pageHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
-			});
+		test('expect send file not show modal', async () => {
+			await pageHomeChannel.content.buttonSend.click();
+			await expect(pageHomeChannel.content.modalFilePreview).not.toBeVisible();
 		});
 
-		test.describe('Messaging actions', async () => {
-			test.beforeEach(async () => {
-				await pageHomeChannel.sidenav.doOpenChat('general');
-			});
+		test('expect send file with description', async () => {
+			await pageHomeChannel.content.descriptionInput.type('any_description');
+			await pageHomeChannel.content.buttonSend.click();
+			await expect(pageHomeChannel.content.getFileDescription).toHaveText('any_description');
+		});
 
-			test('expect reply the message', async ({ page }) => {
-				await pageHomeChannel.content.doSendMessage('This is a message for reply');
-				await pageHomeChannel.content.doOpenMessageActionMenu();
-				await pageHomeChannel.content.doSelectAction('reply');
-				await pageHomeChannel.tabs.messageInput.type('this is a reply message');
-				await page.keyboard.press('Enter');
-				await expect(pageHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
-				await pageHomeChannel.tabs.closeThreadMessage.click();
-			});
+		test('expect send file with different file name', async () => {
+			await pageHomeChannel.content.fileNameInput.fill('any_file1.txt');
+			await pageHomeChannel.content.buttonSend.click();
+			await expect(pageHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+		});
+	});
 
-			test('expect edit the message', async () => {
-				await pageHomeChannel.content.doSendMessage('This is a message to edit');
-				await pageHomeChannel.content.doOpenMessageActionMenu();
-				await pageHomeChannel.content.doSelectAction('edit');
-			});
+	test.describe('Messaging actions', async () => {
+		test.beforeEach(async () => {
+			await pageHomeChannel.sidenav.doOpenChat('general');
+		});
 
-			test('expect message is deleted', async () => {
-				await pageHomeChannel.content.doSendMessage('Message to delete');
-				await pageHomeChannel.content.doOpenMessageActionMenu();
-				await pageHomeChannel.content.doSelectAction('delete');
-			});
+		test('expect reply the message', async ({ page }) => {
+			await pageHomeChannel.content.doSendMessage('This is a message for reply');
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('reply');
+			await pageHomeChannel.tabs.messageInput.type('this is a reply message');
+			await page.keyboard.press('Enter');
+			await expect(pageHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
+			await pageHomeChannel.tabs.closeThreadMessage.click();
+		});
 
-			test('it should quote the message', async () => {
-				const message = `Message for quote - ${Date.now()}`;
+		test('expect edit the message', async () => {
+			await pageHomeChannel.content.doSendMessage('This is a message to edit');
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('edit');
+		});
 
-				await pageHomeChannel.content.doSendMessage(message);
-				await pageHomeChannel.content.doOpenMessageActionMenu();
-				await pageHomeChannel.content.doSelectAction('quote');
+		test('expect message is deleted', async () => {
+			await pageHomeChannel.content.doSendMessage('Message to delete');
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('delete');
+		});
 
-				await expect(pageHomeChannel.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
-			});
+		test('it should quote the message', async () => {
+			const message = `Message for quote - ${Date.now()}`;
 
-			test('it should star the message', async () => {
-				await pageHomeChannel.content.doSendMessage('Message to star');
-				await pageHomeChannel.content.doOpenMessageActionMenu();
-				await pageHomeChannel.content.doSelectAction('star');
-			});
+			await pageHomeChannel.content.doSendMessage(message);
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('quote');
 
-			test('it should copy the message', async () => {
-				await pageHomeChannel.content.doSendMessage('Message to copy');
-				await pageHomeChannel.content.doOpenMessageActionMenu();
-				await pageHomeChannel.content.doSelectAction('copy');
-			});
+			await expect(pageHomeChannel.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
+		});
 
-			test('it should permalink the message', async () => {
-				await pageHomeChannel.content.doSendMessage('Message to permalink');
-				await pageHomeChannel.content.doOpenMessageActionMenu();
-				await pageHomeChannel.content.doSelectAction('permalink');
-			});
+		test('it should star the message', async () => {
+			await pageHomeChannel.content.doSendMessage('Message to star');
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('star');
+		});
+
+		test('it should copy the message', async () => {
+			await pageHomeChannel.content.doSendMessage('Message to copy');
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('copy');
+		});
+
+		test('it should permalink the message', async () => {
+			await pageHomeChannel.content.doSendMessage('Message to permalink');
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('permalink');
 		});
 	});
 });
