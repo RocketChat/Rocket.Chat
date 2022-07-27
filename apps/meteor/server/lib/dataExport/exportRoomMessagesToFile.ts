@@ -1,3 +1,5 @@
+import { mkdir, writeFile } from 'fs/promises';
+
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Messages as MessagesRaw } from '@rocket.chat/models';
 import type { IMessage, IRoom, IUser, MessageAttachment, FileProp, RoomType } from '@rocket.chat/core-typings';
@@ -6,9 +8,6 @@ import { settings } from '../../../app/settings/server';
 import { joinPath } from '../fileUtils';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { Messages } from '../../../app/models/server';
-import { startFile } from './startFile';
-import { writeToFile } from './writeToFile';
-import { createDir } from './createDir';
 
 const hideUserName = (
 	username: string,
@@ -263,8 +262,8 @@ export const exportRoomMessagesToFile = async function (
 	usersMap = {},
 	hideUsers = true,
 ) {
-	createDir(exportPath);
-	createDir(assetsPath);
+	await mkdir(exportPath, { recursive: true });
+	await mkdir(assetsPath, { recursive: true });
 
 	const result = {
 		fileList: [] as FileProp[],
@@ -280,7 +279,9 @@ export const exportRoomMessagesToFile = async function (
 		const filePath = joinPath(exportPath, exportOpRoomData.targetFile);
 		if (exportOpRoomData.status === 'pending') {
 			exportOpRoomData.status = 'exporting';
-			startFile(filePath, exportType === 'html' ? '<meta http-equiv="content-type" content="text/html; charset=utf-8">' : '');
+			if (exportType === 'html') {
+				await writeFile(filePath, '<meta http-equiv="content-type" content="text/html; charset=utf-8">', { encoding: 'utf8' });
+			}
 		}
 
 		const skip = exportOpRoomData.exportedCount;
@@ -304,7 +305,7 @@ export const exportRoomMessagesToFile = async function (
 			exportOpRoomData.status = 'completed';
 		}
 
-		writeToFile(filePath, `${messages.join('\n')}\n`);
+		await writeFile(filePath, `${messages.join('\n')}\n`, { encoding: 'utf8', flag: 'a' });
 	}
 
 	return result;

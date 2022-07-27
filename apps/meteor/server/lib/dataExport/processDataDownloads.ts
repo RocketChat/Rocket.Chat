@@ -1,5 +1,6 @@
-import fs from 'fs';
-import util from 'util';
+import { createWriteStream } from 'fs';
+import { promisify } from 'util';
+import { access, mkdir, rm, writeFile } from 'fs/promises';
 
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
@@ -17,15 +18,9 @@ import { getURL } from '../../../app/utils/lib/getURL';
 import { getRoomData } from './getRoomData';
 import { sendEmail } from './sendEmail';
 import { makeZipFile } from './makeZipFile';
-import { copyFile } from './copyFile';
+import { copyFileUpload } from './copyFileUpload';
 import { uploadZipFile } from './uploadZipFile';
 import { exportRoomMessagesToFile } from './exportRoomMessagesToFile';
-import { startFile } from './startFile';
-import { writeToFile } from './writeToFile';
-import { createDir } from './createDir';
-
-const fsExists = util.promisify(fs.exists);
-const fsUnlink = util.promisify(fs.unlink);
 
 let zipFolder = '/tmp/zipFiles';
 if (settings.get<string>('UserData_FileSystemZipPath')) {
@@ -59,7 +54,7 @@ const loadUserSubscriptions = (_exportOperation: IExportOperation, fileType: 'js
 	return roomList;
 };
 
-const generateUserFile = (exportOperation: IExportOperation, userData?: IUser) => {
+const generateUserFile = async (exportOperation: IExportOperation, userData?: IUser) => {
 	if (!userData) {
 		return;
 	}
@@ -76,30 +71,34 @@ const generateUserFile = (exportOperation: IExportOperation, userData?: IUser) =
 	};
 
 	const fileName = joinPath(exportOperation.exportPath, exportOperation.fullExport ? 'user.json' : 'user.html');
-	startFile(fileName, '');
 
 	if (exportOperation.fullExport) {
-		writeToFile(fileName, JSON.stringify(dataToSave));
+		await writeFile(fileName, JSON.stringify(dataToSave), { encoding: 'utf8' });
 
 		exportOperation.generatedUserFile = true;
 		return;
 	}
 
-	writeToFile(fileName, '<meta http-equiv="content-type" content="text/html; charset=utf-8">');
+	const stream = createWriteStream(fileName, { encoding: 'utf8' });
+
+	stream.write('<!DOCTYPE html>\n');
+	stream.write('<meta http-equiv="content-type" content="text/html; charset=utf-8">\n');
 	for (const [key, value] of Object.entries(dataToSave)) {
-		writeToFile(fileName, `<p><strong>${key}</strong>:`);
+		stream.write(`<p><strong>${key}</strong>:`);
 		if (typeof value === 'string') {
-			writeToFile(fileName, value);
+			stream.write(value);
 		} else if (Array.isArray(value)) {
-			writeToFile(fileName, '<br/>');
+			stream.write('<br/>');
 
 			for (const item of value) {
-				writeToFile(fileName, `${item}<br/>`);
+				stream.write(`${item}<br/>`);
 			}
 		}
 
-		writeToFile(fileName, '</p>');
+		stream.write('</p>\n');
 	}
+
+	await promisify(stream.close)();
 };
 
 const generateUserAvatarFile = async (exportOperation: IExportOperation, userData?: IUser) => {
@@ -118,13 +117,13 @@ const generateUserAvatarFile = async (exportOperation: IExportOperation, userDat
 	}
 };
 
-const generateChannelsFile = (type: 'json' | 'html', exportPath: string, exportOperation: IExportOperation) => {
+const generateChannelsFile = async (type: 'json' | 'html', exportPath: string, exportOperation: IExportOperation) => {
 	if (type !== 'json') {
 		return;
 	}
 
 	const fileName = joinPath(exportPath, 'channels.json');
-	startFile(
+	await writeFile(
 		fileName,
 		exportOperation.roomList
 			?.map((roomData) =>
@@ -163,7 +162,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 
 	try {
 		if (!exportOperation.generatedUserFile) {
-			generateUserFile(exportOperation, exportOperation.userData);
+			await generateUserFile(exportOperation, exportOperation.userData);
 		}
 
 		if (!exportOperation.generatedAvatar) {
@@ -171,7 +170,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 		}
 
 		if (exportOperation.status === 'exporting-rooms') {
-			generateChannelsFile(exportType, exportOperation.exportPath, exportOperation);
+			await generateChannelsFile(exportType, exportOperation.exportPath, exportOperation);
 
 			exportOperation.status = 'exporting';
 		}
@@ -201,22 +200,22 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 
 		if (exportOperation.status === 'downloading') {
 			for await (const attachmentData of exportOperation.fileList) {
-				await copyFile(attachmentData, exportOperation.assetsPath);
+				await copyFileUpload(attachmentData, exportOperation.assetsPath);
 			}
 
 			const targetFile = joinPath(zipFolder, `${generatedFileName}.zip`);
-			if (await fsExists(targetFile)) {
-				await fsUnlink(targetFile);
-			}
+			await rm(targetFile, { force: true });
 
 			exportOperation.status = 'compressing';
 		}
 
 		if (exportOperation.status === 'compressing') {
-			createDir(zipFolder);
+			await mkdir(zipFolder, { recursive: true });
 
 			exportOperation.generatedFile = joinPath(zipFolder, `${generatedFileName}.zip`);
-			if (!(await fsExists(exportOperation.generatedFile))) {
+			try {
+				await access(exportOperation.generatedFile);
+			} catch (error) {
 				await makeZipFile(exportOperation.exportPath, exportOperation.generatedFile);
 			}
 

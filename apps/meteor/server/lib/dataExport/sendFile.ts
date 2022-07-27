@@ -1,13 +1,13 @@
-import path from 'path';
+import path, { join } from 'path';
+import { mkdir, mkdtemp } from 'fs/promises';
+import { tmpdir } from 'os';
 
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import mkdirp from 'mkdirp';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { getURL } from '../../../app/utils/lib/getURL';
 import { getPath } from './getPath';
-import { copyFile } from './copyFile';
+import { copyFileUpload } from './copyFileUpload';
 import { getRoomData } from './getRoomData';
 import { exportRoomMessagesToFile } from './exportRoomMessagesToFile';
 import { makeZipFile } from './makeZipFile';
@@ -24,13 +24,13 @@ type ExportFile = {
 export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => {
 	const exportType = data.format;
 
-	const baseDir = `/tmp/exportFile-${Random.id()}`;
+	const baseDir = await mkdtemp(join(tmpdir(), 'exportFile-'));
 
 	const exportPath = baseDir;
 	const assetsPath = path.join(baseDir, 'assets');
 
-	mkdirp.sync(exportPath);
-	mkdirp.sync(assetsPath);
+	await mkdir(exportPath, { recursive: true });
+	await mkdir(assetsPath, { recursive: true });
 
 	const roomData = getRoomData(data.rid);
 
@@ -65,7 +65,7 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	await exportMessages();
 
 	for await (const attachmentData of fullFileList) {
-		await copyFile(attachmentData, assetsPath);
+		await copyFileUpload(attachmentData, assetsPath);
 	}
 
 	const exportFile = `${baseDir}-export.zip`;

@@ -1,8 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import { access } from 'fs/promises';
+import path, { join } from 'path';
+import { mkdir, mkdtemp } from 'fs/promises';
+import { tmpdir } from 'os';
 
-import mkdirp from 'mkdirp';
 import { Meteor } from 'meteor/meteor';
 import { ExportOperations, UserDataFiles } from '@rocket.chat/models';
 import type { IExportOperation, IUser } from '@rocket.chat/core-typings';
@@ -52,13 +51,8 @@ Meteor.methods({
 			}
 		}
 
-		const tempFolder = settings.get<string | undefined>('UserData_FileSystemPath')?.trim() || '/tmp/userData';
-
-		try {
-			access(tempFolder, fs.constants.R_OK | fs.constants.W_OK);
-		} catch (e) {
-			await mkdirp(tempFolder);
-		}
+		const tempFolder = settings.get<string | undefined>('UserData_FileSystemPath')?.trim() || (await mkdtemp(join(tmpdir(), 'userData')));
+		await mkdir(tempFolder, { recursive: true });
 
 		const exportOperation = {
 			status: 'preparing',
@@ -74,18 +68,10 @@ Meteor.methods({
 		exportOperation._id = id;
 
 		const folderName = path.join(tempFolder, id);
-		try {
-			access(folderName, fs.constants.R_OK | fs.constants.W_OK);
-		} catch (e) {
-			await mkdirp(folderName);
-		}
+		await mkdir(folderName, { recursive: true });
 
 		const assetsFolder = path.join(folderName, 'assets');
-		try {
-			access(assetsFolder, fs.constants.R_OK | fs.constants.W_OK);
-		} catch (e) {
-			await mkdirp(assetsFolder);
-		}
+		await mkdir(assetsFolder, { recursive: true });
 
 		exportOperation.exportPath = folderName;
 		exportOperation.assetsPath = assetsFolder;
