@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 import { publicChannelCreated, setPublicChannelCreated } from './utils/mocks/checks';
 import { Auth, HomeChannel } from './page-objects';
@@ -9,12 +9,10 @@ const anyChannelName = `channel-test-${Date.now()}`;
 let hasUserAddedInChannel = false;
 
 test.describe('Channel', () => {
-	let page: Page;
 	let pageAuth: Auth;
 	let pageHomeChannel: HomeChannel;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
 		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 
@@ -42,137 +40,69 @@ test.describe('Channel', () => {
 		});
 
 		test.describe('SideNav Channel List', () => {
-			test.beforeAll(async () => {
-				await pageHomeChannel.content.inputMain.click();
-			});
-
 			test('expect go to the general channel', async () => {
+				await pageHomeChannel.content.inputMain.click();
 				await pageHomeChannel.sidenav.doOpenChat('general');
 			});
 
 			test('expect go to the user created channel', async () => {
+				await pageHomeChannel.content.inputMain.click();
 				await pageHomeChannel.sidenav.doOpenChat(anyChannelName);
 			});
 		});
 	});
 
 	test.describe('Usage', () => {
-		test.beforeAll(async () => {
+		test('expect add people to the room', async ({ page }) => {
 			await pageHomeChannel.sidenav.doOpenChat(anyChannelName);
-		});
 
-		test.describe('Adding a user to the room:', async () => {
-			test.beforeAll(async () => {
-				await pageHomeChannel.doDismissToast();
-				await pageHomeChannel.tabs.btnTabMembers.click();
-			});
-
-			test.afterAll(async () => {
-				await pageHomeChannel.doDismissToast();
-				await pageHomeChannel.tabs.btnTabMembers.click();
-			});
-
-			test('expect add people to the room', async () => {
-				await pageHomeChannel.tabs.doAddPeopleToChannel(anyUser);
-				hasUserAddedInChannel = true;
-				await expect(page.locator('.rcx-toastbar.rcx-toastbar--success')).toBeVisible();
-			});
+			await pageHomeChannel.tabs.btnTabMembers.click();
+			await pageHomeChannel.tabs.doAddPeopleToChannel(anyUser);
+			hasUserAddedInChannel = true;
+			await expect(page.locator('.rcx-toastbar.rcx-toastbar--success')).toBeVisible();
 		});
 
 		test.describe('Channel settings]:', async () => {
-			test.describe('Channel topic edit', async () => {
-				test.beforeAll(async () => {
-					await pageHomeChannel.tabs.btnTabInfo.click();
-					await pageHomeChannel.tabs.editNameBtn.click();
-				});
+			test('expect edit the topic input', async () => {
+				await pageHomeChannel.tabs.btnTabInfo.click();
+				await pageHomeChannel.tabs.editNameBtn.click();
 
-				test.afterAll(async () => {
-					await pageHomeChannel.doDismissToast();
-					if (await pageHomeChannel.tabs.mainSideBar.isVisible()) {
-						await pageHomeChannel.tabs.mainSideBarClose.click();
-					}
-				});
+				await pageHomeChannel.tabs.editTopicTextInput.fill('TOPIC EDITED');
+				await pageHomeChannel.tabs.editNameSave.click();
 
-				test('expect edit the topic input', async () => {
-					await pageHomeChannel.tabs.editTopicTextInput.fill('TOPIC EDITED');
-				});
-
-				test('expect save the topic', async () => {
-					await pageHomeChannel.tabs.editNameSave.click();
-				});
-
-				test('expect show the new topic', async () => {
-					await expect(pageHomeChannel.tabs.secondSetting('TOPIC EDITED')).toBeVisible();
-				});
+				await expect(pageHomeChannel.tabs.secondSetting('TOPIC EDITED')).toBeVisible();
 			});
 
-			test.describe('Channel announcement edit', async () => {
-				test.beforeAll(async () => {
-					await pageHomeChannel.tabs.btnTabInfo.click();
-					await pageHomeChannel.tabs.editNameBtn.click();
-				});
+			test('expect edit the announcement input', async () => {
+				await pageHomeChannel.tabs.btnTabInfo.click();
+				await pageHomeChannel.tabs.editNameBtn.click();
 
-				test.afterAll(async () => {
-					await pageHomeChannel.doDismissToast();
-					if (await pageHomeChannel.tabs.mainSideBar.isVisible()) {
-						await pageHomeChannel.tabs.mainSideBarClose.click();
-					}
-				});
+				await pageHomeChannel.tabs.editAnnouncementTextInput.type('ANNOUNCEMENT EDITED');
+				await pageHomeChannel.tabs.editNameSave.click();
 
-				test('expect edit the announcement input', async () => {
-					await pageHomeChannel.tabs.editAnnouncementTextInput.type('ANNOUNCEMENT EDITED');
-				});
-
-				test('expect save the announcement', async () => {
-					await pageHomeChannel.tabs.editNameSave.click();
-				});
-
-				test('expect show the new announcement', async () => {
-					await expect(pageHomeChannel.tabs.thirdSetting).toHaveText('ANNOUNCEMENT EDITED');
-				});
+				await expect(pageHomeChannel.tabs.thirdSetting).toHaveText('ANNOUNCEMENT EDITED');
 			});
 
-			test.describe('Channel description edit', async () => {
-				test.beforeAll(async () => {
-					await pageHomeChannel.tabs.btnTabInfo.click();
-					await pageHomeChannel.tabs.editNameBtn.click();
-				});
+			test('expect edit the description input', async () => {
+				await pageHomeChannel.tabs.btnTabInfo.click();
+				await pageHomeChannel.tabs.editNameBtn.click();
 
-				test.afterAll(async () => {
-					await pageHomeChannel.doDismissToast();
-					if (await pageHomeChannel.tabs.mainSideBar.isVisible()) {
-						await pageHomeChannel.tabs.mainSideBarClose.click();
-					}
-				});
+				await pageHomeChannel.tabs.editDescriptionTextInput.type('DESCRIPTION EDITED');
+				await pageHomeChannel.tabs.editNameSave.click();
+				await pageHomeChannel.tabs.mainSideBarBack.click();
 
-				test('expect edit the description input', async () => {
-					await pageHomeChannel.tabs.editDescriptionTextInput.type('DESCRIPTION EDITED');
-				});
-
-				test('expect save the description', async () => {
-					await pageHomeChannel.tabs.editNameSave.click();
-				});
-
-				test('expect show the new description', async () => {
-					await pageHomeChannel.tabs.mainSideBarBack.click();
-					await expect(pageHomeChannel.tabs.fourthSetting).toHaveText('DESCRIPTION EDITED');
-				});
+				await expect(pageHomeChannel.tabs.fourthSetting).toHaveText('DESCRIPTION EDITED');
 			});
 		});
 
 		test.describe('Members tab usage]:', async () => {
 			test.describe('User muted', async () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					if (!hasUserAddedInChannel) {
 						await pageHomeChannel.tabs.btnTabMembers.click();
 						await pageHomeChannel.tabs.doAddPeopleToChannel(anyUser);
 						await pageHomeChannel.tabs.btnTabMembers.click();
 					}
-					await pageHomeChannel.tabs.btnTabMembers.click();
-				});
-
-				test.afterAll(async () => {
-					await pageHomeChannel.doDismissToast();
 					await pageHomeChannel.tabs.btnTabMembers.click();
 				});
 
@@ -182,17 +112,12 @@ test.describe('Channel', () => {
 			});
 
 			test.describe('Owner added', async () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					if (!hasUserAddedInChannel) {
 						await pageHomeChannel.tabs.btnTabMembers.click();
 						await pageHomeChannel.tabs.doAddPeopleToChannel(anyUser);
 						await pageHomeChannel.tabs.btnTabMembers.click();
 					}
-					await pageHomeChannel.tabs.btnTabMembers.click();
-				});
-
-				test.afterAll(async () => {
-					await pageHomeChannel.doDismissToast();
 					await pageHomeChannel.tabs.btnTabMembers.click();
 				});
 
@@ -204,7 +129,7 @@ test.describe('Channel', () => {
 			});
 
 			test.describe('Moderator added', async () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					if (!hasUserAddedInChannel) {
 						await pageHomeChannel.tabs.btnTabMembers.click();
 						await pageHomeChannel.tabs.doAddPeopleToChannel(anyUser);
@@ -213,7 +138,7 @@ test.describe('Channel', () => {
 					await pageHomeChannel.tabs.btnTabMembers.click();
 				});
 
-				test.afterAll(async () => {
+				test.afterEach(async () => {
 					await pageHomeChannel.doDismissToast();
 					await pageHomeChannel.tabs.btnTabMembers.click();
 				});
@@ -224,29 +149,14 @@ test.describe('Channel', () => {
 				});
 			});
 
-			test.describe('Channel name edit', async () => {
-				test.beforeAll(async () => {
-					await pageHomeChannel.doDismissToast();
-					await pageHomeChannel.tabs.btnTabInfo.click();
-				});
-
-				test.afterAll(async () => {
-					await pageHomeChannel.doDismissToast();
-
-					if (await pageHomeChannel.tabs.mainSideBar.isVisible()) {
-						await pageHomeChannel.tabs.btnTabInfo.click();
-					}
-				});
-
-				test('expect edit channel name', async () => {
-					await pageHomeChannel.tabs.editNameBtn.click();
-					await pageHomeChannel.tabs.editNameTextInput.fill(`NAME-EDITED-${anyChannelName}`);
-					await pageHomeChannel.tabs.editNameSave.click();
-				});
-
-				test('expect to find and open with new name', async () => {
-					await pageHomeChannel.sidenav.doOpenChat(`NAME-EDITED-${anyChannelName}`);
-				});
+			test('expect edit channel name', async ({ page }) => {
+				await pageHomeChannel.sidenav.doOpenChat(anyChannelName);
+				await pageHomeChannel.tabs.btnTabInfo.click();
+				await pageHomeChannel.tabs.editNameBtn.click();
+				await pageHomeChannel.tabs.editNameTextInput.fill(`NAME-EDITED-${anyChannelName}`);
+				await pageHomeChannel.tabs.editNameSave.click();
+				await pageHomeChannel.sidenav.doOpenChat(`NAME-EDITED-${anyChannelName}`);
+				await expect(page).toHaveURL(`/channel/NAME-EDITED-${anyChannelName}`);
 			});
 		});
 	});
