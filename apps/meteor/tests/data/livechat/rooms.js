@@ -61,6 +61,20 @@ export const takeInquiry = (roomId, agentId) => {
 	});
 };
 
+export const fetchInquiry = (roomId) => {
+	return new Promise((resolve, reject) => {
+		request
+			.get(api(`livechat/inquiries.getOne?roomId=${roomId}`))
+			.set(credentials)
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.inquiry);
+			});
+	});
+};
+
 export const createDepartment = (agents) => {
 	return new Promise((resolve, reject) => {
 		request

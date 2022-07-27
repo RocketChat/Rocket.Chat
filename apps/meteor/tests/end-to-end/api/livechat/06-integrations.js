@@ -42,4 +42,93 @@ describe('LIVECHAT - Integrations', function () {
 			});
 		});
 	});
+
+	describe('Incoming SMS', () => {
+		before((done) => {
+			updateSetting('SMS_Enabled', true)
+				.then(() => updateSetting('SMS_Service', ''))
+				.then(() => done());
+		});
+
+		describe('POST livechat/sms-incoming/:service', () => {
+			it('should throw an error if SMS is disabled', (done) => {
+				updateSetting('SMS_Enabled', false)
+					.then(() => {
+						request
+							.post(api('livechat/sms-incoming/twilio'))
+							.set(credentials)
+							.send({
+								from: '+123456789',
+								body: 'Hello',
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(400);
+					})
+					.then(() => done());
+			});
+
+			it('should return an error when SMS service is not configured', (done) => {
+				updateSetting('SMS_Enabled', true)
+					.then(() => {
+						request
+							.post(api('livechat/sms-incoming/twilio'))
+							.set(credentials)
+							.send({
+								From: '+123456789',
+								To: '+123456789',
+								Body: 'Hello',
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(400)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', false);
+							});
+					})
+					.then(() => done());
+			});
+
+			it('should throw an error if SMS_Default_Omnichannel_Department does not exists', (done) => {
+				updateSetting('SMS_Default_Omnichannel_Department', '123')
+					.then(() => {
+						request
+							.post(api('livechat/sms-incoming/twilio'))
+							.set(credentials)
+							.send({
+								From: '+123456789',
+								To: '+123456789',
+								Body: 'Hello',
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(400)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', false);
+							});
+					})
+					.then(() => done());
+			});
+
+			it('should return headers and <Response> as body on success', (done) => {
+				updateSetting('SMS_Default_Omnichannel_Department', '')
+					.then(() => updateSetting('SMS_Service', 'twilio'))
+					.then(() => {
+						request
+							.post(api('livechat/sms-incoming/twilio'))
+							.set(credentials)
+							.send({
+								From: '+123456789',
+								To: '+123456789',
+								Body: 'Hello',
+							})
+							.expect('Content-Type', 'text/xml')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+								expect(res.body).to.have.property('headers');
+								expect(res.body).to.have.property('body');
+							});
+					})
+					.then(() => done());
+			});
+		});
+	});
 });

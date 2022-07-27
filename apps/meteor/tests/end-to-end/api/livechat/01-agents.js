@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
 import { createAgent, createManager } from '../../../data/livechat/rooms.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { createUser } from '../../../data/users.helper.js';
 
 describe('LIVECHAT - Agents', function () {
 	this.retries(0);
@@ -25,7 +26,7 @@ describe('LIVECHAT - Agents', function () {
 	});
 
 	// TODO: missing test cases for POST method
-	describe('livechat/users/:type', () => {
+	describe('GET livechat/users/:type', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('edit-omnichannel-contact', [])
 				.then(() => updatePermission('transfer-livechat-guest', []))
@@ -100,6 +101,186 @@ describe('LIVECHAT - Agents', function () {
 						})
 						.end(done);
 				});
+		});
+	});
+
+	describe('POST livechat/users/:type', () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
+			updatePermission('view-livechat-manager', [])
+				.then(() => {
+					request
+						.post(api('livechat/users/agent'))
+						.set(credentials)
+						.send({
+							username: 'test-agent',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(403);
+				})
+				.then(() => done());
+		});
+
+		it('should return an error when type is invalid', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => {
+					request
+						.post(api('livechat/users/invalid-type'))
+						.set(credentials)
+						.send({
+							username: 'test-agent',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400);
+				})
+				.then(() => done());
+		});
+
+		it('should return an error when username is invalid', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => {
+					request
+						.post(api('livechat/users/agent'))
+						.set(credentials)
+						.send({
+							username: 'mr-not-valid',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400);
+				})
+				.then(() => done());
+		});
+
+		it('should return a valid user when all goes fine', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => createUser())
+				.then((user) => {
+					request
+						.post(api('livechat/users/agent'))
+						.set(credentials)
+						.send({
+							username: user.username,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('user');
+							expect(res.body.user).to.have.property('_id');
+							expect(res.body.user).to.have.property('username');
+						});
+				})
+				.then(() => done());
+		});
+	});
+
+	describe('GET livechat/users/:type/:_id', () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
+			updatePermission('view-livechat-manager', [])
+				.then(() => {
+					request
+						.get(api(`livechat/users/agent/id${agent._id}`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(403);
+				})
+				.then(() => done());
+		}).timeout(5000);
+
+		it('should return an error when type is invalid', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => {
+					request
+						.get(api(`livechat/users/invalid-type/invalid-id${agent._id}`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(400);
+				})
+				.then(() => done());
+		}).timeout(5000);
+
+		it('should return an error when _id is invalid', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => {
+					request.get(api('livechat/users/agent/invalid-id')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+				})
+				.then(() => done());
+		}).timeout(5000);
+
+		it('should return a valid user when all goes fine', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => createAgent())
+				.then((agent) => {
+					request
+						.get(api(`livechat/users/agent/${agent._id}`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('user');
+							expect(res.body.user).to.have.property('_id');
+							expect(res.body.user).to.have.property('username');
+							expect(res.body.user).to.not.have.property('roles');
+						});
+				})
+				.then(() => done());
+		});
+
+		it('should return { user: null } when user is not an agent', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => createUser())
+				.then((user) => {
+					request
+						.get(api(`livechat/users/agent/${user._id}`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('user');
+							expect(res.body.user).to.be.null;
+						});
+				})
+				.then(() => done());
+		});
+	});
+
+	describe('DELETE livechat/users/:type/:_id', () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
+			updatePermission('view-livechat-manager', [])
+				.then(() => {
+					request.delete(api(`livechat/users/agent/id`)).set(credentials).expect('Content-Type', 'application/json').expect(403);
+				})
+				.then(() => done());
+		}).timeout(5000);
+
+		it('should return an error when type is invalid', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => {
+					request.delete(api(`livechat/users/invalid-type/id`)).set(credentials).expect('Content-Type', 'application/json').expect(400);
+				})
+				.then(() => done());
+		}).timeout(5000);
+
+		it('should return an error when _id is invalid', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => {
+					request.delete(api('livechat/users/agent/invalid-id')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+				})
+				.then(() => done());
+		}).timeout(5000);
+
+		it('should return a valid user when all goes fine', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => createAgent())
+				.then((agent) => {
+					request
+						.delete(api(`livechat/users/agent/${agent._id}`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200);
+				})
+				.then(() => done());
 		});
 	});
 
