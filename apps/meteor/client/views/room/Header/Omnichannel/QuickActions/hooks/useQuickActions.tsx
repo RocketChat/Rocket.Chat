@@ -15,7 +15,6 @@ import {
 import { Session } from 'meteor/session';
 import React, { useCallback, useState, useEffect } from 'react';
 
-import { RoomManager } from '../../../../../../../app/ui-utils/client';
 import PlaceChatOnHoldModal from '../../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../../components/Omnichannel/modals/CloseChatModalData';
