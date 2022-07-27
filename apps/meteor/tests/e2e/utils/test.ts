@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { test as baseTest } from '@playwright/test';
 
 const PATH_NYC_OUTPUT = path.join(process.cwd(), '.nyc_output');
-
+// @ts-ignore
 export const test = baseTest.extend({
 	context: async ({ context }, use) => {
 		if (!process.env.E2E_COVERAGE) {
