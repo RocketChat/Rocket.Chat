@@ -285,6 +285,131 @@ describe('LIVECHAT - visitors', function () {
 				.end(done);
 		});
 	});
+	describe('livechat/visitors.search', () => {
+		it('should find a visitor by name', (done) => {
+			createVisitor().then((createdVisitor: ILivechatVisitor) => {
+				request
+					.get(api(`livechat/visitors.search?term=${createdVisitor.name}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('total', 1);
+						expect(res.body).to.have.property('visitors');
+						expect(res.body.visitors).to.be.an('array');
+						expect(res.body.visitors).to.have.length(1);
+						expect(res.body.visitors[0]).to.have.property('_id');
+						expect(res.body.visitors[0]).to.have.property('name');
+						expect(res.body.visitors[0]).to.have.property('username');
+						expect(res.body.visitors[0]).to.have.property('phone');
+						expect(res.body.visitors[0]).to.have.property('visitorEmails');
+						expect(res.body.visitors[0]._id).to.be.equal(createdVisitor._id);
+						expect(res.body.visitors[0].name).to.be.equal(createdVisitor.name);
+					})
+					.end(done);
+			});
+		});
+		it('should find a visitor by username', (done) => {
+			createVisitor().then((createdVisitor: ILivechatVisitor) => {
+				request
+					.get(api(`livechat/visitors.search?term=${createdVisitor.username}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('total', 1);
+						expect(res.body).to.have.property('visitors');
+						expect(res.body.visitors).to.be.an('array');
+						expect(res.body.visitors).to.have.length(1);
+						expect(res.body.visitors[0]).to.have.property('_id');
+						expect(res.body.visitors[0]).to.have.property('name');
+						expect(res.body.visitors[0]).to.have.property('username');
+						expect(res.body.visitors[0]).to.have.property('phone');
+						expect(res.body.visitors[0]).to.have.property('visitorEmails');
+						expect(res.body.visitors[0]._id).to.be.equal(createdVisitor._id);
+						expect(res.body.visitors[0].username).to.be.equal(createdVisitor.username);
+					})
+					.end(done);
+			});
+		});
+		it('should find a visitor by email', (done) => {
+			createVisitor().then((createdVisitor: ILivechatVisitor) => {
+				request
+					.get(api(`livechat/visitors.search?term=${createdVisitor.visitorEmails![0].address}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('total', 1);
+						expect(res.body).to.have.property('visitors');
+						expect(res.body.visitors).to.be.an('array');
+						expect(res.body.visitors).to.have.length(1);
+						expect(res.body.visitors[0]).to.have.property('_id');
+						expect(res.body.visitors[0]).to.have.property('name');
+						expect(res.body.visitors[0]).to.have.property('username');
+						expect(res.body.visitors[0]).to.have.property('phone');
+						expect(res.body.visitors[0]).to.have.property('visitorEmails');
+						expect(res.body.visitors[0]._id).to.be.equal(createdVisitor._id);
+						expect(res.body.visitors[0].visitorEmails[0].address).to.be.equal(createdVisitor.visitorEmails![0].address);
+					})
+					.end(done);
+			});
+		});
+		it('should find a visitor by phone', (done) => {
+			createVisitor().then((createdVisitor: ILivechatVisitor) => {
+				request
+					.get(api(`livechat/visitors.search?term=${createdVisitor.phone![0].phoneNumber}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('total', 1);
+						expect(res.body).to.have.property('visitors');
+						expect(res.body.visitors).to.be.an('array');
+						expect(res.body.visitors).to.have.length(1);
+						expect(res.body.visitors[0]).to.have.property('_id');
+						expect(res.body.visitors[0]).to.have.property('name');
+						expect(res.body.visitors[0]).to.have.property('username');
+						expect(res.body.visitors[0]).to.have.property('phone');
+						expect(res.body.visitors[0]).to.have.property('visitorEmails');
+						expect(res.body.visitors[0]._id).to.be.equal(createdVisitor._id);
+						expect(res.body.visitors[0].phone[0].phoneNumber).to.be.equal(createdVisitor.phone![0].phoneNumber);
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the query params is not valid', (done) => {
+			request
+				.get(api('livechat/visitors.search?offset=-1'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+		it('should return an empty array when no visitor is found', (done) => {
+			request
+				.get(api(`livechat/visitors.search?term=${Math.random().toString(36)}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('total', 0);
+					expect(res.body).to.have.property('visitors');
+					expect(res.body.visitors).to.be.an('array');
+					expect(res.body.visitors).to.have.length(0);
+				})
+				.end(done);
+		});
+	});
 });
 
 // TODO: Missing tests for the following endpoints:
