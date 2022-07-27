@@ -33,7 +33,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 	const phoneNumber = Array.isArray(v?.phone) ? v?.phone[0]?.phoneNumber : v?.phone;
 	const shouldShowWrapup = useMemo(() => lastMessage?.t === 'voip-call-wrapup' && lastMessage?.msg, [lastMessage]);
 	const shouldShowTags = useMemo(() => tags && tags.length > 0, [tags]);
-	const _name = name || fname;
+	const _name = fname || name;
 
 	return (
 		<>
