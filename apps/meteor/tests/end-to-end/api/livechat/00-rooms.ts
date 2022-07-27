@@ -2,8 +2,8 @@
 
 import fs from 'fs';
 import path from 'path';
-import { expect } from 'chai';
 
+import { expect } from 'chai';
 import { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Response } from 'supertest';
 
