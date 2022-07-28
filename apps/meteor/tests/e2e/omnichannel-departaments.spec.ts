@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './utils/test';
 import { Auth, OmnichannelDepartaments } from './page-objects';
 
 test.describe('Department', () => {

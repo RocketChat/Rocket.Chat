@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './utils/test';
 import { publicChannelCreated, setPublicChannelCreated } from './utils/mocks/checks';
 import { Auth, HomeChannel } from './page-objects';
 
