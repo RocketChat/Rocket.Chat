@@ -1862,6 +1862,7 @@
   "error-logged-user-not-in-room": "You are not in the room `%s`",
   "error-max-guests-number-reached": "You reached the maximum number of guest users allowed by your license. Contact sale@rocket.chat for a new license.",
   "error-max-number-simultaneous-chats-reached": "The maximum number of simultaneous chats per agent has been reached.",
+  "error-max-rooms-per-guest-reached": "The maximum number of rooms per guest has been reached.",
   "error-message-deleting-blocked": "Message deleting is blocked",
   "error-message-editing-blocked": "Message editing is blocked",
   "error-message-size-exceeded": "Message size exceeds Message_MaxAllowedSize",

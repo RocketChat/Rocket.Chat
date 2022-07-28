@@ -154,6 +154,7 @@ type Hook =
 	| 'afterValidateNewOAuthUser'
 	| 'archiveRoom'
 	| 'beforeActivateUser'
+	| 'beforeAddGuestUserToRoom'
 	| 'beforeCreateRoom'
 	| 'beforeCreateUser'
 	| 'beforeGetMentions'
