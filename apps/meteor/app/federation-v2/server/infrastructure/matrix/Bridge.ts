@@ -99,7 +99,11 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void> {
-		await this.bridgeInstance.getIntent(externalInviterId).invite(externalRoomId, externalInviteeId);
+		try {
+			await this.bridgeInstance.getIntent(externalInviterId).invite(externalRoomId, externalInviteeId);
+		} catch (e) {
+			// no-op
+		}
 	}
 
 	public async createUser(username: string, name: string, domain: string): Promise<string> {
