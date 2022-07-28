@@ -55,7 +55,6 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 
 	public async beforeAddUserToARoom(dmBeforeAddUserToARoomInput: FederationBeforeAddUserToARoomDto): Promise<void> {
 		const { invitees = [] } = dmBeforeAddUserToARoomInput;
-
 		if (invitees.length === 0) {
 			return;
 		}
@@ -68,7 +67,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 		// 	internalHomeServerDomain,
 		// );
 		const externalUsersToBeCreatedLocally = invitees.filter((invitee) =>
-			FederatedUserEE.isAnInternalUser(this.bridge.extractHomeserverOrigin(invitee.rawInviteeId), this.internalHomeServerDomain),
+			!FederatedUserEE.isAnInternalUser(this.bridge.extractHomeserverOrigin(invitee.rawInviteeId), this.internalHomeServerDomain),
 		);
 
 		await Promise.all(
@@ -353,6 +352,9 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 			if (!federatedInviteeUser) {
 				throw new Error(`User with internalUsername ${inviteeUsernameOnly} not found`);
 			}
+			if (await this.rocketRoomAdapter.isUserAlreadyJoined(internalRoomId, federatedInviteeUser.internalReference._id)) {
+				return;
+			}
 			await this.bridge.createUser(
 				inviteeUsernameOnly,
 				federatedInviteeUser?.internalReference?.name || federatedInviteeUser.internalReference?.username || inviteeUsernameOnly,
@@ -369,6 +371,9 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 		await this.createFederatedUserIfNecessary(normalizedInviteeId, rawInviteeId, existsOnlyOnProxyServer);
 
 		const federatedInviteeUser = await this.rocketUserAdapter.getFederatedUserByInternalUsername(normalizedInviteeId);
+		if (await this.rocketRoomAdapter.isUserAlreadyJoined(internalRoomId, federatedInviteeUser?.internalReference?._id ||'')) {
+			return;
+		}
 		if (!federatedInviteeUser) {
 			throw new Error(`User with internalUsername ${normalizedInviteeId} not found`);
 		}
