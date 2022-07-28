@@ -1,5 +1,6 @@
-import { expect, test, Browser, Page } from '@playwright/test';
+import { Browser, Page } from '@playwright/test';
 
+import { test, expect } from './utils/test';
 import { validUserInserted } from './utils/mocks/userAndPasswordMock';
 import { Auth, HomeChannel } from './page-objects';
 

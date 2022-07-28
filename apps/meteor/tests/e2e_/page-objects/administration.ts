@@ -1,5 +1,6 @@
-import { Locator, expect, Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 
+import { expect } from '../utils/test';
 import { AdminFlextab, AdminSidenav } from './fragments';
 
 export class Administration {
