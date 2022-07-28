@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 
 import { Auth } from './page-objects';
 
-test.describe('register-and-login', () => {
+test.describe.parallel('register-and-login', () => {
     let pageAuth: Auth;
 
 	test.beforeEach(async ({ page }) => {
