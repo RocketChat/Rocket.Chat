@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import type { Db, Collection } from 'mongodb';
+import type { Db, Collection, MongoClientOptions } from 'mongodb';
 
 const { MONGO_URL = 'mongodb://localhost:27017/rocketchat' } = process.env;
 
@@ -15,10 +15,8 @@ export enum Collections {
 	Settings = 'rocketchat_settings',
 }
 
-function connectDb(poolSize: number): Promise<MongoClient> {
-	const client = new MongoClient(MONGO_URL, {
-		minPoolSize: poolSize,
-	});
+function connectDb(options?: MongoClientOptions): Promise<MongoClient> {
+	const client = new MongoClient(MONGO_URL, options);
 
 	return client.connect().catch((error) => {
 		// exits the process in case of any error
@@ -29,15 +27,15 @@ function connectDb(poolSize: number): Promise<MongoClient> {
 
 let db: Db;
 
-export const getConnection = ((): ((poolSize?: number) => Promise<Db>) => {
+export const getConnection = ((): ((options?: MongoClientOptions) => Promise<Db>) => {
 	let client: Promise<MongoClient>;
 
-	return async (poolSize = 5): Promise<Db> => {
+	return async (options): Promise<Db> => {
 		if (db) {
 			return db;
 		}
 		if (!client) {
-			client = connectDb(poolSize);
+			client = connectDb(options);
 			client.then((c) => {
 				db = c.db(name);
 			});
