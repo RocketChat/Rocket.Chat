@@ -1,6 +1,6 @@
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
 import { Box, Select, SelectOption, Field, Button } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, ReactElement } from 'react';
 
 import { WebdavAccounts } from '../../../../app/models/client';
@@ -19,7 +19,7 @@ const AccountIntegrationsPage = (): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const accounts = useReactiveValue(getWebdavAccounts);
-	const removeWebdavAccount = useMethod('removeWebdavAccount');
+	const removeWebdavAccount = useEndpoint('POST', '/v1/webdav.removeWebdavAccount');
 
 	const {
 		values: { selected },
@@ -30,7 +30,7 @@ const AccountIntegrationsPage = (): ReactElement => {
 
 	const handleClickRemove = useCallback(() => {
 		try {
-			removeWebdavAccount(selected as string);
+			removeWebdavAccount({ accountId: selected as string });
 			dispatchToastMessage({ type: 'success', message: t('Webdav_account_removed') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: String(error) });
