@@ -79,11 +79,7 @@ describe('LIVECHAT - inquiries', function () {
 					.get(api('livechat/inquiries.getOne?roomId=room-id'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
-					})
+					.expect(403)
 					.end(done);
 			});
 		});
