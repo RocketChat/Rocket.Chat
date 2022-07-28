@@ -140,7 +140,13 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 }
 
 export class FederationRoomReceiveExternalMessageDto extends FederationBaseRoomInputDto {
-	constructor({ externalRoomId, normalizedRoomId, externalSenderId, normalizedSenderId, messageText }: IFederationSendInternalMessageInputDto) {
+	constructor({
+		externalRoomId,
+		normalizedRoomId,
+		externalSenderId,
+		normalizedSenderId,
+		messageText,
+	}: IFederationSendInternalMessageInputDto) {
 		super({ externalRoomId, normalizedRoomId });
 		this.externalSenderId = externalSenderId;
 		this.normalizedSenderId = normalizedSenderId;

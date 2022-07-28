@@ -1,6 +1,7 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
-
+require('util').inspect.defaultOptions.depth = null;
+console.log({ MatrixBridgedRoomDN: MatrixBridgedRoom.getLocalRoomId });
 import { FederatedRoom } from '../../../domain/FederatedRoom';
 import { createRoom, addUserToRoom, removeUserFromRoom } from '../../../../../lib/server';
 import { FederatedUser } from '../../../domain/FederatedUser';

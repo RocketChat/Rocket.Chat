@@ -37,9 +37,11 @@ export class MatrixBridgedUserRaw extends BaseRaw<IMatrixBridgedUser> implements
 		await this.updateOne(
 			{ uid: localUserId },
 			{
-				uid: localUserId,
-				mui: externalUserId,
-				remote,
+				$set: {
+					uid: localUserId,
+					mui: externalUserId,
+					remote,
+				}
 			},
 			{ upsert: true },
 		);

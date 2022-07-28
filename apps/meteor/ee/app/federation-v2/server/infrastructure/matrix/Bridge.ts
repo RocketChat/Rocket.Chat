@@ -45,21 +45,18 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		return matrixRoom.room_id;
 	}
 
-	public async getRoomName(externalRoomId: string, externalUserId: string): Promise<string> {
+	public async getRoomName(externalRoomId: string, externalUserId: string): Promise<string | undefined> {
 		const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as AbstractMatrixEvent[];
 
-		return (
-			((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_NAME_CHANGED) as MatrixEventRoomNameChanged)?.content?.name ||
-			''
-		);
+		return ((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_NAME_CHANGED) as MatrixEventRoomNameChanged)?.content
+			?.name;
 	}
 
-	public async getRoomTopic(externalRoomId: string, externalUserId: string): Promise<string> {
+	public async getRoomTopic(externalRoomId: string, externalUserId: string): Promise<string | undefined> {
 		const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as AbstractMatrixEvent[];
-		return (
-			((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_TOPIC_CHANGED) as MatrixEventRoomTopicChanged)?.content
-				?.topic || ''
-		);
+
+		return ((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_TOPIC_CHANGED) as MatrixEventRoomTopicChanged)?.content
+			?.topic;
 	}
 
 	public async setRoomName(externalRoomId: string, externalUserId: string, roomName: string): Promise<void> {

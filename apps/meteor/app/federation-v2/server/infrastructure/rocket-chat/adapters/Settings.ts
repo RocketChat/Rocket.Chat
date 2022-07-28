@@ -105,7 +105,15 @@ export class RocketChatSettingsAdapter {
 	}
 
 	private async updateRegistrationFile(): Promise<void> {
-		await Settings.updateValueById('Federation_Matrix_registration_file', yaml.dump(this.generateRegistrationFileObject()));
+		const registrationFile = this.generateRegistrationFileObject();
+		await Settings.updateValueById('Federation_Matrix_registration_file', yaml.dump({
+			id: registrationFile.id,
+			hs_token: registrationFile.homeserverToken,
+			as_token: registrationFile.applicationServiceToken,
+			url: registrationFile.bridgeUrl,
+			sender_localpart: registrationFile.botName,
+			namespaces: registrationFile.listenTo,
+		}));
 	}
 
 	private watchChangesAndUpdateRegistrationFile(): void {
@@ -136,10 +144,10 @@ export class RocketChatSettingsAdapter {
 				});
 
 				const uniqueId = settings.get('uniqueID') || uuidv4().slice(0, 15).replace(new RegExp('-', 'g'), '_');
-				const homeserverToken = crypto.createHash('sha256').update(`hs_${uniqueId}`).digest('hex');
-				const applicationServiceToken = crypto.createHash('sha256').update(`as_${uniqueId}`).digest('hex');
+				const homeserverToken = crypto.createHash('sha256').update(`hs_${ uniqueId }`).digest('hex');
+				const applicationServiceToken = crypto.createHash('sha256').update(`as_${ uniqueId }`).digest('hex');
 
-				this.add('Federation_Matrix_id', `rocketchat_${uniqueId}`, {
+				this.add('Federation_Matrix_id', `rocketchat_${ uniqueId }`, {
 					readonly: true,
 					type: 'string',
 					i18nLabel: 'Federation_Matrix_id',

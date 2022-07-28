@@ -43,7 +43,7 @@ export class MatrixBridge implements IFederationBridge {
 		protected bridgePort: number,
 		protected homeServerRegistrationFile: IFederationBridgeRegistrationFile,
 		protected eventHandler: (event: AbstractMatrixEvent) => void,
-	) { } // eslint-disable-line no-empty-function
+	) {} // eslint-disable-line no-empty-function
 
 	public async onFederationAvailabilityChanged(enabled: boolean): Promise<void> {
 		if (!enabled) {
@@ -106,9 +106,9 @@ export class MatrixBridge implements IFederationBridge {
 		if (!MatrixUserInstance) {
 			throw new Error('Error loading the Matrix User instance from the external library');
 		}
-		const matrixUserId = `@${ username?.toLowerCase() }:${ domain }`;
+		const matrixUserId = `@${username?.toLowerCase()}:${domain}`;
 		const newUser = new MatrixUserInstance(matrixUserId);
-		await this.bridgeInstance.provisionUser(newUser, { name: `${ username } (${ name })` });
+		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})` });
 
 		return matrixUserId;
 	}
@@ -148,9 +148,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public extractHomeserverOrigin(externalUserId: string): string {
-		return externalUserId.includes(':')
-			? externalUserId.split(':').pop() || ''
-			: '';
+		return externalUserId.includes(':') ? externalUserId.split(':').pop() || '' : '';
 	}
 
 	public isRoomFromTheSameHomeserver(externalRoomId: string, domain: string): boolean {
@@ -158,11 +156,11 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public logFederationStartupInfo(info?: string): void {
-		federationBridgeLogger.info(`${ info }:
-			id: ${ this.appServiceId }
-			bridgeUrl: ${ this.bridgeUrl }
-			homeserverURL: ${ this.homeServerUrl }
-			homeserverDomain: ${ this.homeServerDomain }
+		federationBridgeLogger.info(`${info}:
+			id: ${this.appServiceId}
+			bridgeUrl: ${this.bridgeUrl}
+			homeserverURL: ${this.homeServerUrl}
+			homeserverDomain: ${this.homeServerDomain}
 		`);
 	}
 

@@ -15,6 +15,22 @@ export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServic
 	federationBridgeEE,
 );
 
+export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildRoomInternalHooksServiceSender(
+	rocketRoomAdapterEE,
+	rocketUserAdapterEE,
+	rocketSettingsAdapter,
+	rocketNotificationAdapterEE,
+	federationBridgeEE,
+);
+
+export const federationDMRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildDMRoomInternalHooksServiceSender(
+	rocketRoomAdapterEE,
+	rocketUserAdapterEE,
+	rocketSettingsAdapter,
+	rocketNotificationAdapterEE,
+	federationBridgeEE,
+);
+
 const runFederationEE = async (): Promise<void> => {
 	await federationBridgeEE.start();
 	federationBridgeEE.logFederationStartupInfo('Running Federation Enterprise V2');
@@ -32,7 +48,11 @@ onToggledFeature('federation', {
 		}
 		await stopFederation();
 		await runFederationEE();
-		FederationFactoryEE.setupListeners(federationRoomServiceSenderEE, rocketSettingsAdapter);
+		FederationFactoryEE.setupListeners(
+			federationRoomInternalHooksServiceSenderEE,
+			federationDMRoomInternalHooksServiceSenderEE,
+			rocketSettingsAdapter,
+		);
 		require('./infrastructure/rocket-chat/slash-commands');
 	},
 	down: async () => {

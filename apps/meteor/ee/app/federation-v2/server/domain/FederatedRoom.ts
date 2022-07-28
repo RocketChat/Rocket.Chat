@@ -40,6 +40,14 @@ export class FederatedRoomEE extends FederatedRoom {
 		return this.isDirectMessage() && this.members && this.members.length > 0 ? this.members.map((user) => user.internalReference) : [];
 	}
 
+	public shouldUpdateRoomName(externalRoomName: string): boolean {
+		return this.internalReference.name !== externalRoomName && !this.isDirectMessage();
+	}
+
+	public shouldUpdateRoomTopic(externalRoomTopic: string): boolean {
+		return this.internalReference.topic !== externalRoomTopic && !this.isDirectMessage();
+	}
+
 	public static build(): FederatedRoomEE {
 		return new FederatedRoomEE();
 	}

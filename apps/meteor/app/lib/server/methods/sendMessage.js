@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
@@ -15,7 +16,6 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
 import { federationRoomServiceSender } from '../../../federation-v2/server';
 import { FederationRoomSenderConverter } from '../../../federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
-import { isRoomFederated } from '@rocket.chat/core-typings';
 
 export function executeSendMessage(uid, message) {
 	if (message.tshow && !message.tmid) {

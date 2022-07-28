@@ -130,7 +130,7 @@ export class FederationRoomSenderConverterEE {
 			internalInviterId,
 			internalRoomId,
 			invitees: users,
-			...(externalInviterId ? { externalInviterId } : {}),
+			inviteComesFromAnExternalHomeServer: Boolean(externalInviterId),
 		});
 	}
 
@@ -153,7 +153,7 @@ export class FederationRoomSenderConverterEE {
 			internalInviterId,
 			internalRoomId,
 			invitees: normalizeInvitees(allUsernamesToBeInvited, homeServerDomainName),
-			...(externalInviterId ? { externalInviterId } : {}),
+			inviteComesFromAnExternalHomeServer: Boolean(externalInviterId),
 		});
 	}
 

@@ -74,8 +74,8 @@ export class FederationAfterLeaveRoomDto extends FederationSenderBaseRoomInputDt
 		super({ internalRoomId });
 		this.internalUserId = internalUserId;
 	}
-	internalUserId: string;
 
+	internalUserId: string;
 }
 
 export class FederationAfterRemoveUserFromRoomDto extends FederationSenderBaseRoomInputDto {

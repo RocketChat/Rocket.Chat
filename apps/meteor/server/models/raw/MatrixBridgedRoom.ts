@@ -30,6 +30,6 @@ export class MatrixBridgedRoomRaw extends BaseRaw<IMatrixBridgedRoom> implements
 	}
 
 	async createOrUpdateByLocalRoomId(localRoomId: string, externalRoomId: string): Promise<void> {
-		await this.updateOne({ rid: localRoomId }, { rid: localRoomId, mri: externalRoomId }, { upsert: true });
+		await this.updateOne({ rid: localRoomId }, { $set: { rid: localRoomId, mri: externalRoomId } }, { upsert: true });
 	}
 }

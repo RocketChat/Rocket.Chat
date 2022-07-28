@@ -103,4 +103,8 @@ export class FederatedRoom {
 	public shouldUpdateRoomTopic(newRoomTopic: string): boolean {
 		return this.internalReference?.topic !== newRoomTopic && !this.isDirectMessage();
 	}
+
+	public static isAnInternalRoom(fromOriginName: string, localOriginName: string): boolean {
+		return fromOriginName === localOriginName;
+	}
 }

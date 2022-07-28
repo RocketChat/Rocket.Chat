@@ -101,7 +101,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 	private ensureDefaultFields<P>(options: FindOptions<P>): FindOptions<P>;
 
 	private ensureDefaultFields<P>(options?: any): FindOptions<P> | undefined | FindOptions<T> {
-		if (options.fields) {
+		if (options?.fields) {
 			warnFields("Using 'fields' in models is deprecated.", options);
 		}
 
@@ -142,7 +142,6 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 	async findOne<P>(query: Filter<T> | string = {}, options?: any): Promise<WithId<T> | WithId<P> | null> {
 		const q = typeof query === 'string' ? ({ _id: query } as unknown as Filter<T>) : query;
-
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 		if (optionsDef) {
 			return this.col.findOne(q, optionsDef);

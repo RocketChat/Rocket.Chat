@@ -56,7 +56,7 @@ export class FederationRoomServiceListener extends FederationService {
 
 			// await this.rocketUserAdapter.createFederatedUser(federatedCreatorUser);
 		}
-		const creator = creatorUser || await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId);
+		const creator = creatorUser || (await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId));
 		if (!creator) {
 			throw new Error('Creator user not found');
 		}
@@ -89,7 +89,7 @@ export class FederationRoomServiceListener extends FederationService {
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 
 		if (wasGeneratedOnTheProxyServer && !affectedFederatedRoom) {
-			throw new Error(`Could not find room with external room id: ${ externalRoomId }`);
+			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
 		}
 
 		// const isInviterFromTheSameHomeServer = this.bridge.isUserIdFromTheSameHomeserver(
@@ -189,13 +189,13 @@ export class FederationRoomServiceListener extends FederationService {
 
 		// 	await this.rocketUserAdapter.createFederatedUser(federatedInviteeUser);
 		// }
-		const federatedInviteeUser = inviteeUser || await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
-		const federatedInviterUser = inviterUser || await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId);
+		const federatedInviteeUser = inviteeUser || (await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId));
+		const federatedInviterUser = inviterUser || (await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId));
 
 		if (!federatedInviteeUser || !federatedInviterUser) {
 			throw new Error('Invitee or inviter user not found');
 		}
-		
+
 		if (!wasGeneratedOnTheProxyServer && !affectedFederatedRoom) {
 			const members = [federatedInviterUser, federatedInviteeUser];
 			const newFederatedRoom = FederatedRoom.createInstance(
@@ -213,12 +213,15 @@ export class FederationRoomServiceListener extends FederationService {
 
 		const federatedRoom = affectedFederatedRoom || (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId));
 		if (!federatedRoom) {
-			throw new Error(`Could not find room with external room id: ${ externalRoomId }`);
+			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
 		}
 
 		if (leave) {
 			// TODO: check if this is possible to move to the domain layer
-			const isInviteeAlreadyJoinedInternalRoom = await this.internalRoomAdapter.isUserAlreadyJoined(federatedRoom.internalReference?._id, federatedInviteeUser?.internalReference?._id);
+			const isInviteeAlreadyJoinedInternalRoom = await this.internalRoomAdapter.isUserAlreadyJoined(
+				federatedRoom.internalReference?._id,
+				federatedInviteeUser?.internalReference?._id,
+			);
 			// if (
 			// 	!(await this.internalRoomAdapter.isUserAlreadyJoined(
 			// 		federatedRoom.internalReference?._id,
@@ -228,7 +231,8 @@ export class FederationRoomServiceListener extends FederationService {
 			// 	return;
 			// }
 
-			isInviteeAlreadyJoinedInternalRoom && await this.internalRoomAdapter.removeUserFromRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
+			isInviteeAlreadyJoinedInternalRoom &&
+				(await this.internalRoomAdapter.removeUserFromRoom(federatedRoom, federatedInviteeUser, federatedInviterUser));
 			return;
 		}
 		// if (!wasGeneratedOnTheProxyServer && affectedFederatedRoom.isDirectMessage()) {
@@ -252,10 +256,7 @@ export class FederationRoomServiceListener extends FederationService {
 		// }
 		if (!wasGeneratedOnTheProxyServer && federatedRoom.isDirectMessage() && !federatedRoom.isUserPartOfTheRoom(federatedInviteeUser)) {
 			// TODO: leaked business logic, revisit this to move to domain layer
-			const membersUsernames = [
-				...federatedRoom.getMembersUsernames(),
-				federatedInviteeUser.getUsername() || defaultInviteeUsername,
-			];
+			const membersUsernames = [...federatedRoom.getMembersUsernames(), federatedInviteeUser.getUsername() || defaultInviteeUsername];
 			const newFederatedRoom = FederatedRoom.createInstance(
 				externalRoomId,
 				normalizedRoomId,
@@ -353,5 +354,4 @@ export class FederationRoomServiceListener extends FederationService {
 
 		await this.internalRoomAdapter.updateRoomTopic(federatedRoom, federatedUser);
 	}
-
 }

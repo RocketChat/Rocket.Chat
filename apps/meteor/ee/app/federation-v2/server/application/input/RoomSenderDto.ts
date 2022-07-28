@@ -23,7 +23,7 @@ export interface IFederationOnRoomCreationDto extends IFederationInviterDto {
 export interface IFederationOnDirectMessageCreationDto extends IFederationInviterDto {
 	internalRoomId: string;
 	invitees: IFederationInviteeDto[];
-	externalInviterId?: string;
+	inviteComesFromAnExternalHomeServer: boolean;
 }
 
 export interface IFederationCreateDirectMessageDto extends IFederationInviterDto {
@@ -33,7 +33,7 @@ export interface IFederationCreateDirectMessageDto extends IFederationInviterDto
 export type IFederationBeforeAddUserToARoomDto = IFederationOnRoomCreationDto;
 
 export interface IFederationOnUserAddedToARoomDto extends IFederationOnRoomCreationDto {
-	externalInviterId?: string;
+	inviteComesFromAnExternalHomeServer: boolean;
 }
 
 export class FederationInviterDto {
@@ -75,18 +75,18 @@ export class FederationOnRoomCreationDto extends FederationInviterDto {
 }
 
 export class FederationOnDirectMessageRoomCreationDto extends FederationInviterDto {
-	constructor({ internalInviterId, internalRoomId, invitees, externalInviterId }: IFederationOnDirectMessageCreationDto) {
+	constructor({ internalInviterId, internalRoomId, invitees, inviteComesFromAnExternalHomeServer }: IFederationOnDirectMessageCreationDto) {
 		super({ internalInviterId });
 		this.internalRoomId = internalRoomId;
 		this.invitees = invitees;
-		this.externalInviterId = externalInviterId;
+		this.inviteComesFromAnExternalHomeServer = inviteComesFromAnExternalHomeServer;
 	}
 
 	internalRoomId: string;
 
 	invitees: IFederationInviteeDto[];
 
-	externalInviterId?: string;
+	inviteComesFromAnExternalHomeServer: boolean;
 }
 
 export class FederationCreateDirectMessageDto extends FederationInviterDto {
@@ -116,12 +116,12 @@ export class FederationBeforeAddUserToARoomDto extends FederationBeforeDirectMes
 }
 
 export class FederationOnUsersAddedToARoomDto extends FederationOnRoomCreationDto {
-	constructor({ internalInviterId, internalRoomId, invitees, externalInviterId }: IFederationOnUserAddedToARoomDto) {
+	constructor({ internalInviterId, internalRoomId, invitees, inviteComesFromAnExternalHomeServer }: IFederationOnUserAddedToARoomDto) {
 		super({ internalInviterId, internalRoomId, invitees });
-		this.externalInviterId = externalInviterId;
+		this.inviteComesFromAnExternalHomeServer = inviteComesFromAnExternalHomeServer;
 	}
 
-	externalInviterId?: string;
+	inviteComesFromAnExternalHomeServer: boolean;
 }
 
 export class FederationSetupRoomDto extends FederationInviterDto {
