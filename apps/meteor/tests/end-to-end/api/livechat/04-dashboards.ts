@@ -1,3 +1,5 @@
+/* eslint-env mocha */
+
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
@@ -46,7 +48,9 @@ describe('LIVECHAT - dashboards', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.totalizers).to.be.an('array');
-						res.body.totalizers.forEach((prop) => expect(expectedMetrics.includes(prop.title)).to.be.true);
+						(res.body.totalizers as { title: string; value: string }[]).forEach(
+							(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
+						);
 					})
 					.end(done);
 			});
@@ -79,7 +83,9 @@ describe('LIVECHAT - dashboards', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.totalizers).to.be.an('array');
-						res.body.totalizers.forEach((prop) => expect(expectedMetrics.includes(prop.title)).to.be.true);
+						(res.body.totalizers as { title: string; value: string }[]).forEach(
+							(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
+						);
 					})
 					.end(done);
 			});
@@ -112,7 +118,9 @@ describe('LIVECHAT - dashboards', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.totalizers).to.be.an('array');
-						res.body.totalizers.forEach((prop) => expect(expectedMetrics.includes(prop.title)).to.be.true);
+						(res.body.totalizers as { title: string; value: string }[]).forEach(
+							(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
+						);
 					})
 					.end(done);
 			});
@@ -147,7 +155,9 @@ describe('LIVECHAT - dashboards', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.totalizers).to.be.an('array');
-						res.body.totalizers.forEach((prop) => expect(expectedMetrics.includes(prop.title)).to.be.true);
+						(res.body.totalizers as { title: string; value: string }[]).forEach(
+							(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
+						);
 					})
 					.end(done);
 			});

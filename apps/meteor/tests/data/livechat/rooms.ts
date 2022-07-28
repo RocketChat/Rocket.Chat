@@ -1,15 +1,16 @@
+import type { ILivechatAgent, ILivechatDepartment, ILivechatInquiryRecord, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { adminUsername } from '../user';
 
-export const createLivechatRoom = (visitorToken) =>
+export const createLivechatRoom = (visitorToken: string): Promise<IOmnichannelRoom> =>
 	new Promise((resolve) => {
 		request
 			.get(api(`livechat/room?token=${visitorToken}`))
 			.set(credentials)
-			.end((err, res) => resolve(res.body.room));
+			.end((_err, res) => resolve(res.body.room));
 	});
 
-export const createVisitor = () =>
+export const createVisitor = (): Promise<ILivechatVisitor> =>
 	new Promise((resolve, reject) => {
 		const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 		const email = `${token}@${token}.com`;
@@ -39,7 +40,7 @@ export const createVisitor = () =>
 		});
 	});
 
-export const takeInquiry = (roomId, agentId) => {
+export const takeInquiry = (roomId: string, _agentId: string): Promise<IOmnichannelRoom> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(methodCall(`livechat:takeInquiry`))
@@ -61,7 +62,7 @@ export const takeInquiry = (roomId, agentId) => {
 	});
 };
 
-export const fetchInquiry = (roomId) => {
+export const fetchInquiry = (roomId: string): Promise<ILivechatInquiryRecord> => {
 	return new Promise((resolve, reject) => {
 		request
 			.get(api(`livechat/inquiries.getOne?roomId=${roomId}`))
@@ -75,7 +76,7 @@ export const fetchInquiry = (roomId) => {
 	});
 };
 
-export const createDepartment = (agents) => {
+export const createDepartment = (agents: { agentId: string }[]): Promise<ILivechatDepartment> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/department'))
@@ -90,7 +91,7 @@ export const createDepartment = (agents) => {
 	});
 }
 
-export const createAgent = () =>
+export const createAgent = (): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/users/agent'))
@@ -106,7 +107,7 @@ export const createAgent = () =>
 			});
 	});
 
-export const createManager = () =>
+export const createManager = (): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/users/manager'))
@@ -122,7 +123,7 @@ export const createManager = () =>
 			});
 	});
 
-export const makeAgentAvailable = () =>
+export const makeAgentAvailable = (): Promise<unknown> =>
 	new Promise((resolve, reject) => {
 		request.post(api('users.setStatus')).set(credentials).send({
 			message: '',

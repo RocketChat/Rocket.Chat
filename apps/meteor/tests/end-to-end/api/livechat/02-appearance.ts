@@ -1,9 +1,11 @@
+/* eslint-env mocha */
+
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - triggers', function () {
+describe('LIVECHAT - appearance', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -12,11 +14,11 @@ describe('LIVECHAT - triggers', function () {
 		updateSetting('Livechat_enabled', true).then(done);
 	});
 
-	describe('livechat/triggers', () => {
+	describe('livechat/appearance', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
 				request
-					.get(api('livechat/triggers'))
+					.get(api('livechat/appearance'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -27,38 +29,18 @@ describe('LIVECHAT - triggers', function () {
 					.end(done);
 			});
 		});
-		it('should return an array of triggers', (done) => {
+		it('should return an array of settings', (done) => {
 			updatePermission('view-livechat-manager', ['admin']).then(() => {
 				request
-					.get(api('livechat/triggers'))
+					.get(api('livechat/appearance'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body.triggers).to.be.an('array');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('count');
+						expect(res.body.appearance).to.be.an('array');
 					})
 					.end(done);
-			});
-		});
-	});
-
-	describe('livechat/triggers/:id', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-manager', []).then(() => {
-				request
-					.get(api('livechat/triggers/invalid-id'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-unauthorized');
-					})
-					.end(() => updatePermission('view-livechat-manager', ['admin']).then(done));
 			});
 		});
 	});

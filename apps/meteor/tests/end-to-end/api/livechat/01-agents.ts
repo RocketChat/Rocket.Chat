@@ -1,3 +1,6 @@
+/* eslint-env mocha */
+
+import type { ILivechatAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
@@ -7,8 +10,8 @@ import { createUser } from '../../../data/users.helper.js';
 
 describe('LIVECHAT - Agents', function () {
 	this.retries(0);
-	let agent;
-	let manager;
+	let agent: ILivechatAgent;
+	let manager: ILivechatAgent;
 
 	before((done) => getCredentials(done));
 
@@ -75,8 +78,8 @@ describe('LIVECHAT - Agents', function () {
 							expect(res.body).to.have.property('offset');
 							expect(res.body).to.have.property('total');
 							expect(res.body).to.have.property('count');
-							const agentRecentlyCreated = res.body.users.find((user) => agent._id === user._id);
-							expect(agentRecentlyCreated._id).to.be.equal(agent._id);
+							const agentRecentlyCreated = (res.body.users as ILivechatAgent[]).find((user) => agent._id === user._id);
+							expect(agentRecentlyCreated?._id).to.be.equal(agent._id);
 						})
 						.end(done);
 				});
@@ -96,8 +99,8 @@ describe('LIVECHAT - Agents', function () {
 							expect(res.body).to.have.property('offset');
 							expect(res.body).to.have.property('total');
 							expect(res.body).to.have.property('count');
-							const managerRecentlyCreated = res.body.users.find((user) => manager._id === user._id);
-							expect(managerRecentlyCreated._id).to.be.equal(manager._id);
+							const managerRecentlyCreated = (res.body.users as ILivechatAgent[]).find((user) => manager._id === user._id);
+							expect(managerRecentlyCreated?._id).to.be.equal(manager._id);
 						})
 						.end(done);
 				});
@@ -323,7 +326,7 @@ describe('LIVECHAT - Agents', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('departments').and.to.be.an('array');
-						res.body.departments.forEach((department) => {
+						(res.body.departments as ILivechatDepartment[]).forEach((department) => {
 							expect(department.agentId).to.be.equal(agent._id);
 						});
 					})

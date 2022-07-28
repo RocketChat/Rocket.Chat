@@ -1,6 +1,7 @@
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { api, credentials, request } from '../api-data';
 
-export const createDepartment = () =>
+export const createDepartment = (): Promise<ILivechatDepartment> =>
 	new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/department'))

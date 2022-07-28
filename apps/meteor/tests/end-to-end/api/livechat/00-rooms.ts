@@ -4,16 +4,16 @@ import fs from 'fs';
 import path from 'path';
 
 import { expect } from 'chai';
-import { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
+import { IOmnichannelRoom, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
-import { createVisitor, createLivechatRoom, createAgent, makeAgentAvailable } from '../../../data/livechat/rooms.js';
+import { createVisitor, createLivechatRoom, createAgent, makeAgentAvailable } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - rooms', function () {
 	this.retries(0);
-	let visitor: IVisitor;
+	let visitor: ILivechatVisitor;
 	let room: IOmnichannelRoom;
 
 	before((done) => getCredentials(done));

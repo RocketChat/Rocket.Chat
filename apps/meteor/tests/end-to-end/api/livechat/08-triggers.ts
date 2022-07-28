@@ -1,9 +1,11 @@
+/* eslint-env mocha */
+
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - Queue', function () {
+describe('LIVECHAT - triggers', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -12,11 +14,11 @@ describe('LIVECHAT - Queue', function () {
 		updateSetting('Livechat_enabled', true).then(done);
 	});
 
-	describe('livechat/queue', () => {
+	describe('livechat/triggers', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-l-room', []).then(() => {
+			updatePermission('view-livechat-manager', []).then(() => {
 				request
-					.get(api('livechat/queue'))
+					.get(api('livechat/triggers'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -27,16 +29,16 @@ describe('LIVECHAT - Queue', function () {
 					.end(done);
 			});
 		});
-		it('should return an array of queued metrics', (done) => {
-			updatePermission('view-l-room', ['admin']).then(() => {
+		it('should return an array of triggers', (done) => {
+			updatePermission('view-livechat-manager', ['admin']).then(() => {
 				request
-					.get(api('livechat/queue'))
+					.get(api('livechat/triggers'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body.queue).to.be.an('array');
+						expect(res.body.triggers).to.be.an('array');
 						expect(res.body).to.have.property('offset');
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('count');
@@ -44,25 +46,21 @@ describe('LIVECHAT - Queue', function () {
 					.end(done);
 			});
 		});
-		it('should return an array of queued metrics even requested with count and offset params', (done) => {
-			updatePermission('view-l-room', ['admin']).then(() => {
+	});
+
+	describe('livechat/triggers/:id', () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
+			updatePermission('view-livechat-manager', []).then(() => {
 				request
-					.get(api('livechat/queue'))
+					.get(api('livechat/triggers/invalid-id'))
 					.set(credentials)
-					.query({
-						count: 5,
-						offset: 0,
-					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.queue).to.be.an('array');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('count');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('error-not-unauthorized');
 					})
-					.end(done);
+					.end(() => updatePermission('view-livechat-manager', ['admin']).then(done));
 			});
 		});
 	});
