@@ -9,7 +9,7 @@ test.describe.parallel('register-and-login', () => {
 	test.beforeEach(async ({ page }) => {
 		poAuth = new Auth(page);
         
-        await page.goto('/');
+        await page.goto('/home');
 	});
 
 	test('expect trigger a validation error if no data is provided on register', async () => {

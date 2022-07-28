@@ -10,7 +10,7 @@ test.describe.serial('message-mentions', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-        await page.goto('/');
+        await page.goto('/home');
 	});
 
     test('expect show "all" and "here" options', async () => {

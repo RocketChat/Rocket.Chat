@@ -10,7 +10,7 @@ test.describe.serial('emoji', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-        await page.goto('/')
+        await page.goto('/home')
 	});
 
     test('expect pick and send grinning emoji', async ({ page }) => {

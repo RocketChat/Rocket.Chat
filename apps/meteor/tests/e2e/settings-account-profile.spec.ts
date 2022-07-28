@@ -13,7 +13,7 @@ test.describe.parallel('settings-account-profile', () => {
         poHomeChannel = new HomeChannel(page);
         poAccountProfile = new AccountProfile(page);
 
-        await page.goto('/')
+        await page.goto('/home')
     })
 
     test('expect update profile with new name and username', async () => {

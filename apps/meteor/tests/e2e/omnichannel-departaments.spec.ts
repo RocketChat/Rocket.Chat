@@ -8,7 +8,7 @@ test.use({ storageState: 'session-admin.json' });
 test.describe.serial('omnichannel-departaments', () => {
 	let poOmnichannelDepartaments: OmnichannelDepartaments;
 
-    const departmentName = faker.animal.type() + Date.now();
+    const departmentName = faker.datatype.uuid();
 
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelDepartaments = new OmnichannelDepartaments(page);

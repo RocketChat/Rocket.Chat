@@ -8,7 +8,7 @@ test.describe.parallel('forgot-password', () => {
 	test.beforeEach(async ({ page }) => {
 		poAuth = new Auth(page);
 		
-		await page.goto('/');
+		await page.goto('/home');
 	});
 
 	test('expect trigger a validation error if no email is provided', async () => {
