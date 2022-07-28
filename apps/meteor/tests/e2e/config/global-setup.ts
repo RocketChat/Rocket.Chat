@@ -1,8 +1,11 @@
 import { chromium } from '@playwright/test';
 
 import * as constants from './constants'
+import populateDatabase from '../fixtures/populate-database';
 
 export default async function(): Promise<void> {
+    await populateDatabase();
+
     const browser1 = await chromium.launch();
     const page1 = await browser1.newPage();
 
