@@ -13,7 +13,9 @@ describe('LIVECHAT - inquiries', function () {
 	before((done) => getCredentials(done));
 
 	before((done) => {
-		updateSetting('Livechat_enabled', true).then(done);
+		updateSetting('Livechat_enabled', true)
+			.then(() => updateSetting('Routing_Method', 'Manual_Selection'))
+			.then(() => done());
 	});
 
 	describe('livechat/inquiries.list', () => {
