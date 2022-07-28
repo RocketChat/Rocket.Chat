@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { Base } from './_Base';
 
 export class Settings extends Base {
@@ -8,9 +6,6 @@ export class Settings extends Base {
 
 		this.tryEnsureIndex({ blocked: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ hidden: 1 }, { sparse: 1 });
-
-		const collectionObj = this.model.rawCollection();
-		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
 
 	// FIND
