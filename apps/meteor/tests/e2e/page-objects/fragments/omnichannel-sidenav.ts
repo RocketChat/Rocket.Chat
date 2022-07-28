@@ -7,7 +7,11 @@ export class OmnichannelSidenav {
 		this.page = page;
 	}
 
-	get linkDepartments() {
+	get linkDepartments(): Locator {
 		return this.page.locator('a[href="omnichannel/departments"]');
+	}
+
+	get linkAgents(): Locator {
+		return this.page.locator('a[href="omnichannel/agents"]');
 	}
 }

@@ -6,6 +6,9 @@ import populateDatabase from '../fixtures/populate-database';
 export default async function(): Promise<void> {
     await populateDatabase();
 
+    /**------------------------------------------------------------------------------------/
+     *  Create "admin" session 
+     -------------------------------------------------------------------------------------*/
     const browser1 = await chromium.launch();
     const page1 = await browser1.newPage();
 
@@ -34,4 +37,20 @@ export default async function(): Promise<void> {
 
     await page1.context().storageState({ path: 'session-admin.json' });
     await browser1.close();
+
+    /**------------------------------------------------------------------------------------/
+     *  Create "user1" session 
+     -------------------------------------------------------------------------------------*/
+    const browser2 = await chromium.launch();
+    const page2 = await browser2.newPage();
+
+    await page2.goto(constants.BASE_URL);
+
+    await page2.locator('[name=emailOrUsername]').type("user1");
+    await page2.locator('[name=pass]').type("any_password");
+    await page2.locator('.login').click();
+
+    await page2.context().storageState({ path: 'session.json' });
+    await browser2.close();
+
 }
