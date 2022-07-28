@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../../lib/callbacks';
 import { LivechatRooms } from '../../../../../app/models/server';
 
-const handleAfterSaveMessage = (message, { _id: rid }) => {
+const handleAfterSaveMessage = (message, { _id: rid, t: roomType, v: roomVisitor }) => {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
@@ -14,14 +14,14 @@ const handleAfterSaveMessage = (message, { _id: rid }) => {
 		return message;
 	}
 
-	// Need to read the room every time, the room object is not updated
-	const room = LivechatRooms.findOneById(rid, { t: 1, v: 1, onHold: 1 });
-	if (!room) {
+	// message valid only if it is a livechat room
+	if (!(typeof roomType !== 'undefined' && roomType === 'l' && roomVisitor && roomVisitor.token)) {
 		return message;
 	}
 
-	// message valid only if it is a livechat room
-	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
+	// Need to read the room every time, the room object is not updated
+	const room = LivechatRooms.findOneById(rid, { t: 1, v: 1, onHold: 1 });
+	if (!room) {
 		return message;
 	}
 
