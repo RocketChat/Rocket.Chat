@@ -18,45 +18,47 @@ import type {
 	IPbxEvent,
 } from '@rocket.chat/core-typings';
 import { ISetting, SettingValue } from '@rocket.chat/core-typings';
+import {
+	IBaseModel,
+	IEmailInboxModel,
+	IInstanceStatusModel,
+	IIntegrationHistoryModel,
+	IIntegrationsModel,
+	ILivechatDepartmentAgentsModel,
+	ILivechatInquiryModel,
+	ILoginServiceConfigurationModel,
+	IMessagesModel,
+	IPbxEventsModel,
+	IPermissionsModel,
+	IRolesModel,
+	IRoomsModel,
+	ISettingsModel,
+	ISubscriptionsModel,
+	IUsersModel,
+	IUsersSessionsModel,
+} from '@rocket.chat/model-typings';
 
-import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
-import { UsersRaw } from '../../../app/models/server/raw/Users';
-import { SettingsRaw } from '../../../app/models/server/raw/Settings';
-import { PermissionsRaw } from '../../../app/models/server/raw/Permissions';
-import { MessagesRaw } from '../../../app/models/server/raw/Messages';
-import { RolesRaw } from '../../../app/models/server/raw/Roles';
-import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
-import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
-import { LivechatInquiryRaw } from '../../../app/models/server/raw/LivechatInquiry';
-import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
 import { subscriptionFields, roomFields } from './publishFields';
-import { LoginServiceConfigurationRaw } from '../../../app/models/server/raw/LoginServiceConfiguration';
-import { InstanceStatusRaw } from '../../../app/models/server/raw/InstanceStatus';
-import { IntegrationHistoryRaw } from '../../../app/models/server/raw/IntegrationHistory';
-import { LivechatDepartmentAgentsRaw } from '../../../app/models/server/raw/LivechatDepartmentAgents';
-import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
 import { EventSignatures } from '../../sdk/lib/Events';
-import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
-import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 
 interface IModelsParam {
-	Subscriptions: SubscriptionsRaw;
-	Permissions: PermissionsRaw;
-	Users: UsersRaw;
-	Settings: SettingsRaw;
-	Messages: MessagesRaw;
-	LivechatInquiry: LivechatInquiryRaw;
-	LivechatDepartmentAgents: LivechatDepartmentAgentsRaw;
-	UsersSessions: UsersSessionsRaw;
-	Roles: RolesRaw;
-	Rooms: RoomsRaw;
-	LoginServiceConfiguration: LoginServiceConfigurationRaw;
-	InstanceStatus: InstanceStatusRaw;
-	IntegrationHistory: IntegrationHistoryRaw;
-	Integrations: IntegrationsRaw;
-	EmailInbox: EmailInboxRaw;
-	PbxEvent: PbxEventsRaw;
+	Subscriptions: ISubscriptionsModel;
+	Permissions: IPermissionsModel;
+	Users: IUsersModel;
+	Settings: ISettingsModel;
+	Messages: IMessagesModel;
+	LivechatInquiry: ILivechatInquiryModel;
+	LivechatDepartmentAgents: ILivechatDepartmentAgentsModel;
+	UsersSessions: IUsersSessionsModel;
+	Roles: IRolesModel;
+	Rooms: IRoomsModel;
+	LoginServiceConfiguration: ILoginServiceConfigurationModel;
+	InstanceStatus: IInstanceStatusModel;
+	IntegrationHistory: IIntegrationHistoryModel;
+	Integrations: IIntegrationsModel;
+	EmailInbox: IEmailInboxModel;
+	PbxEvents: IPbxEventsModel;
 }
 
 interface IChange<T> {
@@ -68,7 +70,7 @@ interface IChange<T> {
 	unset?: Record<string, number>;
 }
 
-type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>) => void) => void;
+type Watcher = <T extends IBaseData>(model: IBaseModel<T>, fn: (event: IChange<T>) => void) => void;
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
@@ -105,7 +107,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		IntegrationHistory,
 		Integrations,
 		EmailInbox,
-		PbxEvent,
+		PbxEvents,
 	} = models;
 
 	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
@@ -122,7 +124,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
-				const message: IMessage | undefined = data ?? (await Messages.findOne({ _id: id }));
+				const message = data ?? (await Messages.findOneById(id));
 				if (!message) {
 					return;
 				}
@@ -344,6 +346,12 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	// TODO: Prevent flood from database on username change, what causes changes on all past messages from that user
 	// and most of those messages are not loaded by the clients.
 	watch<IUser>(Users, ({ clientAction, id, data, diff, unset }) => {
+		// LivechatCount is updated each time an agent is routed to a chat. This prop is not used on the UI so we don't need
+		// to broadcast events originated by it when it's the only update on the user
+		if (diff && Object.keys(diff).length === 1 && 'livechatCount' in diff) {
+			return;
+		}
+
 		broadcast('watch.users', { clientAction, data, diff, unset, id });
 	});
 
@@ -410,10 +418,10 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.emailInbox', { clientAction, data, id });
 	});
 
-	watch<IPbxEvent>(PbxEvent, async ({ clientAction, id, data: eventData }) => {
+	watch<IPbxEvent>(PbxEvents, async ({ clientAction, id, data: eventData }) => {
 		// For now, we just care about insertions here
 		if (clientAction === 'inserted') {
-			const data = eventData ?? (await PbxEvent.findOneById(id));
+			const data = eventData ?? (await PbxEvents.findOneById(id));
 			if (!data || !['ContactStatus', 'Hangup'].includes(data.event)) {
 				// For now, we'll only care about agent connect/disconnect events
 				// Other events are not handled by watchers but by service

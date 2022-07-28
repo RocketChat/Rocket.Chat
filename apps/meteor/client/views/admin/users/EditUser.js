@@ -14,7 +14,6 @@ const getInitialValue = (data) => ({
 	name: data.name ?? '',
 	password: '',
 	username: data.username,
-	status: data.status,
 	bio: data.bio ?? '',
 	nickname: data.nickname ?? '',
 	email: (data.emails && data.emails.length && data.emails[0].address) || '',
@@ -89,10 +88,10 @@ function EditUser({ data, roles, onReload, ...props }) {
 		[data._id],
 	);
 
-	const saveAction = useEndpointAction('POST', 'users.update', saveQuery, t('User_updated_successfully'));
-	const saveAvatarAction = useEndpointUpload('users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
-	const saveAvatarUrlAction = useEndpointAction('POST', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
-	const resetAvatarAction = useEndpointAction('POST', 'users.resetAvatar', resetAvatarQuery, t('Avatar_changed_successfully'));
+	const saveAction = useEndpointAction('POST', '/v1/users.update', saveQuery, t('User_updated_successfully'));
+	const saveAvatarAction = useEndpointUpload('/v1/users.setAvatar', t('Avatar_changed_successfully'));
+	const saveAvatarUrlAction = useEndpointAction('POST', '/v1/users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
+	const resetAvatarAction = useEndpointAction('POST', '/v1/users.resetAvatar', resetAvatarQuery, t('Avatar_changed_successfully'));
 
 	const updateAvatar = useCallback(async () => {
 		if (avatarObj === 'reset') {

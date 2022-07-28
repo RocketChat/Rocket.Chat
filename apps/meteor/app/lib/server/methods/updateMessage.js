@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import moment from 'moment';
 
-import { Messages } from '../../../models';
-import { settings } from '../../../settings';
+import { Messages } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { hasPermission, canSendMessage } from '../../../authorization/server';
 import { updateMessage } from '../functions';
 
@@ -50,13 +50,13 @@ Meteor.methods({
 			let currentTsDiff;
 			let msgTs;
 
-			if (Match.test(originalMessage.ts, Number)) {
+			if (originalMessage.ts instanceof Date || Match.test(originalMessage.ts, Number)) {
 				msgTs = moment(originalMessage.ts);
 			}
 			if (msgTs) {
 				currentTsDiff = moment().diff(msgTs, 'minutes');
 			}
-			if (currentTsDiff > blockEditInMinutes) {
+			if (currentTsDiff >= blockEditInMinutes) {
 				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', {
 					method: 'updateMessage',
 				});

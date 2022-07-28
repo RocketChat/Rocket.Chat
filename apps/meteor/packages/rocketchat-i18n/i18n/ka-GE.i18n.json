@@ -2091,7 +2091,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "მომხმარებელთა ჯგუფის ფილტრი",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "LDAP საძიებო ფილტრი გამოიყენება იმის შესამოწმებლად, თუ მომხმარებელი ჯგუფშია.",
   "LDAP_Sync_User_Data_RolesMap": "მომხმარებელთა მონაცემთა ჯგუფის რუკა",
-  "LDAP_Sync_User_Data_RolesMap_Description": "LDAP ჯგუფების დატანა Rocket.Chat-ის მომხმარებელთა როლებზე <br/> მაგალითად, {\"rocket-admin\":\"admin\", \"tech-support\":\"support\"} დაიტანს rocket-admin LDAP ჯგუფს Rocket's-ის ადმინის როლად",
+  "LDAP_Sync_User_Data_RolesMap_Description": "LDAP ჯგუფების დატანა Rocket.Chat-ის მომხმარებელთა როლებზე <br/> მაგალითად, {\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]} დაიტანს rocket-admin LDAP ჯგუფს Rocket's-ის ადმინის როლად",
   "LDAP_Timeout": "ტაიმაუტი (მილიწამები)",
   "LDAP_Timeout_Description": "რამდენი მილიწამი დაელოდოს ძიების შედეგს სანამ შეცდომას დააბრუნებს",
   "LDAP_Unique_Identifier_Field": "უნიკალური საიდენტიფიკაციო ველი",

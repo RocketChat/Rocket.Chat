@@ -19,8 +19,8 @@ function ImportProgressPage() {
 	const [completed, setCompleted] = useSafely(useState(0));
 	const [total, setTotal] = useSafely(useState(0));
 
-	const getCurrentImportOperation = useEndpoint('GET', 'getCurrentImportOperation');
-	const getImportProgress = useEndpoint('GET', 'getImportProgress');
+	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
+	const getImportProgress = useEndpoint('GET', '/v1/getImportProgress');
 
 	const importHistoryRoute = useRoute('admin-import');
 	const prepareImportRoute = useRoute('admin-import-prepare');

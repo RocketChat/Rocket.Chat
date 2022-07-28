@@ -1,15 +1,11 @@
 import { slashCommands } from '../../utils/lib/slashCommand';
 
-slashCommands.add(
-	'create',
-	undefined,
-	{
+slashCommands.add({
+	command: 'create',
+	options: {
 		description: 'Create_A_New_Channel',
 		params: '#channel',
 		permission: ['create-c', 'create-p'],
 	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+	providesPreview: false,
+});

@@ -5,11 +5,12 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { setupAutogrow } from './messageBoxAutogrow';
 import { formattingButtons, applyFormatting } from './messageBoxFormatting';
 import { EmojiPicker } from '../../../emoji';
-import { Users } from '../../../models';
+import { Users, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings';
 import { fileUpload, KonchatNotification } from '../../../ui';
 import { messageBox, popover } from '../../../ui-utils';
@@ -256,6 +257,11 @@ Template.messageBox.helpers({
 	isSubscribed() {
 		const { subscription } = Template.currentData();
 		return !!subscription;
+	},
+	isFederatedRoom() {
+		const { rid } = Template.currentData();
+
+		return isRoomFederated(ChatRoom.findOne(rid));
 	},
 });
 

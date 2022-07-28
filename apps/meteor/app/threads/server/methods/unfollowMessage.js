@@ -6,6 +6,7 @@ import { RateLimiter } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { canAccessRoomId } from '../../../authorization/server';
 import { unfollow } from '../functions';
+import { Apps, AppEvents } from '../../../apps/server/orchestrator';
 
 Meteor.methods({
 	unfollowMessage({ mid }) {
@@ -20,7 +21,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'unfollowMessage' });
 		}
 
-		const message = Messages.findOneById(mid, { fields: { rid: 1, tmid: 1 } });
+		const message = Messages.findOneById(mid);
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
 				method: 'unfollowMessage',
@@ -31,7 +32,12 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'unfollowMessage' });
 		}
 
-		return unfollow({ rid: message.rid, tmid: message.tmid || message._id, uid });
+		const unfollowResult = unfollow({ rid: message.rid, tmid: message.tmid || message._id, uid });
+
+		const isFollowed = false;
+		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageFollowed, message, Meteor.user(), isFollowed));
+
+		return unfollowResult;
 	},
 });
 

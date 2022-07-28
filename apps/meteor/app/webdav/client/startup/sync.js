@@ -14,7 +14,7 @@ Tracker.autorun(async () => {
 	if (!Meteor.userId()) {
 		return;
 	}
-	const { accounts } = await APIClient.v1.get('webdav.getMyAccounts');
+	const { accounts } = await APIClient.get('/v1/webdav.getMyAccounts');
 	accounts.forEach((account) => WebdavAccounts.insert(account));
 	Notifications.onUser('webdav', ({ type, account }) => events[type](account));
 });

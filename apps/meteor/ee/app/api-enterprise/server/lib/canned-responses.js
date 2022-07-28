@@ -1,9 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { LivechatDepartmentAgents, CannedResponse } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import CannedResponse from '../../../models/server/raw/CannedResponse';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
-import { LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
 
 export async function findAllCannedResponses({ userId }) {
 	if (!(await hasPermissionAsync(userId, 'view-canned-responses'))) {
@@ -156,13 +155,12 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 		filter = {};
 	}
 
-	const cursor = CannedResponse.find(filter, {
+	const { cursor, totalCount } = CannedResponse.findPaginated(filter, {
 		sort: options.sort || { shortcut: 1 },
 		skip: options.offset,
 		limit: options.count,
 	});
-	const total = await cursor.count();
-	const cannedResponses = await cursor.toArray();
+	const [cannedResponses, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
 		cannedResponses,
 		total,

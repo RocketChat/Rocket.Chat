@@ -6,7 +6,9 @@ import { useLayout, useRoute, useLogout, useSetting, useAtLeastOnePermission, us
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactElement } from 'react';
 
+import { triggerActionButtonAction } from '../../../app/ui-message/client/ActionManager';
 import { AccountBox, SideNav } from '../../../app/ui-utils/client';
+import { IAppAccountBoxItem, isAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { userStatus } from '../../../app/user-status/client';
 import { callbacks } from '../../../lib/callbacks';
 import MarkdownText from '../../components/MarkdownText';
@@ -40,7 +42,7 @@ const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) 
 const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum => isDefaultStatus(id);
 
 const setStatus = (status: typeof userStatus.list['']): void => {
-	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : '');
+	AccountBox.setStatus(status.statusType as unknown as number, !isDefaultStatus(status.id) ? status.name : '');
 	callbacks.run('userStatusManuallySet', status);
 };
 
@@ -61,7 +63,7 @@ type UserDropdownProps = {
 
 const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const t = useTranslation();
-	const accountRoute = useRoute('account');
+	const accountRoute = useRoute('account-index');
 	const adminRoute = useRoute('admin-index');
 	const logout = useLogout();
 	const { sidebar, isMobile } = useLayout();
@@ -102,6 +104,8 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	});
 
 	const accountBoxItems = useReactiveValue(getItems);
+
+	const appBoxItems = (): IAppAccountBoxItem[] => accountBoxItems.filter((item): item is IAppAccountBoxItem => isAppAccountBoxItem(item));
 
 	return (
 		<Box display='flex' flexDirection='column' w={!isMobile ? '244px' : undefined}>
@@ -171,20 +175,55 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				<>
 					<Option.Divider />
 					{showAdmin && <Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}></Option>}
-					{accountBoxItems.map((item, i) => {
-						const action = (): void => {
-							if (item.href) {
-								FlowRouter.go(item.href);
-								onClose();
-							}
-							if (item.sideNav) {
-								SideNav.setFlex(item.sideNav);
-								SideNav.openFlex();
-								onClose();
-							}
-						};
+					{accountBoxItems
+						.filter((item) => !isAppAccountBoxItem(item))
+						.map((item, i) => {
+							const action = (): void => {
+								if (item.href) {
+									FlowRouter.go(item.href);
+									onClose();
+								}
+								if (item.sideNav) {
+									SideNav.setFlex(item.sideNav);
+									SideNav.openFlex();
+									onClose();
+								}
+							};
 
-						return <Option icon={item.icon} label={t(item.name)} onClick={item.href || item.sideNav ? action : undefined} key={i}></Option>;
+							return (
+								<Option
+									icon={item.icon as any}
+									label={t(item.name as any)}
+									onClick={item.href || item.sideNav ? action : undefined}
+									key={i}
+								></Option>
+							);
+						})}
+				</>
+			)}
+
+			{appBoxItems().length > 0 && (
+				<>
+					<Option.Divider />
+					<Box pi='x16' fontScale='c1' textTransform='uppercase'>
+						{t('Apps')}
+					</Box>
+					{appBoxItems().map((item, key) => {
+						const action = (): void => {
+							triggerActionButtonAction({
+								rid: '',
+								mid: '',
+								actionId: item.actionId,
+								appId: item.appId,
+								payload: { context: item.context },
+							});
+						};
+						return (
+							// We use the type assertion to any in the `label` property as i18n strings that come from apps are not known in compile time
+							<>
+								<Option label={t(item.name as any)} key={item.actionId + key} onClick={action} />
+							</>
+						);
 					})}
 				</>
 			)}

@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload';
-import { Rooms, Messages } from '../../../models';
+import { Rooms, Messages } from '../../../models/server';
 import { API } from '../api';
 import {
 	findAdminRooms,
@@ -85,10 +86,13 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { file, ...fields } = Promise.await(
-				getUploadFormData({
-					request: this.request,
-				}),
+			const [file, fields] = Promise.await(
+				getUploadFormData(
+					{
+						request: this.request,
+					},
+					{ field: 'file' },
+				),
 			);
 
 			if (!file) {
@@ -177,8 +181,8 @@ API.v1.addRoute(
 	'rooms.cleanHistory',
 	{ authRequired: true },
 	{
-		post() {
-			const findResult = findRoomByIdOrName({ params: this.bodyParams });
+		async post() {
+			const { _id } = findRoomByIdOrName({ params: this.bodyParams });
 
 			const {
 				latest,
@@ -200,22 +204,20 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "oldest" is required.');
 			}
 
-			const count = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('cleanRoomHistory', {
-					roomId: findResult._id,
-					latest: new Date(latest),
-					oldest: new Date(oldest),
-					inclusive,
-					limit,
-					excludePinned: [true, 'true', 1, '1'].includes(excludePinned),
-					filesOnly: [true, 'true', 1, '1'].includes(filesOnly),
-					ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads),
-					ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion),
-					fromUsers: users,
-				}),
-			);
+			const count = await Meteor.call('cleanRoomHistory', {
+				roomId: _id,
+				latest: new Date(latest),
+				oldest: new Date(oldest),
+				inclusive,
+				limit,
+				excludePinned: [true, 'true', 1, '1'].includes(excludePinned),
+				filesOnly: [true, 'true', 1, '1'].includes(filesOnly),
+				ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads),
+				ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion),
+				fromUsers: users,
+			});
 
-			return API.v1.success({ count });
+			return API.v1.success({ _id, count });
 		},
 	},
 );
@@ -292,7 +294,7 @@ API.v1.addRoute(
 	'rooms.getDiscussions',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const room = findRoomByIdOrName({ params: this.requestParams() });
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
@@ -303,18 +305,20 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign(query, { prid: room._id });
 
-			const discussions = Rooms.find(ourQuery, {
+			const { cursor, totalCount } = RoomsRaw.findPaginated(ourQuery, {
 				sort: sort || { fname: 1 },
 				skip: offset,
 				limit: count,
-				fields,
-			}).fetch();
+				projection: fields,
+			});
+
+			const [discussions, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				discussions,
 				count: discussions.length,
 				offset,
-				total: Rooms.find(ourQuery).count(),
+				total,
 			});
 		},
 	},

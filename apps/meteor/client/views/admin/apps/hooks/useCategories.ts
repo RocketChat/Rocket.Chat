@@ -7,14 +7,6 @@ import { handleAPIError } from '../helpers';
 import { useCategoryFlatList } from './useCategoryFlatList';
 import { useCategoryToggle } from './useCategoryToggle';
 
-type Category = {
-	id: string;
-	title: string;
-	description: string;
-	createdDate: string;
-	modifiedDate: string;
-};
-
 export const useCategories = (): [
 	CategoryDropDownListProps['groups'],
 	(CategoryDropdownItem & { checked: true })[],
@@ -28,7 +20,7 @@ export const useCategories = (): [
 		try {
 			const fetchedCategories = await Apps.getCategories();
 
-			const mappedCategories = fetchedCategories.map((currentCategory: Category) => ({
+			const mappedCategories = fetchedCategories.map((currentCategory) => ({
 				id: currentCategory.id,
 				label: currentCategory.title,
 				checked: false,
@@ -48,7 +40,7 @@ export const useCategories = (): [
 					items: mappedCategories,
 				},
 			]);
-		} catch (e) {
+		} catch (e: any) {
 			handleAPIError(e);
 		}
 	}, [t]);

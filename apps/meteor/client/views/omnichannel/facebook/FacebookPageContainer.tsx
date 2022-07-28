@@ -65,7 +65,7 @@ const FacebookPageContainer: FC = () => {
 				page: id,
 			});
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 			setSubscribed(isSubscribed);
 		}
 	});
@@ -77,7 +77,7 @@ const FacebookPageContainer: FC = () => {
 			reloadInitial();
 			reloadData();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 		}
 	});
 
@@ -103,7 +103,7 @@ const FacebookPageContainer: FC = () => {
 				reloadData();
 			}
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 		}
 	});
 

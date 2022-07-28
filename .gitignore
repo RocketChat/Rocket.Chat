@@ -44,3 +44,5 @@ yarn-error.log*
 
 # lint
 eslint_report.json
+.nvmrc
+.idea/

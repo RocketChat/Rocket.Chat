@@ -16,7 +16,7 @@ function DepartmentsAgentsTable({ agents, setAgentListFinal, setAgentsAdded, set
 
 	return (
 		<>
-			<AddAgent agentList={agentList} setAgentList={setAgentList} setAgentsAdded={setAgentsAdded} />
+			<AddAgent agentList={agentList} data-qa='DepartmentSelect-AgentsTable' setAgentList={setAgentList} setAgentsAdded={setAgentsAdded} />
 			<GenericTable
 				header={
 					<>

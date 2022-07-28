@@ -1,16 +1,46 @@
+import { MongoInternals } from 'meteor/mongo';
+
 import { addMigration } from '../../lib/migrations';
-import { Settings } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 264,
 	async up() {
-		// in case server is being updated, we check setup wizard status to determine if should still create the initial channel
-		const setupWizard = await Settings.getValueById('Show_Setup_Wizard');
-		if (setupWizard === 'pending') {
-			// if still pending for some reason, we need to create the initial channel, so keep the setting as false
-			return;
+		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+		const npsVote = mongo.db.collection('rocketchat_nps_vote');
+
+		const duplicated = await npsVote
+			.aggregate([
+				{
+					$group: {
+						_id: { identifier: '$identifier', npsId: '$npsId' },
+						total: { $sum: 1 },
+						firstId: { $first: '$_id' },
+					},
+				},
+				{
+					$match: {
+						total: { $gt: 1 },
+					},
+				},
+			])
+			.toArray(); // since there should not be too much duplicated, it is safe to use .toArray()
+
+		await Promise.all(
+			duplicated.map((record) =>
+				npsVote.deleteMany({
+					_id: { $ne: record.firstId },
+					identifier: record._id.identifier,
+					npsId: record._id.npsId,
+				}),
+			),
+		);
+
+		try {
+			await npsVote.dropIndex('npsId_1_identifier_1');
+			await npsVote.createIndex({ npsId: 1, identifier: 1 }, { unique: true });
+		} catch (error: unknown) {
+			console.warn('Error recreating index for rocketchat_nps_vote, continuing...');
+			console.warn(error);
 		}
-		// if the setup wizard is not pending anymore, we assume initial channel was already created once
-		await Settings.updateValueById('Initial_Channel_Created', true);
 	},
 });

@@ -10,16 +10,9 @@ const BurgerMenu = (): ReactElement => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const unreadMessagesBadge = useSession('unread');
 
-	const isSidebarOpen = sidebar.isOpen();
 	const toggleSidebar = useMutableCallback(() => sidebar.toggle());
 
-	return (
-		<BurgerMenuButton
-			open={isSidebarOpen}
-			onClick={toggleSidebar}
-			badge={!isLayoutEmbedded && unreadMessagesBadge && unreadMessagesBadge}
-		/>
-	);
+	return <BurgerMenuButton onClick={toggleSidebar} badge={!isLayoutEmbedded && unreadMessagesBadge && unreadMessagesBadge} />;
 };
 
 export default memo(BurgerMenu);

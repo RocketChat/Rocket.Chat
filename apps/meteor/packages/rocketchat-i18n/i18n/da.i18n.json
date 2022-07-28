@@ -2215,7 +2215,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "Brugergruppefilter",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "LDAP-søgefilteret der bruges til at kontrollere om en bruger er i en gruppe.",
   "LDAP_Sync_User_Data_RolesMap": "Brugerdata-gruppeoversigt",
-  "LDAP_Sync_User_Data_RolesMap_Description": "Relatér LDAP-grupper til Rocket.Chat-brugerroller <br/> F.eks. vil '{\"rocket-admin\":\"admin\", \"tech-support\":\"support\"}' relatere rocket-admin-LDAP-gruppen til Rockets \"admin\" -rolle.",
+  "LDAP_Sync_User_Data_RolesMap_Description": "Relatér LDAP-grupper til Rocket.Chat-brugerroller <br/> F.eks. vil '{\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]}' relatere rocket-admin-LDAP-gruppen til Rockets \"admin\" -rolle.",
   "LDAP_Timeout": "Timeout (ms)",
   "LDAP_Timeout_Description": "Hvor mange mileseconds venter på et søgeresultat, før du returnerer en fejl",
   "LDAP_Unique_Identifier_Field": "Unikt identifikationsfelt",

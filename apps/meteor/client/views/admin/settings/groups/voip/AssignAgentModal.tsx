@@ -20,7 +20,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 	const [extension, setExtension] = useState(existingExtension || '');
 	const query = useMemo(() => ({ type: 'available' as const, userId: agent }), [agent]);
 
-	const assignAgent = useEndpoint('POST', 'omnichannel/agent/extension');
+	const assignAgent = useEndpoint('POST', '/v1/omnichannel/agent/extension');
 
 	const handleAssignment = useMutableCallback(async () => {
 		try {
@@ -33,7 +33,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 	});
 	const handleAgentChange = useMutableCallback((e) => setAgent(e));
 
-	const { value: availableExtensions, phase: state } = useEndpointData('omnichannel/extension', query);
+	const { value: availableExtensions, phase: state } = useEndpointData('/v1/omnichannel/extension', query);
 
 	return (
 		<Modal>

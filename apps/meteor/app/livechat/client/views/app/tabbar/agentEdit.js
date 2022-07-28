@@ -133,7 +133,7 @@ Template.agentEdit.onCreated(async function () {
 	this.availableDepartments = new ReactiveVar([]);
 	this.back = Template.currentData().back;
 
-	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
+	const { departments } = await APIClient.get('/v1/livechat/department?sort={"name": 1}');
 	this.departments.set(departments);
 	this.availableDepartments.set(departments.filter(({ enabled }) => enabled));
 
@@ -146,8 +146,8 @@ Template.agentEdit.onCreated(async function () {
 			return;
 		}
 
-		const { user } = await APIClient.v1.get(`livechat/users/agent/${agentId}`);
-		const { departments } = await APIClient.v1.get(`livechat/agents/${agentId}/departments`);
+		const { user } = await APIClient.get(`/v1/livechat/users/agent/${agentId}`);
+		const { departments } = await APIClient.get(`/v1/livechat/agents/${agentId}/departments`);
 		this.agent.set(user);
 		this.agentDepartments.set((departments || []).map((department) => department.departmentId));
 		this.ready.set(true);

@@ -1,5 +1,5 @@
 import { callbacks } from '../../../../lib/callbacks';
-import { LivechatRooms } from '../../../models';
+import { LivechatRooms } from '../../../models/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 callbacks.add(

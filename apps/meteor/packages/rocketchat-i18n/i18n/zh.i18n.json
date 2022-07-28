@@ -2300,7 +2300,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "用户组过滤器",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "LDAP搜索过滤器，用于检查用户是否在组中。",
   "LDAP_Sync_User_Data_RolesMap": "用户数据群组对应",
-  "LDAP_Sync_User_Data_RolesMap_Description": "将LDAP组对应到Rocket.Chat用户角色<br/>例如，`{\"rocket-admin\":\"admin\", \"tech-support\":\"support\"}`会将rocket-admin LDAP组对应到Rocket.Chat的“管理员”角色。",
+  "LDAP_Sync_User_Data_RolesMap_Description": "将LDAP组对应到Rocket.Chat用户角色<br/>例如，`{\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]}`会将rocket-admin LDAP组对应到Rocket.Chat的“管理员”角色。",
   "LDAP_Timeout": "超时（ms）",
   "LDAP_Timeout_Description": "在返回错误之前等待搜索结果多少英里",
   "LDAP_Unique_Identifier_Field": "唯一识别字段",

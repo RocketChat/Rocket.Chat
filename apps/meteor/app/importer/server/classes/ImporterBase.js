@@ -11,10 +11,9 @@ import { ImporterWebsocket } from './ImporterWebsocket';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
-import { Settings, Imports } from '../../../models';
+import { Settings, Imports, ImportData } from '../../../models/server';
 import { Logger } from '../../../logger';
 import { ImportDataConverter } from './ImportDataConverter';
-import { ImportData } from '../../../models/server';
 import { t } from '../../../utils/server';
 import { Selection, SelectionChannel, SelectionUser } from '..';
 
@@ -265,9 +264,6 @@ export class Base {
 
 				this.oldSettings.FileUpload_MediaTypeBlackList = Settings.findOneById('FileUpload_MediaTypeBlackList').value;
 				Settings.updateValueById('FileUpload_MediaTypeBlackList', '');
-
-				this.oldSettings.UI_Allow_room_names_with_special_chars = Settings.findOneById('UI_Allow_room_names_with_special_chars').value;
-				Settings.updateValueById('UI_Allow_room_names_with_special_chars', true);
 				break;
 			case ProgressStep.DONE:
 			case ProgressStep.ERROR:
@@ -277,7 +273,6 @@ export class Base {
 				Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
 				Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
 				Settings.updateValueById('FileUpload_MediaTypeBlackList', this.oldSettings.FileUpload_MediaTypeBlackList);
-				Settings.updateValueById('UI_Allow_room_names_with_special_chars', this.oldSettings.UI_Allow_room_names_with_special_chars);
 				break;
 		}
 

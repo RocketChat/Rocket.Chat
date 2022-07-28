@@ -14,10 +14,10 @@ const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, .
 			<Modal.Content fontScale='p2'>{text}</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button ghost onClick={cancel || close}>
+					<Button secondary onClick={cancel || close}>
 						{cancelText || t('Cancel')}
 					</Button>
-					<Button primary danger onClick={confirm}>
+					<Button danger onClick={confirm}>
 						{confirmText}
 					</Button>
 				</ButtonGroup>

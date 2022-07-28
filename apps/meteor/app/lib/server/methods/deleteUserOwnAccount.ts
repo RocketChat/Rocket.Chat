@@ -7,6 +7,7 @@ import s from 'underscore.string';
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { deleteUser } from '../functions';
+import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 
 Meteor.methods({
 	async deleteUserOwnAccount(password, confirmRelinquish) {
@@ -50,6 +51,9 @@ Meteor.methods({
 		}
 
 		await deleteUser(uid, confirmRelinquish);
+
+		// App IPostUserDeleted event hook
+		Promise.await(Apps.triggerEvent(AppEvents.IPostUserDeleted, { user }));
 
 		return true;
 	},

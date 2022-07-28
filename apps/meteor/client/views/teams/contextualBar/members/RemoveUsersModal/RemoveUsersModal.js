@@ -12,11 +12,11 @@ const initialData = { user: { username: '' } };
 const RemoveUsersModal = ({ teamId, userId, onClose, onCancel, onConfirm }) => {
 	const t = useTranslation();
 	const { value, phase } = useEndpointData(
-		'teams.listRoomsOfUser',
+		'/v1/teams.listRoomsOfUser',
 		useMemo(() => ({ teamId, userId }), [teamId, userId]),
 	);
 	const userDataFetch = useEndpointData(
-		'users.info',
+		'/v1/users.info',
 		useMemo(() => ({ userId }), [userId]),
 		initialData,
 	);

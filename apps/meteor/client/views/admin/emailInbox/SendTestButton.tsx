@@ -1,4 +1,4 @@
-import { Button, Icon, TableCell } from '@rocket.chat/fuselage';
+import { IconButton, TableCell } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
@@ -10,7 +10,7 @@ const SendTestButton = ({ id }: SendTestButtonProps): ReactElement => {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const sendTest = useEndpoint('POST', `email-inbox.send-test/${id}`);
+	const sendTest = useEndpoint('POST', `/v1/email-inbox.send-test/${id}`);
 
 	const handleOnClick = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
 		e.preventDefault();
@@ -24,9 +24,7 @@ const SendTestButton = ({ id }: SendTestButtonProps): ReactElement => {
 
 	return (
 		<TableCell fontScale='p2' color='hint' withTruncatedText>
-			<Button small ghost title={t('Send_Test_Email')} onClick={handleOnClick}>
-				<Icon name='send' size='x20' />
-			</Button>
+			<IconButton icon='send' small title={t('Send_Test_Email')} onClick={handleOnClick} />
 		</TableCell>
 	);
 };

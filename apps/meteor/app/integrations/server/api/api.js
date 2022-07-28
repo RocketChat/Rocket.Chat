@@ -1,5 +1,4 @@
-import vm from 'vm';
-
+import { VM, VMScript } from 'vm2';
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Random } from 'meteor/random';
@@ -9,12 +8,12 @@ import Future from 'fibers/future';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
+import { Integrations } from '@rocket.chat/models';
 
 import { incomingLogger } from '../logger';
 import { processWebhookMessage } from '../../../lib/server';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import * as Models from '../../../models/server';
-import { Integrations } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 
 const compiledScripts = {};
@@ -68,14 +67,19 @@ function getIntegrationScript(integration) {
 	const script = integration.scriptCompiled;
 	const { sandbox, store } = buildSandbox();
 	try {
-		incomingLogger.info({ msg: 'Will evaluate script of Trigger', name: integration.name });
+		incomingLogger.info({ msg: 'Will evaluate script of Trigger', integration: integration.name });
 		incomingLogger.debug(script);
 
-		const vmScript = vm.createScript(script, 'script.js');
-		vmScript.runInNewContext(sandbox);
-		if (sandbox.Script) {
+		const vmScript = new VMScript(`${script}; Script;`, 'script.js');
+		const vm = new VM({
+			sandbox,
+		});
+
+		const ScriptClass = vm.run(vmScript);
+
+		if (ScriptClass) {
 			compiledScripts[integration._id] = {
-				script: new sandbox.Script(),
+				script: new ScriptClass(),
 				store,
 				_updatedAt: integration._updatedAt,
 			};
@@ -85,22 +89,20 @@ function getIntegrationScript(integration) {
 	} catch (err) {
 		incomingLogger.error({
 			msg: 'Error evaluating Script in Trigger',
-			name: integration.name,
+			integration: integration.name,
 			script,
 			err,
 		});
 		throw API.v1.failure('error-evaluating-script');
 	}
 
-	if (!sandbox.Script) {
-		incomingLogger.error({ msg: 'Class "Script" not in Trigger', name: integration.name });
-		throw API.v1.failure('class-script-not-found');
-	}
+	incomingLogger.error({ msg: 'Class "Script" not in Trigger', integration: integration.name });
+	throw API.v1.failure('class-script-not-found');
 }
 
 function createIntegration(options, user) {
-	incomingLogger.info({ msg: 'Add integration', name: options.name });
-	incomingLogger.debug(options);
+	incomingLogger.info({ msg: 'Add integration', integration: options.name });
+	incomingLogger.debug({ options });
 
 	Meteor.runAsUser(user._id, function () {
 		switch (options.event) {
@@ -137,7 +139,7 @@ function createIntegration(options, user) {
 
 function removeIntegration(options, user) {
 	incomingLogger.info('Remove integration');
-	incomingLogger.debug(options);
+	incomingLogger.debug({ options });
 
 	const integrationToRemove = Promise.await(Integrations.findOneByUrl(options.target_url));
 	if (!integrationToRemove) {
@@ -150,7 +152,7 @@ function removeIntegration(options, user) {
 }
 
 function executeIntegrationRest() {
-	incomingLogger.info({ msg: 'Post integration:', name: this.integration.name });
+	incomingLogger.info({ msg: 'Post integration:', integration: this.integration.name });
 	incomingLogger.debug({ urlParams: this.urlParams, bodyParams: this.bodyParams });
 
 	if (this.integration.enabled !== true) {
@@ -205,9 +207,12 @@ function executeIntegrationRest() {
 			sandbox.script = script;
 			sandbox.request = request;
 
-			const result = Future.fromPromise(
-				vm.runInNewContext(
-					`
+			const vm = new VM({
+				timeout: 3000,
+				sandbox,
+			});
+
+			const scriptResult = vm.run(`
 				new Promise((resolve, reject) => {
 					Fiber(() => {
 						scriptTimeout(reject);
@@ -218,18 +223,14 @@ function executeIntegrationRest() {
 						}
 					}).run();
 				}).catch((error) => { throw new Error(error); });
-			`,
-					sandbox,
-					{
-						timeout: 3000,
-					},
-				),
-			).wait();
+			`);
+
+			const result = Future.fromPromise(scriptResult).wait();
 
 			if (!result) {
 				incomingLogger.debug({
 					msg: 'Process Incoming Request result of Trigger has no data',
-					name: this.integration.name,
+					integration: this.integration.name,
 				});
 				return API.v1.success();
 			}
@@ -245,13 +246,13 @@ function executeIntegrationRest() {
 
 			incomingLogger.debug({
 				msg: 'Process Incoming Request result of Trigger',
-				name: this.integration.name,
+				integration: this.integration.name,
 				result: this.bodyParams,
 			});
 		} catch (err) {
 			incomingLogger.error({
 				msg: 'Error running Script in Trigger',
-				name: this.integration.name,
+				integration: this.integration.name,
 				script: this.integration.scriptCompiled,
 				err,
 			});

@@ -37,7 +37,6 @@ export interface IRoom extends IRocketChatRecord {
 	lastMessage?: IMessage;
 	lm?: Date;
 	usersCount: number;
-	jitsiTimeout?: Date;
 	callStatus?: CallStatus;
 	webRtcCallStartTime?: Date;
 	servedBy?: {
@@ -51,13 +50,6 @@ export interface IRoom extends IRocketChatRecord {
 
 	prid?: string;
 	avatarETag?: string;
-	tokenpass?: {
-		require: string;
-		tokens: {
-			token: string;
-			balance: number;
-		}[];
-	};
 
 	teamMain?: boolean;
 	teamId?: string;
@@ -69,6 +61,7 @@ export interface IRoom extends IRocketChatRecord {
 	unread?: number;
 	alert?: boolean;
 	hideUnreadStatus?: boolean;
+	hideMentionStatus?: boolean;
 
 	muted?: string[];
 	unmuted?: string[];
@@ -83,10 +76,21 @@ export interface IRoom extends IRocketChatRecord {
 	description?: string;
 	createdOTR?: boolean;
 	e2eKeyId?: string;
+
+	/* @deprecated */
+	federated?: boolean;
+
+	channel?: { _id: string };
 }
 
+export interface IRoomFederated extends IRoom {
+	federated: true;
+}
+
+export const isRoomFederated = (room: Partial<IRoom>): room is IRoomFederated => 'federated' in room && (room as any).federated === true;
 export interface ICreatedRoom extends IRoom {
 	rid: string;
+	inserted: boolean;
 }
 
 export interface ITeamRoom extends IRoom {
@@ -108,7 +112,7 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 	usernames: Array<Username>;
 }
 
-export const isDirectMessageRoom = (room: IRoom | IDirectMessageRoom): room is IDirectMessageRoom => room.t === 'd';
+export const isDirectMessageRoom = (room: Partial<IRoom> | IDirectMessageRoom): room is IDirectMessageRoom => room.t === 'd';
 export const isMultipleDirectMessageRoom = (room: IRoom | IDirectMessageRoom): room is IDirectMessageRoom =>
 	isDirectMessageRoom(room) && room.uids.length > 2;
 
@@ -169,6 +173,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	priorityId: any;
 	livechatData: any;
 	queuedAt?: Date;
+	status?: 'queued'; // TODO: missing types for this
 
 	ts: Date;
 	label?: string;
@@ -188,6 +193,7 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
 	t: 'v';
+	name: string;
 	// The timestamp when call was started
 	callStarted: Date;
 	// The amount of time the call lasted, in milliseconds
@@ -206,6 +212,8 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 		status: 'online' | 'busy' | 'away' | 'offline';
 		phone?: string | null;
 	};
+	// Outbound means the call was initiated from Rocket.Chat and vise versa
+	direction: 'inbound' | 'outbound';
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
@@ -234,3 +242,39 @@ export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichanne
 
 	return room.source?.type === OmnichannelSourceType.APP;
 };
+
+export type RoomAdminFieldsType =
+	| '_id'
+	| 'prid'
+	| 'fname'
+	| 'name'
+	| 't'
+	| 'cl'
+	| 'u'
+	| 'usernames'
+	| 'usersCount'
+	| 'muted'
+	| 'unmuted'
+	| 'ro'
+	| 'default'
+	| 'favorite'
+	| 'featured'
+	| 'topic'
+	| 'msgs'
+	| 'archived'
+	| 'teamId'
+	| 'teamMain'
+	| 'announcement'
+	| 'description'
+	| 'broadcast'
+	| 'uids'
+	| 'avatarETag';
+
+export interface IRoomWithRetentionPolicy extends IRoom {
+	retention: {
+		maxAge: number;
+		filesOnly: boolean;
+		excludePinned: boolean;
+		ignoreThreads: boolean;
+	};
+}

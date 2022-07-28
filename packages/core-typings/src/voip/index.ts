@@ -12,3 +12,7 @@ export * from './UserState';
 export * from './VoipClientEvents';
 export * from './VoipEvents';
 export * from './WorkflowTypes';
+export * from './IVoipClientEvents';
+export * from './VoIPUserConfiguration';
+export * from './VoIpCallerInfo';
+export * from './ICallDetails';

@@ -1,4 +1,4 @@
-export { t, isRtl } from '../lib/tapi18n';
+export { t } from '../lib/tapi18n';
 export { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
 export { Info } from '../rocketchat.info';
 export { getUserPreference } from '../lib/getUserPreference';
@@ -10,7 +10,7 @@ export { slashCommands } from '../lib/slashCommand';
 export { getUserNotificationPreference } from '../lib/getUserNotificationPreference';
 export { getAvatarColor } from '../lib/getAvatarColor';
 export { getURL } from '../lib/getURL';
-export { getValidRoomName } from '../lib/getValidRoomName';
+export { getValidRoomName } from './lib/getValidRoomName';
 export { placeholders } from '../lib/placeholders';
 export { templateVarHandler } from '../lib/templateVarHandler';
-export { secondsToHHMMSS } from '../lib/timeConverter';
+export { secondsToHHMMSS } from '../../../lib/utils/secondsToHHMMSS';

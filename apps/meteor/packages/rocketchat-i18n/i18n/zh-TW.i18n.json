@@ -2553,7 +2553,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "使用者群組過濾",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "LDAP 搜尋過濾已使用在假如使用者在群組時檢查。",
   "LDAP_Sync_User_Data_RolesMap": "使用者資料群組對應",
-  "LDAP_Sync_User_Data_RolesMap_Description": "將 LDAP 群組對應到 Rocket.Chat 使用者角色<br/>例如，`{\"rocket-admin\":\"admin\", \"tech-support\":\"support\"}`將 rocket-admin LDAP 群組對應到Rocket 的 “admin” 角色。",
+  "LDAP_Sync_User_Data_RolesMap_Description": "將 LDAP 群組對應到 Rocket.Chat 使用者角色<br/>例如，`{\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]}`將 rocket-admin LDAP 群組對應到Rocket 的 “admin” 角色。",
   "LDAP_Teams_BaseDN": "LDAP 團體 BaseDN",
   "LDAP_Teams_BaseDN_Description": "此 LDAP BaseDN 已使用去查詢使用者的團體。",
   "LDAP_Teams_Name_Field": "LDAP 團體名稱屬性",

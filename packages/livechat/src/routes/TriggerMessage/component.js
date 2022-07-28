@@ -8,7 +8,7 @@ import styles from './styles.scss';
 
 
 class TriggerMessage extends Component {
-	state = { }
+	state = { };
 
 	constructor(props) {
 		super(props);
@@ -18,9 +18,9 @@ class TriggerMessage extends Component {
 	componentDidUpdate() {
 		let height = 0;
 
-		this.ref.current.base.children.forEach((el) => {
+		for (const el of this.ref.current.base.children) {
 			height += el.scrollHeight;
-		});
+		}
 
 		parentCall('resizeWidget', height);
 	}

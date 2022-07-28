@@ -2,7 +2,7 @@ import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { isRtl } from '../../../utils';
+import { isRTLScriptLanguage } from '../../../../client/lib/utils/isRTLScriptLanguage';
 
 const sideNavW = 280;
 const map = (x, in_min, in_max, out_min, out_max) => ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -16,7 +16,7 @@ export const menu = new (class extends Emitter {
 	}
 
 	get isRtl() {
-		return isRtl(Meteor._localStorage.getItem('userLanguage'));
+		return isRTLScriptLanguage(Meteor._localStorage.getItem('userLanguage'));
 	}
 
 	translate(diff, width = sideNavW) {

@@ -62,7 +62,7 @@ Template.GameContainer.events({
 Template.GameContainer.onCreated(async () => {
 	const externalComponent = await getExternalComponent();
 
-	APIClient.post('apps/externalComponentEvent', {
+	APIClient.post('/apps/externalComponentEvent', {
 		event: 'IPostExternalComponentOpened',
 		externalComponent,
 	});
@@ -71,7 +71,7 @@ Template.GameContainer.onCreated(async () => {
 Template.GameContainer.onDestroyed(async () => {
 	const externalComponent = await getExternalComponent();
 
-	APIClient.post('apps/externalComponentEvent', {
+	APIClient.post('/apps/externalComponentEvent', {
 		event: 'IPostExternalComponentClosed',
 		externalComponent,
 	});

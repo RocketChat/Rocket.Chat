@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/interface-name-prefix */
 import * as mongodb from 'mongodb';
 
 declare module 'meteor/mongo' {
@@ -12,6 +11,7 @@ declare module 'meteor/mongo' {
 		onSkippedEntries(callback: Function): void;
 		waitUntilCaughtUp(): void;
 		_defineTooFarBehind(value: number): void;
+		_entryQueue?: unknown[];
 	}
 
 	interface MongoConnection {
@@ -29,7 +29,6 @@ declare module 'meteor/mongo' {
 	}
 
 	namespace Mongo {
-		// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 		interface CollectionStatic {
 			new <T>(
 				name: string | null,

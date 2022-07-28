@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import { IRoom } from '@rocket.chat/core-typings';
 import { EventHandlerOf } from '@rocket.chat/emitter';
 import { createContext, useContext } from 'react';

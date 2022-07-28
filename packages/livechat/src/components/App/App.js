@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import { Component } from 'preact';
 import { Router, route } from 'preact-router';
-import queryString from 'query-string';
+import { parse } from 'query-string';
 import { withTranslation } from 'react-i18next';
 
 import history from '../../history';
@@ -32,7 +32,7 @@ export class App extends Component {
 	state = {
 		initialized: false,
 		poppedOut: false,
-	}
+	};
 
 	handleRoute = async () => {
 		setTimeout(() => {
@@ -77,7 +77,7 @@ export class App extends Component {
 				return route('/register');
 			}
 		}, 100);
-	}
+	};
 
 	handleTriggers() {
 		const { config: { online, enabled } } = this.props;
@@ -91,18 +91,18 @@ export class App extends Component {
 	handleEnableNotifications = () => {
 		const { dispatch, sound = {} } = this.props;
 		dispatch({ sound: { ...sound, enabled: true } });
-	}
+	};
 
 	handleDisableNotifications = () => {
 		const { dispatch, sound = {} } = this.props;
 		dispatch({ sound: { ...sound, enabled: false } });
-	}
+	};
 
 	handleMinimize = () => {
 		parentCall('minimizeWindow');
 		const { dispatch } = this.props;
 		dispatch({ minimized: true });
-	}
+	};
 
 	handleRestore = () => {
 		parentCall('restoreWindow');
@@ -117,27 +117,28 @@ export class App extends Component {
 		} else {
 			dispatchRestore();
 		}
-	}
+		Triggers.callbacks.emit('chat-opened-by-visitor');
+	};
 
 	handleOpenWindow = () => {
 		parentCall('openPopout');
 		const { dispatch } = this.props;
 		dispatch({ undocked: true, minimized: false });
-	}
+	};
 
 	handleDismissAlert = (id) => {
 		const { dispatch, alerts = [] } = this.props;
 		dispatch({ alerts: alerts.filter((alert) => alert.id !== id) });
-	}
+	};
 
 	handleVisibilityChange = async () => {
 		const { dispatch } = this.props;
 		await dispatch({ visible: !visibility.hidden });
-	}
+	};
 
 	handleLanguageChange = () => {
 		this.forceUpdate();
-	}
+	};
 
 	dismissNotification = () => !isActiveSession();
 
@@ -159,7 +160,7 @@ export class App extends Component {
 	checkPoppedOutWindow() {
 		// Checking if the window is poppedOut and setting parent minimized if yes for the restore purpose
 		const { dispatch } = this.props;
-		const poppedOut = queryString.parse(window.location.search).mode === 'popout';
+		const poppedOut = parse(window.location.search).mode === 'popout';
 		this.setState({ poppedOut });
 		if (poppedOut) {
 			dispatch({ minimized: false });
@@ -240,7 +241,7 @@ export class App extends Component {
 				<TriggerMessage path='/trigger-messages' {...screenProps} />
 			</Router>
 		);
-	}
+	};
 }
 
 export default withTranslation()(App);
