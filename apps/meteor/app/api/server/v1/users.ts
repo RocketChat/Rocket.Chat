@@ -8,6 +8,7 @@ import {
 	isUsersListTeamsProps,
 	isUsersAutocompleteProps,
 	isUsersSetAvatarProps,
+	isUsersSetAvatarFromServiceProps,
 	isUsersUpdateParamsPOST,
 	isUsersUpdateOwnBasicInfoParamsPOST,
 	isUsersSetPreferencesParamsPOST,
@@ -220,6 +221,78 @@ API.v1.addRoute(
 			}
 
 			setUserAvatar(user, image.fileBuffer, image.mimetype, 'rest');
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.setAvatarFromService',
+	{
+		authRequired: true,
+		validateParams: isUsersSetAvatarFromServiceProps,
+	},
+	{
+		async post() {
+			const canEditOtherUserAvatar = hasPermission(this.userId, 'edit-other-user-avatar');
+
+			if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
+				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
+					method: 'users.setAvatar',
+				});
+			}
+
+			let user = ((): IUser | undefined => {
+				if (this.isUserFromParams()) {
+					return Meteor.users.findOne(this.userId) as IUser | undefined;
+				}
+				if (canEditOtherUserAvatar) {
+					return this.getUserFromParams();
+				}
+			})();
+
+			if (!user) {
+				return API.v1.unauthorized();
+			}
+
+			if (this.bodyParams.avatarUrl) {
+				setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
+				return API.v1.success();
+			}
+
+			const [image, fields] = await getUploadFormData(
+				{
+					request: this.request,
+				},
+				{
+					field: 'image',
+				},
+			);
+
+			if (!image) {
+				return API.v1.failure("The 'image' param is required");
+			}
+
+			const sentTheUserByFormData = fields.userId || fields.username;
+			if (sentTheUserByFormData) {
+				if (fields.userId) {
+					user = Users.findOneById(fields.userId, { fields: { username: 1 } });
+				} else if (fields.username) {
+					user = Users.findOneByUsernameIgnoringCase(fields.username, { fields: { username: 1 } });
+				}
+
+				if (!user) {
+					throw new Meteor.Error('error-invalid-user', 'The optional "userId" or "username" param provided does not match any users');
+				}
+
+				const isAnotherUser = this.userId !== user._id;
+				if (isAnotherUser && !hasPermission(this.userId, 'edit-other-user-avatar')) {
+					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+				}
+			}
+
+			Meteor.call('setAvatarFromService', user._id, image.fileBuffer, image.mimetype);
 
 			return API.v1.success();
 		},

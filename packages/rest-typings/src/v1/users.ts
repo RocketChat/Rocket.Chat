@@ -75,6 +75,50 @@ const UsersSetAvatarSchema = {
 
 export const isUsersSetAvatarProps = ajv.compile<UsersSetAvatar>(UsersSetAvatarSchema);
 
+type UsersSetAvatarFromService = {
+	userId?: IUser['_id'];
+	username?: IUser['username'];
+	avatarUrl?: string;
+
+	blob?: Blob | {};
+	contentType?: string;
+	service?: string;
+};
+
+const UsersSetAvatarFromServiceSchema = {
+	type: 'object',
+	properties: {
+		userId: {
+			type: 'string',
+			nullable: true,
+		},
+		username: {
+			type: 'string',
+			nullable: true,
+		},
+		avatarUrl: {
+			type: 'string',
+			nullable: true,
+		},
+		blob: {
+			type: 'object',
+			nullable: true,
+		},
+		contentType: {
+			type: 'string',
+			nullable: true,
+		},
+		service: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isUsersSetAvatarFromServiceProps = ajv.compile<UsersSetAvatarFromService>(UsersSetAvatarFromServiceSchema);
+
 type UsersResetAvatar = { userId?: IUser['_id']; username?: IUser['username'] };
 
 const UsersResetAvatarSchema = {
@@ -134,6 +178,9 @@ export type UsersEndpoints = {
 
 	'/v1/users.setAvatar': {
 		POST: (params: UsersSetAvatar) => void;
+	};
+	'/v1/users.setAvatarFromService': {
+		POST: (params: UsersSetAvatarFromService) => void;
 	};
 	'/v1/users.resetAvatar': {
 		POST: (params: UsersResetAvatar) => void;

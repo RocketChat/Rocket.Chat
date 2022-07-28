@@ -1,5 +1,5 @@
 import { AvatarObject, AvatarServiceObject, AvatarReset, AvatarUrlObj, IUser } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo, useCallback } from 'react';
 
 import { useEndpointAction } from './useEndpointAction';
@@ -19,7 +19,7 @@ export const useUpdateAvatar = (
 	const avatarUrl = isAvatarUrl(avatarObj) ? avatarObj.avatarUrl : '';
 
 	const successText = t('Avatar_changed_successfully');
-	const setAvatarFromService = useMethod('setAvatarFromService');
+	const setAvatarFromService = useEndpoint('POST', '/v1/users.setAvatarFromService');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -52,7 +52,7 @@ export const useUpdateAvatar = (
 		if (isServiceObject(avatarObj)) {
 			const { blob, contentType, service } = avatarObj;
 			try {
-				await setAvatarFromService(blob, contentType, service);
+				await setAvatarFromService({ blob, contentType, service });
 				dispatchToastMessage({ type: 'success', message: successText });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
