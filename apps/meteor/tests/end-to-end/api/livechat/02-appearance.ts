@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'chai';
+import { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
@@ -22,7 +23,7 @@ describe('LIVECHAT - appearance', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('error-not-authorized');
 					})
@@ -36,7 +37,7 @@ describe('LIVECHAT - appearance', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.appearance).to.be.an('array');
 					})

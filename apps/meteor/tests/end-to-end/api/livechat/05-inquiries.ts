@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'chai';
+import { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createAgent, createLivechatRoom, createVisitor, fetchInquiry, makeAgentAvailable } from '../../../data/livechat/rooms';
@@ -23,7 +24,7 @@ describe('LIVECHAT - inquiries', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('unauthorized');
 					})
@@ -37,7 +38,7 @@ describe('LIVECHAT - inquiries', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.inquiries).to.be.an('array');
 						expect(res.body).to.have.property('offset');
@@ -62,7 +63,7 @@ describe('LIVECHAT - inquiries', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.inquiries).to.be.an('array');
 						expect(res.body).to.have.property('offset');
@@ -92,7 +93,7 @@ describe('LIVECHAT - inquiries', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('inquiry');
 					})
@@ -121,7 +122,7 @@ describe('LIVECHAT - inquiries', function () {
 					.send({ inquiryId: 'room-id', userId: 'invalid-user-id' })
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 					})
 					.end(done);
@@ -136,7 +137,7 @@ describe('LIVECHAT - inquiries', function () {
 					.send({ inquiryId: { regexxxx: 'bla' }, userId: 'user-id' })
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 					})
 					.end(done);
@@ -159,7 +160,7 @@ describe('LIVECHAT - inquiries', function () {
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
-						.expect((res) => {
+						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('inquiry');
 							expect(res.body.inquiry).to.have.property('servedBy');
@@ -184,7 +185,7 @@ describe('LIVECHAT - inquiries', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.inquiries).to.be.an('array');
 						expect(res.body).to.have.property('offset');

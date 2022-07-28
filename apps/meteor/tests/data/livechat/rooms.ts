@@ -10,7 +10,7 @@ export const createLivechatRoom = (visitorToken: string): Promise<IOmnichannelRo
 		request
 			.get(api(`livechat/room?token=${visitorToken}`))
 			.set(credentials)
-			.end((_err, res) => resolve(res.body.room));
+			.end((_err: Error, res: DummyResponse<IOmnichannelRoom>) => resolve(res.body.room));
 	});
 
 export const createVisitor = (): Promise<ILivechatVisitor> =>
@@ -18,7 +18,7 @@ export const createVisitor = (): Promise<ILivechatVisitor> =>
 		const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 		const email = `${token}@${token}.com`;
 		const phone = `${Math.floor(Math.random() * 10000000000)}`;
-		request.get(api(`livechat/visitor/${token}`)).end((err, res) => {
+		request.get(api(`livechat/visitor/${token}`)).end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
 			if (!err && res && res.body && res.body.visitor) {
 				return resolve(res.body.visitor);
 			}
@@ -131,7 +131,7 @@ export const makeAgentAvailable = (): Promise<unknown> =>
 		request.post(api('users.setStatus')).set(credentials).send({
 			message: '',
 			status: 'online',
-		}).end((err, _res) => {
+		}).end((err: Error, _res: DummyResponse<unknown, 'unwrapped'>) => {
 			if (err) {
 				return reject(err);
 			}

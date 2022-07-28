@@ -2,6 +2,7 @@
 
 import type { ILivechatAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createAgent, createManager } from '../../../data/livechat/rooms';
@@ -40,7 +41,7 @@ describe('LIVECHAT - Agents', function () {
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(400)
-						.expect((res) => {
+						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body.error).to.be.equal('error-not-authorized');
 						})
@@ -56,7 +57,7 @@ describe('LIVECHAT - Agents', function () {
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(400)
-						.expect((res) => {
+						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body.error).to.be.equal('Invalid type');
 						})
@@ -72,7 +73,7 @@ describe('LIVECHAT - Agents', function () {
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
-						.expect((res) => {
+						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body.users).to.be.an('array');
 							expect(res.body).to.have.property('offset');
@@ -93,7 +94,7 @@ describe('LIVECHAT - Agents', function () {
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
-						.expect((res) => {
+						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body.users).to.be.an('array');
 							expect(res.body).to.have.property('offset');
@@ -165,7 +166,7 @@ describe('LIVECHAT - Agents', function () {
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
-						.expect((res) => {
+						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('user');
 							expect(res.body.user).to.have.property('_id');
@@ -218,7 +219,7 @@ describe('LIVECHAT - Agents', function () {
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
-						.expect((res) => {
+						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('user');
 							expect(res.body.user).to.have.property('_id');
@@ -238,7 +239,7 @@ describe('LIVECHAT - Agents', function () {
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
-						.expect((res) => {
+						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('user');
 							expect(res.body.user).to.be.null;
@@ -295,7 +296,7 @@ describe('LIVECHAT - Agents', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('error-not-authorized');
 					})
@@ -309,7 +310,7 @@ describe('LIVECHAT - Agents', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('departments').and.to.be.an('array');
 					})
@@ -323,7 +324,7 @@ describe('LIVECHAT - Agents', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('departments').and.to.be.an('array');
 						(res.body.departments as ILivechatDepartment[]).forEach((department) => {
