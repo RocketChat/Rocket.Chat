@@ -76,7 +76,7 @@ export const fetchInquiry = (roomId: string): Promise<ILivechatInquiryRecord> =>
 	});
 };
 
-export const createDepartment = (agents: { agentId: string }[]): Promise<ILivechatDepartment> => {
+export const createDepartment = (agents?: { agentId: string }[]): Promise<ILivechatDepartment> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/department'))
@@ -128,7 +128,7 @@ export const makeAgentAvailable = (): Promise<unknown> =>
 		request.post(api('users.setStatus')).set(credentials).send({
 			message: '',
 			status: 'online',
-		}).end((err, res) => {
+		}).end((err, _res) => {
 			if (err) {
 				return reject(err);
 			}
