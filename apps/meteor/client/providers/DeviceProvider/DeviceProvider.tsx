@@ -1,5 +1,6 @@
-import { DeviceContext, Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode, useEffect, useState } from 'react';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { DeviceContext, Device, IExperimentalHTMLAudioElement, DeviceContextValue } from '@rocket.chat/ui-contexts';
+import React, { ReactElement, ReactNode, useEffect, useState, useMemo } from 'react';
 
 import { isSetSinkIdAvailable } from './lib/isSetSinkIdAvailable';
 
@@ -8,6 +9,7 @@ type DeviceProviderProps = {
 };
 
 export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement => {
+	const [enabled] = useState(typeof isSecureContext && isSecureContext);
 	const [availableAudioOutputDevices, setAvailableAudioOutputDevices] = useState<Device[]>([]);
 	const [availableAudioInputDevices, setAvailableAudioInputDevices] = useState<Device[]>([]);
 	const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] = useState<Device>({
@@ -28,25 +30,21 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 		setSelectedAudioInputDevice(device);
 	};
 
-	const setAudioOutputDevice = ({
-		outputDevice,
-		HTMLAudioElement,
-	}: {
-		outputDevice: Device;
-		HTMLAudioElement: IExperimentalHTMLAudioElement;
-	}): void => {
-		if (!isSetSinkIdAvailable()) {
-			throw new Error('setSinkId is not available in this browser');
-		}
-		if (!isSecureContext) {
-			throw new Error('Device Changes are not available on insecure contexts');
-		}
-		setSelectedAudioOutputDevice(outputDevice);
-		HTMLAudioElement.setSinkId(outputDevice.id);
-	};
+	const setAudioOutputDevice = useMutableCallback(
+		({ outputDevice, HTMLAudioElement }: { outputDevice: Device; HTMLAudioElement: IExperimentalHTMLAudioElement }): void => {
+			if (!isSetSinkIdAvailable()) {
+				throw new Error('setSinkId is not available in this browser');
+			}
+			if (!enabled) {
+				throw new Error('Device Changes are not available on insecure contexts');
+			}
+			setSelectedAudioOutputDevice(outputDevice);
+			HTMLAudioElement.setSinkId(outputDevice.id);
+		},
+	);
 
 	useEffect(() => {
-		if (!isSecureContext) {
+		if (!enabled) {
 			return;
 		}
 		const setMediaDevices = (): void => {
@@ -76,15 +74,31 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 		return (): void => {
 			navigator.mediaDevices?.removeEventListener('devicechange', setMediaDevices);
 		};
-	}, []);
+	}, [enabled]);
 
-	const contextValue = {
-		availableAudioOutputDevices,
+	const contextValue = useMemo((): DeviceContextValue => {
+		if (!enabled) {
+			return {
+				enabled,
+			};
+		}
+
+		return {
+			enabled,
+			availableAudioOutputDevices,
+			availableAudioInputDevices,
+			selectedAudioOutputDevice,
+			selectedAudioInputDevice,
+			setAudioOutputDevice,
+			setAudioInputDevice,
+		};
+	}, [
 		availableAudioInputDevices,
-		selectedAudioOutputDevice,
+		availableAudioOutputDevices,
+		enabled,
 		selectedAudioInputDevice,
+		selectedAudioOutputDevice,
 		setAudioOutputDevice,
-		setAudioInputDevice,
-	};
+	]);
 	return <DeviceContext.Provider value={contextValue}>{children}</DeviceContext.Provider>;
 };

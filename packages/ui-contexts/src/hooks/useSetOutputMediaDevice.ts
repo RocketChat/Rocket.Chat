@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { DeviceContext, Device, IExperimentalHTMLAudioElement } from '../DeviceContext';
+import { DeviceContext, Device, IExperimentalHTMLAudioElement, isDeviceContextEnabled } from '../DeviceContext';
 
 // This allows different places to set the output device by providing a HTMLAudioElement
 
@@ -13,5 +13,11 @@ type setOutputMediaDevice = ({
 }) => void;
 
 export const useSetOutputMediaDevice = (): setOutputMediaDevice => {
-	return useContext(DeviceContext).setAudioOutputDevice;
+	const context = useContext(DeviceContext);
+
+	if (!isDeviceContextEnabled(context)) {
+		throw new Error('useSetOutputMediaDevice only if Device management is enabled');
+	}
+
+	return context.setAudioOutputDevice;
 };
