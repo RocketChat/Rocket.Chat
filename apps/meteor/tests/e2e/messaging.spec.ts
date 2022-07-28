@@ -15,7 +15,7 @@ const createAuxContext = async (browser: Browser): Promise<AuxContext> => {
 
 test.use({ storageState: 'session-admin.json' });
 
-test.describe.only('Messaging', () => {
+test.describe('Messaging', () => {
 	let pageHomeChannel: HomeChannel;
 	let targetChannel: string;
 

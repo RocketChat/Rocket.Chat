@@ -13,7 +13,7 @@
     {
       "sameSite": "Lax",
       "name": "rc_token",
-      "value": "vuNyiMgDbmkrMvurJygQCCwPb6N6waiFHYBcZqJAost",
+      "value": "HJ14ZjO1RI0nGcHQ8i3uHBBcVw3gAEqFdGI7u7qyjNw",
       "domain": "localhost",
       "path": "/",
       "expires": -1,
@@ -31,11 +31,11 @@
         },
         {
           "name": "Meteor.loginToken",
-          "value": "vuNyiMgDbmkrMvurJygQCCwPb6N6waiFHYBcZqJAost"
+          "value": "HJ14ZjO1RI0nGcHQ8i3uHBBcVw3gAEqFdGI7u7qyjNw"
         },
         {
           "name": "Meteor.loginTokenExpires",
-          "value": "Wed Oct 26 2022 15:55:01 GMT-0300 (Brasilia Standard Time)"
+          "value": "Wed Oct 26 2022 17:36:16 GMT-0300 (Brasilia Standard Time)"
         },
         {
           "name": "Meteor.userId",

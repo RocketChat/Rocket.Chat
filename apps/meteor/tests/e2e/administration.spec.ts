@@ -1,17 +1,16 @@
-import { test, expect } from './utils/test';
-import { Auth, Administration } from './page-objects';
+import { test, expect } from '@playwright/test';
 
-test.describe('Administration', () => {
-	let pageAuth: Auth;
+import { Administration } from './page-objects';
+
+test.use({ storageState: 'session-admin.json' });
+test.describe.parallel('Administration', () => {
 	let pageAdmin: Administration;
 
 	test.beforeEach(async ({ page }) => {
-		pageAuth = new Auth(page);
 		pageAdmin = new Administration(page);
 	});
 
 	test.beforeEach(async ({ page }) => {
-		await pageAuth.doLogin();
 		await page.goto('/admin');
 	});
 
@@ -29,13 +28,6 @@ test.describe('Administration', () => {
 		test.describe('Rooms', () => {
 			test.beforeEach(async () => {
 				await pageAdmin.roomsLink.click();
-			});
-
-			test.describe('Render', () => {
-				test('expect rom page is rendered is rendered', async () => {
-					await pageAdmin.verifyCheckBoxRendered(['Direct', 'Public', 'Private', 'Omnichannel', 'Discussions', 'Teams']);
-					await expect(pageAdmin.roomsSearchForm).toBeVisible();
-				});
 			});
 
 			test.describe('Filter search input', () => {
@@ -117,31 +109,6 @@ test.describe('Administration', () => {
 					test('expect dont user when write wrong name', async () => {
 						await pageAdmin.usersFilter.type('any_user_wrong');
 						await expect(pageAdmin.notFoundChannels).toBeVisible();
-					});
-				});
-
-				test.describe('Create user', () => {
-					test.beforeEach(async () => {
-						await pageAdmin.tabs.usersAddUserTab.click();
-					});
-
-					test('expect tab user add is rendering', async () => {
-						await expect(pageAdmin.tabs.usersAddUserName).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserUsername).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserEmail).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserVerifiedCheckbox).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserPassword).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserRoleList).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserRandomPassword).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserChangePasswordCheckbox).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserDefaultChannelCheckbox).toBeVisible();
-						await expect(pageAdmin.tabs.usersAddUserWelcomeEmailCheckbox).toBeVisible();
-						await expect(pageAdmin.tabs.usersButtonCancel).toBeVisible();
-						await expect(pageAdmin.tabs.usersButtonSave).toBeVisible();
-
-						await pageAdmin.tabs.usersAddUserTabClose.click();
-
-						await expect(pageAdmin.tabs.addUserTable).not.toBeVisible();
 					});
 				});
 			});
