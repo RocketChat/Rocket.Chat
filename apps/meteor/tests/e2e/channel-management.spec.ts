@@ -78,13 +78,11 @@ test.describe.serial('channel-management', () => {
         await poHomeChannel.tabs.room.btnSave.click();
     })
 
-    test('expect edit name of "targetChannel"', async ({ page }) => {
+    test('expect edit name of "targetChannel"', async () => {
         await poHomeChannel.sidenav.openChat(targetChannel);
         await poHomeChannel.tabs.btnRoomInfo.click();
         await poHomeChannel.tabs.room.btnEdit.click();
-        await poHomeChannel.tabs.room.inputName.type('edit');
+        await poHomeChannel.tabs.room.inputName.fill(targetChannel+'edit');
         await poHomeChannel.tabs.room.btnSave.click();
-
-        await expect(page).toHaveURL(`/channel/edit${targetChannel}`);
     })
 });

@@ -1,11 +1,17 @@
 import { test, expect } from '@playwright/test';
 
 import { HomeChannel } from './page-objects';
+import { createTargetChannel } from './utils';
 
 test.use({ storageState: 'session-admin.json' });
 
 test.describe.serial('emoji', () => {
 	let poHomeChannel: HomeChannel;
+    let targetChannel: string;
+
+    test.beforeAll(async ({ browser }) => {
+        targetChannel = await createTargetChannel(browser);
+    })
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
@@ -14,7 +20,7 @@ test.describe.serial('emoji', () => {
 	});
 
     test('expect pick and send grinning emoji', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat('general');
+		await poHomeChannel.sidenav.openChat(targetChannel);
         await poHomeChannel.content.pickEmoji('emoji-grinning')
         await page.keyboard.press('Enter');
 
@@ -22,7 +28,7 @@ test.describe.serial('emoji', () => {
     });
 
     test('expect render special characters and numbers properly', async () => {
-		await poHomeChannel.sidenav.openChat('general');
+		await poHomeChannel.sidenav.openChat(targetChannel);
 
         await poHomeChannel.content.sendMessage('® © ™ # *');
         await expect(poHomeChannel.content.lastUserMessage).toContainText('® © ™ # *');

@@ -41,4 +41,11 @@ export class HomeSidenav {
 		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
 		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
 	}
+	
+	async createPublicChannel(name: string) {
+		await this.openNewByLabel('Channel');
+		await this.checkboxPrivateChannel.click();
+		await this.inputChannelName.type(name);
+		await this.btnCreateChannel.click();
+	}
 }

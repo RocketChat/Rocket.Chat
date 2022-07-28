@@ -1,10 +1,10 @@
 import { chromium } from '@playwright/test';
 
 import * as constants from './constants'
-import populateDatabase from '../fixtures/populate-database';
+import injectInitialData from '../fixtures/inject-initial-data';
 
 export default async function(): Promise<void> {
-    await populateDatabase();
+    await injectInitialData();
 
     /**------------------------------------------------------------------------------------/
      *  Create "admin" session 

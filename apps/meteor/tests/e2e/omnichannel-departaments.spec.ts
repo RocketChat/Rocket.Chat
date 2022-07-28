@@ -46,6 +46,6 @@ test.describe.serial('omnichannel-departaments', () => {
         await poOmnichannelDepartaments.btnModalConfirmDelete.click();
 
         await poOmnichannelDepartaments.inputSearch.fill('edited-' + departmentName);
-        await expect(poOmnichannelDepartaments.firstRowInTable).toBeVisible()
+        await expect(poOmnichannelDepartaments.firstRowInTable).toBeHidden()
     })
 });
