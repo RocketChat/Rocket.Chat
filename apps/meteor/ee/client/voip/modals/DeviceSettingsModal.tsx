@@ -60,6 +60,11 @@ const DeviceSettingsModal = (): ReactElement => {
 						</Box>
 					</Box>
 				)}
+				{!isSecureContext && (
+					<Box color='danger-600' display='flex' flexDirection='column'>
+						{t('Device_Changes_Not_Available_Insecure_Context')}
+					</Box>
+				)}
 				<Field>
 					<Field.Label>{t('Microphone')}</Field.Label>
 					<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>

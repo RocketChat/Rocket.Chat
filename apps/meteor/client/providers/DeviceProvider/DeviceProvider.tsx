@@ -21,6 +21,13 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 		type: 'audio',
 	});
 
+	const setAudioInputDevice = (device: Device): void => {
+		if (!isSecureContext) {
+			throw new Error('Device Changes are not available on insecure contexts');
+		}
+		setSelectedAudioInputDevice(device);
+	};
+
 	const setAudioOutputDevice = ({
 		outputDevice,
 		HTMLAudioElement,
@@ -31,13 +38,19 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 		if (!isSetSinkIdAvailable()) {
 			throw new Error('setSinkId is not available in this browser');
 		}
+		if (!isSecureContext) {
+			throw new Error('Device Changes are not available on insecure contexts');
+		}
 		setSelectedAudioOutputDevice(outputDevice);
 		HTMLAudioElement.setSinkId(outputDevice.id);
 	};
 
 	useEffect(() => {
+		if (!isSecureContext) {
+			return;
+		}
 		const setMediaDevices = (): void => {
-			navigator.mediaDevices.enumerateDevices().then((devices) => {
+			navigator.mediaDevices?.enumerateDevices().then((devices) => {
 				const audioInput: Device[] = [];
 				const audioOutput: Device[] = [];
 				devices.forEach((device) => {
@@ -57,11 +70,11 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 			});
 		};
 
-		navigator.mediaDevices.addEventListener('devicechange', setMediaDevices);
+		navigator.mediaDevices?.addEventListener('devicechange', setMediaDevices);
 		setMediaDevices();
 
 		return (): void => {
-			navigator.mediaDevices.removeEventListener('devicechange', setMediaDevices);
+			navigator.mediaDevices?.removeEventListener('devicechange', setMediaDevices);
 		};
 	}, []);
 
@@ -71,7 +84,7 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 		selectedAudioOutputDevice,
 		selectedAudioInputDevice,
 		setAudioOutputDevice,
-		setAudioInputDevice: setSelectedAudioInputDevice,
+		setAudioInputDevice,
 	};
 	return <DeviceContext.Provider value={contextValue}>{children}</DeviceContext.Provider>;
 };
