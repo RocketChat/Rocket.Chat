@@ -19,4 +19,10 @@ export class HomeContent {
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.keyboard.press('Enter');
 	}
+
+	async pickEmoji(emoji: string, section = 'icon-people') {
+		await this.page.locator('.rc-message-box__icon.emoji-picker-icon').click();
+		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
+		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${emoji}")]`).first().click();
+	}
 }
