@@ -1,6 +1,9 @@
-import type { ILivechatAgent, ILivechatDepartment, ILivechatInquiryRecord, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IInquiry, ILivechatAgent, ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { adminUsername } from '../user';
+
+type DummyResponse<T, E = 'wrapped'> = 
+	E extends 'wrapped' ? { body: { [k: string]: T } } : { body: T };
 
 export const createLivechatRoom = (visitorToken: string): Promise<IOmnichannelRoom> =>
 	new Promise((resolve) => {
@@ -31,7 +34,7 @@ export const createVisitor = (): Promise<ILivechatVisitor> =>
 						customFields: [{ key: 'address', value: 'Rocket.Chat street', overwrite: true }],
 					},
 				})
-				.end((err, res) => {
+				.end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
 					if (err) {
 						return reject(err);
 					}
@@ -53,7 +56,7 @@ export const takeInquiry = (roomId: string, _agentId: string): Promise<IOmnichan
 					msg: 'method',
 				}),
 			})
-			.end((err, res) => {
+			.end((err: Error, res: DummyResponse<IOmnichannelRoom, 'unwrapped'>) => {
 				if (err) {
 					return reject(err);
 				}
@@ -62,12 +65,12 @@ export const takeInquiry = (roomId: string, _agentId: string): Promise<IOmnichan
 	});
 };
 
-export const fetchInquiry = (roomId: string): Promise<ILivechatInquiryRecord> => {
+export const fetchInquiry = (roomId: string): Promise<IInquiry> => {
 	return new Promise((resolve, reject) => {
 		request
 			.get(api(`livechat/inquiries.getOne?roomId=${roomId}`))
 			.set(credentials)
-			.end((err, res) => {
+			.end((err: Error, res: DummyResponse<IInquiry>) => {
 				if (err) {
 					return reject(err);
 				}
@@ -82,7 +85,7 @@ export const createDepartment = (agents?: { agentId: string }[]): Promise<ILivec
 			.post(api('livechat/department'))
 			.set(credentials)
 			.send({ department: { name: `Department ${Date.now()}`, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'a@b.com' }, agents })
-			.end((err, res) => {
+			.end((err: Error, res: DummyResponse<ILivechatDepartment>) => {
 				if (err) {
 					return reject(err);
 				}
@@ -99,7 +102,7 @@ export const createAgent = (): Promise<ILivechatAgent> =>
 			.send({
 				username: adminUsername,
 			})
-			.end((err, res) => {
+			.end((err: Error, res: DummyResponse<ILivechatAgent>) => {
 				if (err) {
 					return reject(err);
 				}
@@ -115,7 +118,7 @@ export const createManager = (): Promise<ILivechatAgent> =>
 			.send({
 				username: adminUsername,
 			})
-			.end((err, res) => {
+			.end((err: Error, res: DummyResponse<ILivechatAgent>) => {
 				if (err) {
 					return reject(err);
 				}
@@ -143,13 +146,12 @@ export const makeAgentAvailable = (): Promise<unknown> =>
 					msg: 'method',
 				}),
 			})
-			.end((err, res) => {
+			.end((err: Error, res: DummyResponse<unknown, 'unwrapped'>) => {
 				if (err) {
 					return reject(err);
 				}
 				resolve(res.body);
 			});
 		});
-
 	});
 
