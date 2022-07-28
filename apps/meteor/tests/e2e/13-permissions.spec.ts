@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 import faker from '@faker-js/faker';
 
+import { test, expect } from './utils/test';
 import { Auth, Administration, HomeChannel } from './page-objects';
 
 test.describe('Permissions', () => {
