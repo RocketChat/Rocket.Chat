@@ -20,21 +20,22 @@ import RemoveIcon from '../../icons/remove.svg';
 import SendIcon from '../../icons/send.svg';
 import EmojiIcon from '../../icons/smile.svg';
 import styles from './styles.scss';
+import 'emoji-mart/css/emoji-mart.css';
 
 class Chat extends Component {
 	state = {
 		atBottom: true,
 		text: '',
 		emojiPickerActive: false,
-	}
+	};
 
 	handleFilesDropTargetRef = (ref) => {
 		this.filesDropTarget = ref;
-	}
+	};
 
 	handleMessagesContainerRef = (messagesContainer) => {
 		this.messagesContainer = messagesContainer ? messagesContainer.base : null;
-	}
+	};
 
 	handleScrollTo = (region) => {
 		const { onTop, onBottom } = this.props;
@@ -50,17 +51,17 @@ class Chat extends Component {
 		if (region === MessageList.SCROLL_AT_TOP) {
 			onTop && onTop();
 		}
-	}
+	};
 
 	handleUploadClick = (event) => {
 		event.preventDefault();
 		this.filesDropTarget.browse();
-	}
+	};
 
 	handleSendClick = (event) => {
 		event.preventDefault();
 		this.handleSubmit(this.state.text);
-	}
+	};
 
 	handleSubmit = (text) => {
 		if (this.props.onSubmit) {
@@ -68,7 +69,7 @@ class Chat extends Component {
 			this.setState({ text: '' });
 			this.turnOffEmojiPicker();
 		}
-	}
+	};
 
 	handleChangeText = (text) => {
 		let value = text;
@@ -78,26 +79,26 @@ class Chat extends Component {
 		}
 		this.setState({ text: value });
 		onChangeText && onChangeText(value);
-	}
+	};
 
 	toggleEmojiPickerState = () => {
 		this.setState({ emojiPickerActive: !this.state.emojiPickerActive });
-	}
+	};
 
 	handleEmojiSelect = (emoji) => {
 		this.toggleEmojiPickerState();
 		this.notifyEmojiSelect(emoji.native);
-	}
+	};
 
 	handleEmojiClick = () => {
 		this.turnOffEmojiPicker();
-	}
+	};
 
 	turnOffEmojiPicker = () => {
 		if (this.state.emojiPickerActive) {
 			this.setState({ emojiPickerActive: !this.state.emojiPickerActive });
 		}
-	}
+	};
 
 	render = ({
 		color,
@@ -231,7 +232,7 @@ class Chat extends Component {
 				}
 			</Screen.Footer>
 		</FilesDropTarget>
-	</Screen>
+	</Screen>;
 }
 
 export default withTranslation()(Chat);

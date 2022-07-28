@@ -60,7 +60,7 @@ export class IMAPInterceptor extends EventEmitter {
 		});
 
 		this.imap.on('error', (err: Error) => {
-			this.log('Error occurred ...');
+			this.log('Error occurred ...', err);
 			throw err;
 		});
 	}

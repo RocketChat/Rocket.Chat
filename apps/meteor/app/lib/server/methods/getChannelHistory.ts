@@ -105,8 +105,17 @@ Meteor.methods({
 						showThreadMessages,
 					);
 
+					const totalCursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+						rid,
+						oldest,
+						firstMsg.ts,
+						hiddenMessageTypes,
+						{},
+						showThreadMessages,
+					);
+
 					firstUnread = unreadMessages.fetch()[0];
-					unreadNotLoaded = unreadMessages.count();
+					unreadNotLoaded = totalCursor.count();
 				}
 			}
 

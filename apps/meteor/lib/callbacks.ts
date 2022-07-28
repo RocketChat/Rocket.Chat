@@ -1,7 +1,7 @@
 import Url from 'url';
 
 import { Meteor } from 'meteor/meteor';
-import { FilterQuery } from 'mongodb';
+import type { FilterOperators } from 'mongodb';
 import type {
 	IMessage,
 	IRoom,
@@ -64,6 +64,7 @@ type EventLikeCallbackSignatures = {
 	'onValidateLogin': (login: ILoginAttempt) => void;
 	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
 	'beforeCreateDirectRoom': (members: IUser[]) => void;
+	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
 	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 };
@@ -105,11 +106,11 @@ type ChainedCallbackSignatures = {
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
 	'livechat.beforeCloseRoom': (params: { room: IRoom; options: unknown }) => { room: IRoom; options: unknown };
-	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent;
+	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent | null;
 	'livechat.applyDepartmentRestrictions': (
-		query: FilterQuery<ILivechatDepartmentRecord>,
+		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
-	) => FilterQuery<ILivechatDepartmentRecord>;
+	) => FilterOperators<ILivechatDepartmentRecord>;
 	'livechat.onMaxNumberSimultaneousChatsReached': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
@@ -147,6 +148,7 @@ type Hook =
 	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
 	| 'afterRoomNameChange'
+	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateLogin'
 	| 'afterValidateNewOAuthUser'

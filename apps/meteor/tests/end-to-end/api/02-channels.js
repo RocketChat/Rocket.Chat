@@ -1043,6 +1043,7 @@ describe('[Channels]', function () {
 			})
 			.end(done);
 	});
+
 	describe('/channels.members', () => {
 		it('should return an array of members by channel', (done) => {
 			request
@@ -1062,6 +1063,7 @@ describe('[Channels]', function () {
 				})
 				.end(done);
 		});
+
 		it('should return an array of members by channel even requested with count and offset params', (done) => {
 			request
 				.get(api('channels.members'))
@@ -1077,6 +1079,27 @@ describe('[Channels]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('members').and.to.be.an('array');
 					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+				})
+				.end(done);
+		});
+
+		it('should return an filtered array of members by channel', (done) => {
+			request
+				.get(api('channels.members'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+					filter: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('count', 1);
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('offset');
 				})

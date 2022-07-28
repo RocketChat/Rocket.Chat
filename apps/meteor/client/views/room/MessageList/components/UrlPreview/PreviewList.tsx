@@ -79,33 +79,46 @@ const normalizeMeta = ({ url, meta }: OembedUrlLegacy): PreviewMetadata => {
 	);
 };
 
-const hasContentType = (headers: any): headers is { contentType: string } => !!headers.contentType;
+const hasContentType = (headers: OembedUrlLegacy['headers']): headers is { contentType: string } =>
+	headers ? 'contentType' in headers : false;
 
 const getHeaderType = (headers: OembedUrlLegacy['headers']): UrlPreview['type'] | undefined => {
-	if (hasContentType(headers) && headers?.contentType?.match(/image\/.*/)) {
+	if (!hasContentType(headers)) {
+		return;
+	}
+	if (headers.contentType.match(/image\/.*/)) {
 		return 'image';
 	}
-	if (hasContentType(headers) && headers?.contentType?.match(/audio\/.*/)) {
+	if (headers.contentType.match(/audio\/.*/)) {
 		return 'audio';
 	}
-	if (hasContentType(headers) && headers?.contentType?.match(/video\/.*/)) {
+	if (headers.contentType.match(/video\/.*/)) {
 		return 'video';
 	}
 };
 
+const isValidPreviewMeta = ({ siteName, siteUrl, authorName, authorUrl, title, description, image, html }: PreviewMetadata): boolean =>
+	!((!siteName || !siteUrl) && (!authorName || !authorUrl) && !title && !description && !image && !html);
+
 const processMetaAndHeaders = (url: OembedUrlLegacy): PreviewData | false => {
-	if (!url.headers) {
+	if (!url.headers && !url.meta) {
 		return false;
 	}
 
-	if (!url.meta) {
-		return {
-			type: 'headers',
-			data: { url: url.url, type: getHeaderType(url.headers), originalType: hasContentType(url.headers) ? url.headers?.contentType : '' },
-		};
+	const data = url.meta && Object.values(url.meta) && normalizeMeta(url);
+	if (data && isValidPreviewMeta(data)) {
+		return { type: 'oembed', data };
 	}
 
-	return { type: 'oembed', data: normalizeMeta(url) };
+	const type = getHeaderType(url.headers);
+	if (!type) {
+		return false;
+	}
+
+	return {
+		type: 'headers',
+		data: { url: url.url, type, originalType: hasContentType(url.headers) ? url.headers?.contentType : '' },
+	};
 };
 
 const isPreviewData = (data: PreviewData | false): data is PreviewData => !!data;
@@ -126,14 +139,14 @@ const PreviewList = ({ urls }: PreviewListProps): ReactElement | null => {
 			{metaAndHeaders.map(({ type, data }, index) => {
 				if (isMetaPreview(data, type)) {
 					return (
-						<MessageBlock width={oembedWidth}>
-							<OEmbedResolver meta={data} key={index} />
+						<MessageBlock width={oembedWidth} key={index}>
+							<OEmbedResolver meta={data} />
 						</MessageBlock>
 					);
 				}
 				return (
-					<MessageBlock width={oembedWidth}>
-						<UrlPreview {...data} key={index} />
+					<MessageBlock width={oembedWidth} key={index}>
+						<UrlPreview {...data} />
 					</MessageBlock>
 				);
 			})}

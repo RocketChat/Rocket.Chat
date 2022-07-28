@@ -3,7 +3,6 @@ import { Base64 } from 'meteor/base64';
 import { EJSON } from 'meteor/ejson';
 import { Random } from 'meteor/random';
 import { Session } from 'meteor/session';
-import { TimeSync } from 'meteor/mizzao:timesync';
 import { Emitter } from '@rocket.chat/emitter';
 
 import { e2e } from './rocketchat.e2e';
@@ -395,12 +394,7 @@ export class E2ERoom extends Emitter {
 
 	// Helper function for encryption of messages
 	encrypt(message) {
-		let ts;
-		if (isNaN(TimeSync.serverOffset())) {
-			ts = new Date();
-		} else {
-			ts = new Date(Date.now() + TimeSync.serverOffset());
-		}
+		const ts = new Date();
 
 		const data = new TextEncoder('UTF-8').encode(
 			EJSON.stringify({

@@ -32,7 +32,7 @@ export class App extends Component {
 	state = {
 		initialized: false,
 		poppedOut: false,
-	}
+	};
 
 	handleRoute = async () => {
 		setTimeout(() => {
@@ -77,7 +77,7 @@ export class App extends Component {
 				return route('/register');
 			}
 		}, 100);
-	}
+	};
 
 	handleTriggers() {
 		const { config: { online, enabled } } = this.props;
@@ -91,18 +91,18 @@ export class App extends Component {
 	handleEnableNotifications = () => {
 		const { dispatch, sound = {} } = this.props;
 		dispatch({ sound: { ...sound, enabled: true } });
-	}
+	};
 
 	handleDisableNotifications = () => {
 		const { dispatch, sound = {} } = this.props;
 		dispatch({ sound: { ...sound, enabled: false } });
-	}
+	};
 
 	handleMinimize = () => {
 		parentCall('minimizeWindow');
 		const { dispatch } = this.props;
 		dispatch({ minimized: true });
-	}
+	};
 
 	handleRestore = () => {
 		parentCall('restoreWindow');
@@ -118,27 +118,27 @@ export class App extends Component {
 			dispatchRestore();
 		}
 		Triggers.callbacks.emit('chat-opened-by-visitor');
-	}
+	};
 
 	handleOpenWindow = () => {
 		parentCall('openPopout');
 		const { dispatch } = this.props;
 		dispatch({ undocked: true, minimized: false });
-	}
+	};
 
 	handleDismissAlert = (id) => {
 		const { dispatch, alerts = [] } = this.props;
 		dispatch({ alerts: alerts.filter((alert) => alert.id !== id) });
-	}
+	};
 
 	handleVisibilityChange = async () => {
 		const { dispatch } = this.props;
 		await dispatch({ visible: !visibility.hidden });
-	}
+	};
 
 	handleLanguageChange = () => {
 		this.forceUpdate();
-	}
+	};
 
 	dismissNotification = () => !isActiveSession();
 
@@ -241,7 +241,7 @@ export class App extends Component {
 				<TriggerMessage path='/trigger-messages' {...screenProps} />
 			</Router>
 		);
-	}
+	};
 }
 
 export default withTranslation()(App);

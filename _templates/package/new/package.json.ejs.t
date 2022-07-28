@@ -11,7 +11,7 @@ to: packages/<%= name %>/package.json
 		"eslint": "^8.12.0",
 		"jest": "^27.5.1",
 		"ts-jest": "^27.1.4",
-		"typescript": "~4.3.4"
+		"typescript": "~4.5.5"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -24,15 +24,5 @@ to: packages/<%= name %>/package.json
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	],
-	"dependencies": {
-	},
-	"eslintConfig": {
-		"extends": [
-			"@rocket.chat/eslint-config"
-		],
-		"ignorePatterns": [
-			"**/dist"
-		]
-	}
+	]
 }
