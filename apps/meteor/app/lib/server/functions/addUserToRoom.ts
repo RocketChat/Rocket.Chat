@@ -32,7 +32,16 @@ export const addUserToRoom = function (
 		throw new Meteor.Error((error as any)?.message);
 	}
 
-	const userToBeAdded = typeof user !== 'string' ? user : Users.findOneByUsername(user.replace('@', ''));
+	const idOrUsername = typeof user === 'string' ? user : user._id || user.username;
+	const userToBeAdded = Users.findOneByIdOrUsername(idOrUsername?.replace('@', ''));
+
+	if (!userToBeAdded) {
+		throw new Meteor.Error('user-not-found');
+	}
+
+	if (userToBeAdded.roles.includes('guest')) {
+		callbacks.run('beforeAddGuestUserToRoom', { _id: userToBeAdded._id });
+	}
 
 	// Check if user is already in room
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
