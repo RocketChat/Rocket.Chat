@@ -165,8 +165,7 @@ export class FederationRoomServiceListener extends FederationService {
 
 		const inviteeUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
 		if (!inviteeUser) {
-			const username = isInviteeFromTheSameHomeServer ? inviteeUsernameOnly : normalizedInviteeId;
-			await this.createFederatedUser(externalInviteeId, username, isInviteeFromTheSameHomeServer);
+			await this.createFederatedUser(externalInviteeId, defaultInviteeUsername, isInviteeFromTheSameHomeServer);
 			// const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalInviterId);
 			// const name = externalUserProfileInformation?.displayName || normalizedInviterId;
 			// const federatedCreatorUser = FederatedUser.createInstance(externalInviterId, {
@@ -254,6 +253,7 @@ export class FederationRoomServiceListener extends FederationService {
 		// 	await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom, membersUsernames.filter(Boolean));
 		// 	return;
 		// }
+		console.log({ wasGeneratedOnTheProxyServer, affectedFederatedRoom, federatedInviteeUser });
 		if (!wasGeneratedOnTheProxyServer && federatedRoom.isDirectMessage() && !federatedRoom.isUserPartOfTheRoom(federatedInviteeUser)) {
 			// TODO: leaked business logic, revisit this to move to domain layer
 			const membersUsernames = [...federatedRoom.getMembersUsernames(), federatedInviteeUser.getUsername() || defaultInviteeUsername];
@@ -270,7 +270,7 @@ export class FederationRoomServiceListener extends FederationService {
 			// if (federatedRoom.isUserPartOfTheRoom(federatedInviteeUser)) {
 			// 	return;
 			// }
-			// await this.internalRoomAdapter.removeDirectMessageRoom(federatedRoom);
+			await this.internalRoomAdapter.removeDirectMessageRoom(federatedRoom);
 			await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom, membersUsernames);
 			return;
 		}

@@ -118,9 +118,13 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 			this.bridge.extractHomeserverOrigin(federatedRoom.externalId),
 			this.rocketSettingsAdapter.getHomeServerDomain(),
 		);
+
+		if (!isRoomFromTheSameHomeServer) {
+			return;
+		}
 		const externalRoomName = await this.bridge.getRoomName(federatedRoom.externalId, federatedUser.externalId);
 
-		if (!isRoomFromTheSameHomeServer || !federatedRoom.shouldUpdateRoomName(externalRoomName || '')) {
+		if (!federatedRoom.shouldUpdateRoomName(externalRoomName || '')) {
 			return;
 		}
 
@@ -149,6 +153,9 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 			this.bridge.extractHomeserverOrigin(federatedRoom.externalId),
 			this.rocketSettingsAdapter.getHomeServerDomain(),
 		);
+		if (!isRoomFromTheSameHomeServer) {
+			return;
+		}
 		const externalRoomTopic = await this.bridge.getRoomTopic(federatedRoom.externalId, federatedUser.externalId);
 		// if (federatedRoom.isDirectMessage()) {
 		// 	return;
@@ -158,7 +165,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 		// if (externalRoomTopic === internalRoomTopic) {
 		// 	return;
 		// }
-		if (!isRoomFromTheSameHomeServer || !federatedRoom.shouldUpdateRoomName(externalRoomTopic || '')) {
+		if (!federatedRoom.shouldUpdateRoomName(externalRoomTopic || '')) {
 			return;
 		}
 		await this.bridge.setRoomTopic(federatedRoom.externalId, federatedUser.externalId, internalRoomTopic);

@@ -104,13 +104,16 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 			this.bridge.extractHomeserverOrigin(federatedInviterUser.externalId),
 			this.internalHomeServerDomain,
 		);
+		console.log('isInviterFromTheSameHomeServer', isInviterFromTheSameHomeServer);
 
 		const internalFederatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		console.log('internalFederatedRoom', internalFederatedRoom);
 		if (!internalFederatedRoom && isInviterFromTheSameHomeServer) {
 			const externalRoomId = await this.bridge.createDirectMessageRoom(
 				federatedInviterUser.externalId,
 				invitees.map((invitee) => invitee.rawInviteeId),
 			);
+			console.log({ externalRoomId })
 			const newFederatedRoom = FederatedRoomEE.createInstanceEE(
 				externalRoomId,
 				externalRoomId,
