@@ -5,7 +5,7 @@ import { HomeChannel, AccountProfile } from './page-objects';
 
 test.use({ storageState: 'session-admin.json' });
 
-test.describe.parallel('settings-account-profile', () => {
+test.describe.serial('settings-account-profile', () => {
     let poHomeChannel: HomeChannel;
     let poAccountProfile: AccountProfile;
 

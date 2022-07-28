@@ -15,21 +15,23 @@ test.describe.parallel('create-channel', () => {
 	});
 
 	test('expect create public channel', async ({ page }) => {
-		const name = faker.datatype.uuid();
+		const channelName = faker.datatype.uuid();
 
-		await poHomeChannel.sidenav.openNewByText('Channel');
+		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.checkboxPrivateChannel.click();
-		await poHomeChannel.sidenav.inputChannelName.type(name);
+		await poHomeChannel.sidenav.inputChannelName.type(channelName);
 		await poHomeChannel.sidenav.btnCreateChannel.click();
-		await expect(page).toHaveURL(`/channel/${name}`);
+		
+		await expect(page).toHaveURL(`/channel/${channelName}`);
 	});
 
 	test('expect create private channel', async ({ page }) => {
-		const name = faker.datatype.uuid();
+		const channelName = faker.datatype.uuid();
         
-		await poHomeChannel.sidenav.openNewByText('Channel');
-		await poHomeChannel.sidenav.inputChannelName.type(name);
+		await poHomeChannel.sidenav.openNewByLabel('Channel');
+		await poHomeChannel.sidenav.inputChannelName.type(channelName);
 		await poHomeChannel.sidenav.btnCreateChannel.click();
-		await expect(page).toHaveURL(`/group/${name}`);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
 	});
 });
