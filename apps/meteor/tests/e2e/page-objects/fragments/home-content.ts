@@ -7,6 +7,14 @@ export class HomeContent {
 		this.page = page;
 	}
 
+	get inputMessage(): Locator {
+		return this.page.locator('[name="msg"]');
+	}
+
+	get messagePopUpItems(): Locator {
+		return this.page.locator('.message-popup-items');
+	}
+
 	get lastUserMessage(): Locator {
 		return this.page.locator('[data-qa-type="message"]').last();
 	}
