@@ -44,11 +44,13 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 
 	const handleAddCustomOAuthButtonClick = (): void => {
 		const onConfirm = async (text: string): Promise<void> => {
-			setModal(null);
 			try {
 				await addOAuthService(text);
+				dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_added') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error as Error });
+			} finally {
+				setModal(null);
 			}
 		};
 		setModal(<CreateOAuthModal onConfirm={onConfirm} onClose={(): void => setModal(null)} />);
@@ -68,8 +70,11 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 					onConfirm={async (): Promise<void> => {
 						try {
 							await removeOAuthService(id);
+							dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_removed') });
 						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: String(error) });
+							dispatchToastMessage({ type: 'error', message: error as Error });
+						} finally {
+							setModal(null);
 						}
 					}}
 				></GenericModal>,

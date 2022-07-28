@@ -23,17 +23,20 @@ const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps): ReactE
 	};
 
 	return (
-		<GenericModal title={t('Add_custom_oauth')} onClose={onClose} onConfirm={handleConfirm}>
-			<p>{t('Give_a_unique_name_for_the_custom_oauth')}</p>
+		<GenericModal title={t('Add_custom_oauth')} confirmText={t('Add')} onCancel={onClose} onClose={onClose} onConfirm={handleConfirm}>
 			<Field>
-				<TextInput
-					placeholder={t('Custom_oauth_unique_name')}
-					value={text}
-					onChange={(e: FormEvent<HTMLInputElement>): void => {
-						setText(e.currentTarget.value);
-						setError('');
-					}}
-				/>
+				<Field.Label>{t('Give_a_unique_name_for_the_custom_oauth')}</Field.Label>
+				<Field.Row>
+					<TextInput
+						error={error}
+						placeholder={t('Custom_oauth_unique_name')}
+						value={text}
+						onChange={(e: FormEvent<HTMLInputElement>): void => {
+							setText(e.currentTarget.value);
+							setError('');
+						}}
+					/>
+				</Field.Row>
 				{error && <Field.Error>{error}</Field.Error>}
 			</Field>
 		</GenericModal>
