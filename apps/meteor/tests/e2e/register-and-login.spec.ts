@@ -4,49 +4,49 @@ import { faker } from '@faker-js/faker';
 import { Auth } from './page-objects';
 
 test.describe.parallel('register-and-login', () => {
-    let pageAuth: Auth;
+    let poAuth: Auth;
 
 	test.beforeEach(async ({ page }) => {
-		pageAuth = new Auth(page);
+		poAuth = new Auth(page);
         
         await page.goto('/');
 	});
 
 	test('expect trigger a validation error if no data is provided on register', async () => {
-        await pageAuth.btnRegister.click();
-		await pageAuth.btnSubmit.click();
+        await poAuth.btnRegister.click();
+		await poAuth.btnSubmit.click();
 
-		await expect(pageAuth.textErrorName).toBeVisible();
-		await expect(pageAuth.textErrorEmail).toBeVisible();
-		await expect(pageAuth.textErrorPassword).toBeVisible();
+		await expect(poAuth.textErrorName).toBeVisible();
+		await expect(poAuth.textErrorEmail).toBeVisible();
+		await expect(poAuth.textErrorPassword).toBeVisible();
 	});
 
 	test('expect trigger a validation error if different password is provided on register', async () => {
-        await pageAuth.btnRegister.click();
-        await pageAuth.inputName.type(faker.name.firstName());
-		await pageAuth.inputEmail.type(faker.internet.email());
-		await pageAuth.inputPassword.type('any_password');
-		await pageAuth.inputPasswordConfirm.type('any_password_2');
-		await pageAuth.btnSubmit.click();
+        await poAuth.btnRegister.click();
+        await poAuth.inputName.type(faker.name.firstName());
+		await poAuth.inputEmail.type(faker.internet.email());
+		await poAuth.inputPassword.type('any_password');
+		await poAuth.inputPasswordConfirm.type('any_password_2');
+		await poAuth.btnSubmit.click();
 
-		await expect(pageAuth.textErrorPasswordConfirm).toBeVisible();
+		await expect(poAuth.textErrorPasswordConfirm).toBeVisible();
 	});
 
 	test('expect successfully register a new user', async () => {
-        await pageAuth.btnRegister.click();
-        await pageAuth.inputName.type(faker.name.firstName());
-		await pageAuth.inputEmail.type(faker.internet.email());
-		await pageAuth.inputPassword.type('any_password');
-		await pageAuth.inputPasswordConfirm.type('any_password');
-		await pageAuth.btnSubmit.click();
-		await pageAuth.btnRegisterConfirmUsername.click();
+        await poAuth.btnRegister.click();
+        await poAuth.inputName.type(faker.name.firstName());
+		await poAuth.inputEmail.type(faker.internet.email());
+		await poAuth.inputPassword.type('any_password');
+		await poAuth.inputPasswordConfirm.type('any_password');
+		await poAuth.btnSubmit.click();
+		await poAuth.btnRegisterConfirmUsername.click();
 	});
 
     test('expect show a toast when wrong username/password on login', async () => {
-		await pageAuth.inputEmailOrUsername.type(faker.internet.email());
-		await pageAuth.inputPassword.type('any_password');
-		await pageAuth.btnSubmit.click();
+		await poAuth.inputEmailOrUsername.type(faker.internet.email());
+		await poAuth.inputPassword.type('any_password');
+		await poAuth.btnSubmit.click();
 
-		await expect(pageAuth.toastError).toBeVisible();
+		await expect(poAuth.toastError).toBeVisible();
 	});
 });

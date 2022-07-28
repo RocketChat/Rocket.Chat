@@ -26,4 +26,8 @@ export class AccountProfile {
 	get emailTextInput(): Locator {
 		return this.page.locator('//label[contains(text(), "Email")]/..//input');
 	}
+
+	get btnClose(): Locator {
+		return this.page.locator('button >> i.rcx-icon--name-cross.rcx-icon');
+	}
 }
