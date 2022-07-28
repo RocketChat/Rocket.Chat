@@ -1,9 +1,7 @@
 import { Modal, Box, ButtonGroup, Button, Scrollable, Callout, Margins, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, FormEvent, ReactElement, useState } from 'react';
-
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 
 type OfflineLicenseModalProps = {
 	onClose: () => void;
@@ -27,8 +25,6 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 
 	const hasChanges = lastSetLicense !== newLicense;
 
-	const addLicense = useEndpointActionExperimental('POST', '/v1/licenses.add', t('Cloud_License_applied_successfully'));
-
 	const handlePaste = useMutableCallback(async () => {
 		try {
 			const text = await navigator.clipboard.readText();
@@ -38,16 +34,21 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 		}
 	});
 
+	const addLicense = useEndpoint('POST', '/v1/licenses.add');
+
 	const handleApplyLicense = useMutableCallback(async () => {
-		setIsUpdating(true);
 		setLastSetLicense(newLicense);
-		const data = (await addLicense({ license: newLicense })) as unknown as { success: true };
-		if (data?.success) {
+
+		try {
+			setIsUpdating(true);
+			await addLicense({ license: newLicense });
+			dispatchToastMessage({ type: 'success', message: t('Cloud_License_applied_successfully') });
 			onClose();
-			return;
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			setIsUpdating(false);
+			setStatus('invalid');
 		}
-		setIsUpdating(false);
-		setStatus('invalid');
 	});
 
 	return (
