@@ -1,5 +1,6 @@
 import './deviceManagement';
 import './engagementDashboard';
+import './maxRoomsPerGuest';
 import './seatsCap';
 import './services';
 import './upsell';

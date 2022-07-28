@@ -15,6 +15,7 @@ export interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
+let maxRoomsPerGuest = 0;
 let maxActiveUsers = 0;
 
 class LicenseClass {
@@ -162,6 +163,10 @@ class LicenseClass {
 				maxGuestUsers = license.maxGuestUsers;
 			}
 
+			if (license.maxRoomsPerGuest > maxRoomsPerGuest) {
+				maxRoomsPerGuest = license.maxRoomsPerGuest;
+			}
+
 			if (license.maxActiveUsers > maxActiveUsers) {
 				maxActiveUsers = license.maxActiveUsers;
 			}
@@ -269,6 +274,10 @@ export function isEnterprise(): boolean {
 
 export function getMaxGuestUsers(): number {
 	return maxGuestUsers;
+}
+
+export function getMaxRoomsPerGuest(): number {
+	return maxRoomsPerGuest;
 }
 
 export function getMaxActiveUsers(): number {
