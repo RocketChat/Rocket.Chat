@@ -1,10 +1,29 @@
-import { Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 
 export class HomeSidenav {
 	private readonly page: Page;
 
 	constructor(page: Page) {
 		this.page = page;
+	}
+
+	get checkboxPrivateChannel(): Locator {
+		return this.page.locator(
+			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Private")]/../following-sibling::label/i',
+		);
+	}
+
+	get inputChannelName(): Locator {
+		return this.page.locator('#modal-root [placeholder="Channel Name"]');
+	}
+
+	get btnCreateChannel(): Locator {
+		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
+	}
+
+	async openNewByText(text: string): Promise<void> {
+		await this.page.locator('[data-qa="sidebar-create"]').click()
+		await this.page.locator(`li.rcx-option >> text="${text}"`).click()
 	}
 
 	async logout(): Promise<void> {
