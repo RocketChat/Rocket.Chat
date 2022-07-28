@@ -30,7 +30,7 @@ import { getCollectionName } from '@rocket.chat/models';
 import { setUpdatedAt } from '../../../app/models/server/lib/setUpdatedAt';
 
 const warnFields =
-	process.env.NODE_ENV !== 'production'
+	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'
 		? (...rest: any): void => {
 				console.warn(...rest, new Error().stack);
 		  }
@@ -79,6 +79,10 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		// noop
 	}
 
+	getCollectionName(): string {
+		return this.collectionName;
+	}
+
 	private doNotMixInclusionAndExclusionFields(options: FindOptions<T> = {}): FindOptions<T> {
 		const optionsDef = this.ensureDefaultFields(options);
 		if (optionsDef?.projection === undefined) {
@@ -101,15 +105,15 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 	private ensureDefaultFields<P>(options: FindOptions<P>): FindOptions<P>;
 
 	private ensureDefaultFields<P>(options?: any): FindOptions<P> | undefined | FindOptions<T> {
+		if (options?.fields) {
+			warnFields("Using 'fields' in models is deprecated.", options);
+		}
+
 		if (this.defaultFields === undefined) {
 			return options;
 		}
 
 		const { fields: deprecatedFields, projection, ...rest } = options || {};
-
-		if (deprecatedFields) {
-			warnFields("Using 'fields' in models is deprecated.", options);
-		}
 
 		const fields = { ...deprecatedFields, ...projection };
 

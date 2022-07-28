@@ -10,28 +10,28 @@ import styles from './styles.scss';
 export class Modal extends Component {
 	static defaultProps = {
 		dismissByOverlay: true,
-	}
+	};
 
 	handleKeyDown = ({ key }) => {
 		if (key === 'Escape') {
 			this.triggerDismiss();
 		}
-	}
+	};
 
 	handleTouchStart = () => {
 		const { dismissByOverlay } = this.props;
 		dismissByOverlay && this.triggerDismiss();
-	}
+	};
 
 	handleMouseDown = () => {
 		const { dismissByOverlay } = this.props;
 		dismissByOverlay && this.triggerDismiss();
-	}
+	};
 
 	triggerDismiss = () => {
 		const { onDismiss } = this.props;
 		this.mounted && onDismiss && onDismiss();
-	}
+	};
 
 	componentDidMount() {
 		this.mounted = true;
@@ -57,7 +57,7 @@ export class Modal extends Component {
 				<div className={createClassName(styles, 'modal', { animated })} {...props}>{children}</div>
 			</div>
 		) : null
-	)
+	);
 }
 
 

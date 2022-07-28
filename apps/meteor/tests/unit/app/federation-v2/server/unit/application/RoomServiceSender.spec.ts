@@ -39,7 +39,11 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		leaveRoom: sinon.stub(),
 	};
 	const room = FederatedRoom.build();
-	const user = FederatedRoom.build();
+	const user = FederatedUser.build();
+	user.internalReference = {
+		name: 'test',
+		username: 'test',
+	} as any;
 
 	beforeEach(() => {
 		service = new FederationRoomServiceSender(roomAdapter as any, userAdapter as any, settingsAdapter as any, bridge as any);
@@ -100,8 +104,8 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 
 		it('should NOT create the invitee user if the user already exists', async () => {
 			userAdapter.getFederatedUserByInternalId.resolves(user);
-			userAdapter.getFederatedUserByInternalUsername.resolves({} as any);
-			userAdapter.getInternalUserById.resolves({ username: 'username', name: 'name' } as any);
+			userAdapter.getFederatedUserByInternalUsername.resolves(user);
+			userAdapter.getInternalUserById.resolves(user);
 			settingsAdapter.getHomeServerDomain.returns('domain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
@@ -116,8 +120,8 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		it('should create the invitee user internally if it does not exists', async () => {
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			userAdapter.getFederatedUserByInternalUsername.onCall(0).resolves(undefined);
-			userAdapter.getFederatedUserByInternalUsername.onCall(1).resolves({} as any);
-			userAdapter.getInternalUserById.resolves({ username: 'username', name: 'name' } as any);
+			userAdapter.getFederatedUserByInternalUsername.onCall(1).resolves(user);
+			userAdapter.getInternalUserById.resolves(user);
 			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			settingsAdapter.getHomeServerDomain.returns('domain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
@@ -136,8 +140,8 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 
 		it('should NOT create the room if it already exists', async () => {
 			userAdapter.getFederatedUserByInternalId.resolves(user);
-			userAdapter.getFederatedUserByInternalUsername.resolves({} as any);
-			userAdapter.getInternalUserById.resolves({ username: 'username', name: 'name' } as any);
+			userAdapter.getFederatedUserByInternalUsername.resolves(user);
+			userAdapter.getInternalUserById.resolves(user);
 			settingsAdapter.getHomeServerDomain.returns('domain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
@@ -150,12 +154,12 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		});
 
 		it('should create the room both externally and internally if it does not exists', async () => {
-			const inviter = { externalId: 'externalInviterId' } as any;
-			const invitee = { externalId: 'externalInviteeId' } as any;
+			const inviter = { ...user, externalId: 'externalInviterId' } as any;
+			const invitee = { ...user, externalId: 'externalInviteeId' } as any;
 			userAdapter.getFederatedUserByInternalId.resolves(inviter);
 			userAdapter.getFederatedUserByInternalUsername.resolves(invitee);
 			roomAdapter.getInternalRoomById.resolves({ _id: 'internalRoomId', t: RoomType.CHANNEL, name: 'roomName', topic: 'topic' } as any);
-			userAdapter.getInternalUserById.resolves({ username: 'username', name: 'name' } as any);
+			userAdapter.getInternalUserById.resolves(user);
 			settingsAdapter.getHomeServerDomain.returns('domain');
 			bridge.createUser.resolves('externalInviterId');
 			bridge.createDirectMessageRoom.resolves('externalRoomId');
@@ -176,13 +180,13 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		});
 
 		it('should create, invite and join the user to the room in the proxy home server if the invitee is from the same homeserver', async () => {
-			userAdapter.getFederatedUserByInternalId.resolves({ externalId: 'externalInviterId' } as any);
+			userAdapter.getFederatedUserByInternalId.resolves({ ...user, externalId: 'externalInviterId' } as any);
 			userAdapter.getFederatedUserByInternalUsername.resolves({
 				externalId: 'externalInviteeId',
 				internalReference: { name: 'usernameInvitee' },
 			} as any);
 			roomAdapter.getInternalRoomById.resolves({ _id: 'internalRoomId', t: RoomType.CHANNEL, name: 'roomName', topic: 'topic' } as any);
-			userAdapter.getInternalUserById.resolves({ username: 'username', name: 'name' } as any);
+			userAdapter.getInternalUserById.resolves(user);
 			room.externalId = 'externalRoomId';
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			settingsAdapter.getHomeServerDomain.returns('domain');
@@ -200,7 +204,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		});
 
 		it('should NOT invite any user externally if the user is not from the same home server AND it was already invited when creating the room', async () => {
-			userAdapter.getFederatedUserByInternalId.resolves({ externalId: 'externalInviterId' } as any);
+			userAdapter.getFederatedUserByInternalId.resolves({ ...user, externalId: 'externalInviterId' } as any);
 			userAdapter.getFederatedUserByInternalUsername.resolves({
 				externalId: 'externalInviteeId',
 				internalReference: { name: 'usernameInvitee' },
@@ -222,7 +226,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		});
 
 		it('should always add the user to the internal room', async () => {
-			userAdapter.getFederatedUserByInternalId.resolves({ externalId: 'externalInviterId' } as any);
+			userAdapter.getFederatedUserByInternalId.resolves({ ...user, externalId: 'externalInviterId' } as any);
 			userAdapter.getFederatedUserByInternalUsername.resolves({
 				externalId: 'externalInviteeId',
 				internalReference: { name: 'usernameInvitee' },
@@ -263,7 +267,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		});
 
 		it('should send the message through the bridge', async () => {
-			userAdapter.getFederatedUserByInternalId.resolves({ externalId: 'externalId' } as any);
+			userAdapter.getFederatedUserByInternalId.resolves({ ...user, externalId: 'externalId' } as any);
 			roomAdapter.getFederatedRoomByInternalId.resolves({ externalId: 'externalId' } as any);
 			await service.sendMessageFromRocketChat({ message: { msg: 'text' } } as any);
 			expect(bridge.sendMessage.calledWith('externalId', 'externalId', 'text')).to.be.true;
@@ -325,6 +329,24 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.resolves({ externalId: 'externalId' });
 			await service.leaveRoom({} as any);
 			expect(bridge.leaveRoom.calledWith('externalId', 'externalId')).to.be.true;
+		});
+	});
+
+	describe('#beforeCreateDirectMessageFromUI()', () => {
+		it('should throw an error if there at least one user with federated: true', async () => {
+			try {
+				await service.beforeCreateDirectMessageFromUI([{ federated: true } as any, {} as any]);
+			} catch (e: any) {
+				expect(e.message).to.be.equal('error-this-is-an-ee-feature');
+			}
+		});
+
+		it('should throw an error if there at least one new external user', async () => {
+			try {
+				await service.beforeCreateDirectMessageFromUI(['@myexternal:external.com', {} as any]);
+			} catch (e: any) {
+				expect(e.message).to.be.equal('error-this-is-an-ee-feature');
+			}
 		});
 	});
 });

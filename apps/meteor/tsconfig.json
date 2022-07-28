@@ -40,12 +40,13 @@
 		// "experimentalDecorators": true,
 	},
 	"exclude": [
+		"**/node_modules/**",
 		"./.meteor/**",
 		"./packages/**",
 		"./imports/client/**",
 		"**/dist/**",
+		"./public/**"
 		// "./ee/server/services/**"
-		"node_modules"
 	],
 	"ts-node": {
 		"files": true

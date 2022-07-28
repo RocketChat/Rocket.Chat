@@ -10,8 +10,8 @@ Tracker.autorun(async () => {
 	const newUserId = Meteor.userId();
 	if (oldUserId === null && newUserId) {
 		APIClient.get('/v1/commands.list').then((result) => {
-			result.commands.forEach(({ command, appId }) => {
-				slashCommands.add({ command, appId });
+			result.commands.forEach((command) => {
+				slashCommands.add(command);
 			});
 		});
 	}
