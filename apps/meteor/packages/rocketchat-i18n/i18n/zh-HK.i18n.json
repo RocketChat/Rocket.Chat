@@ -1049,7 +1049,7 @@
   "error-delete-protected-role": "无法删除受保护的角色",
   "error-department-not-found": "部门没有找到",
   "error-direct-message-file-upload-not-allowed": "直接邮件中不允许文件共享",
-  "error-duplicate-channel-name": "频道 '%s' 已存在",
+  "error-duplicate-channel-name": null,
   "error-edit-permissions-not-allowed": "不允许编辑权限",
   "error-email-domain-blacklisted": "该电子邮件域被列入黑名单",
   "error-email-send-failed": "尝试发送电子邮件时出错：__message__",

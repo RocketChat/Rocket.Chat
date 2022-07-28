@@ -1452,7 +1452,7 @@
   "error-delete-protected-role": "Nelze odstranit chráněné role",
   "error-department-not-found": "Oddělení nenalezeno",
   "error-direct-message-file-upload-not-allowed": "Sdílení souborů není v přímé konverzaci povoleno",
-  "error-duplicate-channel-name": "Místnost s názvem ' %s' již existuje",
+  "error-duplicate-channel-name": null,
   "error-edit-permissions-not-allowed": "Úpravy oprávnění nejsou povoleny",
   "error-email-domain-blacklisted": "E-mailová doména není povolena",
   "error-email-send-failed": "Nepodařilo se odeslat email: __message__",
