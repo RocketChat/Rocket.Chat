@@ -104,19 +104,19 @@ test.describe('Administration', () => {
 		});
 
 		test.describe('Users', () => {
-			test.beforeAll(async () => {
+			test.beforeEach(async () => {
 				await pageAdmin.usersLink.click();
 			});
 
 			test.describe('Filter text', async () => {
-				test.beforeEach(async () => {
+				test.beforeEach(async ({ page }) => {
 					await pageAdmin.usersFilter.click({ clickCount: 3 });
-					await pageAdmin.usersFilter.type('');
+					await page.keyboard.press('Backspace');
 				});
 
-				test.afterAll(async () => {
+				test.afterAll(async ({ page }) => {
 					await pageAdmin.usersFilter.click({ clickCount: 3 });
-					await pageAdmin.usersFilter.type('');
+					await page.keyboard.press('Backspace');
 				});
 
 				test('expect show rocket.cat user item', async () => {
@@ -131,7 +131,7 @@ test.describe('Administration', () => {
 			});
 
 			test.describe('User info', () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					await pageAdmin.usersFilter.type('rocket.cat');
 				});
 
@@ -148,7 +148,7 @@ test.describe('Administration', () => {
 			});
 
 			test.describe('Create user', () => {
-				test.beforeAll(async () => {
+				test.beforeEach(async () => {
 					await pageAdmin.tabs.usersAddUserTab.click();
 				});
 
