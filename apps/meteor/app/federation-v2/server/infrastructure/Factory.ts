@@ -106,13 +106,20 @@ export class FederationFactory {
 	}
 
 	public static setupListeners(roomServiceSender: FederationRoomServiceSender, roomInternalHooksValidator: FederationRoomInternalHooksValidator): void {
+		FederationFactory.setupActions(roomServiceSender);
+		FederationFactory.setupValidators(roomInternalHooksValidator);
+	}
+
+	private static setupActions(roomServiceSender: FederationRoomServiceSender): void {
 		FederationHooks.onUserLeftRoom((user: IUser, room: IRoom) =>
 			roomServiceSender.onUserLeftRoom(FederationRoomSenderConverter.toOnUserLeftRoom(user._id, room._id)),
 		);
 		FederationHooks.onUserRemovedFromRoom((user: IUser, room: IRoom, userWhoRemoved: IUser) =>
 			roomServiceSender.onUserRemovedFromRoom(FederationRoomSenderConverter.toOnUserRemovedFromRoom(user._id, room._id, userWhoRemoved._id)),
 		);
+	}
 
+	private static setupValidators(roomInternalHooksValidator: FederationRoomInternalHooksValidator): void {
 		FederationHooks.canAddFederatedUserToNonFederatedRoom((user: IUser | string, room: IRoom) =>
 			roomInternalHooksValidator.canAddFederatedUserToNonFederatedRoom(user, room)
 		);

@@ -239,7 +239,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			rid: roomId,
 		};
 
-		const result = this.deleteMany(query);
+		const result = await this.deleteMany(query);
 
 		if (Match.test(result, Number) && result > 0) {
 			await Rooms.incUsersCountByIds([roomId], -result);

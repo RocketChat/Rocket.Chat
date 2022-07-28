@@ -18,8 +18,7 @@ export class FederationRoomInternalHooksValidator extends FederationService {
     }
 
     public async canAddFederatedUserToNonFederatedRoom(internalUser: IUser | string, internalRoom: IRoom): Promise<void> {
-        const addingNewExternalUser = typeof internalUser === 'string';
-        if (addingNewExternalUser) {
+        if (this.isAddingANewExternalUser(internalUser)) {
             return;
         }
 
@@ -27,9 +26,9 @@ export class FederationRoomInternalHooksValidator extends FederationService {
             return;
         }
 
-        const user = await this.internalUserAdapter.getFederatedUserByInternalId(internalUser._id);
-        const doNotAddFederatedUsersOnNonFederatedRooms = user && !user.existsOnlyOnProxyServer;
-        if (doNotAddFederatedUsersOnNonFederatedRooms) {
+        const user = await this.internalUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
+        const isAFederatedUser = user && !user.existsOnlyOnProxyServer;
+        if (isAFederatedUser) {
             throw new Error('error-cant-add-federated-users');
         }
     }
@@ -38,8 +37,7 @@ export class FederationRoomInternalHooksValidator extends FederationService {
         if (!isRoomFederated(internalRoom)) {
             return;
         }
-        const addingNewExternalUser = typeof internalUser === 'string';
-        if (addingNewExternalUser) {
+        if (this.isAddingANewExternalUser(internalUser)) {
             throw new Error('error-this-is-an-ee-feature');
         }
 
@@ -57,7 +55,7 @@ export class FederationRoomInternalHooksValidator extends FederationService {
             return;
         }
 
-        const invitee = await this.internalUserAdapter.getFederatedUserByInternalId(internalUser._id);
+        const invitee = await this.internalUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
         const addingAnExternalUser = invitee && !invitee.existsOnlyOnProxyServer;
         const addingExternalUserToNonDirectMessageRoom = addingAnExternalUser && internalRoom.t !== RoomType.DIRECT_MESSAGE;
         if (addingExternalUserToNonDirectMessageRoom) {
@@ -67,16 +65,20 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 
     public async canCreateDirectMessageFromUI(internalUsers: (IUser | string)[]): Promise<void> {
         const usernames = internalUsers.map((user) => {
-            if (typeof user === 'string') {
+            if (this.isAddingANewExternalUser(user)) {
                 return user;
             }
-            return user.username;
+            return (user as IUser).username;
         });
         const atLeastOneExternalUser =
-            usernames.some((username) => this.isAnInternalIdentifier(username || '')) || //TODO: maybe filter this out before to come here
-            internalUsers.filter((user) => typeof user !== 'string').some((user) => isUserFederated(user as IUser));
+            usernames.some((username) => this.isAnInternalIdentifier(username as string || '')) ||
+            internalUsers.filter((user) => this.isAddingANewExternalUser(user)).some((user) => isUserFederated(user as IUser));
         if (atLeastOneExternalUser) {
             throw new Error('error-this-is-an-ee-feature');
         }
+    }
+
+    private isAddingANewExternalUser(user: IUser | string): boolean {
+        return typeof user === 'string';
     }
 }
