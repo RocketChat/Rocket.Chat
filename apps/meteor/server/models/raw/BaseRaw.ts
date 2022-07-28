@@ -105,7 +105,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 	private ensureDefaultFields<P>(options: FindOptions<P>): FindOptions<P>;
 
 	private ensureDefaultFields<P>(options?: any): FindOptions<P> | undefined | FindOptions<T> {
-		if (options.fields) {
+		if (options?.fields) {
 			warnFields("Using 'fields' in models is deprecated.", options);
 		}
 
