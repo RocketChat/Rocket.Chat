@@ -1,0 +1,51 @@
+.sidebar-flex {
+	&__header {
+		display: flex;
+
+		padding: var(--sidebar-default-padding);
+	}
+
+	&__title {
+		flex: 1;
+
+		font-size: 1rem;
+		font-weight: 400;
+	}
+
+	&__close-button {
+		font-size: 18px;
+	}
+
+	&__search {
+		padding: 0 1rem;
+
+		& .rc-input {
+			&__wrapper {
+				color: var(--sidebar-flex-search-placeholder-color);
+			}
+
+			&__icon {
+				left: 0.5rem;
+			}
+
+			&__element {
+				padding-left: 2.25rem;
+
+				border: 0;
+				background-color: var(--sidebar-flex-search-background);
+
+				&::placeholder {
+					color: var(--sidebar-flex-search-placeholder-color);
+				}
+			}
+		}
+	}
+}
+
+@media (width <= 400px) {
+	.sidebar-flex {
+		&__back-button {
+			padding: 1rem calc(var(--sidebar-small-default-padding) - 8px) 1.5rem;
+		}
+	}
+}
