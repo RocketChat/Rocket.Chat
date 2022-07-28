@@ -14,136 +14,146 @@ describe('LIVECHAT - inquiries', function () {
 
 	before((done) => {
 		updateSetting('Livechat_enabled', true)
-			.then(() => updateSetting('Routing_Method', 'Manual_Selection'))
+			.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
 			.then(() => done());
 	});
 
 	describe('livechat/inquiries.list', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-manager', []).then(() => {
-				request
-					.get(api('livechat/inquiries.list'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
-					.end(done);
-			});
+			updatePermission('view-livechat-manager', [])
+				.then(() => {
+					request
+						.get(api('livechat/inquiries.list'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(403)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.error).to.be.equal('unauthorized');
+						});
+				})
+				.then(() => done());
 		});
 		it('should return an array of inquiries', (done) => {
-			updatePermission('view-livechat-manager', ['admin']).then(() => {
-				request
-					.get(api('livechat/inquiries.list'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.inquiries).to.be.an('array');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('count');
-					})
-					.end(done);
-			});
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(() => {
+					request
+						.get(api('livechat/inquiries.list'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body.inquiries).to.be.an('array');
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('total');
+							expect(res.body).to.have.property('count');
+						});
+				})
+				.then(() => done());
 		});
 	});
 
 	describe('livechat/inquiries.queued', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-l-room', []).then(() => {
-				request.get(api('livechat/inquiries.queued')).set(credentials).expect('Content-Type', 'application/json').expect(403).end(done);
-			});
+			updatePermission('view-l-room', [])
+				.then(() => {
+					request.get(api('livechat/inquiries.queued')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+				})
+				.then(() => done());
 		});
 		it('should return an array of inquiries', (done) => {
-			updatePermission('view-l-room', ['admin']).then(() => {
-				request
-					.get(api('livechat/inquiries.queued'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.inquiries).to.be.an('array');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('count');
-					})
-					.end(done);
-			});
+			updatePermission('view-l-room', ['admin'])
+				.then(() => {
+					request
+						.get(api('livechat/inquiries.queued'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body.inquiries).to.be.an('array');
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('total');
+							expect(res.body).to.have.property('count');
+						});
+				})
+				.then(() => done());
 		});
 	});
 
 	describe('livechat/inquiries.getOne', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-l-room', []).then(() => {
-				request
-					.get(api('livechat/inquiries.getOne?roomId=room-id'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.end(done);
-			});
+			updatePermission('view-l-room', [])
+				.then(() => {
+					request
+						.get(api('livechat/inquiries.getOne?roomId=room-id'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(403);
+				})
+				.then(() => done());
 		});
 		it('should return a inquiry', (done) => {
-			updatePermission('view-l-room', ['admin']).then(() => {
-				request
-					.get(api('livechat/inquiries.getOne?roomId=room-id'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('inquiry');
-					})
-					.end(done);
-			});
+			updatePermission('view-l-room', ['admin'])
+				.then(() => {
+					request
+						.get(api('livechat/inquiries.getOne?roomId=room-id'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('inquiry');
+						});
+				})
+				.then(() => done());
 		});
 	});
 
 	describe('POST livechat/inquiries.take', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-l-room', []).then(() => {
-				request
-					.post(api('livechat/inquiries.take'))
-					.set(credentials)
-					.send({ inquiryId: 'room-id' })
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.end(done);
-			});
+			updatePermission('view-l-room', [])
+				.then(() => {
+					request
+						.post(api('livechat/inquiries.take'))
+						.set(credentials)
+						.send({ inquiryId: 'room-id' })
+						.expect('Content-Type', 'application/json')
+						.expect(403);
+				})
+				.then(() => done());
 		}).timeout(5000);
 		it('should throw an error when userId is provided but is invalid', (done) => {
-			updatePermission('view-l-room', ['admin', 'livechat-agent']).then(() => {
-				request
-					.post(api('livechat/inquiries.take'))
-					.set(credentials)
-					.send({ inquiryId: 'room-id', userId: 'invalid-user-id' })
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
-			});
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => {
+					request
+						.post(api('livechat/inquiries.take'))
+						.set(credentials)
+						.send({ inquiryId: 'room-id', userId: 'invalid-user-id' })
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+						});
+				})
+				.then(() => done());
 		});
 
 		it('should throw an error if inquiryId is not an string', (done) => {
-			updatePermission('view-l-room', ['admin', 'livechat-agent']).then(() => {
-				request
-					.post(api('livechat/inquiries.take'))
-					.set(credentials)
-					.send({ inquiryId: { regexxxx: 'bla' }, userId: 'user-id' })
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
-			});
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => {
+					request
+						.post(api('livechat/inquiries.take'))
+						.set(credentials)
+						.send({ inquiryId: { regexxxx: 'bla' }, userId: 'user-id' })
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+						});
+				})
+				.then(() => done());
 		});
 
 		it('should take an inquiry if all params are good', (done) => {
@@ -168,34 +178,37 @@ describe('LIVECHAT - inquiries', function () {
 							expect(res.body.inquiry).to.have.property('servedBy');
 							expect(res.body.inquiry.servedBy).to.have.property('_id', agent._id);
 							expect(res.body.inquiry.source.type).to.equal('api');
-						})
-						.end(done);
-				});
+						});
+				})
+				.then(() => done());
 		}).timeout(5000);
 	});
 
 	describe('livechat/inquiries.queuedForUser', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-l-room', []).then(() => {
-				request.get(api('livechat/inquiries.queued')).set(credentials).expect('Content-Type', 'application/json').expect(403).end(done);
-			});
+			updatePermission('view-l-room', [])
+				.then(() => {
+					request.get(api('livechat/inquiries.queued')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+				})
+				.then(() => done());
 		});
 		it('should return an array of inquiries', (done) => {
-			updatePermission('view-l-room', ['admin']).then(() => {
-				request
-					.get(api('livechat/inquiries.queued'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.inquiries).to.be.an('array');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('count');
-					})
-					.end(done);
-			});
+			updatePermission('view-l-room', ['admin'])
+				.then(() => {
+					request
+						.get(api('livechat/inquiries.queued'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body.inquiries).to.be.an('array');
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('total');
+							expect(res.body).to.have.property('count');
+						});
+				})
+				.then(() => done());
 		});
 	});
 });
