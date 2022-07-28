@@ -31,6 +31,10 @@
 		"dsv": {
 			"dependsOn": ["build"],
 			"cache": false
+		},
+		"@rocket.chat/ui-contexts#build": {
+			"dependsOn": ["^build"],
+			"cache": false
 		}
 	}
 }
