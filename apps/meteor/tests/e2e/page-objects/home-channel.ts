@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+
 import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
 
 export class HomeChannel {
@@ -18,6 +19,6 @@ export class HomeChannel {
 	}
 
 	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success')
+		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 }

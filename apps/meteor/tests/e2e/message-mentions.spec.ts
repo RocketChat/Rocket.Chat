@@ -10,14 +10,14 @@ test.describe.serial('message-mentions', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-        await page.goto('/home');
+		await page.goto('/home');
 	});
 
-    test('expect show "all" and "here" options', async () => {
-        await poHomeChannel.sidenav.openChat('general');
-        await poHomeChannel.content.inputMessage.type('@');
+	test('expect show "all" and "here" options', async () => {
+		await poHomeChannel.sidenav.openChat('general');
+		await poHomeChannel.content.inputMessage.type('@');
 
-        await expect(poHomeChannel.content.messagePopUpItems.locator('text=all')).toBeVisible();
-        await expect(poHomeChannel.content.messagePopUpItems.locator('text=here')).toBeVisible();
-    });
+		await expect(poHomeChannel.content.messagePopUpItems.locator('text=all')).toBeVisible();
+		await expect(poHomeChannel.content.messagePopUpItems.locator('text=here')).toBeVisible();
+	});
 });

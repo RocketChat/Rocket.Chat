@@ -8,10 +8,10 @@ export class HomeFlextabMembers {
 	}
 
 	async addUser(username: string) {
-        await this.page.locator('//button[contains(text(), "Add")]').click();
-        await this.page.locator('//label[contains(text(), "Choose users")]/..//input').type(username);
-        await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${username}`).first().click();
-        await this.page.locator('//button[contains(text(), "Add users")]').click();
+		await this.page.locator('//button[contains(text(), "Add")]').click();
+		await this.page.locator('//label[contains(text(), "Choose users")]/..//input').type(username);
+		await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${username}`).first().click();
+		await this.page.locator('//button[contains(text(), "Add users")]').click();
 	}
 
 	async muteUser(username: string) {

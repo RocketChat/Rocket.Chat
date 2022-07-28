@@ -7,7 +7,7 @@ test.describe.parallel('forgot-password', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poAuth = new Auth(page);
-		
+
 		await page.goto('/home');
 	});
 

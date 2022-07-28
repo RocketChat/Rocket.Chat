@@ -21,9 +21,13 @@ export class HomeSidenav {
 		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
+	itemDirectMessage(route: string): Locator {
+		return this.page.locator(`[data-qa="sidebar-item"][href="/direct/${route}"]`);
+	}
+
 	async openNewByLabel(text: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-create"]').click()
-		await this.page.locator(`li.rcx-option >> text="${text}"`).click()
+		await this.page.locator('[data-qa="sidebar-create"]').click();
+		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
 	}
 
 	async logout(): Promise<void> {
@@ -41,7 +45,7 @@ export class HomeSidenav {
 		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
 		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
 	}
-	
+
 	async createPublicChannel(name: string) {
 		await this.openNewByLabel('Channel');
 		await this.checkboxPrivateChannel.click();

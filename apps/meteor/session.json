@@ -1,0 +1,47 @@
+{
+  "cookies": [
+    {
+      "sameSite": "Lax",
+      "name": "rc_uid",
+      "value": "user1",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false
+    },
+    {
+      "sameSite": "Lax",
+      "name": "rc_token",
+      "value": "vuNyiMgDbmkrMvurJygQCCwPb6N6waiFHYBcZqJAost",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "userLanguage",
+          "value": "en-US"
+        },
+        {
+          "name": "Meteor.loginToken",
+          "value": "vuNyiMgDbmkrMvurJygQCCwPb6N6waiFHYBcZqJAost"
+        },
+        {
+          "name": "Meteor.loginTokenExpires",
+          "value": "Wed Oct 26 2022 15:55:01 GMT-0300 (Brasilia Standard Time)"
+        },
+        {
+          "name": "Meteor.userId",
+          "value": "user1"
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
 // any_password
-const password_hashed = '$2b$10$EMxaeQQbSw9JLL.YvOVPaOW8MKta6pgmp2BcN5Op4cC9bJiOqmUS.'
+const PASSWORD_HASHED = '$2b$10$EMxaeQQbSw9JLL.YvOVPaOW8MKta6pgmp2BcN5Op4cC9bJiOqmUS.';
 
 export const user1: IUser = {
 	_id: 'user1',
@@ -15,7 +15,7 @@ export const user1: IUser = {
 	utcOffset: -3,
 	username: 'user1',
 	services: {
-		password: { bcrypt: password_hashed },
+		password: { bcrypt: PASSWORD_HASHED },
 		email2fa: { enabled: true, changedAt: new Date() },
 		email: {
 			verificationTokens: [
