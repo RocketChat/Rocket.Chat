@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { IOmnichannelRoom, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createVisitor, createLivechatRoom, createAgent, makeAgentAvailable } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 

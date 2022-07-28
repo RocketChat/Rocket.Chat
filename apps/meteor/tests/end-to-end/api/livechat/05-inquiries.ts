@@ -2,8 +2,8 @@
 
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
-import { createAgent, createLivechatRoom, createVisitor, fetchInquiry, makeAgentAvailable } from '../../../data/livechat/rooms.js';
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { createAgent, createLivechatRoom, createVisitor, fetchInquiry, makeAgentAvailable } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - inquiries', function () {

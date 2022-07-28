@@ -3,10 +3,10 @@
 import type { ILivechatAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
-import { createAgent, createManager } from '../../../data/livechat/rooms.js';
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { createAgent, createManager } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { createUser } from '../../../data/users.helper.js';
+import { createUser } from '../../../data/users.helper';
 
 describe('LIVECHAT - Agents', function () {
 	this.retries(0);

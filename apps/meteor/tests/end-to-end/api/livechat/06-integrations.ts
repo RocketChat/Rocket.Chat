@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - Integrations', function () {

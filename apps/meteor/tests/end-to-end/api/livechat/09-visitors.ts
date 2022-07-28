@@ -4,9 +4,9 @@ import { expect } from 'chai';
 import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { makeAgentAvailable, createAgent, createLivechatRoom, createVisitor, takeInquiry } from '../../../data/livechat/rooms.js';
+import { makeAgentAvailable, createAgent, createLivechatRoom, createVisitor, takeInquiry } from '../../../data/livechat/rooms';
 
 describe('LIVECHAT - visitors', function () {
 	this.retries(0);
