@@ -155,7 +155,6 @@ export async function findDepartmentsBetweenIds({
 	ids,
 	fields,
 }: {
-	uid: string;
 	ids: string[];
 	fields: Record<string, unknown>;
 }): Promise<{ departments: ILivechatDepartmentRecord[] }> {

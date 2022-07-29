@@ -256,7 +256,6 @@ API.v1.addRoute(
 
 			return API.v1.success(
 				await findDepartmentsBetweenIds({
-					uid: this.userId,
 					ids,
 					fields,
 				}),
