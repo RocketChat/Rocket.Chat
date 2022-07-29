@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
 import { adminUsername, password } from '../../data/user.js';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
@@ -90,9 +90,142 @@ describe('[Groups]', function () {
 			}
 		});
 	});
+	describe('[/groups.members]', () => {
+		let testGroup = {};
+		let testGroup2 = {};
+		let groupMessage = {};
+
+		let testUser = {};
+		let testCredentials = {};
+
+		before(async () => {
+			testUser = await createUser();
+		});
+		before(async () => {
+			testCredentials = await login(testUser.username, password);
+		});
+		after(async () => {
+			await deleteUser(testUser);
+			testUser = undefined;
+		});
+
+		it('creating new group...', (done) => {
+			request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `members-${apiPrivateChannelName}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testGroup = res.body.group;
+				})
+				.end(done);
+		});
+		it('creating new group for test user', (done) => {
+			request
+				.post(api('groups.create'))
+				.set(testCredentials)
+				.send({
+					name: `test-member-${apiPrivateChannelName}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testGroup2 = res.body.group;
+				})
+				.end(done);
+		});
+
+		it("should fail to get group members when you can't access the room", (done) => {
+			request
+				.get(api('groups.members'))
+				.set(testCredentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.end(done);
+		});
+
+		it('should return group members', (done) => {
+			request
+				.get(api('groups.members'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+				})
+				.end(done);
+		});
+
+		it('should return group members with test user credentials', (done) => {
+			request
+				.get(api('groups.members'))
+				.set(testCredentials)
+				.query({
+					roomId: testGroup2._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+				})
+				.end(done);
+		});
+
+		it('should return group members if you have an admin role when request members from other group', (done) => {
+			request
+				.get(api('groups.members'))
+				.set(credentials)
+				.query({
+					roomId: testGroup2._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
 	describe('[/groups.info]', () => {
 		let testGroup = {};
+		let testGroup2 = {};
 		let groupMessage = {};
+
+		let testUser = {};
+		let testCredentials = {};
+
+		before(async () => {
+			testUser = await createUser();
+		});
+		before(async () => {
+			testCredentials = await login(testUser.username, password);
+		});
+		after(async () => {
+			await deleteUser(testUser);
+			testUser = undefined;
+		});
+
 		it('creating new group...', (done) => {
 			request
 				.post(api('groups.create'))
@@ -107,6 +240,33 @@ describe('[Groups]', function () {
 				})
 				.end(done);
 		});
+		it('creating new group for test user', (done) => {
+			request
+				.post(api('groups.create'))
+				.set(testCredentials)
+				.send({
+					name: `test-user-${apiPrivateChannelName}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testGroup2 = res.body.group;
+				})
+				.end(done);
+		});
+
+		it("should fail to get group info when you can't access the room", (done) => {
+			request
+				.get(api('groups.info'))
+				.set(testCredentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.end(done);
+		});
+
 		it('should return group basic structure', (done) => {
 			request
 				.get(api('groups.info'))
@@ -125,6 +285,45 @@ describe('[Groups]', function () {
 				})
 				.end(done);
 		});
+
+		it('should return group basic structure if you have an admin role when request info from other group', (done) => {
+			request
+				.get(api('groups.info'))
+				.set(credentials)
+				.query({
+					roomId: testGroup2._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', `test-user-${apiPrivateChannelName}`);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+				})
+				.end(done);
+		});
+
+		it('should return group basic structure when you can access', (done) => {
+			request
+				.get(api('groups.info'))
+				.set(testCredentials)
+				.query({
+					roomId: testGroup2._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', `test-user-${apiPrivateChannelName}`);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+				})
+				.end(done);
+		});
+
 		it('sending a message...', (done) => {
 			request
 				.post(api('chat.sendMessage'))
@@ -208,6 +407,25 @@ describe('[Groups]', function () {
 				})
 				.end(done);
 		});
+
+		it('should not return lastMessage if you have an admin role when info from other group', (done) => {
+			request
+				.get(api('groups.info'))
+				.set(credentials)
+				.query({
+					roomId: testGroup2._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('group').and.to.be.an('object');
+					const { group } = res.body;
+					expect(group).to.not.have.property('lastMessage');
+				})
+				.end(done);
+		});
+
 		it('should return all groups messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
 			request
 				.get(api('groups.messages'))
@@ -641,6 +859,8 @@ describe('[Groups]', function () {
 			.set(credentials)
 			.query({
 				roomId: group._id,
+				count: 5,
+				offset: 0,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -847,6 +1067,10 @@ describe('[Groups]', function () {
 				request
 					.get(api('groups.listAll'))
 					.set(credentials)
+					.query({
+						count: 5,
+						offset: 0,
+					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
