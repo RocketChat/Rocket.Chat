@@ -2,13 +2,15 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { settings } from '../../../settings';
-import { AudioRecorder, fileUpload, USER_ACTIVITIES, UserAction } from '../../../ui';
+import { AudioRecorder, fileUpload, USER_ACTIVITIES, UserAction } from '../../../ui/client';
 import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
 
+const audioRecorder = new AudioRecorder();
+
 const startRecording = async (rid, tmid) => {
 	try {
-		await AudioRecorder.start();
+		await audioRecorder.start();
 		UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 	} catch (error) {
 		throw error;
@@ -16,7 +18,7 @@ const startRecording = async (rid, tmid) => {
 };
 
 const stopRecording = async (rid, tmid) => {
-	const result = await new Promise((resolve) => AudioRecorder.stop(resolve));
+	const result = await new Promise((resolve) => audioRecorder.stop(resolve));
 	UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 	return result;
 };
@@ -87,7 +89,7 @@ Template.messageBoxAudioMessage.onDestroyed(async function () {
 Template.messageBoxAudioMessage.helpers({
 	isAllowed() {
 		return (
-			AudioRecorder.isSupported() &&
+			audioRecorder.isSupported() &&
 			!Template.instance().isMicrophoneDenied.get() &&
 			settings.get('FileUpload_Enabled') &&
 			settings.get('Message_AudioRecorderEnabled') &&
