@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { IUser } from '@rocket.chat/core-typings';
 import {
 	Field,
@@ -39,7 +40,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 	const getAvatarSuggestions = useEndpoint('GET', '/v1/users.getAvatarSuggestion');
-	const sendConfirmationEmail = useEndpoint('sendConfirmationEmail');
+	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 
 	const [usernameError, setUsernameError] = useState<string | undefined>();
 	const [avatarSuggestions, setAvatarSuggestions] = useSafely(useState());
@@ -79,7 +80,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 			return;
 		}
 		try {
-			await sendConfirmationEmail(email);
+			await sendConfirmationEmail({ email });
 			dispatchToastMessage({ type: 'success', message: t('Verification_email_sent') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
@@ -111,11 +112,11 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 
 	useEffect(() => {
 		const getSuggestions = async (): Promise<void> => {
-			const suggestions = await getAvatarSuggestions();
+			const suggestions = await getAvatarSuggestions({ userId: user!._id });
 			setAvatarSuggestions(suggestions);
 		};
 		getSuggestions();
-	}, [getAvatarSuggestions, setAvatarSuggestions]);
+	}, [getAvatarSuggestions, setAvatarSuggestions, user]);
 
 	useEffect(() => {
 		checkUsername(username);

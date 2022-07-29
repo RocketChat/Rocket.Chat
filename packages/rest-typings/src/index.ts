@@ -234,6 +234,7 @@ export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
 export * from './v1/users/UsersGetAvatarSuggestionParamsGET';
+export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';

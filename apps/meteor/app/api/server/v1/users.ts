@@ -13,6 +13,7 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersGetAvatarSuggestionParamsGET,
+	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
@@ -748,6 +749,27 @@ API.v1.addRoute('/v1/users.2fa.sendEmailCode', {
 		return API.v1.success();
 	},
 });
+
+API.v1.addRoute(
+	'/v1/users.sendConfirmationEmail',
+	{
+		authRequired: true,
+		validateParams: isUsersSendConfirmationEmailParamsPOST,
+	},
+	{
+		post() {
+			const { email } = this.bodyParams.user;
+
+			if (!email) {
+				throw new Meteor.Error('error-parameter-required', 'email is required');
+			}
+
+			// Should we verify the email first?
+			Meteor.call('sendConfirmationEmail', email);
+			return API.v1.success();
+		},
+	},
+);
 
 API.v1.addRoute(
 	'/v1/users.presence',

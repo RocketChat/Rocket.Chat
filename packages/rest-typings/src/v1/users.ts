@@ -117,9 +117,14 @@ export type UsersEndpoints = {
 		POST: (params: Users2faSendEmailCode) => void;
 	};
 
+	'/v1/users.sendConfirmationEmail': {
+		POST: (params: { email: string }) => void;
+	};
+
 	'/v1/users.listTeams': {
 		GET: (params: UsersListTeamsParamsGET) => { teams: ITeam[] };
 	};
+
 	'/v1/users.autocomplete': {
 		GET: (params: UsersAutocompleteParamsGET) => {
 			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
@@ -135,6 +140,7 @@ export type UsersEndpoints = {
 	'/v1/users.setAvatar': {
 		POST: (params: UsersSetAvatar) => void;
 	};
+
 	'/v1/users.resetAvatar': {
 		POST: (params: UsersResetAvatar) => void;
 	};
@@ -145,15 +151,18 @@ export type UsersEndpoints = {
 			exportOperation: IExportOperation;
 		};
 	};
+
 	'/v1/users.logoutOtherClients': {
 		POST: () => {
 			token: string;
 			tokenExpires: string;
 		};
 	};
+
 	'/v1/users.removeOtherTokens': {
 		POST: () => void;
 	};
+
 	'/v1/users.resetE2EKey': {
 		POST: (
 			params:
@@ -168,6 +177,7 @@ export type UsersEndpoints = {
 				  },
 		) => void;
 	};
+
 	'/v1/users.resetTOTP': {
 		POST: (
 			params:
@@ -201,39 +211,47 @@ export type UsersEndpoints = {
 			}[];
 		};
 	};
+
 	'/v1/users.regeneratePersonalAccessToken': {
 		POST: (params: { tokenName: string }) => {
 			token: string;
 		};
 	};
+
 	'/v1/users.generatePersonalAccessToken': {
 		POST: (params: { tokenName: string; bypassTwoFactor: boolean }) => {
 			token: string;
 		};
 	};
+
 	'/v1/users.getUsernameSuggestion': {
 		GET: () => {
 			result: string;
 		};
 	};
+
 	'/v1/users.getAvatarSuggestion': {
 		GET: (params: { userId: string }) => {
-			result: string;
+			result: Record<string, unknown>;
 		};
 	};
+
 	'/v1/users.checkUsernameAvailability': {
 		GET: (params: { username: string }) => {
 			result: Record<string, unknown>;
 		};
 	};
+
 	'/v1/users.forgotPassword': {
 		POST: (params: { email: string }) => void;
 	};
+
 	'/v1/users.getPreferences': {
 		GET: () => {
 			preferences: Required<IUser>['settings']['preferences'];
 		};
 	};
+
 	'/v1/users.createToken': {
 		POST: () => {
 			data: {
