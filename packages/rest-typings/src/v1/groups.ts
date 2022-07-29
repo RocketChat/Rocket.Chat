@@ -323,7 +323,7 @@ export const isGroupsMessageProps = ajv.compile<GroupsMessageProps>(GroupsMessag
 
 export type RoomIdOrRoomNameProps = { roomId: IRoom['_id'] } | { roomName: string };
 
-const RoomIdOrRoomNameProps = {
+const RoomIdOrRoomNamePropsSchema = {
 	oneOf: [
 		{
 			type: 'object',
@@ -348,7 +348,7 @@ const RoomIdOrRoomNameProps = {
 	],
 };
 
-export const isRoomIdOrRoomNameProps = ajv.compile<RoomIdOrRoomNameProps>(RoomIdOrRoomNameProps);
+export const isRoomIdOrRoomNameProps = ajv.compile<RoomIdOrRoomNameProps>(RoomIdOrRoomNamePropsSchema);
 
 export type GroupsEndpoints = {
 	'/v1/groups.files': {
