@@ -93,7 +93,6 @@ describe('[Groups]', function () {
 	describe('[/groups.members]', () => {
 		let testGroup = {};
 		let testGroup2 = {};
-		let groupMessage = {};
 
 		let testUser = {};
 		let testCredentials = {};
