@@ -2,25 +2,28 @@ import { Box, Margins, PasswordInput, Field, FieldGroup, Button } from '@rocket.
 import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUser, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { useCallback, useEffect } from 'react';
+import React, { ComponentProps, ReactElement, useCallback, useEffect } from 'react';
 
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
 import { callbacks } from '../../../../lib/callbacks';
 import { useForm } from '../../../hooks/useForm';
 
-const EndToEnd = (props) => {
+const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const homeRoute = useRoute('home');
 	const user = useUser();
 
-	const publicKey = useLocalStorage('public_key');
-	const privateKey = useLocalStorage('private_key');
+	const publicKey = useLocalStorage('public_key', undefined);
+	const privateKey = useLocalStorage('private_key', undefined);
 
 	const resetE2eKey = useMethod('e2e.resetOwnE2EKey');
 
 	const { values, handlers, reset } = useForm({ password: '', passwordConfirm: '' });
-	const { password, passwordConfirm } = values;
+	const { password, passwordConfirm } = values as {
+		password: string;
+		passwordConfirm: string;
+	};
 	const { handlePassword, handlePasswordConfirm } = handlers;
 
 	const keysExist = publicKey && privateKey;
@@ -43,7 +46,7 @@ const EndToEnd = (props) => {
 			reset();
 			dispatchToastMessage({ type: 'success', message: t('Encryption_key_saved_successfully') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	}, [dispatchToastMessage, password, reset, t]);
 
@@ -55,7 +58,7 @@ const EndToEnd = (props) => {
 				handleLogout();
 			}
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	}, [dispatchToastMessage, resetE2eKey, handleLogout, t]);
 
