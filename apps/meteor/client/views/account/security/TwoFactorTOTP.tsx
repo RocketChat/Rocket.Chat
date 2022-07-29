@@ -22,7 +22,7 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 	const regenerateCodesFn = useMethod('2fa:regenerateCodes');
 
 	const [registeringTotp, setRegisteringTotp] = useSafely(useState(false));
-	const [qrCode, setQrCode] = useSafely(useState());
+	const [qrCode, setQrCode] = useSafely(useState<string>());
 	const [totpSecret, setTotpSecret] = useSafely(useState<string>());
 	const [codesRemaining, setCodesRemaining] = useSafely(useState());
 
