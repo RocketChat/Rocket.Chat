@@ -1,0 +1,16 @@
+import * as fastq from 'fastq';
+
+export class InMemoryQueue {
+	private instance: any;
+
+	public setHandler(handler: Function, concurrency: number): void {
+		this.instance = fastq.promise(handler as any, concurrency);
+	}
+
+	public addToQueue(task: Record<string, any>): void {
+		if (!this.instance) {
+			throw new Error('You need to set the handler first');
+		}
+		this.instance.push(task).catch(console.error);
+	}
+}
