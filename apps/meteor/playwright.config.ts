@@ -18,4 +18,5 @@ export default {
 	timeout: process.env.CI ? 600_000 : 300_000,
 	retries: process.env.CI ? 2 : undefined,
 	globalTimeout: 600_000,
+	maxFailures: process.env.CI ? 5 : undefined,
 } as PlaywrightTestConfig;
