@@ -1,5 +1,6 @@
-import { expect, test, Browser, Page } from '@playwright/test';
+import { Browser, Page } from '@playwright/test';
 
+import { expect, test } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
 
@@ -23,7 +24,7 @@ test.describe('Messaging', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		
+
 		await page.goto('/home');
 	});
 

@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './utils/test';
 import { Admin } from './page-objects';
 
 test.use({ storageState: 'session-admin.json' });
@@ -9,44 +8,44 @@ test.describe.parallel('administration', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poAdmin = new Admin(page);
-		
+
 		await page.goto('/admin');
 	});
 
 	test.describe('/rooms', () => {
 		test.beforeEach(async () => {
 			await poAdmin.sidenav.linkRooms.click();
-		})
+		});
 
 		test('expect find "general" channel', async ({ page }) => {
 			await poAdmin.inputSearchRooms.type('general');
 
-			expect(page.locator('table tr[qa-room-id="GENERAL"]')).toBeVisible()
-		})
-	})
+			expect(page.locator('table tr[qa-room-id="GENERAL"]')).toBeVisible();
+		});
+	});
 
 	test.describe('/users', () => {
 		test.beforeEach(async () => {
 			await poAdmin.sidenav.linkUsers.click();
-		})
+		});
 
 		test('expect find "user1" user', async ({ page }) => {
 			await poAdmin.inputSearchUsers.type('user1');
 
-			expect(page.locator('table tr[qa-user-id="user1"]')).toBeVisible()
-		})
-	})
+			expect(page.locator('table tr[qa-user-id="user1"]')).toBeVisible();
+		});
+	});
 
 	test.describe('/settings', () => {
 		test.beforeEach(async () => {
 			await poAdmin.sidenav.linkSettings.click();
-		})
+		});
 
 		test.describe('GENERAL', () => {
 			test.beforeEach(async ({ page }) => {
 				await poAdmin.inputSearchSettings.type('general');
 				await page.locator('[data-qa-id="General"] >> text="Open"').click();
-			})
+			});
 
 			test('expect be abble to reset a setting after a change', async () => {
 				await poAdmin.inputSiteURL.type('any_text');
@@ -69,13 +68,13 @@ test.describe.parallel('administration', () => {
 
 				await poAdmin.inputGoogleTagManagerId.click();
 				await poAdmin.btnResetGoogleTagManagerId.click();
-				
+
 				await poAdmin.inputBugsnagApiKey.click();
 				await poAdmin.inputResetBugsnagApiKey.click();
 
 				await poAdmin.inputRobotsFileContent.type('any_text');
 				await poAdmin.btnResetRobotsFileContent.click();
-			})
-		})
-	})
+			});
+		});
+	});
 });

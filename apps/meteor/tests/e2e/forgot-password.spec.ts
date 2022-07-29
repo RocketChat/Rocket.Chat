@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './utils/test';
 import { Auth } from './page-objects';
 
 test.describe.parallel('forgot-password', () => {

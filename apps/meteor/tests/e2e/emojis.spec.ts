@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
 

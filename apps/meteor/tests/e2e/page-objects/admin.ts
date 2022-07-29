@@ -1,15 +1,15 @@
 import { Locator, Page } from '@playwright/test';
 
-import { AdminSidenav } from './fragments'
+import { AdminSidenav } from './fragments';
 
 export class Admin {
 	private readonly page: Page;
 
-    readonly sidenav: AdminSidenav;
+	readonly sidenav: AdminSidenav;
 
 	constructor(page: Page) {
 		this.page = page;
-        this.sidenav = new AdminSidenav(page);
+		this.sidenav = new AdminSidenav(page);
 	}
 
 	get inputSearchRooms(): Locator {
@@ -27,7 +27,7 @@ export class Admin {
 	get inputSiteURL(): Locator {
 		return this.page.locator('[data-qa-setting-id="Site_Url"]');
 	}
-	
+
 	get btnResetSiteURL(): Locator {
 		return this.page.locator('//label[@title="Site_Url"]//following-sibling::button');
 	}

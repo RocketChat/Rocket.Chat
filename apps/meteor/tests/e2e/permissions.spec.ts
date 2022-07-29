@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './utils/test';
 import { BASE_API_URL, ADMIN_CREDENTIALS } from './config/constants';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
@@ -137,7 +136,9 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test.fixme('expect option(upload file) not be visible', async () => {});
+		test.fixme('expect option(upload file) not be visible', async () => {
+			//
+		});
 
 		test.afterAll(async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/FileUpload_Enabled`, {
@@ -159,7 +160,9 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test.fixme('expect option(upload audio) not be visible', async () => {});
+		test.fixme('expect option(upload audio) not be visible', async () => {
+			//
+		});
 
 		test.afterAll(async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AudioRecorderEnabled`, {
@@ -181,7 +184,9 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test.fixme('expect option(upload video) not be visible', async () => {});
+		test.fixme('expect option(upload video) not be visible', async () => {
+			//
+		});
 
 		test.afterAll(async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_VideoRecorderEnabled`, {
@@ -209,7 +214,9 @@ test.describe.parallel('permissions', () => {
 			expect(response2.status()).toBe(200);
 		});
 
-		test.fixme('expect badword be censored', async () => {});
+		test.fixme('expect badword be censored', async () => {
+			//
+		});
 
 		test.afterAll(async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowBadWordsFilter`, {
