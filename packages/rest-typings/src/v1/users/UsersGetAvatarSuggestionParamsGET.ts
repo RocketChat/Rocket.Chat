@@ -1,7 +1,7 @@
 // TO-DO: import Ajv instance instead of creating a new one
 import Ajv from 'ajv';
 
-const ajv = new Ajv({coerceTypes: true});
+const ajv = new Ajv({ coerceTypes: true });
 
 export type UsersGetAvatarSuggestionParamsGET = {
 	userId: string;
