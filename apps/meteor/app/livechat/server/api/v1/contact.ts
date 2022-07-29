@@ -1,6 +1,7 @@
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { API } from '../../../../api/server';
 import { Contacts } from '../../lib/Contacts';
@@ -68,7 +69,7 @@ API.v1.addRoute(
 								},
 							},
 						).toArray()
-					).map(({ _id }) => [_id, customObj[_id]]),
+					).map(({ _id }) => [`livechatData.${_id}`, new RegExp(escapeRegExp(customObj[_id]), 'i')]),
 				);
 			}
 
@@ -77,7 +78,7 @@ API.v1.addRoute(
 				{
 					...(email && { visitorEmails: { address: email } }),
 					...(phone && { phone: { phoneNumber: phone } }),
-					...(Object.keys(foundCF).length && { livechatData: foundCF }),
+					...(Object.keys(foundCF).length && foundCF),
 				},
 			);
 

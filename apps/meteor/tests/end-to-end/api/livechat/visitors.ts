@@ -1,10 +1,11 @@
 import { expect } from 'chai';
-import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { makeAgentAvailable, createAgent, createLivechatRoom, createVisitor } from '../../../data/livechat/rooms.js';
+import { makeAgentAvailable, createAgent, createLivechatRoom, createVisitor } from '../../../data/livechat/rooms';
+import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 
 describe('LIVECHAT - visitors', function () {
 	this.retries(0);
@@ -408,6 +409,102 @@ describe('LIVECHAT - visitors', function () {
 					expect(res.body.visitors).to.have.length(0);
 				})
 				.end(done);
+		});
+	});
+});
+
+describe('Omnichannel', function () {
+	this.retries(0);
+
+	before((done) => getCredentials(done));
+
+	describe('GET [omnichannel/contact.search]', () => {
+		it('should find a contact by email', (done) => {
+			createVisitor()
+				.then()
+				.then((visitor: ILivechatVisitor) => {
+					// visitor.
+					request
+						.get(api(`omnichannel/contact.search?email=${visitor.visitorEmails![0].address}`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('contact');
+							expect(res.body.contact).to.have.property('_id');
+							expect(res.body.contact).to.have.property('_id');
+							expect(res.body.contact).to.have.property('name');
+							expect(res.body.contact).to.have.property('username');
+							expect(res.body.contact).to.have.property('phone');
+							expect(res.body.contact).to.have.property('visitorEmails');
+							expect(res.body.contact._id).to.be.equal(visitor._id);
+							expect(res.body.contact.phone[0].phoneNumber).to.be.equal(visitor.phone?.[0].phoneNumber);
+						})
+						.end(done);
+				});
+		});
+		it('should find a contact by phone', (done) => {
+			createVisitor()
+				.then()
+				.then((visitor: ILivechatVisitor) => {
+					// visitor.
+					request
+						.get(api(`omnichannel/contact.search?phone=${visitor.phone?.[0].phoneNumber}`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('contact');
+							expect(res.body.contact).to.have.property('_id');
+							expect(res.body.contact).to.have.property('_id');
+							expect(res.body.contact).to.have.property('name');
+							expect(res.body.contact).to.have.property('username');
+							expect(res.body.contact).to.have.property('phone');
+							expect(res.body.contact).to.have.property('visitorEmails');
+							expect(res.body.contact._id).to.be.equal(visitor._id);
+							expect(res.body.contact.phone[0].phoneNumber).to.be.equal(visitor.phone?.[0].phoneNumber);
+						})
+						.end(done);
+				});
+		});
+		it('should find a contact by custom field', (done) => {
+			const cfID = 'address';
+			return createCustomField({
+				searchable: true,
+				field: 'address',
+				label: 'address',
+				defaultValue: 'test_default_address',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+			} as ILivechatCustomField & { field: string })
+				.then((cf) => {
+					if (!cf) {
+						throw new Error('Custom field not created');
+					}
+				})
+				.then(() => createVisitor())
+				.then(() => {
+					request
+						.get(api(`omnichannel/contact.search?custom=${new URLSearchParams({ address: 'Rocket.Chat' }).toString()}`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body.contact).to.have.property('name');
+							expect(res.body.contact).to.have.property('username');
+							expect(res.body.contact).to.have.property('phone');
+							expect(res.body.contact).to.have.property('visitorEmails');
+							expect(res.body.contact.livechatData).to.have.property('address', 'Rocket.Chat street');
+							deleteCustomField(cfID);
+						});
+				})
+				.then(() => {
+					done();
+				});
 		});
 	});
 });
