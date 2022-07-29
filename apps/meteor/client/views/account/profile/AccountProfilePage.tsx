@@ -7,7 +7,6 @@ import {
 	useLogout,
 	useSetting,
 	useEndpoint,
-	useMethod,
 	useTranslation,
 	TranslationKey,
 } from '@rocket.chat/ui-contexts';
@@ -65,8 +64,8 @@ const AccountProfilePage = (): ReactElement => {
 	const [loggingOut, setLoggingOut] = useState(false);
 
 	const logoutOtherClients = useEndpoint('POST', '/v1/users.logoutOtherClients');
-	const deleteOwnAccount = useMethod('deleteUserOwnAccount');
-	const saveFn = useMethod('saveUserProfile');
+	const deleteOwnAccount = useEndpoint('POST', '/v1/users.deleteOwnAccount');
+	const saveFn = useEndpoint('saveUserProfile');
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 

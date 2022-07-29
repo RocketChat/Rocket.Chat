@@ -239,6 +239,10 @@ export type UsersEndpoints = {
 		};
 	};
 
+	'/v1/users.deleteOwnAccount': {
+		POST: (params: { password: string; confirmRelinquish: boolean }) => void;
+	};
+
 	'/v1/users.setActiveStatus': {
 		POST: (params: UserSetActiveStatusParamsPOST) => {
 			user: IUser;
