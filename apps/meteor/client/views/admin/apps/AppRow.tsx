@@ -101,8 +101,8 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
-				<AppStatus app={props} isSubscribed={isSubscribed} isAppDetailsPage={false} mis='x4' />
-				{(installed || isSubscribed) && <AppMenu app={props} mis='x4' />}
+				<AppStatus app={props} isSubscribed={isSubscribed} isAppDetailsPage={false} installed={installed} mis='x4' />
+				<Box w='x32'>{(installed || isSubscribed) && <AppMenu app={props} mis='x4' />}</Box>
 			</Box>
 		</Box>
 	);
