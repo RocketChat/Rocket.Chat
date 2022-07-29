@@ -216,6 +216,11 @@ export type UsersEndpoints = {
 			result: string;
 		};
 	};
+	'/v1/users.checkUsernameAvailability': {
+		GET: (params: { username: string }) => {
+			result: boolean;
+		};
+	};
 	'/v1/users.forgotPassword': {
 		POST: (params: { email: string }) => void;
 	};

@@ -11,6 +11,7 @@ import {
 	isUsersUpdateParamsPOST,
 	isUsersUpdateOwnBasicInfoParamsPOST,
 	isUsersSetPreferencesParamsPOST,
+	isGETUsersCheckUsernameAvailability,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
@@ -587,6 +588,22 @@ API.v1.addRoute(
 	{
 		get() {
 			const result = Meteor.call('getUsernameSuggestion');
+
+			return API.v1.success({ result });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.checkUsernameAvailability',
+	{
+		authRequired: true,
+		validateParams: isGETUsersCheckUsernameAvailability,
+	},
+	{
+		get() {
+			const { username } = this.queryParams;
+			const result = Meteor.call('checkUsernameAvailability', username);
 
 			return API.v1.success({ result });
 		},

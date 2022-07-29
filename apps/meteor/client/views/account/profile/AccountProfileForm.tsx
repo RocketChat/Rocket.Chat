@@ -13,7 +13,7 @@ import {
 	Margins,
 } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, TranslationKey, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { Dispatch, ReactElement, SetStateAction, useCallback, useMemo, useEffect, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -37,9 +37,9 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const checkUsernameAvailability = useMethod('checkUsernameAvailability');
-	const getAvatarSuggestions = useMethod('getAvatarSuggestion');
-	const sendConfirmationEmail = useMethod('sendConfirmationEmail');
+	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
+	const getAvatarSuggestions = useEndpoint('getAvatarSuggestion');
+	const sendConfirmationEmail = useEndpoint('sendConfirmationEmail');
 
 	const [usernameError, setUsernameError] = useState<string | undefined>();
 	const [avatarSuggestions, setAvatarSuggestions] = useSafely(useState());
@@ -99,7 +99,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 			if (!namesRegex.test(username)) {
 				return setUsernameError(t('error-invalid-username'));
 			}
-			const isAvailable = await checkUsernameAvailability(username);
+			const isAvailable = await checkUsernameAvailability({ username });
 			if (!isAvailable) {
 				return setUsernameError(t('Username_already_exist'));
 			}
