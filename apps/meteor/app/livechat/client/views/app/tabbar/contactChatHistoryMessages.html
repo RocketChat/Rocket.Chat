@@ -1,0 +1,57 @@
+<template name="contactChatHistoryMessages">
+	<header class="contextual-bar__header">
+        <div class="contextual-bar__header-data">
+            <button class="rc-button rc-button--nude contextual-bar__header-back-btn js-back" title="{{_ 'Return'}}">
+                <i class="icon-angle-left"></i>
+            </button>
+            {{> icon icon="clock" block="contextual-bar__header-icon"}}
+            <h1 class="contextual-bar__header-title">{{label}}</h1>
+        </div>
+        <button class="contextual-bar__header-close js-close" aria-label="{{_ "Close"}}">
+            {{> icon block="contextual-bar__header-close-icon" icon="plus"}}
+        </button>
+	</header>
+	<section class="contextual-bar__content flex-tab contact-chat-history-messages">
+        <div class="control rocket-search-input contact-chat-history-search-wrapper">
+            <form class="search-form" role="form">
+                <div class="rc-input">
+                    <label class="rc-input__label">
+                        <div class="rc-input__wrapper">
+                            <div class="rc-input__icon">
+                                {{> icon block="rc-input__icon-svg" icon='magnifier'}}
+                            </div>
+                            <input type="text" class="rc-input__element" name="message-search" id="message-search" placeholder="{{_ 'Search_Messages'}}" autocomplete="off" aria-label="{{_ 'Search_Messages'}}" />
+                        </div>
+                    </label>
+                </div>
+            </form>
+        </div>
+        {{#if $and isSearching empty }}
+            <div class="rocket-search-result">
+                <div class="contact-chat-history-search-empty">
+                    <h2>{{_ "No_results_found"}}</h2>
+                </div>
+            </div>
+        {{else}}
+            {{#if hasError}}
+                <div class="rocket-search-result">
+                    <div class="contact-chat-history-search-empty">
+                        <h2>{{_ "Not_found_or_not_allowed"}}</h2>
+                    </div>
+                </div>
+            {{else}}
+                <div class="flex-tab__result js-list">
+                    <ul class="list clearfix contact-chat-history-messages-list">
+                        {{# with messageContext}}
+                            {{#each msg in messages}}{{> message msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+                        {{/with}}
+
+                        {{#if isLoading}}
+                            {{> loading}}
+                        {{/if}}
+                    </ul>
+                </div>
+            {{/if}}
+        {{/if}}
+	</section>
+</template>

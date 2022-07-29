@@ -1,2 +1,0 @@
-import './settings';
-import './googlevision';
