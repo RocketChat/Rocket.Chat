@@ -86,4 +86,4 @@ tests/e2e/test-failures/
 out.txt
 dist
 session-admin.json
-session.jsons
+session.json

@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 import { BASE_API_URL, ADMIN_CREDENTIALS } from './config/constants';
 import { HomeChannel } from './page-objects';
@@ -39,7 +39,7 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test('expect option(edit) not be visible', async () => {
+		test.fixme('expect option(edit) not be visible', async () => {
 			await poHomeChannel.content.sendMessage('any_message');
 		});
 
@@ -63,7 +63,7 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test('expect option(delete) not be visible', async () => {
+		test.fixme('expect option(delete) not be visible', async () => {
 			await poHomeChannel.content.sendMessage('any_message');
 		});
 
@@ -89,7 +89,7 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test('expect option(pin) not be visible', async () => {
+		test.fixme('expect option(pin) not be visible', async () => {
 			await poHomeChannel.content.sendMessage('any_message');
 		});
 
@@ -113,7 +113,7 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test('expect option(star) not be visible', async () => {
+		test.fixme('expect option(star) not be visible', async () => {
 			await poHomeChannel.content.sendMessage('any_message');
 		});
 
@@ -137,7 +137,7 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test('expect option(upload file) not be visible', async () => {});
+		test.fixme('expect option(upload file) not be visible', async () => {});
 
 		test.afterAll(async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/FileUpload_Enabled`, {
@@ -159,7 +159,7 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test('expect option(upload audio) not be visible', async () => {});
+		test.fixme('expect option(upload audio) not be visible', async () => {});
 
 		test.afterAll(async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AudioRecorderEnabled`, {
@@ -181,7 +181,7 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test('expect option(upload video) not be visible', async () => {});
+		test.fixme('expect option(upload video) not be visible', async () => {});
 
 		test.afterAll(async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_VideoRecorderEnabled`, {
@@ -209,7 +209,7 @@ test.describe.parallel('permissions', () => {
 			expect(response2.status()).toBe(200);
 		});
 
-		test('expect badword be censored', () => {});
+		test.fixme('expect badword be censored', async () => {});
 
 		test.afterAll(async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowBadWordsFilter`, {

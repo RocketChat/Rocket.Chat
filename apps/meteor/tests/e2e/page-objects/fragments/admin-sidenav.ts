@@ -10,4 +10,12 @@ export class AdminSidenav {
 	get linkUsers(): Locator {
 		return this.page.locator('.flex-nav [href="/admin/users"]');
 	}
+
+	get linkRooms(): Locator {
+		return this.page.locator('.flex-nav [href="/admin/rooms"]');
+	}
+
+	get linkSettings(): Locator {
+		return this.page.locator('.flex-nav [href="/admin/settings"]');
+	}
 }
