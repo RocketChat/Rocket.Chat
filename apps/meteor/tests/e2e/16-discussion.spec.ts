@@ -1,7 +1,7 @@
-import { test } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { v4 as uuid } from 'uuid';
 
+import { test } from './utils/test';
 import { Auth, HomeDiscussion } from './page-objects';
 
 test.describe('[Discussion]', () => {
