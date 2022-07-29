@@ -77219,6 +77219,49 @@
           ]
         }
       ]
+    },
+    "4.8.3": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25873",
+          "title": "[FIX] Update chartjs usage to v3",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "26057",
+          "title": "[FIX] Unable to close chats when comments is disabled",
+          "userLogin": "murtaza98",
+          "description": "Fixes https://github.com/RocketChat/Rocket.Chat/issues/25954",
+          "milestone": "5.0.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26276",
+          "title": "[FIX] Unable to send voice recording to Whatsapp",
+          "userLogin": "murtaza98",
+          "milestone": "4.8.3",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
