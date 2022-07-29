@@ -30,14 +30,7 @@ export class FederationRoomServiceSender extends FederationService {
 
 		const internalInviterUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId);
 		if (!internalInviterUser) {
-			const internalUser = await this.internalUserAdapter.getInternalUserById(internalInviterId);
-			if (!internalUser || !internalUser?.username) {
-				throw new Error(`Could not find user id for ${internalInviterId}`);
-			}
-			const name = internalUser.name || internalUser.username;
-			const externalInviterId = await this.bridge.createUser(internalUser.username, name, this.internalHomeServerDomain);
-			const existsOnlyOnProxyServer = true;
-			await this.createFederatedUser(externalInviterId, internalUser.username, existsOnlyOnProxyServer, name);
+			await this.createFederatedUserForInviterUsingLocalInformation(internalInviterId);
 		}
 
 		const internalInviteeUser = await this.internalUserAdapter.getFederatedUserByInternalId(normalizedInviteeId);
@@ -45,6 +38,7 @@ export class FederationRoomServiceSender extends FederationService {
 			const existsOnlyOnProxyServer = false;
 			await this.createFederatedUser(rawInviteeId, normalizedInviteeId, existsOnlyOnProxyServer);
 		}
+
 		const federatedInviterUser = internalInviterUser || (await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId));
 		const federatedInviteeUser =
 			internalInviteeUser || (await this.internalUserAdapter.getFederatedUserByInternalUsername(normalizedInviteeId));
@@ -57,7 +51,7 @@ export class FederationRoomServiceSender extends FederationService {
 			this.internalHomeServerDomain,
 		);
 
-		const internalRoomId = FederatedRoom.buildRoomIdForDirectMessages(federatedInviterUser, federatedInviteeUser);
+		const internalRoomId = FederatedRoom.buildRoomIdForDirectMessages(federatedInviterUser, federatedInviteeUser); // TODO: revisit this id generation
 		const internalFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 
 		if (!internalFederatedRoom) {
@@ -77,6 +71,7 @@ export class FederationRoomServiceSender extends FederationService {
 		if (!federatedRoom) {
 			throw new Error(`Could not find room id for ${internalRoomId}`);
 		}
+
 		if (isInviteeFromTheSameHomeServer) {
 			// TODO: this might not be necessary, needs to double check
 			await this.bridge.createUser(
@@ -87,6 +82,7 @@ export class FederationRoomServiceSender extends FederationService {
 			await this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser.externalId);
 			await this.bridge.joinRoom(federatedRoom.externalId, federatedInviteeUser.externalId);
 		}
+		
 		await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 	}
 
@@ -123,6 +119,7 @@ export class FederationRoomServiceSender extends FederationService {
 		if (!byWhom) {
 			return;
 		}
+
 		await this.bridge.kickUserFromRoom(federatedRoom.externalId, federatedUser.externalId, byWhom.externalId);
 	}
 
@@ -138,6 +135,7 @@ export class FederationRoomServiceSender extends FederationService {
 		if (!federatedRoom) {
 			throw new Error(`Could not find room id for ${internalRoomId}`);
 		}
+
 		await this.bridge.sendMessage(federatedRoom.externalId, federatedSender.externalId, message.msg);
 
 		return message; // this need to be here due to a limitation in the internal API that was expecting the return of the sendMessage function.

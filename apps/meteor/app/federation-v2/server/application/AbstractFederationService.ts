@@ -31,6 +31,19 @@ export abstract class FederationService {
 		await this.internalUserAdapter.createFederatedUser(federatedUser);
 	}
 
+	protected async createFederatedUserForInviterUsingLocalInformation(internalInviterId: string): Promise<string> {
+		const internalUser = await this.internalUserAdapter.getInternalUserById(internalInviterId);
+		if (!internalUser || !internalUser?.username) {
+			throw new Error(`Could not find user id for ${ internalInviterId }`);
+		}
+		const name = internalUser.name || internalUser.username;
+		const externalInviterId = await this.bridge.createUser(internalUser.username, name, this.internalHomeServerDomain);
+		const existsOnlyOnProxyServer = true;
+		await this.createFederatedUser(externalInviterId, internalUser.username, existsOnlyOnProxyServer, name);
+
+		return externalInviterId;
+	}
+
 	protected isAnInternalIdentifier(externalIdentifier: string): boolean {
 		return FederatedUser.isAnInternalUser(this.bridge.extractHomeserverOrigin(externalIdentifier), this.internalHomeServerDomain);
 	}
