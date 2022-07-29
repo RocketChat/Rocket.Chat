@@ -18,7 +18,6 @@ import { t, getUserPreference } from '../../../utils/client';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './userActionIndicator.ts';
-import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';

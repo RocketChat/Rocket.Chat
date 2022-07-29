@@ -64,7 +64,7 @@ export class AudioRecorder {
 		delete this.encoder;
 	}
 
-	async start(cb: (this: this, done: boolean) => void) {
+	async start(cb?: (this: this, done: boolean) => void) {
 		try {
 			this.createAudioContext();
 			await this.createStream();
@@ -79,7 +79,7 @@ export class AudioRecorder {
 		}
 	}
 
-	stop(cb: () => void) {
+	stop(cb: (data: Blob) => void) {
 		this.encoder?.on('encoded', cb);
 		this.encoder?.close();
 

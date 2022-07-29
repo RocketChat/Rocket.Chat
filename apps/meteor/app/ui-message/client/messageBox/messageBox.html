@@ -26,7 +26,7 @@
 					{{else}}
 						<div class="rc-message-box__federation_icon"></div>
 					{{/unless}}
-					
+
 					<textarea aria-label="{{_ 'Message'}}" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message"></textarea>
 					<div class="js-input-message-shadow"></div>
 					{{#if isSendIconVisible}}
@@ -39,7 +39,7 @@
 						{{ else }}
 							{{#unless isFederatedRoom}}
 								{{#if canSend}}
-									{{> messageBoxAudioMessage rid=rid tmid=tmid}}
+									{{> AudioMessageRecorder rid=rid tmid=tmid }}
 									<span class="rc-message-box__action-menu js-action-menu" data-desktop aria-haspopup="true" data-qa-id="menu-more-actions">
 										{{#if actions}}
 											<span class="rc-message-box__icon">

@@ -171,8 +171,7 @@
 
 		&-done,
 		&-cancel,
-		&-timer,
-		&-loading {
+		&-timer {
 			display: none;
 		}
 
@@ -207,12 +206,6 @@
 				border-radius: 50%;
 				background-color: red;
 			}
-		}
-
-		&-loading {
-			cursor: pointer;
-
-			animation: spin 1s linear infinite;
 		}
 
 		&--recording {

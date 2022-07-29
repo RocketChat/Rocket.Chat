@@ -154,7 +154,7 @@ type FileUploadProp = SingleOrArray<{
 /* @deprecated */
 export const fileUpload = async (
 	f: FileUploadProp,
-	input: HTMLInputElement,
+	input: HTMLInputElement | ArrayLike<HTMLInputElement>,
 	{
 		rid,
 		tmid,
