@@ -37,13 +37,14 @@ const GroupsFilesPropsSchema = {
 
 export const isGroupsFilesProps = ajv.compile<GroupsFilesProps>(GroupsFilesPropsSchema);
 
-type GroupsMembersProps = {
-	roomId: IRoom['_id'];
-	offset?: number;
-	count?: number;
-	filter?: string;
-	status?: string[];
-};
+type GroupsMembersProps = Omit<
+	PaginatedRequest<{
+		roomId: IRoom['_id'];
+		filter?: string;
+		status?: string[];
+	}>,
+	'query'
+>;
 
 const GroupsMembersPropsSchema = {
 	type: 'object',
@@ -67,6 +68,9 @@ const GroupsMembersPropsSchema = {
 			type: 'array',
 			items: { type: 'string' },
 			nullable: true,
+		},
+		sort: {
+			type: 'string',
 		},
 	},
 	required: ['roomId'],
@@ -317,6 +321,35 @@ const GroupsMessagePropsSchema = {
 
 export const isGroupsMessageProps = ajv.compile<GroupsMessageProps>(GroupsMessagePropsSchema);
 
+export type RoomIdOrRoomNameProps = { roomId: IRoom['_id'] } | { roomName: string };
+
+const RoomIdOrRoomNameProps = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: {
+					type: 'string',
+				},
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomIdOrRoomNameProps = ajv.compile<RoomIdOrRoomNameProps>(RoomIdOrRoomNameProps);
+
 export type GroupsEndpoints = {
 	'/v1/groups.files': {
 		GET: (params: GroupsFilesProps) => PaginatedResult<{
@@ -335,6 +368,11 @@ export type GroupsEndpoints = {
 		GET: (params: PaginatedRequest<{ roomId: string; latest?: string }>) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
+	};
+	'/v1/groups.info': {
+		GET: (params: RoomIdOrRoomNameProps) => {
+			group: Partial<IRoom>;
+		};
 	};
 	'/v1/groups.archive': {
 		POST: (params: GroupsArchiveProps) => void;
