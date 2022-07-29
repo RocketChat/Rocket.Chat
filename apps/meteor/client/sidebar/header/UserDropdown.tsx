@@ -109,21 +109,11 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 	return (
 		<Box display='flex' flexDirection='column' w={!isMobile ? '244px' : undefined}>
-			<Box display='flex' flexDirection='row'>
-				<Box mie='x4' mis='x16'>
+			<Box pb='x8' pi='x16' display='flex' flexDirection='row'>
+				<Box mie='x4'>
 					<UserAvatar size='x36' username={username || ''} etag={avatarETag} />
 				</Box>
-				<Box
-					mie='x8'
-					mis='x4'
-					display='flex'
-					overflow='hidden'
-					flexDirection='column'
-					fontScale='p2'
-					mb='neg-x4'
-					flexGrow={1}
-					flexShrink={1}
-				>
+				<Box mis='x4' display='flex' overflow='hidden' flexDirection='column' fontScale='p2' mb='neg-x4' flexGrow={1} flexShrink={1}>
 					<Box withTruncatedText w='full' display='flex' alignItems='center' flexDirection='row'>
 						<Margins inline='x4'>
 							<UserStatus status={status} />
