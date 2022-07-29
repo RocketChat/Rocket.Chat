@@ -59,14 +59,17 @@ export function generateUsernameSuggestion(user: Pick<IUser, 'name' | 'emails' |
 	}
 
 	usernames = usernames.filter((e) => e);
+	
+	const prefixSuggestion = settings.get('Accounts_DefaultUsernamePrefixSuggestion')
+	if(prefixSuggestion && user.name) {
+		usernames.unshift(prefixSuggestion+user.name);
+	}
 
 	for (const item of usernames) {
 		if (usernameIsAvailable(item)) {
 			return item;
 		}
 	}
-
-	usernames.push(settings.get('Accounts_DefaultUsernamePrefixSuggestion'));
 
 	let index = Users.find({ username: new RegExp(`^${usernames[0]}-[0-9]+`) }).count();
 	const username = '';
