@@ -20,8 +20,8 @@
 		"eslint": "eslint src",
 		"stylelint": "stylelint 'src/**/*.scss'",
 		"storybook": "start-storybook -p 9001 -c .storybook",
-		"bundler-analyze": "webpack-cli --mode production --stats normal --json > stats.json && webpack-bundle-analyzer stats.json",
-		"build-storybook": "build-storybook"
+		"build-storybook": "build-storybook",
+		"bundler-analyze": "webpack-cli --mode production --stats normal --json > stats.json && webpack-bundle-analyzer stats.json"
 	},
 	"devDependencies": {
 		"@babel/eslint-parser": "^7.18.9",
