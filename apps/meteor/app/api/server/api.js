@@ -11,7 +11,7 @@ import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
 import { metrics } from '../../metrics/server';
-import { hasPermission, hasAllPermission } from '../../authorization/server';
+import { hasPermission, hasAllPermission, hasAtLeastOnePermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
 
@@ -311,6 +311,58 @@ export class APIClass extends Restivus {
 		return routeActions.map((action) => this.getFullRouteName(route, action, apiVersion));
 	}
 
+	checkPermissions(options) {
+		if (!options.permissionsRequired) {
+			return false;
+		}
+
+		if (Array.isArray(options.permissionsRequired)) {
+			options.permissionsRequired = {
+				'*': {
+					operation: 'hasAll',
+					permissions: options.permissionsRequired,
+				},
+			};
+			return true;
+		}
+
+		if (typeof options.permissionsRequired === 'object' && Object.keys(options.permissionsRequired).length > 0) {
+			// check if options.permissionsRequired has any keys like http methods
+			if (Object.keys(options.permissionsRequired).some((key) => ['GET', 'POST', 'PUT', 'DELETE'].includes(key.toUpperCase()))) {
+				Object.keys(options.permissionsRequired).forEach((method) => {
+					if (!options.permissionsRequired[method]?.operation) {
+						options.permissionsRequired[method] = {
+							operation: 'hasAll',
+							permissions: options.permissionsRequired[method],
+						};
+					}
+				});
+				return true;
+			}
+		}
+
+		// If reached here, options.permissionsRequired contained an invalid payload
+	}
+
+	checkPermisisonsForInvocation(userId, permissionsPayload, requestMethod) {
+		const permissions = permissionsPayload[requestMethod] || permissionsPayload['*'];
+
+		if (!permissions) {
+			// how we reached here in the first place?
+			return false;
+		}
+
+		if (permissions.operation === 'hasAll') {
+			return hasAllPermission(userId, permissions.permissions);
+		}
+
+		if (permissions.operation === 'hasAny') {
+			return hasAtLeastOnePermission(userId, permissions.permissions);
+		}
+
+		return false;
+	}
+
 	addRoute(routes, options, endpoints) {
 		// Note: required if the developer didn't provide options
 		if (typeof endpoints === 'undefined') {
@@ -318,14 +370,7 @@ export class APIClass extends Restivus {
 			options = {};
 		}
 
-		let shouldVerifyPermissions;
-
-		if (!_.isArray(options.permissionsRequired)) {
-			options.permissionsRequired = undefined;
-			shouldVerifyPermissions = false;
-		} else {
-			shouldVerifyPermissions = !!options.permissionsRequired.length;
-		}
+		const shouldVerifyPermissions = this.checkPermissions(options);
 
 		// Allow for more than one route using the same option and endpoints
 		if (!_.isArray(routes)) {
@@ -428,7 +473,10 @@ export class APIClass extends Restivus {
 						if (_options.validateParams && !_options.validateParams(this.request.method === 'GET' ? this.queryParams : this.bodyParams)) {
 							throw new Meteor.Error('invalid-params', _options.validateParams.errors?.map((error) => error.message).join('\n '));
 						}
-						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, _options.permissionsRequired))) {
+						if (
+							shouldVerifyPermissions &&
+							(!this.userId || !this.checkPermisisonsForInvocation(this.userId, _options.permissionsRequired, this.request.method))
+						) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
 								permissions: _options.permissionsRequired,
 							});

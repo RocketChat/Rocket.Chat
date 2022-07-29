@@ -48,11 +48,12 @@ type NotFoundResult = {
 	};
 };
 
+export type TOperation = 'hasAll' | 'hasAny';
 export type NonEnterpriseTwoFactorOptions = {
 	authRequired: true;
 	forceTwoFactorAuthenticationForNonEnterprise: true;
 	twoFactorRequired: true;
-	permissionsRequired?: string[];
+	permissionsRequired?: string[] | { [key in Method]: string[] } | { [key in Method]: { operation: TOperation; permissions: string[] } };
 	twoFactorOptions: ITwoFactorOptions;
 };
 
