@@ -216,9 +216,14 @@ export type UsersEndpoints = {
 			result: string;
 		};
 	};
+	'/v1/users.getAvatarSuggestion': {
+		GET: (params: { userId: string }) => {
+			result: string;
+		};
+	};
 	'/v1/users.checkUsernameAvailability': {
 		GET: (params: { username: string }) => {
-			result: boolean;
+			result: Record<string, unknown>;
 		};
 	};
 	'/v1/users.forgotPassword': {

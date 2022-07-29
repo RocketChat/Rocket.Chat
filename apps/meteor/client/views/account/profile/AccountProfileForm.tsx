@@ -38,7 +38,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
-	const getAvatarSuggestions = useEndpoint('getAvatarSuggestion');
+	const getAvatarSuggestions = useEndpoint('GET', '/v1/users.getAvatarSuggestion');
 	const sendConfirmationEmail = useEndpoint('sendConfirmationEmail');
 
 	const [usernameError, setUsernameError] = useState<string | undefined>();
