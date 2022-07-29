@@ -213,7 +213,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>خوش امدید به <strong>[Site_Name]</strong></h1><p>بروید به <a href=\"[Site_URL]\">[Site_URL]</a> و از بهترین ابزار منبع باز را امتحان کنید!</p><p>شما میتوانید با ایمیل خود :[email] و رمز عبور [password] وارد شوید.ممکن است لازم باشد انها را پس از اولین ورود تغییر دهید",
   "Accounts_UserAddedEmail_Description": "شما می توانید از این جانشین ها استفاده نمایید:<br/><ul><li>[name], [fname], [lname] برای نام کامل، نام و یا نام خانوادگی.</li></ul><li>[email] برای ایمیل کاربر.</li><li>[password] برای رمز عبور کاربران</li><li>[Site_Name] و [Site_URL] برای نمایش نام نرم افزار و آدرس ان.</li>",
   "Accounts_UserAddedEmailSubject_Default": "شما به [Site_Name] اضافه شده اید",
-  "Accounts_Verify_Email_For_External_Accounts": "اعتبار سنجی ایمیل برای حساب های خارجی",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Activate": "فعال کردن",
   "Active": "فعال",
   "Activity": "فعالیت",

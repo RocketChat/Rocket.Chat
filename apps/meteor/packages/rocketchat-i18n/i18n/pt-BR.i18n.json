@@ -251,7 +251,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Bem-vindo ao <strong>[Site_Name]</strong></h1>.<p> Vá para <a href=\"[Site_URL]\">[Site_URL]</a> e experimente a melhor solução de conversas de código aberto da atualidade! </p><p> Você pode fazer o login usando seu e-mail: [email] e senha: [password]. Pode ser necessário alterar a senha após o seu primeiro login.",
   "Accounts_UserAddedEmail_Description": "Você pode usar os seguintes espaços reservados: <br/><ul><li> [name], [fname], [lname] para o nome do usuário completo, primeiro nome ou sobrenome, respectivamente. </li><li> [email] para e-mail do usuário. </li><li> [password] para a senha do usuário. </li><li> [Site_Name] e [Site_URL] para o nome do aplicativo e URL, respectivamente. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Você foi adicionado ao [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "Verificar e-mail para contas externas",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action": "Ação",
   "Action_required": "Ação necessária",
   "Activate": "Ativar",

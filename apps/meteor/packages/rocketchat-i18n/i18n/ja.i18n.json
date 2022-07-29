@@ -251,7 +251,7 @@
   "Accounts_UserAddedEmail_Default": "<h1><strong>[Site_Name]</strong>へようこそ</h1><p><a href=\"[Site_URL]\">[Site_URL]</a>にアクセスし、最高レベルのオープンソースチャットソリューションを今すぐお試しください。</p><p>メールアドレス：[email]とパスワード：[password]でログインできます。これらは初回のログイン後に変更する必要があります。",
   "Accounts_UserAddedEmail_Description": "次のプレースホルダーを使用できます。<br/><ul><li> [name]（氏名）、[fname]（名）、[lname]（姓）</li><li>[email] （ユーザーのメールアドレス）</li><li>[password]（ユーザーのパスワード）</li><li> [Site_Name]（アプリケーション名）と[Site_URL]（URL） </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "[Site_Name]に追加されました",
-  "Accounts_Verify_Email_For_External_Accounts": "外部アカウントのメールアドレスの確認",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action": "アクション",
   "Action_required": "必要なアクション",
   "Activate": "有効化",
