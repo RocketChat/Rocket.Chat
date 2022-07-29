@@ -7,8 +7,8 @@ export default async function (): Promise<void> {
 	await injectInitialData();
 
 	/** ------------------------------------------------------------------------------------/
-     *  Create "admin" session
-     -------------------------------------------------------------------------------------*/
+	 *  Create "admin" session
+	 -------------------------------------------------------------------------------------*/
 	const browser1 = await chromium.launch();
 	const page1 = await browser1.newPage();
 
@@ -40,8 +40,8 @@ export default async function (): Promise<void> {
 	await browser1.close();
 
 	/** ------------------------------------------------------------------------------------/
-     *  Create "user1" session
-     -------------------------------------------------------------------------------------*/
+	 *  Create "user1" session
+	 -------------------------------------------------------------------------------------*/
 	const browser2 = await chromium.launch();
 	const page2 = await browser2.newPage();
 
@@ -50,24 +50,24 @@ export default async function (): Promise<void> {
 	await page2.locator('[name=emailOrUsername]').type('user1');
 	await page2.locator('[name=pass]').type('any_password');
 	await page2.locator('.login').click();
-	
+
 	await page2.waitForSelector('text="Welcome to Rocket.Chat!"');
 	await page2.context().storageState({ path: 'user1-session.json' });
 	await browser2.close();
 
 	/** ------------------------------------------------------------------------------------/
-     *  Create "user2" session
-     -------------------------------------------------------------------------------------*/
-	 const browser3 = await chromium.launch();
-	 const page3 = await browser3.newPage();
- 
-	 await page3.goto(constants.BASE_URL);
- 
-	 await page3.locator('[name=emailOrUsername]').type('user2');
-	 await page3.locator('[name=pass]').type('any_password');
-	 await page3.locator('.login').click();
-	 
-	 await page3.waitForSelector('text="Welcome to Rocket.Chat!"');
-	 await page3.context().storageState({ path: 'user2-session.json' });
-	 await browser3.close();
+	 *  Create "user2" session
+	 -------------------------------------------------------------------------------------*/
+	const browser3 = await chromium.launch();
+	const page3 = await browser3.newPage();
+
+	await page3.goto(constants.BASE_URL);
+
+	await page3.locator('[name=emailOrUsername]').type('user2');
+	await page3.locator('[name=pass]').type('any_password');
+	await page3.locator('.login').click();
+
+	await page3.waitForSelector('text="Welcome to Rocket.Chat!"');
+	await page3.context().storageState({ path: 'user2-session.json' });
+	await browser3.close();
 }
