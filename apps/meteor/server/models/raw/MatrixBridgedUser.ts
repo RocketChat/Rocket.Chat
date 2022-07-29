@@ -41,7 +41,7 @@ export class MatrixBridgedUserRaw extends BaseRaw<IMatrixBridgedUser> implements
 					uid: localUserId,
 					mui: externalUserId,
 					remote,
-				}
+				},
 			},
 			{ upsert: true },
 		);

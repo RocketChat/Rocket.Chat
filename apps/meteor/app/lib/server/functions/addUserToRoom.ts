@@ -25,7 +25,7 @@ export const addUserToRoom = function (
 	) {
 		return;
 	}
-	
+
 	try {
 		callbacks.run('federation.beforeAddUserAToRoom', { user, inviter }, room);
 	} catch (error) {

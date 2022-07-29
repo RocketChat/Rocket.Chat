@@ -4,9 +4,7 @@ import { IFederationBridgeEE } from '../../domain/IFederationBridge';
 import { RocketChatNotificationAdapter } from '../../infrastructure/rocket-chat/adapters/Notification';
 import { RocketChatRoomAdapterEE } from '../../infrastructure/rocket-chat/adapters/Room';
 import { RocketChatUserAdapterEE } from '../../infrastructure/rocket-chat/adapters/User';
-import {
-	FederationCreateDirectMessageDto,
-} from '../input/RoomSenderDto';
+import { FederationCreateDirectMessageDto } from '../input/RoomSenderDto';
 
 export class FederationRoomServiceSenderEE extends FederationService {
 	constructor(

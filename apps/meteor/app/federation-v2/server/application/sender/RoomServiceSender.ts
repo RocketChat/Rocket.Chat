@@ -35,11 +35,7 @@ export class FederationRoomServiceSender extends FederationService {
 				throw new Error(`Could not find user id for ${internalInviterId}`);
 			}
 			const name = internalUser.name || internalUser.username;
-			const externalInviterId = await this.bridge.createUser(
-				internalUser.username,
-				name,
-				this.internalHomeServerDomain,
-			);
+			const externalInviterId = await this.bridge.createUser(internalUser.username, name, this.internalHomeServerDomain);
 			const existsOnlyOnProxyServer = true;
 			await this.createFederatedUser(externalInviterId, internalUser.username, existsOnlyOnProxyServer, name);
 		}
@@ -83,7 +79,11 @@ export class FederationRoomServiceSender extends FederationService {
 		}
 		if (isInviteeFromTheSameHomeServer) {
 			// TODO: this might not be necessary, needs to double check
-			await this.bridge.createUser(inviteeUsernameOnly, federatedInviteeUser.getName() || normalizedInviteeId, this.internalHomeServerDomain);
+			await this.bridge.createUser(
+				inviteeUsernameOnly,
+				federatedInviteeUser.getName() || normalizedInviteeId,
+				this.internalHomeServerDomain,
+			);
 			await this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser.externalId);
 			await this.bridge.joinRoom(federatedRoom.externalId, federatedInviteeUser.externalId);
 		}
@@ -142,5 +142,4 @@ export class FederationRoomServiceSender extends FederationService {
 
 		return message; // this need to be here due to a limitation in the internal API that was expecting the return of the sendMessage function.
 	}
-
 }

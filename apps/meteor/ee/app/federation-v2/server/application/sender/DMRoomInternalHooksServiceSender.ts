@@ -47,10 +47,8 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		}
 
 		const externalUsersToBeCreatedLocally = invitees.filter(
-			(invitee) => !FederatedUserEE.isAnInternalUser(
-				this.bridge.extractHomeserverOrigin(invitee.rawInviteeId),
-				this.internalHomeServerDomain,
-			),
+			(invitee) =>
+				!FederatedUserEE.isAnInternalUser(this.bridge.extractHomeserverOrigin(invitee.rawInviteeId), this.internalHomeServerDomain),
 		);
 
 		await Promise.all(
@@ -75,7 +73,7 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		if (!inviterUser) {
 			const internalUser = await this.internalUserAdapter.getInternalUserById(internalInviterId);
 			if (!internalUser || !internalUser.username) {
-				throw new Error(`User with internalId ${ internalInviterId } not found`);
+				throw new Error(`User with internalId ${internalInviterId} not found`);
 			}
 			const username = internalUser.username || internalInviterId;
 			const name = internalUser.name || internalInviterId;
@@ -86,7 +84,7 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 
 		const federatedInviterUser = inviterUser || (await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId));
 		if (!federatedInviterUser) {
-			throw new Error(`User with internalId ${ internalInviterId } not found`);
+			throw new Error(`User with internalId ${internalInviterId} not found`);
 		}
 
 		const isInviterFromTheSameHomeServer = FederatedUserEE.isAnInternalUser(
@@ -138,12 +136,12 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		}
 
 		if (!isInviteeFromTheSameHomeServer) {
-			return
+			return;
 		}
-		
-		const federatedInviteeUser = inviteeUser || await this.internalUserAdapter.getFederatedUserByInternalUsername(inviteeUsernameOnly);
+
+		const federatedInviteeUser = inviteeUser || (await this.internalUserAdapter.getFederatedUserByInternalUsername(inviteeUsernameOnly));
 		if (!federatedInviteeUser) {
-			throw new Error(`User with internalUsername ${ inviteeUsernameOnly } not found`);
+			throw new Error(`User with internalUsername ${inviteeUsernameOnly} not found`);
 		}
 
 		await this.bridge.createUser(
@@ -151,6 +149,5 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 			federatedInviteeUser?.internalReference?.name || federatedInviteeUser.internalReference?.username || inviteeUsernameOnly,
 			this.internalHomeServerDomain,
 		);
-		return;
 	}
 }

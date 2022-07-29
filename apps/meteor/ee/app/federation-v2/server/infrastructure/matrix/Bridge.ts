@@ -52,7 +52,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 			return ((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_NAME_CHANGED) as MatrixEventRoomNameChanged)?.content
 				?.name;
 		} catch (error) {
-			return;
+			// no-op
 		}
 	}
 
@@ -60,10 +60,10 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		try {
 			const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as AbstractMatrixEvent[];
 
-		return ((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_TOPIC_CHANGED) as MatrixEventRoomTopicChanged)?.content
-			?.topic;
+			return ((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_TOPIC_CHANGED) as MatrixEventRoomTopicChanged)?.content
+				?.topic;
 		} catch (error) {
-			return;
+			// no-op
 		}
 	}
 
