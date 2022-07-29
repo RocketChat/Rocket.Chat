@@ -23,7 +23,7 @@ export const getLivechatRoomInfo = (roomId) => {
 	});
 }
 
-export const createVisitor = () =>
+export const createVisitor = (departmentId) =>
 	new Promise((resolve, reject) => {
 		const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 		const email = `${token}@${token}.com`;
@@ -42,6 +42,7 @@ export const createVisitor = () =>
 						token,
 						phone,
 						customFields: [{ key: 'address', value: 'Rocket.Chat street', overwrite: true }],
+						...departmentId && { department: departmentId },
 					},
 				})
 				.end((err, res) => {
