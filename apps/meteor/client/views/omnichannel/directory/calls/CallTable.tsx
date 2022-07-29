@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import React, { useState, useMemo, useCallback, FC } from 'react';
 
+import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import GenericTable from '../../../../components/GenericTable';
 import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
@@ -171,8 +172,8 @@ const CallTable: FC = () => {
 					qa-user-id={_id}
 					height='40px'
 				>
-					<Table.Cell withTruncatedText>{fname}</Table.Cell>
-					<Table.Cell withTruncatedText>{phoneNumber}</Table.Cell>
+					<Table.Cell withTruncatedText>{parseOutboundPhoneNumber(fname)}</Table.Cell>
+					<Table.Cell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</Table.Cell>
 					<Table.Cell withTruncatedText>{queue}</Table.Cell>
 					<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
 					<Table.Cell withTruncatedText>{duration.isValid() && duration.humanize()}</Table.Cell>

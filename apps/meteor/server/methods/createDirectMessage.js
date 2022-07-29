@@ -7,6 +7,7 @@ import { Users, Rooms } from '../../app/models/server';
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
 import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { addUser } from '../../app/federation/server/functions/addUser';
+import { callbacks } from '../../lib/callbacks';
 
 export function createDirectMessage(usernames, userId, excludeSelf = false) {
 	check(usernames, [String]);
@@ -88,6 +89,11 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 	const options = { creator: me._id };
 	if (excludeSelf && hasPermission(this.userId, 'view-room-administration')) {
 		options.subscriptionExtra = { open: true };
+	}
+	try {
+		callbacks.run('federation.beforeCreateDirectMessage', roomUsers);
+	} catch (error) {
+		throw new Meteor.Error(error?.message);
 	}
 	const { _id: rid, inserted, ...room } = createRoom('d', null, null, roomUsers, null, {}, options);
 

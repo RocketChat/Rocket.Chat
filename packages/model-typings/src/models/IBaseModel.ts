@@ -55,6 +55,8 @@ export type FindPaginated<C> = {
 export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 	col: Collection<T>;
 
+	getCollectionName(): string;
+
 	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;
 
 	findOneById(_id: string, options?: FindOptions<T> | undefined): Promise<T | null>;

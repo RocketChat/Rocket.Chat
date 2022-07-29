@@ -24,15 +24,5 @@ to: packages/<%= name %>/package.json
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	],
-	"dependencies": {
-	},
-	"eslintConfig": {
-		"extends": [
-			"@rocket.chat/eslint-config"
-		],
-		"ignorePatterns": [
-			"**/dist"
-		]
-	}
+	]
 }

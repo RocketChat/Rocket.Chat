@@ -19,8 +19,8 @@ export const useChannelsList = ({ period, offset, count }: UseChannelsListOption
 			const { start, end } = getPeriodRange(period);
 
 			const response = await getChannelsList({
-				start,
-				end,
+				start: start.toISOString(),
+				end: end.toISOString(),
 				offset,
 				count,
 			});

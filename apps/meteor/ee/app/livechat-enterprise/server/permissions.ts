@@ -7,7 +7,7 @@ export const createPermissions = async (): Promise<void> => {
 	const livechatManagerRole = 'livechat-manager';
 	const adminRole = 'admin';
 
-	const monitorRole = await Roles.findOneById(livechatMonitorRole, { fields: { _id: 1 } });
+	const monitorRole = await Roles.findOneById(livechatMonitorRole, { projection: { _id: 1 } });
 	if (!monitorRole) {
 		await createOrUpdateProtectedRoleAsync(livechatMonitorRole, {
 			name: livechatMonitorRole,
