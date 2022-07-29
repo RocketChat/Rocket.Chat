@@ -1,7 +1,7 @@
 import { Box, Button, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUser, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, ReactElement, ComponentProps } from 'react';
 import qrcode from 'yaqrcode';
 
 import TextCopy from '../../../components/TextCopy';
@@ -9,7 +9,7 @@ import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotp
 import { useForm } from '../../../hooks/useForm';
 import BackupCodesModal from './BackupCodesModal';
 
-const TwoFactorTOTP = (props) => {
+const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const user = useUser();
@@ -23,20 +23,20 @@ const TwoFactorTOTP = (props) => {
 
 	const [registeringTotp, setRegisteringTotp] = useSafely(useState(false));
 	const [qrCode, setQrCode] = useSafely(useState());
-	const [totpSecret, setTotpSecret] = useSafely(useState());
+	const [totpSecret, setTotpSecret] = useSafely(useState<string>());
 	const [codesRemaining, setCodesRemaining] = useSafely(useState());
 
 	const { values, handlers } = useForm({ authCode: '' });
 
-	const { authCode } = values;
+	const { authCode } = values as { authCode: string };
 	const { handleAuthCode } = handlers;
 
-	const totpEnabled = user && user.services && user.services.totp && user.services.totp.enabled;
+	const totpEnabled = user?.services?.totp?.enabled;
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	useEffect(() => {
-		const updateCodesRemaining = async () => {
+		const updateCodesRemaining = async (): Promise<void | boolean> => {
 			if (!totpEnabled) {
 				return false;
 			}
@@ -55,12 +55,12 @@ const TwoFactorTOTP = (props) => {
 
 			setRegisteringTotp(true);
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	}, [dispatchToastMessage, enableTotpFn, setQrCode, setRegisteringTotp, setTotpSecret]);
 
 	const handleDisableTotp = useCallback(async () => {
-		const onDisable = async (authCode) => {
+		const onDisable = async (authCode: string): Promise<void> => {
 			try {
 				const result = await disableTotpFn(authCode);
 
@@ -70,7 +70,7 @@ const TwoFactorTOTP = (props) => {
 
 				dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_disabled') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 			}
 			closeModal();
 		};
@@ -87,12 +87,12 @@ const TwoFactorTOTP = (props) => {
 			}
 			setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	}, [authCode, closeModal, dispatchToastMessage, setModal, t, verifyCodeFn]);
 
 	const handleRegenerateCodes = useCallback(() => {
-		const onRegenerate = async (authCode) => {
+		const onRegenerate = async (authCode: string): Promise<void> => {
 			try {
 				const result = await regenerateCodesFn(authCode);
 
@@ -101,7 +101,7 @@ const TwoFactorTOTP = (props) => {
 				}
 				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 			}
 		};
 
@@ -124,7 +124,7 @@ const TwoFactorTOTP = (props) => {
 					<>
 						<Box>{t('Scan_QR_code')}</Box>
 						<Box>{t('Scan_QR_code_alternative_s')}</Box>
-						<TextCopy text={totpSecret} />
+						<TextCopy text={totpSecret || ''} />
 						<Box is='img' size='x200' src={qrCode} aria-hidden='true' />
 						<Box display='flex' flexDirection='row' w='full'>
 							<TextInput placeholder={t('Enter_authentication_code')} value={authCode} onChange={handleAuthCode} />
