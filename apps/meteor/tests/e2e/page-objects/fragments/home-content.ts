@@ -89,40 +89,9 @@ export class HomeContent {
 		);
 	}
 
-	async openMessageActionMenu(): Promise<void> {
-		await this.page.locator('[data-qa-type="message"]:last-child').hover();
-		await this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-action-menu"][data-qa-id="menu"]').waitFor();
-		await this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
-	}
-
-	async selectAction(action: 'edit' | 'reply' | 'delete' | 'permalink' | 'copy' | 'quote' | 'star'): Promise<void> {
-		switch (action) {
-			case 'edit':
-				await this.page.locator('[data-qa-id="edit-message"]').click();
-				await this.page.locator('[name="msg"]').fill('this message was edited');
-				await this.page.keyboard.press('Enter');
-				break;
-			case 'reply':
-				await this.page.locator('[data-qa-id="reply-in-thread"]').click();
-				break;
-			case 'delete':
-				await this.page.locator('[data-qa-id="delete-message"]').click();
-				await this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
-				break;
-			case 'permalink':
-				await this.page.locator('[data-qa-id="permalink"]').click();
-				break;
-			case 'copy':
-				await this.page.locator('[data-qa-id="copy"]').click();
-				break;
-			case 'quote':
-				await this.page.locator('[data-qa-id="quote-message"]').click();
-				await this.page.locator('[name="msg"]').type('this is a quote message');
-				await this.page.keyboard.press('Enter');
-				break;
-			case 'star':
-				await this.page.locator('[data-qa-id="star-message"]').click();
-				break;
-		}
+	async openLastMessageMenu(): Promise<void> {
+		await this.page.locator('[data-qa-type="message"]').last().hover();
+		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').waitFor();
+		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
 	}
 }

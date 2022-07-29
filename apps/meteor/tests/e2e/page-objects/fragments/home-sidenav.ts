@@ -21,10 +21,6 @@ export class HomeSidenav {
 		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
-	itemDirectMessage(route: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"][href="/direct/${route}"]`);
-	}
-
 	async openNewByLabel(text: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-create"]').click();
 		await this.page.locator(`li.rcx-option >> text="${text}"`).click();

@@ -3,7 +3,7 @@ import { BASE_API_URL, ADMIN_CREDENTIALS } from './config/constants';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
 
-test.use({ storageState: 'session.json' });
+test.use({ storageState: 'user1-session.json' });
 
 test.describe.parallel('permissions', () => {
 	let poHomeChannel: HomeChannel;
@@ -77,7 +77,7 @@ test.describe.parallel('permissions', () => {
 	});
 
 	test.describe.serial('Pin message', () => {
-		test.use({ storageState: 'session-admin.json' });
+		test.use({ storageState: 'admin-session.json' });
 
 		test.beforeAll(async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {

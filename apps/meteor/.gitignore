@@ -85,5 +85,4 @@ coverage
 tests/e2e/test-failures/
 out.txt
 dist
-session-admin.json
-session.json
+*-session.json

@@ -1,7 +1,7 @@
 import { test, expect } from './utils/test';
 import { Admin } from './page-objects';
 
-test.use({ storageState: 'session-admin.json' });
+test.use({ storageState: 'admin-session.json' });
 
 test.describe.parallel('administration', () => {
 	let poAdmin: Admin;

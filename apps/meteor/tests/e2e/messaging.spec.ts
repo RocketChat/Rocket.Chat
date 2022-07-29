@@ -5,14 +5,14 @@ import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
 
 const createAuxContext = async (browser: Browser): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
-	const page = await browser.newPage({ storageState: 'session.json' });
+	const page = await browser.newPage({ storageState: 'user2-session.json' });
 	const poHomeChannel = new HomeChannel(page);
 	await page.goto('/home');
 
 	return { page, poHomeChannel };
 };
 
-test.use({ storageState: 'session-admin.json' });
+test.use({ storageState: 'user1-session.json' });
 
 test.describe('Messaging', () => {
 	let poHomeChannel: HomeChannel;
@@ -41,15 +41,15 @@ test.describe('Messaging', () => {
 		await auxContext.page.close();
 	});
 
-	test('expect show "hello word" in both contexts (direct)', async ({ browser }) => {
-		const auxContext = await createAuxContext(browser);
-		await poHomeChannel.sidenav.openChat('user1');
+	test.only('expect show "hello word" in both contexts (direct)', async ({ browser }) => {
+		await poHomeChannel.sidenav.openChat('user2');
 		await poHomeChannel.content.sendMessage('hello world');
+		
+		const auxContext = await createAuxContext(browser);
+		await auxContext.poHomeChannel.sidenav.openChat('user1');
 
-		await auxContext.poHomeChannel.sidenav.itemDirectMessage('rocketchat.internal.admin.testuser1').click();
-
-		await expect(auxContext.poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+		await expect(auxContext.poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
 
 		await auxContext.page.close();
 	});
@@ -90,52 +90,60 @@ test.describe('Messaging', () => {
 
 		test('expect reply the message', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('this is a message for reply');
-			await poHomeChannel.content.openMessageActionMenu();
-			await poHomeChannel.content.selectAction('reply');
+			await poHomeChannel.content.openLastMessageMenu();
+			await page.locator('[data-qa-id="reply-in-thread"]').click();
+
 			await page.locator('.rcx-vertical-bar .js-input-message').type('this is a reply message');
 			await page.keyboard.press('Enter');
 
 			await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
 		});
 
-		test('expect edit the message', async () => {
+		test('expect edit the message', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('This is a message to edit');
-			await poHomeChannel.content.openMessageActionMenu();
-			await poHomeChannel.content.selectAction('edit');
+			await poHomeChannel.content.openLastMessageMenu();
+
+			await page.locator('[data-qa-id="edit-message"]').click();
+			await page.locator('[name="msg"]').fill('this message was edited');
+			await page.keyboard.press('Enter');
 		});
 
-		test('expect message is deleted', async () => {
+		test('expect message is deleted', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('Message to delete');
-			await poHomeChannel.content.openMessageActionMenu();
-			await poHomeChannel.content.selectAction('delete');
+			await poHomeChannel.content.openLastMessageMenu();
+
+			await page.locator('[data-qa-id="delete-message"]').click();
+			await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
 		});
 
-		test('expect quote the message', async () => {
+		test('expect quote the message', async ({ page }) => {
 			const message = `Message for quote - ${Date.now()}`;
 
 			await poHomeChannel.content.sendMessage(message);
-			await poHomeChannel.content.openMessageActionMenu();
-			await poHomeChannel.content.selectAction('quote');
+			await poHomeChannel.content.openLastMessageMenu();
+			await page.locator('[data-qa-id="quote-message"]').click();
+			await page.locator('[name="msg"]').type('this is a quote message');
+			await page.keyboard.press('Enter');
 
 			await expect(poHomeChannel.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
 		});
 
-		test('expect star the message', async () => {
+		test('expect star the message', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('Message to star');
-			await poHomeChannel.content.openMessageActionMenu();
-			await poHomeChannel.content.selectAction('star');
+			await poHomeChannel.content.openLastMessageMenu();
+			await page.locator('[data-qa-id="star-message"]').click();
 		});
 
-		test('expect copy the message', async () => {
+		test('expect copy the message', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('Message to copy');
-			await poHomeChannel.content.openMessageActionMenu();
-			await poHomeChannel.content.selectAction('copy');
+			await poHomeChannel.content.openLastMessageMenu();
+			await page.locator('[data-qa-id="copy"]').click();
 		});
 
-		test('expect permalink the message', async () => {
+		test('expect permalink the message', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('Message to permalink');
-			await poHomeChannel.content.openMessageActionMenu();
-			await poHomeChannel.content.selectAction('permalink');
+			await poHomeChannel.content.openLastMessageMenu();
+			await page.locator('[data-qa-id="permalink"]').click();
 		});
 	});
 });

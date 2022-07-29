@@ -34,3 +34,35 @@ export const user1: IUser = {
 	// @ts-ignore
 	__rooms: ['GENERAL'],
 };
+
+export const user2: IUser = {
+	_id: 'user2',
+	type: 'user',
+	active: true,
+	emails: [{ address: 'user2@email.com', verified: false }],
+	roles: ['user'],
+	name: 'User2',
+	lastLogin: new Date(),
+	statusConnection: 'offline',
+	utcOffset: -3,
+	username: 'user2',
+	services: {
+		password: { bcrypt: PASSWORD_HASHED },
+		email2fa: { enabled: true, changedAt: new Date() },
+		email: {
+			verificationTokens: [
+				{
+					token: 'V8e1X2pMtYnVBzIgQx017Gmy37kq-WxohSHPjg-0qf2',
+					address: 'user2@email.com',
+					when: new Date(),
+				},
+			],
+		},
+		resume: { loginTokens: [] },
+		emailCode: [{ code: '', expire: new Date() }],
+	},
+	createdAt: new Date(),
+	_updatedAt: new Date(),
+	// @ts-ignore
+	__rooms: ['GENERAL'],
+};

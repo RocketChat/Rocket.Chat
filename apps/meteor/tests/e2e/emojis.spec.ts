@@ -2,7 +2,7 @@ import { test, expect } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
 
-test.use({ storageState: 'session-admin.json' });
+test.use({ storageState: 'admin-session.json' });
 
 test.describe.serial('emoji', () => {
 	let poHomeChannel: HomeChannel;

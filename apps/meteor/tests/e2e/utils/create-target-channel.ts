@@ -8,7 +8,7 @@ import { HomeChannel } from '../page-objects/home-channel';
  *  - Usefull to create a target channel for message related tests
  */
 export async function createTargetChannel(browser: Browser): Promise<string> {
-	const page = await browser.newPage({ storageState: 'session-admin.json' });
+	const page = await browser.newPage({ storageState: 'admin-session.json' });
 	const name = faker.datatype.uuid();
 
 	await page.goto('/home');
