@@ -758,7 +758,7 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			const { email } = this.bodyParams.user;
+			const { email } = this.bodyParams;
 
 			if (!email) {
 				throw new Meteor.Error('error-parameter-required', 'email is required');
