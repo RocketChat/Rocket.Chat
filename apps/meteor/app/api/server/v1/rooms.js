@@ -13,24 +13,22 @@ import {
 	findChannelAndPrivateAutocompleteWithPagination,
 } from '../lib/rooms';
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
-import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
+import { canAccessRoom, canAccessRoomId, hasPermission, hasRole } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { isRoomsInfoProps } from '@rocket.chat/rest-typings/dist/v1/rooms';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
-	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
+	const { roomId, roomName } = params;
+	if ((!roomId || !roomId.trim()) && (!roomName || !roomName.trim())) {
 		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
 	const fields = { ...API.v1.defaultFieldsToExclude };
 
-	let room;
-	if (params.roomId) {
-		room = Rooms.findOneById(params.roomId, { fields });
-	} else if (params.roomName) {
-		room = Rooms.findOneByName(params.roomName, { fields });
-	}
+	const room = roomId ? Rooms.findOneById(roomId, { fields }) : Rooms.findOneByName(roomName, { fields });
+
 	if (!room) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
 	}
@@ -224,17 +222,17 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.info',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsInfoProps },
 	{
 		get() {
 			const room = findRoomByIdOrName({ params: this.requestParams() });
-			const { fields } = this.parseJsonQuery();
+			const isAdmin = hasRole(this.userId, 'admin');
 
-			if (!room || !canAccessRoom(room, { _id: this.userId })) {
+			if (!isAdmin && !canAccessRoom(room, { _id: this.userId })) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			return API.v1.success({ room: Rooms.findOneByIdOrName(room._id, { fields }) });
+			return API.v1.success({ room });
 		},
 	},
 );

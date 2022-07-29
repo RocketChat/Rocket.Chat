@@ -12,12 +12,14 @@ import {
 	hasAllPermission,
 	roomAccessAttributes,
 	hasRole,
+	canAccessRoomId,
 } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
+import { getChannelHistory } from '../../../../app/lib/server/methods/getChannelHistory';
 import { isGroupsMembersProps, isRoomIdOrRoomNameProps } from '@rocket.chat/rest-typings/dist/v1/groups';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
@@ -483,18 +485,38 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.info',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomIdOrRoomNameProps },
 	{
 		get() {
-			const findResult = findPrivateGroupByIdOrName({
-				params: this.requestParams(),
-				userId: this.userId,
-				checkedArchived: false,
-			});
+			const { roomId, roomName } = this.requestParams();
+			const room = roomId
+				? Rooms.findOneById(roomId, { fields: API.v1.defaultFieldsToExclude })
+				: Rooms.findOneByName(roomName, { fields: API.v1.defaultFieldsToExclude });
 
-			return API.v1.success({
-				group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
-			});
+			if (!room || room.t !== 'p') {
+				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			}
+
+			const isAdmin = hasRole(this.userId, 'admin');
+			const hasAccess = canAccessRoomId(room._id, this.userId);
+
+			if (!isAdmin && !hasAccess) {
+				throw new Meteor.Error('error-not-allowed', 'You are not allowed to access this group');
+			}
+
+			if (hasAccess) {
+				return API.v1.success({
+					group: this.composeRoomWithLastMessage(room, this.userId),
+				});
+			} else {
+				// remove room object lastMessage
+				const group = Object.assign({}, room);
+				delete group.lastMessage;
+
+				return API.v1.success({
+					group,
+				});
+			}
 		},
 	},
 );
