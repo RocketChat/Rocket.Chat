@@ -395,10 +395,7 @@ type POSTLivechatDepartmentProps = {
 		chatClosingTags?: string[];
 		fallbackForwardDepartment?: string;
 	};
-	agents: {
-		upsert: { agentId: string; count?: number; order?: number }[];
-		remove: { agentId: string }[];
-	};
+	agents: { agentId: string; count?: number; order?: number }[];
 };
 
 const POSTLivechatDepartmentSchema = {
@@ -446,42 +443,24 @@ const POSTLivechatDepartmentSchema = {
 			additionalProperties: true,
 		},
 		agents: {
-			type: 'object',
-			properties: {
-				upsert: {
-					type: 'array',
-					items: {
-						type: 'object',
-						properties: {
-							agentId: {
-								type: 'string',
-							},
-							count: {
-								type: 'number',
-								nullable: true,
-							},
-							order: {
-								type: 'number',
-								nullable: true,
-							},
-						},
-						required: ['agentId'],
-						additionalProperties: false,
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					agentId: {
+						type: 'string',
+					},
+					count: {
+						type: 'number',
+						nullable: true,
+					},
+					order: {
+						type: 'number',
+						nullable: true,
 					},
 				},
-				remove: {
-					type: 'array',
-					items: {
-						type: 'object',
-						properties: {
-							agentId: {
-								type: 'string',
-							},
-						},
-						required: ['agentId'],
-						additionalProperties: false,
-					},
-				},
+				required: ['agentId'],
+				additionalProperties: false,
 			},
 			nullable: true,
 		},
