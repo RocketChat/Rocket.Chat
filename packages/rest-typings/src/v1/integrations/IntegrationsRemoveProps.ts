@@ -31,7 +31,6 @@ const integrationsRemoveSchema = {
 					nullable: false,
 					pattern: 'webhook-outgoing',
 				},
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				target_url: {
 					type: 'string',
 					nullable: false,

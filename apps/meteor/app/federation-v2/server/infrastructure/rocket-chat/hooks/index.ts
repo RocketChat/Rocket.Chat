@@ -45,15 +45,27 @@ export class FederationHooks {
 	public static canAddUsersToTheRoom(callback: Function): void {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
-			(params: { user: IUser | string }, room: IRoom): void => {
-				Promise.await(callback(params.user, room));
+			(params: { user: IUser | string; inviter: IUser }, room: IRoom): void => {
+				Promise.await(callback(params.user, params.inviter, room));
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-can-add-users-to-the-room',
 		);
 	}
 
+	public static beforeCreateDirectMessage(callback: Function): void {
+		callbacks.add(
+			'federation.beforeCreateDirectMessage',
+			(members: IUser[]): void => {
+				Promise.await(callback(members));
+			},
+			callbacks.priority.HIGH,
+			'federation-v2-before-create-direct-message-ce',
+		);
+	}
+
 	public static removeCEValidation(): void {
 		callbacks.remove('federation.beforeAddUserAToRoom', 'federation-v2-can-add-users-to-the-room');
+		callbacks.remove('federation.beforeCreateDirectMessage', 'federation-v2-before-create-direct-message-ce');
 	}
 }

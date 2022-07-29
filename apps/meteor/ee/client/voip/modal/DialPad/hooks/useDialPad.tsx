@@ -1,9 +1,10 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { ChangeEvent, RefCallback, useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormHandleSubmit } from 'react-hook-form';
 
 import { useDialModal } from '../../../../../../client/hooks/useDialModal';
 import { useOutboundDialer } from '../../../../hooks/useOutboundDialer';
+import { PadDigit } from '../Pad';
 
 type DialPadStateHandlers = {
 	inputName: string;
@@ -12,8 +13,13 @@ type DialPadStateHandlers = {
 	isButtonDisabled: boolean;
 	handleOnChange: (e: ChangeEvent<HTMLInputElement>) => void;
 	handleBackspaceClick: () => void;
-	handlePadButtonClick: (digit: string | number) => void;
+	handlePadButtonClick: (digit: PadDigit[0]) => void;
+	handlePadButtonLongPressed: (digit: PadDigit[1]) => void;
 	handleCallButtonClick: () => void;
+	handleSubmit: UseFormHandleSubmit<{
+		PhoneInput: string;
+	}>;
+	onSubmit: () => void;
 };
 
 type DialPadProps = {
@@ -32,6 +38,7 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 		setValue,
 		setError,
 		clearErrors,
+		handleSubmit,
 		watch,
 		formState: { errors },
 	} = useForm<{ PhoneInput: string }>({
@@ -41,16 +48,31 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 	});
 
 	const { ref, onChange } = register('PhoneInput');
+
 	const value = watch('PhoneInput');
 
 	const [disabled, setDisabled] = useState(true);
 
 	const handleBackspaceClick = useCallback((): void => {
+		clearErrors();
 		setValue('PhoneInput', value.slice(0, -1));
-	}, [setValue, value]);
+	}, [clearErrors, setValue, value]);
 
 	const handlePadButtonClick = useCallback(
-		(digit: string | number): void => {
+		(digit: PadDigit[0]): void => {
+			clearErrors();
+
+			setValue('PhoneInput', value + digit);
+		},
+		[clearErrors, setValue, value],
+	);
+
+	const handlePadButtonLongPressed = useCallback(
+		(digit: PadDigit[1]): void => {
+			if (digit !== '+') {
+				return;
+			}
+
 			setValue('PhoneInput', value + digit);
 		},
 		[setValue, value],
@@ -61,9 +83,21 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 			return setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
 		}
 
-		outboundClient.makeCall(value.replace('+', ''));
+		outboundClient.makeCall(value);
 		closeDialModal();
 	}, [outboundClient, setError, t, value, closeDialModal]);
+
+	const onSubmit = useCallback(() => {
+		handleCallButtonClick();
+	}, [handleCallButtonClick]);
+
+	const handleOnChange = useCallback(
+		(e) => {
+			clearErrors();
+			onChange(e);
+		},
+		[clearErrors, onChange],
+	);
 
 	useEffect(() => {
 		setError('PhoneInput', { message: errorMessage });
@@ -71,7 +105,7 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 
 	useEffect(() => {
 		setDisabled(!value);
-	}, [clearErrors, value]);
+	}, [value]);
 
 	useEffect(() => {
 		setFocus('PhoneInput');
@@ -82,9 +116,12 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 		inputRef: ref,
 		inputError: errors.PhoneInput?.message,
 		isButtonDisabled: disabled,
-		handleOnChange: onChange,
+		handleOnChange,
 		handleBackspaceClick,
 		handlePadButtonClick,
+		handlePadButtonLongPressed,
 		handleCallButtonClick,
+		handleSubmit,
+		onSubmit,
 	};
 };

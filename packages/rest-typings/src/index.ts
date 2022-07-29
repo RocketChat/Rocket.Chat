@@ -40,7 +40,7 @@ import type { CommandsEndpoints } from './v1/commands';
 import type { MeEndpoints } from './v1/me';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
+// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention
 export interface Endpoints
 	extends ChannelsEndpoints,
 		MeEndpoints,
@@ -184,11 +184,11 @@ export type OperationResult<TMethod extends Method, TPathPattern extends PathPat
 
 export type UrlParams<T extends string> = string extends T
 	? Record<string, string>
-	: T extends `${infer _Start}:${infer Param}/${infer Rest}`
+	: T extends `${string}:${infer Param}/${infer Rest}`
 	? { [k in Param | keyof UrlParams<Rest>]: string }
-	: T extends `${infer _Start}:${infer Param}`
+	: T extends `${string}:${infer Param}`
 	? { [k in Param]: string }
-	: undefined | {};
+	: undefined | Record<string, never>;
 
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
@@ -232,6 +232,9 @@ export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';
 export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
+export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
+export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
+export * from './v1/autotranslate/AutotranslateTranslateMessageParamsPOST';
 export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
 export * from './v1/e2e/e2eSetRoomKeyIDParamsPOST';
 export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';

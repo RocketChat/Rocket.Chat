@@ -40,7 +40,6 @@ const assets: IRocketChatAssets = {
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_ico: {
 		label: 'favicon (ico)',
 		defaultUrl: 'favicon.ico',
@@ -57,7 +56,6 @@ const assets: IRocketChatAssets = {
 			extensions: ['svg'],
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_16: {
 		label: 'favicon 16x16 (png)',
 		defaultUrl: 'images/logo/favicon-16x16.png',
@@ -68,7 +66,6 @@ const assets: IRocketChatAssets = {
 			height: 16,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_32: {
 		label: 'favicon 32x32 (png)',
 		defaultUrl: 'images/logo/favicon-32x32.png',
@@ -79,7 +76,6 @@ const assets: IRocketChatAssets = {
 			height: 32,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_192: {
 		label: 'android-chrome 192x192 (png)',
 		defaultUrl: 'images/logo/android-chrome-192x192.png',
@@ -90,7 +86,6 @@ const assets: IRocketChatAssets = {
 			height: 192,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_512: {
 		label: 'android-chrome 512x512 (png)',
 		defaultUrl: 'images/logo/android-chrome-512x512.png',
@@ -101,7 +96,6 @@ const assets: IRocketChatAssets = {
 			height: 512,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	touchicon_180: {
 		label: 'apple-touch-icon 180x180 (png)',
 		defaultUrl: 'images/logo/apple-touch-icon.png',
@@ -112,7 +106,6 @@ const assets: IRocketChatAssets = {
 			height: 180,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	touchicon_180_pre: {
 		label: 'apple-touch-icon-precomposed 180x180 (png)',
 		defaultUrl: 'images/logo/apple-touch-icon-precomposed.png',
@@ -123,7 +116,6 @@ const assets: IRocketChatAssets = {
 			height: 180,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_70: {
 		label: 'mstile 70x70 (png)',
 		defaultUrl: 'images/logo/mstile-70x70.png',
@@ -134,7 +126,6 @@ const assets: IRocketChatAssets = {
 			height: 70,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_144: {
 		label: 'mstile 144x144 (png)',
 		defaultUrl: 'images/logo/mstile-144x144.png',
@@ -145,7 +136,6 @@ const assets: IRocketChatAssets = {
 			height: 144,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_150: {
 		label: 'mstile 150x150 (png)',
 		defaultUrl: 'images/logo/mstile-150x150.png',
@@ -156,7 +146,6 @@ const assets: IRocketChatAssets = {
 			height: 150,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_310_square: {
 		label: 'mstile 310x310 (png)',
 		defaultUrl: 'images/logo/mstile-310x310.png',
@@ -167,7 +156,6 @@ const assets: IRocketChatAssets = {
 			height: 310,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_310_wide: {
 		label: 'mstile 310x150 (png)',
 		defaultUrl: 'images/logo/mstile-310x150.png',
@@ -178,7 +166,6 @@ const assets: IRocketChatAssets = {
 			height: 150,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	safari_pinned: {
 		label: 'safari pinned tab (svg)',
 		defaultUrl: 'images/logo/safari-pinned-tab.svg',
@@ -495,7 +482,7 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 	const asset = getAssetByKey(params.asset);
 	const file = asset?.cache;
 
-	const format = req.url.split('.').pop() || '';
+	const format = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
 
 	if (asset && Array.isArray(asset.constraints.extensions) && !asset.constraints.extensions.includes(format)) {
 		res.writeHead(403);

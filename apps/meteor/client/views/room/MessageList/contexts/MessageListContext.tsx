@@ -1,8 +1,10 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
 
 export type MessageListContextValue = {
 	useShowTranslated: ({ message }: { message: IMessage }) => boolean;
+	useTranslateProvider: ({ message }: { message: IMessage }) => string | boolean;
+	useTranslateAttachments: ({ message }: { message: IMessage }) => MessageAttachment[];
 	useShowStarred: ({ message }: { message: IMessage }) => boolean;
 	useShowFollowing: ({ message }: { message: IMessage }) => boolean;
 	useMessageDateFormatter: () => (date: Date) => string;
@@ -28,6 +30,8 @@ export type MessageListContextValue = {
 
 export const MessageListContext = createContext<MessageListContextValue>({
 	useShowTranslated: () => false,
+	useTranslateProvider: () => false,
+	useTranslateAttachments: () => [],
 	useShowStarred: () => false,
 	useShowFollowing: () => false,
 	useUserHasReacted: () => (): boolean => false,
@@ -49,6 +53,10 @@ export const MessageListContext = createContext<MessageListContextValue>({
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
 	useContext(MessageListContext).useShowTranslated(...args);
+export const useTranslateProvider: MessageListContextValue['useTranslateProvider'] = (...args) =>
+	useContext(MessageListContext).useTranslateProvider(...args);
+export const useTranslateAttachments: MessageListContextValue['useTranslateAttachments'] = (...args) =>
+	useContext(MessageListContext).useTranslateAttachments(...args);
 export const useShowStarred: MessageListContextValue['useShowStarred'] = (...args) =>
 	useContext(MessageListContext).useShowStarred(...args);
 export const useShowFollowing: MessageListContextValue['useShowFollowing'] = (...args) =>

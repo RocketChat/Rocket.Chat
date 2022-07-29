@@ -11,11 +11,11 @@ class GDPRContainer extends Component {
 		const { dispatch } = this.props;
 		await dispatch({ gdpr: { accepted: true } });
 		route('/');
-	}
+	};
 
 	render = (props) => (
 		<GDPRAgreement {...props} onAgree={this.handleAgree} />
-	)
+	);
 }
 
 const GDPRConnector = ({ ref, t, ...props }) => (

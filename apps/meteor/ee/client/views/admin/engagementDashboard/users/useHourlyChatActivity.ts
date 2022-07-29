@@ -17,7 +17,7 @@ export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivi
 			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day')).subtract(displacement, 'days').toDate();
 
 			const response = await getHourlyChatActivity({
-				start: day,
+				start: day.toISOString(),
 			});
 
 			return response

@@ -4,8 +4,8 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@types/mongodb": "^3.6.20",
-		"eslint": "^8.18.0",
+		"eslint": "^8.20.0",
+		"mongodb": "^4.3.1",
 		"prettier": "^2.7.1",
 		"typescript": "~4.5.5"
 	},
@@ -23,8 +23,8 @@
 	],
 	"dependencies": {
 		"@rocket.chat/apps-engine": "^1.32.0",
-		"@rocket.chat/icons": "^0.31.13",
-		"@rocket.chat/message-parser": "^0.32.0-dev.5",
-		"@rocket.chat/ui-kit": "^0.31.13"
+		"@rocket.chat/icons": "0.31.16",
+		"@rocket.chat/message-parser": "0.31.16",
+		"@rocket.chat/ui-kit": "0.31.16"
 	}
 }

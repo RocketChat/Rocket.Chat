@@ -1,17 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import { LivechatInquiry } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { hasPermission } from '../../../../authorization';
-import { Users, LivechatDepartment, LivechatInquiry } from '../../../../models/server';
+import { Users, LivechatDepartment } from '../../../../models/server';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -25,11 +26,11 @@ API.v1.addRoute(
 					ourQuery.department = departmentFromDB._id;
 				}
 			}
-			const cursor = LivechatInquiry.find(ourQuery, {
+			const { cursor, totalCount } = LivechatInquiry.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields: {
+				projection: {
 					rid: 1,
 					name: 1,
 					ts: 1,
@@ -37,14 +38,14 @@ API.v1.addRoute(
 					department: 1,
 				},
 			});
-			const totalCount = cursor.count();
-			const inquiries = cursor.fetch();
+
+			const [inquiries, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				inquiries,
 				offset,
 				count: inquiries.length,
-				total: totalCount,
+				total,
 			});
 		},
 	},
