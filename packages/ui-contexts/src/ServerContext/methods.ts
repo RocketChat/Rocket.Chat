@@ -4,6 +4,7 @@ import type { DeleteResult } from 'mongodb';
 import type { AddWebdavAccountMethod } from './methods/addWebdavAccount';
 import type { FollowMessageMethod } from './methods/followMessage';
 import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
+import type { GetWebdavFileListMethod } from './methods/getWebdavFileList';
 import type { JoinRoomMethod } from './methods/joinRoom';
 import type { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
 import type { RoomNameExistsMethod } from './methods/roomNameExists';
@@ -71,6 +72,7 @@ export interface ServerMethods {
 		hasAdmin: boolean;
 	};
 	'getUsersOfRoom': (...args: any[]) => any;
+	'getWebdavFileList': GetWebdavFileListMethod;
 	'hideRoom': (...args: any[]) => any;
 	'ignoreUser': (...args: any[]) => any;
 	'insertOrUpdateSound': (args: { previousName?: string; name?: string; _id?: string; extension: string }) => string;

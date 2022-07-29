@@ -128,6 +128,8 @@ Template.webdavFilePicker.helpers({
 		return { icon, type, extension };
 	},
 	filePreview() {
+		console.log(this);
+		console.log(this.preview);
 		return this.preview;
 	},
 	isLoading() {

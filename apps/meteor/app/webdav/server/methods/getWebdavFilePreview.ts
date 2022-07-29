@@ -15,7 +15,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!settings.get('Webdav_Integration_Enabled')) {
+		if (!settings.get('Webdav_Integration_Enabled') || !settings.get('Accounts_OAuth_Nextcloud_URL')) {
 			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {
 				method: 'getWebdavFilePreview',
 			});
