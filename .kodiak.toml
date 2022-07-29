@@ -17,3 +17,5 @@ include_coauthors=true
 versions = ["minor", "patch"]
 usernames = ["dependabot"]
 
+[approve]
+auto_approve_usernames=["lingohub"]
