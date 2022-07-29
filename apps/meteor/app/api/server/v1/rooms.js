@@ -13,7 +13,7 @@ import {
 	findChannelAndPrivateAutocompleteWithPagination,
 } from '../lib/rooms';
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
-import { canAccessRoom, canAccessRoomId, hasPermission, hasRole } from '../../../authorization/server';
+import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
@@ -226,9 +226,8 @@ API.v1.addRoute(
 	{
 		get() {
 			const room = findRoomByIdOrName({ params: this.requestParams() });
-			const isAdmin = hasRole(this.userId, 'admin');
 
-			if (!isAdmin && !canAccessRoom(room, { _id: this.userId })) {
+			if (!canAccessRoom(room, { _id: this.userId })) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
