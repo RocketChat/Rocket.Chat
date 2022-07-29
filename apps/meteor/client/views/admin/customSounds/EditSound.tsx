@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useMemo, useEffect, ReactElement, SyntheticEvent } from 'react';
 
@@ -140,9 +140,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
 				<Box display='flex' flexDirection='row' mbs='none'>
 					<Margins inline='x4'>
-						<Button square onClick={clickUpload}>
-							<Icon name='upload' size='x20' />
-						</Button>
+						<IconButton icon='upload' secondary onClick={clickUpload} />
 						{sound?.name || 'none'}
 					</Margins>
 				</Box>
@@ -161,7 +159,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 			<Field>
 				<Field.Row>
 					<ButtonGroup stretch w='full'>
-						<Button primary danger onClick={handleDeleteButtonClick}>
+						<Button danger onClick={handleDeleteButtonClick}>
 							<Icon name='trash' mie='x4' />
 							{t('Delete')}
 						</Button>

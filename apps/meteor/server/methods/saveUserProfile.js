@@ -121,12 +121,7 @@ function saveUserProfile(settings, customFields) {
 
 	// App IPostUserUpdated event hook
 	const updatedUser = Users.findOneById(this.userId);
-	Promise.await(
-		Apps.triggerEvent(AppEvents.IPostUserUpdated, {
-			user: updatedUser,
-			previousUser: user,
-		}),
-	);
+	Promise.await(Apps.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user }));
 
 	return true;
 }

@@ -1,6 +1,6 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, ReactNode, useRef } from 'react';
+import React, { useCallback, useRef, ReactElement } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
@@ -8,7 +8,7 @@ import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import CustomUserStatusFormWithData from './CustomUserStatusFormWithData';
 import CustomUserStatusTable from './CustomUserStatusTable';
 
-const CustomUserStatusRoute = (): ReactNode => {
+const CustomUserStatusRoute = (): ReactElement => {
 	const t = useTranslation();
 	const route = useRoute('custom-user-status');
 	const context = useRouteParameter('context');

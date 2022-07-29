@@ -16,7 +16,7 @@ const DepartmentAutoComplete = (props) => {
 	const { enabled, onlyMyDepartments = false } = props;
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
-		'livechat/department.autocomplete',
+		'/v1/livechat/department.autocomplete',
 		useMemo(() => query(filter, enabled, onlyMyDepartments), [onlyMyDepartments, enabled, filter]),
 	);
 

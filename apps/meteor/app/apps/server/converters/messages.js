@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
 
-import { Messages, Rooms, Users } from '../../../models';
+import { Messages, Rooms, Users } from '../../../models/server';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 
 export class AppMessagesConverter {

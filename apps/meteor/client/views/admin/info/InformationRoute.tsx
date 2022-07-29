@@ -20,7 +20,7 @@ const InformationRoute = (): ReactElement => {
 	const [statistics, setStatistics] = useState<IStats>();
 	const [instances, setInstances] = useState([]);
 	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(() => (): void => undefined);
-	const getStatistics = useEndpoint('GET', 'statistics');
+	const getStatistics = useEndpoint('GET', '/v1/statistics');
 	const getInstances = useMethod('instances/get');
 
 	useEffect(() => {

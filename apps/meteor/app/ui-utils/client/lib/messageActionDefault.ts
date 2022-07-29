@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
 import { IMessage } from '@rocket.chat/core-typings';
 
-import { messageArgs } from './messageArgs';
+import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
@@ -40,7 +40,7 @@ Meteor.startup(async function () {
 		id: 'reply-directly',
 		icon: 'reply-directly',
 		label: 'Reply_in_direct_message',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			roomCoordinator.openRouteLink(
@@ -110,7 +110,7 @@ Meteor.startup(async function () {
 		icon: 'permalink',
 		label: 'Get_link',
 		// classes: 'clipboard',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const permalink = await MessageAction.getPermaLink(message._id);
@@ -129,7 +129,7 @@ Meteor.startup(async function () {
 		icon: 'copy',
 		label: 'Copy',
 		// classes: 'clipboard',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			navigator.clipboard.writeText(message.msg);
@@ -171,7 +171,7 @@ Meteor.startup(async function () {
 				if (msgTs != null) {
 					currentTsDiff = moment().diff(msgTs, 'minutes');
 				}
-				return !!currentTsDiff && currentTsDiff < blockEditInMinutes;
+				return (!!currentTsDiff || currentTsDiff === 0) && currentTsDiff < blockEditInMinutes;
 			}
 			return true;
 		},
@@ -212,7 +212,7 @@ Meteor.startup(async function () {
 		id: 'report-message',
 		icon: 'report',
 		label: 'Report',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;

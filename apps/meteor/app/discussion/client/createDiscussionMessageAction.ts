@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { settings } from '../../settings/client';
 import { hasPermission } from '../../authorization/client';
 import { MessageAction } from '../../ui-utils/client';
-import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import CreateDiscussion from '../../../client/components/CreateDiscussion/CreateDiscussion';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';

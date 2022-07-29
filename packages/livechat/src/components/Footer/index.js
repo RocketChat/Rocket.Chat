@@ -5,7 +5,6 @@ import { PopoverMenu } from '../Menu';
 import { createClassName } from '../helpers';
 import styles from './styles.scss';
 
-
 export const Footer = ({ children, className, ...props }) => (
 	<footer className={createClassName(styles, 'footer', {}, [className])} {...props}>
 		{children}

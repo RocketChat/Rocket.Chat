@@ -1,4 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { Editor, EditorFromTextArea } from 'codemirror';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 
 const defaultGutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
@@ -44,7 +45,7 @@ function CodeMirror({
 	const [value, setValue] = useState(valueProp || defaultValue);
 
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
-	const editorRef = useRef<HTMLFormElement | null>(null);
+	const editorRef = useRef<EditorFromTextArea | null>(null);
 	const handleChange = useMutableCallback(onChange);
 
 	useEffect(() => {
@@ -53,11 +54,16 @@ function CodeMirror({
 		}
 
 		const setupCodeMirror = async (): Promise<void> => {
-			const jsPath = 'codemirror/lib/codemirror.js';
-			const CodeMirror = await import(jsPath);
-			await import('../../../../../app/ui/client/lib/codeMirror/codeMirror');
-			const cssPath = 'codemirror/lib/codemirror.css';
-			await import(cssPath);
+			const CodeMirror = await import('codemirror');
+			await Promise.all([
+				import('../../../../../app/ui/client/lib/codeMirror/codeMirror'),
+				import('codemirror/addon/edit/matchbrackets'),
+				import('codemirror/addon/edit/closebrackets'),
+				import('codemirror/addon/edit/matchtags'),
+				import('codemirror/addon/edit/trailingspace'),
+				import('codemirror/addon/search/match-highlighter'),
+				import('codemirror/lib/codemirror.css'),
+			]);
 
 			if (!textAreaRef.current) {
 				return;
@@ -77,7 +83,7 @@ function CodeMirror({
 				readOnly,
 			});
 
-			editorRef?.current?.on('change', (doc: HTMLFormElement) => {
+			editorRef.current.on('change', (doc: Editor) => {
 				const value = doc.getValue();
 				setValue(value);
 				handleChange(value);
@@ -119,7 +125,7 @@ function CodeMirror({
 		}
 
 		if (value !== editorRef.current.getValue()) {
-			editorRef.current.setValue(value);
+			editorRef.current.setValue(value ?? '');
 		}
 	}, [textAreaRef, value]);
 

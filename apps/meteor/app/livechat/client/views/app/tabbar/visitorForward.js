@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
-import { ChatRoom } from '../../../../../models';
+import { ChatRoom } from '../../../../../models/client';
 import { t } from '../../../../../utils';
 import './visitorForward.html';
 import { APIClient } from '../../../../../utils/client';
@@ -99,7 +99,7 @@ Template.visitorForward.onCreated(async function () {
 		}
 	});
 
-	const { departments } = await APIClient.v1.get('livechat/department?enabled=true');
+	const { departments } = await APIClient.get('/v1/livechat/department', { enabled: true });
 	this.departments.set(departments);
 });
 

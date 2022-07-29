@@ -21,10 +21,14 @@
 			"outputs": []
 		},
 		"typecheck": {
-			"dependsOn": ["build"],
+			"dependsOn": ["^build"],
 			"outputs": []
 		},
 		"dev": {
+			"dependsOn": ["^dev"],
+			"cache": false
+		},
+		"dsv": {
 			"dependsOn": ["build"],
 			"cache": false
 		}

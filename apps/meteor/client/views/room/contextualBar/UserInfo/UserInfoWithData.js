@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useSession, useSetting, useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
@@ -10,24 +10,20 @@ import VerticalBar from '../../../../components/VerticalBar';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
-import { useWebRTC } from '../../hooks/useWebRTC';
 import UserInfo from './UserInfo';
-import UserWebRTCWithData from './UserWebRTC';
 import UserActions from './actions/UserActions';
 
 function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = onClickClose, video, onClickBack, ...props }) {
 	const t = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const getRoles = useRolesDescription();
-	const openedRoom = useSession('openedRoom');
-	const { showUserWebRTC } = useWebRTC(openedRoom);
 
 	const {
 		value,
 		phase: state,
 		error,
 	} = useEndpointData(
-		'users.info',
+		'/v1/users.info',
 		useMemo(() => ({ ...(uid && { userId: uid }), ...(username && { username }) }), [uid, username]),
 	);
 
@@ -40,9 +36,10 @@ function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = 
 
 		return {
 			_id,
-			name: showRealNames && name ? name : username,
+			name,
 			username,
 			lastLogin,
+			showRealNames,
 			roles: roles && getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
 			canViewAllInfo,
@@ -79,9 +76,7 @@ function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = 
 				</VerticalBar.Content>
 			)}
 
-			{!isLoading && showUserWebRTC && <UserWebRTCWithData rid={openedRoom} peerName={user?.name} {...props} />}
-
-			{!isLoading && !error && !showUserWebRTC && (
+			{!isLoading && !error && (
 				<UserInfo {...user} data={user} actions={<UserActions user={user} rid={rid} backToList={onClickBack} />} {...props} p='x24' />
 			)}
 		</>

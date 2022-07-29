@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { FederationServers } from '@rocket.chat/models';
 
 import { FederationRoomEvents, Users } from '../../../models/server';
-import { FederationServers } from '../../../models/server/raw';
 
 export async function getStatistics() {
 	const numberOfEvents = FederationRoomEvents.find().count();

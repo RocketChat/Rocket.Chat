@@ -1,9 +1,9 @@
 import _ from 'underscore';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { Roles } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
 import { Subscriptions, Users } from '../../../app/models/server';
-import { Roles } from '../../../app/models/server/raw';
 
 export function getRoomRoles(rid: IRoom['_id']): ISubscription[] {
 	const options = {

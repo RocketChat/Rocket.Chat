@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
 import { settings } from '../../../settings/server';
-import { Settings } from '../../../models';
+import { Settings } from '../../../models/server';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 

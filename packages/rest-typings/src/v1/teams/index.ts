@@ -25,8 +25,8 @@ type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' |
 interface IUserInfo {
 	_id: string;
 	username?: string;
-	name: string;
-	status: string;
+	name?: string;
+	status?: string;
 	settings?: Record<string, any>;
 }
 interface ITeamMemberInfo {
@@ -51,13 +51,13 @@ export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is
 export const isTeamPropsWithTeamId = <T extends TeamProps>(props: T): props is T & { teamId: string } => 'teamId' in props;
 
 export type TeamsEndpoints = {
-	'teams.list': {
+	'/v1/teams.list': {
 		GET: () => PaginatedResult & { teams: ITeam[] };
 	};
-	'teams.listAll': {
+	'/v1/teams.listAll': {
 		GET: () => { teams: ITeam[] } & PaginatedResult;
 	};
-	'teams.create': {
+	'/v1/teams.create': {
 		POST: (params: {
 			name: ITeam['name'];
 			type: ITeam['type'];
@@ -95,19 +95,19 @@ export type TeamsEndpoints = {
 		};
 	};
 
-	'teams.convertToChannel': {
+	'/v1/teams.convertToChannel': {
 		POST: (params: TeamsConvertToChannelProps) => void;
 	};
 
-	'teams.addRooms': {
+	'/v1/teams.addRooms': {
 		POST: (params: { rooms: IRoom['_id'][]; teamId: string } | { rooms: IRoom['_id'][]; teamName: string }) => { rooms: IRoom[] };
 	};
 
-	'teams.removeRoom': {
+	'/v1/teams.removeRoom': {
 		POST: (params: TeamsRemoveRoomProps) => { room: IRoom };
 	};
 
-	'teams.members': {
+	'/v1/teams.members': {
 		GET: (
 			params: ({ teamId: string } | { teamName: string }) & {
 				status?: string[];
@@ -117,41 +117,41 @@ export type TeamsEndpoints = {
 		) => PaginatedResult & { members: ITeamMemberInfo[] };
 	};
 
-	'teams.addMembers': {
+	'/v1/teams.addMembers': {
 		POST: (params: TeamsAddMembersProps) => void;
 	};
 
-	'teams.updateMember': {
+	'/v1/teams.updateMember': {
 		POST: (params: TeamsUpdateMemberProps) => void;
 	};
 
-	'teams.removeMember': {
+	'/v1/teams.removeMember': {
 		POST: (params: TeamsRemoveMemberProps) => void;
 	};
 
-	'teams.leave': {
+	'/v1/teams.leave': {
 		POST: (params: TeamsLeaveProps) => void;
 	};
 
-	'teams.info': {
+	'/v1/teams.info': {
 		GET: (params: ({ teamId: string } | { teamName: string }) & {}) => {
 			teamInfo: Partial<ITeam>;
 		};
 	};
 
-	'teams.autocomplete': {
+	'/v1/teams.autocomplete': {
 		GET: (params: { name: string }) => { teams: ITeamAutocompleteResult[] };
 	};
 
-	'teams.update': {
+	'/v1/teams.update': {
 		POST: (params: TeamsUpdateProps) => void;
 	};
 
-	'teams.delete': {
+	'/v1/teams.delete': {
 		POST: (params: TeamsDeleteProps) => void;
 	};
 
-	'teams.listRoomsOfUser': {
+	'/v1/teams.listRoomsOfUser': {
 		GET: (
 			params:
 				| {
@@ -167,7 +167,7 @@ export type TeamsEndpoints = {
 		) => PaginatedResult & { rooms: IRoom[] };
 	};
 
-	'teams.listRooms': {
+	'/v1/teams.listRooms': {
 		GET: (
 			params: PaginatedRequest &
 				({ teamId: string } | { teamName: string }) & {
@@ -177,7 +177,7 @@ export type TeamsEndpoints = {
 		) => PaginatedResult & { rooms: IRoom[] };
 	};
 
-	'teams.updateRoom': {
+	'/v1/teams.updateRoom': {
 		POST: (params: { roomId: IRoom['_id']; isDefault: boolean }) => {
 			room: IRoom;
 		};

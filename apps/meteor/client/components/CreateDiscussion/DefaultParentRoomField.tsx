@@ -9,7 +9,7 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 const DefaultParentRoomField = ({ defaultParentRoom }: { defaultParentRoom: string }): ReactElement => {
 	const t = useTranslation();
 	const { value, phase } = useEndpointData(
-		'rooms.info',
+		'/v1/rooms.info',
 		useMemo(
 			() => ({
 				roomId: defaultParentRoom,

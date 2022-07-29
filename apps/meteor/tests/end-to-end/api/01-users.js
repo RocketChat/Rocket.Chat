@@ -328,6 +328,7 @@ describe('[Users]', function () {
 					email,
 					name: 'name',
 					username,
+					pass: 'test',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -447,7 +448,7 @@ describe('[Users]', function () {
 					.end(done);
 			});
 		});
-		it("should NOT return some services fields when request to another user's info even if the user has the necessary permission", (done) => {
+		it("should NOT return any services fields when request to another user's info even if the user has the necessary permission", (done) => {
 			updatePermission('view-full-other-user-info', ['admin']).then(() => {
 				request
 					.get(api('users.info'))
@@ -460,12 +461,7 @@ describe('[Users]', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.nested.property('user.services.emailCode');
-						expect(res.body).to.not.have.nested.property('user.services.cloud');
-						expect(res.body).to.not.have.nested.property('user.services.email2fa');
-						expect(res.body).to.not.have.nested.property('user.services.totp');
-						expect(res.body).to.not.have.nested.property('user.services.password');
-						expect(res.body).to.not.have.nested.property('user.services.email');
-						expect(res.body).to.not.have.nested.property('user.services.resume');
+						expect(res.body).to.not.have.nested.property('user.services');
 					})
 					.end(done);
 			});
@@ -3117,7 +3113,6 @@ describe('[Users]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal("The 'selector' param is required");
 					})
 					.end(done);
 			});

@@ -96,7 +96,7 @@ const FileUploadModal = ({
 				</Modal.Content>
 				<Modal.Footer>
 					<ButtonGroup align='end'>
-						<Button ghost onClick={onClose}>
+						<Button secondary onClick={onClose}>
 							{t('Cancel')}
 						</Button>
 						<Button primary type='submit' disabled={!name}>

@@ -27,7 +27,7 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'number',
+					type: 'string',
 				},
 				count: {
 					type: 'number',
@@ -49,7 +49,7 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'number',
+					type: 'string',
 				},
 				count: {
 					type: 'number',

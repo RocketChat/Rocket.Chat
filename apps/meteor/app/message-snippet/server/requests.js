@@ -1,7 +1,7 @@
 import { WebApp } from 'meteor/webapp';
 import { Cookies } from 'meteor/ostrio:cookies';
 
-import { Users, Rooms, Messages } from '../../models';
+import { Users, Rooms, Messages } from '../../models/server';
 
 WebApp.connectHandlers.use('/snippet/download', function (req, res) {
 	let rawCookies;

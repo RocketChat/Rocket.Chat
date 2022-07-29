@@ -1,3 +1,4 @@
+import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
@@ -12,6 +13,7 @@ Meteor.methods({
 		check(options, {
 			id: Match.Optional(String),
 			token: _matchToken,
+			authToken: String,
 			appName: String,
 			userId: Match.OneOf(String, null),
 			metadata: Match.Optional(Object),
@@ -21,6 +23,9 @@ Meteor.methods({
 		if (options.userId && options.userId !== this.userId) {
 			throw new Meteor.Error(403, 'Forbidden access');
 		}
+
+		// we always store the hashed token to protect users
+		const hashedToken = Accounts._hashLoginToken(options.authToken);
 
 		let doc;
 
@@ -48,6 +53,7 @@ Meteor.methods({
 			// Rig default doc
 			doc = {
 				token: options.token,
+				authToken: hashedToken,
 				appName: options.appName,
 				userId: options.userId,
 				enabled: true,
@@ -71,6 +77,7 @@ Meteor.methods({
 					$set: {
 						updatedAt: new Date(),
 						token: options.token,
+						authToken: hashedToken,
 					},
 				},
 			);

@@ -1,273 +1,153 @@
-import { expect, test, Browser } from '@playwright/test';
+import { Browser, Page } from '@playwright/test';
 
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import LoginPage from './utils/pageobjects/LoginPage';
-import FlexTab from './utils/pageobjects/FlexTab';
-import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
-import { ChatContext } from './utils/types/ChatContext';
+import { test, expect } from './utils/test';
+import { validUserInserted } from './utils/mocks/userAndPasswordMock';
+import { Auth, HomeChannel } from './page-objects';
 
-const createBrowserContextForChat = async (browser: Browser, baseURL: string): Promise<ChatContext> => {
+async function createAuxContext(browser: Browser): Promise<{ page: Page; pageHomeChannel: HomeChannel }> {
 	const page = await browser.newPage();
+	const pageAuth = new Auth(page);
+	const pageHomeChannel = new HomeChannel(page);
 
-	const loginPage = new LoginPage(page);
-	const mainContent = new MainContent(page);
-	const sideNav = new SideNav(page);
+	await pageAuth.doLogin(validUserInserted);
 
-	await loginPage.goto(baseURL);
-	await loginPage.login(validUserInserted);
+	return { page, pageHomeChannel };
+}
 
-	return { mainContent, sideNav };
-};
+test.describe('Messaging', () => {
+	let pageAuth: Auth;
+	let pageHomeChannel: HomeChannel;
 
-test.describe('[Messaging]', () => {
-	let loginPage: LoginPage;
-	let mainContent: MainContent;
-	let sideNav: SideNav;
-	let flexTab: FlexTab;
-	test.beforeAll(async ({ browser, baseURL }) => {
-		const context = await browser.newContext();
-		const page = await context.newPage();
-
-		loginPage = new LoginPage(page);
-		mainContent = new MainContent(page);
-		sideNav = new SideNav(page);
-		flexTab = new FlexTab(page);
-
-		await loginPage.goto(baseURL as string);
-
-		await loginPage.login(adminLogin);
+	test.beforeEach(async ({ page }) => {
+		pageAuth = new Auth(page);
+		pageHomeChannel = new HomeChannel(page);
 	});
 
-	test.describe('[Normal messaging]', async () => {
-		let anotherContext: ChatContext;
+	test.beforeEach(async () => {
+		await pageAuth.doLogin();
+	});
 
-		test.describe('[General channel]', async () => {
-			test.beforeAll(async ({ browser, baseURL }) => {
-				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
-				await anotherContext.sideNav.general().click();
-				await anotherContext.mainContent.sendMessage('Hello');
-				await sideNav.general().click();
-				await mainContent.sendMessage('Hello');
-			});
-			test.afterAll(async () => {
-				await anotherContext.mainContent.getPage().close();
-			});
-			test('expect received message is visible for two context', async () => {
-				const anotherUserMessage = mainContent.getPage().locator('li.message[data-own="false"]').last();
-				const mainUserMessage = anotherContext.mainContent.getPage().locator('li.message[data-own="false"]').last();
+	test('expect show "hello word" in both contexts (general)', async ({ browser }) => {
+		await pageHomeChannel.sidenav.doOpenChat('general');
+		await pageHomeChannel.content.doSendMessage('hello world');
 
-				await expect(anotherUserMessage).toBeVisible();
-				await expect(mainUserMessage).toBeVisible();
-			});
-		});
-		test.describe('[Public channel]', async () => {
-			test.beforeAll(async ({ browser, baseURL }) => {
-				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
-				await anotherContext.sideNav.findForChat('public channel');
-				await anotherContext.mainContent.sendMessage('Hello');
-				await sideNav.findForChat('public channel');
-				await mainContent.sendMessage('Hello');
-			});
-			test.afterAll(async () => {
-				await anotherContext.mainContent.getPage().close();
-			});
-			test('expect received message is visible for two context', async () => {
-				const anotherUserMessage = mainContent.getPage().locator('li.message[data-own="false"]').last();
-				const mainUserMessage = anotherContext.mainContent.getPage().locator('li.message[data-own="false"]').last();
+		const auxContext = await createAuxContext(browser);
+		await auxContext.pageHomeChannel.sidenav.doOpenChat('general');
 
-				await expect(anotherUserMessage).toBeVisible();
-				await expect(mainUserMessage).toBeVisible();
-			});
-		});
+		await expect(auxContext.pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+		await expect(pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
 
-		test.describe('[Private channel]', async () => {
-			test.beforeAll(async ({ browser, baseURL }) => {
-				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
-				await anotherContext.sideNav.findForChat('private channel');
-				await anotherContext.mainContent.sendMessage('Hello');
-				await sideNav.findForChat('private channel');
-				await mainContent.sendMessage('Hello');
-			});
-			test.afterAll(async () => {
-				await anotherContext.mainContent.getPage().close();
-			});
-			test('expect received message is visible for two context', async () => {
-				const anotherUserMessage = mainContent.getPage().locator('li.message[data-own="false"]').last();
-				const mainUserMessage = anotherContext.mainContent.getPage().locator('li.message[data-own="false"]').last();
+		await auxContext.page.close();
+	});
 
-				await expect(anotherUserMessage).toBeVisible();
-				await expect(mainUserMessage).toBeVisible();
-			});
+	test('expect show "hello word" in both contexts (private channel)', async ({ browser }) => {
+		await pageHomeChannel.sidenav.doOpenChat('private channel');
+		await pageHomeChannel.content.doSendMessage('hello world');
+
+		const auxContext = await createAuxContext(browser);
+		await auxContext.pageHomeChannel.sidenav.doOpenChat('private channel');
+
+		await expect(auxContext.pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+		await expect(pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+
+		await auxContext.page.close();
+	});
+
+	test('expect show "hello word" in both contexts (direct)', async ({ browser }) => {
+		await pageHomeChannel.sidenav.doOpenChat('user.name.test');
+		await pageHomeChannel.content.doSendMessage('hello world');
+
+		const auxContext = await createAuxContext(browser);
+		await auxContext.pageHomeChannel.sidenav.doOpenChat('rocketchat.internal.admin.test');
+
+		await expect(auxContext.pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+		await expect(pageHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+
+		await auxContext.page.close();
+	});
+
+	test.describe('File Upload', async () => {
+		test.beforeEach(async () => {
+			await pageHomeChannel.sidenav.doOpenChat('general');
+			await pageHomeChannel.content.doDragAndDropFile();
 		});
 
-		test.describe('[Direct Message]', async () => {
-			test.beforeAll(async ({ browser, baseURL }) => {
-				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
-				await anotherContext.sideNav.findForChat('rocketchat.internal.admin.test');
-				await anotherContext.mainContent.sendMessage('Hello');
-				await sideNav.findForChat('user.name.test');
-				await mainContent.sendMessage('Hello');
-			});
-			test.afterAll(async () => {
-				await anotherContext.mainContent.getPage().close();
-			});
-			test('expect received message is visible for two context', async () => {
-				const anotherUserMessage = mainContent.getPage().locator('li.message[data-own="false"]').last();
-				const mainUserMessage = anotherContext.mainContent.getPage().locator('li.message[data-own="false"]').last();
-
-				await expect(anotherUserMessage).toBeVisible();
-				await expect(mainUserMessage).toBeVisible();
-			});
+		test('expect not show modal after click in cancel button', async () => {
+			await pageHomeChannel.content.modalCancelButton.click();
+			await expect(pageHomeChannel.content.modalFilePreview).not.toBeVisible();
 		});
 
-		test.describe('[File Upload]', async () => {
-			test.beforeAll(async () => {
-				await sideNav.general().click();
-			});
-			test.describe('[Render]', async () => {
-				test.beforeAll(async () => {
-					await mainContent.dragAndDropFile();
-				});
-				test('expect modal is visible', async () => {
-					await expect(mainContent.modalTitle()).toHaveText('File Upload');
-				});
-				test('expect cancel button is visible', async () => {
-					await expect(mainContent.modalCancelButton()).toBeVisible();
-				});
-				test('expect confirm button is visible', async () => {
-					await expect(mainContent.buttonSend()).toBeVisible();
-				});
-				test('expect file preview is visible', async () => {
-					await expect(mainContent.modalFilePreview()).toBeVisible();
-				});
-
-				test('expect file name input is visible', async () => {
-					await expect(mainContent.fileName()).toBeVisible();
-					await expect(mainContent.fileName()).toHaveText('File name');
-				});
-
-				test('expect file description is visible', async () => {
-					await expect(mainContent.fileDescription()).toBeVisible();
-					await expect(mainContent.fileDescription()).toHaveText('File description');
-				});
-			});
-			test.describe('[Actions]', async () => {
-				test.beforeEach(async () => {
-					await mainContent.dragAndDropFile();
-				});
-
-				test('expect not show modal after click in cancel button', async () => {
-					await mainContent.cancelClick();
-					await expect(mainContent.modalFilePreview()).not.toBeVisible();
-				});
-
-				test('expect send file not show modal', async () => {
-					await mainContent.sendFileClick();
-					await expect(mainContent.modalFilePreview()).not.toBeVisible();
-				});
-				test('expect send file with description', async () => {
-					await mainContent.setDescription();
-					await mainContent.sendFileClick();
-					await expect(mainContent.getFileDescription()).toHaveText('any_description');
-				});
-
-				test('expect send file with different file name', async () => {
-					await mainContent.setFileName();
-					await mainContent.sendFileClick();
-					await expect(mainContent.lastMessageFileName()).toContainText('any_file1.txt');
-				});
-			});
+		test('expect send file not show modal', async () => {
+			await pageHomeChannel.content.buttonSend.click();
+			await expect(pageHomeChannel.content.modalFilePreview).not.toBeVisible();
 		});
 
-		test.describe('[Messaging actions]', async () => {
-			test.describe('[Usage]', async () => {
-				test.beforeAll(async () => {
-					await sideNav.general().click();
-				});
-				test.describe('[Reply]', async () => {
-					test.beforeAll(async () => {
-						await mainContent.sendMessage('This is a message for reply');
-						await mainContent.openMessageActionMenu();
-					});
-					test('expect reply the message', async () => {
-						await mainContent.selectAction('reply');
-						await flexTab.messageInput().type('this is a reply message');
-						await flexTab.keyboardPress('Enter');
-						await expect(flexTab.flexTabViewThreadMessage()).toHaveText('this is a reply message');
-						await flexTab.closeThreadMessage().click();
-					});
-				});
+		test('expect send file with description', async () => {
+			await pageHomeChannel.content.descriptionInput.type('any_description');
+			await pageHomeChannel.content.buttonSend.click();
+			await expect(pageHomeChannel.content.getFileDescription).toHaveText('any_description');
+		});
 
-				test.describe('[Edit]', async () => {
-					test.beforeAll(async () => {
-						await mainContent.sendMessage('This is a message for edit');
-						await mainContent.openMessageActionMenu();
-					});
+		test('expect send file with different file name', async () => {
+			await pageHomeChannel.content.fileNameInput.fill('any_file1.txt');
+			await pageHomeChannel.content.buttonSend.click();
+			await expect(pageHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+		});
+	});
 
-					test('expect edit the message', async () => {
-						await mainContent.selectAction('edit');
-					});
-				});
+	test.describe('Messaging actions', async () => {
+		test.beforeEach(async () => {
+			await pageHomeChannel.sidenav.doOpenChat('general');
+		});
 
-				test.describe('[Delete]', async () => {
-					test.beforeAll(async () => {
-						await mainContent.sendMessage('Message for Message Delete Tests');
-						await mainContent.openMessageActionMenu();
-					});
+		test('expect reply the message', async ({ page }) => {
+			await pageHomeChannel.content.doSendMessage('This is a message for reply');
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('reply');
+			await pageHomeChannel.tabs.messageInput.type('this is a reply message');
+			await page.keyboard.press('Enter');
+			await expect(pageHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
+			await pageHomeChannel.tabs.closeThreadMessage.click();
+		});
 
-					test('expect message is deleted', async () => {
-						await mainContent.selectAction('delete');
-					});
-				});
+		test('expect edit the message', async () => {
+			await pageHomeChannel.content.doSendMessage('This is a message to edit');
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('edit');
+		});
 
-				test.describe('[Quote]', async () => {
-					const message = `Message for quote Tests - ${Date.now()}`;
+		test('expect message is deleted', async () => {
+			await pageHomeChannel.content.doSendMessage('Message to delete');
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('delete');
+		});
 
-					test.beforeAll(async () => {
-						await mainContent.sendMessage(message);
-						await mainContent.openMessageActionMenu();
-					});
+		test('it should quote the message', async () => {
+			const message = `Message for quote - ${Date.now()}`;
 
-					test('it should quote the message', async () => {
-						await mainContent.selectAction('quote');
-						await expect(mainContent.waitForLastMessageTextAttachmentEqualsText()).toHaveText(message);
-					});
-				});
+			await pageHomeChannel.content.doSendMessage(message);
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('quote');
 
-				test.describe('[Star]', async () => {
-					test.beforeAll(async () => {
-						await mainContent.sendMessage('Message for star Tests');
-						await mainContent.openMessageActionMenu();
-					});
+			await expect(pageHomeChannel.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
+		});
 
-					test('it should star the message', async () => {
-						await mainContent.selectAction('star');
-					});
-				});
+		test('it should star the message', async () => {
+			await pageHomeChannel.content.doSendMessage('Message to star');
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('star');
+		});
 
-				test.describe('[Copy]', async () => {
-					test.beforeAll(async () => {
-						await mainContent.sendMessage('Message for copy Tests');
-						await mainContent.openMessageActionMenu();
-					});
+		test('it should copy the message', async () => {
+			await pageHomeChannel.content.doSendMessage('Message to copy');
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('copy');
+		});
 
-					test('it should copy the message', async () => {
-						await mainContent.selectAction('copy');
-					});
-				});
-
-				test.describe('[Permalink]', async () => {
-					test.beforeAll(async () => {
-						await mainContent.sendMessage('Message for permalink Tests');
-						await mainContent.openMessageActionMenu();
-					});
-
-					test('it should permalink the message', async () => {
-						await mainContent.selectAction('permalink');
-					});
-				});
-			});
+		test('it should permalink the message', async () => {
+			await pageHomeChannel.content.doSendMessage('Message to permalink');
+			await pageHomeChannel.content.doOpenMessageActionMenu();
+			await pageHomeChannel.content.doSelectAction('permalink');
 		});
 	});
 });

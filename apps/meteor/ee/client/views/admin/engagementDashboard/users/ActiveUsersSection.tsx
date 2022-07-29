@@ -5,11 +5,11 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
-import CounterSet from '../../../../../../client/components/data/CounterSet';
+import CounterSet from '../../../../../../client/components/dataView/CounterSet';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
 import Section from '../Section';
-import DownloadDataButton from '../data/DownloadDataButton';
-import LegendSymbol from '../data/LegendSymbol';
+import DownloadDataButton from '../dataView/DownloadDataButton';
+import LegendSymbol from '../dataView/LegendSymbol';
 import { useActiveUsers } from './useActiveUsers';
 
 type ActiveUsersSectionProps = {
@@ -128,7 +128,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 						variation: diffDailyActiveUsers ?? 0,
 						description: (
 							<>
-								<LegendSymbol color={colors.b200} /> {t('Daily_Active_Users')}
+								<LegendSymbol color={colors.p200} /> {t('Daily_Active_Users')}
 							</>
 						),
 					},
@@ -137,7 +137,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 						variation: diffWeeklyActiveUsers ?? 0,
 						description: (
 							<>
-								<LegendSymbol color={colors.b300} /> {t('Weekly_Active_Users')}
+								<LegendSymbol color={colors.p300} /> {t('Weekly_Active_Users')}
 							</>
 						),
 					},
@@ -146,7 +146,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 						variation: diffMonthlyActiveUsers ?? 0,
 						description: (
 							<>
-								<LegendSymbol color={colors.b500} /> {t('Monthly_Active_Users')}
+								<LegendSymbol color={colors.p500} /> {t('Monthly_Active_Users')}
 							</>
 						),
 					},
@@ -204,7 +204,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 											right: 0,
 											left: 40,
 										}}
-										colors={[colors.b200, colors.b300, colors.b500]}
+										colors={[colors.p200, colors.p300, colors.p500]}
 										axisLeft={{
 											// TODO: Get it from theme
 											tickSize: 0,

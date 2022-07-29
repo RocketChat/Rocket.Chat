@@ -5,12 +5,12 @@ import { useQuery } from 'react-query';
 import { UpgradeTabVariant, getUpgradeTabType } from '../../../lib/getUpgradeTabType';
 
 export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; trialEndDate: string | undefined; isLoading: boolean } => {
-	const getRegistrationStatus = useEndpoint('GET', 'cloud.registrationStatus');
-	const getLicenses = useEndpoint('GET', 'licenses.get');
+	const getRegistrationStatus = useEndpoint('GET', '/v1/cloud.registrationStatus');
+	const getLicenses = useEndpoint('GET', '/v1/licenses.get');
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
 
 	const { data: registrationStatusData } = useQuery(['registrationStatus'], () => getRegistrationStatus());
-	const { data: getValidLicensesData, isSuccess } = useQuery(['licences'], () => getLicenses(), {
+	const { data: getValidLicensesData, isSuccess } = useQuery(['licenses'], () => getLicenses(), {
 		enabled: !!registrationStatusData,
 	});
 

@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
@@ -10,7 +10,14 @@ import VisitorData from './VisitorData';
 function RoomEditWithData({ id, reload, reloadInfo, close }) {
 	const t = useTranslation();
 
-	const { value: roomData, phase: state, error } = useEndpointData(`rooms.info?roomId=${id}`);
+	const {
+		value: roomData,
+		phase: state,
+		error,
+	} = useEndpointData(
+		'/v1/rooms.info',
+		useMemo(() => ({ roomId: id }), [id]),
+	);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

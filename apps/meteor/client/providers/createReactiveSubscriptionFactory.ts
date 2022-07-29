@@ -1,16 +1,15 @@
 import { Tracker } from 'meteor/tracker';
-import { Subscription, Unsubscribe } from 'use-subscription';
 
 interface ISubscriptionFactory<T> {
-	(...args: any[]): Subscription<T>;
+	(...args: any[]): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T];
 }
 
 export const createReactiveSubscriptionFactory =
 	<T>(computeCurrentValueWith: (...args: any[]) => T): ISubscriptionFactory<T> =>
-	(...args: any[]): Subscription<T> => {
+	(...args: any[]): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T] => {
 		const computeCurrentValue = (): T => computeCurrentValueWith(...args);
 
-		const callbacks = new Set<Unsubscribe>();
+		const callbacks = new Set<() => void>();
 
 		let currentValue = computeCurrentValue();
 
@@ -24,9 +23,8 @@ export const createReactiveSubscriptionFactory =
 			});
 		}, 0);
 
-		return {
-			getCurrentValue: (): T => currentValue,
-			subscribe: (callback): Unsubscribe => {
+		return [
+			(callback): (() => void) => {
 				callbacks.add(callback);
 
 				return (): void => {
@@ -39,5 +37,6 @@ export const createReactiveSubscriptionFactory =
 					}
 				};
 			},
-		};
+			(): T => currentValue,
+		];
 	};

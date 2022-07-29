@@ -1,40 +1,41 @@
-import { test } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
-import ChannelCreation from './utils/pageobjects/ChannelCreation';
-import LoginPage from './utils/pageobjects/LoginPage';
-import { validUserInserted, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';
+import { test, expect } from './utils/test';
+import { HomeChannel, Auth } from './page-objects';
 
-test.describe('[Channel]', async () => {
-	let channelCreation: ChannelCreation;
-	let loginPage: LoginPage;
+test.describe('Channel Creation', () => {
+	let pageAuth: Auth;
+	let pageHomeChannel: HomeChannel;
 
-	const HELLO = 'Hello';
-
-	test.beforeEach(async ({ page, baseURL }) => {
-		const baseUrl = baseURL as string;
-		loginPage = new LoginPage(page);
-		await loginPage.goto(baseUrl);
-		await loginPage.login(validUserInserted);
-
-		channelCreation = new ChannelCreation(page);
+	test.beforeEach(async ({ page }) => {
+		pageAuth = new Auth(page);
+		pageHomeChannel = new HomeChannel(page);
 	});
 
-	test.describe('[Public and private channel creation]', () => {
-		let channelName: string;
-		test.beforeEach(async () => {
-			channelName = faker.animal.type();
-		});
-
-		test('expect create privateChannel channel', async () => {
-			await channelCreation.createChannel(channelName, true);
-		});
-
-		test('expect create public channel', async () => {
-			await channelCreation.createChannel(channelName, false);
-		});
+	test.beforeEach(async () => {
+		await pageAuth.doLogin();
 	});
-	test('expect send message to channel created', async () => {
-		await channelCreation.sendMessage(ROCKET_CAT, HELLO);
+
+	test('expect create public channel', async ({ page }) => {
+		const name = faker.animal.type() + Date.now();
+
+		await pageHomeChannel.sidenav.btnCreate.click();
+		await pageHomeChannel.sidenav.createOptionByText('Channel').click();
+		await pageHomeChannel.sidenav.checkboxChannelType.click();
+		await pageHomeChannel.sidenav.inputChannelName.type(name);
+		await pageHomeChannel.sidenav.btnCreateChannel.click();
+
+		await expect(page).toHaveURL(`/channel/${name}`);
+	});
+
+	test('expect create private channel', async ({ page }) => {
+		const name = faker.animal.type() + Date.now();
+
+		await pageHomeChannel.sidenav.btnCreate.click();
+		await pageHomeChannel.sidenav.createOptionByText('Channel').click();
+		await pageHomeChannel.sidenav.inputChannelName.type(name);
+		await pageHomeChannel.sidenav.btnCreateChannel.click();
+
+		await expect(page).toHaveURL(`/group/${name}`);
 	});
 });

@@ -1,8 +1,8 @@
-import { Box, Button, Icon, Throbber } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Throbber, Tooltip, PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, memo } from 'react';
+import React, { useCallback, useState, useRef, memo } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
@@ -33,11 +33,13 @@ const actions = {
 	},
 };
 
-const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false, ...props }) => {
+const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, installed = false, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState());
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
+	const [isHovered, setIsHovered] = useState(false);
 	const setModal = useSetModal();
+	const statusRef = useRef();
 
 	const { price, purchaseType, pricingPlans } = app;
 
@@ -107,15 +109,17 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 	};
 
 	const AppStatusStyle = {
-		bg: status.label === 'Disabled' ? colors.y100 : colors.b100,
-		color: status.label === 'Disabled' ? colors.y800 : 'primary-500',
+		bg: status.label === 'Disabled' ? colors.w100 : colors.p100,
+		color: status.label === 'Disabled' ? colors.w800 : colors.p500,
 	};
+
+	const shouldShowPriceDisplay = isAppDetailsPage && button && button.action !== 'update';
 
 	return (
 		<Box {...props}>
 			{button && (
 				<Box
-					bg={colors.b100}
+					bg={isAppDetailsPage ? colors.p100 : 'transparent'}
 					display='flex'
 					flexDirection='row'
 					alignItems='center'
@@ -123,17 +127,28 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 					borderRadius='x2'
 					invisible={!showStatus && !loading}
 				>
-					<Button primary disabled={loading} minHeight='x40' onClick={handleClick}>
+					<Button
+						secondary={button.label !== 'Update'}
+						primary={button.label === 'Update'}
+						fontSize='x12'
+						fontWeight={700}
+						disabled={loading}
+						onClick={handleClick}
+						mie={isAppDetailsPage || isSubscribed ? '0' : 'x32'}
+						pi='x8'
+						pb='x6'
+						lineHeight='x12'
+					>
 						{loading ? (
 							<Throbber inheritColor />
 						) : (
 							<>
-								{button.icon && <Icon name={button.icon} />}
-								{t(button.label)}
+								{button.icon && <Icon name={button.icon} mie='x8' />}
+								{t(button.label.replace(' ', '_'))}
 							</>
 						)}
 					</Button>
-					{isAppDetailsPage && (
+					{shouldShowPriceDisplay && (
 						<Box pi='x14' color='primary-500'>
 							{!installed && (
 								<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
@@ -143,10 +158,29 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 				</Box>
 			)}
 			{status && (
-				<Box display='flex' alignItems='center' pi='x14' pb='x8' bg={AppStatusStyle.bg} color={AppStatusStyle.color}>
-					<Icon size='x20' name={status.icon} mie='x4' />
-					{t(status.label)}
-				</Box>
+				<>
+					<Box
+						ref={statusRef}
+						onMouseEnter={() => setIsHovered(true)}
+						onMouseLeave={() => setIsHovered(false)}
+						display='flex'
+						alignItems='center'
+						pi='x8'
+						pb='x8'
+						bg={AppStatusStyle.bg}
+						color={AppStatusStyle.color}
+					>
+						<Icon size='x20' name={status.icon} mie='x4' />
+					</Box>
+					<PositionAnimated
+						anchor={statusRef}
+						placement='top-middle'
+						margin={8}
+						visible={isHovered ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}
+					>
+						<Tooltip bg={colors.n900} color={colors.white}>{`App ${status.label}`}</Tooltip>
+					</PositionAnimated>
+				</>
 			)}
 		</Box>
 	);

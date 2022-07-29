@@ -7,6 +7,7 @@ type UserAvatarProps = Omit<BaseAvatarProps, 'url' | 'title'> & {
 	username: string;
 	etag?: string;
 	url?: string;
+	title?: string;
 };
 
 const UserAvatar: FC<UserAvatarProps> = ({ username, etag, ...rest }) => {

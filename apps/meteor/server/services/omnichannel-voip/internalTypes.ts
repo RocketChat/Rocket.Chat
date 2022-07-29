@@ -1,3 +1,6 @@
+import { IVoipRoom, IMessage } from '@rocket.chat/core-typings';
+import { FindOptions } from 'mongodb';
+
 export type FindVoipRoomsParams = {
 	agents?: string[];
 	open?: boolean;
@@ -7,9 +10,13 @@ export type FindVoipRoomsParams = {
 	queue?: string;
 	visitorId?: string;
 	options?: {
-		sort?: Record<string, unknown>;
+		sort?: FindOptions<IVoipRoom>['sort'];
 		count?: number;
 		fields?: Record<string, unknown>;
 		offset?: number;
 	};
+	direction?: IVoipRoom['direction'];
+	roomName?: string;
 };
+
+export type IOmniRoomClosingMessage = Pick<IMessage, 't' | 'groupable'> & Partial<Pick<IMessage, 'msg'>>;

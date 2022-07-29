@@ -5,7 +5,7 @@ import { API } from '../../../../api/server';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/transcript', {
-	post() {
+	async post() {
 		try {
 			check(this.bodyParams, {
 				token: String,
@@ -14,7 +14,7 @@ API.v1.addRoute('livechat/transcript', {
 			});
 
 			const { token, rid, email } = this.bodyParams;
-			if (!Livechat.sendTranscript({ token, rid, email })) {
+			if (!(await Livechat.sendTranscript({ token, rid, email }))) {
 				return API.v1.failure({ message: TAPi18n.__('Error_sending_livechat_transcript') });
 			}
 

@@ -2,7 +2,7 @@ import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
-import CounterSet from '../../../components/data/CounterSet';
+import CounterSet from '../../../components/dataView/CounterSet';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { usePolledMethodData } from '../../../hooks/usePolledMethodData';
 

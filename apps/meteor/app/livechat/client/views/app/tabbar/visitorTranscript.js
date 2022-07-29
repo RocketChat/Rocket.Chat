@@ -169,12 +169,12 @@ Template.visitorTranscript.onCreated(async function () {
 	this.infoMessage = new ReactiveVar('');
 
 	this.autorun(async () => {
-		const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${Template.currentData().visitorId}`);
+		const { visitor } = await APIClient.get('/v1/livechat/visitors.info', { visitorId: Template.currentData().visitorId });
 		this.visitor.set(visitor);
 	});
 
 	this.autorun(async () => {
-		const { room } = await APIClient.v1.get(`rooms.info?roomId=${Template.currentData().roomId}`);
+		const { room } = await APIClient.get('/v1/rooms.info', { roomId: Template.currentData().roomId });
 		this.room.set(room);
 
 		if (room?.transcriptRequest) {

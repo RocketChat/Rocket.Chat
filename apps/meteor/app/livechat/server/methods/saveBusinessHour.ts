@@ -8,7 +8,7 @@ Meteor.methods({
 		try {
 			Promise.await(businessHourManager.saveBusinessHour(businessHourData));
 		} catch (e) {
-			throw new Meteor.Error(e.message);
+			throw new Meteor.Error(e instanceof Error ? e.message : String(e));
 		}
 	},
 });

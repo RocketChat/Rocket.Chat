@@ -1,6 +1,8 @@
+import { IVoipRoom } from '@rocket.chat/core-typings';
 import { useLayout, useCurrentRoute } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
 
+import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import BurgerMenu from '../../../../components/BurgerMenu';
 import TemplateHeader from '../../../../components/Header';
 import { ToolboxActionConfig } from '../../lib/Toolbox';
@@ -8,7 +10,11 @@ import { ToolboxContext, useToolboxContext } from '../../lib/Toolbox/ToolboxCont
 import RoomHeader, { RoomHeaderProps } from '../RoomHeader';
 import { BackButton } from './BackButton';
 
-const VoipRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot, room }) => {
+export type VoipRoomHeaderProps = {
+	room: IVoipRoom;
+} & Omit<RoomHeaderProps, 'room'>;
+
+const VoipRoomHeader: FC<VoipRoomHeaderProps> = ({ slots: parentSlot, room }) => {
 	const [name] = useCurrentRoute();
 	const { isMobile } = useLayout();
 	const context = useToolboxContext();
@@ -35,7 +41,7 @@ const VoipRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot, room }) => {
 				[context],
 			)}
 		>
-			<RoomHeader slots={slots} room={room} />
+			<RoomHeader slots={slots} room={{ ...room, name: parseOutboundPhoneNumber(room.fname) }} />
 		</ToolboxContext.Provider>
 	);
 };

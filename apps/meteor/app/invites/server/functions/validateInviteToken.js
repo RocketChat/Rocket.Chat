@@ -1,7 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-
-import { Rooms } from '../../../models';
-import { Invites } from '../../../models/server/raw';
+import { Invites, Rooms } from '@rocket.chat/models';
 
 export const validateInviteToken = async (token) => {
 	if (!token || typeof token !== 'string') {
@@ -19,7 +17,7 @@ export const validateInviteToken = async (token) => {
 		});
 	}
 
-	const room = Rooms.findOneById(inviteData.rid);
+	const room = await Rooms.findOneById(inviteData.rid);
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'The invite token is invalid.', {
 			method: 'validateInviteToken',

@@ -17,5 +17,9 @@ declare module 'meteor/accounts-base' {
 		export class LoginCancelledError extends Error {
 			public static readonly numericError: number;
 		}
+
+		export const USER_ID_KEY: string;
+
+		export const LOGIN_TOKEN_KEY: string;
 	}
 }

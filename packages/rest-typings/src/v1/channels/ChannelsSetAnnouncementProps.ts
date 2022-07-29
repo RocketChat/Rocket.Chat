@@ -2,20 +2,37 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type ChannelsSetAnnouncementProps = { roomId: string; announcement: string };
+export type ChannelsSetAnnouncementProps = { roomId: string; announcement: string } | { roomName: string; announcement: string };
 
 const channelsSetAnnouncementPropsSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+				announcement: {
+					type: 'string',
+				},
+			},
+			required: ['roomId', 'announcement'],
+			additionalProperties: false,
 		},
-		announcement: {
-			type: 'string',
+		{
+			type: 'object',
+			properties: {
+				roomName: {
+					type: 'string',
+				},
+				announcement: {
+					type: 'string',
+				},
+			},
+			required: ['roomName', 'announcement'],
+			additionalProperties: false,
 		},
-	},
-	required: ['roomId', 'announcement'],
-	additionalProperties: false,
+	],
 };
 
 export const isChannelsSetAnnouncementProps = ajv.compile<ChannelsSetAnnouncementProps>(channelsSetAnnouncementPropsSchema);

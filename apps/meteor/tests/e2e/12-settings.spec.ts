@@ -1,35 +1,27 @@
-import { test, expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
-import { BASE_API_URL } from './utils/mocks/urlMock';
+import { test, expect } from './utils/test';
+import { BASE_API_URL } from './utils/constants';
 import { adminLogin, validUserInserted, registerUser } from './utils/mocks/userAndPasswordMock';
-import LoginPage from './utils/pageobjects/LoginPage';
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import Administration from './utils/pageobjects/Administration';
-import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
+import { Auth, HomeChannel, AccountProfile, Administration } from './page-objects';
 
 const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
 
-test.describe.skip('[Settings]', async () => {
+test.describe.skip('Settings', async () => {
 	let page: Page;
-	let loginPage: LoginPage;
-	let mainContent: MainContent;
-	let sideNav: SideNav;
-	let userPreferences: PreferencesMainContent;
+	let pageAuth: Auth;
+	let pageHomeChannel: HomeChannel;
+	let pageAccountProfile: AccountProfile;
 
 	test.beforeAll(async ({ browser }) => {
-		const context = await browser.newContext();
-		page = await context.newPage();
+		page = await browser.newPage();
+		pageAuth = new Auth(page);
+		pageHomeChannel = new HomeChannel(page);
+		pageAccountProfile = new AccountProfile(page);
 
-		loginPage = new LoginPage(page);
-		mainContent = new MainContent(page);
-		sideNav = new SideNav(page);
-		userPreferences = new PreferencesMainContent(page);
-
-		await loginPage.goto('/');
-		await loginPage.login(validUserInserted);
-		await sideNav.general().click();
+		await pageAuth.doLogin(validUserInserted);
+		await pageHomeChannel.sidenav.doOpenChat('general');
 	});
 
 	test.beforeAll(async ({ request }) => {
@@ -58,9 +50,9 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(edit) not be visible', async () => {
-			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.doSendMessage(`any_message_${uuid()}`);
+			await pageHomeChannel.content.doOpenMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="edit-message"]')).toBeFalsy();
 		});
@@ -77,9 +69,9 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(edit) be visible', async () => {
-			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.doSendMessage(`any_message_${uuid()}`);
+			await pageHomeChannel.content.doOpenMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="edit-message"]')).toBeTruthy();
 		});
@@ -98,9 +90,9 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(delete) not be visible', async () => {
-			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.doSendMessage(`any_message_${uuid()}`);
+			await pageHomeChannel.content.doOpenMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeFalsy();
 		});
@@ -117,9 +109,9 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(delete) be visible', async () => {
-			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.doSendMessage(`any_message_${uuid()}`);
+			await pageHomeChannel.content.doOpenMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeTruthy();
 		});
@@ -138,9 +130,9 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(upload audio) not be visible', async () => {
-			await mainContent.doReload();
+			await pageHomeChannel.content.doReload();
 
-			expect(await mainContent.recordBtn().isVisible()).toBeFalsy();
+			expect(await pageHomeChannel.content.btnAudioRecod.isVisible()).toBeFalsy();
 		});
 
 		test('(API) expect enable audio files', async ({ request }) => {
@@ -155,9 +147,9 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(upload audio) be visible', async () => {
-			await mainContent.doReload();
+			await pageHomeChannel.content.doReload();
 
-			expect(await mainContent.recordBtn().isVisible()).toBeTruthy();
+			expect(await pageHomeChannel.content.btnAudioRecod.isVisible()).toBeTruthy();
 		});
 	});
 
@@ -174,8 +166,8 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(upload video) not be visible', async () => {
-			await mainContent.doReload();
-			await mainContent.openMoreActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.openMoreActionMenu();
 
 			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeFalsy();
 		});
@@ -192,8 +184,8 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(upload video) be visible', async () => {
-			await mainContent.doReload();
-			await mainContent.openMoreActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.openMoreActionMenu();
 
 			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeTruthy();
 		});
@@ -225,10 +217,10 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect badword be censored', async () => {
-			await mainContent.doReload();
+			await pageHomeChannel.content.doReload();
 
-			await mainContent.sendMessage(unauthorizedWord);
-			await mainContent.waitForLastMessageEqualsText('*'.repeat(unauthorizedWord.length));
+			await pageHomeChannel.content.doSendMessage(unauthorizedWord);
+			await expect(pageHomeChannel.content.lastMessage).toContainText('*'.repeat(unauthorizedWord.length));
 		});
 
 		test('(API) expect disable bad words filter', async ({ request }) => {
@@ -243,10 +235,10 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect badword not be censored', async () => {
-			await mainContent.doReload();
+			await pageHomeChannel.content.doReload();
 
-			await mainContent.sendMessage(unauthorizedWord);
-			await mainContent.waitForLastMessageEqualsText(unauthorizedWord);
+			await pageHomeChannel.content.doSendMessage(unauthorizedWord);
+			await expect(pageHomeChannel.content.lastMessage).toContainText(unauthorizedWord);
 		});
 	});
 
@@ -263,9 +255,9 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test.skip('(UI) expect option(star message) not be visible', async () => {
-			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.doSendMessage(`any_message_${uuid()}`);
+			await pageHomeChannel.content.doOpenMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="star-message"]')).toBeFalsy();
 		});
@@ -282,9 +274,9 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(star message) be visible', async () => {
-			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.doSendMessage(`any_message_${uuid()}`);
+			await pageHomeChannel.content.doOpenMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="star-message"]')).toBeTruthy();
 		});
@@ -303,8 +295,8 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(upload file) not be visible', async () => {
-			await mainContent.doReload();
-			await mainContent.openMoreActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.openMoreActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="file-upload"]')).toBeFalsy();
 		});
@@ -321,8 +313,8 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(upload file) be visible', async () => {
-			await mainContent.doReload();
-			await mainContent.openMoreActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.openMoreActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="file-upload"]')).toBeTruthy();
 		});
@@ -341,13 +333,13 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test.skip('(UI) expect options(update profile) be disabled', async () => {
-			await sideNav.sidebarUserMenu().click();
-			await sideNav.account().click();
+			await pageHomeChannel.sidenav.btnAvatar.click();
+			await pageHomeChannel.sidenav.linkAccount.click();
 
-			expect(userPreferences.avatarFileInput().isDisabled()).toBeTruthy();
-			expect(userPreferences.emailTextInput().isDisabled()).toBeTruthy();
-			expect(userPreferences.realNameTextInput().isDisabled()).toBeTruthy();
-			expect(userPreferences.userNameTextInput().isDisabled()).toBeTruthy();
+			expect(pageAccountProfile.avatarFileInput.isDisabled()).toBeTruthy();
+			expect(pageAccountProfile.emailTextInput.isDisabled()).toBeTruthy();
+			expect(pageAccountProfile.inputName.isDisabled()).toBeTruthy();
+			expect(pageAccountProfile.inputUsername.isDisabled()).toBeTruthy();
 		});
 
 		test('(API) expect enable profile change', async ({ request }) => {
@@ -375,10 +367,10 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test.skip('(UI) expect option(update avatar) be disabled', async () => {
-			await sideNav.sidebarUserMenu().click();
-			await sideNav.account().click();
+			await pageHomeChannel.sidenav.btnAvatar.click();
+			await pageHomeChannel.sidenav.linkAccount.click();
 
-			expect(userPreferences.avatarFileInput().isDisabled()).toBeTruthy();
+			expect(pageAccountProfile.avatarFileInput.isDisabled()).toBeTruthy();
 		});
 
 		test('(API) expect enable avatar change', async ({ request }) => {
@@ -394,25 +386,21 @@ test.describe.skip('[Settings]', async () => {
 	});
 });
 
-test.describe.skip('[Settings (admin)]', async () => {
+test.describe.skip('Settings (admin)', async () => {
 	let page: Page;
-	let loginPage: LoginPage;
-	let mainContent: MainContent;
-	let sideNav: SideNav;
-	let admin: Administration;
+	let pageAuth: Auth;
+	let pageHomeChannel: HomeChannel;
+	let pageAdmin: Administration;
 
 	test.beforeAll(async ({ browser }) => {
-		const context = await browser.newContext();
-		page = await context.newPage();
+		page = await browser.newPage();
+		pageAuth = new Auth(page);
+		pageHomeChannel = new HomeChannel(page);
+		pageAdmin = new Administration(page);
 
-		loginPage = new LoginPage(page);
-		mainContent = new MainContent(page);
-		sideNav = new SideNav(page);
-		admin = new Administration(page);
-
-		await loginPage.goto('/');
-		await loginPage.login(adminLogin);
-		await sideNav.general().click();
+		await page.goto('/');
+		await pageAuth.doLogin();
+		await pageHomeChannel.sidenav.doOpenChat('general');
 	});
 
 	test.beforeAll(async ({ request }) => {
@@ -436,9 +424,9 @@ test.describe.skip('[Settings (admin)]', async () => {
 		});
 
 		test('(UI) expect option(pin message) not be visible', async () => {
-			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.doSendMessage(`any_message_${uuid()}`);
+			await pageHomeChannel.content.doOpenMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeFalsy();
 		});
@@ -455,9 +443,9 @@ test.describe.skip('[Settings (admin)]', async () => {
 		});
 
 		test('(UI) expect option(pin message) be visible', async () => {
-			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await pageHomeChannel.content.doReload();
+			await pageHomeChannel.content.doSendMessage(`any_message_${uuid()}`);
+			await pageHomeChannel.content.doOpenMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeTruthy();
 		});
@@ -477,23 +465,23 @@ test.describe.skip('[Settings (admin)]', async () => {
 
 		test.describe('(UI) expect activate/deactivate flow as admin', () => {
 			test('expect open /users as admin', async () => {
-				await admin.goto('/admin');
-				await admin.usersLink().click();
+				await page.goto('/admin');
+				await pageAdmin.usersLink.click();
 			});
 
 			test('expect find registered user', async () => {
-				await admin.usersFilter().type(registerUser.email, { delay: 200 });
-				await admin.userInTable(registerUser.email).click();
+				await pageAdmin.usersFilter.type(registerUser.email, { delay: 200 });
+				await pageAdmin.userInTable(registerUser.email).click();
 			});
 
 			test('expect activate registered user', async () => {
-				await admin.userInfoActions().locator('button:nth-child(3)').click();
-				await admin.getPage().locator('[value="changeActiveStatus"]').click();
+				await pageAdmin.userInfoActions.locator('button:nth-child(3)').click();
+				await page.locator('value="changeActiveStatus"]').click();
 			});
 
 			test('expect deactivate registered user', async () => {
-				await admin.userInfoActions().locator('button:nth-child(3)').click();
-				await admin.getPage().locator('[value="changeActiveStatus"]').click();
+				await pageAdmin.userInfoActions.locator('button:nth-child(3)').click();
+				await page.locator('value="changeActiveStatus"]').click();
 			});
 		});
 
