@@ -11,12 +11,14 @@ import {
 	canAccessRoom,
 	hasAllPermission,
 	roomAccessAttributes,
+	hasRole,
 } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
+import { isGroupsMembersProps, isRoomIdOrRoomNameProps } from '@rocket.chat/rest-typings/dist/v1/groups';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
@@ -643,32 +645,33 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.members',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsMembersProps },
 	{
 		async get() {
-			const findResult = findPrivateGroupByIdOrName({
-				params: this.requestParams(),
-				userId: this.userId,
-			});
+			const { roomId } = this.requestParams();
+			const room = Rooms.findOneById(roomId, { fields: API.v1.defaultFieldsToExclude });
 
-			if (findResult.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list', findResult.rid)) {
+			if (!room || room.t !== 'p') {
+				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			}
+
+			const isAdmin = hasRole(this.userId, 'admin');
+
+			if (!isAdmin && !canAccessRoomId(room._id, this.userId)) {
+				throw new Meteor.Error('error-not-allowed', 'You are not allowed to access this group');
+			}
+
+			if (room.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list', room._id)) {
 				return API.v1.unauthorized();
 			}
 
 			const { offset: skip, count: limit } = this.getPaginationItems();
 			const { sort = {} } = this.parseJsonQuery();
 
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
-					filter: Match.Maybe(String),
-				}),
-			);
 			const { status, filter } = this.queryParams;
 
 			const { cursor, totalCount } = findUsersOfRoom({
-				rid: findResult.rid,
+				rid: room._id,
 				...(status && { status: { $in: status } }),
 				skip,
 				limit,
