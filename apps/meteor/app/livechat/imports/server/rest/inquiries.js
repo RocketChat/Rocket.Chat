@@ -128,19 +128,16 @@ API.v1.addRoute(
 	'livechat/inquiries.getOne',
 	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			const { roomId } = this.queryParams;
 			if (!roomId) {
 				return API.v1.failure("The 'roomId' param is required");
 			}
 
 			return API.v1.success(
-				Promise.await(
-					findOneInquiryByRoomId({
-						userId: this.userId,
-						roomId,
-					}),
-				),
+				await findOneInquiryByRoomId({
+					roomId,
+				}),
 			);
 		},
 	},
