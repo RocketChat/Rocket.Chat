@@ -46,15 +46,6 @@ export class FederationRoomServiceListener extends FederationService {
 		const creatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId);
 		if (!creatorUser) {
 			await this.createFederatedUser(externalInviterId, normalizedInviterId);
-			// const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalInviterId);
-			// const name = externalUserProfileInformation?.displayName || normalizedInviterId;
-			// const federatedCreatorUser = FederatedUser.createInstance(externalInviterId, {
-			// 	name,
-			// 	username: normalizedInviterId,
-			// 	existsOnlyOnProxyServer: false,
-			// });
-
-			// await this.rocketUserAdapter.createFederatedUser(federatedCreatorUser);
 		}
 		const creator = creatorUser || (await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId));
 		if (!creator) {
@@ -92,102 +83,26 @@ export class FederationRoomServiceListener extends FederationService {
 			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
 		}
 
-		// const isInviterFromTheSameHomeServer = this.bridge.isUserIdFromTheSameHomeserver(
-		// 	externalInviterId,
-		// 	this.rocketSettingsAdapter.getHomeServerDomain(),
-		// );
-		// const isInviteeFromTheSameHomeServer = this.bridge.isUserIdFromTheSameHomeserver(
-		// 	externalInviteeId,
-		// 	this.rocketSettingsAdapter.getHomeServerDomain(),
-		// );
-		const internalHomeServerDomain = this.internalSettingsAdapter.getHomeServerDomain();
-
 		const isInviterFromTheSameHomeServer = FederatedUser.isAnInternalUser(
 			this.bridge.extractHomeserverOrigin(externalInviterId),
-			internalHomeServerDomain,
+			this.internalHomeServerDomain,
 		);
 		const isInviteeFromTheSameHomeServer = FederatedUser.isAnInternalUser(
 			this.bridge.extractHomeserverOrigin(externalInviteeId),
-			internalHomeServerDomain,
+			this.internalHomeServerDomain,
 		);
-		const defaultInviterUsername = isInviterFromTheSameHomeServer ? inviterUsernameOnly : normalizedInviterId;
-		const defaultInviteeUsername = isInviteeFromTheSameHomeServer ? inviteeUsernameOnly : normalizedInviteeId;
+		const inviterUsername = isInviterFromTheSameHomeServer ? inviterUsernameOnly : normalizedInviterId;
+		const inviteeUsername = isInviteeFromTheSameHomeServer ? inviteeUsernameOnly : normalizedInviteeId;
 
 		const inviterUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId);
 		if (!inviterUser) {
-			await this.createFederatedUser(externalInviterId, defaultInviterUsername, isInviterFromTheSameHomeServer);
-			// const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalInviterId);
-			// const name = externalUserProfileInformation?.displayName || normalizedInviterId;
-			// const federatedCreatorUser = FederatedUser.createInstance(externalInviterId, {
-			// 	name,
-			// 	username: normalizedInviterId,
-			// 	existsOnlyOnProxyServer: false,
-			// });
-
-			// await this.rocketUserAdapter.createFederatedUser(federatedCreatorUser);
+			await this.createFederatedUser(externalInviterId, inviterUsername, isInviterFromTheSameHomeServer);
 		}
-		// if (!(await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviterId))) {
-		// 	const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalInviterId);
-		// 	const name = externalUserProfileInformation?.displayName || normalizedInviterId;
-		// 	const federatedInviterUser = FederatedUser.createInstance(externalInviterId, {
-		// 		name,
-		// 		username,
-		// 		existsOnlyOnProxyServer: isInviterFromTheSameHomeServer,
-		// 	});
-
-		// 	await this.rocketUserAdapter.createFederatedUser(federatedInviterUser);
-		// }
-		// if (!(await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviterId))) {
-		// 	const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalInviterId);
-		// 	const name = externalUserProfileInformation?.displayName || normalizedInviterId;
-		// 	const username = isInviterFromTheSameHomeServer ? inviterUsernameOnly : normalizedInviterId;
-		// 	const federatedInviterUser = FederatedUser.createInstance(externalInviterId, {
-		// 		name,
-		// 		username,
-		// 		existsOnlyOnProxyServer: isInviterFromTheSameHomeServer,
-		// 	});
-
-		// 	await this.rocketUserAdapter.createFederatedUser(federatedInviterUser);
-		// }
-
-		// if (!(await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviteeId))) {
-		// 	const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalInviteeId);
-		// 	const name = externalUserProfileInformation?.displayName || normalizedInviteeId;
-		// 	const username = isInviteeFromTheSameHomeServer ? inviteeUsernameOnly : normalizedInviteeId;
-		// 	const federatedInviteeUser = FederatedUser.createInstance(externalInviteeId, {
-		// 		name,
-		// 		username,
-		// 		existsOnlyOnProxyServer: isInviteeFromTheSameHomeServer,
-		// 	});
-
-		// 	await this.rocketUserAdapter.createFederatedUser(federatedInviteeUser);
-		// }
 
 		const inviteeUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
 		if (!inviteeUser) {
-			await this.createFederatedUser(externalInviteeId, defaultInviteeUsername, isInviteeFromTheSameHomeServer);
-			// const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalInviterId);
-			// const name = externalUserProfileInformation?.displayName || normalizedInviterId;
-			// const federatedCreatorUser = FederatedUser.createInstance(externalInviterId, {
-			// 	name,
-			// 	username: normalizedInviterId,
-			// 	existsOnlyOnProxyServer: false,
-			// });
-
-			// await this.rocketUserAdapter.createFederatedUser(federatedCreatorUser);
+			await this.createFederatedUser(externalInviteeId, inviteeUsername, isInviteeFromTheSameHomeServer);
 		}
-		// if (!(await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviteeId))) {
-		// 	const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalInviteeId);
-		// 	const name = externalUserProfileInformation?.displayName || normalizedInviteeId;
-		// 	const username = isInviteeFromTheSameHomeServer ? inviteeUsernameOnly : normalizedInviteeId;
-		// 	const federatedInviteeUser = FederatedUser.createInstance(externalInviteeId, {
-		// 		name,
-		// 		username,
-		// 		existsOnlyOnProxyServer: isInviteeFromTheSameHomeServer,
-		// 	});
-
-		// 	await this.rocketUserAdapter.createFederatedUser(federatedInviteeUser);
-		// }
 		const federatedInviteeUser = inviteeUser || (await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId));
 		const federatedInviterUser = inviterUser || (await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId));
 
@@ -215,48 +130,20 @@ export class FederationRoomServiceListener extends FederationService {
 			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
 		}
 
+		// TODO: try to move this to the top of the method
 		if (leave) {
 			// TODO: check if this is possible to move to the domain layer
 			const isInviteeAlreadyJoinedInternalRoom = await this.internalRoomAdapter.isUserAlreadyJoined(
 				federatedRoom.internalReference?._id,
 				federatedInviteeUser?.internalReference?._id,
 			);
-			// if (
-			// 	!(await this.internalRoomAdapter.isUserAlreadyJoined(
-			// 		federatedRoom.internalReference?._id,
-			// 		federatedInviteeUser?.internalReference?._id,
-			// 	))
-			// ) {
-			// 	return;
-			// }
-
 			isInviteeAlreadyJoinedInternalRoom &&
 				(await this.internalRoomAdapter.removeUserFromRoom(federatedRoom, federatedInviteeUser, federatedInviterUser));
 			return;
 		}
-		// if (!wasGeneratedOnTheProxyServer && affectedFederatedRoom.isDirectMessage()) {
-		// 	const membersUsernames: string[] = [
-		// 		...(affectedFederatedRoom.internalReference?.usernames || []),
-		// 		federatedInviteeUser?.internalReference?.username || '',
-		// 	];
-		// 	const newFederatedRoom = FederatedRoom.createInstance(
-		// 		externalRoomId,
-		// 		normalizedRoomId,
-		// 		federatedInviterUser,
-		// 		RoomType.DIRECT_MESSAGE,
-		// 		externalRoomName,
-		// 	);
-		// 	if (affectedFederatedRoom.internalReference?.usernames?.includes(federatedInviteeUser?.internalReference.username || '')) {
-		// 		return;
-		// 	}
-		// 	await this.internalRoomAdapter.removeDirectMessageRoom(affectedFederatedRoom);
-		// 	await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom, membersUsernames.filter(Boolean));
-		// 	return;
-		// }
-		console.log({ wasGeneratedOnTheProxyServer, affectedFederatedRoom, federatedInviteeUser });
 		if (!wasGeneratedOnTheProxyServer && federatedRoom.isDirectMessage() && !federatedRoom.isUserPartOfTheRoom(federatedInviteeUser)) {
 			// TODO: leaked business logic, revisit this to move to domain layer
-			const membersUsernames = [...federatedRoom.getMembersUsernames(), federatedInviteeUser.getUsername() || defaultInviteeUsername];
+			const membersUsernames = [...federatedRoom.getMembersUsernames(), federatedInviteeUser.getUsername() || inviteeUsername];
 			const newFederatedRoom = FederatedRoom.createInstance(
 				externalRoomId,
 				normalizedRoomId,
@@ -264,12 +151,6 @@ export class FederationRoomServiceListener extends FederationService {
 				RoomType.DIRECT_MESSAGE,
 				externalRoomName,
 			);
-			// if (federatedRoom.internalReference?.usernames?.includes(federatedInviteeUser?.internalReference.username || '')) {
-			// 	return;
-			// }
-			// if (federatedRoom.isUserPartOfTheRoom(federatedInviteeUser)) {
-			// 	return;
-			// }
 			await this.internalRoomAdapter.removeDirectMessageRoom(federatedRoom);
 			await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom, membersUsernames);
 			return;

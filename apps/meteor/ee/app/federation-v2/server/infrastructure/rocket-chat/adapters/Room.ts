@@ -35,7 +35,7 @@ export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
 	}
 
 	public async createLocalDirectMessageRoom(members: string[], creatorId: string): Promise<void> {
-		createDirectMessage(members, creatorId);
+		return Promise.resolve(createDirectMessage(members, creatorId));
 	}
 
 	private createFederatedRoomEEInstance(externalRoomId: string, room: IRoom): FederatedRoomEE {
