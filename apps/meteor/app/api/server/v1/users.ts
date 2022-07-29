@@ -11,7 +11,7 @@ import {
 	isUsersUpdateParamsPOST,
 	isUsersUpdateOwnBasicInfoParamsPOST,
 	isUsersSetPreferencesParamsPOST,
-	isGETUsersCheckUsernameAvailability,
+	isUsersCheckUsernameAvailabilityParamsGET,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
@@ -598,7 +598,7 @@ API.v1.addRoute(
 	'users.checkUsernameAvailability',
 	{
 		authRequired: true,
-		validateParams: isGETUsersCheckUsernameAvailability,
+		validateParams: isUsersCheckUsernameAvailabilityParamsGET,
 	},
 	{
 		get() {

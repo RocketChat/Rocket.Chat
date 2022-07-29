@@ -3,11 +3,11 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv({coerceTypes: true});
 
-export type GETUsersCheckUsernameAvailability = {
+export type UsersCheckUsernameAvailabilityParamsGET = {
 	username: string;
 };
 
-const GETUsersCheckUsernameAvailabilitySchema = {
+const UsersCheckUsernameAvailabilityParamsGETSchema = {
 	type: 'object',
 	properties: {
 		username: {
@@ -18,4 +18,4 @@ const GETUsersCheckUsernameAvailabilitySchema = {
 	additionalProperties: false,
 };
 
-export const isGETUsersCheckUsernameAvailability = ajv.compile<GETUsersCheckUsernameAvailability>(GETUsersCheckUsernameAvailabilitySchema);
+export const isUsersCheckUsernameAvailabilityParamsGET = ajv.compile<UsersCheckUsernameAvailabilityParamsGET>(UsersCheckUsernameAvailabilityParamsGETSchema);
