@@ -22,7 +22,7 @@ Meteor.methods({
 		}
 
 		try {
-			uploadFileToWebdav(accountId, fileData, name);
+			await uploadFileToWebdav(accountId, fileData, name);
 			return { success: true };
 		} catch (error: any) {
 			if (typeof error === 'object' && error instanceof Error && error.name === 'error-invalid-account') {

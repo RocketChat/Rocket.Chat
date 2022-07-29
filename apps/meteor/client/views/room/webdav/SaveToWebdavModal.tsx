@@ -2,7 +2,7 @@ import { MessageAttachment, IWebdavAccount } from '@rocket.chat/core-typings';
 import { Modal, Box, ButtonGroup, Button, FieldGroup, Field, Select, SelectOption, Throbber } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, useMemo } from 'react';
+import React, { ReactElement, useState, useMemo, useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -21,6 +21,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 	const [isLoading, setIsLoading] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const uploadFileToWebdav = useMethod('uploadFileToWebdav');
+	const fileRequest = useRef<XMLHttpRequest | null>(null);
 	const accountIdField = useUniqueId();
 
 	const {
@@ -39,6 +40,8 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 		return [];
 	}, [value?.accounts]);
 
+	useEffect(() => fileRequest.current?.abort, []);
+
 	const handleSaveFile = ({ accountId }: { accountId: IWebdavAccount['_id'] }): void => {
 		setIsLoading(true);
 
@@ -47,11 +50,11 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 			attachment: { title },
 		} = data;
 
-		const fileRequest = new XMLHttpRequest();
-		fileRequest.open('GET', url, true);
-		fileRequest.responseType = 'arraybuffer';
-		fileRequest.onload = async (): Promise<void> => {
-			const arrayBuffer = fileRequest.response;
+		fileRequest.current = new XMLHttpRequest();
+		fileRequest.current.open('GET', url, true);
+		fileRequest.current.responseType = 'arraybuffer';
+		fileRequest.current.onload = async (): Promise<void> => {
+			const arrayBuffer = fileRequest.current?.response;
 			if (arrayBuffer) {
 				const fileData = new Uint8Array(arrayBuffer);
 
@@ -60,17 +63,16 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 					if (!response.success) {
 						return dispatchToastMessage({ type: 'error', message: t(response.message) });
 					}
-
 					return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 				} catch (error) {
-					return dispatchToastMessage({ type: 'error', message: String(error) });
+					return dispatchToastMessage({ type: 'error', message: error as Error });
 				} finally {
 					setIsLoading(false);
 					onClose();
 				}
 			}
 		};
-		fileRequest.send(null);
+		fileRequest.current.send(null);
 	};
 
 	return (
