@@ -44,8 +44,8 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 					},
 				},
 			});
-		} catch (error: any) {
-			dispatchToast({ type: 'error', message: error });
+		} catch (error) {
+			dispatchToast({ type: 'error', message: error as Error });
 		} finally {
 			onClose();
 		}
@@ -56,7 +56,7 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 			const position = await getGeolocationPosition();
 			queryClient.setQueryData(['geolocationPosition', 'granted'], position);
 			queryClient.setQueryData('geolocationPermission', 'granted');
-		} catch (e: any) {
+		} catch (e) {
 			queryClient.setQueryData('geolocationPermission', () => getGeolocationPermission);
 		}
 	};
