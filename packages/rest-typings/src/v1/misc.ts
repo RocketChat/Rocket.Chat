@@ -181,8 +181,8 @@ export type MiscEndpoints = {
 
 	'/v1/spotlight': {
 		GET: (params: Spotlight) => {
-			users: Pick<IUser, 'username' | 'name' | 'status' | 'statusText' | 'avatarETag'>[];
-			rooms: IRoom[];
+			users: Pick<Required<IUser>, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
+			rooms: Pick<Required<IRoom>, 't' | 'name' | 'lastMessage' | '_id'>[];
 		};
 	};
 
