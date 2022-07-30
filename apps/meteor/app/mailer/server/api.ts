@@ -198,9 +198,7 @@ export const send = ({
 		from,
 		replyTo,
 		subject: replace(subject, data),
-		text: (text && replace(text, data))
-			|| (html && convert(replace(html, data)))
-			|| undefined,
+		text: (text && replace(text, data)) || (html && convert(replace(html, data))) || undefined,
 		html: html ? wrap(html, data) : undefined,
 		headers,
 	});
