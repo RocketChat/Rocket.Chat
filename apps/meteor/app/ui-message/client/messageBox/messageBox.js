@@ -26,7 +26,7 @@ import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
-import { getMarkdownLinkFromHtml } from '../../../../lib/getMarkdownLinkFromHtml';
+import { getMarkdownFromHtml } from '../../../../lib/getMarkdownFromHtml';
 
 Template.messageBox.onCreated(function () {
 	this.state = new ReactiveDict();
@@ -405,22 +405,22 @@ Template.messageBox.events({
 			Promise.all([getHtmlPromise, getTextPromise]).then((values) => {
 				const [ html, text ] = values;
 
-				const markdownLink = getMarkdownLinkFromHtml(html);
-				if (!markdownLink) {
+				const markdown = getMarkdownFromHtml(html);
+				if (!markdown) {
 					return;
 				}
 
 				if (document.selection) {
 					input.focus();
 					const sel = document.selection.createRange();
-					sel.text = markdownLink;
+					sel.text = markdown;
 				} else if (input.selectionStart || input.selectionStart === 0) {
 					let before = input.value.substring(0, input.selectionStart);
 					before = before.substring(0, before.length - text.length);
 					const after = input.value.substring(input.selectionEnd, input.value.length);
-					input.value = `${before}${markdownLink}${after}`;
+					input.value = `${before}${markdown}${after}`;
 				} else {
-					input.value += markdownLink;
+					input.value += markdown;
 				}
 			});
 		}
