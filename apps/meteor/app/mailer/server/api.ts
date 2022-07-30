@@ -194,9 +194,7 @@ export const send = ({
 		from,
 		replyTo,
 		subject: replace(subject, data),
-		text: (text && stripHtml(wrap(text, data)).result)
-			|| (html && stripHtml(wrap(html, data)).result)
-			|| undefined,
+		text: (text && stripHtml(wrap(text, data)).result) || (html && stripHtml(wrap(html, data)).result) || undefined,
 		html: html ? wrap(html, data) : undefined,
 		headers,
 	});
