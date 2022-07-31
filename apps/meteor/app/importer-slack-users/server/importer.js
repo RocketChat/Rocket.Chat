@@ -4,8 +4,7 @@ import { Random } from 'meteor/random';
 
 import { RawImports, Base, ProgressStep, Selection, SelectionUser } from '../../importer/server';
 import { RocketChatFile } from '../../file';
-import { Users } from '../../models';
-import { Settings as SettingsRaw } from '../../models/server';
+import { Users, Settings as SettingsRaw } from '../../models/server';
 
 export class SlackUsersImporter extends Base {
 	constructor(info, importRecord) {

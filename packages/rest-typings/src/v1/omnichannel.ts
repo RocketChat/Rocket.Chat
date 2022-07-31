@@ -12,6 +12,7 @@ import type {
 	IOmnichannelRoom,
 	IRoom,
 	ISetting,
+	ILivechatPriority,
 } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
@@ -382,13 +383,18 @@ const LivechatDepartmentSchema = {
 
 export const isLivechatDepartmentProps = ajv.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
 
-type LivechatDepartmentsAvailableByUnitIdProps = PaginatedRequest<{ text: string }>;
+type LivechatDepartmentsAvailableByUnitIdProps = PaginatedRequest<{ text: string; onlyMyDepartments?: 'true' | 'false' }>;
 
 const LivechatDepartmentsAvailableByUnitIdSchema = {
 	type: 'object',
 	properties: {
 		text: {
 			type: 'string',
+		},
+		onlyMyDepartments: {
+			type: 'string',
+			enum: ['true', 'false'],
+			nullable: true,
 		},
 		count: {
 			type: 'number',
@@ -446,7 +452,7 @@ const LivechatDepartmentsByUnitSchema = {
 
 export const isLivechatDepartmentsByUnitProps = ajv.compile<LivechatDepartmentsByUnitProps>(LivechatDepartmentsByUnitSchema);
 
-type LivechatDepartmentsByUnitIdProps = PaginatedRequest<{ text: string }>;
+type LivechatDepartmentsByUnitIdProps = PaginatedRequest<{}>;
 
 const LivechatDepartmentsByUnitIdSchema = {
 	type: 'object',
@@ -777,6 +783,139 @@ const LivechatUsersAgentSchema = {
 
 export const isLivechatUsersAgentProps = ajv.compile<LivechatUsersAgentProps>(LivechatUsersAgentSchema);
 
+type LivechatPrioritiesProps = PaginatedRequest<{ text?: string }>;
+
+const LivechatPrioritiesPropsSchema = {
+	type: 'object',
+	properties: {
+		text: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isLivechatPrioritiesProps = ajv.compile<LivechatPrioritiesProps>(LivechatPrioritiesPropsSchema);
+
+type POSTOmnichannelContactProps = {
+	_id?: string;
+	token: string;
+	name: string;
+	username?: string;
+	email?: string;
+	phone?: string;
+	customFields?: Record<string, unknown>;
+	contactManager?: {
+		username: string;
+	};
+};
+
+const POSTOmnichannelContactSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+			nullable: true,
+		},
+		token: {
+			type: 'string',
+		},
+		name: {
+			type: 'string',
+		},
+		username: {
+			type: 'string',
+		},
+		email: {
+			type: 'string',
+			nullable: true,
+		},
+		phone: {
+			type: 'string',
+			nullable: true,
+		},
+		customFields: {
+			type: 'object',
+			nullable: true,
+		},
+		contactManager: {
+			type: 'object',
+			nullable: true,
+			properties: {
+				username: {
+					type: 'string',
+				},
+			},
+		},
+	},
+	required: ['token', 'name', 'username'],
+	additionalProperties: false,
+};
+
+export const isPOSTOmnichannelContactProps = ajv.compile<POSTOmnichannelContactProps>(POSTOmnichannelContactSchema);
+
+type GETOmnichannelContactProps = { contactId: string };
+
+const GETOmnichannelContactSchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isGETOmnichannelContactProps = ajv.compile<GETOmnichannelContactProps>(GETOmnichannelContactSchema);
+
+type GETOmnichannelContactSearchProps = { email: string } | { phone: string };
+
+const GETOmnichannelContactSearchSchema = {
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				email: {
+					type: 'string',
+				},
+			},
+			required: ['email'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				phone: {
+					type: 'string',
+				},
+			},
+			required: ['phone'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isGETOmnichannelContactSearchProps = ajv.compile<GETOmnichannelContactSearchProps>(GETOmnichannelContactSearchSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -803,15 +942,21 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/room.join': {
 		GET: (params: LiveChatRoomJoin) => { success: boolean };
 	};
-	'/v1/livechat/monitors.list': {
+	'/v1/livechat/monitors': {
 		GET: (params: LivechatMonitorsListProps) => PaginatedResult<{
 			monitors: ILivechatMonitor[];
 		}>;
 	};
-	'/v1/livechat/tags.list': {
+	'/v1/livechat/monitors/:username': {
+		GET: () => ILivechatMonitor;
+	};
+	'/v1/livechat/tags': {
 		GET: (params: LivechatTagsListProps) => PaginatedResult<{
 			tags: ILivechatTag[];
 		}>;
+	};
+	'/v1/livechat/tags/:tagId': {
+		GET: () => ILivechatTag | null;
 	};
 	'/v1/livechat/department': {
 		GET: (params: LivechatDepartmentProps) => PaginatedResult<{
@@ -842,7 +987,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: LivechatDepartmentDepartmentIdAgentsGET) => PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>;
 		POST: (params: LivechatDepartmentDepartmentIdAgentsPOST) => void;
 	};
-	'/v1/livechat/departments.available-by-unit/:id': {
+	'/v1/livechat/units/:unitId/departments/available': {
 		GET: (params: LivechatDepartmentsAvailableByUnitIdProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
@@ -853,7 +998,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 
-	'/v1/livechat/departments.by-unit/:id': {
+	'/v1/livechat/units/:unitId/departments': {
 		GET: (params: LivechatDepartmentsByUnitIdProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
@@ -925,7 +1070,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/visitor/:token': {
-		GET: (params: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor };
+		GET: (params?: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor };
 		DELETE: (params: LivechatVisitorTokenDelete) => {
 			visitor: { _id: string; ts: string };
 		};
@@ -977,5 +1122,30 @@ export type OmnichannelEndpoints = {
 
 	'/v1/livechat/webrtc.call/:callId': {
 		PUT: (params: { rid: string; status: 'ended' }) => void;
+	};
+
+	'/v1/livechat/priorities': {
+		GET: (params: LivechatPrioritiesProps) => PaginatedResult<{ priorities: ILivechatPriority[] }>;
+	};
+
+	'/v1/livechat/priorities/:priorityId': {
+		GET: () => ILivechatPriority;
+	};
+
+	'/v1/livechat/visitors.search': {
+		GET: (
+			params: PaginatedRequest<{
+				term: string;
+			}>,
+		) => PaginatedResult<{ visitors: any[] }>;
+	};
+	'omnichannel/contact': {
+		POST: (params: POSTOmnichannelContactProps) => { contact: string };
+
+		GET: (params: GETOmnichannelContactProps) => { contact: ILivechatVisitor | null };
+	};
+
+	'omnichannel/contact.search': {
+		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
 	};
 };

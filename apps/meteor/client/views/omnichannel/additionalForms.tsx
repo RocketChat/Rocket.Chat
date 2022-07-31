@@ -2,7 +2,6 @@ import { ReactElement } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
-/* eslint-disable @typescript-eslint/interface-name-prefix */
 export interface EEFormHooks {}
 
 const createFormSubscription = (): {

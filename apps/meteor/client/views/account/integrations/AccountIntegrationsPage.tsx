@@ -33,7 +33,7 @@ const AccountIntegrationsPage = (): ReactElement => {
 			removeWebdavAccount(selected as string);
 			dispatchToastMessage({ type: 'success', message: t('Webdav_account_removed') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	}, [dispatchToastMessage, removeWebdavAccount, selected, t]);
 
@@ -46,7 +46,7 @@ const AccountIntegrationsPage = (): ReactElement => {
 						<Field.Label>{t('WebDAV_Accounts')}</Field.Label>
 						<Field.Row>
 							<Select options={options} onChange={handleSelected} value={selected as string} placeholder={t('Select_an_option')} />
-							<Button primary danger onClick={handleClickRemove}>
+							<Button danger onClick={handleClickRemove}>
 								{t('Remove')}
 							</Button>
 						</Field.Row>

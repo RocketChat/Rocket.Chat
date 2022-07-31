@@ -6,6 +6,7 @@ import type { IMessage, RequiredField, SlashCommand } from '@rocket.chat/core-ty
 import { slashCommands } from '../../../utils/server';
 import { Utilities } from '../../lib/misc/Utilities';
 import { AppServerOrchestrator } from '../orchestrator';
+import { parseParameters } from '../../../../lib/utils/parseParameters';
 
 export class AppCommandsBridge extends CommandBridge {
 	disabledCommands: Map<string, typeof slashCommands.commands[string]>;
@@ -169,9 +170,15 @@ export class AppCommandsBridge extends CommandBridge {
 		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
-		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
+		const params = parseParameters(parameters);
 
-		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params), threadId, triggerId);
+		const context = new SlashCommandContext(
+			Object.freeze(user),
+			Object.freeze(room),
+			Object.freeze(params) as string[],
+			threadId,
+			triggerId,
+		);
 
 		Promise.await(this.orch.getManager()?.getCommandManager().executeCommand(command, context));
 	}
@@ -180,9 +187,9 @@ export class AppCommandsBridge extends CommandBridge {
 		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
-		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
+		const params = parseParameters(parameters);
 
-		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params), threadId);
+		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params) as string[], threadId);
 		return Promise.await(this.orch.getManager()?.getCommandManager().getPreviews(command, context));
 	}
 
@@ -196,9 +203,15 @@ export class AppCommandsBridge extends CommandBridge {
 		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
-		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
+		const params = parseParameters(parameters);
 
-		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params), threadId, triggerId);
+		const context = new SlashCommandContext(
+			Object.freeze(user),
+			Object.freeze(room),
+			Object.freeze(params) as string[],
+			threadId,
+			triggerId,
+		);
 
 		await this.orch.getManager()?.getCommandManager().executePreview(command, preview, context);
 	}

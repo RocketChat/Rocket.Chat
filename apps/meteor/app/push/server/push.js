@@ -12,8 +12,6 @@ import { settings } from '../../settings/server';
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens');
 
-appTokensCollection._ensureIndex({ userId: 1 });
-
 export class PushClass {
 	options = {};
 

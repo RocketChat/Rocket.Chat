@@ -10,28 +10,28 @@ import styles from './styles.scss';
 export class Modal extends Component {
 	static defaultProps = {
 		dismissByOverlay: true,
-	}
+	};
 
 	handleKeyDown = ({ key }) => {
 		if (key === 'Escape') {
 			this.triggerDismiss();
 		}
-	}
+	};
 
 	handleTouchStart = () => {
 		const { dismissByOverlay } = this.props;
 		dismissByOverlay && this.triggerDismiss();
-	}
+	};
 
 	handleMouseDown = () => {
 		const { dismissByOverlay } = this.props;
 		dismissByOverlay && this.triggerDismiss();
-	}
+	};
 
 	triggerDismiss = () => {
 		const { onDismiss } = this.props;
 		this.mounted && onDismiss && onDismiss();
-	}
+	};
 
 	componentDidMount() {
 		this.mounted = true;
@@ -57,7 +57,7 @@ export class Modal extends Component {
 				<div className={createClassName(styles, 'modal', { animated })} {...props}>{children}</div>
 			</div>
 		) : null
-	)
+	);
 }
 
 
@@ -80,7 +80,7 @@ export const ConfirmationModal = withTranslation()(({
 	<Modal.Message>{text}</Modal.Message>
 	<ButtonGroup>
 		<Button outline secondary onClick={onCancel}>{cancelButtonText || t('no')}</Button>
-		<Button danger onClick={onConfirm}>{confirmButtonText || t('yes')}</Button>
+		<Button secondaryDanger onClick={onConfirm}>{confirmButtonText || t('yes')}</Button>
 	</ButtonGroup>
 </Modal>);
 

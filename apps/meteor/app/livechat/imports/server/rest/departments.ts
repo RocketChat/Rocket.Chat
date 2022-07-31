@@ -2,7 +2,7 @@ import { isLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermission, hasAtLeastOnePermission } from '../../../../authorization/server';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import {
@@ -18,6 +18,10 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isLivechatDepartmentProps },
 	{
 		async get() {
+			if (!hasAtLeastOnePermission(this.userId, ['view-livechat-departments', 'view-l-room'])) {
+				return API.v1.unauthorized();
+			}
+
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
@@ -76,6 +80,10 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			if (!hasAtLeastOnePermission(this.userId, ['view-livechat-departments', 'view-l-room'])) {
+				return API.v1.unauthorized();
+			}
+
 			check(this.urlParams, {
 				_id: String,
 			});

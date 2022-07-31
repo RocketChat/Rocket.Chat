@@ -47,4 +47,5 @@ export type SlashCommand<T extends string = string> = {
 	providesPreview: boolean;
 	previewer?: SlashCommandPreviewer;
 	previewCallback?: SlashCommandPreviewCallback;
+	appId?: string;
 };

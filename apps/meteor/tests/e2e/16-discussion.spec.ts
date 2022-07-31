@@ -1,52 +1,44 @@
-import { test, Page } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { v4 as uuid } from 'uuid';
 
-import { MainContent, Discussion, LoginPage, SideNav } from './pageobjects';
-import { adminLogin } from './utils/mocks/userAndPasswordMock';
+import { test } from './utils/test';
+import { Auth, HomeDiscussion } from './page-objects';
 
 test.describe('[Discussion]', () => {
-	let page: Page;
-	let loginPage: LoginPage;
-	let discussion: Discussion;
-	let sideNav: SideNav;
-	let mainContent: MainContent;
+	let pageAuth: Auth;
+	let pageHomeDiscussion: HomeDiscussion;
 
-	let discussionName: string;
-	let message: string;
+	test.beforeEach(async ({ page }) => {
+		pageAuth = new Auth(page);
+		pageHomeDiscussion = new HomeDiscussion(page);
+	});
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
-		await page.goto('/');
-		await page.waitForLoadState('load');
-		loginPage = new LoginPage(page);
-		discussion = new Discussion(page);
-		sideNav = new SideNav(page);
-		mainContent = new MainContent(page);
-
-		await loginPage.login(adminLogin);
+	test.beforeEach(async () => {
+		await pageAuth.doLogin();
 	});
 
 	test.describe('[Create discussion from screen]', () => {
 		test('expect discussion is created', async () => {
-			discussionName = faker.animal.type();
-			message = faker.animal.type();
-			await sideNav.newChannelBtnToolbar.click();
-			await discussion.createDiscussion('public channel', discussionName, message);
+			const anyDiscussionName = faker.animal.type() + Date.now();
+			const anyMessage = faker.animal.type();
+
+			await pageHomeDiscussion.sidenav.btnCreate.click();
+			await pageHomeDiscussion.doCreateDiscussion('public channel', anyDiscussionName, anyMessage);
 		});
 	});
 
 	test.describe.skip('[Create discussion from context menu]', () => {
-		test.beforeAll(async () => {
-			message = faker.animal.type() + uuid();
-			await sideNav.findForChat('public channel');
-			await mainContent.sendMessage(message);
+		const anyMessage = faker.animal.type() + uuid();
+
+		test.beforeEach(async () => {
+			await pageHomeDiscussion.sidenav.doOpenChat('public channel');
+			await pageHomeDiscussion.content.doSendMessage(anyMessage);
 		});
 
-		test('expect show a dialog for starting a discussion', async () => {
-			await mainContent.page.waitForLoadState('domcontentloaded', { timeout: 3000 });
-			await mainContent.openMessageActionMenu();
-			await discussion.createDiscussionInContext(message);
+		test('expect show a dialog for starting a discussion', async ({ page }) => {
+			await page.waitForLoadState('domcontentloaded', { timeout: 3000 });
+			await pageHomeDiscussion.content.doOpenMessageActionMenu();
+			await pageHomeDiscussion.doCreateDiscussionInContext(anyMessage);
 		});
 	});
 });

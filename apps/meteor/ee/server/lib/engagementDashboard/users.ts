@@ -1,7 +1,7 @@
 import moment from 'moment';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users, Analytics, Sessions } from '@rocket.chat/models';
 
-import { Users, Analytics, Sessions } from '../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
 export const handleUserCreated = (user: IUser): IUser => {
@@ -25,10 +25,14 @@ export const fillFirstDaysOfUsersIfNeeded = async (date: Date): Promise<void> =>
 	}).toArray();
 	if (!usersFromAnalytics.length) {
 		const startOfPeriod = moment(date).subtract(90, 'days').toDate();
-		const users = await Users.getTotalOfRegisteredUsersByDate({
+		const users = (await Users.getTotalOfRegisteredUsersByDate({
 			start: startOfPeriod,
 			end: date,
-		});
+		})) as {
+			date: string;
+			users: number;
+			type: 'users';
+		}[];
 		users.forEach((user) =>
 			Analytics.insertOne({
 				...user,

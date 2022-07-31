@@ -11,7 +11,7 @@ import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { callbacks } from '../../../../lib/callbacks';
 import { Notifications } from '../../../notifications';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';

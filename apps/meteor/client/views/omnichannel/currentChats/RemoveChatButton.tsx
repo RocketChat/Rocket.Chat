@@ -1,4 +1,4 @@
-import { Table, Icon, Button } from '@rocket.chat/fuselage';
+import { Table, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
@@ -27,7 +27,7 @@ const RemoveChatButton: FC<{ _id: string; reload: () => void }> = ({ _id, reload
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 			}
 			setModal(null);
 		};
@@ -43,9 +43,7 @@ const RemoveChatButton: FC<{ _id: string; reload: () => void }> = ({ _id, reload
 
 	return (
 		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
-			<Button small ghost title={t('Remove')} onClick={handleDelete}>
-				<Icon name='trash' size='x16' />
-			</Button>
+			<IconButton small icon='trash' title={t('Remove')} onClick={handleDelete} />
 		</Table.Cell>
 	);
 };

@@ -9,7 +9,7 @@ import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
 import { modal } from '../../../../../ui-utils';
-import { Subscriptions } from '../../../../../models';
+import { Subscriptions } from '../../../../../models/client';
 import { settings } from '../../../../../settings';
 import { t } from '../../../../../utils';
 import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';

@@ -3,12 +3,12 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { metrics } from '../../../app/metrics';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { AutoUpdateRecord, IMeteor } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
-import { Users } from '../../../app/models/server/raw/index';
 import { Livechat } from '../../../app/livechat/server';
 import { settings } from '../../../app/settings/server';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
@@ -34,6 +34,8 @@ let processOnChange: (diff: Record<string, any>, id: string) => void;
 const disableOplog = !!(Package as any)['disable-oplog'];
 const serviceConfigCallbacks = new Set<Callbacks>();
 
+const disableMsgRoundtripTracking = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING).toLowerCase());
+
 if (disableOplog) {
 	// Stores the callbacks for the disconnection reactivity bellow
 	const userCallbacks = new Map();
@@ -49,7 +51,10 @@ if (disableOplog) {
 		}: {
 			collectionName: string;
 			selector: Record<string, any>;
-			options?: { fields?: Record<string, number> };
+			options?: {
+				projection?: Record<string, number>;
+				fields?: Record<string, number>;
+			};
 		},
 		_ordered: boolean,
 		callbacks: Callbacks,
@@ -58,9 +63,16 @@ if (disableOplog) {
 		let cbs: Set<{ hashedToken: string; callbacks: Callbacks }>;
 		let data: { hashedToken: string; callbacks: Callbacks };
 		if (callbacks?.added) {
-			const records = Promise.await(mongo.rawCollection(collectionName).find(selector, { projection: options.fields }).toArray());
+			const records = Promise.await(
+				mongo
+					.rawCollection(collectionName)
+					.find(selector, {
+						...(options.projection || options.fields ? { projection: options.projection || options.fields } : {}),
+					})
+					.toArray(),
+			);
 			for (const { _id, ...fields } of records) {
-				callbacks.added(_id, fields);
+				callbacks.added(String(_id), fields);
 			}
 
 			if (collectionName === 'users' && selector['services.resume.loginTokens.hashedToken']) {
@@ -247,7 +259,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			configureEmailInboxes();
 		});
 
-		if (!process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING) {
+		if (!disableMsgRoundtripTracking) {
 			this.onEvent('watch.messages', ({ message }) => {
 				if (message?._updatedAt) {
 					metrics.messageRoundtripTime.set(Date.now() - message._updatedAt.getDate());
