@@ -251,7 +251,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Benvingut a <strong>[Site_Name]</strong></h1><p>Vés a <a href=\"[Site_URL]\">[Site_URL]</a> i prova la millor eina de programari lliure per a treball a distància disponible actualment!</p><p>Pots entrar utilitzant el teu correu-e: [email] i contrasenya: [password]. És possible que et demanem canviar-la quan entris per primera vegada.",
   "Accounts_UserAddedEmail_Description": "És possible utilitzar els marcadors: <br/><ul><li>[name], [fname], [lname] per al nom complet de l'usuari, nom o cognom, respectivament.</li><li>[email] per a l'adreça de correu electrònic de l'usuari.</li><li>[password] per la contrasenya.</li><li>[Site_Name] i [Site_URL] pel nom del lloc web i de l'adreça URL, respectivament.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Se t'ha afegit a [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "Verificar el correu electrònic per als comptes externs",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action": "Acció",
   "Action_required": "Acció requerida",
   "Activate": "Activa",

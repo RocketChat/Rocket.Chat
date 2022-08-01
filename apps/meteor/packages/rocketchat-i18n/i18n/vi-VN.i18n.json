@@ -231,7 +231,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Chào mừng đến <strong>[Site_Name]</strong></h1><p>Hãy truy cập <a href=\"[Site_URL]\">[Site_URL]</a> và trải nghiệm giải pháp mã nguồn mở tuyệt vời nhất hiện nay!</p><p>Bạn có thể đăng nhập sử dụng hòm thư: [email] và mật khẩu: [password]. Bạn có thể được yêu cầu thay đổi nó sau lần đăng nhập đầu tiên.",
   "Accounts_UserAddedEmail_Description": "Bạn có thể sử dụng các placeholder sau: <br/><ul><li>[name], [fname], [lname] tương ứng cho tên, họ hoặc họ của người dùng, tương ứng.</li><li>[email] cho email của người dùng.</li><li>[password] cho mật khẩu của người dùng.</li><li>[Site_Name] và [Site_URL] cho Tên Ứng dụng và URL tương ứng.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Bạn đã được thêm vào [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "Xác minh Email cho tài khoản bên ngoài",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action": "Hoạt động ",
   "Action_required": "Hành động cần phải thực hiện ",
   "Activate": "Đang hoạt động",
