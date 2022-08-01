@@ -3,7 +3,7 @@ import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { callbacks } from '../../../../../../lib/callbacks';
 
 export class FederationHooks {
-	public static onUserLeftRoom(callback: (user: IUser, room: IRoom) => Promise<void>): void {
+	public static afterUserLeaveRoom(callback: (user: IUser, room: IRoom) => Promise<void>): void {
 		callbacks.add(
 			'afterLeaveRoom',
 			(user: IUser, room: IRoom | undefined): void => {

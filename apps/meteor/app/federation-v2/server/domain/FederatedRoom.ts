@@ -4,50 +4,51 @@ import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { FederatedUser } from './FederatedUser';
 
 export abstract class AbstractFederatedRoom {
-	public externalId: string;
+	protected externalId: string;
 
-	public internalReference: IRoom;
+	protected internalReference: IRoom;
 
-	// eslint-disable-next-line
-	protected constructor() { }
+	protected constructor({ externalId, internalReference }: { externalId: string, internalReference: IRoom }) {
+		this.externalId = externalId;
+		this.internalReference = internalReference;
+	}
 
 	protected static generateTemporaryName(normalizedExternalId: string): string {
 		return `Federation-${ normalizedExternalId }`;
 	}
-
-	// public static build(): FederatedRoom {
-	// 	return new FederatedRoom();
-	// }
-
-	// public getMembers(): IUser[] {
-	// 	return this.members && this.members.length > 0 ? this.members.map((user) => user.internalReference) : [];
-	// }
-
 	public abstract isDirectMessage(): boolean;
 
 	public getMembersUsernames(): string[] {
 		return this.internalReference?.usernames || [];
 	}
 
-	public isUserPartOfTheRoom(federatedUser: FederatedUser): boolean {
-		if (!federatedUser.internalReference?.username) {
-			return false;
-		}
-		if (!this.internalReference?.usernames) {
-			return false;
-		}
-		return this.internalReference.usernames.includes(federatedUser.internalReference.username);
+	public getExternalId(): string {
+		return this.externalId;
 	}
 
-	// public static buildRoomIdForDirectMessages(inviter: FederatedUser, invitee: FederatedUser): string {
-	// 	if (!inviter.internalReference || !invitee.internalReference) {
-	// 		throw new Error('Cannot create room Id without the user ids');
-	// 	}
-	// 	return [inviter.internalReference, invitee.internalReference]
-	// 		.map(({ _id }) => _id)
-	// 		.sort()
-	// 		.join('');
-	// }
+	public getRoomType(): RoomType {
+		return this.internalReference.t as RoomType;
+	}
+
+	public getInternalId(): string {
+		return this.internalReference._id;
+	}
+
+	public getInternalName(): string | undefined {
+		return this.internalReference.name;
+	}
+
+	public getInternalTopic(): string | undefined {
+		return this.internalReference.topic;
+	}
+
+	public getInternalReference(): Readonly<IRoom> {
+		return Object.freeze(this.internalReference);
+	}
+
+	public getInternalCreator(): Readonly<Pick<IUser, '_id' | 'username' | 'name'>> {
+		return Object.freeze(this.internalReference.u);
+	}
 
 	public setRoomType(type: RoomType): void {
 		if (this.isDirectMessage()) {
@@ -86,9 +87,8 @@ export abstract class AbstractFederatedRoom {
 
 export class FederatedRoom extends AbstractFederatedRoom {
 
-	// eslint-disable-next-line
-	protected constructor() {
-		super();
+	protected constructor({ externalId, internalReference }: { externalId: string, internalReference: IRoom }) {
+		super({ externalId, internalReference });
 	}
 
 	public static createInstance(
@@ -97,23 +97,24 @@ export class FederatedRoom extends AbstractFederatedRoom {
 		creator: FederatedUser,
 		type: RoomType,
 		name?: string,
-		// members?: FederatedUser[],
 	): FederatedRoom {
 		const roomName = name || FederatedRoom.generateTemporaryName(normalizedExternalId);
-		return Object.assign(new FederatedRoom(), {
+		return new FederatedRoom({
 			externalId,
-			// members,
 			internalReference: {
 				t: type,
 				name: roomName,
 				fname: roomName,
-				u: creator.internalReference,
-			},
+				u: creator.getInternalReference(),
+			} as unknown as IRoom,
 		});
 	}
 
-	public static build(): FederatedRoom {
-		return new FederatedRoom();
+	public static createWithInternalReference(externalId: string, internalReference: IRoom): FederatedRoom {
+		return new FederatedRoom({
+			externalId,
+			internalReference,
+		});
 	}
 
 	public isDirectMessage(): boolean {
@@ -126,54 +127,57 @@ export class DirectMessageFederatedRoom extends AbstractFederatedRoom {
 
 	public members: FederatedUser[];
 	
-	protected constructor() {
-		super();
+	protected constructor({ externalId, internalReference, members }: { externalId: string, internalReference: IRoom, members: FederatedUser[] }) {
+		super({ externalId, internalReference });
+		this.members = members;
 	}
 
 	public static createInstance(
 		externalId: string,
-		normalizedExternalId: string,
 		creator: FederatedUser,
-		type: RoomType,
-		name?: string,
-		members?: FederatedUser[],
+		members: FederatedUser[],
 	): DirectMessageFederatedRoom {
-		const roomName = name || FederatedRoom.generateTemporaryName(normalizedExternalId);
-		return Object.assign(new DirectMessageFederatedRoom(), {
+		return new DirectMessageFederatedRoom({
 			externalId,
 			members,
 			internalReference: {
-				t: type,
-				name: roomName,
-				fname: roomName,
-				u: creator.internalReference,
-			},
+				t: RoomType.DIRECT_MESSAGE,
+				u: creator.getInternalReference(),
+			} as unknown as IRoom
 		});
 	}
 
-	public static build(): FederatedRoom {
-		return new DirectMessageFederatedRoom();
+	public static createWithInternalReference(externalId: string, internalReference: IRoom, members: FederatedUser[]): DirectMessageFederatedRoom {
+		return new DirectMessageFederatedRoom({
+			externalId,
+			internalReference,
+			members,
+		});
 	}
 
-	public getInternalMembers(): IUser[] {
-		return this.members && this.members.length > 0 ? this.members.map((user) => user.internalReference) : [];
+	public getInternalMembersUsernames(): string[] {
+		return this.members.map((user) => user.getUsername() || '').filter(Boolean);
 	}
 
 	public getMembers(): FederatedUser[] {
 		return this.members;
 	}
 
+	public addMember(member: FederatedUser): void {
+		this.members.push(member);
+	}
+
 	public isDirectMessage(): boolean {
 		return true;
 	}
 
-	public static buildRoomIdForDirectMessages(inviter: FederatedUser, invitee: FederatedUser): string {
-		if (!inviter.internalReference || !invitee.internalReference) {
-			throw new Error('Cannot create room Id without the user ids');
+	public isUserPartOfTheRoom(federatedUser: FederatedUser): boolean {
+		if (!federatedUser.getUsername()) {
+			return false;
 		}
-		return [inviter.internalReference, invitee.internalReference]
-			.map(({ _id }) => _id)
-			.sort()
-			.join('');
+		if (!this.internalReference?.usernames) {
+			return false;
+		}
+		return this.internalReference.usernames.includes(federatedUser.getUsername() as string);
 	}
 }

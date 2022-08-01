@@ -1,4 +1,4 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import { IRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
@@ -6,7 +6,7 @@ import { createRoom, addUserToRoom, removeUserFromRoom } from '../../../../../li
 import { FederatedUser } from '../../../domain/FederatedUser';
 import { saveRoomName } from '../../../../../channel-settings/server/functions/saveRoomName';
 import { saveRoomTopic } from '../../../../../channel-settings/server/functions/saveRoomTopic';
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { getFederatedUserByInternalUsername } from './User';
 
 export class RocketChatRoomAdapter {
 	public async getFederatedRoomByExternalId(externalRoomId: string): Promise<FederatedRoom | undefined> {
@@ -37,53 +37,63 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async createFederatedRoom(federatedRoom: FederatedRoom): Promise<void> {
-		// const members = federatedRoom.getMembers();
 		const { rid, _id } = createRoom(
-			federatedRoom.internalReference.t,
-			federatedRoom.internalReference.name,
-			federatedRoom.internalReference?.u?.username || '',
-			// members,
-			// false,
-			// undefined,
-			// { creator: members[0]?._id },
+			federatedRoom.getRoomType(),
+			federatedRoom.getInternalName(),
+			federatedRoom.getInternalCreator()?.username || '',
 		);
 		const roomId = rid || _id;
-		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.externalId);
+		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
 		await Rooms.setAsFederated(roomId);
 	}
 
 	public async removeDirectMessageRoom(federatedRoom: FederatedRoom): Promise<void> {
-		const roomId = federatedRoom.internalReference._id;
+		const roomId = federatedRoom.getInternalId();
 		await Rooms.removeById(roomId);
 		await Subscriptions.removeByRoomId(roomId);
 		await MatrixBridgedRoom.removeByLocalRoomId(roomId);
 	}
 
-	public async createFederatedRoomForDirectMessage(federatedRoom: DirectMessageFederatedRoom/*, membersUsernames: string[]*/): Promise<void> {
-		// const members = federatedRoom.getMembers();
+	public async createFederatedRoomForDirectMessage(federatedRoom: DirectMessageFederatedRoom): Promise<void> {
+		const readonly = false;
+		const extraData = undefined;
 		const { rid, _id } = createRoom(
-			federatedRoom.internalReference.t,
-			federatedRoom.internalReference.name,
-			federatedRoom.internalReference?.u?.username || '',
-			federatedRoom.getInternalMembers().map((user) => user.username as string),
-			// membersUsernames,
-			false,
-			undefined,
-			{ creator: federatedRoom.internalReference.u._id },
+			federatedRoom.getRoomType(),
+			federatedRoom.getInternalName(),
+			federatedRoom.getInternalCreator()?.username || '',
+			federatedRoom.getInternalMembersUsernames(),
+			readonly,
+			extraData,
+			{ creator: federatedRoom.getInternalCreator()?._id },
 		);
 		const roomId = rid || _id;
-		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.externalId);
+		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
 		await Rooms.setAsFederated(roomId);
 	}
 
+	public async getDirectMessageFederatedRoomByUserIds(userIds: string[]): Promise<FederatedRoom | undefined> {
+		const room = await Rooms.findOneDirectRoomContainingAllUserIDs(userIds);
+		if (!room) {
+			return;
+		}
+		const externalRoomId = await MatrixBridgedRoom.getExternalRoomId(room._id);
+		if (!externalRoomId) {
+			return;
+		}
+
+		if (room) {
+			return this.createFederatedRoomInstance(externalRoomId, room);
+		}
+	}
+
 	public async addUserToRoom(federatedRoom: FederatedRoom, inviteeUser: FederatedUser, inviterUser?: FederatedUser): Promise<void> {
-		Promise.resolve(addUserToRoom(federatedRoom.internalReference._id, inviteeUser.internalReference, inviterUser?.internalReference));
+		Promise.resolve(addUserToRoom(federatedRoom.getInternalId(), inviteeUser.getInternalReference(), inviterUser?.getInternalReference()));
 	}
 
 	public async removeUserFromRoom(federatedRoom: FederatedRoom, affectedUser: FederatedUser, byUser: FederatedUser): Promise<void> {
 		Promise.resolve(
-			removeUserFromRoom(federatedRoom.internalReference._id, affectedUser.internalReference, {
-				byUser: byUser.internalReference,
+			removeUserFromRoom(federatedRoom.getInternalId(), affectedUser.getInternalReference(), {
+				byUser: byUser.getInternalReference(),
 			}),
 		);
 	}
@@ -95,24 +105,25 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async updateRoomType(federatedRoom: FederatedRoom): Promise<void> {
-		await Rooms.setRoomTypeById(federatedRoom.internalReference._id, federatedRoom.internalReference.t);
-		await Subscriptions.updateAllRoomTypesByRoomId(federatedRoom.internalReference._id, federatedRoom.internalReference.t);
+		await Rooms.setRoomTypeById(federatedRoom.getInternalId(), federatedRoom.getRoomType());
+		await Subscriptions.updateAllRoomTypesByRoomId(federatedRoom.getRoomType(), federatedRoom.getRoomType());
 	}
 
 	public async updateRoomName(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
-		await saveRoomName(federatedRoom.internalReference._id, federatedRoom.internalReference.name, federatedUser.internalReference);
+		await saveRoomName(federatedRoom.getRoomType(), federatedRoom.getInternalName(), federatedUser.getInternalReference());
 	}
 
 	public async updateRoomTopic(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
-		await saveRoomTopic(federatedRoom.internalReference._id, federatedRoom.internalReference.topic, federatedUser.internalReference);
+		await saveRoomTopic(federatedRoom.getRoomType(), federatedRoom.getInternalTopic(), federatedUser.getInternalReference());
 	}
 
-	private createFederatedRoomInstance(externalRoomId: string, room: IRoom): FederatedRoom {
-		const federatedRoom = room.t === RoomType.DIRECT_MESSAGE ? DirectMessageFederatedRoom.build() : FederatedRoom.build();
-		federatedRoom.externalId = externalRoomId;
-		federatedRoom.internalReference = room;
+	private async createFederatedRoomInstance(externalRoomId: string, room: IRoom): Promise<FederatedRoom> {
+		if (isDirectMessageRoom(room)) {
+			const members = await Promise.all((room.usernames || []).map((username) => getFederatedUserByInternalUsername(username))) as FederatedUser[];
+			return DirectMessageFederatedRoom.createWithInternalReference(externalRoomId, room, members);
+		}
 
-		return federatedRoom;
+		return FederatedRoom.createWithInternalReference(externalRoomId, room);
 	}
 
 }

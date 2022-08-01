@@ -7,40 +7,6 @@ import { FederatedUserEE } from './FederatedUser';
 
 
 export class FederatedRoomEE extends FederatedRoom {
-	// public externalId: string;
-
-	// public members?: FederatedUserEE[];
-
-	// public internalReference: IRoom;
-
-	// public static createInstanceEE(
-	// 	externalId: string,
-	// 	normalizedExternalId: string,
-	// 	creator: FederatedUser,
-	// 	type: RoomType,
-	// 	name?: string,
-	// 	members?: FederatedUser[],
-	// ): FederatedRoomEE {
-	// 	const roomName = name || FederatedRoom.generateTemporaryName(normalizedExternalId);
-	// 	return Object.assign(new FederatedRoomEE(), {
-	// 		externalId,
-	// 		...(isDirectMessageRoom({ t: type }) ? { members } : {}),
-	// 		internalReference: {
-	// 			t: type,
-	// 			name: roomName,
-	// 			fname: roomName,
-	// 			u: creator.internalReference,
-	// 		},
-	// 	});
-	// }
-
-	// public isDirectMessage(): boolean {
-	// 	return isDirectMessageRoom({ t: this.internalReference.t });
-	// }
-
-	// public getMembers(): IUser[] {
-	// 	return this.isDirectMessage() && this.members && this.members.length > 0 ? this.members.map((user) => user.internalReference) : [];
-	// }
 
 	public shouldUpdateRoomName(externalRoomName: string): boolean {
 		return this.internalReference.name !== externalRoomName && !this.isDirectMessage();
@@ -50,9 +16,6 @@ export class FederatedRoomEE extends FederatedRoom {
 		return this.internalReference.topic !== externalRoomTopic && !this.isDirectMessage();
 	}
 
-	public static build(): FederatedRoomEE {
-		return new FederatedRoomEE();
-	}
 }
 
 export class DirectMessageFederatedRoomEE extends DirectMessageFederatedRoom {

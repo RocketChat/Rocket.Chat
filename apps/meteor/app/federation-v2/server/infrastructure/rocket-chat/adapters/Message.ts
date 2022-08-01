@@ -4,6 +4,6 @@ import { FederatedUser } from '../../../domain/FederatedUser';
 
 export class RocketChatMessageAdapter {
 	public async sendMessage(user: FederatedUser, room: FederatedRoom, messageText: string): Promise<void> {
-		Promise.resolve(sendMessage(user.internalReference, { msg: messageText }, room.internalReference));
+		Promise.resolve(sendMessage(user.getInternalReference(), { msg: messageText }, room.getInternalReference()));
 	}
 }

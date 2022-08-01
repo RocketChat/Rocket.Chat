@@ -653,4 +653,13 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.findPaginated(query, options);
 	}
+
+	findOneDirectRoomContainingAllUserIDs(uid, options) {
+		const query = {
+			t: 'd',
+			uids: { $size: uid.length, $all: uid },
+		};
+
+		return this.findOne(query, options);
+	}
 }

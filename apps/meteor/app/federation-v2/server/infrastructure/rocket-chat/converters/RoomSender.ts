@@ -41,7 +41,7 @@ export class FederationRoomSenderConverter {
 		});
 	}
 
-	public static toOnUserLeftRoom(internalUserId: string, internalRoomId: string): FederationAfterLeaveRoomDto {
+	public static toAfterUserLeaveRoom(internalUserId: string, internalRoomId: string): FederationAfterLeaveRoomDto {
 		return new FederationAfterLeaveRoomDto({
 			internalRoomId,
 			internalUserId,

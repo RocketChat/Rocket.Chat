@@ -51,7 +51,7 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 			return;
 		}
 
-		const isRoomFromTheProxyServer = this.isAnInternalIdentifier(externalRoom.externalId);
+		const isRoomFromTheProxyServer = this.isAnInternalIdentifier(externalRoom.getExternalId());
 		const isInviterFromTheProxyServer = this.isAnInternalIdentifier(inviter.getExternalId());
 
 		const fullActionExecutedOnTheRemoteHomeServer = !isRoomFromTheProxyServer && !isInviterFromTheProxyServer;

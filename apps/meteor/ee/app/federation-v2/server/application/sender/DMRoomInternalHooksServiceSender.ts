@@ -54,7 +54,7 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		await Promise.all(
 			externalUsersToBeCreatedLocally.map((invitee) =>
 				this.internalUserAdapter.createLocalUser(
-					FederatedUserEE.createInstance('', {
+					FederatedUserEE.createLocalInstanceOnly({
 						username: invitee.normalizedInviteeId,
 						name: invitee.normalizedInviteeId,
 						existsOnlyOnProxyServer: false,
@@ -72,14 +72,12 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		const inviterUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId);
 		if (!inviterUser) {
 			const internalUser = await this.internalUserAdapter.getInternalUserById(internalInviterId);
-			if (!internalUser || !internalUser.username) {
-				throw new Error(`User with internalId ${internalInviterId} not found`);
-			}
 			const username = internalUser.username || internalInviterId;
 			const name = internalUser.name || internalInviterId;
 			const existsOnlyOnProxyServer = true;
 			const externalInviterId = await this.bridge.createUser(username, name, this.internalHomeServerDomain);
-			await this.createFederatedUser(externalInviterId, internalUser.username, existsOnlyOnProxyServer, name);
+
+			await this.createFederatedUser(externalInviterId, username, existsOnlyOnProxyServer, name);
 		}
 
 		const federatedInviterUser = inviterUser || (await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId));
@@ -94,17 +92,12 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		const internalFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 
 		if (!internalFederatedRoom && isInviterFromTheSameHomeServer) {
+			const externalInviteeIds = invitees.map((invitee) => invitee.rawInviteeId);
 			const externalRoomId = await this.bridge.createDirectMessageRoom(
 				federatedInviterUser.getExternalId(),
-				invitees.map((invitee) => invitee.rawInviteeId),
+				externalInviteeIds,
 			);
-			const newFederatedRoom = DirectMessageFederatedRoomEE.createInstance(
-				externalRoomId,
-				externalRoomId,
-				federatedInviterUser,
-				RoomType.DIRECT_MESSAGE,
-			);
-			await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, newFederatedRoom);
+			await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, externalRoomId);
 		}
 
 		await Promise.all(
@@ -146,7 +139,7 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 
 		await this.bridge.createUser(
 			inviteeUsernameOnly,
-			federatedInviteeUser?.internalReference?.name || federatedInviteeUser.internalReference?.username || inviteeUsernameOnly,
+			federatedInviteeUser.getName() || federatedInviteeUser.getUsername() || inviteeUsernameOnly,
 			this.internalHomeServerDomain,
 		);
 	}

@@ -3,6 +3,30 @@ import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 
 import { FederatedUser } from '../../../domain/FederatedUser';
 
+const createFederatedUserInstance = (externalUserId: string, user: IUser, remote = true): FederatedUser => {
+	const federatedUser = FederatedUser.createInstanceWithInternalUser(
+		externalUserId,
+		!remote,
+		user
+	);
+
+	return federatedUser;
+}
+
+export const getFederatedUserByInternalUsername = async (username: string): Promise<FederatedUser | undefined> => {
+	const user = await Users.findOneByUsername(username);
+	if (!user) {
+		return;
+	}
+	const internalBridgedUser = await MatrixBridgedUser.getBridgedUserByLocalId(user._id);
+	if (!internalBridgedUser) {
+		return;
+	}
+	const { mui: externalUserId, remote } = internalBridgedUser;
+
+	return createFederatedUserInstance(externalUserId, user, remote);
+}
+
 export class RocketChatUserAdapter {
 	public async getFederatedUserByExternalId(externalUserId: string): Promise<FederatedUser | undefined> {
 		const internalBridgedUserId = await MatrixBridgedUser.getLocalUserIdByExternalId(externalUserId);
@@ -13,7 +37,7 @@ export class RocketChatUserAdapter {
 		const user = await Users.findOneById(internalBridgedUserId);
 
 		if (user) {
-			return this.createFederatedUserInstance(externalUserId, user);
+			return createFederatedUserInstance(externalUserId, user);
 		}
 	}
 
@@ -26,7 +50,7 @@ export class RocketChatUserAdapter {
 		const user = await Users.findOneById(userId);
 
 		if (user) {
-			return this.createFederatedUserInstance(externalUserId, user, remote);
+			return createFederatedUserInstance(externalUserId, user, remote);
 		}
 	}
 
@@ -41,15 +65,19 @@ export class RocketChatUserAdapter {
 		}
 		const { mui: externalUserId, remote } = internalBridgedUser;
 
-		return this.createFederatedUserInstance(externalUserId, user, remote);
+		return createFederatedUserInstance(externalUserId, user, remote);
 	}
 
-	public async getInternalUserById(userId: string): Promise<IUser | null> {
-		return Users.findOneById(userId);
+	public async getInternalUserById(userId: string): Promise<IUser> {
+		const user = await Users.findOneById(userId);
+		if (!user || !user.username) {
+			throw new Error(`User with internalId ${userId} not found`);
+		}
+		return user;
 	}
 
 	public async createFederatedUser(federatedUser: FederatedUser): Promise<void> {
-		const existingLocalUser = await Users.findOneByUsername(federatedUser.internalReference.username || '');
+		const existingLocalUser = await Users.findOneByUsername(federatedUser.getUsername() || '');
 		if (existingLocalUser) {
 			return MatrixBridgedUser.createOrUpdateByLocalId(
 				existingLocalUser._id,
@@ -58,25 +86,16 @@ export class RocketChatUserAdapter {
 			);
 		}
 		const { insertedId } = await Users.insertOne({
-			username: federatedUser.internalReference.username,
-			type: federatedUser.internalReference.type,
-			status: federatedUser.internalReference.status,
-			active: federatedUser.internalReference.active,
-			roles: federatedUser.internalReference.roles,
-			name: federatedUser.internalReference.name,
-			requirePasswordChange: federatedUser.internalReference.requirePasswordChange,
+			username: federatedUser.getInternalReference().username,
+			type: federatedUser.getInternalReference().type,
+			status: federatedUser.getInternalReference().status,
+			active: federatedUser.getInternalReference().active,
+			roles: federatedUser.getInternalReference().roles,
+			name: federatedUser.getInternalReference().name,
+			requirePasswordChange: federatedUser.getInternalReference().requirePasswordChange,
 			createdAt: new Date(),
 			federated: true,
 		});
 		return MatrixBridgedUser.createOrUpdateByLocalId(insertedId, federatedUser.getExternalId(), federatedUser.isRemote());
-	}
-
-	private createFederatedUserInstance(externalUserId: string, user: IUser, remote = true): FederatedUser {
-		const federatedUser = FederatedUser.build();
-		federatedUser.externalId = externalUserId;
-		federatedUser.internalReference = user;
-		federatedUser.existsOnlyOnProxyServer = !remote;
-
-		return federatedUser;
 	}
 }

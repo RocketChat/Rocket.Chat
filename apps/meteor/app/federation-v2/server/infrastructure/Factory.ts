@@ -114,8 +114,8 @@ export class FederationFactory {
 	}
 
 	private static setupActions(roomServiceSender: FederationRoomServiceSender): void {
-		FederationHooks.onUserLeftRoom((user: IUser, room: IRoom) =>
-			roomServiceSender.onUserLeftRoom(FederationRoomSenderConverter.toOnUserLeftRoom(user._id, room._id)),
+		FederationHooks.afterUserLeaveRoom((user: IUser, room: IRoom) =>
+			roomServiceSender.afterUserLeaveRoom(FederationRoomSenderConverter.toAfterUserLeaveRoom(user._id, room._id)),
 		);
 		FederationHooks.onUserRemovedFromRoom((user: IUser, room: IRoom, userWhoRemoved: IUser) =>
 			roomServiceSender.onUserRemovedFromRoom(
