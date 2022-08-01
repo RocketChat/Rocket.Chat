@@ -503,6 +503,7 @@ export const CallProvider: FC = ({ children }) => {
 			openRoom,
 			createRoom,
 			closeRoom,
+			networkStatus,
 			openWrapUpModal,
 			changeAudioOutputDevice,
 			changeAudioInputDevice,
@@ -524,6 +525,7 @@ export const CallProvider: FC = ({ children }) => {
 		openWrapUpModal,
 		changeAudioOutputDevice,
 		changeAudioInputDevice,
+		networkStatus,
 	]);
 
 	return (

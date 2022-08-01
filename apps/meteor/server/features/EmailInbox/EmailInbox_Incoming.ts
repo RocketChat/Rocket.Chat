@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import stripHtml from 'string-strip-html';
 import { Random } from 'meteor/random';
 import { ParsedMail, Attachment } from 'mailparser';
@@ -176,6 +175,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 			_id: msgId,
 			groupable: false,
 			msg,
+			token: guest.token,
 			attachments: [
 				{
 					actions: [

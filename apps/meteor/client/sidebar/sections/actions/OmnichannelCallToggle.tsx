@@ -5,16 +5,16 @@ import { OmnichannelCallToggleError } from './OmnichannelCallToggleError';
 import { OmnichannelCallToggleLoading } from './OmnichannelCallToggleLoading';
 import { OmnichannelCallToggleReady } from './OmnichannelCallToggleReady';
 
-export const OmnichannelCallToggle = (): ReactElement => {
+export const OmnichannelCallToggle = ({ ...props }): ReactElement => {
 	const isCallReady = useIsCallReady();
 	const isCallError = useIsCallError();
 	if (isCallError) {
-		return <OmnichannelCallToggleError />;
+		return <OmnichannelCallToggleError {...props} />;
 	}
 
 	if (!isCallReady) {
-		return <OmnichannelCallToggleLoading />;
+		return <OmnichannelCallToggleLoading {...props} />;
 	}
 
-	return <OmnichannelCallToggleReady />;
+	return <OmnichannelCallToggleReady {...props} />;
 };

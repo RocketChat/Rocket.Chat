@@ -19,10 +19,12 @@ callbacks.add(
 		}
 
 		const { departmentId } = room;
-		const maxNumberSimultaneousChat = getMaxNumberSimultaneousChat({
-			agentId: user._id,
-			departmentId,
-		});
+		const maxNumberSimultaneousChat = Promise.await(
+			getMaxNumberSimultaneousChat({
+				agentId: user._id,
+				departmentId,
+			}),
+		);
 
 		if (maxNumberSimultaneousChat === 0) {
 			return user;

@@ -84,14 +84,16 @@ addAction('start-call', ({ room }) => {
 			enableOption && !ownUser
 				? {
 						groups,
-						'id': 'start-call',
-						'title': 'Call',
-						'icon': 'phone',
-						'action': handleOpenVideoConf,
-						'disabled': federated,
-						'data-tooltip': federated ? 'Video_Call_unavailable_for_federation' : '',
-						'full': true,
-						'order': live ? -1 : 4,
+						id: 'start-call',
+						title: 'Call',
+						icon: 'phone',
+						action: handleOpenVideoConf,
+						...(federated && {
+							'disabled': true,
+							'data-tooltip': 'Video_Call_unavailable_for_federation',
+						}),
+						full: true,
+						order: live ? -1 : 4,
 				  }
 				: null,
 		[groups, enableOption, live, handleOpenVideoConf, ownUser, federated],
