@@ -370,6 +370,18 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
+	saveDefaultById(_id, defaultValue) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				default: defaultValue,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
 		const readPreference = ReadPreference.SECONDARY_PREFERRED;
 		const lookup = {

@@ -79,6 +79,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setRoomTopicById(roomId: any, topic: any): any;
 
+	saveDefaultById(roomId: any, defaultValue: any): Promise<UpdateResult>;
+
 	findByE2E(options: any): any;
 
 	findRoomsInsideTeams(autoJoin?: boolean): any;
