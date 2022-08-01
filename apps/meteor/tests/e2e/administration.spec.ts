@@ -12,19 +12,24 @@ test.describe.parallel('administration', () => {
 		await page.goto('/admin');
 	});
 
-	test.describe('/rooms', () => {
+	test.describe.only('Info', () => {
 		test.beforeEach(async () => {
-			await poAdmin.sidenav.linkRooms.click();
+			await poAdmin.sidenav.linkInfo.click();
 		});
 
-		test('expect find "general" channel', async ({ page }) => {
-			await poAdmin.inputSearchRooms.type('general');
+		test('expect download info as JSON', async ({ page }) => {
+			const [download] = await Promise.all([
+				page.waitForEvent('download'),
+				page.locator('button:has-text("Download Info")').click(),
+			]);
 
-			expect(page.locator('table tr[qa-room-id="GENERAL"]')).toBeVisible();
-		});
-	});
+			expect(download.suggestedFilename()).toBe('statistics.json')
+		})
+	})
 
-	test.describe('/users', () => {
+	test.describe('Import', () => {})
+
+	test.describe('Users', () => {
 		test.beforeEach(async () => {
 			await poAdmin.sidenav.linkUsers.click();
 		});
@@ -36,45 +41,41 @@ test.describe.parallel('administration', () => {
 		});
 	});
 
-	test.describe('/settings', () => {
+	test.describe('Rooms', () => {
 		test.beforeEach(async () => {
-			await poAdmin.sidenav.linkSettings.click();
+			await poAdmin.sidenav.linkRooms.click();
 		});
 
-		test.describe('GENERAL', () => {
-			test.beforeEach(async ({ page }) => {
-				await poAdmin.inputSearchSettings.type('general');
-				await page.locator('[data-qa-id="General"] >> text="Open"').click();
-			});
+		test('expect find "general" channel', async ({ page }) => {
+			await poAdmin.inputSearchRooms.type('general');
 
-			test('expect be abble to reset a setting after a change', async () => {
-				await poAdmin.inputSiteURL.type('any_text');
-				await poAdmin.btnResetSiteURL.click();
-
-				await poAdmin.inputSiteName.type('any_text');
-				await poAdmin.btnResetSiteName.click();
-
-				await poAdmin.btnAllowInvalidSelfSignedCerts.click();
-				await poAdmin.btnResetAllowInvalidSelfSignedCerts.click();
-
-				await poAdmin.btnEnableFavoriteRooms.click();
-				await poAdmin.btnResetEnableFavoriteRooms.click();
-
-				await poAdmin.btnUseCDNPrefix.click();
-				await poAdmin.btnResetUseCDNPrefix.click();
-
-				await poAdmin.btnForceSSL.click();
-				await poAdmin.btnResetForceSSL.click();
-
-				await poAdmin.inputGoogleTagManagerId.click();
-				await poAdmin.btnResetGoogleTagManagerId.click();
-
-				await poAdmin.inputBugsnagApiKey.click();
-				await poAdmin.inputResetBugsnagApiKey.click();
-
-				await poAdmin.inputRobotsFileContent.type('any_text');
-				await poAdmin.btnResetRobotsFileContent.click();
-			});
+			expect(page.locator('table tr[qa-room-id="GENERAL"]')).toBeVisible();
 		});
 	});
+
+	test.describe('Invites', () => {})
+
+	test.describe('Connectivity Services', () => {})
+
+	test.describe('View Logs', () => {})
+
+	test.describe('Custom Sounds', () => {})
+
+	test.describe('Federation Dashboard', () => {})
+
+	test.describe('Apps', () => {})
+
+	test.describe('Email Inboxes', () => {})
+
+	test.describe('Custom Emoji', () => {})
+
+	test.describe('Integrations', () => {})
+
+	test.describe('OAuth Applications', () => {})
+
+	test.describe('Mailer', () => {})
+
+	test.describe('Custom User Status', () => {})
+
+	test.describe('Permissions', () => {})
 });
