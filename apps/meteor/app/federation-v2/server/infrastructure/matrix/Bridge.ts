@@ -152,7 +152,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public extractHomeserverOrigin(externalUserId: string): string {
-		return externalUserId.includes(':') ? externalUserId.split(':').pop() || '' : '';
+		return externalUserId.includes(':') ? externalUserId.split(':').pop() || '' : this.homeServerDomain;
 	}
 
 	public isRoomFromTheSameHomeserver(externalRoomId: string, domain: string): boolean {

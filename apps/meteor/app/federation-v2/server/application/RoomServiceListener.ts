@@ -111,6 +111,9 @@ export class FederationRoomServiceListener extends FederationService {
 		}
 
 		if (!wasGeneratedOnTheProxyServer && !affectedFederatedRoom) {
+			if(!roomType) {
+				return;
+			}
 			if(roomType === RoomType.DIRECT_MESSAGE) {
 				const members = [federatedInviterUser, federatedInviteeUser];
 			const newFederatedRoom = DirectMessageFederatedRoom.createInstance(

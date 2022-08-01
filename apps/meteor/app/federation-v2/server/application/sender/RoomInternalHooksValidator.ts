@@ -75,8 +75,8 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 			return (user as IUser).username;
 		});
 		const atLeastOneExternalUser =
-			usernames.some((username) => this.isAnInternalIdentifier((username as string) || '')) ||
-			internalUsers.filter((user) => this.isAddingANewExternalUser(user)).some((user) => isUserFederated(user as IUser));
+			usernames.some((username) => !this.isAnInternalIdentifier((username as string) || '')) ||
+			internalUsers.filter((user) => !this.isAddingANewExternalUser(user)).some((user) => isUserFederated(user as IUser));
 		if (atLeastOneExternalUser) {
 			throw new Error('error-this-is-an-ee-feature');
 		}
