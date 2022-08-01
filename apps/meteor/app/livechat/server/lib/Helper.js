@@ -600,14 +600,15 @@ export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) 
 	}
 
 	upsert.forEach((agent) => {
-		if (!Users.findOneById(agent.agentId, { fields: { _id: 1 } })) {
+		const agentFromDb = Users.findOneById(agent.agentId, { fields: { _id: 1, username: 1 } });
+		if (!agentFromDb) {
 			return;
 		}
 
 		LivechatDepartmentAgents.saveAgent({
 			agentId: agent.agentId,
 			departmentId,
-			username: agent.username,
+			username: agentFromDb.username,
 			count: agent.count ? parseInt(agent.count) : 0,
 			order: agent.order ? parseInt(agent.order) : 0,
 			departmentEnabled,

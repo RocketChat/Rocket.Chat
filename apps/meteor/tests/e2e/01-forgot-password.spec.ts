@@ -1,17 +1,14 @@
-import { Page, test, expect } from '@playwright/test';
-
+import { test, expect } from './utils/test';
 import { Auth } from './page-objects';
 
 test.describe('Forgot Password', () => {
-	let page: Page;
 	let pageAuth: Auth;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
 		pageAuth = new Auth(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async ({ page }) => {
 		await page.goto('/');
 		await pageAuth.btnForgotPassword.click();
 	});
