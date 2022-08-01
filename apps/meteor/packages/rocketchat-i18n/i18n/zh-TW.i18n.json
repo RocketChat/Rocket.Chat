@@ -251,7 +251,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>歡迎來到<strong>[Site_Name]</strong></h1><p>轉到<a href=\"[Site_URL]\">[Site_URL]</a>，並嘗試了當今最先進的開源聊天解決方案！ </p><p>您可以登陸使用您的電子郵件：[email]和密碼：[password]。您可能需要您首次登錄後更改。",
   "Accounts_UserAddedEmail_Description": "您可以使用以下佔位符： <br/><ul><li> [name]，[fname]，[lname]為用戶的全名，名字或姓氏，分別。 </li><li> [email]為用戶的電子郵件。 </li><li> [password]為用戶的密碼。 </li><li> [Site_Name]和[Site_URL]分別為應用程序的名稱和網址。 </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "您已被新增至 [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "驗證外部帳號的電子郵件",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action": "動作",
   "Action_required": "需要採取的行動",
   "Activate": "啟用",

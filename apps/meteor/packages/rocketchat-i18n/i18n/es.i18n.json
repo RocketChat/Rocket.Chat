@@ -251,7 +251,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Te damos la bienvenida a <strong>[Site_Name]</strong></h1><p>Ve a <a href=\"[Site_URL]\">[Site_URL]</a> y prueba la mejor solución de chat de código abierto disponible hoy en día</p><p>Puedes iniciar sesión usando tu correo electrónico ([email]) y tu contraseña ([password]). Puede que se te solicite que la cambies la primera vez que inicies sesión.",
   "Accounts_UserAddedEmail_Description": "Puedes usar los siguientes marcadores de posición: <br/><ul><li>[name], [fname], [lname] para el nombre completo, el nombre o el apellido del usuario, respectivamente. </li><li>[email] para el correo electrónico del usuario. </li><li>[password] para la contraseña del usuario. </li><li>[Site_Name] y [Site_URL] para el nombre y la URL de la aplicación, respectivamente.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Se te ha añadido a [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "Verificar el correo electrónico de cuentas externas",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action": "Acción",
   "Action_required": "Acción requerida",
   "Activate": "Activar",

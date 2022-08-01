@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 
-import InfoPanel from '../../../../InfoPanel';
+import InfoPanel from '../../../../../components/InfoPanel';
 
 type InfoFieldPropsType = {
 	label: string;
