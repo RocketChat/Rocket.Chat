@@ -431,206 +431,222 @@ jobs:
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
 
-      - name: Build Docker image
-        id: build-docker-image
-        uses: ./.github/actions/build-docker-image
-        with:
-          root-dir: /tmp/build
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          release: official
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - name: 'Build Docker image: account'
-        uses: ./.github/actions/build-docker-image-service
-        with:
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          service: account
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - name: 'Build Docker image: authorization'
-        uses: ./.github/actions/build-docker-image-service
-        with:
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          service: authorization
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - name: 'Build Docker image: ddp-streamer'
-        uses: ./.github/actions/build-docker-image-service
-        with:
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          service: ddp-streamer
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - name: 'Build Docker image: presence'
-        uses: ./.github/actions/build-docker-image-service
-        with:
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          service: presence
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - name: 'Build Docker image: stream-hub'
-        uses: ./.github/actions/build-docker-image-service
-        with:
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          service: stream-hub
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - name: Launch Traefik
+      - name: Start containers
         run: |
-          docker run --name traefik -d \
-          -p 3000:80 \
-          -v /var/run/docker.sock:/var/run/docker.sock \
-          traefik:2.7 \
-          --providers.docker=true
+          DOCKER_TAG=${{ needs.release-versions.outputs.gh-docker-tag }} \
+          MONGO_URL=mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true \
+          docker compose -f docker-compose-ci.yml up -d --build
 
-      # TODO move startup/restart to its own github action
-      - name: Start up Rocket.Chat
-        run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+          docker compose -f docker-compose-ci.yml logs
 
-          docker run --name rocketchat -d \
-            --link mongodb \
-            --link nats \
-            -e TEST_MODE=true \
-            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-            -e TRANSPORTER=nats://nats:4222 \
-            -e MOLECULER_LOG_LEVEL=info \
-            -e ENTERPRISE_LICENSE="${{ secrets.ENTERPRISE_LICENSE }}" \
-            -e SKIP_PROCESS_EVENT_REGISTRATION=true \
-            --label 'traefik.http.routers.rocketchat.rule=PathPrefix(`/`)' \
-            ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.official
-
-          # spin up all micro services
-          docker run --name ddp-streamer -d \
-            --link mongodb \
-            --link nats \
-            -e PORT=4000 \
-            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-            -e TRANSPORTER=nats://nats:4222 \
-            -e MOLECULER_LOG_LEVEL=info \
-            --label 'traefik.http.services.ddp-streamer.loadbalancer.server.port=4000' \
-            --label 'traefik.http.routers.ddp-streamer.rule=PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)' \
-            ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${{ needs.release-versions.outputs.gh-docker-tag }}
-
-      - name: 'Start service: stream-hub'
-        run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          docker run --name stream-hub -d \
-            --link mongodb \
-            --link nats \
-            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-            -e TRANSPORTER=nats://nats:4222 \
-            -e MOLECULER_LOG_LEVEL=info \
-            ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${{ needs.release-versions.outputs.gh-docker-tag }}
-
-          until echo "$(docker logs stream-hub)" | grep -q "NetworkBroker started successfully"; do
-            echo "Waiting 'stream-hub' to start up"
+          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer)" | grep -q "NetworkBroker started successfully"; do
+            echo "Waiting 'ddp-streamer' to start up"
             ((c++)) && ((c==10)) && exit 1
             sleep 10
           done
 
-      - name: 'Start service: account'
-        run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+          docker compose -f docker-compose-ci.yml logs
 
-          docker run --name account -d \
-            --link mongodb \
-            --link nats \
-            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-            -e TRANSPORTER=nats://nats:4222 \
-            -e MOLECULER_LOG_LEVEL=info \
-            ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${{ needs.release-versions.outputs.gh-docker-tag }}
+      # - name: Build Docker image
+      #   id: build-docker-image
+      #   uses: ./.github/actions/build-docker-image
+      #   with:
+      #     root-dir: /tmp/build
+      #     docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      #     release: official
+      #     username: ${{ secrets.CR_USER }}
+      #     password: ${{ secrets.CR_PAT }}
 
-          until echo "$(docker logs account)" | grep -q "NetworkBroker started successfully"; do
-            echo "Waiting 'account' to start up"
-            ((c++)) && ((c==10)) && exit 1
-            sleep 10
-          done
+      # - name: 'Build Docker image: account'
+      #   uses: ./.github/actions/build-docker-image-service
+      #   with:
+      #     docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      #     service: account
+      #     username: ${{ secrets.CR_USER }}
+      #     password: ${{ secrets.CR_PAT }}
 
-      - name: 'Start service: authorization'
-        run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+      # - name: 'Build Docker image: authorization'
+      #   uses: ./.github/actions/build-docker-image-service
+      #   with:
+      #     docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      #     service: authorization
+      #     username: ${{ secrets.CR_USER }}
+      #     password: ${{ secrets.CR_PAT }}
 
-          docker run --name authorization -d \
-            --link mongodb \
-            --link nats \
-            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-            -e TRANSPORTER=nats://nats:4222 \
-            -e MOLECULER_LOG_LEVEL=info \
-            ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${{ needs.release-versions.outputs.gh-docker-tag }}
+      # - name: 'Build Docker image: ddp-streamer'
+      #   uses: ./.github/actions/build-docker-image-service
+      #   with:
+      #     docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      #     service: ddp-streamer
+      #     username: ${{ secrets.CR_USER }}
+      #     password: ${{ secrets.CR_PAT }}
 
-          until echo "$(docker logs authorization)" | grep -q "NetworkBroker started successfully"; do
-            echo "Waiting 'authorization' to start up"
-            ((c++)) && ((c==10)) && exit 1
-            sleep 10
-          done
+      # - name: 'Build Docker image: presence'
+      #   uses: ./.github/actions/build-docker-image-service
+      #   with:
+      #     docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      #     service: presence
+      #     username: ${{ secrets.CR_USER }}
+      #     password: ${{ secrets.CR_PAT }}
 
-      - name: 'Start service: presence'
-        run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+      # - name: 'Build Docker image: stream-hub'
+      #   uses: ./.github/actions/build-docker-image-service
+      #   with:
+      #     docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      #     service: stream-hub
+      #     username: ${{ secrets.CR_USER }}
+      #     password: ${{ secrets.CR_PAT }}
 
-          docker run --name presence -d \
-            --link mongodb \
-            --link nats \
-            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-            -e TRANSPORTER=nats://nats:4222 \
-            -e MOLECULER_LOG_LEVEL=info \
-            ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${{ needs.release-versions.outputs.gh-docker-tag }}
+      # - name: Launch Traefik
+      #   run: |
+      #     docker run --name traefik -d \
+      #     -p 3000:80 \
+      #     -v /var/run/docker.sock:/var/run/docker.sock \
+      #     traefik:2.7 \
+      #     --providers.docker=true
 
-          until echo "$(docker logs presence)" | grep -q "NetworkBroker started successfully"; do
-            echo "Waiting 'presence' to start up"
-            ((c++)) && ((c==10)) && exit 1
-            sleep 10
-          done
+      # # TODO move startup/restart to its own github action
+      # - name: Start up Rocket.Chat
+      #   run: |
+      #     LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+      #     docker run --name rocketchat -d \
+      #       --link mongodb \
+      #       --link nats \
+      #       -e TEST_MODE=true \
+      #       -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+      #       -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
+      #       -e TRANSPORTER=nats://nats:4222 \
+      #       -e MOLECULER_LOG_LEVEL=info \
+      #       -e ENTERPRISE_LICENSE="${{ secrets.ENTERPRISE_LICENSE }}" \
+      #       -e SKIP_PROCESS_EVENT_REGISTRATION=true \
+      #       --label 'traefik.http.routers.rocketchat.rule=PathPrefix(`/`)' \
+      #       ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.official
+
+      #     # spin up all micro services
+      #     docker run --name ddp-streamer -d \
+      #       --link mongodb \
+      #       --link nats \
+      #       -e PORT=4000 \
+      #       -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+      #       -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
+      #       -e TRANSPORTER=nats://nats:4222 \
+      #       -e MOLECULER_LOG_LEVEL=info \
+      #       --label 'traefik.http.services.ddp-streamer.loadbalancer.server.port=4000' \
+      #       --label 'traefik.http.routers.ddp-streamer.rule=PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)' \
+      #       ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${{ needs.release-versions.outputs.gh-docker-tag }}
+
+      # - name: 'Start service: stream-hub'
+      #   run: |
+      #     LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+      #     docker run --name stream-hub -d \
+      #       --link mongodb \
+      #       --link nats \
+      #       -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+      #       -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
+      #       -e TRANSPORTER=nats://nats:4222 \
+      #       -e MOLECULER_LOG_LEVEL=info \
+      #       ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${{ needs.release-versions.outputs.gh-docker-tag }}
+
+      #     until echo "$(docker logs stream-hub)" | grep -q "NetworkBroker started successfully"; do
+      #       echo "Waiting 'stream-hub' to start up"
+      #       ((c++)) && ((c==10)) && exit 1
+      #       sleep 10
+      #     done
+
+      # - name: 'Start service: account'
+      #   run: |
+      #     LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+      #     docker run --name account -d \
+      #       --link mongodb \
+      #       --link nats \
+      #       -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+      #       -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
+      #       -e TRANSPORTER=nats://nats:4222 \
+      #       -e MOLECULER_LOG_LEVEL=info \
+      #       ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${{ needs.release-versions.outputs.gh-docker-tag }}
+
+      #     until echo "$(docker logs account)" | grep -q "NetworkBroker started successfully"; do
+      #       echo "Waiting 'account' to start up"
+      #       ((c++)) && ((c==10)) && exit 1
+      #       sleep 10
+      #     done
+
+      # - name: 'Start service: authorization'
+      #   run: |
+      #     LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+      #     docker run --name authorization -d \
+      #       --link mongodb \
+      #       --link nats \
+      #       -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+      #       -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
+      #       -e TRANSPORTER=nats://nats:4222 \
+      #       -e MOLECULER_LOG_LEVEL=info \
+      #       ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${{ needs.release-versions.outputs.gh-docker-tag }}
+
+      #     until echo "$(docker logs authorization)" | grep -q "NetworkBroker started successfully"; do
+      #       echo "Waiting 'authorization' to start up"
+      #       ((c++)) && ((c==10)) && exit 1
+      #       sleep 10
+      #     done
+
+      # - name: 'Start service: presence'
+      #   run: |
+      #     LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+      #     docker run --name presence -d \
+      #       --link mongodb \
+      #       --link nats \
+      #       -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
+      #       -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
+      #       -e TRANSPORTER=nats://nats:4222 \
+      #       -e MOLECULER_LOG_LEVEL=info \
+      #       ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${{ needs.release-versions.outputs.gh-docker-tag }}
+
+      #     until echo "$(docker logs presence)" | grep -q "NetworkBroker started successfully"; do
+      #       echo "Waiting 'presence' to start up"
+      #       ((c++)) && ((c==10)) && exit 1
+      #       sleep 10
+      #     done
 
       - name: E2E Test API
         run: |
           cd ./apps/meteor
           for i in $(seq 1 5); do
-            docker stop rocketchat
-            docker stop stream-hub
-            docker stop account
-            docker stop authorization
-            docker stop ddp-streamer
-            docker stop presence
+            # docker stop rocketchat
+            # docker stop stream-hub
+            # docker stop account
+            # docker stop authorization
+            # docker stop ddp-streamer
+            # docker stop presence
 
-            docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
+            # docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
-            NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
-            echo $NOW
+            # NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+            # echo $NOW
 
-            docker start rocketchat
-            docker start stream-hub
-            docker start account
-            docker start authorization
-            docker start ddp-streamer
-            docker start presence
+            # docker start rocketchat
+            # docker start stream-hub
+            # docker start account
+            # docker start authorization
+            # docker start ddp-streamer
+            # docker start presence
 
-            until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
-              echo "Waiting Rocket.Chat to start up"
-              ((c++)) && ((c==10)) && exit 1
-              sleep 10
-            done
+            # until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+            #   echo "Waiting Rocket.Chat to start up"
+            #   ((c++)) && ((c==10)) && exit 1
+            #   sleep 10
+            # done
 
-            docker logs rocketchat --tail=50
-            docker logs stream-hub --tail=50
-            docker logs account --tail=50
-            docker logs authorization --tail=50
-            docker logs ddp-streamer --tail=50
-            docker logs presence --tail=50
+            # docker logs rocketchat --tail=50
+            # docker logs stream-hub --tail=50
+            # docker logs account --tail=50
+            # docker logs authorization --tail=50
+            # docker logs ddp-streamer --tail=50
+            # docker logs presence --tail=50
 
             npm run testapi && s=0 && break || s=$? && docker logs rocketchat --tail=100 && docker logs authorization --tail=50;
           done;
@@ -646,39 +662,41 @@ jobs:
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
 
-          docker logs rocketchat --tail=50
+          # docker logs rocketchat --tail=50
 
-          docker stop rocketchat
-          docker stop stream-hub
-          docker stop account
-          docker stop authorization
-          docker stop ddp-streamer
-          docker stop presence
+          # docker stop rocketchat
+          # docker stop stream-hub
+          # docker stop account
+          # docker stop authorization
+          # docker stop ddp-streamer
+          # docker stop presence
 
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
           echo $NOW
 
-          docker start rocketchat
-          docker start stream-hub
-          docker start account
-          docker start authorization
-          docker start ddp-streamer
-          docker start presence
+          # docker start rocketchat
+          # docker start stream-hub
+          # docker start account
+          # docker start authorization
+          # docker start ddp-streamer
+          # docker start presence
 
-          until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+          docker compose -f docker-compose-ci.yml restart
+
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
             ((c++)) && ((c==10)) && exit 1
             sleep 10
           done
 
-          docker logs rocketchat --tail=50
-          docker logs stream-hub --tail=50
-          docker logs account --tail=50
-          docker logs authorization --tail=50
-          docker logs ddp-streamer --tail=50
-          docker logs presence --tail=50
+          # docker logs rocketchat --tail=50
+          # docker logs stream-hub --tail=50
+          # docker logs account --tail=50
+          # docker logs authorization --tail=50
+          # docker logs ddp-streamer --tail=50
+          # docker logs presence --tail=50
 
           cd ./apps/meteor
 

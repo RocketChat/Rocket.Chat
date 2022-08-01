@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  rocketchat:
+    build:
+      dockerfile: apps/meteor/.docker/Dockerfile
+      context: /tmp/build
+    image: rocketchat/rocket.chat:${DOCKER_TAG}
+    environment:
+      - "MONGO_URL=${MONGO_URL}"
+      - TRANSPORTER=nats://nats:4222
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - nats
+      - traefik
+    labels:
+      traefik.enable: true
+      traefik.http.services.rocketchat.loadbalancer.server.port: 3000
+      traefik.http.routers.rocketchat.service: rocketchat
+      traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
+
+  authorization-service:
+    build:
+      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      # context: .
+      args:
+        SERVICE: authorization
+    # image: rocketchat/authorization-service:latest
+    environment:
+      - "MONGO_URL=${MONGO_URL}"
+      - TRANSPORTER=nats://nats:4222
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - nats
+
+  account-service:
+    build:
+      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      args:
+        SERVICE: account
+    # image: rocketchat/account-service:latest
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - TRANSPORTER=nats://nats:4222
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - nats
+
+  presence-service:
+    build:
+      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      # context: .
+      args:
+        SERVICE: presence
+    # image: rocketchat/presence-service:latest
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - TRANSPORTER=nats://nats:4222
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - nats
+
+  ddp-streamer-service:
+    build:
+      dockerfile: ee/apps/ddp-streamer/Dockerfile
+      # context: .
+      args:
+        SERVICE: ddp-streamer
+    # image: rocketchat/ddp-streamer-service:latest
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - TRANSPORTER=nats://nats:4222
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - nats
+      - traefik
+    labels:
+      traefik.enable: true
+      traefik.http.services.ddp-streamer-service.loadbalancer.server.port: 3000
+      traefik.http.routers.ddp-streamer-service.service: ddp-streamer-service
+      traefik.http.routers.ddp-streamer-service.rule: PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)
+
+  stream-hub-service:
+    build:
+      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      # context: .
+      args:
+        SERVICE: stream-hub
+    # image: rocketchat/stream-hub-service:latest
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - TRANSPORTER=nats://nats:4222
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - nats
+
+  nats:
+    image: nats:2.6-alpine
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "4222:4222"
+
+  traefik:
+    image: traefik:v2.8
+    command:
+      - --providers.docker=true
+    ports:
+      - 3000:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
