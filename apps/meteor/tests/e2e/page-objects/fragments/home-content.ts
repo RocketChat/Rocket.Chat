@@ -64,6 +64,38 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
 	}
 
+	get btnOptionEditMessage(): Locator {
+		return this.page.locator('[data-qa-id="edit-message"]')
+	}
+	
+	get btnOptionDeleteMessage(): Locator {
+		return this.page.locator('[data-qa-id="delete-message"]')
+	}
+
+	get btnOptionPinMessage(): Locator {
+		return this.page.locator('[data-qa-id="pin-message"]')
+	}
+
+	get btnOptionStarMessage(): Locator {
+		return this.page.locator('[data-qa-id="star-message"]')
+	}
+
+	get btnOptionFileUpload(): Locator {
+		return this.page.locator('[data-qa-id="file-upload"]')
+	}
+	
+	get btnVideoMessage(): Locator {
+		return this.page.locator('.rc-popover__content [data-id="video-message"]')
+	}
+
+	get btnRecordAudio(): Locator {
+		return this.page.locator('[data-qa-id="audio-record"]')
+	}
+
+	get btnMenuMoreActions() {
+		return this.page.locator('[data-qa-id="menu-more-actions"')
+	}
+
 	async pickEmoji(emoji: string, section = 'icon-people') {
 		await this.page.locator('.rc-message-box__icon.emoji-picker-icon').click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();

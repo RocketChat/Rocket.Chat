@@ -3,9 +3,9 @@ import { BASE_API_URL, ADMIN_CREDENTIALS } from './config/constants';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
 
-test.use({ storageState: 'user1-session.json' });
+test.use({ storageState: 'user2-session.json' });
 
-test.describe.parallel('permissions', () => {
+test.describe.serial('permissions', () => {
 	let poHomeChannel: HomeChannel;
 	let apiSessionHeaders: { 'X-Auth-Token': string; 'X-User-Id': string };
 	let targetChannel: string;
@@ -26,6 +26,7 @@ test.describe.parallel('permissions', () => {
 
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('any_message');
 	});
 
 	test.describe.serial('Edit message', () => {
@@ -38,8 +39,10 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test.fixme('expect option(edit) not be visible', async () => {
-			await poHomeChannel.content.sendMessage('any_message');
+		test('expect option(edit) not be visible', async () => {
+			await poHomeChannel.content.openLastMessageMenu();
+			
+			await expect(poHomeChannel.content.btnOptionEditMessage).toBeHidden();
 		});
 
 		test.afterAll(async ({ request }) => {
@@ -62,8 +65,10 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test.fixme('expect option(delete) not be visible', async () => {
-			await poHomeChannel.content.sendMessage('any_message');
+		test('expect option(delete) not be visible', async () => {
+			await poHomeChannel.content.openLastMessageMenu();
+			
+			await expect(poHomeChannel.content.btnOptionDeleteMessage).toBeHidden();
 		});
 
 		test.afterAll(async ({ request }) => {
@@ -88,8 +93,10 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test.fixme('expect option(pin) not be visible', async () => {
-			await poHomeChannel.content.sendMessage('any_message');
+		test('expect option(pin) not be visible', async () => {
+			await poHomeChannel.content.openLastMessageMenu();
+			
+			await expect(poHomeChannel.content.btnOptionPinMessage).toBeHidden();
 		});
 
 		test.afterAll(async ({ request }) => {
@@ -112,8 +119,10 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test.fixme('expect option(star) not be visible', async () => {
-			await poHomeChannel.content.sendMessage('any_message');
+		test('expect option(star) not be visible', async () => {
+			await poHomeChannel.content.openLastMessageMenu();
+			
+			await expect(poHomeChannel.content.btnOptionStarMessage).toBeHidden();	
 		});
 
 		test.afterAll(async ({ request }) => {
@@ -136,8 +145,10 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test.fixme('expect option(upload file) not be visible', async () => {
-			//
+		test('expect option(upload file) not be visible', async () => {
+			await poHomeChannel.content.btnMenuMoreActions.click();
+
+			await expect(poHomeChannel.content.btnOptionFileUpload).toBeHidden();	
 		});
 
 		test.afterAll(async ({ request }) => {
@@ -160,8 +171,10 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test.fixme('expect option(upload audio) not be visible', async () => {
-			//
+		test('expect option(upload audio) not be visible', async () => {
+			await poHomeChannel.content.btnMenuMoreActions.click();
+
+			await expect(poHomeChannel.content.btnRecordAudio).toBeHidden();	
 		});
 
 		test.afterAll(async ({ request }) => {
@@ -184,8 +197,10 @@ test.describe.parallel('permissions', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test.fixme('expect option(upload video) not be visible', async () => {
-			//
+		test('expect option(upload video) not be visible', async () => {
+			await poHomeChannel.content.btnMenuMoreActions.click();
+
+			await expect(poHomeChannel.content.btnVideoMessage).toBeHidden();	
 		});
 
 		test.afterAll(async ({ request }) => {
@@ -214,8 +229,10 @@ test.describe.parallel('permissions', () => {
 			expect(response2.status()).toBe(200);
 		});
 
-		test.fixme('expect badword be censored', async () => {
-			//
+		test('expect badword be censored', async () => {
+			await poHomeChannel.content.sendMessage('badword');
+
+			await expect(poHomeChannel.content.lastUserMessage).toContainText('*'.repeat(7));
 		});
 
 		test.afterAll(async ({ request }) => {
