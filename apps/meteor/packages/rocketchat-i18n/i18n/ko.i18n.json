@@ -242,7 +242,7 @@
   "Accounts_UserAddedEmail_Default": "<h1><strong>[Site_Name]</strong> 에 오신 것을 환영합니다.</h1><p><a href=\"[Site_URL]\">[Site_URL]</a>로 이동하여 오늘날 최고의 오픈 소스 채팅 솔루션을 경험 해 보십시오! </p><p> 이메일: [email] 과 비밀번호 : [password] 로 로그인 할 수 있습니다. 로그인 후에는 변경하셔야 합니다.",
   "Accounts_UserAddedEmail_Description": "다음의 기호를 사용할 수 있습니다:<br/><ul><li>[lname] - 성, [name] - 전체 이름(성+이름), [fname] - 이름 </li><li>[email] - 이메일</li><li>[password] - 비밀번호</li><li>[Site_Name] - 사이트명, [Site_URL] - 사이트 URL</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "당신이은 [Site_Name] 에 추가되었습니다",
-  "Accounts_Verify_Email_For_External_Accounts": "외부 계정의 이메일 확인",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action": "동작",
   "Action_required": "필요한 조치",
   "Activate": "활성화",

@@ -69,7 +69,7 @@ const RoomMembersWithData = ({ rid }) => {
 	}, [setState, reload]);
 
 	if (state.tab === 'UserInfo') {
-		return <UserInfoWithData rid={rid} onClickClose={onClickClose} onClickBack={handleBack} username={state.username} />;
+		return <UserInfoWithData rid={rid} onClose={onClickClose} onClickBack={handleBack} username={state.username} />;
 	}
 
 	if (state.tab === 'InviteUsers') {
