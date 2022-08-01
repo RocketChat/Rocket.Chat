@@ -4,11 +4,6 @@ import React, { useCallback, ReactElement } from 'react';
 
 import ListItem from '../Sidebar/ListItem';
 
-const checkBoxStyle = {
-	paddingLeft: '24px',
-	paddingInlineStart: '24px',
-};
-
 function ViewModeList(): ReactElement {
 	const t = useTranslation();
 
@@ -32,13 +27,13 @@ function ViewModeList(): ReactElement {
 	return (
 		<>
 			<OptionTitle>{t('Display')}</OptionTitle>
-			<ul className='rc-popover__list'>
+			<ul>
 				<ListItem
 					icon={'extended-view'}
 					text={t('Extended')}
 					input={
 						<RadioButton
-							style={checkBoxStyle}
+							pis='x24'
 							onChange={setToExtended}
 							name='sidebarViewMode'
 							value='extended'
@@ -50,13 +45,7 @@ function ViewModeList(): ReactElement {
 					icon={'medium-view'}
 					text={t('Medium')}
 					input={
-						<RadioButton
-							style={checkBoxStyle}
-							onChange={setToMedium}
-							name='sidebarViewMode'
-							value='medium'
-							checked={sidebarViewMode === 'medium'}
-						/>
+						<RadioButton pis='x24' onChange={setToMedium} name='sidebarViewMode' value='medium' checked={sidebarViewMode === 'medium'} />
 					}
 				/>
 				<ListItem
@@ -64,7 +53,7 @@ function ViewModeList(): ReactElement {
 					text={t('Condensed')}
 					input={
 						<RadioButton
-							style={checkBoxStyle}
+							pis='x24'
 							onChange={setToCondensed}
 							name='sidebarViewMode'
 							value='condensed'
@@ -77,7 +66,7 @@ function ViewModeList(): ReactElement {
 					text={t('Avatars')}
 					input={
 						<ToggleSwitch
-							style={checkBoxStyle}
+							pis='x24'
 							onChange={handleChangeSidebarDisplayAvatar}
 							name='sidebarDisplayAvatar'
 							checked={sidebarDisplayAvatar}

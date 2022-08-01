@@ -53,7 +53,7 @@ const CreateRoomList: FC<CreateRoomListProps> = ({ closeList }) => {
 	return (
 		<>
 			<OptionTitle>{t('Create_new')}</OptionTitle>
-			<ul className='rc-popover__list'>
+			<ul>
 				{canCreateChannel && (
 					<ListItem
 						icon='hashtag'
