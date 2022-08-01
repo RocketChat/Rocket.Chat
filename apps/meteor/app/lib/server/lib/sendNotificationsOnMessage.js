@@ -244,11 +244,8 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 
 	// Don't fetch all users if room exceeds max members
 	const maxMembersForNotification = settings.get('Notifications_Max_Room_Members');
-	const roomMembersCount = await Subscriptions.model
-		.rawCollection()
-		.aggregate([{ $match: { rid: room._id } }, lookup, { $match: { 'receiver.active': true } }, { $count: 'count' }])
-		.toArray()
-		.then((res) => res?.[0]?.count || 0);
+
+	const roomMembersCount = await Subscriptions.countRoomMembers(room._id);
 
 	const disableAllMessageNotifications = roomMembersCount > maxMembersForNotification && maxMembersForNotification !== 0;
 

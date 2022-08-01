@@ -1381,6 +1381,26 @@ export class Subscriptions extends Base {
 	unsetOnHold(roomId) {
 		return this.update({ rid: roomId }, { $unset: { onHold: 1 } }, { multi: true });
 	}
+
+	countRoomMembers(roomId) {
+		return this.model
+			.rawCollection()
+			.aggregate([
+				{ $match: { rid: roomId } },
+				{
+					$lookup: {
+						from: 'users',
+						localField: 'u._id',
+						foreignField: '_id',
+						as: 'receiver',
+					},
+				},
+				{ $match: { 'receiver.active': true } },
+				{ $count: 'count' },
+			])
+			.toArray()
+			.then((res) => res?.[0]?.count || 0);
+	}
 }
 
 export default new Subscriptions('subscription', true);
