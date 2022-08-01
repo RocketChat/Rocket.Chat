@@ -31,7 +31,7 @@ test.describe.serial('Messaging', () => {
 	test('expect show "hello word" in both contexts (targetChannel)', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello world');
-		
+
 		const auxContext = await createAuxContext(browser);
 		await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
 
