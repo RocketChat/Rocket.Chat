@@ -14,7 +14,7 @@ const createAuxContext = async (browser: Browser): Promise<{ page: Page; poHomeC
 
 test.use({ storageState: 'user1-session.json' });
 
-test.describe.serial.only('Messaging', () => {
+test.describe.serial('Messaging', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 
