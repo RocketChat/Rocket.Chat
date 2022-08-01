@@ -1,12 +1,12 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import Page from '../../../components/Page';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import AccountTokensTable from './AccountTokensTable';
 import AddToken from './AddToken';
 
-const AccountTokensPage = () => {
+const AccountTokensPage = (): ReactElement => {
 	const t = useTranslation();
 	const { value: data, reload } = useEndpointData('/v1/users.getPersonalAccessTokens');
 
