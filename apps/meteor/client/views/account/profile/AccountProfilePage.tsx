@@ -15,7 +15,7 @@ import { SHA256 } from 'meteor/sha';
 import React, { ReactElement, useMemo, useState, useCallback } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import ConfirmOwnerChangeWarningModal from '../../../components/ConfirmOwnerChangeWarningModal';
+import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
 import Page from '../../../components/Page';
 import { useForm } from '../../../hooks/useForm';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
@@ -206,11 +206,11 @@ const AccountProfilePage = (): ReactElement => {
 			};
 
 			return setModal(() => (
-				<ConfirmOwnerChangeWarningModal
+				<ConfirmOwnerChangeModal
 					onConfirm={handleConfirm}
 					onCancel={closeModal}
 					contentTitle={t(`Delete_User_Warning_${erasureType}` as TranslationKey)}
-					confirmLabel={t('Delete')}
+					confirmText={t('Delete')}
 					shouldChangeOwner={shouldChangeOwner}
 					shouldBeRemoved={shouldBeRemoved}
 				/>

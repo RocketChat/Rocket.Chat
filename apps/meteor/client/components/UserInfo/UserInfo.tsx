@@ -1,72 +1,85 @@
+import { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { memo, ReactElement, ReactNode } from 'react';
 
-import MarkdownText from '../../../../components/MarkdownText';
-import UTCClock from '../../../../components/UTCClock';
-import UserCard from '../../../../components/UserCard';
-import VerticalBar from '../../../../components/VerticalBar';
-import { useTimeAgo } from '../../../../hooks/useTimeAgo';
-import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import InfoPanel from '../../../InfoPanel';
-import Avatar from './Avatar';
+import { useTimeAgo } from '../../hooks/useTimeAgo';
+import { useUserCustomFields } from '../../hooks/useUserCustomFields';
+import { useUserDisplayName } from '../../hooks/useUserDisplayName';
+import InfoPanel from '../InfoPanel';
+import MarkdownText from '../MarkdownText';
+import UTCClock from '../UTCClock';
+import UserCard from '../UserCard';
+import VerticalBar from '../VerticalBar';
+import UserInfoAvatar from './UserInfoAvatar';
 
-function UserInfo({
+type UserInfoDataProps = Serialized<
+	Pick<
+		IUser,
+		| 'name'
+		| 'username'
+		| 'nickname'
+		| 'bio'
+		| 'lastLogin'
+		| 'avatarETag'
+		| 'utcOffset'
+		| 'phone'
+		| 'createdAt'
+		| 'statusText'
+		| 'canViewAllInfo'
+		| 'customFields'
+	>
+>;
+
+type UserInfoProps = UserInfoDataProps & {
+	status: ReactNode;
+	email?: string;
+	verified?: boolean;
+	actions: ReactElement;
+	roles: ReactElement[];
+};
+
+const UserInfo = ({
 	username,
+	name,
+	lastLogin,
+	nickname,
 	bio,
-	canViewAllInfo,
+	avatarETag,
+	roles,
+	utcOffset,
+	phone,
 	email,
 	verified,
-	showRealNames,
-	status,
-	phone,
-	customStatus,
-	roles = [],
-	lastLogin,
 	createdAt,
-	utcOffset,
-	customFields = [],
-	name,
-	data,
-	nickname,
+	status,
+	statusText,
+	customFields,
+	canViewAllInfo,
 	actions,
 	...props
-}) {
+}: UserInfoProps): ReactElement => {
 	const t = useTranslation();
 	const timeAgo = useTimeAgo();
-	const customFieldsToShowSetting = useSetting('Accounts_CustomFieldsToShowInUserInfo');
-	let customFieldsToShowObj;
-	try {
-		customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
-	} catch (error) {
-		customFieldsToShowObj = undefined;
-	}
-
-	const customFieldsToShow = customFieldsToShowObj
-		? Object.values(customFieldsToShowObj).map((value) => {
-				const role = Object.values(value);
-				const roleNameToShow = Object.keys(value);
-				const customField = {};
-				customField[roleNameToShow] = customFields[role];
-				return customField;
-		  })
-		: [];
+	const userDisplayName = useUserDisplayName({ name, username });
+	const userCustomFields = useUserCustomFields(customFields);
 
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
 			<InfoPanel>
-				<InfoPanel.Avatar>
-					<Avatar size={'x332'} username={username} etag={data?.avatarETag} />
-				</InfoPanel.Avatar>
+				{username && (
+					<InfoPanel.Avatar>
+						<UserInfoAvatar username={username} etag={avatarETag} />
+					</InfoPanel.Avatar>
+				)}
 
 				{actions && <InfoPanel.Section>{actions}</InfoPanel.Section>}
 
 				<InfoPanel.Section>
-					<InfoPanel.Title icon={status} title={getUserDisplayName(name, username, !!showRealNames)} />
-
-					{customStatus && (
+					{userDisplayName && <InfoPanel.Title icon={status} title={userDisplayName} />}
+					{statusText && (
 						<InfoPanel.Text>
-							<MarkdownText content={customStatus} parseEmoji={true} variant='inline' />
+							<MarkdownText content={statusText} parseEmoji={true} />
 						</InfoPanel.Text>
 					)}
 				</InfoPanel.Section>
@@ -82,9 +95,7 @@ function UserInfo({
 					{Number.isInteger(utcOffset) && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Local_Time')}</InfoPanel.Label>
-							<InfoPanel.Text>
-								<UTCClock utcOffset={utcOffset} />
-							</InfoPanel.Text>
+							<InfoPanel.Text>{utcOffset && <UTCClock utcOffset={utcOffset} />}</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 
@@ -127,7 +138,6 @@ function UserInfo({
 
 					{phone && (
 						<InfoPanel.Field>
-							{' '}
 							<InfoPanel.Label>{t('Phone')}</InfoPanel.Label>
 							<InfoPanel.Text display='flex' flexDirection='row' alignItems='center'>
 								<Box is='a' withTruncatedText href={`tel:${phone}`}>
@@ -139,29 +149,28 @@ function UserInfo({
 
 					{email && (
 						<InfoPanel.Field>
-							{' '}
 							<InfoPanel.Label>{t('Email')}</InfoPanel.Label>
 							<InfoPanel.Text display='flex' flexDirection='row' alignItems='center'>
 								<Box is='a' withTruncatedText href={`mailto:${email}`}>
 									{email}
 								</Box>
 								<Margins inline='x4'>
-									{verified && <Tag variant='secondary'>{t('Verified')}</Tag>}
-									{verified || <Tag disabled>{t('Not_verified')}</Tag>}
+									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
 							</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 
-					{customFieldsToShow.map((customField) =>
-						Object.values(customField)[0] ? (
-							<InfoPanel.Field key={Object.keys(customField)[0]}>
-								<InfoPanel.Label>{t(Object.keys(customField)[0])}</InfoPanel.Label>
-								<InfoPanel.Text>
-									<MarkdownText content={Object.values(customField)[0]} variant='inline' />
-								</InfoPanel.Text>
-							</InfoPanel.Field>
-						) : null,
+					{userCustomFields?.map(
+						(customField) =>
+							customField?.value && (
+								<InfoPanel.Field key={customField.value}>
+									<InfoPanel.Label>{t(customField.label as TranslationKey)}</InfoPanel.Label>
+									<InfoPanel.Text>
+										<MarkdownText content={customField.value} variant='inline' />
+									</InfoPanel.Text>
+								</InfoPanel.Field>
+							),
 					)}
 
 					{createdAt && (
@@ -174,6 +183,6 @@ function UserInfo({
 			</InfoPanel>
 		</VerticalBar.ScrollableContent>
 	);
-}
+};
 
 export default memo(UserInfo);
