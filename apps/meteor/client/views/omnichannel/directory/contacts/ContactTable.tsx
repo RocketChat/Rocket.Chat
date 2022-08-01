@@ -128,7 +128,7 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 				</GenericTableHeader>
 				{result.phase === AsyncStatePhase.RESOLVED && (
 					<GenericTableBody>
-						{result.value.visitors.map(({ _id, username, name, visitorEmails, phone, lastChat }) => {
+						{result.value.visitors.map(({ _id, username, fname, visitorEmails, phone, lastChat }) => {
 							const phoneNumber = phone?.length && phone[0].phoneNumber;
 							const visitorEmail = visitorEmails?.length && visitorEmails[0].address;
 
@@ -144,7 +144,7 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 									onClick={onRowClick(_id)}
 								>
 									<GenericTableCell withTruncatedText>{username}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(name)}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(fname)}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>

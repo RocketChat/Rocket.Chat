@@ -162,7 +162,6 @@ const getUrlMeta = async function (
 	const urlObj = URL.parse(url);
 	if (withFragment != null) {
 		const queryStringObj = querystring.parse(urlObj.query || '');
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		queryStringObj._escaped_fragment_ = '';
 		urlObj.query = querystring.stringify(queryStringObj);
 		let path = urlObj.pathname;
