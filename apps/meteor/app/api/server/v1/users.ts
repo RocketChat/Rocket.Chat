@@ -47,7 +47,7 @@ import { getURL } from '../../../utils/server';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
 API.v1.addRoute(
-	'/v1/users.getAvatar',
+	'users.getAvatar',
 	{ authRequired: false },
 	{
 		get() {
@@ -65,7 +65,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.getAvatarSuggestion',
+	'users.getAvatarSuggestion',
 	{
 		authRequired: true,
 		validateParams: isUsersGetAvatarSuggestionParamsGET,
@@ -73,15 +73,15 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { userId } = this.bodyParams;
-			const result = Meteor.call('getAvatarSuggestion', userId);
+			const suggestions = Meteor.call('getAvatarSuggestion', userId);
 
-			return API.v1.success({ result });
+			return API.v1.success({ suggestions });
 		},
 	},
 );
 
 API.v1.addRoute(
-	'/v1/users.update',
+	'users.update',
 	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
 	{
 		post() {
@@ -110,7 +110,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.updateOwnBasicInfo',
+	'users.updateOwnBasicInfo',
 	{ authRequired: true, validateParams: isUsersUpdateOwnBasicInfoParamsPOST },
 	{
 		post() {
@@ -142,7 +142,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.setPreferences',
+	'users.setPreferences',
 	{ authRequired: true, validateParams: isUsersSetPreferencesParamsPOST },
 	{
 		post() {
@@ -177,7 +177,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.setAvatar',
+	'users.setAvatar',
 	{ authRequired: true, validateParams: isUsersSetAvatarProps },
 	{
 		async post() {
@@ -185,7 +185,7 @@ API.v1.addRoute(
 
 			if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
 				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
-					method: '/v1/users.setAvatar',
+					method: 'users.setAvatar',
 				});
 			}
 
@@ -246,7 +246,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.create',
+	'users.create',
 	{ authRequired: true, validateParams: isUserCreateParamsPOST },
 	{
 		post() {
@@ -277,7 +277,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.delete',
+	'users.delete',
 	{ authRequired: true },
 	{
 		post() {
@@ -296,7 +296,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.deleteOwnAccount',
+	'users.deleteOwnAccount',
 	{ authRequired: true },
 	{
 		post() {
@@ -318,7 +318,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.setActiveStatus',
+	'users.setActiveStatus',
 	{ authRequired: true, validateParams: isUserSetActiveStatusParamsPOST },
 	{
 		post() {
@@ -336,7 +336,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.deactivateIdle',
+	'users.deactivateIdle',
 	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST },
 	{
 		post() {
@@ -359,7 +359,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.info',
+	'users.info',
 	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
 	{
 		async get() {
@@ -404,7 +404,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.list',
+	'users.list',
 	{
 		authRequired: true,
 		queryOperations: ['$or', '$and'],
@@ -500,7 +500,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.register',
+	'users.register',
 	{
 		authRequired: false,
 		rateLimiterOptions: {
@@ -532,7 +532,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.resetAvatar',
+	'users.resetAvatar',
 	{ authRequired: true },
 	{
 		post() {
@@ -544,7 +544,7 @@ API.v1.addRoute(
 				Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar', user._id));
 			} else {
 				throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
-					method: '/v1/users.resetAvatar',
+					method: 'users.resetAvatar',
 				});
 			}
 
@@ -554,7 +554,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.createToken',
+	'users.createToken',
 	{ authRequired: true },
 	{
 		post() {
@@ -566,7 +566,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.getPreferences',
+	'users.getPreferences',
 	{ authRequired: true },
 	{
 		get() {
@@ -585,7 +585,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.forgotPassword',
+	'users.forgotPassword',
 	{ authRequired: false },
 	{
 		post() {
@@ -601,7 +601,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.getUsernameSuggestion',
+	'users.getUsernameSuggestion',
 	{ authRequired: true },
 	{
 		get() {
@@ -613,7 +613,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.checkUsernameAvailability',
+	'users.checkUsernameAvailability',
 	{
 		authRequired: true,
 		validateParams: isUsersCheckUsernameAvailabilityParamsGET,
@@ -629,7 +629,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.generatePersonalAccessToken',
+	'users.generatePersonalAccessToken',
 	{ authRequired: true, twoFactorRequired: true },
 	{
 		post() {
@@ -645,7 +645,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.regeneratePersonalAccessToken',
+	'users.regeneratePersonalAccessToken',
 	{ authRequired: true, twoFactorRequired: true },
 	{
 		post() {
@@ -661,7 +661,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.getPersonalAccessTokens',
+	'users.getPersonalAccessTokens',
 	{ authRequired: true },
 	{
 		get() {
@@ -687,7 +687,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.removePersonalAccessToken',
+	'users.removePersonalAccessToken',
 	{ authRequired: true, twoFactorRequired: true },
 	{
 		post() {
@@ -705,7 +705,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.2fa.enableEmail',
+	'users.2fa.enableEmail',
 	{ authRequired: true },
 	{
 		post() {
@@ -717,7 +717,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.2fa.disableEmail',
+	'users.2fa.disableEmail',
 	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
 	{
 		post() {
@@ -728,7 +728,7 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute('/v1/users.2fa.sendEmailCode', {
+API.v1.addRoute('users.2fa.sendEmailCode', {
 	post() {
 		const { emailOrUsername } = this.bodyParams;
 
@@ -751,7 +751,7 @@ API.v1.addRoute('/v1/users.2fa.sendEmailCode', {
 });
 
 API.v1.addRoute(
-	'/v1/users.sendConfirmationEmail',
+	'users.sendConfirmationEmail',
 	{
 		authRequired: true,
 		validateParams: isUsersSendConfirmationEmailParamsPOST,
@@ -772,7 +772,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.presence',
+	'users.presence',
 	{ authRequired: true },
 	{
 		get() {
@@ -817,7 +817,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.requestDataDownload',
+	'users.requestDataDownload',
 	{ authRequired: true },
 	{
 		get() {
@@ -836,7 +836,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.logoutOtherClients',
+	'users.logoutOtherClients',
 	{ authRequired: true },
 	{
 		async post() {
@@ -867,7 +867,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.autocomplete',
+	'users.autocomplete',
 	{ authRequired: true, validateParams: isUsersAutocompleteProps },
 	{
 		async get() {
@@ -883,7 +883,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.removeOtherTokens',
+	'users.removeOtherTokens',
 	{ authRequired: true },
 	{
 		post() {
@@ -893,7 +893,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.resetE2EKey',
+	'users.resetE2EKey',
 	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
 	{
 		post() {
@@ -925,7 +925,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.resetTOTP',
+	'users.resetTOTP',
 	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
 	{
 		async post() {
@@ -956,7 +956,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.listTeams',
+	'users.listTeams',
 	{ authRequired: true, validateParams: isUsersListTeamsProps },
 	{
 		async get() {
@@ -982,7 +982,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.logout',
+	'users.logout',
 	{ authRequired: true, validateParams: isUserLogoutParamsPOST },
 	{
 		post() {
@@ -1005,7 +1005,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.getPresence',
+	'users.getPresence',
 	{ authRequired: true },
 	{
 		get() {
@@ -1028,7 +1028,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/users.setStatus',
+	'users.setStatus',
 	{ authRequired: true },
 	{
 		post() {
@@ -1042,7 +1042,7 @@ API.v1.addRoute(
 
 			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
 				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
-					method: '/v1/users.setStatus',
+					method: 'users.setStatus',
 				});
 			}
 
@@ -1070,7 +1070,7 @@ API.v1.addRoute(
 
 						if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 							throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
-								method: '/v1/users.setStatus',
+								method: 'users.setStatus',
 							});
 						}
 
@@ -1084,7 +1084,7 @@ API.v1.addRoute(
 						setUserStatus(user, status);
 					} else {
 						throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
-							method: '/v1/users.setStatus',
+							method: 'users.setStatus',
 						});
 					}
 				}
@@ -1102,7 +1102,7 @@ API.v1.addRoute(
 // };
 
 API.v1.addRoute(
-	'/v1/users.getStatus',
+	'users.getStatus',
 	{ authRequired: true },
 	{
 		get() {
@@ -1128,7 +1128,7 @@ API.v1.addRoute(
 );
 
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
-	const userRegisterRoute = '/api/v1/users.registerpost';
+	const userRegisterRoute = '/apiusers.registerpost';
 
 	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
 });

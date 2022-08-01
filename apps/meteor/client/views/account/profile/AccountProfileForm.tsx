@@ -43,7 +43,11 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 
 	const [usernameError, setUsernameError] = useState<string | undefined>();
-	const [avatarSuggestions, setAvatarSuggestions] = useSafely(useState());
+	const [avatarSuggestions, setAvatarSuggestions] = useSafely(
+		useState<{
+			[key: string]: { service: string; blob: string };
+		}>({}),
+	);
 
 	const {
 		allowRealNameChange,
@@ -112,8 +116,8 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 
 	useEffect(() => {
 		const getSuggestions = async (): Promise<void> => {
-			const suggestions = await getAvatarSuggestions({ userId: user!._id });
-			setAvatarSuggestions(suggestions as unknown as SetStateAction<undefined>);
+			const { suggestions } = await getAvatarSuggestions({ userId: user!._id });
+			setAvatarSuggestions(suggestions);
 		};
 		getSuggestions();
 	}, [getAvatarSuggestions, setAvatarSuggestions, user]);

@@ -124,6 +124,9 @@ const avatarProviders = {
 	},
 };
 
+/**
+ * @return {Object}
+ */
 export async function getAvatarSuggestionForUser(user) {
 	check(user, Object);
 

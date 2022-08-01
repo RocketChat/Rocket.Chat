@@ -232,7 +232,7 @@ export type UsersEndpoints = {
 
 	'/v1/users.getAvatarSuggestion': {
 		GET: (params: { userId: string }) => {
-			result: Record<string, unknown>;
+			suggestions: Record<string, { blob: string; contentType: string; service: string; url: string }>;
 		};
 	};
 
