@@ -44,7 +44,4 @@ export abstract class FederationService {
 		return externalInviterId;
 	}
 
-	protected isAnInternalIdentifier(externalIdentifier: string): boolean {
-		return FederatedUser.isAnInternalUser(this.bridge.extractHomeserverOrigin(externalIdentifier), this.internalHomeServerDomain);
-	}
 }

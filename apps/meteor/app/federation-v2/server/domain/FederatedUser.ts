@@ -1,4 +1,5 @@
 import { IUser } from '@rocket.chat/core-typings';
+import { isAnInternalIdentifier } from './FederatedRoom';
 
 export interface IFederatedUserCreationParams {
 	name: string;
@@ -68,7 +69,7 @@ export class FederatedUser {
 	}
 
 	public static isAnInternalUser(fromOriginName: string, localOriginName: string): boolean {
-		return fromOriginName === localOriginName;
+		return isAnInternalIdentifier(fromOriginName, localOriginName);
 	}
 
 	public getExternalId(): string {

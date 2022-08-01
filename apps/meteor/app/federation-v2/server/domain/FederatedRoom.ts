@@ -3,6 +3,10 @@ import { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { FederatedUser } from './FederatedUser';
 
+export const isAnInternalIdentifier = (fromOriginName: string, localOriginName: string): boolean => {
+	return fromOriginName === localOriginName;
+}
+
 export abstract class AbstractFederatedRoom {
 	protected externalId: string;
 
@@ -42,6 +46,10 @@ export abstract class AbstractFederatedRoom {
 		return this.internalReference.topic;
 	}
 
+	public static isAnInternalRoom(fromOriginName: string, localOriginName: string): boolean {
+		return isAnInternalIdentifier(fromOriginName, localOriginName);
+	}
+
 	public getInternalReference(): Readonly<IRoom> {
 		return Object.freeze(this.internalReference);
 	}
@@ -78,10 +86,6 @@ export abstract class AbstractFederatedRoom {
 
 	public shouldUpdateRoomTopic(newRoomTopic: string): boolean {
 		return this.internalReference?.topic !== newRoomTopic && !this.isDirectMessage();
-	}
-
-	public static isAnInternalRoom(fromOriginName: string, localOriginName: string): boolean {
-		return fromOriginName === localOriginName;
 	}
 }
 
