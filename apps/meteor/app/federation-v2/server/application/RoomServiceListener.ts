@@ -76,6 +76,7 @@ export class FederationRoomServiceListener extends FederationService {
 			roomType = RoomType.CHANNEL,
 			leave,
 		} = roomChangeMembershipInput;
+		console.log({ roomChangeMembershipInput })
 		const wasGeneratedOnTheProxyServer = eventOrigin === EVENT_ORIGIN.LOCAL;
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 
@@ -125,6 +126,8 @@ export class FederationRoomServiceListener extends FederationService {
 				members,
 			);
 			await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
+			await this.bridge.joinRoom(externalRoomId, externalInviteeId);
+			return
 			// await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom/*, membersUsernames*/);
 			} else {
 				// const members = [federatedInviterUser, federatedInviteeUser];
@@ -138,6 +141,7 @@ export class FederationRoomServiceListener extends FederationService {
 			);
 
 			await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
+			await this.bridge.joinRoom(externalRoomId, externalInviteeId);
 			}
 			// const members = [federatedInviterUser, federatedInviteeUser];
 			// const newFederatedRoom = FederatedRoom.createInstance(
@@ -151,13 +155,16 @@ export class FederationRoomServiceListener extends FederationService {
 
 			// await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
 			// await this.bridge.joinRoom(externalRoomId, externalInviteeId);
-			await this.bridge.joinRoom(externalRoomId, externalInviteeId);
 		}
 
 		const federatedRoom = affectedFederatedRoom || (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId));
+		console.log({ federatedRoom })
+		console.log({ federatedInviteeUser })
 		if (!federatedRoom) {
 			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
 		}
+		console.log({ isDm: federatedRoom.isDirectMessage() })
+		console.log({ isUserPartOfTheRoom: federatedRoom.isUserPartOfTheRoom(federatedInviteeUser) })
 
 		// TODO: try to move this to the top of the method
 		if (leave) {
@@ -170,7 +177,10 @@ export class FederationRoomServiceListener extends FederationService {
 				(await this.internalRoomAdapter.removeUserFromRoom(federatedRoom, federatedInviteeUser, federatedInviterUser));
 			return;
 		}
-		if (!wasGeneratedOnTheProxyServer && federatedRoom.isDirectMessage() && !federatedRoom.isUserPartOfTheRoom(federatedInviteeUser)) {
+		if (!wasGeneratedOnTheProxyServer && federatedRoom.isDirectMessage()) {
+			if (federatedRoom.isUserPartOfTheRoom(federatedInviteeUser)) {
+				return;
+			}
 			// TODO: leaked business logic, revisit this to move to domain layer
 			const members = [...(federatedRoom as DirectMessageFederatedRoom).getMembers(), federatedInviteeUser];
 			const newFederatedRoom = DirectMessageFederatedRoom.createInstance(

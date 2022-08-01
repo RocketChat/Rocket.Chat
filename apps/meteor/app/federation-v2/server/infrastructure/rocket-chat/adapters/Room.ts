@@ -108,7 +108,7 @@ export class RocketChatRoomAdapter {
 	}
 
 	private createFederatedRoomInstance(externalRoomId: string, room: IRoom): FederatedRoom {
-		const federatedRoom = room.t === RoomType.DIRECT_MESSAGE ? FederatedRoom.build() : DirectMessageFederatedRoom.build();
+		const federatedRoom = room.t === RoomType.DIRECT_MESSAGE ? DirectMessageFederatedRoom.build() : FederatedRoom.build();
 		federatedRoom.externalId = externalRoomId;
 		federatedRoom.internalReference = room;
 
