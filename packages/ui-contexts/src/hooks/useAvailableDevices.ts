@@ -7,11 +7,14 @@ type AvailableDevices = {
 	audioOutput?: Device[];
 };
 
-export const useAvailableDevices = (): AvailableDevices => {
+export const useAvailableDevices = (): AvailableDevices | null => {
 	const context = useContext(DeviceContext);
 
 	if (!isDeviceContextEnabled(context)) {
-		throw new Error('useAvailableDevices only if Device management is enabled');
+		console.warn(
+			'Device Management is disabled on unsecure contexts, see https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts/features_restricted_to_secure_contexts',
+		);
+		return null;
 	}
 
 	return {

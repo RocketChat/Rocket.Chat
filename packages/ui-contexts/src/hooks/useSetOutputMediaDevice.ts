@@ -16,7 +16,10 @@ export const useSetOutputMediaDevice = (): setOutputMediaDevice => {
 	const context = useContext(DeviceContext);
 
 	if (!isDeviceContextEnabled(context)) {
-		throw new Error('useSetOutputMediaDevice only if Device management is enabled');
+		console.warn(
+			'Device Management is disabled on unsecure contexts, see https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts/features_restricted_to_secure_contexts',
+		);
+		return () => undefined;
 	}
 
 	return context.setAudioOutputDevice;
