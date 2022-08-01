@@ -14,7 +14,7 @@ const createAuxContext = async (browser: Browser): Promise<{ page: Page; poHomeC
 
 test.use({ storageState: 'user1-session.json' });
 
-test.describe('Messaging', () => {
+test.describe.serial('Messaging', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 
@@ -29,10 +29,10 @@ test.describe('Messaging', () => {
 	});
 
 	test('expect show "hello word" in both contexts (targetChannel)', async ({ browser }) => {
-		const auxContext = await createAuxContext(browser);
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello world');
-
+		
+		const auxContext = await createAuxContext(browser);
 		await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
 
 		await expect(auxContext.poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
