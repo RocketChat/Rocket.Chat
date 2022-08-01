@@ -157,7 +157,7 @@
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"eslint-plugin-testing-library": "^5.5.1",
 		"fast-glob": "^3.2.11",
-		"i18next": "^20.6.1",
+		"i18next": "^21.8.16",
 		"jsdom-global": "^3.0.2",
 		"mocha": "^9.2.2",
 		"mock-require": "^3.0.3",
