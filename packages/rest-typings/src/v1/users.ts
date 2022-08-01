@@ -135,6 +135,26 @@ export type UsersEndpoints = {
 	'/v1/users.setAvatar': {
 		POST: (params: UsersSetAvatar) => void;
 	};
+
+	'/v1/users.saveUserProfile': {
+		POST: (params: {
+			settings: {
+				email: string;
+				realname: string;
+				username: string;
+				nickname: string;
+				statusText: string;
+				statusType: string;
+				bio: string;
+				newPassword: string;
+				typedPassword: string;
+			};
+			customFields: {
+				[key: string]: unknown;
+			};
+		}) => void;
+	};
+
 	'/v1/users.resetAvatar': {
 		POST: (params: UsersResetAvatar) => void;
 	};
@@ -145,15 +165,18 @@ export type UsersEndpoints = {
 			exportOperation: IExportOperation;
 		};
 	};
+
 	'/v1/users.logoutOtherClients': {
 		POST: () => {
 			token: string;
 			tokenExpires: string;
 		};
 	};
+
 	'/v1/users.removeOtherTokens': {
 		POST: () => void;
 	};
+
 	'/v1/users.resetE2EKey': {
 		POST: (
 			params:
@@ -168,6 +191,7 @@ export type UsersEndpoints = {
 				  },
 		) => void;
 	};
+
 	'/v1/users.resetTOTP': {
 		POST: (
 			params:
@@ -201,29 +225,35 @@ export type UsersEndpoints = {
 			}[];
 		};
 	};
+
 	'/v1/users.regeneratePersonalAccessToken': {
 		POST: (params: { tokenName: string }) => {
 			token: string;
 		};
 	};
+
 	'/v1/users.generatePersonalAccessToken': {
 		POST: (params: { tokenName: string; bypassTwoFactor: boolean }) => {
 			token: string;
 		};
 	};
+
 	'/v1/users.getUsernameSuggestion': {
 		GET: () => {
 			result: string;
 		};
 	};
+
 	'/v1/users.forgotPassword': {
 		POST: (params: { email: string }) => void;
 	};
+
 	'/v1/users.getPreferences': {
 		GET: () => {
 			preferences: Required<IUser>['settings']['preferences'];
 		};
 	};
+
 	'/v1/users.createToken': {
 		POST: () => {
 			data: {

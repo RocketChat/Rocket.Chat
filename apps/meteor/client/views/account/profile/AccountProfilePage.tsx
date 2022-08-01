@@ -65,7 +65,7 @@ const AccountProfilePage = (): ReactElement => {
 
 	const logoutOtherClients = useEndpoint('POST', '/v1/users.logoutOtherClients');
 	const deleteOwnAccount = useEndpoint('POST', '/v1/users.deleteOwnAccount');
-	const saveFn = useEndpoint('saveUserProfile');
+	const saveFn = useEndpoint('POST', '/v1/users.saveUserProfile');
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
@@ -195,7 +195,7 @@ const AccountProfilePage = (): ReactElement => {
 		(passwordOrUsername, shouldChangeOwner, shouldBeRemoved) => {
 			const handleConfirm = async (): Promise<void> => {
 				try {
-					await deleteOwnAccount(SHA256(passwordOrUsername), true);
+					await deleteOwnAccount({ password: SHA256(passwordOrUsername), confirmRelinquish: true });
 					dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
 					closeModal();
 					logout();
@@ -221,7 +221,7 @@ const AccountProfilePage = (): ReactElement => {
 	const handleDeleteOwnAccount = useCallback(async () => {
 		const handleConfirm = async (passwordOrUsername: string): Promise<void> => {
 			try {
-				await deleteOwnAccount(SHA256(passwordOrUsername));
+				await deleteOwnAccount({ password: SHA256(passwordOrUsername), confirmRelinquish: true });
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
 				logout();
 			} catch (error: any) {

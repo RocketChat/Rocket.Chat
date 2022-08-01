@@ -123,6 +123,43 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'users.saveUserProfile',
+	{
+		authRequired: true,
+		validateParams: AAAAAAAAAAAAAAAAA,
+	},
+	{
+		post() {
+			const userData = {
+				email: this.bodyParams.data.email,
+				realname: this.bodyParams.data.realname,
+				username: this.bodyParams.data.username,
+				nickname: this.bodyParams.data.nickname,
+				statusText: this.bodyParams.data.statusText,
+				statusType: this.bodyParams.data.statusType,
+				bio: this.bodyParams.data.bio,
+				newPassword: this.bodyParams.data.newPassword,
+				typedPassword: this.bodyParams.data.currentPassword,
+			};
+
+			// saveUserProfile now uses the default two factor authentication procedures, so we need to provide that
+			const twoFactorOptions = !userData.typedPassword
+				? null
+				: {
+						twoFactorCode: userData.typedPassword,
+						twoFactorMethod: 'password',
+				  };
+
+			Meteor.call('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
+
+			return API.v1.success({
+				user: Users.findOneById(this.userId, { fields: API.v1.defaultFieldsToExclude }),
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
 	'users.setPreferences',
 	{ authRequired: true, validateParams: isUsersSetPreferencesParamsPOST },
 	{
