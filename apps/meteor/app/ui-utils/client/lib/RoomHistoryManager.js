@@ -41,11 +41,11 @@ export const normalizeThreadMessage = ({ ...message }) => {
 };
 
 export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper') => {
-	const mountedElement = document.querySelector(selector);
+	const element = document.querySelector(selector);
+	if (element) {
+		return element;
+	}
 	return new Promise((resolve) => {
-		if (mountedElement) {
-			return resolve(mountedElement);
-		}
 		const observer = new MutationObserver(function (mutations, obs) {
 			const element = document.querySelector(selector);
 			if (element) {
