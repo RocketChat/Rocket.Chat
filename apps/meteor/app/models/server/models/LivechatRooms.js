@@ -295,7 +295,9 @@ export class LivechatRooms extends Base {
 			'v.token': visitorToken,
 			departmentId,
 		};
-		if (source) query['source.type'] = source;
+		if (source) {
+			query['source.type'] = source;
+		}
 
 		return this.findOne(query, options);
 	}
