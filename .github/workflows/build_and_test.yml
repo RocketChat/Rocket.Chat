@@ -341,7 +341,16 @@ jobs:
           done;
           exit $s
 
+      - name: Cache Playwright binaries
+        uses: actions/cache@v3
+        id: cache-playwright
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: playwright-1.23.1 }}
+
       - name: Install Playwright
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: |
           cd ./apps/meteor
           npx playwright install --with-deps
