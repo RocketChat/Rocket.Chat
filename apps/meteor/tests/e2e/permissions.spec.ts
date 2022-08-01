@@ -41,7 +41,7 @@ test.describe.serial('permissions', () => {
 
 		test('expect option(edit) not be visible', async () => {
 			await poHomeChannel.content.openLastMessageMenu();
-			
+
 			await expect(poHomeChannel.content.btnOptionEditMessage).toBeHidden();
 		});
 
@@ -67,7 +67,7 @@ test.describe.serial('permissions', () => {
 
 		test('expect option(delete) not be visible', async () => {
 			await poHomeChannel.content.openLastMessageMenu();
-			
+
 			await expect(poHomeChannel.content.btnOptionDeleteMessage).toBeHidden();
 		});
 
@@ -95,7 +95,7 @@ test.describe.serial('permissions', () => {
 
 		test('expect option(pin) not be visible', async () => {
 			await poHomeChannel.content.openLastMessageMenu();
-			
+
 			await expect(poHomeChannel.content.btnOptionPinMessage).toBeHidden();
 		});
 
@@ -121,8 +121,8 @@ test.describe.serial('permissions', () => {
 
 		test('expect option(star) not be visible', async () => {
 			await poHomeChannel.content.openLastMessageMenu();
-			
-			await expect(poHomeChannel.content.btnOptionStarMessage).toBeHidden();	
+
+			await expect(poHomeChannel.content.btnOptionStarMessage).toBeHidden();
 		});
 
 		test.afterAll(async ({ request }) => {
@@ -148,7 +148,7 @@ test.describe.serial('permissions', () => {
 		test('expect option(upload file) not be visible', async () => {
 			await poHomeChannel.content.btnMenuMoreActions.click();
 
-			await expect(poHomeChannel.content.btnOptionFileUpload).toBeHidden();	
+			await expect(poHomeChannel.content.btnOptionFileUpload).toBeHidden();
 		});
 
 		test.afterAll(async ({ request }) => {
@@ -174,7 +174,7 @@ test.describe.serial('permissions', () => {
 		test('expect option(upload audio) not be visible', async () => {
 			await poHomeChannel.content.btnMenuMoreActions.click();
 
-			await expect(poHomeChannel.content.btnRecordAudio).toBeHidden();	
+			await expect(poHomeChannel.content.btnRecordAudio).toBeHidden();
 		});
 
 		test.afterAll(async ({ request }) => {
@@ -200,7 +200,7 @@ test.describe.serial('permissions', () => {
 		test('expect option(upload video) not be visible', async () => {
 			await poHomeChannel.content.btnMenuMoreActions.click();
 
-			await expect(poHomeChannel.content.btnVideoMessage).toBeHidden();	
+			await expect(poHomeChannel.content.btnVideoMessage).toBeHidden();
 		});
 
 		test.afterAll(async ({ request }) => {

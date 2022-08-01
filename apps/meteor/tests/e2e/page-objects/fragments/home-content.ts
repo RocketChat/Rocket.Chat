@@ -65,35 +65,35 @@ export class HomeContent {
 	}
 
 	get btnOptionEditMessage(): Locator {
-		return this.page.locator('[data-qa-id="edit-message"]')
+		return this.page.locator('[data-qa-id="edit-message"]');
 	}
-	
+
 	get btnOptionDeleteMessage(): Locator {
-		return this.page.locator('[data-qa-id="delete-message"]')
+		return this.page.locator('[data-qa-id="delete-message"]');
 	}
 
 	get btnOptionPinMessage(): Locator {
-		return this.page.locator('[data-qa-id="pin-message"]')
+		return this.page.locator('[data-qa-id="pin-message"]');
 	}
 
 	get btnOptionStarMessage(): Locator {
-		return this.page.locator('[data-qa-id="star-message"]')
+		return this.page.locator('[data-qa-id="star-message"]');
 	}
 
 	get btnOptionFileUpload(): Locator {
-		return this.page.locator('[data-qa-id="file-upload"]')
+		return this.page.locator('[data-qa-id="file-upload"]');
 	}
-	
+
 	get btnVideoMessage(): Locator {
-		return this.page.locator('.rc-popover__content [data-id="video-message"]')
+		return this.page.locator('.rc-popover__content [data-id="video-message"]');
 	}
 
 	get btnRecordAudio(): Locator {
-		return this.page.locator('[data-qa-id="audio-record"]')
+		return this.page.locator('[data-qa-id="audio-record"]');
 	}
 
 	get btnMenuMoreActions() {
-		return this.page.locator('[data-qa-id="menu-more-actions"')
+		return this.page.locator('[data-qa-id="menu-more-actions"');
 	}
 
 	async pickEmoji(emoji: string, section = 'icon-people') {

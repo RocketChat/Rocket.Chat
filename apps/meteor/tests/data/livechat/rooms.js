@@ -39,6 +39,21 @@ export const createVisitor = () =>
 		});
 	});
 
+export const createDepartment = () => {
+	return new Promise((resolve, reject) => {
+		request
+			.post(api('livechat/department'))
+			.set(credentials)
+			.send({ department: { name: `Department ${Date.now()}`, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'a@b.com' } })
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.department);
+			});
+	});
+}
+
 export const createAgent = () =>
 	new Promise((resolve, reject) => {
 		request
