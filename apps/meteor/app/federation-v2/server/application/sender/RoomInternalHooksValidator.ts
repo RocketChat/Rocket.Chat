@@ -53,7 +53,7 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 			return;
 		}
 
-		const isRoomFromTheProxyServer = FederatedRoom.isAnInternalUser(this.bridge.extractHomeserverOrigin(externalRoom.getExternalId()), this.internalHomeServerDomain);
+		const isRoomFromTheProxyServer = FederatedRoom.isAnInternalRoom(this.bridge.extractHomeserverOrigin(externalRoom.getExternalId()), this.internalHomeServerDomain);
 		const isInviterFromTheProxyServer = FederatedUser.isAnInternalUser(this.bridge.extractHomeserverOrigin(inviter.getExternalId()), this.internalHomeServerDomain);
 
 		const fullActionExecutedOnTheRemoteHomeServer = !isRoomFromTheProxyServer && !isInviterFromTheProxyServer;

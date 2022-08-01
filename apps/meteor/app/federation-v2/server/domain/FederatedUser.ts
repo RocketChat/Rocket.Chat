@@ -1,4 +1,4 @@
-import { IUser } from '@rocket.chat/core-typings';
+import { IUser, UserStatus } from '@rocket.chat/core-typings';
 import { isAnInternalIdentifier } from './FederatedRoom';
 
 export interface IFederatedUserCreationParams {
@@ -14,42 +14,43 @@ export class FederatedUser {
 
 	protected internalReference: IUser;
 
-	// eslint-disable-next-line
-	protected constructor() {}
+	protected constructor({ externalId, internalReference, existsOnlyOnProxyServer }: { externalId: string, internalReference: IUser, existsOnlyOnProxyServer: boolean }) {
+		this.externalId = externalId;
+		this.existsOnlyOnProxyServer = existsOnlyOnProxyServer;
+		this.internalReference = internalReference;
+	}
 
 	public static createInstance(externalId: string, params: IFederatedUserCreationParams): FederatedUser {
-		return Object.assign(new FederatedUser(), {
+		return new FederatedUser({
 			externalId,
 			existsOnlyOnProxyServer: params.existsOnlyOnProxyServer,
 			internalReference: {
 				username: params.username,
 				name: params.name,
 				type: 'user',
-				status: 'online',
+				status: UserStatus.ONLINE,
 				active: true,
 				roles: ['user'],
 				requirePasswordChange: false,
-			},
+			} as unknown as IUser,
 		});
 	}
 
-	public static createLocalInstanceOnly(params: IFederatedUserCreationParams): FederatedUser {
-		return Object.assign(new FederatedUser(), {
-			existsOnlyOnProxyServer: params.existsOnlyOnProxyServer,
-			internalReference: {
-				username: params.username,
-				name: params.name,
-				type: 'user',
-				status: 'online',
-				active: true,
-				roles: ['user'],
-				requirePasswordChange: false,
-			},
-		});
+	public static createLocalInstanceOnly(params: IFederatedUserCreationParams): IUser {
+		return {
+			username: params.username,
+			name: params.name,
+			type: 'user',
+			status: UserStatus.ONLINE,
+			active: true,
+			roles: ['user'],
+			requirePasswordChange: false,
+			federated: !params.existsOnlyOnProxyServer,
+		} as unknown as IUser;
 	}
 
 	public static createInstanceWithInternalUser(externalId: string, existsOnlyOnProxyServer: boolean, internalReference: IUser): FederatedUser {
-		return Object.assign(new FederatedUser(), {
+		return new FederatedUser({
 			externalId,
 			existsOnlyOnProxyServer,
 			internalReference,
