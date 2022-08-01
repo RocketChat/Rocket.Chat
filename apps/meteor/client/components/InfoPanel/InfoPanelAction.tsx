@@ -1,7 +1,7 @@
 import { Icon, Button } from '@rocket.chat/fuselage';
 import React, { ComponentProps, FC } from 'react';
 
-const Action: FC<ComponentProps<typeof Button> & { icon: ComponentProps<typeof Icon>['name']; label: string }> = ({
+const InfoPanelAction: FC<ComponentProps<typeof Button> & { icon: ComponentProps<typeof Icon>['name']; label: string }> = ({
 	label,
 	icon,
 	...props
@@ -12,4 +12,4 @@ const Action: FC<ComponentProps<typeof Button> & { icon: ComponentProps<typeof I
 	</Button>
 );
 
-export default Action;
+export default InfoPanelAction;

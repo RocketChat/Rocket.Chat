@@ -1,26 +1,23 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import React, { FC, ComponentProps } from 'react';
 
 import GenericModal from './GenericModal';
 import RawText from './RawText';
 
-type ConfirmOwnerChangeWarningModalProps = {
-	onConfirm: () => void;
-	onCancel: () => void;
-	shouldChangeOwner: Array<string>;
-	shouldBeRemoved: Array<string>;
-	contentTitle: string;
-	confirmLabel: string;
-};
+type ConfirmOwnerChangeModalProps = {
+	shouldChangeOwner: string[];
+	shouldBeRemoved: string[];
+	contentTitle?: string;
+} & Pick<ComponentProps<typeof GenericModal>, 'onConfirm' | 'onCancel' | 'confirmText'>;
 
-const ConfirmOwnerChangeWarningModal: FC<ConfirmOwnerChangeWarningModalProps> = ({
-	onConfirm,
-	onCancel,
-	contentTitle = '',
-	confirmLabel = '',
+const ConfirmOwnerChangeModal: FC<ConfirmOwnerChangeModalProps> = ({
 	shouldChangeOwner,
 	shouldBeRemoved,
+	contentTitle,
+	confirmText,
+	onConfirm,
+	onCancel,
 }) => {
 	const t = useTranslation();
 
@@ -61,7 +58,7 @@ const ConfirmOwnerChangeWarningModal: FC<ConfirmOwnerChangeWarningModalProps> = 
 	}
 
 	return (
-		<GenericModal variant='danger' onClose={onCancel} onCancel={onCancel} confirmText={confirmLabel} onConfirm={onConfirm}>
+		<GenericModal variant='danger' onClose={onCancel} onCancel={onCancel} confirmText={confirmText} onConfirm={onConfirm}>
 			{contentTitle}
 
 			{changeOwnerRooms && (
@@ -78,4 +75,4 @@ const ConfirmOwnerChangeWarningModal: FC<ConfirmOwnerChangeWarningModalProps> = 
 	);
 };
 
-export default ConfirmOwnerChangeWarningModal;
+export default ConfirmOwnerChangeModal;
