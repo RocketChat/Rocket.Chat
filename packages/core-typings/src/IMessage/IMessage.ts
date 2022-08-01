@@ -129,7 +129,7 @@ export interface IMessage extends IRocketChatRecord {
 	replies?: IUser['_id'][];
 	location?: {
 		type: 'Point';
-		coordinates: [string, string];
+		coordinates: [number, number];
 	};
 	starred?: { _id: IUser['_id'] }[];
 	pinned?: boolean;

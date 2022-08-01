@@ -1,24 +1,22 @@
-import { Page, test, expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
+import { test, expect } from './utils/test';
 import { HomeChannel, Auth } from './page-objects';
 
 test.describe('Channel Creation', () => {
-	let page: Page;
 	let pageAuth: Auth;
 	let pageHomeChannel: HomeChannel;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
 		pageAuth = new Auth(page);
 		pageHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeAll(async () => {
+	test.beforeEach(async () => {
 		await pageAuth.doLogin();
 	});
 
-	test('expect create public channel', async () => {
+	test('expect create public channel', async ({ page }) => {
 		const name = faker.animal.type() + Date.now();
 
 		await pageHomeChannel.sidenav.btnCreate.click();
@@ -30,7 +28,7 @@ test.describe('Channel Creation', () => {
 		await expect(page).toHaveURL(`/channel/${name}`);
 	});
 
-	test('expect create private channel', async () => {
+	test('expect create private channel', async ({ page }) => {
 		const name = faker.animal.type() + Date.now();
 
 		await pageHomeChannel.sidenav.btnCreate.click();
