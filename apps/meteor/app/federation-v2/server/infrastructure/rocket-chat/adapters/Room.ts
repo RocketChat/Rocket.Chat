@@ -1,11 +1,12 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
 
-import { FederatedRoom } from '../../../domain/FederatedRoom';
+import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import { createRoom, addUserToRoom, removeUserFromRoom } from '../../../../../lib/server';
 import { FederatedUser } from '../../../domain/FederatedUser';
 import { saveRoomName } from '../../../../../channel-settings/server/functions/saveRoomName';
 import { saveRoomTopic } from '../../../../../channel-settings/server/functions/saveRoomTopic';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 export class RocketChatRoomAdapter {
 	public async getFederatedRoomByExternalId(externalRoomId: string): Promise<FederatedRoom | undefined> {
@@ -36,15 +37,15 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async createFederatedRoom(federatedRoom: FederatedRoom): Promise<void> {
-		const members = federatedRoom.getMembers();
+		// const members = federatedRoom.getMembers();
 		const { rid, _id } = createRoom(
 			federatedRoom.internalReference.t,
 			federatedRoom.internalReference.name,
 			federatedRoom.internalReference?.u?.username || '',
-			members,
-			false,
-			undefined,
-			{ creator: members[0]?._id },
+			// members,
+			// false,
+			// undefined,
+			// { creator: members[0]?._id },
 		);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.externalId);
@@ -58,12 +59,14 @@ export class RocketChatRoomAdapter {
 		await MatrixBridgedRoom.removeByLocalRoomId(roomId);
 	}
 
-	public async createFederatedRoomForDirectMessage(federatedRoom: FederatedRoom, membersUsernames: string[]): Promise<void> {
+	public async createFederatedRoomForDirectMessage(federatedRoom: DirectMessageFederatedRoom/*, membersUsernames: string[]*/): Promise<void> {
+		// const members = federatedRoom.getMembers();
 		const { rid, _id } = createRoom(
 			federatedRoom.internalReference.t,
 			federatedRoom.internalReference.name,
 			federatedRoom.internalReference?.u?.username || '',
-			membersUsernames,
+			federatedRoom.getInternalMembers().map((user) => user.username as string),
+			// membersUsernames,
 			false,
 			undefined,
 			{ creator: federatedRoom.internalReference.u._id },
@@ -85,14 +88,6 @@ export class RocketChatRoomAdapter {
 		);
 	}
 
-	private createFederatedRoomInstance(externalRoomId: string, room: IRoom): FederatedRoom {
-		const federatedRoom = FederatedRoom.build();
-		federatedRoom.externalId = externalRoomId;
-		federatedRoom.internalReference = room;
-
-		return federatedRoom;
-	}
-
 	public async isUserAlreadyJoined(internalRoomId: string, internalUserId: string): Promise<boolean> {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(internalRoomId, internalUserId, { projection: { _id: 1 } });
 
@@ -111,4 +106,13 @@ export class RocketChatRoomAdapter {
 	public async updateRoomTopic(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
 		await saveRoomTopic(federatedRoom.internalReference._id, federatedRoom.internalReference.topic, federatedUser.internalReference);
 	}
+
+	private createFederatedRoomInstance(externalRoomId: string, room: IRoom): FederatedRoom {
+		const federatedRoom = room.t === RoomType.DIRECT_MESSAGE ? FederatedRoom.build() : DirectMessageFederatedRoom.build();
+		federatedRoom.externalId = externalRoomId;
+		federatedRoom.internalReference = room;
+
+		return federatedRoom;
+	}
+
 }

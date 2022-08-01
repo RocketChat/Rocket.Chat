@@ -1,7 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { IMessage } from '@rocket.chat/core-typings';
 
-import { FederatedRoom } from '../../domain/FederatedRoom';
+import { DirectMessageFederatedRoom, FederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
 import { IFederationBridge } from '../../domain/IFederationBridge';
 import { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
@@ -51,12 +51,12 @@ export class FederationRoomServiceSender extends FederationService {
 			this.internalHomeServerDomain,
 		);
 
-		const internalRoomId = FederatedRoom.buildRoomIdForDirectMessages(federatedInviterUser, federatedInviteeUser); // TODO: revisit this id generation
+		const internalRoomId = DirectMessageFederatedRoom.buildRoomIdForDirectMessages(federatedInviterUser, federatedInviteeUser); // TODO: revisit this id generation
 		const internalFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 
 		if (!internalFederatedRoom) {
-			const externalRoomId = await this.bridge.createDirectMessageRoom(federatedInviterUser.externalId, [federatedInviteeUser.externalId]);
-			const newFederatedRoom = FederatedRoom.createInstance(
+			const externalRoomId = await this.bridge.createDirectMessageRoom(federatedInviterUser.getExternalId(), [federatedInviteeUser.getExternalId()]);
+			const newFederatedRoom = DirectMessageFederatedRoom.createInstance(
 				externalRoomId,
 				externalRoomId,
 				federatedInviterUser,
@@ -64,7 +64,7 @@ export class FederationRoomServiceSender extends FederationService {
 				undefined,
 				[federatedInviterUser, federatedInviteeUser],
 			);
-			await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
+			await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
 		}
 
 		const federatedRoom = internalFederatedRoom || (await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId));
@@ -79,8 +79,8 @@ export class FederationRoomServiceSender extends FederationService {
 				federatedInviteeUser.getName() || normalizedInviteeId,
 				this.internalHomeServerDomain,
 			);
-			await this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser.externalId);
-			await this.bridge.joinRoom(federatedRoom.externalId, federatedInviteeUser.externalId);
+			await this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.getExternalId(), federatedInviteeUser.getExternalId());
+			await this.bridge.joinRoom(federatedRoom.externalId, federatedInviteeUser.getExternalId());
 		}
 		
 		await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
@@ -99,7 +99,7 @@ export class FederationRoomServiceSender extends FederationService {
 			return;
 		}
 
-		await this.bridge.leaveRoom(federatedRoom.externalId, federatedUser.externalId);
+		await this.bridge.leaveRoom(federatedRoom.externalId, federatedUser.getExternalId());
 	}
 
 	public async onUserRemovedFromRoom(afterLeaveRoomInput: FederationAfterRemoveUserFromRoomDto): Promise<void> {
@@ -120,7 +120,7 @@ export class FederationRoomServiceSender extends FederationService {
 			return;
 		}
 
-		await this.bridge.kickUserFromRoom(federatedRoom.externalId, federatedUser.externalId, byWhom.externalId);
+		await this.bridge.kickUserFromRoom(federatedRoom.externalId, federatedUser.getExternalId(), byWhom.getExternalId());
 	}
 
 	public async sendExternalMessage(roomSendExternalMessageInput: FederationRoomSendExternalMessageDto): Promise<IMessage> {
@@ -136,7 +136,7 @@ export class FederationRoomServiceSender extends FederationService {
 			throw new Error(`Could not find room id for ${internalRoomId}`);
 		}
 
-		await this.bridge.sendMessage(federatedRoom.externalId, federatedSender.externalId, message.msg);
+		await this.bridge.sendMessage(federatedRoom.externalId, federatedSender.getExternalId(), message.msg);
 
 		return message; // this need to be here due to a limitation in the internal API that was expecting the return of the sendMessage function.
 	}

@@ -1,6 +1,6 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import { FederatedRoom } from '../domain/FederatedRoom';
+import { DirectMessageFederatedRoom, FederatedRoom } from '../domain/FederatedRoom';
 import { FederatedUser } from '../domain/FederatedUser';
 import { EVENT_ORIGIN, IFederationBridge } from '../domain/IFederationBridge';
 import { RocketChatMessageAdapter } from '../infrastructure/rocket-chat/adapters/Message';
@@ -111,17 +111,43 @@ export class FederationRoomServiceListener extends FederationService {
 		}
 
 		if (!wasGeneratedOnTheProxyServer && !affectedFederatedRoom) {
-			const members = [federatedInviterUser, federatedInviteeUser];
+			if(roomType === RoomType.DIRECT_MESSAGE) {
+				const members = [federatedInviterUser, federatedInviteeUser];
+			const newFederatedRoom = DirectMessageFederatedRoom.createInstance(
+				externalRoomId,
+				normalizedRoomId,
+				federatedInviterUser,
+				RoomType.DIRECT_MESSAGE,
+				externalRoomName,
+				members,
+			);
+			await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
+			// await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom/*, membersUsernames*/);
+			} else {
+				// const members = [federatedInviterUser, federatedInviteeUser];
 			const newFederatedRoom = FederatedRoom.createInstance(
 				externalRoomId,
 				normalizedRoomId,
 				federatedInviterUser,
 				roomType,
 				externalRoomName,
-				members,
+				// members,
 			);
 
 			await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
+			}
+			// const members = [federatedInviterUser, federatedInviteeUser];
+			// const newFederatedRoom = FederatedRoom.createInstance(
+			// 	externalRoomId,
+			// 	normalizedRoomId,
+			// 	federatedInviterUser,
+			// 	roomType,
+			// 	externalRoomName,
+			// 	// members,
+			// );
+
+			// await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
+			// await this.bridge.joinRoom(externalRoomId, externalInviteeId);
 			await this.bridge.joinRoom(externalRoomId, externalInviteeId);
 		}
 
@@ -135,7 +161,7 @@ export class FederationRoomServiceListener extends FederationService {
 			// TODO: check if this is possible to move to the domain layer
 			const isInviteeAlreadyJoinedInternalRoom = await this.internalRoomAdapter.isUserAlreadyJoined(
 				federatedRoom.internalReference?._id,
-				federatedInviteeUser?.internalReference?._id,
+				federatedInviteeUser.getInternalId(),
 			);
 			isInviteeAlreadyJoinedInternalRoom &&
 				(await this.internalRoomAdapter.removeUserFromRoom(federatedRoom, federatedInviteeUser, federatedInviterUser));
@@ -143,16 +169,17 @@ export class FederationRoomServiceListener extends FederationService {
 		}
 		if (!wasGeneratedOnTheProxyServer && federatedRoom.isDirectMessage() && !federatedRoom.isUserPartOfTheRoom(federatedInviteeUser)) {
 			// TODO: leaked business logic, revisit this to move to domain layer
-			const membersUsernames = [...federatedRoom.getMembersUsernames(), federatedInviteeUser.getUsername() || inviteeUsername];
-			const newFederatedRoom = FederatedRoom.createInstance(
+			const members = [...(federatedRoom as DirectMessageFederatedRoom).getMembers(), federatedInviteeUser];
+			const newFederatedRoom = DirectMessageFederatedRoom.createInstance(
 				externalRoomId,
 				normalizedRoomId,
 				federatedInviterUser,
 				RoomType.DIRECT_MESSAGE,
 				externalRoomName,
+				members
 			);
 			await this.internalRoomAdapter.removeDirectMessageRoom(federatedRoom);
-			await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom, membersUsernames);
+			await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom/*, membersUsernames*/);
 			return;
 		}
 

@@ -53,8 +53,8 @@ export class RocketChatUserAdapter {
 		if (existingLocalUser) {
 			return MatrixBridgedUser.createOrUpdateByLocalId(
 				existingLocalUser._id,
-				federatedUser.externalId,
-				!federatedUser.existsOnlyOnProxyServer,
+				federatedUser.getExternalId(),
+				federatedUser.isRemote(),
 			);
 		}
 		const { insertedId } = await Users.insertOne({
@@ -68,7 +68,7 @@ export class RocketChatUserAdapter {
 			createdAt: new Date(),
 			federated: true,
 		});
-		return MatrixBridgedUser.createOrUpdateByLocalId(insertedId, federatedUser.externalId, !federatedUser.existsOnlyOnProxyServer);
+		return MatrixBridgedUser.createOrUpdateByLocalId(insertedId, federatedUser.getExternalId(), federatedUser.isRemote());
 	}
 
 	private createFederatedUserInstance(externalUserId: string, user: IUser, remote = true): FederatedUser {

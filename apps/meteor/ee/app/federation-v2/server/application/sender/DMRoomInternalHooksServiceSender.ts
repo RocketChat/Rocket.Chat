@@ -88,14 +88,14 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		}
 
 		const isInviterFromTheSameHomeServer = FederatedUserEE.isAnInternalUser(
-			this.bridge.extractHomeserverOrigin(federatedInviterUser.externalId),
+			this.bridge.extractHomeserverOrigin(federatedInviterUser.getExternalId()),
 			this.internalHomeServerDomain,
 		);
 		const internalFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 
 		if (!internalFederatedRoom && isInviterFromTheSameHomeServer) {
 			const externalRoomId = await this.bridge.createDirectMessageRoom(
-				federatedInviterUser.externalId,
+				federatedInviterUser.getExternalId(),
 				invitees.map((invitee) => invitee.rawInviteeId),
 			);
 			const newFederatedRoom = FederatedRoomEE.createInstanceEE(

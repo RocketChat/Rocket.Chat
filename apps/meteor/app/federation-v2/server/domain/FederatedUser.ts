@@ -7,11 +7,11 @@ export interface IFederatedUserCreationParams {
 }
 
 export class FederatedUser {
-	public externalId: string;
+	private externalId: string;
+
+	private existsOnlyOnProxyServer: boolean;
 
 	public internalReference: IUser;
-
-	public existsOnlyOnProxyServer: boolean;
 
 	// eslint-disable-next-line
 	protected constructor() {}
@@ -46,5 +46,17 @@ export class FederatedUser {
 
 	public static build(): FederatedUser {
 		return new FederatedUser();
+	}
+
+	public getExternalId(): string {
+		return this.externalId;
+	}
+
+	public isRemote(): boolean {
+		return !this.existsOnlyOnProxyServer;
+	}
+
+	public getInternalId(): string {
+		return this.internalReference._id;
 	}
 }
