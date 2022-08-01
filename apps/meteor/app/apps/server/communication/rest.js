@@ -567,9 +567,17 @@ export class AppsRestApi {
 				get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
+					const headers = getDefaultHeaders();
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
 					let result;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/apps/featured`);
+						result = HTTP.get(`${baseUrl}/v1/apps/featured`, {
+							headers,
+						});
 					} catch (e) {
 						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
