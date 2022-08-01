@@ -76,6 +76,7 @@ export { useUserSubscriptions } from './hooks/useUserSubscriptions';
 export { useSelectedDevices } from './hooks/useSelectedDevices';
 export { useDeviceConstraints } from './hooks/useDeviceConstraints';
 export { useAvailableDevices } from './hooks/useAvailableDevices';
+export { useIsDeviceManagementEnabled } from './hooks/useIsDeviceManagementEnabled';
 export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
 export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 
