@@ -199,6 +199,7 @@ export type UsersEndpoints = {
 				lastTokenPart: string;
 				bypassTwoFactor: boolean;
 			}[];
+			success: boolean;
 		};
 	};
 	'/v1/users.regeneratePersonalAccessToken': {

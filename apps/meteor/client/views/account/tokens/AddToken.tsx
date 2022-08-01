@@ -1,17 +1,17 @@
 import { Box, TextInput, Button, Field, FieldGroup, Margins, CheckBox } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 
+import GenericModal from '../../../components/GenericModal';
 import { useForm } from '../../../hooks/useForm';
-import InfoModal from './InfoModal';
 
 const initialValues = {
 	name: '',
 	bypassTwoFactor: false,
 };
 
-const AddToken = ({ onDidAddToken, ...props }) => {
+const AddToken = ({ onDidAddToken, ...props }: { onDidAddToken: () => void }): ReactElement => {
 	const t = useTranslation();
 	const createTokenFn = useMethod('personalAccessTokens:generateToken');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -21,7 +21,7 @@ const AddToken = ({ onDidAddToken, ...props }) => {
 
 	const { values, handlers, reset } = useForm(initialValues);
 
-	const { name, bypassTwoFactor } = values;
+	const { name, bypassTwoFactor } = values as typeof initialValues;
 	const { handleName, handleBypassTwoFactor } = handlers;
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
@@ -31,26 +31,21 @@ const AddToken = ({ onDidAddToken, ...props }) => {
 			const token = await createTokenFn({ tokenName: name, bypassTwoFactor });
 
 			setModal(
-				<InfoModal
-					title={t('API_Personal_Access_Token_Generated')}
-					content={
-						<Box
-							dangerouslySetInnerHTML={{
-								__html: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
-									token,
-									userId,
-								}),
-							}}
-						/>
-					}
-					confirmText={t('ok')}
-					onConfirm={closeModal}
-				/>,
+				<GenericModal title={t('API_Personal_Access_Token_Generated')} confirmText={t('Ok')} onConfirm={closeModal}>
+					<Box
+						dangerouslySetInnerHTML={{
+							__html: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
+								token,
+								userId,
+							}),
+						}}
+					/>
+				</GenericModal>,
 			);
 			reset();
 			onDidAddToken();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	}, [bypassTwoFactor, closeModal, createTokenFn, dispatchToastMessage, name, onDidAddToken, reset, setModal, t, userId]);
 

@@ -1,13 +1,26 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { ReactElement, RefObject, useMemo, useCallback, useState } from 'react';
 
+import GenericModal from '../../../components/GenericModal';
 import GenericTable from '../../../components/GenericTable';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
 import AccountTokensRow from './AccountTokensRow';
-import InfoModal from './InfoModal';
 
-const AccountTokensTable = ({ data, reload }) => {
+type AccountTokensTableProps = {
+	data?: {
+		tokens: {
+			name?: string | undefined;
+			createdAt: string;
+			lastTokenPart: string;
+			bypassTwoFactor: boolean;
+		}[];
+		success: boolean;
+	};
+	reload: () => void;
+};
+
+const AccountTokensTable = ({ data, reload }: AccountTokensTableProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -17,13 +30,13 @@ const AccountTokensTable = ({ data, reload }) => {
 	const regenerateToken = useMethod('personalAccessTokens:regenerateToken');
 	const removeToken = useMethod('personalAccessTokens:removeToken');
 
-	const [ref, isMedium] = useResizeInlineBreakpoint([600], 200);
+	const [ref, isMedium] = useResizeInlineBreakpoint([600], 200) as [RefObject<HTMLElement>, boolean];
 
-	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
+	const [params, setParams] = useState<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>({ current: 0, itemsPerPage: 25 });
 
-	const tokensTotal = data && data.success ? data.tokens.length : 0;
+	const tokensTotal = data?.success ? data.tokens.length : 0;
 
-	const { current, itemsPerPage } = params;
+	const { current = 0, itemsPerPage = 25 } = params;
 
 	const tokens = useMemo(() => {
 		if (!data) {
@@ -52,46 +65,43 @@ const AccountTokensTable = ({ data, reload }) => {
 
 	const onRegenerate = useCallback(
 		(name) => {
-			const onConfirm = async () => {
+			const onConfirm: () => Promise<void> = async () => {
 				try {
 					setModal(null);
 
 					const token = await regenerateToken({ tokenName: name });
 
 					setModal(
-						<InfoModal
-							title={t('API_Personal_Access_Token_Generated')}
-							content={
-								<Box
-									dangerouslySetInnerHTML={{
-										__html: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
-											token,
-											userId,
-										}),
-									}}
-								/>
-							}
-							confirmText={t('ok')}
-							onConfirm={closeModal}
-						/>,
+						<GenericModal title={t('API_Personal_Access_Token_Generated')} confirmText={t('Ok')} onConfirm={closeModal}>
+							<Box
+								dangerouslySetInnerHTML={{
+									__html: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
+										token,
+										userId,
+									}),
+								}}
+							/>
+						</GenericModal>,
 					);
 
 					reload();
 				} catch (e) {
 					setModal(null);
-					dispatchToastMessage({ type: 'error', message: e });
+					dispatchToastMessage({ type: 'error', message: String(e) });
 				}
 			};
 
 			setModal(
-				<InfoModal
+				<GenericModal
+					variant='warning'
 					title={t('Are_you_sure')}
-					content={t('API_Personal_Access_Tokens_Regenerate_Modal')}
 					confirmText={t('API_Personal_Access_Tokens_Regenerate_It')}
 					onConfirm={onConfirm}
-					cancelText={t('Cancel')}
+					onCancel={closeModal}
 					onClose={closeModal}
-				/>,
+				>
+					{t('API_Personal_Access_Tokens_Regenerate_Modal')}
+				</GenericModal>,
 			);
 		},
 		[closeModal, dispatchToastMessage, regenerateToken, reload, setModal, t, userId],
@@ -99,7 +109,7 @@ const AccountTokensTable = ({ data, reload }) => {
 
 	const onRemove = useCallback(
 		(name) => {
-			const onConfirm = async () => {
+			const onConfirm: () => Promise<void> = async () => {
 				try {
 					await removeToken({ tokenName: name });
 
@@ -107,26 +117,35 @@ const AccountTokensTable = ({ data, reload }) => {
 					reload();
 					closeModal();
 				} catch (e) {
-					dispatchToastMessage({ type: 'error', message: e });
+					dispatchToastMessage({ type: 'error', message: String(e) });
 				}
 			};
 
 			setModal(
-				<InfoModal
+				<GenericModal
+					variant='danger'
 					title={t('Are_you_sure')}
-					content={t('API_Personal_Access_Tokens_Remove_Modal')}
 					confirmText={t('Yes')}
 					onConfirm={onConfirm}
 					cancelText={t('Cancel')}
 					onClose={closeModal}
-				/>,
+				>
+					{t('API_Personal_Access_Tokens_Remove_Modal')}
+				</GenericModal>,
 			);
 		},
 		[closeModal, dispatchToastMessage, reload, removeToken, setModal, t],
 	);
 
 	return (
-		<GenericTable ref={ref} header={header} results={tokens} total={tokensTotal} setParams={setParams} params={params}>
+		<GenericTable
+			ref={ref}
+			header={header}
+			results={tokens?.map((token) => ({ _id: token.createdAt, ...token }))}
+			total={tokensTotal}
+			setParams={setParams}
+			params={params}
+		>
 			{useCallback(
 				(props) => (
 					<AccountTokensRow onRegenerate={onRegenerate} onRemove={onRemove} isMedium={isMedium} {...props} />
