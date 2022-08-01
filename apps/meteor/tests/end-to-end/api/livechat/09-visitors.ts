@@ -481,7 +481,7 @@ describe('Omnichannel', function () {
 				scope: 'visitor',
 				visibility: 'public',
 				regexp: '',
-			} as ILivechatCustomField & { field: string })
+			} as unknown as ILivechatCustomField & { field: string })
 				.then((cf) => {
 					if (!cf) {
 						throw new Error('Custom field not created');
@@ -504,9 +504,7 @@ describe('Omnichannel', function () {
 							deleteCustomField(cfID);
 						});
 				})
-				.then(() => {
-					done();
-				});
+				.then(done);
 		});
 	});
 });
