@@ -10,8 +10,6 @@ export interface IExperimentalHTMLAudioElement extends HTMLAudioElement {
 	setSinkId: (sinkId: string) => void;
 }
 
-export type DeviceContextValue = EnabledDeviceContextValue | DisabledDeviceContextValue;
-
 type EnabledDeviceContextValue = {
 	enabled: true;
 	availableAudioOutputDevices: Device[];
@@ -28,6 +26,8 @@ type EnabledDeviceContextValue = {
 type DisabledDeviceContextValue = {
 	enabled: false;
 };
+
+export type DeviceContextValue = EnabledDeviceContextValue | DisabledDeviceContextValue;
 
 export const isDeviceContextEnabled = (context: DeviceContextValue): context is EnabledDeviceContextValue =>
 	(context as EnabledDeviceContextValue).enabled;
