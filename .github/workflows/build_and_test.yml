@@ -224,6 +224,7 @@ jobs:
       matrix:
         node-version: ['14.19.3']
         mongodb-version: ['4.2', '4.4', '5.0']
+        playwright-strategy: [1, 2]
 
     steps:
       - name: Launch MongoDB
@@ -368,7 +369,7 @@ jobs:
           done
 
           cd ./apps/meteor
-          npm run test:e2e
+          npm run test:e2e --shard=${{matrix.shard}}/2
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
