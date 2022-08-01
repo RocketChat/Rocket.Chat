@@ -352,7 +352,6 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				get() {
-					console.log('Deu certo');
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
