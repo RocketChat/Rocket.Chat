@@ -14,7 +14,7 @@ const createAuxContext = async (browser: Browser): Promise<{ page: Page; poHomeC
 
 test.use({ storageState: 'user1-session.json' });
 
-test.describe.serial('Messaging', () => {
+test.describe.serial.only('Messaging', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 
@@ -30,10 +30,10 @@ test.describe.serial('Messaging', () => {
 
 	test('expect show "hello word" in both contexts (targetChannel)', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.sendMessage('hello world');
-
 		const auxContext = await createAuxContext(browser);
 		await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
+
+		await poHomeChannel.content.sendMessage('hello world');
 
 		await expect(auxContext.poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
@@ -43,10 +43,10 @@ test.describe.serial('Messaging', () => {
 
 	test('expect show "hello word" in both contexts (direct)', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat('user2');
-		await poHomeChannel.content.sendMessage('hello world');
-
 		const auxContext = await createAuxContext(browser);
 		await auxContext.poHomeChannel.sidenav.openChat('user1');
+
+		await poHomeChannel.content.sendMessage('hello world');
 
 		await expect(poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
 		await expect(auxContext.poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
