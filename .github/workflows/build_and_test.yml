@@ -645,6 +645,14 @@ jobs:
           done;
           exit $s
 
+      - name: Cache Playwright binaries
+        uses: actions/cache@v3
+        id: cache-playwright
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: playwright-1.23.1 }}
+
       - name: Install Playwright
         run: |
           cd ./apps/meteor
