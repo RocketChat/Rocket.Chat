@@ -21,7 +21,7 @@ const UserCardUsername = ({ name, status = <UserStatus.Offline />, ...props }: U
 		withTruncatedText
 		{...props}
 	>
-		{status}{' '}
+		{status}
 		<Box mis='x8' flexGrow={1} withTruncatedText>
 			{name}
 		</Box>
