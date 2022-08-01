@@ -1,9 +1,12 @@
-import { expect } from 'chai';
+/* eslint-env mocha */
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
+import { expect } from 'chai';
+import { Response } from 'supertest';
+
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - Integrations', function () {
+describe('LIVECHAT - appearance', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -12,15 +15,15 @@ describe('LIVECHAT - Integrations', function () {
 		updateSetting('Livechat_enabled', true).then(done);
 	});
 
-	describe('livechat/integrations.settings', () => {
+	describe('livechat/appearance', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
 				request
-					.get(api('livechat/integrations.settings'))
+					.get(api('livechat/appearance'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('error-not-authorized');
 					})
@@ -30,13 +33,13 @@ describe('LIVECHAT - Integrations', function () {
 		it('should return an array of settings', (done) => {
 			updatePermission('view-livechat-manager', ['admin']).then(() => {
 				request
-					.get(api('livechat/integrations.settings'))
+					.get(api('livechat/appearance'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body.settings).to.be.an('array');
+						expect(res.body.appearance).to.be.an('array');
 					})
 					.end(done);
 			});
