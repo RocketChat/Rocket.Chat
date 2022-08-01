@@ -119,11 +119,12 @@ export class RocketChatRoomAdapter {
 
 	private async createFederatedRoomInstance(externalRoomId: string, room: IRoom): Promise<FederatedRoom> {
 		if (isDirectMessageRoom(room)) {
-			const members = await Promise.all((room.usernames || []).map((username) => getFederatedUserByInternalUsername(username))) as FederatedUser[];
+			const members = (await Promise.all(
+				(room.usernames || []).map((username) => getFederatedUserByInternalUsername(username)),
+			)) as FederatedUser[];
 			return DirectMessageFederatedRoom.createWithInternalReference(externalRoomId, room, members);
 		}
 
 		return FederatedRoom.createWithInternalReference(externalRoomId, room);
 	}
-
 }

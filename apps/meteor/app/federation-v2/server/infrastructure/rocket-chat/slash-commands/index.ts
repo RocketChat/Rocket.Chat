@@ -31,7 +31,7 @@ const executeSlashCommand = async (
 	if (providedCommand !== 'federation' || !stringParams) {
 		return;
 	}
-	
+
 	const [command, ...params] = stringParams.trim().split(' ');
 	const [rawUserId] = params;
 	const currentUserId = Meteor.userId();

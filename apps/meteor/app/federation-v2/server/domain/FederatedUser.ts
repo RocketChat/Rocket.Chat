@@ -1,4 +1,5 @@
 import { IUser, UserStatus } from '@rocket.chat/core-typings';
+
 import { isAnInternalIdentifier } from './FederatedRoom';
 
 export interface IFederatedUserCreationParams {
@@ -14,7 +15,15 @@ export class FederatedUser {
 
 	protected internalReference: IUser;
 
-	protected constructor({ externalId, internalReference, existsOnlyOnProxyServer }: { externalId: string, internalReference: IUser, existsOnlyOnProxyServer: boolean }) {
+	protected constructor({
+		externalId,
+		internalReference,
+		existsOnlyOnProxyServer,
+	}: {
+		externalId: string;
+		internalReference: IUser;
+		existsOnlyOnProxyServer: boolean;
+	}) {
 		this.externalId = externalId;
 		this.existsOnlyOnProxyServer = existsOnlyOnProxyServer;
 		this.internalReference = internalReference;
@@ -49,7 +58,11 @@ export class FederatedUser {
 		} as unknown as IUser;
 	}
 
-	public static createInstanceWithInternalUser(externalId: string, existsOnlyOnProxyServer: boolean, internalReference: IUser): FederatedUser {
+	public static createInstanceWithInternalUser(
+		externalId: string,
+		existsOnlyOnProxyServer: boolean,
+		internalReference: IUser,
+	): FederatedUser {
 		return new FederatedUser({
 			externalId,
 			existsOnlyOnProxyServer,

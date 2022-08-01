@@ -5,21 +5,22 @@ import { FederatedUser } from './FederatedUser';
 
 export const isAnInternalIdentifier = (fromOriginName: string, localOriginName: string): boolean => {
 	return fromOriginName === localOriginName;
-}
+};
 
 export abstract class AbstractFederatedRoom {
 	protected externalId: string;
 
 	protected internalReference: IRoom;
 
-	protected constructor({ externalId, internalReference }: { externalId: string, internalReference: IRoom }) {
+	protected constructor({ externalId, internalReference }: { externalId: string; internalReference: IRoom }) {
 		this.externalId = externalId;
 		this.internalReference = internalReference;
 	}
 
 	protected static generateTemporaryName(normalizedExternalId: string): string {
-		return `Federation-${ normalizedExternalId }`;
+		return `Federation-${normalizedExternalId}`;
 	}
+
 	public abstract isDirectMessage(): boolean;
 
 	public getMembersUsernames(): string[] {
@@ -90,8 +91,7 @@ export abstract class AbstractFederatedRoom {
 }
 
 export class FederatedRoom extends AbstractFederatedRoom {
-
-	protected constructor({ externalId, internalReference }: { externalId: string, internalReference: IRoom }) {
+	protected constructor({ externalId, internalReference }: { externalId: string; internalReference: IRoom }) {
 		super({ externalId, internalReference });
 	}
 
@@ -124,34 +124,40 @@ export class FederatedRoom extends AbstractFederatedRoom {
 	public isDirectMessage(): boolean {
 		return false;
 	}
-
 }
 
 export class DirectMessageFederatedRoom extends AbstractFederatedRoom {
-
 	public members: FederatedUser[];
-	
-	protected constructor({ externalId, internalReference, members }: { externalId: string, internalReference: IRoom, members: FederatedUser[] }) {
+
+	protected constructor({
+		externalId,
+		internalReference,
+		members,
+	}: {
+		externalId: string;
+		internalReference: IRoom;
+		members: FederatedUser[];
+	}) {
 		super({ externalId, internalReference });
 		this.members = members;
 	}
 
-	public static createInstance(
-		externalId: string,
-		creator: FederatedUser,
-		members: FederatedUser[],
-	): DirectMessageFederatedRoom {
+	public static createInstance(externalId: string, creator: FederatedUser, members: FederatedUser[]): DirectMessageFederatedRoom {
 		return new DirectMessageFederatedRoom({
 			externalId,
 			members,
 			internalReference: {
 				t: RoomType.DIRECT_MESSAGE,
 				u: creator.getInternalReference(),
-			} as unknown as IRoom
+			} as unknown as IRoom,
 		});
 	}
 
-	public static createWithInternalReference(externalId: string, internalReference: IRoom, members: FederatedUser[]): DirectMessageFederatedRoom {
+	public static createWithInternalReference(
+		externalId: string,
+		internalReference: IRoom,
+		members: FederatedUser[],
+	): DirectMessageFederatedRoom {
 		return new DirectMessageFederatedRoom({
 			externalId,
 			internalReference,

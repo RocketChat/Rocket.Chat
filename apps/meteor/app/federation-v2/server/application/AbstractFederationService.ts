@@ -34,7 +34,7 @@ export abstract class FederationService {
 	protected async createFederatedUserForInviterUsingLocalInformation(internalInviterId: string): Promise<string> {
 		const internalUser = await this.internalUserAdapter.getInternalUserById(internalInviterId);
 		if (!internalUser || !internalUser?.username) {
-			throw new Error(`Could not find user id for ${ internalInviterId }`);
+			throw new Error(`Could not find user id for ${internalInviterId}`);
 		}
 		const name = internalUser.name || internalUser.username;
 		const externalInviterId = await this.bridge.createUser(internalUser.username, name, this.internalHomeServerDomain);
@@ -43,5 +43,4 @@ export abstract class FederationService {
 
 		return externalInviterId;
 	}
-
 }

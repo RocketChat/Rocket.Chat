@@ -1,8 +1,5 @@
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-
 import { FederationService } from '../../../../../../app/federation-v2/server/application/AbstractFederationService';
 import { RocketChatSettingsAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
-import { DirectMessageFederatedRoomEE, FederatedRoomEE } from '../../domain/FederatedRoom';
 import { FederatedUserEE } from '../../domain/FederatedUser';
 import { IFederationBridgeEE } from '../../domain/IFederationBridge';
 import { RocketChatNotificationAdapter } from '../../infrastructure/rocket-chat/adapters/Notification';
@@ -93,10 +90,7 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 
 		if (!internalFederatedRoom && isInviterFromTheSameHomeServer) {
 			const externalInviteeIds = invitees.map((invitee) => invitee.rawInviteeId);
-			const externalRoomId = await this.bridge.createDirectMessageRoom(
-				federatedInviterUser.getExternalId(),
-				externalInviteeIds,
-			);
+			const externalRoomId = await this.bridge.createDirectMessageRoom(federatedInviterUser.getExternalId(), externalInviteeIds);
 			await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, externalRoomId);
 		}
 

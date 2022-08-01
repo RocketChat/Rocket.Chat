@@ -1,4 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../domain/FederatedRoom';
 import { FederatedUser } from '../domain/FederatedUser';
@@ -16,7 +17,6 @@ import {
 	FederationRoomChangeTopicDto,
 } from './input/RoomReceiverDto';
 import { FederationService } from './AbstractFederationService';
-import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
@@ -81,7 +81,7 @@ export class FederationRoomServiceListener extends FederationService {
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 
 		if (wasGeneratedOnTheProxyServer && !affectedFederatedRoom) {
-			throw new Error(`Could not find room with external room id: ${ externalRoomId }`);
+			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
 		}
 
 		const isInviterFromTheSameHomeServer = FederatedUser.isAnInternalUser(
@@ -117,11 +117,7 @@ export class FederationRoomServiceListener extends FederationService {
 			}
 			if (isDirectMessageRoom({ t: roomType })) {
 				const members = [federatedInviterUser, federatedInviteeUser];
-				const newFederatedRoom = DirectMessageFederatedRoom.createInstance(
-					externalRoomId,
-					federatedInviterUser,
-					members,
-				);
+				const newFederatedRoom = DirectMessageFederatedRoom.createInstance(externalRoomId, federatedInviterUser, members);
 				await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
 				await this.bridge.joinRoom(externalRoomId, externalInviteeId);
 				return;
@@ -140,7 +136,7 @@ export class FederationRoomServiceListener extends FederationService {
 
 		const federatedRoom = affectedFederatedRoom || (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId));
 		if (!federatedRoom) {
-			throw new Error(`Could not find room with external room id: ${ externalRoomId }`);
+			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
 		}
 
 		if (leave) {

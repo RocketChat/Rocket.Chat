@@ -19,7 +19,7 @@ export class FederationRoomServiceSenderEE extends FederationService {
 
 	public async createLocalDirectMessageRoom(dmRoomCreateInput: FederationCreateDirectMessageDto): Promise<void> {
 		const { internalInviterId, invitees } = dmRoomCreateInput;
-		
+
 		await this.rocketRoomAdapter.createLocalDirectMessageRoom(invitees, internalInviterId);
 	}
 }

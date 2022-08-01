@@ -1,8 +1,8 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { IRoom, isRoomFederated, isUserFederated, IUser } from '@rocket.chat/core-typings';
+
 import { FederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
-
 import { IFederationBridge } from '../../domain/IFederationBridge';
 import { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
@@ -53,8 +53,14 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 			return;
 		}
 
-		const isRoomFromTheProxyServer = FederatedRoom.isAnInternalRoom(this.bridge.extractHomeserverOrigin(externalRoom.getExternalId()), this.internalHomeServerDomain);
-		const isInviterFromTheProxyServer = FederatedUser.isAnInternalUser(this.bridge.extractHomeserverOrigin(inviter.getExternalId()), this.internalHomeServerDomain);
+		const isRoomFromTheProxyServer = FederatedRoom.isAnInternalRoom(
+			this.bridge.extractHomeserverOrigin(externalRoom.getExternalId()),
+			this.internalHomeServerDomain,
+		);
+		const isInviterFromTheProxyServer = FederatedUser.isAnInternalUser(
+			this.bridge.extractHomeserverOrigin(inviter.getExternalId()),
+			this.internalHomeServerDomain,
+		);
 
 		const fullActionExecutedOnTheRemoteHomeServer = !isRoomFromTheProxyServer && !isInviterFromTheProxyServer;
 		if (fullActionExecutedOnTheRemoteHomeServer) {
@@ -77,8 +83,10 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 			return (user as IUser).username;
 		});
 		const atLeastOneExternalUser =
-			usernames.some((username) => !FederatedUser.isAnInternalUser(this.bridge.extractHomeserverOrigin(username as string), this.internalHomeServerDomain)) ||
-			internalUsers.filter((user) => !this.isAddingANewExternalUser(user)).some((user) => isUserFederated(user as IUser));
+			usernames.some(
+				(username) =>
+					!FederatedUser.isAnInternalUser(this.bridge.extractHomeserverOrigin(username as string), this.internalHomeServerDomain),
+			) || internalUsers.filter((user) => !this.isAddingANewExternalUser(user)).some((user) => isUserFederated(user as IUser));
 		if (atLeastOneExternalUser) {
 			throw new Error('error-this-is-an-ee-feature');
 		}
