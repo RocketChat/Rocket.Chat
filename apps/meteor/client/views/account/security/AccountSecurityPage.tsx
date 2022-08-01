@@ -1,6 +1,6 @@
 import { Box, Accordion } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import Page from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
@@ -8,7 +8,7 @@ import EndToEnd from './EndToEnd';
 import TwoFactorEmail from './TwoFactorEmail';
 import TwoFactorTOTP from './TwoFactorTOTP';
 
-const AccountSecurityPage = () => {
+const AccountSecurityPage = (): ReactElement => {
 	const t = useTranslation();
 
 	const twoFactorEnabled = useSetting('Accounts_TwoFactorAuthentication_Enabled');

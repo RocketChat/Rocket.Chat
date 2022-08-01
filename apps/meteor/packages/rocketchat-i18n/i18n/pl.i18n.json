@@ -252,7 +252,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Witamy w <strong>[Site_Name]</strong></h1><p>Przejdź na stronę <a href=\"[Site_URL]\">[Site_URL]</a> i wypróbuj dziś najlepsze dostępne otwarte rozwiązanie czatu!</p><p> Możesz zalogować się przy użyciu adresu e-mail: [email] i hasła: [password]. Może wystąpić konieczność zmiany hasła po pierwszym logowaniu.",
   "Accounts_UserAddedEmail_Description": "Możesz użyć znaczników: <br/><ul><li>[name], [fname], [lname], aby wstawić odpowiednio pełną nazwę użytkownika, jego imię lub nazwisko.</li><li>[email], aby wstawić adres e-mail użytkownika.</li><li>[password], aby wstawić hasło użytkownika.</li><li>[Site_Name] i [Site_URL], aby wstawić odpowiednio nazwę aplikacji i adres URL.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Dodano Cię do [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "Weryfikuj adres e-mail w przypadku kont zewnętrznych",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action": "Akcja",
   "Action_required": "Wymagana akcja",
   "Activate": "Aktywuj",

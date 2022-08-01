@@ -1,3 +1,5 @@
+/* eslint-env mocha */
+
 import { expect } from 'chai';
 import { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Response } from 'supertest';

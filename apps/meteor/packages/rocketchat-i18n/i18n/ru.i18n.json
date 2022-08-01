@@ -251,7 +251,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Добро пожаловать в <strong>[Site_Name]</strong></h1><p>Посетите <a href=\"[Site_URL]\">[Site_URL]</a> и попробуйте лучшее решение для чатов с открытым исходным кодом на сегодняшний день!</p> <p>Вы можете войти в систему, используя адрес электронной почты: [email] и пароль: [password]. Возможно, вам потребуется сменить его после первого входа в систему.",
   "Accounts_UserAddedEmail_Description": "Вы можете использовать следующие подстановки: <br/><ul><li> [name], [fname], [lname] для полного имени пользователя, только имени или только фамилии  соответственно). </li><li> [email] -  для email адреса пользователя. </li><li> [password] - для пароля пользователя. </li><li>[Site_Name] и [Site_URL] - название вашего приложения и его URL. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Вы были добавлены в [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "Проверить электронную почту для внешних аккаунтов",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action": "Действие",
   "Action_required": "Требуется действие",
   "Activate": "Активировать",

@@ -232,7 +232,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Velkommen til <strong>[Site_Name]</strong></h1><p>Gå til <a href=\"[Site_URL]\">[Site_URL]</a> for at prøve den bedste open source-chatløsning man kan få!</p><p>Du kan logge ind med din e-mail: [email] og kodeordet: [password]. Du skal måske ændre det efter dit første login.",
   "Accounts_UserAddedEmail_Description": "Du kan bruge følgende felter: <br/><ul><li>[navn], [fname] eller [lname] for brugerens fulde navn, fornavn eller efternavn.</li><li>[email] for brugerens e-mail.</li><li>[password] for brugerens adgangskode.</li><li>[Site_Name] og [Site_URL] for henholdsvis applikationsnavn og URL.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Du er blevet føjet til [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "Bekræft e-mail for eksterne konti",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action_required": "Handling påkrævet",
   "Activate": "Aktivér",
   "Active": "Aktiv",
