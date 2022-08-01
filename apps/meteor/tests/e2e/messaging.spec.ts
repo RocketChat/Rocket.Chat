@@ -41,7 +41,7 @@ test.describe('Messaging', () => {
 		await auxContext.page.close();
 	});
 
-	test.only('expect show "hello word" in both contexts (direct)', async ({ browser }) => {
+	test('expect show "hello word" in both contexts (direct)', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat('user2');
 		await poHomeChannel.content.sendMessage('hello world');
 
