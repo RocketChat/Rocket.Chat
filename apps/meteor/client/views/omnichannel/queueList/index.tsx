@@ -87,7 +87,13 @@ const QueueList = (): ReactElement => {
 		[mediaQuery, t],
 	);
 
-	const [params, setParams] = useState({
+	const [params, setParams] = useState<{
+		servedBy: string;
+		status: string;
+		departmentId: string;
+		itemsPerPage: 25 | 50 | 100;
+		current: number;
+	}>({
 		servedBy: '',
 		status: '',
 		departmentId: '',

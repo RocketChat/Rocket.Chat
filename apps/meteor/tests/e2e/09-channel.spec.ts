@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './utils/test';
 import { publicChannelCreated, setPublicChannelCreated } from './utils/mocks/checks';
 import { Auth, HomeChannel } from './page-objects';
 
@@ -67,6 +66,7 @@ test.describe('Channel', () => {
 				await pageHomeChannel.tabs.btnTabInfo.click();
 				await pageHomeChannel.tabs.editNameBtn.click();
 
+				await pageHomeChannel.tabs.editTopicTextInput.click({ clickCount: 3 });
 				await pageHomeChannel.tabs.editTopicTextInput.fill('TOPIC EDITED');
 				await pageHomeChannel.tabs.editNameSave.click();
 
@@ -77,6 +77,7 @@ test.describe('Channel', () => {
 				await pageHomeChannel.tabs.btnTabInfo.click();
 				await pageHomeChannel.tabs.editNameBtn.click();
 
+				await pageHomeChannel.tabs.editAnnouncementTextInput.click({ clickCount: 3 });
 				await pageHomeChannel.tabs.editAnnouncementTextInput.type('ANNOUNCEMENT EDITED');
 				await pageHomeChannel.tabs.editNameSave.click();
 
@@ -87,6 +88,7 @@ test.describe('Channel', () => {
 				await pageHomeChannel.tabs.btnTabInfo.click();
 				await pageHomeChannel.tabs.editNameBtn.click();
 
+				await pageHomeChannel.tabs.editDescriptionTextInput.click({ clickCount: 3 });
 				await pageHomeChannel.tabs.editDescriptionTextInput.type('DESCRIPTION EDITED');
 				await pageHomeChannel.tabs.editNameSave.click();
 				await pageHomeChannel.tabs.mainSideBarBack.click();
