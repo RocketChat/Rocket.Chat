@@ -306,7 +306,14 @@ jobs:
       - name: Publish Docker images
         if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
         run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+          export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+          # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
+          if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
+            export RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
+          else
+            export RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
+          fi;
 
           docker compose -f docker-compose-ci.yml push rocketchat
 
@@ -478,7 +485,11 @@ jobs:
 
       - name: Publish Docker images
         if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
+        env:
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
+          export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
           docker compose -f docker-compose-ci.yml push \
             authorization-service \
             account-service \
