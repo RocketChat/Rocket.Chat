@@ -272,15 +272,15 @@ jobs:
           MONGO_URL: "mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true"
           MONGO_OPLOG_URL: "mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true"
         run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+          export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
           if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
-            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
-            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
+            export RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
+            export RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
           else
-            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
-            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
+            export RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
+            export RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
           fi;
 
           docker compose -f docker-compose-ci.yml up -d --build rocketchat
