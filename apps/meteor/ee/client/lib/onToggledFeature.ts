@@ -1,4 +1,4 @@
-import { QueryObserver } from 'react-query';
+import { QueryObserver } from '@tanstack/react-query';
 
 import { queryClient } from '../../../client/lib/queryClient';
 import type { BundleFeature } from '../../app/license/server/bundles';

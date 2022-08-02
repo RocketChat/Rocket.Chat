@@ -5,11 +5,11 @@ import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
+import InfoPanel from '../../../../../components/InfoPanel';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
-import InfoPanel from '../../../../InfoPanel';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import AgentField from '../../chats/contextualBar/AgentField';
 import { InfoField } from './InfoField';

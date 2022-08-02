@@ -72,6 +72,10 @@ const normalizeLocationSharing = (payload) => {
 
 API.v1.addRoute('livechat/sms-incoming/:service', {
 	async post() {
+		if (!SMS.isConfiguredService(this.urlParams.service)) {
+			return API.v1.failure('Invalid service');
+		}
+
 		const SMSService = SMS.getService(this.urlParams.service);
 		const sms = SMSService.parse(this.bodyParams);
 		const { department } = this.queryParams;
