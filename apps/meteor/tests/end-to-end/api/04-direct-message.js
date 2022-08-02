@@ -188,8 +188,8 @@ describe('[Direct Messages]', function () {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('count', 1);
+				expect(res.body).to.have.property('total', 1);
 				expect(res.body).to.have.property('ims').and.to.be.an('array');
 				const im = res.body.ims[0];
 				expect(im).to.have.property('_id');
@@ -199,6 +199,7 @@ describe('[Direct Messages]', function () {
 				expect(im).to.have.property('lm');
 				expect(im).to.have.property('_updatedAt');
 				expect(im).to.have.property('ts');
+				expect(im).to.have.property('lastMessage');
 			})
 			.end(done);
 	});
@@ -211,8 +212,8 @@ describe('[Direct Messages]', function () {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('count', 1);
+				expect(res.body).to.have.property('total', 1);
 				expect(res.body).to.have.property('ims').and.to.be.an('array');
 				const im = res.body.ims[0];
 				expect(im).to.have.property('_id');
@@ -223,6 +224,7 @@ describe('[Direct Messages]', function () {
 				expect(im).to.have.property('sysMes');
 				expect(im).to.have.property('_updatedAt');
 				expect(im).to.have.property('ts');
+				expect(im).to.have.property('lastMessage');
 			})
 			.end(done);
 	});

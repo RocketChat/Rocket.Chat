@@ -65,14 +65,10 @@ export type ImEndpoints = {
 		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; query?: string; fields?: string }>) => PaginatedResult<{ messages: IMessage[] }>;
 	};
 	'/v1/im.list': {
-		GET: (
-			params: PaginatedRequest,
-		) => PaginatedResult<{ ims: Array<Pick<IRoom, '_id' | '_updatedAt' | 't' | 'msgs' | 'ts' | 'lm' | 'topic' | 'usernames'>> }>;
+		GET: (params: PaginatedRequest<{ fields?: string }>) => PaginatedResult<{ ims: IRoom[] }>;
 	};
 	'/v1/im.list.everyone': {
-		GET: (params: PaginatedRequest<{ query: string; fields?: string }>) => PaginatedResult<{
-			ims: Array<Pick<IRoom, '_id' | 'name' | 't' | 'usernames' | 'msgs' | 'u' | 'ts' | 'ro' | 'sysMes' | '_updatedAt'>>;
-		}>;
+		GET: (params: PaginatedRequest<{ query: string; fields?: string }>) => PaginatedResult<{ ims: IRoom[] }>;
 	};
 	'/v1/im.open': {
 		POST: (params: { roomId: string }) => void;
