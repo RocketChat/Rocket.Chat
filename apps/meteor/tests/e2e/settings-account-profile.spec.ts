@@ -9,6 +9,8 @@ test.describe.serial('settings-account-profile', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
 
+	const token = faker.random.alpha(10);
+
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		poAccountProfile = new AccountProfile(page);
@@ -34,5 +36,41 @@ test.describe.serial('settings-account-profile', () => {
 		await poHomeChannel.content.linkUserCard.click();
 
 		await expect(poHomeChannel.tabs.userInfoUsername).toHaveText(newUsername);
+	});
+
+	test.describe('Personal Access Tokens', () => {
+		test.beforeEach(async () => {
+			await poHomeChannel.sidenav.goToMyAccount();
+			await poAccountProfile.sidenav.linkTokens.click();
+		});
+
+		test('expect show empty personal access tokens table', async () => {
+			await expect(poAccountProfile.tokensTableEmpty).toBeVisible();
+			await expect(poAccountProfile.inputToken).toBeVisible();
+		});
+
+		test('expect show new personal token', async () => {
+			await poAccountProfile.inputToken.type(token);
+			await poAccountProfile.btnTokensAdd.click();
+			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
+		});
+
+		test('expect not allow add new personal token with same name', async ({ page }) => {
+			await poAccountProfile.inputToken.type(token);
+			await poAccountProfile.btnTokensAdd.click();
+			await expect(page.locator('.rcx-toastbar.rcx-toastbar--error')).toBeVisible();
+		});
+
+		test('expect regenerate personal token', async () => {
+			await poAccountProfile.tokenInTable(token).locator('button >> nth=0').click();
+			await poAccountProfile.btnRegenerateTokenModal.click();
+			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
+		});
+
+		test('expect delete personal token', async ({ page }) => {
+			await poAccountProfile.tokenInTable(token).locator('button >> nth=1').click();
+			await poAccountProfile.btnRemoveTokenModal.click();
+			await expect(page.locator('.rcx-toastbar.rcx-toastbar--success')).toBeVisible();
+		});
 	});
 });

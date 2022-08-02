@@ -1,10 +1,15 @@
 import { Locator, Page } from '@playwright/test';
 
+import { AccountSidenav } from './fragments/account-sidenav';
+
 export class AccountProfile {
 	private readonly page: Page;
 
+	readonly sidenav: AccountSidenav;
+
 	constructor(page: Page) {
 		this.page = page;
+		this.sidenav = new AccountSidenav(page);
 	}
 
 	get inputName(): Locator {
@@ -29,5 +34,33 @@ export class AccountProfile {
 
 	get btnClose(): Locator {
 		return this.page.locator('button >> i.rcx-icon--name-cross.rcx-icon');
+	}
+	
+	get inputToken(): Locator {
+		return this.page.locator('[data-qa="PersonalTokenField"]');
+	}
+
+	get tokensTableEmpty(): Locator {
+		return this.page.locator('//div[contains(text(), "No results found")]');
+	}
+
+	get btnTokensAdd(): Locator {
+		return this.page.locator('//button[contains(text(), "Add")]');
+	}
+
+	get tokenAddedModal(): Locator {
+		return this.page.locator("//div[text()='Personal Access Token successfully generated']");
+	}
+
+	tokenInTable(name: string): Locator {
+		return this.page.locator(`tr[qa-token-name="${name}"]`);
+	}
+
+	get btnRegenerateTokenModal(): Locator {
+		return this.page.locator('//button[contains(text(), "Regenerate token")]');
+	}
+
+	get btnRemoveTokenModal(): Locator {
+		return this.page.locator('//button[contains(text(), "Remove")]');
 	}
 }
