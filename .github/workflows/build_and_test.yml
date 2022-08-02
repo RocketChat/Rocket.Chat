@@ -432,21 +432,21 @@ jobs:
           rm Rocket.Chat.tar.gz
 
       - name: Start containers
+        env:
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          MONGO_URL: "mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true"
         run: |
-          DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}" \
-          MONGO_URL="mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-          PROJECT_ROOT=$GITHUB_WORKSPACE \
           docker compose -f docker-compose-ci.yml up -d --build
+
+          sleep 10
 
           docker compose -f docker-compose-ci.yml logs
 
           until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
-            ((c++)) && ((c==10)) && exit 1
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer && exit 1
             sleep 10
           done
-
-          docker compose -f docker-compose-ci.yml logs
 
       # - name: Build Docker image
       #   id: build-docker-image

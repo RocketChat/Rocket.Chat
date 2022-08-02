@@ -3,7 +3,7 @@ version: '3.8'
 services:
   rocketchat:
     build:
-      dockerfile: "${PROJECT_ROOT}/apps/meteor/.docker/Dockerfile"
+      dockerfile: "${GITHUB_WORKSPACE}/apps/meteor/.docker/Dockerfile"
       context: /tmp/build
     image: "rocketchat/rocket.chat:${DOCKER_TAG}"
     environment:
