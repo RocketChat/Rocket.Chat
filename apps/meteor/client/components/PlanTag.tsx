@@ -1,7 +1,7 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { ReactElement, useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
 
 import { isTruthy } from '../../lib/isTruthy';
 
