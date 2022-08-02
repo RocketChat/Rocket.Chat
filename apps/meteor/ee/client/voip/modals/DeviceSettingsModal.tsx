@@ -21,6 +21,7 @@ type FieldValues = {
 const DeviceSettingsModal = (): ReactElement => {
 	const setModal = useSetModal();
 	const onCancel = (): void => setModal();
+	const isDeviceManagementEnabled = useIsDeviceManagementEnabled();
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const selectedAudioDevices = useSelectedDevices();
@@ -67,7 +68,7 @@ const DeviceSettingsModal = (): ReactElement => {
 						</Box>
 					</Box>
 				)}
-				{!useIsDeviceManagementEnabled && (
+				{!isDeviceManagementEnabled && (
 					<Box color='danger-600' display='flex' flexDirection='column'>
 						{t('Device_Changes_Not_Available_Insecure_Context')}
 					</Box>
