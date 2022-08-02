@@ -5,13 +5,11 @@ import { FederationFactoryEE } from './infrastructure/Factory';
 const federationBridgeEE = FederationFactoryEE.buildBridge(rocketSettingsAdapter, federationQueueInstance);
 const rocketRoomAdapterEE = FederationFactoryEE.buildRocketRoomAdapter();
 const rocketUserAdapterEE = FederationFactoryEE.buildRocketUserAdapter();
-const rocketNotificationAdapterEE = FederationFactoryEE.buildRocketNotificationdapter();
 
 export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
 	rocketSettingsAdapter,
-	rocketNotificationAdapterEE,
 	federationBridgeEE,
 );
 
@@ -19,7 +17,6 @@ export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.bu
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
 	rocketSettingsAdapter,
-	rocketNotificationAdapterEE,
 	federationBridgeEE,
 );
 
@@ -27,7 +24,6 @@ export const federationDMRoomInternalHooksServiceSenderEE = FederationFactoryEE.
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
 	rocketSettingsAdapter,
-	rocketNotificationAdapterEE,
 	federationBridgeEE,
 );
 

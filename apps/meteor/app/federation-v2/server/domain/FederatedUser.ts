@@ -41,7 +41,7 @@ export class FederatedUser {
 		});
 	}
 
-	private static createLocalInstanceOnly(params: IFederatedUserCreationParams): IUser {
+	public static createLocalInstanceOnly(params: IFederatedUserCreationParams): IUser {
 		return {
 			username: params.username,
 			name: params.name,
