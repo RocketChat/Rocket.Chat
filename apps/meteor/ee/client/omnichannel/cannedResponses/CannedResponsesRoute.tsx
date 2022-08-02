@@ -44,7 +44,7 @@ const CannedResponsesRoute: FC = () => {
 	const { sharing, createdBy, text } = values as CannedResponseFilterValues;
 	const { handleSharing, handleCreatedBy, handleText } = handlers;
 
-	const [params, setParams] = useState<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>({
+	const [params, setParams] = useState<{ current: number; itemsPerPage: 25 | 50 | 100 }>({
 		current: 0,
 		itemsPerPage: 25,
 	});

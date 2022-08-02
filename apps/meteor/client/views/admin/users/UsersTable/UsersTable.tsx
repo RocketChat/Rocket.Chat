@@ -133,6 +133,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination
+						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
 						count={value?.total || 0}
