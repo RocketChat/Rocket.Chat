@@ -5,7 +5,7 @@ import * as constants from './tests/e2e/config/constants';
 export default {
 	globalSetup: require.resolve('./tests/e2e/config/global-setup.ts'),
 	use: {
-		headless: false,
+		headless: true,
 		ignoreHTTPSErrors: true,
 		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
@@ -14,7 +14,7 @@ export default {
 	outputDir: 'tests/e2e/.playwright',
 	reporter: process.env.CI ? 'github' : 'list',
 	testDir: 'tests/e2e',
-	workers: 2,
+	workers: process.env.CI ? 1 : undefined,
 	timeout: process.env.CI ? 2000_000 : 600_000,
 	retries: process.env.CI ? 2 : undefined,
 	globalTimeout: 2000_000,
