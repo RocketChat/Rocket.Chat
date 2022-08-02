@@ -65,6 +65,7 @@ test.describe('Administration', () => {
 					await expect(pageAdmin.notFoundChannelOrUser).toBeVisible();
 				});
 			});
+
 			test.describe('Filter checkbox', () => {
 				test.beforeAll(async () => {
 					await pageAdmin.roomsSearchForm.click({ clickCount: 3 });

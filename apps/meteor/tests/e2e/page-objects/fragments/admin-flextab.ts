@@ -60,7 +60,7 @@ export class AdminFlextab {
 	}
 
 	get usersAddUserTabClose(): Locator {
-		return this.page.locator('//div[text()="Add User"]//button');
+		return this.page.locator('[data-qa="VerticalBarActionClose"]');
 	}
 
 	get addUserTable(): Locator {

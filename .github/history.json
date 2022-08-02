@@ -90890,6 +90890,68 @@
         "5.0"
       ],
       "pull_requests": []
+    },
+    "5.0.1": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26323",
+          "title": "[FIX] Not possible to deactivate users",
+          "userLogin": "dougfabris",
+          "milestone": "5.0.1",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "26336",
+          "title": "[IMPROVE] Use single change stream to watch DB changes",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.0.1",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26368",
+          "title": "Regression: Fix app privacy links opening in desktop client instead of browser",
+          "userLogin": "rique223",
+          "description": "Demo gif:\r\n![privacy-links](https://user-images.githubusercontent.com/43561537/181083695-bc37b5c2-8aa5-4714-9098-9ad02d2fc2bb.gif)",
+          "milestone": "5.0.1",
+          "contributors": [
+            "rique223"
+          ]
+        },
+        {
+          "pr": "26192",
+          "title": "Chore: Convert UserCardWithData to ts",
+          "userLogin": "dougfabris",
+          "milestone": "5.0.1",
+          "contributors": [
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26343",
+          "title": "Chore: Remove square prop from IconButton",
+          "userLogin": "dougfabris",
+          "milestone": "5.0.1",
+          "contributors": [
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }

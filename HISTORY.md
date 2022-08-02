@@ -1,6 +1,49 @@
 
+# 5.0.1
+`2022-08-02  ·  1 🚀  ·  1 🐛  ·  3 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🚀 Improvements
+
+
+- Use single change stream to watch DB changes ([#26336](https://github.com/RocketChat/Rocket.Chat/pull/26336))
+
+### 🐛 Bug fixes
+
+
+- Not possible to deactivate users ([#26323](https://github.com/RocketChat/Rocket.Chat/pull/26323))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Convert UserCardWithData to ts ([#26192](https://github.com/RocketChat/Rocket.Chat/pull/26192) by [@kodiakhq[bot]](https://github.com/kodiakhq[bot]))
+
+- Chore: Remove square prop from IconButton ([#26343](https://github.com/RocketChat/Rocket.Chat/pull/26343) by [@kodiakhq[bot]](https://github.com/kodiakhq[bot]))
+
+- Regression: Fix app privacy links opening in desktop client instead of browser ([#26368](https://github.com/RocketChat/Rocket.Chat/pull/26368))
+
+  Demo gif:
+  ![privacy-links](https://user-images.githubusercontent.com/43561537/181083695-bc37b5c2-8aa5-4714-9098-9ad02d2fc2bb.gif)
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@kodiakhq[bot]](https://github.com/kodiakhq[bot])
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 5.0.0
-`2022-07-22  ·  14 ️️️⚠️  ·  33 🎉  ·  20 🚀  ·  110 🐛  ·  389 🔍  ·  63 👩‍💻👨‍💻`
+`2022-07-21  ·  14 ️️️⚠️  ·  33 🎉  ·  20 🚀  ·  110 🐛  ·  389 🔍  ·  63 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `14.19.3`
