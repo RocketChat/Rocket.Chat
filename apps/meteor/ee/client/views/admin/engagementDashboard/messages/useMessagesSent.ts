@@ -29,6 +29,7 @@ export const useMessagesSent = ({ period }: UseMessagesSentOptions) => {
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
 		},
 	);
 };

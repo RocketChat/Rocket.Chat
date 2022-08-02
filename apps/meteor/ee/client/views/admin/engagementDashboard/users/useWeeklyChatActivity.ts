@@ -29,6 +29,7 @@ export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivi
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
 		},
 	);
 };

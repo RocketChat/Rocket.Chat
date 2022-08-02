@@ -32,7 +32,7 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 	);
 
 	return (
-		<Page>
+		<Page backgroundColor='neutral-100'>
 			<Page.Header title={t('Engagement_Dashboard')}>
 				<Select options={timezoneOptions} value={timezoneId} onChange={handleTimezoneChange} />
 			</Page.Header>

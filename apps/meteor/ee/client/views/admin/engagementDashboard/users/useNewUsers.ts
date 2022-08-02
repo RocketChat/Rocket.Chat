@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 
 import { getPeriodRange, Period } from '../dataView/periods';
 
-type UseNewUsersOptions = { period: Period['key']; utc: boolean };
+export type UseNewUsersOptions = { period: Period['key']; utc: boolean };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useNewUsers = ({ period, utc }: UseNewUsersOptions) => {
@@ -15,6 +15,7 @@ export const useNewUsers = ({ period, utc }: UseNewUsersOptions) => {
 			const { start, end } = getPeriodRange(period, utc);
 
 			const response = await getNewUsers({
+				// start: '',
 				start: start.toISOString(),
 				end: end.toISOString(),
 			});
@@ -29,6 +30,7 @@ export const useNewUsers = ({ period, utc }: UseNewUsersOptions) => {
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
 		},
 	);
 };

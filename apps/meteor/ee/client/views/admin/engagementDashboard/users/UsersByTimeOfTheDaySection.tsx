@@ -5,7 +5,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
-import Section from '../Section';
+import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import DownloadDataButton from '../dataView/DownloadDataButton';
 import PeriodSelector from '../dataView/PeriodSelector';
 import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
@@ -64,28 +64,25 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 	}, [data, utc]);
 
 	return (
-		<Section
-			title={t('Users_by_time_of_day')}
-			filter={
-				<>
-					<PeriodSelector {...periodSelectorProps} />
-					<DownloadDataButton
-						attachmentName={`UsersByTimeOfTheDaySection_start_${data?.start}_end_${data?.end}`}
-						headers={['Date', 'Users']}
-						dataAvailable={!!data}
-						dataExtractor={(): unknown[][] | undefined =>
-							data?.week
-								?.map(({ users, hour, day, month, year }) => ({
-									date: moment([year, month - 1, day, hour, 0, 0, 0]),
-									users,
-								}))
-								?.sort((a, b) => a.date.diff(b.date))
-								?.map(({ date, users }) => [date.toISOString(), users])
-						}
-					/>
-				</>
-			}
-		>
+		<>
+			<EngagementDashboardCardFilter>
+				<PeriodSelector {...periodSelectorProps} />
+				<DownloadDataButton
+					attachmentName={`UsersByTimeOfTheDaySection_start_${data?.start}_end_${data?.end}`}
+					headers={['Date', 'Users']}
+					dataAvailable={!!data}
+					dataExtractor={(): unknown[][] | undefined =>
+						data?.week
+							?.map(({ users, hour, day, month, year }) => ({
+								date: moment([year, month - 1, day, hour, 0, 0, 0]),
+								users,
+							}))
+							?.sort((a, b) => a.date.diff(b.date))
+							?.map(({ date, users }) => [date.toISOString(), users])
+					}
+				/>
+			</EngagementDashboardCardFilter>
+
 			{values ? (
 				<Box display='flex' style={{ height: 696 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
@@ -179,7 +176,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 			) : (
 				<Skeleton variant='rect' height={696} />
 			)}
-		</Section>
+		</>
 	);
 };
 

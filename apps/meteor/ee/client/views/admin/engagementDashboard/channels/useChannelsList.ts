@@ -36,6 +36,7 @@ export const useChannelsList = ({ period, offset, count }: UseChannelsListOption
 		{
 			keepPreviousData: true,
 			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
 		},
 	);
 };
