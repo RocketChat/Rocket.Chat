@@ -1,6 +1,6 @@
 import { useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { useQuery } from 'react-query';
 
 import { UpgradeTabVariant, getUpgradeTabType } from '../../../lib/getUpgradeTabType';
 
