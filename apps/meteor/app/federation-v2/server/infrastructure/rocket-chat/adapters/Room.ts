@@ -40,7 +40,7 @@ export class RocketChatRoomAdapter {
 		const { rid, _id } = createRoom(
 			federatedRoom.getRoomType(),
 			federatedRoom.getInternalName(),
-			federatedRoom.getInternalCreator()?.username || '',
+			federatedRoom.getCreatorInternalUsername() || federatedRoom.getCreatorInternalId(),
 		);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
@@ -60,11 +60,11 @@ export class RocketChatRoomAdapter {
 		const { rid, _id } = createRoom(
 			federatedRoom.getRoomType(),
 			federatedRoom.getInternalName(),
-			federatedRoom.getInternalCreator()?.username || '',
+			federatedRoom.getCreatorInternalUsername() || federatedRoom.getCreatorInternalId(),
 			federatedRoom.getInternalMembersUsernames(),
 			readonly,
 			extraData,
-			{ creator: federatedRoom.getInternalCreator()?._id },
+			{ creator: federatedRoom.getCreatorInternalId() },
 		);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
@@ -110,17 +110,17 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async updateRoomName(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
-		await saveRoomName(federatedRoom.getRoomType(), federatedRoom.getInternalName(), federatedUser.getInternalReference());
+		await saveRoomName(federatedRoom.getInternalId(), federatedRoom.getInternalName(), federatedUser.getInternalReference());
 	}
 
 	public async updateRoomTopic(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
-		await saveRoomTopic(federatedRoom.getRoomType(), federatedRoom.getInternalTopic(), federatedUser.getInternalReference());
+		await saveRoomTopic(federatedRoom.getInternalId(), federatedRoom.getInternalTopic(), federatedUser.getInternalReference());
 	}
 
 	private async createFederatedRoomInstance(externalRoomId: string, room: IRoom): Promise<FederatedRoom> {
 		if (isDirectMessageRoom(room)) {
 			const members = (await Promise.all(
-				(room.usernames || []).map((username) => getFederatedUserByInternalUsername(username)),
+				(room.usernames || []).map((username) => getFederatedUserByInternalUsername(username)).filter(Boolean),
 			)) as FederatedUser[];
 			return DirectMessageFederatedRoom.createWithInternalReference(externalRoomId, room, members);
 		}

@@ -93,7 +93,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 			return;
 		}
 
-		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getInternalCreator()._id);
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getCreatorInternalId());
 		if (!federatedUser) {
 			return;
 		}
@@ -121,7 +121,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 			return;
 		}
 
-		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getInternalCreator()._id);
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getCreatorInternalId());
 		if (!federatedUser) {
 			return;
 		}

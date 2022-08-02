@@ -128,7 +128,7 @@ export class FederationRoomServiceSender extends FederationService {
 			return;
 		}
 
-		const byWhom = await this.internalUserAdapter.getFederatedUserByInternalId(actionDoneByInternalId as string);
+		const byWhom = await this.internalUserAdapter.getFederatedUserByInternalId(actionDoneByInternalId);
 		if (!byWhom) {
 			return;
 		}

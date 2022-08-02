@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IRoom, isRoomFederated, isUserFederated, IUser } from '@rocket.chat/core-typings';
+import { IRoom, isDirectMessageRoom, isRoomFederated, isUserFederated, IUser } from '@rocket.chat/core-typings';
 
 import { FederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
@@ -69,23 +69,23 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 
 		const invitee = await this.internalUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
 		const addingAnExternalUser = invitee && !invitee.isRemote();
-		const addingExternalUserToNonDirectMessageRoom = addingAnExternalUser && internalRoom.t !== RoomType.DIRECT_MESSAGE;
+		const addingExternalUserToNonDirectMessageRoom = addingAnExternalUser && !isDirectMessageRoom(internalRoom);
 		if (addingExternalUserToNonDirectMessageRoom) {
 			throw new Error('error-this-is-an-ee-feature');
 		}
 	}
 
 	public async canCreateDirectMessageFromUI(internalUsers: (IUser | string)[]): Promise<void> {
-		const usernames = internalUsers.map((user) => {
+		const usernames: string[] = internalUsers.map((user) => {
 			if (this.isAddingANewExternalUser(user)) {
-				return user;
+				return user as string;
 			}
-			return (user as IUser).username;
+			return (user as IUser).username || '';
 		});
 		const atLeastOneExternalUser =
 			usernames.some(
 				(username) =>
-					!FederatedUser.isAnInternalUser(this.bridge.extractHomeserverOrigin(username as string), this.internalHomeServerDomain),
+					!FederatedUser.isAnInternalUser(this.bridge.extractHomeserverOrigin(username), this.internalHomeServerDomain),
 			) || internalUsers.filter((user) => !this.isAddingANewExternalUser(user)).some((user) => isUserFederated(user as IUser));
 		if (atLeastOneExternalUser) {
 			throw new Error('error-this-is-an-ee-feature');

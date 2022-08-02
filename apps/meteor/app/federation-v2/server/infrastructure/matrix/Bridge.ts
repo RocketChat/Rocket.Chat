@@ -146,7 +146,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean {
-		const userDomain = externalUserId.includes(':') ? externalUserId.split(':').pop() : '';
+		const userDomain = this.extractHomeserverOrigin(externalUserId);
 
 		return userDomain === domain;
 	}

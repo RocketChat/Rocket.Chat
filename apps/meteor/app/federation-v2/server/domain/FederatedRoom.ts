@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import { IRoom } from '@rocket.chat/core-typings';
 import { ObjectId } from 'mongodb'; // This should not be in the domain layer, but its a known "problem"
 
 import { FederatedUser } from './FederatedUser';
@@ -62,8 +62,12 @@ export abstract class AbstractFederatedRoom {
 		});
 	}
 
-	public getInternalCreator(): Readonly<Pick<IUser, '_id' | 'username' | 'name'>> {
-		return Object.freeze(this.internalReference.u);
+	public getCreatorInternalUsername(): string | undefined {
+		return this.internalReference.u.username;
+	}
+
+	public getCreatorInternalId(): string {
+		return this.internalReference.u._id;
 	}
 
 	public setRoomType(type: RoomType): void {
