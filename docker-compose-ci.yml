@@ -10,6 +10,7 @@ services:
       - "MONGO_URL=${MONGO_URL}"
       - TRANSPORTER=nats://nats:4222
       - MOLECULER_LOG_LEVEL=info
+      - TEST_MODE=true
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
