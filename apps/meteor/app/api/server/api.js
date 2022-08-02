@@ -52,6 +52,25 @@ const getRequestIP = (req) => {
 	return forwardedFor[forwardedFor.length - httpForwardedCount];
 };
 
+const checkPermisisonsForInvocation = (userId, permissionsPayload, requestMethod) => {
+	const permissions = permissionsPayload[requestMethod] || permissionsPayload['*'];
+
+	if (!permissions) {
+		// how we reached here in the first place?
+		return false;
+	}
+
+	if (permissions.operation === 'hasAll') {
+		return hasAllPermission(userId, permissions.permissions);
+	}
+
+	if (permissions.operation === 'hasAny') {
+		return hasAtLeastOnePermission(userId, permissions.permissions);
+	}
+
+	return false;
+};
+
 export class APIClass extends Restivus {
 	constructor(properties) {
 		super(properties);
@@ -344,25 +363,6 @@ export class APIClass extends Restivus {
 		// If reached here, options.permissionsRequired contained an invalid payload
 	}
 
-	checkPermisisonsForInvocation(userId, permissionsPayload, requestMethod) {
-		const permissions = permissionsPayload[requestMethod] || permissionsPayload['*'];
-
-		if (!permissions) {
-			// how we reached here in the first place?
-			return false;
-		}
-
-		if (permissions.operation === 'hasAll') {
-			return hasAllPermission(userId, permissions.permissions);
-		}
-
-		if (permissions.operation === 'hasAny') {
-			return hasAtLeastOnePermission(userId, permissions.permissions);
-		}
-
-		return false;
-	}
-
 	addRoute(routes, options, endpoints) {
 		// Note: required if the developer didn't provide options
 		if (typeof endpoints === 'undefined') {
@@ -481,7 +481,7 @@ export class APIClass extends Restivus {
 						}
 						if (
 							shouldVerifyPermissions &&
-							(!this.userId || !this.checkPermisisonsForInvocation(this.userId, _options.permissionsRequired, this.request.method))
+							(!this.userId || !checkPermisisonsForInvocation(this.userId, _options.permissionsRequired, this.request.method))
 						) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
 								permissions: _options.permissionsRequired,
