@@ -251,7 +251,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Bienvenue sur <strong>[Site_Name]</strong></h1><p> Allez sur <a href=\"[Site_URL]\">[Site_URL]</a> et essayez la meilleure solution de chat open source disponible aujourd'hui ! </p><p> Vous pouvez vous connecter en utilisant votre adresse e-mail : [email] et votre mot de passe : [password]. Vous pouvez être amené à le changer après votre première connexion.",
   "Accounts_UserAddedEmail_Description": "Vous pouvez utiliser les variables suivantes : <br/> <ul><li>[name], [fname], [lname] pour le nom complet de l'utilisateur, le prénom ou le nom de famille de l'utilisateur, respectivement.</li><li>[email] pour l'adresse e-mail de l'utilisateur. </li><li>[password] pour le mot de passe de l'utilisateur.</li><li> [Site_Name] et [Site_URL] pour le nom et l'URL de l'application, respectivement.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Vous avez été ajouté à [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "Vérifier l'adresse mail pour les comptes externes",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action": "Action",
   "Action_required": "Action requise",
   "Activate": "Activer",
