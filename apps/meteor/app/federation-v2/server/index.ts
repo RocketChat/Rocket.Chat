@@ -46,8 +46,8 @@ export const runFederation = async (): Promise<void> => {
 	if (!rocketSettingsAdapter.isFederationEnabled()) {
 		return;
 	}
-	federationBridge.logFederationStartupInfo('Running Federation V2');
 	await federationBridge.start();
+	federationBridge.logFederationStartupInfo('Running Federation V2');
 	require('./infrastructure/rocket-chat/slash-commands');
 };
 

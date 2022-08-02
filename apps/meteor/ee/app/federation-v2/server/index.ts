@@ -36,13 +36,13 @@ let cancelSettingsObserverEE: () => void;
 
 onToggledFeature('federation', {
 	up: async () => {
+		await stopFederation();
 		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged(
 			federationBridgeEE.onFederationAvailabilityChanged.bind(federationBridgeEE),
 		);
 		if (!rocketSettingsAdapter.isFederationEnabled()) {
 			return;
 		}
-		await stopFederation();
 		await runFederationEE();
 		FederationFactoryEE.setupListeners(
 			federationRoomInternalHooksServiceSenderEE,
@@ -53,8 +53,8 @@ onToggledFeature('federation', {
 	},
 	down: async () => {
 		await federationBridgeEE.stop();
-		await runFederation();
-		FederationFactoryEE.removeListeners();
 		cancelSettingsObserverEE();
+		FederationFactoryEE.removeListeners();
+		await runFederation();
 	},
 });

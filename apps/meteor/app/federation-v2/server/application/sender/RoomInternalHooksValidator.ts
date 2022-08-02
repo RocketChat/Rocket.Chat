@@ -1,4 +1,3 @@
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { IRoom, isDirectMessageRoom, isRoomFederated, isUserFederated, IUser } from '@rocket.chat/core-typings';
 
 import { FederatedRoom } from '../../domain/FederatedRoom';
@@ -84,8 +83,7 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 		});
 		const atLeastOneExternalUser =
 			usernames.some(
-				(username) =>
-					!FederatedUser.isAnInternalUser(this.bridge.extractHomeserverOrigin(username), this.internalHomeServerDomain),
+				(username) => !FederatedUser.isAnInternalUser(this.bridge.extractHomeserverOrigin(username), this.internalHomeServerDomain),
 			) || internalUsers.filter((user) => !this.isAddingANewExternalUser(user)).some((user) => isUserFederated(user as IUser));
 		if (atLeastOneExternalUser) {
 			throw new Error('error-this-is-an-ee-feature');
