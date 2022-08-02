@@ -25,8 +25,6 @@ test.describe.serial('permissions', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.sendMessage('any_message');
 	});
 
 	test.describe.serial('Edit message', () => {
@@ -40,6 +38,8 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option(edit) not be visible', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.content.sendMessage('any_message');
 			await poHomeChannel.content.openLastMessageMenu();
 
 			await expect(poHomeChannel.content.btnOptionEditMessage).toBeHidden();
@@ -66,6 +66,8 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option(delete) not be visible', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.content.sendMessage('any_message');
 			await poHomeChannel.content.openLastMessageMenu();
 
 			await expect(poHomeChannel.content.btnOptionDeleteMessage).toBeHidden();
@@ -94,6 +96,8 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option(pin) not be visible', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.content.sendMessage('any_message');
 			await poHomeChannel.content.openLastMessageMenu();
 
 			await expect(poHomeChannel.content.btnOptionPinMessage).toBeHidden();
@@ -122,6 +126,8 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option(star) not be visible', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.content.sendMessage('any_message');
 			await poHomeChannel.content.openLastMessageMenu();
 
 			await expect(poHomeChannel.content.btnOptionStarMessage).toBeHidden();
@@ -232,6 +238,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect badword be censored', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('badword');
 
 			await expect(poHomeChannel.content.lastUserMessage).toContainText('*'.repeat(7));

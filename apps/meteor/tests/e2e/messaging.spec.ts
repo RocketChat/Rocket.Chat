@@ -57,26 +57,29 @@ test.describe.serial('Messaging', () => {
 	test.describe('File Upload', async () => {
 		test.beforeEach(async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
-			await poHomeChannel.content.dragAndDropFile();
 		});
 
-		test('expect not show modal after click in cancel button', async () => {
+		test('expect successfully cancel upload', async () => {
+			await poHomeChannel.content.dragAndDropFile();
 			await poHomeChannel.content.btnModalCancel.click();
 			await expect(poHomeChannel.content.modalFilePreview).not.toBeVisible();
 		});
 
 		test('expect send file not show modal', async () => {
+			await poHomeChannel.content.dragAndDropFile();
 			await poHomeChannel.content.btnModalConfirm.click();
 			await expect(poHomeChannel.content.modalFilePreview).not.toBeVisible();
 		});
 
 		test('expect send file with description', async () => {
+			await poHomeChannel.content.dragAndDropFile();
 			await poHomeChannel.content.descriptionInput.type('any_description');
 			await poHomeChannel.content.btnModalConfirm.click();
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
 		});
 
 		test('expect send file with different file name', async () => {
+			await poHomeChannel.content.dragAndDropFile();
 			await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
 			await poHomeChannel.content.btnModalConfirm.click();
 			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
@@ -92,7 +95,6 @@ test.describe.serial('Messaging', () => {
 			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await poHomeChannel.content.openLastMessageMenu();
 			await page.locator('[data-qa-id="reply-in-thread"]').click();
-
 			await page.locator('.rcx-vertical-bar .js-input-message').type('this is a reply message');
 			await page.keyboard.press('Enter');
 
@@ -102,7 +104,6 @@ test.describe.serial('Messaging', () => {
 		test('expect edit the message', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('This is a message to edit');
 			await poHomeChannel.content.openLastMessageMenu();
-
 			await page.locator('[data-qa-id="edit-message"]').click();
 			await page.locator('[name="msg"]').fill('this message was edited');
 			await page.keyboard.press('Enter');
@@ -111,7 +112,6 @@ test.describe.serial('Messaging', () => {
 		test('expect message is deleted', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('Message to delete');
 			await poHomeChannel.content.openLastMessageMenu();
-
 			await page.locator('[data-qa-id="delete-message"]').click();
 			await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
 		});

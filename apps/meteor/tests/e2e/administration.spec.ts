@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker';
+
 import { test, expect } from './utils/test';
 import { Admin } from './page-objects';
 
@@ -37,6 +39,17 @@ test.describe.parallel('administration', () => {
 			await poAdmin.inputSearchUsers.type('user1');
 
 			expect(page.locator('table tr[qa-user-id="user1"]')).toBeVisible();
+		});
+
+		test('expect create a user', async () => {
+			await poAdmin.tabs.users.btnNew.click();
+			await poAdmin.tabs.users.inputName.type(faker.name.firstName());
+			await poAdmin.tabs.users.inputUserName.type(faker.internet.userName());
+			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
+			await poAdmin.tabs.users.checkboxVerified.click();
+			await poAdmin.tabs.users.inputPassword.type('any_password');
+			await poAdmin.tabs.users.addRole('user');
+			await poAdmin.tabs.users.btnSave.click();
 		});
 	});
 
@@ -105,6 +118,10 @@ test.describe.parallel('administration', () => {
 	});
 
 	test.describe('Settings', () => {
+		test.beforeEach(async () => {
+			await poAdmin.sidenav.linkSettings.click();
+		});
+
 		test.describe('General', () => {
 			test.beforeEach(async ({ page }) => {
 				await poAdmin.inputSearchSettings.type('general');

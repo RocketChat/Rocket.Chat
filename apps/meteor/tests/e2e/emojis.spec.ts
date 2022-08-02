@@ -26,6 +26,14 @@ test.describe.serial('emoji', () => {
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('😀');
 	});
 
+	test('expect send emoji via text', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage(':innocent:');
+		await page.keyboard.press('Enter');
+
+		await expect(poHomeChannel.content.lastUserMessage).toContainText('😇');
+	});
+
 	test('expect render special characters and numbers properly', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 

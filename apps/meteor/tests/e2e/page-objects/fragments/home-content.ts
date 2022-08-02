@@ -93,7 +93,11 @@ export class HomeContent {
 	}
 
 	get btnMenuMoreActions() {
-		return this.page.locator('[data-qa-id="menu-more-actions"');
+		return this.page.locator('[data-qa-id="menu-more-actions"]');
+	}
+
+	get linkUserCard(): Locator {
+		return this.page.locator('[data-qa="UserCard"] a');
 	}
 
 	async pickEmoji(emoji: string, section = 'icon-people') {

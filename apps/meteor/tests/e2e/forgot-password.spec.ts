@@ -17,9 +17,17 @@ test.describe.parallel('forgot-password', () => {
 		await expect(poAuth.textErrorEmail).toBeVisible();
 	});
 
-	test('expect trigger a validation if a invalid email is provided', async () => {
+	test('expect trigger a validation if a invalid email is provided (1)', async () => {
 		await poAuth.btnForgotPassword.click();
 		await poAuth.inputEmail.type('mail@mail');
+		await poAuth.btnSubmit.click();
+
+		await expect(poAuth.textErrorEmail).toBeVisible();
+	});
+
+	test('expect trigger a validation if a invalid email is provided (2)', async () => {
+		await poAuth.btnForgotPassword.click();
+		await poAuth.inputEmail.type('mail');
 		await poAuth.btnSubmit.click();
 
 		await expect(poAuth.textErrorEmail).toBeVisible();

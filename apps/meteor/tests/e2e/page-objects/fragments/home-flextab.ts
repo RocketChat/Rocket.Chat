@@ -29,4 +29,8 @@ export class HomeFlextab {
 			'div.thread-list.js-scroll-thread ul.thread [data-qa-type="message"]:last-child div.message-body-wrapper [data-qa-type="message-body"]',
 		);
 	}
+
+	get userInfoUsername(): Locator {
+		return this.page.locator('[data-qa="UserInfoUserName"]');
+	}
 }

@@ -16,7 +16,7 @@ test.describe.serial('settings-account-profile', () => {
 		await page.goto('/home');
 	});
 
-	test('expect update profile with new name and username', async () => {
+	test('expect update profile with new name/username', async () => {
 		const newName = faker.name.findName();
 		const newUsername = faker.internet.userName(newName);
 
@@ -29,5 +29,10 @@ test.describe.serial('settings-account-profile', () => {
 		await poHomeChannel.content.sendMessage('any_message');
 
 		await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);
+
+		await poHomeChannel.content.lastUserMessageNotSequential.locator('figure').click();
+		await poHomeChannel.content.linkUserCard.click();
+
+		await expect(poHomeChannel.tabs.userInfoUsername).toHaveText(newUsername);
 	});
 });

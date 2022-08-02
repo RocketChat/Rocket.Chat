@@ -1,27 +1,21 @@
-import { faker } from '@faker-js/faker';
-
 import { test, expect } from './utils/test';
 import { HomeChannel } from './page-objects';
+import { createTargetChannel } from './utils';
 
 test.use({ storageState: 'admin-session.json' });
 
 test.describe.serial('channel-management', () => {
 	let poHomeChannel: HomeChannel;
-	const targetChannel = faker.datatype.uuid();
+	let targetChannel: string;
+
+	test.beforeAll(async ({ browser }) => {
+		targetChannel = await createTargetChannel(browser);
+	});
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
-	});
-
-	test('expect create "targetChannel" channel', async ({ page }) => {
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.checkboxPrivateChannel.click();
-		await poHomeChannel.sidenav.inputChannelName.type(targetChannel);
-		await poHomeChannel.sidenav.btnCreateChannel.click();
-
-		await expect(page).toHaveURL(`/channel/${targetChannel}`);
 	});
 
 	test('expect add "user1" to "targetChannel"', async () => {
@@ -78,11 +72,14 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.btnSave.click();
 	});
 
-	test('expect edit name of "targetChannel"', async () => {
+	test('expect edit name of "targetChannel"', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await poHomeChannel.tabs.room.btnEdit.click();
-		await poHomeChannel.tabs.room.inputName.fill(`${targetChannel}edit`);
+		await poHomeChannel.tabs.room.inputName.fill(`NAME-EDITED-${targetChannel}`);
 		await poHomeChannel.tabs.room.btnSave.click();
+		await poHomeChannel.sidenav.openChat(`NAME-EDITED-${targetChannel}`);
+
+		await expect(page).toHaveURL(`/channel/NAME-EDITED-${targetChannel}`);
 	});
 });
