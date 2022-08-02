@@ -4229,7 +4229,7 @@ __metadata:
     css-loader: ^4.3.0
     css-vars-ponyfill: ^2.4.7
     cssnano: ^4.1.11
-    date-fns: ^2.15.0
+    date-fns: ^2.29.1
     desvg-loader: ^0.1.0
     emoji-mart: ^3.0.1
     eslint: ^8.20.0
@@ -12598,10 +12598,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.15.0, date-fns@npm:^2.28.0":
+"date-fns@npm:^2.28.0":
   version: 2.28.0
   resolution: "date-fns@npm:2.28.0"
   checksum: a0516b2e4f99b8bffc6cc5193349f185f195398385bdcaf07f17c2c4a24473c99d933eb0018be4142a86a6d46cb0b06be6440ad874f15e795acbedd6fd727a1f
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^2.29.1":
+  version: 2.29.1
+  resolution: "date-fns@npm:2.29.1"
+  checksum: 9d07f77dffc1eb8c213391bde39f2963ffe7c0019d9edde14487882d627224f3a39b963e6e99d0cc58afff220a6a1a7e8864d2789958f4eaa77714de94d4d076
   languageName: node
   linkType: hard
 

@@ -13,7 +13,7 @@
 	},
 	"scripts": {
 		"clean": "rimraf dist",
-		"build": "webpack-cli --mode production",
+		"build": "webpack-cli --mode production --stats errors-warnings",
 		"dev": "yarn build",
 		"start": "webpack-dev-server --mode development",
 		"lint": "run-s eslint stylelint",
@@ -92,7 +92,7 @@
 		"@rocket.chat/ui-kit": "^0.14.1",
 		"crypto-js": "^4.1.1",
 		"css-vars-ponyfill": "^2.4.7",
-		"date-fns": "^2.15.0",
+		"date-fns": "^2.29.1",
 		"emoji-mart": "^3.0.1",
 		"history": "^5.3.0",
 		"i18next": "^21.8.10",
@@ -114,5 +114,9 @@
 		"updateFiles": [
 			"package.json"
 		]
+	},
+	"volta": {
+		"node": "14.19.3",
+		"yarn": "1.22.18"
 	}
 }
