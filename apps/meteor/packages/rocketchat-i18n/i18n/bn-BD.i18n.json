@@ -1,6 +1,8 @@
 {
   "403": "নিষিদ্ধ",
   "500": "অভ্যন্তরীণ সার্ভারের ত্রুটি",
+  "__count__empty_rooms_will_be_removed_automatically": null,
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": null,
   "@username": "@ইউজারনেইম",
   "@username_message": "@ইউজারনেইম<message>",
   "#channel": "#channel",

@@ -1,38 +1,39 @@
-import { Box, Table, Tag } from '@rocket.chat/fuselage';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useState, memo, KeyboardEvent, MouseEvent } from 'react';
+import { css } from '@rocket.chat/css-in-js';
+import { Box } from '@rocket.chat/fuselage';
+import { useMediaQueries } from '@rocket.chat/fuselage-hooks';
+import colors from '@rocket.chat/fuselage-tokens/colors';
+import { useRoute } from '@rocket.chat/ui-contexts';
+import React, { FC, memo, KeyboardEvent, MouseEvent } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
 import AppMenu from './AppMenu';
 import AppStatus from './AppStatus';
+import BundleChips from './BundleChips';
 import { App } from './types';
 
-type AppRowProps = App & {
-	medium: boolean;
-	large: boolean;
-};
+const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
+	const { name, id, description, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed, isMarketplace, bundledIn } =
+		props;
 
-const AppRow: FC<AppRowProps> = ({ medium, ...props }) => {
-	const {
-		author: { name: authorName },
-		name,
-		id,
-		description,
-		categories,
-		iconFileData,
-		marketplaceVersion,
-		iconFileContent,
-		installed,
-	} = props;
-	const t = useTranslation();
-
-	const [isFocused, setFocused] = useState(false);
-	const [isHovered, setHovered] = useState(false);
-	const isStatusVisible = isFocused || isHovered;
+	const [isAppNameTruncated, isBundleTextVisible, isDescriptionVisible] = useMediaQueries(
+		'(max-width: 510px)',
+		'(max-width: 887px)',
+		'(min-width: 1200px)',
+	);
 
 	const appsRoute = useRoute('admin-apps');
+	const marketplaceRoute = useRoute('admin-marketplace');
 
 	const handleClick = (): void => {
+		if (isMarketplace) {
+			marketplaceRoute.push({
+				context: 'details',
+				version: marketplaceVersion,
+				id,
+			});
+			return;
+		}
+
 		appsRoute.push({
 			context: 'details',
 			version: marketplaceVersion,
@@ -52,53 +53,58 @@ const AppRow: FC<AppRowProps> = ({ medium, ...props }) => {
 		e.stopPropagation();
 	};
 
+	const hover = css`
+		&:hover,
+		&:focus {
+			cursor: pointer;
+			outline: 0;
+			background-color: ${colors.n200} !important;
+		}
+	`;
+
 	return (
-		<Table.Row
+		<Box
 			key={id}
 			role='link'
-			action
 			tabIndex={0}
 			onClick={handleClick}
 			onKeyDown={handleKeyDown}
-			onFocus={(): void => setFocused(true)}
-			onBlur={(): void => setFocused(false)}
-			onMouseEnter={(): void => setHovered(true)}
-			onMouseLeave={(): void => setHovered(false)}
+			display='flex'
+			flexDirection='row'
+			justifyContent='space-between'
+			alignItems='center'
+			bg='surface'
+			mbe='x8'
+			pb='x8'
+			pis='x16'
+			pie='x4'
+			className={hover}
 		>
-			<Table.Cell withTruncatedText display='flex' flexDirection='row'>
-				<AppAvatar size='x40' mie='x8' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
-				<Box display='flex' flexDirection='column' alignSelf='flex-start'>
-					<Box color='default' fontScale='p2m'>
+			<Box display='flex' flexDirection='row' width='80%'>
+				<AppAvatar size='x40' mie='x16' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+				<Box display='flex' alignItems='center' color='default' fontScale='p2m' mie='x16' style={{ whiteSpace: 'nowrap' }}>
+					<Box is='span' withTruncatedText={isAppNameTruncated}>
 						{name}
 					</Box>
-					<Box color='default' fontScale='p2m'>{`${t('By')} ${authorName}`}</Box>
 				</Box>
-			</Table.Cell>
-			{medium && (
-				<Table.Cell>
-					<Box display='flex' flexDirection='column'>
-						<Box color='default' withTruncatedText>
+				<Box display='flex' mie='x16' alignItems='center' color='default'>
+					{bundledIn && Boolean(bundledIn.length) && (
+						<Box display='flex' alignItems='center' color='default' mie='x16'>
+							<BundleChips bundledIn={bundledIn} isIconOnly={isBundleTextVisible} />
+						</Box>
+					)}
+					{isDescriptionVisible && (
+						<Box is='span' withTruncatedText width='x369'>
 							{description}
 						</Box>
-						{categories && (
-							<Box color='hint' display='flex' flex-direction='row' withTruncatedText>
-								{categories.map((current) => (
-									<Box mie='x4' key={current}>
-										<Tag disabled>{current}</Tag>
-									</Box>
-								))}
-							</Box>
-						)}
-					</Box>
-				</Table.Cell>
-			)}
-			<Table.Cell withTruncatedText>
-				<Box display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8' onClick={preventClickPropagation}>
-					<AppStatus app={props} showStatus={isStatusVisible} isAppDetailsPage={false} mis='x4' />
-					{installed && <AppMenu app={props} invisible={!isStatusVisible} mis='x4' />}
+					)}
 				</Box>
-			</Table.Cell>
-		</Table.Row>
+			</Box>
+			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
+				<AppStatus app={props} isSubscribed={isSubscribed} isAppDetailsPage={false} installed={installed} mis='x4' />
+				<Box minWidth='x32'>{(installed || isSubscribed) && <AppMenu app={props} mis='x4' />}</Box>
+			</Box>
+		</Box>
 	);
 };
 
