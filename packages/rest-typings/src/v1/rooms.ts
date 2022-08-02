@@ -492,8 +492,9 @@ export type RoomsEndpoints = {
 		) => void;
 	};
 	'/v1/rooms.nameExists': {
-		GET: {
-			roomName: string;
+		GET: (params: { roomName: string }) => {
+			success: boolean;
+			exists: boolean;
 		};
 	};
 };
