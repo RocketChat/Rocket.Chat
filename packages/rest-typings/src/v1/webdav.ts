@@ -9,7 +9,7 @@ export type WebdavEndpoints = {
 	};
 	'/v1/webdav.removeWebdavAccount': {
 		POST: (params: { accountId: IWebdavAccount['_id'] }) => {
-			// success: boolean;
+			success: boolean;
 			result: DeleteResult;
 		};
 	};
