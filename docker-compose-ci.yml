@@ -3,18 +3,18 @@ version: '3.8'
 services:
   rocketchat:
     build:
-      dockerfile: "${GITHUB_WORKSPACE}/apps/meteor/.docker/Dockerfile"
+      dockerfile: ${RC_DOCKERFILE}
       context: /tmp/build
-    image: "rocketchat/rocket.chat:${DOCKER_TAG}"
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${RC_DOCKER_TAG}
     environment:
       - "MONGO_URL=${MONGO_URL}"
+      - "MONGO_OPLOG_URL=${MONGO_OPLOG_URL}"
       - TRANSPORTER=nats://nats:4222
       - MOLECULER_LOG_LEVEL=info
       - TEST_MODE=true
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
-      - nats
       - traefik
     labels:
       traefik.enable: true
@@ -25,10 +25,9 @@ services:
   authorization-service:
     build:
       dockerfile: apps/meteor/ee/server/services/Dockerfile
-      # context: .
       args:
         SERVICE: authorization
-    # image: rocketchat/authorization-service:latest
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
     environment:
       - "MONGO_URL=${MONGO_URL}"
       - TRANSPORTER=nats://nats:4222
@@ -43,7 +42,7 @@ services:
       dockerfile: apps/meteor/ee/server/services/Dockerfile
       args:
         SERVICE: account
-    # image: rocketchat/account-service:latest
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
       - TRANSPORTER=nats://nats:4222
@@ -56,10 +55,9 @@ services:
   presence-service:
     build:
       dockerfile: apps/meteor/ee/server/services/Dockerfile
-      # context: .
       args:
         SERVICE: presence
-    # image: rocketchat/presence-service:latest
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
       - TRANSPORTER=nats://nats:4222
@@ -72,10 +70,9 @@ services:
   ddp-streamer-service:
     build:
       dockerfile: ee/apps/ddp-streamer/Dockerfile
-      # context: .
       args:
         SERVICE: ddp-streamer
-    # image: rocketchat/ddp-streamer-service:latest
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
       - TRANSPORTER=nats://nats:4222
@@ -94,10 +91,9 @@ services:
   stream-hub-service:
     build:
       dockerfile: apps/meteor/ee/server/services/Dockerfile
-      # context: .
       args:
         SERVICE: stream-hub
-    # image: rocketchat/stream-hub-service:latest
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
       - TRANSPORTER=nats://nats:4222

@@ -267,77 +267,76 @@ jobs:
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
 
-      - name: Build Docker image
-        id: build-docker-image
-        if: matrix.mongodb-version != '5.0'
-        uses: ./.github/actions/build-docker-image
-        with:
-          root-dir: /tmp/build
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          release: official
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - name: Build Alpine Docker image
-        id: build-docker-image-alpine
-        if: matrix.mongodb-version == '5.0'
-        uses: ./.github/actions/build-docker-image
-        with:
-          root-dir: /tmp/build
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          release: alpine
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      # TODO move startup/restart to its own github action
-      - name: Start up Rocket.Chat
+      - name: Start containers
+        env:
+          MONGO_URL: "mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true"
+          MONGO_OPLOG_URL: "mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true"
         run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
           # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
           if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
-            IMAGE_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
+            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
+            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
           else
-            IMAGE_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
+            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
+            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
           fi;
 
-          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${IMAGE_TAG}"
+          docker compose -f docker-compose-ci.yml up -d --build rocketchat
 
-          docker run --name rocketchat -d \
-            --link mongodb \
-            -p 3000:3000 \
-            -e TEST_MODE=true \
-            -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-            -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-            ${IMAGE_NAME}
+          sleep 10
 
-          until echo "$(docker logs rocketchat)" | grep -q "SERVER RUNNING"; do
+          docker compose -f docker-compose-ci.yml logs
+
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && exit 1
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
             sleep 10
           done
 
+      - name: Login to GitHub Container Registry
+        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Publish Docker images
+        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
+        run: |
+          docker compose -f docker-compose-ci.yml push rocketchat
+
+          if [[ '${{ matrix.mongodb-version }}' = '4.4' ]]; then
+            IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}"
+
+            echo "Push Docker image: ${IMAGE_NAME_BASE}"
+
+            docker tag ${IMAGE_NAME_BASE}.official $IMAGE_NAME_BASE
+            docker push $IMAGE_NAME_BASE
+          fi;
+
       - name: E2E Test API
         run: |
-          docker logs rocketchat --tail=50
+          docker ps
+          # docker logs rocketchat --tail=50
 
           cd ./apps/meteor
           for i in $(seq 1 5); do
-            docker stop rocketchat
+            # docker stop rocketchat
             docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
-            echo $NOW
 
-            docker start rocketchat
+            docker compose -f ../../docker-compose-ci.yml restart rocketchat
+            # docker start rocketchat
 
-            until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+            until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
               ((c++)) && ((c==10)) && exit 1
               sleep 10
             done
 
-            npm run testapi && s=0 && break || s=$? && docker logs rocketchat --tail=100;
+            npm run testapi && s=0 && break || s=$? && docker compose -f ../../docker-compose-ci.yml logs rocketchat --tail=100;
           done;
           exit $s
 
@@ -361,17 +360,17 @@ jobs:
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
 
-          docker logs rocketchat --tail=50
+          # docker logs rocketchat --tail=50
 
-          docker stop rocketchat
+          # docker stop rocketchat
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
           echo $NOW
 
-          docker start rocketchat
+          docker compose -f docker-compose-ci.yml restart rocketchat
 
-          until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
             ((c++)) && ((c==10)) && exit 1
             sleep 10
@@ -402,9 +401,6 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version-ee }}
           mongodb-replica-set: rs0
-
-      # - name: Launch NATS
-      #   run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
 
       - uses: actions/checkout@v3
 
@@ -443,8 +439,10 @@ jobs:
 
       - name: Start containers
         env:
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
           MONGO_URL: "mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true"
+          RC_DOCKERFILE: "${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
+          RC_DOCKER_TAG: "${{ needs.release-versions.outputs.gh-docker-tag }}.official"
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker compose -f docker-compose-ci.yml up -d --build
 
@@ -464,170 +462,23 @@ jobs:
             sleep 10
           done
 
-      # - name: Build Docker image
-      #   id: build-docker-image
-      #   uses: ./.github/actions/build-docker-image
-      #   with:
-      #     root-dir: /tmp/build
-      #     docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      #     release: official
-      #     username: ${{ secrets.CR_USER }}
-      #     password: ${{ secrets.CR_PAT }}
+      - name: Login to GitHub Container Registry
+        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
 
-      # - name: 'Build Docker image: account'
-      #   uses: ./.github/actions/build-docker-image-service
-      #   with:
-      #     docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      #     service: account
-      #     username: ${{ secrets.CR_USER }}
-      #     password: ${{ secrets.CR_PAT }}
-
-      # - name: 'Build Docker image: authorization'
-      #   uses: ./.github/actions/build-docker-image-service
-      #   with:
-      #     docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      #     service: authorization
-      #     username: ${{ secrets.CR_USER }}
-      #     password: ${{ secrets.CR_PAT }}
-
-      # - name: 'Build Docker image: ddp-streamer'
-      #   uses: ./.github/actions/build-docker-image-service
-      #   with:
-      #     docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      #     service: ddp-streamer
-      #     username: ${{ secrets.CR_USER }}
-      #     password: ${{ secrets.CR_PAT }}
-
-      # - name: 'Build Docker image: presence'
-      #   uses: ./.github/actions/build-docker-image-service
-      #   with:
-      #     docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      #     service: presence
-      #     username: ${{ secrets.CR_USER }}
-      #     password: ${{ secrets.CR_PAT }}
-
-      # - name: 'Build Docker image: stream-hub'
-      #   uses: ./.github/actions/build-docker-image-service
-      #   with:
-      #     docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      #     service: stream-hub
-      #     username: ${{ secrets.CR_USER }}
-      #     password: ${{ secrets.CR_PAT }}
-
-      # - name: Launch Traefik
-      #   run: |
-      #     docker run --name traefik -d \
-      #     -p 3000:80 \
-      #     -v /var/run/docker.sock:/var/run/docker.sock \
-      #     traefik:2.7 \
-      #     --providers.docker=true
-
-      # # TODO move startup/restart to its own github action
-      # - name: Start up Rocket.Chat
-      #   run: |
-      #     LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-      #     docker run --name rocketchat -d \
-      #       --link mongodb \
-      #       --link nats \
-      #       -e TEST_MODE=true \
-      #       -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-      #       -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-      #       -e TRANSPORTER=nats://nats:4222 \
-      #       -e MOLECULER_LOG_LEVEL=info \
-      #       -e ENTERPRISE_LICENSE="${{ secrets.ENTERPRISE_LICENSE }}" \
-      #       -e SKIP_PROCESS_EVENT_REGISTRATION=true \
-      #       --label 'traefik.http.routers.rocketchat.rule=PathPrefix(`/`)' \
-      #       ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.official
-
-      #     # spin up all micro services
-      #     docker run --name ddp-streamer -d \
-      #       --link mongodb \
-      #       --link nats \
-      #       -e PORT=4000 \
-      #       -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-      #       -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-      #       -e TRANSPORTER=nats://nats:4222 \
-      #       -e MOLECULER_LOG_LEVEL=info \
-      #       --label 'traefik.http.services.ddp-streamer.loadbalancer.server.port=4000' \
-      #       --label 'traefik.http.routers.ddp-streamer.rule=PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)' \
-      #       ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${{ needs.release-versions.outputs.gh-docker-tag }}
-
-      # - name: 'Start service: stream-hub'
-      #   run: |
-      #     LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-      #     docker run --name stream-hub -d \
-      #       --link mongodb \
-      #       --link nats \
-      #       -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-      #       -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-      #       -e TRANSPORTER=nats://nats:4222 \
-      #       -e MOLECULER_LOG_LEVEL=info \
-      #       ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${{ needs.release-versions.outputs.gh-docker-tag }}
-
-      #     until echo "$(docker logs stream-hub)" | grep -q "NetworkBroker started successfully"; do
-      #       echo "Waiting 'stream-hub' to start up"
-      #       ((c++)) && ((c==10)) && exit 1
-      #       sleep 10
-      #     done
-
-      # - name: 'Start service: account'
-      #   run: |
-      #     LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-      #     docker run --name account -d \
-      #       --link mongodb \
-      #       --link nats \
-      #       -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-      #       -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-      #       -e TRANSPORTER=nats://nats:4222 \
-      #       -e MOLECULER_LOG_LEVEL=info \
-      #       ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${{ needs.release-versions.outputs.gh-docker-tag }}
-
-      #     until echo "$(docker logs account)" | grep -q "NetworkBroker started successfully"; do
-      #       echo "Waiting 'account' to start up"
-      #       ((c++)) && ((c==10)) && exit 1
-      #       sleep 10
-      #     done
-
-      # - name: 'Start service: authorization'
-      #   run: |
-      #     LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-      #     docker run --name authorization -d \
-      #       --link mongodb \
-      #       --link nats \
-      #       -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-      #       -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-      #       -e TRANSPORTER=nats://nats:4222 \
-      #       -e MOLECULER_LOG_LEVEL=info \
-      #       ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${{ needs.release-versions.outputs.gh-docker-tag }}
-
-      #     until echo "$(docker logs authorization)" | grep -q "NetworkBroker started successfully"; do
-      #       echo "Waiting 'authorization' to start up"
-      #       ((c++)) && ((c==10)) && exit 1
-      #       sleep 10
-      #     done
-
-      # - name: 'Start service: presence'
-      #   run: |
-      #     LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-      #     docker run --name presence -d \
-      #       --link mongodb \
-      #       --link nats \
-      #       -e "MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true" \
-      #       -e "MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true" \
-      #       -e TRANSPORTER=nats://nats:4222 \
-      #       -e MOLECULER_LOG_LEVEL=info \
-      #       ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${{ needs.release-versions.outputs.gh-docker-tag }}
-
-      #     until echo "$(docker logs presence)" | grep -q "NetworkBroker started successfully"; do
-      #       echo "Waiting 'presence' to start up"
-      #       ((c++)) && ((c==10)) && exit 1
-      #       sleep 10
-      #     done
+      - name: Publish Docker images
+        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
+        run: |
+          docker compose -f docker-compose-ci.yml push \
+            authorization-service \
+            account-service \
+            ddp-streamer-service \
+            presence-service \
+            stream-hub-service
 
       - name: E2E Test API
         run: |
