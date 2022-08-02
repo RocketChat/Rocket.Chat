@@ -917,7 +917,7 @@ describe('[Users]', function () {
 				.query({
 					userId: userCredentials['X-User-Id'],
 				})
-				.expect(307)
+				.expect(200)
 				.end(done);
 		});
 
