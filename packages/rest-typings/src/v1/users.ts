@@ -1,4 +1,4 @@
-import type { IExportOperation, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
@@ -104,6 +104,8 @@ export type UserPresence = Readonly<
 	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
 >;
 
+export type UserPersonalTokens = Pick<IPersonalAccessToken, 'name' | 'lastTokenPart' | 'bypassTwoFactor'> & { createdAt: string };
+
 export type UsersEndpoints = {
 	'/v1/users.2fa.enableEmail': {
 		POST: () => void;
@@ -193,13 +195,7 @@ export type UsersEndpoints = {
 
 	'/v1/users.getPersonalAccessTokens': {
 		GET: () => {
-			tokens: {
-				name?: string;
-				createdAt: string;
-				lastTokenPart: string;
-				bypassTwoFactor: boolean;
-			}[];
-			success: boolean;
+			tokens: UserPersonalTokens[];
 		};
 	};
 	'/v1/users.regeneratePersonalAccessToken': {
