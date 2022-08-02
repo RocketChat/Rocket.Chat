@@ -99,4 +99,8 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 	async deleteFile(fileId: string): Promise<DeleteResult> {
 		return this.deleteOne({ _id: fileId });
 	}
+
+	async findOneByName(name: string): Promise<IUpload | null> {
+		return this.findOne({ name });
+	}
 }
