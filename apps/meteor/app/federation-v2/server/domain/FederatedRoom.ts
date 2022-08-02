@@ -1,5 +1,6 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { IRoom, IUser } from '@rocket.chat/core-typings';
+import { ObjectId } from 'mongodb'; // This should not be in the domain layer, but its a known "problem"
 
 import { FederatedUser } from './FederatedUser';
 
@@ -10,11 +11,14 @@ export const isAnInternalIdentifier = (fromOriginName: string, localOriginName: 
 export abstract class AbstractFederatedRoom {
 	protected externalId: string;
 
+	protected internalId: string;
+
 	protected internalReference: IRoom;
 
 	protected constructor({ externalId, internalReference }: { externalId: string; internalReference: IRoom }) {
 		this.externalId = externalId;
 		this.internalReference = internalReference;
+		this.internalId = internalReference._id || new ObjectId().toHexString();
 	}
 
 	protected static generateTemporaryName(normalizedExternalId: string): string {
@@ -36,7 +40,7 @@ export abstract class AbstractFederatedRoom {
 	}
 
 	public getInternalId(): string {
-		return this.internalReference._id;
+		return this.internalId;
 	}
 
 	public getInternalName(): string | undefined {
@@ -52,7 +56,10 @@ export abstract class AbstractFederatedRoom {
 	}
 
 	public getInternalReference(): Readonly<IRoom> {
-		return Object.freeze(this.internalReference);
+		return Object.freeze({
+			...this.internalReference,
+			_id: this.internalId,
+		});
 	}
 
 	public getInternalCreator(): Readonly<Pick<IUser, '_id' | 'username' | 'name'>> {
@@ -81,12 +88,12 @@ export abstract class AbstractFederatedRoom {
 		this.internalReference.topic = topic;
 	}
 
-	public shouldUpdateRoomName(newRoomName: string): boolean {
-		return this.internalReference?.name !== newRoomName && !this.isDirectMessage();
+	public shouldUpdateRoomName(aRoomName: string): boolean {
+		return this.internalReference?.name !== aRoomName && !this.isDirectMessage();
 	}
 
-	public shouldUpdateRoomTopic(newRoomTopic: string): boolean {
-		return this.internalReference?.topic !== newRoomTopic && !this.isDirectMessage();
+	public shouldUpdateRoomTopic(aRoomTopic: string): boolean {
+		return this.internalReference?.topic !== aRoomTopic && !this.isDirectMessage();
 	}
 }
 

@@ -2,7 +2,6 @@ import { FederationService } from '../../../../../../app/federation-v2/server/ap
 import { RocketChatSettingsAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
 import { FederatedUserEE } from '../../domain/FederatedUser';
 import { IFederationBridgeEE } from '../../domain/IFederationBridge';
-import { RocketChatNotificationAdapter } from '../../infrastructure/rocket-chat/adapters/Notification';
 import { RocketChatRoomAdapterEE } from '../../infrastructure/rocket-chat/adapters/Room';
 import { RocketChatUserAdapterEE } from '../../infrastructure/rocket-chat/adapters/User';
 import {
@@ -16,7 +15,6 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		protected internalRoomAdapter: RocketChatRoomAdapterEE,
 		protected internalUserAdapter: RocketChatUserAdapterEE,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
-		protected internalNotificationAdapter: RocketChatNotificationAdapter,
 		protected bridge: IFederationBridgeEE,
 	) {
 		super(bridge, internalUserAdapter, internalSettingsAdapter);

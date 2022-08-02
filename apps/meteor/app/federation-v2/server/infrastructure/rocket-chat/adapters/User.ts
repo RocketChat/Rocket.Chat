@@ -77,17 +77,7 @@ export class RocketChatUserAdapter {
 		if (existingLocalUser) {
 			return MatrixBridgedUser.createOrUpdateByLocalId(existingLocalUser._id, federatedUser.getExternalId(), federatedUser.isRemote());
 		}
-		const { insertedId } = await Users.insertOne({
-			username: federatedUser.getInternalReference().username,
-			type: federatedUser.getInternalReference().type,
-			status: federatedUser.getInternalReference().status,
-			active: federatedUser.getInternalReference().active,
-			roles: federatedUser.getInternalReference().roles,
-			name: federatedUser.getInternalReference().name,
-			requirePasswordChange: federatedUser.getInternalReference().requirePasswordChange,
-			createdAt: new Date(),
-			federated: true,
-		});
+		const { insertedId } = await Users.insertOne(federatedUser.getStorageRepresentation());
 		return MatrixBridgedUser.createOrUpdateByLocalId(insertedId, federatedUser.getExternalId(), federatedUser.isRemote());
 	}
 }

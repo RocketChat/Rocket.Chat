@@ -51,8 +51,8 @@ export class FederationRoomServiceSender extends FederationService {
 		);
 
 		const internalFederatedRoom = await this.internalRoomAdapter.getDirectMessageFederatedRoomByUserIds([
-			federatedInviteeUser.getInternalReference()._id,
-			federatedInviterUser.getInternalReference()._id,
+			federatedInviteeUser.getInternalId(),
+			federatedInviterUser.getInternalId(),
 		]);
 
 		if (!internalFederatedRoom) {
@@ -69,16 +69,13 @@ export class FederationRoomServiceSender extends FederationService {
 		const federatedRoom =
 			internalFederatedRoom ||
 			(await this.internalRoomAdapter.getDirectMessageFederatedRoomByUserIds([
-				federatedInviteeUser.getInternalReference()._id,
-				federatedInviterUser.getInternalReference()._id,
+				federatedInviteeUser.getInternalId(),
+				federatedInviterUser.getInternalId(),
 			]));
 
 		if (!federatedRoom) {
 			throw new Error(
-				`Could not find room id for users: ${[
-					federatedInviteeUser.getInternalReference()._id,
-					federatedInviterUser.getInternalReference()._id,
-				].join(' ')}`,
+				`Could not find room id for users: ${[federatedInviteeUser.getInternalId(), federatedInviterUser.getInternalId()].join(' ')}`,
 			);
 		}
 

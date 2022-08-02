@@ -18,48 +18,27 @@ export class FederationFactoryEE {
 		rocketRoomAdapter: RocketChatRoomAdapterEE,
 		rocketUserAdapter: RocketChatUserAdapterEE,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
-		rocketNotificationAdapter: RocketChatNotificationAdapter,
 		bridge: IFederationBridgeEE,
 	): FederationRoomServiceSenderEE {
-		return new FederationRoomServiceSenderEE(
-			rocketRoomAdapter,
-			rocketUserAdapter,
-			rocketSettingsAdapter,
-			rocketNotificationAdapter,
-			bridge,
-		);
+		return new FederationRoomServiceSenderEE(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, bridge);
 	}
 
 	public static buildRoomInternalHooksServiceSender(
 		rocketRoomAdapter: RocketChatRoomAdapterEE,
 		rocketUserAdapter: RocketChatUserAdapterEE,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
-		rocketNotificationAdapter: RocketChatNotificationAdapter,
 		bridge: IFederationBridgeEE,
 	): FederationRoomInternalHooksServiceSender {
-		return new FederationRoomInternalHooksServiceSender(
-			rocketRoomAdapter,
-			rocketUserAdapter,
-			rocketSettingsAdapter,
-			rocketNotificationAdapter,
-			bridge,
-		);
+		return new FederationRoomInternalHooksServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, bridge);
 	}
 
 	public static buildDMRoomInternalHooksServiceSender(
 		rocketRoomAdapter: RocketChatRoomAdapterEE,
 		rocketUserAdapter: RocketChatUserAdapterEE,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
-		rocketNotificationAdapter: RocketChatNotificationAdapter,
 		bridge: IFederationBridgeEE,
 	): FederationDMRoomInternalHooksServiceSender {
-		return new FederationDMRoomInternalHooksServiceSender(
-			rocketRoomAdapter,
-			rocketUserAdapter,
-			rocketSettingsAdapter,
-			rocketNotificationAdapter,
-			bridge,
-		);
+		return new FederationDMRoomInternalHooksServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, bridge);
 	}
 
 	public static buildBridge(rocketSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridgeEE {

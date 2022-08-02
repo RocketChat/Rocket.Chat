@@ -1,4 +1,5 @@
 import { IUser, UserStatus } from '@rocket.chat/core-typings';
+import { ObjectId } from 'mongodb'; // This should not be in the domain layer, but its a known "problem"
 
 import { isAnInternalIdentifier } from './FederatedRoom';
 
@@ -10,6 +11,8 @@ export interface IFederatedUserCreationParams {
 
 export class FederatedUser {
 	protected externalId: string;
+
+	protected internalId: string;
 
 	protected existsOnlyOnProxyServer: boolean;
 
@@ -27,25 +30,18 @@ export class FederatedUser {
 		this.externalId = externalId;
 		this.existsOnlyOnProxyServer = existsOnlyOnProxyServer;
 		this.internalReference = internalReference;
+		this.internalId = internalReference._id || new ObjectId().toHexString();
 	}
 
 	public static createInstance(externalId: string, params: IFederatedUserCreationParams): FederatedUser {
 		return new FederatedUser({
 			externalId,
 			existsOnlyOnProxyServer: params.existsOnlyOnProxyServer,
-			internalReference: {
-				username: params.username,
-				name: params.name,
-				type: 'user',
-				status: UserStatus.ONLINE,
-				active: true,
-				roles: ['user'],
-				requirePasswordChange: false,
-			} as unknown as IUser,
+			internalReference: FederatedUser.createLocalInstanceOnly(params),
 		});
 	}
 
-	public static createLocalInstanceOnly(params: IFederatedUserCreationParams): IUser {
+	private static createLocalInstanceOnly(params: IFederatedUserCreationParams): IUser {
 		return {
 			username: params.username,
 			name: params.name,
@@ -71,7 +67,26 @@ export class FederatedUser {
 	}
 
 	public getInternalReference(): Readonly<IUser> {
-		return Object.freeze(this.internalReference);
+		return Object.freeze({
+			...this.internalReference,
+			_id: this.internalId,
+		});
+	}
+
+	public getStorageRepresentation(): Readonly<IUser> {
+		return {
+			_id: this.internalId,
+			username: this.internalReference.username || '',
+			type: this.internalReference.type,
+			status: this.internalReference.status,
+			active: this.internalReference.active,
+			roles: this.internalReference.roles,
+			name: this.internalReference.name,
+			requirePasswordChange: this.internalReference.requirePasswordChange,
+			createdAt: new Date(),
+			_updatedAt: new Date(),
+			federated: this.isRemote(),
+		};
 	}
 
 	public getUsername(): string | undefined {
