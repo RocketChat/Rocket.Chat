@@ -442,9 +442,9 @@ jobs:
 
           docker compose -f docker-compose-ci.yml logs
 
-          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer)" | grep -q "NetworkBroker started successfully"; do
+          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer && exit 1
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
             sleep 10
           done
 
