@@ -303,7 +303,7 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Publish Docker images
+      - name: Publish Docker images to GitHub Container Registry
         if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
         run: |
           export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
@@ -454,6 +454,7 @@ jobs:
           RC_DOCKERFILE: "${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
           RC_DOCKER_TAG: "${{ needs.release-versions.outputs.gh-docker-tag }}.official"
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          TRANSPORTER: nats://nats:4222
         run: |
           export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -483,7 +484,7 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Publish Docker images
+      - name: Publish Docker images to GitHub Container Registry
         if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
         env:
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -500,42 +501,7 @@ jobs:
       - name: E2E Test API
         run: |
           cd ./apps/meteor
-          for i in $(seq 1 5); do
-            # docker stop rocketchat
-            # docker stop stream-hub
-            # docker stop account
-            # docker stop authorization
-            # docker stop ddp-streamer
-            # docker stop presence
-
-            # docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
-
-            # NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
-            # echo $NOW
-
-            # docker start rocketchat
-            # docker start stream-hub
-            # docker start account
-            # docker start authorization
-            # docker start ddp-streamer
-            # docker start presence
-
-            # until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
-            #   echo "Waiting Rocket.Chat to start up"
-            #   ((c++)) && ((c==10)) && exit 1
-            #   sleep 10
-            # done
-
-            # docker logs rocketchat --tail=50
-            # docker logs stream-hub --tail=50
-            # docker logs account --tail=50
-            # docker logs authorization --tail=50
-            # docker logs ddp-streamer --tail=50
-            # docker logs presence --tail=50
-
-            npm run testapi && s=0 && break || s=$? && docker logs rocketchat --tail=100 && docker logs authorization --tail=50;
-          done;
-          exit $s
+          npm run testapi
 
       - name: Cache Playwright binaries
         uses: actions/cache@v3
@@ -556,26 +522,9 @@ jobs:
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
 
-          # docker logs rocketchat --tail=50
-
-          # docker stop rocketchat
-          # docker stop stream-hub
-          # docker stop account
-          # docker stop authorization
-          # docker stop ddp-streamer
-          # docker stop presence
-
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
-          echo $NOW
-
-          # docker start rocketchat
-          # docker start stream-hub
-          # docker start account
-          # docker start authorization
-          # docker start ddp-streamer
-          # docker start presence
 
           docker compose -f docker-compose-ci.yml restart
 
@@ -584,13 +533,6 @@ jobs:
             ((c++)) && ((c==10)) && exit 1
             sleep 10
           done
-
-          # docker logs rocketchat --tail=50
-          # docker logs stream-hub --tail=50
-          # docker logs account --tail=50
-          # docker logs authorization --tail=50
-          # docker logs ddp-streamer --tail=50
-          # docker logs presence --tail=50
 
           cd ./apps/meteor
 
