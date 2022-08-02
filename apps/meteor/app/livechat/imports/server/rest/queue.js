@@ -3,7 +3,7 @@ import { findQueueMetrics } from '../../../server/api/lib/queue';
 
 API.v1.addRoute(
 	'livechat/queue',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		get() {
 			const { offset, count } = this.getPaginationItems();

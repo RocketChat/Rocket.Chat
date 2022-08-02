@@ -1,7 +1,6 @@
 import { check } from 'meteor/check';
 import _ from 'underscore';
 
-import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api/server';
 import { Users } from '../../../../models/server';
 import { Livechat } from '../../../server/lib/Livechat';
@@ -9,7 +8,22 @@ import { findAgents, findManagers } from '../../../server/api/lib/users';
 
 API.v1.addRoute(
 	'livechat/users/:type',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: {
+			GET: {
+				permissions: [
+					'manage-livechat-agents',
+					'transfer-livechat-guest',
+					'edit-omnichannel-contact',
+					'view-livechat-manager',
+					'manage-livechat-agents',
+				],
+				operation: 'hasAny',
+			},
+			POST: { permissions: ['view-livechat-manager'], operation: 'hasAll' },
+		},
+	},
 	{
 		get() {
 			check(this.urlParams, {
@@ -52,9 +66,6 @@ API.v1.addRoute(
 			throw new Error('Invalid type');
 		},
 		post() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			check(this.urlParams, {
 				type: String,
 			});
@@ -84,13 +95,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/users/:type/:_id',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
-
 			check(this.urlParams, {
 				type: String,
 				_id: String,
@@ -123,10 +130,6 @@ API.v1.addRoute(
 			});
 		},
 		delete() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
-
 			check(this.urlParams, {
 				type: String,
 				_id: String,

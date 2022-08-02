@@ -6,7 +6,7 @@ import { Messages, Rooms, Settings } from '../../../../models';
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { settings } from '../lib/livechat';
-import { hasPermission, canSendMessage } from '../../../../authorization';
+import { canSendMessage } from '../../../../authorization';
 import { Livechat } from '../../lib/Livechat';
 import { Logger } from '../../../../logger';
 
@@ -14,17 +14,13 @@ const logger = new Logger('LivechatVideoCallApi');
 
 API.v1.addRoute(
 	'livechat/webrtc.call',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		get() {
 			try {
 				check(this.queryParams, {
 					rid: Match.Maybe(String),
 				});
-
-				if (!hasPermission(this.userId, 'view-l-room')) {
-					return API.v1.unauthorized();
-				}
 
 				const room = canSendMessage(this.queryParams.rid, {
 					uid: this.userId,
@@ -79,7 +75,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/webrtc.call/:callId',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		put() {
 			try {
@@ -94,10 +90,6 @@ API.v1.addRoute(
 
 				const { callId } = this.urlParams;
 				const { rid, status } = this.bodyParams;
-
-				if (!hasPermission(this.userId, 'view-l-room')) {
-					return API.v1.unauthorized();
-				}
 
 				const room = canSendMessage(rid, {
 					uid: this.userId,

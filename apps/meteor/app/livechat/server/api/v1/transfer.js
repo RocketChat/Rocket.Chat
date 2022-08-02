@@ -7,7 +7,7 @@ import { findLivechatTransferHistory } from '../lib/transfer';
 
 API.v1.addRoute(
 	'livechat/transfer.history/:rid',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-rooms'] },
 	{
 		get() {
 			check(this.urlParams, {

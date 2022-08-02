@@ -70,7 +70,7 @@ API.v1.addRoute('livechat/custom.fields', {
 
 API.v1.addRoute(
 	'livechat/custom-fields',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		get() {
 			const { offset, count } = this.getPaginationItems();
@@ -96,7 +96,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/custom-fields/:_id',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		get() {
 			check(this.urlParams, {

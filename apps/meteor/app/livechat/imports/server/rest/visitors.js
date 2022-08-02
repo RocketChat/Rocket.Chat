@@ -13,7 +13,7 @@ import {
 
 API.v1.addRoute(
 	'livechat/visitors.info',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		get() {
 			check(this.queryParams, {
@@ -29,7 +29,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/visitors.pagesVisited/:roomId',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		get() {
 			check(this.urlParams, {
@@ -57,7 +57,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/visitors.chatHistory/room/:roomId/visitor/:visitorId',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		get() {
 			check(this.urlParams, {
@@ -137,7 +137,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/visitors.search',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async get() {
 			const { term } = this.requestParams();

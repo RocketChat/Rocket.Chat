@@ -59,7 +59,12 @@ export type NonEnterpriseTwoFactorOptions = {
 
 type Options = (
 	| {
-			permissionsRequired?: string[];
+			permissionsRequired?:
+				| string[]
+				| ({ [key in Method]?: string[] } & { '*'?: string[] })
+				| ({ [key in Method]?: { operation: TOperation; permissions: string[] } } & {
+						'*'?: { operation: TOperation; permissions: string[] };
+				  });
 			authRequired?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
 	  }
