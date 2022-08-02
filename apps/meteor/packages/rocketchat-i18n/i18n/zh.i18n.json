@@ -240,7 +240,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>欢迎访问 <strong>[Site_Name]</strong></h1><p> 转到 <a href=\"[Site_URL]\">[Site_URL]</a> 并尝试当今最先进的开源聊天解决方案！</p><p>您可以使用您的电子邮件地址：[email] 和密码：[password] 进行登陆。您可能需要在您首次登录后更改密码。",
   "Accounts_UserAddedEmail_Description": "您可以使用以下占位符：<br/><ul><li>全名 [name]，名字 [fname]，姓氏 [lname]。</li><li>[email] 为用户的 email。</li><li>[password] 为用户的密码。</li><li>[Site_Name] 和 [Site_URL] 分为网站名称和网站地址。</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "您已被添加到 [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "为外部账号验证邮箱",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action_required": "需要操作",
   "Activate": "激活",
   "Active": "活跃",

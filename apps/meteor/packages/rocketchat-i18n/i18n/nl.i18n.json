@@ -251,7 +251,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Welkom bij <strong>[Site_Name]</strong></h1><p> Ga naar <a href=\"[Site_URL]\">[Site_URL]</a> en probeer de beste open source chat-oplossing die vandaag beschikbaar is! </p><p> U kunt inloggen met uw e-mail: [email] en wachtwoord: [password]. U kan nodig zijn om het te veranderen na uw eerste login.",
   "Accounts_UserAddedEmail_Description": "U kunt de volgende variabels gebruiken: <br/><ul><li> [name], [fname], [lname] voor respectievelijk de volledige naam, voornaam of achternaam van de gebruiker. </li><li> [email] voor e-mail van de gebruiker. </li><li> [password] voor het wachtwoord van de gebruiker. </li><li> [Site_Name] en [Site_URL] voor respectievelijk de applicatienaam en URL. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Je bent toegevoegd aan [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "Verifieer e-mailadres voor externe accounts",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action": "Actie",
   "Action_required": "Actie vereist",
   "Activate": "Activeren",

@@ -219,7 +219,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Bem-vindo ao <strong>[Site_Name]</strong></h1><p> Vá para <a href=\"[Site_URL]\">[Site_URL]</a> e tente a melhor solução de chat com código fonte aberto disponível hoje! </p><p> Pode fazer o login usando seu e-mail: [email] e password: [password]. Pode ser obrigado a mudá-lo após o seu primeiro login.",
   "Accounts_UserAddedEmail_Description": "Pode usar os seguintes espaços reservados: <br/><ul><li> [name], [fname], [lname] para o nome do utilizador completo, primeiro nome ou sobrenome, respectivamente. </li><li> [email] para e-mail do utilizador. </li><li> [Senha] para a senha do utilizador. </li><li> [Site_Name] e [Site_URL] para o nome da aplicação e URL, respectivamente. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Foi adicionado ao [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "Verificar o Email para Contas Externas",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Activate": "Ativar",
   "Active": "Activo",
   "Activity": "Atividade",

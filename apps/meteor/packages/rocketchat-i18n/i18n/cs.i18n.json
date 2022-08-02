@@ -233,7 +233,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Vítá Vás <strong>[Site_Name]</strong></h1> <p>Přejděte na <a href=\"[Site_URL]\">[Site_URL]</a> a zkuste to nejlepší open source chat řešení na trhu!</p><p>Můžete se přihlásit pomocí e-mailu: [email] a hesla: [password]. Po přihlášení jej možná budete muset změnit.",
   "Accounts_UserAddedEmail_Description": "Můžete použít:<br/><ul><li>[name], [fname], [lname] pro celé jméno, křestní nebo příjmení.</li><li>[email] pro email uživatele.</li><li>[password] pro heslo uživatele.</li><li>[Site_Name] a [Site_URL] pro jméno a URL aplikace.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Vítejte na [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "U externích účtů ověřovat email",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action_required": "Je vyžadována akce",
   "Activate": "Aktivovat",
   "Active": "Aktivní",
