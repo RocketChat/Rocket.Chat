@@ -1,8 +1,8 @@
 import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import React, { ReactElement, ReactNode, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { QueryErrorResetBoundary } from 'react-query';
 
 export type EngagementDashboardCardErrorBoundaryProps = {
 	children?: ReactNode;
