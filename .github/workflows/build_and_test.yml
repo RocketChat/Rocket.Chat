@@ -393,8 +393,8 @@ jobs:
           mongodb-version: ${{ matrix.mongodb-version-ee }}
           mongodb-replica-set: rs0
 
-      - name: Launch NATS
-        run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
+      # - name: Launch NATS
+      #   run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
 
       - uses: actions/checkout@v3
 
