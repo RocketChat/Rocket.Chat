@@ -15,7 +15,7 @@ const NotFoundPage = (): ReactElement => {
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('Page_not_found')}</StatesTitle>
-				<StatesSubtitle>{t('Room_not_exist_or_not_permission')}</StatesSubtitle>
+				<StatesSubtitle>{t('Page_not_exist_or_not_permission')}</StatesSubtitle>
 				<StatesActions mbs='x16'>
 					<StatesAction onClick={handleGoHomeClick}>{t('Homepage')}</StatesAction>
 				</StatesActions>
