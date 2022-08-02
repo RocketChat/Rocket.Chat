@@ -53,6 +53,12 @@ const getRequestIP = (req) => {
 };
 
 const checkPermisisonsForInvocation = (userId, permissionsPayload, requestMethod) => {
+	console.log('------------------------------------------------------');
+	console.log('checkPermisisonsForInvocation');
+	console.log('userId', userId);
+	console.log('permissionsPayload', permissionsPayload);
+	console.log('requestMethod', requestMethod);
+	console.log('------------------------------------------------------');
 	const permissions = permissionsPayload[requestMethod] || permissionsPayload['*'];
 
 	if (!permissions) {
