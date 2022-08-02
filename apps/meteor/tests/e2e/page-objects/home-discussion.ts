@@ -1,5 +1,6 @@
-import { Locator, Page, expect } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 
+import { expect } from '../utils/test';
 import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
 
 export class HomeDiscussion {
