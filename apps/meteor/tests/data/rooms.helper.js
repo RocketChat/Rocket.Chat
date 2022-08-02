@@ -25,12 +25,6 @@ export const createRoom = ({ name, type, username, token, agentId, members, cred
 	};
 	const params = type === 'd' ? { username } : { name };
 
-	console.log('about to do the request');
-	console.log(api(`${endpoints[type]}`));
-	console.log(params);
-	console.log(customCredentials);
-	console.log(credentials);
-
 	return request
 		.post(api(endpoints[type]))
 		.set(customCredentials || credentials)

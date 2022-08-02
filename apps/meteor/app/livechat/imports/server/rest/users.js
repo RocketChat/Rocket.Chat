@@ -5,6 +5,7 @@ import { API } from '../../../../api/server';
 import { Users } from '../../../../models/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
+import { hasAtLeastOnePermission } from '../../../../authorization/server';
 
 API.v1.addRoute(
 	'livechat/users/:type',
@@ -12,20 +13,14 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: {
 			GET: {
-				permissions: [
-					'manage-livechat-agents',
-					'transfer-livechat-guest',
-					'edit-omnichannel-contact',
-					'view-livechat-manager',
-					'manage-livechat-agents',
-				],
-				operation: 'hasAny',
+				permissions: ['manage-livechat-agents'],
+				operation: 'hasAll',
 			},
 			POST: { permissions: ['view-livechat-manager'], operation: 'hasAll' },
 		},
 	},
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				type: String,
 			});
@@ -34,33 +29,37 @@ API.v1.addRoute(
 			const { text } = this.queryParams;
 
 			if (this.urlParams.type === 'agent') {
+				if (hasAtLeastOnePermission(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact'])) {
+					throw new Error('error-not-authorized');
+				}
+
 				return API.v1.success(
-					Promise.await(
-						findAgents({
-							userId: this.userId,
-							text,
-							pagination: {
-								offset,
-								count,
-								sort,
-							},
-						}),
-					),
+					findAgents({
+						userId: this.userId,
+						text,
+						pagination: {
+							offset,
+							count,
+							sort,
+						},
+					}),
 				);
 			}
 			if (this.urlParams.type === 'manager') {
+				if (!(await hasAtLeastOnePermission(this.userId, ['view-livechat-manager']))) {
+					throw new Error('error-not-authorized');
+				}
+
 				return API.v1.success(
-					Promise.await(
-						findManagers({
-							userId: this.userId,
-							text,
-							pagination: {
-								offset,
-								count,
-								sort,
-							},
-						}),
-					),
+					findManagers({
+						userId: this.userId,
+						text,
+						pagination: {
+							offset,
+							count,
+							sort,
+						},
+					}),
 				);
 			}
 			throw new Error('Invalid type');
