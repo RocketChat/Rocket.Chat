@@ -924,7 +924,7 @@ describe('[Users]', function () {
 		it('should return an error when the user does not exist', (done) => {
 			request
 				.get(api('users.getAvatarSuggestion'))
-				.set(userCredentials)
+				.set('')
 				.query({
 					userId: 'invalid-id',
 				})
