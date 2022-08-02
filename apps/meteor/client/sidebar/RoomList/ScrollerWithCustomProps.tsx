@@ -2,7 +2,7 @@ import React, { forwardRef, ReactElement } from 'react';
 
 import ScrollableContentWrapper from '../../components/ScrollableContentWrapper';
 
-export default forwardRef<HTMLElement>(function ScrollerWithCustomProps(props, ref): ReactElement {
+export default forwardRef<HTMLDivElement>(function ScrollerWithCustomProps(props, ref): ReactElement {
 	return (
 		<ScrollableContentWrapper
 			{...props}

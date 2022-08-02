@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebdavAccounts } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { getWebdavCredentials } from './getWebdavCredentials';
+import { getWebdavCredentials } from '../lib/getWebdavCredentials';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
 Meteor.methods({

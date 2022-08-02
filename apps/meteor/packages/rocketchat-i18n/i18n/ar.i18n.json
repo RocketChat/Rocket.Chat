@@ -251,7 +251,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>مرحبًا بكم في<strong> [Site_Name]</strong></h1> <p> انتقل إلى<a href=\"[Site_URL]\"> [Site_URL] </a>وجرب أفضل حل للدردشة مفتوحة المصدر متاح اليوم!</p> <p> يمكنك تسجيل الدخول باستخدام بريدك الإلكتروني: [email] وكلمة المرور: [password]. قد يُطلب منك تغييرها بعد تسجيل الدخول في المرة الأولى.",
   "Accounts_UserAddedEmail_Description": "يمكنك استخدام العناصر النائبة التالية:<br/><ul><li> [name]، [fname]، [lname] لاسم المستخدم الكامل أو الاسم الأول أو اسم العائلة، على التوالي.</li><li>[email] للبريد الإلكتروني للمستخدم.</li><li>[password] لكلمة مرور المستخدم. </li><li>[Site_Name] و[Site_URL] لاسم التطبيق وعنوان URL الخاص به على التوالي.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "لقد تمت إضافتك إلى [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "التحقق من البريد الإلكتروني للحسابات الخارجية",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action": "الإجراء",
   "Action_required": "الإجراء المطلوب",
   "Activate": "تنشيط",

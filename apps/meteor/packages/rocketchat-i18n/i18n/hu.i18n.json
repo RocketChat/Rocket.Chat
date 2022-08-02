@@ -241,7 +241,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Üdvözli a(z) <strong>[Site_Name]</strong></h1><p>Menjen a(z) <a href=\"[Site_URL]\">[Site_URL]</a> címre, és még ma próbálja ki az elérhető legjobb nyílt forráskódú csevegőmegoldást!</p><p>Bejelentkezhet az e-mail-címe ([email]) és jelszava ([password]) használatával. Arra kérhetik, hogy változtassa meg az első bejelentkezés után.",
   "Accounts_UserAddedEmail_Description": "A következő helykitöltőket használhatja: <br/><ul><li>[name] a felhasználó teljes nevéhez, [lname] a felhasználó vezetéknevéhez és [fname] a felhasználó keresztnevéhez.</li><li>[email] a felhasználó e-mail-címéhez.</li><li>[password] a felhasználó jelszavához.</li><li>[Site_Name] az alkalmazás nevéhez és [Site_URL] az alkalmazás URL-jéhez.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Hozzá lett adva a(z) [Site_Name] alkalmazáshoz",
-  "Accounts_Verify_Email_For_External_Accounts": "E-mail ellenőrzése külső fiókok esetén",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action_required": "Beavatkozás szükséges",
   "Activate": "Aktiválás",
   "Active": "Aktív",

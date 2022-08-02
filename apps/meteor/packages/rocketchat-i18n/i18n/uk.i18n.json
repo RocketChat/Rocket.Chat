@@ -238,7 +238,7 @@
   "Accounts_UserAddedEmail_Default": "<h1>Ласкаво просимо до <strong>[Site_Name]</strong></h1><p> Перейти до <a href=\"[Site_URL]\">[Site_URL]</a> і спробувати краще рішення чату з відкритим вихідним кодом на сьогоднішній день! </p><p>Ви можете увійти в систему, використовуючи адресу електронної пошти: [email] і пароль: [password]. Можливо, вам буде потрібно змінити його після першого входу в систему.",
   "Accounts_UserAddedEmail_Description": "Ви можете використовувати наступні наповнювачі: <br/><ul><li> [name], [fname], [lname]  для повного ім'я користувача, ім'я або прізвище, відповідно. </li><li> [email] для електронної пошти користувача. </li><li> [password] для пароля користувача. </li><li> [Site_Name] і [Site_URL]  назви програми і URL-адреси відповідно. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Ви були додані до [Site_Name]",
-  "Accounts_Verify_Email_For_External_Accounts": "Перевірте електронну пошту для зовнішніх облікових записів",
+  "Accounts_Verify_Email_For_External_Accounts": null,
   "Action_required": "Потрібна дія",
   "Activate": "Активувати",
   "Active": "активний",
