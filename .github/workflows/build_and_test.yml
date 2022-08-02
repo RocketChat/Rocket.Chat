@@ -448,6 +448,12 @@ jobs:
             sleep 10
           done
 
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
+            echo "Waiting Rocket.Chat to start up"
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
+            sleep 10
+          done
+
       # - name: Build Docker image
       #   id: build-docker-image
       #   uses: ./.github/actions/build-docker-image
