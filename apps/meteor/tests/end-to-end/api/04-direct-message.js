@@ -190,6 +190,15 @@ describe('[Direct Messages]', function () {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count');
 				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('ims').and.to.be.an('array');
+				const im = res.body.ims[0];
+				expect(im).to.have.property('_id');
+				expect(im).to.have.property('t').and.to.be.eq('d');
+				expect(im).to.have.property('msgs').and.to.be.a('number');
+				expect(im).to.have.property('usernames').and.to.be.an('array');
+				expect(im).to.have.property('lm');
+				expect(im).to.have.property('_updatedAt');
+				expect(im).to.have.property('ts');
 			})
 			.end(done);
 	});
@@ -204,6 +213,16 @@ describe('[Direct Messages]', function () {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count');
 				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('ims').and.to.be.an('array');
+				const im = res.body.ims[0];
+				expect(im).to.have.property('_id');
+				expect(im).to.have.property('t').and.to.be.eq('d');
+				expect(im).to.have.property('msgs').and.to.be.a('number');
+				expect(im).to.have.property('usernames').and.to.be.an('array');
+				expect(im).to.have.property('ro');
+				expect(im).to.have.property('sysMes');
+				expect(im).to.have.property('_updatedAt');
+				expect(im).to.have.property('ts');
 			})
 			.end(done);
 	});
