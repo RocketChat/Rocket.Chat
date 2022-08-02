@@ -883,6 +883,75 @@ describe('[Users]', function () {
 		});
 	});
 
+	describe('[/users.getAvatarSuggestion]', () => {
+		let user;
+		before(async () => {
+			user = await createUser();
+		});
+
+		it('should return 401 unauthorized when user is not logged in', (done) => {
+			request
+				.get(api('users.getAvatarSuggestion'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		let userCredentials;
+		before(async () => {
+			userCredentials = await login(user.username, password);
+		});
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+			await updatePermission('edit-other-user-info', ['admin']);
+		});
+
+		it('should get avatar suggestion of the logged user via userId', (done) => {
+			request
+				.get(api('users.getAvatarSuggestion'))
+				.set(userCredentials)
+				.query({
+					userId: userCredentials['X-User-Id'],
+				})
+				.expect(307)
+				.end(done);
+		});
+
+		it('should return an error when the user does not exist', (done) => {
+			request
+				.get(api('users.getAvatarSuggestion'))
+				.set(userCredentials)
+				.query({
+					userId: 'invalid-id',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the request is null', (done) => {
+			request
+				.get(api('users.getAvatarSuggestion'))
+				.set('')
+				.query({
+					userId: '',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/users.update]', () => {
 		before(async () =>
 			Promise.all([
@@ -1744,6 +1813,36 @@ describe('[Users]', function () {
 		});
 	});
 
+	describe('[/users.sendConfirmationEmail]', () => {
+		it('should send email to user (return success), when is a valid email', (done) => {
+			request
+				.post(api('users.sendConfirmationEmail'))
+				.send({
+					email: adminEmail,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should not send email to user(return error), when is a invalid email', (done) => {
+			request
+				.post(api('users.sendConfirmationEmail'))
+				.send({
+					email: 'invalidEmail',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/users.getUsernameSuggestion]', () => {
 		const testUsername = `test${+new Date()}`;
 		let targetUser;
@@ -1791,6 +1890,82 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.result).to.be.equal(testUsername);
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/users.checkUsernameAvailability]', () => {
+		it('should return 401 unauthorized when user is not logged in', (done) => {
+			request
+				.get(api('users.checkUsernameAvailability'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		const testUsername = `test${+new Date()}`;
+		let targetUser;
+		let userCredentials;
+		it('register a new user...', (done) => {
+			request
+				.post(api('users.register'))
+				.set(credentials)
+				.send({
+					email: `${testUsername}.@teste.com`,
+					username: `${testUsername}test`,
+					name: testUsername,
+					pass: password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					targetUser = res.body.user;
+				})
+				.end(done);
+		});
+		it('Login...', (done) => {
+			request
+				.post(api('login'))
+				.send({
+					user: targetUser.username,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+
+		it('should return true if the username is available', (done) => {
+			request
+				.get(api('users.checkUsernameAvailability'))
+				.set(userCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.result).to.be.equal(true);
+				})
+				.end(done);
+		});
+
+		it('should return an error when the user does not exist', (done) => {
+			request
+				.get(api('users.checkUsernameAvailability'))
+				.set('')
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
 				})
 				.end(done);
 		});

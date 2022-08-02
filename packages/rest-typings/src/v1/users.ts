@@ -238,7 +238,8 @@ export type UsersEndpoints = {
 
 	'/v1/users.checkUsernameAvailability': {
 		GET: (params: { username: string }) => {
-			result: Record<string, unknown>;
+			// result: Record<string, unknown>;
+			result: boolean;
 		};
 	};
 
