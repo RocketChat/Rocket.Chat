@@ -34,11 +34,11 @@ export const Item = ({ children, primary, danger, disabled, icon, ...props }) =>
 		{children}
 	</button>;
 class PopoverMenuWrapper extends Component {
-	state = {}
+	state = {};
 
 	handleRef = (ref) => {
 		this.menuRef = ref;
-	}
+	};
 
 	handleClick = ({ target }) => {
 		if (!target.closest(`.${ styles.menu__item }`)) {
@@ -47,7 +47,7 @@ class PopoverMenuWrapper extends Component {
 
 		const { dismiss } = this.props;
 		dismiss();
-	}
+	};
 
 	componentDidMount() {
 		const { triggerBounds, overlayBounds } = this.props;
@@ -83,7 +83,7 @@ class PopoverMenuWrapper extends Component {
 		>
 			{children}
 		</Menu>
-	)
+	);
 }
 
 

@@ -1,4 +1,5 @@
 import './migrations';
+import './watchDb';
 import './appcache';
 import './callbacks';
 import './cron';

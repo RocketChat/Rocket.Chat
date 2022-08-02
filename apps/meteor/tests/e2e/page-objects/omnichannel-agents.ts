@@ -1,4 +1,6 @@
-import { Locator, expect, Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
+
+import { expect } from '../utils/test';
 
 export class OmnichannelAgents {
 	private readonly page: Page;

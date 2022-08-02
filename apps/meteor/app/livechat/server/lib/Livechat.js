@@ -371,7 +371,7 @@ export const Livechat = {
 			});
 		}
 
-		const user = await LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+		const user = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 		if (user) {
 			return LivechatVisitors.updateById(user._id, updateUser);
 		}
@@ -1077,6 +1077,10 @@ export const Livechat = {
 				'error-fallback-department-circular',
 				'Cannot save department. Circular reference between fallback department and department',
 			);
+		}
+
+		if (fallbackForwardDepartment && !LivechatDepartment.findOneById(fallbackForwardDepartment)) {
+			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
 		}
 
 		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
