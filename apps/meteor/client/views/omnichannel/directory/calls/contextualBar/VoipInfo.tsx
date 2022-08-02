@@ -14,6 +14,7 @@ import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import AgentField from '../../chats/contextualBar/AgentField';
 import { InfoField } from './InfoField';
 import { VoipInfoCallButton } from './VoipInfoCallButton';
+import { useContactName } from '../../../../../hooks/omnichannel/useContactName';
 
 type VoipInfoPropsType = {
 	room: IVoipRoom;
@@ -34,6 +35,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 	const shouldShowWrapup = useMemo(() => lastMessage?.t === 'voip-call-wrapup' && lastMessage?.msg, [lastMessage]);
 	const shouldShowTags = useMemo(() => tags && tags.length > 0, [tags]);
 	const _name = fname || name;
+	const contactName = useContactName(phoneNumber);
 
 	return (
 		<>
@@ -57,7 +59,11 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 							<InfoPanel.Label>{t('Contact')}</InfoPanel.Label>
 							<Box display='flex'>
 								<UserAvatar size='x28' username={_name} />
-								<AgentInfoDetails mis='x8' name={parseOutboundPhoneNumber(_name)} status={<UserStatus status={v?.status} />} />
+								<AgentInfoDetails
+									mis='x8'
+									name={contactName || parseOutboundPhoneNumber(_name)}
+									status={<UserStatus status={v?.status} />}
+								/>
 							</Box>
 						</InfoPanel.Field>
 					)}
