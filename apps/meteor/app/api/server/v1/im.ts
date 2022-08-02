@@ -425,16 +425,28 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			const { sort = { name: 1 }, fields } = this.parseJsonQuery();
+			const { sort = { name: 1 } } = this.parseJsonQuery();
 
 			// TODO: CACHE: Add Breaking notice since we removed the query param
-
 			const subscriptions = await Subscriptions.find({ 'u._id': this.userId, 't': 'd' })
 				.map((item) => item.rid)
 				.toArray();
 
-			const { cursor, totalCount } = Rooms.findPaginated(
-				{ type: 'd', _id: { $in: subscriptions } },
+			const fields = {
+				_id: 1,
+				_updatedAt: 1,
+				t: 1,
+				msgs: 1,
+				ts: 1,
+				lm: 1,
+				topic: 1,
+				usernames: 1,
+			};
+
+			const { cursor, totalCount } = Rooms.findPaginated<
+				Pick<IRoom, '_id' | '_updatedAt' | 't' | 'msgs' | 'ts' | 'lm' | 'topic' | 'usernames'>
+			>(
+				{ t: 'd', _id: { $in: subscriptions } },
 				{
 					sort,
 					skip: offset,
@@ -443,11 +455,7 @@ API.v1.addRoute(
 				},
 			);
 
-			const [ims, total] = await Promise.all([
-				cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
-				totalCount,
-			]);
-
+			const [ims, total] = await Promise.all([cursor.toArray(), totalCount]);
 			return API.v1.success({
 				ims,
 				offset,
@@ -468,22 +476,32 @@ API.v1.addRoute(
 			}
 
 			const { offset, count }: { offset: number; count: number } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { sort, query } = this.parseJsonQuery();
 
-			const { cursor, totalCount } = Rooms.findPaginated(
+			const { cursor, totalCount } = Rooms.findPaginated<
+				Pick<IRoom, '_id' | 'name' | 't' | 'usernames' | 'msgs' | 'u' | 'ts' | 'ro' | 'sysMes' | '_updatedAt'>
+			>(
 				{ ...query, t: 'd' },
 				{
 					sort: sort || { name: 1 },
 					skip: offset,
 					limit: count,
-					projection: fields,
+					projection: {
+						_id: 1,
+						name: 1,
+						t: 1,
+						usernames: 1,
+						msgs: 1,
+						u: 1,
+						ts: 1,
+						ro: 1,
+						sysMes: 1,
+						_updatedAt: 1,
+					},
 				},
 			);
 
-			const [rooms, total] = await Promise.all([
-				cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
-				totalCount,
-			]);
+			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				ims: rooms,
