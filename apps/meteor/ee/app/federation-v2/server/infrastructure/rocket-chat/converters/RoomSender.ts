@@ -1,4 +1,4 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import { IRoom, isUserFederated, IUser } from '@rocket.chat/core-typings';
 
 import {
 	extractServerNameFromExternalIdentifier,
@@ -48,7 +48,7 @@ const getExternalUsersToBeInvited = (invitees: (IUser | string)[]): (IUser | str
 	const externalAndNonExistentInviteesUsername = invitees.filter((invitee: IUser | string) => !isAnExistentUser(invitee));
 	const externalExistentUsers = invitees
 		.filter(isAnExistentUser)
-		.filter((invitee) => (invitee as IUser).federated === true || isAnExternalIdentifierFormat((invitee as IUser).username || ''));
+		.filter((invitee) => isUserFederated(invitee as IUser) || isAnExternalIdentifierFormat((invitee as IUser).username || ''));
 
 	return [...externalAndNonExistentInviteesUsername, ...externalExistentUsers];
 };

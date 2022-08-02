@@ -75,7 +75,7 @@ export class FederationFactoryEE {
 			roomInternalHooksServiceSender.onRoomCreated(
 				FederationRoomSenderConverterEE.toOnRoomCreationDto(
 					owner._id,
-					owner.username as string,
+					owner.username || '',
 					room._id,
 					originalMemberList,
 					homeServerDomain,
@@ -84,7 +84,7 @@ export class FederationFactoryEE {
 		);
 		FederationHooksEE.onUsersAddedToARoom(async (room: IRoom, owner: IUser, members: IUser[] | string[]) =>
 			roomInternalHooksServiceSender.onUsersAddedToARoom(
-				FederationRoomSenderConverterEE.toOnAddedUsersToARoomDto(owner._id, owner.username as string, room._id, members, homeServerDomain),
+				FederationRoomSenderConverterEE.toOnAddedUsersToARoomDto(owner._id, owner.username || '', room._id, members, homeServerDomain),
 			),
 		);
 		FederationHooksEE.beforeDirectMessageRoomCreate(async (members: IUser[] | string[]) =>

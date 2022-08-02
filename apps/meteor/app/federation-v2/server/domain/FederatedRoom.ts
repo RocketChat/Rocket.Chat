@@ -199,6 +199,9 @@ export class DirectMessageFederatedRoom extends AbstractFederatedRoom {
 		if (!this.internalReference?.usernames) {
 			return false;
 		}
+		if (!federatedUser.getUsername()) {
+			return false;
+		}
 		return this.internalReference.usernames.includes(federatedUser.getUsername() as string);
 	}
 }

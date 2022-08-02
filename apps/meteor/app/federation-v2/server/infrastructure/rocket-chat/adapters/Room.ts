@@ -91,10 +91,10 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async removeUserFromRoom(federatedRoom: FederatedRoom, affectedUser: FederatedUser, byUser: FederatedUser): Promise<void> {
+		const userHasBeenRemoved = byUser.getInternalId() !== affectedUser.getInternalId();
+		const options = userHasBeenRemoved ? { byUser: byUser.getInternalReference() } : undefined;
 		Promise.resolve(
-			removeUserFromRoom(federatedRoom.getInternalId(), affectedUser.getInternalReference(), {
-				byUser: byUser.getInternalReference(),
-			}),
+			removeUserFromRoom(federatedRoom.getInternalId(), affectedUser.getInternalReference(), options),
 		);
 	}
 
