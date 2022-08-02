@@ -1,6 +1,6 @@
 import { Button, Box, Throbber } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import { useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { FC, useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client';
@@ -15,7 +15,7 @@ const AppsWhatIsIt: FC = () => {
 
 	const appsRouter = useRoute('admin-marketplace');
 	const enableAppsEngine = useMethod('apps/go-enable');
-	const isAppsEngineEnabled = useMethod('apps/is-enabled');
+	const isAppsEngineEnabled = useEndpoint('GET', '/apps/is-enabled');
 
 	const handleClick = async (): Promise<void> => {
 		setLoading(true);
