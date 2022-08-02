@@ -10,11 +10,11 @@ import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
+import { useContactName } from '../../../../../hooks/omnichannel/useContactName';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import AgentField from '../../chats/contextualBar/AgentField';
 import { InfoField } from './InfoField';
 import { VoipInfoCallButton } from './VoipInfoCallButton';
-import { useContactName } from '../../../../../hooks/omnichannel/useContactName';
 
 type VoipInfoPropsType = {
 	room: IVoipRoom;
