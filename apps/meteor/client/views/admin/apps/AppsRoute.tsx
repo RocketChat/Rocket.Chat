@@ -22,7 +22,7 @@ const AppsRoute: FC = () => {
 				return;
 			}
 
-			if (!(await isAppsEngineEnabled())) {
+			if (!(await isAppsEngineEnabled(this))) {
 				appsWhatIsItRoute.push();
 				return;
 			}
