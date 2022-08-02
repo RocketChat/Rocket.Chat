@@ -390,8 +390,9 @@ describe('miscellaneous', function () {
 				.end(done);
 		});
 
+		const teamName = `new-team-name-${Date.now()}`;
+		let teamCreated = {};
 		before((done) => {
-			const teamName = `new-team-name-${Date.now()}`;
 			request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -399,12 +400,18 @@ describe('miscellaneous', function () {
 					name: teamName,
 					type: 0,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('team');
-					expect(res.body).to.have.nested.property('team._id');
+					teamCreated = res.body.team;
+				})
+				.end(done);
+		});
+
+		after((done) => {
+			request
+				.post(api('teams.delete'))
+				.set(credentials)
+				.send({
+					teamName,
 				})
 				.end(done);
 		});
@@ -427,9 +434,9 @@ describe('miscellaneous', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('result');
 					expect(res.body.result).to.be.an(`array`);
-					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('total', 1);
 					expect(res.body.total).to.be.an('number');
-					expect(res.body.result[0]).to.have.property('_id');
+					expect(res.body.result[0]).to.have.property('_id', teamCreated.roomId);
 					expect(res.body.result[0]).to.have.property('fname');
 					expect(res.body.result[0]).to.have.property('teamMain');
 					expect(res.body.result[0]).to.have.property('name');
