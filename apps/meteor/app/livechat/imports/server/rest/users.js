@@ -30,7 +30,7 @@ API.v1.addRoute(
 
 			if (this.urlParams.type === 'agent') {
 				if (hasAtLeastOnePermission(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact'])) {
-					throw new Error('error-not-authorized');
+					return API.v1.unauthorized();
 				}
 
 				return API.v1.success(
@@ -47,7 +47,7 @@ API.v1.addRoute(
 			}
 			if (this.urlParams.type === 'manager') {
 				if (!(await hasAtLeastOnePermission(this.userId, ['view-livechat-manager']))) {
-					throw new Error('error-not-authorized');
+					return API.v1.unauthorized();
 				}
 
 				return API.v1.success(

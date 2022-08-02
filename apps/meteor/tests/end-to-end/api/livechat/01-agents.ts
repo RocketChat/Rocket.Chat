@@ -36,16 +36,7 @@ describe('LIVECHAT - Agents', function () {
 				.then(() => updatePermission('transfer-livechat-guest', []))
 				.then(() => updatePermission('manage-livechat-agents', []))
 				.then(() => {
-					request
-						.get(api('livechat/users/agent'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body.error).to.be.equal('error-not-authorized');
-						})
-						.end(done);
+					request.get(api('livechat/users/agent')).set(credentials).expect('Content-Type', 'application/json').expect(403).end(done);
 				});
 		});
 		it('should throw an error when the type is invalid', (done) => {
