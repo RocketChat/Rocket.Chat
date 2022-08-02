@@ -7016,7 +7016,7 @@ __metadata:
     eslint-plugin-react-hooks: ^4.6.0
     eslint-plugin-testing-library: ^5.9.1
     eventemitter3: ^4.0.7
-    exif-be-gone: ^1.2.2
+    exif-be-gone: ^1.3.1
     express: ^4.17.3
     express-rate-limit: ^5.5.1
     fast-glob: ^3.2.11
@@ -17827,14 +17827,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"exif-be-gone@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "exif-be-gone@npm:1.2.2"
+"exif-be-gone@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "exif-be-gone@npm:1.3.1"
   dependencies:
     "@types/stream-buffers": ^3.0.3
   bin:
     exif-be-gone: cli.js
-  checksum: 81b84f6bdbb3d162f5f61128087c2eb6d6f924fa9b356afe8b6770b702a003263f9d4ad2b3bb0f2c98b3c81c52478afa0b20f2889d89c47a5ec393b485713306
+  checksum: 046f7c951362e29747de8559bdee6ae21513be4baa66bd048ef929bb61c88beb4649d32372f3bc1f6bcc67343eef8b15a1fb6fe46af1e8742cf54eb1a3333b68
   languageName: node
   linkType: hard
 
