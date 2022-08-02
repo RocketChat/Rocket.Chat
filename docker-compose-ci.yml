@@ -5,7 +5,7 @@ services:
     build:
       dockerfile: apps/meteor/.docker/Dockerfile
       context: /tmp/build
-    image: rocketchat/rocket.chat:${DOCKER_TAG}
+    image: "rocketchat/rocket.chat:${DOCKER_TAG}"
     environment:
       - "MONGO_URL=${MONGO_URL}"
       - TRANSPORTER=nats://nats:4222
