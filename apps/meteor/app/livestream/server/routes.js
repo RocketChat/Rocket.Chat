@@ -1,10 +1,10 @@
-import { google } from 'googleapis';
+import { auth } from '@googleapis/oauth2';
 
 import { settings } from '../../settings/server';
 import { Users } from '../../models/server';
 import { API } from '../../api/server';
 
-const { OAuth2 } = google.auth;
+const { OAuth2 } = auth;
 
 API.v1.addRoute('livestream/oauth', {
 	get: function functionName() {
