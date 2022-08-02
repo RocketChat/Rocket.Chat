@@ -2264,7 +2264,6 @@ describe('Threads', () => {
 		];
 		before((done) => {
 			createRoom({ type: 'c', name: `channel.test.threads.${Date.now()}` }).end((err, room) => {
-				console.log(room);
 				testChannel = room.body.channel;
 				request
 					.post(api('chat.sendMessage'))
