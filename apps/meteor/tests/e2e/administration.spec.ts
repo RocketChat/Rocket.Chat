@@ -60,8 +60,7 @@ test.describe.parallel('administration', () => {
 
 		test('expect find "general" channel', async ({ page }) => {
 			await poAdmin.inputSearchRooms.type('general');
-
-			expect(page.locator('table tr[qa-room-id="GENERAL"]')).toBeVisible();
+			await page.waitForSelector('[qa-room-id="GENERAL"]');
 		});
 	});
 
@@ -147,10 +146,10 @@ test.describe.parallel('administration', () => {
 				await poAdmin.btnForceSSL.click();
 				await poAdmin.btnResetForceSSL.click();
 
-				await poAdmin.inputGoogleTagManagerId.click();
+				await poAdmin.inputGoogleTagManagerId.type('any_text');
 				await poAdmin.btnResetGoogleTagManagerId.click();
 
-				await poAdmin.inputBugsnagApiKey.click();
+				await poAdmin.inputBugsnagApiKey.type('any_text');
 				await poAdmin.inputResetBugsnagApiKey.click();
 
 				await poAdmin.inputRobotsFileContent.type('any_text');

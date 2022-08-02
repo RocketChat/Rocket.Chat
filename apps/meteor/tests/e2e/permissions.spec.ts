@@ -154,6 +154,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option(upload file) not be visible', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.btnMenuMoreActions.click();
 
 			await expect(poHomeChannel.content.btnOptionFileUpload).toBeHidden();
@@ -180,6 +181,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option(upload audio) not be visible', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.btnMenuMoreActions.click();
 
 			await expect(poHomeChannel.content.btnRecordAudio).toBeHidden();
@@ -206,6 +208,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option(upload video) not be visible', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.btnMenuMoreActions.click();
 
 			await expect(poHomeChannel.content.btnVideoMessage).toBeHidden();
@@ -221,7 +224,8 @@ test.describe.serial('permissions', () => {
 		});
 	});
 
-	test.describe.serial('Filter words', () => {
+	// FIXME:
+	test.describe.skip('Filter words', () => {
 		test.beforeAll(async ({ request }) => {
 			const response1 = await request.post(`${BASE_API_URL}/settings/Message_AllowBadWordsFilter`, {
 				headers: apiSessionHeaders,
