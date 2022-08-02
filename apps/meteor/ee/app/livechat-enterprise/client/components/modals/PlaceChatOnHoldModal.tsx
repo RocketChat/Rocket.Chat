@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
+import { Button, Modal } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 
@@ -14,20 +14,18 @@ const PlaceChatOnHoldModal: FC<PlaceChatOnHoldModalProps> = ({ onCancel, onOnHol
 	return (
 		<Modal {...props}>
 			<Modal.Header>
-				<Icon name='pause-unfilled' size={20} />
+				<Modal.Icon name='pause-unfilled' />
 				<Modal.Title>{t('Omnichannel_onHold_Chat')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{t('Would_you_like_to_place_chat_on_hold')}</Modal.Content>
 			<Modal.Footer>
-				<Box>
-					<ButtonGroup align='end'>
-						<Button onClick={onCancel}>{t('Cancel')}</Button>
-						<Button primary onClick={confirm}>
-							{t('Omnichannel_onHold_Chat')}
-						</Button>
-					</ButtonGroup>
-				</Box>
+				<Modal.FooterControllers>
+					<Button onClick={onCancel}>{t('Cancel')}</Button>
+					<Button primary onClick={confirm}>
+						{t('Omnichannel_onHold_Chat')}
+					</Button>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

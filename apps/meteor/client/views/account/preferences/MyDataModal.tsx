@@ -1,4 +1,4 @@
-import { ButtonGroup, Button, Icon, Box, Modal } from '@rocket.chat/fuselage';
+import { Button, Box, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
@@ -14,7 +14,7 @@ const MyDataModal: FC<MyDataModalProps> = ({ onCancel, title, text, ...props }) 
 	return (
 		<Modal {...props}>
 			<Modal.Header>
-				<Icon color='success' name='circle-check' size={20} />
+				<Modal.Icon color='success' name='circle-check' />
 				<Modal.Title>{title}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
@@ -22,11 +22,11 @@ const MyDataModal: FC<MyDataModalProps> = ({ onCancel, title, text, ...props }) 
 				<Box mb='x8'>{text}</Box>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button primary onClick={onCancel}>
 						{t('Ok')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

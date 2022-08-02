@@ -1,4 +1,4 @@
-import { Modal, Field, Select, ButtonGroup, Button, SelectOption, Box } from '@rocket.chat/fuselage';
+import { Modal, Field, Select, Button, SelectOption, Box } from '@rocket.chat/fuselage';
 import { useTranslation, useAvailableDevices, useToastMessageDispatch, useSetModal, useSelectedDevices } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
@@ -86,12 +86,12 @@ const DeviceSettingsModal = (): ReactElement => {
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup stretch w='full'>
+				<Modal.FooterControllers>
 					<Button onClick={(): void => setModal()}>{t('Cancel')}</Button>
 					<Button disabled={!setSinkIdAvailable} primary onClick={handleSubmit(onSubmit)}>
 						{t('Save')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

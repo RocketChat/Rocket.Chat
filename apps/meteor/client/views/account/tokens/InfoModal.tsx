@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
+import { Button, Modal } from '@rocket.chat/fuselage';
 import React, { FC, ReactNode } from 'react';
 
 type InfoModalProps = {
@@ -20,14 +20,14 @@ const InfoModal: FC<InfoModalProps> = ({ title, content, icon, confirmText, canc
 		</Modal.Header>
 		<Modal.Content fontScale='p2'>{content}</Modal.Content>
 		<Modal.Footer>
-			<ButtonGroup align='end'>
+			<Modal.FooterControllers>
 				{cancelText && <Button onClick={onClose}>{cancelText}</Button>}
 				{confirmText && onConfirm && (
 					<Button primary onClick={onConfirm}>
 						{confirmText}
 					</Button>
 				)}
-			</ButtonGroup>
+			</Modal.FooterControllers>
 		</Modal.Footer>
 	</Modal>
 );

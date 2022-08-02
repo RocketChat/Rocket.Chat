@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
+import { Button, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -20,7 +20,7 @@ const AppPermissionsReviewModal = ({ appPermissions, cancel, confirm, modalProps
 	return (
 		<Modal {...modalProps}>
 			<Modal.Header>
-				<Icon color='warning' name='modal-warning' size={25} />
+				<Modal.Icon color='warning' name='modal-warning' />
 				<Modal.Title>{t('Apps_Permissions_Review_Modal_Title')}</Modal.Title>
 				<Modal.Close onClick={handleCloseButtonClick} />
 			</Modal.Header>
@@ -41,14 +41,14 @@ const AppPermissionsReviewModal = ({ appPermissions, cancel, confirm, modalProps
 				</ul>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button secondary onClick={handleCancelButtonClick}>
 						{t('Cancel')}
 					</Button>
 					<Button primary onClick={handleConfirmButtonClick}>
 						{t('Agree')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

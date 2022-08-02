@@ -1,4 +1,4 @@
-import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Modal, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
@@ -192,12 +192,12 @@ const CreateChannel = ({
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button disabled={!canSave} onClick={onCreate} primary>
 						{t('Create')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);
