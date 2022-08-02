@@ -1,38 +1,60 @@
+import faker from '@faker-js/faker';
+import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
-import { faker } from '@faker-js/faker';
-import { createUser, login } from '../users.helper';
 import { password } from '../user';
+import { createUser, login } from '../users.helper';
 import { createAgent, makeAgentAvailable } from './rooms';
-import { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 
-export const createDepartmentWithMethod = (initialAgents: { agentId: string, username: string }[] = []) =>
+export const createDepartment = (): Promise<ILivechatDepartment> =>
 	new Promise((resolve, reject) => {
 		request
-			.post(methodCall('livechat:saveDepartment'))
-			.set(credentials)
+			.post(api('livechat/department'))
 			.send({
-				message: JSON.stringify({
-					method: 'livechat:saveDepartment',
-					params: ['', {
-						enabled: true,
-						email: faker.internet.email(),
-						showOnRegistration: true,
-						showOnOfflineForm: true,
-						name: `new department ${Date.now()}`,
-						description: 'created from api',
-					}, initialAgents],
-					id: 'id',
-					msg: 'method',
-				}),
+				department: {
+					enabled: false,
+					email: 'email@email.com',
+					showOnRegistration: true,
+					showOnOfflineForm: true,
+					name: `new department ${Date.now()}`,
+					description: 'created from api',
+				},
 			})
-			.end((err: any, res: any) => {
+			.set(credentials)
+			.end((err, res) => {
 				if (err) {
 					return reject(err);
 				}
-				resolve(JSON.parse(res.body.message).result);
+				resolve(res.body.department);
 			});
 	});
 
+export const createDepartmentWithMethod = (initialAgents: { agentId: string, username: string }[] = []) =>
+new Promise((resolve, reject) => {
+	request
+		.post(methodCall('livechat:saveDepartment'))
+		.set(credentials)
+		.send({
+			message: JSON.stringify({
+				method: 'livechat:saveDepartment',
+				params: ['', {
+					enabled: true,
+					email: faker.internet.email(),
+					showOnRegistration: true,
+					showOnOfflineForm: true,
+					name: `new department ${Date.now()}`,
+					description: 'created from api',
+				}, initialAgents],
+				id: 'id',
+				msg: 'method',
+			}),
+		})
+		.end((err: any, res: any) => {
+			if (err) {
+				return reject(err);
+			}
+			resolve(JSON.parse(res.body.message).result);
+		});
+});
 
 export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: IUser}> => {
 	const agent: IUser = await createUser();

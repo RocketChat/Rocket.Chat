@@ -6,6 +6,7 @@ type FilterByTextCommonProps = {
 	children?: ReactNode | undefined;
 	placeholder?: string;
 	inputRef?: () => void;
+	shouldFiltersStack?: boolean;
 	onChange: (filter: { text: string }) => void;
 };
 
@@ -20,7 +21,14 @@ type FilterByTextProps = FilterByTextCommonProps | FilterByTextPropsWithButton;
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 
-const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, ...props }: FilterByTextProps): ReactElement => {
+const FilterByText = ({
+	placeholder,
+	onChange: setFilter,
+	inputRef,
+	children,
+	shouldFiltersStack,
+	...props
+}: FilterByTextProps): ReactElement => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -38,7 +46,7 @@ const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, ..
 	}, []);
 
 	return (
-		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' {...props}>
+		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection={shouldFiltersStack ? 'column' : 'row'} {...props}>
 			<TextInput
 				placeholder={placeholder ?? t('Search')}
 				ref={inputRef}
@@ -52,7 +60,7 @@ const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, ..
 				</Button>
 			) : (
 				children && (
-					<Box mis='x8' display='flex' flexDirection='row'>
+					<Box mis={shouldFiltersStack ? '' : 'x8'} display='flex' flexDirection={shouldFiltersStack ? 'column' : 'row'}>
 						{children}
 					</Box>
 				)

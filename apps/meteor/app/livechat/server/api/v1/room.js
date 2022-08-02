@@ -146,54 +146,50 @@ API.v1.addRoute('livechat/room.transfer', {
 
 API.v1.addRoute('livechat/room.survey', {
 	async post() {
-		try {
-			check(this.bodyParams, {
-				rid: String,
-				token: String,
-				data: [
-					Match.ObjectIncluding({
-						name: String,
-						value: String,
-					}),
-				],
-			});
+		check(this.bodyParams, {
+			rid: String,
+			token: String,
+			data: [
+				Match.ObjectIncluding({
+					name: String,
+					value: String,
+				}),
+			],
+		});
 
-			const { rid, token, data } = this.bodyParams;
+		const { rid, token, data } = this.bodyParams;
 
-			const visitor = await findGuest(token);
-			if (!visitor) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			const config = await settings();
-			if (!config.survey || !config.survey.items || !config.survey.values) {
-				throw new Meteor.Error('invalid-livechat-config');
-			}
-
-			const updateData = {};
-			for (const item of data) {
-				if ((config.survey.items.includes(item.name) && config.survey.values.includes(item.value)) || item.name === 'additionalFeedback') {
-					updateData[item.name] = item.value;
-				}
-			}
-
-			if (Object.keys(updateData).length === 0) {
-				throw new Meteor.Error('invalid-data');
-			}
-
-			if (!LivechatRooms.updateSurveyFeedbackById(room._id, updateData)) {
-				return API.v1.failure();
-			}
-
-			return API.v1.success({ rid, data: updateData });
-		} catch (e) {
-			return API.v1.failure(e);
+		const visitor = await findGuest(token);
+		if (!visitor) {
+			throw new Meteor.Error('invalid-token');
 		}
+
+		const room = findRoom(token, rid);
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		const config = await settings();
+		if (!config.survey || !config.survey.items || !config.survey.values) {
+			throw new Meteor.Error('invalid-livechat-config');
+		}
+
+		const updateData = {};
+		for (const item of data) {
+			if ((config.survey.items.includes(item.name) && config.survey.values.includes(item.value)) || item.name === 'additionalFeedback') {
+				updateData[item.name] = item.value;
+			}
+		}
+
+		if (Object.keys(updateData).length === 0) {
+			throw new Meteor.Error('invalid-data');
+		}
+
+		if (!LivechatRooms.updateSurveyFeedbackById(room._id, updateData)) {
+			return API.v1.failure();
+		}
+
+		return API.v1.success({ rid, data: updateData });
 	},
 });
 

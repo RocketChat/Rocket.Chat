@@ -418,7 +418,95 @@ const LivechatDepartmentSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentProps = ajv.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
+export const isGETLivechatDepartmentProps = ajv.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
+
+type POSTLivechatDepartmentProps = {
+	department: {
+		enabled: boolean;
+		name: string;
+		email: string;
+		description?: string;
+		showOnRegistration: boolean;
+		showOnOfflineForm: boolean;
+		requestTagsBeforeClosingChat?: boolean;
+		chatClosingTags?: string[];
+		fallbackForwardDepartment?: string;
+	};
+	agents: { agentId: string; count?: number; order?: number }[];
+};
+
+const POSTLivechatDepartmentSchema = {
+	type: 'object',
+	properties: {
+		department: {
+			type: 'object',
+			properties: {
+				enabled: {
+					type: 'boolean',
+				},
+				name: {
+					type: 'string',
+				},
+				description: {
+					type: 'string',
+					nullable: true,
+				},
+				showOnRegistration: {
+					type: 'boolean',
+				},
+				showOnOfflineForm: {
+					type: 'boolean',
+				},
+				requestTagsBeforeClosingChat: {
+					type: 'boolean',
+					nullable: true,
+				},
+				chatClosingTags: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				fallbackForwardDepartment: {
+					type: 'string',
+					nullable: true,
+				},
+				email: {
+					type: 'string',
+				},
+			},
+			required: ['name', 'email', 'enabled', 'showOnRegistration', 'showOnOfflineForm'],
+			additionalProperties: true,
+		},
+		agents: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					agentId: {
+						type: 'string',
+					},
+					count: {
+						type: 'number',
+						nullable: true,
+					},
+					order: {
+						type: 'number',
+						nullable: true,
+					},
+				},
+				required: ['agentId'],
+				additionalProperties: false,
+			},
+			nullable: true,
+		},
+	},
+	required: ['department'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatDepartmentProps = ajv.compile<POSTLivechatDepartmentProps>(POSTLivechatDepartmentSchema);
 
 type LivechatDepartmentsAvailableByUnitIdProps = PaginatedRequest<{ text: string; onlyMyDepartments?: 'true' | 'false' }>;
 
