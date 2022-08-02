@@ -96,6 +96,12 @@ export type AppsEndpoints = {
 		};
 	};
 
+	'/apps/is-enabled': {
+		GET: () => {
+			result: boolean;
+		};
+	};
+
 	'/apps': {
 		GET:
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
