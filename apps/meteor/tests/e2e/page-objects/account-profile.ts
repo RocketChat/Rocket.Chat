@@ -35,7 +35,7 @@ export class AccountProfile {
 	get btnClose(): Locator {
 		return this.page.locator('button >> i.rcx-icon--name-cross.rcx-icon');
 	}
-	
+
 	get inputToken(): Locator {
 		return this.page.locator('[data-qa="PersonalTokenField"]');
 	}

@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker';
 type UserFixture = IUser & {
 	username: string;
 	__rooms: string[];
-}
+};
 
 export function createUserFixture(username: string): UserFixture {
 	return {
@@ -17,7 +17,7 @@ export function createUserFixture(username: string): UserFixture {
 		lastLogin: new Date(),
 		statusConnection: 'offline',
 		utcOffset: -3,
-		username: username,
+		username,
 		services: {
 			password: { bcrypt: '$2b$10$EMxaeQQbSw9JLL.YvOVPaOW8MKta6pgmp2BcN5Op4cC9bJiOqmUS.' },
 			email2fa: { enabled: true, changedAt: new Date() },
@@ -36,5 +36,5 @@ export function createUserFixture(username: string): UserFixture {
 		createdAt: new Date(),
 		_updatedAt: new Date(),
 		__rooms: ['GENERAL'],
-	}
+	};
 }

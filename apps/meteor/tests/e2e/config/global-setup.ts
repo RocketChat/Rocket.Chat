@@ -1,3 +1,5 @@
+/* eslint no-await-in-loop: 0 */
+
 import { chromium } from '@playwright/test';
 
 import * as constants from './constants';
@@ -36,16 +38,16 @@ export default async function (): Promise<void> {
 
 	const { usersFixtures } = await injectInitialData();
 
-	for(const user of usersFixtures) {
+	for (const user of usersFixtures) {
 		const browser = await chromium.launch();
 		const page = await browser.newPage();
-	
+
 		await page.goto(constants.BASE_URL);
-	
+
 		await page.locator('[name=emailOrUsername]').type(user.username);
 		await page.locator('[name=pass]').type('any_password');
 		await page.locator('.login').click();
-	
+
 		await page.waitForSelector('text="Welcome to Rocket.Chat!"');
 		await page.context().storageState({ path: `${user.username}-session.json` });
 		await browser.close();
