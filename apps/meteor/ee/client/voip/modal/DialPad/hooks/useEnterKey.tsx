@@ -8,7 +8,7 @@ export const useEnterKey = (onEnter: () => void, disabled: boolean): void => {
 			}
 
 			e.stopPropagation();
-			onEnter?.();
+			onEnter();
 		};
 
 		window.addEventListener('keydown', sendOnEnter);
