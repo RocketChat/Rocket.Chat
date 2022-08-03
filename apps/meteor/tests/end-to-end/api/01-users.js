@@ -924,7 +924,7 @@ describe('[Users]', function () {
 		it('should return an error when the user does not exist', (done) => {
 			request
 				.get(api('users.getAvatarSuggestion'))
-				.set('')
+				.set(userCredentials)
 				.query({
 					userId: 'invalid-id',
 				})
@@ -939,7 +939,7 @@ describe('[Users]', function () {
 		it('should return an error when the request is null', (done) => {
 			request
 				.get(api('users.getAvatarSuggestion'))
-				.set('')
+				.set(userCredentials)
 				.query({
 					userId: '',
 				})
