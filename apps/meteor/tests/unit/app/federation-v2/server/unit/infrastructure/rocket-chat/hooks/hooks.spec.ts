@@ -1,16 +1,16 @@
+/* eslint-disable */
 import mock from 'mock-require';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { FederationHooks } from '../../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/hooks';
-
 const remove = sinon.stub();
-
 mock('../../../../../../../../../lib/callbacks', {
 	callbacks: {
 		remove,
 	},
 });
+
+import { FederationHooks } from '../../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/hooks';
 
 describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 	describe('#removeCEValidation()', () => {

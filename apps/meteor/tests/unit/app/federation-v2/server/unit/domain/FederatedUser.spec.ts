@@ -1,7 +1,6 @@
+/* eslint-disable */
 import { expect } from 'chai';
 import mock from 'mock-require';
-
-import { FederatedUser } from '../../../../../../../app/federation-v2/server/domain/FederatedUser';
 
 mock('mongodb', {
 	ObjectId: class ObjectId {
@@ -10,6 +9,8 @@ mock('mongodb', {
 		}
 	},
 });
+
+import { FederatedUser } from '../../../../../../../app/federation-v2/server/domain/FederatedUser';
 
 describe('Federation - Domain - FederatedUser', () => {
 	describe('#createInstance()', () => {

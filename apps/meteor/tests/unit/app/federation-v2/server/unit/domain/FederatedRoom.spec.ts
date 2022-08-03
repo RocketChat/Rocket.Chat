@@ -1,13 +1,7 @@
+/* eslint-disable */
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import mock from 'mock-require';
 import { expect } from 'chai';
-
-import {
-	AbstractFederatedRoom,
-	DirectMessageFederatedRoom,
-	FederatedRoom,
-	isAnInternalIdentifier,
-} from '../../../../../../../app/federation-v2/server/domain/FederatedRoom';
 
 mock('mongodb', {
 	ObjectId: class ObjectId {
@@ -16,6 +10,13 @@ mock('mongodb', {
 		}
 	},
 });
+
+import {
+	AbstractFederatedRoom,
+	DirectMessageFederatedRoom,
+	FederatedRoom,
+	isAnInternalIdentifier,
+} from '../../../../../../../app/federation-v2/server/domain/FederatedRoom';
 
 describe('Federation - Domain - FederatedRoom', () => {
 	describe('#isAnInternalIdentifier()', () => {
