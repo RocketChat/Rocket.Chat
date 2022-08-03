@@ -68,7 +68,8 @@ Meteor.methods({
 });
 
 declare module 'meteor/meteor' {
-	namespace Meteor {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	export namespace Meteor {
 		export let ircBridge: Bridge;
 	}
 }
