@@ -1,14 +1,14 @@
 import { Random } from 'meteor/random';
 
 import { getRedirectUri } from './getRedirectUri';
-import { Settings } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { userScopes } from '../oauthScopes';
+import { Settings } from '@rocket.chat/models';
 
-export function getOAuthAuthorizationUrl() {
+export async function getOAuthAuthorizationUrl() {
 	const state = Random.id();
 
-	Settings.updateValueById('Cloud_Workspace_Registration_State', state);
+	await Settings.updateValueById('Cloud_Workspace_Registration_State', state);
 
 	const cloudUrl = settings.get('Cloud_Url');
 	const client_id = settings.get('Cloud_Workspace_Client_Id');
