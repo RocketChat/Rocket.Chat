@@ -3,9 +3,9 @@ import { HTTP } from 'meteor/http';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
 import { settings } from '../../../settings/server';
-import { Settings } from '../../../models/server';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { Settings } from '@rocket.chat/models';
 
 export async function startRegisterWorkspace(resend = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
@@ -15,9 +15,9 @@ export async function startRegisterWorkspace(resend = false) {
 		return true;
 	}
 
-	Settings.updateValueById('Register_Server', true);
+	await Settings.updateValueById('Register_Server', true);
 
-	const regInfo = await buildWorkspaceRegistrationData();
+	const regInfo = await buildWorkspaceRegistrationData(undefined);
 
 	const cloudUrl = settings.get('Cloud_Url');
 
@@ -39,7 +39,7 @@ export async function startRegisterWorkspace(resend = false) {
 		return false;
 	}
 
-	Settings.updateValueById('Cloud_Workspace_Id', data.id);
+	await Settings.updateValueById('Cloud_Workspace_Id', data.id);
 
 	return true;
 }
