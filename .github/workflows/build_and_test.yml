@@ -378,7 +378,7 @@ jobs:
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
-        if: failure()
+        if: always()
         with:
           name: playwright-test-trace
           path: ./apps/meteor/tests/e2e/.playwright*
@@ -708,7 +708,7 @@ jobs:
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
-        if: failure()
+        if: always()
         with:
           name: e2e-ee-testtrace
           path: ./apps/meteor/tests/e2e/.playwright*
