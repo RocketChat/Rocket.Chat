@@ -5,6 +5,7 @@ export type WebdavEndpoints = {
 	'/v1/webdav.getMyAccounts': {
 		GET: () => {
 			accounts: IWebdavAccountIntegration[];
+			success: boolean;
 		};
 	};
 	'/v1/webdav.removeWebdavAccount': {
