@@ -26,10 +26,6 @@ test.describe.parallel('administration', () => {
 		});
 	});
 
-	test.describe('Import', () => {
-		//
-	});
-
 	test.describe('Users', () => {
 		test.beforeEach(async () => {
 			await poAdmin.sidenav.linkUsers.click();
@@ -62,58 +58,6 @@ test.describe.parallel('administration', () => {
 			await poAdmin.inputSearchRooms.type('general');
 			await page.waitForSelector('[qa-room-id="GENERAL"]');
 		});
-	});
-
-	test.describe('Invites', () => {
-		//
-	});
-
-	test.describe('Connectivity Services', () => {
-		//
-	});
-
-	test.describe('View Logs', () => {
-		//
-	});
-
-	test.describe('Custom Sounds', () => {
-		//
-	});
-
-	test.describe('Federation Dashboard', () => {
-		//
-	});
-
-	test.describe('Apps', () => {
-		//
-	});
-
-	test.describe('Email Inboxes', () => {
-		//
-	});
-
-	test.describe('Custom Emoji', () => {
-		//
-	});
-
-	test.describe('Integrations', () => {
-		//
-	});
-
-	test.describe('OAuth Applications', () => {
-		//
-	});
-
-	test.describe('Mailer', () => {
-		//
-	});
-
-	test.describe('Custom User Status', () => {
-		//
-	});
-
-	test.describe('Permissions', () => {
-		//
 	});
 
 	test.describe('Settings', () => {
