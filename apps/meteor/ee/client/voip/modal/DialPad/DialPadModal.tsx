@@ -48,7 +48,7 @@ const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalP
 				</Field>
 				<Pad onClickPadButton={handlePadButtonClick} onLongPressPadButton={handlePadButtonLongPressed} />
 			</Modal.Content>
-			<Modal.Footer>
+			<Modal.Footer justifyContent='center'>
 				<Box display='flex' justifyContent='center'>
 					<IconButton
 						icon='phone'
