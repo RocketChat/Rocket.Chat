@@ -42,6 +42,8 @@ export interface ISettingsModel extends IBaseModel<ISetting> {
 
 	findSetupWizardSettings(): FindCursor<ISetting>;
 
+	findEnterpriseSettings(): FindCursor<ISetting>;
+
 	addOptionValueById(_id: ISetting['_id'], option: ISettingSelectOption): Promise<Document | UpdateResult>;
 
 	findNotHiddenPublicUpdatedAfter(updatedAt: Date): FindCursor<ISetting>;

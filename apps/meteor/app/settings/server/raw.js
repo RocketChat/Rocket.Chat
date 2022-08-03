@@ -1,11 +1,11 @@
-import Settings from '../../models/server/models/Settings';
+import { Settings } from '@rocket.chat/models';
 
 const cache = new Map();
 
 export const setValue = (_id, value) => cache.set(_id, value);
 
 const setFromDB = async (_id) => {
-	const setting = Settings.findOneById(_id, { fields: { value: 1 } });
+	const setting = await Settings.findOneById(_id, { fields: { value: 1 } });
 	if (!setting) {
 		return;
 	}

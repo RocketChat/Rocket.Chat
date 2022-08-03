@@ -1,4 +1,5 @@
-import SettingsModel from '../../models/server/models/Settings';
+import { Settings } from '@rocket.chat/models';
+
 import { SettingsRegistry } from './SettingsRegistry';
 import { initializeSettings } from './startup';
 import { settings } from './cached';
@@ -8,6 +9,6 @@ export { SettingsEvents } from './SettingsRegistry';
 
 export { settings };
 
-export const settingsRegistry = new SettingsRegistry({ store: settings, model: SettingsModel });
+export const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings });
 
-initializeSettings({ SettingsModel, settings });
+initializeSettings({ SettingsModel: Settings, settings });
