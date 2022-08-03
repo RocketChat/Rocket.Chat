@@ -3,11 +3,6 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { IUser } from '@rocket.chat/core-typings';
 
-import {
-	normalizeExternalInviteeId,
-	executeSlashCommand,
-} from '../../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands/action';
-
 mock('@rocket.chat/models', {
 	Users: {
 		findOneById: async (invitee: string): Promise<IUser | undefined> => {
@@ -17,6 +12,11 @@ mock('@rocket.chat/models', {
 		},
 	},
 });
+
+import {
+	normalizeExternalInviteeId,
+	executeSlashCommand,
+} from '../../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands/action';
 
 describe('Federation - Server Slash command', () => {
 	const command = sinon.stub();
