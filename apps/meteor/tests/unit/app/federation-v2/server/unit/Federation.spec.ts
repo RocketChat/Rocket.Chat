@@ -29,4 +29,14 @@ describe('Federation[Server] - Federation', () => {
 			expect(Federation.actionAllowed({ t: 'd' } as any, RoomMemberActions.INVITE)).to.be.true;
 		});
 	});
+
+	describe('#isAFederatedUsername()', () => {
+		it('should return true if the username is a federated username (includes at least one "@" and at least one ":"', () => {
+			expect(Federation.isAFederatedUsername('@user:domain.com')).to.be.true;
+		});
+
+		it('should return false if the username is a federated username (does NOT includes at least one "@" and at least one ":"', () => {
+			expect(Federation.isAFederatedUsername('user:domain.com')).to.be.false;
+		});
+	});
 });
