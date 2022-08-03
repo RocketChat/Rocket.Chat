@@ -374,10 +374,11 @@ jobs:
           done
 
           cd ./apps/meteor
-          npm run test:e2e
+          yarn test:e2e
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
+        if: failure()
         with:
           name: playwright-test-trace
           path: ./apps/meteor/tests/e2e/.playwright*
@@ -692,7 +693,7 @@ jobs:
 
           cd ./apps/meteor
 
-          E2E_COVERAGE=true IS_EE=true npm run test:e2e
+          E2E_COVERAGE=true IS_EE=true yarn test:e2e
 
       - name: Extract e2e:ee:coverage
         run: |
@@ -705,17 +706,18 @@ jobs:
           flags: e2e
           verbose: true
 
+      - name: Store playwright test trace
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: e2e-ee-testtrace
+          path: ./apps/meteor/tests/e2e/.playwright*
+
       - name: Store e2e-ee-coverage
         uses: actions/upload-artifact@v2
         with:
           name: e2e-ee-coverage
           path: ./apps/meteor/coverage*
-
-      - name: Store playwright test trace
-        uses: actions/upload-artifact@v2
-        with:
-          name: e2e-ee-testtrace
-          path: ./apps/meteor/tests/e2e/.playwright*
 
   deploy:
     runs-on: ubuntu-20.04
