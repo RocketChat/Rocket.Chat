@@ -74,14 +74,14 @@ const avatarProviders = {
 	customOAuth(user: IUser) {
 		const avatars = [];
 		for (const service in user.services) {
-			if (user.services[service]._OAuthCustom) {
+			if (user.services[service as keyof typeof user.services]._OAuthCustom) {
 				const services = ServiceConfiguration.configurations.find({ service }, { fields: { secret: 0 } }).fetch();
 
 				if (services.length > 0) {
-					if (user.services[service].avatarUrl) {
+					if (user.services[service as keyof typeof user.services].avatarUrl) {
 						avatars.push({
 							service,
-							url: user.services[service].avatarUrl,
+							url: user.services[service as keyof typeof user.services].avatarUrl,
 						});
 					}
 				}
