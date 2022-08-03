@@ -10,6 +10,12 @@ export default {
 		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
 		screenshot: process.env.CI ? 'off' : 'only-on-failure',
+		channel: 'chrome',
+		launchOptions: {
+			// force GPU hardware acceleration
+			// (even in headless mode)
+			args: ['--use-gl=egl'],
+		},
 	},
 	outputDir: 'tests/e2e/.playwright',
 	reporter: process.env.CI ? 'github' : 'list',
