@@ -20,8 +20,9 @@ export default {
 	outputDir: 'tests/e2e/.playwright',
 	reporter: process.env.CI ? 'github' : 'list',
 	testDir: 'tests/e2e',
-	workers: 1,
+	workers: 2,
 	retries: process.env.CI ? 2 : undefined,
-	timeout: 42 * 1000,
+	timeout: 60 * 1000,
+	globalTimeout: 40 * 60 * 1000,
 	maxFailures: process.env.CI ? 5 : undefined,
 } as PlaywrightTestConfig;
