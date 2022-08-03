@@ -6,7 +6,7 @@ import { Unsubscribe } from 'use-subscription';
 import { VideoConfContext, VideoConfPopupPayload } from '../contexts/VideoConfContext';
 import { VideoConfManager, DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
 import VideoConfBlockModal from '../views/room/contextualBar/VideoConference/VideoConfBlockModal';
-import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups';
+import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
