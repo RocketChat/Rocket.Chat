@@ -12,7 +12,7 @@ mock('../../../../../../../../../lib/callbacks', {
 
 import { FederationHooks } from '../../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/hooks';
 
-describe.only('Federation - Hooks', () => {
+describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#removeCEValidation()', () => {
 		it('should remove the specific validation for CE environments', () => {

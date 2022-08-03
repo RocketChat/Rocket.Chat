@@ -3,11 +3,13 @@ import { IMessage } from '@rocket.chat/core-typings';
 
 import { FederationRoomSenderConverter } from '../../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
 import {
+	FederationAfterLeaveRoomDto,
+	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
 } from '../../../../../../../../../app/federation-v2/server/application/input/RoomSenderDto';
 
-describe('Federation - Infrastructure - RocketChat - FederationRoomSenderConverter', () => {
+describe.only('Federation - Infrastructure - RocketChat - FederationRoomSenderConverter', () => {
 	describe('#toCreateDirectMessageRoomDto()', () => {
 		it('should return an instance of FederationCreateDMAndInviteUserDto', () => {
 			expect(
@@ -73,6 +75,44 @@ describe('Federation - Infrastructure - RocketChat - FederationRoomSenderConvert
 				internalSenderId,
 				internalRoomId,
 				message: msg,
+			});
+		});
+	});
+
+	describe('#toAfterUserLeaveRoom()', () => {
+		it('should return an instance of FederationAfterLeaveRoomDto', () => {
+			expect(
+				FederationRoomSenderConverter.toAfterUserLeaveRoom('internalUserId', 'internalRoomId'),
+			).to.be.instanceOf(FederationAfterLeaveRoomDto);
+		});
+
+		it('should have all the properties set', () => {
+			const internalUserId = 'internalUserId';
+			const internalRoomId = 'internalRoomId';
+			const result: any = FederationRoomSenderConverter.toAfterUserLeaveRoom('internalUserId', 'internalRoomId');
+			expect(result).to.be.eql({
+				internalUserId,
+				internalRoomId,
+			});
+		});
+	});
+
+	describe('#toOnUserRemovedFromRoom()', () => {
+		it('should return an instance of FederationAfterRemoveUserFromRoomDto', () => {
+			expect(
+				FederationRoomSenderConverter.toOnUserRemovedFromRoom('internalUserId', 'internalRoomId', 'actionDoneByInternalId'),
+			).to.be.instanceOf(FederationAfterRemoveUserFromRoomDto);
+		});
+
+		it('should have all the properties set', () => {
+			const internalUserId = 'internalUserId';
+			const internalRoomId = 'internalRoomId';
+			const actionDoneByInternalId = 'actionDoneByInternalId';
+			const result: any = FederationRoomSenderConverter.toOnUserRemovedFromRoom('internalUserId', 'internalRoomId', 'actionDoneByInternalId');
+			expect(result).to.be.eql({
+				internalUserId,
+				internalRoomId,
+				actionDoneByInternalId,
 			});
 		});
 	});

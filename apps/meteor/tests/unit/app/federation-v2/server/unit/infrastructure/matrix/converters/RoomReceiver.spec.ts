@@ -186,7 +186,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 			expect(result.eventOrigin).to.be.equal(EVENT_ORIGIN.REMOTE);
 		});
 
-		it('should set the event origin as LOCAL if the inviter is NOT different home servers', () => {
+		it('should set the event origin as LOCAL if the inviter is NOT from a different home server', () => {
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto({ sender: 'a:domain' } as any, 'domain');
 			expect(result.eventOrigin).to.be.equal(EVENT_ORIGIN.LOCAL);
 		});
@@ -239,7 +239,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 				normalizedRoomId: 'roomId',
 				externalSenderId: '@marcos.defendi:matrix.org',
 				normalizedSenderId: 'marcos.defendi:matrix.org',
-				text: 'msg',
+				messageText: 'msg',
 			});
 		});
 	});
