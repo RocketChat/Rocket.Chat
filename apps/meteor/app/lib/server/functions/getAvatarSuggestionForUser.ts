@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { check } from 'meteor/check';
 import { Gravatar } from 'meteor/jparker:gravatar';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { fetch } from '../../../../server/lib/http/fetch';
 
 const avatarProviders = {
-	facebook(user) {
-		if (user.services && user.services.facebook && user.services.facebook.id && settings.get('Accounts_OAuth_Facebook')) {
+	facebook(user: IUser) {
+		if (user.services?.facebook?.id && settings.get('Accounts_OAuth_Facebook')) {
 			return {
 				service: 'facebook',
 				url: `https://graph.facebook.com/${user.services.facebook.id}/picture?type=large`,
@@ -15,11 +17,9 @@ const avatarProviders = {
 		}
 	},
 
-	google(user) {
+	google(user: IUser) {
 		if (
-			user.services &&
-			user.services.google &&
-			user.services.google.picture &&
+			user.services?.google?.picture &&
 			user.services.google.picture !== 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg' &&
 			settings.get('Accounts_OAuth_Google')
 		) {
@@ -30,8 +30,8 @@ const avatarProviders = {
 		}
 	},
 
-	github(user) {
-		if (user.services && user.services.github && user.services.github.username && settings.get('Accounts_OAuth_Github')) {
+	github(user: IUser) {
+		if (user.services?.github?.username && settings.get('Accounts_OAuth_Github')) {
 			return {
 				service: 'github',
 				url: `https://avatars.githubusercontent.com/${user.services.github.username}?s=200`,
@@ -39,12 +39,9 @@ const avatarProviders = {
 		}
 	},
 
-	linkedin(user) {
+	linkedin(user: IUser) {
 		if (
-			user.services &&
-			user.services.linkedin &&
-			user.services.linkedin.profilePicture &&
-			user.services.linkedin.profilePicture.identifiersUrl &&
+			user.services?.linkedin?.profilePicture?.identifiersUrl &&
 			user.services.linkedin.profilePicture.identifiersUrl.length > 0 &&
 			settings.get('Accounts_OAuth_Linkedin')
 		) {
@@ -56,8 +53,8 @@ const avatarProviders = {
 		}
 	},
 
-	twitter(user) {
-		if (user.services && user.services.twitter && user.services.twitter.profile_image_url_https && settings.get('Accounts_OAuth_Twitter')) {
+	twitter(user: IUser) {
+		if (user.services?.twitter?.profile_image_url_https && settings.get('Accounts_OAuth_Twitter')) {
 			return {
 				service: 'twitter',
 				url: user.services.twitter.profile_image_url_https.replace(/_normal|_bigger/, ''),
@@ -65,8 +62,8 @@ const avatarProviders = {
 		}
 	},
 
-	gitlab(user) {
-		if (user.services && user.services.gitlab && user.services.gitlab.avatar_url && settings.get('Accounts_OAuth_Gitlab')) {
+	gitlab(user: IUser) {
+		if (user.services?.gitlab?.avatar_url && settings.get('Accounts_OAuth_Gitlab')) {
 			return {
 				service: 'gitlab',
 				url: user.services.gitlab.avatar_url,
@@ -74,7 +71,7 @@ const avatarProviders = {
 		}
 	},
 
-	customOAuth(user) {
+	customOAuth(user: IUser) {
 		const avatars = [];
 		for (const service in user.services) {
 			if (user.services[service]._OAuthCustom) {
@@ -93,7 +90,7 @@ const avatarProviders = {
 		return avatars;
 	},
 
-	emails(user) {
+	emails(user: IUser) {
 		const avatars = [];
 		if (user.emails && user.emails.length > 0) {
 			for (const email of user.emails) {
@@ -127,7 +124,7 @@ const avatarProviders = {
 /**
  * @return {Object}
  */
-export async function getAvatarSuggestionForUser(user) {
+export async function getAvatarSuggestionForUser(user: IUser) {
 	check(user, Object);
 
 	const avatars = [];
@@ -143,17 +140,23 @@ export async function getAvatarSuggestionForUser(user) {
 		}
 	}
 
-	const validAvatars = {};
+	const validAvatars: Record<string, unknown> = {};
 	for await (const avatar of avatars) {
 		try {
 			const response = await fetch(avatar.url);
+			const newAvatar: { service: string; url: string; blob: string; contentType: string } = {
+				service: avatar.service,
+				url: avatar.url,
+				blob: '',
+				contentType: '',
+			};
 
 			if (response.status === 200) {
 				let blob = `data:${response.headers.get('content-type')};base64,`;
 				blob += Buffer.from(await response.arrayBuffer()).toString('base64');
-				avatar.blob = blob;
-				avatar.contentType = response.headers.get('content-type');
-				validAvatars[avatar.service] = avatar;
+				newAvatar.blob = blob;
+				newAvatar.contentType = response.headers.get('content-type')!;
+				validAvatars[avatar.service] = newAvatar;
 			}
 		} catch (error) {
 			// error;
