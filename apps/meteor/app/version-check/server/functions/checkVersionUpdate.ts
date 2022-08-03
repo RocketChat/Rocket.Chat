@@ -2,7 +2,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import semver from 'semver';
 import { Settings } from '@rocket.chat/models';
 
-import getNewUpdates from './getNewUpdates';
+import { getNewUpdates } from './getNewUpdates';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/server';
 import { Users } from '../../../models/server';
@@ -13,7 +13,7 @@ import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmin
 export const checkVersionUpdate = async () => {
 	logger.info('Checking for version updates');
 
-	const { versions, alerts } = getNewUpdates();
+	const { versions, alerts } = await getNewUpdates();
 
 	const update = {
 		exists: false,

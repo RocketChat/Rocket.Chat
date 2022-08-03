@@ -4,10 +4,10 @@ import { HTTP } from 'meteor/http';
 import { check, Match } from 'meteor/check';
 
 import { Settings } from '../../../models/server';
-import { Info } from '../../../utils';
+import { Info } from '../../../utils/server';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
 
-export default () => {
+export const getNewUpdates = async () => {
 	try {
 		const uniqueID = Settings.findOne('uniqueID');
 
@@ -24,11 +24,10 @@ export default () => {
 			deployPlatform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
 
-		const headers = {};
-		const token = Promise.await(getWorkspaceAccessToken());
-		if (token) {
-			headers.Authorization = `Bearer ${token}`;
-		}
+		const token = await getWorkspaceAccessToken();
+		const headers = {
+			...(token && { Authorization: `Bearer ${token}` }),
+		};
 
 		const { data } = HTTP.get('https://releases.rocket.chat/updates/check', {
 			params,
