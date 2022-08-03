@@ -249,9 +249,9 @@ describe('[Rooms]', function () {
 		});
 		it('should return true if this room name exists', (done) => {
 			request
-				.post(api('rooms.nameExists'))
+				.get(api('rooms.nameExists'))
 				.set(credentials)
-				.send({
+				.query({
 					roomName: testChannelName,
 				})
 				.expect(200)
@@ -264,9 +264,9 @@ describe('[Rooms]', function () {
 
 		it('should return an error when send an invalid room', (done) => {
 			request
-				.post(api('rooms.nameExists'))
+				.get(api('rooms.nameExists'))
 				.set(credentials)
-				.send({
+				.query({
 					roomId: 'foo',
 				})
 				.expect(400)
