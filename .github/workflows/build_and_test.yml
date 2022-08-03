@@ -287,8 +287,6 @@ jobs:
 
           sleep 10
 
-          docker compose -f docker-compose-ci.yml logs
-
           until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
             ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
@@ -329,17 +327,15 @@ jobs:
       - name: E2E Test API
         run: |
           docker ps
-          # docker logs rocketchat --tail=50
+          docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
           cd ./apps/meteor
           for i in $(seq 1 5); do
-            # docker stop rocketchat
             docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
 
             docker compose -f ../../docker-compose-ci.yml restart rocketchat
-            # docker start rocketchat
 
             until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
@@ -371,13 +367,12 @@ jobs:
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
 
-          # docker logs rocketchat --tail=50
+          docker ps
+          docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
-          # docker stop rocketchat
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
-          echo $NOW
 
           docker compose -f docker-compose-ci.yml restart rocketchat
 
@@ -497,9 +492,9 @@ jobs:
             stream-hub-service
 
       - name: E2E Test API
-        run: |          
+        run: |
           docker ps
-          # docker logs rocketchat --tail=50
+          docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
           cd ./apps/meteor
           for i in $(seq 1 5); do
@@ -537,6 +532,9 @@ jobs:
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
+
+          docker ps
+          docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
