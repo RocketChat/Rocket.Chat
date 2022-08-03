@@ -10,7 +10,7 @@ $ TEST_MODE=true yarn dev
 Then we can run a single suite with
 
 ```sh
-$ yarn test:e2e ./tests/e2e/01-forgot-password.spec.ts
+$ yarn test:e2e ./tests/e2e/administration.spec.ts
 ```
 
 Or all the tests with
