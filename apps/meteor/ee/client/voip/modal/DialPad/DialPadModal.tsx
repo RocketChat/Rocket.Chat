@@ -1,4 +1,4 @@
-import { Box, Field, Modal, IconButton } from '@rocket.chat/fuselage';
+import { Field, Modal, IconButton } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
 import { DialInput } from './DialInput';
@@ -49,21 +49,19 @@ const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalP
 				</Field>
 				<Pad onClickPadButton={handlePadButtonClick} onLongPressPadButton={handlePadButtonLongPressed} />
 			</Modal.Content>
-			<Modal.Footer>
-				<Box display='flex' justifyContent='center'>
-					<IconButton
-						icon='phone'
-						disabled={isButtonDisabled}
-						borderRadius='full'
-						secondary
-						info
-						size='64px'
-						onClick={(): void => {
-							handleCallButtonClick();
-							handleClose();
-						}}
-					/>
-				</Box>
+			<Modal.Footer justifyContent='center'>
+				<IconButton
+					icon='phone'
+					disabled={isButtonDisabled}
+					borderRadius='full'
+					secondary
+					info
+					size='64px'
+					onClick={(): void => {
+						handleCallButtonClick();
+						handleClose();
+					}}
+				/>
 			</Modal.Footer>
 		</Modal>
 	);
