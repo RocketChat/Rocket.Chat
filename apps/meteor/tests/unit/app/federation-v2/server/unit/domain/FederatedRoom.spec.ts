@@ -19,6 +19,7 @@ import {
 } from '../../../../../../../app/federation-v2/server/domain/FederatedRoom';
 
 describe('Federation - Domain - FederatedRoom', () => {
+
 	describe('#isAnInternalIdentifier()', () => {
 		it('should return true if the origin is equal to the localOrigin', () => {
 			expect(isAnInternalIdentifier('localOrigin', 'localOrigin')).to.be.equal(true);
