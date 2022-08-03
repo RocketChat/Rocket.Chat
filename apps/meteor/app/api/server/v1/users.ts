@@ -72,7 +72,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { userId } = this.bodyParams;
+			const { userId } = this;
 			const suggestions = Meteor.call('getAvatarSuggestion', userId);
 
 			return API.v1.success({ suggestions });

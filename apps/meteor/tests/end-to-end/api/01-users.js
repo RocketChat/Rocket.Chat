@@ -889,6 +889,11 @@ describe('[Users]', function () {
 			user = await createUser();
 		});
 
+		let userCredentials;
+		before(async () => {
+			userCredentials = await login(user.username, password);
+		});
+
 		it('should return 401 unauthorized when user is not logged in', (done) => {
 			request
 				.get(api('users.getAvatarSuggestion'))
@@ -900,10 +905,6 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		let userCredentials;
-		before(async () => {
-			userCredentials = await login(user.username, password);
-		});
 		after(async () => {
 			await deleteUser(user);
 			user = undefined;
@@ -918,36 +919,6 @@ describe('[Users]', function () {
 					userId: userCredentials['X-User-Id'],
 				})
 				.expect(200)
-				.end(done);
-		});
-
-		it('should return an error when the user does not exist', (done) => {
-			request
-				.get(api('users.getAvatarSuggestion'))
-				.set(userCredentials)
-				.query({
-					userId: 'invalid-id',
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
-		});
-
-		it('should return an error when the request is null', (done) => {
-			request
-				.get(api('users.getAvatarSuggestion'))
-				.set(userCredentials)
-				.query({
-					userId: '',
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
 				.end(done);
 		});
 	});
