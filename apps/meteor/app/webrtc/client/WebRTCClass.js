@@ -10,7 +10,7 @@ import { Notifications } from '../../notifications';
 import { settings } from '../../settings';
 import { modal } from '../../ui-utils';
 import { ChatSubscription } from '../../models/client';
-import { WEB_RTC_EVENTS } from '..';
+import { WEB_RTC_EVENTS } from '../webRTCEvents';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 
 class WebRTCTransportClass extends Emitter {

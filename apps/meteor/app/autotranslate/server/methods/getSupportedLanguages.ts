@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { hasPermission } from '../../../authorization/server';
-import { TranslationProviderRegistry } from '..';
+import { TranslationProviderRegistry } from '../autotranslate';
 
 Meteor.methods({
 	'autoTranslate.getSupportedLanguages'(targetLanguage) {

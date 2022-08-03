@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
 import { Imports } from '../../../models/server';
-import { Importers } from '..';
+import { Importers } from '../../lib/Importers';
 
 Meteor.methods({
 	getImportProgress() {

@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { RocketChatImportFileInstance } from '../startup/store';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { hasPermission } from '../../../authorization';
-import { Importers } from '..';
+import { Importers } from '../../lib/Importers';
 
 function downloadHttpFile(fileUrl, writeStream) {
 	const protocol = fileUrl.startsWith('https') ? https : http;

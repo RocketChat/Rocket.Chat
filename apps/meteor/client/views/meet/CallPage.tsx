@@ -5,7 +5,7 @@ import React, { FC, useEffect, useState } from 'react';
 
 import { Notifications } from '../../../app/notifications/client';
 import { WebRTC } from '../../../app/webrtc/client';
-import { WEB_RTC_EVENTS } from '../../../app/webrtc/index';
+import { WEB_RTC_EVENTS } from '../../../app/webrtc/webRTCEvents';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import OngoingCallDuration from './OngoingCallDuration';
 import './styles.css';

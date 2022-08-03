@@ -7,7 +7,7 @@ import { RocketChatImportFileInstance } from '../startup/store';
 import { hasPermission } from '../../../authorization';
 import { Imports } from '../../../models/server';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
-import { Importers } from '..';
+import { Importers } from '../../lib/Importers';
 
 Meteor.methods({
 	getImportFileData() {

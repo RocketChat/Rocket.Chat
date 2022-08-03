@@ -2,7 +2,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
 import { Imports } from '../../../models/server';
-import { Importers, Selection, SelectionChannel, SelectionUser } from '..';
+import { Importers } from '../../lib/Importers';
+import { Selection } from '../classes/ImporterSelection';
+import { SelectionChannel } from '../classes/ImporterSelectionChannel';
+import { SelectionUser } from '../classes/ImporterSelectionUser';
 
 Meteor.methods({
 	startImport(input) {

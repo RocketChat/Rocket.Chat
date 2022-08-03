@@ -15,7 +15,9 @@ import { Settings, Imports, ImportData } from '../../../models/server';
 import { Logger } from '../../../logger';
 import { ImportDataConverter } from './ImportDataConverter';
 import { t } from '../../../utils/server';
-import { Selection, SelectionChannel, SelectionUser } from '..';
+import { Selection } from './ImporterSelection';
+import { SelectionChannel } from './ImporterSelectionChannel';
+import { SelectionUser } from './ImporterSelectionUser';
 
 /**
  * Base class for all of the importers.
