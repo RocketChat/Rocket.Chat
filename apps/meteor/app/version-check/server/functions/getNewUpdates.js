@@ -25,7 +25,7 @@ export default () => {
 		};
 
 		const headers = {};
-		const token = getWorkspaceAccessToken();
+		const token = Promise.await(getWorkspaceAccessToken());
 		if (token) {
 			headers.Authorization = `Bearer ${token}`;
 		}

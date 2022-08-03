@@ -8,7 +8,7 @@ import { LICENSE_VERSION } from '../license';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function getWorkspaceLicense() {
-	const token = getWorkspaceAccessToken();
+	const token = Promise.await(getWorkspaceAccessToken());
 
 	if (!token) {
 		return { updated: false, license: '' };

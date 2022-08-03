@@ -23,7 +23,7 @@ export async function syncWorkspace(reconnectCheck = false) {
 	let result;
 	try {
 		const headers = {};
-		const token = getWorkspaceAccessToken(true);
+		const token = await getWorkspaceAccessToken(true);
 
 		if (token) {
 			headers.Authorization = `Bearer ${token}`;
