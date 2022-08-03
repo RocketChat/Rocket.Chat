@@ -34,7 +34,7 @@ export async function getWorkspaceLicense() {
 	const remoteLicense = licenseResult.data;
 	const currentLicense = await Settings.findOne('Cloud_Workspace_License');
 
-	if (!currentLicense) {
+	if (!currentLicense || !currentLicense._updatedAt) {
 		throw new Error('Failed to retrieve current license');
 	}
 
