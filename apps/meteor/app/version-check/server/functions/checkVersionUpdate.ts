@@ -34,10 +34,10 @@ export const checkVersionUpdate = async () => {
 		await sendMessagesToAdmins({
 			msgs: ({ adminUser }) => [
 				{
-					msg: `*${TAPi18n.__('Update_your_RocketChat', adminUser.language)}*\n${TAPi18n.__(
+					msg: `*${TAPi18n.__('Update_your_RocketChat', adminUser.language ?? 'en')}*\n${TAPi18n.__(
 						'New_version_available_(s)',
 						version.version,
-						adminUser.language,
+						adminUser.language ?? 'en',
 					)}\n${version.infoUrl}`,
 				},
 			],
@@ -62,9 +62,9 @@ export const checkVersionUpdate = async () => {
 				alerts
 					.filter((alert) => !Users.bannerExistsById(adminUser._id, `alert-${alert.id}`))
 					.map((alert) => ({
-						msg: `*${TAPi18n.__('Rocket_Chat_Alert', adminUser.language)}:*\n\n*${TAPi18n.__(
+						msg: `*${TAPi18n.__('Rocket_Chat_Alert', adminUser.language ?? 'en')}:*\n\n*${TAPi18n.__(
 							alert.title,
-							adminUser.language,
+							adminUser.language ?? 'en',
 						)}*\n${TAPi18n.__(alert.text, ...(alert.textArguments || []), adminUser.language)}\n${alert.infoUrl}`,
 					})),
 			banners: alerts.map((alert) => ({
