@@ -16,13 +16,13 @@ export async function syncWorkspace(reconnectCheck = false) {
 		return false;
 	}
 
-	const info = await buildWorkspaceRegistrationData();
+	const info = await buildWorkspaceRegistrationData(undefined);
 
 	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
 
 	let result;
 	try {
-		const headers = {};
+		const headers: Record<string, string> = {};
 		const token = await getWorkspaceAccessToken(true);
 
 		if (token) {
@@ -53,11 +53,11 @@ export async function syncWorkspace(reconnectCheck = false) {
 	}
 
 	if (data.publicKey) {
-		Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
+		await Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
 	}
 
 	if (data.trial?.trialId) {
-		Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
+		await Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
 	}
 
 	if (data.nps) {
