@@ -462,8 +462,6 @@ jobs:
 
           sleep 10
 
-          docker compose -f docker-compose-ci.yml logs
-
           until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
             ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
@@ -499,9 +497,27 @@ jobs:
             stream-hub-service
 
       - name: E2E Test API
-        run: |
+        run: |          
+          docker ps
+          # docker logs rocketchat --tail=50
+
           cd ./apps/meteor
-          npm run testapi
+          for i in $(seq 1 5); do
+            docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
+
+            NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+
+            docker compose -f ../../docker-compose-ci.yml restart
+
+            until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+              echo "Waiting Rocket.Chat to start up"
+              ((c++)) && ((c==10)) && exit 1
+              sleep 10
+            done
+
+            npm run testapi && s=0 && break || s=$? && docker compose -f ../../docker-compose-ci.yml logs --tail=100;
+          done;
+          exit $s
 
       - name: Cache Playwright binaries
         uses: actions/cache@v3
