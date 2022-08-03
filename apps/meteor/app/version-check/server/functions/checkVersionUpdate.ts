@@ -1,15 +1,16 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import semver from 'semver';
+import { Settings } from '@rocket.chat/models';
 
 import getNewUpdates from './getNewUpdates';
 import { settings } from '../../../settings/server';
-import { Info } from '../../../utils';
-import { Users, Settings } from '../../../models/server';
+import { Info } from '../../../utils/server';
+import { Users } from '../../../models/server';
 import logger from '../logger';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 // import getNewUpdates from '../sampleUpdateData';
 
-export default () => {
+export const checkVersionUpdate = async () => {
 	logger.info('Checking for version updates');
 
 	const { versions, alerts } = getNewUpdates();
@@ -39,7 +40,7 @@ export default () => {
 	});
 
 	if (update.exists) {
-		Settings.updateValueById('Update_LatestAvailableVersion', update.lastestVersion.version);
+		Promise.await(Settings.updateValueById('Update_LatestAvailableVersion', update.lastestVersion.version));
 
 		Promise.await(
 			sendMessagesToAdmins({
