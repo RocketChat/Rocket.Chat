@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { Users, Rooms, Settings } from '../../../models/server';
+import { Users, Rooms } from '../../../models/server';
 import { sendMessage } from '../../../lib';
+import { Settings } from '@rocket.chat/models';
 
 class ErrorHandler {
 	constructor() {
