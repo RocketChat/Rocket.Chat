@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Meteor } from 'meteor/meteor';
 import { Users } from '@rocket.chat/models';
 
@@ -13,8 +14,8 @@ Meteor.methods({
 			});
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 
-		return getAvatarSuggestionForUser(user);
+		return getAvatarSuggestionForUser(user!);
 	},
 });
