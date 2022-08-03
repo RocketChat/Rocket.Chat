@@ -226,6 +226,58 @@ describe('[Rooms]', function () {
 		});
 	});
 
+	describe('/rooms.nameExists', () => {
+		it('should return 401 unauthorized when user is not logged in', (done) => {
+			request
+				.get(api('rooms.nameExists'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		// eslint-disable-next-line no-unused-vars
+		let testChannel;
+		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+		it('create an channel', (done) => {
+			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
+				testChannel = res.body.channel;
+				done();
+			});
+		});
+		it('should return true if this room name exists', (done) => {
+			request
+				.post(api('rooms.nameExists'))
+				.set(credentials)
+				.send({
+					roomName: testChannelName,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.result).to.be.equal(true);
+				})
+				.end(done);
+		});
+
+		it('should return an error when send an invalid room', (done) => {
+			request
+				.post(api('rooms.nameExists'))
+				.set(credentials)
+				.send({
+					roomId: 'foo',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/rooms.cleanHistory]', () => {
 		let publicChannel;
 		let privateChannel;
