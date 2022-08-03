@@ -1,12 +1,13 @@
+import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
-import { hasPermission } from '../../../authorization';
-import { Settings } from '../../../models/server';
+import { hasPermission } from '../../../authorization/server';
 
 Meteor.methods({
 	'livechat:saveIntegration'(values) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		const uid = Meteor.userId();
+		if (!uid || !hasPermission(uid, 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveIntegration',
 			});
