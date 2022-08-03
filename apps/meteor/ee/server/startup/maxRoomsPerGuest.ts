@@ -11,7 +11,7 @@ callbacks.add(
 	({ _id }: { _id: IUser['_id'] }) => {
 		const totalSubscriptions = Subscriptions.findByUserId(_id).count();
 
-		if (totalSubscriptions === getMaxRoomsPerGuest()) {
+		if (totalSubscriptions >= getMaxRoomsPerGuest()) {
 			throw new Meteor.Error('error-max-rooms-per-guest-reached', TAPi18n.__('error-max-rooms-per-guest-reached'));
 		}
 	},
