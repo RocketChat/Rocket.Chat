@@ -345,7 +345,8 @@ describe('[Rooms]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('files').and.to.be.eq([]);
+					expect(res.body).to.have.property('files').and.to.be.an('array');
+					expect(res.body.files).to.have.lengthOf(0);
 				})
 				.end(done);
 		});
