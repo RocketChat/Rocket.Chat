@@ -39,8 +39,5 @@ test.describe.serial('emoji', () => {
 
 		await poHomeChannel.content.sendMessage('® © ™ # *');
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('® © ™ # *');
-
-		await poHomeChannel.content.sendMessage('0 1 2 3 4 5 6 7 8 9');
-		await expect(poHomeChannel.content.lastUserMessage).toContainText('0 1 2 3 4 5 6 7 8 9');
 	});
 });
