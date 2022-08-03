@@ -1,10 +1,10 @@
 import { HTTP } from 'meteor/http';
+import { Settings } from '@rocket.chat/models';
 
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
-import { Settings } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
 import { NPS, Banner } from '../../../../server/sdk';
