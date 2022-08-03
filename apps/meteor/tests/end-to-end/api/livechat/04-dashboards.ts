@@ -1,6 +1,9 @@
-import { expect } from 'chai';
+/* eslint-env mocha */
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
+import { expect } from 'chai';
+import { Response } from 'supertest';
+
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - dashboards', function () {
@@ -29,7 +32,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('unauthorized');
 					})
@@ -43,10 +46,12 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.totalizers).to.be.an('array');
-						res.body.totalizers.forEach((prop) => expect(expectedMetrics.includes(prop.title)).to.be.true);
+						(res.body.totalizers as { title: string; value: string }[]).forEach(
+							(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
+						);
 					})
 					.end(done);
 			});
@@ -62,7 +67,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('unauthorized');
 					})
@@ -76,10 +81,12 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.totalizers).to.be.an('array');
-						res.body.totalizers.forEach((prop) => expect(expectedMetrics.includes(prop.title)).to.be.true);
+						(res.body.totalizers as { title: string; value: string }[]).forEach(
+							(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
+						);
 					})
 					.end(done);
 			});
@@ -95,7 +102,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('unauthorized');
 					})
@@ -109,10 +116,12 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.totalizers).to.be.an('array');
-						res.body.totalizers.forEach((prop) => expect(expectedMetrics.includes(prop.title)).to.be.true);
+						(res.body.totalizers as { title: string; value: string }[]).forEach(
+							(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
+						);
 					})
 					.end(done);
 			});
@@ -128,7 +137,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('unauthorized');
 					})
@@ -144,10 +153,12 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.totalizers).to.be.an('array');
-						res.body.totalizers.forEach((prop) => expect(expectedMetrics.includes(prop.title)).to.be.true);
+						(res.body.totalizers as { title: string; value: string }[]).forEach(
+							(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
+						);
 					})
 					.end(done);
 			});
@@ -162,7 +173,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('unauthorized');
 					})
@@ -176,7 +187,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('open');
 						expect(res.body).to.have.property('closed');
@@ -195,7 +206,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('unauthorized');
 					})
@@ -209,7 +220,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 					})
 					.end(done);
@@ -225,7 +236,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('unauthorized');
 					})
@@ -239,7 +250,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('offline');
 						expect(res.body).to.have.property('away');
@@ -259,7 +270,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('unauthorized');
 					})
@@ -273,7 +284,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 					})
 					.end(done);
@@ -289,7 +300,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal('unauthorized');
 					})
@@ -303,7 +314,7 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.expect((res) => {
+					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('response');
 						expect(res.body).to.have.property('reaction');

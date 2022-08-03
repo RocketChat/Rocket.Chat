@@ -1,12 +1,12 @@
 /* eslint-env mocha */
 
 import { expect } from 'chai';
-import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { makeAgentAvailable, createAgent, createLivechatRoom, createVisitor } from '../../../data/livechat/rooms';
+import { makeAgentAvailable, createAgent, createLivechatRoom, createVisitor, takeInquiry } from '../../../data/livechat/rooms';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 
 describe('LIVECHAT - visitors', function () {
@@ -288,134 +288,186 @@ describe('LIVECHAT - visitors', function () {
 				.end(done);
 		});
 	});
-	describe('livechat/visitors.search', () => {
-		it('should find a visitor by name', (done) => {
-			createVisitor().then((createdVisitor: ILivechatVisitor) => {
+
+	describe('livechat/visitors.autocomplete', () => {
+		it('should return an error when the user doesnt have the right permissions', (done) => {
+			updatePermission('view-l-room', []).then(() =>
 				request
-					.get(api(`livechat/visitors.search?term=${createdVisitor.name}`))
+					.get(api('livechat/visitors.autocomplete'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(403)
+					.end(done),
+			);
+		});
+
+		it('should return an error when the "selector" query parameter is not valid', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent']).then(() => {
+				request
+					.get(api('livechat/visitors.autocomplete'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
 					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('total', 1);
-						expect(res.body).to.have.property('visitors');
-						expect(res.body.visitors).to.be.an('array');
-						expect(res.body.visitors).to.have.length(1);
-						expect(res.body.visitors[0]).to.have.property('_id');
-						expect(res.body.visitors[0]).to.have.property('name');
-						expect(res.body.visitors[0]).to.have.property('username');
-						expect(res.body.visitors[0]).to.have.property('phone');
-						expect(res.body.visitors[0]).to.have.property('visitorEmails');
-						expect(res.body.visitors[0]._id).to.be.equal(createdVisitor._id);
-						expect(res.body.visitors[0].name).to.be.equal(createdVisitor.name);
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal("The 'selector' param is required");
 					})
 					.end(done);
 			});
 		});
-		it('should find a visitor by username', (done) => {
-			createVisitor().then((createdVisitor: ILivechatVisitor) => {
+
+		it('should return an error if "selector" param is not JSON serializable', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent']).then(() => {
 				request
-					.get(api(`livechat/visitors.search?term=${createdVisitor.username}`))
+					.get(api('livechat/visitors.autocomplete'))
+					.query({ selector: '{invalid' })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('total', 1);
-						expect(res.body).to.have.property('visitors');
-						expect(res.body.visitors).to.be.an('array');
-						expect(res.body.visitors).to.have.length(1);
-						expect(res.body.visitors[0]).to.have.property('_id');
-						expect(res.body.visitors[0]).to.have.property('name');
-						expect(res.body.visitors[0]).to.have.property('username');
-						expect(res.body.visitors[0]).to.have.property('phone');
-						expect(res.body.visitors[0]).to.have.property('visitorEmails');
-						expect(res.body.visitors[0]._id).to.be.equal(createdVisitor._id);
-						expect(res.body.visitors[0].username).to.be.equal(createdVisitor.username);
+						expect(res.body).to.have.property('success', false);
 					})
 					.end(done);
 			});
 		});
-		it('should find a visitor by email', (done) => {
-			createVisitor().then((createdVisitor: ILivechatVisitor) => {
-				request
-					.get(api(`livechat/visitors.search?term=${createdVisitor.visitorEmails![0].address}`))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('total', 1);
-						expect(res.body).to.have.property('visitors');
-						expect(res.body.visitors).to.be.an('array');
-						expect(res.body.visitors).to.have.length(1);
-						expect(res.body.visitors[0]).to.have.property('_id');
-						expect(res.body.visitors[0]).to.have.property('name');
-						expect(res.body.visitors[0]).to.have.property('username');
-						expect(res.body.visitors[0]).to.have.property('phone');
-						expect(res.body.visitors[0]).to.have.property('visitorEmails');
-						expect(res.body.visitors[0]._id).to.be.equal(createdVisitor._id);
-						expect(res.body.visitors[0].visitorEmails[0].address).to.be.equal(createdVisitor.visitorEmails![0].address);
-					})
-					.end(done);
-			});
+
+		it('should return a list of visitors when the query params is all valid', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => createVisitor())
+				.then((createdVisitor: ILivechatVisitor) => {
+					request
+						.get(api('livechat/visitors.autocomplete'))
+						.query({ selector: JSON.stringify({ term: createdVisitor.name }) })
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('items');
+							expect(res.body.items).to.be.an('array');
+							expect(res.body.items).to.have.length.of.at.least(1);
+							expect(res.body.items[0]).to.have.property('_id');
+							expect(res.body.items[0]).to.have.property('name');
+
+							const visitor = res.body.items.find((item: any) => item._id === createdVisitor._id);
+							expect(visitor).to.have.property('_id');
+							expect(visitor).to.have.property('name');
+							expect(visitor._id).to.be.equal(createdVisitor._id);
+						})
+						.end(done);
+				});
 		});
-		it('should find a visitor by phone', (done) => {
-			createVisitor().then((createdVisitor: ILivechatVisitor) => {
-				request
-					.get(api(`livechat/visitors.search?term=${createdVisitor.phone![0].phoneNumber}`))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('total', 1);
-						expect(res.body).to.have.property('visitors');
-						expect(res.body.visitors).to.be.an('array');
-						expect(res.body.visitors).to.have.length(1);
-						expect(res.body.visitors[0]).to.have.property('_id');
-						expect(res.body.visitors[0]).to.have.property('name');
-						expect(res.body.visitors[0]).to.have.property('username');
-						expect(res.body.visitors[0]).to.have.property('phone');
-						expect(res.body.visitors[0]).to.have.property('visitorEmails');
-						expect(res.body.visitors[0]._id).to.be.equal(createdVisitor._id);
-						expect(res.body.visitors[0].phone[0].phoneNumber).to.be.equal(createdVisitor.phone![0].phoneNumber);
-					})
-					.end(done);
-			});
+	});
+
+	describe('livechat/visitors.searchChats/room/:roomId/visitor/:visitorId', () => {
+		it('should return an error when the user doesnt have the right permissions', (done) => {
+			updatePermission('view-l-room', [])
+				.then(() =>
+					request
+						.get(api('livechat/visitors.searchChats/room/123/visitor/123'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(403),
+				)
+				.then(() => done())
+				.catch(done);
 		});
-		it('should return an error when the query params is not valid', (done) => {
-			request
-				.get(api('livechat/visitors.search?offset=-1'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
+
+		it('should throw an error when the roomId is not valid', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => {
+					request
+						.get(api('livechat/visitors.searchChats/room/invalid/visitor/123'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+						});
 				})
-				.end(done);
+				.then(() => done())
+				.catch(done);
 		});
-		it('should return an empty array when no visitor is found', (done) => {
-			request
-				.get(api(`livechat/visitors.search?term=${Math.random().toString(36)}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('total', 0);
-					expect(res.body).to.have.property('visitors');
-					expect(res.body.visitors).to.be.an('array');
-					expect(res.body.visitors).to.have.length(0);
+
+		it('should return an empty array if the user is not the one serving the chat', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
+				.then(() => createVisitor())
+				.then((createdVisitor: ILivechatVisitor) => createLivechatRoom(createdVisitor.token))
+				.then((room: IOmnichannelRoom) => {
+					request
+						.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/123`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('history');
+							expect(res.body.history).to.be.an('array');
+							expect(res.body.history).to.have.lengthOf(0);
+						});
 				})
-				.end(done);
+				.then(() => done())
+				.catch(done);
+		});
+
+		it('should return an empty array if the visitorId doesnt correlate to room', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
+				.then(() => createVisitor())
+				.then((createdVisitor: ILivechatVisitor) => createLivechatRoom(createdVisitor.token))
+				.then((room: IOmnichannelRoom) => {
+					request
+						.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/123`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('history');
+							expect(res.body.history).to.be.an('array');
+							expect(res.body.history).to.have.lengthOf(0);
+						});
+				})
+				.then(() => done())
+				.catch(done);
+		});
+
+		it('should return a list of chats when the query params is all valid', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
+				.then(() => createVisitor())
+				.then((createdVisitor: ILivechatVisitor) => Promise.all([createLivechatRoom(createdVisitor.token), createdVisitor]))
+				.then(([room, visitor]: [IOmnichannelRoom, ILivechatVisitor]) => Promise.all([createAgent(), room, visitor]))
+				.then(([agent, room, visitor]: [ILivechatAgent, IOmnichannelRoom, ILivechatVisitor]) => {
+					return Promise.all([room, visitor, takeInquiry(room._id, agent._id)]);
+				})
+				.then(([room, visitor]: [IOmnichannelRoom, ILivechatVisitor, any]) => {
+					request
+						.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=false`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('history');
+							expect(res.body.history).to.be.an('array');
+							expect(res.body.history).to.have.length.of.at.least(1);
+							expect(res.body.history[0]).to.have.property('_id');
+							expect(res.body.history[0]).to.have.property('name');
+							expect(res.body.history[0]).to.have.property('createdAt');
+							expect(res.body.history[0]).to.have.property('endedAt');
+							expect(res.body.history[0]).to.have.property('status');
+							expect(res.body.history[0]).to.have.property('visitor');
+						});
+				})
+				.then(() => done())
+				.catch(done);
 		});
 	});
 });
 
-describe('Omnichannel', function () {
+describe.only('Omnichannel', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -423,18 +475,16 @@ describe('Omnichannel', function () {
 	describe('GET [omnichannel/contact.search]', () => {
 		it('should find a contact by email', (done) => {
 			createVisitor()
-				.then()
 				.then((visitor: ILivechatVisitor) => {
-					// visitor.
 					request
 						.get(api(`omnichannel/contact.search?email=${visitor.visitorEmails![0].address}`))
 						.set(credentials)
+						.send()
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('contact');
-							expect(res.body.contact).to.have.property('_id');
 							expect(res.body.contact).to.have.property('_id');
 							expect(res.body.contact).to.have.property('name');
 							expect(res.body.contact).to.have.property('username');
@@ -442,24 +492,24 @@ describe('Omnichannel', function () {
 							expect(res.body.contact).to.have.property('visitorEmails');
 							expect(res.body.contact._id).to.be.equal(visitor._id);
 							expect(res.body.contact.phone[0].phoneNumber).to.be.equal(visitor.phone?.[0].phoneNumber);
-						})
-						.end(done);
-				});
+							// done();
+						});
+				})
+				.then(() => done())
+				.catch(done)
 		});
-		it('should find a contact by phone', (done) => {
+		it('should find a contact by phone', (done) =>{
 			createVisitor()
-				.then()
 				.then((visitor: ILivechatVisitor) => {
-					// visitor.
 					request
 						.get(api(`omnichannel/contact.search?phone=${visitor.phone?.[0].phoneNumber}`))
 						.set(credentials)
+						.send()
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('contact');
-							expect(res.body.contact).to.have.property('_id');
 							expect(res.body.contact).to.have.property('_id');
 							expect(res.body.contact).to.have.property('name');
 							expect(res.body.contact).to.have.property('username');
@@ -467,13 +517,14 @@ describe('Omnichannel', function () {
 							expect(res.body.contact).to.have.property('visitorEmails');
 							expect(res.body.contact._id).to.be.equal(visitor._id);
 							expect(res.body.contact.phone[0].phoneNumber).to.be.equal(visitor.phone?.[0].phoneNumber);
-						})
-						.end(done);
-				});
+						});
+				})
+				.then(() => done())
+				.catch(done)
 		});
 		it('should find a contact by custom field', (done) => {
 			const cfID = 'address';
-			return createCustomField({
+			createCustomField({
 				searchable: true,
 				field: 'address',
 				label: 'address',
@@ -492,6 +543,7 @@ describe('Omnichannel', function () {
 					request
 						.get(api(`omnichannel/contact.search?custom=${new URLSearchParams({ address: 'Rocket.Chat' }).toString()}`))
 						.set(credentials)
+						.send()
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res: Response) => {
@@ -504,7 +556,8 @@ describe('Omnichannel', function () {
 							deleteCustomField(cfID);
 						});
 				})
-				.then(done);
+				.then(() => done())
+				.catch(done);
 		});
 	});
 });
