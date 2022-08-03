@@ -358,11 +358,7 @@ jobs:
 
       - name: E2E Test UI
         run: |
-          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
-          Xvfb -screen 0 1024x768x24 :99 &
-
           docker logs rocketchat --tail=50
-
           docker stop rocketchat
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
@@ -382,10 +378,9 @@ jobs:
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
-        if: failure()
         with:
           name: playwright-test-trace
-          path: ./apps/meteor/tests/e2e/test-failures*
+          path: ./apps/meteor/tests/e2e/.playwright*
 
   test-ee:
     runs-on: ubuntu-20.04
@@ -662,11 +657,7 @@ jobs:
 
       - name: E2E Test UI
         run: |
-          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
-          Xvfb -screen 0 1024x768x24 :99 &
-
           docker logs rocketchat --tail=50
-
           docker stop rocketchat
           docker stop stream-hub
           docker stop account
@@ -722,10 +713,9 @@ jobs:
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
-        if: failure()
         with:
           name: e2e-ee-testtrace
-          path: ./apps/meteor/tests/e2e/test-failures*
+          path: ./apps/meteor/tests/e2e/.playwright*
 
   deploy:
     runs-on: ubuntu-20.04
