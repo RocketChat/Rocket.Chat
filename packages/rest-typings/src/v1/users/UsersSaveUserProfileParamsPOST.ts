@@ -11,8 +11,8 @@ export type UsersSaveUserProfileParamsPOST = {
 		username?: string;
 		nickname?: string;
 		statusText?: string;
-      statusType?: string;
-      bio?: string;
+		statusType?: string;
+		bio?: string;
 		typedPassword?: string;
 		newPassword?: string;
 	};
