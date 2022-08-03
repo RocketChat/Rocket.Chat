@@ -3,7 +3,7 @@ import { Users } from '@rocket.chat/models';
 
 import { slashCommands } from '../../../../../../../app/utils/lib/slashCommand';
 import { federationRoomServiceSenderEE } from '../../..';
-import { normalizeExternalInviteeId } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands';
+import { normalizeExternalInviteeId } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands/action';
 import { FederationRoomSenderConverterEE } from '../converters/RoomSender';
 
 const EE_FEDERATION_COMMANDS = {
