@@ -1,4 +1,4 @@
-import { ILoginAttempt } from '../ILoginAttempt';
+import type { ILoginAttempt } from '../ILoginAttempt';
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 

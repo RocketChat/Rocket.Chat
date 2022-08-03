@@ -1,13 +1,13 @@
 declare module '@rocket.chat/fuselage-ui-kit' {
-	import {
+	import type {
 		IDividerBlock,
 		ISectionBlock,
 		IActionsBlock,
 		IContextBlock,
 		IInputBlock,
 	} from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
-	import { IBlock } from '@rocket.chat/ui-kit';
-	import { Context, FC, ReactChildren } from 'react';
+	import type { IBlock } from '@rocket.chat/ui-kit';
+	import type { Context, FC, ReactChildren } from 'react';
 
 	export const kitContext: Context<{
 		action: (action: { blockId: string; appId: string; actionId: string; value: unknown; viewId: string }) => void | Promise<void>;

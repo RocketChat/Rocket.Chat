@@ -1,10 +1,12 @@
-import { Agenda, Job } from '@rocket.chat/agenda';
+import type { Job } from '@rocket.chat/agenda';
+import { Agenda } from '@rocket.chat/agenda';
 import { ObjectID } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
-import { StartupType, IProcessor, IOnetimeSchedule, IRecurringSchedule } from '@rocket.chat/apps-engine/definition/scheduler';
+import type { IProcessor, IOnetimeSchedule, IRecurringSchedule } from '@rocket.chat/apps-engine/definition/scheduler';
+import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
 import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/SchedulerBridge';
 
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 
 function _callProcessor(processor: Function): (job: Job) => void {
 	return (job): void => {

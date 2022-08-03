@@ -2,9 +2,9 @@ import { EventEmitter } from 'events';
 
 import type { IPublication } from 'meteor/rocketchat:streamer';
 
-import { Server } from './Server';
-import { Client } from './Client';
-import { IPacket } from './types/IPacket';
+import type { Server } from './Server';
+import type { Client } from './Client';
+import type { IPacket } from './types/IPacket';
 
 export class Publication extends EventEmitter implements IPublication {
 	_session: IPublication['_session'];

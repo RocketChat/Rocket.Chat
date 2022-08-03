@@ -7,15 +7,8 @@ import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import he from 'he';
 import jschardet from 'jschardet';
-import {
-	OEmbedUrlContentResult,
-	OEmbedUrlWithMetadata,
-	IMessage,
-	MessageAttachment,
-	isOEmbedUrlContentResult,
-	isOEmbedUrlWithMetadata,
-	OEmbedMeta,
-} from '@rocket.chat/core-typings';
+import type { OEmbedUrlContentResult, OEmbedUrlWithMetadata, IMessage, MessageAttachment, OEmbedMeta } from '@rocket.chat/core-typings';
+import { isOEmbedUrlContentResult, isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { OEmbedCache } from '@rocket.chat/models';
 
 import { Logger } from '../../logger/server';

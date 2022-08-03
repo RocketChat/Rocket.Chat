@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { handleError } from '../../../../client/lib/utils/handleError';
 

@@ -3,7 +3,7 @@ import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
 
 import { LDAPEE } from '../sdk';
 import { settings } from '../../../app/settings/server';
-import { LDAPConnection } from '../../../server/lib/ldap/Connection';
+import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
 import { cronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 import { LDAPEEManager } from '../lib/ldap/Manager';

@@ -9,7 +9,7 @@ import { Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
-import { ICreateRoomParams } from '../../../../server/sdk/types/IRoomService';
+import type { ICreateRoomParams } from '../../../../server/sdk/types/IRoomService';
 
 const generateSubscription = (fname: string, name: string, user: IUser, extra: {}): any => ({
 	_id: Random.id(),

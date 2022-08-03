@@ -9,7 +9,7 @@ import {
 	FederationRoomSendInternalMessageDto,
 } from '../../../application/input/RoomReceiverDto';
 import { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
-import { IMatrixEvent } from '../definitions/IMatrixEvent';
+import type { IMatrixEvent } from '../definitions/IMatrixEvent';
 import { AddMemberToRoomMembership } from '../definitions/IMatrixEventContent/IMatrixEventContentAddMemberToRoom';
 import { RoomJoinRules } from '../definitions/IMatrixEventContent/IMatrixEventContentSetRoomJoinRules';
 import { MatrixEventType } from '../definitions/MatrixEventType';

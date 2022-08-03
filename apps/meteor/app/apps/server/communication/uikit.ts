@@ -1,4 +1,5 @@
-import express, { Request, Response } from 'express';
+import type { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { Meteor } from 'meteor/meteor';
@@ -7,7 +8,8 @@ import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definitio
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { settings } from '../../../settings/server';
-import { Apps, AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
+import { Apps } from '../orchestrator';
 import { UiKitCoreApp } from '../../../../server/sdk';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 

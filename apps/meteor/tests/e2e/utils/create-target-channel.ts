@@ -1,4 +1,4 @@
-import { Browser } from '@playwright/test';
+import type { Browser } from '@playwright/test';
 import faker from '@faker-js/faker';
 
 import { HomeChannel } from '../page-objects/home-channel';

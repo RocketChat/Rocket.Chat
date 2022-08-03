@@ -1,5 +1,5 @@
-import { IEmailInbox } from '@rocket.chat/core-typings';
-import { InsertOneResult, UpdateResult, WithId } from 'mongodb';
+import type { IEmailInbox } from '@rocket.chat/core-typings';
+import type { InsertOneResult, UpdateResult, WithId } from 'mongodb';
 import { EmailInbox } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';

@@ -1,6 +1,6 @@
 declare module 'meteor/rocketchat:tap-i18n' {
-	import { Tracker } from 'meteor/tracker';
-	import i18next from 'i18next';
+	import type { Tracker } from 'meteor/tracker';
+	import type i18next from 'i18next';
 
 	namespace TAPi18n {
 		function __(

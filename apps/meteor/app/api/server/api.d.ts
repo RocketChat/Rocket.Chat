@@ -11,7 +11,7 @@ import type { IUser, IMethodConnection, IRoom } from '@rocket.chat/core-typings'
 import type { ValidateFunction } from 'ajv';
 import type { Request, Response } from 'express';
 
-import { ITwoFactorOptions } from '../../2fa/server/code';
+import type { ITwoFactorOptions } from '../../2fa/server/code';
 
 type SuccessResult<T> = {
 	statusCode: 200;

@@ -1,4 +1,5 @@
-import React, { ContextType, ReactElement, ReactNode, useMemo } from 'react';
+import type { ContextType, ReactElement, ReactNode } from 'react';
+import React, { useMemo } from 'react';
 import { RouterContext } from '@rocket.chat/ui-contexts';
 
 type RouterContextMockProps = {

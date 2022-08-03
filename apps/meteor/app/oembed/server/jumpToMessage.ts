@@ -3,7 +3,8 @@ import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import { ITranslatedMessage, MessageAttachment, isQuoteAttachment } from '@rocket.chat/core-typings';
+import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import { isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';

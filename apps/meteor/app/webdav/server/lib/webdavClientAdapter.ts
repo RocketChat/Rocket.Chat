@@ -1,4 +1,5 @@
-import { createClient, WebDavClient, Stat } from 'webdav';
+import type { WebDavClient, Stat } from 'webdav';
+import { createClient } from 'webdav';
 
 export type ServerCredentials = {
 	token?: string;

@@ -2,7 +2,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
 import type { SettingValue, RoomType } from '@rocket.chat/core-typings';
 
-import {
+import type {
 	IRoomTypeConfig,
 	IRoomTypeRouteConfig,
 	IRoomTypeClientDirectives,

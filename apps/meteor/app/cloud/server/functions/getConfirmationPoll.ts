@@ -1,5 +1,5 @@
 import { HTTP } from 'meteor/http';
-import { CloudConfirmationPollData } from '@rocket.chat/core-typings';
+import type { CloudConfirmationPollData } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';

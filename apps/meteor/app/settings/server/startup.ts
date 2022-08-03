@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import { Settings } from '../../models/server/models/Settings';
-import { ICachedSettings } from './CachedSettings';
+import type { Settings } from '../../models/server/models/Settings';
+import type { ICachedSettings } from './CachedSettings';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function initializeSettings({ SettingsModel, settings }: { SettingsModel: Settings; settings: ICachedSettings }): void {

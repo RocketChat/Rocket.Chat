@@ -1,4 +1,4 @@
-import { SettingValue } from '@rocket.chat/core-typings';
+import type { SettingValue } from '@rocket.chat/core-typings';
 import { Statistics } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';

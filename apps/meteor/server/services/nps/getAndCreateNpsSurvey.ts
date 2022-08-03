@@ -1,6 +1,6 @@
 import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
-import { UiKitBannerPayload, IBanner, BannerPlatform } from '@rocket.chat/core-typings';
+import type { UiKitBannerPayload, IBanner, BannerPlatform } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';

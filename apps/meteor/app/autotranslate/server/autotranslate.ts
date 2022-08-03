@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import {
+import type {
 	IMessage,
 	IRoom,
 	MessageAttachment,

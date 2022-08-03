@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { IUser } from '@rocket.chat/core-typings';
-import { Filter } from 'mongodb';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { Filter } from 'mongodb';
 import { Users } from '@rocket.chat/models';
 import type { Mongo } from 'meteor/mongo';
 

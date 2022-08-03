@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
-import { MessageAttachment, FileAttachmentProps } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { MessageAttachment, FileAttachmentProps, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Uploads } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';

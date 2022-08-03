@@ -1,4 +1,4 @@
-import { ServerCredentials } from './webdavClientAdapter';
+import type { ServerCredentials } from './webdavClientAdapter';
 
 export function getWebdavCredentials(account: ServerCredentials): ServerCredentials {
 	const cred = account.token

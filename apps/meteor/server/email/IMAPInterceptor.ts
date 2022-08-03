@@ -2,7 +2,8 @@ import { EventEmitter } from 'events';
 
 import IMAP from 'imap';
 import type Connection from 'imap';
-import { simpleParser, ParsedMail } from 'mailparser';
+import type { ParsedMail } from 'mailparser';
+import { simpleParser } from 'mailparser';
 
 type IMAPOptions = {
 	deleteAfterRead: boolean;

@@ -1,5 +1,5 @@
 import { HTTP } from 'meteor/http';
-import { CloudRegistrationIntentData } from '@rocket.chat/core-typings';
+import type { CloudRegistrationIntentData } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';

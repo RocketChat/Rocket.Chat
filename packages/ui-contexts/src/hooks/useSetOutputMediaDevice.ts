@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 
-import { DeviceContext, Device, IExperimentalHTMLAudioElement, isDeviceContextEnabled } from '../DeviceContext';
+import { DeviceContext, isDeviceContextEnabled } from '../DeviceContext';
+import type { Device, IExperimentalHTMLAudioElement } from '../DeviceContext';
 
 // This allows different places to set the output device by providing a HTMLAudioElement
 
