@@ -18,7 +18,7 @@ import {
 	executeSlashCommand,
 } from '../../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands/action';
 
-describe('Federation - Server Slash command', () => {
+describe('Federation - Infrastructure - RocketChat - Server Slash command', () => {
 	const command = sinon.stub();
 
 	describe('#normalizeExternalInviteeId()', () => {

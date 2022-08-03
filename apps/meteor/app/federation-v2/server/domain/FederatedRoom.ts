@@ -27,10 +27,6 @@ export abstract class AbstractFederatedRoom {
 
 	public abstract isDirectMessage(): boolean;
 
-	public getMembersUsernames(): string[] {
-		return this.internalReference?.usernames || [];
-	}
-
 	public getExternalId(): string {
 		return this.externalId;
 	}
@@ -43,16 +39,16 @@ export abstract class AbstractFederatedRoom {
 		return this.internalId;
 	}
 
-	public getInternalName(): string | undefined {
-		return this.internalReference.name;
+	public getName(): string | undefined {
+		return this.internalReference.fname || this.internalReference.name;
 	}
 
-	public getInternalTopic(): string | undefined {
+	public getTopic(): string | undefined {
 		return this.internalReference.topic;
 	}
 
-	public static isAnInternalRoom(fromOriginName: string, localOriginName: string): boolean {
-		return isAnInternalIdentifier(fromOriginName, localOriginName);
+	public static isOriginalFromTheProxyServer(fromOriginName: string, proxyServerOriginName: string): boolean {
+		return isAnInternalIdentifier(fromOriginName, proxyServerOriginName);
 	}
 
 	public getInternalReference(): Readonly<IRoom> {
@@ -62,12 +58,12 @@ export abstract class AbstractFederatedRoom {
 		});
 	}
 
-	public getCreatorInternalUsername(): string | undefined {
-		return this.internalReference.u.username;
+	public getCreatorUsername(): string | undefined {
+		return this.internalReference.u?.username;
 	}
 
-	public getCreatorInternalId(): string {
-		return this.internalReference.u._id;
+	public getCreatorId(): string {
+		return this.internalReference.u?._id;
 	}
 
 	public setRoomType(type: RoomType): void {
@@ -113,6 +109,9 @@ export class FederatedRoom extends AbstractFederatedRoom {
 		type: RoomType,
 		name?: string,
 	): FederatedRoom {
+		if (type === RoomType.DIRECT_MESSAGE) {
+			throw new Error('For DMs please use the specific class');
+		}
 		const roomName = name || FederatedRoom.generateTemporaryName(normalizedExternalId);
 		return new FederatedRoom({
 			externalId,
@@ -126,6 +125,9 @@ export class FederatedRoom extends AbstractFederatedRoom {
 	}
 
 	public static createWithInternalReference(externalId: string, internalReference: IRoom): FederatedRoom {
+		if (internalReference.t === RoomType.DIRECT_MESSAGE) {
+			throw new Error('For DMs please use the specific class');
+		}
 		return new FederatedRoom({
 			externalId,
 			internalReference,
@@ -176,7 +178,7 @@ export class DirectMessageFederatedRoom extends AbstractFederatedRoom {
 		});
 	}
 
-	public getInternalMembersUsernames(): string[] {
+	public getMembersUsernames(): string[] {
 		return this.members.map((user) => user.getUsername() || '').filter(Boolean);
 	}
 
@@ -197,9 +199,6 @@ export class DirectMessageFederatedRoom extends AbstractFederatedRoom {
 			return false;
 		}
 		if (!this.internalReference?.usernames) {
-			return false;
-		}
-		if (!federatedUser.getUsername()) {
 			return false;
 		}
 		return this.internalReference.usernames.includes(federatedUser.getUsername() as string);

@@ -93,12 +93,12 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 			return;
 		}
 
-		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getCreatorInternalId());
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getCreatorId());
 		if (!federatedUser) {
 			return;
 		}
 
-		const isRoomFromTheSameHomeServer = FederatedRoomEE.isAnInternalRoom(
+		const isRoomFromTheSameHomeServer = FederatedRoomEE.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
 			this.internalSettingsAdapter.getHomeServerDomain(),
 		);
@@ -121,12 +121,12 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 			return;
 		}
 
-		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getCreatorInternalId());
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getCreatorId());
 		if (!federatedUser) {
 			return;
 		}
 
-		const isRoomFromTheSameHomeServer = FederatedRoomEE.isAnInternalRoom(
+		const isRoomFromTheSameHomeServer = FederatedRoomEE.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
 			this.internalSettingsAdapter.getHomeServerDomain(),
 		);

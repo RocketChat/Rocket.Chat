@@ -39,8 +39,8 @@ export class RocketChatRoomAdapter {
 	public async createFederatedRoom(federatedRoom: FederatedRoom): Promise<void> {
 		const { rid, _id } = createRoom(
 			federatedRoom.getRoomType(),
-			federatedRoom.getInternalName(),
-			federatedRoom.getCreatorInternalUsername() || federatedRoom.getCreatorInternalId(),
+			federatedRoom.getName(),
+			federatedRoom.getCreatorUsername() || federatedRoom.getCreatorId(),
 		);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
@@ -59,12 +59,12 @@ export class RocketChatRoomAdapter {
 		const extraData = undefined;
 		const { rid, _id } = createRoom(
 			federatedRoom.getRoomType(),
-			federatedRoom.getInternalName(),
-			federatedRoom.getCreatorInternalUsername() || federatedRoom.getCreatorInternalId(),
-			federatedRoom.getInternalMembersUsernames(),
+			federatedRoom.getName(),
+			federatedRoom.getCreatorUsername() || federatedRoom.getCreatorId(),
+			federatedRoom.getMembersUsernames(),
 			readonly,
 			extraData,
-			{ creator: federatedRoom.getCreatorInternalId() },
+			{ creator: federatedRoom.getCreatorId() },
 		);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
@@ -108,11 +108,11 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async updateRoomName(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
-		await saveRoomName(federatedRoom.getInternalId(), federatedRoom.getInternalName(), federatedUser.getInternalReference());
+		await saveRoomName(federatedRoom.getInternalId(), federatedRoom.getName(), federatedUser.getInternalReference());
 	}
 
 	public async updateRoomTopic(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
-		await saveRoomTopic(federatedRoom.getInternalId(), federatedRoom.getInternalTopic(), federatedUser.getInternalReference());
+		await saveRoomTopic(federatedRoom.getInternalId(), federatedRoom.getTopic(), federatedUser.getInternalReference());
 	}
 
 	private async createFederatedRoomInstance(externalRoomId: string, room: IRoom): Promise<FederatedRoom> {
