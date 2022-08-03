@@ -7,7 +7,7 @@ describe('[Webdav]', function () {
 
 	before((done) => getCredentials(done));
 
-	describe('[/webdav.getMyAccounts]', () => {
+	describe('/webdav.getMyAccounts', () => {
 		it('should return my webdav accounts', (done) => {
 			request
 				.get(api('webdav.getMyAccounts'))

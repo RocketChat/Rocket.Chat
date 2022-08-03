@@ -4,8 +4,8 @@ import type { DeleteResult } from 'mongodb';
 export type WebdavEndpoints = {
 	'/v1/webdav.getMyAccounts': {
 		GET: () => {
-			accounts: IWebdavAccountIntegration[];
 			success: boolean;
+			accounts: IWebdavAccountIntegration[];
 		};
 	};
 	'/v1/webdav.removeWebdavAccount': {
