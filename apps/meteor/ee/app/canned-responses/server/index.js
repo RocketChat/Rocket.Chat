@@ -11,7 +11,5 @@ onLicense('canned-responses', () => {
 	require('./methods/saveCannedResponse');
 	require('./methods/removeCannedResponse');
 
-	Meteor.startup(function () {
-		createSettings();
-	});
+	createSettings();
 });
