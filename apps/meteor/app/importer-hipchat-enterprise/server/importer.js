@@ -3,9 +3,9 @@ import path from 'path';
 import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
+import { Settings } from '@rocket.chat/models';
 
 import { Base, ProgressStep } from '../../importer/server';
-import { Settings } from '@rocket.chat/models';
 
 export class HipChatEnterpriseImporter extends Base {
 	constructor(info, importRecord) {

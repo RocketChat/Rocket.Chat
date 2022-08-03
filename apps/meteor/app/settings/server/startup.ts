@@ -4,14 +4,8 @@ import type { Settings } from '@rocket.chat/models';
 import { ICachedSettings } from './CachedSettings';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export async function initializeSettings({
-	SettingsModel,
-	settings,
-}: {
-	SettingsModel: typeof Settings;
-	settings: ICachedSettings;
-}): Promise<void> {
-	await SettingsModel.find().forEach((record: ISetting) => {
+export async function initializeSettings({ model, settings }: { model: typeof Settings; settings: ICachedSettings }): Promise<void> {
+	await model.find().forEach((record: ISetting) => {
 		settings.set(record);
 	});
 

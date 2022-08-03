@@ -11,4 +11,4 @@ export { settings };
 
 export const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings });
 
-initializeSettings({ SettingsModel: Settings, settings });
+initializeSettings({ model: Settings, settings });

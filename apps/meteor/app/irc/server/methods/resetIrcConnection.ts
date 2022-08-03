@@ -54,8 +54,8 @@ Meteor.methods({
 					},
 				};
 				// TODO: is this the best way to do this? is this really necessary?
-				// Meteor.ircBridge = new Bridge(config);
-				// Meteor.ircBridge.init();
+				Meteor.ircBridge = new Bridge(config);
+				Meteor.ircBridge.init();
 			}),
 			300,
 		);

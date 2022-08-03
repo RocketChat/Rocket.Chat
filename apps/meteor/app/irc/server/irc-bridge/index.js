@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import Queue from 'queue-fifo';
 import moment from 'moment';
 import _ from 'underscore';
+import { Settings } from '@rocket.chat/models';
 
 import * as peerCommandHandlers from './peerHandlers';
 import * as localCommandHandlers from './localHandlers';
 import { callbacks } from '../../../../lib/callbacks';
 import * as servers from '../servers';
 import { Logger } from '../../../logger/server';
-import { Settings } from '@rocket.chat/models';
 
 const logger = new Logger('IRC Bridge');
 const queueLogger = logger.section('Queue');

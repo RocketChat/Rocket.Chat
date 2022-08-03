@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
+import { Settings } from '@rocket.chat/models';
 
 import { RawImports, Base, ProgressStep, Selection, SelectionUser } from '../../importer/server';
 import { RocketChatFile } from '../../file';
 import { Users } from '../../models/server';
-import { Settings } from '@rocket.chat/models';
 
 export class SlackUsersImporter extends Base {
 	constructor(info, importRecord) {

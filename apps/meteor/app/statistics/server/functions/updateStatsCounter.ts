@@ -1,4 +1,5 @@
 import { Settings } from '@rocket.chat/models';
+
 import telemetryEvent from '../lib/telemetryEvents';
 
 type updateCounterDataType = { settingsId: string };

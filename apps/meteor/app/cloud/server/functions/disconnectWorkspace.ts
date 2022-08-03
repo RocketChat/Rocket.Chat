@@ -1,4 +1,5 @@
 import { Settings } from '@rocket.chat/models';
+
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 export async function disconnectWorkspace() {

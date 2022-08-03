@@ -1,11 +1,11 @@
 import _ from 'underscore';
+import { Settings } from '@rocket.chat/models';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { Messages, ImportData } from '../../models/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import { Settings } from '@rocket.chat/models';
 
 export class SlackImporter extends Base {
 	parseData(data) {

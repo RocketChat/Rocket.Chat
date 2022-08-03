@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { onLicense } from '../../license/server';
 
 onLicense('canned-responses', () => {

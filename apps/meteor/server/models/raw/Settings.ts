@@ -207,6 +207,7 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 			},
 		});
 	}
+
 	findEnterpriseSettings(): FindCursor<ISetting> {
 		return this.find({ enterprise: true });
 	}
