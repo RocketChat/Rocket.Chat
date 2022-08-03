@@ -240,9 +240,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - name: Setup Chrome
-        run: npm i chromedriver
-
       - name: yarn install
         run: yarn
 
@@ -409,9 +406,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
-
-      - name: Setup Chrome
-        run: npm i chromedriver
 
       - name: TurboRepo local server
         uses: felixmosh/turborepo-gh-artifacts@v1
@@ -695,6 +689,13 @@ jobs:
 
           E2E_COVERAGE=true IS_EE=true yarn test:e2e
 
+      - name: Store playwright test trace
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: e2e-ee-testtrace
+          path: ./apps/meteor/tests/e2e/.playwright*
+
       - name: Extract e2e:ee:coverage
         run: |
           cd ./apps/meteor
@@ -705,13 +706,6 @@ jobs:
           directory: ./apps/meteor
           flags: e2e
           verbose: true
-
-      - name: Store playwright test trace
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: e2e-ee-testtrace
-          path: ./apps/meteor/tests/e2e/.playwright*
 
       - name: Store e2e-ee-coverage
         uses: actions/upload-artifact@v2
