@@ -45,7 +45,7 @@ export class FederationRoomServiceSender extends FederationService {
 			throw new Error('Could not find inviter or invitee user');
 		}
 
-		const isInviteeFromTheSameHomeServer = FederatedUser.isAnInternalUser(
+		const isInviteeFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(rawInviteeId),
 			this.internalHomeServerDomain,
 		);

@@ -51,7 +51,10 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 
 		const externalUsersToBeCreatedLocally = invitees.filter(
 			(invitee) =>
-				!FederatedUserEE.isAnInternalUser(this.bridge.extractHomeserverOrigin(invitee.rawInviteeId), this.internalHomeServerDomain),
+				!FederatedUserEE.isOriginalFromTheProxyServer(
+					this.bridge.extractHomeserverOrigin(invitee.rawInviteeId),
+					this.internalHomeServerDomain,
+				),
 		);
 
 		await Promise.all(
@@ -172,7 +175,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 	private async inviteUserToAFederatedRoom(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
 		const { internalInviterId, internalRoomId, normalizedInviteeId, inviteeUsernameOnly, rawInviteeId } = roomInviteUserInput;
 
-		const isInviteeFromTheSameHomeServer = FederatedUserEE.isAnInternalUser(
+		const isInviteeFromTheSameHomeServer = FederatedUserEE.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(rawInviteeId),
 			this.internalHomeServerDomain,
 		);

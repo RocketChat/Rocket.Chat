@@ -56,7 +56,7 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 			this.bridge.extractHomeserverOrigin(externalRoom.getExternalId()),
 			this.internalHomeServerDomain,
 		);
-		const isInviterFromTheProxyServer = FederatedUser.isAnInternalUser(
+		const isInviterFromTheProxyServer = FederatedUser.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(inviter.getExternalId()),
 			this.internalHomeServerDomain,
 		);
@@ -83,7 +83,8 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 		});
 		const atLeastOneExternalUser =
 			usernames.some(
-				(username) => !FederatedUser.isAnInternalUser(this.bridge.extractHomeserverOrigin(username), this.internalHomeServerDomain),
+				(username) =>
+					!FederatedUser.isOriginalFromTheProxyServer(this.bridge.extractHomeserverOrigin(username), this.internalHomeServerDomain),
 			) || internalUsers.filter((user) => !this.isAddingANewExternalUser(user)).some((user) => isUserFederated(user as IUser));
 		if (atLeastOneExternalUser) {
 			throw new Error('error-this-is-an-ee-feature');

@@ -84,11 +84,11 @@ export class FederationRoomServiceListener extends FederationService {
 			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
 		}
 
-		const isInviterFromTheSameHomeServer = FederatedUser.isAnInternalUser(
+		const isInviterFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(externalInviterId),
 			this.internalHomeServerDomain,
 		);
-		const isInviteeFromTheSameHomeServer = FederatedUser.isAnInternalUser(
+		const isInviteeFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(externalInviteeId),
 			this.internalHomeServerDomain,
 		);

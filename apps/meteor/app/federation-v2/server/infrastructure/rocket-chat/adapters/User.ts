@@ -4,7 +4,7 @@ import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 import { FederatedUser } from '../../../domain/FederatedUser';
 
 const createFederatedUserInstance = (externalUserId: string, user: IUser, remote = true): FederatedUser => {
-	const federatedUser = FederatedUser.createInstanceWithInternalUser(externalUserId, !remote, user);
+	const federatedUser = FederatedUser.createWithInternalReference(externalUserId, !remote, user);
 
 	return federatedUser;
 };

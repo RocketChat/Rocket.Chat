@@ -43,7 +43,10 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 
 		const externalUsersToBeCreatedLocally = invitees.filter(
 			(invitee) =>
-				!FederatedUserEE.isAnInternalUser(this.bridge.extractHomeserverOrigin(invitee.rawInviteeId), this.internalHomeServerDomain),
+				!FederatedUserEE.isOriginalFromTheProxyServer(
+					this.bridge.extractHomeserverOrigin(invitee.rawInviteeId),
+					this.internalHomeServerDomain,
+				),
 		);
 
 		await Promise.all(
@@ -80,7 +83,7 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 			throw new Error(`User with internalId ${internalInviterId} not found`);
 		}
 
-		const isInviterFromTheSameHomeServer = FederatedUserEE.isAnInternalUser(
+		const isInviterFromTheSameHomeServer = FederatedUserEE.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(federatedInviterUser.getExternalId()),
 			this.internalHomeServerDomain,
 		);
@@ -108,7 +111,7 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 	private async createUserForDirectMessage(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
 		const { normalizedInviteeId, inviteeUsernameOnly, rawInviteeId } = roomInviteUserInput;
 
-		const isInviteeFromTheSameHomeServer = FederatedUserEE.isAnInternalUser(
+		const isInviteeFromTheSameHomeServer = FederatedUserEE.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(rawInviteeId),
 			this.internalHomeServerDomain,
 		);

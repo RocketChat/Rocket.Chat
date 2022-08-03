@@ -81,9 +81,9 @@ describe('Federation - Infrastructure - RocketChat - FederationRoomSenderConvert
 
 	describe('#toAfterUserLeaveRoom()', () => {
 		it('should return an instance of FederationAfterLeaveRoomDto', () => {
-			expect(
-				FederationRoomSenderConverter.toAfterUserLeaveRoom('internalUserId', 'internalRoomId'),
-			).to.be.instanceOf(FederationAfterLeaveRoomDto);
+			expect(FederationRoomSenderConverter.toAfterUserLeaveRoom('internalUserId', 'internalRoomId')).to.be.instanceOf(
+				FederationAfterLeaveRoomDto,
+			);
 		});
 
 		it('should have all the properties set', () => {
@@ -108,7 +108,11 @@ describe('Federation - Infrastructure - RocketChat - FederationRoomSenderConvert
 			const internalUserId = 'internalUserId';
 			const internalRoomId = 'internalRoomId';
 			const actionDoneByInternalId = 'actionDoneByInternalId';
-			const result: any = FederationRoomSenderConverter.toOnUserRemovedFromRoom('internalUserId', 'internalRoomId', 'actionDoneByInternalId');
+			const result: any = FederationRoomSenderConverter.toOnUserRemovedFromRoom(
+				'internalUserId',
+				'internalRoomId',
+				'actionDoneByInternalId',
+			);
 			expect(result).to.be.eql({
 				internalUserId,
 				internalRoomId,

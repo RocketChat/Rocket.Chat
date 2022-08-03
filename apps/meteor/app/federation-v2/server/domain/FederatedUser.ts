@@ -54,11 +54,7 @@ export class FederatedUser {
 		} as unknown as IUser;
 	}
 
-	public static createInstanceWithInternalUser(
-		externalId: string,
-		existsOnlyOnProxyServer: boolean,
-		internalReference: IUser,
-	): FederatedUser {
+	public static createWithInternalReference(externalId: string, existsOnlyOnProxyServer: boolean, internalReference: IUser): FederatedUser {
 		return new FederatedUser({
 			externalId,
 			existsOnlyOnProxyServer,
@@ -97,7 +93,7 @@ export class FederatedUser {
 		return this.internalReference?.name;
 	}
 
-	public static isAnInternalUser(fromOriginName: string, localOriginName: string): boolean {
+	public static isOriginalFromTheProxyServer(fromOriginName: string, localOriginName: string): boolean {
 		return isAnInternalIdentifier(fromOriginName, localOriginName);
 	}
 
@@ -110,6 +106,6 @@ export class FederatedUser {
 	}
 
 	public getInternalId(): string {
-		return this.internalReference._id;
+		return this.internalId;
 	}
 }
