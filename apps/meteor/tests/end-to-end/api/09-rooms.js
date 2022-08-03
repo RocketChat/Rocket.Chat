@@ -305,6 +305,50 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
+		it('should successfully delete an image and thumbnail from public channel', (done) => {
+			request
+				.post(api(`rooms.upload/${publicChannel._id}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message._id', message._id);
+					expect(res.body).to.have.nested.property('message.rid', publicChannel._id);
+					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
+					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+				});
+
+			request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			request
+				.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomId: publicChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.eq([]);
+				})
+				.end(done);
+		});
 		it('should return success when send a valid private channel', (done) => {
 			request
 				.post(api('rooms.cleanHistory'))
