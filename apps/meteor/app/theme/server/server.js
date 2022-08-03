@@ -9,7 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings, settingsRegistry } from '../../settings/server';
 import { Logger } from '../../logger';
 import { addStyle } from '../../ui-master/server/inject';
-import { Settings } from '../../models/server';
+import { Settings } from '@rocket.chat/models';
 
 const logger = new Logger('rocketchat:theme');
 
