@@ -11,6 +11,7 @@ import {
 	isUsersUpdateParamsPOST,
 	isUsersUpdateOwnBasicInfoParamsPOST,
 	isUsersSetPreferencesParamsPOST,
+	isUsersSaveUserProfileParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
@@ -126,7 +127,7 @@ API.v1.addRoute(
 	'users.saveUserProfile',
 	{
 		authRequired: true,
-		validateParams: AAAAAAAAAAAAAAAAA,
+		validateParams: isUsersSaveUserProfileParamsPOST,
 	},
 	{
 		post() {
