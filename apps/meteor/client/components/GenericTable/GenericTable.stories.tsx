@@ -35,7 +35,7 @@ const renderRow = ({ _id, name, email }: any) => (
 );
 
 export const Default: ComponentStory<typeof GenericTable> = (args) => (
-	<GenericTable {...args} header={header} renderFilter={renderFilter} renderRow={renderRow} height='100vh' />
+	<GenericTable {...args} header={header} renderFilter={renderFilter} renderRow={renderRow} />
 );
 Default.storyName = 'GenericTable';
 Default.args = {
