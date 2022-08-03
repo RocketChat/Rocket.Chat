@@ -15,80 +15,67 @@ export const checkVersionUpdate = async () => {
 
 	const { versions, alerts } = await getNewUpdates();
 
-	const update = {
-		exists: false,
-		lastestVersion: null,
-		security: false,
-	};
+	const lastCheckedVersion = settings.get<string>('Update_LatestAvailableVersion');
 
-	const lastCheckedVersion = settings.get('Update_LatestAvailableVersion');
-	versions.forEach((version) => {
+	for await (const version of versions) {
+		if (!lastCheckedVersion) {
+			break;
+		}
 		if (semver.lte(version.version, lastCheckedVersion)) {
-			return;
+			continue;
 		}
 
 		if (semver.lte(version.version, Info.version)) {
-			return;
+			continue;
 		}
 
-		update.exists = true;
-		update.lastestVersion = version;
+		await Settings.updateValueById('Update_LatestAvailableVersion', version.version);
 
-		if (version.security === true) {
-			update.security = true;
-		}
-	});
-
-	if (update.exists) {
-		Promise.await(Settings.updateValueById('Update_LatestAvailableVersion', update.lastestVersion.version));
-
-		Promise.await(
-			sendMessagesToAdmins({
-				msgs: ({ adminUser }) => [
-					{
-						msg: `*${TAPi18n.__('Update_your_RocketChat', adminUser.language)}*\n${TAPi18n.__(
-							'New_version_available_(s)',
-							update.lastestVersion.version,
-							adminUser.language,
-						)}\n${update.lastestVersion.infoUrl}`,
-					},
-				],
-				banners: [
-					{
-						id: `versionUpdate-${update.lastestVersion.version}`.replace(/\./g, '_'),
-						priority: 10,
-						title: 'Update_your_RocketChat',
-						text: 'New_version_available_(s)',
-						textArguments: [update.lastestVersion.version],
-						link: update.lastestVersion.infoUrl,
-					},
-				],
-			}),
-		);
+		await sendMessagesToAdmins({
+			msgs: ({ adminUser }) => [
+				{
+					msg: `*${TAPi18n.__('Update_your_RocketChat', adminUser.language)}*\n${TAPi18n.__(
+						'New_version_available_(s)',
+						version.version,
+						adminUser.language,
+					)}\n${version.infoUrl}`,
+				},
+			],
+			banners: [
+				{
+					id: `versionUpdate-${version.version}`.replace(/\./g, '_'),
+					priority: 10,
+					title: 'Update_your_RocketChat',
+					text: 'New_version_available_(s)',
+					textArguments: [version.version],
+					link: version.infoUrl,
+					modifiers: [],
+				},
+			],
+		});
+		break;
 	}
 
 	if (alerts && alerts.length) {
-		Promise.await(
-			sendMessagesToAdmins({
-				msgs: ({ adminUser }) =>
-					alerts
-						.filter((alert) => !Users.bannerExistsById(adminUser._id, `alert-${alert.id}`))
-						.map((alert) => ({
-							msg: `*${TAPi18n.__('Rocket_Chat_Alert', adminUser.language)}:*\n\n*${TAPi18n.__(
-								alert.title,
-								adminUser.language,
-							)}*\n${TAPi18n.__(alert.text, ...(alert.textArguments || []), adminUser.language)}\n${alert.infoUrl}`,
-						})),
-				banners: alerts.map((alert) => ({
-					id: `alert-${alert.id}`.replace(/\./g, '_'),
-					priority: 10,
-					title: alert.title,
-					text: alert.text,
-					textArguments: alert.textArguments,
-					modifiers: alert.modifiers,
-					link: alert.infoUrl,
-				})),
-			}),
-		);
+		await sendMessagesToAdmins({
+			msgs: ({ adminUser }) =>
+				alerts
+					.filter((alert) => !Users.bannerExistsById(adminUser._id, `alert-${alert.id}`))
+					.map((alert) => ({
+						msg: `*${TAPi18n.__('Rocket_Chat_Alert', adminUser.language)}:*\n\n*${TAPi18n.__(
+							alert.title,
+							adminUser.language,
+						)}*\n${TAPi18n.__(alert.text, ...(alert.textArguments || []), adminUser.language)}\n${alert.infoUrl}`,
+					})),
+			banners: alerts.map((alert) => ({
+				id: `alert-${alert.id}`.replace(/\./g, '_'),
+				priority: 10,
+				title: alert.title,
+				text: alert.text,
+				textArguments: alert.textArguments,
+				modifiers: alert.modifiers,
+				link: alert.infoUrl,
+			})),
+		});
 	}
 };

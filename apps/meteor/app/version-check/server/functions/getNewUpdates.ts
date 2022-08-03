@@ -39,9 +39,9 @@ export const getNewUpdates = async () => {
 			Match.ObjectIncluding({
 				versions: [
 					Match.ObjectIncluding({
-						version: Match.Optional(String),
+						version: String,
 						security: Match.Optional(Boolean),
-						infoUrl: Match.Optional(String),
+						infoUrl: String,
 					}),
 				],
 				alerts: Match.Optional([
