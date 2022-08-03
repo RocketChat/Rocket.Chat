@@ -40,7 +40,7 @@ export const addUserToRoom = function (
 	}
 
 	if (userToBeAdded.roles.includes('guest')) {
-		callbacks.run('beforeAddGuestUserToRoom', { _id: userToBeAdded._id });
+		callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter: userToBeAdded });
 	}
 
 	// Check if user is already in room
