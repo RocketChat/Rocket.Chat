@@ -1,18 +1,22 @@
 import os from 'os';
 
+import { Settings } from '@rocket.chat/models';
 import { HTTP } from 'meteor/http';
 import { check, Match } from 'meteor/check';
 
-import { Settings } from '../../../models/server';
 import { Info } from '../../../utils/server';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
 
 export const getNewUpdates = async () => {
 	try {
-		const uniqueID = Settings.findOne('uniqueID');
+		const uniqueID = await Settings.findOne('uniqueID');
+
+		if (!uniqueID) {
+			throw new Error('uniqueID not found');
+		}
 
 		const params = {
-			uniqueId: uniqueID.value,
+			uniqueId: String(uniqueID.value),
 			installedAt: uniqueID.createdAt.toJSON(),
 			version: Info.version,
 			osType: os.type(),
