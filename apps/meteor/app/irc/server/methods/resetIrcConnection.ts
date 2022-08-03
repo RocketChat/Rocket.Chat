@@ -66,3 +66,9 @@ Meteor.methods({
 		};
 	},
 });
+
+declare module 'meteor/meteor' {
+	namespace Meteor {
+		export let ircBridge: Bridge;
+	}
+}

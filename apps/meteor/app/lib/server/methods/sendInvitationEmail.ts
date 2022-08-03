@@ -16,12 +16,13 @@ Meteor.startup(() => {
 Meteor.methods({
 	async sendInvitationEmail(emails) {
 		check(emails, [String]);
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendInvitationEmail',
 			});
 		}
-		if (!hasPermission(Meteor.userId(), 'bulk-register-user')) {
+		if (!hasPermission(uid, 'bulk-register-user')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'sendInvitationEmail',
 			});

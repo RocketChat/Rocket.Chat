@@ -217,7 +217,7 @@ export class SettingsRegistry {
 
 		if (!this.store.has(_id)) {
 			options.ts = new Date();
-			Promise.await(this.model.insertOne(options));
+			Promise.await(this.model.insertOne(options as ISetting));
 			this.store.set(options as ISetting);
 		}
 

@@ -48,20 +48,38 @@ export const getNewUpdates = async () => {
 						infoUrl: String,
 					}),
 				],
-				alerts: Match.Optional([
-					Match.ObjectIncluding({
-						id: Match.Optional(String),
-						title: Match.Optional(String),
-						text: Match.Optional(String),
-						textArguments: Match.Optional([Match.Any]),
-						modifiers: Match.Optional([String]),
-						infoUrl: Match.Optional(String),
-					}),
-				]),
+				alerts: [
+					Match.Optional([
+						Match.ObjectIncluding({
+							id: String,
+							title: String,
+							text: String,
+							textArguments: [Match.Any],
+							modifiers: [String],
+							infoUrl: String,
+						}),
+					]),
+				],
 			}),
 		);
 
-		return data;
+		return data as {
+			versions: {
+				version: string;
+				security: boolean;
+				infoUrl: string;
+			}[];
+
+			alerts: {
+				id: string;
+				priority: number;
+				title: string;
+				text: string;
+				textArguments?: string[];
+				modifiers: string[];
+				infoUrl: string;
+			}[];
+		};
 	} catch (error) {
 		// There's no need to log this error
 		// as it's pointless and the user

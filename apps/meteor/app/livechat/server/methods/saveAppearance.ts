@@ -4,7 +4,7 @@ import { Settings } from '@rocket.chat/models';
 import { hasPermission } from '../../../authorization/server';
 
 Meteor.methods({
-	async 'livechat:saveAppearance'(settings) {
+	async 'livechat:saveAppearance'(settings: { _id: string; value: any }[]) {
 		const uid = Meteor.userId();
 		if (!uid || !hasPermission(uid, 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {

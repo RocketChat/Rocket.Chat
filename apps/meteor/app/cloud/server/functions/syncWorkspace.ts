@@ -69,6 +69,10 @@ export async function syncWorkspace(reconnectCheck = false) {
 			npsId,
 			startAt,
 			expireAt: new Date(expireAt),
+			createdBy: {
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+			},
 		});
 
 		const now = new Date();

@@ -68,18 +68,21 @@ export const statistics = {
 
 		// Setup Wizard
 		statistics.wizard = {};
-		wizardFields.forEach((field) => {
-			const record = Settings.findOne(field);
-			if (record) {
-				const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
-				statistics.wizard[wizardField] = record.value;
-			}
-		});
+		await Promise.all(
+			wizardFields.map(async (field) => {
+				const record = await Settings.findOne(field);
+				if (record) {
+					const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
+					statistics.wizard[wizardField] = record.value;
+				}
+			}),
+		);
 
 		// Version
+		const uniqueID = await Settings.findOne('uniqueID');
 		statistics.uniqueId = settings.get('uniqueID');
-		if (Settings.findOne('uniqueID')) {
-			statistics.installedAt = Settings.findOne('uniqueID').createdAt;
+		if (uniqueID) {
+			statistics.installedAt = String(uniqueID.createdAt);
 		}
 
 		if (Info) {

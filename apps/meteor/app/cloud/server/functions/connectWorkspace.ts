@@ -7,7 +7,7 @@ import { settings } from '../../../settings/server';
 import { saveRegistrationData } from './saveRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export async function connectWorkspace(token) {
+export async function connectWorkspace(token: string) {
 	const { connectToCloud } = retrieveRegistrationStatus();
 	if (!connectToCloud) {
 		await Settings.updateValueById('Register_Server', true);
@@ -36,7 +36,7 @@ export async function connectWorkspace(token) {
 			},
 			data: regInfo,
 		});
-	} catch (e) {
+	} catch (e: any) {
 		if (e.response && e.response.data && e.response.data.error) {
 			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
 		} else {
