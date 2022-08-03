@@ -328,19 +328,23 @@ jobs:
 
           cd ./apps/meteor
           for i in $(seq 1 5); do
+            npm run testapi && s=0 && break || s=$?
+
+            docker compose -f ../../docker-compose-ci.yml logs rocketchat --tail=100
+
+            docker compose -f ../../docker-compose-ci.yml stop rocketchat
+
             docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
 
-            docker compose -f ../../docker-compose-ci.yml restart rocketchat
+            docker compose -f ../../docker-compose-ci.yml start rocketchat
 
             until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
               ((c++)) && ((c==10)) && exit 1
               sleep 10
-            done
-
-            npm run testapi && s=0 && break || s=$? && docker compose -f ../../docker-compose-ci.yml logs rocketchat --tail=100;
+            done;
           done;
           exit $s
 
@@ -485,23 +489,27 @@ jobs:
       - name: E2E Test API
         run: |
           docker ps
-          docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
+          docker compose -f docker-compose-ci.yml logs --tail=50
 
           cd ./apps/meteor
           for i in $(seq 1 5); do
+            npm run testapi && s=0 && break || s=$?;
+
+            docker compose -f ../../docker-compose-ci.yml logs --tail=100
+
+            docker compose -f ../../docker-compose-ci.yml stop
+
             docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
 
-            docker compose -f ../../docker-compose-ci.yml restart
+            docker compose -f ../../docker-compose-ci.yml start
 
             until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
               ((c++)) && ((c==10)) && exit 1
               sleep 10
-            done
-
-            npm run testapi && s=0 && break || s=$? && docker compose -f ../../docker-compose-ci.yml logs --tail=100;
+            done;
           done;
           exit $s
 
