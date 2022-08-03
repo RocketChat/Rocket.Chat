@@ -240,9 +240,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - name: Setup Chrome
-        run: npm i chromedriver
-
       - name: yarn install
         run: yarn
 
@@ -341,18 +338,24 @@ jobs:
           done;
           exit $s
 
+      - name: Cache Playwright binaries
+        uses: actions/cache@v3
+        id: cache-playwright
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
+          key: playwright-1.23.1
+
       - name: Install Playwright
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: |
           cd ./apps/meteor
           npx playwright install --with-deps
 
       - name: E2E Test UI
         run: |
-          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
-          Xvfb -screen 0 1024x768x24 :99 &
-
           docker logs rocketchat --tail=50
-
           docker stop rocketchat
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
@@ -368,14 +371,14 @@ jobs:
           done
 
           cd ./apps/meteor
-          npm run test:e2e
+          yarn test:e2e
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
-        if: failure()
+        if: always()
         with:
           name: playwright-test-trace
-          path: ./apps/meteor/tests/e2e/test-failures*
+          path: ./apps/meteor/tests/e2e/.playwright*
 
   test-ee:
     runs-on: ubuntu-20.04
@@ -403,9 +406,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
-
-      - name: Setup Chrome
-        run: npm i chromedriver
 
       - name: TurboRepo local server
         uses: felixmosh/turborepo-gh-artifacts@v1
@@ -636,6 +636,15 @@ jobs:
           done;
           exit $s
 
+      - name: Cache Playwright binaries
+        uses: actions/cache@v3
+        id: cache-playwright
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
+          key: playwright-1.23.1
+
       - name: Install Playwright
         run: |
           cd ./apps/meteor
@@ -643,11 +652,7 @@ jobs:
 
       - name: E2E Test UI
         run: |
-          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
-          Xvfb -screen 0 1024x768x24 :99 &
-
           docker logs rocketchat --tail=50
-
           docker stop rocketchat
           docker stop stream-hub
           docker stop account
@@ -682,7 +687,14 @@ jobs:
 
           cd ./apps/meteor
 
-          E2E_COVERAGE=true IS_EE=true npm run test:e2e
+          E2E_COVERAGE=true IS_EE=true yarn test:e2e
+
+      - name: Store playwright test trace
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: e2e-ee-testtrace
+          path: ./apps/meteor/tests/e2e/.playwright*
 
       - name: Extract e2e:ee:coverage
         run: |
@@ -700,13 +712,6 @@ jobs:
         with:
           name: e2e-ee-coverage
           path: ./apps/meteor/coverage*
-
-      - name: Store playwright test trace
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: e2e-ee-testtrace
-          path: ./apps/meteor/tests/e2e/test-failures*
 
   deploy:
     runs-on: ubuntu-20.04
