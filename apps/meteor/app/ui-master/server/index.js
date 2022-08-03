@@ -124,9 +124,9 @@ Meteor.startup(() => {
 });
 
 const renderDynamicCssList = _.debounce(
-	Meteor.bindEnvironment(() => {
+	Meteor.bindEnvironment(async () => {
 		// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
-		const colors = await(Settings.find({ _id: /theme-color-rc/i }, { fields: { value: 1, editor: 1 } }).toArray()).filter(
+		const colors = Promise.await(Settings.find({ _id: /theme-color-rc/i }, { projection: { value: 1, editor: 1 } }).toArray()).filter(
 			(color) => color && color.value,
 		);
 
