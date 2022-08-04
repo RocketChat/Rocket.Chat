@@ -28,7 +28,7 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 		}
 
 		const user = await this.internalUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
-		const isAFederatedUser = user && !user.isRemote();
+		const isAFederatedUser = user && user.isRemote();
 		if (isAFederatedUser) {
 			throw new Error('error-cant-add-federated-users');
 		}
@@ -60,14 +60,13 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 			this.bridge.extractHomeserverOrigin(inviter.getExternalId()),
 			this.internalHomeServerDomain,
 		);
-
 		const fullActionExecutedOnTheRemoteHomeServer = !isRoomFromTheProxyServer && !isInviterFromTheProxyServer;
 		if (fullActionExecutedOnTheRemoteHomeServer) {
 			return;
 		}
 
 		const invitee = await this.internalUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
-		const addingAnExternalUser = invitee && !invitee.isRemote();
+		const addingAnExternalUser = invitee && invitee.isRemote();
 		const addingExternalUserToNonDirectMessageRoom = addingAnExternalUser && !isDirectMessageRoom(internalRoom);
 		if (addingExternalUserToNonDirectMessageRoom) {
 			throw new Error('error-this-is-an-ee-feature');
