@@ -224,6 +224,7 @@ jobs:
       matrix:
         node-version: ['14.19.3']
         mongodb-version: ['4.2', '4.4', '5.0']
+        shard: ['1/2', '2/2']
 
     steps:
       - name: Launch MongoDB
@@ -371,7 +372,7 @@ jobs:
           done
 
           cd ./apps/meteor
-          yarn test:e2e
+          yarn test:e2e --shard=${{ matrix.shard }}
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
@@ -388,6 +389,7 @@ jobs:
       matrix:
         node-version: ['14.19.3']
         mongodb-version-ee: ['4.4']
+        shard: ['1/2', '2/2']
 
     steps:
       - name: Launch MongoDB
@@ -687,7 +689,7 @@ jobs:
 
           cd ./apps/meteor
 
-          E2E_COVERAGE=true IS_EE=true yarn test:e2e
+          E2E_COVERAGE=true IS_EE=true yarn test:e2e --shard=${{ matrix.shard }}
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
