@@ -8,6 +8,7 @@ import { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppSto
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { AppScreenshot, Serialized } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 
 import { App } from '../../../client/views/admin/apps/types';
 import { dispatchToastMessage } from '../../../client/lib/toast';
@@ -238,15 +239,14 @@ export const Apps = new AppClientOrchestrator();
 
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(() => {
-		Meteor.call('apps/is-enabled', (error: Error, isEnabled: boolean) => {
-			if (error) {
-				Apps.handleError(error);
-				return;
-			}
+		try {
+			const { result } = useEndpoint('GET', '/apps/is-enabled');
 
 			Apps.getAppClientManager().initialize();
-			Apps.load(isEnabled);
-		});
+			Apps.load(result);
+		} catch (error) {
+			Apps.handleError(error as Error);
+		}
 	});
 
 	Tracker.autorun(() => {
