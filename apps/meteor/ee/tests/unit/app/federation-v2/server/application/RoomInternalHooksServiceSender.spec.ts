@@ -1,23 +1,14 @@
-/* eslint-disable */
+/* eslint-disable import/first */
 import mock from 'mock-require';
-import chai, { expect } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-mock('mongodb', {
-	ObjectId: class ObjectId {
-		toHexString(): string {
-			return 'hexString';
-		}
-	},
-});
+import '../../../../../../../tests/mocks/server/mongodb';
 
 import { FederatedRoomEE } from '../../../../../../app/federation-v2/server/domain/FederatedRoom';
 import { FederatedUserEE } from '../../../../../../app/federation-v2/server/domain/FederatedUser';
 import { FederationRoomInternalHooksServiceSender } from '../../../../../../app/federation-v2/server/application/sender/RoomInternalHooksServiceSender';
-
-chai.use(chaiAsPromised);
 
 describe('FederationEE - Application - FederationRoomInternalHooksServiceSender', () => {
 	let service: FederationRoomInternalHooksServiceSender;

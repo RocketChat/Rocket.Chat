@@ -1,20 +1,12 @@
-/* eslint-disable */
+/* eslint-disable import/first */
 import { expect } from 'chai';
 import mock from 'mock-require';
-
-mock('mongodb', {
-	ObjectId: class ObjectId {
-		toHexString(): string {
-			return 'hexString';
-		}
-	},
-});
+import '../../../../../../mocks/server/mongodb';
 
 import { FederatedUser } from '../../../../../../../app/federation-v2/server/domain/FederatedUser';
 
 describe('Federation - Domain - FederatedUser', () => {
-
-    after(() => mock.stop('mongodb'));
+	after(() => mock.stop('mongodb'));
 
 	describe('#createInstance()', () => {
 		it('should create the instance with the internalId as the provided one', () => {

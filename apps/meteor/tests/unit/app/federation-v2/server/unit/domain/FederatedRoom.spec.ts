@@ -1,15 +1,8 @@
-/* eslint-disable */
+/* eslint-disable import/first */
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import mock from 'mock-require';
 import { expect } from 'chai';
-
-mock('mongodb', {
-	ObjectId: class ObjectId {
-		toHexString(): string {
-			return 'hexString';
-		}
-	},
-});
+import '../../../../../../mocks/server/mongodb';
 
 import {
 	AbstractFederatedRoom,
@@ -19,8 +12,7 @@ import {
 } from '../../../../../../../app/federation-v2/server/domain/FederatedRoom';
 
 describe('Federation - Domain - FederatedRoom', () => {
-
-    after(() => mock.stop('mongodb'));
+	after(() => mock.stop('mongodb'));
 
 	describe('#isAnInternalIdentifier()', () => {
 		it('should return true if the origin is equal to the localOrigin', () => {
@@ -159,7 +151,10 @@ describe('Federation - Domain - FederatedRoom', () => {
 
 			it('should throw an error if the room is a DM', () => {
 				const federatedRoom = new MyDMClass({ externalId: 'externalId', internalReference: {} });
-				expect(() => federatedRoom.changeRoomType(RoomType.PRIVATE_GROUP)).to.throw(Error, 'Its not possible to change a direct message type');
+				expect(() => federatedRoom.changeRoomType(RoomType.PRIVATE_GROUP)).to.throw(
+					Error,
+					'Its not possible to change a direct message type',
+				);
 			});
 		});
 

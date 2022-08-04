@@ -6,34 +6,33 @@ import { RocketChatUserAdapterEE } from '../../infrastructure/rocket-chat/adapte
 import { IFederationInviteeDto } from '../input/RoomSenderDto';
 
 export abstract class FederationServiceEE extends FederationService {
-
-    constructor(
+	constructor(
 		protected bridge: IFederationBridgeEE,
 		protected internalUserAdapter: RocketChatUserAdapterEE,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 	) {
-        super(bridge, internalUserAdapter, internalSettingsAdapter);
+		super(bridge, internalUserAdapter, internalSettingsAdapter);
 	}
 
-    protected async createUsersLocallyOnly(invitees: IFederationInviteeDto[]): Promise<void> {
-        const externalUsersToBeCreatedLocally = invitees.filter(
-            (invitee) =>
-                !FederatedUserEE.isOriginalFromTheProxyServer(
-                    this.bridge.extractHomeserverOrigin(invitee.rawInviteeId),
-                    this.internalHomeServerDomain,
-                ),
-        );
+	protected async createUsersLocallyOnly(invitees: IFederationInviteeDto[]): Promise<void> {
+		const externalUsersToBeCreatedLocally = invitees.filter(
+			(invitee) =>
+				!FederatedUserEE.isOriginalFromTheProxyServer(
+					this.bridge.extractHomeserverOrigin(invitee.rawInviteeId),
+					this.internalHomeServerDomain,
+				),
+		);
 
-        await Promise.all(
-            externalUsersToBeCreatedLocally.map((invitee) =>
-                this.internalUserAdapter.createLocalUser(
-                    FederatedUserEE.createLocalInstanceOnly({
-                        username: invitee.normalizedInviteeId,
-                        name: invitee.normalizedInviteeId,
-                        existsOnlyOnProxyServer: false,
-                    }),
-                ),
-            ),
-        );
-    }
+		await Promise.all(
+			externalUsersToBeCreatedLocally.map((invitee) =>
+				this.internalUserAdapter.createLocalUser(
+					FederatedUserEE.createLocalInstanceOnly({
+						username: invitee.normalizedInviteeId,
+						name: invitee.normalizedInviteeId,
+						existsOnlyOnProxyServer: false,
+					}),
+				),
+			),
+		);
+	}
 }

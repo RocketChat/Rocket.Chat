@@ -1,13 +1,10 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import chai, { expect } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { expect } from 'chai';
 import sinon from 'sinon';
 
 import { FederationRoomInternalHooksValidator } from '../../../../../../../../app/federation-v2/server/application/sender/RoomInternalHooksValidator';
 import { FederatedRoom } from '../../../../../../../../app/federation-v2/server/domain/FederatedRoom';
 import { FederatedUser } from '../../../../../../../../app/federation-v2/server/domain/FederatedUser';
-
-chai.use(chaiAsPromised);
 
 describe('Federation - Application - FederationRoomInternalHooksValidator', () => {
 	let service: FederationRoomInternalHooksValidator;

@@ -1,19 +1,10 @@
-/* eslint-disable */
+/* eslint-disable import/first */
 import mock from 'mock-require';
-import chai, { expect } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-chai.use(chaiAsPromised);
-
-mock('mongodb', {
-	ObjectId: class ObjectId {
-		toHexString(): string {
-			return 'hexString';
-		}
-	},
-});
+import '../../../../../../mocks/server/mongodb';
 
 import { FederationRoomServiceListener } from '../../../../../../../app/federation-v2/server/application/RoomServiceListener';
 import { FederatedUser } from '../../../../../../../app/federation-v2/server/domain/FederatedUser';
@@ -79,7 +70,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		bridge.joinRoom.reset();
 	});
 
-    after(() => mock.stop('mongodb'));
+	after(() => mock.stop('mongodb'));
 
 	describe('#onCreateRoom()', () => {
 		const creator = FederatedUser.createInstance('externalInviterId', {
@@ -128,9 +119,9 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		it('should throw an error if the creator was not found', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
 			userAdapter.getFederatedUserByExternalId.resolves(undefined);
-            await expect(service.onCreateRoom({ externalInviterId: 'externalInviterId', normalizedInviterId: 'normalizedInviterId' } as any)).to.be.rejectedWith(
-				'Creator user not found',
-			);
+			await expect(
+				service.onCreateRoom({ externalInviterId: 'externalInviterId', normalizedInviterId: 'normalizedInviterId' } as any),
+			).to.be.rejectedWith('Creator user not found');
 		});
 
 		it('should create the room if it does not exists yet', async () => {
@@ -160,23 +151,25 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		it('should throw an error if the room does not exists AND the event was originally from LOCAL', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
 
-            await expect(service.onChangeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.LOCAL } as any)).to.be.rejectedWith(
-				'Could not find room with external room id: externalRoomId',
-			);
+			await expect(
+				service.onChangeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.LOCAL } as any),
+			).to.be.rejectedWith('Could not find room with external room id: externalRoomId');
 		});
 
 		it('should NOT throw an error if the room already exists AND event origin is equal to LOCAL', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(user);
 
-			await expect(service.onChangeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.LOCAL } as any)).not.to.be.rejected;
+			await expect(service.onChangeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.LOCAL } as any)).not.to.be
+				.rejected;
 		});
 
 		it('should NOT throw an error if the room already exists AND event origin is equal to REMOTE', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(user);
 
-			await expect(service.onChangeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.REMOTE } as any)).not.to.be.rejected;
+			await expect(service.onChangeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.REMOTE } as any)).not.to.be
+				.rejected;
 		});
 
 		it('should NOT create the inviter if it already exists', async () => {
@@ -196,7 +189,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.onFirstCall().resolves(undefined);
 			userAdapter.getFederatedUserByExternalId.resolves(user);
-            bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.extractHomeserverOrigin.returns('localDomain');
 			await service.onChangeRoomMembership({
 				externalRoomId: 'externalRoomId',
 				eventOrigin: EVENT_ORIGIN.LOCAL,
@@ -240,28 +233,28 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(undefined);
 
-            await expect(service.onChangeRoomMembership({
-                externalRoomId: 'externalRoomId',
-                eventOrigin: EVENT_ORIGIN.LOCAL,
-                externalInviteeId: 'externalInviteeId',
-                normalizedInviteeId: 'normalizedInviteeId',
-            } as any)).to.be.rejectedWith(
-				'Invitee or inviter user not found',
-			);
+			await expect(
+				service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					externalInviteeId: 'externalInviteeId',
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any),
+			).to.be.rejectedWith('Invitee or inviter user not found');
 		});
 
 		it('should throw an error if the inviter user does not exists at all', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(undefined);
 
-            await expect(service.onChangeRoomMembership({
-                externalRoomId: 'externalRoomId',
-                eventOrigin: EVENT_ORIGIN.LOCAL,
-                externalInviteeId: 'externalInviteeId',
-                normalizedInviteeId: 'normalizedInviteeId',
-            } as any)).to.be.rejectedWith(
-				'Invitee or inviter user not found',
-			);
+			await expect(
+				service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					externalInviteeId: 'externalInviteeId',
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any),
+			).to.be.rejectedWith('Invitee or inviter user not found');
 		});
 
 		it('should NOT create the room if it does not exists yet AND the event origin is REMOTE but there is no room type on the event', async () => {
@@ -348,16 +341,16 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
 			userAdapter.getFederatedUserByExternalId.resolves(user);
 
-            await expect(service.onChangeRoomMembership({
-                externalRoomId: 'externalRoomId',
-                normalizedRoomId: 'normalizedRoomId',
-                eventOrigin: EVENT_ORIGIN.REMOTE,
-                roomType: RoomType.CHANNEL,
-                externalInviteeId: 'externalInviteeId',
-                normalizedInviteeId: 'normalizedInviteeId',
-            } as any)).to.be.rejectedWith(
-				'Could not find room with external room id: externalRoomId',
-			);
+			await expect(
+				service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.REMOTE,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any),
+			).to.be.rejectedWith('Could not find room with external room id: externalRoomId');
 		});
 
 		it('should remove the user from room if its a LEAVE event and the user is in the room already', async () => {
