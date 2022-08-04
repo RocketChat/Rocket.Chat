@@ -434,7 +434,7 @@ API.v1.addRoute(
 				.toArray();
 
 			const { cursor, totalCount } = Rooms.findPaginated(
-				{ type: 'd', _id: { $in: subscriptions } },
+				{ t: 'd', _id: { $in: subscriptions } },
 				{
 					sort,
 					skip: offset,
@@ -451,7 +451,7 @@ API.v1.addRoute(
 			return API.v1.success({
 				ims,
 				offset,
-				count,
+				count: ims.length,
 				total,
 			});
 		},
