@@ -97,7 +97,7 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 
 		await Promise.all(
 			invitees.map((member) =>
-				this.createUserForDirectMessage({
+				this.createUserForDirectMessageRoom({
 					internalInviterId,
 					internalRoomId,
 					inviteeUsernameOnly: member.inviteeUsernameOnly,
@@ -108,7 +108,7 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		);
 	}
 
-	private async createUserForDirectMessage(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
+	private async createUserForDirectMessageRoom(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
 		const { normalizedInviteeId, inviteeUsernameOnly, rawInviteeId } = roomInviteUserInput;
 
 		const isInviteeFromTheSameHomeServer = FederatedUserEE.isOriginalFromTheProxyServer(
@@ -130,6 +130,11 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		const federatedInviteeUser = inviteeUser || (await this.internalUserAdapter.getFederatedUserByInternalUsername(inviteeUsernameOnly));
 		if (!federatedInviteeUser) {
 			throw new Error(`User with internalUsername ${inviteeUsernameOnly} not found`);
+		}
+
+		const profile = await this.bridge.getUserProfileInformation(federatedInviteeUser.getExternalId());
+		if (profile) {
+			return;
 		}
 
 		await this.bridge.createUser(
