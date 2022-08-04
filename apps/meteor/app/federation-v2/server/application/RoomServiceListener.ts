@@ -74,7 +74,7 @@ export class FederationRoomServiceListener extends FederationService {
 			inviteeUsernameOnly,
 			inviterUsernameOnly,
 			eventOrigin,
-			roomType = RoomType.CHANNEL,
+			roomType,
 			leave,
 		} = roomChangeMembershipInput;
 		const wasGeneratedOnTheProxyServer = eventOrigin === EVENT_ORIGIN.LOCAL;
@@ -198,7 +198,7 @@ export class FederationRoomServiceListener extends FederationService {
 			return;
 		}
 
-		federatedRoom.setRoomType(roomType);
+		federatedRoom.changeRoomType(roomType);
 		await this.internalRoomAdapter.updateRoomType(federatedRoom);
 	}
 

@@ -66,7 +66,7 @@ export abstract class AbstractFederatedRoom {
 		return this.internalReference.u?._id;
 	}
 
-	public setRoomType(type: RoomType): void {
+	public changeRoomType(type: RoomType): void {
 		if (this.isDirectMessage()) {
 			throw new Error('Its not possible to change a direct message type');
 		}

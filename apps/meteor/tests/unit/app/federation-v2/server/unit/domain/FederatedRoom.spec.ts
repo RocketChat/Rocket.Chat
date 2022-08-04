@@ -148,16 +148,16 @@ describe('Federation - Domain - FederatedRoom', () => {
 			});
 		});
 
-		describe('#setRoomType()', () => {
+		describe('#changeRoomType()', () => {
 			it('should set the room type if the original type is not equal a DM', () => {
 				const federatedRoom = new MyClass({ externalId: 'externalId', internalReference: { u: { _id: 'creatorId' } } });
-				federatedRoom.setRoomType(RoomType.PRIVATE_GROUP);
+				federatedRoom.changeRoomType(RoomType.PRIVATE_GROUP);
 				expect(federatedRoom.getRoomType()).to.be.equal(RoomType.PRIVATE_GROUP);
 			});
 
 			it('should throw an error if the room is a DM', () => {
 				const federatedRoom = new MyDMClass({ externalId: 'externalId', internalReference: {} });
-				expect(() => federatedRoom.setRoomType(RoomType.PRIVATE_GROUP)).to.throw(Error, 'Its not possible to change a direct message type');
+				expect(() => federatedRoom.changeRoomType(RoomType.PRIVATE_GROUP)).to.throw(Error, 'Its not possible to change a direct message type');
 			});
 		});
 
