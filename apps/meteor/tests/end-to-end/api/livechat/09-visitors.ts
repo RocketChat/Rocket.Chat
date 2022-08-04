@@ -503,9 +503,9 @@ describe.only('Omnichannel', function () {
 						});
 				})
 				.then(() => done())
-				.catch(done)
+				.catch(done);
 		});
-		it('should find a contact by phone', (done) =>{
+		it('should find a contact by phone', (done) => {
 			createVisitor()
 				.then((visitor: ILivechatVisitor) => {
 					request
@@ -527,7 +527,7 @@ describe.only('Omnichannel', function () {
 						});
 				})
 				.then(() => done())
-				.catch(done)
+				.catch(done);
 		});
 		it('should find a contact by custom field', (done) => {
 			const cfID = 'address';
