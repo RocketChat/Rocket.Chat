@@ -1,4 +1,3 @@
-import { FederationService } from '../../../../../../app/federation-v2/server/application/AbstractFederationService';
 import { RocketChatSettingsAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
 import { FederatedRoomEE } from '../../domain/FederatedRoom';
 import { FederatedUserEE } from '../../domain/FederatedUser';
@@ -12,8 +11,9 @@ import {
 	FederationRoomInviteUserDto,
 	FederationSetupRoomDto,
 } from '../input/RoomSenderDto';
+import { FederationServiceEE } from './AbstractFederationService';
 
-export class FederationRoomInternalHooksServiceSender extends FederationService {
+export class FederationRoomInternalHooksServiceSender extends FederationServiceEE {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapterEE,
 		protected internalUserAdapter: RocketChatUserAdapterEE,
@@ -49,25 +49,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationService 
 			return;
 		}
 
-		const externalUsersToBeCreatedLocally = invitees.filter(
-			(invitee) =>
-				!FederatedUserEE.isOriginalFromTheProxyServer(
-					this.bridge.extractHomeserverOrigin(invitee.rawInviteeId),
-					this.internalHomeServerDomain,
-				),
-		);
-
-		await Promise.all(
-			externalUsersToBeCreatedLocally.map((invitee) =>
-				this.internalUserAdapter.createLocalUser(
-					FederatedUserEE.createLocalInstanceOnly({
-						username: invitee.normalizedInviteeId,
-						name: invitee.normalizedInviteeId,
-						existsOnlyOnProxyServer: false,
-					}),
-				),
-			),
-		);
+		await this.createUsersLocallyOnly(invitees);
 	}
 
 	public async onUsersAddedToARoom(roomOnUsersAddedToARoomInput: FederationOnUsersAddedToARoomDto): Promise<void> {
