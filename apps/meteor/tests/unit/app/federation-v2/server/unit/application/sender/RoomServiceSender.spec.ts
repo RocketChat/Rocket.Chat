@@ -12,18 +12,13 @@ chai.use(chaiAsPromised);
 describe('Federation - Application - FederationRoomServiceSender', () => {
 	let service: FederationRoomServiceSender;
 	const roomAdapter = {
-		getFederatedRoomByExternalId: sinon.stub(),
 		getFederatedRoomByInternalId: sinon.stub(),
 		createFederatedRoomForDirectMessage: sinon.stub(),
 		getDirectMessageFederatedRoomByUserIds: sinon.stub(),
-		removeUserFromRoom: sinon.stub(),
 		addUserToRoom: sinon.stub(),
-		getInternalRoomById: sinon.stub(),
 		createFederatedRoom: sinon.stub(),
-		isUserAlreadyJoined: sinon.stub(),
 	};
 	const userAdapter = {
-		getFederatedUserByExternalId: sinon.stub(),
 		getFederatedUserByInternalId: sinon.stub(),
 		createFederatedUser: sinon.stub(),
 		getInternalUserById: sinon.stub(),
@@ -49,15 +44,11 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 	});
 
 	afterEach(() => {
-		roomAdapter.getFederatedRoomByExternalId.reset();
 		roomAdapter.getFederatedRoomByInternalId.reset();
 		roomAdapter.createFederatedRoomForDirectMessage.reset();
 		roomAdapter.getDirectMessageFederatedRoomByUserIds.reset();
 		roomAdapter.addUserToRoom.reset();
-		roomAdapter.getInternalRoomById.reset();
 		roomAdapter.createFederatedRoom.reset();
-		roomAdapter.isUserAlreadyJoined.reset();
-		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getInternalUserById.reset();
 		userAdapter.createFederatedUser.reset();

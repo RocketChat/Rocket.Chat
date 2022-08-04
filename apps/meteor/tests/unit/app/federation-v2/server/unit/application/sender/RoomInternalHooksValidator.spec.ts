@@ -12,34 +12,18 @@ chai.use(chaiAsPromised);
 describe('Federation - Application - FederationRoomInternalHooksValidator', () => {
 	let service: FederationRoomInternalHooksValidator;
 	const roomAdapter = {
-		getFederatedRoomByExternalId: sinon.stub(),
 		getFederatedRoomByInternalId: sinon.stub(),
-		createFederatedRoomForDirectMessage: sinon.stub(),
-		removeUserFromRoom: sinon.stub(),
-		addUserToRoom: sinon.stub(),
-		getInternalRoomById: sinon.stub(),
 		createFederatedRoom: sinon.stub(),
-		isUserAlreadyJoined: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
 		getFederatedUserByInternalId: sinon.stub(),
-		createFederatedUser: sinon.stub(),
-		getInternalUserById: sinon.stub(),
-		getFederatedUserByInternalUsername: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
 	};
 	const bridge = {
-		getUserProfileInformation: sinon.stub().resolves({}),
 		extractHomeserverOrigin: sinon.stub(),
-		sendMessage: sinon.stub(),
-		createUser: sinon.stub(),
-		inviteToRoom: sinon.stub().returns(new Promise((resolve) => resolve({}))),
-		createDirectMessageRoom: sinon.stub(),
-		joinRoom: sinon.stub(),
-		leaveRoom: sinon.stub(),
 	};
 
 	beforeEach(() => {
@@ -47,25 +31,11 @@ describe('Federation - Application - FederationRoomInternalHooksValidator', () =
 	});
 
 	afterEach(() => {
-		roomAdapter.getFederatedRoomByExternalId.reset();
 		roomAdapter.getFederatedRoomByInternalId.reset();
-		roomAdapter.createFederatedRoomForDirectMessage.reset();
-		roomAdapter.addUserToRoom.reset();
-		roomAdapter.getInternalRoomById.reset();
 		roomAdapter.createFederatedRoom.reset();
-		roomAdapter.isUserAlreadyJoined.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
-		userAdapter.getInternalUserById.reset();
-		userAdapter.createFederatedUser.reset();
-		userAdapter.getFederatedUserByInternalUsername.reset();
 		bridge.extractHomeserverOrigin.reset();
-		bridge.sendMessage.reset();
-		bridge.createUser.reset();
-		bridge.createDirectMessageRoom.reset();
-		bridge.inviteToRoom.reset();
-		bridge.joinRoom.reset();
-		bridge.leaveRoom.reset();
 	});
 
 	describe('#canAddFederatedUserToNonFederatedRoom()', () => {

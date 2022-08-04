@@ -16,7 +16,6 @@ mock('@rocket.chat/models', {
 
 import { executeSlashCommand } from '../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands/action';
 
-
 describe('FederationEE - Infrastructure - RocketChat - Server Slash command', () => {
 	const command = sinon.stub();
 

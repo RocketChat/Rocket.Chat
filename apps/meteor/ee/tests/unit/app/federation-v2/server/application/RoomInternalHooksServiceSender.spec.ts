@@ -23,11 +23,8 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 	let service: FederationRoomInternalHooksServiceSender;
 	const roomAdapter = {
 		getFederatedRoomByInternalId: sinon.stub(),
-		createFederatedRoom: sinon.stub(),
 		updateFederatedRoomByInternalRoomId: sinon.stub(),
-		addUserToRoom: sinon.stub(),
 		getInternalRoomById: sinon.stub(),
-		isUserAlreadyJoined: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByInternalId: sinon.stub(),
@@ -43,10 +40,8 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		getUserProfileInformation: sinon.stub().resolves({}),
 		extractHomeserverOrigin: sinon.stub(),
 		createUser: sinon.stub(),
-		inviteToRoom: sinon.stub().returns(new Promise((resolve) => resolve({}))),
+		inviteToRoom: sinon.stub(),
 		createRoom: sinon.stub(),
-		createDirectMessageRoom: sinon.stub(),
-		joinRoom: sinon.stub(),
 		setRoomName: sinon.stub(),
 		getRoomName: sinon.stub(),
 		setRoomTopic: sinon.stub(),
@@ -66,11 +61,8 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 
 	afterEach(() => {
 		roomAdapter.getFederatedRoomByInternalId.reset();
-		roomAdapter.createFederatedRoom.reset();
 		roomAdapter.updateFederatedRoomByInternalRoomId.reset();
-		roomAdapter.addUserToRoom.reset();
 		roomAdapter.getInternalRoomById.reset();
-		roomAdapter.isUserAlreadyJoined.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getInternalUserById.reset();
 		userAdapter.createFederatedUser.reset();
@@ -79,9 +71,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		bridge.extractHomeserverOrigin.reset();
 		bridge.createUser.reset();
 		bridge.createRoom.reset();
-		bridge.createDirectMessageRoom.reset();
 		bridge.inviteToRoom.reset();
-		bridge.joinRoom.reset();
 		bridge.setRoomTopic.reset();
 		bridge.setRoomName.reset();
 		bridge.getRoomName.reset();
