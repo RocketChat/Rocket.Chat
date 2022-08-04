@@ -14,7 +14,7 @@ describe('Settings', () => {
 	it('should not insert the same setting twice', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
-		settings.initilized();
+		settings.initialized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
@@ -77,7 +77,7 @@ describe('Settings', () => {
 	it('should respect override via environment as int', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
-		settings.initilized();
+		settings.initialized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
 		process.env.OVERWRITE_SETTING_my_setting = '1';
@@ -137,7 +137,7 @@ describe('Settings', () => {
 
 		const settings = new CachedSettings();
 		Settings.settings = settings;
-		settings.initilized();
+		settings.initialized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
@@ -194,7 +194,7 @@ describe('Settings', () => {
 
 		const settings = new CachedSettings();
 		Settings.settings = settings;
-		settings.initilized();
+		settings.initialized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
@@ -251,7 +251,7 @@ describe('Settings', () => {
 		process.env.my_setting = '1';
 		const settings = new CachedSettings();
 		Settings.settings = settings;
-		settings.initilized();
+		settings.initialized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
 		await settingsRegistry.addGroup('group', function () {
@@ -302,7 +302,7 @@ describe('Settings', () => {
 		return new Promise(async (resolve) => {
 			const settings = new CachedSettings();
 			Settings.settings = settings;
-			settings.initilized();
+			settings.initialized();
 			const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
 			const spiedCallback1 = spy();
@@ -339,7 +339,7 @@ describe('Settings', () => {
 		settings.watch('setting_callback', spiedCallback1, { debounce: 1 });
 		settings.watchByRegex(/setting_callback/gi, spiedCallback2, { debounce: 1 });
 
-		settings.initilized();
+		settings.initialized();
 		settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('setting_callback', 'value2', {

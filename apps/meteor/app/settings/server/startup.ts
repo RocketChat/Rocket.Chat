@@ -9,5 +9,5 @@ export async function initializeSettings({ model, settings }: { model: typeof Se
 		settings.set(record);
 	});
 
-	settings.initilized();
+	settings.initialized();
 }

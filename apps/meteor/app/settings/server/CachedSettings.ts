@@ -16,7 +16,7 @@ export interface ICachedSettings {
 	/*
 	 * @description: The settings object as ready
 	 */
-	initilized(): void;
+	initialized(): void;
 
 	/*
 	 * returns if the setting is defined
@@ -188,7 +188,7 @@ export class CachedSettings
 
 	store = new Map<string, ISetting>();
 
-	initilized(): void {
+	initialized(): void {
 		if (this.ready) {
 			return;
 		}

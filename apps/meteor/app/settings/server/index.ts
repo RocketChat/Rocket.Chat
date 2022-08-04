@@ -12,12 +12,12 @@ export { settings };
 
 export const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings });
 
-settingsRegistry.add = use(settingsRegistry.add, async (context, next) => {
-	return Promise.await(next(...context));
+settingsRegistry.add = use(settingsRegistry.add, (context, next) => {
+	return Promise.await(next(...context)) as any;
 });
 
 settingsRegistry.addGroup = use(settingsRegistry.addGroup, (context, next) => {
-	return Promise.await(next(...context));
+	return Promise.await(next(...context)) as any;
 });
 
 Promise.await(initializeSettings({ model: Settings, settings }));
