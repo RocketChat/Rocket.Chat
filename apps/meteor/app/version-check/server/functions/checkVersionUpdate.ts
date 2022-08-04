@@ -34,10 +34,12 @@ export const checkVersionUpdate = async () => {
 		await sendMessagesToAdmins({
 			msgs: ({ adminUser }) => [
 				{
-					msg: `*${TAPi18n.__('Update_your_RocketChat', adminUser.language ?? 'en')}*\n${TAPi18n.__(
+					msg: `*${TAPi18n.__('Update_your_RocketChat', { ...(adminUser.language && { lng: adminUser.language }) })}*\n${TAPi18n.__(
 						'New_version_available_(s)',
-						version.version,
-						adminUser.language ?? 'en',
+						{
+							postProcess: 'sprintf',
+							sprintf: [version.version],
+						},
 					)}\n${version.infoUrl}`,
 				},
 			],
@@ -62,10 +64,17 @@ export const checkVersionUpdate = async () => {
 				alerts
 					.filter((alert) => !Users.bannerExistsById(adminUser._id, `alert-${alert.id}`))
 					.map((alert) => ({
-						msg: `*${TAPi18n.__('Rocket_Chat_Alert', adminUser.language ?? 'en')}:*\n\n*${TAPi18n.__(
+						msg: `*${TAPi18n.__('Rocket_Chat_Alert', { ...(adminUser.language && { lng: adminUser.language }) })}:*\n\n*${TAPi18n.__(
 							alert.title,
-							adminUser.language ?? 'en',
-						)}*\n${TAPi18n.__(alert.text, ...(alert.textArguments || []), adminUser.language)}\n${alert.infoUrl}`,
+							{ ...(adminUser.language && { lng: adminUser.language }) },
+						)}*\n${TAPi18n.__(alert.text, {
+							...(adminUser.language && { lng: adminUser.language }),
+							...(Array.isArray(alert.textArguments) && {
+								postProcess: 'sprintf',
+								sprintf: alert.textArguments,
+							}),
+							...((!Array.isArray(alert.textArguments) && alert.textArguments) || {}), // bien dormido
+						})}\n${alert.infoUrl}`,
 					})),
 			banners: alerts.map((alert) => ({
 				id: `alert-${alert.id}`.replace(/\./g, '_'),

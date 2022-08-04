@@ -9,7 +9,14 @@ declare module 'meteor/rocketchat:tap-i18n' {
 				lng?: string;
 			} & {
 				[replacements: string]: boolean | number | string | string[];
-			},
+			} & (
+					| {
+							postProcess: 'sprintf';
+							sprintf: (boolean | number | string)[];
+					  }
+					| {}
+				),
+			lang?: string,
 		): string;
 		function getLanguages(): {
 			[language: string]: {
