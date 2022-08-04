@@ -59,6 +59,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	const { department } = data || { department: {} };
 
 	const [[tags, tagsText], setTagsState] = useState(() => [department?.chatClosingTags ?? [], '']);
+	const [newTagsState, setNewTagsState] = useState(false);
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
 		name: withDefault(department?.name, ''),
@@ -118,6 +119,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 	const handleTagChipClick = (tag) => () => {
 		setTagsState(([tags, tagsText]) => [tags.filter((_tag) => _tag !== tag), tagsText]);
+		setNewTagsState(true);
 	};
 
 	const handleTagTextSubmit = useMutableCallback(() => {
@@ -130,6 +132,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 			return [[...tags, tagsText], ''];
 		});
+		setNewTagsState(true);
 	});
 
 	const handleTagTextChange = (e) => {
@@ -271,7 +274,12 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 						<Button onClick={handleReturn}>
 							<Icon name='back' /> {t('Back')}
 						</Button>
-						<Button type='submit' form={formId} primary disabled={invalidForm && hasNewAgent && !(id && agentsHaveChanged())}>
+						<Button
+							type='submit'
+							form={formId}
+							primary
+							disabled={invalidForm && hasNewAgent && !newTagsState && !(id && agentsHaveChanged())}
+						>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
