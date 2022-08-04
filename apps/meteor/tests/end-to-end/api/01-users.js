@@ -2055,22 +2055,9 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.delete]', () => {
-		const updatePermission = (permission, roles) =>
-			new Promise((resolve) => {
-				request
-					.post(api('permissions.update'))
-					.set(credentials)
-					.send({ permissions: [{ _id: permission, roles }] })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(resolve);
-			});
-		const testUsername = `testuserdelete${+new Date()}`;
 		let targetUser;
 		beforeEach((done) => {
+			const testUsername = `testuserdelete${+new Date()}`;
 			request
 				.post(api('users.register'))
 				.set(credentials)
