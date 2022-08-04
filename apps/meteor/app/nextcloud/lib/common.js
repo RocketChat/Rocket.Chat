@@ -1,11 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
-
-import { settings } from '../../settings';
 import { CustomOAuth } from '../../custom-oauth';
 
-const config = {
+export const config = {
 	serverURL: '',
 	tokenPath: '/index.php/apps/oauth2/api/v1/token',
 	tokenSentVia: 'header',
@@ -18,29 +13,4 @@ const config = {
 	},
 };
 
-const Nextcloud = new CustomOAuth('nextcloud', config);
-
-const fillServerURL = _.debounce(
-	Meteor.bindEnvironment(() => {
-		const nextcloudURL = settings.get('Accounts_OAuth_Nextcloud_URL');
-		if (!nextcloudURL) {
-			if (nextcloudURL === undefined) {
-				return fillServerURL();
-			}
-			return;
-		}
-		config.serverURL = nextcloudURL.trim().replace(/\/*$/, '');
-		return Nextcloud.configure(config);
-	}),
-	Meteor.isServer ? 1000 : 100,
-);
-
-Meteor.startup(function () {
-	if (Meteor.isServer) {
-		settings.watch('Accounts_OAuth_Nextcloud_URL', () => fillServerURL());
-	} else {
-		Tracker.autorun(function () {
-			return fillServerURL();
-		});
-	}
-});
+export const Nextcloud = new CustomOAuth('nextcloud', config);

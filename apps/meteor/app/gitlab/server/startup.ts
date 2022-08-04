@@ -1,4 +1,7 @@
-import { settingsRegistry } from '../../settings/server';
+import _ from 'underscore';
+
+import { settings, settingsRegistry } from '../../settings/server';
+import { config, Gitlab } from '../lib/common';
 
 settingsRegistry.addGroup('OAuth', function () {
 	this.section('GitLab', function () {
@@ -27,4 +30,15 @@ settingsRegistry.addGroup('OAuth', function () {
 			enableQuery,
 		});
 	});
+});
+
+Meteor.startup(() => {
+	const updateConfig = _.debounce(() => {
+		config.serverURL = settings.get<string>('API_Gitlab_URL').trim().replace(/\/*$/, '') || config.serverURL;
+		config.identityPath = settings.get('Accounts_OAuth_Gitlab_identity_path') || config.identityPath;
+		config.mergeUsers = Boolean(settings.get('Accounts_OAuth_Gitlab_merge_users'));
+		Gitlab.configure(config);
+	}, 300);
+
+	settings.watchMultiple(['API_Gitlab_URL', 'Accounts_OAuth_Gitlab_identity_path', 'Accounts_OAuth_Gitlab_merge_users'], updateConfig);
 });

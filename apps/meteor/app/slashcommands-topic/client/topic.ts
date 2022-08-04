@@ -9,18 +9,14 @@ import { handleError } from '../../../client/lib/utils/handleError';
 slashCommands.add({
 	command: 'topic',
 	callback: function Topic(_command: 'topic', params, item): void {
-		if (Meteor.isClient && hasPermission('edit-room', item.rid)) {
+		if (hasPermission('edit-room', item.rid)) {
 			Meteor.call('saveRoomSettings', item.rid, 'roomTopic', params, (err: Meteor.Error) => {
 				if (err) {
-					if (Meteor.isClient) {
-						handleError(err);
-					}
+					handleError(err);
 					throw err;
 				}
 
-				if (Meteor.isClient) {
-					callbacks.run('roomTopicChanged', ChatRoom.findOne(item.rid));
-				}
+				callbacks.run('roomTopicChanged', ChatRoom.findOne(item.rid));
 			});
 		}
 	},

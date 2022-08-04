@@ -2,7 +2,7 @@ import { isOauthCustomConfiguration } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { CustomOAuth } from '../../app/custom-oauth/client/custom_oauth_client';
+import { CustomOAuth } from '../../app/custom-oauth/client';
 
 Meteor.startup(() => {
 	ServiceConfiguration.configurations

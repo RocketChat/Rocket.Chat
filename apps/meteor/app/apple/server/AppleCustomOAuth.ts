@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import NodeRSA from 'node-rsa';
 import { KJUR } from 'jsrsasign';
 
-import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
+import { CustomOAuth } from '../../custom-oauth/server';
 import { MeteorError } from '../../../server/sdk/errors';
 
 const isValidAppleJWT = (identityToken: string, header: any): any => {

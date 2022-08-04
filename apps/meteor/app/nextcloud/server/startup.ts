@@ -1,4 +1,8 @@
-import { settingsRegistry } from '../../settings/server';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
+import { settings, settingsRegistry } from '../../settings/server';
+import { config, Nextcloud } from '../lib/common';
 
 settingsRegistry.addGroup('OAuth', function () {
 	this.section('Nextcloud', function () {
@@ -35,4 +39,26 @@ settingsRegistry.addGroup('OAuth', function () {
 			persistent: true,
 		});
 	});
+});
+
+const fillServerURL = _.debounce(
+	Meteor.bindEnvironment(() => {
+		const nextcloudURL = settings.get('Accounts_OAuth_Nextcloud_URL') as string;
+		if (!nextcloudURL) {
+			if (nextcloudURL === undefined) {
+				fillServerURL();
+				return;
+			}
+
+			return;
+		}
+
+		config.serverURL = nextcloudURL.trim().replace(/\/*$/, '');
+		Nextcloud.configure(config);
+	}),
+	1000,
+);
+
+Meteor.startup(function () {
+	settings.watch('Accounts_OAuth_Nextcloud_URL', () => fillServerURL());
 });

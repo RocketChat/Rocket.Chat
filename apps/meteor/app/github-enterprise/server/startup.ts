@@ -1,4 +1,7 @@
-import { settingsRegistry } from '../../settings/server';
+import { Meteor } from 'meteor/meteor';
+
+import { settings, settingsRegistry } from '../../settings/server';
+import { config, GitHubEnterprise } from '../lib/common';
 
 settingsRegistry.addGroup('OAuth', function () {
 	this.section('GitHub Enterprise', function () {
@@ -29,5 +32,12 @@ settingsRegistry.addGroup('OAuth', function () {
 			readonly: true,
 			enableQuery,
 		});
+	});
+});
+
+Meteor.startup(() => {
+	settings.watch<string>('API_GitHub_Enterprise_URL', (value) => {
+		config.serverURL = value;
+		GitHubEnterprise.configure(config);
 	});
 });

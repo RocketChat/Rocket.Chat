@@ -1,14 +1,16 @@
+import { JSDOM } from 'jsdom';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
+import { setGlobalWindow } from '../lib/globalWindow';
 import { createMarkdownMessageRenderer, createMarkdownNotificationRenderer } from '../lib/markdown';
-import './settings';
-
-export { Markdown } from '../lib/markdown';
 
 Meteor.startup(() => {
+	const { window } = new JSDOM('');
+	setGlobalWindow(window);
+
 	Tracker.autorun(() => {
 		const options = {
 			parser: settings.get('Markdown_Parser'),

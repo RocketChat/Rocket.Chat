@@ -5,7 +5,7 @@ import createDOMPurify from 'dompurify';
 import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
 
 import hljs, { register } from '../../hljs';
-import { getGlobalWindow } from '../../getGlobalWindow';
+import { getGlobalWindow } from '../../globalWindow';
 
 const renderer = new _marked.Renderer();
 

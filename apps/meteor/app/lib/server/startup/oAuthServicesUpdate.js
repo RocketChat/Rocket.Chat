@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
-import { CustomOAuth } from '../../../custom-oauth';
+import { CustomOAuth } from '../../../custom-oauth/server';
 import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
 import { addOAuthService } from '../functions/addOAuthService';

@@ -1,4 +1,8 @@
-import { settingsRegistry } from '../../settings/server';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
+import { settings, settingsRegistry } from '../../settings/server';
+import { config, WordPress } from '../lib/common';
 
 settingsRegistry.addGroup('OAuth', function () {
 	return this.section('WordPress', function () {
@@ -88,4 +92,82 @@ settingsRegistry.addGroup('OAuth', function () {
 			enableQuery,
 		});
 	});
+});
+
+const fillSettings = _.debounce(
+	Meteor.bindEnvironment(() => {
+		config.serverURL = settings.get('API_Wordpress_URL');
+		if (!config.serverURL) {
+			if (config.serverURL === undefined) {
+				fillSettings();
+				return;
+			}
+			return;
+		}
+
+		delete config.identityPath;
+		delete config.identityTokenSentVia;
+		delete config.authorizePath;
+		delete config.tokenPath;
+		delete config.scope;
+
+		const serverType = settings.get('Accounts_OAuth_Wordpress_server_type');
+		switch (serverType) {
+			case 'custom':
+				if (settings.get('Accounts_OAuth_Wordpress_identity_path')) {
+					config.identityPath = settings.get('Accounts_OAuth_Wordpress_identity_path');
+				}
+
+				if (settings.get('Accounts_OAuth_Wordpress_identity_token_sent_via')) {
+					config.identityTokenSentVia = settings.get('Accounts_OAuth_Wordpress_identity_token_sent_via');
+				}
+
+				if (settings.get('Accounts_OAuth_Wordpress_token_path')) {
+					config.tokenPath = settings.get('Accounts_OAuth_Wordpress_token_path');
+				}
+
+				if (settings.get('Accounts_OAuth_Wordpress_authorize_path')) {
+					config.authorizePath = settings.get('Accounts_OAuth_Wordpress_authorize_path');
+				}
+
+				if (settings.get('Accounts_OAuth_Wordpress_scope')) {
+					config.scope = settings.get('Accounts_OAuth_Wordpress_scope');
+				}
+				break;
+			case 'wordpress-com':
+				config.identityPath = 'https://public-api.wordpress.com/rest/v1/me';
+				config.identityTokenSentVia = 'header';
+				config.authorizePath = 'https://public-api.wordpress.com/oauth2/authorize';
+				config.tokenPath = 'https://public-api.wordpress.com/oauth2/token';
+				config.scope = 'auth';
+				break;
+			default:
+				config.identityPath = '/oauth/me';
+				break;
+		}
+
+		WordPress.configure(config);
+		if (Meteor.isServer) {
+			const enabled = settings.get('Accounts_OAuth_Wordpress');
+			if (enabled) {
+				ServiceConfiguration.configurations.upsert(
+					{
+						service: 'wordpress',
+					},
+					{
+						$set: config,
+					},
+				);
+			} else {
+				ServiceConfiguration.configurations.remove({
+					service: 'wordpress',
+				});
+			}
+		}
+	}),
+	1000,
+);
+
+Meteor.startup(() => {
+	settings.watchByRegex(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
 });

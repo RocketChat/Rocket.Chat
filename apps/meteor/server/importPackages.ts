@@ -14,7 +14,7 @@ import '../app/channel-settings/server';
 import '../app/cloud/server';
 import '../app/colors/server';
 import '../app/crowd/server';
-import '../app/custom-oauth';
+import '../app/custom-oauth/server';
 import '../app/custom-sounds/server';
 import '../app/dolphin/server';
 import '../app/drupal/server';
