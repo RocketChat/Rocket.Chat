@@ -92,8 +92,8 @@ describe('[Users]', function () {
 		before((done) => clearCustomFields(done));
 		after((done) => clearCustomFields(done));
 
-		it('should create a new user', (done) => {
-			request
+		it('should create a new user', async () => {
+			await request
 				.post(api('users.create'))
 				.set(credentials)
 				.send({
@@ -120,8 +120,16 @@ describe('[Users]', function () {
 
 					targetUser._id = res.body.user._id;
 					targetUser.username = res.body.user.username;
+				});
+
+			await request
+				.post(api('login'))
+				.send({
+					user: apiUsername,
+					password,
 				})
-				.end(done);
+				.expect('Content-Type', 'application/json')
+				.expect(200);
 		});
 
 		it('should create a new user with custom fields', (done) => {
