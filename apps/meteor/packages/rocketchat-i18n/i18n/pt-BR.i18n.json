@@ -1439,6 +1439,7 @@
   "Desktop_Notifications_Not_Enabled": "Notificações da área de trabalho estão desabilitadas",
   "Details": "Detalhes",
   "Device_Changes_Not_Available": "Mudanças de dispositivo não estão disponíveis neste navegador, para disponíbilidade garantida, use o aplicativo desktop oficial do Rocket.Chat.",
+  "Device_Changes_Not_Available_Insecure_Context": "Mudanças de dispositivo somente estão disponíveis em contextos seguros. (https://)",
   "Different_Style_For_User_Mentions": "Estilo diferente para as menções do usuário",
   "Direct_Message": "Mensagem direta",
   "Direct_message_creation_description": "Você está prestes a criar uma conversa com vários usuários. Adicione os usuários com quem gostaria de conversar, todos no mesmo local, utilizando mensagens diretas.",
