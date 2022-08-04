@@ -3861,6 +3861,7 @@
   "Review_devices": "Review when and where devices are connecting from",
   "Ringing": "Ringing",
   "Robot_Instructions_File_Content": "Robots.txt File Contents",
+  "Root": "Root",
   "Default_Referrer_Policy": "Default Referrer Policy",
   "Default_Referrer_Policy_Description": "This controls the 'referrer' header that's sent when requesting embedded media from other servers. For more information, refer to <a href='https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy'>this link from MDN</a>. Remember, a full page refresh is required for this to take effect",
   "No_Referrer": "No Referrer",

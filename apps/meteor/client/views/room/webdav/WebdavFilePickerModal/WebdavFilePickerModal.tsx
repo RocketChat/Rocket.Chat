@@ -1,6 +1,6 @@
 import { IWebdavNode } from '@rocket.chat/core-typings';
-import { Modal, Box, Button, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Modal, Box, IconButton } from '@rocket.chat/fuselage';
+import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, ReactElement, useEffect, useCallback } from 'react';
 
@@ -22,9 +22,10 @@ const WebdavFilePickerModal = ({ onClose, account }: WebdavFilePickerModalProps)
 	const [isLoading, setIsLoading] = useState(false);
 	const [typeView, setTypeView] = useState<'list' | 'grid'>('list');
 	const [currentFolder, setCurrentFolder] = useState('/');
-	const [parentFolders, setParentFolders] = useState<Array<string>>([]);
-	const [text, setText] = useState('');
-	const [webdavNodes, setWebdavNodes] = useState<Array<IWebdavNode>>([]);
+	const [parentFolders, setParentFolders] = useState<string[]>([]);
+	const [webdavNodes, setWebdavNodes] = useState<IWebdavNode[]>([]);
+	const [filterText, setFilterText] = useState('');
+	const debouncedFilter = useDebouncedValue(filterText, 500);
 
 	console.log('account', account);
 	console.log('currentFolder', currentFolder);
@@ -57,16 +58,25 @@ const WebdavFilePickerModal = ({ onClose, account }: WebdavFilePickerModalProps)
 			.catch((e) => e);
 	});
 
-	const handleGetWebdavFileList = useMutableCallback(async (): Promise<void> => {
+	const handleFilterNodes = useCallback(
+		(webdavNodes: IWebdavNode[]): void => {
+			const regex = new RegExp(`\\b${debouncedFilter}`, 'i');
+			const filteredNodes = webdavNodes.filter(({ basename }) => basename.match(regex));
+			return setWebdavNodes(filteredNodes);
+		},
+		[debouncedFilter],
+	);
+
+	const handleGetWebdavFileList = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
 		let result;
 		try {
 			result = await getWebdavFileList(account._id, currentFolder);
 			console.log(result);
-			setWebdavNodes(result.data);
+			handleFilterNodes(result.data);
 		} catch (error) {
 			console.log(error);
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error as Error });
 			onClose();
 		} finally {
 			setIsLoading(false);
@@ -76,12 +86,10 @@ const WebdavFilePickerModal = ({ onClose, account }: WebdavFilePickerModalProps)
 			// 	instance.state.set({ unfilteredWebdavNodes: nodesWithPreviews });
 			// }
 		}
-	});
+	}, [account._id, currentFolder, dispatchToastMessage, getWebdavFileList, onClose, showFilePreviews, handleFilterNodes]);
 
-	const handleBreadcrumb = (el) => {
-		// const index = $(event.target).data('index');
-		const index = 0;
-		console.log(el.target);
+	const handleBreadcrumb = (e): void => {
+		const { index } = e.currentTarget.dataset;
 
 		const parentFolders = currentFolder.split('/').filter((s) => s);
 		// determine parent directory to go to
@@ -91,14 +99,6 @@ const WebdavFilePickerModal = ({ onClose, account }: WebdavFilePickerModalProps)
 			targetFolder += '/';
 		}
 		setCurrentFolder(targetFolder);
-	};
-
-	const handleFilterNodes = (value) => {
-		console.log(value);
-		// const input = this.searchText.get();
-		// const regex = new RegExp(`\\b${value}`, 'i');
-		// const filteredNodes = webdavNodes.filter(({ basename }) => basename.match(regex));
-		// setWebdavNodes(filteredNodes);
 	};
 
 	useEffect(() => {
@@ -119,19 +119,11 @@ const WebdavFilePickerModal = ({ onClose, account }: WebdavFilePickerModalProps)
 				<Box display='flex' justifyContent='space-between'>
 					<FilePickerBreadcrumbs parentFolders={parentFolders} handleBreadcrumb={handleBreadcrumb} />
 					<Box>
-						{typeView === 'list' && (
-							<Button title={t('Grid_view')} ghost small onClick={(): void => setTypeView('grid')}>
-								<Icon size='x20' name='squares' />
-							</Button>
-						)}
-						{typeView === 'grid' && (
-							<Button title={t('List_view')} ghost small onClick={(): void => setTypeView('list')}>
-								<Icon size='x20' name='th-list' />
-							</Button>
-						)}
+						{typeView === 'list' && <IconButton icon='squares' small title={t('Grid_view')} onClick={(): void => setTypeView('grid')} />}
+						{typeView === 'grid' && <IconButton icon='th-list' small title={t('List_view')} onClick={(): void => setTypeView('list')} />}
 					</Box>
 				</Box>
-				<FilterByText onChange={({ text }): void => handleFilterNodes(text)} />
+				<FilterByText onChange={({ text }): void => setFilterText(text)} />
 				{typeView === 'list' && (
 					<WebdavFilePickerTable webdavNodes={webdavNodes} setCurrentFolder={setCurrentFolder} isLoading={isLoading} />
 				)}

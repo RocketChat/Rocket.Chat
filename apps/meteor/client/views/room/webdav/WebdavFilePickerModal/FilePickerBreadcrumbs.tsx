@@ -1,43 +1,27 @@
-import { Box, Icon, Button } from '@rocket.chat/fuselage';
+import { Box, Icon, IconButton, Tag } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 type FilePickerBreadcrumbsProps = {
-	parentFolders: Array<string>;
+	parentFolders: string[];
 	handleBreadcrumb: () => void;
 };
 
 const FilePickerBreadcrumbs = ({ parentFolders, handleBreadcrumb }: FilePickerBreadcrumbsProps): ReactElement => {
-	console.log(parentFolders);
+	const t = useTranslation();
+
 	return (
 		<Box display='flex' alignItems='center'>
-			<Button ghost small data-index={-1} onClick={handleBreadcrumb}>
-				<Icon size='x20' name='home' />
-			</Button>
+			<IconButton title={t('Root')} aria-label='home' icon='home' small data-index={-1} onClick={handleBreadcrumb} />
 			{parentFolders?.map((parentFolder, index) => (
 				<Box display='flex' alignItems='center' key={index}>
 					<Icon name='chevron-left' />
-					<Box aria-label='{{ parentFolder }}' data-index='{{@index}}'>
+					<Tag aria-label={parentFolder} data-index={index} onClick={handleBreadcrumb}>
 						{parentFolder}
-					</Box>
+					</Tag>
 				</Box>
 			))}
 		</Box>
-
-		// <div className="webdav-path-breadcrumb">
-		//   <div className="webdav-breadcrumb-item">
-		//     <button className="webdav-breadcrumb-folder js-webdav-breadcrumb-folder" aria-label="Home" data-index="-1">
-		//       <i className="icon-home"></i>
-		//     </button>
-		//   </div>
-		//   {{#each parentFolder in parentFolders}}
-		//     <div className="webdav-breadcrumb-item">
-		//       <i className="icon-angle-right"></i>
-		//       <button className="webdav-breadcrumb-folder js-webdav-breadcrumb-folder" aria-label="{{ parentFolder }}" data-index="{{@index}}">
-		//         {{ parentFolder }}
-		//       </button>
-		//     </div>
-		//   {{/each}}
-		// </div>
 	);
 };
 

@@ -128,8 +128,6 @@ Template.webdavFilePicker.helpers({
 		return { icon, type, extension };
 	},
 	filePreview() {
-		console.log(this);
-		console.log(this.preview);
 		return this.preview;
 	},
 	isLoading() {
@@ -256,6 +254,7 @@ Template.webdavFilePicker.events({
 		instance.state.set('webdavCurrentFolder', targetFolder);
 	},
 	async 'click .js-webdav_file'() {
+		console.log('clicked');
 		const roomId = Session.get('openedRoom');
 		const instance = Template.instance();
 		const { accountId } = instance.data;

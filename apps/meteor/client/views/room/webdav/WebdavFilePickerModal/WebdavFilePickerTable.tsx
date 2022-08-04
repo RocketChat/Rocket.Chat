@@ -1,7 +1,7 @@
 import { IWebdavNode } from '@rocket.chat/core-typings';
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, Icon, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ComponentProps } from 'react';
+import React, { ReactElement } from 'react';
 
 import { timeAgo } from '../../../../../app/ui/client/views/app/helpers';
 import {
@@ -29,16 +29,12 @@ const getFileSize = (type: string, size: number): string => {
 	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 };
 
-const getNodeIconType = (
-	basename: string,
-	fileType: string,
-	mime: string,
-): { icon: ComponentProps<typeof Icon['name']>; type: string; extension: string } => {
+const getNodeIconType = (basename: string, fileType: string, mime: string): { icon: string; type: string; extension: string } => {
 	// add icon for different types
 	let icon = 'clip';
 	let type = '';
 
-	let extension = basename.split('.').pop();
+	let extension = basename?.split('.').pop();
 	if (extension === basename) {
 		extension = '';
 	}
@@ -88,67 +84,75 @@ const WebdavFilePickerTable = ({ webdavNodes, setCurrentFolder, isLoading }: Web
 
 	return (
 		<Box display='flex' flexDirection='column' overflowY='hidden' height='x256'>
-			<GenericTable>
-				<GenericTableHeader>
-					<GenericTableHeaderCell
-						width='300px'
-						key='name'
-						direction={sortDirection}
-						active={sortBy[0] === 'name'}
-						onClick={setSort}
-						sort='name'
-					>
-						{t('Name')}
-					</GenericTableHeaderCell>
-					<GenericTableHeaderCell key='size' direction={sortDirection} active={sortBy[1] === 'size'} onClick={setSort} sort='size'>
-						{t('Size')}
-					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key='dataModified'
-						direction={sortDirection}
-						active={sortBy[2] === 'dataModified'}
-						onClick={setSort}
-						sort='dataModified'
-					>
-						{t('Data_modified')}
-					</GenericTableHeaderCell>
-				</GenericTableHeader>
-				<GenericTableBody>
-					{isLoading &&
-						Array(5)
-							.fill('')
-							.map((_, index) => <GenericTableLoadingRow key={index} cols={3} />)}
-					{!isLoading &&
-						webdavNodes?.length > 0 &&
-						webdavNodes?.map((webdavNode, index) => {
-							const { icon, type, extension } = getNodeIconType(webdavNode.basename, webdavNode.type, webdavNode.mime);
+			{(isLoading || webdavNodes?.length > 0) && (
+				<GenericTable>
+					<GenericTableHeader>
+						<GenericTableHeaderCell
+							width='300px'
+							key='name'
+							direction={sortDirection}
+							active={sortBy[0] === 'name'}
+							onClick={setSort}
+							sort='name'
+						>
+							{t('Name')}
+						</GenericTableHeaderCell>
+						<GenericTableHeaderCell key='size' direction={sortDirection} active={sortBy[1] === 'size'} onClick={setSort} sort='size'>
+							{t('Size')}
+						</GenericTableHeaderCell>
+						<GenericTableHeaderCell
+							key='dataModified'
+							direction={sortDirection}
+							active={sortBy[2] === 'dataModified'}
+							onClick={setSort}
+							sort='dataModified'
+						>
+							{t('Data_modified')}
+						</GenericTableHeaderCell>
+					</GenericTableHeader>
+					<GenericTableBody>
+						{isLoading &&
+							Array(5)
+								.fill('')
+								.map((_, index) => <GenericTableLoadingRow key={index} cols={3} />)}
+						{!isLoading &&
+							webdavNodes?.map((webdavNode, index) => {
+								const { icon, type, extension } = getNodeIconType(webdavNode.basename, webdavNode.type, webdavNode.mime);
 
-							console.log({ icon, type, extension });
-							return (
-								<GenericTableRow
-									key={index}
-									// onKeyDown={onClick(emojis._id)}
-									onClick={() => handleClick(webdavNode.filename, webdavNode.type)}
-									tabIndex={0}
-									role='link'
-									action
-									// qa-emoji-id={emojis._id}
-								>
-									<GenericTableCell fontScale='p2' color='default' w='x200' display='flex' alignItems='center'>
-										<Icon mie='x4' size='x20' name={icon} />
-										<Box withTruncatedText>{webdavNode.basename}</Box>
-									</GenericTableCell>
-									<GenericTableCell fontScale='p2' color='default'>
-										<Box withTruncatedText>{getFileSize(webdavNode.type, webdavNode?.size)}</Box>
-									</GenericTableCell>
-									<GenericTableCell fontScale='p2' color='default'>
-										<Box withTruncatedText>{timeAgo(new Date(), t)}</Box>
-									</GenericTableCell>
-								</GenericTableRow>
-							);
-						})}
-				</GenericTableBody>
-			</GenericTable>
+								console.log({ icon, type, extension });
+								return (
+									<GenericTableRow
+										className='js-webdav_file'
+										key={index}
+										// onKeyDown={onClick(emojis._id)}
+										onClick={(): void => handleClick(webdavNode.filename, webdavNode.type)}
+										tabIndex={0}
+										role='link'
+										action
+										// qa-emoji-id={emojis._id}
+									>
+										<GenericTableCell fontScale='p2' color='default' w='x200' display='flex' alignItems='center'>
+											<Icon mie='x4' size='x20' name={icon} />
+											<Box withTruncatedText>{webdavNode.basename}</Box>
+										</GenericTableCell>
+										<GenericTableCell fontScale='p2' color='default'>
+											<Box withTruncatedText>{getFileSize(webdavNode.type, webdavNode?.size)}</Box>
+										</GenericTableCell>
+										<GenericTableCell fontScale='p2' color='default'>
+											<Box withTruncatedText>{timeAgo(new Date(), t)}</Box>
+										</GenericTableCell>
+									</GenericTableRow>
+								);
+							})}
+					</GenericTableBody>
+				</GenericTable>
+			)}
+			{!isLoading && webdavNodes?.length === 0 && (
+				<States>
+					<StatesIcon name='magnifier' />
+					<StatesTitle>{t('No_results_found')}</StatesTitle>
+				</States>
+			)}
 		</Box>
 	);
 };
