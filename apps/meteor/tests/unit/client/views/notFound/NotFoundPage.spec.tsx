@@ -26,35 +26,9 @@ describe.skip('views/notFound/NotFoundPage', () => {
 
 		expect(document.body).to.have.focus;
 		userEvent.tab();
-		expect(screen.getByRole('button', { name: 'Return_to_previous_page' })).to.have.focus;
-		userEvent.tab();
 		expect(screen.getByRole('button', { name: 'Return_to_home' })).to.have.focus;
 		userEvent.tab();
 		expect(document.body).to.have.focus;
-	});
-
-	context('"Return to previous page" button', () => {
-		context('when clicked', () => {
-			const listener = spy();
-
-			before(() => {
-				window.history.pushState('404-page', '', 'http://localhost:3000/404');
-				window.addEventListener('popstate', listener);
-			});
-
-			after(() => {
-				window.removeEventListener('popstate', listener);
-			});
-
-			it('should go back on history', async () => {
-				render(<NotFoundPage />);
-				const button = screen.getByRole('button', { name: 'Return_to_previous_page' });
-
-				userEvent.click(button);
-				await waitFor(() => expect(listener).to.have.been.called(), { timeout: 2000 });
-				expect(window.history.state).to.not.be.eq('404-page');
-			});
-		});
 	});
 
 	context('"Return to home" button', () => {
