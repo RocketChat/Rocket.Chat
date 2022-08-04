@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, MouseEvent } from 'react';
 
-import useDecryptMessage from '../../../../hooks/useDecryptMessage';
+import { useDecryptedMessage } from '../../../../hooks/useDecryptedMessage';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { clickableItem } from '../../../../lib/clickableItem';
 import { callWithErrorHandling } from '../../../../lib/utils/callWithErrorHandling';
@@ -37,7 +37,7 @@ const Row: FC<ThreadRowProps> = memo(function Row({ thread, showRealNames, unrea
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 
-	const decryptedMsg = useDecryptMessage(thread);
+	const decryptedMsg = useDecryptedMessage(thread);
 	const msg = normalizeThreadMessage({ ...thread, msg: decryptedMsg });
 
 	const { name = thread.u.username } = thread.u;
