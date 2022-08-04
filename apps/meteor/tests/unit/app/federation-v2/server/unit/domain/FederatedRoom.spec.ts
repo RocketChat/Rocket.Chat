@@ -20,6 +20,8 @@ import {
 
 describe('Federation - Domain - FederatedRoom', () => {
 
+    after(() => mock.stop('mongodb'));
+
 	describe('#isAnInternalIdentifier()', () => {
 		it('should return true if the origin is equal to the localOrigin', () => {
 			expect(isAnInternalIdentifier('localOrigin', 'localOrigin')).to.be.equal(true);

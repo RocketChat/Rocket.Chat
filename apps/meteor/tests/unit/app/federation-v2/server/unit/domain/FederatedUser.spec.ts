@@ -14,6 +14,8 @@ import { FederatedUser } from '../../../../../../../app/federation-v2/server/dom
 
 describe('Federation - Domain - FederatedUser', () => {
 
+    after(() => mock.stop('mongodb'));
+
 	describe('#createInstance()', () => {
 		it('should create the instance with the internalId as the provided one', () => {
 			const federatedUser = FederatedUser.createInstance('@marcos:matrix.org', {

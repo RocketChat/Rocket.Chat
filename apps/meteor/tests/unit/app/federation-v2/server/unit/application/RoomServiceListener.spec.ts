@@ -79,6 +79,8 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		bridge.joinRoom.reset();
 	});
 
+    after(() => mock.stop('mongodb'));
+
 	describe('#onCreateRoom()', () => {
 		const creator = FederatedUser.createInstance('externalInviterId', {
 			name: 'normalizedInviterId',
