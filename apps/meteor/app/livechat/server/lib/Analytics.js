@@ -5,7 +5,7 @@ import { LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
 import { LivechatRooms } from '../../../models/server';
 import { secondsToHHMMSS } from '../../../utils/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../logger/server';
 
 const HOURS_IN_DAY = 24;
 const logger = new Logger('OmnichannelAnalytics');

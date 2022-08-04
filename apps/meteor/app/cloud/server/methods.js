@@ -10,7 +10,7 @@ import { disconnectWorkspace } from './functions/disconnectWorkspace';
 import { syncWorkspace } from './functions/syncWorkspace';
 import { checkUserHasCloudLogin } from './functions/checkUserHasCloudLogin';
 import { userLogout } from './functions/userLogout';
-import { hasPermission } from '../../authorization';
+import { hasPermission } from '../../authorization/server';
 import { buildWorkspaceRegistrationData } from './functions/buildRegistrationData';
 
 Meteor.methods({

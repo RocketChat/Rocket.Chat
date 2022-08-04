@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../settings';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/client';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { validateEmail } from '../../../../lib/emailValidator';
 

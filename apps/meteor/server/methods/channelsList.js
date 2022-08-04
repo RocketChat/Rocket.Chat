@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Subscriptions, Users } from '../../app/models/server';
 import { getUserPreference } from '../../app/utils';
 import { settings } from '../../app/settings/server';

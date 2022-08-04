@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { t } from '../../../../../utils';
+import { t, APIClient } from '../../../../../utils/client';
 import { hasAtLeastOnePermission, hasPermission, hasAnyRole } from '../../../../../authorization/client';
-import './visitorEdit.html';
-import { APIClient } from '../../../../../utils/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
+
+import './visitorEdit.html';
 
 const CUSTOM_FIELDS_COUNT = 100;
 

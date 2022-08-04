@@ -3,9 +3,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
 import { VRecDialog } from '../../../ui-vrecord/client';
-import { messageBox } from '../../../ui-utils';
-import { fileUpload } from '../../../ui';
-import { settings } from '../../../settings';
+import { messageBox } from '../../../ui-utils/client';
+import { fileUpload } from '../../../ui/client';
+import { settings } from '../../../settings/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ShareLocationModal from '../../../../client/views/room/ShareLocation/ShareLocationModal';
 

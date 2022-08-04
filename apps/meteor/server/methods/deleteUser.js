@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Users } from '../../app/models/server';
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 import { callbacks } from '../../lib/callbacks';
 import { deleteUser } from '../../app/lib/server';
 import { AppEvents, Apps } from '../../app/apps/server/orchestrator';

@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import moment from 'moment';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Users } from '../../../models/server';
 import { api } from '../../../../server/sdk/api';

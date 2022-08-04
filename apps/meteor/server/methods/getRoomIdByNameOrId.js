@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Rooms } from '../../app/models/server';
-import { canAccessRoom } from '../../app/authorization';
+import { canAccessRoom } from '../../app/authorization/server';
 
 Meteor.methods({
 	getRoomIdByNameOrId(rid) {

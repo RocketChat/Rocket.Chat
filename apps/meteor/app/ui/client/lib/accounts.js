@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
-import { t } from '../../../utils';
+import { t } from '../../../utils/client';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Accounts.onEmailVerificationLink(function (token, done) {

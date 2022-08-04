@@ -4,9 +4,9 @@ import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 
-import { settings } from '../../../settings';
-import { Button } from '../../../ui';
-import { t } from '../../../utils';
+import { settings } from '../../../settings/client';
+import { Button } from '../../../ui/client';
+import { t } from '../../../utils/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 

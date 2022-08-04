@@ -4,11 +4,11 @@ import { Template } from 'meteor/templating';
 
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 import { handleError } from '../../../../../../client/lib/utils/handleError';
-import { t } from '../../../../../utils';
-import { APIClient } from '../../../../../utils/client';
-import './visitorTranscript.html';
+import { t, APIClient } from '../../../../../utils/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
+
+import './visitorTranscript.html';
 
 const validateTranscriptData = (instance) => {
 	const subject = instance.$('[name="subject"]').val();

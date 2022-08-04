@@ -1,6 +1,6 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { MessageTypes } from '../../../../app/ui-utils';
+import { MessageTypes } from '../../../../app/ui-utils/server';
 
 MessageTypes.registerType({
 	id: 'livechat_priority_history',

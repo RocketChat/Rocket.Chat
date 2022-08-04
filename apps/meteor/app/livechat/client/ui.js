@@ -1,8 +1,8 @@
 import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../settings';
-import { hasAllPermission } from '../../authorization';
-import { AccountBox, MessageTypes } from '../../ui-utils';
+import { hasAllPermission } from '../../authorization/client';
+import { AccountBox, MessageTypes } from '../../ui-utils/client';
 
 Tracker.autorun((c) => {
 	// import omnichannel tabbar templates right away if omnichannel enabled

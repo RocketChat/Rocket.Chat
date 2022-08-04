@@ -4,7 +4,7 @@ import fs from 'fs';
 import { Meteor } from 'meteor/meteor';
 
 import { RocketChatImportFileInstance } from '../startup/store';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { Imports } from '../../../models/server';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Importers } from '../../lib/Importers';

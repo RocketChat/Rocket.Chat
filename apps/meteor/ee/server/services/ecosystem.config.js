@@ -4,7 +4,7 @@ module.exports = {
 	apps: [
 		{
 			name: 'authorization',
-			watch: [...watch, '../../../server/services/authorization'],
+			watch: [...watch, '../../../server/services/authorization/server'],
 		},
 		{
 			name: 'presence',

@@ -3,12 +3,13 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { settings } from '../../../../../settings';
+import { settings } from '../../../../../settings/client';
 import { modal } from '../../../../../ui-utils/client';
-import { APIClient, t } from '../../../../../utils';
-import { hasAnyRole } from '../../../../../authorization';
-import './closeRoom.html';
+import { APIClient, t } from '../../../../../utils/client';
+import { hasAnyRole } from '../../../../../authorization/client';
 import { handleError } from '../../../../../../client/lib/utils/handleError';
+
+import './closeRoom.html';
 
 const validateRoomComment = (comment) => {
 	if (!settings.get('Livechat_request_comment_when_closing_conversation')) {

@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import _ from 'underscore';
 import { OAuthApps } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../../authorization';
+import { hasPermission } from '../../../../authorization/server';
 import { Users } from '../../../../models/server';
 import { parseUriList } from '../functions/parseUriList';
 

@@ -5,7 +5,7 @@ import { LivechatVisitors } from '@rocket.chat/models';
 import { settings } from '../../../../settings/server';
 import { Settings, LivechatRooms } from '../../../../models/server';
 import { fileUploadIsValidContentType } from '../../../../utils/server';
-import { FileUpload } from '../../../../file-upload';
+import { FileUpload } from '../../../../file-upload/server';
 import { API } from '../../../../api/server';
 import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData';
 

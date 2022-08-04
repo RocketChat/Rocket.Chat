@@ -14,13 +14,14 @@ import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManag
 import { Messages } from '../../../models/client';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
 import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
-import './thread.html';
-import { getUserPreference } from '../../../utils';
+import { getUserPreference } from '../../../utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
-import './messageBoxFollow';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
+
+import './messageBoxFollow';
+import './thread.html';
 
 const sort = { ts: 1 };
 

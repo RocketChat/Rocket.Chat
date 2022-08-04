@@ -10,7 +10,7 @@ import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { callbacks } from '../../../../lib/callbacks';
-import { Notifications } from '../../../notifications';
+import { Notifications } from '../../../notifications/client';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../../../../client/lib/utils/getConfig';

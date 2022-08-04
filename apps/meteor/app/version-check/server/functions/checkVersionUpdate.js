@@ -3,7 +3,7 @@ import semver from 'semver';
 
 import getNewUpdates from './getNewUpdates';
 import { settings } from '../../../settings/server';
-import { Info } from '../../../utils';
+import { Info } from '../../../utils/server';
 import { Users, Settings } from '../../../models/server';
 import logger from '../logger';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Avatars } from '@rocket.chat/models';
 
 import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
-import { FileUpload } from '../../../app/file-upload';
+import { FileUpload } from '../../../app/file-upload/server';
 import { settings } from '../../../app/settings/server';
 import { Users } from '../../../app/models/server';
 

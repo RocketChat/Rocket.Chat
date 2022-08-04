@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { OAuthApps } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../../authorization';
+import { hasPermission } from '../../../../authorization/server';
 
 Meteor.methods({
 	async deleteOAuthApp(applicationId) {

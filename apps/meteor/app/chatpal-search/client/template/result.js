@@ -2,7 +2,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { getURL } from '../../../utils';
+import { getURL } from '../../../utils/client';
 import { Subscriptions } from '../../../models/client';
 import { getUserAvatarURL as getAvatarUrl } from '../../../utils/lib/getUserAvatarURL';
 import { formatTime } from '../../../../client/lib/utils/formatTime';

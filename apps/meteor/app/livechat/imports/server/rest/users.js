@@ -1,7 +1,7 @@
 import { check } from 'meteor/check';
 import _ from 'underscore';
 
-import { hasPermission } from '../../../../authorization';
+import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api/server';
 import { Users } from '../../../../models/server';
 import { Livechat } from '../../../server/lib/Livechat';

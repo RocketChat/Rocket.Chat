@@ -4,8 +4,8 @@ import { Template } from 'meteor/templating';
 import { callbacks } from '../../../lib/callbacks';
 import { UiTextContext } from '../../../definition/IRoomTypeConfig';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models/client';
-import { getUserPreference } from '../../utils';
-import { settings } from '../../settings';
+import { getUserPreference } from '../../utils/client';
+import { settings } from '../../settings/client';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 Template.roomList.helpers({

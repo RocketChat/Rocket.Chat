@@ -4,10 +4,10 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { ChatRoom } from '../../../../../models/client';
-import { t } from '../../../../../utils';
-import './visitorForward.html';
-import { APIClient } from '../../../../../utils/client';
+import { t, APIClient } from '../../../../../utils/client';
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
+
+import './visitorForward.html';
 
 Template.visitorForward.helpers({
 	visitor() {

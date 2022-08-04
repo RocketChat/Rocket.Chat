@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { ChatSubscription } from '../../../../models/client';
 import { menu } from '../../../../ui-utils/client';
 import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
-import { getUserPreference } from '../../../../utils';
+import { getUserPreference } from '../../../../utils/client';
 
 Template.burger.helpers({
 	unread() {

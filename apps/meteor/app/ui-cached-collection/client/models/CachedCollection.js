@@ -274,8 +274,8 @@ export class CachedCollection extends Emitter {
 	}
 
 	async setupListener(eventType, eventName) {
-		const { RoomManager } = await import('../../../ui-utils');
-		const { ChatRoom, CachedChatRoom } = await import('../../../models');
+		const { RoomManager } = await import('../../../ui-utils/client');
+		const { ChatRoom, CachedChatRoom } = await import('../../../models/client');
 		Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
 			this.log('record received', t, record);
 			callbacks.run(`cachedCollection-received-${this.name}`, record, t);

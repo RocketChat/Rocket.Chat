@@ -5,8 +5,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { SlackBridge } from './slackbridge';
 import { Rooms } from '../../models/server';
-import { msgStream } from '../../lib';
-import { slashCommands } from '../../utils';
+import { msgStream } from '../../lib/server';
+import { slashCommands } from '../../utils/server';
 
 function SlackBridgeImport(command, params, item) {
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {

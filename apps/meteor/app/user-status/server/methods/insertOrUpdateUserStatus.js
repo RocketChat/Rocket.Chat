@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { CustomUserStatus } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({

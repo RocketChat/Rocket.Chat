@@ -4,8 +4,8 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { AccountBox } from '../../../ui-utils';
-import { settings } from '../../../settings';
+import { AccountBox } from '../../../ui-utils/client';
+import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { add, remove } from '../../../../client/views/room/lib/Toolbox/IframeButtons';
 import { baseURI } from '../../../../client/lib/baseURI';

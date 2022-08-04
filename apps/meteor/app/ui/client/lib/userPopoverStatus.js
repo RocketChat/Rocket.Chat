@@ -1,4 +1,4 @@
-import { t } from '../../../utils';
+import { t } from '../../../utils/client';
 import { settings } from '../../../settings/client';
 
 export const getPopoverStatusConfig = (currentTarget, actionCallback) => {

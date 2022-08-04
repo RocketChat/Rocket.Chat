@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-import { menu } from '../../../ui-utils';
+import { menu } from '../../../ui-utils/client';
 
 window.addEventListener(
 	'resize',

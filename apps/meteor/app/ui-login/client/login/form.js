@@ -6,9 +6,9 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
-import { t } from '../../../utils';
+import { t } from '../../../utils/client';
 import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 

@@ -3,7 +3,7 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Subscriptions, Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { addUserToRoom } from '../functions';
 import { api } from '../../../../server/sdk/api';
 import { Federation } from '../../../federation-v2/server/infrastructure/rocket-chat/Federation';

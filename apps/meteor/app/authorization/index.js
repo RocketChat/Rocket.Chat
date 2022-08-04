@@ -4,5 +4,5 @@ if (Meteor.isClient) {
 	module.exports = require('./client/');
 }
 if (Meteor.isServer) {
-	module.exports = require('./server/index.js');
+	module.exports = require('./server/');
 }

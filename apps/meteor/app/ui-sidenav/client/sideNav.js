@@ -4,9 +4,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
-import { SideNav, menu } from '../../ui-utils';
-import { settings } from '../../settings';
-import { getUserPreference } from '../../utils';
+import { SideNav, menu } from '../../ui-utils/client';
+import { settings } from '../../settings/client';
+import { getUserPreference } from '../../utils/client';
 import { Users } from '../../models/client';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 

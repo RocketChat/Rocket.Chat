@@ -11,8 +11,8 @@ import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { deleteMessage, updateMessage, addUserToRoom, removeUserFromRoom, archiveRoom, unarchiveRoom, sendMessage } from '../../lib';
-import { saveRoomName, saveRoomTopic } from '../../channel-settings';
-import { FileUpload } from '../../file-upload';
+import { saveRoomName, saveRoomTopic } from '../../channel-settings/server';
+import { FileUpload } from '../../file-upload/server';
 
 export default class SlackAdapter {
 	constructor(slackBridge) {

@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 
-import { createCollapseable } from '../../ui-utils';
+import { createCollapseable } from '../../ui-utils/client';
 
 createCollapseable(Template.oembedBaseWidget, (instance) => instance.data.settings.collapseMediaByDefault || false);
 

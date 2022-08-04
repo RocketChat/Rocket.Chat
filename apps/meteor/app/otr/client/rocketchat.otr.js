@@ -3,8 +3,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
 import { Subscriptions } from '../../models/client';
-import { Notifications } from '../../notifications';
-import { t } from '../../utils';
+import { Notifications } from '../../notifications/client';
+import { t } from '../../utils/client';
 import { onClientMessageReceived } from '../../../client/lib/onClientMessageReceived';
 import { onClientBeforeSendMessage } from '../../../client/lib/onClientBeforeSendMessage';
 import { OtrRoomState } from './OtrRoomState';

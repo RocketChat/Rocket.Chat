@@ -8,19 +8,18 @@ import _ from 'underscore';
 import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
-import { modal } from '../../../../../ui-utils';
+import { modal, RoomManager } from '../../../../../ui-utils/client';
 import { Subscriptions } from '../../../../../models/client';
-import { settings } from '../../../../../settings';
-import { t } from '../../../../../utils';
-import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
-import './visitorInfo.html';
-import { APIClient } from '../../../../../utils/client';
-import { RoomManager } from '../../../../../ui-utils/client';
+import { settings } from '../../../../../settings/client';
+import { t, APIClient } from '../../../../../utils/client';
+import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
 import { Markdown } from '../../../../../markdown/client';
 import { handleError } from '../../../../../../client/lib/utils/handleError';
 import { formatDateAndTime } from '../../../../../../client/lib/utils/formatDateAndTime';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
+
+import './visitorInfo.html';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();

@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 
 import { getCustomFormTemplate } from '../customTemplates/register';
 import './agentEdit.html';
-import { hasPermission } from '../../../../../authorization';
+import { hasPermission } from '../../../../../authorization/client';
 import { t, APIClient } from '../../../../../utils/client';
 import { handleError } from '../../../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';

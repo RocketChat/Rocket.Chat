@@ -7,7 +7,7 @@ import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
-import { MessageAction, RoomHistoryManager } from '../../../ui-utils';
+import { MessageAction, RoomHistoryManager } from '../../../ui-utils/client';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { Rooms } from '../../../models/client';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';

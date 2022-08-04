@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
-import { hasRole } from '../../../authorization';
+import { hasRole } from '../../../authorization/server';
 import {
 	Messages,
 	LivechatRooms,
@@ -18,7 +18,7 @@ import {
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
 import { Apps, AppEvents } from '../../../apps/server';
 import notifications from '../../../notifications/server/lib/Notifications';

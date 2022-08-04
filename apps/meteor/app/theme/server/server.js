@@ -7,7 +7,7 @@ import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 
 import { settings, settingsRegistry } from '../../settings/server';
-import { Logger } from '../../logger';
+import { Logger } from '../../logger/server';
 import { addStyle } from '../../ui-master/server/inject';
 import { Settings } from '../../models/server';
 

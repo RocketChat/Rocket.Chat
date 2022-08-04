@@ -3,7 +3,7 @@ import { Cookies } from 'meteor/ostrio:cookies';
 import { Avatars } from '@rocket.chat/models';
 
 import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
-import { FileUpload } from '../../../app/file-upload';
+import { FileUpload } from '../../../app/file-upload/server';
 import { Rooms } from '../../../app/models/server';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 

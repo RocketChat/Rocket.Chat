@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../../../../app/authorization';
+import { hasPermission } from '../../../../../app/authorization/server';
 import CannedResponse from '../../../models/server/models/CannedResponse';
 import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 import { Users } from '../../../../../app/models/server';

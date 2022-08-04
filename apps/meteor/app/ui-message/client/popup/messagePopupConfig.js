@@ -11,7 +11,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Messages, Subscriptions } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization/client';
-import { EmojiPicker, emoji } from '../../../emoji';
+import { EmojiPicker, emoji } from '../../../emoji/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { t, getUserPreference, slashCommands } from '../../../utils/client';
 import { customMessagePopups } from './customMessagePopups';

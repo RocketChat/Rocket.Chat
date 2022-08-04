@@ -7,7 +7,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
 import { OTR } from './rocketchat.otr';
-import { Notifications } from '../../notifications';
+import { Notifications } from '../../notifications/client';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { Presence } from '../../../client/lib/presence';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';

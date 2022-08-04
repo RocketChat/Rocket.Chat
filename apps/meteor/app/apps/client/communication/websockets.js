@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { slashCommands, APIClient } from '../../../utils';
-import { CachedCollectionManager } from '../../../ui-cached-collection';
+import { slashCommands, APIClient } from '../../../utils/client';
+import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { loadButtons } from '../../../ui-message/client/ActionButtonSyncer';
 
 export const AppEvents = Object.freeze({

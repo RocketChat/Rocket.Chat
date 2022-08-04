@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
-import { getUserPreference } from '../../utils';
+import { getUserPreference } from '../../utils/client';
 
 Template.oembedImageWidget.helpers({
 	loadImage() {

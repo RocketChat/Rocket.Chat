@@ -6,7 +6,7 @@ import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings/server';
-import { Info } from '../../../utils';
+import { Info } from '../../../utils/server';
 import { Users } from '../../../models/server';
 import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';

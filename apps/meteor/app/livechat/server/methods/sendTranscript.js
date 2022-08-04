@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({

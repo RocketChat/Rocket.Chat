@@ -4,9 +4,9 @@ import moment from 'moment';
 import _ from 'underscore';
 
 import { ChatRoom } from '../../../../../models/client';
-import { t } from '../../../../../utils';
+import { t, APIClient } from '../../../../../utils/client';
+
 import './visitorNavigation.html';
-import { APIClient } from '../../../../../utils/client';
 
 const ITEMS_COUNT = 50;
 

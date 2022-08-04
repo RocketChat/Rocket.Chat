@@ -6,12 +6,12 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { auth } from '../oauth.js';
-import { RocketChatAnnouncement } from '../../../lib';
-import { popout } from '../../../ui-utils';
-import { t } from '../../../utils';
-import { settings } from '../../../settings';
+import { RocketChatAnnouncement } from '../../../lib/client';
+import { popout } from '../../../ui-utils/client';
+import { t } from '../../../utils/client';
+import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
-import { hasAllPermission } from '../../../authorization';
+import { hasAllPermission } from '../../../authorization/client';
 import { Users, Rooms } from '../../../models/client';
 import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';

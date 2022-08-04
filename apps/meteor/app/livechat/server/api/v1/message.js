@@ -5,7 +5,7 @@ import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { Messages, LivechatRooms } from '../../../../models/server';
-import { hasPermission } from '../../../../authorization';
+import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api/server';
 import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';

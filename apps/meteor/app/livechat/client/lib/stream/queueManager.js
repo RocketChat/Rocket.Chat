@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { APIClient } from '../../../../utils/client';
+import { APIClient, getUserPreference } from '../../../../utils/client';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { inquiryDataStream } from './inquiry';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
-import { getUserPreference } from '../../../../utils';
 import { CustomSounds } from '../../../../custom-sounds/client/lib/CustomSounds';
 
 const departments = new Set();

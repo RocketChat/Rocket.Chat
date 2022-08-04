@@ -3,7 +3,7 @@ import { Match } from 'meteor/check';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { Rooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { saveRoomName } from '../functions/saveRoomName';

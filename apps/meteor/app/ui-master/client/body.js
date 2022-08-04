@@ -6,15 +6,16 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { t } from '../../utils/client';
-import { chatMessages } from '../../ui';
-import { popover, RoomManager } from '../../ui-utils';
-import { settings } from '../../settings';
+import { chatMessages } from '../../ui/client';
+import { popover, RoomManager } from '../../ui-utils/client';
+import { settings } from '../../settings/client';
 import { ChatSubscription } from '../../models/client';
-import './body.html';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
+
+import './body.html';
 
 Template.body.onRendered(function () {
 	new Clipboard('.clipboard');

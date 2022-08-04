@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { LivechatRooms, Messages } from '../../../models/server';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 
 Meteor.methods({
 	'livechat:getFirstRoomMessage'({ rid }) {

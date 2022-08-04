@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { LivechatRooms, LivechatInquiry, Users } from '../../../models/server';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../logger/server';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('QueueManager');

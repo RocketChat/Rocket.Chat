@@ -8,9 +8,9 @@ import s from 'underscore.string';
 
 import { getCustomFormTemplate } from '../customTemplates/register';
 import './agentInfo.html';
-import { modal } from '../../../../../ui-utils';
+import { modal } from '../../../../../ui-utils/client';
 import { t, APIClient } from '../../../../../utils/client';
-import { hasPermission } from '../../../../../authorization';
+import { hasPermission } from '../../../../../authorization/client';
 import { handleError } from '../../../../../../client/lib/utils/handleError';
 
 const customFieldsTemplate = () => getCustomFormTemplate('livechatAgentInfoForm');
