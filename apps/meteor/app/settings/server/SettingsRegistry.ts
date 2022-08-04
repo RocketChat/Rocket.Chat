@@ -97,7 +97,7 @@ export class SettingsRegistry {
 	/*
 	 * Add a setting
 	 */
-	add(_id: string, value: SettingValue, { sorter, section, group, ...options }: ISettingAddOptions = {}): void {
+	async add(_id: string, value: SettingValue, { sorter, section, group, ...options }: ISettingAddOptions = {}): Promise<void> {
 		if (!_id || value == null) {
 			throw new Error('Invalid arguments');
 		}
@@ -156,17 +156,15 @@ export class SettingsRegistry {
 			const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
 			const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
-			Promise.await(
-				this.model.updateOne(
-					{ _id },
-					{
-						$set: { ...settingOverwrittenProps },
-						...(removedKeys.length && {
-							$unset: removedKeys.reduce((unset, key) => ({ ...unset, [key]: 1 }), {}),
-						}),
-					},
-					{ upsert: true },
-				),
+			await this.model.updateOne(
+				{ _id },
+				{
+					$set: { ...settingOverwrittenProps },
+					...(removedKeys.length && {
+						$unset: removedKeys.reduce((unset, key) => ({ ...unset, [key]: 1 }), {}),
+					}),
+				},
+				{ upsert: true },
 			);
 
 			return;
@@ -174,7 +172,7 @@ export class SettingsRegistry {
 
 		if (settingStored && isOverwritten) {
 			if (settingStored.value !== settingFromCodeOverwritten.value) {
-				Promise.await(this.model.updateOne({ _id }, settingProps, { upsert: true }));
+				await this.model.updateOne({ _id }, settingProps, { upsert: true });
 			}
 			return;
 		}
@@ -192,7 +190,7 @@ export class SettingsRegistry {
 
 		const setting = isOverwritten ? settingFromCodeOverwritten : settingOverwrittenDefault;
 
-		Promise.await(this.model.insertOne(setting)); // no need to emit unless we remove the oplog
+		await this.model.insertOne(setting); // no need to emit unless we remove the oplog
 
 		this.store.set(setting);
 	}
@@ -203,7 +201,7 @@ export class SettingsRegistry {
 	addGroup(_id: string, cb: addGroupCallback): void;
 
 	// eslint-disable-next-line no-dupe-class-members
-	addGroup(_id: string, groupOptions: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): void {
+	async addGroup(_id: string, groupOptions: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): Promise<void> {
 		if (!_id || (groupOptions instanceof Function && cb)) {
 			throw new Error('Invalid arguments');
 		}
@@ -217,7 +215,7 @@ export class SettingsRegistry {
 
 		if (!this.store.has(_id)) {
 			options.ts = new Date();
-			Promise.await(this.model.insertOne(options as ISetting));
+			await this.model.insertOne(options as ISetting);
 			this.store.set(options as ISetting);
 		}
 
