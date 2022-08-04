@@ -147,27 +147,25 @@ const fillSettings = _.debounce(
 		}
 
 		WordPress.configure(config);
-		if (Meteor.isServer) {
-			const enabled = settings.get('Accounts_OAuth_Wordpress');
-			if (enabled) {
-				ServiceConfiguration.configurations.upsert(
-					{
-						service: 'wordpress',
-					},
-					{
-						$set: config,
-					},
-				);
-			} else {
-				ServiceConfiguration.configurations.remove({
+		const enabled = settings.get('Accounts_OAuth_Wordpress');
+		if (enabled) {
+			ServiceConfiguration.configurations.upsert(
+				{
 					service: 'wordpress',
-				});
-			}
+				},
+				{
+					$set: config,
+				},
+			);
+		} else {
+			ServiceConfiguration.configurations.remove({
+				service: 'wordpress',
+			});
 		}
 	}),
 	1000,
 );
 
 Meteor.startup(() => {
-	settings.watchByRegex(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
+	settings.watchByRegex(/^(API\_Wordpress\_URL|Accounts\_OAuth\_Wordpress\_.+)$/, () => fillSettings());
 });
