@@ -573,7 +573,7 @@ export class AppsRestApi {
 						headers.Authorization = `Bearer ${token}`;
 					}
 
-					const workspaceIdSetting = Promise.await(Settings.findOneById('Cloud_Workspace_Id'));
+					const workspaceIdSetting = await Settings.findOneById('Cloud_Workspace_Id');
 
 					let result;
 					try {
@@ -590,7 +590,7 @@ export class AppsRestApi {
 						return API.v1.failure();
 					}
 
-					Promise.await(Apps.updateAppsMarketplaceInfo([result.data]));
+					await Apps.updateAppsMarketplaceInfo([result.data]);
 
 					return API.v1.success({ app: result.data });
 				},

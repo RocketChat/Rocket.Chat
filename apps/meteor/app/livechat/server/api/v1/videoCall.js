@@ -41,7 +41,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('webRTC calling not enabled');
 				}
 
-				const config = Promise.await(settings());
+				const config = await settings();
 				if (!config.theme || !config.theme.actionLinks || !config.theme.actionLinks.webrtc) {
 					throw new Meteor.Error('invalid-livechat-config');
 				}
