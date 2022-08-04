@@ -397,6 +397,8 @@ export const CallProvider: FC = ({ children }) => {
 				case 'Address Incomplete':
 					openDialModal({ errorMessage: t('Dialed_number_is_incomplete') });
 					break;
+				case 'Request Terminated':
+					break;
 				default:
 					openDialModal({ errorMessage: t('Something_went_wrong_try_again_later') });
 			}
