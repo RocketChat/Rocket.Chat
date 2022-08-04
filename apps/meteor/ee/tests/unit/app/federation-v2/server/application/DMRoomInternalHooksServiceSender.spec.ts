@@ -90,6 +90,18 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 		});
 		const room = FederatedRoomEE.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
 
+		it('should NOT create the inviter user both externally and internally if it already exists', async () => {
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			await service.onDirectMessageRoomCreation({
+				invitees,
+				internalInviterId: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			} as any);
+
+			expect(bridge.createUser.called).to.be.false;
+		});
+
 		it('should create the inviter user both externally and internally if it does not exists', async () => {
 			userAdapter.getFederatedUserByInternalId.onCall(0).resolves(undefined);
 			userAdapter.getFederatedUserByInternalId.onCall(1).resolves(user);
