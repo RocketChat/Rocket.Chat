@@ -1,4 +1,4 @@
-import { FindOneOptions } from 'mongodb';
+import { FindOptions } from 'mongodb';
 import _ from 'underscore';
 import type {
 	IVoipExtensionBase,
@@ -141,6 +141,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			msgs: 0,
 			usersCount: 1,
 			lm: newRoomAt,
+			name: `${name}-${callUniqueId}`,
 			fname: name,
 			t: 'v',
 			ts: newRoomAt,
@@ -232,7 +233,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		agent: { agentId: string; username: string },
 		rid: string,
 		direction: IVoipRoom['direction'],
-		options: FindOneOptions<IVoipRoom> = {},
+		options: FindOptions<IVoipRoom> = {},
 	): Promise<IRoomCreationResponse> {
 		this.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
 		let room = await VoipRoom.findOneById(rid, options);
@@ -394,7 +395,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		roomName,
 		options: { offset = 0, count, fields, sort } = {},
 	}: FindVoipRoomsParams): Promise<PaginatedResult<{ rooms: IVoipRoom[] }>> {
-		const cursor = VoipRoom.findRoomsWithCriteria({
+		const { cursor, totalCount } = VoipRoom.findRoomsWithCriteria({
 			agents,
 			open,
 			createdAt,
@@ -412,8 +413,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			},
 		});
 
-		const total = await cursor.count();
-		const rooms = await cursor.toArray();
+		const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return {
 			rooms,
@@ -476,9 +476,9 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		offset?: number,
 		sort?: Record<string, unknown>,
 	): Promise<{ agents: ILivechatAgent[]; total: number }> {
-		const cursor = Users.getAvailableAgentsIncludingExt(includeExtension, text, { count, skip: offset, sort });
-		const agents = await cursor.toArray();
-		const total = await cursor.count();
+		const { cursor, totalCount } = Users.getAvailableAgentsIncludingExt(includeExtension, text, { count, skip: offset, sort });
+
+		const [agents, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		return {
 			agents,

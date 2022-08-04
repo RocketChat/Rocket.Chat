@@ -21,7 +21,7 @@ class ChatContainer extends Component {
 		queueSpot: 0,
 		triggerQueueMessage: true,
 		estimatedWaitTime: null,
-	}
+	};
 
 	checkConnectingAgent = async () => {
 		const { connecting, queueInfo } = this.props;
@@ -38,7 +38,7 @@ class ChatContainer extends Component {
 			await this.handleQueueMessage(connecting, queueInfo);
 			await this.handleConnectingAgentAlert(newConnecting, normalizeQueueAlert(queueInfo));
 		}
-	}
+	};
 
 	checkRoom = () => {
 		const { room } = this.props;
@@ -47,7 +47,7 @@ class ChatContainer extends Component {
 			this.state.room = room;
 			setTimeout(loadMessages, 500);
 		}
-	}
+	};
 
 	grantUser = async () => {
 		const { token, user, guest, dispatch } = this.props;
@@ -59,7 +59,7 @@ class ChatContainer extends Component {
 		const visitor = { token, ...guest };
 		const newUser = await Livechat.grantVisitor({ visitor });
 		await dispatch({ user: newUser });
-	}
+	};
 
 	getRoom = async () => {
 		const { alerts, dispatch, room, messages, i18n } = this.props;
@@ -88,20 +88,20 @@ class ChatContainer extends Component {
 		} finally {
 			await dispatch({ loading: false });
 		}
-	}
+	};
 
 	handleTop = () => {
 		loadMoreMessages();
-	}
+	};
 
 	startTyping = throttle(async ({ rid, username }) => {
 		await Livechat.notifyVisitorTyping(rid, username, true);
 		this.stopTypingDebounced({ rid, username });
-	}, 4500)
+	}, 4500);
 
-	stopTyping = ({ rid, username }) => Livechat.notifyVisitorTyping(rid, username, false)
+	stopTyping = ({ rid, username }) => Livechat.notifyVisitorTyping(rid, username, false);
 
-	stopTypingDebounced = debounce(this.stopTyping, 5000)
+	stopTypingDebounced = debounce(this.stopTyping, 5000);
 
 	handleChangeText = async () => {
 		const { user, room } = this.props;
@@ -110,7 +110,7 @@ class ChatContainer extends Component {
 		}
 
 		this.startTyping({ rid: room._id, username: user.username });
-	}
+	};
 
 	handleSubmit = async (msg) => {
 		if (msg.trim() === '') {
@@ -133,7 +133,7 @@ class ChatContainer extends Component {
 			await dispatch({ alerts: (alerts.push(alert), alerts) });
 		}
 		await Livechat.notifyVisitorTyping(rid, user.username, false);
-	}
+	};
 
 	doFileUpload = async (rid, file) => {
 		const { alerts, dispatch, i18n } = this.props;
@@ -162,16 +162,16 @@ class ChatContainer extends Component {
 		const { _id: rid } = await this.getRoom();
 
 		files.forEach((file) => this.doFileUpload(rid, file));
-	}
+	};
 
 	handleSoundStop = async () => {
 		const { dispatch, sound = {} } = this.props;
 		await dispatch({ sound: { ...sound, play: false } });
-	}
+	};
 
 	onChangeDepartment = () => {
 		route('/switch-department');
-	}
+	};
 
 	onFinishChat = async () => {
 		const { i18n } = this.props;
@@ -199,7 +199,7 @@ class ChatContainer extends Component {
 			await dispatch({ loading: false });
 			await closeChat();
 		}
-	}
+	};
 
 	onRemoveUserData = async () => {
 		const { i18n } = this.props;
@@ -225,22 +225,22 @@ class ChatContainer extends Component {
 			await dispatch({ loading: false });
 			route('/chat-finished');
 		}
-	}
+	};
 
 	canSwitchDepartment = () => {
 		const { allowSwitchingDepartments, departments = {} } = this.props;
 		return allowSwitchingDepartments && departments.filter((dept) => dept.showOnRegistration).length > 1;
-	}
+	};
 
 	canFinishChat = () => {
 		const { room, connecting } = this.props;
 		return (room !== undefined) || connecting;
-	}
+	};
 
 	canRemoveUserData = () => {
 		const { allowRemoveUserData } = this.props;
 		return allowRemoveUserData;
-	}
+	};
 
 	registrationRequired = () => {
 		const {
@@ -261,12 +261,12 @@ class ChatContainer extends Component {
 
 		const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
 		return nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment;
-	}
+	};
 
 	onRegisterUser = () => route('/register');
 
 	showOptionsMenu = () =>
-		this.canSwitchDepartment() || this.canFinishChat() || this.canRemoveUserData()
+		this.canSwitchDepartment() || this.canFinishChat() || this.canRemoveUserData();
 
 
 	async handleConnectingAgentAlert(connecting, message) {
@@ -353,7 +353,7 @@ class ChatContainer extends Component {
 			registrationRequired={this.registrationRequired()}
 			onRegisterUser={this.onRegisterUser}
 		/>
-	)
+	);
 }
 
 export const ChatConnector = ({ ref, t, ...props }) => (

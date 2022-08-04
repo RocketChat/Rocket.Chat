@@ -1,5 +1,5 @@
 import type { IRoom, ISetting, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
-import type { DeleteWriteOpResultObject } from 'mongodb';
+import type { DeleteResult } from 'mongodb';
 
 import type { AddWebdavAccountMethod } from './methods/addWebdavAccount';
 import type { FollowMessageMethod } from './methods/followMessage';
@@ -11,10 +11,11 @@ import type { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
 import type { SaveSettingsMethod } from './methods/saveSettings';
 import type { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
 import type { UnfollowMessageMethod } from './methods/unfollowMessage';
+import type { UploadFileToWebdav } from './methods/uploadFileToWebdav';
 
 // TODO: frontend chapter day - define methods
 
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
 	'2fa:checkCodesRemaining': (...args: any[]) => any;
 	'2fa:disable': (...args: any[]) => any;
@@ -88,7 +89,7 @@ export interface ServerMethods {
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
-	'removeWebdavAccount': (accountId: string) => DeleteWriteOpResultObject;
+	'removeWebdavAccount': (accountId: string) => DeleteResult;
 	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
 	'requestDataDownload': (...args: any[]) => any;
@@ -117,6 +118,7 @@ export interface ServerMethods {
 	'updateOAuthApp': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;
+	'uploadFileToWebdav': UploadFileToWebdav;
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;

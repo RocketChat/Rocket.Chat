@@ -68,7 +68,7 @@ type Options = (
 			twoFactorOptions?: ITwoFactorOptions;
 	  }
 ) & {
-	validateParams?: ValidateFunction;
+	validateParams?: ValidateFunction | { [key in Method]?: ValidateFunction };
 	authOrAnonRequired?: true;
 };
 
@@ -94,6 +94,8 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	readonly queryParams: TMethod extends 'GET'
 		? TOptions extends { validateParams: ValidateFunction<infer T> }
 			? T
+			: TOptions extends { validateParams: { GET: ValidateFunction<infer T> } }
+			? T
 			: Partial<OperationParams<TMethod, TPathPattern>>
 		: Record<string, string>;
 	// TODO make it unsafe
@@ -101,6 +103,10 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		? Record<string, unknown>
 		: TOptions extends { validateParams: ValidateFunction<infer T> }
 		? T
+		: TOptions extends { validateParams: infer V }
+		? V extends { [key in TMethod]: ValidateFunction<infer T> }
+			? T
+			: Partial<OperationParams<TMethod, TPathPattern>>
 		: Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
 
@@ -126,7 +132,6 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	getUserInfo(
 		me: IUser,
 	): TOptions extends { authRequired: true } ? UserInfo : TOptions extends { authOrAnonRequired: true } ? UserInfo | undefined : undefined;
-	insertUserObject<T>({ object, userId }: { object: { [key: string]: unknown }; userId: string }): { [key: string]: unknown } & T;
 	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
 } & (TOptions extends { authRequired: true }
 	? {

@@ -1,18 +1,19 @@
+import type { VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
+import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import {
 	useCallActions,
 	useCallCreateRoom,
 	useCallerInfo,
 	useCallOpenRoom,
+	useIsVoipEnterprise,
 	useOpenedRoomInfo,
 	useQueueCounter,
 	useQueueName,
 } from '../../../contexts/CallContext';
 import SidebarFooterDefault from '../SidebarFooterDefault';
-import { SidebarFooterWatermark } from '../SidebarFooterWatermark';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
 export const VoipFooter = (): ReactElement | null => {
@@ -26,10 +27,11 @@ export const VoipFooter = (): ReactElement | null => {
 	const queueCounter = useQueueCounter();
 	const queueName = useQueueName();
 	const openedRoomInfo = useOpenedRoomInfo();
+	const options = useVoipFooterMenu();
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
-	const isEE = useHasLicenseModule('voip-enterprise');
+	const isEnterprise = useIsVoipEnterprise();
 
 	const toggleMic = useCallback(
 		(state: boolean) => {
@@ -48,17 +50,15 @@ export const VoipFooter = (): ReactElement | null => {
 		[callActions],
 	);
 
-	const getSubtitle = (): string => {
-		switch (callerInfo.state) {
-			case 'IN_CALL':
-				return t('In_progress');
-			case 'OFFER_RECEIVED':
-				return t('Ringing');
-			case 'ON_HOLD':
-				return t('On_Hold');
-		}
+	const getSubtitle = (state: VoIpCallerInfo['state']): string => {
+		const subtitles: Record<string, string> = {
+			IN_CALL: t('In_progress'),
+			OFFER_RECEIVED: t('Ringing'),
+			OFFER_SENT: t('Calling'),
+			ON_HOLD: t('On_Hold'),
+		};
 
-		return '';
+		return subtitles[state] || '';
 	};
 
 	const tooltips = {
@@ -91,7 +91,7 @@ export const VoipFooter = (): ReactElement | null => {
 			callerState={callerInfo.state}
 			callActions={callActions}
 			title={queueName || t('Phone_call')}
-			subtitle={getSubtitle()}
+			subtitle={getSubtitle(callerInfo.state)}
 			muted={muted}
 			paused={paused}
 			toggleMic={toggleMic}
@@ -103,8 +103,8 @@ export const VoipFooter = (): ReactElement | null => {
 			dispatchEvent={dispatchEvent}
 			openedRoomInfo={openedRoomInfo}
 			anonymousText={t('Anonymous')}
-			isEnterprise={isEE === true}
-			children={<SidebarFooterWatermark />}
+			isEnterprise={isEnterprise}
+			options={options}
 		/>
 	);
 };

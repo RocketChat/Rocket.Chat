@@ -1,10 +1,9 @@
 /* eslint-disable complexity */
-import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } from '@rocket.chat/core-typings';
+import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageBody, MessageBlock } from '@rocket.chat/fuselage';
 import { useTranslation, useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
-import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import Attachments from '../../../../components/message/Attachments';
 import MessageActions from '../../../../components/message/MessageActions';
 import BroadcastMetric from '../../../../components/message/Metrics/Broadcast';
@@ -15,7 +14,7 @@ import { UserPresence } from '../../../../lib/presence';
 import MessageBlockUiKit from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
+import { useTranslateAttachments, useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 import MessageContentBody from './MessageContentBody';
 import ReactionsList from './MessageReactionsList';
@@ -45,6 +44,8 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 	const isEncryptedMessage = isE2EEMessage(message);
 
+	const messageAttachments = useTranslateAttachments({ message });
+
 	return (
 		<>
 			{!message.blocks && (message.md || message.msg) && (
@@ -59,7 +60,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 					<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
 				</MessageBlock>
 			)}
-			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
+			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
 
