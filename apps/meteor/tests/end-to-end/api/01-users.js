@@ -92,8 +92,8 @@ describe('[Users]', function () {
 		before((done) => clearCustomFields(done));
 		after((done) => clearCustomFields(done));
 
-		it('should create a new user', (done) => {
-			request
+		it('should create a new user', async () => {
+			await request
 				.post(api('users.create'))
 				.set(credentials)
 				.send({
@@ -120,8 +120,16 @@ describe('[Users]', function () {
 
 					targetUser._id = res.body.user._id;
 					targetUser.username = res.body.user.username;
+				});
+
+			await request
+				.post(api('login'))
+				.send({
+					user: apiUsername,
+					password,
 				})
-				.end(done);
+				.expect('Content-Type', 'application/json')
+				.expect(200);
 		});
 
 		it('should create a new user with custom fields', (done) => {
@@ -2055,22 +2063,9 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.delete]', () => {
-		const updatePermission = (permission, roles) =>
-			new Promise((resolve) => {
-				request
-					.post(api('permissions.update'))
-					.set(credentials)
-					.send({ permissions: [{ _id: permission, roles }] })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(resolve);
-			});
-		const testUsername = `testuserdelete${+new Date()}`;
 		let targetUser;
 		beforeEach((done) => {
+			const testUsername = `testuserdelete${+new Date()}`;
 			request
 				.post(api('users.register'))
 				.set(credentials)
