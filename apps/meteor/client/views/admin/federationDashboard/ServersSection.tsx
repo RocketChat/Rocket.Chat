@@ -1,7 +1,7 @@
 import { Box, Throbber } from '@rocket.chat/fuselage';
 import { useMethod } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { ReactElement } from 'react';
-import { useQuery } from 'react-query';
 
 function ServersSection(): ReactElement | null {
 	const getFederationServers = useMethod('federation:getServers');

@@ -11,6 +11,7 @@ import {
 } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
 import React, {
 	forwardRef,
@@ -25,7 +26,6 @@ import React, {
 	FormEventHandler,
 	Ref,
 } from 'react';
-import { useQuery, UseQueryResult } from 'react-query';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 

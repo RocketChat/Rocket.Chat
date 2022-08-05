@@ -1,8 +1,8 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { ReactElement } from 'react';
-import { useQuery } from 'react-query';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';

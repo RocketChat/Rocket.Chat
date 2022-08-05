@@ -9,9 +9,9 @@ import {
 	TranslationKey,
 	useToastMessageDispatch,
 } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
 import React, { useState, useCallback, ReactElement } from 'react';
-import { useQuery } from 'react-query';
 
 import LoginLayout from '../LoginLayout';
 
