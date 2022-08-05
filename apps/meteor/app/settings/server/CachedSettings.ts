@@ -13,154 +13,52 @@ type SettingsConfig = {
 type OverCustomSettingsConfig = Partial<SettingsConfig>;
 
 export interface ICachedSettings {
-	/*
-	 * @description: The settings object as ready
-	 */
 	initilized(): void;
 
-	/*
-	 * returns if the setting is defined
-	 * @param _id - The setting id
-	 * @returns {boolean}
-	 */
 	has(_id: ISetting['_id']): boolean;
 
-	/*
-	 * Gets the current Object of the setting
-	 * @param _id - The setting id
-	 * @returns {ISetting} - The current Object of the setting
-	 */
 	getSetting(_id: ISetting['_id']): ISetting | undefined;
 
-	/*
-	 * Gets the current value of the setting
-	 * @remarks
-	 * 		- In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
-	 * @param _id - The setting id
-	 * @returns {SettingValue} - The current value of the setting
-	 */
 	get<T extends SettingValue = SettingValue>(_id: ISetting['_id']): T;
 
-	/*
-	 * Gets the current value of the setting
-	 * @remarks
-	 * 		- In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
-	 * @param _id - The setting id
-	 * @returns {SettingValue} - The current value of the setting
-	 *
-	 */
-	/* @deprecated */
 	getByRegexp<T extends SettingValue = SettingValue>(_id: RegExp): [string, T][];
 
-	/*
-	 * Get the current value of the settings, and keep track of changes
-	 * @remarks
-	 * 		- This callback is debounced
-	 *       - The callback is not fire until the settings got initialized
-	 * @param _ids - Array of setting id
-	 * @param callback - The callback to run
-	 * @returns {() => void} - A function that can be used to cancel the observe
-	 */
 	watchMultiple<T extends SettingValue = SettingValue>(_id: ISetting['_id'][], callback: (settings: T[]) => void): () => void;
 
-	/*
-	 * Get the current value of the setting, and keep track of changes
-	 * @remarks
-	 * 		- This callback is debounced
-	 *       - The callback is not fire until the settings got initialized
-	 * @param _id - The setting id
-	 * @param callback - The callback to run
-	 * @returns {() => void} - A function that can be used to cancel the observe
-	 */
 	watch<T extends SettingValue = SettingValue>(_id: ISetting['_id'], cb: (args: T) => void, config?: OverCustomSettingsConfig): () => void;
 
-	/*
-	 * Get the current value of the setting, or wait until the initialized
-	 * @remarks
-	 * 		- This is a one time run
-	 * 		- This callback is debounced
-	 *       - The callback is not fire until the settings got initialized
-	 * @param _id - The setting id
-	 * @param callback - The callback to run
-	 * @returns {() => void} - A function that can be used to cancel the observe
-	 */
 	watchOnce<T extends SettingValue = SettingValue>(
 		_id: ISetting['_id'],
 		cb: (args: T) => void,
 		config?: OverCustomSettingsConfig,
 	): () => void;
 
-	/*
-	 * Observes the given setting by id and keep track of changes
-	 * @remarks
-	 * 		- This callback is debounced
-	 *       - The callback is not fire until the setting is changed
-	 *       - The callback is not fire until all the settings get initialized
-	 * @param _id - The setting id
-	 * @param callback - The callback to run
-	 * @returns {() => void} - A function that can be used to cancel the observe
-	 */
 	change<T extends SettingValue = SettingValue>(
 		_id: ISetting['_id'],
 		callback: (args: T) => void,
 		config?: OverCustomSettingsConfig,
 	): () => void;
 
-	/*
-	 * Observes multiple settings and keep track of changes
-	 * @remarks
-	 * 		- This callback is debounced
-	 *       - The callback is not fire until the setting is changed
-	 *       - The callback is not fire until all the settings get initialized
-	 * @param _ids - Array of setting id
-	 * @param callback - The callback to run
-	 * @returns {() => void} - A function that can be used to cancel the observe
-	 */
 	changeMultiple<T extends SettingValue = SettingValue>(
 		_ids: ISetting['_id'][],
 		callback: (settings: T[]) => void,
 		config?: OverCustomSettingsConfig,
 	): () => void;
 
-	/*
-	 * Observes the setting and fires only if there is a change. Runs only once
-	 * @remarks
-	 * 		- This is a one time run
-	 * 		- This callback is debounced
-	 *       - The callback is not fire until the setting is changed
-	 *       - The callback is not fire until all the settings get initialized
-	 * @param _id - The setting id
-	 * @param callback - The callback to run
-	 * @returns {() => void} - A function that can be used to cancel the observe
-	 */
 	changeOnce<T extends SettingValue = SettingValue>(
 		_id: ISetting['_id'],
 		callback: (args: T) => void,
 		config?: OverCustomSettingsConfig,
 	): () => void;
 
-	/*
-	 * Sets the value of the setting
-	 * @remarks
-	 * 		- if the value set is the same as the current value, the change will not be fired
-	 *       - if the value is set before the initialization, the emit will be queued and will be fired after initialization
-	 * @param _id - The setting id
-	 * @param value - The value to set
-	 * @returns {void}
-	 */
 	set(record: ISetting): void;
 
 	getConfig(config?: OverCustomSettingsConfig): SettingsConfig;
 
-	/* @deprecated */
 	watchByRegex(regex: RegExp, cb: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void;
 
-	/* @deprecated */
 	changeByRegex(regex: RegExp, callback: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void;
 
-	/*
-	 * @description: Wait until the settings get ready then run the callback
-	 */
 	onReady(cb: () => void): void;
 }
 
@@ -188,6 +86,9 @@ export class CachedSettings
 
 	store = new Map<string, ISetting>();
 
+	/**
+	 * The settings object as ready
+	 */
 	initilized(): void {
 		if (this.ready) {
 			return;
@@ -197,7 +98,7 @@ export class CachedSettings
 		SystemLogger.debug('Settings initalized');
 	}
 
-	/*
+	/**
 	 * returns if the setting is defined
 	 * @param _id - The setting id
 	 * @returns {boolean}
@@ -209,6 +110,11 @@ export class CachedSettings
 		return this.store.has(_id);
 	}
 
+	/**
+	 * Gets the current Object of the setting
+	 * @param _id - The setting id
+	 * @returns {ISetting} - The current Object of the setting
+	 */
 	public getSetting(_id: ISetting['_id']): ISetting | undefined {
 		if (!this.ready && warn) {
 			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
@@ -216,11 +122,10 @@ export class CachedSettings
 		return this.store.get(_id);
 	}
 
-	/*
+	/**
 	 * Gets the current value of the setting
-	 * @remarks
-	 * 		- In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
-	 * 		- The setting's value will be cached in memory so it won't call the DB every time you fetch a particular setting
+	 * - In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
+	 * - The setting's value will be cached in memory so it won't call the DB every time you fetch a particular setting
 	 * @param _id - The setting id
 	 * @returns {SettingValue} - The current value of the setting
 	 */
@@ -231,15 +136,13 @@ export class CachedSettings
 		return this.store.get(_id)?.value as T;
 	}
 
-	/*
+	/**
 	 * Gets the current value of the setting
-	 * @remarks
-	 * 		- In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
+	 * - In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
+	 * @deprecated
 	 * @param _id - The setting id
 	 * @returns {SettingValue} - The current value of the setting
-	 *
 	 */
-	/* @deprecated */
 	public getByRegexp<T extends SettingValue = SettingValue>(_id: RegExp): [string, T][] {
 		if (!this.ready && warn) {
 			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
@@ -248,11 +151,10 @@ export class CachedSettings
 		return [...this.store.entries()].filter(([key]) => _id.test(key)).map(([key, setting]) => [key, setting.value]) as [string, T][];
 	}
 
-	/*
+	/**
 	 * Get the current value of the settings, and keep track of changes
-	 * @remarks
-	 * 		- This callback is debounced
-	 *       - The callback is not fire until the settings got initialized
+	 * - This callback is debounced
+	 * - The callback is not fire until the settings got initialized
 	 * @param _ids - Array of setting id
 	 * @param callback - The callback to run
 	 * @returns {() => void} - A function that can be used to cancel the observe
@@ -286,11 +188,10 @@ export class CachedSettings
 		};
 	}
 
-	/*
+	/**
 	 * Get the current value of the setting, and keep track of changes
-	 * @remarks
-	 * 		- This callback is debounced
-	 *       - The callback is not fire until the settings got initialized
+	 * - This callback is debounced
+	 * - The callback is not fire until the settings got initialized
 	 * @param _id - The setting id
 	 * @param callback - The callback to run
 	 * @returns {() => void} - A function that can be used to cancel the observe
@@ -317,12 +218,11 @@ export class CachedSettings
 		return this.change(_id, cb, config);
 	}
 
-	/*
+	/**
 	 * Get the current value of the setting, or wait until the initialized
-	 * @remarks
-	 * 		- This is a one time run
-	 * 		- This callback is debounced
-	 *       - The callback is not fire until the settings got initialized
+	 * - This is a one time run
+	 * - This callback is debounced
+	 * - The callback is not fire until the settings got initialized
 	 * @param _id - The setting id
 	 * @param callback - The callback to run
 	 * @returns {() => void} - A function that can be used to cancel the observe
@@ -339,12 +239,11 @@ export class CachedSettings
 		return this.changeOnce(_id, cb, config);
 	}
 
-	/*
+	/**
 	 * Observes the given setting by id and keep track of changes
-	 * @remarks
-	 * 		- This callback is debounced
-	 *       - The callback is not fire until the setting is changed
-	 *       - The callback is not fire until all the settings get initialized
+	 * - This callback is debounced
+	 * - The callback is not fire until the setting is changed
+	 * - The callback is not fire until all the settings get initialized
 	 * @param _id - The setting id
 	 * @param callback - The callback to run
 	 * @returns {() => void} - A function that can be used to cancel the observe
@@ -358,12 +257,11 @@ export class CachedSettings
 		return this.on(_id, _.debounce(callback, debounce) as any);
 	}
 
-	/*
+	/**
 	 * Observes multiple settings and keep track of changes
-	 * @remarks
-	 * 		- This callback is debounced
-	 *       - The callback is not fire until the setting is changed
-	 *       - The callback is not fire until all the settings get initialized
+	 * - This callback is debounced
+	 * - The callback is not fire until the setting is changed
+	 * - The callback is not fire until all the settings get initialized
 	 * @param _ids - Array of setting id
 	 * @param callback - The callback to run
 	 * @returns {() => void} - A function that can be used to cancel the observe
@@ -387,13 +285,12 @@ export class CachedSettings
 		};
 	}
 
-	/*
+	/**
 	 * Observes the setting and fires only if there is a change. Runs only once
-	 * @remarks
-	 * 		- This is a one time run
-	 * 		- This callback is debounced
-	 *       - The callback is not fire until the setting is changed
-	 *       - The callback is not fire until all the settings get initialized
+	 * - This is a one time run
+	 * - This callback is debounced
+	 * - The callback is not fire until the setting is changed
+	 * - The callback is not fire until all the settings get initialized
 	 * @param _id - The setting id
 	 * @param callback - The callback to run
 	 * @returns {() => void} - A function that can be used to cancel the observe
@@ -407,11 +304,10 @@ export class CachedSettings
 		return this.once(_id, _.debounce(callback, debounce) as any);
 	}
 
-	/*
+	/**
 	 * Sets the value of the setting
-	 * @remarks
-	 * 		- if the value set is the same as the current value, the change will not be fired
-	 *       - if the value is set before the initialization, the emit will be queued and will be fired after initialization
+	 * - if the value set is the same as the current value, the change will not be fired
+	 * - if the value is set before the initialization, the emit will be queued and will be fired after initialization
 	 * @param _id - The setting id
 	 * @param value - The value to set
 	 * @returns {void}
@@ -438,7 +334,7 @@ export class CachedSettings
 		...config,
 	});
 
-	/* @deprecated */
+	/** @deprecated */
 	public watchByRegex(regex: RegExp, cb: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void {
 		if (!this.ready) {
 			const cancel = new Set<() => void>();
@@ -461,7 +357,7 @@ export class CachedSettings
 		return this.changeByRegex(regex, cb, config);
 	}
 
-	/* @deprecated */
+	/** @deprecated */
 	public changeByRegex(regex: RegExp, callback: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void {
 		const store: Map<string, (...args: [string, SettingValue]) => void> = new Map();
 		return this.on('*', ([_id, value]) => {
@@ -475,6 +371,9 @@ export class CachedSettings
 		});
 	}
 
+	/**
+	 * Wait until the settings get ready then run the callback
+	 */
 	public onReady(cb: () => void): void {
 		if (this.ready) {
 			return cb();
