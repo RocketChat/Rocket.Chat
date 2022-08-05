@@ -4,9 +4,9 @@ import xmlCrypto from 'xml-crypto';
 
 import { SAMLUtils } from '../Utils';
 import { StatusCode } from '../constants';
-import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
-import { IResponseValidateCallback } from '../../definition/callbacks';
-import { ISAMLAssertion } from '../../definition/ISAMLAssertion';
+import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
+import type { IResponseValidateCallback } from '../../definition/callbacks';
+import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
 
 type XmlParent = Element | Document;
 

@@ -1,15 +1,19 @@
+import type { Browser } from '@playwright/test';
 import faker from '@faker-js/faker';
 
-import { BaseTest } from './test';
+import { HomeChannel } from '../page-objects/home-channel';
 
 /**
  * createTargetChannel:
  *  - Usefull to create a target channel for message related tests
  */
-export async function createTargetChannel(api: BaseTest['api']): Promise<string> {
+export async function createTargetChannel(browser: Browser): Promise<string> {
+	const page = await browser.newPage({ storageState: 'admin-session.json' });
 	const name = faker.datatype.uuid();
 
-	await api.post('/channels.create', { name });
+	await page.goto('/home');
+	await new HomeChannel(page).sidenav.createPublicChannel(name);
+	await page.close();
 
 	return name;
 }

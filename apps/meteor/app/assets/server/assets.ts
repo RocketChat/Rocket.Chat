@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { ServerResponse, IncomingMessage } from 'http';
+import type { ServerResponse, IncomingMessage } from 'http';
 
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
@@ -7,8 +7,8 @@ import { WebAppHashing } from 'meteor/webapp-hashing';
 import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
-import { NextHandleFunction } from 'connect';
-import { IRocketChatAssets, IRocketChatAsset } from '@rocket.chat/core-typings';
+import type { NextHandleFunction } from 'connect';
+import type { IRocketChatAssets, IRocketChatAsset } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../settings/server';

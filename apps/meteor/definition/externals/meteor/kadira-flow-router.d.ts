@@ -1,5 +1,5 @@
 declare module 'meteor/kadira:flow-router' {
-	import { Subscription } from 'meteor/meteor';
+	import type { Subscription } from 'meteor/meteor';
 
 	type Context = {
 		params: Record<string, string>;

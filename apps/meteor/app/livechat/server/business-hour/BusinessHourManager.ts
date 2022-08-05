@@ -1,9 +1,9 @@
 import moment from 'moment';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import type { ICronJobs } from '@rocket.chat/core-typings';
+import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import type { ICronJobs, ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
+import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 

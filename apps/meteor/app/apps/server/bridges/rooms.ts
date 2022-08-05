@@ -1,11 +1,12 @@
-import { RoomType, IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
-import { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { Meteor } from 'meteor/meteor';
 import type { ISubscription } from '@rocket.chat/core-typings';
 
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 

@@ -1,9 +1,9 @@
-import { ServiceBroker, Context, ServiceSchema } from 'moleculer';
+import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { asyncLocalStorage } from '../../server/sdk';
-import { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
-import { ServiceClass } from '../../server/sdk/types/ServiceClass';
-import { EventSignatures } from '../../server/sdk/lib/Events';
+import type { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
+import type { ServiceClass } from '../../server/sdk/types/ServiceClass';
+import type { EventSignatures } from '../../server/sdk/lib/Events';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',

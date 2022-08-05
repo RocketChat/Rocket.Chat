@@ -1,5 +1,5 @@
 import 'meteor/meteor';
-import { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
+import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
 
 declare module 'meteor/meteor' {
 	namespace Meteor {

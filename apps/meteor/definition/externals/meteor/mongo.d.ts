@@ -1,4 +1,4 @@
-import * as mongodb from 'mongodb';
+import type * as mongodb from 'mongodb';
 
 declare module 'meteor/mongo' {
 	interface RemoteCollectionDriver {

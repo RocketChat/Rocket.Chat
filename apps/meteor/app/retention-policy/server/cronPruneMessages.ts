@@ -1,5 +1,5 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
+import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { Rooms } from '../../models/server';
