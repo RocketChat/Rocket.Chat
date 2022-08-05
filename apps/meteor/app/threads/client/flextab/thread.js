@@ -49,6 +49,15 @@ Template.thread.helpers({
 		const tmid = state.get('tmid');
 		return Threads.findOne({ _id: tmid });
 	},
+	tmid() {
+		return Template.instance().state.get('tmid');
+	},
+	rid() {
+		return Template.instance().state.get('rid');
+	},
+	threadListStyle() {
+		return getUserPreference(Meteor.userId(), 'useLegacyMessageTemplate') ? '' : 'height:100%;';
+	},
 	isLoading() {
 		return Template.instance().state.get('loading') !== false;
 	},

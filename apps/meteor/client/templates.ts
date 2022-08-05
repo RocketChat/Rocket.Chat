@@ -20,6 +20,8 @@ createTemplateForComponent('DiscussionMetric', () => import('./components/messag
 		}),
 });
 
+createTemplateForComponent('ThreadMessageList', () => import('./views/room/MessageList/ThreadMessageList'), { attachment: 'at-parent' });
+
 createTemplateForComponent('MessageList', () => import('./views/room/MessageList/MessageList'));
 
 createTemplateForComponent('BroadCastMetric', () => import('./components/message/Metrics/Broadcast'));

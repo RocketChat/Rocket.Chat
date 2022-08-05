@@ -1,12 +1,24 @@
-import { IMessage, isRoomFederated, IUser } from '@rocket.chat/core-typings';
+import { IMessage, isRoomFederated, IUser, isThreadMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserRoom, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useMemo } from 'react';
 
-import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
+import { MessageAction, MessageActionContext } from '../../../../../../app/ui-utils/client/lib/MessageAction';
 import { getTabBarContext } from '../../../lib/Toolbox/ToolboxContext';
 import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
 import { MessageActionMenu } from './MessageActionMenu';
+
+const getMessageContext = (message: IMessage, room: IRoom): MessageActionContext => {
+	if (isRoomFederated(room)) {
+		return 'federated';
+	}
+
+	if (isThreadMessage(message)) {
+		return 'threads';
+	}
+
+	return 'message';
+};
 
 export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 	const t = useTranslation();
@@ -20,8 +32,11 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 	const subscription = useUserSubscription(message.rid);
 	const settings = useSettings();
 	const user = useUser() as IUser;
-	const federationContext = isRoomFederated(room) ? 'federated' : '';
-	const context = federationContext || 'message';
+	// const federationContext = isRoomFederated(room) ? 'federated' : '';
+	// const isThreadMessage = isThreadMessage(message);
+	// const context = federationContext || 'message';
+
+	const context = getMessageContext(message, room);
 
 	const mapSettings = useMemo(() => Object.fromEntries(settings.map((setting) => [setting._id, setting.value])), [settings]);
 

@@ -10,7 +10,7 @@ type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'contex
 export const MessageActionMenu: FC<{
 	options: MessageActionConfig[];
 }> = ({ options, ...rest }) => {
-	const ref = useRef(null);
+	const ref = useRef<HTMLButtonElement>(null);
 
 	const t = useTranslation();
 	const [visible, setVisible] = useState(false);
@@ -29,7 +29,8 @@ export const MessageActionMenu: FC<{
 		[key: string]: MessageActionConfigOption[];
 	};
 
-	const messagesContainer = document.querySelector('.messages-container') || document.body;
+	// const messagesContainer = document.querySelector('.thread') || document.body;
+	// console.log(messagesContainer);
 
 	return (
 		<MessageToolboxItem
@@ -40,7 +41,7 @@ export const MessageActionMenu: FC<{
 			data-qa-type='message-action-menu'
 		>
 			{visible && (
-				<ToolboxDropdown reference={ref} container={messagesContainer} {...rest}>
+				<ToolboxDropdown reference={ref} {...rest}>
 					{Object.entries(groupOptions).map(([, options], index, arr) => (
 						<Fragment key={index}>
 							{options.map((option) => (
