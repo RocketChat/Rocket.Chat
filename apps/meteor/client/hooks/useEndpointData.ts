@@ -27,7 +27,7 @@ export const useEndpointData = <TPath extends PathFor<'GET'>>(
 ): AsyncState<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>> & {
 	reload: () => void;
 } => {
-	deprecationWarning('useEndpointData is deprecated, use useEndpoint instead', endpoint, params, initialValue);
+	deprecationWarning('useEndpointData is deprecated, use @tanstack/react-query and useEndpoint instead', endpoint, params, initialValue);
 	const { resolve, reject, reset, ...state } = useAsyncState(initialValue);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getData = useEndpoint('GET', endpoint);
