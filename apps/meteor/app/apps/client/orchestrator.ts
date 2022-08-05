@@ -238,12 +238,12 @@ class AppClientOrchestrator {
 export const Apps = new AppClientOrchestrator();
 
 Meteor.startup(() => {
-	CachedCollectionManager.onLogin(() => {
+	CachedCollectionManager.onLogin(async () => {
 		try {
-			const { result } = useEndpoint('GET', '/apps/is-enabled');
+			const isEnabled = useEndpoint('GET', '/apps/is-enabled');
 
 			Apps.getAppClientManager().initialize();
-			Apps.load(result);
+			Apps.load((await isEnabled(this)).result);
 		} catch (error) {
 			Apps.handleError(error as Error);
 		}

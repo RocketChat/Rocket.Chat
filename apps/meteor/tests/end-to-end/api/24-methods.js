@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 
+import { AppServerOrchestrator } from '../../../app/apps/server/orchestrator.js';
 import { getCredentials, request, methodCall, api, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper.js';
 
@@ -1953,6 +1954,35 @@ describe('Meteor.methods', function () {
 					expect(result.result.ro).to.equal(false);
 					done();
 				});
+		});
+	});
+
+	describe.only('/apps/is-enabled', () => {
+		const orch = new AppServerOrchestrator();
+
+		it('should return an error when the required parameter "AppServerOrchestrator" is not provided', (done) => {
+			request
+				.get(api('/apps/is-enabled'))
+				.set(credentials)
+				.query()
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('result', false);
+				})
+				.end(done);
+		});
+		it('should return if the app is enabled', (done) => {
+			request
+				.get(api('/apps/is-enabled'))
+				.set(credentials)
+				.query({ orch })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('result', true | false);
+				})
+				.end(done);
 		});
 	});
 });
