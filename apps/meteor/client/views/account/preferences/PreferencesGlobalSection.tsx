@@ -31,8 +31,6 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSection
 		useLegacyMessageTemplate: boolean;
 	};
 
-	console.log(values);
-
 	const { handleDontAskAgainList, handleUseLegacyMessageTemplate } = handlers;
 
 	commitRef.current.global = commit;
