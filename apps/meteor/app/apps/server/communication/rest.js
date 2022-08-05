@@ -348,6 +348,38 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
+			'featured',
+			{ authRequired: true },
+			{
+				get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+
+					const headers = getDefaultHeaders();
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					let result;
+					try {
+						result = HTTP.get(`${baseUrl}/v1/apps/featured`, {
+							headers,
+						});
+					} catch (e) {
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
+					}
+
+					if (!result || result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the Featured Apps from the Marketplace:', result.data);
+						return API.v1.failure();
+					}
+
+					return API.v1.success(result.data);
+				},
+			},
+		);
+
+		this.api.addRoute(
 			':id',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{

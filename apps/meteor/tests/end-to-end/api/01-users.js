@@ -3278,6 +3278,19 @@ describe('[Users]', function () {
 
 			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
 		});
+		it('should return an error when the payload is missing all supported fields', (done) => {
+			request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('Match error: Failed Match.OneOf, Match.Maybe or Match.Optional validation');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/users.removeOtherTokens]', () => {
