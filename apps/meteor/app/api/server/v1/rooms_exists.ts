@@ -23,6 +23,8 @@ const GETRoomsNameExistsSchema = {
 
 export const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
 
+console.log('test');
+
 API.v1.addRoute(
 	'rooms.nameExists',
 	{
@@ -33,7 +35,7 @@ API.v1.addRoute(
 		get() {
 			const { roomName } = this.queryParams;
 
-			return API.v1.success(Meteor.call('rooms.nameExists', roomName));
+			return API.v1.success(Meteor.call('roomNameExists', roomName));
 		},
 	},
 );
