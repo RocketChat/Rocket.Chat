@@ -8,16 +8,16 @@ import { BASE_API_URL, ADMIN_CREDENTIALS } from '../config/constants';
 
 const PATH_NYC_OUTPUT = path.join(process.cwd(), '.nyc_output');
 
-export type AnyObj = { [key: string]: any; }
+export type AnyObj = { [key: string]: any };
 
 export type BaseTest = {
 	api: {
-		get(uri: string): Promise<APIResponse>
+		get(uri: string): Promise<APIResponse>;
 		post(uri: string, data: AnyObj): Promise<APIResponse>;
 		put(uri: string, data: AnyObj): Promise<APIResponse>;
 		delete(uri: string): Promise<APIResponse>;
-	}
-}
+	};
+};
 
 export const test = baseTest.extend<BaseTest>({
 	context: async ({ context }, use) => {
@@ -57,23 +57,23 @@ export const test = baseTest.extend<BaseTest>({
 		const headers = {
 			'X-Auth-Token': json.data.authToken,
 			'X-User-Id': json.data.userId,
-		}
+		};
 
 		await use({
 			get(uri: string) {
-				return request.get(BASE_API_URL + uri, { headers })
+				return request.get(BASE_API_URL + uri, { headers });
 			},
 			post(uri: string, data: AnyObj) {
-				return request.post(BASE_API_URL + uri, { headers, data })
+				return request.post(BASE_API_URL + uri, { headers, data });
 			},
 			put(uri: string, data: AnyObj) {
-				return request.put(BASE_API_URL + uri, { headers, data })
+				return request.put(BASE_API_URL + uri, { headers, data });
 			},
 			delete(uri: string) {
-				return request.delete(BASE_API_URL + uri, { headers })
+				return request.delete(BASE_API_URL + uri, { headers });
 			},
-		})
-	}
+		});
+	},
 });
 
 export const { expect } = test;
