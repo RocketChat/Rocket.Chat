@@ -24,13 +24,13 @@
 	"dependencies": {
 		"@rocket.chat/apps-engine": "^1.32.0",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "0.31.16",
-		"@rocket.chat/message-parser": "0.31.16",
+		"@rocket.chat/emitter": "next",
+		"@rocket.chat/message-parser": "next",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "0.31.16",
-		"@rocket.chat/ui-kit": "0.31.16",
+		"@rocket.chat/string-helpers": "next",
+		"@rocket.chat/ui-kit": "next",
 		"ajv": "^8.11.0",
 		"bcrypt": "^5.0.1",
 		"body-parser": "^1.20.0",
@@ -54,7 +54,7 @@
 		"ws": "^8.8.0"
 	},
 	"devDependencies": {
-		"@rocket.chat/icons": "0.31.16",
+		"@rocket.chat/icons": "next",
 		"@types/cookie": "^0.5.1",
 		"@types/cookie-parser": "^1.4.3",
 		"@types/ejson": "^2.2.0",
