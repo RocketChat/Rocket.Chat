@@ -12,6 +12,7 @@ import type { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
 import type { SaveSettingsMethod } from './methods/saveSettings';
 import type { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
 import type { UnfollowMessageMethod } from './methods/unfollowMessage';
+import type { UploadFileToWebdav } from './methods/uploadFileToWebdav';
 
 // TODO: frontend chapter day - define methods
 
@@ -118,6 +119,7 @@ export interface ServerMethods {
 	'updateOAuthApp': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;
+	'uploadFileToWebdav': UploadFileToWebdav;
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
