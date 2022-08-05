@@ -5,8 +5,16 @@ import { Random } from 'meteor/random';
 import { UploadFS } from 'meteor/jalik:ufs';
 import _ from 'underscore';
 
-import { canAccessRoom, hasPermission } from '../../authorization';
-import { settings } from '../../settings';
+let canAccessRoom;
+let hasPermission;
+let settings;
+if (Meteor.isClient) {
+	({ canAccessRoom, hasPermission } = require('../../authorization/client'));
+	({ settings } = require('../../settings/client'));
+} else {
+	({ canAccessRoom, hasPermission } = require('../../authorization/server'));
+	({ settings } = require('../../settings/server'));
+}
 
 // set ufs temp dir to $TMPDIR/ufs instead of /tmp/ufs if the variable is set
 if ('TMPDIR' in process.env) {
