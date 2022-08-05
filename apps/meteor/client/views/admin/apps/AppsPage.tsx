@@ -4,7 +4,7 @@ import { useRoute, useSetting, useMethod, useTranslation } from '@rocket.chat/ui
 import React, { useEffect, useState, ReactElement } from 'react';
 
 import Page from '../../../components/Page';
-import AppsList from './AppsList';
+import AppsPageContent from './AppsPageContent';
 
 type AppsPageProps = {
 	isMarketplace: boolean;
@@ -67,7 +67,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 				</Tabs.Item>
 			</Tabs>
 			<Page.Content bg={colors.n100}>
-				<AppsList isMarketplace={isMarketplace} />
+				<AppsPageContent isMarketplace={isMarketplace} />
 			</Page.Content>
 		</Page>
 	);

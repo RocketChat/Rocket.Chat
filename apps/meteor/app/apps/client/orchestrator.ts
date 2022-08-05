@@ -107,15 +107,10 @@ class AppClientOrchestrator {
 		}
 
 		return (result as App[]).map((app: App) => {
-			const { latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt, bundledIn } = app;
+			const { latest, ...rest } = app;
 			return {
 				...latest,
-				price,
-				pricingPlans,
-				purchaseType,
-				isEnterpriseOnly,
-				modifiedAt,
-				bundledIn,
+				rest,
 			};
 		});
 	}
