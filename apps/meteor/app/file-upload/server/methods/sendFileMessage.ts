@@ -62,7 +62,7 @@ Meteor.methods({
 				image_size: file.size,
 			};
 
-			if (file.identify && file.identify.size) {
+			if (file.identify?.size) {
 				attachment.image_dimensions = file.identify.size;
 			}
 

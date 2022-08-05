@@ -382,7 +382,7 @@ export class LDAPManager {
 			return [`${username}@${settings.get('LDAP_Default_Domain')}`];
 		}
 
-		if (ldapUser.mail && ldapUser.mail.includes('@')) {
+		if (ldapUser.mail?.includes('@')) {
 			return [ldapUser.mail];
 		}
 

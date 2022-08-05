@@ -76,7 +76,7 @@ export class SettingsBase {
 			}, []);
 		}
 
-		return Meteor.settings && Meteor.settings[_id];
+		return Meteor.settings?.[_id];
 	}
 
 	set(_id: string, value: SettingValue, callback: () => void): void {

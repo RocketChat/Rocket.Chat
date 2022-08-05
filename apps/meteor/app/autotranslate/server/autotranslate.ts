@@ -286,7 +286,7 @@ export abstract class AutoTranslate {
 		if (targetLanguage) {
 			targetLanguages = [targetLanguage];
 		} else {
-			targetLanguages = Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u && message.u._id);
+			targetLanguages = Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u?._id);
 		}
 		if (message.msg) {
 			Meteor.defer(() => {

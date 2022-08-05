@@ -257,7 +257,7 @@ class RocketChatAssetsClass {
 	}
 
 	public refreshClients(): boolean {
-		return (process.emit as Function)('message', {
+		return process.emit('message', {
 			refresh: 'client',
 		});
 	}
@@ -358,9 +358,9 @@ for (const key of Object.keys(assets)) {
 
 settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
 
-Meteor.startup(function () {
-	return Meteor.setTimeout(function () {
-		return (process.emit as Function)('message', {
+Meteor.startup(() => {
+	Meteor.setTimeout(() => {
+		process.emit('message', {
 			refresh: 'client',
 		});
 	}, 200);
@@ -504,7 +504,7 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 
 	const reqModifiedHeader = req.headers['if-modified-since'];
 	if (reqModifiedHeader) {
-		if (reqModifiedHeader === (file.uploadDate && file.uploadDate.toUTCString())) {
+		if (reqModifiedHeader === file.uploadDate?.toUTCString()) {
 			res.setHeader('Last-Modified', reqModifiedHeader);
 			res.writeHead(304);
 			res.end();
@@ -523,7 +523,7 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 		return;
 	}
 
-	res.setHeader('Last-Modified', (file.uploadDate && file.uploadDate.toUTCString()) || new Date().toUTCString());
+	res.setHeader('Last-Modified', file.uploadDate?.toUTCString() || new Date().toUTCString());
 	res.setHeader('Content-Type', file.contentType);
 	res.setHeader('Content-Length', file.size);
 	res.writeHead(200);

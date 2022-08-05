@@ -25,9 +25,7 @@ export class WebdavClientAdapter {
 		try {
 			return await this._client.stat(path);
 		} catch (error: any) {
-			throw new Error(
-				error.response && error.response.statusText ? error.response.statusText : 'Error checking if directory exists on webdav',
-			);
+			throw new Error(error.response?.statusText ? error.response.statusText : 'Error checking if directory exists on webdav');
 		}
 	}
 
@@ -35,7 +33,7 @@ export class WebdavClientAdapter {
 		try {
 			return await this._client.createDirectory(path);
 		} catch (error: any) {
-			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error creating directory on webdav');
+			throw new Error(error.response?.statusText ? error.response.statusText : 'Error creating directory on webdav');
 		}
 	}
 
@@ -43,7 +41,7 @@ export class WebdavClientAdapter {
 		try {
 			return await this._client.deleteFile(path);
 		} catch (error: any) {
-			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error deleting file on webdav');
+			throw new Error(error.response?.statusText ? error.response.statusText : 'Error deleting file on webdav');
 		}
 	}
 
@@ -51,7 +49,7 @@ export class WebdavClientAdapter {
 		try {
 			return (await this._client.getFileContents(filename)) as Buffer;
 		} catch (error: any) {
-			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error getting file contents webdav');
+			throw new Error(error.response?.statusText ? error.response.statusText : 'Error getting file contents webdav');
 		}
 	}
 
@@ -59,7 +57,7 @@ export class WebdavClientAdapter {
 		try {
 			return await this._client.getDirectoryContents(path);
 		} catch (error: any) {
-			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error getting directory contents webdav');
+			throw new Error(error.response?.statusText ? error.response.statusText : 'Error getting directory contents webdav');
 		}
 	}
 

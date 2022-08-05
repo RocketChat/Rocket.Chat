@@ -157,11 +157,11 @@ export class AppLivechatBridge extends LivechatBridge {
 			id: visitor.id,
 		};
 
-		if (visitor.visitorEmails && visitor.visitorEmails.length) {
+		if (visitor.visitorEmails?.length) {
 			registerData.email = visitor.visitorEmails[0].address;
 		}
 
-		if (visitor.phone && visitor.phone.length) {
+		if (visitor.phone?.length) {
 			(registerData as any).phone = { number: visitor.phone[0].phoneNumber };
 		}
 

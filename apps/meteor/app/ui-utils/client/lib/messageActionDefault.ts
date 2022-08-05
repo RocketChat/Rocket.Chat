@@ -219,7 +219,7 @@ Meteor.startup(async function () {
 			modal.open(
 				{
 					title: TAPi18n.__('Report_this_message_question_mark'),
-					text: message.msg || (message.attachments && message.attachments[0]?.description) || message.file?.name,
+					text: message.msg || message.attachments?.[0]?.description || message.file?.name,
 					inputPlaceholder: TAPi18n.__('Why_do_you_want_to_report_question_mark'),
 					type: 'input',
 					showCancelButton: true,

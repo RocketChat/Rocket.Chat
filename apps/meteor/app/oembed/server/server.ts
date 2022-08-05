@@ -309,7 +309,7 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 				}
 				if (isOEmbedUrlWithMetadata(data) && data.meta != null) {
 					item.meta = getRelevantMetaTags(data.meta) || {};
-					if (item.meta && item.meta.oembedHtml) {
+					if (item.meta?.oembedHtml) {
 						item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml) || '';
 					}
 				}

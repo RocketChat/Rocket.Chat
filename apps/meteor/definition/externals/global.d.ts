@@ -1,3 +1,5 @@
+import type { Server, Socket } from 'net';
+
 interface Navigator {
 	/** @deprecated */
 	readonly userLanguage?: string;
@@ -21,4 +23,12 @@ interface Window {
 interface PromiseConstructor {
 	await<T>(promise: Promise<T>): T;
 	await<T>(value: T): T;
+}
+
+declare global {
+	namespace NodeJS {
+		interface Process {
+			emit(event: 'message', message: any, sendHandle?: Server | Socket): boolean;
+		}
+	}
 }
