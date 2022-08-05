@@ -1,16 +1,20 @@
-import { Accordion, Field, FieldGroup, MultiSelect, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldGroup, MultiSelect, ToggleSwitch, Callout, SelectOption } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import { useForm } from '../../../hooks/useForm';
+import { FormSectionProps } from './AccountPreferencesPage';
 
-const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
+const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSectionProps): ReactElement => {
 	const t = useTranslation();
 
-	const userDontAskAgainList = useUserPreference('dontAskAgainList');
+	const userDontAskAgainList = useUserPreference<{ action: string; label: string }[]>('dontAskAgainList');
 	const userLegacyMessageTemplate = useUserPreference('useLegacyMessageTemplate');
 
-	const options = useMemo(() => (userDontAskAgainList || []).map(({ action, label }) => [action, label]), [userDontAskAgainList]);
+	const options = useMemo(
+		() => (userDontAskAgainList || []).map(({ action, label }) => [action, label]) as SelectOption[],
+		[userDontAskAgainList],
+	);
 
 	const selectedOptions = options.map(([action]) => action);
 
@@ -22,7 +26,12 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
 		onChange,
 	);
 
-	const { dontAskAgainList, useLegacyMessageTemplate } = values;
+	const { dontAskAgainList, useLegacyMessageTemplate } = values as {
+		dontAskAgainList: string[];
+		useLegacyMessageTemplate: boolean;
+	};
+
+	console.log(values);
 
 	const { handleDontAskAgainList, handleUseLegacyMessageTemplate } = handlers;
 
