@@ -117,7 +117,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 					<Box withTruncatedText w='full' display='flex' alignItems='center' flexDirection='row'>
 						<Margins inline='x4'>
 							<UserStatus status={status} />
-							<Box is='span' withTruncatedText display='inline-block'>
+							<Box is='span' withTruncatedText display='inline-block' fontWeight='700'>
 								{displayName}
 							</Box>
 						</Margins>
