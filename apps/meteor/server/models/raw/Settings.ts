@@ -50,7 +50,10 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		return this.find(query);
 	}
 
-	updateValueById<T extends ISetting['value'] = ISetting['value']>(_id: string, value: T): Promise<Document | UpdateResult> {
+	updateValueById(
+		_id: string,
+		value: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
+	): Promise<Document | UpdateResult> {
 		const query = {
 			blocked: { $ne: true },
 			value: { $ne: value },

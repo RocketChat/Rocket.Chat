@@ -9,13 +9,13 @@ export async function unregisterWorkspace() {
 	}
 
 	await Promise.all([
-		Settings.updateValueById('Cloud_Workspace_Id', undefined),
-		Settings.updateValueById('Cloud_Workspace_Name', undefined),
-		Settings.updateValueById('Cloud_Workspace_Client_Id', undefined),
-		Settings.updateValueById('Cloud_Workspace_Client_Secret', undefined),
-		Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', undefined),
-		Settings.updateValueById('Cloud_Workspace_PublicKey', undefined),
-		Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', undefined),
+		Settings.updateValueById('Cloud_Workspace_Id', null),
+		Settings.updateValueById('Cloud_Workspace_Name', null),
+		Settings.updateValueById('Cloud_Workspace_Client_Id', null),
+		Settings.updateValueById('Cloud_Workspace_Client_Secret', null),
+		Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', null),
+		Settings.updateValueById('Cloud_Workspace_PublicKey', null),
+		Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', null),
 	]);
 
 	return true;

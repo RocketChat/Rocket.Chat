@@ -12,7 +12,10 @@ export interface ISettingsModel extends IBaseModel<ISetting> {
 
 	findByIds(_id?: string[] | string): FindCursor<ISetting>;
 
-	updateValueById<T extends ISetting['value'] = ISetting['value']>(_id: string, value: T): Promise<Document | UpdateResult>;
+	updateValueById(
+		_id: string,
+		value: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
+	): Promise<Document | UpdateResult>;
 
 	incrementValueById(_id: ISetting['_id'], value?: number): Promise<Document | UpdateResult>;
 
