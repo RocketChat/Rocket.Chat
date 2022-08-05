@@ -1,0 +1,25 @@
+{
+  "name": "@rocket.chat/rest-api",
+  "version": "1.0.0",
+  "main": "dist/routes.js",
+  "author": "Diego Sampaio <chinello@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "concurrently \"nodemon\" \"nodemon -x tsoa spec-and-routes\"",
+    "build:routes": "tsoa spec-and-routes",
+    "build:tsc": "tsc -p tsconfig.json",
+    "build": "yarn build:routes && yarn build:tsc",
+    "start": "node build/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.1",
+    "swagger-ui-express": "^4.5.0",
+    "tsoa": "^4.1.1"
+  },
+  "devDependencies": {
+    "@rocket.chat/core-typings": "workspace:^",
+    "@types/express": "^4",
+    "@types/node": "^18.0.6",
+    "typescript": "~4.5.5"
+  }
+}

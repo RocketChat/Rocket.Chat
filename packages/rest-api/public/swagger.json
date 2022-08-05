@@ -1,0 +1,573 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"IUserEmailVerificationToken": {
+				"properties": {
+					"token": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"when": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"token",
+					"address",
+					"when"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IMeteorLoginToken": {
+				"properties": {
+					"hashedToken": {
+						"type": "string"
+					},
+					"twoFactorAuthorizedUntil": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"twoFactorAuthorizedHash": {
+						"type": "string"
+					},
+					"when": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"hashedToken",
+					"when"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IPersonalAccessToken": {
+				"properties": {
+					"hashedToken": {
+						"type": "string"
+					},
+					"twoFactorAuthorizedUntil": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"twoFactorAuthorizedHash": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"personalAccessToken"
+						],
+						"nullable": false
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"lastTokenPart": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"bypassTwoFactor": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"hashedToken",
+					"type",
+					"createdAt",
+					"lastTokenPart",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LoginToken": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/IMeteorLoginToken"
+					},
+					{
+						"$ref": "#/components/schemas/IPersonalAccessToken"
+					}
+				]
+			},
+			"IUserEmailCode": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"expire": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"code",
+					"expire"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IUserServices": {
+				"properties": {
+					"password": {
+						"properties": {
+							"bcrypt": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"bcrypt"
+						],
+						"type": "object"
+					},
+					"passwordHistory": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"email": {
+						"properties": {
+							"verificationTokens": {
+								"items": {
+									"$ref": "#/components/schemas/IUserEmailVerificationToken"
+								},
+								"type": "array"
+							}
+						},
+						"type": "object"
+					},
+					"resume": {
+						"properties": {
+							"loginTokens": {
+								"items": {
+									"$ref": "#/components/schemas/LoginToken"
+								},
+								"type": "array"
+							}
+						},
+						"type": "object"
+					},
+					"cloud": {},
+					"google": {},
+					"facebook": {},
+					"github": {},
+					"totp": {
+						"properties": {
+							"secret": {
+								"type": "string"
+							},
+							"hashedBackup": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							"enabled": {
+								"type": "boolean"
+							}
+						},
+						"required": [
+							"secret",
+							"hashedBackup",
+							"enabled"
+						],
+						"type": "object"
+					},
+					"email2fa": {
+						"properties": {
+							"changedAt": {
+								"type": "string",
+								"format": "date-time"
+							},
+							"enabled": {
+								"type": "boolean"
+							}
+						},
+						"required": [
+							"changedAt",
+							"enabled"
+						],
+						"type": "object"
+					},
+					"emailCode": {
+						"items": {
+							"$ref": "#/components/schemas/IUserEmailCode"
+						},
+						"type": "array"
+					},
+					"saml": {
+						"properties": {
+							"nameID": {
+								"type": "string"
+							},
+							"idpSession": {
+								"type": "string"
+							},
+							"idp": {
+								"type": "string"
+							},
+							"provider": {
+								"type": "string"
+							},
+							"inResponseTo": {
+								"type": "string"
+							}
+						},
+						"type": "object"
+					},
+					"ldap": {
+						"properties": {
+							"idAttribute": {
+								"type": "string"
+							},
+							"id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"id"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"emailCode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IUserEmail": {
+				"properties": {
+					"address": {
+						"type": "string"
+					},
+					"verified": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"address"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserStatus": {
+				"enum": [
+					"online",
+					"away",
+					"offline",
+					"busy"
+				],
+				"type": "string"
+			},
+			"IUserSettings": {
+				"properties": {
+					"profile": {},
+					"preferences": {
+						"properties": {},
+						"additionalProperties": {},
+						"type": "object"
+					}
+				},
+				"required": [
+					"profile",
+					"preferences"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IUser": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"_updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"roles": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"type": {
+						"type": "string"
+					},
+					"active": {
+						"type": "boolean"
+					},
+					"username": {
+						"type": "string"
+					},
+					"nickname": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"services": {
+						"$ref": "#/components/schemas/IUserServices"
+					},
+					"emails": {
+						"items": {
+							"$ref": "#/components/schemas/IUserEmail"
+						},
+						"type": "array"
+					},
+					"status": {
+						"$ref": "#/components/schemas/UserStatus"
+					},
+					"statusConnection": {
+						"type": "string"
+					},
+					"lastLogin": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"bio": {
+						"type": "string"
+					},
+					"avatarOrigin": {
+						"type": "string"
+					},
+					"avatarETag": {
+						"type": "string"
+					},
+					"avatarUrl": {
+						"type": "string"
+					},
+					"utcOffset": {
+						"type": "number",
+						"format": "double"
+					},
+					"language": {
+						"type": "string"
+					},
+					"statusDefault": {
+						"$ref": "#/components/schemas/UserStatus"
+					},
+					"statusText": {
+						"type": "string"
+					},
+					"oauth": {
+						"properties": {
+							"authorizedClients": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							}
+						},
+						"required": [
+							"authorizedClients"
+						],
+						"type": "object"
+					},
+					"statusLivechat": {
+						"type": "string"
+					},
+					"e2e": {
+						"properties": {
+							"public_key": {
+								"type": "string"
+							},
+							"private_key": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"public_key",
+							"private_key"
+						],
+						"type": "object"
+					},
+					"requirePasswordChange": {
+						"type": "boolean"
+					},
+					"customFields": {
+						"properties": {},
+						"additionalProperties": {},
+						"type": "object"
+					},
+					"settings": {
+						"$ref": "#/components/schemas/IUserSettings"
+					},
+					"defaultRoom": {
+						"type": "string"
+					},
+					"ldap": {
+						"type": "boolean"
+					},
+					"extension": {
+						"type": "string"
+					},
+					"inviteToken": {
+						"type": "string"
+					},
+					"federated": {
+						"type": "boolean"
+					},
+					"canViewAllInfo": {
+						"type": "boolean"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"reason": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"_id",
+					"_updatedAt",
+					"createdAt",
+					"roles",
+					"type",
+					"active"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pick_IUser.username_": {
+				"properties": {
+					"username": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"UserCreationParams": {
+				"$ref": "#/components/schemas/Pick_IUser.username_"
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "@rocket.chat/rest-api",
+		"version": "1.0.0",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {
+			"name": "Diego Sampaio ",
+			"email": "chinello@gmail.com"
+		}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/users/{userId}": {
+			"get": {
+				"operationId": "GetUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IUser"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/users": {
+			"get": {
+				"operationId": "GetUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IUser"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "CreateUser",
+				"responses": {
+					"201": {
+						"description": "Created"
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserCreationParams"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/api/v2"
+		}
+	]
+}

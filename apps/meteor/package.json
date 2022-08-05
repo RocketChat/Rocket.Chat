@@ -218,6 +218,7 @@
 		"@rocket.chat/mp3-encoder": "0.24.0",
 		"@rocket.chat/onboarding-ui": "next",
 		"@rocket.chat/poplib": "workspace:^",
+		"@rocket.chat/rest-api": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
 		"@rocket.chat/ui-client": "workspace:^",
