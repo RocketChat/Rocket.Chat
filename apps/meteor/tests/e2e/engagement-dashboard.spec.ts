@@ -2,14 +2,14 @@ import { test, expect } from './utils/test';
 import { Admin } from './page-objects';
 import { IS_EE } from './config/constants';
 
+test.skip(!IS_EE, 'Engagemente Dashboard > Enterprise Only');
+
 test.use({ storageState: 'admin-session.json' });
 
 test.describe('engagement-dashboard', () => {
 	let poAdmin: Admin;
 
-	test.describe('Engagement Dashboard Error Component', () => {
-		test.skip(!IS_EE, 'Enterprise Only');
-
+	test.describe.parallel('expect to trigger fallback error component', () => {
 		test.beforeEach(async ({ page }) => {
 			poAdmin = new Admin(page);
 			await page.goto('/admin');
@@ -19,7 +19,7 @@ test.describe('engagement-dashboard', () => {
 			await expect(page.locator('[data-qa="EngagementDashboardPage"]')).toBeVisible();
 		});
 
-		test('Users Tab: Check for Error component on widget error', async ({ page }) => {
+		test('expect to show 4 fallback errors components inside widget at Users Tab', async ({ page }) => {
 			await expect(
 				page.locator('[data-qa-id="EngagementDashboardPage-usersTab"][aria-selected="true"]', { hasText: 'Users' }),
 			).toBeVisible();
@@ -28,7 +28,7 @@ test.describe('engagement-dashboard', () => {
 			await expect(page.locator('[data-qa="EngagementDashboardCardErrorBoundary"]')).toHaveCount(4);
 		});
 
-		test('Messages Tab: Check for Error component on widget error', async ({ page }) => {
+		test('expect to show 2 fallback errors components inside widget at Messages Tab', async ({ page }) => {
 			await page.locator('[data-qa-id="EngagementDashboardPage-messagesTab"]').click();
 			await expect(
 				page.locator('[data-qa-id="EngagementDashboardPage-messagesTab"][aria-selected="true"]', { hasText: 'Messages' }),
@@ -38,7 +38,7 @@ test.describe('engagement-dashboard', () => {
 			await expect(page.locator('[data-qa="EngagementDashboardCardErrorBoundary"]')).toHaveCount(2);
 		});
 
-		test('Channels Tab: Check for Error component on widget error', async ({ page }) => {
+		test('expect to show a fallback error component inside widget at Channels Tab', async ({ page }) => {
 			await page.locator('[data-qa-id="EngagementDashboardPage-channelsTab"]').click();
 			await expect(
 				page.locator('[data-qa-id="EngagementDashboardPage-channelsTab"][aria-selected="true"]', { hasText: 'Channels' }),
