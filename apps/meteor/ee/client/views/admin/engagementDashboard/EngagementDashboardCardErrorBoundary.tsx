@@ -1,4 +1,4 @@
-import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import React, { ReactElement, ReactNode, useState } from 'react';
@@ -27,16 +27,14 @@ const EngagementDashboardCardErrorBoundary = ({ children }: EngagementDashboardC
 					onError={errorHandler}
 					onReset={reset}
 					fallbackRender={({ resetErrorBoundary }): ReactElement => (
-						<Box display='flex' justifyContent='center' alignItems='center' height='100%'>
-							<States>
-								<StatesIcon name='circle-exclamation' />
-								<StatesTitle>{t('Something_Went_Wrong')}</StatesTitle>
-								<StatesSubtitle>{isError(error) && error?.message}</StatesSubtitle>
-								<StatesActions>
-									<StatesAction onClick={(): void => resetErrorBoundary()}>{t('Retry')}</StatesAction>
-								</StatesActions>
-							</States>
-						</Box>
+						<States>
+							<StatesIcon name='circle-exclamation' />
+							<StatesTitle>{t('Something_Went_Wrong')}</StatesTitle>
+							<StatesSubtitle>{isError(error) && error?.message}</StatesSubtitle>
+							<StatesActions data-qa='EngagementDashboardCardErrorBoundary'>
+								<StatesAction onClick={(): void => resetErrorBoundary()}>{t('Retry')}</StatesAction>
+							</StatesActions>
+						</States>
 					)}
 				/>
 			)}
