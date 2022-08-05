@@ -19,6 +19,7 @@ export type BaseTest = {
 	};
 };
 
+// @ts-ignore
 export const test = baseTest.extend<BaseTest>({
 	context: async ({ context }, use) => {
 		if (!process.env.E2E_COVERAGE) {
