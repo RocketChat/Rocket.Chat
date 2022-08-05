@@ -351,11 +351,11 @@ export class AppsRestApi {
 			'featured',
 			{ authRequired: true },
 			{
-				get() {
+				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken();
+					const token = await getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${token}`;
 					}
