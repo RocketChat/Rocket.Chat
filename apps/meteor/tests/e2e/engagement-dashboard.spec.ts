@@ -1,5 +1,6 @@
 import { test, expect } from './utils/test';
 import { Admin } from './page-objects';
+import { IS_EE } from './config/constants';
 
 test.use({ storageState: 'admin-session.json' });
 
@@ -7,6 +8,8 @@ test.describe('engagement-dashboard', () => {
 	let poAdmin: Admin;
 
 	test.describe('Engagement Dashboard Error Component', () => {
+		test.skip(!IS_EE, 'Enterprise Only');
+
 		test.beforeEach(async ({ page }) => {
 			poAdmin = new Admin(page);
 			await page.goto('/admin');
