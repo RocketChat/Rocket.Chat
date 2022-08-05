@@ -83,7 +83,7 @@ const compareSettings = compareSettingsIgnoringKeys([
 ]);
 
 export class SettingsRegistry {
-	private model: typeof Settings;
+	private model: ISettingsModel;
 
 	private store: ICachedSettings;
 
