@@ -20,10 +20,6 @@ const PreferencesLocalizationSection = ({
 		return mapOptions;
 	}, [languages]);
 
-	useEffect(() => {
-		console.log(languageOptions);
-	}, [languageOptions]);
-
 	const { values, handlers, commit } = useForm({ language: userLanguage }, onChange);
 
 	const { language } = values as { language: string };
