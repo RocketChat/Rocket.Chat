@@ -1,7 +1,7 @@
-import { formatDistance } from 'date-fns';
 import i18next from 'i18next';
 
-import { getDateFnsLocale } from './locale';
+import { localeFormatDistance, getDateFnsLocale } from './locale';
+
 
 export const normalizeAgent = (agentData) => agentData && { name: agentData.name, username: agentData.username, status: agentData.status };
 
@@ -12,7 +12,7 @@ export const normalizeQueueAlert = (queueInfo) => {
 
 	const { spot, estimatedWaitTimeSeconds } = queueInfo;
 	const locale = getDateFnsLocale();
-	const estimatedWaitTime = estimatedWaitTimeSeconds && formatDistance(new Date().setSeconds(estimatedWaitTimeSeconds), new Date(), { locale });
+	const estimatedWaitTime = estimatedWaitTimeSeconds && localeFormatDistance(new Date().setSeconds(estimatedWaitTimeSeconds), new Date(), { locale });
 	return spot > 0
 	&& (
 		estimatedWaitTime

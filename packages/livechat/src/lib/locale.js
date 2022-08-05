@@ -1,3 +1,7 @@
+
+import { format, formatDistance } from 'date-fns';
+import i18next from 'i18next';
+
 import store from '../store';
 
 /**
@@ -48,6 +52,10 @@ export const getDateFnsLocale = () => {
 	fullLanguage = fullLanguage.toLowerCase();
 	const [languageCode] = fullLanguage.split ? fullLanguage.split(/[-_]/) : [];
 	const locale = [fullLanguage, languageCode, 'en-US'].find((lng) => supportedLocales.indexOf(lng) > -1);
-	// eslint-disable-next-line import/no-dynamic-require
-	return require(`date-fns/locale/${ locale }/index.js`);
+
+	return import(`date-fns/locale/${ locale }/index.js`);
 };
+
+export const localeFormat = (date, _format) => format(date, _format, i18next.language);
+
+export const localeFormatDistance = (date, baseDate) => formatDistance(date, baseDate, { locale: i18next.language });
