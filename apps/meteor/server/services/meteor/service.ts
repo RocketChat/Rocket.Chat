@@ -104,19 +104,20 @@ if (disableOplog) {
 	// Re-implement meteor's reactivity that uses observe to disconnect sessions when the token
 	// associated was removed
 	processOnChange = (diff: Record<string, any>, id: string): void => {
+		if (!diff || !('services.resume.loginTokens' in diff)) {
+			return;
+		}
 		const loginTokens: undefined | { hashedToken: string }[] = diff['services.resume.loginTokens'];
-		if (loginTokens) {
-			const tokens = loginTokens.map(({ hashedToken }) => hashedToken);
+		const tokens = loginTokens?.map(({ hashedToken }) => hashedToken);
 
-			const cbs = userCallbacks.get(id);
-			if (cbs) {
-				[...cbs]
-					.filter(({ hashedToken }) => !tokens.includes(hashedToken))
-					.forEach((item) => {
-						item.callbacks.removed(id);
-						cbs.delete(item);
-					});
-			}
+		const cbs = userCallbacks.get(id);
+		if (cbs) {
+			[...cbs]
+				.filter(({ hashedToken }) => tokens === undefined || !tokens.includes(hashedToken))
+				.forEach((item) => {
+					item.callbacks.removed(id);
+					cbs.delete(item);
+				});
 		}
 	};
 }
