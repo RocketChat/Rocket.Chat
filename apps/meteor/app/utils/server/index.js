@@ -4,7 +4,7 @@ export { Info } from '../rocketchat.info';
 export { getUserPreference } from '../lib/getUserPreference';
 export { fileUploadMediaWhiteList, fileUploadIsValidContentType } from '../lib/fileUploadRestrictions';
 export { isDocker } from './functions/isDocker';
-export { getMongoInfo, getOplogInfo } from './functions/getMongoInfo';
+export { getMongoInfo } from './functions/getMongoInfo';
 export { getUserAvatarURL } from '../lib/getUserAvatarURL';
 export { slashCommands } from '../lib/slashCommand';
 export { getUserNotificationPreference } from '../lib/getUserNotificationPreference';
