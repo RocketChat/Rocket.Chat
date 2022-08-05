@@ -4,6 +4,7 @@ import { api, credentials, methodCall, request } from '../api-data';
 import { password } from '../user';
 import { createUser, login } from '../users.helper';
 import { createAgent, makeAgentAvailable } from './rooms';
+import { DummyResponse } from './utils';
 
 export const createDepartment = (): Promise<ILivechatDepartment> =>
 	new Promise((resolve, reject) => {
@@ -20,7 +21,7 @@ export const createDepartment = (): Promise<ILivechatDepartment> =>
 				},
 			})
 			.set(credentials)
-			.end((err, res) => {
+			.end((err: Error, res: DummyResponse<ILivechatDepartment>) => {
 				if (err) {
 					return reject(err);
 				}

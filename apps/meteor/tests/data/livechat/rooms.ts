@@ -1,9 +1,7 @@
 import type { IInquiry, ILivechatAgent, ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { adminUsername } from '../user';
-
-type DummyResponse<T, E = 'wrapped'> =
-	E extends 'wrapped' ? { body: { [k: string]: T } } : { body: T };
+import { DummyResponse } from './utils';
 
 export const createLivechatRoom = (visitorToken: string): Promise<IOmnichannelRoom> =>
 	new Promise((resolve) => {
@@ -165,7 +163,7 @@ export const getLivechatRoomInfo = (roomId: string): Promise<IOmnichannelRoom> =
 			.query({
 				roomId,
 			})
-			.end((_err, req) => {
+			.end((_err: Error, req: DummyResponse<IOmnichannelRoom>) => {
 				resolve(req.body.channel);
 			});
 	});
