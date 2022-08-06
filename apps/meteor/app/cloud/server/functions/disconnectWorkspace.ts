@@ -1,13 +1,14 @@
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { Settings } from '../../../models/server';
+import { Settings } from '@rocket.chat/models';
 
-export function disconnectWorkspace() {
+import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+
+export async function disconnectWorkspace() {
 	const { connectToCloud } = retrieveRegistrationStatus();
 	if (!connectToCloud) {
 		return true;
 	}
 
-	Settings.updateValueById('Register_Server', false);
+	await Settings.updateValueById('Register_Server', false);
 
 	return true;
 }
