@@ -109,7 +109,7 @@ export class NetworkBroker implements IBroker {
 			name,
 			actions: {},
 			...dependencies,
-			events: instance.getEvents().reduce<Record<string, Function>>((map, eventName) => {
+			events: instance.getEvents().reduce<Record<string, (ctx: Context) => void>>((map, eventName) => {
 				map[eventName] = /^\$/.test(eventName)
 					? (ctx: Context): void => {
 							// internal events params are not an array

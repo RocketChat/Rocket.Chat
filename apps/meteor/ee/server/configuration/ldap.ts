@@ -16,7 +16,7 @@ Meteor.startup(() =>
 		addSettings();
 
 		// Configure background sync cronjob
-		function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => {}): () => void {
+		function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => void): () => void {
 			let lastSchedule: string;
 			return function addCronJobDebounced(): void {
 				if (settings.get('LDAP_Enable') !== true || settings.get(enableSetting) !== true) {

@@ -90,7 +90,7 @@ callbacks.add(
 				author_name: jumpToMessage.alias || jumpToMessage.u.username,
 				author_icon: getUserAvatarURL(jumpToMessage.u.username),
 				message_link: item.url,
-				// @ts-expect-error
+				// @ts-expect-error Type 'MessageAttachment[]' is not assignable to type 'MessageQuoteAttachment[]'.
 				attachments: jumpToMessage.attachments || [],
 				ts: jumpToMessage.ts,
 			});

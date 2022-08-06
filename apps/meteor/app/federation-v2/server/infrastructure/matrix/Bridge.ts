@@ -23,7 +23,7 @@ export class MatrixBridge implements IFederationBridge {
 		protected bridgeUrl: string,
 		protected bridgePort: number,
 		protected homeServerRegistrationFile: Record<string, any>,
-		protected eventHandler: Function,
+		protected eventHandler: (event: IMatrixEvent<MatrixEventType>) => void,
 	) {
 		this.logInfo();
 	}

@@ -3,7 +3,7 @@ import type { ComponentType, PropsWithoutRef } from 'react';
 import { createLazyPortal } from './createLazyPortal';
 import { registerPortal } from './portalsSubscription';
 
-export const createEphemeralPortal = <Props extends {} = {}>(
+export const createEphemeralPortal = <Props>(
 	factory: () => Promise<{ default: ComponentType<Props> }>,
 	propsFn: () => PropsWithoutRef<Props>,
 	container: Element,

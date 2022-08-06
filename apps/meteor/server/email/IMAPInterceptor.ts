@@ -14,7 +14,6 @@ type IMAPOptions = {
 
 export declare interface IMAPInterceptor {
 	on(event: 'email', listener: (email: ParsedMail) => void): this;
-	on(event: string, listener: Function): this;
 }
 
 export class IMAPInterceptor extends EventEmitter {
@@ -79,7 +78,7 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	isActive(): boolean {
-		if (this.imap && this.imap.state && this.imap.state === 'disconnected') {
+		if (this.imap?.state && this.imap.state === 'disconnected') {
 			return false;
 		}
 

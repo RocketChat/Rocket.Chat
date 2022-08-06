@@ -1,8 +1,9 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
+import type { ICreatedRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
+import type { MatchKeysAndValues } from 'mongodb';
 
 import { Users, Rooms } from '../../../models/server';
 import { Apps } from '../../../apps/server';
@@ -11,7 +12,12 @@ import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
 import type { ICreateRoomParams } from '../../../../server/sdk/types/IRoomService';
 
-const generateSubscription = (fname: string, name: string, user: IUser, extra: {}): any => ({
+const generateSubscription = (
+	fname: string,
+	name: string,
+	user: IUser,
+	extra: MatchKeysAndValues<ISubscription>,
+): MatchKeysAndValues<ISubscription> => ({
 	_id: Random.id(),
 	alert: false,
 	unread: 0,

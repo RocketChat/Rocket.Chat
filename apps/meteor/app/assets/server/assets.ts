@@ -8,7 +8,7 @@ import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
 import type { NextHandleFunction } from 'connect';
-import type { IRocketChatAssets, IRocketChatAsset } from '@rocket.chat/core-typings';
+import type { IRocketChatAssets, IRocketChatAsset, IRocketChatAssetCache } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../settings/server';
@@ -368,14 +368,14 @@ Meteor.startup(() => {
 
 const { calculateClientHash } = WebAppHashing;
 
-WebAppHashing.calculateClientHash = function (manifest: Record<string, any>, includeFilter: Function, runtimeConfigOverride: any): string {
+WebAppHashing.calculateClientHash = function (manifest, includeFilter, runtimeConfigOverride): string {
 	for (const key of Object.keys(assets)) {
 		const value = getAssetByKey(key);
 		if (!value.cache && !value.defaultUrl) {
 			continue;
 		}
 
-		let cache = {};
+		let cache: IRocketChatAssetCache;
 		if (value.cache) {
 			cache = {
 				path: value.cache.path,
@@ -524,8 +524,8 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 	}
 
 	res.setHeader('Last-Modified', file.uploadDate?.toUTCString() || new Date().toUTCString());
-	res.setHeader('Content-Type', file.contentType);
-	res.setHeader('Content-Length', file.size);
+	if (file.contentType) res.setHeader('Content-Type', file.contentType);
+	if (file.size) res.setHeader('Content-Length', file.size);
 	res.writeHead(200);
 	res.end(file.content);
 });

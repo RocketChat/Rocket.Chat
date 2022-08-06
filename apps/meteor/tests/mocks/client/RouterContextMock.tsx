@@ -31,8 +31,11 @@ const RouterContextMock = ({ children, pushRoute, replaceRoute }: RouterContextM
 			],
 			queryCurrentRoute: (): [
 				subscribe: (onStoreChange: () => void) => () => void,
-				getSnapshot: () => [undefined?, {}?, {}?, undefined?],
-			] => [() => (): void => undefined, (): [undefined, {}, {}, undefined] => [undefined, {}, {}, undefined]],
+				getSnapshot: () => [undefined?, Record<string, string>?, Record<string, string>?, undefined?],
+			] => [
+				() => (): void => undefined,
+				(): [undefined, Record<string, string>, Record<string, string>, undefined] => [undefined, {}, {}, undefined],
+			],
 		}),
 		[pushRoute, replaceRoute],
 	);

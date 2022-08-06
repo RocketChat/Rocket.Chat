@@ -4296,6 +4296,7 @@ __metadata:
     "@types/jsdom-global": ^3.0.2
     "@types/jsrsasign": ^9.0.3
     "@types/katex": ^0.14.0
+    "@types/later": ^1.2.7
     "@types/ldapjs": ^2.2.2
     "@types/less": ^3.0.3
     "@types/lodash": ^4.14.182
@@ -6733,6 +6734,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: e009a2bfb50e90ca9b7c6e8f648f8464067271fd99116f881073fa6fa76dc8d0133181dd65e6614d5fb1220d671d67b0124aef7d97dc02d7e342ab143a47779d
+  languageName: node
+  linkType: hard
+
+"@types/later@npm:^1.2.7":
+  version: 1.2.7
+  resolution: "@types/later@npm:1.2.7"
+  checksum: 247f10e3e39bf50d78cdeb95f854e73b8378fdb2de542a0b632d892377098b438c2596dd99657d2ca0ca9370b07a2c112b29e5fbde636c91e4292f9a82b04572
   languageName: node
   linkType: hard
 

@@ -28,8 +28,8 @@ type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails 
 				stack: TStack;
 				errorType: TErrorType;
 				details: TErrorDetails;
-		  } & (undefined extends TErrorType ? {} : { errorType: TErrorType }) &
-				(undefined extends TErrorDetails ? {} : { details: TErrorDetails extends string ? unknown : TErrorDetails });
+		  } & (undefined extends TErrorType ? object : { errorType: TErrorType }) &
+				(undefined extends TErrorDetails ? object : { details: TErrorDetails extends string ? unknown : TErrorDetails });
 };
 
 type UnauthorizedResult<T> = {
@@ -80,7 +80,7 @@ type PartialThis = {
 type UserInfo = IUser & {
 	email?: string;
 	settings: {
-		profile: {};
+		profile: object;
 		preferences: unknown;
 	};
 	avatarUrl: string;
@@ -167,7 +167,7 @@ type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpoi
 			action: Action<TMethod, TPathPattern, TEndpointOptions>;
 	  } & { twoFactorRequired: boolean });
 
-type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}> = {
+type Operations<TPathPattern extends PathPattern, TOptions extends Options = object> = {
 	[M in MethodOf<TPathPattern> as Lowercase<M>]: Operation<Uppercase<M>, TPathPattern, TOptions>;
 };
 
@@ -252,6 +252,7 @@ export declare const API: {
 	v1: APIClass<'/v1'>;
 	default: APIClass;
 	helperMethods: Map<string, (...args: any[]) => unknown>;
+	ApiClass: APIClass;
 };
 
 export declare const defaultRateLimiterOptions: {
