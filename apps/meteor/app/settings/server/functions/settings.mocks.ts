@@ -34,14 +34,14 @@ class SettingsClass {
 		return [...this.data.values()].find((data) => Object.entries(query).every(([key, value]) => this.checkQueryMatch(key, data, value)));
 	}
 
-	insert(doc: any): void {
+	insertOne(doc: any): void {
 		this.data.set(doc._id, doc);
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		this.settings.set(doc);
 		this.insertCalls++;
 	}
 
-	upsert(query: any, update: any): void {
+	updateOne(query: any, update: any): void {
 		const existent = this.findOne(query);
 
 		const data = { ...existent, ...query, ...update, ...update.$set };
@@ -71,4 +71,4 @@ class SettingsClass {
 
 export const Settings = new SettingsClass();
 
-mock('../../../models/server/models/Settings', Settings);
+mock('@rocket.chat/models', { Settings });

@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
+import { Settings } from '@rocket.chat/models';
 
 import { RawImports, Base, ProgressStep, Selection, SelectionUser } from '../../importer/server';
 import { RocketChatFile } from '../../file';
-import { Users, Settings as SettingsRaw } from '../../models/server';
+import { Users } from '../../models/server';
 
 export class SlackUsersImporter extends Base {
 	constructor(info, importRecord) {
@@ -166,7 +167,7 @@ export class SlackUsersImporter extends Base {
 					});
 				}
 
-				SettingsRaw.incrementValueById('Slack_Users_Importer_Count', this.users.users.length);
+				Settings.incrementValueById('Slack_Users_Importer_Count', this.users.users.length);
 				super.updateProgress(ProgressStep.FINISHING);
 				super.updateProgress(ProgressStep.DONE);
 			} catch (e) {

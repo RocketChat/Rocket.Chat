@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Settings } from '@rocket.chat/models';
 
 import * as Mailer from '../../../mailer';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
-import { Settings as SettingsRaw } from '../../../models/server';
 
 let html = '';
 Meteor.startup(() => {
@@ -14,14 +14,15 @@ Meteor.startup(() => {
 });
 
 Meteor.methods({
-	sendInvitationEmail(emails) {
+	async sendInvitationEmail(emails) {
 		check(emails, [String]);
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendInvitationEmail',
 			});
 		}
-		if (!hasPermission(Meteor.userId(), 'bulk-register-user')) {
+		if (!hasPermission(uid, 'bulk-register-user')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'sendInvitationEmail',
 			});
@@ -34,7 +35,13 @@ Meteor.methods({
 			});
 		}
 
-		const subject = settings.get('Invitation_Subject');
+		const subject = settings.get<string>('Invitation_Subject');
+
+		if (!subject) {
+			throw new Meteor.Error('error-email-send-failed', 'No subject', {
+				method: 'sendInvitationEmail',
+			});
+		}
 
 		return validEmails.filter((email) => {
 			try {
@@ -48,7 +55,7 @@ Meteor.methods({
 					},
 				});
 
-				SettingsRaw.incrementValueById('Invitation_Email_Count');
+				Settings.incrementValueById('Invitation_Email_Count');
 				return mailerResult;
 			} catch ({ message }) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
