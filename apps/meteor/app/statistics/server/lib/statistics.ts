@@ -21,9 +21,10 @@ import {
 	Messages as MessagesRaw,
 	Roles as RolesRaw,
 	InstanceStatus,
+	Settings,
 } from '@rocket.chat/models';
 
-import { Settings, Users, Rooms, Subscriptions, Messages } from '../../../models/server';
+import { Users, Rooms, Subscriptions, Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
@@ -67,18 +68,21 @@ export const statistics = {
 
 		// Setup Wizard
 		statistics.wizard = {};
-		wizardFields.forEach((field) => {
-			const record = Settings.findOne(field);
-			if (record) {
-				const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
-				statistics.wizard[wizardField] = record.value;
-			}
-		});
+		await Promise.all(
+			wizardFields.map(async (field) => {
+				const record = await Settings.findOne(field);
+				if (record) {
+					const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
+					statistics.wizard[wizardField] = record.value;
+				}
+			}),
+		);
 
 		// Version
+		const uniqueID = await Settings.findOne('uniqueID');
 		statistics.uniqueId = settings.get('uniqueID');
-		if (Settings.findOne('uniqueID')) {
-			statistics.installedAt = Settings.findOne('uniqueID').createdAt;
+		if (uniqueID) {
+			statistics.installedAt = String(uniqueID.createdAt);
 		}
 
 		if (Info) {
@@ -453,6 +457,8 @@ export const statistics = {
 
 		statsPms.push(Analytics.resetSeatRequestCount());
 
+		// TODO: Is that the best way to do this? maybe we should use a promise.all()
+
 		statistics.dashboardCount = settings.get('Engagement_Dashboard_Load_Count');
 		statistics.messageAuditApply = settings.get('Message_Auditing_Apply_Count');
 		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
@@ -483,22 +489,22 @@ export const statistics = {
 		statistics.matrixBridgeEnabled = settings.get('Federation_Matrix_enabled');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
 
-		const defaultHomeTitle = Settings.findOneById('Layout_Home_Title').packageValue;
+		const defaultHomeTitle = (await Settings.findOneById('Layout_Home_Title'))?.packageValue;
 		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== defaultHomeTitle;
 
-		const defaultHomeBody = Settings.findOneById('Layout_Home_Body').packageValue;
+		const defaultHomeBody = (await Settings.findOneById('Layout_Home_Body'))?.packageValue;
 		statistics.homeBodyChanged = settings.get('Layout_Home_Body') !== defaultHomeBody;
 
-		const defaultCustomCSS = Settings.findOneById('theme-custom-css').packageValue;
+		const defaultCustomCSS = (await Settings.findOneById('theme-custom-css'))?.packageValue;
 		statistics.customCSSChanged = settings.get('theme-custom-css') !== defaultCustomCSS;
 
-		const defaultOnLogoutCustomScript = Settings.findOneById('Custom_Script_On_Logout').packageValue;
+		const defaultOnLogoutCustomScript = (await Settings.findOneById('Custom_Script_On_Logout'))?.packageValue;
 		statistics.onLogoutCustomScriptChanged = settings.get('Custom_Script_On_Logout') !== defaultOnLogoutCustomScript;
 
-		const defaultLoggedOutCustomScript = Settings.findOneById('Custom_Script_Logged_Out').packageValue;
+		const defaultLoggedOutCustomScript = (await Settings.findOneById('Custom_Script_Logged_Out'))?.packageValue;
 		statistics.loggedOutCustomScriptChanged = settings.get('Custom_Script_Logged_Out') !== defaultLoggedOutCustomScript;
 
-		const defaultLoggedInCustomScript = Settings.findOneById('Custom_Script_Logged_In').packageValue;
+		const defaultLoggedInCustomScript = (await Settings.findOneById('Custom_Script_Logged_In'))?.packageValue;
 		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
 
 		await Promise.all(statsPms).catch(log);
