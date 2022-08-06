@@ -27,7 +27,7 @@ const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): Reac
 		}
 	}, [dispatchToastMessage, t, onClose, readReceiptsResult.isError, readReceiptsResult.error]);
 
-	if (readReceiptsResult.isLoading || readReceiptsResult.isIdle || readReceiptsResult.isError) {
+	if (readReceiptsResult.isLoading || readReceiptsResult.isError) {
 		return (
 			<GenericModal title={t('Read_by')} onConfirm={onClose} onClose={onClose}>
 				<Skeleton type='rect' w='full' h='x120' />

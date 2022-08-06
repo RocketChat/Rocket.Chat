@@ -99,7 +99,7 @@ const FacebookPageContainer = (): ReactElement => {
 		}
 	});
 
-	if (initialStateResult.isLoading || initialStateResult.isIdle || listPagesResult.isLoading || listPagesResult.isIdle) {
+	if (initialStateResult.isLoading || listPagesResult.isLoading) {
 		return <PageSkeleton />;
 	}
 

@@ -10,7 +10,7 @@ function ServersSection(): ReactElement | null {
 		refetchInterval: 10_000,
 	});
 
-	if (result.isLoading || result.isIdle) {
+	if (result.isLoading) {
 		return <Throbber alignItems='center' />;
 	}
 

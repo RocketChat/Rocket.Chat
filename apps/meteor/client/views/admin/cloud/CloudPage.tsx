@@ -102,7 +102,7 @@ const CloudPage = function CloudPage(): ReactNode {
 		setModal(<ManualWorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
 
-	if (result.isLoading || result.isIdle || result.isError) {
+	if (result.isLoading || result.isError) {
 		return null;
 	}
 

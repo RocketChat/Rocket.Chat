@@ -12,7 +12,7 @@ const useOverviewData = (): [eventCount: ReactNode, userCount: ReactNode, server
 		refetchInterval: 10_000,
 	});
 
-	if (result.isLoading || result.isIdle) {
+	if (result.isLoading) {
 		return [<Skeleton variant='text' />, <Skeleton variant='text' />, <Skeleton variant='text' />];
 	}
 
