@@ -6,6 +6,7 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
 		"test": "echo \"Error: no test specified\" && exit 1",
+		"lint": "eslint src",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
 	"keywords": [
