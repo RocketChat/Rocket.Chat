@@ -6,8 +6,9 @@ import { Meteor } from 'meteor/meteor';
 import type { ISubscription } from '@rocket.chat/core-typings';
 
 import { AppServerOrchestrator } from '../orchestrator';
-import { Rooms, Subscriptions, Users } from '../../../models/server';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { callbacks } from '../../../../lib/callbacks';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
@@ -120,6 +121,11 @@ export class AppRoomBridge extends RoomBridge {
 		const rm = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
 		Rooms.update(rm._id, rm);
+		if (room.isArchived) {
+			Subscriptions.archiveByRoomId(rm._id);
+			Messages.createRoomArchivedByRoomIdAndUser(rm._id, Meteor.user());
+			callbacks.run('afterRoomArchived', Rooms.findOneById(rm._id), Meteor.user());
+		}
 
 		for (const username of members) {
 			const member = Users.findOneByUsername(username, {});

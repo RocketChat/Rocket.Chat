@@ -3,6 +3,7 @@
 	"description": "The Ultimate Open Source WebChat Platform",
 	"version": "5.1.0-develop",
 	"private": true,
+	"@rocket.chat/apps-engine": "file:/home/himanshu/Desktop/Rocket.Chat.Apps-engine",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
