@@ -4,7 +4,7 @@ export interface ILDAPCallback {
 
 export interface ILDAPPageData {
 	end: boolean;
-	next: Function | undefined;
+	next?: () => void;
 }
 
 export interface ILDAPPageCallback {
