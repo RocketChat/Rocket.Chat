@@ -732,7 +732,7 @@ export const Livechat = {
 		Livechat.logger.debug(`Transfering room ${room._id} [Transfered by: ${transferData?.transferredBy?._id}]`);
 		if (room.onHold) {
 			Livechat.logger.debug('Cannot transfer. Room is on hold');
-			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:transfer' });
+			throw new Error('error-room-onHold');
 		}
 
 		if (transferData.departmentId) {

@@ -1068,7 +1068,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: LiveChatRoomJoin) => { success: boolean };
 	};
 	'/v1/livechat/room.forward': {
-		GET: (params: LiveChatRoomForward) => { success: boolean };
+		POST: (params: LiveChatRoomForward) => { success: boolean };
 	};
 	'/v1/livechat/monitors': {
 		GET: (params: LivechatMonitorsListProps) => PaginatedResult<{

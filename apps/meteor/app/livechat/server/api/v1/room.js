@@ -3,6 +3,8 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors, Users } from '@rocket.chat/models';
+import { isLiveChatRoomForwardProps } from '@rocket.chat/rest-typings';
 
 import { settings as rcSettings } from '../../../../settings/server';
 import { Messages, LivechatRooms } from '../../../../models/server';
@@ -195,20 +197,34 @@ API.v1.addRoute('livechat/room.survey', {
 
 API.v1.addRoute(
 	'livechat/room.forward',
-	{ authRequired: true, permissionsRequired: ['view-l-room', 'transfer-livechat-guest'] },
+	{ authRequired: true, permissionsRequired: ['view-l-room', 'transfer-livechat-guest'], validateParams: isLiveChatRoomForwardProps },
 	{
-		post() {
-			let result = false;
+		async post() {
+			const transferData = this.bodyParams;
 
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('livechat:transfer', this.bodyParams);
-			});
-
-			if (result) {
-				return API.v1.success();
+			const room = await LivechatRooms.findOneById(this.bodyParams.roomId);
+			if (!room || room.t !== 'l') {
+				throw new Error('error-invalid-room', 'Invalid room');
 			}
 
-			return API.v1.failure();
+			if (!room.open) {
+				throw new Error('This_conversation_is_already_closed');
+			}
+
+			const guest = await LivechatVisitors.findOneById(room.v && room.v._id);
+			transferData.transferredBy = normalizeTransferredByData(Meteor.user() || {}, room);
+			if (transferData.userId) {
+				const userToTransfer = await Users.findOneById(transferData.userId);
+				transferData.transferredTo = {
+					_id: userToTransfer._id,
+					username: userToTransfer.username,
+					name: userToTransfer.name,
+				};
+			}
+
+			const chatForwardedResult = await Livechat.transfer(room, guest, transferData);
+
+			return chatForwardedResult ? API.v1.success() : API.v1.failure();
 		},
 	},
 );

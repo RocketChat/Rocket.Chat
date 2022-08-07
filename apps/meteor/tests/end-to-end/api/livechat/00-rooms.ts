@@ -257,6 +257,9 @@ describe('LIVECHAT - rooms', function () {
 			await request
 				.post(api('livechat/room.forward'))
 				.set(credentials)
+				.send({
+					roomId: 'invalid-room-id',
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(403)
 				.expect((res: Response) => {
@@ -272,6 +275,9 @@ describe('LIVECHAT - rooms', function () {
 			await request
 				.post(api('livechat/room.forward'))
 				.set(credentials)
+				.send({
+					roomId: 'invalid-room-id',
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(403)
 				.expect((res: Response) => {
