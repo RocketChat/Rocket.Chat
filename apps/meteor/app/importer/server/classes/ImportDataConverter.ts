@@ -283,7 +283,6 @@ export class ImportDataConverter {
 			: Accounts.createUser({
 					username: userData.username,
 					password,
-					// @ts-ignore
 					joinDefaultChannelsSilenced: true,
 			  });
 

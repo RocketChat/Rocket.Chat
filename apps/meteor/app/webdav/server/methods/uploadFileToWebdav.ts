@@ -31,7 +31,6 @@ Meteor.methods({
 				});
 			}
 
-			// @ts-ignore
 			logger.error(error);
 
 			if (error.response) {

@@ -14,7 +14,7 @@ declare module 'meteor/rocketchat:tap-i18n' {
 							postProcess: 'sprintf';
 							sprintf: (boolean | number | string)[];
 					  }
-					| {}
+					| Record<string, any>
 				),
 			lang?: string,
 		): string;

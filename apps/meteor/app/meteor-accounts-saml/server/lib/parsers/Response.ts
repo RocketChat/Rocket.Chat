@@ -287,9 +287,9 @@ export class ResponseParser {
 		const sig = new xmlCrypto.SignedXml();
 
 		sig.keyInfoProvider = {
-			getKeyInfo: (/* key*/): string => '<X509Data></X509Data>',
-			// @ts-ignore - the definition file must be wrong
-			getKey: (/* keyInfo*/): string => SAMLUtils.certToPEM(cert),
+			file: '',
+			getKeyInfo: () => '<X509Data></X509Data>',
+			getKey: () => Buffer.from(SAMLUtils.certToPEM(cert)),
 		};
 
 		sig.loadSignature(signature);
