@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { expect } from 'chai';
-import { IOmnichannelRoom, ILivechatVisitor, IUser } from '@rocket.chat/core-typings';
+import { IOmnichannelRoom, ILivechatVisitor, IUser, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 import { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -338,9 +338,10 @@ describe('LIVECHAT - rooms', function () {
 			expect(latestRoom).to.have.property('lastMessage');
 			expect(latestRoom.lastMessage?.t).to.be.equal('livechat_transfer_history');
 			expect(latestRoom.lastMessage?.u?.username).to.be.equal(adminUsername);
-			expect((latestRoom.lastMessage as any)?.transferData?.comment).to.be.equal('test comment');
-			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('agent');
-			expect((latestRoom.lastMessage as any)?.transferData?.transferredTo?.username).to.be.equal(forwardChatToUser.username);
+			const { lastMessage } = latestRoom as { lastMessage: IOmnichannelSystemMessage };
+			expect(lastMessage?.transferData?.comment).to.be.equal('test comment');
+			expect(lastMessage?.transferData?.scope).to.be.equal('agent');
+			expect(lastMessage?.transferData?.transferredTo?.username).to.be.equal(forwardChatToUser.username);
 		});
 
 		it('should return a success message when transferred successfully to a department', async () => {
