@@ -80,13 +80,17 @@ export type ChannelsEndpoints = {
 		POST: (params: { roomId: string } | { roomName: string }) => void;
 	};
 	'/v1/channels.kick': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
+		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {
+			channel: IRoom;
+		};
 	};
 	'/v1/channels.delete': {
 		POST: (params: ChannelsDeleteProps) => void;
 	};
 	'/v1/channels.leave': {
-		POST: (params: { roomId: string } | { roomName: string }) => void;
+		POST: (params: { roomId: string } | { roomName: string }) => {
+			channel: IRoom;
+		};
 	};
 	'/v1/channels.addModerator': {
 		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
@@ -133,7 +137,9 @@ export type ChannelsEndpoints = {
 		}>;
 	};
 	'/v1/channels.setAnnouncement': {
-		POST: (params: ChannelsSetAnnouncementProps) => void;
+		POST: (params: ChannelsSetAnnouncementProps) => {
+			announcement: string;
+		};
 	};
 	'/v1/channels.getAllUserMentionsByChannel': {
 		GET: (params: ChannelsGetAllUserMentionsByChannelProps) => PaginatedResult<{
