@@ -1,21 +1,16 @@
 import {
-	Body,
 	Controller,
 	Get,
 	Path,
-	Post,
 	Query,
 	Route,
-	SuccessResponse,
 } from "tsoa";
 import { IRoom, IMessage } from '@rocket.chat/core-typings';
 
-/**
- * Problem with tuples https://github.com/lukeautry/tsoa/issues/685
- * @TODO this is a hack to be able to continue the poc
- */
+// TODO this is a hack to be able to continue the poc. Problem with tuples https://github.com/lukeautry/tsoa/issues/685
+type MessageFieldsIgnored = 'blocks' | 'urls' | 'location';
 type RoomWithoutMessage = Omit<IRoom, 'lastMessage'>;
-type MessageCompatible = Omit<IMessage, 'blocks' | 'urls' | 'location'>;
+type MessageCompatible = Omit<IMessage, MessageFieldsIgnored>;
 
 @Route('rooms')
 export class RoomsController extends Controller {

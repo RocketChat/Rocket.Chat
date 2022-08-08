@@ -7,13 +7,20 @@ import {
 	Query,
 	Route,
 	SuccessResponse,
-	} from "tsoa";
+} from "tsoa";
 import { IUser } from '@rocket.chat/core-typings';
 
 import { UsersService, UserCreationParams } from "./usersService";
 
 @Route("users")
 export class UsersController extends Controller {
+	private UserService: any; // TODO missing way to import Service definitions
+
+	constructor(rcDI: any) {
+		super();
+		this.UserService = rcDI.User;
+	}
+
 	@Get("{userId}")
 	public async getUser(
 		@Path() userId: number,
