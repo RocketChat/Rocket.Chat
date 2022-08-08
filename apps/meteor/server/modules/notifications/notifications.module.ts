@@ -238,7 +238,7 @@ export class NotificationsModule {
 				return false;
 			}
 
-			if (!(await canType({ extraData, rid, username, userId: this.userId }))) {
+			if (!(await canType({ extraData, rid, username, userId: this.userId ?? undefined }))) {
 				return false;
 			}
 
