@@ -1,14 +1,14 @@
 import { HTTP } from 'meteor/http';
+import { Settings } from '@rocket.chat/models';
 
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { settings } from '../../../settings/server';
-import { Settings } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { LICENSE_VERSION } from '../license';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function getWorkspaceLicense() {
-	const token = getWorkspaceAccessToken();
+export async function getWorkspaceLicense() {
+	const token = await getWorkspaceAccessToken();
 
 	if (!token) {
 		return { updated: false, license: '' };
@@ -21,8 +21,8 @@ export function getWorkspaceLicense() {
 				Authorization: `Bearer ${token}`,
 			},
 		});
-	} catch (e) {
-		if (e.response && e.response.data && e.response.data.error) {
+	} catch (e: any) {
+		if (e.response?.data?.error) {
 			SystemLogger.error(`Failed to update license from Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
 		} else {
 			SystemLogger.error(e);
@@ -32,13 +32,17 @@ export function getWorkspaceLicense() {
 	}
 
 	const remoteLicense = licenseResult.data;
-	const currentLicense = settings.get('Cloud_Workspace_License');
+	const currentLicense = await Settings.findOne('Cloud_Workspace_License');
+
+	if (!currentLicense || !currentLicense._updatedAt) {
+		throw new Error('Failed to retrieve current license');
+	}
 
 	if (remoteLicense.updatedAt <= currentLicense._updatedAt) {
 		return { updated: false, license: '' };
 	}
 
-	Settings.updateValueById('Cloud_Workspace_License', remoteLicense.license);
+	await Settings.updateValueById('Cloud_Workspace_License', remoteLicense.license);
 
 	callbacks.run('workspaceLicenseChanged', remoteLicense.license);
 

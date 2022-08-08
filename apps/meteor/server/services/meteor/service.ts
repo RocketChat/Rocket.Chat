@@ -7,7 +7,7 @@ import { Users } from '@rocket.chat/models';
 
 import { metrics } from '../../../app/metrics';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { AutoUpdateRecord, IMeteor } from '../../sdk/types/IMeteor';
+import type { AutoUpdateRecord, IMeteor } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
 import { Livechat } from '../../../app/livechat/server';
 import { settings } from '../../../app/settings/server';
@@ -21,7 +21,7 @@ import notifications from '../../../app/notifications/server/lib/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 import { use } from '../../../app/settings/server/Middleware';
-import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
+import type { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 
 type Callbacks = {
 	added(id: string, record: object): void;
@@ -104,19 +104,20 @@ if (disableOplog) {
 	// Re-implement meteor's reactivity that uses observe to disconnect sessions when the token
 	// associated was removed
 	processOnChange = (diff: Record<string, any>, id: string): void => {
+		if (!diff || !('services.resume.loginTokens' in diff)) {
+			return;
+		}
 		const loginTokens: undefined | { hashedToken: string }[] = diff['services.resume.loginTokens'];
-		if (loginTokens) {
-			const tokens = loginTokens.map(({ hashedToken }) => hashedToken);
+		const tokens = loginTokens?.map(({ hashedToken }) => hashedToken);
 
-			const cbs = userCallbacks.get(id);
-			if (cbs) {
-				[...cbs]
-					.filter(({ hashedToken }) => !tokens.includes(hashedToken))
-					.forEach((item) => {
-						item.callbacks.removed(id);
-						cbs.delete(item);
-					});
-			}
+		const cbs = userCallbacks.get(id);
+		if (cbs) {
+			[...cbs]
+				.filter(({ hashedToken }) => tokens === undefined || !tokens.includes(hashedToken))
+				.forEach((item) => {
+					item.callbacks.removed(id);
+					cbs.delete(item);
+				});
 		}
 	};
 }

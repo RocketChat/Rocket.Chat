@@ -4,12 +4,12 @@ import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
-import { Roles, Users as UsersRaw } from '@rocket.chat/models';
+import { Roles, Settings, Users as UsersRaw } from '@rocket.chat/models';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Settings, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
@@ -295,7 +295,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 	if (!roles.includes('admin') && !hasAdmin) {
 		roles.push('admin');
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			Promise.await(Settings.updateValueById('Show_Setup_Wizard', 'in_progress'));
 		}
 	}
 

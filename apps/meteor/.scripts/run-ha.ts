@@ -1,4 +1,5 @@
-import { spawn, SpawnOptions } from 'child_process';
+import type { SpawnOptions } from 'child_process';
+import { spawn } from 'child_process';
 import * as path from 'path';
 
 enum ModeParam {

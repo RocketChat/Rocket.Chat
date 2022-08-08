@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Settings } from '@rocket.chat/models';
 
-import { Messages, Rooms, Settings } from '../../../../models';
+import { Messages, Rooms } from '../../../../models';
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { settings } from '../lib/livechat';
@@ -16,7 +17,7 @@ API.v1.addRoute(
 	'livechat/webrtc.call',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			try {
 				check(this.queryParams, {
 					rid: Match.Maybe(String),
@@ -40,7 +41,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('webRTC calling not enabled');
 				}
 
-				const config = Promise.await(settings());
+				const config = await settings();
 				if (!config.theme || !config.theme.actionLinks || !config.theme.actionLinks.webrtc) {
 					throw new Meteor.Error('invalid-livechat-config');
 				}
@@ -48,19 +49,17 @@ API.v1.addRoute(
 				let { callStatus } = room;
 
 				if (!callStatus || callStatus === 'ended' || callStatus === 'declined') {
-					Settings.incrementValueById('WebRTC_Calls_Count');
+					await Settings.incrementValueById('WebRTC_Calls_Count');
 					callStatus = 'ringing';
-					Promise.await(Rooms.setCallStatusAndCallStartTime(room._id, callStatus));
-					Promise.await(
-						Messages.createWithTypeRoomIdMessageAndUser(
-							'livechat_webrtc_video_call',
-							room._id,
-							TAPi18n.__('Join_my_room_to_start_the_video_call'),
-							this.user,
-							{
-								actionLinks: config.theme.actionLinks.webrtc,
-							},
-						),
+					await Rooms.setCallStatusAndCallStartTime(room._id, callStatus);
+					await Messages.createWithTypeRoomIdMessageAndUser(
+						'livechat_webrtc_video_call',
+						room._id,
+						TAPi18n.__('Join_my_room_to_start_the_video_call'),
+						this.user,
+						{
+							actionLinks: config.theme.actionLinks.webrtc,
+						},
 					);
 				}
 				const videoCall = {

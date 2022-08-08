@@ -46,7 +46,7 @@ Meteor.startup(function () {
 		try {
 			SystemLogger.info('REG_TOKEN Provided. Attempting to register');
 
-			if (!connectWorkspace(process.env.REG_TOKEN)) {
+			if (!Promise.await(connectWorkspace(process.env.REG_TOKEN))) {
 				throw new Error("Couldn't register with token.  Please make sure token is valid or hasn't already been used");
 			}
 

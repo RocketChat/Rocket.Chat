@@ -466,7 +466,7 @@ export type ChatEndpoints = {
 		POST: (params: ChatReact) => void;
 	};
 	'/v1/chat.ignoreUser': {
-		GET: (params: ChatIgnoreUser) => {};
+		GET: (params: ChatIgnoreUser) => void;
 	};
 	'/v1/chat.search': {
 		GET: (params: ChatSearch) => {
