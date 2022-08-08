@@ -31,7 +31,7 @@ const FacebookPageContainer = (): ReactElement => {
 
 	const initialStateResult = useQuery(
 		['omnichannel/facebook/initial-state'],
-		async () => livechatFacebook({ action: 'initialState' }) as Promise<InitialStateData>,
+		async () => livechatFacebook({ action: 'initialState' }) as unknown as Promise<InitialStateData>,
 		{
 			initialData: { enabled: false, hasToken: false },
 		},
@@ -39,7 +39,7 @@ const FacebookPageContainer = (): ReactElement => {
 
 	const listPagesResult = useQuery(
 		['omnichannel/facebook/list-pages'],
-		async () => livechatFacebook({ action: 'list-pages' }) as Promise<PageData>,
+		async () => livechatFacebook({ action: 'list-pages' }) as unknown as Promise<PageData>,
 		{
 			initialData: { pages: [] },
 		},
