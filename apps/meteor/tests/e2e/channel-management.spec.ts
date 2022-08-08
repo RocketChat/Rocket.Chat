@@ -82,4 +82,14 @@ test.describe.serial('channel-management', () => {
 
 		await expect(page).toHaveURL(`/channel/NAME-EDITED-${targetChannel}`);
 	});
+
+	test('expect Notification Preferences to have all "default" preferences by default', async () => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.tabs.btnMoreItems.click();
+		await poHomeChannel.tabs.btnNotificationPreferences.click();
+		await poHomeChannel.tabs.notificationPreferences.updateAllNotificaitonPreferences();
+		await poHomeChannel.tabs.notificationPreferences.btnSave.click();
+
+		await expect(poHomeChannel.toastSuccess).toBeVisible();
+	});
 });
