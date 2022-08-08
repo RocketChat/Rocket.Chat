@@ -1,6 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { ChangeEvent, RefCallback, useCallback, useEffect, useState } from 'react';
-import { useForm, UseFormHandleSubmit } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import { useDialModal } from '../../../../../../client/hooks/useDialModal';
 import { useOutboundDialer } from '../../../../hooks/useOutboundDialer';
@@ -16,10 +16,6 @@ type DialPadStateHandlers = {
 	handlePadButtonClick: (digit: PadDigit[0]) => void;
 	handlePadButtonLongPressed: (digit: PadDigit[1]) => void;
 	handleCallButtonClick: () => void;
-	handleSubmit: UseFormHandleSubmit<{
-		PhoneInput: string;
-	}>;
-	onSubmit: () => void;
 };
 
 type DialPadProps = {
@@ -38,7 +34,6 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 		setValue,
 		setError,
 		clearErrors,
-		handleSubmit,
 		watch,
 		formState: { errors },
 	} = useForm<{ PhoneInput: string }>({
@@ -87,10 +82,6 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 		closeDialModal();
 	}, [outboundClient, setError, t, value, closeDialModal]);
 
-	const onSubmit = useCallback(() => {
-		handleCallButtonClick();
-	}, [handleCallButtonClick]);
-
 	const handleOnChange = useCallback(
 		(e) => {
 			clearErrors();
@@ -121,7 +112,5 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 		handlePadButtonClick,
 		handlePadButtonLongPressed,
 		handleCallButtonClick,
-		handleSubmit,
-		onSubmit,
 	};
 };

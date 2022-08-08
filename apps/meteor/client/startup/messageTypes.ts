@@ -12,9 +12,7 @@ Meteor.startup(() => {
 		message: 'room_changed_privacy',
 		data(message: IMessage) {
 			return {
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				user_by: message.u && message.u.username,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				room_type: t(message.msg),
 			};
 		},
@@ -26,9 +24,7 @@ Meteor.startup(() => {
 		message: 'room_changed_topic',
 		data(message: IMessage) {
 			return {
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				user_by: message.u && message.u.username,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				room_topic: escapeHTML(message.msg || `(${t('None').toLowerCase()})`),
 			};
 		},
@@ -40,7 +36,6 @@ Meteor.startup(() => {
 		message: 'room_changed_avatar',
 		data(message: IMessage) {
 			return {
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				user_by: message.u && message.u.username,
 			};
 		},
@@ -52,9 +47,7 @@ Meteor.startup(() => {
 		message: 'room_changed_announcement',
 		data(message: IMessage) {
 			return {
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				user_by: message.u && message.u.username,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				room_announcement: escapeHTML(message.msg || `(${t('None').toLowerCase()})`),
 			};
 		},
@@ -66,9 +59,7 @@ Meteor.startup(() => {
 		message: 'room_changed_description',
 		data(message: IMessage) {
 			return {
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				user_by: message.u && message.u.username,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				room_description: escapeHTML(message.msg || `(${t('None').toLowerCase()})`),
 			};
 		},
