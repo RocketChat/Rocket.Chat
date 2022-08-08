@@ -10,26 +10,21 @@ $ TEST_MODE=true yarn dev
 Then we can run a single suite with
 
 ```sh
-$ yarn test:playwright ./tests/e2e/01-forgot-password.spec.ts
+$ yarn test:e2e ./tests/e2e/administration.spec.ts
 ```
 
 Or all the tests with
 
 ```sh
-$ yarn test:playwright
+$ yarn test:e2e
 ```
 
-We can also provide some env vars to `test:playwright` script:
+We can also provide some env vars to `test:e2e` script:
 - `BASE_URL=<any_url>` Run the tests to the given url
 - `PWDEBUG=1` Controll the test execution
 
-## Current limitations
-- 00-wizard.spec.ts will only pass if the database is empty
-- There are some dependencies between tests, so we can't run the suites in parallel
-
 ## Page Objects
 - Any locator name must start with of one the following prefixes: `btn`, `link`, `input`, `select`, `checkbox`, `text`
-- Any action name should starts with the prefix `do`
 
 ## Important links
 - [playwright docs](https://playwright.dev/docs/intro)
