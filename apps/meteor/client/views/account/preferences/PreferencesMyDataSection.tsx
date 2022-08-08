@@ -1,10 +1,10 @@
 import { Accordion, Field, FieldGroup, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 
 import MyDataModal from './MyDataModal';
 
-const PreferencesMyDataSection = ({ onChange, ...props }) => {
+const PreferencesMyDataSection = ({ ...props }): ReactElement => {
 	const t = useTranslation();
 
 	const setModal = useSetModal();
@@ -68,7 +68,7 @@ const PreferencesMyDataSection = ({ onChange, ...props }) => {
 
 				setModal(<MyDataModal title={t('UserDataDownload_Requested')} onCancel={closeModal} />);
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 			}
 		},
 		[closeModal, dispatchToastMessage, requestDataDownload, setModal, t],
