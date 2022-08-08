@@ -1,4 +1,4 @@
-import { ServerResponse } from 'http';
+import type { ServerResponse } from 'http';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
@@ -6,16 +6,16 @@ import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import fiber from 'fibers';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
-import { IUser, IIncomingMessage } from '@rocket.chat/core-typings';
+import type { IUser, IIncomingMessage } from '@rocket.chat/core-typings';
 import { CredentialTokens } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { Users, Rooms } from '../../../models/server';
 import { saveUserIdentity, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
 import { SAMLServiceProvider } from './ServiceProvider';
-import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
-import { ISAMLAction } from '../definition/ISAMLAction';
-import { ISAMLUser } from '../definition/ISAMLUser';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import type { ISAMLAction } from '../definition/ISAMLAction';
+import type { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';

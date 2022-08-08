@@ -2,7 +2,7 @@ import type { IRoom, IUser, IMessage } from '@rocket.chat/core-typings';
 import { Users, Rooms, Messages } from '@rocket.chat/models';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { ICreateRoomParams, IRoomService } from '../../sdk/types/IRoomService';
+import type { ICreateRoomParams, IRoomService } from '../../sdk/types/IRoomService';
 import { Authorization } from '../../sdk';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 

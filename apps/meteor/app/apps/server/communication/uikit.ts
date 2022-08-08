@@ -1,4 +1,5 @@
-import express, { Request, Response } from 'express';
+import type { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { Meteor } from 'meteor/meteor';
@@ -7,7 +8,8 @@ import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definitio
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { settings } from '../../../settings/server';
-import { Apps, AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
+import { Apps } from '../orchestrator';
 import { UiKitCoreApp } from '../../../../server/sdk';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
@@ -71,8 +73,8 @@ router.use((req: Request, res, next) => {
 	next();
 });
 
-const corsOptions = {
-	origin: (origin: string | undefined, callback: Function): void => {
+const corsOptions: cors.CorsOptions = {
+	origin: (origin, callback) => {
 		if (
 			!origin ||
 			!corsEnabled ||
@@ -82,14 +84,14 @@ const corsOptions = {
 		) {
 			callback(null, true);
 		} else {
-			callback('Not allowed by CORS', false);
+			callback(new Error('Not allowed by CORS'), false);
 		}
 	},
 };
 
 apiServer.use('/api/apps/ui.interaction/', cors(corsOptions), router); // didn't have the rateLimiter option
 
-const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request): {} => {
+const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request) => {
 	if (type === UIKitIncomingInteractionType.BLOCK) {
 		const { type, actionId, triggerId, mid, rid, payload, container } = req.body;
 
@@ -109,7 +111,7 @@ const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request): {}
 			user,
 			visitor,
 			room,
-		};
+		} as const;
 	}
 
 	if (type === UIKitIncomingInteractionType.VIEW_CLOSED) {

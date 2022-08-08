@@ -1,5 +1,5 @@
-import { IVoipRoom, IMessage } from '@rocket.chat/core-typings';
-import { FindOptions } from 'mongodb';
+import type { IVoipRoom, IMessage } from '@rocket.chat/core-typings';
+import type { FindOptions } from 'mongodb';
 
 export type FindVoipRoomsParams = {
 	agents?: string[];

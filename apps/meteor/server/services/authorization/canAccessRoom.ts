@@ -1,9 +1,9 @@
-import { TEAM_TYPE, ITeam } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { IUser, ITeam } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Settings, TeamMember, Team } from '@rocket.chat/models';
 
 import { Authorization } from '../../sdk';
-import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
+import type { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomVoip } from './canAccessRoomVoip';
 
