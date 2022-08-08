@@ -1034,10 +1034,16 @@ API.v1.addRoute(
 		post() {
 			check(
 				this.bodyParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe(String),
-					message: Match.Maybe(String),
-				}),
+				Match.OneOf(
+					Match.ObjectIncluding({
+						status: Match.Maybe(String),
+						message: String,
+					}),
+					Match.ObjectIncluding({
+						status: String,
+						message: Match.Maybe(String),
+					}),
+				),
 			);
 
 			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {

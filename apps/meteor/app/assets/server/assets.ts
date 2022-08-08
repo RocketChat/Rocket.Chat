@@ -9,13 +9,13 @@ import sizeOf from 'image-size';
 import sharp from 'sharp';
 import { NextHandleFunction } from 'connect';
 import { IRocketChatAssets, IRocketChatAsset } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
 import { getExtension } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization/server';
 import { RocketChatFile } from '../../file';
-import { Settings } from '../../models/server';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',
@@ -347,7 +347,7 @@ function addAssetToSetting(asset: string, value: IRocketChatAsset): void {
 
 	if (typeof currentValue === 'object' && currentValue.defaultUrl !== getAssetByKey(asset).defaultUrl) {
 		currentValue.defaultUrl = getAssetByKey(asset).defaultUrl;
-		Settings.updateValueById(key, currentValue);
+		Promise.await(Settings.updateValueById(key, currentValue));
 	}
 }
 
