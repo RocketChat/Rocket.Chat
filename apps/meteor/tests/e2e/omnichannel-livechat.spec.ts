@@ -1,27 +1,8 @@
-import { test, expect, APIRequestContext } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
-import { BASE_API_URL, ADMIN_CREDENTIALS, IS_EE } from './config/constants';
+import { test, expect } from './utils/test';
 import { OmnichannelLiveChat } from './page-objects';
 import { createAuxContext } from './utils';
-
-const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
-
-const makeLogin = async (request: APIRequestContext): Promise<void> => {
-	const response = await request.post(`${BASE_API_URL}/login`, { data: ADMIN_CREDENTIALS });
-
-	const { userId, authToken } = (await response.json()).data;
-
-	apiSessionHeaders['X-Auth-Token'] = authToken;
-	apiSessionHeaders['X-User-Id'] = userId;
-};
-
-const addAgent = async (request: APIRequestContext): Promise<void> => {
-	await request.post(`${BASE_API_URL}/livechat/users/agent`, {
-		headers: apiSessionHeaders,
-		data: { username: 'user3' },
-	});
-};
 
 test.describe.only('Livechat', () => {
 	let poLiveChat: OmnichannelLiveChat;
@@ -43,14 +24,11 @@ test.describe.only('Livechat', () => {
 
 	test.describe('Send message to online agent', () => {
 		let auxContext: any;
-		test.beforeEach(async ({ page }) => {
-			await page.goto('/livechat');
-		});
 
-		test.beforeAll(async ({ browser, request }) => {
-			await makeLogin(request);
-			await addAgent(request);
-			auxContext = await createAuxContext(browser, 'user3-session.json');
+		test.beforeAll(async ({ browser, api }) => {
+			await api.post('/livechat/users/agent', { username: 'user1' });
+
+			auxContext = await createAuxContext(browser, 'user1-session.json');
 		});
 
 		test('expect message is received from agent and user ', async ({ page }) => {
@@ -78,8 +56,8 @@ test.describe.only('Livechat', () => {
 			await expect(page.locator('[contenteditable="true"]')).not.toBeVisible();
 		});
 
-		test.describe('[Not allow close]', () => {
-			test.skip(!IS_EE, 'verify agent is not allowed to close chat');
+		test.describe.skip('[Not allow close]', () => {
+			test.skip(!true, 'verify agent is not allowed to close chat');
 
 			test.beforeEach(async () => {
 				//
