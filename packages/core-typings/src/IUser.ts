@@ -16,7 +16,7 @@ export interface IPersonalAccessToken extends ILoginToken {
 	type: 'personalAccessToken';
 	createdAt: Date;
 	lastTokenPart: string;
-	name?: string;
+	name: string;
 	bypassTwoFactor?: boolean;
 }
 
