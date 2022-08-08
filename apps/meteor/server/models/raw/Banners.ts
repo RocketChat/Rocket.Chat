@@ -1,4 +1,5 @@
-import { BannerPlatform, IBanner, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IBanner, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { BannerPlatform } from '@rocket.chat/core-typings';
 import type { IBannersModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult } from 'mongodb';
 

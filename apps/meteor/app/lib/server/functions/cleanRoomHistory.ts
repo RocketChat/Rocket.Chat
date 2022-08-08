@@ -1,4 +1,4 @@
-import { FindCursor } from 'mongodb';
+import type { FindCursor } from 'mongodb';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IMessageDiscussion } from '@rocket.chat/core-typings';
 

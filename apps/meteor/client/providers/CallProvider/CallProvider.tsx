@@ -400,8 +400,6 @@ export const CallProvider: FC = ({ children }) => {
 					openDialModal({ errorMessage: t('Dialed_number_is_incomplete') });
 					break;
 				case 'Request Terminated':
-					// This happens when the user is the one hanging up the call.
-					openDialModal();
 					break;
 				default:
 					openDialModal({ errorMessage: t('Something_went_wrong_try_again_later') });

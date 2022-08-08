@@ -34,7 +34,7 @@ Meteor.methods({
 			});
 		}
 
-		if (user.services && user.services.password && s.trim(user.services.password.bcrypt)) {
+		if (user.services?.password && s.trim(user.services.password.bcrypt)) {
 			const result = Accounts._checkPassword(user, {
 				digest: password.toLowerCase(),
 				algorithm: 'sha-256',
