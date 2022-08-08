@@ -1,6 +1,6 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useContext, FC, ReactNode, ComponentProps } from 'react';
+import React, { useContext, FC, ComponentProps, ReactNode } from 'react';
 
 import BurgerMenu from '../BurgerMenu';
 import TemplateHeader from '../Header';
@@ -9,6 +9,7 @@ import PageContext from './PageContext';
 type PageHeaderProps = {
 	title: ReactNode;
 	onClickBack?: () => void;
+	borderBlockEndColor?: string;
 } & Omit<ComponentProps<typeof Box>, 'title'>;
 
 const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickBack, borderBlockEndColor, ...props }) => {
@@ -17,7 +18,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 	const { isMobile } = useLayout();
 
 	return (
-		<Box borderBlockEndWidth='x2' borderBlockEndColor={borderBlockEndColor ?? border ? 'neutral-200' : 'transparent'}>
+		<Box borderBlockEndWidth='x2' borderBlockEndColor={borderBlockEndColor ?? border ? 'neutral-200' : 'transparent'} {...props}>
 			<Box
 				marginBlock='x16'
 				marginInline='x24'

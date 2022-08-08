@@ -71,10 +71,12 @@ const UsersPage = (): ReactElement => {
 			{context && (
 				<VerticalBar>
 					<VerticalBar.Header>
-						{context === 'info' && t('User_Info')}
-						{context === 'edit' && t('Edit_User')}
-						{context === 'new' && t('Add_User')}
-						{context === 'invite' && t('Invite_Users')}
+						<VerticalBar.Text>
+							{context === 'info' && t('User_Info')}
+							{context === 'edit' && t('Edit_User')}
+							{context === 'new' && t('Add_User')}
+							{context === 'invite' && t('Invite_Users')}
+						</VerticalBar.Text>
 						<VerticalBar.Close onClick={handleCloseVerticalBar} />
 					</VerticalBar.Header>
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}

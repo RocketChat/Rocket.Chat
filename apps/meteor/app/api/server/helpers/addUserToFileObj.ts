@@ -1,4 +1,4 @@
-import { IUpload, IUser } from '@rocket.chat/core-typings';
+import type { IUpload, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 export async function addUserToFileObj(files: IUpload[]): Promise<(IUpload & { user?: Pick<IUser, '_id' | 'name' | 'username'> })[]> {

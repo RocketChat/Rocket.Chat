@@ -8,7 +8,7 @@ type QueueListPagePropsParamsType = {
 	servedBy: string;
 	status: string;
 	departmentId: string;
-	itemsPerPage: number;
+	itemsPerPage: 25 | 50 | 100;
 	current: number;
 };
 
@@ -41,7 +41,7 @@ export const QueueListPage = ({ title, header, data, renderRow, params, setParam
 				results={data?.queue}
 				total={data?.total}
 				params={params}
-				setParams={setParams}
+				setParams={setParams as (params: Pick<QueueListPagePropsParamsType, 'itemsPerPage' | 'current'>) => void}
 			/>
 		</Page.Content>
 	</Page>

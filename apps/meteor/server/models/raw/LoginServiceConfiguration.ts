@@ -1,6 +1,6 @@
 import type { ILoginServiceConfiguration, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILoginServiceConfigurationModel } from '@rocket.chat/model-typings';
-import { Collection, Db } from 'mongodb';
+import type { Collection, Db } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 

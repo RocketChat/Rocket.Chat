@@ -15,7 +15,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { ImportData as ImportDataRaw } from '@rocket.chat/models';
 
-import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
+import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
@@ -283,7 +283,6 @@ export class ImportDataConverter {
 			: Accounts.createUser({
 					username: userData.username,
 					password,
-					// @ts-ignore
 					joinDefaultChannelsSilenced: true,
 			  });
 

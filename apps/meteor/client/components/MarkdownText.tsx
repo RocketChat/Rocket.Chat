@@ -77,7 +77,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 }) => {
 	const sanitizer = dompurify.sanitize;
 
-	let markedOptions: {};
+	let markedOptions: marked.MarkedOptions;
 
 	switch (variant) {
 		case 'inline':
