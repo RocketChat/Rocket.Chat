@@ -1,4 +1,5 @@
-import { Badge, drawBadge } from './badge';
+import type { Badge } from './badge';
+import { drawBadge } from './badge';
 
 const getFavicons = () => {
 	const favicons = Array.from(document.head.getElementsByTagName('link')).filter((link) =>

@@ -179,7 +179,7 @@ const $nor = <T>(subSelector: Query<T>[]): ((doc: T) => boolean) => {
 	return (doc: T): boolean => subSelectorFunctions.every((f) => !f(doc));
 };
 
-const $where = <T>(selectorValue: string | Function): ((doc: T) => boolean) => {
+const $where = <T>(selectorValue: string | ((doc: T) => boolean)): ((doc: T) => boolean) => {
 	const fn = selectorValue instanceof Function ? selectorValue : Function(`return ${selectorValue}`);
 	return (doc: T): boolean => !!fn.call(doc);
 };

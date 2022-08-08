@@ -2,9 +2,10 @@
 /* eslint-disable arrow-body-style */
 
 import { Meteor } from 'meteor/meteor';
-import { IUIActionButton, RoomTypeFilter } from '@rocket.chat/apps-engine/definition/ui';
+import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
+import { RoomTypeFilter } from '@rocket.chat/apps-engine/definition/ui';
+import type { IRoom } from '@rocket.chat/core-typings';
 import {
-	IRoom,
 	isDirectMessageRoom,
 	isMultipleDirectMessageRoom,
 	isOmnichannelRoom,
