@@ -33,7 +33,7 @@ export async function sendMessagesToAdmins({
 }: {
 	fromId?: string;
 	checkFrom?: boolean;
-	msgs?: Partial<IMessage>[] | Function;
+	msgs?: Partial<IMessage>[] | (({ adminUser }: { adminUser: IUser }) => Partial<IMessage>[]);
 	banners?: Banner[] | Function;
 }): Promise<void> {
 	const fromUser = checkFrom ? await Users.findOneById(fromId, { projection: { _id: 1 } }) : true;
