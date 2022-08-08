@@ -1,10 +1,10 @@
 import { HTTP } from 'meteor/http';
+import { Settings } from '@rocket.chat/models';
 
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
-import { Settings } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
 import { NPS, Banner } from '../../../../server/sdk';
@@ -16,14 +16,14 @@ export async function syncWorkspace(reconnectCheck = false) {
 		return false;
 	}
 
-	const info = await buildWorkspaceRegistrationData();
+	const info = await buildWorkspaceRegistrationData(undefined);
 
 	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
 
 	let result;
 	try {
-		const headers = {};
-		const token = getWorkspaceAccessToken(true);
+		const headers: Record<string, string> = {};
+		const token = await getWorkspaceAccessToken(true);
 
 		if (token) {
 			headers.Authorization = `Bearer ${token}`;
@@ -36,8 +36,8 @@ export async function syncWorkspace(reconnectCheck = false) {
 			headers,
 		});
 
-		getWorkspaceLicense();
-	} catch (e) {
+		await getWorkspaceLicense();
+	} catch (e: any) {
 		if (e.response && e.response.data && e.response.data.error) {
 			SystemLogger.error(`Failed to sync with Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
 		} else {
@@ -53,11 +53,11 @@ export async function syncWorkspace(reconnectCheck = false) {
 	}
 
 	if (data.publicKey) {
-		Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
+		await Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
 	}
 
 	if (data.trial?.trialId) {
-		Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
+		await Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
 	}
 
 	if (data.nps) {
@@ -69,6 +69,10 @@ export async function syncWorkspace(reconnectCheck = false) {
 			npsId,
 			startAt,
 			expireAt: new Date(expireAt),
+			createdBy: {
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+			},
 		});
 
 		const now = new Date();
