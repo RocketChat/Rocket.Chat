@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import express, { Response, Request, IRouter, RequestHandler } from 'express';
+import type { Response, Request, IRouter, RequestHandler } from 'express';
+import express from 'express';
 import { WebApp } from 'meteor/webapp';
 import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges/ApiBridge';
-import { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
-import { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
-import { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
+import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
+import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
+import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
 const apiServer = express();

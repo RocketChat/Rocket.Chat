@@ -5,7 +5,7 @@ import { getLicenses, validateFormat, flatModules, getMaxActiveUsers, isEnterpri
 import { Users } from '../../../app/models/server';
 import { API } from '../../../app/api/server/api';
 import { hasPermission } from '../../../app/authorization/server';
-import { ILicense } from '../../app/license/definitions/ILicense';
+import type { ILicense } from '../../app/license/definitions/ILicense';
 
 function licenseTransform(license: ILicense): ILicense {
 	return {

@@ -6,8 +6,8 @@ import { v1 as uuidv1 } from 'uuid';
 
 import { DDP_EVENTS } from './constants';
 import { Publication } from './Publication';
-import { Client } from './Client';
-import { IPacket } from './types/IPacket';
+import type { Client } from './Client';
+import type { IPacket } from './types/IPacket';
 import { MeteorService } from '../../../../apps/meteor/server/sdk';
 import { isMeteorError, MeteorError } from '../../../../apps/meteor/server/sdk/errors';
 import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';

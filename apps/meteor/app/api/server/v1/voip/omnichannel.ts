@@ -1,5 +1,5 @@
 import { Match, check } from 'meteor/check';
-import { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
+import type { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { API } from '../../api';

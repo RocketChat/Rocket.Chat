@@ -1,5 +1,6 @@
 import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 
 type PlaceChatOnHoldModalProps = {

@@ -2,8 +2,10 @@ import http from 'http';
 import https from 'https';
 
 import { fetch as nodeFetch } from 'meteor/fetch';
-import { default as createHttpProxyAgent, HttpProxyAgent } from 'http-proxy-agent';
-import { default as createHttpsProxyAgent, HttpsProxyAgent } from 'https-proxy-agent';
+import type { HttpProxyAgent } from 'http-proxy-agent';
+import { default as createHttpProxyAgent } from 'http-proxy-agent';
+import type { HttpsProxyAgent } from 'https-proxy-agent';
+import { default as createHttpsProxyAgent } from 'https-proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 
 export function getFetchAgent(

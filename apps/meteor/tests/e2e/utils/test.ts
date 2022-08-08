@@ -2,7 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { v4 as uuid } from 'uuid';
-import { APIResponse, test as baseTest } from '@playwright/test';
+import type { APIResponse } from '@playwright/test';
+import { test as baseTest } from '@playwright/test';
 
 import { BASE_API_URL, ADMIN_CREDENTIALS } from '../config/constants';
 
@@ -19,7 +20,6 @@ export type BaseTest = {
 	};
 };
 
-// @ts-ignore
 export const test = baseTest.extend<BaseTest>({
 	context: async ({ context }, use) => {
 		if (!process.env.E2E_COVERAGE) {

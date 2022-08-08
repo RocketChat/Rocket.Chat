@@ -1,10 +1,28 @@
-import { Accordion, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { Accordion, Field, Select, FieldGroup, ToggleSwitch, SelectOption } from '@rocket.chat/fuselage';
+import { useUserPreference, useSetting, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
+import React, { ReactElement, useMemo } from 'react';
 
 import { useForm } from '../../../hooks/useForm';
+import type { FormSectionProps } from './AccountPreferencesPage';
 
-const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
+type Values = {
+	unreadAlert: boolean;
+	alsoSendThreadToChannel: 'default' | 'always' | 'never';
+	useEmojis: boolean;
+	convertAsciiEmoji: boolean;
+	autoImageLoad: boolean;
+	saveMobileBandwidth: boolean;
+	collapseMediaByDefault: boolean;
+	hideUsernames: boolean;
+	hideRoles: boolean;
+	hideFlexTab: boolean;
+	displayAvatars: boolean;
+	clockMode: 0 | 1 | 2;
+	sendOnEnter: 'normal' | 'alternative' | 'desktop';
+	messageViewMode: 0 | 1 | 2;
+};
+
+const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSectionProps): ReactElement => {
 	const t = useTranslation();
 
 	const showRoles = useSetting('UI_DisplayRoles');
@@ -43,7 +61,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 		clockMode,
 		sendOnEnter,
 		messageViewMode,
-	} = values;
+	} = values as Values;
 
 	const {
 		handleUnreadAlert,
@@ -63,17 +81,17 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 	} = handlers;
 
 	const alsoSendThreadMessageToChannelOptions = useMemo(
-		() => [
+		(): SelectOption[] => [
 			['default', t('Default')],
-			['always', t('Always')],
+			['always', t('Always' as TranslationKey)], // TO DO: add "Always" to en.json ui-contexts
 			['never', t('Never')],
 		],
 		[t],
 	);
 
 	const timeFormatOptions = useMemo(
-		() => [
-			[0, t('Default')],
+		(): SelectOption[] => [
+			[0 as any, t('Default')], // TO DO: update SelectOption type to accept number as first item
 			[1, t('12_Hour')],
 			[2, t('24_Hour')],
 		],
@@ -81,7 +99,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 	);
 
 	const sendOnEnterOptions = useMemo(
-		() => [
+		(): SelectOption[] => [
 			['normal', t('Enter_Normal')],
 			['alternative', t('Enter_Alternative')],
 			['desktop', t('Only_On_Desktop')],
@@ -90,8 +108,8 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 	);
 
 	const messageViewModeOptions = useMemo(
-		() => [
-			[0, t('Normal')],
+		(): SelectOption[] => [
+			[0 as any, t('Normal')], // TO DO: update SelectOption type to accept number as first item
 			[1, t('Cozy')],
 			[2, t('Compact')],
 		],

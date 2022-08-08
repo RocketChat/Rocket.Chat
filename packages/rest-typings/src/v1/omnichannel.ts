@@ -540,7 +540,7 @@ const LivechatDepartmentsByUnitSchema = {
 
 export const isLivechatDepartmentsByUnitProps = ajv.compile<LivechatDepartmentsByUnitProps>(LivechatDepartmentsByUnitSchema);
 
-type LivechatDepartmentsByUnitIdProps = PaginatedRequest<{}>;
+type LivechatDepartmentsByUnitIdProps = PaginatedRequest;
 
 const LivechatDepartmentsByUnitIdSchema = {
 	type: 'object',
