@@ -5,7 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { sauEvents } from '../services/sauMonitor/events';
-import { ILoginAttempt } from '../../app/authentication/server/ILoginAttempt';
+import type { ILoginAttempt } from '../../app/authentication/server/ILoginAttempt';
 import { deviceManagementEvents } from '../services/device-management/events';
 
 Accounts.onLogin((info: ILoginAttempt) => {

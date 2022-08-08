@@ -8,7 +8,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-type DirectoryProps = PaginatedRequest<{}>;
+type DirectoryProps = PaginatedRequest;
 
 const DirectorySchema = {
 	type: 'object',

@@ -28,8 +28,8 @@ const useQuery = (
 		current,
 	}: {
 		text?: string;
-		itemsPerPage?: 25 | 50 | 100;
-		current?: number;
+		itemsPerPage: 25 | 50 | 100;
+		current: number;
 	},
 	[column, direction]: string[],
 	userIdLoggedIn: string | null,
@@ -54,7 +54,7 @@ const useQuery = (
 	);
 
 const CallTable: FC = () => {
-	const [params, setParams] = useState<{ text?: string; current?: number; itemsPerPage?: 25 | 50 | 100 }>({
+	const [params, setParams] = useState<{ text?: string; current: number; itemsPerPage: 25 | 50 | 100 }>({
 		text: '',
 		current: 0,
 		itemsPerPage: 25,

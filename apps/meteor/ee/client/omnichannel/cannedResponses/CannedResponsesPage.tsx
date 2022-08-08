@@ -10,8 +10,8 @@ import Page from '../../../../client/components/Page';
 export type CannedResponsesPageProps = {
 	data: any;
 	header: ReactElement[];
-	setParams: Dispatch<SetStateAction<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>>;
-	params: { current?: number; itemsPerPage?: 25 | 50 | 100 };
+	setParams: Dispatch<SetStateAction<{ current: number; itemsPerPage: 25 | 50 | 100 }>>;
+	params: { current: number; itemsPerPage: 25 | 50 | 100 };
 	title: string;
 	renderFilter?: (props: any) => ReactElement;
 	renderRow?: (props: any) => ReactElement;

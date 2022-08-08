@@ -1,22 +1,22 @@
 import { Random } from 'meteor/random';
 import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
-import {
+import type {
 	ILivechatMessage,
 	IVisitor,
 	ILivechatRoom,
 	ILivechatTransferData,
 	IDepartment,
 } from '@rocket.chat/apps-engine/definition/livechat';
-import { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
 import { Users, LivechatDepartment, LivechatRooms } from '../../../models/server';
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppLivechatBridge extends LivechatBridge {
 	// eslint-disable-next-line no-empty-function
@@ -157,11 +157,11 @@ export class AppLivechatBridge extends LivechatBridge {
 			id: visitor.id,
 		};
 
-		if (visitor.visitorEmails && visitor.visitorEmails.length) {
+		if (visitor.visitorEmails?.length) {
 			registerData.email = visitor.visitorEmails[0].address;
 		}
 
-		if (visitor.phone && visitor.phone.length) {
+		if (visitor.phone?.length) {
 			(registerData as any).phone = { number: visitor.phone[0].phoneNumber };
 		}
 
