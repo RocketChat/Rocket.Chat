@@ -8,7 +8,7 @@ import {
 import { IRoom, IMessage } from '@rocket.chat/core-typings';
 
 // TODO this is a hack to be able to continue the poc. Problem with tuples https://github.com/lukeautry/tsoa/issues/685
-type MessageFieldsIgnored = 'blocks' | 'urls' | 'location';
+type MessageFieldsIgnored = 'blocks' | 'urls' | 'location' | 'md';
 type RoomWithoutMessage = Omit<IRoom, 'lastMessage'>;
 type MessageCompatible = Omit<IMessage, MessageFieldsIgnored>;
 
