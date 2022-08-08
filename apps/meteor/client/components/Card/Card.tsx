@@ -3,7 +3,6 @@ import React, { FC } from 'react';
 
 type CardProps = {
 	variant?: 'light' | 'tint';
-	mb?: string;
 };
 
 const Card: FC<CardProps> = ({ variant, ...props }: CardProps) => (

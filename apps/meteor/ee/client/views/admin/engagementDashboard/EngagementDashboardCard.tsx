@@ -9,14 +9,10 @@ type EngagementDashboardCardProps = {
 	title?: string;
 };
 
-const EngagementDashboardCard = ({ children, title = undefined }: EngagementDashboardCardProps): ReactElement => {
-	const styleProps = {
-		fontScale: 'h4',
-	};
-
-	return (
-		<Card variant='light' mb='x16'>
-			{title && <Card.Title {...styleProps}>{title}</Card.Title>}
+const EngagementDashboardCard = ({ children, title = undefined }: EngagementDashboardCardProps): ReactElement => (
+	<Box mb='x16'>
+		<Card variant='light'>
+			{title && <Card.Title>{title}</Card.Title>}
 			<Card.Body>
 				<Card.Col>
 					<EngagementDashboardCardErrorBoundary>
@@ -25,7 +21,7 @@ const EngagementDashboardCard = ({ children, title = undefined }: EngagementDash
 				</Card.Col>
 			</Card.Body>
 		</Card>
-	);
-};
+	</Box>
+);
 
 export default EngagementDashboardCard;
