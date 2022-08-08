@@ -2,12 +2,13 @@ import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import { FederatedRoom } from '../domain/FederatedRoom';
 import { FederatedUser } from '../domain/FederatedUser';
-import { EVENT_ORIGIN, IFederationBridge } from '../domain/IFederationBridge';
-import { RocketChatMessageAdapter } from '../infrastructure/rocket-chat/adapters/Message';
-import { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
-import { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
-import { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
-import {
+import type { IFederationBridge } from '../domain/IFederationBridge';
+import { EVENT_ORIGIN } from '../domain/IFederationBridge';
+import type { RocketChatMessageAdapter } from '../infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
+import type {
 	FederationRoomCreateInputDto,
 	FederationRoomChangeMembershipDto,
 	FederationRoomSendInternalMessageDto,

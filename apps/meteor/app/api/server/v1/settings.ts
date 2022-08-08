@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
-import { ISetting, ISettingColor, isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
+import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import {
 	isOauthCustomConfiguration,
 	isSettingsUpdatePropDefault,
@@ -12,7 +13,8 @@ import { Settings } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
 import { hasPermission } from '../../../authorization/server';
-import { API, ResultFor } from '../api';
+import type { ResultFor } from '../api';
+import { API } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
 
