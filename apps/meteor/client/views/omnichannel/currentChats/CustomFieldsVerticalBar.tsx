@@ -33,7 +33,7 @@ const CustomFieldsVerticalBar = ({ setCustomFields }: CustomFieldsVerticalBarPro
 				<VerticalBar.Close onClick={(): void => currentChatsRoute.push({ context: '' })} />
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent is='form'>
-				{allCustomFields?.customFields.map((customField: { _id: string; label: string }) => (
+				{allCustomFields?.customFields.map((customField) => (
 					<Field>
 						<Field.Label>{customField.label}</Field.Label>
 						<Field.Row>

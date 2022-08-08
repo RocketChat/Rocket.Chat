@@ -133,9 +133,7 @@ const CurrentChatsRoute = (): ReactElement => {
 	const onHeaderClick = useMutableCallback((id) => {
 		if (sortBy === id) {
 			setSort(id, sortDirection === 'asc' ? 'desc' : 'asc');
-			return;
 		}
-		setSort(id, 'asc');
 	});
 
 	const debouncedParams = useDebouncedValue(params, 500);
@@ -169,15 +167,27 @@ const CurrentChatsRoute = (): ReactElement => {
 
 			return (
 				<GenericTableRow key={_id} onClick={(): void => onRowClick(_id)} action>
-					<GenericTableCell withTruncatedText>{fname}</GenericTableCell>
-					<GenericTableCell withTruncatedText>{department ? department.name : ''}</GenericTableCell>
-					<GenericTableCell withTruncatedText>{servedBy?.username}</GenericTableCell>
-					<GenericTableCell withTruncatedText>{moment(ts).format('L LTS')}</GenericTableCell>
-					<GenericTableCell withTruncatedText>{moment(lm).format('L LTS')}</GenericTableCell>
-					<GenericTableCell withTruncatedText>{getStatusText(open, onHold)}</GenericTableCell>
+					<GenericTableCell withTruncatedText data-qa='current-chats-header-name'>
+						{fname}
+					</GenericTableCell>
+					<GenericTableCell withTruncatedText data-qa='current-chats-header-department'>
+						{department ? department.name : ''}
+					</GenericTableCell>
+					<GenericTableCell withTruncatedText data-qa='current-chats-header-servedBy'>
+						{servedBy?.username}
+					</GenericTableCell>
+					<GenericTableCell withTruncatedText data-qa='current-chats-header-startedAt'>
+						{moment(ts).format('L LTS')}
+					</GenericTableCell>
+					<GenericTableCell withTruncatedText data-qa='current-chats-header-lastMessage'>
+						{moment(lm).format('L LTS')}
+					</GenericTableCell>
+					<GenericTableCell withTruncatedText data-qa='current-chats-header-status'>
+						{getStatusText(open, onHold)}
+					</GenericTableCell>
 					{canRemoveClosedChats && !open && (
 						<GenericTableCell withTruncatedText>
-							<RemoveChatButton _id={_id} reload={reload} />
+							<RemoveChatButton _id={_id} reload={reload} data-qa='current-chats-header-remove' />
 						</GenericTableCell>
 					)}
 				</GenericTableRow>
@@ -203,7 +213,7 @@ const CurrentChatsRoute = (): ReactElement => {
 					<GenericTable>
 						<GenericTableHeader>
 							<GenericTableHeaderCell
-								key={'fname'}
+								key='fname'
 								direction={sortDirection}
 								active={sortBy === 'fname'}
 								onClick={onHeaderClick}
@@ -212,7 +222,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								{t('Name')}
 							</GenericTableHeaderCell>
 							<GenericTableHeaderCell
-								key={'departmentId'}
+								key='departmentId'
 								direction={sortDirection}
 								active={sortBy === 'departmentId'}
 								onClick={onHeaderClick}
@@ -221,7 +231,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								{t('Department')}
 							</GenericTableHeaderCell>
 							<GenericTableHeaderCell
-								key={'servedBy'}
+								key='servedBy'
 								direction={sortDirection}
 								active={sortBy === 'servedBy'}
 								onClick={onHeaderClick}
@@ -229,14 +239,14 @@ const CurrentChatsRoute = (): ReactElement => {
 							>
 								{t('Served_By')}
 							</GenericTableHeaderCell>
-							<GenericTableHeaderCell key={'ts'} direction={sortDirection} active={sortBy === 'ts'} onClick={onHeaderClick} sort='ts'>
+							<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={onHeaderClick} sort='ts'>
 								{t('Started_At')}
 							</GenericTableHeaderCell>
-							<GenericTableHeaderCell key={'lm'} direction={sortDirection} active={sortBy === 'lm'} onClick={onHeaderClick} sort='lm'>
+							<GenericTableHeaderCell key='lm' direction={sortDirection} active={sortBy === 'lm'} onClick={onHeaderClick} sort='lm'>
 								{t('Last_Message')}
 							</GenericTableHeaderCell>
 							<GenericTableHeaderCell
-								key={'open'}
+								key='open'
 								direction={sortDirection}
 								active={sortBy === 'open'}
 								onClick={onHeaderClick}
@@ -246,7 +256,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								{t('Status')}
 							</GenericTableHeaderCell>
 							{canRemoveClosedChats && (
-								<GenericTableHeaderCell key={'remove'} w='x60'>
+								<GenericTableHeaderCell key='remove' w='x60'>
 									{t('Remove')}
 								</GenericTableHeaderCell>
 							)}

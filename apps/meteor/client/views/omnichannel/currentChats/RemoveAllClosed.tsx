@@ -14,7 +14,7 @@ const RemoveAllClosed: FC<{
 	const menuOptions = {
 		clearFilters: {
 			label: (
-				<Box>
+				<Box data-qa='current-chats-options-clearFilters'>
 					<Icon name='refresh' size='x16' marginInlineEnd='x4' />
 					{t('Clear_filters')}
 				</Box>
@@ -24,7 +24,7 @@ const RemoveAllClosed: FC<{
 		...(canRemove && {
 			removeClosed: {
 				label: (
-					<Box color='danger'>
+					<Box color='danger' data-qa='current-chats-options-removeAllClosed'>
 						<Icon name='trash' size='x16' marginInlineEnd='x4' />
 						{t('Delete_all_closed_chats')}
 					</Box>
@@ -35,7 +35,7 @@ const RemoveAllClosed: FC<{
 		...(canViewCustomFields && {
 			customFields: {
 				label: (
-					<Box>
+					<Box data-qa='current-chats-options-customFields'>
 						<Icon name='magnifier' size='x16' marginInlineEnd='x4' />
 						{t('Custom_Fields')}
 					</Box>
@@ -44,7 +44,9 @@ const RemoveAllClosed: FC<{
 			},
 		}),
 	};
-	return <Menu alignSelf='flex-end' small={false} options={menuOptions} placement='bottom-start' {...props} />;
+	return (
+		<Menu alignSelf='flex-end' small={false} options={menuOptions} placement='bottom-start' data-qa='current-chats-options' {...props} />
+	);
 };
 
 export default RemoveAllClosed;
