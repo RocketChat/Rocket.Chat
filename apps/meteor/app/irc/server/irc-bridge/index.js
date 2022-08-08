@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import Queue from 'queue-fifo';
 import moment from 'moment';
 import _ from 'underscore';
+import { Settings } from '@rocket.chat/models';
 
 import * as peerCommandHandlers from './peerHandlers';
 import * as localCommandHandlers from './localHandlers';
 import { callbacks } from '../../../../lib/callbacks';
 import * as servers from '../servers';
-import { Settings } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 
 const logger = new Logger('IRC Bridge');
@@ -57,7 +57,7 @@ class Bridge {
 		removed = false;
 		this.loggedInUsers = [];
 
-		const lastPing = Settings.findOneById('IRC_Bridge_Last_Ping');
+		const lastPing = Promise.await(Settings.findOneById('IRC_Bridge_Last_Ping'));
 		if (lastPing) {
 			if (Math.abs(moment(lastPing.value).diff()) < 1000 * 30) {
 				this.log('Not trying to connect.');
