@@ -4270,7 +4270,6 @@ __metadata:
     "@tanstack/react-query": ^4.0.10
     "@testing-library/react": ~12.1.5
     "@testing-library/user-event": ^13.5.0
-    "@tsoa/runtime": ^4.1.0
     "@types/adm-zip": ^0.5.0
     "@types/bad-words": ^3.0.1
     "@types/bcrypt": ^5.0.0
@@ -4501,6 +4500,7 @@ __metadata:
     template-file: ^6.0.1
     tinykeys: ^1.4.0
     ts-node: ^10.8.1
+    tsoa: ^4.1.1
     turndown: ^7.1.1
     twilio: ^3.76.1
     twit: ^2.2.11
