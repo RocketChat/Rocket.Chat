@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { IIntegration } from '@rocket.chat/core-typings';
+import type { IIntegration } from '@rocket.chat/core-typings';
 import {
 	isIntegrationsCreateProps,
 	isIntegrationsHistoryProps,

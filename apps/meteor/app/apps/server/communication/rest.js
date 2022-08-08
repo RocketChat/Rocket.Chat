@@ -70,13 +70,13 @@ export class AppsRestApi {
 			'',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					// Gets the Apps from the marketplace
 					if (this.queryParams.marketplace) {
 						const headers = getDefaultHeaders();
-						const token = getWorkspaceAccessToken();
+						const token = await getWorkspaceAccessToken();
 						if (token) {
 							headers.Authorization = `Bearer ${token}`;
 						}
@@ -100,7 +100,7 @@ export class AppsRestApi {
 
 					if (this.queryParams.categories) {
 						const headers = getDefaultHeaders();
-						const token = getWorkspaceAccessToken();
+						const token = await getWorkspaceAccessToken();
 						if (token) {
 							headers.Authorization = `Bearer ${token}`;
 						}
@@ -183,8 +183,8 @@ export class AppsRestApi {
 
 						const headers = getDefaultHeaders();
 						try {
-							const downloadToken = getWorkspaceAccessToken(true, 'marketplace:download', false);
-							const marketplaceToken = getWorkspaceAccessToken();
+							const downloadToken = await getWorkspaceAccessToken(true, 'marketplace:download', false);
+							const marketplaceToken = await getWorkspaceAccessToken();
 
 							const [downloadResponse, marketplaceResponse] = await Promise.all([
 								fetch(`${baseUrl}/v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${downloadToken}`, {
@@ -318,11 +318,11 @@ export class AppsRestApi {
 			'bundles/:id/apps',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {};
-					const token = getWorkspaceAccessToken();
+					const token = await getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${token}`;
 					}
@@ -351,11 +351,11 @@ export class AppsRestApi {
 			'featured',
 			{ authRequired: true },
 			{
-				get() {
+				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken();
+					const token = await getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${token}`;
 					}
@@ -383,12 +383,12 @@ export class AppsRestApi {
 			':id',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					if (this.queryParams.marketplace && this.queryParams.version) {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
 						const headers = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
-						const token = getWorkspaceAccessToken();
+						const token = await getWorkspaceAccessToken();
 						if (token) {
 							headers.Authorization = `Bearer ${token}`;
 						}
@@ -414,7 +414,7 @@ export class AppsRestApi {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
 						const headers = getDefaultHeaders();
-						const token = getWorkspaceAccessToken();
+						const token = await getWorkspaceAccessToken();
 						if (token) {
 							headers.Authorization = `Bearer ${token}`;
 						}
@@ -466,7 +466,7 @@ export class AppsRestApi {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
 						const headers = getDefaultHeaders();
-						const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
+						const token = await getWorkspaceAccessToken(true, 'marketplace:download', false);
 
 						try {
 							const response = await fetch(
@@ -564,11 +564,11 @@ export class AppsRestApi {
 			':id/versions',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
-					const token = getWorkspaceAccessToken();
+					const token = await getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${token}`;
 					}
@@ -596,16 +596,16 @@ export class AppsRestApi {
 			':id/sync',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				post() {
+				async post() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken();
+					const token = await getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${token}`;
 					}
 
-					const workspaceIdSetting = Promise.await(Settings.findOneById('Cloud_Workspace_Id'));
+					const workspaceIdSetting = await Settings.findOneById('Cloud_Workspace_Id');
 
 					let result;
 					try {
@@ -622,7 +622,7 @@ export class AppsRestApi {
 						return API.v1.failure();
 					}
 
-					Promise.await(Apps.updateAppsMarketplaceInfo([result.data]));
+					await Apps.updateAppsMarketplaceInfo([result.data]);
 
 					return API.v1.success({ app: result.data });
 				},

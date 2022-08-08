@@ -1,6 +1,6 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, FC } from 'react';
+import React, { useMemo, ReactElement } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
@@ -16,7 +16,7 @@ import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider'
 import { useTab, useTabBarOpen, useTabBarClose, useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import LazyComponent from './LazyComponent';
 
-export const Room: FC<{}> = () => {
+export const Room = (): ReactElement => {
 	const room = useRoom();
 	const t = useTranslation();
 	const tab = useTab();

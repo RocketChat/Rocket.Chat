@@ -1,3 +1,3 @@
-export type WithItemCount<T = {}> = T & {
+export type WithItemCount<T = Record<string, unknown>> = T & {
 	count: { total: number }[];
 };

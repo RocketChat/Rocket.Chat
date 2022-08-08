@@ -8,7 +8,7 @@ import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { sendMessage } from '../../../lib/server/functions';
 import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
-import { ILoginAttempt } from '../ILoginAttempt';
+import type { ILoginAttempt } from '../ILoginAttempt';
 
 const logger = new Logger('LoginProtection');
 
