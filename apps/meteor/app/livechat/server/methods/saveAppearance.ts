@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import { Settings } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization';
-import { Settings } from '../../../models/server';
+import { hasPermission } from '../../../authorization/server';
 
 Meteor.methods({
-	'livechat:saveAppearance'(settings) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+	async 'livechat:saveAppearance'(settings: { _id: string; value: any }[]) {
+		const uid = Meteor.userId();
+		if (!uid || !hasPermission(uid, 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveAppearance',
 			});
@@ -39,8 +40,10 @@ Meteor.methods({
 			throw new Meteor.Error('invalid-setting');
 		}
 
-		settings.forEach((setting) => {
-			Settings.updateValueById(setting._id, setting.value);
-		});
+		await Promise.all(
+			settings.map((setting) => {
+				return Settings.updateValueById(setting._id, setting.value);
+			}),
+		);
 	},
 });
