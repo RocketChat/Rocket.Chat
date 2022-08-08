@@ -1,6 +1,6 @@
-import { Readable, Stream } from 'stream';
+import type { Readable, Stream } from 'stream';
 
-import sharp from 'sharp';
+import type sharp from 'sharp';
 
 export type ResizeResult = {
 	data: Buffer;

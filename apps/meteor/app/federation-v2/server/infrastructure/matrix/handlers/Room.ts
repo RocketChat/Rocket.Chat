@@ -1,7 +1,7 @@
-import { FederationRoomServiceReceiver } from '../../../application/RoomServiceReceiver';
-import { RocketChatSettingsAdapter } from '../../rocket-chat/adapters/Settings';
+import type { FederationRoomServiceReceiver } from '../../../application/RoomServiceReceiver';
+import type { RocketChatSettingsAdapter } from '../../rocket-chat/adapters/Settings';
 import { MatrixRoomReceiverConverter } from '../converters/RoomReceiver';
-import { IMatrixEvent } from '../definitions/IMatrixEvent';
+import type { IMatrixEvent } from '../definitions/IMatrixEvent';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 import { MatrixBaseEventHandler } from './BaseEvent';
 
