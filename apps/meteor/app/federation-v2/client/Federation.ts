@@ -1,4 +1,5 @@
-import { IRoom, isDirectMessageRoom, IUser, ValueOf } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, ValueOf } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 

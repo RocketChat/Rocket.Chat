@@ -1,8 +1,8 @@
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
-import { IExternalUserProfileInformation, IFederationBridge } from '../../domain/IFederationBridge';
+import type { IExternalUserProfileInformation, IFederationBridge } from '../../domain/IFederationBridge';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
-import { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
+import type { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 

@@ -1,4 +1,4 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { FederationRoomServiceListener } from '../application/RoomServiceListener';
 import { FederationRoomServiceSender } from '../application/sender/RoomServiceSender';
@@ -18,7 +18,7 @@ import { RocketChatMessageAdapter } from './rocket-chat/adapters/Message';
 import { RocketChatRoomAdapter } from './rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from './rocket-chat/adapters/Settings';
 import { RocketChatUserAdapter } from './rocket-chat/adapters/User';
-import { IFederationBridge } from '../domain/IFederationBridge';
+import type { IFederationBridge } from '../domain/IFederationBridge';
 import { FederationHooks } from './rocket-chat/hooks';
 import { FederationRoomSenderConverter } from './rocket-chat/converters/RoomSender';
 import { FederationRoomInternalHooksValidator } from '../application/sender/RoomInternalHooksValidator';

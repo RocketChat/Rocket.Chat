@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { FederationRoomSenderConverter } from '../../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
 import {

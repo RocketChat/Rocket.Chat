@@ -1,5 +1,5 @@
-import { IRoom, isUserFederated, IUser } from '@rocket.chat/core-typings';
-
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isUserFederated } from '@rocket.chat/core-typings';
 import {
 	extractServerNameFromExternalIdentifier,
 	formatExternalUserIdToInternalUsernameFormat,
@@ -16,8 +16,8 @@ import {
 	FederationOnUsersAddedToARoomDto,
 	FederationRoomInviteUserDto,
 	FederationSetupRoomDto,
-	IFederationInviteeDto,
 } from '../../../application/input/RoomSenderDto';
+import type { IFederationInviteeDto } from '../../../application/input/RoomSenderDto';
 
 const ensureUserHasAHomeServer = (username: string, localHomeServer: string): string => {
 	return username?.includes(':') ? username : `${username}:${localHomeServer}`;

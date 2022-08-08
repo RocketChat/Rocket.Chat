@@ -1,4 +1,4 @@
-import { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
+import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
 
 export abstract class MatrixBaseEventHandler {
 	public abstract eventType: string;

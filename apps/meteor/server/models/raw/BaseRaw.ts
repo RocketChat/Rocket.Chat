@@ -1,4 +1,4 @@
-import {
+import type {
 	BulkWriteOptions,
 	ChangeStream,
 	Collection,
@@ -9,7 +9,6 @@ import {
 	IndexDescription,
 	InsertOneOptions,
 	ModifyResult,
-	ObjectId,
 	OptionalUnlessRequiredId,
 	UpdateFilter,
 	WithId,
@@ -23,6 +22,7 @@ import {
 	DeleteResult,
 	DeleteOptions,
 } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import type { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
 import { getCollectionName } from '@rocket.chat/models';

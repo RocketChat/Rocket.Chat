@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { Settings } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import OmniChannel from '../lib/OmniChannel';
-import { Settings } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:facebook'(options) {

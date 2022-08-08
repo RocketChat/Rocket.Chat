@@ -9,7 +9,7 @@ export interface IImportRecord {
 	data: IImportData;
 	dataType: IImportRecordType;
 	_id: string;
-	options?: {};
+	options?: Record<string, unknown>;
 	errors?: Array<{
 		message: string;
 		stack?: string;

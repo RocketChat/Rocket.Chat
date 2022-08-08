@@ -33,7 +33,7 @@ callbacks.add(
 		if (forwardSuccess) {
 			const { _id, username } = transferData.transferredBy;
 			// The property is injected dynamically on ee folder
-			// @ts-expect-error
+			// @ts-expect-error Property 'createTransferFailedHistoryMessage' does not exist on type 'Messages'.
 			Messages.createTransferFailedHistoryMessage(room._id, '', { _id, username }, { transferData: transferDataFallback });
 		}
 

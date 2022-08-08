@@ -7,7 +7,7 @@ import { MatrixEventRoomTopicChanged } from '../../../../../../app/federation-v2
 import { MatrixEventType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixEventType';
 import { MatrixRoomType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomVisibility';
-import { IFederationBridgeEE } from '../../domain/IFederationBridge';
+import type { IFederationBridgeEE } from '../../domain/IFederationBridge';
 
 export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE {
 	constructor(

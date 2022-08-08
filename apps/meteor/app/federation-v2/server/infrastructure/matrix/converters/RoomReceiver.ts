@@ -9,7 +9,8 @@ import {
 	FederationRoomReceiveExternalMessageDto,
 } from '../../../application/input/RoomReceiverDto';
 import { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
-import { RoomMembershipChangedEventType, MatrixEventRoomMembershipChanged } from '../definitions/events/RoomMembershipChanged';
+import type { MatrixEventRoomMembershipChanged } from '../definitions/events/RoomMembershipChanged';
+import { RoomMembershipChangedEventType } from '../definitions/events/RoomMembershipChanged';
 import { MatrixRoomJoinRules } from '../definitions/MatrixRoomJoinRules';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 import { MatrixEventRoomCreated } from '../definitions/events/RoomCreated';

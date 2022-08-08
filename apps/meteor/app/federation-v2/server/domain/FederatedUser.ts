@@ -1,4 +1,5 @@
-import { IUser, UserStatus } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { ObjectId } from 'mongodb'; // This should not be in the domain layer, but its a known "problem"
 
 import { isAnInternalIdentifier } from './FederatedRoom';

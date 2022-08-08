@@ -1,5 +1,5 @@
-import { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
-import { MatrixBaseEventHandler } from './BaseEvent';
+import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
+import type { MatrixBaseEventHandler } from './BaseEvent';
 
 export class MatrixEventsHandler {
 	// eslint-disable-next-line no-empty-function

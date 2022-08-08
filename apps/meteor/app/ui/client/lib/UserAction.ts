@@ -21,7 +21,7 @@ const activityTimeouts = new Map();
 const activityRenews = new Map();
 const continuingIntervals = new Map();
 const roomActivities = new Map<string, Set<string>>();
-const rooms = new Map<string, Function>();
+const rooms = new Map<string, (username: string, activityType: string[], extras?: object | undefined) => void>();
 
 const performingUsers = new ReactiveDict<IActionsObject>();
 

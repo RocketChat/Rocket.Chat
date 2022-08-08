@@ -1,8 +1,8 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { ObjectId } from 'mongodb'; // This should not be in the domain layer, but its a known "problem"
 
-import { FederatedUser } from './FederatedUser';
+import type { FederatedUser } from './FederatedUser';
 
 export const isAnInternalIdentifier = (fromOriginName: string, localOriginName: string): boolean => {
 	return fromOriginName === localOriginName;

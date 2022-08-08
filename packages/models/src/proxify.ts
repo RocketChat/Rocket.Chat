@@ -10,7 +10,7 @@ function handler<T extends object>(namespace: string): ProxyHandler<T> {
 				models.set(namespace, (lazyModels.get(namespace) as () => IBaseModel<any>)());
 			}
 
-			// @ts-expect-error
+			// @ts-ignore
 			return models.get(namespace)[prop];
 		},
 	};

@@ -1,4 +1,4 @@
-import { IRocketChatRecord } from '@rocket.chat/core-typings';
+import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 
 import type { RealTimeData } from './DatabaseWatcher';
 

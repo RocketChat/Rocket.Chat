@@ -1,16 +1,16 @@
 import { HTTP } from 'meteor/http';
+import { Settings } from '@rocket.chat/models';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { Settings } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { saveRegistrationData } from './saveRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function connectWorkspace(token) {
+export async function connectWorkspace(token: string) {
 	const { connectToCloud } = retrieveRegistrationStatus();
 	if (!connectToCloud) {
-		Settings.updateValueById('Register_Server', true);
+		await Settings.updateValueById('Register_Server', true);
 	}
 
 	// shouldn't get here due to checking this on the method
@@ -36,8 +36,8 @@ export function connectWorkspace(token) {
 			},
 			data: regInfo,
 		});
-	} catch (e) {
-		if (e.response && e.response.data && e.response.data.error) {
+	} catch (e: any) {
+		if (e.response?.data?.error) {
 			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
 		} else {
 			SystemLogger.error(e);
@@ -52,7 +52,7 @@ export function connectWorkspace(token) {
 		return false;
 	}
 
-	Promise.await(saveRegistrationData(data));
+	await saveRegistrationData(data);
 
 	return true;
 }

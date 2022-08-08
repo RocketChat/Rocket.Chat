@@ -1,4 +1,4 @@
-import * as fastq from 'fastq';
+import fastq from 'fastq';
 
 import { AbstractMatrixEvent } from '../matrix/definitions/AbstractMatrixEvent';
 

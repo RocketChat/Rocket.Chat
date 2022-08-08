@@ -59,7 +59,7 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public onFederationEnabledStatusChanged(callback: (enabled: boolean) => Promise<void>): () => void {
-		return settings.watchMultiple(
+		return settings.watchMultiple<boolean>(
 			[
 				'Federation_Matrix_enabled',
 				'Federation_Matrix_id',

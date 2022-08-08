@@ -6,14 +6,14 @@ import { createContext, useContext } from 'react';
 import { actions, listen, ToolboxActionConfig, ToolboxAction, Events } from '.';
 import './defaultActions';
 
-export type ToolboxEventHandler = (handler: EventHandlerOf<Events, 'change'>) => Function;
+export type ToolboxEventHandler = (handler: EventHandlerOf<Events, 'change'>) => () => void;
 
 export type ToolboxContextValue = {
 	actions: Map<ToolboxActionConfig['id'], ToolboxAction>;
 	listen: ToolboxEventHandler;
 	tabBar?: any;
 	context?: any;
-	open: Function;
+	open: (actionId: string, context?: string) => void;
 	openUserInfo: (username: string) => void;
 	close: () => void;
 	activeTabBar?: ToolboxActionConfig;
