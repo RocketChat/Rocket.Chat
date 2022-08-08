@@ -279,7 +279,7 @@ export const upsertPermissions = async (): Promise<void> => {
 			roles: [],
 		};
 		// copy previously assigned roles if available
-		if (previousSettingPermissions[permissionId] && previousSettingPermissions[permissionId].roles) {
+		if (previousSettingPermissions[permissionId]?.roles) {
 			permission.roles = previousSettingPermissions[permissionId].roles;
 		}
 		if (setting.group) {

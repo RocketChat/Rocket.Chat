@@ -1,13 +1,13 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { FederatedRoom } from '../domain/FederatedRoom';
 import { FederatedUser } from '../domain/FederatedUser';
-import { IFederationBridge } from '../domain/IFederationBridge';
-import { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
-import { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
-import { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
-import {
+import type { IFederationBridge } from '../domain/IFederationBridge';
+import type { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
+import type {
 	FederationAfterLeaveRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,

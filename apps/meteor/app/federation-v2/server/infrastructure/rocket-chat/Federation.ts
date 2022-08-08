@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IRoom, ValueOf } from '@rocket.chat/core-typings';
+import type { IRoom, ValueOf } from '@rocket.chat/core-typings';
 
 import { RoomMemberActions } from '../../../../../definition/IRoomTypeConfig';
 

@@ -54,7 +54,7 @@ const _setEmail = function (userId: string, email: string, shouldSendVerificatio
 	const user = Users.findOneById(userId);
 
 	// User already has desired username, return
-	if (user.emails && user.emails[0] && user.emails[0].address === email) {
+	if (user.emails?.[0] && user.emails[0].address === email) {
 		return user;
 	}
 
@@ -66,7 +66,7 @@ const _setEmail = function (userId: string, email: string, shouldSendVerificatio
 		});
 	}
 
-	const oldEmail = user.emails && user.emails[0];
+	const oldEmail = user.emails?.[0];
 
 	if (oldEmail) {
 		_sendEmailChangeNotification(oldEmail.address, email);

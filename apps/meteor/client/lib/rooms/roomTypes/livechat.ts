@@ -71,7 +71,7 @@ roomCoordinator.add(LivechatRoomType, {
 	getUserStatus(rid) {
 		const room = Session.get(`roomData${rid}`);
 		if (room) {
-			return room.v && room.v.status;
+			return room.v?.status;
 		}
 		const inquiry = LivechatInquiry.findOne({ rid });
 		return inquiry?.v?.status;

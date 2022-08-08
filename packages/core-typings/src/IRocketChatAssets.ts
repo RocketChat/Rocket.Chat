@@ -15,12 +15,12 @@ export interface IRocketChatAssetCache {
 	cacheable: boolean;
 	where: string;
 	type: string;
-	content: Buffer;
-	extension: string;
+	content?: Buffer;
+	extension?: string;
 	url: string;
-	size: number;
-	uploadDate: Date;
-	contentType: string;
+	size?: number;
+	uploadDate?: Date;
+	contentType?: string;
 	hash: string;
 	sourceMapUrl?: string;
 }

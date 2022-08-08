@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 import { OAuth2Server } from 'meteor/rocketchat:oauth2-server';
-import { Request, Response } from 'express';
-import { IUser } from '@rocket.chat/core-typings';
+import type { Request, Response } from 'express';
+import type { IUser } from '@rocket.chat/core-typings';
 import { OAuthApps } from '@rocket.chat/models';
 
 import { Users } from '../../../models/server';

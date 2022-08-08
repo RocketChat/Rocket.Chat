@@ -1,4 +1,5 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import type { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 import type { IRocketChatAssets } from '@rocket.chat/core-typings';
 
 export type AssetsUnsetAssetProps = { assetName: keyof IRocketChatAssets; refreshAllClients?: boolean };

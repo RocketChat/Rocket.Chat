@@ -1,5 +1,5 @@
-import { IRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import type { ISubscription, IRegisterUser, IUser } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom } from '@rocket.chat/core-typings';
+import type { ISubscription, IRegisterUser, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
 import { Subscriptions, Users } from '../../../models/server';
