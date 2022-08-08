@@ -58,7 +58,7 @@ export const checkVersionUpdate = async () => {
 		break;
 	}
 
-	if (alerts && alerts.length) {
+	if (alerts?.length) {
 		await sendMessagesToAdmins({
 			msgs: ({ adminUser }) =>
 				alerts

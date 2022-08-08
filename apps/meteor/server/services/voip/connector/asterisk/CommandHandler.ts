@@ -13,14 +13,14 @@
  * We shall be using only AMI interface in the for now. Other interfaces will be
  * added as and when required.
  */
-import { Db } from 'mongodb';
-import type { IVoipConnectorResult, IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
-import { IManagementConfigData } from '@rocket.chat/core-typings';
+import type { Db } from 'mongodb';
+import type { IVoipConnectorResult, IManagementServerConnectionStatus, IManagementConfigData } from '@rocket.chat/core-typings';
 
 import { Commands } from './Commands';
-import { IConnection } from './IConnection';
+import type { IConnection } from './IConnection';
 import { Logger } from '../../../../lib/logger/Logger';
-import { Command, CommandType } from './Command';
+import type { Command } from './Command';
+import { CommandType } from './Command';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
 import { WebsocketConnection } from '../websocket/WebsocketConnection';

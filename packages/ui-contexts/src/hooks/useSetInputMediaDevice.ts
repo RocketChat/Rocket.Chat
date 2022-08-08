@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 
-import { DeviceContext, Device, isDeviceContextEnabled } from '../DeviceContext';
+import type { Device } from '../DeviceContext';
+import { DeviceContext, isDeviceContextEnabled } from '../DeviceContext';
 
 type setInputMediaDevice = (inputDevice: Device) => void;
 
