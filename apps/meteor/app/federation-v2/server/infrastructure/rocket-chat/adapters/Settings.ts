@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../../../../settings/server';
-import { IFederationBridgeRegistrationFile } from '../../matrix/Bridge';
+import type { IFederationBridgeRegistrationFile } from '../../matrix/Bridge';
 
 const EVERYTHING_REGEX = '.*';
 const LISTEN_RULES = EVERYTHING_REGEX;

@@ -1,9 +1,7 @@
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import {
-	FederationBaseRoomInputDto,
-	IFederationReceiverBaseRoomInputDto,
-} from '../../../../../../app/federation-v2/server/application/input/RoomReceiverDto';
+import type { IFederationReceiverBaseRoomInputDto } from '../../../../../../app/federation-v2/server/application/input/RoomReceiverDto';
+import { FederationBaseRoomInputDto } from '../../../../../../app/federation-v2/server/application/input/RoomReceiverDto';
 
 export interface IFederationCreateInputDto extends IFederationReceiverBaseRoomInputDto {
 	roomType: RoomType;

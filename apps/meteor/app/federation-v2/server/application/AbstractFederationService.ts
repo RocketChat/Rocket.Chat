@@ -1,7 +1,7 @@
 import { FederatedUser } from '../domain/FederatedUser';
-import { IFederationBridge } from '../domain/IFederationBridge';
-import { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
-import { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
+import type { IFederationBridge } from '../domain/IFederationBridge';
+import type { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
 
 export abstract class FederationService {
 	protected internalHomeServerDomain: string;

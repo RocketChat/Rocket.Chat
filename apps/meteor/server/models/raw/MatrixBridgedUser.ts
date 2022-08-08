@@ -1,6 +1,6 @@
-import { IMatrixBridgedUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IMatrixBridgedUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IMatrixBridgedUserModel } from '@rocket.chat/model-typings';
-import { Collection, Db, IndexDescription } from 'mongodb';
+import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 

@@ -1,11 +1,12 @@
-import { IRoom, isDirectMessageRoom, isRoomFederated, isUserFederated, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isRoomFederated, isUserFederated } from '@rocket.chat/core-typings';
 
 import { FederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
-import { IFederationBridge } from '../../domain/IFederationBridge';
-import { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
-import { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
-import { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
+import type { IFederationBridge } from '../../domain/IFederationBridge';
+import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
 import { FederationService } from '../AbstractFederationService';
 
 export class FederationRoomInternalHooksValidator extends FederationService {

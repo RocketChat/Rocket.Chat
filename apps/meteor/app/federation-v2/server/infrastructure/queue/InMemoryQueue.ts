@@ -1,6 +1,6 @@
 import fastq from 'fastq';
 
-import { AbstractMatrixEvent } from '../matrix/definitions/AbstractMatrixEvent';
+import type { AbstractMatrixEvent } from '../matrix/definitions/AbstractMatrixEvent';
 
 export class InMemoryQueue {
 	private instance: any;

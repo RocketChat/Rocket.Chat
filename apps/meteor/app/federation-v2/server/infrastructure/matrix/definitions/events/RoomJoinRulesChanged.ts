@@ -1,6 +1,7 @@
-import { AbstractMatrixEvent, IBaseEventContent } from '../AbstractMatrixEvent';
+import type { IBaseEventContent } from '../AbstractMatrixEvent';
+import { AbstractMatrixEvent } from '../AbstractMatrixEvent';
 import { MatrixEventType } from '../MatrixEventType';
-import { MatrixRoomJoinRules } from '../MatrixRoomJoinRules';
+import type { MatrixRoomJoinRules } from '../MatrixRoomJoinRules';
 
 export interface IMatrixEventContentSetRoomJoinRules extends IBaseEventContent {
 	join_rule: MatrixRoomJoinRules;

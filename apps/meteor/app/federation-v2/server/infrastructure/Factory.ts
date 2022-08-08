@@ -4,7 +4,7 @@ import { FederationRoomServiceListener } from '../application/RoomServiceListene
 import { FederationRoomServiceSender } from '../application/sender/RoomServiceSender';
 import { MatrixBridge } from './matrix/Bridge';
 import { MatrixEventsHandler } from './matrix/handlers';
-import { MatrixBaseEventHandler } from './matrix/handlers/BaseEvent';
+import type { MatrixBaseEventHandler } from './matrix/handlers/BaseEvent';
 import {
 	MatrixRoomCreatedHandler,
 	MatrixRoomJoinRulesChangedHandler,

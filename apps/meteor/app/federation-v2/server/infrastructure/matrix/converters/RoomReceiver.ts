@@ -13,12 +13,12 @@ import type { MatrixEventRoomMembershipChanged } from '../definitions/events/Roo
 import { RoomMembershipChangedEventType } from '../definitions/events/RoomMembershipChanged';
 import { MatrixRoomJoinRules } from '../definitions/MatrixRoomJoinRules';
 import { MatrixEventType } from '../definitions/MatrixEventType';
-import { MatrixEventRoomCreated } from '../definitions/events/RoomCreated';
-import { MatrixEventRoomMessageSent } from '../definitions/events/RoomMessageSent';
-import { MatrixEventRoomJoinRulesChanged } from '../definitions/events/RoomJoinRulesChanged';
-import { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameChanged';
-import { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
-import { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
+import type { MatrixEventRoomCreated } from '../definitions/events/RoomCreated';
+import type { MatrixEventRoomMessageSent } from '../definitions/events/RoomMessageSent';
+import type { MatrixEventRoomJoinRulesChanged } from '../definitions/events/RoomJoinRulesChanged';
+import type { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameChanged';
+import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
+import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
 
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
 	return matrixIdentifier.replace('@', '').replace('!', '');

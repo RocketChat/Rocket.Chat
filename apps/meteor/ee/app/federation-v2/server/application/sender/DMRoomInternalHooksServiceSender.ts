@@ -1,9 +1,9 @@
-import { RocketChatSettingsAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatSettingsAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
 import { FederatedUserEE } from '../../domain/FederatedUser';
-import { IFederationBridgeEE } from '../../domain/IFederationBridge';
-import { RocketChatRoomAdapterEE } from '../../infrastructure/rocket-chat/adapters/Room';
-import { RocketChatUserAdapterEE } from '../../infrastructure/rocket-chat/adapters/User';
-import {
+import type { IFederationBridgeEE } from '../../domain/IFederationBridge';
+import type { RocketChatRoomAdapterEE } from '../../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatUserAdapterEE } from '../../infrastructure/rocket-chat/adapters/User';
+import type {
 	FederationBeforeDirectMessageRoomCreationDto,
 	FederationOnDirectMessageRoomCreationDto,
 	FederationRoomInviteUserDto,

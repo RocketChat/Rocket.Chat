@@ -1,13 +1,13 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { DirectMessageFederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
-import { IFederationBridge } from '../../domain/IFederationBridge';
-import { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
-import { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
-import { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
+import type { IFederationBridge } from '../../domain/IFederationBridge';
+import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
 import { FederationService } from '../AbstractFederationService';
-import {
+import type {
 	FederationAfterLeaveRoomDto,
 	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,

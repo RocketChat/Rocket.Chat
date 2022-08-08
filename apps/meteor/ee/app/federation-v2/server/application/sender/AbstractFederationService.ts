@@ -1,9 +1,9 @@
 import { FederationService } from '../../../../../../app/federation-v2/server/application/AbstractFederationService';
-import { RocketChatSettingsAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatSettingsAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
 import { FederatedUserEE } from '../../domain/FederatedUser';
-import { IFederationBridgeEE } from '../../domain/IFederationBridge';
-import { RocketChatUserAdapterEE } from '../../infrastructure/rocket-chat/adapters/User';
-import { IFederationInviteeDto } from '../input/RoomSenderDto';
+import type { IFederationBridgeEE } from '../../domain/IFederationBridge';
+import type { RocketChatUserAdapterEE } from '../../infrastructure/rocket-chat/adapters/User';
+import type { IFederationInviteeDto } from '../input/RoomSenderDto';
 
 export abstract class FederationServiceEE extends FederationService {
 	constructor(

@@ -2,12 +2,12 @@ import type { FederationRoomServiceListener } from '../../../application/RoomSer
 import type { RocketChatSettingsAdapter } from '../../rocket-chat/adapters/Settings';
 import { MatrixRoomReceiverConverter } from '../converters/RoomReceiver';
 import { MatrixBaseEventHandler } from './BaseEvent';
-import { MatrixEventRoomCreated } from '../definitions/events/RoomCreated';
-import { MatrixEventRoomMembershipChanged } from '../definitions/events/RoomMembershipChanged';
-import { MatrixEventRoomJoinRulesChanged } from '../definitions/events/RoomJoinRulesChanged';
-import { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameChanged';
-import { MatrixEventRoomMessageSent } from '../definitions/events/RoomMessageSent';
-import { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
+import type { MatrixEventRoomCreated } from '../definitions/events/RoomCreated';
+import type { MatrixEventRoomMembershipChanged } from '../definitions/events/RoomMembershipChanged';
+import type { MatrixEventRoomJoinRulesChanged } from '../definitions/events/RoomJoinRulesChanged';
+import type { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameChanged';
+import type { MatrixEventRoomMessageSent } from '../definitions/events/RoomMessageSent';
+import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 
 export class MatrixRoomCreatedHandler extends MatrixBaseEventHandler {
