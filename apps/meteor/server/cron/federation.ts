@@ -17,7 +17,7 @@ function updateSetting(id: string, value: SettingValue | null): void {
 			Settings.updateValueById(id, value);
 		}
 	} else {
-		Settings.updateValueById(id, undefined);
+		Settings.updateValueById(id, null);
 	}
 }
 

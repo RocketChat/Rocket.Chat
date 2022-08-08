@@ -1496,6 +1496,7 @@
   "Desktop_Notifications_Not_Enabled": "Desktop Notifications are Not Enabled",
   "Details": "Details",
   "Device_Changes_Not_Available": "Device changes not available in this browser. For guaranteed availability, please use Rocket.Chat's official desktop app.",
+  "Device_Changes_Not_Available_Insecure_Context": "Device changes are only available on secure contexts (e.g. https://)",
   "Device_Management": "Device management",
   "Device_ID": "Device ID",
   "Device_Info": "Device Info",
