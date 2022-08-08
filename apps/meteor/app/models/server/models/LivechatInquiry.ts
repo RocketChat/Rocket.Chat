@@ -1,5 +1,5 @@
-import { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
-import { FindOptions, FindCursor, UpdateResult, DeleteResult } from 'mongodb';
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import type { FindOptions, FindCursor, UpdateResult, DeleteResult } from 'mongodb';
 
 import { Base } from './_Base';
 

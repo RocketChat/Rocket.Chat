@@ -1,4 +1,5 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import type { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
 const ajv = new Ajv();

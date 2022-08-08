@@ -27,7 +27,7 @@ export async function startRegisterWorkspace(resend = false) {
 			data: regInfo,
 		});
 	} catch (e: any) {
-		if (e.response && e.response.data && e.response.data.error) {
+		if (e.response?.data?.error) {
 			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${e.response.data.error}`);
 		} else {
 			SystemLogger.error(e);

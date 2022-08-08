@@ -87,7 +87,11 @@ Meteor.methods({
 			data,
 			Match.ObjectIncluding({
 				serverURL: String,
-				token: String,
+				token: Match.ObjectIncluding({
+					access_token: String,
+					token_type: String,
+					refresh_token: Match.Optional(String),
+				}),
 				name: Match.Maybe(String),
 			}),
 		);

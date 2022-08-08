@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 
 import { Users } from '../../../models/server';
 import { oAuth2ServerAuth } from '../../../oauth2-server-config/server/oauth/oauth2-server';

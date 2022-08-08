@@ -1,4 +1,5 @@
-import { ServerType, IVoipManagementServerConfig, IVoipCallServerConfig } from '@rocket.chat/core-typings';
+import type { IVoipManagementServerConfig, IVoipCallServerConfig } from '@rocket.chat/core-typings';
+import { ServerType } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server/cached';
 
