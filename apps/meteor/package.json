@@ -227,6 +227,7 @@
 		"@rocket.chat/ui-video-conf": "workspace:^",
 		"@slack/rtm-api": "^6.0.0",
 		"@tanstack/react-query": "^4.0.10",
+		"@tsoa/runtime": "^4.1.0",
 		"@types/cookie": "^0.5.1",
 		"@types/katex": "^0.14.0",
 		"@types/lodash": "^4.14.182",

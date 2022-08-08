@@ -8,6 +8,7 @@
     "basePath": "api/v2"
   },
   "routes": {
-    "routesDir": "src/"
+    "routesDir": "src/",
+		"middlewareTemplate": "src/config/tsoa-generator.hbs"
   }
 }
