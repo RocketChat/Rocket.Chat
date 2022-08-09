@@ -83,7 +83,7 @@ test.describe.serial('channel-management', () => {
 		await expect(page).toHaveURL(`/channel/NAME-EDITED-${targetChannel}`);
 	});
 
-	test('expect Notification Preferences to have all "default" preferences by default', async () => {
+	test('expect edit notification preferences of "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnMoreItems.click();
 		await poHomeChannel.tabs.btnNotificationPreferences.click();
@@ -91,5 +91,15 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.notificationPreferences.btnSave.click();
 
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
+	});
+
+	test('expect all notification preferences of "targetChannel" to be "Mentions"', async () => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.tabs.btnMoreItems.click();
+		await poHomeChannel.tabs.btnNotificationPreferences.click();
+
+		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Desktop')).toContainText('Mentions');
+		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Mobile')).toContainText('Mentions');
+		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Email')).toContainText('Mentions');
 	});
 });

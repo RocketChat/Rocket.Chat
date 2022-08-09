@@ -11,6 +11,10 @@ export class HomeFlextabNotificationPreferences {
 		return this.page.locator('//aside//button[contains(text(), "Save")]');
 	}
 
+	getPreferenceByDevice(device: string): Locator {
+		return this.page.locator(`//div[@id="${device}Alert"]`);
+	}
+
 	async selectDropdownById(text: string): Promise<void> {
 		await this.page.locator(`//div[@id="${text}"]`).click();
 	}
