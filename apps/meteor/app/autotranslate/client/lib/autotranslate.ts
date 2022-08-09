@@ -1,7 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import mem from 'mem';
-import { IRoom, ISubscription, ISupportedLanguage, ITranslatedMessage, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
+import type {
+	IRoom,
+	ISubscription,
+	ISupportedLanguage,
+	ITranslatedMessage,
+	IUser,
+	MessageAttachmentDefault,
+} from '@rocket.chat/core-typings';
 
 import { Subscriptions, Messages } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';

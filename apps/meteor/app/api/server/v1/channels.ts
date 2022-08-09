@@ -485,7 +485,7 @@ API.v1.addRoute(
 				fields: { 'u._id': 1 },
 			});
 
-			const members = subscriptions.fetch().map((s: ISubscription) => s.u && s.u._id);
+			const members = subscriptions.fetch().map((s: ISubscription) => s.u?._id);
 
 			const teamData = {
 				team: {

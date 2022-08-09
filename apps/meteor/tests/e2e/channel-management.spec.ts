@@ -8,8 +8,8 @@ test.describe.serial('channel-management', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 
-	test.beforeAll(async ({ browser }) => {
-		targetChannel = await createTargetChannel(browser);
+	test.beforeAll(async ({ api }) => {
+		targetChannel = await createTargetChannel(api);
 	});
 
 	test.beforeEach(async ({ page }) => {

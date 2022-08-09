@@ -1,8 +1,7 @@
 import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, IRocketChatRecord, ValueOf, AtLeast } from '@rocket.chat/core-typings';
 
-import type { IRoomTypeConfig, IRoomTypeServerDirectives } from '../../../definition/IRoomTypeConfig';
+import type { IRoomTypeConfig, IRoomTypeServerDirectives, RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { Users } from '../../../app/models/server';
-import { RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { settings } from '../../../app/settings/server';
 
