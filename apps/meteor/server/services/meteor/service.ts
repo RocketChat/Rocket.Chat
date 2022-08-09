@@ -7,7 +7,7 @@ import { Users } from '@rocket.chat/models';
 
 import { metrics } from '../../../app/metrics';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { AutoUpdateRecord, IMeteor } from '../../sdk/types/IMeteor';
+import type { AutoUpdateRecord, IMeteor } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
 import { Livechat } from '../../../app/livechat/server';
 import { settings } from '../../../app/settings/server';
@@ -21,7 +21,7 @@ import notifications from '../../../app/notifications/server/lib/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 import { use } from '../../../app/settings/server/Middleware';
-import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
+import type { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 
 type Callbacks = {
 	added(id: string, record: object): void;
