@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Rooms as RoomsRaw } from '@rocket.chat/models';
-import Ajv from 'ajv';
 
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models/server';
@@ -18,8 +17,6 @@ import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authoriz
 import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
-
-// -------------------------------
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -43,46 +40,6 @@ function findRoomByIdOrName({ params, checkedArchived = true }) {
 
 	return room;
 }
-
-const ajv = new Ajv({ coerceTypes: true });
-
-const GETRoomsNameExists = {
-	roomName: '',
-};
-
-const GETRoomsNameExistsSchema = {
-	type: 'object',
-	properties: {
-		roomName: {
-			type: 'string',
-		},
-	},
-	required: ['roomName'],
-	additionalProperties: false,
-};
-
-export const isGETRoomsNameExists = ajv.compile < GETRoomsNameExists > GETRoomsNameExistsSchema;
-
-API.v1.addRoute(
-	'rooms.nameExists',
-	{
-		authRequired: true,
-		validateParams: isGETRoomsNameExists,
-	},
-	{
-		get() {
-			console.log('conseguiu chegar no get() do rooms_exists');
-
-			const { roomName } = this.queryParams;
-
-			console.log(`consegui obter o roomName: ${roomName}`);
-
-			return API.v1.success({ exists: Meteor.call('roomNameExists', roomName) });
-		},
-	},
-);
-
-// -------------------------------
 
 API.v1.addRoute(
 	'rooms.get',
