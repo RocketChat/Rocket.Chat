@@ -1,4 +1,4 @@
-import { IOTRAlgorithm } from './IOTR';
+import type { IOTRAlgorithm } from './IOTR';
 
 const { subtle } = global.crypto;
 
