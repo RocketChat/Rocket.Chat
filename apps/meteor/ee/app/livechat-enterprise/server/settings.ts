@@ -1,10 +1,11 @@
+import { Settings } from '@rocket.chat/models';
+
 import { settingsRegistry } from '../../../../app/settings/server';
-import { Settings } from '../../../../app/models/server';
 
 const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
 const businessHoursEnabled = { _id: 'Livechat_enable_business_hours', value: true };
 
-export const createSettings = (): void => {
+export const createSettings = async (): Promise<void> => {
 	settingsRegistry.add('Livechat_abandoned_rooms_action', 'none', {
 		type: 'select',
 		group: 'Omnichannel',
@@ -206,11 +207,11 @@ export const createSettings = (): void => {
 		enableQuery: omnichannelEnabledQuery,
 	});
 
-	Settings.addOptionValueById('Livechat_Routing_Method', {
+	await Settings.addOptionValueById('Livechat_Routing_Method', {
 		key: 'Load_Balancing',
 		i18nLabel: 'Load_Balancing',
 	});
-	Settings.addOptionValueById('Livechat_Routing_Method', {
+	await Settings.addOptionValueById('Livechat_Routing_Method', {
 		key: 'Load_Rotation',
 		i18nLabel: 'Load_Rotation',
 	});

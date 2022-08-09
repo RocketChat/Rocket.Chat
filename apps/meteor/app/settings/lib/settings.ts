@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import { SettingValue } from '@rocket.chat/core-typings';
+import type { SettingValue } from '@rocket.chat/core-typings';
 
 export type SettingComposedValue<T extends SettingValue = SettingValue> = { key: string; value: T };
 export type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;
@@ -76,7 +76,7 @@ export class SettingsBase {
 			}, []);
 		}
 
-		return Meteor.settings && Meteor.settings[_id];
+		return Meteor.settings?.[_id];
 	}
 
 	set(_id: string, value: SettingValue, callback: () => void): void {
