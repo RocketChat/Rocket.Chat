@@ -1,9 +1,9 @@
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
-import { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
+import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 import { LivechatVisitors, Users, LivechatRooms } from '@rocket.chat/models';
-import { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { LivechatCustomField, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
 

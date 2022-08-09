@@ -1,10 +1,10 @@
-import { ICreatedRoom, IRoom } from '@rocket.chat/core-typings';
+import type { ICreatedRoom, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
 import { MatrixBridgedRoom, Subscriptions } from '../../../../../models/server';
 import { FederatedRoom } from '../../../domain/FederatedRoom';
 import { createRoom, addUserToRoom, removeUserFromRoom } from '../../../../../lib/server';
-import { FederatedUser } from '../../../domain/FederatedUser';
+import type { FederatedUser } from '../../../domain/FederatedUser';
 import { saveRoomName } from '../../../../../channel-settings/server/functions/saveRoomName';
 import { saveRoomTopic } from '../../../../../channel-settings/server/functions/saveRoomTopic';
 

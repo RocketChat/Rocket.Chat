@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatTag } from '@rocket.chat/models';
-import { ILivechatTag } from '@rocket.chat/core-typings';
+import type { ILivechatTag } from '@rocket.chat/core-typings';
 import type { FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';

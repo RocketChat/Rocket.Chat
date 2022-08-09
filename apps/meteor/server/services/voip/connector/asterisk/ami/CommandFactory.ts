@@ -6,7 +6,7 @@
  * e.g even though extension_info and extension_list are two different commands,
  * they will be executed by |PJSIPEndpoint| class.
  */
-import { Db } from 'mongodb';
+import type { Db } from 'mongodb';
 
 import { Command } from '../Command';
 import { Commands } from '../Commands';

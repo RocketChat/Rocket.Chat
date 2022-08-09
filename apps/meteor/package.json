@@ -105,6 +105,7 @@
 		"@types/jsdom": "^16.2.14",
 		"@types/jsdom-global": "^3.0.2",
 		"@types/jsrsasign": "^9.0.3",
+		"@types/later": "^1.2.7",
 		"@types/ldapjs": "^2.2.2",
 		"@types/less": "^3.0.3",
 		"@types/lodash.get": "^4.4.7",
