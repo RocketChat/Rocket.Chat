@@ -5,14 +5,8 @@ API.v1.addRoute(
 	'livechat/integrations.settings',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			const settings = Promise.await(
-				findIntegrationSettings({
-					userId: this.userId,
-				}),
-			);
-
-			return API.v1.success(settings);
+		async get() {
+			return API.v1.success(await findIntegrationSettings());
 		},
 	},
 );
