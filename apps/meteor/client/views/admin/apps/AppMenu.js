@@ -130,17 +130,18 @@ function AppMenu({ app, ...props }) {
 					action: handleSubscription,
 				},
 			}),
-			...(context !== 'details' && {
-				viewLogs: {
-					label: (
-						<Box>
-							<Icon name='list-alt' size='x16' marginInlineEnd='x4' />
-							{t('View_Logs')}
-						</Box>
-					),
-					action: handleViewLogs,
-				},
-			}),
+			...(context !== 'details' &&
+				app.installed && {
+					viewLogs: {
+						label: (
+							<Box>
+								<Icon name='list-alt' size='x16' marginInlineEnd='x4' />
+								{t('View_Logs')}
+							</Box>
+						),
+						action: handleViewLogs,
+					},
+				}),
 			...(app.installed &&
 				isAppEnabled && {
 					disable: {

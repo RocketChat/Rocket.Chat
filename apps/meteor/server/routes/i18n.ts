@@ -1,7 +1,7 @@
-import { ServerResponse } from 'http';
+import type { ServerResponse } from 'http';
 
 import { match } from 'path-to-regexp';
-import { IncomingMessage } from 'connect';
+import type { IncomingMessage } from 'connect';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 

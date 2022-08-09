@@ -2,6 +2,7 @@ import http from 'http';
 import fs from 'fs';
 import https from 'https';
 
+import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import AdmZip from 'adm-zip';
 import getFileType from 'file-type';
@@ -11,7 +12,7 @@ import { ImporterWebsocket } from './ImporterWebsocket';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
-import { Settings, Imports, ImportData } from '../../../models/server';
+import { Imports, ImportData } from '../../../models/server';
 import { Logger } from '../../../logger';
 import { ImportDataConverter } from './ImportDataConverter';
 import { t } from '../../../utils/server';
@@ -250,29 +251,29 @@ export class Base {
 
 		switch (step) {
 			case ProgressStep.IMPORTING_STARTED:
-				this.oldSettings.Accounts_AllowedDomainsList = Settings.findOneById('Accounts_AllowedDomainsList').value;
-				Settings.updateValueById('Accounts_AllowedDomainsList', '');
+				this.oldSettings.Accounts_AllowedDomainsList = Promise.await(Settings.findOneById('Accounts_AllowedDomainsList')).value;
+				Promise.await(Settings.updateValueById('Accounts_AllowedDomainsList', ''));
 
-				this.oldSettings.Accounts_AllowUsernameChange = Settings.findOneById('Accounts_AllowUsernameChange').value;
-				Settings.updateValueById('Accounts_AllowUsernameChange', true);
+				this.oldSettings.Accounts_AllowUsernameChange = Promise.await(Settings.findOneById('Accounts_AllowUsernameChange')).value;
+				Promise.await(Settings.updateValueById('Accounts_AllowUsernameChange', true));
 
-				this.oldSettings.FileUpload_MaxFileSize = Settings.findOneById('FileUpload_MaxFileSize').value;
-				Settings.updateValueById('FileUpload_MaxFileSize', -1);
+				this.oldSettings.FileUpload_MaxFileSize = Promise.await(Settings.findOneById('FileUpload_MaxFileSize')).value;
+				Promise.await(Settings.updateValueById('FileUpload_MaxFileSize', -1));
 
-				this.oldSettings.FileUpload_MediaTypeWhiteList = Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
-				Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
+				this.oldSettings.FileUpload_MediaTypeWhiteList = Promise.await(Settings.findOneById('FileUpload_MediaTypeWhiteList')).value;
+				Promise.await(Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*'));
 
-				this.oldSettings.FileUpload_MediaTypeBlackList = Settings.findOneById('FileUpload_MediaTypeBlackList').value;
-				Settings.updateValueById('FileUpload_MediaTypeBlackList', '');
+				this.oldSettings.FileUpload_MediaTypeBlackList = Promise.await(Settings.findOneById('FileUpload_MediaTypeBlackList')).value;
+				Promise.await(Settings.updateValueById('FileUpload_MediaTypeBlackList', ''));
 				break;
 			case ProgressStep.DONE:
 			case ProgressStep.ERROR:
 			case ProgressStep.CANCELLED:
-				Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList);
-				Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
-				Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
-				Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
-				Settings.updateValueById('FileUpload_MediaTypeBlackList', this.oldSettings.FileUpload_MediaTypeBlackList);
+				Promise.await(Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList));
+				Promise.await(Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange));
+				Promise.await(Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize));
+				Promise.await(Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList));
+				Promise.await(Settings.updateValueById('FileUpload_MediaTypeBlackList', this.oldSettings.FileUpload_MediaTypeBlackList));
 				break;
 		}
 

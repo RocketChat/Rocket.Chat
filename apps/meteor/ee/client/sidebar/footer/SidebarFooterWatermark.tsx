@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { ReactElement } from 'react';
-import { useQuery } from 'react-query';
 
 export const SidebarFooterWatermark = (): ReactElement | null => {
 	const t = useTranslation();

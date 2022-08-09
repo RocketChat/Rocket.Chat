@@ -134,7 +134,7 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.info': {
-		GET: (params: ({ teamId: string } | { teamName: string }) & {}) => {
+		GET: (params: ({ teamId: string } | { teamName: string }) & Record<string, string | number | boolean | object>) => {
 			teamInfo: Partial<ITeam>;
 		};
 	};

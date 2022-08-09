@@ -1,11 +1,12 @@
 import { EventEmitter } from 'events';
 
 import { Users } from '../../../../app/models/server';
-import { getBundleModules, isBundle, getBundleFromModule, BundleFeature } from './bundles';
+import type { BundleFeature } from './bundles';
+import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import { ILicense } from '../definitions/ILicense';
-import { ILicenseTag } from '../definitions/ILicenseTag';
+import type { ILicense } from '../definitions/ILicense';
+import type { ILicenseTag } from '../definitions/ILicenseTag';
 
 const EnterpriseLicenses = new EventEmitter();
 

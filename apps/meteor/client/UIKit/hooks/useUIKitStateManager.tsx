@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 
 const useUIKitStateManager = <S extends UiKitPayload>(initialState: S): S => {
-	const [state, setState] = useSafely(useState<S>(initialState));
+	const [state, setState] = useSafely(useState(initialState));
 
 	const { viewId } = state;
 

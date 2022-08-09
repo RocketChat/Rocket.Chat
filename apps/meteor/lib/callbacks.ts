@@ -1,4 +1,4 @@
-import Url from 'url';
+import type Url from 'url';
 
 import { Meteor } from 'meteor/meteor';
 import type { FilterOperators } from 'mongodb';
@@ -20,7 +20,7 @@ import type {
 import type { Logger } from '../app/logger/server';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import { getRandomId } from './random';
-import { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
+import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 
 enum CallbackPriority {
 	HIGH = -1000,
