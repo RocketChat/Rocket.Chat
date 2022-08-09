@@ -3,7 +3,7 @@ import type { Browser, Page } from '@playwright/test';
 import { HomeChannel } from '../page-objects';
 
 /**
- * createTargetChannel:
+ * createAuxContext:
  *  - Usefull to create a aux context for test will need many contexts
  */
 

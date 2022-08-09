@@ -21,7 +21,7 @@ test.describe('Livechat', () => {
 
 		test('expect send message to live chat', async () => {
 			await poLiveChat.btnOpenLiveChat('L').click();
-			await poLiveChat.doSendMessage(newUser);
+			await poLiveChat.sendMessage(newUser);
 		});
 
 		test.describe('Send message to online agent', () => {
@@ -38,7 +38,7 @@ test.describe('Livechat', () => {
 
 			test('expect message is received from agent and user ', async ({ page }) => {
 				await poLiveChat.btnOpenLiveChat('R').click();
-				await poLiveChat.doSendMessage(newUser, false);
+				await poLiveChat.sendMessage(newUser, false);
 
 				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
@@ -52,12 +52,14 @@ test.describe('Livechat', () => {
 			});
 		});
 	});
-	test.use({ storageState: 'user1-session.json' });
-	test('expect message is received from user', async ({ page }) => {
-		await page.goto('/');
-		const poHomeChannel = new HomeChannel(page);
-		await poHomeChannel.sidenav.openChat(newUser.name);
-		await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
-		await expect(poHomeChannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
+	test.describe('Verify message is received', () => {
+		test.use({ storageState: 'user1-session.json' });
+		test('expect message is received from user', async ({ page }) => {
+			await page.goto('/');
+			const poHomeChannel = new HomeChannel(page);
+			await poHomeChannel.sidenav.openChat(newUser.name);
+			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
+		});
 	});
 });
