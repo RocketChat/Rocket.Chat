@@ -1,3 +1,10 @@
+/**
+ * @type {(userPref: Pick<import('@rocket.chat/core-typings').IUser, 'settings'>) => {
+ * 	desktopPrefOrigin: 'user';
+ * 	mobilePrefOrigin: 'user';
+ * 	emailPrefOrigin: 'user';
+ * }}
+ */
 export const getDefaultSubscriptionPref = (userPref) => {
 	const subscription = {};
 

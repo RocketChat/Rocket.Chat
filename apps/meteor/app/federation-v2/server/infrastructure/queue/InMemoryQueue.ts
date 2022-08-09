@@ -1,10 +1,10 @@
-import * as fastq from 'fastq';
+import fastq from 'fastq';
 
 export class InMemoryQueue {
 	private instance: any;
 
-	public setHandler(handler: Function, concurrency: number): void {
-		this.instance = fastq.promise(handler as any, concurrency);
+	public setHandler<C, T = any, R = any>(handler: fastq.asyncWorker<C, T, R>, concurrency: number): void {
+		this.instance = fastq.promise(handler, concurrency);
 	}
 
 	public addToQueue(task: Record<string, any>): void {
