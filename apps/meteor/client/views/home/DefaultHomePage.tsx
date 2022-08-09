@@ -25,7 +25,7 @@ const DefaultHomePage = (): ReactElement => {
 		<Page data-qa='page-home' data-qa-type='default' backgroundColor='neutral-100'>
 			<HomePageHeader />
 			<PageScrollableContent>
-				<Box is='h1' fontScale='h1' marginBlock='x42' minHeight='x40'>
+				<Box is='h1' fontScale='h1' marginBlock='x42' minHeight='x40' data-qa-id='homepage-welcome-text'>
 					{t('Welcome_to', { Site_Name: workspaceName || 'Rocket.Chat' })}
 				</Box>
 				<Box is='h3' fontScale='h3' marginBlock='x16'>
