@@ -639,15 +639,13 @@ describe('[Groups]', function () {
 		request
 			.get(api('groups.list'))
 			.set(credentials)
-			.query({
-				roomId: group._id,
-			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count');
 				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('groups').and.to.be.an('array');
 			})
 			.end(done);
 	});
@@ -1614,6 +1612,66 @@ describe('[Groups]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', false);
+				})
+				.end(done);
+		});
+	});
+
+	context("Setting: 'Use Real Name': true", () => {
+		before(async () => {
+			await updateSetting('UI_Use_Real_Name', true);
+
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid: group._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+		after(async () => updateSetting('UI_Use_Real_Name', false));
+
+		it('/groups.list', (done) => {
+			request
+				.get(api('groups.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('groups').and.to.be.an('array');
+
+					const retGroup = res.body.groups.find(({ _id }) => _id === group._id);
+
+					expect(retGroup).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
+				})
+				.end(done);
+		});
+
+		it('/groups.listAll', (done) => {
+			request
+				.get(api('groups.listAll'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('groups').and.to.be.an('array');
+
+					const retGroup = res.body.groups.find(({ _id }) => _id === group._id);
+
+					expect(retGroup).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
 				.end(done);
 		});
