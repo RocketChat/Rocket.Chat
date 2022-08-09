@@ -1,16 +1,16 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { FederationRoomServiceSender } from '../../../../../app/federation-v2/server/application/RoomServiceSender';
 import { FederatedUser } from '../../../../../app/federation-v2/server/domain/FederatedUser';
-import { RocketChatSettingsAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatSettingsAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
 import { FederatedRoomEE } from '../domain/FederatedRoom';
 import { FederatedUserEE } from '../domain/FederatedUser';
-import { IFederationBridgeEE } from '../domain/IFederationBridge';
-import { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
-import { RocketChatRoomAdapterEE } from '../infrastructure/rocket-chat/adapters/Room';
-import { RocketChatUserAdapterEE } from '../infrastructure/rocket-chat/adapters/User';
-import {
+import type { IFederationBridgeEE } from '../domain/IFederationBridge';
+import type { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
+import type { RocketChatRoomAdapterEE } from '../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatUserAdapterEE } from '../infrastructure/rocket-chat/adapters/User';
+import type {
 	FederationBeforeAddUserToARoomDto,
 	FederationBeforeDirectMessageRoomCreationDto,
 	FederationCreateDirectMessageDto,

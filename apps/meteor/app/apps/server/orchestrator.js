@@ -60,7 +60,7 @@ export class AppServerOrchestrator {
 		this._converters.set('visitors', new AppVisitorsConverter(this));
 		this._converters.set('departments', new AppDepartmentsConverter(this));
 		this._converters.set('uploads', new AppUploadsConverter(this));
-		this._converters.set('videoConferences', new AppVideoConferencesConverter(this));
+		this._converters.set('videoConferences', new AppVideoConferencesConverter());
 
 		this._bridges = new RealAppBridges(this);
 

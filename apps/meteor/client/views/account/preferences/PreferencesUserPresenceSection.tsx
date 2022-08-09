@@ -1,10 +1,11 @@
 import { Accordion, Field, NumberInput, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 
 import { useForm } from '../../../hooks/useForm';
+import type { FormSectionProps } from './AccountPreferencesPage';
 
-const PreferencesUserPresenceSection = ({ onChange, commitRef, ...props }) => {
+const PreferencesUserPresenceSection = ({ onChange, commitRef, ...props }: FormSectionProps): ReactElement => {
 	const t = useTranslation();
 	const userEnableAutoAway = useUserPreference('enableAutoAway');
 	const userIdleTimeLimit = useUserPreference('idleTimeLimit');
@@ -17,7 +18,7 @@ const PreferencesUserPresenceSection = ({ onChange, commitRef, ...props }) => {
 		onChange,
 	);
 
-	const { enableAutoAway, idleTimeLimit } = values;
+	const { enableAutoAway, idleTimeLimit } = values as { enableAutoAway: boolean; idleTimeLimit: string | number | string[] };
 
 	const { handleEnableAutoAway, handleIdleTimeLimit } = handlers;
 

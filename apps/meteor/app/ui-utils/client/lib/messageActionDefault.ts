@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -16,7 +16,7 @@ import ReactionList from '../../../../client/views/room/modals/ReactionListModal
 import CreateDiscussion from '../../../../client/components/CreateDiscussion/CreateDiscussion';
 import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { ChatMessages } from '../../../ui/client';
+import type { ChatMessages } from '../../../ui/client';
 
 export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
 	// checks if the message is not already on the list
@@ -219,7 +219,7 @@ Meteor.startup(async function () {
 			modal.open(
 				{
 					title: TAPi18n.__('Report_this_message_question_mark'),
-					text: message.msg || (message.attachments && message.attachments[0]?.description) || message.file?.name,
+					text: message.msg || message.attachments?.[0]?.description || message.file?.name,
 					inputPlaceholder: TAPi18n.__('Why_do_you_want_to_report_question_mark'),
 					type: 'input',
 					showCancelButton: true,

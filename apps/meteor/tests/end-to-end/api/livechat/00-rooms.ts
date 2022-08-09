@@ -4,8 +4,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { expect } from 'chai';
-import { IOmnichannelRoom, ILivechatVisitor } from '@rocket.chat/core-typings';
-import { Response } from 'supertest';
+import type { IOmnichannelRoom, ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createVisitor, createLivechatRoom, createAgent, makeAgentAvailable } from '../../../data/livechat/rooms';

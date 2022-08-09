@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { IUIActionButton, UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
+import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
+import { UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
 
 import { APIClient } from '../../utils/client';
 import * as TabBar from './actionButtons/tabbar';
