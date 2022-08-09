@@ -3120,7 +3120,7 @@
   "Message_has_been_edited": "Die Nachricht wurde bearbeitet",
   "Message_has_been_edited_at": "Die Nachricht wurde am __date__ bearbeitet",
   "Message_has_been_edited_by": "Die Nachricht wurde editiert von __username__",
-  "Message_has_been_edited_by_at": "Die Nachricht wurde bearbeitet von __Benutzername__ am __datum__",
+  "Message_has_been_edited_by_at": null,
   "Message_has_been_pinned": "Nachricht wurde angeheftet",
   "Message_has_been_starred": "Nachricht wurde als Favorit gekennzeichnet",
   "Message_has_been_unpinned": "Nachricht wurde entpinnt",
