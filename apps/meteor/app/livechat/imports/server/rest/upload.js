@@ -1,21 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import filesize from 'filesize';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, Settings } from '@rocket.chat/models';
 
 import { settings } from '../../../../settings/server';
-import { Settings, LivechatRooms } from '../../../../models/server';
+import { LivechatRooms } from '../../../../models/server';
 import { fileUploadIsValidContentType } from '../../../../utils/server';
-import { FileUpload } from '../../../../file-upload';
+import { FileUpload } from '../../../../file-upload/server';
 import { API } from '../../../../api/server';
 import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData';
 
 let maxFileSize;
 
-settings.watch('FileUpload_MaxFileSize', function (value) {
+settings.watch('FileUpload_MaxFileSize', async function (value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
-		maxFileSize = Settings.findOneById('FileUpload_MaxFileSize').packageValue;
+		maxFileSize = await Settings.findOneById('FileUpload_MaxFileSize').packageValue;
 	}
 });
 

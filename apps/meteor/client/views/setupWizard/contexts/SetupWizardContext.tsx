@@ -53,7 +53,7 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 		},
 		registrationData: { cloudEmail: '', user_code: '', device_code: '' },
 	},
-	setSetupWizardData: (data: {}) => data,
+	setSetupWizardData: (data) => data,
 	loaded: false,
 	settings: [],
 	skipCloudRegistration: false,

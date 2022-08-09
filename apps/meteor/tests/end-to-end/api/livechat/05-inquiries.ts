@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'chai';
-import { Response } from 'supertest';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createAgent, createLivechatRoom, createVisitor, fetchInquiry, makeAgentAvailable } from '../../../data/livechat/rooms';

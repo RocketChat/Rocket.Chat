@@ -42,5 +42,8 @@ export const RouterContext = createContext<RouterContextValue>({
 	replaceRoute: () => undefined,
 	queryRouteParameter: () => [() => (): void => undefined, (): undefined => undefined],
 	queryQueryStringParameter: () => [() => (): void => undefined, (): undefined => undefined],
-	queryCurrentRoute: () => [() => (): void => undefined, (): [undefined, {}, {}, undefined] => [undefined, {}, {}, undefined]],
+	queryCurrentRoute: () => [
+		() => (): void => undefined,
+		(): [undefined, RouteParameters, QueryStringParameters, undefined] => [undefined, {}, {}, undefined],
+	],
 });

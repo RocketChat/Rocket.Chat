@@ -2,7 +2,7 @@
 
 import type { ILivechatAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { Response } from 'supertest';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createAgent, createManager } from '../../../data/livechat/rooms';

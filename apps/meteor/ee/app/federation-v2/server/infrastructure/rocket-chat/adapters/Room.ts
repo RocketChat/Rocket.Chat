@@ -1,4 +1,4 @@
-import { ICreatedRoom, IRoom } from '@rocket.chat/core-typings';
+import type { ICreatedRoom, IRoom } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import { RocketChatRoomAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Room';

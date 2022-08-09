@@ -134,7 +134,7 @@ export const uploadFileWithMessage = async (
 		uploads
 			.filter((u) => u.id === upload.id)
 			.forEach((u) => {
-				u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+				u.error = error.xhr?.responseJSON?.error || error.message;
 				u.percentage = 0;
 			});
 		if (!uploads.length) {
