@@ -9,7 +9,7 @@ import { createAgent, createManager } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser } from '../../../data/users.helper';
 
-describe('LIVECHAT - Agents', function () {
+describe.only('LIVECHAT - Agents', function () {
 	this.retries(0);
 	let agent: ILivechatAgent;
 	let manager: ILivechatAgent;
