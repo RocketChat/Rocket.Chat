@@ -9,10 +9,10 @@
  * happens in /etc/asterisk/manager.conf file.
  *
  */
-import { IConnection } from '../IConnection';
+import type { IConnection } from '../IConnection';
 import { Logger } from '../../../../../lib/logger/Logger';
-import { Command } from '../Command';
-import { CallbackContext } from './CallbackContext';
+import type { Command } from '../Command';
+import type { CallbackContext } from './CallbackContext';
 
 /**
  * Note : asterisk-manager does not provide any types.

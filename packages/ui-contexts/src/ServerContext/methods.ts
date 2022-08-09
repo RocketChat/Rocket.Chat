@@ -1,7 +1,13 @@
 import type { IRoom, ISetting, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult } from 'mongodb';
 
-import type { AddWebdavAccountMethod } from './methods/addWebdavAccount';
+import type {
+	AddWebdavAccount,
+	GetWebdavFileList,
+	UploadFileToWebdav,
+	RemoveWebdavAccount,
+	GetWebdavFilePreview,
+	GetFileFromWebdav,
+} from './methods/webdav';
 import type { FollowMessageMethod } from './methods/followMessage';
 import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import type { JoinRoomMethod } from './methods/joinRoom';
@@ -11,7 +17,6 @@ import type { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
 import type { SaveSettingsMethod } from './methods/saveSettings';
 import type { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
 import type { UnfollowMessageMethod } from './methods/unfollowMessage';
-import type { UploadFileToWebdav } from './methods/uploadFileToWebdav';
 
 // TODO: frontend chapter day - define methods
 
@@ -25,7 +30,7 @@ export interface ServerMethods {
 	'addOAuthApp': (...args: any[]) => any;
 	'addOAuthService': (...args: any[]) => any;
 	'addUsersToRoom': (...args: any[]) => any;
-	'addWebdavAccount': AddWebdavAccountMethod;
+	'addWebdavAccount': AddWebdavAccount;
 	'apps/go-enable': (...args: any[]) => any;
 	'apps/is-enabled': (...args: any[]) => any;
 	'authorization:addPermissionToRole': (...args: any[]) => any;
@@ -66,12 +71,15 @@ export interface ServerMethods {
 	'eraseRoom': (...args: any[]) => any;
 	'followMessage': FollowMessageMethod;
 	'getAvatarSuggestion': (...args: any[]) => any;
+	'getFileFromWebdav': GetFileFromWebdav;
 	'getSetupWizardParameters': () => {
 		settings: ISetting[];
 		serverAlreadyRegistered: boolean;
 		hasAdmin: boolean;
 	};
 	'getUsersOfRoom': (...args: any[]) => any;
+	'getWebdavFileList': GetWebdavFileList;
+	'getWebdavFilePreview': GetWebdavFilePreview;
 	'hideRoom': (...args: any[]) => any;
 	'ignoreUser': (...args: any[]) => any;
 	'insertOrUpdateSound': (args: { previousName?: string; name?: string; _id?: string; extension: string }) => string;
@@ -89,7 +97,7 @@ export interface ServerMethods {
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
-	'removeWebdavAccount': (accountId: string) => DeleteResult;
+	'removeWebdavAccount': RemoveWebdavAccount;
 	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
 	'requestDataDownload': (...args: any[]) => any;

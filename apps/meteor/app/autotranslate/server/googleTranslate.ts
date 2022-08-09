@@ -5,7 +5,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
-import {
+import type {
 	IMessage,
 	IProviderMetadata,
 	ISupportedLanguage,

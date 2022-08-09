@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { UploadBridge } from '@rocket.chat/apps-engine/server/bridges/UploadBridge';
-import { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
-import { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 
 import { FileUpload } from '../../../file-upload/server';
 import { determineFileType } from '../../lib/misc/determineFileType';
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	if (details.visitorToken) {

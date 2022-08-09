@@ -1,16 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-import {
-	_generateStampedLoginToken,
-	_hashStampedToken,
-	_hashLoginToken,
-	_tokenExpiration,
-	validatePassword,
-	IHashedStampedToken,
-} from './lib/utils';
+import type { IHashedStampedToken } from './lib/utils';
+import { _generateStampedLoginToken, _hashStampedToken, _hashLoginToken, _tokenExpiration, validatePassword } from './lib/utils';
 import { getCollection, Collections } from '../mongo';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
-import { IAccount, ILoginResult } from '../../../../server/sdk/types/IAccount';
+import type { IAccount, ILoginResult } from '../../../../server/sdk/types/IAccount';
 import { MeteorError } from '../../../../server/sdk/errors';
 
 const saveSession = async (uid: string, newToken: IHashedStampedToken): Promise<void> => {

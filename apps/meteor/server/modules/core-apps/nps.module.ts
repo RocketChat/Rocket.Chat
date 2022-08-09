@@ -1,4 +1,4 @@
-import { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
+import type { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
 import { Banner, NPS } from '../../sdk';
 import { createModal } from './nps/createModal';
 
