@@ -29,12 +29,12 @@ API.v1.addRoute(
 			const { text } = this.queryParams;
 
 			if (this.urlParams.type === 'agent') {
-				if (hasAtLeastOnePermission(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact'])) {
+				if (!(await hasAtLeastOnePermission(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
 					return API.v1.unauthorized();
 				}
 
 				return API.v1.success(
-					findAgents({
+					await findAgents({
 						userId: this.userId,
 						text,
 						pagination: {
@@ -51,7 +51,7 @@ API.v1.addRoute(
 				}
 
 				return API.v1.success(
-					findManagers({
+					await findManagers({
 						userId: this.userId,
 						text,
 						pagination: {

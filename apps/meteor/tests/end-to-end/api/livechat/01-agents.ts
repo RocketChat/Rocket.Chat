@@ -9,7 +9,7 @@ import { createAgent, createManager } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser } from '../../../data/users.helper';
 
-describe.only('LIVECHAT - Agents', function () {
+describe('LIVECHAT - Agents', function () {
 	this.retries(0);
 	let agent: ILivechatAgent;
 	let manager: ILivechatAgent;
@@ -287,11 +287,7 @@ describe.only('LIVECHAT - Agents', function () {
 					.get(api(`livechat/agents/${agent._id}/departments`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
-					})
+					.expect(403)
 					.end(done);
 			});
 		});
