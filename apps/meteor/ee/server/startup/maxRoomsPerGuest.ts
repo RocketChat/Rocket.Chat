@@ -8,7 +8,7 @@ import { Subscriptions } from '../../../app/models/server';
 
 callbacks.add(
 	'beforeAddedToRoom',
-	({ _id }: { _id: IUser['_id'] }) => {
+	({ user }) => {
 		if (user.roles.includes('guest')) {
 			const totalSubscriptions = Subscriptions.findByUserId(user._id).count();
 
