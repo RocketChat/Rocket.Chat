@@ -1,4 +1,7 @@
 {
+  "1": "1",
+  "2": "2",
+  "3": "3",
   "403": "Forbidden",
   "500": "Internal Server Error",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ empty rooms will be removed automatically.",
