@@ -2019,6 +2019,19 @@ describe('[Channels]', function () {
 			await updateSetting('UI_Use_Real_Name', true);
 
 			await request
+				.post(api('channels.join'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id', channel._id);
+				});
+
+			await request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -2033,7 +2046,22 @@ describe('[Channels]', function () {
 					expect(res.body).to.have.property('success', true);
 				});
 		});
-		after(async () => updateSetting('UI_Use_Real_Name', false));
+		after(async () => {
+			await updateSetting('UI_Use_Real_Name', false);
+
+			await request
+				.post(api('channels.leave'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id', channel._id);
+				});
+		});
 
 		it('/channels.list', (done) => {
 			request
