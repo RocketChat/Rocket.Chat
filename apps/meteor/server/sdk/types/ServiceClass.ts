@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events';
 
 import { asyncLocalStorage } from '..';
-import { IBroker, IBrokerNode } from './IBroker';
-import { EventSignatures } from '../lib/Events';
+import type { IBroker, IBrokerNode } from './IBroker';
+import type { EventSignatures } from '../lib/Events';
 
 export interface IServiceContext {
 	id: string; // Context ID

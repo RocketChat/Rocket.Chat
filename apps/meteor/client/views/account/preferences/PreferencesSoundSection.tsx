@@ -1,14 +1,20 @@
-import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Tooltip, Box } from '@rocket.chat/fuselage';
+import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Tooltip, Box, SelectOption } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, ReactElement } from 'react';
 
 import { CustomSounds } from '../../../../app/custom-sounds/client';
 import { useForm } from '../../../hooks/useForm';
+import { FormSectionProps } from './AccountPreferencesPage';
 
-const useCustomSoundsOptions = () =>
-	useMemo(() => CustomSounds && CustomSounds.getList && CustomSounds.getList().map(({ _id, name }) => [_id, name]), []);
+type Values = {
+	newRoomNotification: string;
+	newMessageNotification: string;
+	muteFocusedConversations: boolean;
+	notificationsSoundVolume: number;
+};
+const useCustomSoundsOptions = (): SelectOption[] => useMemo(() => CustomSounds?.getList?.().map(({ _id, name }) => [_id, name]), []);
 
-const PreferencesSoundSection = ({ onChange, commitRef, ...props }) => {
+const PreferencesSoundSection = ({ onChange, commitRef, ...props }: FormSectionProps): ReactElement => {
 	const t = useTranslation();
 
 	const soundsList = useCustomSoundsOptions();
@@ -22,7 +28,7 @@ const PreferencesSoundSection = ({ onChange, commitRef, ...props }) => {
 
 	const { values, handlers, commit } = useForm(settings, onChange);
 
-	const { newRoomNotification, newMessageNotification, muteFocusedConversations, notificationsSoundVolume } = values;
+	const { newRoomNotification, newMessageNotification, muteFocusedConversations, notificationsSoundVolume } = values as Values;
 
 	const { handleNewRoomNotification, handleNewMessageNotification, handleMuteFocusedConversations, handleNotificationsSoundVolume } =
 		handlers;
@@ -84,7 +90,7 @@ const PreferencesSoundSection = ({ onChange, commitRef, ...props }) => {
 									min='0'
 									max='100'
 								/>
-								<Tooltip placement='right-left' mis='x8'>
+								<Tooltip placement='right' mis='x8'>
 									{notificationsSoundVolume}
 								</Tooltip>
 							</Field.Row>

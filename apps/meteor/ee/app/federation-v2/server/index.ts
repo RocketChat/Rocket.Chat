@@ -21,7 +21,7 @@ const runFederationEE = async (): Promise<void> => {
 	await federationEE.start();
 };
 
-let cancelSettingsObserverEE: Function;
+let cancelSettingsObserverEE: () => void;
 
 onToggledFeature('federation', {
 	up: async () => {

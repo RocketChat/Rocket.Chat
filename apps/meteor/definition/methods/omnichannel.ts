@@ -18,9 +18,9 @@ declare module '@rocket.chat/ui-contexts' {
 					subscribed: boolean;
 					id: string;
 			  }[])
-			| ((...args: [{ action: 'subscribe' | 'unsubscribe'; page: string }]) => {})
+			| ((...args: [{ action: 'subscribe' | 'unsubscribe'; page: string }]) => void)
 			| ((...args: [{ action: 'enable' }]) => { url: string } | undefined)
-			| ((...args: [{ action: 'disable' }]) => {});
+			| ((...args: [{ action: 'disable' }]) => void);
 		'livechat:getAgentOverviewData': (...args: any[]) => any;
 		'livechat:getAnalyticsChartData': (...args: any[]) => any;
 		'livechat:getAnalyticsOverviewData': (...args: any[]) => any;

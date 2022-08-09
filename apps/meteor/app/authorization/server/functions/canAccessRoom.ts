@@ -1,5 +1,5 @@
 import { Authorization } from '../../../../server/sdk';
-import { IAuthorization } from '../../../../server/sdk/types/IAuthorization';
+import type { IAuthorization } from '../../../../server/sdk/types/IAuthorization';
 
 export const canAccessRoomAsync = Authorization.canAccessRoom;
 export const canAccessRoomIdAsync = Authorization.canAccessRoomId;

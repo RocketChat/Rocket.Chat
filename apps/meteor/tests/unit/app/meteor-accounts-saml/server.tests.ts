@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 
-import '../lib/server.mocks';
 import { AuthorizeRequest } from '../../../../app/meteor-accounts-saml/server/lib/generators/AuthorizeRequest';
 import { LogoutRequest } from '../../../../app/meteor-accounts-saml/server/lib/generators/LogoutRequest';
 import { LogoutResponse } from '../../../../app/meteor-accounts-saml/server/lib/generators/LogoutResponse';
@@ -35,6 +34,8 @@ import {
 	privateKeyCert,
 	privateKey,
 } from './data';
+import { isTruthy } from '../../../../lib/isTruthy';
+import '../lib/server.mocks';
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
@@ -855,8 +856,7 @@ describe('SAML', () => {
 
 				// Workaround because chai doesn't handle Maps very well
 				for (const [key, value] of userObject.attributeList) {
-					// @ts-ignore
-					expect(value).to.be.equal(profile[key]);
+					expect(value).to.be.equal(profile[key as keyof typeof profile]);
 				}
 			});
 
@@ -933,7 +933,10 @@ describe('SAML', () => {
 				SAMLUtils.updateGlobalSettings(globalSettings);
 				SAMLUtils.relayState = '[RelayState]';
 
-				// @ts-ignore
+				if (!isTruthy(profile)) {
+					throw new Error('Profile is null');
+				}
+
 				const userObject = SAMLUtils.mapProfileToUserObject(profile);
 
 				expect(userObject).to.be.an('object');

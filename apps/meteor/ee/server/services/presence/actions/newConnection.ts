@@ -1,5 +1,5 @@
 import { getCollection, Collections } from '../../mongo';
-import { IServiceContext } from '../../../../../server/sdk/types/ServiceClass';
+import type { IServiceContext } from '../../../../../server/sdk/types/ServiceClass';
 
 const status = 'online';
 

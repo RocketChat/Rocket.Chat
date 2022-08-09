@@ -1,6 +1,6 @@
 import { PushToken } from '@rocket.chat/models';
 
-import { IPushService } from '../../sdk/types/IPushService';
+import type { IPushService } from '../../sdk/types/IPushService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 
 export class PushService extends ServiceClassInternal implements IPushService {

@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 export class HomeContent {
 	private readonly page: Page;
