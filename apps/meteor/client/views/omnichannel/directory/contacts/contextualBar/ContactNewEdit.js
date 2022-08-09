@@ -1,7 +1,7 @@
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
@@ -47,7 +47,11 @@ function ContactNewEdit({ id, data, close }) {
 
 	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(getInitialValues(data));
+	const initialValue = getInitialValues(data);
+
+	const { username: initialUsername } = initialValue;
+
+	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(initialValue);
 
 	const eeForms = useFormsSubscription();
 
@@ -73,6 +77,7 @@ function ContactNewEdit({ id, data, close }) {
 	const [emailError, setEmailError] = useState();
 	const [phoneError, setPhoneError] = useState();
 	const [customFieldsError, setCustomFieldsError] = useState([]);
+	const [userId, setUserId] = useState('no-agent-selected');
 
 	const { value: allCustomFields, phase: state } = useEndpointData('/v1/livechat/custom-fields');
 
@@ -99,6 +104,7 @@ function ContactNewEdit({ id, data, close }) {
 	const saveContact = useEndpoint('POST', '/v1/omnichannel/contact');
 	const emailAlreadyExistsAction = useEndpoint('GET', '/v1/omnichannel/contact.search');
 	const phoneAlreadyExistsAction = useEndpoint('GET', '/v1/omnichannel/contact.search');
+	const getUserData = useEndpoint('GET', '/v1/users.info');
 
 	const checkEmailExists = useMutableCallback(async () => {
 		if (!validateEmail(email)) {
@@ -134,6 +140,28 @@ function ContactNewEdit({ id, data, close }) {
 		!phone && setPhoneError(null);
 	}, [phone]);
 
+	useEffect(() => {
+		if (!initialUsername) {
+			return;
+		}
+
+		getUserData({ username: initialUsername }).then(({ user }) => {
+			setUserId(user._id);
+		});
+	}, [getUserData, initialUsername]);
+
+	const handleContactManagerChange = useMutableCallback(async (userId) => {
+		setUserId(userId);
+		if (userId === 'no-agent-selected') {
+			handleUsername('');
+			return;
+		}
+
+		getUserData({ userId }).then(({ user }) => {
+			handleUsername(user.username);
+		});
+	});
+
 	const handleSave = useMutableCallback(async (e) => {
 		e.preventDefault();
 		let error = false;
@@ -152,18 +180,13 @@ function ContactNewEdit({ id, data, close }) {
 
 		const payload = {
 			name,
+			phone,
+			email,
+			customFields: livechatData || {},
+			token: token || createToken(),
+			...(username && { contactManager: { username } }),
+			...(id && { _id: id }),
 		};
-		payload.phone = phone;
-		payload.email = email;
-		payload.customFields = livechatData || {};
-		payload.contactManager = username ? { username } : {};
-
-		if (id) {
-			payload._id = id;
-			payload.token = token;
-		} else {
-			payload.token = createToken();
-		}
 
 		try {
 			await saveContact(payload);
@@ -213,7 +236,7 @@ function ContactNewEdit({ id, data, close }) {
 						setCustomFieldsError={setCustomFieldsError}
 					/>
 				)}
-				{ContactManager && <ContactManager value={username} handler={handleUsername} />}
+				{ContactManager && <ContactManager value={userId} handler={handleContactManagerChange} />}
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>

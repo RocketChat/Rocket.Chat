@@ -9,7 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
-import { Users as UsersRaw, LivechatVisitors } from '@rocket.chat/models';
+import { Users as UsersRaw, LivechatVisitors, Settings } from '@rocket.chat/models';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -22,7 +22,6 @@ import {
 	LivechatRooms,
 	Messages,
 	Subscriptions,
-	Settings,
 	Rooms,
 	LivechatDepartmentAgents,
 	LivechatDepartment,
@@ -371,7 +370,7 @@ export const Livechat = {
 			});
 		}
 
-		const user = await LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+		const user = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 		if (user) {
 			return LivechatVisitors.updateById(user._id, updateUser);
 		}
@@ -538,39 +537,41 @@ export const Livechat = {
 	getInitSettings() {
 		const rcSettings = {};
 
-		Settings.findNotHiddenPublic([
-			'Livechat_title',
-			'Livechat_title_color',
-			'Livechat_enable_message_character_limit',
-			'Livechat_message_character_limit',
-			'Message_MaxAllowedSize',
-			'Livechat_enabled',
-			'Livechat_registration_form',
-			'Livechat_allow_switching_departments',
-			'Livechat_offline_title',
-			'Livechat_offline_title_color',
-			'Livechat_offline_message',
-			'Livechat_offline_success_message',
-			'Livechat_offline_form_unavailable',
-			'Livechat_display_offline_form',
-			'Omnichannel_call_provider',
-			'Language',
-			'Livechat_enable_transcript',
-			'Livechat_transcript_message',
-			'Livechat_fileupload_enabled',
-			'FileUpload_Enabled',
-			'Livechat_conversation_finished_message',
-			'Livechat_conversation_finished_text',
-			'Livechat_name_field_registration_form',
-			'Livechat_email_field_registration_form',
-			'Livechat_registration_form_message',
-			'Livechat_force_accept_data_processing_consent',
-			'Livechat_data_processing_consent_text',
-			'Livechat_show_agent_info',
-			'Livechat_clear_local_storage_when_chat_ended',
-		]).forEach((setting) => {
-			rcSettings[setting._id] = setting.value;
-		});
+		Promise.await(
+			Settings.findNotHiddenPublic([
+				'Livechat_title',
+				'Livechat_title_color',
+				'Livechat_enable_message_character_limit',
+				'Livechat_message_character_limit',
+				'Message_MaxAllowedSize',
+				'Livechat_enabled',
+				'Livechat_registration_form',
+				'Livechat_allow_switching_departments',
+				'Livechat_offline_title',
+				'Livechat_offline_title_color',
+				'Livechat_offline_message',
+				'Livechat_offline_success_message',
+				'Livechat_offline_form_unavailable',
+				'Livechat_display_offline_form',
+				'Omnichannel_call_provider',
+				'Language',
+				'Livechat_enable_transcript',
+				'Livechat_transcript_message',
+				'Livechat_fileupload_enabled',
+				'FileUpload_Enabled',
+				'Livechat_conversation_finished_message',
+				'Livechat_conversation_finished_text',
+				'Livechat_name_field_registration_form',
+				'Livechat_email_field_registration_form',
+				'Livechat_registration_form_message',
+				'Livechat_force_accept_data_processing_consent',
+				'Livechat_data_processing_consent_text',
+				'Livechat_show_agent_info',
+				'Livechat_clear_local_storage_when_chat_ended',
+			]).forEach((setting) => {
+				rcSettings[setting._id] = setting.value;
+			}),
+		);
 
 		rcSettings.Livechat_history_monitor_type = settings.get('Livechat_history_monitor_type');
 
@@ -1077,6 +1078,10 @@ export const Livechat = {
 				'error-fallback-department-circular',
 				'Cannot save department. Circular reference between fallback department and department',
 			);
+		}
+
+		if (fallbackForwardDepartment && !LivechatDepartment.findOneById(fallbackForwardDepartment)) {
+			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
 		}
 
 		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
