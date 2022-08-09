@@ -7,6 +7,7 @@ import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { Emitter } from '@rocket.chat/emitter';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
+import { waitUntilWrapperExists } from './waitUntilWrapperExists';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from '../../../../client/lib/utils/renderMessageBody';
@@ -38,26 +39,6 @@ export const normalizeThreadMessage = ({ ...message }) => {
 			return escapeHTML(attachment.title);
 		}
 	}
-};
-
-export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper') => {
-	const element = document.querySelector(selector);
-	if (element?.length) {
-		return element;
-	}
-	return new Promise((resolve) => {
-		const observer = new MutationObserver(function (mutations, obs) {
-			const element = document.querySelector(selector);
-			if (element) {
-				obs.disconnect(); // stop observing
-				return resolve(element);
-			}
-		});
-		observer.observe(document, {
-			childList: true,
-			subtree: true,
-		});
-	});
 };
 
 export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatMessage) => {
