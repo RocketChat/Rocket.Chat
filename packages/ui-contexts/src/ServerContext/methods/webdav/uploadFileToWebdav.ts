@@ -1,6 +1,6 @@
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
 
-import type { TranslationKey } from '../../TranslationContext';
+import type { TranslationKey } from '../../../TranslationContext';
 
 export type UploadFileToWebdav = (
 	accountId: IWebdavAccount['_id'],
