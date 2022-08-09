@@ -29,7 +29,7 @@ const RadioDropDown: FC<RadioDropDownProps & Partial<ComponentProps<typeof Selec
 
 	return (
 		<>
-			<RadioDropDownAnchor ref={reference} onClick={toggleCollapsed as any} group={group} {...props} />
+			<RadioDropDownAnchor ref={reference} group={group} onClick={toggleCollapsed as any} {...props} />
 			{collapsed && (
 				<DropDownListWrapper ref={reference} onClose={onClose}>
 					<RadioButtonList group={group} onSelected={onSelected} />

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { UAParser } from 'ua-parser-js';
-import { ISocketConnection, IUser } from '@rocket.chat/core-typings';
+import type { ISocketConnection, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import * as Mailer from '../../../../app/mailer';

@@ -1,12 +1,12 @@
 import { Random } from 'meteor/random';
 import { UserPresence } from 'meteor/konecty:user-presence';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
-import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
 import { Subscriptions, Users as UsersRaw } from '@rocket.chat/models';
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppUserBridge extends UserBridge {
 	// eslint-disable-next-line no-empty-function
