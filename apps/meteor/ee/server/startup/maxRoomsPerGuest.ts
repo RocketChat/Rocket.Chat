@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IUser } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../lib/callbacks';
 import { getMaxRoomsPerGuest } from '../../app/license/server/license';
