@@ -45,7 +45,10 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 			dispatchToastMessage({ type: 'success', message: t('Cloud_License_applied_successfully') });
 			onClose();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			dispatchToastMessage({
+				type: 'error',
+				message: error && typeof error === 'object' && 'error' in error ? (error as any).error : String(error),
+			});
 			setIsUpdating(false);
 			setStatus('invalid');
 		}
