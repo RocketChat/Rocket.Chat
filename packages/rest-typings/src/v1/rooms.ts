@@ -507,7 +507,6 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.nameExists': {
 		GET: (params: { roomName: string }) => {
-			success: boolean;
 			exists: boolean;
 		};
 	};

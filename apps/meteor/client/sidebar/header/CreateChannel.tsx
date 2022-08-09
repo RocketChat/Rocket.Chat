@@ -83,11 +83,9 @@ const CreateChannel = ({
 			if (!allowSpecialNames && !channelNameRegex.test(name)) {
 				return setNameError(t('error-invalid-name'));
 			}
-			const isNotAvailable = await channelNameExists({ roomName: name });
+			const { exists } = await channelNameExists({ roomName: name });
 
-			console.log(isNotAvailable);
-
-			if (isNotAvailable) {
+			if (exists) {
 				return setNameError(t('Channel_already_exist', name));
 			}
 		},
