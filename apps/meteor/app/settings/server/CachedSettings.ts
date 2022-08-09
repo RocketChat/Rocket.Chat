@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 import _ from 'underscore';
-import { ISetting, SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
 
@@ -13,7 +13,10 @@ type SettingsConfig = {
 type OverCustomSettingsConfig = Partial<SettingsConfig>;
 
 export interface ICachedSettings {
-	initilized(): void;
+	/*
+	 * @description: The settings object as ready
+	 */
+	initialized(): void;
 
 	has(_id: ISetting['_id']): boolean;
 
@@ -89,13 +92,13 @@ export class CachedSettings
 	/**
 	 * The settings object as ready
 	 */
-	initilized(): void {
+	initialized(): void {
 		if (this.ready) {
 			return;
 		}
 		this.ready = true;
 		this.emit('ready');
-		SystemLogger.debug('Settings initalized');
+		SystemLogger.debug('Settings initialized');
 	}
 
 	/**

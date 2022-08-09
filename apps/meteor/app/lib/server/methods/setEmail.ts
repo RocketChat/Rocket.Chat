@@ -22,7 +22,7 @@ Meteor.methods({
 			});
 		}
 
-		if (user.emails && user.emails[0] && user.emails[0].address === email) {
+		if (user.emails?.[0] && user.emails[0].address === email) {
 			return email;
 		}
 

@@ -1,4 +1,4 @@
-import { Browser, Page } from '@playwright/test';
+import type { Browser, Page } from '@playwright/test';
 
 import { expect, test } from './utils/test';
 import { HomeChannel } from './page-objects';
@@ -18,8 +18,8 @@ test.describe.serial('Messaging', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 
-	test.beforeAll(async ({ browser }) => {
-		targetChannel = await createTargetChannel(browser);
+	test.beforeAll(async ({ api }) => {
+		targetChannel = await createTargetChannel(api);
 	});
 
 	test.beforeEach(async ({ page }) => {

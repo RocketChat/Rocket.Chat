@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import { expect } from 'chai';
 
-import { App } from '../../../../../../../client/views/admin/apps/types';
+import type { App } from '../../../../../../../client/views/admin/apps/types';
 import { filterAppsByCategories } from '../../../../../../../client/views/admin/apps/helpers/filterAppsByCategories';
 
 describe('filterAppsByCategories', () => {
