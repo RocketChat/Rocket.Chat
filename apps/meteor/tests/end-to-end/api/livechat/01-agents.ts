@@ -58,6 +58,7 @@ describe('LIVECHAT - Agents', function () {
 		it('should return an array of agents', (done) => {
 			updatePermission('edit-omnichannel-contact', ['admin'])
 				.then(() => updatePermission('transfer-livechat-guest', ['admin']))
+				.then(() => updatePermission('manage-livechat-agents', ['admin']))
 				.then(() => {
 					request
 						.get(api('livechat/users/agent'))
