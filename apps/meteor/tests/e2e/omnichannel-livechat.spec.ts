@@ -1,67 +1,63 @@
 import { faker } from '@faker-js/faker';
+import type { Page } from '@playwright/test';
 
 import { test, expect } from './utils/test';
-import { OmnichannelLiveChat } from './page-objects';
+import { HomeChannel, OmnichannelLiveChat } from './page-objects';
 import { createAuxContext } from './utils';
 
-test.describe.only('Livechat', () => {
-	let poLiveChat: OmnichannelLiveChat;
+const newUser = {
+	name: faker.name.firstName(),
+	email: faker.internet.email(),
+};
+test.describe('Livechat', () => {
+	test.describe('Send message from user', () => {
+		let poLiveChat: OmnichannelLiveChat;
 
-	test.beforeEach(async ({ page }) => {
-		await page.goto('/livechat');
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/livechat');
 
-		poLiveChat = new OmnichannelLiveChat(page);
-	});
-
-	test.skip('expect send message to live chat', async () => {
-		const newUser = {
-			name: faker.name.firstName(),
-			email: faker.internet.email(),
-		};
-		await poLiveChat.btnOpenLiveChat('L').click();
-		await poLiveChat.doSendMessage(newUser);
-	});
-
-	test.describe('Send message to online agent', () => {
-		let auxContext: any;
-
-		test.beforeAll(async ({ browser, api }) => {
-			await api.post('/livechat/users/agent', { username: 'user1' });
-
-			auxContext = await createAuxContext(browser, 'user1-session.json');
+			poLiveChat = new OmnichannelLiveChat(page);
 		});
 
-		test('expect message is received from agent and user ', async ({ page }) => {
-			const newUser = {
-				name: faker.name.firstName(),
-				email: faker.internet.email(),
-			};
-
-			await poLiveChat.btnOpenLiveChat('R').click();
-			await poLiveChat.doSendMessage(newUser, false);
-
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
-			auxContext.poHomeChannel.sidenav.openChat(newUser.name);
-			await auxContext.poHomeChannel.content.sendMessage('this_a_test_message_from_agent');
-
-			await expect(auxContext.poHomeChannel.content.lastUserMessage).toBeVisible();
-			await expect(auxContext.poHomeChannel.content.lastUserMessage).toBeVisible();
-			await expect(page.locator('div >>text="this_a_test_message_from_user"')).toBeVisible();
-			await expect(page.locator('div >>text="this_a_test_message_from_agent"')).toBeVisible();
+		test('expect send message to live chat', async () => {
+			await poLiveChat.btnOpenLiveChat('L').click();
+			await poLiveChat.doSendMessage(newUser);
 		});
 
-		test('expect after user close live chat screen dont show messages', async ({ page }) => {
-			await poLiveChat.btnOpenLiveChat('R').click();
-			await expect(page.locator('[contenteditable="true"]')).not.toBeVisible();
-		});
+		test.describe('Send message to online agent', () => {
+			let poAuxContext: { page: Page; poHomeChannel: HomeChannel };
+			test.beforeAll(async ({ browser, api }) => {
+				await api.post('/livechat/users/agent', { username: 'user1' });
 
-		test.describe.skip('[Not allow close]', () => {
-			test.skip(!true, 'verify agent is not allowed to close chat');
+				poAuxContext = await createAuxContext(browser, 'user1-session.json');
+			});
 
-			test.beforeEach(async () => {
-				//
+			test.afterAll(async () => {
+				await poAuxContext.page.close();
+			});
+
+			test('expect message is received from agent and user ', async ({ page }) => {
+				await poLiveChat.btnOpenLiveChat('R').click();
+				await poLiveChat.doSendMessage(newUser, false);
+
+				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
+				await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+				await expect(page.locator('div >>text="this_a_test_message_from_user"')).toBeVisible();
+			});
+
+			test('expect after user close live chat screen dont show messages', async ({ page }) => {
+				await poLiveChat.btnOpenLiveChat('R').click();
+				await expect(page.locator('[contenteditable="true"]')).not.toBeVisible();
 			});
 		});
+	});
+	test.use({ storageState: 'user1-session.json' });
+	test('expect message is received from user', async ({ page }) => {
+		await page.goto('/');
+		const poHomeChannel = new HomeChannel(page);
+		await poHomeChannel.sidenav.openChat(newUser.name);
+		await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
+		await expect(poHomeChannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 	});
 });

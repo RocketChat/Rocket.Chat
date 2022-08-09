@@ -11,8 +11,5 @@ export const createAuxContext = async (browser: Browser, storageState: string): 
 	const page = await browser.newPage({ storageState });
 	const poHomeChannel = new HomeChannel(page);
 	await page.goto('/');
-	await page.waitForTimeout(1000);
-	await page.waitForSelector('text="Welcome to Rocket.Chat!"');
-
 	return { page, poHomeChannel };
 };
