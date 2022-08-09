@@ -5,8 +5,9 @@ import { Rooms } from '../../app/models/server';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
-	roomNameExists(rid) {
-		check(rid, String);
+	roomNameExists(roomName) {
+		check(roomName, String);
+		console.log(`consegui obter o roomName no Meteor Method: ${roomName}`);
 
 		methodDeprecationLogger.warn('roomNameExists will be deprecated in future versions of Rocket.Chat');
 
@@ -15,7 +16,19 @@ Meteor.methods({
 				method: 'roomExists',
 			});
 		}
-		const room = Rooms.findOneByName(rid);
-		return !!room;
+		const room = Rooms.findOneByName(roomName);
+
+		console.log(`Esse é o room no Meteor Method: ${room}`);
+
+		let result = true;
+
+		if (room === undefined || room === null) {
+			result = false;
+		}
+
+		console.log(`Esse é o result no Meteor Method: ${result}`);
+
+		return result;
+		// return !!room;
 	},
 });

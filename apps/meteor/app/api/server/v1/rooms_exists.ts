@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
+// import { Meteor } from 'meteor/meteor';
 import Ajv from 'ajv';
 
-import { API } from '../api';
+// import { API } from '../api';
 
 // TO-DO: Replace this instance by only one Ajv import
 const ajv = new Ajv({ coerceTypes: true });
@@ -23,8 +23,9 @@ const GETRoomsNameExistsSchema = {
 
 export const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
 
-console.log('test');
+console.log('TESTE: -------> teste no rooms_exists');
 
+/*
 API.v1.addRoute(
 	'rooms.nameExists',
 	{
@@ -33,9 +34,14 @@ API.v1.addRoute(
 	},
 	{
 		get() {
+			console.log('conseguiu chegar no get() do rooms_exists');
+
 			const { roomName } = this.queryParams;
+
+			console.log(`consegui obter o roomName: ${roomName}`);
 
 			return API.v1.success(Meteor.call('roomNameExists', roomName));
 		},
 	},
 );
+*/
