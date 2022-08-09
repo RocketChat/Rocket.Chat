@@ -7,12 +7,14 @@ import { getMaxRoomsPerGuest } from '../../app/license/server/license';
 import { Subscriptions } from '../../../app/models/server';
 
 callbacks.add(
-	'beforeAddGuestUserToRoom',
+	'beforeAddedToRoom',
 	({ _id }: { _id: IUser['_id'] }) => {
-		const totalSubscriptions = Subscriptions.findByUserId(_id).count();
+		if (user.roles.includes('guest')) {
+			const totalSubscriptions = Subscriptions.findByUserId(user._id).count();
 
-		if (totalSubscriptions === getMaxRoomsPerGuest()) {
-			throw new Meteor.Error('error-max-rooms-per-guest-reached', TAPi18n.__('error-max-rooms-per-guest-reached'));
+			if (totalSubscriptions >= getMaxRoomsPerGuest()) {
+				throw new Meteor.Error('error-max-rooms-per-guest-reached', TAPi18n.__('error-max-rooms-per-guest-reached'));
+			}
 		}
 	},
 	callbacks.priority.MEDIUM,
