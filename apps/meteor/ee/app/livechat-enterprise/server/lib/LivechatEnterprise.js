@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, LivechatTag } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatTag, LivechatPriority } from '@rocket.chat/models';
 
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import { Users, LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
-import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
 import {
@@ -134,7 +133,7 @@ export const LivechatEnterprise = {
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
 	},
 
-	savePriority(_id, priorityData) {
+	async savePriority(_id, priorityData) {
 		check(_id, Match.Maybe(String));
 
 		check(priorityData, {
@@ -143,8 +142,8 @@ export const LivechatEnterprise = {
 			dueTimeInMinutes: String,
 		});
 
-		const oldPriority = _id && LivechatPriority.findOneById(_id, { fields: { dueTimeInMinutes: 1 } });
-		const priority = LivechatPriority.createOrUpdatePriority(_id, priorityData);
+		const oldPriority = _id && (await LivechatPriority.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
+		const priority = await LivechatPriority.createOrUpdatePriority(_id, priorityData);
 		if (!oldPriority) {
 			return priority;
 		}
@@ -159,7 +158,7 @@ export const LivechatEnterprise = {
 		return priority;
 	},
 
-	removePriority(_id) {
+	async removePriority(_id) {
 		check(_id, String);
 
 		const priority = LivechatPriority.findOneById(_id, { fields: { _id: 1 } });
@@ -169,7 +168,7 @@ export const LivechatEnterprise = {
 				method: 'livechat:removePriority',
 			});
 		}
-		const removed = LivechatPriority.removeById(_id);
+		const removed = await LivechatPriority.removeById(_id);
 		if (removed) {
 			removePriorityFromRooms(_id);
 		}

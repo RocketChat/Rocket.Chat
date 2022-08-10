@@ -1,6 +1,7 @@
+import { LivechatPriority } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../../lib/callbacks';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
-import LivechatPriority from '../../../models/server/models/LivechatPriority';
 
 callbacks.add(
 	'livechat.saveInfo',
@@ -15,7 +16,7 @@ callbacks.add(
 			return room;
 		}
 
-		const priority = newPriorityId && LivechatPriority.findOneById(newPriorityId);
+		const priority = newPriorityId && Promise.await(LivechatPriority.findOneById(newPriorityId));
 		LivechatEnterprise.updateRoomPriority(room._id, user, priority);
 
 		return room;
