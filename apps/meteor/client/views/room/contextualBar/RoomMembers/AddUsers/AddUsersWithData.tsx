@@ -1,9 +1,10 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import { IRoom, isRoomFederated, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import { useForm } from '../../../../../hooks/useForm';
+import { useRoom } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import AddUsers from './AddUsers';
 
@@ -20,6 +21,7 @@ type AddUsersInitialProps = {
 const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const room = useRoom();
 
 	const onClickClose = useTabBarClose();
 	const saveAction = useMethod('addUsersToRoom');
@@ -39,7 +41,16 @@ const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): 
 		}
 	});
 
-	return <AddUsers onClickClose={onClickClose} onClickBack={onClickBack} onClickSave={handleSave} users={users} onChange={handleUsers} />;
+	return (
+		<AddUsers
+			onClickClose={onClickClose}
+			onClickBack={onClickBack}
+			onClickSave={handleSave}
+			users={users}
+			isRoomFederated={isRoomFederated(room)}
+			onChange={handleUsers}
+		/>
+	);
 };
 
 export default AddUsersWithData;

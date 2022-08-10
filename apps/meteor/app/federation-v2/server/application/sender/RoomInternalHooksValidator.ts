@@ -20,12 +20,12 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 	}
 
 	public async canAddFederatedUserToNonFederatedRoom(internalUser: IUser | string, internalRoom: IRoom): Promise<void> {
-		if (this.isAddingANewExternalUser(internalUser)) {
+		if (isRoomFederated(internalRoom)) {
 			return;
 		}
 
-		if (isRoomFederated(internalRoom)) {
-			return;
+		if (this.isAddingANewExternalUser(internalUser)) {
+			throw new Error('error-cant-add-federated-users');
 		}
 
 		const user = await this.internalUserAdapter.getFederatedUserByInternalId((internalUser as IUser)._id);
@@ -43,7 +43,7 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 		if (!isRoomFederated(internalRoom)) {
 			return;
 		}
-		if (this.isAddingANewExternalUser(internalUser)) {
+		if (this.isAddingANewExternalUser(internalUser) && !isDirectMessageRoom(internalRoom)) {
 			throw new Error('error-this-is-an-ee-feature');
 		}
 
