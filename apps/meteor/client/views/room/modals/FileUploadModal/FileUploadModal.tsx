@@ -1,4 +1,4 @@
-import { Modal, Box, Field, FieldGroup, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldGroup, TextInput, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, memo, useState, ChangeEvent, FormEventHandler, useEffect } from 'react';
@@ -95,14 +95,14 @@ const FileUploadModal = ({
 					</FieldGroup>
 				</Modal.Content>
 				<Modal.Footer>
-					<ButtonGroup align='end'>
+					<Modal.FooterControllers>
 						<Button secondary onClick={onClose}>
 							{t('Cancel')}
 						</Button>
 						<Button primary type='submit' disabled={!name}>
 							{t('Send')}
 						</Button>
-					</ButtonGroup>
+					</Modal.FooterControllers>
 				</Modal.Footer>
 			</Box>
 		</Modal>
