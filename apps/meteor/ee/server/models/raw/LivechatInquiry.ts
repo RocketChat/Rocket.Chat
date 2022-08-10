@@ -5,8 +5,7 @@ import { overwriteClassOnLicense } from '../../../app/license/server';
 import { db } from '../../../../server/database/utils';
 
 overwriteClassOnLicense('livechat-enterprise', LivechatInquiryRaw, {
-	setEstimatedServiceTimeAt(rid, data = {}) {
-		console.log('----------------------------------------------------');
+	setEstimatedServiceTimeAt(_: Function, rid, data = {}) {
 		const { queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt } = data;
 
 		return this.updateOne(

@@ -6,7 +6,7 @@ import { db } from '../../../../../server/database/utils';
 import { trashCollection } from '../../../../../server/database/trash';
 
 overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgentsRaw, {
-	findAgentsByAgentIdAndBusinessHourId(agentId: string, businessHourId: string): Promise<Record<string, any>> {
+	findAgentsByAgentIdAndBusinessHourId(_: Function, agentId: string, businessHourId: string): Promise<Record<string, any>> {
 		const match = {
 			$match: { agentId },
 		};

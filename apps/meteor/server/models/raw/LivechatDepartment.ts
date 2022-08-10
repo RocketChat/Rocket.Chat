@@ -2,6 +2,7 @@ import type { ILivechatDepartmentRecord, RocketChatRecordDeleted } from '@rocket
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -82,6 +83,24 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 		return this.updateMany(query, update);
 	}
 
+	async createOrUpdateDepartment(_id: string, data: ILivechatDepartmentRecord): Promise<Omit<ILivechatDepartmentRecord, '_updatedAt'>> {
+		const oldData = _id && (await this.findOneById(_id));
+
+		const record = {
+			...data,
+		};
+
+		if (_id) {
+			this.updateOne({ _id }, { $set: record });
+		} else {
+			_id = (await this.insertOne(record)).insertedId;
+		}
+		if (oldData && oldData.enabled !== data.enabled) {
+			await LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
+		}
+		return Object.assign(record, { _id });
+	}
+
 	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(ids: string[] = [], businessHourId: string): Promise<Document | UpdateResult> {
 		const query = {
 			_id: { $in: ids },
@@ -109,5 +128,26 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	findActiveByUnitIds(unitIds: string[], options: FindOptions<ILivechatDepartmentRecord>): FindCursor<ILivechatDepartmentRecord> {
+		const query = {
+			enabled: true,
+			numAgents: { $gt: 0 },
+			parentId: {
+				$exists: true,
+				$in: unitIds,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findEnabledWithAgents(projection?: FindOptions<ILivechatDepartmentRecord>): FindCursor<ILivechatDepartmentRecord> {
+		const query = {
+			numAgents: { $gt: 0 },
+			enabled: true,
+		};
+		return this.find(query, { projection });
 	}
 }

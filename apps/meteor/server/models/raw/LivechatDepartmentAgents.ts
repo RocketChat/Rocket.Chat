@@ -1,6 +1,6 @@
 import type { ILivechatDepartmentAgents, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions } from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -104,5 +104,9 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 	findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): [] {
 		return [];
+	}
+
+	setDepartmentEnabledByDepartmentId(departmentId: string, departmentEnabled: boolean): Promise<UpdateResult | Document> {
+		return this.updateMany({ departmentId }, { $set: { departmentEnabled } });
 	}
 }
