@@ -1,7 +1,11 @@
+import { registerModel } from '@rocket.chat/models';
+
 import { LivechatRoomsRaw } from '../../../../../server/models/raw/LivechatRooms';
 import { queriesLogger } from '../../../livechat-enterprise/server/lib/logger';
 import { addQueryRestrictionsToRoomsModel } from '../../../livechat-enterprise/server/lib/query.helper';
 import { overwriteClassOnLicense } from '../../../license/server';
+import { db } from '../../../../../server/database/utils';
+import { trashCollection } from '../../../../../server/database/trash';
 
 const applyRestrictions = (method) =>
 	function (originalFn, originalQuery, ...args) {
@@ -22,3 +26,5 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRoomsRaw, {
 		return this.update(query, update);
 	},
 });
+
+registerModel('ILivechatRoomsModel', new LivechatRoomsRaw(db, trashCollection));

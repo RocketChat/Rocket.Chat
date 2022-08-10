@@ -1,5 +1,9 @@
+import { registerModel } from '@rocket.chat/models';
+
 import { LivechatDepartmentAgentsRaw } from '../../../../../server/models/raw/LivechatDepartmentAgents';
 import { overwriteClassOnLicense } from '../../../license/server';
+import { db } from '../../../../../server/database/utils';
+import { trashCollection } from '../../../../../server/database/trash';
 
 overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgentsRaw, {
 	findAgentsByAgentIdAndBusinessHourId(agentId: string, businessHourId: string): Promise<Record<string, any>> {
@@ -26,3 +30,5 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgentsRaw, {
 		return model.col.aggregate([match, lookup, unwind, withBusinessHourId, project]).toArray();
 	},
 });
+
+registerModel('ILivechatDepartmentAgentsModel', new LivechatDepartmentAgentsRaw(db, trashCollection));
