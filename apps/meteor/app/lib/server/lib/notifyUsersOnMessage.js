@@ -159,7 +159,7 @@ export function notifyUsersOnMessage(message, room) {
 
 	// if message sent ONLY on a thread, skips the rest as it is done on a callback specific to threads
 	if (message.tmid && !message.tshow) {
-		Rooms.incMsgCountById(message.rid, 1);
+		Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts);
 		return message;
 	}
 
