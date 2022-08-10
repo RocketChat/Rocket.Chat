@@ -1,3 +1,4 @@
+import { App, AppOverview } from '@rocket.chat/core-typings';
 import {
 	Box,
 	States,
@@ -96,9 +97,14 @@ const AppsPageContent: FC<{
 
 	const loadingRows = Array.from({ length: 8 }, (_, i) => <Skeleton key={i} height='x56' mbe='x8' width='100%' variant='rect' />);
 
-	const testFeatured = useEndpointData('/apps/featured');
-	console.log(testFeatured);
-	console.log(appsResult);
+	const { value: featuredResponse } = useEndpointData('/apps/featured');
+
+	const normalizeFeaturedApps = (appOverviewList: AppOverview[]): App[] =>
+		appOverviewList.map((appOverview) => {
+			const { latest, ...rest } = appOverview;
+
+			return { ...latest, ...rest };
+		});
 
 	return (
 		<>
@@ -115,6 +121,10 @@ const AppsPageContent: FC<{
 				statusFilterStructure={statusFilterStructure}
 				statusFilterOnSelected={statusFilterOnSelected}
 			/>
+
+			{featuredResponse?.sections.map((section) => (
+				<AppsList apps={normalizeFeaturedApps(section.apps)} title={section.i18nLabel} isMarketplace={true} mbe='x36' />
+			))}
 
 			{isAllAppsListReadyOrLoading && appsResult.phase === AsyncStatePhase.LOADING
 				? loadingRows

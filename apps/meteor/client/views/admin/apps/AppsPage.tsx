@@ -66,7 +66,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 					{t('Installed')}
 				</Tabs.Item>
 			</Tabs>
-			<Page.Content bg={colors.n100}>
+			<Page.Content bg={colors.n100} overflowY='auto'>
 				<AppsPageContent isMarketplace={isMarketplace} />
 			</Page.Content>
 		</Page>

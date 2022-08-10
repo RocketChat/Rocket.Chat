@@ -4,18 +4,18 @@ import React, { ReactElement } from 'react';
 
 import AppRow from './AppRow';
 
-type AppsListMainProps = {
+type AppsListProps = {
 	apps: App[];
 	title: string;
 	isMarketplace: boolean;
 };
 
-const AppsList = ({ apps, title, isMarketplace }: AppsListMainProps): ReactElement => (
+const AppsList = ({ apps, title, isMarketplace, ...props }: AppsListProps): ReactElement => (
 	<>
 		<Box is='h3' fontSize='h3' fontWeight={700} lineHeight='x28' color='default' mbe='x20'>
 			{title}
 		</Box>
-		<Box overflowY='auto' height='100%'>
+		<Box height='100%' {...props}>
 			{apps.map((app) => (
 				<AppRow key={app.id} isMarketplace={isMarketplace} {...app} />
 			))}
