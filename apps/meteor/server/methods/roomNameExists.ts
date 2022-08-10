@@ -7,7 +7,6 @@ import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWar
 Meteor.methods({
 	roomNameExists(roomName) {
 		check(roomName, String);
-		console.log(`consegui obter o roomName no Meteor Method: ${roomName}`);
 
 		methodDeprecationLogger.warn('roomNameExists will be deprecated in future versions of Rocket.Chat');
 
@@ -18,17 +17,10 @@ Meteor.methods({
 		}
 		const room = Rooms.findOneByName(roomName);
 
-		console.log(`Esse é o room no Meteor Method: ${room}`);
-
-		let result = true;
-
 		if (room === undefined || room === null) {
-			result = false;
+			return false;
 		}
 
-		console.log(`Esse é o result no Meteor Method: ${result}`);
-
-		return result;
-		// return !!room;
+		return true;
 	},
 });
