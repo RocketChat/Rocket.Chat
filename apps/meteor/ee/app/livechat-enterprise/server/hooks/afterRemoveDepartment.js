@@ -1,5 +1,6 @@
+import { LivechatDepartment } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../../lib/callbacks';
-import { LivechatDepartment } from '../../../../../app/models/server';
 
 callbacks.add(
 	'livechat.afterRemoveDepartment',
@@ -8,7 +9,7 @@ callbacks.add(
 		if (!department) {
 			return options;
 		}
-		LivechatDepartment.removeDepartmentFromForwardListById(department._id);
+		Promise.await(LivechatDepartment.removeDepartmentFromForwardListById(department._id));
 		return options;
 	},
 	callbacks.priority.HIGH,
