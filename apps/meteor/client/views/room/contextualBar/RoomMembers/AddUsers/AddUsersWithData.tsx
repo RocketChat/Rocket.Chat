@@ -30,6 +30,16 @@ const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): 
 	const { users } = values as AddUsersInitialProps;
 	const { handleUsers } = handlers;
 
+	const onChangeUsers = useMutableCallback((value, action) => {
+		if (!action) {
+			if (users.includes(value)) {
+				return;
+			}
+			return handleUsers([...users, value]);
+		}
+		handleUsers(users.filter((current) => current !== value));
+	});
+
 	const handleSave = useMutableCallback(async () => {
 		try {
 			await saveAction({ rid, users });
@@ -40,6 +50,7 @@ const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): 
 			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 		}
 	});
+	const onChangeUsersFn = isRoomFederated(room) ? handleUsers : onChangeUsers;
 
 	return (
 		<AddUsers
@@ -48,7 +59,7 @@ const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): 
 			onClickSave={handleSave}
 			users={users}
 			isRoomFederated={isRoomFederated(room)}
-			onChange={handleUsers}
+			onChange={onChangeUsersFn}
 		/>
 	);
 };
