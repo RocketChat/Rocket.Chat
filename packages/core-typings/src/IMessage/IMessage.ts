@@ -1,3 +1,5 @@
+import type Url from 'url';
+
 import type Icons from '@rocket.chat/icons';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { parser } from '@rocket.chat/message-parser';
@@ -15,7 +17,9 @@ type MessageUrl = {
 	url: string;
 	source?: string;
 	meta: Record<string, string>;
-	headers?: { contentLength: string; contentType: string };
+	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
+	ignoreParse?: boolean;
+	parsedUrl?: Pick<Url.UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
 
 type VoipMessageTypesValues =
@@ -52,10 +56,13 @@ type OmnichannelTypesValues =
 	| 'omnichannel_placed_chat_on_hold'
 	| 'omnichannel_on_hold_chat_resumed';
 
+type OtrMessageTypeValues = 'otr' | 'otr-ack';
 type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
 export type MessageTypesValues =
 	| 'e2e'
+	| 'otr'
+	| 'otr-ack'
 	| 'uj'
 	| 'ul'
 	| 'ru'
@@ -86,6 +93,7 @@ export type MessageTypesValues =
 	| TeamMessageTypes
 	| VoipMessageTypesValues
 	| OmnichannelTypesValues
+	| OtrMessageTypeValues
 	| OtrSystemMessages;
 
 export type TokenType = 'code' | 'inlinecode' | 'bold' | 'italic' | 'strike' | 'link';
@@ -124,7 +132,7 @@ export interface IMessage extends IRocketChatRecord {
 	replies?: IUser['_id'][];
 	location?: {
 		type: 'Point';
-		coordinates: [string, string];
+		coordinates: [number, number];
 	};
 	starred?: { _id: IUser['_id'] }[];
 	pinned?: boolean;
@@ -137,6 +145,7 @@ export interface IMessage extends IRocketChatRecord {
 	tcount?: number;
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
+	otrAck?: string;
 
 	urls?: MessageUrl[];
 
@@ -171,6 +180,8 @@ export interface IMessage extends IRocketChatRecord {
 	// Tokenization fields
 	tokens?: Token[];
 	html?: string;
+	// Messages sent from visitors have this field
+	token?: string;
 }
 
 export type MessageSystem = {
@@ -186,6 +197,7 @@ export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
 
 export interface ITranslatedMessage extends IMessage {
 	translations: { [key: string]: string } & { original?: string };
+	translationProvider: string;
 	autoTranslateShowInverse?: boolean;
 	autoTranslateFetching?: boolean;
 }
@@ -300,3 +312,15 @@ export type IMessageInbox = IMessage & {
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
 export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;
+
+export type IE2EEMessage = IMessage & {
+	t: 'e2e';
+	e2e: 'pending' | 'done';
+};
+
+export type IOTRMessage = IMessage & {
+	t: 'otr' | 'otr-ack';
+};
+
+export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
+export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr' || message.t === 'otr-ack';

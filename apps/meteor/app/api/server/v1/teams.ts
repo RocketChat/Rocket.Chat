@@ -1,8 +1,6 @@
-import type { FilterQuery } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { IUser } from '@rocket.chat/core-typings';
 import {
 	isTeamsConvertToChannelProps,
 	isTeamsRemoveRoomProps,
@@ -13,7 +11,8 @@ import {
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
 } from '@rocket.chat/rest-typings';
-import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { ITeam } from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { Users } from '../../../models/server';
@@ -141,11 +140,9 @@ API.v1.addRoute(
 				});
 			}
 
-			await Promise.all([
-				Team.unsetTeamIdOfRooms(this.userId, team._id),
-				Team.removeAllMembersFromTeam(team._id),
-				Team.deleteById(team._id),
-			]);
+			await Promise.all([Team.unsetTeamIdOfRooms(this.userId, team._id), Team.removeAllMembersFromTeam(team._id)]);
+
+			await Team.deleteById(team._id);
 
 			return API.v1.success();
 		},
@@ -413,7 +410,7 @@ API.v1.addRoute(
 				username: username ? new RegExp(escapeRegExp(username), 'i') : undefined,
 				name: name ? new RegExp(escapeRegExp(name), 'i') : undefined,
 				status: status ? { $in: status } : undefined,
-			} as FilterQuery<IUser>;
+			};
 
 			const { records, total } = await Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query);
 

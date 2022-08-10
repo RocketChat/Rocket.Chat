@@ -1,5 +1,5 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
-import { useSetModal, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useMethod, useEndpoint, useTranslation, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
 import CloudLoginModal from './CloudLoginModal';
@@ -11,6 +11,8 @@ function AppMenu({ app, ...props }) {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
+	const appsRoute = useRoute('admin-apps');
+	const context = useRouteParameter('context');
 
 	const setAppStatus = useEndpoint('POST', `/apps/${app.id}/status`);
 	const buildExternalUrl = useEndpoint('GET', '/apps');
@@ -63,6 +65,10 @@ function AppMenu({ app, ...props }) {
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
 	}, [checkUserLoggedIn, setModal, closeModal, buildExternalUrl, app.id, app.purchaseType, syncApp]);
+
+	const handleViewLogs = useCallback(() => {
+		appsRoute.push({ context: 'details', id: app.id, version: app.version, tab: 'logs' });
+	}, [app.id, app.version, appsRoute]);
 
 	const handleDisable = useCallback(() => {
 		const confirm = async () => {
@@ -124,6 +130,18 @@ function AppMenu({ app, ...props }) {
 					action: handleSubscription,
 				},
 			}),
+			...(context !== 'details' &&
+				app.installed && {
+					viewLogs: {
+						label: (
+							<Box>
+								<Icon name='list-alt' size='x16' marginInlineEnd='x4' />
+								{t('View_Logs')}
+							</Box>
+						),
+						action: handleViewLogs,
+					},
+				}),
 			...(app.installed &&
 				isAppEnabled && {
 					disable: {
@@ -160,7 +178,18 @@ function AppMenu({ app, ...props }) {
 				},
 			}),
 		}),
-		[canAppBeSubscribed, t, handleSubscription, app.installed, isAppEnabled, handleDisable, handleEnable, handleUninstall],
+		[
+			canAppBeSubscribed,
+			t,
+			handleSubscription,
+			context,
+			handleViewLogs,
+			app.installed,
+			isAppEnabled,
+			handleDisable,
+			handleEnable,
+			handleUninstall,
+		],
 	);
 
 	return <Menu options={menuOptions} placement='bottom-start' {...props} />;

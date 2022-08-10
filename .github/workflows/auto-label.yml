@@ -8,4 +8,4 @@ jobs:
     steps:
       - uses: ggazzo/gh-action-auto-label@beta-5
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RC_AUTOLABEL_TOKEN }}

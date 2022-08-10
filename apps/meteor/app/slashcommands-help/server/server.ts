@@ -16,9 +16,9 @@ interface IHelpCommand {
 	command: string;
 }
 
-slashCommands.add(
-	'help',
-	function Help(_command, _params, item): void {
+slashCommands.add({
+	command: 'help',
+	callback: function Help(_command, _params, item): void {
 		const userId = Meteor.userId() as string;
 		const user = Users.findOneById(userId);
 
@@ -66,7 +66,7 @@ slashCommands.add(
 			});
 		});
 	},
-	{
+	options: {
 		description: 'Show_the_keyboard_shortcut_list',
 	},
-);
+});

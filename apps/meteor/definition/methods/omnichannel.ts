@@ -1,7 +1,7 @@
 import '@rocket.chat/ui-contexts';
 
 declare module '@rocket.chat/ui-contexts' {
-	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'livechat:addMonitor': (...args: any[]) => any;
 		'livechat:closeRoom': (...args: any[]) => any;
@@ -18,9 +18,9 @@ declare module '@rocket.chat/ui-contexts' {
 					subscribed: boolean;
 					id: string;
 			  }[])
-			| ((...args: [{ action: 'subscribe' | 'unsubscribe'; page: string }]) => {})
+			| ((...args: [{ action: 'subscribe' | 'unsubscribe'; page: string }]) => void)
 			| ((...args: [{ action: 'enable' }]) => { url: string } | undefined)
-			| ((...args: [{ action: 'disable' }]) => {});
+			| ((...args: [{ action: 'disable' }]) => void);
 		'livechat:getAgentOverviewData': (...args: any[]) => any;
 		'livechat:getAnalyticsChartData': (...args: any[]) => any;
 		'livechat:getAnalyticsOverviewData': (...args: any[]) => any;

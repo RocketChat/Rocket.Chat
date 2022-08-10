@@ -2,7 +2,8 @@ import { EventEmitter } from 'events';
 
 import IMAP from 'imap';
 import type Connection from 'imap';
-import { simpleParser, ParsedMail } from 'mailparser';
+import type { ParsedMail } from 'mailparser';
+import { simpleParser } from 'mailparser';
 
 type IMAPOptions = {
 	deleteAfterRead: boolean;
@@ -13,27 +14,29 @@ type IMAPOptions = {
 
 export declare interface IMAPInterceptor {
 	on(event: 'email', listener: (email: ParsedMail) => void): this;
-	on(event: string, listener: Function): this;
 }
 
 export class IMAPInterceptor extends EventEmitter {
 	private imap: IMAP;
 
-	constructor(
-		imapConfig: IMAP.Config,
-		private options: IMAPOptions = {
-			deleteAfterRead: false,
-			filter: ['UNSEEN'],
-			markSeen: true,
-		},
-	) {
+	private options: IMAPOptions;
+
+	constructor(imapConfig: IMAP.Config, options?: Partial<IMAPOptions>) {
 		super();
 
 		this.imap = new IMAP({
 			connTimeout: 30000,
 			keepalive: true,
+			...(imapConfig.tls && { tlsOptions: { servername: imapConfig.host } }),
 			...imapConfig,
 		});
+
+		this.options = {
+			deleteAfterRead: false,
+			filter: ['UNSEEN'],
+			markSeen: true,
+			...options,
+		};
 
 		// On successfully connected.
 		this.imap.on('ready', () => {
@@ -57,7 +60,7 @@ export class IMAPInterceptor extends EventEmitter {
 		});
 
 		this.imap.on('error', (err: Error) => {
-			this.log('Error occurred: ', err);
+			this.log('Error occurred ...', err);
 			throw err;
 		});
 	}
@@ -75,7 +78,7 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	isActive(): boolean {
-		if (this.imap && this.imap.state && this.imap.state === 'disconnected') {
+		if (this.imap?.state && this.imap.state === 'disconnected') {
 			return false;
 		}
 
@@ -83,8 +86,13 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	stop(callback = new Function()): void {
+		this.log('IMAP stop called');
 		this.imap.end();
-		this.imap.once('end', callback);
+		this.imap.once('end', () => {
+			this.log('IMAP stopped');
+			callback?.();
+		});
+		callback?.();
 	}
 
 	restart(): void {

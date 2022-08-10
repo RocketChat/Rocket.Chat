@@ -12,9 +12,10 @@
  * (AgentConnect.calleridnum, connectedlinenum, queue) to signify which agent ansered the call from which queue.
  *
  */
-import { Db } from 'mongodb';
-import type { IQueueDetails } from '@rocket.chat/core-typings';
-import {
+import type { Db } from 'mongodb';
+import type {
+	IPbxEvent,
+	IQueueDetails,
 	IAgentCalledEvent,
 	IAgentConnectEvent,
 	IEventBase,
@@ -23,6 +24,14 @@ import {
 	IQueueEvent,
 	IQueueMemberAdded,
 	IQueueMemberRemoved,
+	ICallOnHold,
+	ICallUnHold,
+	IContactStatus,
+	ICallHangup,
+	IDialingEvent,
+} from '@rocket.chat/core-typings';
+import {
+	isIDialingEvent,
 	isIAgentCalledEvent,
 	isIAgentConnectEvent,
 	isIQueueCallerAbandonEvent,
@@ -31,20 +40,15 @@ import {
 	isIQueueMemberRemovedEvent,
 	isICallOnHoldEvent,
 	isICallUnHoldEvent,
-	ICallOnHold,
-	ICallUnHold,
 	isIContactStatusEvent,
-	IContactStatus,
 	isICallHangupEvent,
-	ICallHangup,
 } from '@rocket.chat/core-typings';
+import { Users, PbxEvents } from '@rocket.chat/models';
 
 import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { CallbackContext } from './CallbackContext';
 // import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
-import { UsersRaw } from '../../../../../../app/models/server/raw/Users';
-import { PbxEventsRaw } from '../../../../../../app/models/server/raw/PbxEvents';
 import { api } from '../../../../../sdk/api';
 import { ACDQueue } from './ACDQueue';
 import { Commands } from '../Commands';
@@ -52,16 +56,10 @@ import { Commands } from '../Commands';
 export class ContinuousMonitor extends Command {
 	private logger: Logger;
 
-	private users: UsersRaw;
-
-	private pbxEvents: PbxEventsRaw;
-
 	constructor(command: string, parametersNeeded: boolean, db: Db) {
 		super(command, parametersNeeded, db);
 		this._type = CommandType.AMI;
 		this.logger = new Logger('ContinuousMonitor');
-		this.users = new UsersRaw(db.collection('users'));
-		this.pbxEvents = new PbxEventsRaw(db.collection('pbx_events'));
 	}
 
 	private async getMembersFromQueueDetails(queueDetails: IQueueDetails): Promise<string[]> {
@@ -75,7 +73,7 @@ export class ContinuousMonitor extends Command {
 		});
 
 		this.logger.debug(`Finding members of queue ${queueDetails.name} between users`);
-		return (await this.users.findByExtensions(extensionList).toArray()).map((u) => u._id);
+		return (await Users.findByExtensions(extensionList).toArray()).map((u) => u._id);
 	}
 
 	// Todo : Move this out of connector. This class is a busy class.
@@ -92,7 +90,7 @@ export class ContinuousMonitor extends Command {
 		const { queue } = event;
 		const queueDetails = await this.getQueueDetails(queue);
 		const { calls } = queueDetails;
-		const user = await this.users.findOneByExtension(extension, {
+		const user = await Users.findOneByExtension(extension, {
 			projection: {
 				_id: 1,
 				username: 1,
@@ -111,7 +109,7 @@ export class ContinuousMonitor extends Command {
 	async processAgentCalled(event: IAgentCalledEvent): Promise<void> {
 		this.logger.debug(`Got new event queue.agentcalled at ${event.queue}`);
 		const extension = event.interface.toLowerCase().replace('pjsip/', '');
-		const user = await this.users.findOneByExtension(extension, {
+		const user = await Users.findOneByExtension(extension, {
 			projection: {
 				_id: 1,
 				username: 1,
@@ -142,7 +140,7 @@ export class ContinuousMonitor extends Command {
 				// This event represents when an agent drops a call because of disconnection
 				// May happen for any reason outside of our control, like closing the browswer
 				// Or network/power issues
-				await this.pbxEvents.insertOne({
+				await PbxEvents.insertOne({
 					event: eventName,
 					uniqueId: `${eventName}-${event.contactstatus}-${now.getTime()}`,
 					ts: now,
@@ -152,11 +150,17 @@ export class ContinuousMonitor extends Command {
 				return;
 			}
 
+			let uniqueId = `${eventName}-${event.calleridnum}-`;
+			if (event.queue) {
+				uniqueId += `${event.queue}-${event.uniqueid}`;
+			} else {
+				uniqueId += `${event.channel}-${event.destchannel}-${event.uniqueid}`;
+			}
 			// NOTE: using the uniqueId prop of event is not the recommented approach, since it's an opaque ID
 			// However, since we're not using it for anything special, it's a "fair use"
 			// uniqueId => {server}/{epoch}.{id of channel associated with this call}
-			await this.pbxEvents.insertOne({
-				uniqueId: `${eventName}-${event.calleridnum}-${event.queue}-${event.uniqueid}`,
+			await PbxEvents.insertOne({
+				uniqueId,
 				event: eventName,
 				ts: now,
 				phone: event.calleridnum,
@@ -235,8 +239,61 @@ export class ContinuousMonitor extends Command {
 		}
 	}
 
+	async isCallBeginEventPresent(pbxEvent: IPbxEvent | null, uniqueId: string): Promise<boolean> {
+		if (pbxEvent && pbxEvent.callUniqueId === uniqueId) {
+			switch (pbxEvent.event.toLowerCase()) {
+				case 'queuecallerjoin':
+				case 'agentconnect':
+					return true;
+				default:
+					return false;
+			}
+		}
+		return false;
+	}
+
+	async manageDialEvents(event: IDialingEvent): Promise<void> {
+		const pbxEvent = await PbxEvents.findOneByUniqueId(event.uniqueid);
+		/**
+		 * Dial events currently are used for detecting the outbound call
+		 * This will later be used for matching call events.
+		 *
+		 * Dial events are generated even for the queued calls but queue events
+		 * are not generated for direct calls (either outbound or directly to an agent).
+		 *
+		 * isCallBeginEventPresent checks if the call was off the queue. If it was,
+		 * we would not try add the dial-event to the pbx database.
+		 */
+		if (await this.isCallBeginEventPresent(pbxEvent, event.uniqueid)) {
+			return;
+		}
+
+		if (event.dialstatus.toLowerCase() !== 'answer' && event.dialstatus.toLowerCase() !== 'ringing') {
+			this.logger.warn(`Received unexpected event ${event.event} dialstatus =  ${event.dialstatus}`);
+			return;
+		}
+		/** This function adds necessary data to
+		 * pbx_events database for outbound calls.
+		 *
+		 * event?.connectedlinenum is the extension/phone number that is being called
+		 * and event.calleridnum is the extension that is initiating a call.
+		 */
+		await PbxEvents.insertOne({
+			uniqueId: `${event.event}-${event.calleridnum}-${event.channel}-${event.destchannel}-${event.uniqueid}`,
+			event: event.event,
+			ts: new Date(),
+			phone: event?.connectedlinenum,
+			callUniqueId: event.uniqueid,
+			callUniqueIdFallback: event.linkedid,
+			agentExtension: event.calleridnum,
+		});
+	}
+
 	async onEvent(event: IEventBase): Promise<void> {
 		this.logger.debug(`Received event ${event.event}`);
+		if (isIDialingEvent(event)) {
+			return this.manageDialEvents(event);
+		}
 		// Event received when a queue member is notified of a call in queue
 		if (isIAgentCalledEvent(event)) {
 			return this.processAgentCalled(event);
@@ -289,6 +346,8 @@ export class ContinuousMonitor extends Command {
 		this.connection.on('unhold', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('contactstatus', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('hangup', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('dialend', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('dialstate', new CallbackContext(this.onEvent.bind(this), this));
 	}
 
 	resetEventHandlers(): void {
@@ -302,6 +361,8 @@ export class ContinuousMonitor extends Command {
 		this.connection.off('unhold', this);
 		this.connection.off('contactstatus', this);
 		this.connection.off('hangup', this);
+		this.connection.off('dialend', this);
+		this.connection.off('dialstate', this);
 	}
 
 	initMonitor(_data: any): boolean {

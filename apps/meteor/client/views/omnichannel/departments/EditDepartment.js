@@ -15,7 +15,6 @@ import {
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useRef } from 'react';
-import { useSubscription } from 'use-subscription';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import Page from '../../../components/Page';
@@ -24,7 +23,7 @@ import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';
 import { AsyncStatePhase } from '../../../lib/asyncState';
-import { formsSubscription } from '../additionalForms';
+import { useFormsSubscription } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 
 function withDefault(key, defaultValue) {
@@ -42,7 +41,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		useDepartmentForwarding = () => {},
 		useDepartmentBusinessHours = () => {},
 		useSelectForwardDepartment = () => {},
-	} = useSubscription(formsSubscription);
+	} = useFormsSubscription();
 
 	const initialAgents = useRef((data && data.agents) || []);
 

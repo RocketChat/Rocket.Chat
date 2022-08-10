@@ -39,7 +39,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 			setUser('');
 			reload.current?.();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 		}
 	});
 

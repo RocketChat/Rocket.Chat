@@ -12,7 +12,6 @@ const TextButton = forwardRef<HTMLElement, TextButtonProps>(function TextButton(
 
 	return (
 		<Button
-			nude
 			small
 			display='flex'
 			justifyContent='center'

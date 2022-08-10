@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
-import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
+import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import Card from '../../../components/Card';
 import { UserStatus } from '../../../components/UserStatus';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
@@ -25,7 +25,7 @@ const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 		router.push();
 	});
 
-	const canViewEngagement = useHasLicense('engagement-dashboard');
+	const canViewEngagement = useHasLicenseModule('engagement-dashboard');
 
 	return (
 		<Card data-qa-id='usage-card'>

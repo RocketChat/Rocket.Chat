@@ -1,6 +1,13 @@
 import { Users } from '../../models';
 import { settings } from '../../settings';
 
+/**
+ * @summary Get a user preference
+ * @param {String} userId The user ID
+ * @param {String} preference The preference name
+ * @param {unknown?} defaultValue The default value
+ * @returns {unknown} The preference value
+ */
 export const getUserPreference = (user, key, defaultValue = undefined) => {
 	let preference;
 	if (typeof user === typeof '') {

@@ -19,7 +19,7 @@ import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Apps, AppEvents } from '../../../apps/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
@@ -531,7 +531,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	const { token } = guest;
-	Livechat.setDepartmentForGuest({ token, department: departmentId });
+	await Livechat.setDepartmentForGuest({ token, department: departmentId });
 	logger.debug(`Department for visitor with token ${token} was updated to ${departmentId}`);
 
 	return true;
@@ -600,14 +600,15 @@ export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) 
 	}
 
 	upsert.forEach((agent) => {
-		if (!Users.findOneById(agent.agentId, { fields: { _id: 1 } })) {
+		const agentFromDb = Users.findOneById(agent.agentId, { fields: { _id: 1, username: 1 } });
+		if (!agentFromDb) {
 			return;
 		}
 
 		LivechatDepartmentAgents.saveAgent({
 			agentId: agent.agentId,
 			departmentId,
-			username: agent.username,
+			username: agentFromDb.username,
 			count: agent.count ? parseInt(agent.count) : 0,
 			order: agent.order ? parseInt(agent.order) : 0,
 			departmentEnabled,

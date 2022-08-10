@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../../file-upload/server';
-import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
+import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { fetch } from '../../../../../server/lib/http/fetch';
 import { SMS } from '../../../../sms';
@@ -34,7 +35,7 @@ const defineDepartment = (idOrName) => {
 	return department && department._id;
 };
 
-const defineVisitor = (smsNumber, targetDepartment) => {
+const defineVisitor = async (smsNumber, targetDepartment) => {
 	const visitor = LivechatVisitors.findOneVisitorByPhone(smsNumber);
 	let data = {
 		token: (visitor && visitor.token) || Random.id(),
@@ -53,7 +54,7 @@ const defineVisitor = (smsNumber, targetDepartment) => {
 		data.department = targetDepartment;
 	}
 
-	const id = Livechat.registerGuest(data);
+	const id = await Livechat.registerGuest(data);
 	return LivechatVisitors.findOneById(id);
 };
 
@@ -71,6 +72,10 @@ const normalizeLocationSharing = (payload) => {
 
 API.v1.addRoute('livechat/sms-incoming/:service', {
 	async post() {
+		if (!SMS.isConfiguredService(this.urlParams.service)) {
+			return API.v1.failure('Invalid service');
+		}
+
 		const SMSService = SMS.getService(this.urlParams.service);
 		const sms = SMSService.parse(this.bodyParams);
 		const { department } = this.queryParams;
@@ -79,7 +84,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			targetDepartment = defineDepartment(SMS.department);
 		}
 
-		const visitor = defineVisitor(sms.from, targetDepartment);
+		const visitor = await defineVisitor(sms.from, targetDepartment);
 		const { token } = visitor;
 		const room = LivechatRooms.findOneOpenByVisitorTokenAndDepartmentId(token, targetDepartment);
 		const roomExists = !!room;

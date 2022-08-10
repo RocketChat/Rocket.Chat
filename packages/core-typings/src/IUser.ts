@@ -16,7 +16,7 @@ export interface IPersonalAccessToken extends ILoginToken {
 	type: 'personalAccessToken';
 	createdAt: Date;
 	lastTokenPart: string;
-	name?: string;
+	name: string;
 	bypassTwoFactor?: boolean;
 }
 
@@ -54,6 +54,7 @@ export interface IUserServices {
 	resume?: {
 		loginTokens?: LoginToken[];
 	};
+	cloud?: unknown;
 	google?: any;
 	facebook?: any;
 	github?: any;
@@ -119,6 +120,7 @@ export interface IUser extends IRocketChatRecord {
 	bio?: string;
 	avatarOrigin?: string;
 	avatarETag?: string;
+	avatarUrl?: string;
 	utcOffset?: number;
 	language?: string;
 	statusDefault?: UserStatus;
@@ -141,6 +143,10 @@ export interface IUser extends IRocketChatRecord {
 	ldap?: boolean;
 	extension?: string;
 	inviteToken?: string;
+	federated?: boolean;
+	canViewAllInfo?: boolean;
+	phone?: string;
+	reason?: string;
 }
 
 export interface IRegisterUser extends IUser {
@@ -169,3 +175,17 @@ export type IUserInRole = Pick<
 	IUser,
 	'_id' | 'name' | 'username' | 'emails' | 'avatarETag' | 'createdAt' | 'roles' | 'type' | 'active' | '_updatedAt'
 >;
+
+export type AvatarUrlObj = {
+	avatarUrl: string;
+};
+
+export type AvatarReset = 'reset';
+
+export type AvatarServiceObject = {
+	blob: Blob;
+	contentType: string;
+	service: string;
+};
+
+export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;

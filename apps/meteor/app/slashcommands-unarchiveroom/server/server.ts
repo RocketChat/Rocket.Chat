@@ -8,9 +8,9 @@ import { api } from '../../../server/sdk/api';
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 
-slashCommands.add(
-	'unarchive',
-	function Unarchive(_command: 'unarchive', params, item): void {
+slashCommands.add({
+	command: 'unarchive',
+	callback: function Unarchive(_command: 'unarchive', params, item): void {
 		let channel = params.trim();
 		let room;
 
@@ -62,9 +62,9 @@ slashCommands.add(
 			}),
 		});
 	},
-	{
+	options: {
 		description: 'Unarchive',
 		params: '#channel',
 		permission: 'unarchive-room',
 	},
-);
+});

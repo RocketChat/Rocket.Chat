@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { memo, FC } from 'react';
-import { useSubscription } from 'use-subscription';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import SidebarItemsAssembler from '../../../components/Sidebar/SidebarItemsAssembler';
 import { useUpgradeTabParams } from '../../hooks/useUpgradeTabParams';
-import { itemsSubscription } from '../sidebarItems';
+import { subscribeToAdminSidebarItems, getAdminSidebarItems } from '../sidebarItems';
 import UpgradeTab from './UpgradeTab';
 
 type AdminSidebarPagesProps = {
@@ -12,7 +12,8 @@ type AdminSidebarPagesProps = {
 };
 
 const AdminSidebarPages: FC<AdminSidebarPagesProps> = ({ currentPath }) => {
-	const items = useSubscription(itemsSubscription);
+	const items = useSyncExternalStore(subscribeToAdminSidebarItems, getAdminSidebarItems);
+
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 
 	return (

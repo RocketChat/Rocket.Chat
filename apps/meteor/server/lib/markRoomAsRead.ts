@@ -1,5 +1,6 @@
+import { NotificationQueue, Subscriptions } from '@rocket.chat/models';
+
 import { callbacks } from '../../lib/callbacks';
-import { NotificationQueue, Subscriptions } from '../../app/models/server/raw';
 
 export async function markRoomAsRead(rid: string, uid: string): Promise<void> {
 	callbacks.run('beforeReadMessages', rid, uid);

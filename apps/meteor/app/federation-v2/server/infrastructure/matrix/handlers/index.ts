@@ -1,10 +1,10 @@
-import { IMatrixEvent } from '../definitions/IMatrixEvent';
-import { MatrixEventType } from '../definitions/MatrixEventType';
-import { MatrixBaseEventHandler } from './BaseEvent';
+import type { IMatrixEvent } from '../definitions/IMatrixEvent';
+import type { MatrixEventType } from '../definitions/MatrixEventType';
+import type { MatrixBaseEventHandler } from './BaseEvent';
 
 export class MatrixEventsHandler {
 	// eslint-disable-next-line no-empty-function
-	constructor(private handlers: MatrixBaseEventHandler<MatrixEventType>[]) {}
+	constructor(protected handlers: MatrixBaseEventHandler<MatrixEventType>[]) {}
 
 	public async handleEvent(event: IMatrixEvent<MatrixEventType>): Promise<void> {
 		const handler = this.handlers.find((handler) => handler.equals(event.type));

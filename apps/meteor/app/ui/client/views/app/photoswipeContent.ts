@@ -75,9 +75,7 @@ let currentGallery: PhotoSwipe<PhotoSwipe.Options> | null = null;
 const initGallery = async (items: Slide[], options: PhotoSwipe.Options): Promise<void> => {
 	const [{ default: PhotoSwipe }] = await Promise.all([
 		import('photoswipe'),
-		// @ts-ignore
 		import('photoswipe/dist/photoswipe.css'),
-		// @ts-ignore
 		import('./photoswipeContent.html'),
 	]);
 

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import type { ISetting } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/server';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { SettingsEvents } from '../../../app/settings/server';
-import { Settings } from '../../../app/models/server/raw';
 
 Meteor.methods({
 	async 'public-settings/get'(updatedAt) {
@@ -53,7 +53,7 @@ Meteor.methods({
 
 		const bypass = <T>(settings: T): T => settings;
 
-		const applyFilter = (fn: Function, args: any[]): any => fn(args);
+		const applyFilter = <T extends any[], U>(fn: (args: T) => U, args: T): U => fn(args);
 
 		const getAuthorizedSettingsFiltered = (settings: ISetting[]): ISetting[] =>
 			settings.filter((record) => hasPermission(uid, getSettingPermissionId(record._id)));

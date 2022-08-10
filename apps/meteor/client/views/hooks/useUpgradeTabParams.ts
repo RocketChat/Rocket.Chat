@@ -1,6 +1,6 @@
 import { useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { useQuery } from 'react-query';
 
 import { UpgradeTabVariant, getUpgradeTabType } from '../../../lib/getUpgradeTabType';
 
@@ -10,7 +10,7 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
 
 	const { data: registrationStatusData } = useQuery(['registrationStatus'], () => getRegistrationStatus());
-	const { data: getValidLicensesData, isSuccess } = useQuery(['licences'], () => getLicenses(), {
+	const { data: getValidLicensesData, isSuccess } = useQuery(['licenses'], () => getLicenses(), {
 		enabled: !!registrationStatusData,
 	});
 

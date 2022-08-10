@@ -12,7 +12,13 @@ const randomDelay = (): Promise<UploadResult> => new Promise((resolve) => setTim
 const uploadToEndpoint = (endpoint: PathFor<'POST'>, formData: any): Promise<UploadResult> =>
 	Promise.resolve(logAction('uploadToEndpoint', endpoint, formData)).then(randomDelay);
 
-const getStream = (streamName: string, options: {} = {}): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
+const getStream = (
+	streamName: string,
+	options: {
+		retransmit?: boolean | undefined;
+		retransmitToSelf?: boolean | undefined;
+	} = {},
+): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
 	logAction('getStream', streamName, options);
 
 	return (eventName, callback): (() => void) => {
@@ -91,7 +97,7 @@ const ServerContextMock = ({
 
 				return {
 					match: (method: string, path: string): boolean => _method === method && pathRegexp.test(path[0] === '/' ? path : `/v1/${path}`),
-					handler,
+					handler: handler as any,
 				};
 			},
 		);
@@ -99,7 +105,7 @@ const ServerContextMock = ({
 		const _callEndpoint: ServerContextValue['callEndpoint'] = async <TMethod extends Method, TPath extends PathFor<TMethod>>(
 			method: TMethod,
 			path: TPath,
-			params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
+			params: OperationParams<TMethod, MatchPathPattern<TPath>>,
 		): Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>> => {
 			const mockedEndpoint = mockedEndpoints.find((endpoint) => endpoint.match(method, path));
 			const handler = mockedEndpoint?.handler;
