@@ -1,9 +1,10 @@
 import type { IOmnichannelCannedResponse, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ICannedResponseModel } from '@rocket.chat/model-typings';
 import type { Db, Collection, IndexDescription, FindOptions, FindCursor, DeleteResult } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
-export class CannedResponse extends BaseRaw<IOmnichannelCannedResponse> {
+export class CannedResponse extends BaseRaw<IOmnichannelCannedResponse> implements ICannedResponseModel {
 	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { shortcut: 1 }, unique: true }];
 	}

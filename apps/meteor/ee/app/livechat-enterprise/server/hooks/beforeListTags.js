@@ -1,9 +1,10 @@
+import { LivechatTag } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../../lib/callbacks';
-import LivechatTag from '../../../models/server/models/LivechatTag';
 
 callbacks.add(
 	'livechat.beforeListTags',
-	() => LivechatTag.find({}, { fields: { name: 1, departments: 1 } }).fetch(),
+	() => Promise.await(LivechatTag.find({}, { projection: { name: 1, departments: 1 } }).toArray()),
 	callbacks.priority.LOW,
 	'livechat-before-list-tags',
 );

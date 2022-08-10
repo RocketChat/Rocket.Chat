@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatTag } from '@rocket.chat/models';
 
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
-import LivechatTag from '../../../models/server/models/LivechatTag';
 import { Users, LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
@@ -110,16 +109,16 @@ export const LivechatEnterprise = {
 		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, unitMonitors, unitDepartments);
 	},
 
-	removeTag(_id) {
+	async removeTag(_id) {
 		check(_id, String);
 
-		const tag = LivechatTag.findOneById(_id, { fields: { _id: 1 } });
+		const tag = await LivechatTag.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!tag) {
 			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
 		}
 
-		return LivechatTag.removeById(_id);
+		await LivechatTag.removeById(_id);
 	},
 
 	saveTag(_id, tagData, tagDepartments) {
