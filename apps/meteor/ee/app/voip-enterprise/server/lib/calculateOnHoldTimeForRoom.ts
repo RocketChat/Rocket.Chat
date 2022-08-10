@@ -1,4 +1,4 @@
-import { IVoipRoom } from '@rocket.chat/core-typings';
+import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { PbxEvents } from '@rocket.chat/models';
 
 export const calculateOnHoldTimeForRoom = async (room: IVoipRoom, closedAt: Date): Promise<number> => {

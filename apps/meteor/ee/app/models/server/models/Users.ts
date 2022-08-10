@@ -12,7 +12,7 @@ type AgentMetadata = {
 
 // get next agent ignoring the ones reached the max amount of active chats
 const getUnavailableAgents = function (_: any, departmentId: string, customFilter: { [k: string]: any }[]): Promise<AgentMetadata[]> {
-	// @ts-expect-error
+	// @ts-expect-error 'this' implicitly has type 'any' because it does not have a type annotation.
 	const col = this.model.rawCollection() as any;
 
 	// if department is provided, remove the agents that are not from the selected department

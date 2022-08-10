@@ -1,12 +1,12 @@
 /* eslint-env mocha */
 
 import { expect } from 'chai';
-import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Response } from 'supertest';
+import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { makeAgentAvailable, createAgent, createLivechatRoom, createVisitor } from '../../../data/livechat/rooms.js';
+import { makeAgentAvailable, createAgent, createLivechatRoom, createVisitor, takeInquiry } from '../../../data/livechat/rooms';
 
 describe('LIVECHAT - visitors', function () {
 	this.retries(0);
@@ -285,6 +285,183 @@ describe('LIVECHAT - visitors', function () {
 					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
+		});
+	});
+
+	describe('livechat/visitors.autocomplete', () => {
+		it('should return an error when the user doesnt have the right permissions', (done) => {
+			updatePermission('view-l-room', []).then(() =>
+				request
+					.get(api('livechat/visitors.autocomplete'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.end(done),
+			);
+		});
+
+		it('should return an error when the "selector" query parameter is not valid', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent']).then(() => {
+				request
+					.get(api('livechat/visitors.autocomplete'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal("The 'selector' param is required");
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error if "selector" param is not JSON serializable', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent']).then(() => {
+				request
+					.get(api('livechat/visitors.autocomplete'))
+					.query({ selector: '{invalid' })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
+		});
+
+		it('should return a list of visitors when the query params is all valid', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => createVisitor())
+				.then((createdVisitor: ILivechatVisitor) => {
+					request
+						.get(api('livechat/visitors.autocomplete'))
+						.query({ selector: JSON.stringify({ term: createdVisitor.name }) })
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('items');
+							expect(res.body.items).to.be.an('array');
+							expect(res.body.items).to.have.length.of.at.least(1);
+							expect(res.body.items[0]).to.have.property('_id');
+							expect(res.body.items[0]).to.have.property('name');
+
+							const visitor = res.body.items.find((item: any) => item._id === createdVisitor._id);
+							expect(visitor).to.have.property('_id');
+							expect(visitor).to.have.property('name');
+							expect(visitor._id).to.be.equal(createdVisitor._id);
+						})
+						.end(done);
+				});
+		});
+	});
+
+	describe('livechat/visitors.searchChats/room/:roomId/visitor/:visitorId', () => {
+		it('should return an error when the user doesnt have the right permissions', (done) => {
+			updatePermission('view-l-room', [])
+				.then(() =>
+					request
+						.get(api('livechat/visitors.searchChats/room/123/visitor/123'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(403),
+				)
+				.then(() => done())
+				.catch(done);
+		});
+
+		it('should throw an error when the roomId is not valid', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => {
+					request
+						.get(api('livechat/visitors.searchChats/room/invalid/visitor/123'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+						});
+				})
+				.then(() => done())
+				.catch(done);
+		});
+
+		it('should return an empty array if the user is not the one serving the chat', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
+				.then(() => createVisitor())
+				.then((createdVisitor: ILivechatVisitor) => createLivechatRoom(createdVisitor.token))
+				.then((room: IOmnichannelRoom) => {
+					request
+						.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/123`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('history');
+							expect(res.body.history).to.be.an('array');
+							expect(res.body.history).to.have.lengthOf(0);
+						});
+				})
+				.then(() => done())
+				.catch(done);
+		});
+
+		it('should return an empty array if the visitorId doesnt correlate to room', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
+				.then(() => createVisitor())
+				.then((createdVisitor: ILivechatVisitor) => createLivechatRoom(createdVisitor.token))
+				.then((room: IOmnichannelRoom) => {
+					request
+						.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/123`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('history');
+							expect(res.body.history).to.be.an('array');
+							expect(res.body.history).to.have.lengthOf(0);
+						});
+				})
+				.then(() => done())
+				.catch(done);
+		});
+
+		it('should return a list of chats when the query params is all valid', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
+				.then(() => createVisitor())
+				.then((createdVisitor: ILivechatVisitor) => Promise.all([createLivechatRoom(createdVisitor.token), createdVisitor]))
+				.then(([room, visitor]: [IOmnichannelRoom, ILivechatVisitor]) => Promise.all([createAgent(), room, visitor]))
+				.then(([agent, room, visitor]: [ILivechatAgent, IOmnichannelRoom, ILivechatVisitor]) => {
+					return Promise.all([room, visitor, takeInquiry(room._id, agent._id)]);
+				})
+				.then(([room, visitor]: [IOmnichannelRoom, ILivechatVisitor, any]) => {
+					request
+						.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=false`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('history');
+							expect(res.body.history).to.be.an('array');
+							expect(res.body.history).to.have.length.of.at.least(1);
+							expect(res.body.history[0]).to.have.property('_id');
+							expect(res.body.history[0]).to.have.property('name');
+							expect(res.body.history[0]).to.have.property('createdAt');
+							expect(res.body.history[0]).to.have.property('endedAt');
+							expect(res.body.history[0]).to.have.property('status');
+							expect(res.body.history[0]).to.have.property('visitor');
+						});
+				})
+				.then(() => done())
+				.catch(done);
 		});
 	});
 });

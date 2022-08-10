@@ -1,4 +1,4 @@
-import { ILicenseTag } from './ILicenseTag';
+import type { ILicenseTag } from './ILicenseTag';
 
 export interface ILicense {
 	url: string;

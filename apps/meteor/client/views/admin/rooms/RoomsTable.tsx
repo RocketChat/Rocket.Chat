@@ -14,8 +14,8 @@ import FilterByTypeAndText from './FilterByTypeAndText';
 type RoomParamsType = {
 	text?: string;
 	types?: string[];
-	current?: number;
-	itemsPerPage?: 25 | 50 | 100;
+	current: number;
+	itemsPerPage: 25 | 50 | 100;
 };
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };

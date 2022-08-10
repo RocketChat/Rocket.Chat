@@ -1,4 +1,5 @@
-import { API, Options, NonEnterpriseTwoFactorOptions } from '../../../app/api/server/api';
+import type { Options, NonEnterpriseTwoFactorOptions } from '../../../app/api/server/api';
+import { API } from '../../../app/api/server/api';
 import { use } from '../../../app/settings/server/Middleware';
 import { isEnterprise } from '../../app/license/server/license';
 

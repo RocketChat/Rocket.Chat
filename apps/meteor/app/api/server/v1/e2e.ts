@@ -5,7 +5,7 @@ import {
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
 	ise2eUpdateGroupKeyParamsPOST,
 } from '@rocket.chat/rest-typings';
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { API } from '../api';
 
