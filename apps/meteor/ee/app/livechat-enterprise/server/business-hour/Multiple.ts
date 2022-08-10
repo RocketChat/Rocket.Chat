@@ -226,7 +226,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 				agentIdsWithoutDepartment.push(agentId);
 			}
 			if (!(await LivechatDepartmentAgents.findAgentsByAgentIdAndBusinessHourId(agentId, department.businessHourId)).length) {
-				// eslint-disable-line no-await-in-loop
 				agentIdsToRemoveCurrentBusinessHour.push(agentId);
 			}
 		}
