@@ -5,10 +5,11 @@ import {
 	LivechatRooms as LivechatRoomsRaw,
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatCustomField,
+	LivechatInquiry,
 } from '@rocket.chat/models';
 
 import { memoizeDebounce } from './debounceByParams';
-import { Users, LivechatInquiry, LivechatRooms, Messages } from '../../../../../app/models/server';
+import { Users, LivechatRooms, Messages } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
@@ -210,8 +211,8 @@ export const updateRoomPriorityHistory = (rid, user, priority) => {
 	Messages.createPriorityHistoryWithRoomIdMessageAndUser(rid, '', user, history);
 };
 
-export const updateInquiryQueuePriority = (roomId, priority) => {
-	const inquiry = LivechatInquiry.findOneByRoomId(roomId, { fields: { rid: 1, ts: 1 } });
+export const updateInquiryQueuePriority = async (roomId, priority) => {
+	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { rid: 1, ts: 1 } });
 	if (!inquiry) {
 		return;
 	}
@@ -227,7 +228,7 @@ export const updateInquiryQueuePriority = (roomId, priority) => {
 		estimatedServiceTimeAt = new Date(estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes));
 	}
 
-	LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, {
+	await LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, {
 		queueOrder,
 		estimatedWaitingTimeQueue,
 		estimatedServiceTimeAt,
@@ -236,7 +237,7 @@ export const updateInquiryQueuePriority = (roomId, priority) => {
 
 export const removePriorityFromRooms = (priorityId) => {
 	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
-		updateInquiryQueuePriority(room._id);
+		Promise.await(updateInquiryQueuePriority(room._id));
 	});
 
 	LivechatRooms.unsetPriorityById(priorityId);
@@ -249,7 +250,7 @@ export const updatePriorityInquiries = (priority) => {
 
 	const { _id: priorityId } = priority;
 	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
-		updateInquiryQueuePriority(room._id, priority);
+		Promise.await(updateInquiryQueuePriority(room._id, priority));
 	});
 };
 

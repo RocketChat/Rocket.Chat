@@ -177,7 +177,7 @@ export const LivechatEnterprise = {
 	},
 
 	updateRoomPriority(roomId, user, priority) {
-		updateInquiryQueuePriority(roomId, priority);
+		Promise.await(updateInquiryQueuePriority(roomId, priority));
 		updateRoomPriorityHistory(roomId, user, priority);
 	},
 
