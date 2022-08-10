@@ -1,5 +1,4 @@
-import type { IUser, IUserSession } from '@rocket.chat/core-typings';
-import { UserStatus } from '@rocket.chat/core-typings';
+import type { IUser, IUserSession, UserStatus } from '@rocket.chat/core-typings';
 
 import { getCollection, Collections } from '../../mongo';
 import { processPresenceAndStatus } from '../lib/processConnectionStatus';

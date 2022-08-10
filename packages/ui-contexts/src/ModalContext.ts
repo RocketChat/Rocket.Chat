@@ -1,4 +1,5 @@
-import { createContext, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { createContext } from 'react';
 
 type ModalConfiguration = {
 	type?: 'rc-game' | 'success' | 'input' | 'warning' | 'error' | false;

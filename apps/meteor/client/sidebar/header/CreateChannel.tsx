@@ -1,6 +1,6 @@
 import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, TranslationKey, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
@@ -61,7 +61,7 @@ const CreateChannel = ({
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const federationEnabled = useSetting('Federation_Matrix_enabled');
-	const channelNameExists = useMethod('roomNameExists');
+	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 
@@ -83,8 +83,9 @@ const CreateChannel = ({
 			if (!allowSpecialNames && !channelNameRegex.test(name)) {
 				return setNameError(t('error-invalid-name'));
 			}
-			const isNotAvailable = await channelNameExists(name);
-			if (isNotAvailable) {
+			const { exists } = await channelNameExists({ roomName: name });
+
+			if (exists) {
 				return setNameError(t('Channel_already_exist', name));
 			}
 		},

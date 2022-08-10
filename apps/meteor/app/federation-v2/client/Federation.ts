@@ -1,4 +1,4 @@
-import { IRoom, IUser, ValueOf } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, ValueOf } from '@rocket.chat/core-typings';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';

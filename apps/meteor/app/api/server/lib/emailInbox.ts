@@ -1,5 +1,5 @@
-import { IEmailInbox } from '@rocket.chat/core-typings';
-import { InsertOneResult, UpdateResult, WithId } from 'mongodb';
+import type { IEmailInbox } from '@rocket.chat/core-typings';
+import type { Filter, InsertOneResult, Sort, UpdateResult, WithId } from 'mongodb';
 import { EmailInbox } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -11,11 +11,11 @@ export const findEmailInboxes = async ({
 	pagination: { offset, count, sort },
 }: {
 	userId: string;
-	query?: {};
+	query?: Filter<IEmailInbox>;
 	pagination: {
 		offset: number;
 		count: number;
-		sort?: {};
+		sort?: Sort;
 	};
 }): Promise<{
 	emailInboxes: IEmailInbox[];

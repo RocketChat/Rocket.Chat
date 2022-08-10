@@ -1,5 +1,5 @@
 import { HTTP } from 'meteor/http';
-import { CloudConfirmationPollData } from '@rocket.chat/core-typings';
+import type { CloudConfirmationPollData } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -11,7 +11,7 @@ export async function getConfirmationPoll(deviceCode: string): Promise<CloudConf
 	try {
 		result = HTTP.get(`${cloudUrl}/api/v2/register/workspace/poll?token=${deviceCode}`);
 	} catch (e: any) {
-		if (e.response && e.response.data && e.response.data.error) {
+		if (e.response?.data?.error) {
 			SystemLogger.error(`Failed to register with Rocket.Chat Cloud. ErrorCode: ${e.response.data.error}`);
 		} else {
 			SystemLogger.error(e);

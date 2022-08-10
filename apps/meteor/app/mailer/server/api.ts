@@ -7,9 +7,9 @@ import juice from 'juice';
 import stripHtml from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { ISetting } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
-import { Settings as SettingsRaw } from '../../models/server';
 import { replaceVariables } from './replaceVariables';
 import { Apps } from '../../apps/server';
 import { validateEmail } from '../../../lib/emailValidator';
@@ -161,7 +161,7 @@ export const sendNoWrap = ({
 		html = undefined;
 	}
 
-	SettingsRaw.incrementValueById('Triggered_Emails_Count');
+	Settings.incrementValueById('Triggered_Emails_Count');
 
 	const email = { to, from, replyTo, subject, html, text, headers };
 

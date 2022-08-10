@@ -1,143 +1,15 @@
-import { EventEmitter } from 'events';
-
 import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
 import { setUpdatedAt } from '../lib/setUpdatedAt';
-import { metrics } from '../../../metrics/server/lib/metrics';
-import { getOplogHandle } from './_oplogHandle';
-import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { trash } from '../../../../server/database/trash';
 
 const baseName = 'rocketchat_';
 
-const actions = {
-	i: 'insert',
-	u: 'update',
-	d: 'remove',
-};
-
-export class BaseDbWatch extends EventEmitter {
-	constructor(collectionName) {
-		super();
-		this.collectionName = collectionName;
-
-		if (!isRunningMs()) {
-			this.initDbWatch();
-		}
-	}
-
-	initDbWatch() {
-		const _oplogHandle = Promise.await(getOplogHandle());
-
-		// When someone start listening for changes we start oplog if available
-		const handleListener = async (event /* , listener*/) => {
-			if (event !== 'change') {
-				return;
-			}
-
-			this.removeListener('newListener', handleListener);
-
-			const query = {
-				collection: this.collectionName,
-			};
-
-			if (!_oplogHandle) {
-				throw new Error(`Error: Unable to find Mongodb Oplog. You must run the server with oplog enabled. Try the following:\n
-				1. Start your mongodb in a replicaset mode: mongod --smallfiles --oplogSize 128 --replSet rs0\n
-				2. Start the replicaset via mongodb shell: mongo mongo/meteor --eval "rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"\n
-				3. Start your instance with OPLOG configuration: export MONGO_OPLOG_URL=mongodb://localhost:27017/local MONGO_URL=mongodb://localhost:27017/meteor node main.js
-				`);
-			}
-
-			_oplogHandle.onOplogEntry(query, this.processOplogRecord.bind(this));
-			// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
-			if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
-				_oplogHandle._defineTooFarBehind(Number.MAX_SAFE_INTEGER);
-			}
-		};
-
-		if (_oplogHandle) {
-			this.on('newListener', handleListener);
-		}
-	}
-
-	processOplogRecord({ id, op }) {
-		const action = actions[op.op];
-		metrics.oplog.inc({
-			collection: this.collectionName,
-			op: action,
-		});
-
-		if (action === 'insert') {
-			this.emit('change', {
-				action,
-				clientAction: 'inserted',
-				id: op.o._id,
-				data: op.o,
-				oplog: true,
-			});
-			return;
-		}
-
-		if (action === 'update') {
-			if (!op.o.$set && !op.o.$unset) {
-				this.emit('change', {
-					action,
-					clientAction: 'updated',
-					id,
-					data: op.o,
-					oplog: true,
-				});
-				return;
-			}
-
-			const diff = {};
-			if (op.o.$set) {
-				for (const key in op.o.$set) {
-					if (op.o.$set.hasOwnProperty(key)) {
-						diff[key] = op.o.$set[key];
-					}
-				}
-			}
-			const unset = {};
-			if (op.o.$unset) {
-				for (const key in op.o.$unset) {
-					if (op.o.$unset.hasOwnProperty(key)) {
-						diff[key] = undefined;
-						unset[key] = 1;
-					}
-				}
-			}
-
-			this.emit('change', {
-				action,
-				clientAction: 'updated',
-				id,
-				diff,
-				unset,
-				oplog: true,
-			});
-			return;
-		}
-
-		if (action === 'remove') {
-			this.emit('change', {
-				action,
-				clientAction: 'removed',
-				id,
-				oplog: true,
-			});
-		}
-	}
-}
-
-export class BaseDb extends BaseDbWatch {
+export class BaseDb {
 	constructor(model, baseModel, options = {}) {
 		const collectionName = Match.test(model, String) ? baseName + model : model._name;
-
-		super(collectionName);
 
 		this.collectionName = collectionName;
 

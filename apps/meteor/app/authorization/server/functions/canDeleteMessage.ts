@@ -1,4 +1,4 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from './hasPermission';
 import { getValue } from '../../../settings/server/raw';
