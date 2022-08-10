@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { ILivechatVisitorDTO, IRoom } from '@rocket.chat/core-typings';
-import { LivechatVisitors as VisitorsRaw } from '@rocket.chat/models';
+import { LivechatVisitors as VisitorsRaw, LivechatCustomField } from '@rocket.chat/models';
 
-import { LivechatRooms, LivechatCustomField } from '../../../../models/server';
+import { LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
@@ -40,17 +40,15 @@ API.v1.addRoute('livechat/visitor', {
 		const visitorId = await Livechat.registerGuest(guest as any); // TODO: Rewrite Livechat to TS
 
 		let visitor = await VisitorsRaw.findOneById(visitorId, {});
-		// If it's updating an existing visitor, it must also update the roomInfo
-		const cursor = LivechatRooms.findOpenByVisitorToken(visitor?.token);
-		cursor.forEach((room: IRoom) => {
-			if (visitor) {
-				Livechat.saveRoomInfo(room, visitor);
-			}
-		});
+		if (visitor) {
+			// If it's updating an existing visitor, it must also update the roomInfo
+			const rooms = LivechatRooms.findOpenByVisitorToken(visitor?.token).fetch();
+			await Promise.all(rooms.map((room: IRoom) => Livechat.saveRoomInfo(room, visitor)));
+		}
 
 		if (customFields && customFields instanceof Array) {
 			customFields.forEach((field) => {
-				const customField = LivechatCustomField.findOneById(field.key);
+				const customField = Promise.await(LivechatCustomField.findOneById(field.key));
 				if (!customField) {
 					return;
 				}
