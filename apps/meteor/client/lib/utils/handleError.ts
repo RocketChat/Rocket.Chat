@@ -3,23 +3,23 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { dispatchToastMessage } from '../toast';
 
-const hasXHR = (error: {}): error is { xhr: JQuery.jqXHR } => 'xhr' in error;
+const hasXHR = (error: object): error is { xhr: JQuery.jqXHR } => 'xhr' in error;
 
-const hasDetails = (error: {}): error is { details: Record<string, string> } =>
+const hasDetails = (error: object): error is { details: Record<string, string> } =>
 	'details' in error && typeof (error as { details: unknown }).details === 'object';
 
-const hasToastrShowed = (error: {}): error is { toastrShowed: true } =>
+const hasToastrShowed = (error: object): error is { toastrShowed: true } =>
 	'toastrShowed' in error && (error as { toastrShowed: unknown }).toastrShowed === true;
 
-const hasError = (error: {}): error is { error: string } => 'error' in error && typeof (error as { error: unknown }).error === 'string';
+const hasError = (error: object): error is { error: string } => 'error' in error && typeof (error as { error: unknown }).error === 'string';
 
-const hasMessage = (error: {}): error is { message: string } =>
+const hasMessage = (error: object): error is { message: string } =>
 	'error' in error && typeof (error as { message: unknown }).message === 'string';
 
 const hasErrorTitle = (details: Record<string, string>): details is Record<string, string> & { errorTitle: string } =>
 	'errorTitle' in details && typeof (details as Record<string, string> & { errorTitle: unknown }) === 'string';
 
-export const handleError = (error: {}, useToastr = true): JQuery<HTMLElement> | string | undefined => {
+export const handleError = (error: object, useToastr = true): JQuery<HTMLElement> | string | undefined => {
 	if (hasXHR(error) && error.xhr.responseJSON) {
 		return handleError(error.xhr.responseJSON, useToastr);
 	}
