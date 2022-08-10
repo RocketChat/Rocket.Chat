@@ -9,7 +9,7 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
 		const uid = Meteor.userId();
 		const options = {
-			me: uid && (Users.findOne(uid, { fields: { username: 1 } }) || {}).username,
+			me: uid && Users.findOne(uid, { fields: { username: 1 } })?.username,
 			pattern: settings.get('UTF8_User_Names_Validation'),
 			useRealName: settings.get('UI_Use_Real_Name'),
 		};

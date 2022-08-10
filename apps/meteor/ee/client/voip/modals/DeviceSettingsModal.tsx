@@ -1,5 +1,12 @@
 import { Modal, Field, Select, ButtonGroup, Button, SelectOption, Box } from '@rocket.chat/fuselage';
-import { useTranslation, useAvailableDevices, useToastMessageDispatch, useSetModal, useSelectedDevices } from '@rocket.chat/ui-contexts';
+import {
+	useTranslation,
+	useAvailableDevices,
+	useToastMessageDispatch,
+	useSetModal,
+	useSelectedDevices,
+	useIsDeviceManagementEnabled,
+} from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 
@@ -14,6 +21,7 @@ type FieldValues = {
 const DeviceSettingsModal = (): ReactElement => {
 	const setModal = useSetModal();
 	const onCancel = (): void => setModal();
+	const isDeviceManagementEnabled = useIsDeviceManagementEnabled();
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const selectedAudioDevices = useSelectedDevices();
@@ -58,6 +66,11 @@ const DeviceSettingsModal = (): ReactElement => {
 						<Box is='a' href='https://rocket.chat/download' target='_blank' rel='noopener noreferrer'>
 							{t('Download_Destkop_App')}
 						</Box>
+					</Box>
+				)}
+				{!isDeviceManagementEnabled && (
+					<Box color='danger-600' display='flex' flexDirection='column'>
+						{t('Device_Changes_Not_Available_Insecure_Context')}
 					</Box>
 				)}
 				<Field>

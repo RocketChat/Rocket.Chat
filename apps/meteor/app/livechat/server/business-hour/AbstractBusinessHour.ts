@@ -3,7 +3,7 @@ import type { ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/co
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
-import { IWorkHoursCronJobsWrapper } from '../../../../server/models/raw/LivechatBusinessHours';
+import type { IWorkHoursCronJobsWrapper } from '../../../../server/models/raw/LivechatBusinessHours';
 
 export interface IBusinessHourBehavior {
 	findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]>;
