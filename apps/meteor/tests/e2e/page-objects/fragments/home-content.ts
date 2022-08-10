@@ -100,6 +100,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa="UserCard"] a');
 	}
 
+	get btnForwardChat(): Locator {
+		return this.page.locator('[data-qa="FowardMessage"]');
+	}
+
 	async pickEmoji(emoji: string, section = 'icon-people') {
 		await this.page.locator('.rc-message-box__icon.emoji-picker-icon').click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
