@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 
 import { settings } from '../../app/settings/server';
 import { Messages, Rooms } from '../../app/models/server';
+import { markRoomAsRead } from '../lib/markRoomAsRead';
 import { canAccessRoom } from '../../app/authorization/server';
 import { readThread } from '../../app/threads/server/functions';
 
@@ -28,6 +29,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });
 		}
 
-		return readThread({ userId: user._id, rid: thread.rid, tmid });
+		readThread({ userId: user._id, rid: thread.rid, tmid });
+		Promise.await(markRoomAsRead(thread.rid, user._id));
 	},
 });
