@@ -27,10 +27,8 @@ Meteor.methods({
 		});
 
 		// If it's updating an existing visitor, it must also update the roomInfo
-		const cursor = LivechatRooms.findOpenByVisitorToken(token);
-		cursor.forEach((room) => {
-			Livechat.saveRoomInfo(room, visitor);
-		});
+		const rooms = LivechatRooms.findOpenByVisitorToken(token).fetch();
+		await Promise.all(rooms.map((room) => Livechat.saveRoomInfo(room, visitor)));
 
 		if (customFields && customFields instanceof Array) {
 			// TODO: refactor to use normal await
