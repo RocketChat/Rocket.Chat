@@ -1,9 +1,9 @@
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
-import { IFederationBridge } from '../../domain/IFederationBridge';
+import type { IFederationBridge } from '../../domain/IFederationBridge';
 import { bridgeLogger } from '../rocket-chat/adapters/logger';
-import { IMatrixEvent } from './definitions/IMatrixEvent';
-import { MatrixEventType } from './definitions/MatrixEventType';
+import type { IMatrixEvent } from './definitions/IMatrixEvent';
+import type { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
@@ -23,7 +23,7 @@ export class MatrixBridge implements IFederationBridge {
 		protected bridgeUrl: string,
 		protected bridgePort: number,
 		protected homeServerRegistrationFile: Record<string, any>,
-		protected eventHandler: Function,
+		protected eventHandler: (event: IMatrixEvent<MatrixEventType>) => void,
 	) {
 		this.logInfo();
 	}

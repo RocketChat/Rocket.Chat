@@ -38,9 +38,9 @@ import {
 } from '@rocket.chat/models';
 
 import { subscriptionFields, roomFields } from './publishFields';
-import { EventSignatures } from '../../sdk/lib/Events';
+import type { EventSignatures } from '../../sdk/lib/Events';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
-import { DatabaseWatcher } from '../../database/DatabaseWatcher';
+import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 

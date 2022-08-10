@@ -4,6 +4,7 @@ import React, { ReactElement } from 'react';
 import { DialInput } from './DialInput';
 import Pad from './Pad';
 import { useDialPad } from './hooks/useDialPad';
+import { useEnterKey } from './hooks/useEnterKey';
 
 type DialPadModalProps = {
 	initialValue?: string;
@@ -22,9 +23,9 @@ const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalP
 		handlePadButtonClick,
 		handlePadButtonLongPressed,
 		handleCallButtonClick,
-		handleSubmit,
-		onSubmit,
 	} = useDialPad({ initialValue, errorMessage });
+
+	useEnterKey(handleCallButtonClick, isButtonDisabled);
 
 	return (
 		<Modal maxWidth='400px'>
@@ -32,7 +33,7 @@ const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalP
 				<Modal.Title />
 				<Modal.Close onClick={handleClose} />
 			</Modal.Header>
-			<Modal.Content is='form' onSubmit={handleSubmit(onSubmit)} display='flex' justifyContent='center' flexDirection='column'>
+			<Modal.Content display='flex' justifyContent='center' flexDirection='column'>
 				<Field>
 					<DialInput
 						ref={inputRef}

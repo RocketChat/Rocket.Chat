@@ -85,8 +85,6 @@ const ForwardChatModal = ({
 					<Field.Label>{t('Forward_to_department')}</Field.Label>
 					<Field.Row>
 						{
-							// TODO: Definitions on fuselage are incorrect, need to be fixed!
-							// @ts-ignore-next-line
 							<PaginatedSelectFiltered
 								withTitle
 								filter={departmentsFilter as string}

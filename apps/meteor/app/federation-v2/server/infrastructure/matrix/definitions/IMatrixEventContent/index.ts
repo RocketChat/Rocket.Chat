@@ -1,10 +1,10 @@
-import { MatrixEventType } from '../MatrixEventType';
-import { IMatrixEventContentCreateRoom } from './IMatrixEventContentCreateRoom';
-import { IMatrixEventContentAddMemberToRoom } from './IMatrixEventContentAddMemberToRoom';
-import { IMatrixEventContentSendMessage } from './IMatrixEventContentSendMessage';
-import { IMatrixEventContentSetRoomJoinRules } from './IMatrixEventContentSetRoomJoinRules';
-import { IMatrixEventContentSetRoomName } from './IMatrixEventContentSetRoomName';
-import { IMatrixEventContentSetRoomTopic } from './IMatrixEventContentSetRoomTopic';
+import type { MatrixEventType } from '../MatrixEventType';
+import type { IMatrixEventContentCreateRoom } from './IMatrixEventContentCreateRoom';
+import type { IMatrixEventContentAddMemberToRoom } from './IMatrixEventContentAddMemberToRoom';
+import type { IMatrixEventContentSendMessage } from './IMatrixEventContentSendMessage';
+import type { IMatrixEventContentSetRoomJoinRules } from './IMatrixEventContentSetRoomJoinRules';
+import type { IMatrixEventContentSetRoomName } from './IMatrixEventContentSetRoomName';
+import type { IMatrixEventContentSetRoomTopic } from './IMatrixEventContentSetRoomTopic';
 
 export type EventContent = {
 	[MatrixEventType.ROOM_CREATED]: IMatrixEventContentCreateRoom;
