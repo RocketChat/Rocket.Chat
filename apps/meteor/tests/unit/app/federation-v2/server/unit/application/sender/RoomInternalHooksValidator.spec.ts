@@ -36,12 +36,14 @@ describe('Federation - Application - FederationRoomInternalHooksValidator', () =
 	});
 
 	describe('#canAddFederatedUserToNonFederatedRoom()', () => {
-		it('should NOT throw an error if the user is trying to add a new external user', async () => {
-			await expect(service.canAddFederatedUserToNonFederatedRoom('external user', {} as any)).to.not.be.rejected;
-		});
-
 		it('should NOT throw an error if the internal room is federated', async () => {
 			await expect(service.canAddFederatedUserToNonFederatedRoom('external user', { federated: true } as any)).to.not.be.rejected;
+		});
+
+		it('should throw an error if the user is tryng to add an external user to a non federated room', async () => {
+			await expect(service.canAddFederatedUserToNonFederatedRoom('external user', {} as any)).to.be.rejectedWith(
+				'error-cant-add-federated-users',
+			);
 		});
 
 		it('should NOT throw an error if the internal room is NOT federated but the user is adding a non federated user to it', async () => {
@@ -73,10 +75,16 @@ describe('Federation - Application - FederationRoomInternalHooksValidator', () =
 			await expect(service.canAddFederatedUserToFederatedRoom('external user', {} as any, {} as any)).to.not.be.rejected;
 		});
 
-		it('should throw an error if the user is trying to add a new external user', async () => {
-			await expect(service.canAddFederatedUserToFederatedRoom('external user', {} as any, { federated: true } as any)).to.be.rejectedWith(
-				'error-this-is-an-ee-feature',
-			);
+		it('should throw an error if the user is trying to add a new external user AND the room is not a DM', async () => {
+			await expect(
+				service.canAddFederatedUserToFederatedRoom('external user', {} as any, { federated: true, t: RoomType.CHANNEL } as any),
+			).to.be.rejectedWith('error-this-is-an-ee-feature');
+		});
+
+		it('should NOT throw an error if the user is trying to add a new external user but the room is a DM', async () => {
+			await expect(
+				service.canAddFederatedUserToFederatedRoom('external user', {} as any, { federated: true, t: RoomType.DIRECT_MESSAGE } as any),
+			).to.not.be.rejected;
 		});
 
 		it('should NOT throw an error if there is no existent federated room', async () => {
