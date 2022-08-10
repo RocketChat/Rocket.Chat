@@ -1,4 +1,4 @@
-import { IDeviceManagementService } from '../../sdk/types/IDeviceManagementService';
+import type { IDeviceManagementService } from '../../sdk/types/IDeviceManagementService';
 import { deviceManagementEvents } from './events';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 

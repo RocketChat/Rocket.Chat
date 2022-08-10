@@ -8,7 +8,7 @@ import { settings } from '../../../settings/server';
 import { TOTPCheck } from './TOTPCheck';
 import { EmailCheck } from './EmailCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
-import { ICodeCheck } from './ICodeCheck';
+import type { ICodeCheck } from './ICodeCheck';
 import { Users } from '../../../models/server';
 
 export interface ITwoFactorOptions {

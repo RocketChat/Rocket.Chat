@@ -1,6 +1,6 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, useRef, ReactElement } from 'react';
+import React, { useState, useCallback, useRef, ReactElement, MutableRefObject } from 'react';
 
 import Page from '../../../components/Page';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
@@ -47,6 +47,11 @@ type CurrentData = {
 	dontAskAgainList: [action: string, label: string][];
 };
 
+export type FormSectionProps = {
+	onChange: any;
+	commitRef: MutableRefObject<Record<string, () => void>>;
+};
+
 type FormatedData = Omit<Partial<CurrentData>, 'dontAskAgainList' | 'highlights'>;
 
 const AccountPreferencesPage = (): ReactElement => {
@@ -61,13 +66,21 @@ const AccountPreferencesPage = (): ReactElement => {
 	const dataDownloadEnabled = useSetting('UserData_EnableDownload');
 
 	const onChange = useCallback(
-		({ initialValue, value, key }) => {
+		<K extends keyof CurrentData, I extends CurrentData[K], V extends CurrentData[K]>({
+			initialValue,
+			value,
+			key,
+		}: {
+			initialValue: I;
+			value: V;
+			key: K;
+		}) => {
 			const { current } = saveData;
 			if (current) {
 				if (JSON.stringify(initialValue) !== JSON.stringify(value)) {
-					current[key as keyof CurrentData] = value;
+					current[key] = value;
 				} else {
-					delete current[key as keyof CurrentData];
+					delete current[key];
 				}
 			}
 
