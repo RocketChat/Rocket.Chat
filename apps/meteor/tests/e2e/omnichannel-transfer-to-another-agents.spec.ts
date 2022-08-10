@@ -41,6 +41,9 @@ test.describe('omnichannel-departaments', () => {
 			await auxContext1.poHomeChannel.content.btnForwardChat.click();
 			await auxContext1.poHomeChannel.content.forwardUser.type('user2');
 			await auxContext1.poHomeChannel.content.btnConfirm.click();
+
+			await auxContext2.poHomeChannel.sidenav.openChat(newUser.name);
+			await expect(auxContext2.poHomeChannel.sidenav.someLocator).toBeVisible();
 		});
 	});
 });
