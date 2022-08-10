@@ -1,4 +1,4 @@
-import { SettingValue } from '@rocket.chat/core-typings';
+import type { SettingValue } from '@rocket.chat/core-typings';
 import { Statistics } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
@@ -6,12 +6,12 @@ import { Users } from '../../../models/server';
 import { statistics } from '../../../statistics/server';
 import { LICENSE_VERSION } from '../license';
 
-type WorkspaceRegistrationData = {
+type WorkspaceRegistrationData<T> = {
 	uniqueId: string;
 	workspaceId: SettingValue;
 	address: SettingValue;
 	contactName: string;
-	contactEmail: string;
+	contactEmail: T;
 	seats: number;
 	allowMarketing: SettingValue;
 	accountName: SettingValue;
@@ -33,7 +33,7 @@ type WorkspaceRegistrationData = {
 	npsEnabled: SettingValue;
 };
 
-export async function buildWorkspaceRegistrationData(contactEmail: string): Promise<WorkspaceRegistrationData> {
+export async function buildWorkspaceRegistrationData<T extends string | undefined>(contactEmail: T): Promise<WorkspaceRegistrationData<T>> {
 	const stats = (await Statistics.findLast()) || (await statistics.get());
 
 	const address = settings.get('Site_Url');

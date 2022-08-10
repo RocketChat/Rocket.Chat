@@ -23,33 +23,33 @@ class SwitchDepartment extends Component {
 
 	state = {
 		department: null,
-	}
+	};
 
 	validations = {
 		department: [Validations.nonEmpty],
-	}
+	};
 
 	getValidableFields = () => Object.keys(this.validations)
 		.map((fieldName) => (this.state[fieldName] ? { fieldName, ...this.state[fieldName] } : null))
-		.filter(Boolean)
+		.filter(Boolean);
 
-	validate = ({ name, value }) => this.validations[name].reduce((error, validation) => error || validation({ value }), undefined)
+	validate = ({ name, value }) => this.validations[name].reduce((error, validation) => error || validation({ value }), undefined);
 
 	validateAll = () => {
 		for (const { fieldName: name, value } of this.getValidableFields()) {
 			const error = this.validate({ name, value });
 			this.setState({ [name]: { ...this.state[name], value, error, showError: false } });
 		}
-	}
+	};
 
-	isValid = () => this.getValidableFields().every(({ error } = {}) => !error)
+	isValid = () => this.getValidableFields().every(({ error } = {}) => !error);
 
 	handleFieldChange = (name) => ({ target: { value } }) => {
 		const error = this.validate({ name, value });
 		this.setState({ [name]: { ...this.state[name], value, error, showError: false } }, () => { this.validateAll(); });
-	}
+	};
 
-	handleDepartmentChange = this.handleFieldChange('department')
+	handleDepartmentChange = this.handleFieldChange('department');
 
 	handleSubmit = (event) => {
 		event.preventDefault();
@@ -61,12 +61,12 @@ class SwitchDepartment extends Component {
 				.reduce((values, entry) => ({ ...values, ...entry }), {});
 			this.props.onSubmit(values);
 		}
-	}
+	};
 
 	handleCancelClick = () => {
 		const { onCancel } = this.props;
 		onCancel && onCancel();
-	}
+	};
 
 	constructor(props) {
 		super(props);

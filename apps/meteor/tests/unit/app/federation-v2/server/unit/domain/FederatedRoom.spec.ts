@@ -78,13 +78,80 @@ describe('Federation - Domain - FederatedRoom', () => {
 	});
 
 	describe('#buildRoomIdForDirectMessages()', () => {
+		it('should throw an error if the inviter does not have the user', () => {
+			expect(() =>
+				FederatedRoom.buildRoomIdForDirectMessages(
+					{ internalReference: undefined } as any,
+					{ internalReference: { _id: 'userId2', name: 'name' } } as any,
+				),
+			).to.throw('Cannot create room Id without the user ids');
+		});
+
+		it('should throw an error if the invitee does not have the user', () => {
+			expect(() =>
+				FederatedRoom.buildRoomIdForDirectMessages(
+					{ internalReference: { _id: 'userId2', name: 'name' } } as any,
+					{ internalReference: undefined } as any,
+				),
+			).to.throw('Cannot create room Id without the user ids');
+		});
+
 		it('should return a string with the users id concatenated', () => {
 			expect(
 				FederatedRoom.buildRoomIdForDirectMessages(
-					{ internalReference: { _id: 'userId1' } } as any,
-					{ internalReference: { _id: 'userId2' } } as any,
+					{ internalReference: { _id: 'userId1', name: 'name' } } as any,
+					{ internalReference: { _id: 'userId2', name: 'name' } } as any,
 				),
 			).to.be.equal('userId1userId2');
+		});
+
+		it('should return a string with the users id concatenated ordering alphabetically', () => {
+			expect(
+				FederatedRoom.buildRoomIdForDirectMessages(
+					{ internalReference: { _id: 'userId1', name: 'name2' } } as any,
+					{ internalReference: { _id: 'userId2', name: 'name1' } } as any,
+				),
+			).to.be.equal('userId1userId2');
+		});
+	});
+
+	describe('#setRoomType()', () => {
+		it('should set the Room type if its not a direct message room', () => {
+			const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.PRIVATE_GROUP);
+			federatedRoom.setRoomType(RoomType.CHANNEL);
+			expect(federatedRoom.internalReference.t).to.be.equal(RoomType.CHANNEL);
+		});
+
+		it('should throw an error when trying to set the room type if its a direct message room', () => {
+			const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.DIRECT_MESSAGE);
+			expect(() => federatedRoom.setRoomType(RoomType.CHANNEL)).to.be.throw('Its not possible to change a direct message type');
+		});
+	});
+
+	describe('#changeRoomName()', () => {
+		it('should change the Room name if its not a direct message room', () => {
+			const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.PRIVATE_GROUP);
+			federatedRoom.changeRoomName('newName');
+			expect(federatedRoom.internalReference.name).to.be.equal('newName');
+			expect(federatedRoom.internalReference.fname).to.be.equal('newName');
+		});
+
+		it('should throw an error when trying to change the room name if its a direct message room', () => {
+			const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.DIRECT_MESSAGE);
+			expect(() => federatedRoom.changeRoomName('newName')).to.be.throw('Its not possible to change a direct message name');
+		});
+	});
+
+	describe('#changeRoomTopic()', () => {
+		it('should change the Room topic if its not a direct message room', () => {
+			const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.PRIVATE_GROUP);
+			federatedRoom.changeRoomTopic('newName');
+			expect(federatedRoom.internalReference.topic).to.be.equal('newName');
+		});
+
+		it('should throw an error when trying to change the room topic if its a direct message room', () => {
+			const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.DIRECT_MESSAGE);
+			expect(() => federatedRoom.changeRoomTopic('newName')).to.be.throw('Its not possible to change a direct message topic');
 		});
 	});
 });

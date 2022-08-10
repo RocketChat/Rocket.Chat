@@ -1,11 +1,11 @@
 import { ButtonGroup, Button, Icon, Box, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 
 type MyDataModalProps = {
 	onCancel: () => void;
 	title: string;
-	text: string;
+	text?: ReactNode;
 };
 
 const MyDataModal: FC<MyDataModalProps> = ({ onCancel, title, text, ...props }) => {
@@ -18,9 +18,11 @@ const MyDataModal: FC<MyDataModalProps> = ({ onCancel, title, text, ...props }) 
 				<Modal.Title>{title}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
-			<Modal.Content fontScale='p2'>
-				<Box mb='x8'>{text}</Box>
-			</Modal.Content>
+			{text && (
+				<Modal.Content fontScale='p2'>
+					<Box mb='x8'>{text}</Box>
+				</Modal.Content>
+			)}
 			<Modal.Footer>
 				<ButtonGroup align='end'>
 					<Button primary onClick={onCancel}>

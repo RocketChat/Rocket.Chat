@@ -1002,7 +1002,7 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const options = {
-			fields: { _id: 1 },
+			projection: { _id: 1 },
 		};
 
 		const found = await this.findOne(query, options);

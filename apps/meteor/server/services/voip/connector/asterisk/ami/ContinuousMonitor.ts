@@ -12,11 +12,10 @@
  * (AgentConnect.calleridnum, connectedlinenum, queue) to signify which agent ansered the call from which queue.
  *
  */
-import { Db } from 'mongodb';
-import {
+import type { Db } from 'mongodb';
+import type {
 	IPbxEvent,
 	IQueueDetails,
-	isIDialingEvent,
 	IAgentCalledEvent,
 	IAgentConnectEvent,
 	IEventBase,
@@ -25,6 +24,14 @@ import {
 	IQueueEvent,
 	IQueueMemberAdded,
 	IQueueMemberRemoved,
+	ICallOnHold,
+	ICallUnHold,
+	IContactStatus,
+	ICallHangup,
+	IDialingEvent,
+} from '@rocket.chat/core-typings';
+import {
+	isIDialingEvent,
 	isIAgentCalledEvent,
 	isIAgentConnectEvent,
 	isIQueueCallerAbandonEvent,
@@ -33,13 +40,8 @@ import {
 	isIQueueMemberRemovedEvent,
 	isICallOnHoldEvent,
 	isICallUnHoldEvent,
-	ICallOnHold,
-	ICallUnHold,
 	isIContactStatusEvent,
-	IContactStatus,
 	isICallHangupEvent,
-	ICallHangup,
-	IDialingEvent,
 } from '@rocket.chat/core-typings';
 import { Users, PbxEvents } from '@rocket.chat/models';
 
