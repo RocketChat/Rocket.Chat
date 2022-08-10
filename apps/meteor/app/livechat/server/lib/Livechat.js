@@ -9,7 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
-import { Users as UsersRaw, LivechatVisitors, Settings } from '@rocket.chat/models';
+import { Users as UsersRaw, LivechatVisitors, LivechatCustomField, Settings } from '@rocket.chat/models';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -25,7 +25,6 @@ import {
 	Rooms,
 	LivechatDepartmentAgents,
 	LivechatDepartment,
-	LivechatCustomField,
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
@@ -392,10 +391,10 @@ export const Livechat = {
 		}
 
 		const customFields = {};
-		const fields = LivechatCustomField.find({ scope: 'visitor' });
 
 		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
-			fields.forEach((field) => {
+			const fields = LivechatCustomField.findByScope('visitor');
+			for await (const field of fields) {
 				if (!livechatData.hasOwnProperty(field._id)) {
 					return;
 				}
@@ -407,7 +406,7 @@ export const Livechat = {
 					}
 				}
 				customFields[field._id] = value;
-			});
+			}
 			updateData.livechatData = customFields;
 		}
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
@@ -512,7 +511,7 @@ export const Livechat = {
 		check(overwrite, Boolean);
 		Livechat.logger.debug(`Setting custom fields data for visitor with token ${token}`);
 
-		const customField = LivechatCustomField.findOneById(key);
+		const customField = await LivechatCustomField.findOneById(key);
 		if (!customField) {
 			throw new Meteor.Error('invalid-custom-field');
 		}
@@ -580,14 +579,14 @@ export const Livechat = {
 		return rcSettings;
 	},
 
-	saveRoomInfo(roomData, guestData, userId) {
+	async saveRoomInfo(roomData, guestData, userId) {
 		Livechat.logger.debug(`Saving room information on room ${roomData._id}`);
 		const { livechatData = {} } = roomData;
 		const customFields = {};
 
 		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
-			const fields = LivechatCustomField.find({ scope: 'room' });
-			fields.forEach((field) => {
+			const fields = LivechatCustomField.findByScope('room');
+			for await (const field of fields) {
 				if (!livechatData.hasOwnProperty(field._id)) {
 					return;
 				}
@@ -599,7 +598,7 @@ export const Livechat = {
 					}
 				}
 				customFields[field._id] = value;
-			});
+			}
 			roomData.livechatData = customFields;
 		}
 

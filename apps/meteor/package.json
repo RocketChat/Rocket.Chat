@@ -79,7 +79,7 @@
 		"@storybook/react": "~6.5.9",
 		"@storybook/testing-library": "0.0.13",
 		"@testing-library/react": "~12.1.5",
-		"@testing-library/user-event": "^13.5.0",
+		"@testing-library/user-event": "~13.5.0",
 		"@types/adm-zip": "^0.5.0",
 		"@types/bad-words": "^3.0.1",
 		"@types/bcrypt": "^5.0.0",
