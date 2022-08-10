@@ -16,7 +16,8 @@ import type { RoomNameExistsMethod } from './methods/roomNameExists';
 import type { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
 import type { SaveSettingsMethod } from './methods/saveSettings';
 import type { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
-import type { UnfollowMessageMethod } from './methods/unfollowMessage';
+import type { UnfollowMessageMethod } from './methods/message/unfollowMessage';
+import type { ReportMessageMethod } from './methods/message/reportMessage';
 
 // TODO: frontend chapter day - define methods
 
@@ -100,6 +101,7 @@ export interface ServerMethods {
 	'removeWebdavAccount': RemoveWebdavAccount;
 	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
+	'reportMessage': ReportMessageMethod;
 	'requestDataDownload': (...args: any[]) => any;
 	'resetPassword': (...args: any[]) => any;
 	'roomNameExists': RoomNameExistsMethod;
