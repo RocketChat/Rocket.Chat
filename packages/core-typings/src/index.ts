@@ -109,6 +109,7 @@ export * from './IVoipServerConnectivityStatus';
 export * from './IOmnichannelVoipServiceResult';
 export * from './IInquiry';
 export * from './ILivechatPriority';
+export * from './ILivechatUnit';
 
 export * from './IAutoTranslate';
 export * from './IVideoConference';

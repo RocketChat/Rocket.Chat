@@ -1,6 +1,6 @@
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
 import { LivechatUnit, registerModel } from '@rocket.chat/models';
-import type { FindCursor, FindOptions, UpdateResult } from 'mongodb';
+import type { FindCursor, FindOptions, UpdateResult, Document } from 'mongodb';
 import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
 
 import { LivechatDepartmentRaw } from '../../../../server/models/raw/LivechatDepartment';
@@ -10,7 +10,7 @@ import { db } from '../../../../server/database/utils';
 // Let's extend the typings :)
 declare module '@rocket.chat/model-typings' {
 	interface ILivechatDepartmentModel {
-		removeParentAndAncestorById?(id: string): Promise<UpdateResult>;
+		removeParentAndAncestorById?(id: string): Promise<UpdateResult | Document>;
 		findEnabledWithAgentsAndBusinessUnit?(
 			businessUnit: string,
 			projection?: FindOptions<ILivechatDepartmentModel>['projection'],

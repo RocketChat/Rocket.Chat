@@ -32,4 +32,6 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId: string): Promise<Document | UpdateResult>;
 	createOrUpdateDepartment(_id: string, data: ILivechatDepartmentRecord): Promise<Omit<ILivechatDepartmentRecord, '_updatedAt'>>;
 	findActiveByUnitIds(unitIds: string[], options: FindOptions<ILivechatDepartmentRecord>): FindCursor<ILivechatDepartmentRecord>;
+	findEnabledWithAgents(projection?: FindOptions<ILivechatDepartmentRecord>): FindCursor<ILivechatDepartmentRecord>;
+	findByUnitIds(unitIds: string[], options: FindOptions<ILivechatDepartmentRecord>): FindCursor<ILivechatDepartmentRecord>;
 }
