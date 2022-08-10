@@ -8,8 +8,8 @@ test.describe.serial('file-upload', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 
-	test.beforeAll(async ({ browser }) => {
-		targetChannel = await createTargetChannel(browser);
+	test.beforeAll(async ({ api }) => {
+		targetChannel = await createTargetChannel(api);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -33,7 +33,7 @@ test.describe.serial('file-upload', () => {
 
 	test('expect send file with name/description updated', async () => {
 		await poHomeChannel.content.dragAndDropFile();
-		await poHomeChannel.content.descriptionInput.type('any_description');
+		await poHomeChannel.content.descriptionInput.fill('any_description');
 		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
 		await poHomeChannel.content.btnModalConfirm.click();
 

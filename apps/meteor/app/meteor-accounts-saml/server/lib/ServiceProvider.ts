@@ -12,10 +12,10 @@ import { ServiceProviderMetadata } from './generators/ServiceProviderMetadata';
 import { LogoutRequestParser } from './parsers/LogoutRequest';
 import { LogoutResponseParser } from './parsers/LogoutResponse';
 import { ResponseParser } from './parsers/Response';
-import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
-import { ISAMLRequest } from '../definition/ISAMLRequest';
-import { ILogoutResponse } from '../definition/ILogoutResponse';
-import { ILogoutRequestValidateCallback, ILogoutResponseValidateCallback, IResponseValidateCallback } from '../definition/callbacks';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import type { ISAMLRequest } from '../definition/ISAMLRequest';
+import type { ILogoutResponse } from '../definition/ILogoutResponse';
+import type { ILogoutRequestValidateCallback, ILogoutResponseValidateCallback, IResponseValidateCallback } from '../definition/callbacks';
 
 export class SAMLServiceProvider {
 	serviceProviderOptions: IServiceProviderOptions;

@@ -7,6 +7,10 @@
 		{
 			"pattern": "apps/*",
 			"changeProcessCWD": true
+		},
+		{
+			"pattern": "ee/apps/*",
+			"changeProcessCWD": true
 		}
 	],
 	"typescript.tsdk": "./node_modules/typescript/lib",

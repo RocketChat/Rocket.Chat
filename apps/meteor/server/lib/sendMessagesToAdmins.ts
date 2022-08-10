@@ -15,7 +15,7 @@ type Banner = {
 	link: string;
 };
 
-const getData = <T>(param: T[] | Function, adminUser: IUser): T[] => {
+const getData = <T>(param: T[] | ((params: { adminUser: IUser }) => T[]), adminUser: IUser): T[] => {
 	const result = typeof param === 'function' ? param({ adminUser }) : param;
 
 	if (!Array.isArray(result)) {
@@ -33,8 +33,8 @@ export async function sendMessagesToAdmins({
 }: {
 	fromId?: string;
 	checkFrom?: boolean;
-	msgs?: Partial<IMessage>[] | Function;
-	banners?: Banner[] | Function;
+	msgs?: Partial<IMessage>[] | ((params: { adminUser: IUser }) => Partial<IMessage>[]);
+	banners?: Banner[] | ((params: { adminUser: IUser }) => Banner[]);
 }): Promise<void> {
 	const fromUser = checkFrom ? await Users.findOneById(fromId, { projection: { _id: 1 } }) : true;
 

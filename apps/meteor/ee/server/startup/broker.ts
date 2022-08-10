@@ -32,7 +32,8 @@ const {
 	SKIP_PROCESS_EVENT_REGISTRATION = 'false',
 } = process.env;
 
-const Base = Serializers.Base as unknown as new () => {};
+const { Base } = Serializers;
+
 class CustomRegenerator extends Errors.Regenerator {
 	restoreCustomError(plainError: any): Error | undefined {
 		const { message, reason, details, errorType, isClientSafe } = plainError;
@@ -62,7 +63,7 @@ class CustomRegenerator extends Errors.Regenerator {
 }
 
 class EJSONSerializer extends Base {
-	serialize(obj: {}): Buffer {
+	serialize(obj: any): Buffer {
 		return Buffer.from(EJSON.stringify(obj));
 	}
 

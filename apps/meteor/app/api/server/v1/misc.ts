@@ -14,7 +14,7 @@ import {
 	isMethodCallAnonProps,
 	isMeteorCall,
 } from '@rocket.chat/rest-typings';
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
