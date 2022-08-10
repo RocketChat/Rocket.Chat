@@ -1618,8 +1618,21 @@ describe('[Groups]', function () {
 	});
 
 	context("Setting: 'Use Real Name': true", () => {
-		before(async () => {
+		let realNameGroup;
+
+		before(async () => {			
 			await updateSetting('UI_Use_Real_Name', true);
+
+			await request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({ name: `group-${Date.now()}` })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+
+					realNameGroup = res.body.group;
+				});
 
 			await request
 				.post(api('chat.sendMessage'))
@@ -1627,7 +1640,7 @@ describe('[Groups]', function () {
 				.send({
 					message: {
 						text: 'Sample message',
-						rid: group._id,
+						rid: realNameGroup._id,
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -1636,7 +1649,18 @@ describe('[Groups]', function () {
 					expect(res.body).to.have.property('success', true);
 				});
 		});
-		after(async () => updateSetting('UI_Use_Real_Name', false));
+		after(async () => {
+			await updateSetting('UI_Use_Real_Name', false);
+			
+			await request
+				.post(api('groups.delete'))
+				.set(credentials)
+				.send({ roomId: realNameGroup._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
 
 		it('/groups.list', (done) => {
 			request
@@ -1650,7 +1674,7 @@ describe('[Groups]', function () {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('groups').and.to.be.an('array');
 
-					const retGroup = res.body.groups.find(({ _id }) => _id === group._id);
+					const retGroup = res.body.groups.find(({ _id }) => _id === realNameGroup._id);
 
 					expect(retGroup).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
@@ -1669,7 +1693,7 @@ describe('[Groups]', function () {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('groups').and.to.be.an('array');
 
-					const retGroup = res.body.groups.find(({ _id }) => _id === group._id);
+					const retGroup = res.body.groups.find(({ _id }) => _id === realNameGroup._id);
 
 					expect(retGroup).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
