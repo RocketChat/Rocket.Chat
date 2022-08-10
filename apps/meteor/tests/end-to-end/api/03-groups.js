@@ -1620,7 +1620,7 @@ describe('[Groups]', function () {
 	context("Setting: 'Use Real Name': true", () => {
 		let realNameGroup;
 
-		before(async () => {			
+		before(async () => {
 			await updateSetting('UI_Use_Real_Name', true);
 
 			await request
@@ -1651,7 +1651,7 @@ describe('[Groups]', function () {
 		});
 		after(async () => {
 			await updateSetting('UI_Use_Real_Name', false);
-			
+
 			await request
 				.post(api('groups.delete'))
 				.set(credentials)
