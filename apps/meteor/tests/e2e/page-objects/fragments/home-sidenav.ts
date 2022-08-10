@@ -14,7 +14,7 @@ export class HomeSidenav {
 	}
 
 	get inputChannelName(): Locator {
-		return this.page.locator('#modal-root [placeholder="Channel Name"]');
+		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-name-input"]');
 	}
 
 	get btnCreateChannel(): Locator {
