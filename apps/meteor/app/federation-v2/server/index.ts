@@ -28,7 +28,7 @@ export const federationRoomServiceSender = FederationFactory.buildRoomServiceSen
 );
 
 FederationFactory.setupListeners(federationRoomServiceSender);
-let cancelSettingsObserver: Function;
+let cancelSettingsObserver: () => void;
 
 export const runFederation = async (): Promise<void> => {
 	federationQueueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);

@@ -1,8 +1,8 @@
 import { Rooms } from '@rocket.chat/models';
 
-import { IAuthorizationVoip } from '../../sdk/types/IAuthorizationVoip';
+import type { IAuthorizationVoip } from '../../sdk/types/IAuthorizationVoip';
 import { proxifyWithWait } from '../../sdk/lib/proxify';
-import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
+import type { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 
 export const AuthorizationVoip = proxifyWithWait<IAuthorizationVoip>('authorization-livechat');
 

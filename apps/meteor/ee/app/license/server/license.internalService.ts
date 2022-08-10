@@ -1,7 +1,7 @@
 import { debounce } from 'underscore';
 
 import { api } from '../../../../server/sdk/api';
-import { ILicense } from '../../../../server/sdk/types/ILicense';
+import type { ILicense } from '../../../../server/sdk/types/ILicense';
 import { ServiceClassInternal } from '../../../../server/sdk/types/ServiceClass';
 import { guestPermissions } from '../../authorization/lib/guestPermissions';
 import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';

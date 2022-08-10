@@ -1,4 +1,4 @@
-import { Box, Modal, ButtonGroup, Button, TextInput, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Modal, Button, TextInput, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
@@ -120,12 +120,12 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button disabled={!isCreateButtonEnabled} onClick={onCreate} primary>
 						{t('Create')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);
