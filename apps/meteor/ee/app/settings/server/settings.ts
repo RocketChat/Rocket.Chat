@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { ISetting, SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
 import { isEnterprise, hasLicense, onValidateLicenses } from '../../license/server/license';

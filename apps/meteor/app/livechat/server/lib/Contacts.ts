@@ -1,11 +1,11 @@
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
-import { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
-import { LivechatVisitors, Users, LivechatRooms } from '@rocket.chat/models';
-import { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
+import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField } from '@rocket.chat/models';
+import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { LivechatCustomField, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
+import { Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
 
 type RegisterContactProps = {
 	_id?: string;
@@ -71,9 +71,9 @@ export const Contacts = {
 			}
 		}
 
-		const allowedCF: ILivechatCustomField['_id'][] = LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }).map(
-			({ _id }: ILivechatCustomField) => _id,
-		);
+		const allowedCF = await LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id'>>('visitor', { projection: { _id: 1 } })
+			.map(({ _id }) => _id)
+			.toArray();
 
 		const livechatData = Object.keys(customFields)
 			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)

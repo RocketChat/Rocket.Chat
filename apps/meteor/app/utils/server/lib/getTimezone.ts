@@ -1,5 +1,5 @@
 import moment from 'moment-timezone';
-import { SettingValue } from '@rocket.chat/core-typings';
+import type { SettingValue } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 
