@@ -1628,6 +1628,7 @@
   "Edit_Canned_Responses": "Edit Canned Responses",
   "Edit_Custom_Field": "Edit Custom Field",
   "Edit_Department": "Edit Department",
+  "Edit_Federated_User_Not_Allowed": "Not possible to edit a federated user",
   "Edit_Invite": "Edit Invite",
   "Edit_previous_message": "`%s` - Edit previous message",
   "Edit_Priority": "Edit Priority",
