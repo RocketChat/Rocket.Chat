@@ -1,4 +1,4 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { EJSON } from 'meteor/ejson';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
@@ -15,7 +15,7 @@ import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Notifications } from '../../notifications/client';
 import { APIClient } from '../../utils/client';
 import { otrSystemMessages } from '../lib/constants';
-import { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
+import type { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
 import {
 	decryptAES,
 	deriveBits,
