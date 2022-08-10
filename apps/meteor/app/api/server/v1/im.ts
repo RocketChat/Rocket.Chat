@@ -443,13 +443,13 @@ API.v1.addRoute(
 					limit: count,
 					projection: fields,
 				},
-			).map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId));
+			);
 
 			const total = await rooms.count();
 			const ims = await rooms.toArray();
 
 			return API.v1.success({
-				ims,
+				ims: ims.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)),
 				offset,
 				count: ims.length,
 				total,
@@ -477,12 +477,10 @@ API.v1.addRoute(
 				skip: offset,
 				limit: count,
 				projection: fields,
-			})
-				.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId))
-				.toArray();
+			}).toArray();
 
 			return API.v1.success({
-				ims: rooms,
+				ims: rooms.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)),
 				offset,
 				count: rooms.length,
 				total: await Rooms.find(ourQuery).count(),
