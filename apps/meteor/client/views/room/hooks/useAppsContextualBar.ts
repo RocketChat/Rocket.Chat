@@ -3,20 +3,19 @@ import { useCurrentRoute } from '@rocket.chat/ui-contexts';
 import { useEffect, useState } from 'react';
 
 import { getUserInteractionPayloadByViewId } from '../../../../app/ui-message/client/ActionManager';
-import { App } from '../../admin/apps/types';
 import { useRoom } from '../contexts/RoomContext';
 
 type AppsContextualBarData = {
 	viewId: string;
 	roomId: string;
 	payload: IUIKitContextualBarInteraction;
-	appInfo: App;
+	appId: string;
 };
 
 export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
 	const [, params] = useCurrentRoute();
 	const [payload, setPayload] = useState<IUIKitContextualBarInteraction>();
-	const [appInfo, setAppInfo] = useState<App>();
+	const [appId, setAppId] = useState<string>();
 
 	const { _id: roomId } = useRoom();
 
@@ -28,21 +27,21 @@ export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
 		}
 
 		if (payload?.appId) {
-			setAppInfo({ id: payload.appId } as any);
+			setAppId(payload.appId);
 		}
 
 		return (): void => {
 			setPayload(undefined);
-			setAppInfo(undefined);
+			setAppId(undefined);
 		};
 	}, [viewId, payload?.appId]);
 
-	if (viewId && payload && appInfo) {
+	if (viewId && payload && appId) {
 		return {
 			viewId,
 			roomId,
 			payload,
-			appInfo,
+			appId,
 		};
 	}
 

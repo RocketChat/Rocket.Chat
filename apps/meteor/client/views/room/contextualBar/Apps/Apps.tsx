@@ -12,13 +12,13 @@ type AppsProps = {
 	onSubmit: (e: any) => void;
 	onCancel: (e: any) => Promise<void>;
 	onClose: (e: any) => Promise<void>;
-	appInfo: { name: string; id: string };
+	appId: string;
 };
 
-const Apps = ({ view, onSubmit, onClose, onCancel, appInfo }: AppsProps): JSX.Element => (
+const Apps = ({ view, onSubmit, onClose, onCancel, appId }: AppsProps): JSX.Element => (
 	<>
 		<VerticalBar.Header>
-			<Avatar url={getURL(`/api/apps/${appInfo.id}/icon`)} />
+			<Avatar url={getURL(`/api/apps/${appId}/icon`)} />
 			<VerticalBar.Text>{modalParser.text(view.title)}</VerticalBar.Text>
 			{onClose && <VerticalBar.Close onClick={onClose} />}
 		</VerticalBar.Header>

@@ -64,7 +64,7 @@ export const Room: FC<{}> = () => {
 								viewId={appsContextualBarContext.viewId}
 								roomId={appsContextualBarContext.roomId}
 								payload={appsContextualBarContext.payload}
-								appInfo={appsContextualBarContext.appInfo}
+								appId={appsContextualBarContext.appId}
 							/>
 						</ErrorBoundary>
 					</SelectedMessagesProvider>
