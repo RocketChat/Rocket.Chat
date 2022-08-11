@@ -3,11 +3,12 @@ import { getLivechatQueueInfo, getLivechatCustomFields } from '../lib/Helper';
 
 callbacks.add(
 	'livechat.onLoadConfigApi',
+	// TODO callbacks cannot be async
 	async (options = {}) => {
 		const { room } = options;
 
 		const queueInfo = await getLivechatQueueInfo(room);
-		const customFields = getLivechatCustomFields();
+		const customFields = await getLivechatCustomFields();
 
 		return {
 			...(queueInfo && { queueInfo }),
