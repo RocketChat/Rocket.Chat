@@ -151,7 +151,7 @@ export class LDAPEEManager extends LDAPManager {
 			filter: filter
 				.replace(/#{username}/g, username)
 				.replace(/#{groupName}/g, groupName)
-				.replace(/#{userdn}/g, dn),
+				.replace(/#{userdn}/g, dn.replace(/\\/g, '\\5c')),
 			scope: 'sub',
 		};
 
@@ -401,7 +401,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		const searchOptions = {
-			filter: query.replace(/#{username}/g, username).replace(/#{userdn}/g, dn),
+			filter: query.replace(/#{username}/g, username).replace(/#{userdn}/g, dn.replace(/\\/g, '\\5c')),
 			scope: ldap.options.userSearchScope || 'sub',
 			sizeLimit: ldap.options.searchSizeLimit,
 		};
