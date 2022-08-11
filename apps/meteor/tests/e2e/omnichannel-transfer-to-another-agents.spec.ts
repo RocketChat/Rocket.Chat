@@ -60,7 +60,7 @@ test.describe('omnichannel-departaments', () => {
 			await page.goto('/');
 			const poHomeChannel = new HomeChannel(page);
 			await poHomeChannel.sidenav.openChat(newUser.name);
-			await expect(poHomeChannel.page.locator(`[data-qa="sidebar-item-title"] >> text="${newUser.name}"`)).toBeVisible();
+			await expect(page.locator(`[data-qa="sidebar-item-title"] >> text="${newUser.name}"`)).toBeVisible();
 		});
 	});
 });
