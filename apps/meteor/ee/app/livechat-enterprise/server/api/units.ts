@@ -46,12 +46,13 @@ API.v1.addRoute(
 		},
 		async post() {
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
-			return LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments);
+			return API.v1.success(await LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments));
 		},
 	},
 );
 
-API.v1.addRoute(
+// Not sure why this route doesn't work properly
+API.v1.addRoute<'livechat/units/:id', { authRequired: true; permissionsRequired: ['manage-livechat-units'] }>(
 	'livechat/units/:id',
 	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
 	{
@@ -68,12 +69,12 @@ API.v1.addRoute(
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
 			const { id } = this.urlParams;
 
-			return LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments);
+			return API.v1.success(await LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments));
 		},
 		async delete() {
 			const { id } = this.urlParams;
 
-			return LivechatEnterprise.removeUnit(id);
+			return API.v1.success((await LivechatEnterprise.removeUnit(id)).deletedCount);
 		},
 	},
 );

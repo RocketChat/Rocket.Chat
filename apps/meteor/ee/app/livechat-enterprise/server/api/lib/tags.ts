@@ -57,5 +57,5 @@ export async function findTagById({ userId, tagId }: FindTagsByIdParams): Promis
 	if (!(await hasPermissionAsync(userId, 'manage-livechat-tags')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
-	return LivechatTag.findOneById(tagId);
+	return LivechatTag.findOneById(tagId, {});
 }
