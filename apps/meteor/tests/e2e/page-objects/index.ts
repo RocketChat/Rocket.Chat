@@ -6,3 +6,4 @@ export * from './home-discussion';
 export * from './omnichannel-agents';
 export * from './omnichannel-departaments';
 export * from './omnichannel-current-chats';
+export * from './omnichannel-livechat';
