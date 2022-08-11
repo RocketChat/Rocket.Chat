@@ -174,7 +174,6 @@ class AppClientOrchestrator {
 			version,
 			permissionsGranted,
 		});
-		console.log('Installed app: ', app);
 		return app;
 	}
 
