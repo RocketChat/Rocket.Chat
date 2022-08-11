@@ -1,6 +1,7 @@
 import { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { ButtonGroup, Button, Box, Avatar } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitModal } from '@rocket.chat/fuselage-ui-kit';
+import { LayoutBlock } from '@rocket.chat/ui-kit';
 import React from 'react';
 
 import { getURL } from '../../../../../app/utils/lib/getURL';
@@ -24,7 +25,7 @@ const Apps = ({ view, onSubmit, onClose, onCancel, appInfo }: AppsProps): JSX.El
 		</VerticalBar.Header>
 		<VerticalBar.ScrollableContent>
 			<Box is='form' method='post' action='#' onSubmit={onSubmit}>
-				<UiKitComponent render={UiKitModal} blocks={view.blocks} />
+				<UiKitComponent render={UiKitModal} blocks={view.blocks as LayoutBlock[]} />
 			</Box>
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
