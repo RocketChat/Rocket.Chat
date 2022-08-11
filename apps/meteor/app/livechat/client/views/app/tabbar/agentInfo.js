@@ -7,11 +7,12 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { getCustomFormTemplate } from '../customTemplates/register';
-import './agentInfo.html';
 import { modal } from '../../../../../ui-utils';
 import { t, APIClient } from '../../../../../utils/client';
 import { hasPermission } from '../../../../../authorization';
-import { handleError } from '../../../../../../client/lib/utils/handleError';
+import { getErrorMessage } from '../../../../../../client/lib/errorHandling';
+import { dispatchToastMessage } from '../../../../../../client/lib/toast';
+import './agentInfo.html';
 
 const customFieldsTemplate = () => getCustomFormTemplate('livechatAgentInfoForm');
 
@@ -118,7 +119,8 @@ Template.agentInfo.events({
 			() => {
 				Meteor.call('livechat:removeAgent', this.username, (error) => {
 					if (error) {
-						return handleError(error);
+						dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+						return;
 					}
 
 					const { tabBar, onRemoveAgent } = instance;

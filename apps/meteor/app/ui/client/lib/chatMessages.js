@@ -23,13 +23,13 @@ import GenericModal from '../../../../client/components/GenericModal';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
 import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
+import { getErrorMessage } from '../../../../client/lib/errorHandling';
 
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
@@ -293,7 +293,7 @@ export class ChatMessages {
 				await this.processMessageSend(message);
 				this.$input.removeData('reply').trigger('dataChange');
 			} catch (error) {
-				handleError(error);
+				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 			}
 			return done();
 		}
@@ -312,7 +312,7 @@ export class ChatMessages {
 				this.confirmDeleteMsg(message, done);
 				return;
 			} catch (error) {
-				handleError(error);
+				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 			}
 		}
 

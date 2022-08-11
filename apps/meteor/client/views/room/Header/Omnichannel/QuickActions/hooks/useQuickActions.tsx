@@ -23,7 +23,7 @@ import ForwardChatModal from '../../../../../../components/Omnichannel/modals/Fo
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
-import { handleError } from '../../../../../../lib/utils/handleError';
+import { getErrorMessage } from '../../../../../../lib/errorHandling';
 import { QuickActionsActionConfig, QuickActionsEnum } from '../../../../lib/QuickActions';
 import { useQuickActionsContext } from '../../../../lib/QuickActions/QuickActionsContext';
 
@@ -85,10 +85,10 @@ export const useQuickActions = (
 			closeModal();
 			Session.set('openedRoom', null);
 			FlowRouter.go('/home');
-		} catch (error: any) {
-			handleError(error);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 		}
-	}, [closeModal, methodReturn, rid]);
+	}, [closeModal, dispatchToastMessage, methodReturn, rid]);
 
 	const requestTranscript = useMethod('livechat:requestTranscript');
 
@@ -102,8 +102,8 @@ export const useQuickActions = (
 					type: 'success',
 					message: t('Livechat_transcript_has_been_requested'),
 				});
-			} catch (error: any) {
-				handleError(error);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 			}
 		},
 		[closeModal, dispatchToastMessage, requestTranscript, rid, t],
@@ -116,11 +116,11 @@ export const useQuickActions = (
 			try {
 				await sendTranscript(token, rid, email, subject);
 				closeModal();
-			} catch (error: any) {
-				handleError(error);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 			}
 		},
-		[closeModal, rid, sendTranscript],
+		[closeModal, dispatchToastMessage, rid, sendTranscript],
 	);
 
 	const discardTranscript = useMethod('livechat:discardTranscript');
@@ -133,8 +133,8 @@ export const useQuickActions = (
 				message: t('Livechat_transcript_request_has_been_canceled'),
 			});
 			closeModal();
-		} catch (error: any) {
-			handleError(error);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 		}
 	}, [closeModal, discardTranscript, dispatchToastMessage, rid, t]);
 
@@ -172,8 +172,8 @@ export const useQuickActions = (
 				dispatchToastMessage({ type: 'success', message: t('Transferred') });
 				FlowRouter.go('/');
 				closeModal();
-			} catch (error: any) {
-				handleError(error);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 			}
 		},
 		[closeModal, dispatchToastMessage, forwardChat, rid, t],
@@ -187,8 +187,8 @@ export const useQuickActions = (
 				await closeChat(rid, comment, { clientAction: true, tags });
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
-			} catch (error: any) {
-				handleError(error);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 			}
 		},
 		[closeChat, closeModal, dispatchToastMessage, rid, t],
@@ -201,8 +201,8 @@ export const useQuickActions = (
 			await onHoldChat({ roomId: rid });
 			closeModal();
 			dispatchToastMessage({ type: 'success', message: t('Chat_On_Hold_Successfully') });
-		} catch (error: any) {
-			handleError(error);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 		}
 	}, [onHoldChat, rid, closeModal, dispatchToastMessage, t]);
 

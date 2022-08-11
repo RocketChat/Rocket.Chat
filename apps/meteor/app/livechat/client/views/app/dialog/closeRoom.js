@@ -7,8 +7,9 @@ import { settings } from '../../../../../settings';
 import { modal } from '../../../../../ui-utils/client';
 import { APIClient, t } from '../../../../../utils';
 import { hasAnyRole } from '../../../../../authorization';
+import { getErrorMessage } from '../../../../../../client/lib/errorHandling';
+import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 import './closeRoom.html';
-import { handleError } from '../../../../../../client/lib/utils/handleError';
 
 const validateRoomComment = (comment) => {
 	if (!settings.get('Livechat_request_comment_when_closing_conversation')) {
@@ -87,7 +88,8 @@ Template.closeRoom.events({
 		Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true, tags }, function (error /* , result*/) {
 			if (error) {
 				console.log(error);
-				return handleError(error);
+				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				return;
 			}
 
 			modal.open({

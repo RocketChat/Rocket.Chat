@@ -8,9 +8,9 @@ import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { settings } from '../../settings/client';
 import { hasAtLeastOnePermission } from '../../authorization/client';
 import { Rooms } from '../../models/client';
-import { handleError } from '../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { getErrorMessage } from '../../../client/lib/errorHandling';
 
 Meteor.startup(function () {
 	MessageAction.addButton({
@@ -23,7 +23,7 @@ Meteor.startup(function () {
 			message.pinned = true;
 			Meteor.call('pinMessage', message, function (error: Error) {
 				if (error) {
-					return handleError(error);
+					dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 				}
 			});
 		},
@@ -51,7 +51,7 @@ Meteor.startup(function () {
 			message.pinned = false;
 			Meteor.call('unpinMessage', message, function (error: Error) {
 				if (error) {
-					return handleError(error);
+					dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 				}
 			});
 		},

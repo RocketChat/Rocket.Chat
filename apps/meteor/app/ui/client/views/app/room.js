@@ -25,10 +25,11 @@ import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
 import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
-import { handleError } from '../../../../../client/lib/utils/handleError';
 import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { call } from '../../../../../client/lib/utils/call';
+import { getErrorMessage } from '../../../../../client/lib/errorHandling';
+import { dispatchToastMessage } from '../../../../../client/lib/toast';
 
 export const chatMessages = {};
 
@@ -768,7 +769,7 @@ Meteor.startup(() => {
 				});
 			})
 			.catch((error) => {
-				handleError(error);
+				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 			});
 
 		this.rolesObserve = RoomRoles.find({ rid: this.data._id }).observe({

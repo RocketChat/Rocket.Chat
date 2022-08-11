@@ -1,7 +1,8 @@
 import { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ui-contexts';
 
+import { getErrorMessage } from '../errorHandling';
+import { dispatchToastMessage } from '../toast';
 import { call } from './call';
-import { handleError } from './handleError';
 
 export const callWithErrorHandling = async <M extends ServerMethodName>(
 	method: M,
@@ -9,8 +10,8 @@ export const callWithErrorHandling = async <M extends ServerMethodName>(
 ): Promise<ServerMethodReturn<M>> => {
 	try {
 		return await call(method, ...params);
-	} catch (error: any) {
-		handleError(error);
+	} catch (error) {
+		dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
 		throw error;
 	}
 };
