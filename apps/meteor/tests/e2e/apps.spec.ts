@@ -9,6 +9,8 @@ test.describe.parallel('Apps', () => {
 	let acrossPage: AcrossPage;
 
 	test.beforeAll(async ({ api }) => {
+		await api.post('/settings/Apps_Framework_enabled', { value: true });
+		await api.post('/settings/Apps_Framework_Development_Mode', { value: true });
 		await installTestApp(api);
 	});
 
@@ -33,5 +35,7 @@ test.describe.parallel('Apps', () => {
 
 	test.afterAll(async ({ api }) => {
 		await cleanupTesterApp(api);
+		await api.post('/settings/Apps_Framework_enabled', { value: false });
+		await api.post('/settings/Apps_Framework_Development_Mode', { value: false });
 	});
 });
