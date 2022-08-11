@@ -4010,7 +4010,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage@npm:*, @rocket.chat/fuselage@npm:next":
+"@rocket.chat/fuselage@npm:next":
   version: 0.32.0-dev.119
   resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.119"
   dependencies:
@@ -4102,9 +4102,11 @@ __metadata:
 "@rocket.chat/layout@npm:next":
   version: 0.32.0-dev.2
   resolution: "@rocket.chat/layout@npm:0.32.0-dev.2"
-  dependencies:
+  peerDependencies:
     "@rocket.chat/fuselage": "*"
-    react-i18next: ~11.18.3
+    react: 17.0.2
+    react-dom: 17.0.2
+    react-i18next: ~11.15.4
   checksum: b02da44ee1c779e225b358e857f5dbd61782e9d103f3f64afbb14a2af4f3709cdee17e4988c01b42bac02842111cc17e05a83c2adf2196f4def2cb3aa9a21d7c
   languageName: node
   linkType: hard
@@ -26195,24 +26197,6 @@ __metadata:
     react-native:
       optional: true
   checksum: b79606a0c36a822b3d9a1e4f2bb4b44643c121de9425ddfeea7e63e5136fe33d4b0b42f045f14d53592dcdbde1fb43cd7be4555b22747d2e0f6f754d3a60c711
-  languageName: node
-  linkType: hard
-
-"react-i18next@npm:~11.18.3":
-  version: 11.18.3
-  resolution: "react-i18next@npm:11.18.3"
-  dependencies:
-    "@babel/runtime": ^7.14.5
-    html-parse-stringify: ^3.0.1
-  peerDependencies:
-    i18next: ">= 19.0.0"
-    react: ">= 16.8.0"
-  peerDependenciesMeta:
-    react-dom:
-      optional: true
-    react-native:
-      optional: true
-  checksum: 05fe3187dd092000c9f24dfd0cad2bd433f9a88a78cec2b43d74545ea1ec014f2b4e2ac84c579480be15bc571ef7fb2a2fafbe0bfac02f80ce10a8ffc6ad91e7
   languageName: node
   linkType: hard
 
