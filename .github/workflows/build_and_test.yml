@@ -430,7 +430,7 @@ jobs:
           cd ./apps/meteor
           npx playwright install --with-deps
 
-      - name: E2E Test UI
+      - name: E2E Test UI (${{ matrix.ui-shard }}/${{ strategy.job-total }})
         env:
           MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
         run: |
@@ -455,7 +455,7 @@ jobs:
       matrix:
         node-version: ['14.19.3']
         mongodb-version-ee: ['4.4']
-        shard: [1, 2]
+        ui-shard: [1, 2]
 
     steps:
       - name: Launch MongoDB
@@ -584,7 +584,7 @@ jobs:
           cd ./apps/meteor
           npx playwright install --with-deps
 
-      - name: E2E Test UI
+      - name: E2E Test UI (${{ matrix.ui-shard }}/${{ strategy.job-total }})
         env:
           MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
         run: |
