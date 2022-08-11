@@ -1,4 +1,52 @@
 
+# 5.0.3
+`2022-08-11  ·  3 🐛  ·  1 🔍  ·  8 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Chats holds to load history for some time ([#26425](https://github.com/RocketChat/Rocket.Chat/pull/26425))
+
+- Endpoints not working when using "Use Real Name" setting ([#26530](https://github.com/RocketChat/Rocket.Chat/pull/26530) by [@kodiakhq[bot]](https://github.com/kodiakhq[bot]))
+
+  The list of endpoints affected is:
+  
+  - `/api/v1/channels.list`  
+  - `/api/v1/channels.list.joined`  
+  - `/api/v1/groups.list`  
+  - `/api/v1/groups.listAll`  
+  - `/api/v1/im.list`  
+  - `/api/v1/im.list.everyone`
+
+- LDAP fails to sync teams when the user DN has escaped characters. ([#26535](https://github.com/RocketChat/Rocket.Chat/pull/26535) by [@kodiakhq[bot]](https://github.com/kodiakhq[bot]))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: validateParams to accept different validators per request method ([#26357](https://github.com/RocketChat/Rocket.Chat/pull/26357))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@kodiakhq[bot]](https://github.com/kodiakhq[bot])
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 5.0.2
 `2022-08-08  ·  2 🐛  ·  3 👩‍💻👨‍💻`
 
