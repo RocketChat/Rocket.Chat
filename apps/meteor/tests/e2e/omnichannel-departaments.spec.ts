@@ -1,51 +1,62 @@
 import { faker } from '@faker-js/faker';
+import type { Page } from '@playwright/test';
 
 import { test, expect } from './utils/test';
-import { OmnichannelDepartaments } from './page-objects';
+import { OmnichannelDepartments } from './page-objects';
 
 test.use({ storageState: 'admin-session.json' });
 
-test.describe.serial('omnichannel-departaments', () => {
-	let poOmnichannelDepartaments: OmnichannelDepartaments;
+test.describe.serial('omnichannel-departments', () => {
+	let poOmnichannelDepartments: OmnichannelDepartments;
 
 	const departmentName = faker.datatype.uuid();
+	const tag = faker.datatype.string(5);
 
-	test.beforeEach(async ({ page }) => {
-		poOmnichannelDepartaments = new OmnichannelDepartaments(page);
+	test.beforeEach(async ({ page }: { page: Page }) => {
+		poOmnichannelDepartments = new OmnichannelDepartments(page);
 
 		await page.goto('/omnichannel');
-		await poOmnichannelDepartaments.sidenav.linkDepartments.click();
+		await poOmnichannelDepartments.sidenav.linkDepartments.click();
 	});
 
 	test('expect create new department', async () => {
-		await poOmnichannelDepartaments.btnNew.click();
-		await poOmnichannelDepartaments.btnEnabled.click();
-		await poOmnichannelDepartaments.inputName.fill(departmentName);
-		await poOmnichannelDepartaments.inputEmail.fill(faker.internet.email());
-		await poOmnichannelDepartaments.btnSave.click();
+		await poOmnichannelDepartments.btnNew.click();
+		await poOmnichannelDepartments.btnEnabled.click();
+		await poOmnichannelDepartments.inputName.fill(departmentName);
+		await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
+		await poOmnichannelDepartments.btnSave.click();
 
-		await poOmnichannelDepartaments.inputSearch.fill(departmentName);
-		await expect(poOmnichannelDepartaments.firstRowInTable).toBeVisible();
+		await poOmnichannelDepartments.inputSearch.fill(departmentName);
+		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 	});
 
 	test('expect update department name', async () => {
-		await poOmnichannelDepartaments.inputSearch.fill(departmentName);
+		await poOmnichannelDepartments.inputSearch.fill(departmentName);
 
-		await poOmnichannelDepartaments.firstRowInTable.locator(`text=${departmentName}`).click();
-		await poOmnichannelDepartaments.inputName.fill(`edited-${departmentName}`);
-		await poOmnichannelDepartaments.btnSave.click();
+		await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
+		await poOmnichannelDepartments.inputName.fill(`edited-${departmentName}`);
+		await poOmnichannelDepartments.btnSave.click();
 
-		await poOmnichannelDepartaments.inputSearch.fill(`edited-${departmentName}`);
-		await expect(poOmnichannelDepartaments.firstRowInTable).toBeVisible();
+		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+	});
+
+	test('expect update adding department tags ', async () => {
+		await poOmnichannelDepartments.inputSearch.fill(departmentName);
+		await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
+		await poOmnichannelDepartments.inputTags.fill(tag);
+		await poOmnichannelDepartments.btnTagsAdd.click();
+
+		await poOmnichannelDepartments.btnSave.isEnabled();
 	});
 
 	test('expect delete department', async () => {
-		await poOmnichannelDepartaments.inputSearch.fill(`edited-${departmentName}`);
+		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
 
-		await poOmnichannelDepartaments.btnDeletefirstRowInTable.click();
-		await poOmnichannelDepartaments.btnModalConfirmDelete.click();
+		await poOmnichannelDepartments.btnDeleteFirstRowInTable.click();
+		await poOmnichannelDepartments.btnModalConfirmDelete.click();
 
-		await poOmnichannelDepartaments.inputSearch.fill(`edited-${departmentName}`);
-		await expect(poOmnichannelDepartaments.firstRowInTable).toBeHidden();
+		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+		await expect(poOmnichannelDepartments.firstRowInTable).toBeHidden();
 	});
 });

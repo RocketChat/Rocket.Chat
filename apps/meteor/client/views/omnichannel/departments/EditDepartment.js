@@ -449,7 +449,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 										onChange={handleTagTextChange}
 										placeholder={t('Enter_a_tag')}
 									/>
-									<Button mis='x8' title={t('add')} onClick={handleTagTextSubmit}>
+									<Button data-qa='DepartmentEditAddButton-ConversationClosingTags' mis='x8' title={t('add')} onClick={handleTagTextSubmit}>
 										{t('Add')}
 									</Button>
 								</Field.Row>

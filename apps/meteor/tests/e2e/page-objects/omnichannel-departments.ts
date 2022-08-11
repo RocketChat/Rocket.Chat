@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 
 import { OmnichannelSidenav } from './fragments';
 
-export class OmnichannelDepartaments {
+export class OmnichannelDepartments {
 	private readonly page: Page;
 
 	readonly sidenav: OmnichannelSidenav;
@@ -32,6 +32,14 @@ export class OmnichannelDepartaments {
 		return this.page.locator('[data-qa="DepartmentEditTextInput-Email"]');
 	}
 
+	get inputTags() {
+		return this.page.locator('[data-qa="DepartmentEditTextInput-ConversationClosingTags"]');
+	}
+
+	get btnTagsAdd() {
+		return this.page.locator('[data-qa="DepartmentEditAddButton-ConversationClosingTags"]');
+	}
+
 	get btnSave() {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Save"');
 	}
@@ -40,7 +48,7 @@ export class OmnichannelDepartaments {
 		return this.page.locator('table tr:first-child td:first-child');
 	}
 
-	get btnDeletefirstRowInTable() {
+	get btnDeleteFirstRowInTable() {
 		return this.page.locator('table tr:first-child td:nth-child(6) button');
 	}
 
