@@ -109,7 +109,7 @@ export class HomeContent {
 	}
 
 	get inputModalAgentForwardComment(): Locator {
-		return this.page.locator('[data-qa="ForwardChatModalTextAreaInputComment"]');
+		return this.page.locator('[data-qa-id="ForwardChatModalTextAreaInputComment"]');
 	}
 
 	async pickEmoji(emoji: string, section = 'icon-people') {
