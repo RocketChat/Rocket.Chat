@@ -24,7 +24,7 @@ const POSTRemoveWebdavAccountSchema = {
 export const isPOSTRemoveWebdavAccount = ajv.compile<POSTRemoveWebdavAccount>(POSTRemoveWebdavAccountSchema);
 
 API.v1.addRoute(
-	'/v1/webdav.getMyAccounts',
+	'webdav.getMyAccounts',
 	{ authRequired: true },
 	{
 		async get() {
@@ -36,7 +36,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'/v1/webdav.removeWebdavAccount',
+	'webdav.removeWebdavAccount',
 	{
 		authRequired: true,
 		validateParams: isPOSTRemoveWebdavAccount,
