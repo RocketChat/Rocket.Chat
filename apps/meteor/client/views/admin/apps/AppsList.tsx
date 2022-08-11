@@ -1,6 +1,6 @@
 import { App } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import React, { ComponentProps, Fragment, ReactElement } from 'react';
 
 import AppRow from './AppRow';
 
@@ -8,10 +8,10 @@ type AppsListProps = {
 	apps: App[];
 	title: string;
 	isMarketplace: boolean;
-};
+} & ComponentProps<typeof Box>;
 
 const AppsList = ({ apps, title, isMarketplace, ...props }: AppsListProps): ReactElement => (
-	<>
+	<Fragment key={props.key}>
 		<Box is='h3' fontSize='h3' fontWeight={700} lineHeight='x28' color='default' mbe='x20'>
 			{title}
 		</Box>
@@ -20,7 +20,7 @@ const AppsList = ({ apps, title, isMarketplace, ...props }: AppsListProps): Reac
 				<AppRow key={app.id} isMarketplace={isMarketplace} {...app} />
 			))}
 		</Box>
-	</>
+	</Fragment>
 );
 
 export default AppsList;

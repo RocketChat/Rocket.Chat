@@ -110,7 +110,7 @@ class AppClientOrchestrator {
 			const { latest, ...rest } = app;
 			return {
 				...latest,
-				rest,
+				...rest,
 			};
 		});
 	}
@@ -174,6 +174,7 @@ class AppClientOrchestrator {
 			version,
 			permissionsGranted,
 		});
+		console.log('Installed app: ', app);
 		return app;
 	}
 

@@ -1,4 +1,3 @@
-import { App, AppOverview } from '@rocket.chat/core-typings';
 import {
 	Box,
 	States,
@@ -13,7 +12,6 @@ import {
 	StatesTitle,
 	Icon,
 	Pagination,
-	Skeleton,
 } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
@@ -21,11 +19,11 @@ import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo, useState } from 'react';
 
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
+import AllAppsSection from './AllAppsSection';
 import { useAppsReload, useAppsResult } from './AppsContext';
 import AppsFilters from './AppsFilters';
-import AppsList from './AppsList';
+import FeaturedAppsSections from './FeaturedAppsSections';
 import { RadioDropDownGroup } from './definitions/RadioDropDownDefinitions';
 import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
@@ -85,26 +83,12 @@ const AppsPageContent: FC<{
 		status: useMemo(() => statusFilterStructure.items.find(({ checked }) => checked)?.id, [statusFilterStructure]),
 	});
 
-	const isAllAppsListReadyOrLoading =
-		appsResult.phase === AsyncStatePhase.LOADING || (appsResult.phase === AsyncStatePhase.RESOLVED && Boolean(appsResult.value.count));
-
 	const noInstalledAppsFound = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total === 0;
 
 	const noMarketplaceOrInstalledAppMatches = appsResult.phase === AsyncStatePhase.RESOLVED && isMarketplace && appsResult.value.count === 0;
 
 	const noInstalledAppMatches =
 		appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total !== 0 && appsResult.value.count === 0;
-
-	const loadingRows = Array.from({ length: 8 }, (_, i) => <Skeleton key={i} height='x56' mbe='x8' width='100%' variant='rect' />);
-
-	const { value: featuredResponse } = useEndpointData('/apps/featured');
-
-	const normalizeFeaturedApps = (appOverviewList: AppOverview[]): App[] =>
-		appOverviewList.map((appOverview) => {
-			const { latest, ...rest } = appOverview;
-
-			return { ...latest, ...rest };
-		});
 
 	return (
 		<>
@@ -122,17 +106,11 @@ const AppsPageContent: FC<{
 				statusFilterOnSelected={statusFilterOnSelected}
 			/>
 
-			{featuredResponse?.sections.map((section) => (
-				<AppsList apps={normalizeFeaturedApps(section.apps)} title={section.i18nLabel} isMarketplace={true} mbe='x36' />
-			))}
+			<FeaturedAppsSections appsResult={appsResult} text={text} isMarketplace={isMarketplace} />
 
-			{isAllAppsListReadyOrLoading && appsResult.phase === AsyncStatePhase.LOADING
-				? loadingRows
-				: appsResult.phase === AsyncStatePhase.RESOLVED && (
-						<AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />
-				  )}
+			<AllAppsSection appsResult={appsResult} isMarketplace={isMarketplace} />
 
-			{appsResult.phase === AsyncStatePhase.RESOLVED && (
+			{appsResult.phase === AsyncStatePhase.RESOLVED && Boolean(appsResult.value.count) && (
 				<Pagination
 					current={current}
 					itemsPerPage={itemsPerPage}

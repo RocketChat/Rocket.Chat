@@ -1,6 +1,6 @@
 import { Box, Icon, PositionAnimated, AnimatedVisibility, Tooltip } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { RefObject, useRef, useState, ReactElement } from 'react';
+import React, { RefObject, useRef, useState, ReactElement, Fragment } from 'react';
 
 import { App } from './types';
 
@@ -22,7 +22,7 @@ const BundleChips = ({ bundledIn, isIconOnly }: BundleChipsProps): ReactElement 
 	return (
 		<>
 			{bundledIn.map((bundle) => (
-				<>
+				<Fragment key={bundle.bundleId}>
 					<Box
 						display='flex'
 						flexDirection='row'
@@ -57,7 +57,7 @@ const BundleChips = ({ bundledIn, isIconOnly }: BundleChipsProps): ReactElement 
 							})}
 						</Tooltip>
 					</PositionAnimated>
-				</>
+				</Fragment>
 			))}
 		</>
 	);

@@ -83,7 +83,7 @@ export type App = {
 	price: number;
 	purchaseType: string;
 	pricingPlans: AppPricingPlan[];
-	iconFileContent?: string;
+	iconFileContent: string;
 	installed?: boolean;
 	isEnterpriseOnly?: boolean;
 	isPurchased?: boolean;
@@ -94,7 +94,7 @@ export type App = {
 		apps: App[];
 		addonTierId?: string;
 	}[];
-	marketplaceVersion?: string;
+	marketplaceVersion: string;
 	latest?: App;
 	status?: AppStatus;
 	subscriptionInfo: AppSubscriptionInfo;
