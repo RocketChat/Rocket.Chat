@@ -17,11 +17,11 @@ export class AccountProfile {
 	}
 
 	get inputAvatarLink(): Locator {
-		return this.page.locator('[data-qa="UserAvatarEditorLink"]');
+		return this.page.locator('[data-qa-id="UserAvatarEditorLink"]');
 	}
 
 	get btnSetAvatarLink(): Locator {
-		return this.page.locator('[data-qa="UserAvatarEditorSetAvatarLink"]');
+		return this.page.locator('[data-qa-id="UserAvatarEditorSetAvatarLink"]');
 	}
 
 	get inputUsername(): Locator {
