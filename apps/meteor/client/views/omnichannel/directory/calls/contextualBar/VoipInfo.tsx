@@ -69,7 +69,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 					<InfoField label={t('Hold_Time')} info={hold || t('Not_Available')} />
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Wrap_Up_Notes')}</InfoPanel.Label>
-						<InfoPanel.Text>{shouldShowWrapup ? lastMessage?.msg : t('Not_Available')}</InfoPanel.Text>
+						<InfoPanel.Text withTruncatedText={false}>{shouldShowWrapup ? lastMessage?.msg : t('Not_Available')}</InfoPanel.Text>
 						{shouldShowTags && (
 							<InfoPanel.Text>
 								<Box display='flex' flexDirection='row' alignItems='center'>
