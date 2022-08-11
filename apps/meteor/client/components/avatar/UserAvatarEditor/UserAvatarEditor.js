@@ -77,7 +77,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 							</Button>
 							<IconButton icon='upload' secondary onClick={clickUpload} disabled={disabled} title={t('Upload')} />
 							<IconButton
-								data-qa='UserAvatarEditorSetAvatarLink'
+								data-qa-id='UserAvatarEditorSetAvatarLink'
 								icon='permalink'
 								secondary
 								onClick={clickUrl}
