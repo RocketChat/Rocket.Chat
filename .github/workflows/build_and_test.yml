@@ -481,7 +481,7 @@ jobs:
       - name: yarn install
         run: yarn
 
-      - run: yarn build
+      - run: yarn build --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Restore build
         uses: actions/download-artifact@v2
