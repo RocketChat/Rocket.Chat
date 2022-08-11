@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Icon } from '@rocket.chat/fuselage';
+import { Button, Modal, Icon } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, ReactElement, useMemo } from 'react';
@@ -57,10 +57,10 @@ const DeviceManagementFeatureModal = ({ close }: { close: () => void }): ReactEl
 				))}
 			</Modal.Content>
 			<Modal.Footer>
-				<Box display='flex' justifyContent='space-between' alignItems='center'>
+				<Modal.FooterControllers>
 					<ExternalLink to={documentationURL}>{t('Learn_more')}</ExternalLink>
 					<Button onClick={handleGotit}>{t('Got_it')}</Button>
-				</Box>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);
