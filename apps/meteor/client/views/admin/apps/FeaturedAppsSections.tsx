@@ -11,11 +11,11 @@ import normalizeFeaturedApps from './helpers/normalizeFeaturedApps';
 
 type FeaturedSectionsProps = {
 	appsResult: AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult>;
-	text: string;
 	isMarketplace: boolean;
+	isFiltered: boolean;
 };
 
-const FeaturedAppsSections = ({ appsResult, text, isMarketplace }: FeaturedSectionsProps): ReactElement | null => {
+const FeaturedAppsSections = ({ appsResult, isMarketplace, isFiltered }: FeaturedSectionsProps): ReactElement | null => {
 	const t = useTranslation();
 	const featuredApps = useEndpointData('/apps/featured');
 
@@ -24,7 +24,7 @@ const FeaturedAppsSections = ({ appsResult, text, isMarketplace }: FeaturedSecti
 		appsResult.phase === AsyncStatePhase.RESOLVED &&
 		Boolean(appsResult.value.count) &&
 		Boolean(featuredApps.value.sections) &&
-		Boolean(!text.length);
+		!isFiltered;
 
 	const loadingFeaturedSections = Array.from({ length: 3 }, (_, i) => (
 		<Skeleton key={i} height='x56' mbe='x8' width='100%' variant='rect' />

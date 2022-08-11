@@ -63,10 +63,10 @@ const AppsPageContent: FC<{
 	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>({
 		label: t('Sort_By'),
 		items: [
-			{ id: 'az', label: 'A-Z', checked: true },
-			{ id: 'za', label: 'Z-A', checked: false },
-			{ id: 'mru', label: t('Most_recent_updated'), checked: false },
+			{ id: 'mru', label: t('Most_recent_updated'), checked: true },
 			{ id: 'lru', label: t('Least_recent_updated'), checked: false },
+			{ id: 'az', label: 'A-Z', checked: false },
+			{ id: 'za', label: 'Z-A', checked: false },
 		],
 	});
 	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
@@ -90,6 +90,13 @@ const AppsPageContent: FC<{
 	const noInstalledAppMatches =
 		appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total !== 0 && appsResult.value.count === 0;
 
+	const isFiltered =
+		Boolean(text.length) ||
+		freePaidFilterStructure.items.find((item) => item.checked)?.id !== 'all' ||
+		statusFilterStructure.items.find((item) => item.checked)?.id !== 'all' ||
+		sortFilterStructure.items.find((item) => item.checked)?.id !== 'mru' ||
+		selectedCategories.length > 0;
+
 	return (
 		<>
 			<AppsFilters
@@ -106,7 +113,7 @@ const AppsPageContent: FC<{
 				statusFilterOnSelected={statusFilterOnSelected}
 			/>
 
-			<FeaturedAppsSections appsResult={appsResult} text={text} isMarketplace={isMarketplace} />
+			<FeaturedAppsSections appsResult={appsResult} isMarketplace={isMarketplace} isFiltered={isFiltered} />
 
 			<AllAppsSection appsResult={appsResult} isMarketplace={isMarketplace} />
 
