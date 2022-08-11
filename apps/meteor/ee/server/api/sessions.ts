@@ -1,5 +1,5 @@
 import { Users, Sessions } from '@rocket.chat/models';
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { isSessionsPaginateProps, isSessionsProps } from '../../definition/rest/v1/sessions';

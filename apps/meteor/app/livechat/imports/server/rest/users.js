@@ -55,33 +55,29 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
-			try {
-				check(this.urlParams, {
-					type: String,
-				});
+			check(this.urlParams, {
+				type: String,
+			});
 
-				check(this.bodyParams, {
-					username: String,
-				});
+			check(this.bodyParams, {
+				username: String,
+			});
 
-				if (this.urlParams.type === 'agent') {
-					const user = Livechat.addAgent(this.bodyParams.username);
-					if (user) {
-						return API.v1.success({ user });
-					}
-				} else if (this.urlParams.type === 'manager') {
-					const user = Livechat.addManager(this.bodyParams.username);
-					if (user) {
-						return API.v1.success({ user });
-					}
-				} else {
-					throw new Error('Invalid type');
+			if (this.urlParams.type === 'agent') {
+				const user = Livechat.addAgent(this.bodyParams.username);
+				if (user) {
+					return API.v1.success({ user });
 				}
-
-				return API.v1.failure();
-			} catch (e) {
-				return API.v1.failure(e.error);
+			} else if (this.urlParams.type === 'manager') {
+				const user = Livechat.addManager(this.bodyParams.username);
+				if (user) {
+					return API.v1.success({ user });
+				}
+			} else {
+				throw new Error('Invalid type');
 			}
+
+			return API.v1.failure();
 		},
 	},
 );
@@ -95,74 +91,66 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			try {
-				check(this.urlParams, {
-					type: String,
-					_id: String,
-				});
+			check(this.urlParams, {
+				type: String,
+				_id: String,
+			});
 
-				const user = Users.findOneById(this.urlParams._id);
+			const user = Users.findOneById(this.urlParams._id);
 
-				if (!user) {
-					return API.v1.failure('User not found');
-				}
-
-				let role;
-
-				if (this.urlParams.type === 'agent') {
-					role = 'livechat-agent';
-				} else if (this.urlParams.type === 'manager') {
-					role = 'livechat-manager';
-				} else {
-					throw new Error('Invalid type');
-				}
-
-				if (user.roles.indexOf(role) !== -1) {
-					return API.v1.success({
-						user: _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat', 'emails', 'livechat'),
-					});
-				}
-
-				return API.v1.success({
-					user: null,
-				});
-			} catch (e) {
-				return API.v1.failure(e.error);
+			if (!user) {
+				return API.v1.failure('User not found');
 			}
+
+			let role;
+
+			if (this.urlParams.type === 'agent') {
+				role = 'livechat-agent';
+			} else if (this.urlParams.type === 'manager') {
+				role = 'livechat-manager';
+			} else {
+				throw new Error('Invalid type');
+			}
+
+			if (user.roles.indexOf(role) !== -1) {
+				return API.v1.success({
+					user: _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat', 'emails', 'livechat'),
+				});
+			}
+
+			return API.v1.success({
+				user: null,
+			});
 		},
 		delete() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
 
-			try {
-				check(this.urlParams, {
-					type: String,
-					_id: String,
-				});
+			check(this.urlParams, {
+				type: String,
+				_id: String,
+			});
 
-				const user = Users.findOneById(this.urlParams._id);
+			const user = Users.findOneById(this.urlParams._id);
 
-				if (!user) {
-					return API.v1.failure();
-				}
-
-				if (this.urlParams.type === 'agent') {
-					if (Livechat.removeAgent(user.username)) {
-						return API.v1.success();
-					}
-				} else if (this.urlParams.type === 'manager') {
-					if (Livechat.removeManager(user.username)) {
-						return API.v1.success();
-					}
-				} else {
-					throw new Error('Invalid type');
-				}
-
+			if (!user) {
 				return API.v1.failure();
-			} catch (e) {
-				return API.v1.failure(e.error);
 			}
+
+			if (this.urlParams.type === 'agent') {
+				if (Livechat.removeAgent(user.username)) {
+					return API.v1.success();
+				}
+			} else if (this.urlParams.type === 'manager') {
+				if (Livechat.removeManager(user.username)) {
+					return API.v1.success();
+				}
+			} else {
+				throw new Error('Invalid type');
+			}
+
+			return API.v1.failure();
 		},
 	},
 );

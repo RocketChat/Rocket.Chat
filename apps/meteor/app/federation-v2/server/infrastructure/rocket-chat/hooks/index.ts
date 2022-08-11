@@ -1,9 +1,9 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../../lib/callbacks';
 
 export class FederationHooks {
-	public static afterLeaveRoom(callback: Function): void {
+	public static afterLeaveRoom(callback: (user: IUser, room: IRoom) => void): void {
 		callbacks.add(
 			'afterLeaveRoom',
 			(user: IUser, room: IRoom | undefined): void => {
@@ -17,7 +17,7 @@ export class FederationHooks {
 		);
 	}
 
-	public static afterRemoveFromRoom(callback: Function): void {
+	public static afterRemoveFromRoom(callback: (removedUser: IUser, room: IRoom, userWhoRemoved: IUser) => void): void {
 		callbacks.add(
 			'afterRemoveFromRoom',
 			(params: { removedUser: IUser; userWhoRemoved: IUser }, room: IRoom | undefined): void => {
@@ -31,7 +31,7 @@ export class FederationHooks {
 		);
 	}
 
-	public static canAddTheUserToTheRoom(callback: Function): void {
+	public static canAddTheUserToTheRoom(callback: (user: string | IUser, room: IRoom) => void): void {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
 			(params: { user: IUser | string }, room: IRoom): void => {
@@ -42,7 +42,7 @@ export class FederationHooks {
 		);
 	}
 
-	public static canAddUsersToTheRoom(callback: Function): void {
+	public static canAddUsersToTheRoom(callback: (user: IUser | string, inviter: IUser, room: IRoom) => void): void {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
 			(params: { user: IUser | string; inviter: IUser }, room: IRoom): void => {
@@ -53,7 +53,7 @@ export class FederationHooks {
 		);
 	}
 
-	public static beforeCreateDirectMessage(callback: Function): void {
+	public static beforeCreateDirectMessage(callback: (members: IUser[]) => void): void {
 		callbacks.add(
 			'federation.beforeCreateDirectMessage',
 			(members: IUser[]): void => {

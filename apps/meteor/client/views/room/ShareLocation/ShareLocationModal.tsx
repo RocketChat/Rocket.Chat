@@ -1,7 +1,7 @@
 import { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { ReactElement } from 'react';
-import { useQuery, useQueryClient } from 'react-query';
 
 import GenericModal from '../../../components/GenericModal';
 import MapView from '../../location/MapView';
@@ -17,7 +17,7 @@ type ShareLocationModalProps = {
 const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToast = useToastMessageDispatch();
-	const { data: permissionData, isLoading: permissionLoading } = useQuery('geolocationPermission', getGeolocationPermission);
+	const { data: permissionData, isLoading: permissionLoading } = useQuery(['geolocationPermission'], getGeolocationPermission);
 	const { data: positionData } = useQuery(['geolocationPosition', permissionData], async () => {
 		if (permissionLoading || permissionData === 'prompt' || permissionData === 'denied') {
 			return;
@@ -55,9 +55,9 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 		try {
 			const position = await getGeolocationPosition();
 			queryClient.setQueryData(['geolocationPosition', 'granted'], position);
-			queryClient.setQueryData('geolocationPermission', 'granted');
+			queryClient.setQueryData(['geolocationPermission'], 'granted');
 		} catch (e) {
-			queryClient.setQueryData('geolocationPermission', () => getGeolocationPermission);
+			queryClient.setQueryData(['geolocationPermission'], () => getGeolocationPermission);
 		}
 	};
 

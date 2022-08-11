@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { IMessage, IPushNotificationConfig, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IPushNotificationConfig, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { Push } from '../../../push/server';
 import { settings } from '../../../settings/server';

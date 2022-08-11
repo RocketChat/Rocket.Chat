@@ -1,5 +1,5 @@
 import { MessageAttachment, IWebdavAccount } from '@rocket.chat/core-typings';
-import { Modal, Box, ButtonGroup, Button, FieldGroup, Field, Select, SelectOption, Throbber } from '@rocket.chat/fuselage';
+import { Modal, Box, Button, FieldGroup, Field, Select, SelectOption, Throbber } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, useMemo, useEffect, useRef } from 'react';
@@ -107,12 +107,12 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 				)}
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary type='submit' disabled={isLoading}>
 						{isLoading ? t('Please_wait') : t('Save_To_Webdav')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);
