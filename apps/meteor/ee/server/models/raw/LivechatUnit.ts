@@ -26,7 +26,10 @@ const addQueryRestrictions = (originalQuery: any) => {
 export class LivechatUnitRaw extends LivechatDepartmentRaw implements ILivechatUnitModel {
 	unfilteredFind = super.find;
 
-	find(originalQuery: Filter<IOmnichannelBusinessUnit>, options: FindOptions<IOmnichannelBusinessUnit> = {}): FindCursor<IOmnichannelBusinessUnit> {
+	find(
+		originalQuery: Filter<IOmnichannelBusinessUnit>,
+		options: FindOptions<IOmnichannelBusinessUnit> = {},
+	): FindCursor<IOmnichannelBusinessUnit> {
 		const query = addQueryRestrictions(originalQuery);
 		queriesLogger.debug({ msg: 'LivechatUnit.find', query });
 		return super.find(query, options);
