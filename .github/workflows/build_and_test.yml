@@ -242,16 +242,16 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - name: yarn install
-        run: yarn
-
-      - run: yarn build
-
       - name: TurboRepo local server
         uses: felixmosh/turborepo-gh-artifacts@v1
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+
+      - name: yarn install
+        run: yarn
+
+      - run: yarn build
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -585,6 +585,8 @@ jobs:
           npx playwright install --with-deps
 
       - name: E2E Test UI
+        env:
+          MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
         run: |
           docker ps
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
