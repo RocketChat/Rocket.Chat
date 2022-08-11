@@ -3,7 +3,7 @@ import QueryString from 'querystring';
 
 import { camelCase } from 'change-case';
 import _ from 'underscore';
-import { OEmbedMeta, OEmbedUrlContent, ParsedUrl, OEmbedProvider } from '@rocket.chat/core-typings';
+import type { OEmbedMeta, OEmbedUrlContent, ParsedUrl, OEmbedProvider } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../lib/callbacks';
 import { SystemLogger } from '../../../server/lib/logger/system';

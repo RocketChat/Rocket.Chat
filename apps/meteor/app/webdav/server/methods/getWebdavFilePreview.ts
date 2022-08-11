@@ -3,7 +3,7 @@ import { createClient } from 'webdav';
 import { WebdavAccounts } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { getWebdavCredentials } from './getWebdavCredentials';
+import { getWebdavCredentials } from '../lib/getWebdavCredentials';
 
 Meteor.methods({
 	async getWebdavFilePreview(accountId, path) {
@@ -15,7 +15,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!settings.get('Webdav_Integration_Enabled')) {
+		if (!settings.get('Webdav_Integration_Enabled') || !settings.get('Accounts_OAuth_Nextcloud_URL')) {
 			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {
 				method: 'getWebdavFilePreview',
 			});

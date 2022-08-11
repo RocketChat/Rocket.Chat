@@ -71,7 +71,6 @@ export default React.memo(function MessageThread({
 						className={anchor}
 						small
 						icon={button}
-						square
 						flexShrink={0}
 						data-following={following}
 						data-id={_id}

@@ -1,11 +1,11 @@
 import { MongoInternals } from 'meteor/mongo';
 
-import { getOplogHandle } from '../../../models/server/models/_oplogHandle';
+import { isWatcherRunning } from '../../../../server/modules/watchers/watchers.module';
 
 export function getOplogInfo() {
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
-	const oplogEnabled = !!Promise.await(getOplogHandle());
+	const oplogEnabled = isWatcherRunning();
 
 	return { oplogEnabled, mongo };
 }

@@ -1,4 +1,5 @@
-import { ISetting, ISettingColor, isSettingColor } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
+import { isSettingColor } from '@rocket.chat/core-typings';
 
 export const getSettingDefaults = (
 	setting: Partial<ISetting> & Pick<ISetting, '_id' | 'value' | 'type'>,

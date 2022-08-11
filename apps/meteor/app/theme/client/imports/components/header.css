@@ -66,38 +66,12 @@
 		align-items: center;
 	}
 
-	&--burger {
-		display: none;
-	}
-
 	&__name {
 		overflow: hidden;
 
 		padding-bottom: 1px;
 
 		text-overflow: ellipsis;
-	}
-
-	&__section-title {
-		color: var(--header-title-username-color-darker);
-
-		font-weight: var(--header-title-username-weight);
-	}
-
-	&__section-help {
-		flex: 1 1;
-	}
-
-	&__section-button {
-		display: flex;
-		flex: 1 1 100%;
-		justify-content: flex-end;
-
-		/* max-width: use this to allign the buttons with the form */
-	}
-
-	&__section-button > button {
-		margin: 0.3rem;
 	}
 
 	&-title {
@@ -186,80 +160,6 @@
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-		}
-
-		&--burger {
-			display: flex;
-
-			margin: 0;
-			padding: 0;
-		}
-	}
-}
-
-.burger {
-	position: relative;
-
-	cursor: pointer;
-	transition: transform 0.2s ease-out 0.1s;
-	will-change: transform;
-
-	& .burger__line {
-		display: block;
-
-		width: 20px;
-		height: 2px;
-		margin: 5px 0;
-
-		transition: transform 0.2s ease-out;
-
-		opacity: 0.8;
-	}
-
-	& .unread-burger-alert {
-		position: absolute;
-		z-index: 3;
-		bottom: 13px;
-		left: 10px;
-
-		min-width: 18px;
-		height: 18px;
-		padding: 0 4px;
-
-		text-align: center;
-
-		border-radius: 20px;
-
-		font-size: 12px;
-		font-weight: bold;
-		line-height: 18px;
-	}
-
-	&.menu-opened .burger__line {
-		&:nth-child(1),
-		&:nth-child(3) {
-			transform-origin: 50%, 50%, 0;
-
-			opacity: 1;
-		}
-
-		&:nth-child(1) {
-			transform: translate(-25%, 3px) rotate(-45deg) scale(0.5, 1);
-		}
-
-		&:nth-child(3) {
-			transform: translate(-25%, -3px) rotate(45deg) scale(0.5, 1);
-		}
-	}
-}
-
-@media (max-width: 780px) {
-	.rc-header {
-		&--burger {
-			display: flex;
-
-			margin: 0;
-			padding: 0;
 		}
 	}
 }

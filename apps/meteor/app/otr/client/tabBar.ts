@@ -1,23 +1,18 @@
 import { useMemo, lazy, useEffect } from 'react';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
-import { OTR } from './rocketchat.otr';
+import OTR from './OTR';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
 const template = lazy(() => import('../../../client/views/room/contextualBar/OTR'));
 
 addAction('otr', () => {
-	const enabled = useSetting('OTR_Enable');
+	const enabled = useSetting('OTR_Enable') as boolean;
 
-	const shouldAddAction = enabled && window.crypto;
+	const shouldAddAction = enabled && Boolean(global.crypto);
 
 	useEffect(() => {
-		if (shouldAddAction) {
-			OTR.crypto = window.crypto.subtle;
-			OTR.enabled.set(true);
-		} else {
-			OTR.enabled.set(false);
-		}
+		OTR.setEnabled(shouldAddAction);
 	}, [shouldAddAction]);
 
 	return useMemo(

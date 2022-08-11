@@ -1,9 +1,9 @@
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
-import { IFederationBridge } from '../../domain/IFederationBridge';
+import type { IFederationBridge } from '../../domain/IFederationBridge';
 import { bridgeLogger } from '../rocket-chat/adapters/logger';
-import { IMatrixEvent } from './definitions/IMatrixEvent';
-import { MatrixEventType } from './definitions/MatrixEventType';
+import type { IMatrixEvent } from './definitions/IMatrixEvent';
+import type { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
@@ -23,7 +23,7 @@ export class MatrixBridge implements IFederationBridge {
 		protected bridgeUrl: string,
 		protected bridgePort: number,
 		protected homeServerRegistrationFile: Record<string, any>,
-		protected eventHandler: Function,
+		protected eventHandler: (event: IMatrixEvent<MatrixEventType>) => void,
 	) {
 		this.logInfo();
 	}
@@ -107,12 +107,9 @@ export class MatrixBridge implements IFederationBridge {
 			options: {
 				visibility,
 				preset,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				is_direct: true,
 				invite: externalInviteeIds,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				creation_content: {
-					// eslint-disable-next-line @typescript-eslint/camelcase
 					was_internally_programatically_created: true,
 				},
 			},
@@ -157,6 +154,10 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void> {
 		this.bridgeInstance.getIntent(externalOwnerId).kick(externalRoomId, externalUserId);
+	}
+
+	public isRoomFromTheSameHomeserver(externalRoomId: string, domain: string): boolean {
+		return this.isUserIdFromTheSameHomeserver(externalRoomId, domain);
 	}
 
 	protected async createInstance(): Promise<void> {
