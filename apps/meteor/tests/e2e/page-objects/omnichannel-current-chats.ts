@@ -1,10 +1,15 @@
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
+
+import { OmnichannelSidenav } from './fragments';
 
 export class OmnichannelCurrentChats {
 	private readonly page: Page;
 
+	readonly sidenav: OmnichannelSidenav;
+
 	constructor(page: Page) {
 		this.page = page;
+		this.sidenav = new OmnichannelSidenav(page);
 	}
 
 	get btnToastClose(): Locator {
@@ -20,7 +25,7 @@ export class OmnichannelCurrentChats {
 	}
 
 	get servedByField(): Locator {
-		return this.page.locator('[data-qa="current-chats-servedBy"]');
+		return this.page.locator('[data-qa="autocomplete-agent"]');
 	}
 
 	get statusField(): Locator {
@@ -36,7 +41,7 @@ export class OmnichannelCurrentChats {
 	}
 
 	get departmentField(): Locator {
-		return this.page.locator('[data-qa="current-chats-department"]');
+		return this.page.locator('[data-qa="autocomplete-department"]');
 	}
 
 	get tagsField(): Locator {
@@ -97,21 +102,5 @@ export class OmnichannelCurrentChats {
 
 	async doOpenOptions(): Promise<void> {
 		await this.formOptions.click();
-	}
-
-	async doClearFilters(): Promise<void> {
-		await this.formOptions.click();
-		await this.clearFiltersOption.click();
-	}
-
-	async doFillInputs(): Promise<void> {
-		await this.guestField.type('guest');
-		// TODO: Set up the prep needed to fill the servedByField field
-		// await this.servedByField.selectOption('All');
-		await this.statusField.selectOption('open');
-		await this.fromField.fill('2022-08-08');
-		await this.toField.fill('2022-08-08');
-		// TODO: Set up the prep needed to fill the department field
-		// await this.departmentField.type('department');
 	}
 }

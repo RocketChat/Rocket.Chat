@@ -114,9 +114,9 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 					<Label mb='x4'>{t('Guest')}</Label>
 					<TextInput flexShrink={0} placeholder={t('Guest')} onChange={handleGuest} value={guest} data-qa='current-chats-guest' />
 				</Box>
-				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
+				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column' data-qa='current-chats-servedBy'>
 					<Label mb='x4'>{t('Served_By')}</Label>
-					<AutoCompleteAgent haveAll value={servedBy} onChange={handleServedBy} data-qa='current-chats-servedBy' />
+					<AutoCompleteAgent haveAll value={servedBy} onChange={handleServedBy} />
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Status')}</Label>
@@ -138,26 +138,19 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 					<InputBox type='date' flexShrink={0} placeholder={t('To')} onChange={handleTo} value={to} data-qa='current-chats-to' />
 				</Box>
 
-				<RemoveAllClosed handleClearFilters={handleClearFilters} handleRemoveClosed={handleRemoveClosed} data-qa='current-chats-remove' />
+				<RemoveAllClosed handleClearFilters={handleClearFilters} handleRemoveClosed={handleRemoveClosed} />
 			</Box>
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>
-					<AutoCompleteDepartment
-						haveAll
-						value={department}
-						onChange={handleDepartment}
-						label={t('All')}
-						onlyMyDepartments
-						data-qa='current-chats-department'
-					/>
+					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} label={t('All')} onlyMyDepartments />
 				</Box>
 			</Box>
 			{EETagsComponent && (
 				<Box display='flex' flexDirection='row' marginBlockStart='x8' {...props}>
 					<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 						<Label mb='x4'>{t('Tags')}</Label>
-						<EETagsComponent value={tags} handler={handleTags} data-qa='current-chats-tags' />
+						<EETagsComponent value={tags} handler={handleTags} />
 					</Box>
 				</Box>
 			)}

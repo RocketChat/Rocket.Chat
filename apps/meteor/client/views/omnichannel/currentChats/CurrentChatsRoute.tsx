@@ -167,27 +167,27 @@ const CurrentChatsRoute = (): ReactElement => {
 
 			return (
 				<GenericTableRow key={_id} onClick={(): void => onRowClick(_id)} action>
-					<GenericTableCell withTruncatedText data-qa='current-chats-header-name'>
+					<GenericTableCell withTruncatedText data-qa='current-chats-cell-name'>
 						{fname}
 					</GenericTableCell>
-					<GenericTableCell withTruncatedText data-qa='current-chats-header-department'>
+					<GenericTableCell withTruncatedText data-qa='current-chats-cell-department'>
 						{department ? department.name : ''}
 					</GenericTableCell>
-					<GenericTableCell withTruncatedText data-qa='current-chats-header-servedBy'>
+					<GenericTableCell withTruncatedText data-qa='current-chats-cell-servedBy'>
 						{servedBy?.username}
 					</GenericTableCell>
-					<GenericTableCell withTruncatedText data-qa='current-chats-header-startedAt'>
+					<GenericTableCell withTruncatedText data-qa='current-chats-cell-startedAt'>
 						{moment(ts).format('L LTS')}
 					</GenericTableCell>
-					<GenericTableCell withTruncatedText data-qa='current-chats-header-lastMessage'>
+					<GenericTableCell withTruncatedText data-qa='current-chats-cell-lastMessage'>
 						{moment(lm).format('L LTS')}
 					</GenericTableCell>
-					<GenericTableCell withTruncatedText data-qa='current-chats-header-status'>
+					<GenericTableCell withTruncatedText data-qa='current-chats-cell-status'>
 						{getStatusText(open, onHold)}
 					</GenericTableCell>
 					{canRemoveClosedChats && !open && (
 						<GenericTableCell withTruncatedText>
-							<RemoveChatButton _id={_id} reload={reload} data-qa='current-chats-header-remove' />
+							<RemoveChatButton _id={_id} reload={reload} />
 						</GenericTableCell>
 					)}
 				</GenericTableRow>
@@ -218,6 +218,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								active={sortBy === 'fname'}
 								onClick={onHeaderClick}
 								sort='fname'
+								data-qa='current-chats-header-name'
 							>
 								{t('Name')}
 							</GenericTableHeaderCell>
@@ -227,6 +228,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								active={sortBy === 'departmentId'}
 								onClick={onHeaderClick}
 								sort='departmentId'
+								data-qa='current-chats-header-department'
 							>
 								{t('Department')}
 							</GenericTableHeaderCell>
@@ -236,13 +238,28 @@ const CurrentChatsRoute = (): ReactElement => {
 								active={sortBy === 'servedBy'}
 								onClick={onHeaderClick}
 								sort='servedBy'
+								data-qa='current-chats-header-servedBy'
 							>
 								{t('Served_By')}
 							</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={onHeaderClick} sort='ts'>
+							<GenericTableHeaderCell
+								key='ts'
+								direction={sortDirection}
+								active={sortBy === 'ts'}
+								onClick={onHeaderClick}
+								sort='ts'
+								data-qa='current-chats-header-startedAt'
+							>
 								{t('Started_At')}
 							</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='lm' direction={sortDirection} active={sortBy === 'lm'} onClick={onHeaderClick} sort='lm'>
+							<GenericTableHeaderCell
+								key='lm'
+								direction={sortDirection}
+								active={sortBy === 'lm'}
+								onClick={onHeaderClick}
+								sort='lm'
+								data-qa='current-chats-header-lastMessage'
+							>
 								{t('Last_Message')}
 							</GenericTableHeaderCell>
 							<GenericTableHeaderCell
@@ -252,11 +269,12 @@ const CurrentChatsRoute = (): ReactElement => {
 								onClick={onHeaderClick}
 								sort='open'
 								w='x100'
+								data-qa='current-chats-header-status'
 							>
 								{t('Status')}
 							</GenericTableHeaderCell>
 							{canRemoveClosedChats && (
-								<GenericTableHeaderCell key='remove' w='x60'>
+								<GenericTableHeaderCell key='remove' w='x60' data-qa='current-chats-header-remove'>
 									{t('Remove')}
 								</GenericTableHeaderCell>
 							)}
