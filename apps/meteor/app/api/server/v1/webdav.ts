@@ -47,7 +47,7 @@ API.v1.addRoute(
 
 			const result = Meteor.call('removeWebdavAccount', accountId);
 
-			return API.v1.success(result);
+			return API.v1.success({ result });
 		},
 	},
 );
