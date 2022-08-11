@@ -245,6 +245,8 @@ jobs:
       - name: yarn install
         run: yarn
 
+      - run: yarn build
+
       - name: TurboRepo local server
         uses: felixmosh/turborepo-gh-artifacts@v1
         with:
@@ -397,7 +399,7 @@ jobs:
       - name: Start containers
         env:
           MONGO_URL: "mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true"
-          MONGO_OPLOG_URL: "mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true"
+          MONGO_OPLOG_URL: "mongodb://host.docker.internal:27017/local?replicaSet=rs0&directConnection=true"
           RC_DOCKERFILE: "${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
           RC_DOCKER_TAG: "${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
         run: |
@@ -429,6 +431,8 @@ jobs:
           npx playwright install --with-deps
 
       - name: E2E Test UI
+        env:
+          MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
         run: |
           docker ps
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
@@ -476,6 +480,8 @@ jobs:
 
       - name: yarn install
         run: yarn
+
+      - run: yarn build
 
       - name: Restore build
         uses: actions/download-artifact@v2
