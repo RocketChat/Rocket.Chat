@@ -3886,7 +3886,7 @@
   "Room_not_found": "Room not found",
   "Room_password_changed_successfully": "Room password changed successfully",
   "room_removed_read_only": "removed read only permission",
-  "room_set_read_only": "Room set as Read Only by <em>__user_by__</em>",
+  "room_set_read_only": "set room to read only",
   "Room_topic_changed_successfully": "Room topic changed successfully",
   "Room_type_changed_successfully": "Room type changed successfully",
   "Room_type_of_default_rooms_cant_be_changed": "This is a default room and the type can not be changed, please consult with your administrator.",
