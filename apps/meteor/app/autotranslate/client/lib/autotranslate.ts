@@ -32,7 +32,7 @@ export const AutoTranslate = {
 	initialized: false,
 	providersMetadata: {} as { [providerNamer: string]: { name: string; displayName: string } },
 	messageIdsToWait: {} as { [messageId: string]: string },
-	supportedLanguages: [] as ISupportedLanguage[],
+	supportedLanguages: [] as ISupportedLanguage[] | undefined,
 
 	findSubscriptionByRid: mem((rid) => Subscriptions.findOne({ rid })),
 
@@ -43,7 +43,7 @@ export const AutoTranslate = {
 		}
 		const language = (subscription?.autoTranslateLanguage || userLanguage || window.defaultUserLanguage?.()) as string;
 		if (language.indexOf('-') !== -1) {
-			if (!this.supportedLanguages.some((supportedLanguage) => supportedLanguage.language === language)) {
+			if (!(this.supportedLanguages || []).some((supportedLanguage) => supportedLanguage.language === language)) {
 				return language.slice(0, 2);
 			}
 		}
