@@ -1,6 +1,6 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
-import { Auth, OmnichannelCurrentChats } from './page-objects';
+import { OmnichannelCurrentChats } from './page-objects';
 
 test.use({ storageState: 'admin-session.json' });
 
