@@ -40,7 +40,6 @@ export const slashCommands = {
 			description: options.description || description,
 			permission: options.permission,
 			clientOnly: options.clientOnly || false,
-
 			result,
 			providesPreview: Boolean(providesPreview),
 			previewer,
