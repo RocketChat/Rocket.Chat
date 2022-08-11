@@ -16,10 +16,7 @@ const hasError = (error: object): error is { error: string } => 'error' in error
 const hasMessage = (error: object): error is { message: string } =>
 	'error' in error && typeof (error as { message: unknown }).message === 'string';
 
-const hasErrorTitle = (details: Record<string, string>): details is Record<string, string> & { errorTitle: string } =>
-	'errorTitle' in details && typeof (details as Record<string, string> & { errorTitle: unknown }) === 'string';
-
-export const handleError = (error: object, useToastr = true): JQuery<HTMLElement> | string | undefined => {
+export const handleError = (error: object, useToastr = true): string | void => {
 	if (hasXHR(error) && error.xhr.responseJSON) {
 		return handleError(error.xhr.responseJSON, useToastr);
 	}
@@ -32,9 +29,10 @@ export const handleError = (error: object, useToastr = true): JQuery<HTMLElement
 			return;
 		}
 
-		const i18message =
-			(hasErrorTitle(details) ? TAPi18n.__(details.errorTitle) : '') +
-			TAPi18n.__(message, Object.fromEntries(Object.entries(details).map(([key, value]) => [key, escapeHTML(TAPi18n.__(value))])));
+		const i18message = TAPi18n.__(
+			message,
+			Object.fromEntries(Object.entries(details).map(([key, value]) => [key, escapeHTML(TAPi18n.__(value))])),
+		);
 
 		dispatchToastMessage({
 			type: 'error',
