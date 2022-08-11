@@ -10,10 +10,10 @@
  */
 import WebSocket from 'ws';
 
-import { IConnection } from '../asterisk/IConnection';
+import type { IConnection } from '../asterisk/IConnection';
 import { Logger } from '../../../../lib/logger/Logger';
-import { Command } from '../asterisk/Command';
-import { CallbackContext } from '../asterisk/ami/CallbackContext';
+import type { Command } from '../asterisk/Command';
+import type { CallbackContext } from '../asterisk/ami/CallbackContext';
 
 export class WebsocketConnection implements IConnection {
 	connection: WebSocket;

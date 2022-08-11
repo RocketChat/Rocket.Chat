@@ -26,7 +26,7 @@ const executeSlashCommand = async (
 	providedCommand: string,
 	stringParams: string | undefined,
 	item: Record<string, any>,
-	commands: Record<string, Function>,
+	commands: Record<string, (currentUserId: string, roomId: string, invitees: string[]) => void>,
 ): Promise<void> => {
 	if (providedCommand !== 'federation' || !stringParams) {
 		return;

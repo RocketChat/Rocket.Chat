@@ -1,7 +1,7 @@
 import { Tracker } from 'meteor/tracker';
 import { ComponentType, ReactElement, PropsWithoutRef, createElement, lazy, useEffect, useState, Suspense, FC } from 'react';
 
-export const createLazyElement = <Props extends {} = {}>(
+export const createLazyElement = <Props>(
 	factory: () => Promise<{ default: ComponentType<Props> }>,
 	getProps?: () => PropsWithoutRef<Props> | undefined,
 ): ReactElement => {

@@ -11,7 +11,8 @@ import {
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
 } from '@rocket.chat/rest-typings';
-import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { ITeam } from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { Users } from '../../../models/server';

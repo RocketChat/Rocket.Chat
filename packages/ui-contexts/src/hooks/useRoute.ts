@@ -1,6 +1,7 @@
 import { useContext, useMemo } from 'react';
 
-import { QueryStringParameters, RouteParameters, RouterContext } from '../RouterContext';
+import type { QueryStringParameters, RouteParameters } from '../RouterContext';
+import { RouterContext } from '../RouterContext';
 
 type Route = {
 	getPath: (parameters?: RouteParameters, queryStringParameters?: QueryStringParameters) => string | undefined;

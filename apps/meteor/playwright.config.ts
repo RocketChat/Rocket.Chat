@@ -1,4 +1,4 @@
-import { PlaywrightTestConfig } from '@playwright/test';
+import type { PlaywrightTestConfig } from '@playwright/test';
 
 import * as constants from './tests/e2e/config/constants';
 

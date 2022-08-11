@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 export class HomeContent {
 	private readonly page: Page;
@@ -27,6 +27,12 @@ export class HomeContent {
 
 	async sendMessage(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
+		await this.page.keyboard.press('Enter');
+	}
+
+	async dispatchSlashCommand(text: string): Promise<void> {
+		await this.page.locator('[name="msg"]').type(text);
+		await this.page.keyboard.press('Enter');
 		await this.page.keyboard.press('Enter');
 	}
 

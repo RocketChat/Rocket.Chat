@@ -1,4 +1,5 @@
-import React, { ContextType, ReactElement, ReactNode, useMemo } from 'react';
+import type { ContextType, ReactElement, ReactNode } from 'react';
+import React, { useMemo } from 'react';
 import { RouterContext } from '@rocket.chat/ui-contexts';
 
 type RouterContextMockProps = {
@@ -30,8 +31,11 @@ const RouterContextMock = ({ children, pushRoute, replaceRoute }: RouterContextM
 			],
 			queryCurrentRoute: (): [
 				subscribe: (onStoreChange: () => void) => () => void,
-				getSnapshot: () => [undefined?, {}?, {}?, undefined?],
-			] => [() => (): void => undefined, (): [undefined, {}, {}, undefined] => [undefined, {}, {}, undefined]],
+				getSnapshot: () => [undefined?, Record<string, string>?, Record<string, string>?, undefined?],
+			] => [
+				() => (): void => undefined,
+				(): [undefined, Record<string, string>, Record<string, string>, undefined] => [undefined, {}, {}, undefined],
+			],
 		}),
 		[pushRoute, replaceRoute],
 	);
