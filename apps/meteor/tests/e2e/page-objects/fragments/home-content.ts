@@ -101,7 +101,15 @@ export class HomeContent {
 	}
 
 	get btnForwardChat(): Locator {
-		return this.page.locator('[data-qa="FowardMessage"]');
+		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
+	}
+
+	get inputModalAgentUserName(): Locator {
+		return this.page.locator('#modal-root input:nth-child(1)');
+	}
+
+	get inputModalAgentForwardComment(): Locator {
+		return this.page.locator('[data-qa="ForwardChatModalTextAreaInputComment"]');
 	}
 
 	async pickEmoji(emoji: string, section = 'icon-people') {
