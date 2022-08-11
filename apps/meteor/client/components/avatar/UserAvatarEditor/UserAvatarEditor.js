@@ -97,7 +97,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 					<Margins inlineStart='x4'>
 						<Box>{t('Use_url_for_avatar')}</Box>
 						<TextInput
-							data-qa='UserAvatarEditorLink'
+							data-qa-id='UserAvatarEditorLink'
 							flexGrow={0}
 							placeholder={t('Use_url_for_avatar')}
 							value={avatarFromUrl}
