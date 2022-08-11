@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { SettingValue } from '@rocket.chat/core-typings';
+import type { SettingValue } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 
 const waitToLoad = function (orch: AppServerOrchestrator): unknown {
 	return new Promise<void>((resolve) => {

@@ -1,8 +1,18 @@
-import { IPaginationOptions, IQueryOptions, IRecordsWithTotal, ITeam, ITeamMember, ITeamStats, TEAM_TYPE } from '@rocket.chat/core-typings';
-import { Filter, FindOptions } from 'mongodb';
-import type { IRoom, IUser, IRole } from '@rocket.chat/core-typings';
+import type {
+	IPaginationOptions,
+	IQueryOptions,
+	IRecordsWithTotal,
+	ITeam,
+	ITeamMember,
+	ITeamStats,
+	TEAM_TYPE,
+	IRoom,
+	IUser,
+	IRole,
+} from '@rocket.chat/core-typings';
+import type { Filter, FindOptions } from 'mongodb';
 
-import { ICreateRoomParams } from './IRoomService';
+import type { ICreateRoomParams } from './IRoomService';
 
 export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
 	id?: string;

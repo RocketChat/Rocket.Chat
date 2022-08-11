@@ -1,7 +1,7 @@
 // import type { Db } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { ISAUMonitorService } from '../../sdk/types/ISAUMonitorService';
+import type { ISAUMonitorService } from '../../sdk/types/ISAUMonitorService';
 import { sauEvents } from './events';
 
 export class SAUMonitorService extends ServiceClassInternal implements ISAUMonitorService {

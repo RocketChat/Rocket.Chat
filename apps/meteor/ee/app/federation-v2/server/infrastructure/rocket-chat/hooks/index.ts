@@ -1,9 +1,9 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../../../lib/callbacks';
 
 export class FederationHooksEE {
-	public static onFederatedRoomCreated(callback: Function): void {
+	public static onFederatedRoomCreated(callback: (room: IRoom, owner: IUser, originalMemberList: string[]) => void): void {
 		callbacks.add(
 			'federation.afterCreateFederatedRoom',
 			(room: IRoom, { owner, originalMemberList }): void => {
@@ -17,7 +17,7 @@ export class FederationHooksEE {
 		);
 	}
 
-	public static onUsersAddedToARoom(callback: Function): void {
+	public static onUsersAddedToARoom(callback: (room: IRoom, inviter: IUser, users: IUser[]) => void): void {
 		callbacks.add(
 			'afterAddedToRoom',
 			(params: { user: IUser; inviter: IUser }, room: IRoom): void => {
@@ -31,7 +31,7 @@ export class FederationHooksEE {
 		);
 	}
 
-	public static onDirectMessageRoomCreated(callback: Function): void {
+	public static onDirectMessageRoomCreated(callback: (room: IRoom, creatorId: string, members: IUser[]) => void): void {
 		callbacks.add(
 			'afterCreateDirectRoom',
 			(room: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }): void =>
@@ -41,7 +41,7 @@ export class FederationHooksEE {
 		);
 	}
 
-	public static beforeDirectMessageRoomCreate(callback: Function): void {
+	public static beforeDirectMessageRoomCreate(callback: (members: IUser[]) => void): void {
 		callbacks.add(
 			'beforeCreateDirectRoom',
 			(members: IUser[]): void => Promise.await(callback(members)),
@@ -50,7 +50,7 @@ export class FederationHooksEE {
 		);
 	}
 
-	public static beforeAddUserToARoom(callback: Function): void {
+	public static beforeAddUserToARoom(callback: (user: IUser | string, room: IRoom) => void): void {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
 			(params: { user: IUser | string }, room: IRoom): void => {
@@ -64,7 +64,7 @@ export class FederationHooksEE {
 		);
 	}
 
-	public static afterRoomNameChanged(callback: Function): void {
+	public static afterRoomNameChanged(callback: (roomId: IRoom['_id'], name: string) => void): void {
 		callbacks.add(
 			'afterRoomNameChange',
 			({ rid: roomId, name }: Record<string, any>): void => {
@@ -75,7 +75,7 @@ export class FederationHooksEE {
 		);
 	}
 
-	public static afterRoomTopicChanged(callback: Function): void {
+	public static afterRoomTopicChanged(callback: (roomId: IRoom['_id'], topic: string) => void): void {
 		callbacks.add(
 			'afterRoomTopicChange',
 			({ rid: roomId, topic }: Record<string, any>): void => {
