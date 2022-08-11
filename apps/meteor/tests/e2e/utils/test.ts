@@ -13,10 +13,10 @@ export type AnyObj = { [key: string]: any };
 
 export type BaseTest = {
 	api: {
-		get(uri: string, prefix: string): Promise<APIResponse>;
-		post(uri: string, data: AnyObj, prefix: string): Promise<APIResponse>;
-		put(uri: string, data: AnyObj, prefix: string): Promise<APIResponse>;
-		delete(uri: string, prefix: string): Promise<APIResponse>;
+		get(uri: string, prefix?: string): Promise<APIResponse>;
+		post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
+		put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
+		delete(uri: string, prefix?: string): Promise<APIResponse>;
 	};
 };
 
