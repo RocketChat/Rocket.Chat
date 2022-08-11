@@ -123,7 +123,7 @@ const ForwardChatModal = ({
 						</Box>
 					</Field.Label>
 					<Field.Row>
-						<TextAreaInput data-qa='ForwardChatModalTextAreaInputComment' {...register('comment')} rows={8} flexGrow={1} />
+						<TextAreaInput data-qa-id='ForwardChatModalTextAreaInputComment' {...register('comment')} rows={8} flexGrow={1} />
 					</Field.Row>
 				</Field>
 			</Modal.Content>
