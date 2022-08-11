@@ -15,8 +15,6 @@ concurrency:
 
 env:
   CI: true
-  MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
-  MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: --max_old_space_size=4096
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
@@ -85,11 +83,11 @@ jobs:
           node-version: '14.19.3'
           cache: 'yarn'
 
-      - name: Free disk space
-        run: |
-          sudo apt clean
-          docker rmi $(docker image ls -aq)
-          df -h
+      # - name: Free disk space
+      #   run: |
+      #     sudo apt clean
+      #     docker rmi $(docker image ls -aq)
+      #     df -h
 
       - name: Cache meteor local
         uses: actions/cache@v2
@@ -154,6 +152,9 @@ jobs:
       - name: TS typecheck
         run: yarn turbo run typecheck --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
+      - name: Unit Test
+        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
         run: |
@@ -216,15 +217,15 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-  test:
+  test-api:
     runs-on: ubuntu-20.04
     needs: [build, release-versions]
 
     strategy:
       matrix:
         node-version: ['14.19.3']
-        mongodb-version: ['4.2', '4.4', '5.0']
-        shard: ['1/2', '2/2']
+        mongodb-version: ['4.2']
+        # mongodb-version: ['4.2', '4.4', '5.0']
 
     steps:
       - name: Launch MongoDB
@@ -249,9 +250,6 @@ jobs:
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
-
-      - name: Unit Test
-        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -349,6 +347,72 @@ jobs:
           done;
           exit $s
 
+  test-ui:
+    runs-on: ubuntu-20.04
+    needs: [build, release-versions]
+
+    strategy:
+      matrix:
+        node-version: ['14.19.3']
+        mongodb-version: ['4.2']
+        # mongodb-version: ['4.2', '4.4', '5.0']
+        ui-shard: [1, 2]
+
+    steps:
+      - name: Launch MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-replica-set: rs0
+
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+
+      - name: yarn install
+        run: yarn
+
+      - name: TurboRepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v1
+        with:
+          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
+          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+
+      - name: Restore build
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: /tmp/build
+
+      - name: Unpack build
+        run: |
+          cd /tmp/build
+          tar xzf Rocket.Chat.tar.gz
+          rm Rocket.Chat.tar.gz
+
+      - name: Start containers
+        env:
+          MONGO_URL: "mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true"
+          MONGO_OPLOG_URL: "mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true"
+          RC_DOCKERFILE: "${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
+          RC_DOCKER_TAG: "${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
+        run: |
+          export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+          docker compose -f docker-compose-ci.yml up -d rocketchat
+
+          sleep 10
+
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
+            echo "Waiting Rocket.Chat to start up"
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
+            sleep 10
+          done
+
       - name: Cache Playwright binaries
         uses: actions/cache@v3
         id: cache-playwright
@@ -369,20 +433,8 @@ jobs:
           docker ps
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
-          docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
-
-          NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
-
-          docker compose -f docker-compose-ci.yml restart rocketchat
-
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
-            echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && exit 1
-            sleep 10
-          done
-
           cd ./apps/meteor
-          yarn test:e2e --shard=${{ matrix.shard }}
+          yarn test:e2e --shard=${{ matrix.ui-shard }}/${{ strategy.job-total }}
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
@@ -399,7 +451,7 @@ jobs:
       matrix:
         node-version: ['14.19.3']
         mongodb-version-ee: ['4.4']
-        shard: ['1/2', '2/2']
+        shard: [1, 2]
 
     steps:
       - name: Launch MongoDB
@@ -424,9 +476,6 @@ jobs:
 
       - name: yarn install
         run: yarn
-
-      - name: Unit Test
-        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -548,7 +597,7 @@ jobs:
 
           cd ./apps/meteor
 
-          E2E_COVERAGE=true IS_EE=true yarn test:e2e --shard=${{ matrix.shard }}
+          E2E_COVERAGE=true IS_EE=true yarn test:e2e --shard=${{ matrix.ui-shard }}/${{ strategy.job-total }}
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
@@ -577,7 +626,7 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    needs: [test, release-versions]
+    needs: [test-api, test-ui, release-versions]
 
     steps:
       - uses: actions/checkout@v3
