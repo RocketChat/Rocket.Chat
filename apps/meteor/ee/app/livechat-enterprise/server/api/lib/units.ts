@@ -28,9 +28,10 @@ export async function findUnits({
 	}
 	const filter = text && new RegExp(escapeRegExp(text), 'i');
 
-	const query = { ...(text && { $or: [{ name: filter }] }) };
+	const query = { ...(text && { $or: [{ name: filter }] }), type: 'u' };
 
 	// TODO need to enfore type IOmnichannelBusinessUnit on LivechatUnit model, so don't need to use generic everywhere
+	// TODO 2: Enforce unit validations on findPaginated
 	const { cursor, totalCount } = LivechatUnit.findPaginated<IOmnichannelBusinessUnit>(query, {
 		sort: sort || { name: 1 },
 		skip: offset,

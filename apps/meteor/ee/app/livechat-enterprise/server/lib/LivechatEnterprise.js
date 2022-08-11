@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, LivechatTag, LivechatPriority } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatTag, LivechatPriority, LivechatUnit } from '@rocket.chat/models';
 
-import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import { Users, LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
@@ -56,10 +55,10 @@ export const LivechatEnterprise = {
 		return false;
 	},
 
-	removeUnit(_id) {
+	async removeUnit(_id) {
 		check(_id, String);
 
-		const unit = LivechatUnit.findOneById(_id, { fields: { _id: 1 } });
+		const unit = await LivechatUnit.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!unit) {
 			throw new Meteor.Error('unit-not-found', 'Unit not found', { method: 'livechat:removeUnit' });
@@ -68,7 +67,7 @@ export const LivechatEnterprise = {
 		return LivechatUnit.removeById(_id);
 	},
 
-	saveUnit(_id, unitData, unitMonitors, unitDepartments) {
+	async saveUnit(_id, unitData, unitMonitors, unitDepartments) {
 		check(_id, Match.Maybe(String));
 
 		check(unitData, {
@@ -95,7 +94,7 @@ export const LivechatEnterprise = {
 
 		let ancestors = [];
 		if (_id) {
-			const unit = LivechatUnit.findOneById(_id);
+			const unit = await LivechatUnit.findOneById(_id, { projection: { _id: 1, ancestors: 1 } });
 			if (!unit) {
 				throw new Meteor.Error('error-unit-not-found', 'Unit not found', {
 					method: 'livechat:saveUnit',

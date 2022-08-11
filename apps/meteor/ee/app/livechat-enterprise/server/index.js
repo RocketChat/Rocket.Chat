@@ -12,7 +12,6 @@ import './methods/savePriority';
 import './methods/removePriority';
 import './methods/removeBusinessHour';
 import './methods/resumeOnHold';
-import LivechatUnit from '../../models/server/models/LivechatUnit';
 import LivechatUnitMonitors from '../../models/server/models/LivechatUnitMonitors';
 import './startup';
 import './hooks/afterTakeInquiry';
@@ -47,4 +46,4 @@ onLicense('livechat-enterprise', () => {
 	});
 });
 
-export { LivechatUnit, LivechatUnitMonitors };
+export { LivechatUnitMonitors };

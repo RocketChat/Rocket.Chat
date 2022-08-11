@@ -1,6 +1,6 @@
 import type { ILivechatUnitModel } from '@rocket.chat/model-typings';
 import { LivechatUnitMonitors } from '@rocket.chat/models';
-import type { ILivechatUnit } from '@rocket.chat/core-typings';
+import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import type { Filter, FindCursor, FindOptions, FindOneOptions, UpdateResult, Document, DeleteResult } from 'mongodb';
 import _ from 'underscore';
 
@@ -24,24 +24,26 @@ const addQueryRestrictions = (originalQuery: any) => {
 };
 
 export class LivechatUnitRaw extends LivechatDepartmentRaw implements ILivechatUnitModel {
-	find(originalQuery: Filter<ILivechatUnit>, options: FindOptions<ILivechatUnit> = {}): FindCursor<ILivechatUnit> {
+	unfilteredFind = super.find;
+
+	find(originalQuery: Filter<IOmnichannelBusinessUnit>, options: FindOptions<IOmnichannelBusinessUnit> = {}): FindCursor<IOmnichannelBusinessUnit> {
 		const query = addQueryRestrictions(originalQuery);
 		queriesLogger.debug({ msg: 'LivechatUnit.find', query });
 		return super.find(query, options);
 	}
 
-	findOne(originalQuery: Filter<ILivechatUnit>, options: FindOptions<ILivechatUnit> = {}) {
+	findOne(originalQuery: Filter<IOmnichannelBusinessUnit>, options: FindOptions<IOmnichannelBusinessUnit> = {}) {
 		const query = addQueryRestrictions(originalQuery);
 		queriesLogger.debug({ msg: 'LivechatUnit.findOne', query });
 		return super.findOne(query, options);
 	}
 
-	findOneById(_id: string, options: FindOneOptions<ILivechatUnit>) {
+	findOneById(_id: string, options: FindOneOptions<IOmnichannelBusinessUnit>) {
 		const query = addQueryRestrictions({ _id });
 		return super.findOne(query, options);
 	}
 
-	findOneByIdOrName(_idOrName: string, options: FindOneOptions<ILivechatUnit> = {}): Promise<ILivechatUnit | null> {
+	findOneByIdOrName(_idOrName: string, options: FindOneOptions<IOmnichannelBusinessUnit> = {}): Promise<IOmnichannelBusinessUnit | null> {
 		const query = {
 			$or: [
 				{
@@ -66,11 +68,11 @@ export class LivechatUnitRaw extends LivechatDepartmentRaw implements ILivechatU
 		return monitoredUnits.map((u) => u.unitId);
 	}
 
-	update(query: Filter<ILivechatUnit>, update: Partial<ILivechatUnit>): Promise<Document | UpdateResult> {
+	update(query: Filter<IOmnichannelBusinessUnit>, update: Partial<IOmnichannelBusinessUnit>): Promise<Document | UpdateResult> {
 		return super.updateMany(query, update);
 	}
 
-	remove(query: Filter<ILivechatUnit>): Promise<Document | DeleteResult> {
+	remove(query: Filter<IOmnichannelBusinessUnit>): Promise<Document | DeleteResult> {
 		return super.deleteMany(query);
 	}
 
@@ -95,9 +97,9 @@ export class LivechatUnitRaw extends LivechatDepartmentRaw implements ILivechatU
 		return this.deleteOne(query);
 	}
 
-	async findMonitoredDepartmentsByMonitorId(monitorId: string): Promise<FindCursor<ILivechatUnit>> {
+	async findMonitoredDepartmentsByMonitorId(monitorId: string): Promise<FindCursor<IOmnichannelBusinessUnit>> {
 		const monitoredUnits = await this.findByMonitorId(monitorId);
-		return this.findByUnitIds(monitoredUnits, {}) as unknown as FindCursor<ILivechatUnit>;
+		return this.findByUnitIds(monitoredUnits, {}) as unknown as FindCursor<IOmnichannelBusinessUnit>;
 	}
 
 	async createOrUpdateUnit(
@@ -106,7 +108,7 @@ export class LivechatUnitRaw extends LivechatDepartmentRaw implements ILivechatU
 		ancestors: string[],
 		monitors: { monitorId: string; username: string }[],
 		departments: string[],
-	) {
+	): Promise<IOmnichannelBusinessUnit> {
 		monitors = ([] as any[]).concat(monitors || []);
 		ancestors = ([] as string[]).concat(ancestors || []);
 
