@@ -1,7 +1,6 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { hasPermission } from '../../../../authorization/server';
 import { findRooms } from '../../../server/api/lib/rooms';
 
 const validateDateParams = (property, date) => {
@@ -32,12 +31,6 @@ API.v1.addRoute(
 			check(open, Match.Maybe(String));
 			check(onhold, Match.Maybe(String));
 			check(tags, Match.Maybe([String]));
-
-			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
-			const hasAgentAccess = hasPermission(this.userId, 'view-l-room') && agents?.includes(this.userId) && agents?.length === 1;
-			if (!hasAdminAccess && !hasAgentAccess) {
-				return API.v1.unauthorized();
-			}
 
 			createdAt = validateDateParams('createdAt', createdAt);
 			closedAt = validateDateParams('closedAt', closedAt);

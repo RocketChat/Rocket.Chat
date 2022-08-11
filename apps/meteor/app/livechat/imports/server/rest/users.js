@@ -5,7 +5,7 @@ import { API } from '../../../../api/server';
 import { Users } from '../../../../models/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
-import { hasAtLeastOnePermission } from '../../../../authorization/server';
+import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 API.v1.addRoute(
 	'livechat/users/:type',
@@ -29,7 +29,7 @@ API.v1.addRoute(
 			const { text } = this.queryParams;
 
 			if (this.urlParams.type === 'agent') {
-				if (!(await hasAtLeastOnePermission(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
+				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
 					return API.v1.unauthorized();
 				}
 
@@ -46,7 +46,7 @@ API.v1.addRoute(
 				);
 			}
 			if (this.urlParams.type === 'manager') {
-				if (!(await hasAtLeastOnePermission(this.userId, ['view-livechat-manager']))) {
+				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['view-livechat-manager']))) {
 					return API.v1.unauthorized();
 				}
 
