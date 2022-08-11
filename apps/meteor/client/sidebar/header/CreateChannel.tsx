@@ -105,7 +105,7 @@ const CreateChannel = ({
 	const canSave = useMemo(() => hasUnsavedChanges && !nameError, [hasUnsavedChanges, nameError]);
 
 	return (
-		<Modal>
+		<Modal data-qa='create-channel-modal'>
 			<Modal.Header>
 				<Modal.Title>{t('Create_channel')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
@@ -116,6 +116,7 @@ const CreateChannel = ({
 						<Field.Label>{t('Name')}</Field.Label>
 						<Field.Row>
 							<TextInput
+								data-qa-type='channel-name-input'
 								error={hasUnsavedChanges ? nameError : undefined}
 								addon={<Icon name={values.type ? 'lock' : 'hash'} size='x20' />}
 								placeholder={t('Channel_name')}
@@ -132,7 +133,11 @@ const CreateChannel = ({
 							</Box>
 						</Field.Label>
 						<Field.Row>
-							<TextInput placeholder={t('Channel_what_is_this_channel_about')} onChange={handlers.handleDescription} />
+							<TextInput
+								placeholder={t('Channel_what_is_this_channel_about')}
+								onChange={handlers.handleDescription}
+								data-qa-type='channel-topic-input'
+							/>
 						</Field.Row>
 					</Field>
 					<Field>
@@ -143,7 +148,12 @@ const CreateChannel = ({
 									{values.type ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}
 								</Field.Description>
 							</Box>
-							<ToggleSwitch checked={!!values.type} disabled={!!canOnlyCreateOneType} onChange={onChangeType} />
+							<ToggleSwitch
+								checked={!!values.type}
+								disabled={!!canOnlyCreateOneType}
+								onChange={onChangeType}
+								data-qa-type='channel-private-toggle'
+							/>
 						</Box>
 					</Field>
 					<Field>
@@ -195,7 +205,7 @@ const CreateChannel = ({
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!canSave} onClick={onCreate} primary>
+					<Button disabled={!canSave} onClick={onCreate} primary data-qa-type='create-channel-confirm-button'>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>
