@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Scrollable, Throbber, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, Scrollable, Throbber, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ChangeEvent, FC, useState } from 'react';
 
@@ -62,14 +62,14 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 				</Box>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup>
+				<Modal.FooterControllers>
 					<Button disabled={isLoading} onClick={onBackButtonClick}>
 						{t('Back')}
 					</Button>
 					<Button primary disabled={isLoading || !cloudKey.trim()} marginInlineStart='auto' onClick={handleFinishButtonClick}>
 						{isLoading ? <Throbber inheritColor /> : t('Finish_Registration')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</>
 	);
