@@ -16,7 +16,7 @@ const createAuxContext = async (browser: Browser, storageState: string): Promise
 	return { page, poHomeChannel };
 };
 
-test.describe.only('omnichannel-departaments', () => {
+test.describe('omnichannel-departaments', () => {
 	let poLiveChat: OmnichannelLiveChat;
 
 	test.beforeAll(async ({ api }) => {
