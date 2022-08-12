@@ -36,7 +36,7 @@ const isPermissionsPayload = (permissionsPayload: PermissionsRequiredKey): permi
 	);
 };
 
-export async function checkPermisisonsForInvocation(
+export async function checkPermissionsForInvocation(
 	userId: IUser['_id'],
 	permissionsPayload: PermissionsPayload,
 	requestMethod: RequestMethod,

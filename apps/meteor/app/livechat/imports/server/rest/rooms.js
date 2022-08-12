@@ -2,7 +2,6 @@ import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
-import { hasPermission } from '../../../../authorization/server';
 
 const validateDateParams = (property, date) => {
 	if (date) {
@@ -21,7 +20,7 @@ API.v1.addRoute(
 	'livechat/rooms',
 	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-livechat-rooms', 'view-l-room'], operation: 'hasAny' } } },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
 			const { agents, departmentId, open, tags, roomName, onhold } = this.requestParams();
@@ -36,31 +35,23 @@ API.v1.addRoute(
 			createdAt = validateDateParams('createdAt', createdAt);
 			closedAt = validateDateParams('closedAt', closedAt);
 
-			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
-			const hasAgentAccess = hasPermission(this.userId, 'view-l-room') && agents?.includes(this.userId) && agents?.length === 1;
-			if (!hasAdminAccess && !hasAgentAccess) {
-				return API.v1.unauthorized();
-			}
-
 			if (customFields) {
 				customFields = JSON.parse(customFields);
 			}
 
 			return API.v1.success(
-				Promise.await(
-					findRooms({
-						agents,
-						roomName,
-						departmentId,
-						open: open && open === 'true',
-						createdAt,
-						closedAt,
-						tags,
-						customFields,
-						onhold,
-						options: { offset, count, sort, fields },
-					}),
-				),
+				findRooms({
+					agents,
+					roomName,
+					departmentId,
+					open: open && open === 'true',
+					createdAt,
+					closedAt,
+					tags,
+					customFields,
+					onhold,
+					options: { offset, count, sort, fields },
+				}),
 			);
 		},
 	},

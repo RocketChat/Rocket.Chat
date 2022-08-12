@@ -14,7 +14,7 @@ import { metrics } from '../../metrics/server';
 import { hasPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
-import { checkPermisisonsForInvocation, checkPermissions } from './api.helpers';
+import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
 
 const logger = new Logger('API');
 
@@ -431,7 +431,7 @@ export class APIClass extends Restivus {
 						if (
 							shouldVerifyPermissions &&
 							(!this.userId ||
-								!Promise.await(checkPermisisonsForInvocation(this.userId, _options.permissionsRequired, this.request.method)))
+								!Promise.await(checkPermissionsForInvocation(this.userId, _options.permissionsRequired, this.request.method)))
 						) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
 								permissions: _options.permissionsRequired,
