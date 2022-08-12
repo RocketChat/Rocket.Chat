@@ -1,14 +1,20 @@
 import { faker } from '@faker-js/faker';
-import type { Page } from '@playwright/test';
+import type { Page, Browser } from '@playwright/test';
 
 import { test, expect } from './utils/test';
 import { HomeChannel, OmnichannelLiveChat } from './page-objects';
-import { createAuxContext } from './utils';
+
+const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page }> => {
+	const page = await browser.newPage({ storageState });
+	await page.goto('/');
+	return { page  };
+};
 
 const newUser = {
 	name: faker.name.firstName(),
 	email: faker.internet.email(),
 };
+
 test.describe('Livechat', () => {
 	test.describe('Send message from user', () => {
 		let poLiveChat: OmnichannelLiveChat;
@@ -25,7 +31,8 @@ test.describe('Livechat', () => {
 		});
 
 		test.describe('Send message to online agent', () => {
-			let poAuxContext: { page: Page; poHomeChannel: HomeChannel };
+			let poAuxContext: { page: Page };
+			
 			test.beforeAll(async ({ browser, api }) => {
 				await api.post('/livechat/users/agent', { username: 'user1' });
 
