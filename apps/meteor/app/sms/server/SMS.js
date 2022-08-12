@@ -26,7 +26,7 @@ export const SMS = {
 	},
 
 	isConfiguredService(name) {
-		return name === this.service;
+		return name.toLowerCase() === this.service.toLowerCase();
 	},
 };
 
