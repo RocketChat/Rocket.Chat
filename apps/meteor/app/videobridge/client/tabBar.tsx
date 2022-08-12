@@ -4,7 +4,8 @@ import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../client/contexts/VideoConfContext';
-import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
+import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/useVideoConfWarning';
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
@@ -84,14 +85,16 @@ addAction('start-call', ({ room }) => {
 			enableOption && !ownUser
 				? {
 						groups,
-						'id': 'start-call',
-						'title': 'Call',
-						'icon': 'phone',
-						'action': handleOpenVideoConf,
-						'disabled': federated,
-						'data-tooltip': federated ? 'Video_Call_unavailable_for_federation' : '',
-						'full': true,
-						'order': live ? -1 : 4,
+						id: 'start-call',
+						title: 'Call',
+						icon: 'phone',
+						action: handleOpenVideoConf,
+						...(federated && {
+							'disabled': true,
+							'data-tooltip': 'Video_Call_unavailable_for_federation',
+						}),
+						full: true,
+						order: live ? -1 : 4,
 				  }
 				: null,
 		[groups, enableOption, live, handleOpenVideoConf, ownUser, federated],

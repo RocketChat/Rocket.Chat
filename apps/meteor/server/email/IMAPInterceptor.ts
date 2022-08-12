@@ -2,7 +2,8 @@ import { EventEmitter } from 'events';
 
 import IMAP from 'imap';
 import type Connection from 'imap';
-import { simpleParser, ParsedMail } from 'mailparser';
+import type { ParsedMail } from 'mailparser';
+import { simpleParser } from 'mailparser';
 
 type IMAPOptions = {
 	deleteAfterRead: boolean;
@@ -13,7 +14,6 @@ type IMAPOptions = {
 
 export declare interface IMAPInterceptor {
 	on(event: 'email', listener: (email: ParsedMail) => void): this;
-	on(event: string, listener: Function): this;
 }
 
 export class IMAPInterceptor extends EventEmitter {
@@ -60,7 +60,7 @@ export class IMAPInterceptor extends EventEmitter {
 		});
 
 		this.imap.on('error', (err: Error) => {
-			this.log('Error occurred ...');
+			this.log('Error occurred ...', err);
 			throw err;
 		});
 	}
@@ -78,7 +78,7 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	isActive(): boolean {
-		if (this.imap && this.imap.state && this.imap.state === 'disconnected') {
+		if (this.imap?.state && this.imap.state === 'disconnected') {
 			return false;
 		}
 

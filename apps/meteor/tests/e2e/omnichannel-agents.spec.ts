@@ -1,118 +1,43 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from './utils/test';
+import { OmnichannelAgents } from './page-objects';
 
-import { adminLogin } from './utils/mocks/userAndPasswordMock';
-import { LoginPage, SideNav, Agents, Global } from './pageobjects';
+test.use({ storageState: 'admin-session.json' });
 
-test.describe('[Agents]', () => {
-	let loginPage: LoginPage;
-	let page: Page;
-	let sideNav: SideNav;
-	let agents: Agents;
-	let global: Global;
+test.describe.serial('omnichannel-agents', () => {
+	let poOmnichannelAgents: OmnichannelAgents;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
-		loginPage = new LoginPage(page);
-		sideNav = new SideNav(page);
-		agents = new Agents(page);
-		global = new Global(page);
+	test.beforeEach(async ({ page }) => {
+		poOmnichannelAgents = new OmnichannelAgents(page);
 
-		await page.goto('/');
-		await loginPage.doLogin(adminLogin);
-		await sideNav.sidebarUserMenu.click();
-		await sideNav.omnichannel.click();
-		await agents.agentsLink.click();
-		await agents.doAddAgent();
+		await page.goto('/omnichannel');
+		await poOmnichannelAgents.sidenav.linkAgents.click();
 	});
 
-	test('expect admin/manager is able to add an agent', async () => {
-		await expect(agents.agentAdded).toBeVisible();
-		await expect(agents.agentAdded).toHaveText('Rocket.Cat');
+	test('expect add "user1" as agent', async ({ page }) => {
+		await poOmnichannelAgents.inputUsername.type('user1', { delay: 1000 });
+		await page.keyboard.press('Enter');
+		await poOmnichannelAgents.btnAdd.click();
+
+		await poOmnichannelAgents.inputSearch.fill('user1');
+		expect(poOmnichannelAgents.firstRowInTable).toBeVisible();
 	});
 
-	test('expect open new agent info on tab', async () => {
-		await agents.agentAdded.click();
-		await expect(agents.userInfoTab).toBeVisible();
-		await expect(agents.agentInfo).toBeVisible();
+	test('expect update "user1" status', async ({ page }) => {
+		await poOmnichannelAgents.inputSearch.fill('user1');
+		await poOmnichannelAgents.firstRowInTable.click();
+
+		await poOmnichannelAgents.btnEdit.click();
+		await poOmnichannelAgents.btnStatus.click();
+		await page.locator(`div.rcx-options[role="listbox"] div.rcx-box ol[role="listbox"] li[value="not-available"]`).click();
+		await poOmnichannelAgents.btnSave.click();
 	});
 
-	test('expect close agent info on tab', async () => {
-		await agents.btnClose.click();
-		await expect(agents.userInfoTab).not.toBeVisible();
-		await expect(agents.agentInfo).not.toBeVisible();
-		await agents.agentAdded.click();
-	});
+	test('expect remove "user1" as agent', async () => {
+		await poOmnichannelAgents.inputSearch.fill('user1');
+		await poOmnichannelAgents.btnDeletefirstRowInTable.click();
+		await poOmnichannelAgents.btnModalRemove.click();
 
-	test.describe('[Render]', () => {
-		test('expect show profile image', async () => {
-			await expect(agents.userAvatar).toBeVisible();
-		});
-
-		test('expect show action buttons', async () => {
-			await expect(agents.btnClose).toBeVisible();
-			await expect(agents.btnEdit).toBeVisible();
-			await expect(agents.btnRemove).toBeVisible();
-		});
-
-		test('expect show livechat status', async () => {
-			await expect(agents.agentInfoUserInfoLabel).toBeVisible();
-		});
-	});
-
-	test.describe('[Edit button]', async () => {
-		test.describe('[Render]', async () => {
-			test.beforeAll(async () => {
-				await agents.btnEdit.click();
-			});
-
-			test('expect show fields', async () => {
-				await agents.getListOfExpectedInputs();
-			});
-		});
-
-		test.describe('[Action]', async () => {
-			test('expect change user status', async () => {
-				await agents.doChangeUserStatus('not-available');
-				await expect(agents.agentListStatus).toHaveText('Not Available');
-			});
-
-			test.describe('[Modal Actions]', async () => {
-				test.beforeEach(async () => {
-					await agents.doRemoveAgent();
-				});
-
-				test('expect modal is not visible after cancel delete agent', async () => {
-					await global.btnModalCancel.click();
-					await expect(global.modal).not.toBeVisible();
-				});
-
-				test('expect agent is removed from user info tab', async () => {
-					await global.btnModalRemove.click();
-					await expect(global.modal).not.toBeVisible();
-					await expect(agents.agentAdded).not.toBeVisible();
-				});
-			});
-
-			test.describe('[Remove from table]', async () => {
-				test.beforeAll(async () => {
-					await agents.doAddAgent();
-				});
-
-				test.beforeEach(async () => {
-					await agents.btnTableRemove.click();
-				});
-
-				test('expect modal is not visible after cancel delete agent', async () => {
-					await global.btnModalCancel.click();
-					await expect(global.modal).not.toBeVisible();
-				});
-
-				test('expect agent is removed from agents table', async () => {
-					await global.btnModalRemove.click();
-					await expect(global.modal).not.toBeVisible();
-					await expect(agents.agentAdded).not.toBeVisible();
-				});
-			});
-		});
+		await poOmnichannelAgents.inputSearch.fill('user1');
+		expect(poOmnichannelAgents.firstRowInTable).toBeHidden();
 	});
 });

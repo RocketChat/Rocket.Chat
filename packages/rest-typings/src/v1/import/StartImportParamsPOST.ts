@@ -83,6 +83,7 @@ const StartImportParamsPostSchema = {
 			required: ['users', 'channels'],
 		},
 	},
+	additionalProperties: false,
 	required: ['input'],
 };
 

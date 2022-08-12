@@ -10,9 +10,10 @@ type BundleChipsProps = {
 		bundleName: string;
 		apps: App[];
 	}[];
+	isIconOnly?: boolean;
 };
 
-const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
+const BundleChips = ({ bundledIn, isIconOnly }: BundleChipsProps): ReactElement => {
 	const t = useTranslation();
 
 	const bundleRef = useRef<Element>();
@@ -36,11 +37,13 @@ const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 						onMouseLeave={(): void => setIsHovered(false)}
 					>
 						<Icon name='bag' size='x20' />
-						<Box fontWeight='700' fontSize='x12' color='info'>
-							{t('bundle_chip_title', {
-								bundleName: bundle.bundleName,
-							})}
-						</Box>
+						{!isIconOnly && (
+							<Box fontWeight='700' fontSize='x12' color='info' style={{ whiteSpace: 'nowrap' }}>
+								{t('bundle_chip_title', {
+									bundleName: bundle.bundleName,
+								})}
+							</Box>
+						)}
 					</Box>
 					<PositionAnimated
 						anchor={bundleRef as RefObject<Element>}

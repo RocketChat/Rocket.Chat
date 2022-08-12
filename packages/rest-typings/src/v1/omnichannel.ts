@@ -381,7 +381,95 @@ const LivechatDepartmentSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentProps = ajv.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
+export const isGETLivechatDepartmentProps = ajv.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
+
+type POSTLivechatDepartmentProps = {
+	department: {
+		enabled: boolean;
+		name: string;
+		email: string;
+		description?: string;
+		showOnRegistration: boolean;
+		showOnOfflineForm: boolean;
+		requestTagsBeforeClosingChat?: boolean;
+		chatClosingTags?: string[];
+		fallbackForwardDepartment?: string;
+	};
+	agents: { agentId: string; count?: number; order?: number }[];
+};
+
+const POSTLivechatDepartmentSchema = {
+	type: 'object',
+	properties: {
+		department: {
+			type: 'object',
+			properties: {
+				enabled: {
+					type: 'boolean',
+				},
+				name: {
+					type: 'string',
+				},
+				description: {
+					type: 'string',
+					nullable: true,
+				},
+				showOnRegistration: {
+					type: 'boolean',
+				},
+				showOnOfflineForm: {
+					type: 'boolean',
+				},
+				requestTagsBeforeClosingChat: {
+					type: 'boolean',
+					nullable: true,
+				},
+				chatClosingTags: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				fallbackForwardDepartment: {
+					type: 'string',
+					nullable: true,
+				},
+				email: {
+					type: 'string',
+				},
+			},
+			required: ['name', 'email', 'enabled', 'showOnRegistration', 'showOnOfflineForm'],
+			additionalProperties: true,
+		},
+		agents: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					agentId: {
+						type: 'string',
+					},
+					count: {
+						type: 'number',
+						nullable: true,
+					},
+					order: {
+						type: 'number',
+						nullable: true,
+					},
+				},
+				required: ['agentId'],
+				additionalProperties: false,
+			},
+			nullable: true,
+		},
+	},
+	required: ['department'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatDepartmentProps = ajv.compile<POSTLivechatDepartmentProps>(POSTLivechatDepartmentSchema);
 
 type LivechatDepartmentsAvailableByUnitIdProps = PaginatedRequest<{ text: string; onlyMyDepartments?: 'true' | 'false' }>;
 
@@ -452,7 +540,7 @@ const LivechatDepartmentsByUnitSchema = {
 
 export const isLivechatDepartmentsByUnitProps = ajv.compile<LivechatDepartmentsByUnitProps>(LivechatDepartmentsByUnitSchema);
 
-type LivechatDepartmentsByUnitIdProps = PaginatedRequest<{}>;
+type LivechatDepartmentsByUnitIdProps = PaginatedRequest;
 
 const LivechatDepartmentsByUnitIdSchema = {
 	type: 'object',
@@ -815,6 +903,107 @@ const LivechatPrioritiesPropsSchema = {
 
 export const isLivechatPrioritiesProps = ajv.compile<LivechatPrioritiesProps>(LivechatPrioritiesPropsSchema);
 
+type POSTOmnichannelContactProps = {
+	_id?: string;
+	token: string;
+	name: string;
+	username?: string;
+	email?: string;
+	phone?: string;
+	customFields?: Record<string, unknown>;
+	contactManager?: {
+		username: string;
+	};
+};
+
+const POSTOmnichannelContactSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+			nullable: true,
+		},
+		token: {
+			type: 'string',
+		},
+		name: {
+			type: 'string',
+		},
+		username: {
+			type: 'string',
+		},
+		email: {
+			type: 'string',
+			nullable: true,
+		},
+		phone: {
+			type: 'string',
+			nullable: true,
+		},
+		customFields: {
+			type: 'object',
+			nullable: true,
+		},
+		contactManager: {
+			type: 'object',
+			nullable: true,
+			properties: {
+				username: {
+					type: 'string',
+				},
+			},
+		},
+	},
+	required: ['token', 'name', 'username'],
+	additionalProperties: false,
+};
+
+export const isPOSTOmnichannelContactProps = ajv.compile<POSTOmnichannelContactProps>(POSTOmnichannelContactSchema);
+
+type GETOmnichannelContactProps = { contactId: string };
+
+const GETOmnichannelContactSchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isGETOmnichannelContactProps = ajv.compile<GETOmnichannelContactProps>(GETOmnichannelContactSchema);
+
+type GETOmnichannelContactSearchProps = { email: string } | { phone: string };
+
+const GETOmnichannelContactSearchSchema = {
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				email: {
+					type: 'string',
+				},
+			},
+			required: ['email'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				phone: {
+					type: 'string',
+				},
+			},
+			required: ['phone'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isGETOmnichannelContactSearchProps = ajv.compile<GETOmnichannelContactSearchProps>(GETOmnichannelContactSearchSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -1037,5 +1226,14 @@ export type OmnichannelEndpoints = {
 				term: string;
 			}>,
 		) => PaginatedResult<{ visitors: any[] }>;
+	};
+	'omnichannel/contact': {
+		POST: (params: POSTOmnichannelContactProps) => { contact: string };
+
+		GET: (params: GETOmnichannelContactProps) => { contact: ILivechatVisitor | null };
+	};
+
+	'omnichannel/contact.search': {
+		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
 	};
 };

@@ -1,5 +1,5 @@
-import { ILivechatVisitor } from '@rocket.chat/core-typings';
-import { AnyBulkWriteOperation, FindCursor } from 'mongodb';
+import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { AnyBulkWriteOperation, FindCursor } from 'mongodb';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';

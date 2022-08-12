@@ -1,4 +1,4 @@
-import Url from 'url';
+import type Url from 'url';
 
 import { Meteor } from 'meteor/meteor';
 import type { FilterOperators } from 'mongodb';
@@ -20,7 +20,7 @@ import type {
 import type { Logger } from '../app/logger/server';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import { getRandomId } from './random';
-import { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
+import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -64,6 +64,7 @@ type EventLikeCallbackSignatures = {
 	'onValidateLogin': (login: ILoginAttempt) => void;
 	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
 	'beforeCreateDirectRoom': (members: IUser[]) => void;
+	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
 	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 };
@@ -147,6 +148,7 @@ type Hook =
 	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
 	| 'afterRoomNameChange'
+	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateLogin'
 	| 'afterValidateNewOAuthUser'

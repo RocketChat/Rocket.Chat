@@ -1,16 +1,16 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { FederationRoomServiceSender } from '../../../../../app/federation-v2/server/application/RoomServiceSender';
 import { FederatedUser } from '../../../../../app/federation-v2/server/domain/FederatedUser';
-import { RocketChatSettingsAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatSettingsAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
 import { FederatedRoomEE } from '../domain/FederatedRoom';
 import { FederatedUserEE } from '../domain/FederatedUser';
-import { IFederationBridgeEE } from '../domain/IFederationBridge';
-import { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
-import { RocketChatRoomAdapterEE } from '../infrastructure/rocket-chat/adapters/Room';
-import { RocketChatUserAdapterEE } from '../infrastructure/rocket-chat/adapters/User';
-import {
+import type { IFederationBridgeEE } from '../domain/IFederationBridge';
+import type { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
+import type { RocketChatRoomAdapterEE } from '../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatUserAdapterEE } from '../infrastructure/rocket-chat/adapters/User';
+import type {
 	FederationBeforeAddUserToARoomDto,
 	FederationBeforeDirectMessageRoomCreationDto,
 	FederationCreateDirectMessageDto,
@@ -151,6 +151,58 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 			);
 			await this.rocketRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoom._id, newFederatedRoom);
 		}
+	}
+
+	public async afterRoomNameChanged(internalRoomId: string, internalRoomName: string): Promise<void> {
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		if (!this.bridge.isRoomFromTheSameHomeserver(federatedRoom.externalId, this.rocketSettingsAdapter.getHomeServerDomain())) {
+			return;
+		}
+
+		if (federatedRoom.isDirectMessage()) {
+			return;
+		}
+
+		const federatedUser = await this.rocketUserAdapter.getFederatedUserByInternalId(federatedRoom.internalReference.u._id);
+		if (!federatedUser) {
+			return;
+		}
+
+		const externalRoomName = await this.bridge.getRoomName(federatedRoom.externalId, federatedUser.externalId);
+		if (externalRoomName === internalRoomName) {
+			return;
+		}
+		await this.bridge.setRoomName(federatedRoom.externalId, federatedUser.externalId, internalRoomName);
+	}
+
+	public async afterRoomTopicChanged(internalRoomId: string, internalRoomTopic: string): Promise<void> {
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		if (!this.bridge.isRoomFromTheSameHomeserver(federatedRoom.externalId, this.rocketSettingsAdapter.getHomeServerDomain())) {
+			return;
+		}
+
+		if (federatedRoom.isDirectMessage()) {
+			return;
+		}
+
+		const federatedUser = await this.rocketUserAdapter.getFederatedUserByInternalId(federatedRoom.internalReference.u._id);
+		if (!federatedUser) {
+			return;
+		}
+
+		const externalRoomTopic = await this.bridge.getRoomTopic(federatedRoom.externalId, federatedUser.externalId);
+		if (externalRoomTopic === internalRoomTopic) {
+			return;
+		}
+		await this.bridge.setRoomTopic(federatedRoom.externalId, federatedUser.externalId, internalRoomTopic);
 	}
 
 	private async createExternalDirectMessageRoomAndInviteUsers(

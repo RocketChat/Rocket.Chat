@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageAttachment } from '@rocket.chat/core-typings';
 
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';

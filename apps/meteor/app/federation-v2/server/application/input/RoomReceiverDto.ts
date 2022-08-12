@@ -1,6 +1,6 @@
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import { EVENT_ORIGIN } from '../../domain/IFederationBridge';
+import type { EVENT_ORIGIN } from '../../domain/IFederationBridge';
 
 class BaseRoom {
 	externalRoomId: string;
@@ -48,4 +48,20 @@ export class FederationRoomSendInternalMessageDto extends BaseRoom {
 	normalizedSenderId: string;
 
 	text: string;
+}
+
+export class FederationRoomChangeJoinRulesDto extends BaseRoom {
+	roomType: RoomType;
+}
+
+export class FederationRoomChangeNameDto extends BaseRoom {
+	normalizedRoomName: string;
+
+	externalSenderId: string;
+}
+
+export class FederationRoomChangeTopicDto extends BaseRoom {
+	roomTopic: string;
+
+	externalSenderId: string;
 }

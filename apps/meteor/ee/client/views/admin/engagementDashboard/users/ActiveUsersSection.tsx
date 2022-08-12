@@ -221,8 +221,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 											format: (date): string => moment(date).format(dauValues.length === 7 ? 'dddd' : 'L'),
 										}}
 										animate={true}
-										motionStiffness={90}
-										motionDamping={15}
+										motionConfig='stiff'
 										theme={{
 											// TODO: Get it from theme
 											axis: {

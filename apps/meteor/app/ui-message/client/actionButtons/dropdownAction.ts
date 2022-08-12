@@ -1,4 +1,4 @@
-import { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
+import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 
 import { AccountBox } from '../../../ui-utils/client/lib/AccountBox';
 

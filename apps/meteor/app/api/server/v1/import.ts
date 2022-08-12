@@ -1,5 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import { isUploadImportFileParamsPOST, isDownloadPublicImportFileParamsPOST, isStartImportParamsPOST } from '@rocket.chat/rest-typings';
+import {
+	isUploadImportFileParamsPOST,
+	isDownloadPublicImportFileParamsPOST,
+	isStartImportParamsPOST,
+	isGetImportFileDataParamsGET,
+	isGetImportProgressParamsGET,
+	isGetLatestImportOperationsParamsGET,
+	isDownloadPendingFilesParamsPOST,
+	isDownloadPendingAvatarsParamsPOST,
+	isGetCurrentImportOperationParamsGET,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 import { Imports } from '../../../models/server';
@@ -67,6 +77,7 @@ API.v1.addRoute(
 	'getImportFileData',
 	{
 		authRequired: true,
+		validateParams: isGetImportFileDataParamsGET,
 		permissionsRequired: ['run-import'],
 	},
 	{
@@ -82,6 +93,7 @@ API.v1.addRoute(
 	'getImportProgress',
 	{
 		authRequired: true,
+		validateParams: isGetImportProgressParamsGET,
 		permissionsRequired: ['run-import'],
 	},
 	{
@@ -96,6 +108,7 @@ API.v1.addRoute(
 	'getLatestImportOperations',
 	{
 		authRequired: true,
+		validateParams: isGetLatestImportOperationsParamsGET,
 		permissionsRequired: ['view-import-operations'],
 	},
 	{
@@ -110,6 +123,7 @@ API.v1.addRoute(
 	'downloadPendingFiles',
 	{
 		authRequired: true,
+		validateParams: isDownloadPendingFilesParamsPOST,
 		permissionsRequired: ['run-import'],
 	},
 	{
@@ -133,6 +147,7 @@ API.v1.addRoute(
 	'downloadPendingAvatars',
 	{
 		authRequired: true,
+		validateParams: isDownloadPendingAvatarsParamsPOST,
 		permissionsRequired: ['run-import'],
 	},
 	{
@@ -156,6 +171,7 @@ API.v1.addRoute(
 	'getCurrentImportOperation',
 	{
 		authRequired: true,
+		validateParams: isGetCurrentImportOperationParamsGET,
 		permissionsRequired: ['run-import'],
 	},
 	{
