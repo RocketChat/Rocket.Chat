@@ -41,7 +41,7 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 					await setAsset(reader.result, blob.type, asset);
 					dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: String(error) });
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			};
 		});
@@ -51,7 +51,7 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 		try {
 			await unsetAsset(asset);
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 

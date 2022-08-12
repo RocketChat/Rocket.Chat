@@ -6,7 +6,6 @@ import { getCustomFormTemplate } from '../customTemplates/register';
 import { hasPermission } from '../../../../../authorization';
 import { t, APIClient } from '../../../../../utils/client';
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
-import { getErrorMessage } from '../../../../../../client/lib/errorHandling';
 import './agentEdit.html';
 
 Template.agentEdit.helpers({
@@ -80,7 +79,7 @@ Template.agentEdit.events({
 		const agentDepartments = instance.agentDepartments.get();
 		Meteor.call('livechat:saveAgentInfo', _id, agentData, agentDepartments, (error) => {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 

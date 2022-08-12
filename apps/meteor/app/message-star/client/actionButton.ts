@@ -9,7 +9,6 @@ import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { Rooms } from '../../models/client';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { getErrorMessage } from '../../../client/lib/errorHandling';
 
 Meteor.startup(function () {
 	MessageAction.addButton({
@@ -21,7 +20,7 @@ Meteor.startup(function () {
 			const { message = messageArgs(this).msg } = props;
 			Meteor.call('starMessage', { ...message, starred: true }, function (error: any) {
 				if (error) {
-					dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			});
 		},
@@ -50,7 +49,7 @@ Meteor.startup(function () {
 
 			Meteor.call('starMessage', { ...message, starred: false }, function (error?: any) {
 				if (error) {
-					dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			});
 		},

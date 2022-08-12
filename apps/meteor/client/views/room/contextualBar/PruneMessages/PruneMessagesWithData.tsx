@@ -92,7 +92,7 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 				dispatchToastMessage({ type: 'success', message: `${count} ${t('messages_pruned')}` });
 				closeModal();
 				reset();
-			} catch (error: any) {
+			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
 				closeModal();
 			}

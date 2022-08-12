@@ -6,7 +6,6 @@ import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { ChatSubscription } from '../../models/client';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { getErrorMessage } from '../../../client/lib/errorHandling';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -16,9 +15,9 @@ Meteor.startup(() => {
 		context: ['message', 'message-mobile', 'threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			return Meteor.call('unreadMessages', message, function (error: any) {
+			return Meteor.call('unreadMessages', message, function (error: unknown) {
 				if (error) {
-					dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+					dispatchToastMessage({ type: 'error', message: error });
 					return;
 				}
 				const subscription = ChatSubscription.findOne({

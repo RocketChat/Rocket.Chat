@@ -14,13 +14,12 @@ import { callbacks } from '../../../../lib/callbacks';
 import { hasAllPermission } from '../../../authorization';
 import { Users, Rooms } from '../../../models/client';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { getErrorMessage } from '../../../../client/lib/errorHandling';
 
 export const call = (...args) =>
 	new Promise(function (resolve, reject) {
 		Meteor.call(...args, function (error, result) {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				reject(error);
 				return;
 			}
@@ -149,7 +148,7 @@ Template.liveStreamTab.events({
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', clearedObject, function (error) {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 			i.editing.set(false);
@@ -176,7 +175,7 @@ Template.liveStreamTab.events({
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function (error) {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 			i.editing.set(false);
@@ -241,7 +240,7 @@ Template.liveStreamTab.events({
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function (error) {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 			i.editing.set(false);

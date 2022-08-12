@@ -10,7 +10,6 @@ import { getCustomFormTemplate } from '../customTemplates/register';
 import { modal } from '../../../../../ui-utils';
 import { t, APIClient } from '../../../../../utils/client';
 import { hasPermission } from '../../../../../authorization';
-import { getErrorMessage } from '../../../../../../client/lib/errorHandling';
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 import './agentInfo.html';
 
@@ -119,7 +118,7 @@ Template.agentInfo.events({
 			() => {
 				Meteor.call('livechat:removeAgent', this.username, (error) => {
 					if (error) {
-						dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+						dispatchToastMessage({ type: 'error', message: error });
 						return;
 					}
 

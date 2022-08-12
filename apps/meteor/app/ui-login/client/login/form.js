@@ -10,7 +10,6 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { getErrorMessage } from '../../../../client/lib/errorHandling';
 
 Template.loginForm.helpers({
 	userName() {
@@ -97,7 +96,7 @@ Template.loginForm.events({
 			if (state === 'forgot-password') {
 				Meteor.call('sendForgotPasswordEmail', formData.email?.trim(), (error) => {
 					if (error) {
-						dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+						dispatchToastMessage({ type: 'error', message: error });
 						return instance.state.set('login');
 					}
 					instance.loading.set(false);
@@ -115,7 +114,7 @@ Template.loginForm.events({
 						if (error.reason === 'Email already exists.') {
 							dispatchToastMessage({ type: 'error', message: t('Email_already_exists') });
 						} else {
-							dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+							dispatchToastMessage({ type: 'error', message: error });
 						}
 						return;
 					}

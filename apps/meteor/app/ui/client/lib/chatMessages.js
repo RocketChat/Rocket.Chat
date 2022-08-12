@@ -29,7 +29,6 @@ import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import { getErrorMessage } from '../../../../client/lib/errorHandling';
 
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
@@ -293,7 +292,7 @@ export class ChatMessages {
 				await this.processMessageSend(message);
 				this.$input.removeData('reply').trigger('dataChange');
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			return done();
 		}
@@ -312,7 +311,7 @@ export class ChatMessages {
 				this.confirmDeleteMsg(message, done);
 				return;
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 		}
 

@@ -21,15 +21,14 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { hasAllPermission, hasRole } from '../../../../authorization/client';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
-import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
 import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
 import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { call } from '../../../../../client/lib/utils/call';
-import { getErrorMessage } from '../../../../../client/lib/errorHandling';
 import { dispatchToastMessage } from '../../../../../client/lib/toast';
+import './room.html';
 
 export const chatMessages = {};
 
@@ -769,7 +768,7 @@ Meteor.startup(() => {
 				});
 			})
 			.catch((error) => {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			});
 
 		this.rolesObserve = RoomRoles.find({ rid: this.data._id }).observe({

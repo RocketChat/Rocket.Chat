@@ -7,7 +7,6 @@ import { settings } from '../../../../../settings';
 import { modal } from '../../../../../ui-utils/client';
 import { APIClient, t } from '../../../../../utils';
 import { hasAnyRole } from '../../../../../authorization';
-import { getErrorMessage } from '../../../../../../client/lib/errorHandling';
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 import './closeRoom.html';
 
@@ -88,7 +87,7 @@ Template.closeRoom.events({
 		Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true, tags }, function (error /* , result*/) {
 			if (error) {
 				console.log(error);
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 

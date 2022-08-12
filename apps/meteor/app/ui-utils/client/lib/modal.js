@@ -4,7 +4,6 @@ import { Template } from 'meteor/templating';
 
 import { t, getUserPreference } from '../../../utils';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { getErrorMessage } from '../../../../client/lib/errorHandling';
 import './modal.html';
 
 let modalStack = [];
@@ -259,7 +258,7 @@ Template.rc_modal.events({
 
 			Meteor.call('saveUserPreferences', { dontAskAgainList }, function (error) {
 				if (error) {
-					dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			});
 		}

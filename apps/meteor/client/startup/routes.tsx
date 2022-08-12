@@ -10,7 +10,6 @@ import React, { lazy } from 'react';
 import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
-import { getErrorMessage } from '../lib/errorHandling';
 import { dispatchToastMessage } from '../lib/toast';
 import BlazeTemplate from '../views/root/BlazeTemplate';
 import MainLayout from '../views/root/MainLayout';
@@ -104,7 +103,7 @@ FlowRouter.route('/home', {
 			});
 			(Meteor as any).loginWithSamlToken(token, (error?: unknown) => {
 				if (error) {
-					dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 
 				appLayout.render(

@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { getErrorMessage } from '../../../../client/lib/errorHandling';
 
 // Action Links namespace creation.
 export const actionLinks = {
@@ -72,9 +71,9 @@ export const actionLinks = {
 		}
 
 		// and run on server side
-		Meteor.call('actionLinkHandler', name, message._id, (error: Error) => {
+		Meteor.call('actionLinkHandler', name, message._id, (error: unknown) => {
 			if (error && !ranClient) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 		});
 	},

@@ -20,7 +20,7 @@ const ToastMessageInnerProvider: FC = ({ children }) => {
 					return;
 				}
 
-				if (typeof message !== 'string') {
+				if (typeof message !== 'string' && message instanceof Error) {
 					message = `[${message.name}] ${message.message}`;
 				}
 

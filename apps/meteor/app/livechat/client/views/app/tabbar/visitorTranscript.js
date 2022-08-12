@@ -7,7 +7,6 @@ import { t } from '../../../../../utils';
 import { APIClient } from '../../../../../utils/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
-import { getErrorMessage } from '../../../../../../client/lib/errorHandling';
 import './visitorTranscript.html';
 
 const validateTranscriptData = (instance) => {
@@ -101,7 +100,7 @@ Template.visitorTranscript.events({
 
 		Meteor.call('livechat:sendTranscript', token, rid, email, subject, (error) => {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 
@@ -128,7 +127,7 @@ Template.visitorTranscript.events({
 
 		Meteor.call('livechat:requestTranscript', rid, email, subject, (error) => {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 
@@ -148,7 +147,7 @@ Template.visitorTranscript.events({
 
 		Meteor.call('livechat:discardTranscript', rid, (error) => {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 

@@ -20,7 +20,6 @@ import { Markdown } from '../../../../../markdown/client';
 import { formatDateAndTime } from '../../../../../../client/lib/utils/formatDateAndTime';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
-import { getErrorMessage } from '../../../../../../client/lib/errorHandling';
 import './visitorInfo.html';
 
 const isSubscribedToRoom = () => {
@@ -280,7 +279,7 @@ Template.visitorInfo.events({
 			const comment = TAPi18n.__('Chat_closed_by_agent');
 			return Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true }, function (error /* , result*/) {
 				if (error) {
-					dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+					dispatchToastMessage({ type: 'error', message: error });
 					return;
 				}
 
@@ -322,7 +321,7 @@ Template.visitorInfo.events({
 			() => {
 				Meteor.call('livechat:returnAsInquiry', this.rid, function (error /* , result*/) {
 					if (error) {
-						dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+						dispatchToastMessage({ type: 'error', message: error });
 					} else {
 						Session.set('openedRoom');
 						FlowRouter.go('/home');

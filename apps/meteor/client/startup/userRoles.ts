@@ -4,7 +4,6 @@ import { Tracker } from 'meteor/tracker';
 
 import { UserRoles, RoomRoles, ChatMessage } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
-import { getErrorMessage } from '../lib/errorHandling';
 import { dispatchToastMessage } from '../lib/toast';
 
 Meteor.startup(() => {
@@ -12,7 +11,7 @@ Meteor.startup(() => {
 		if (Meteor.userId()) {
 			Meteor.call('getUserRoles', (error: Error, results: IRocketChatRecord[]) => {
 				if (error) {
-					dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+					dispatchToastMessage({ type: 'error', message: error });
 					return;
 				}
 

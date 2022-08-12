@@ -8,7 +8,6 @@ import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithE
 import { APIClient } from '../../../../utils/client';
 import { RoomManager } from '../../../../ui-utils/client/lib/RoomManager';
 import { inquiryDataStream } from '../../lib/stream/inquiry';
-import { getErrorMessage } from '../../../../../client/lib/errorHandling';
 import { dispatchToastMessage } from '../../../../../client/lib/toast';
 import './livechatReadOnly.html';
 
@@ -67,7 +66,7 @@ Template.livechatReadOnly.events({
 				throw new Meteor.Error('error-join-room', 'Error joining room');
 			}
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 			throw error;
 		}
 	},

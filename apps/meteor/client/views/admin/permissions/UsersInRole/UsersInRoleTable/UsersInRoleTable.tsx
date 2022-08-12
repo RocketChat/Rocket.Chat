@@ -34,7 +34,7 @@ const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total,
 			try {
 				await removeUser({ roleId, username, scope: rid });
 				dispatchToastMessage({ type: 'success', message: t('User_removed') });
-			} catch (error: any) {
+			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				closeModal();

@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { getErrorMessage } from '../../../../client/lib/errorHandling';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { settings } from '../../../settings/client';
 
@@ -29,7 +28,7 @@ export const call = (...args) =>
 	new Promise(function (resolve, reject) {
 		Meteor.call(...args, function (error, result) {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				reject(error);
 				return;
 			}
@@ -152,7 +151,7 @@ Template.broadcastView.events({
 		await call('setBroadcastStatus', { broadcastId: i.data.broadcast.id, status: 'complete' });
 		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {}, (error) => {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 			i.editing.set(false);

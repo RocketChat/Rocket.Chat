@@ -31,7 +31,7 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 			} else {
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_ignored') });
 			}
-		} catch (error: any) {
+		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});

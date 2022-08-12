@@ -29,7 +29,7 @@ const CloudAccountConfirmation = (): ReactElement => {
 				dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 				return setShowSetupWizard('completed');
 			}
-		} catch (error: any) {
+		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [cloudConfirmationPoll, registrationData.device_code, setShowSetupWizard, saveWorkspaceData, dispatchToastMessage, t]);

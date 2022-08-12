@@ -4,7 +4,6 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 import { ChatRoom } from '../../models/client/models/ChatRoom';
 import { callbacks } from '../../../lib/callbacks';
 import { hasPermission } from '../../authorization/client';
-import { getErrorMessage } from '../../../client/lib/errorHandling';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
 slashCommands.add({
@@ -13,7 +12,7 @@ slashCommands.add({
 		if (hasPermission('edit-room', item.rid)) {
 			Meteor.call('saveRoomSettings', item.rid, 'roomTopic', params, (error: Meteor.Error) => {
 				if (error) {
-					dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+					dispatchToastMessage({ type: 'error', message: error });
 					throw error;
 				}
 

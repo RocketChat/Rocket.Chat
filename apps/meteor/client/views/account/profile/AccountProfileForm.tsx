@@ -81,7 +81,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		try {
 			await sendConfirmationEmail(email);
 			dispatchToastMessage({ type: 'success', message: t('Verification_email_sent') });
-		} catch (error: any) {
+		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, email, previousEmail, sendConfirmationEmail, t]);

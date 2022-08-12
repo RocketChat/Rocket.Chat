@@ -4,7 +4,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { api } from '../../../server/sdk/api';
-import { getErrorMessage } from '../../../client/lib/errorHandling';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
 slashCommands.add({
@@ -14,7 +13,7 @@ slashCommands.add({
 
 		Meteor.call('setUserStatus', null, params, (error: Meteor.Error) => {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 			api.broadcast('notify.ephemeralMessage', userId, item.rid, {

@@ -6,7 +6,6 @@ import { CannedResponse } from '../../collections/CannedResponse';
 import { t } from '../../../../../../app/utils';
 import { chatMessages } from '../../../../../../app/ui/client';
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
-import { getErrorMessage } from '../../../../../../client/lib/errorHandling';
 import './cannedResponses.html';
 
 Template.cannedResponses.helpers({
@@ -152,7 +151,7 @@ Template.cannedResponses.events({
 
 		Meteor.call('removeCannedResponse', _id, (error) => {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 
@@ -235,7 +234,7 @@ Template.cannedResponses.events({
 
 		Meteor.call('saveCannedResponse', _id, responseData, function (error /* , result*/) {
 			if (error) {
-				dispatchToastMessage({ type: 'error', message: getErrorMessage(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
 

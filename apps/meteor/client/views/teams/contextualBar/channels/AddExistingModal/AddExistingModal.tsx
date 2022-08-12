@@ -57,7 +57,7 @@ const useAddExistingModalState = (onClose: () => void, teamId: string, reload: (
 			dispatchToastMessage({ type: 'success', message: t('Channels_added') });
 			onClose();
 			reload();
-		} catch (error: any) {
+		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload]);
