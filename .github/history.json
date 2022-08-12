@@ -91035,6 +91035,62 @@
           ]
         }
       ]
+    },
+    "5.0.3": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26535",
+          "title": "[FIX] LDAP fails to sync teams when the user DN has escaped characters.",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "5.0.3",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26530",
+          "title": "[FIX] Endpoints not working when using \"Use Real Name\" setting",
+          "userLogin": "sampaiodiego",
+          "description": "The list of endpoints affected is:\r\n\r\n- `/api/v1/channels.list`\r\n- `/api/v1/channels.list.joined`\r\n- `/api/v1/groups.list`\r\n- `/api/v1/groups.listAll`\r\n- `/api/v1/im.list`\r\n- `/api/v1/im.list.everyone`",
+          "milestone": "5.0.3",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "26425",
+          "title": "[FIX] Chats holds to load history for some time",
+          "userLogin": "filipemarins",
+          "milestone": "5.0.3",
+          "contributors": [
+            "filipemarins",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "26357",
+          "title": "Chore: validateParams to accept different validators per request method",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.3",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "murtaza98",
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }

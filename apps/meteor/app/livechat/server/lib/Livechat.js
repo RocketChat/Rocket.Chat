@@ -1079,6 +1079,10 @@ export const Livechat = {
 			);
 		}
 
+		if (fallbackForwardDepartment && !LivechatDepartment.findOneById(fallbackForwardDepartment)) {
+			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
+		}
+
 		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
 			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
