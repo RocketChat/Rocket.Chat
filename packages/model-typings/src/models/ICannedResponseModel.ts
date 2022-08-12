@@ -10,7 +10,6 @@ export interface ICannedResponseModel extends IBaseModel<IOmnichannelCannedRespo
 	): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt'>>;
 	findOneById(id: string, options: FindOptions<IOmnichannelCannedResponse>): Promise<IOmnichannelCannedResponse | null>;
 	findOneByShortcut(shortcut: string, options: FindOptions<IOmnichannelCannedResponse>): Promise<IOmnichannelCannedResponse | null>;
-	findByCannedResponseId(_id: string, options: FindOptions<IOmnichannelCannedResponse>): FindCursor<IOmnichannelCannedResponse>;
 	findByDepartmentId(departmentId: string, options: FindOptions<IOmnichannelCannedResponse>): FindCursor<IOmnichannelCannedResponse>;
 	findByShortcut(shortcut: string, options: FindOptions<IOmnichannelCannedResponse>): FindCursor<IOmnichannelCannedResponse>;
 	removeById(_id: string): Promise<DeleteResult>;

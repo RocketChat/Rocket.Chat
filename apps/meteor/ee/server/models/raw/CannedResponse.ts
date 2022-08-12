@@ -1,6 +1,6 @@
 import type { IOmnichannelCannedResponse, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ICannedResponseModel } from '@rocket.chat/model-typings';
-import type { Db, Collection, IndexDescription, FindOptions, FindCursor, DeleteResult } from 'mongodb';
+import type { Db, Collection, IndexDescription, FindOptions, FindCursor } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
@@ -29,16 +29,12 @@ export class CannedResponse extends BaseRaw<IOmnichannelCannedResponse> implemen
 		};
 
 		if (_id) {
-			this.updateOne({ _id }, { $set: record });
+			await this.updateOne({ _id }, { $set: record });
 		} else {
 			_id = (await this.insertOne(record)).insertedId;
 		}
 
 		return Object.assign(record, { _id });
-	}
-
-	findOneById(id: string, options: FindOptions<IOmnichannelCannedResponse> = {}): Promise<IOmnichannelCannedResponse | null> {
-		return this.findOne({ _id: id }, options);
 	}
 
 	findOneByShortcut(shortcut: string, options: FindOptions<IOmnichannelCannedResponse> = {}): Promise<IOmnichannelCannedResponse | null> {
@@ -47,12 +43,6 @@ export class CannedResponse extends BaseRaw<IOmnichannelCannedResponse> implemen
 		};
 
 		return this.findOne(query, options);
-	}
-
-	findByCannedResponseId(_id: string, options: FindOptions<IOmnichannelCannedResponse> = {}): FindCursor<IOmnichannelCannedResponse> {
-		const query = { _id };
-
-		return this.find(query, options);
 	}
 
 	findByDepartmentId(departmentId: string, options: FindOptions<IOmnichannelCannedResponse> = {}): FindCursor<IOmnichannelCannedResponse> {
@@ -68,12 +58,5 @@ export class CannedResponse extends BaseRaw<IOmnichannelCannedResponse> implemen
 		const query = { shortcut };
 
 		return this.find(query, options);
-	}
-
-	// REMOVE
-	removeById(_id: string): Promise<DeleteResult> {
-		const query = { _id };
-
-		return this.deleteOne(query);
 	}
 }
