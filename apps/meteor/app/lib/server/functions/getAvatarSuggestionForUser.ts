@@ -2,7 +2,7 @@
 import { check } from 'meteor/check';
 import { Gravatar } from 'meteor/jparker:gravatar';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { fetch } from '../../../../server/lib/http/fetch';
