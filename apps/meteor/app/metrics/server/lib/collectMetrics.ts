@@ -167,7 +167,7 @@ const updatePrometheusConfig = async (): Promise<void> => {
 		resetTimer = Meteor.setInterval(() => {
 			client.register.getMetricsAsArray().then((metrics) => {
 				metrics.forEach((metric) => {
-					// @ts-expect-error
+					// @ts-expect-error Property 'hashMap' does not exist on type 'metric'.
 					metric.hashMap = {};
 				});
 			});

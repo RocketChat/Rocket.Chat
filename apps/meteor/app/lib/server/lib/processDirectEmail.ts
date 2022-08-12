@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import { ParsedMail } from 'mailparser';
-import { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { ParsedMail } from 'mailparser';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';

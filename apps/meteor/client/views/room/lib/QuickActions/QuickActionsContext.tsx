@@ -5,7 +5,7 @@ import { actions, listen, QuickActionsActionConfig, QuickActionsAction, Events }
 
 import './defaultActions';
 
-export type QuickActionsEventHandler = (handler: EventHandlerOf<Events, 'change'>) => Function;
+export type QuickActionsEventHandler = (handler: EventHandlerOf<Events, 'change'>) => unknown;
 
 export type QuickActionsContext = {
 	actions: Map<QuickActionsActionConfig['id'], QuickActionsAction>;

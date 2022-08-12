@@ -12,7 +12,7 @@ export enum SettingEditor {
 type AssetValue = { defaultUrl?: string };
 export type SettingValueMultiSelect = (string | number)[];
 export type SettingValueRoomPick = Array<{ _id: string; name: string }> | string;
-export type SettingValue = string | boolean | number | SettingValueMultiSelect | Date | AssetValue | undefined;
+export type SettingValue = string | boolean | number | SettingValueMultiSelect | Date | AssetValue | undefined | null;
 
 export interface ISettingSelectOption {
 	key: string | number;

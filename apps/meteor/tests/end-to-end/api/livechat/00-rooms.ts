@@ -1,16 +1,19 @@
 /* eslint-env mocha */
 
-import { expect } from 'chai';
-import { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
-import { Response } from 'supertest';
+import fs from 'fs';
+import path from 'path';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
-import { createVisitor, createLivechatRoom, createAgent, makeAgentAvailable } from '../../../data/livechat/rooms.js';
+import { expect } from 'chai';
+import type { IOmnichannelRoom, ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { Response } from 'supertest';
+
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { createVisitor, createLivechatRoom, createAgent, makeAgentAvailable } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - rooms', function () {
 	this.retries(0);
-	let visitor: IVisitor;
+	let visitor: ILivechatVisitor;
 	let room: IOmnichannelRoom;
 
 	before((done) => getCredentials(done));
@@ -240,6 +243,151 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body.error).to.be.equal('room-closed');
 				})
 				.end(done);
+		});
+	});
+
+	describe('livechat/room.survey', () => {
+		it('should return an "invalid-token" error when the visitor is not found due to an invalid token', (done) => {
+			request
+				.post(api('livechat/room.survey'))
+				.set(credentials)
+				.send({
+					token: 'invalid-token',
+					rid: room._id,
+					data: [{ name: 'question', value: 'answer' }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('[invalid-token]');
+				})
+				.end(done);
+		});
+
+		it('should return an "invalid-room" error when the room is not found due to invalid token and/or rid', (done) => {
+			request
+				.post(api('livechat/room.survey'))
+				.set(credentials)
+				.send({
+					token: visitor.token,
+					rid: 'invalid-rid',
+					data: [{ name: 'question', value: 'answer' }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('[invalid-room]');
+				})
+				.end(done);
+		});
+
+		it('should return "invalid-data" when the items answered are not part of config.survey.items', (done) => {
+			request
+				.post(api('livechat/room.survey'))
+				.set(credentials)
+				.send({
+					token: visitor.token,
+					rid: room._id,
+					data: [{ name: 'question', value: 'answer' }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('[invalid-data]');
+				})
+				.end(done);
+		});
+
+		it('should return the room id and the answers when the query params is all valid', (done) => {
+			request
+				.post(api('livechat/room.survey'))
+				.set(credentials)
+				.send({
+					token: visitor.token,
+					rid: room._id,
+					data: [
+						{ name: 'satisfaction', value: '5' },
+						{ name: 'agentKnowledge', value: '3' },
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rid');
+					expect(res.body).to.have.property('data');
+					expect(res.body.data.satisfaction).to.be.equal('5');
+					expect(res.body.data.agentKnowledge).to.be.equal('3');
+				})
+				.end(done);
+		});
+	});
+
+	describe('livechat/upload/:rid', () => {
+		it('should throw an error if x-visitor-token header is not present', (done) => {
+			request
+				.post(api('livechat/upload/test'))
+				.set(credentials)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.end(done);
+		});
+
+		it('should throw an error if x-visitor-token is present but with an invalid value', (done) => {
+			request
+				.post(api('livechat/upload/test'))
+				.set(credentials)
+				.set('x-visitor-token', 'invalid-token')
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.end(done);
+		});
+
+		it('should throw unauthorized if visitor with token exists but room is invalid', (done) => {
+			createVisitor()
+				.then((visitor) => {
+					request
+						.post(api('livechat/upload/test'))
+						.set(credentials)
+						.set('x-visitor-token', visitor.token)
+						.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+						.expect('Content-Type', 'application/json')
+						.expect(403);
+				})
+				.then(() => done());
+		});
+
+		it('should throw an error if the file is not attached', (done) => {
+			createVisitor()
+				.then((visitor) => {
+					request
+						.post(api('livechat/upload/test'))
+						.set(credentials)
+						.set('x-visitor-token', visitor.token)
+						.expect('Content-Type', 'application/json')
+						.expect(400);
+				})
+				.then(() => done());
+		});
+
+		it('should upload an image on the room if all params are valid', (done) => {
+			createVisitor()
+				.then((visitor) => Promise.all([visitor, createLivechatRoom(visitor.token)]))
+				.then(([visitor, room]) => {
+					request
+						.post(api(`livechat/upload/${room._id}`))
+						.set(credentials)
+						.set('x-visitor-token', visitor.token)
+						.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+						.expect('Content-Type', 'application/json')
+						.expect(200);
+				})
+				.then(() => done());
 		});
 	});
 });
