@@ -91,7 +91,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 		};
 
 		if (_id) {
-			this.updateOne({ _id }, { $set: record });
+			await this.updateOne({ _id }, { $set: record });
 		} else {
 			_id = (await this.insertOne(record)).insertedId;
 		}

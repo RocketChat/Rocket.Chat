@@ -1,6 +1,6 @@
 import type { ILivechatMonitor } from '@rocket.chat/core-typings';
 import type { ILivechatUnitMonitorsModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, FindCursor, UpdateResult } from 'mongodb';
+import type { Db, DeleteResult, FindCursor, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
@@ -8,6 +8,10 @@ import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 export class LivechatUnitMonitorsRaw extends BaseRaw<ILivechatMonitor> implements ILivechatUnitMonitorsModel {
 	constructor(db: Db) {
 		super(db, 'livechat_unit_monitors');
+	}
+
+	protected modelIndexes(): IndexDescription[] {
+		return [{ key: { monitorId: 1, unitId: 1 } }];
 	}
 
 	removeByUnitId(unitId: string): Promise<DeleteResult> {
