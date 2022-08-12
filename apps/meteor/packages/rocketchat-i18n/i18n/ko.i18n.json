@@ -4,7 +4,7 @@
   "__count__empty_rooms_will_be_removed_automatically": "__count__ 빈 대화방은 자동으로 제거됩니다.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ 빈 대화방은 자동으로 제거됩니다 : <br/> __rooms__.",
   "__username__is_no_longer__role__defined_by__user_by_": "__user_by__님이 __username__님을 __role__ 역할에서 제외시켰습니다.",
-  "__username__was_set__role__by__user_by_": "__user_by__님이 __username__님에 의해 __role__에 지정됨",
+  "__username__was_set__role__by__user_by_": "__username__님이 __user_by__님에 의해 __role__에 지정됨",
   "This_room_encryption_has_been_enabled_by__username_": "__username__님이 방 암호화를 활성화함",
   "This_room_encryption_has_been_disabled_by__username_": "__username__님이 방 암호화를 비활성화함",
   "@username": "@사용자명",
