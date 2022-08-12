@@ -113,7 +113,7 @@ FlowRouter.route('/home', {
 
 				appLayout.render(
 					<MainLayout>
-						<BlazeTemplate template='home' />
+						<BlazeTemplate template={'HomePage'} />
 					</MainLayout>,
 				);
 			});
@@ -123,7 +123,7 @@ FlowRouter.route('/home', {
 
 		appLayout.render(
 			<MainLayout>
-				<BlazeTemplate template='home' />
+				<BlazeTemplate template={'HomePage'} />
 			</MainLayout>,
 		);
 	},
