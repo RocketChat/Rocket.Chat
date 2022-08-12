@@ -10,3 +10,4 @@
 /apps/meteor/client/ @RocketChat/frontend
 /apps/meteor/tests/ @RocketChat/chat-engine
 /apps/meteor/app/apps/ @RocketChat/apps
+/apps/meteor/packages/rocketchat-i18n @RocketChat/translation
