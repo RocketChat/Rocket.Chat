@@ -37,7 +37,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 	};
 
 	return (
-		<Page>
+		<Page backgroundColor={colors.n100}>
 			<Page.Header title={t('Apps')} bg={colors.n100}>
 				<ButtonGroup>
 					{isMarketplace && !isLoggedInCloud && (
@@ -58,11 +58,24 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 					)}
 				</ButtonGroup>
 			</Page.Header>
-			<Tabs bg={colors.n100}>
-				<Tabs.Item onClick={(): void => marketplaceRoute.push({ context: '' })} selected={isMarketplace}>
+			<Tabs bg={colors.n100} borderBlockEnd='4px solid #CBCED1' marginInline='x24'>
+				<Tabs.Item
+					onClick={(): void => marketplaceRoute.push({ context: '' })}
+					selected={isMarketplace}
+					mbe='neg-x4'
+					mis='neg-x12'
+					borderWidth='0'
+					borderBlockWidth='x4'
+				>
 					{t('Marketplace')}
 				</Tabs.Item>
-				<Tabs.Item onClick={(): void => marketplaceRoute.push({ context: 'installed' })} selected={!isMarketplace}>
+				<Tabs.Item
+					onClick={(): void => marketplaceRoute.push({ context: 'installed' })}
+					selected={!isMarketplace}
+					mbe='neg-x4'
+					borderWidth='0'
+					borderBlockWidth='x4'
+				>
 					{t('Installed')}
 				</Tabs.Item>
 			</Tabs>
