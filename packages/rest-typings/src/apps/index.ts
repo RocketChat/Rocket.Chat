@@ -96,7 +96,7 @@ export type AppsEndpoints = {
 		};
 	};
 
-	'/apps/featured': {
+	'/apps/featured-apps': {
 		GET: () => {
 			sections: FeaturedAppsSection[];
 		};

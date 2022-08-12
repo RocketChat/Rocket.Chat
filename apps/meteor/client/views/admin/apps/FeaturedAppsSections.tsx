@@ -17,7 +17,7 @@ type FeaturedSectionsProps = {
 
 const FeaturedAppsSections = ({ appsResult, isMarketplace, isFiltered }: FeaturedSectionsProps): ReactElement | null => {
 	const t = useTranslation();
-	const featuredApps = useEndpointData('/apps/featured');
+	const featuredApps = useEndpointData('/apps/featured-apps');
 
 	const shouldShowFeaturedSections =
 		featuredApps.phase === AsyncStatePhase.RESOLVED &&
