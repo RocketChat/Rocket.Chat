@@ -1,7 +1,7 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
+import type { FederationBeforeAddUserToARoomDto } from '../../../application/input/RoomSenderDto';
 import {
-	FederationBeforeAddUserToARoomDto,
 	FederationBeforeDirectMessageRoomCreationDto,
 	FederationCreateDirectMessageDto,
 	FederationOnDirectMessageRoomCreationDto,

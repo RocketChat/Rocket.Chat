@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { IInvite } from '@rocket.chat/core-typings';
+import type { IInvite } from '@rocket.chat/core-typings';
 import { isFindOrCreateInviteParams, isUseInviteTokenProps, isValidateInviteTokenProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';

@@ -1,4 +1,4 @@
-import { Db } from 'mongodb';
+import type { Db } from 'mongodb';
 import { Agenda } from '@rocket.chat/agenda';
 import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';

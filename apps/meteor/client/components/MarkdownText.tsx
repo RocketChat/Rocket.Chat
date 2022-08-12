@@ -77,7 +77,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 }) => {
 	const sanitizer = dompurify.sanitize;
 
-	let markedOptions: {};
+	let markedOptions: marked.MarkedOptions;
 
 	switch (variant) {
 		case 'inline':
@@ -110,7 +110,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 		})();
 
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
-	}, [content, preserveHtml, sanitizer, markedOptions, parseEmoji]);
+	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji]);
 
 	return __html ? (
 		<Box

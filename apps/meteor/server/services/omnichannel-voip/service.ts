@@ -1,4 +1,4 @@
-import { FindOptions } from 'mongodb';
+import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 import type {
 	IVoipExtensionBase,
@@ -7,25 +7,20 @@ import type {
 	IRoomCreationResponse,
 	IUser,
 	ILivechatAgent,
-} from '@rocket.chat/core-typings';
-import {
 	ILivechatVisitor,
-	isILivechatVisitor,
 	IVoipRoom,
 	IRoomClosingInfo,
-	OmnichannelSourceType,
-	isVoipRoom,
-	VoipClientEvents,
 } from '@rocket.chat/core-typings';
+import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
 
-import { IOmnichannelVoipService } from '../../sdk/types/IOmnichannelVoipService';
+import type { IOmnichannelVoipService } from '../../sdk/types/IOmnichannelVoipService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { Voip } from '../../sdk';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { FindVoipRoomsParams, IOmniRoomClosingMessage } from './internalTypes';
+import type { FindVoipRoomsParams, IOmniRoomClosingMessage } from './internalTypes';
 import { api } from '../../sdk/api';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
