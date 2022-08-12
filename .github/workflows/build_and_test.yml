@@ -217,7 +217,7 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-  test-api:
+  test:
     runs-on: ubuntu-20.04
     needs: [build, release-versions]
 
@@ -226,6 +226,7 @@ jobs:
         node-version: ['14.19.3']
         mongodb-version: ['4.2']
         # mongodb-version: ['4.2', '4.4', '5.0']
+        ui-shard: [1, 2]
 
     steps:
       - name: Launch MongoDB
@@ -252,6 +253,21 @@ jobs:
         run: yarn
 
       - run: yarn build --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+
+      - name: Cache Playwright binaries
+        uses: actions/cache@v3
+        id: cache-playwright
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
+          key: playwright-1.23.1
+
+      - name: Install Playwright
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: |
+          cd ./apps/meteor
+          npx playwright install --with-deps
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -349,94 +365,27 @@ jobs:
           done;
           exit $s
 
-  test-ui:
-    runs-on: ubuntu-20.04
-    needs: [build, release-versions]
-
-    strategy:
-      matrix:
-        node-version: ['14.19.3']
-        mongodb-version: ['4.2']
-        # mongodb-version: ['4.2', '4.4', '5.0']
-        ui-shard: [1, 2]
-
-    steps:
-      - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.7.0
-        with:
-          mongodb-version: ${{ matrix.mongodb-version }}
-          mongodb-replica-set: rs0
-
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-
-      - name: yarn install
-        run: yarn
-
-      - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v1
-        with:
-          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
-          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
-
-      - name: Restore build
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: /tmp/build
-
-      - name: Unpack build
+      - name: Restart Rocket.Chat
         run: |
-          cd /tmp/build
-          tar xzf Rocket.Chat.tar.gz
-          rm Rocket.Chat.tar.gz
+          docker ps
+          docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
-      - name: Start containers
-        env:
-          MONGO_URL: "mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true"
-          MONGO_OPLOG_URL: "mongodb://host.docker.internal:27017/local?replicaSet=rs0&directConnection=true"
-          RC_DOCKERFILE: "${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
-          RC_DOCKER_TAG: "${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
-        run: |
-          export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+          docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
-          docker compose -f docker-compose-ci.yml up -d rocketchat
+          NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
 
-          sleep 10
+          docker compose -f docker-compose-ci.yml restart rocketchat
 
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
+            ((c++)) && ((c==10)) && exit 1
             sleep 10
           done
-
-      - name: Cache Playwright binaries
-        uses: actions/cache@v3
-        id: cache-playwright
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-          key: playwright-1.23.1
-
-      - name: Install Playwright
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: |
-          cd ./apps/meteor
-          npx playwright install --with-deps
 
       - name: E2E Test UI (${{ matrix.ui-shard }}/${{ strategy.job-total }})
         env:
           MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
         run: |
-          docker ps
-          docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
-
           cd ./apps/meteor
           yarn test:e2e --shard=${{ matrix.ui-shard }}/${{ strategy.job-total }}
 
@@ -584,9 +533,7 @@ jobs:
           cd ./apps/meteor
           npx playwright install --with-deps
 
-      - name: E2E Test UI (${{ matrix.ui-shard }}/${{ strategy.job-total }})
-        env:
-          MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
+      - name: Restart Rocket.Chat
         run: |
           docker ps
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
@@ -595,7 +542,7 @@ jobs:
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
 
-          docker compose -f docker-compose-ci.yml restart
+          docker compose -f docker-compose-ci.yml restart rocketchat
 
           until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
@@ -603,8 +550,11 @@ jobs:
             sleep 10
           done
 
+      - name: E2E Test UI (${{ matrix.ui-shard }}/${{ strategy.job-total }})
+        env:
+          MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
+        run: |
           cd ./apps/meteor
-
           E2E_COVERAGE=true IS_EE=true yarn test:e2e --shard=${{ matrix.ui-shard }}/${{ strategy.job-total }}
 
       - name: Store playwright test trace
@@ -634,7 +584,7 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    needs: [test-api, test-ui, release-versions]
+    needs: [test, release-versions]
 
     steps:
       - uses: actions/checkout@v3
