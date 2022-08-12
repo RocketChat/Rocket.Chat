@@ -77,7 +77,7 @@ Meteor.startup(async function () {
 	MessageAction.addButton({
 		id: 'share-message',
 		icon: 'arrow-forward',
-		label: 'Share_message',
+		label: 'Share_Message',
 		context: ['message', 'message-mobile', 'threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
