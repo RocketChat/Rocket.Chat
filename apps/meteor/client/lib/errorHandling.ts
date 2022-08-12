@@ -1,7 +1,6 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-const isObject = (obj: unknown): obj is object =>
-	(typeof obj === 'object' || typeof obj === 'function') && obj !== undefined && obj !== null;
+const isObject = (obj: unknown): obj is object => (typeof obj === 'object' || typeof obj === 'function') && obj !== null;
 
 const hasProperty = <TProperty extends number | string | symbol>(
 	obj: unknown,
