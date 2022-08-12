@@ -9,7 +9,6 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { t, getUserPreference } from '../../../../utils/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models/client';
@@ -21,7 +20,6 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { hasAllPermission, hasRole } from '../../../../authorization/client';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
-import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
 import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
@@ -29,152 +27,19 @@ import { handleError } from '../../../../../client/lib/utils/handleError';
 import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { call } from '../../../../../client/lib/utils/call';
+import {
+	roomExcludePinned,
+	roomFilesOnly,
+	roomHasPurge,
+	roomMaxAge,
+	chatMessages,
+	dropzoneHelpers,
+	dropzoneEvents,
+	isAtBottom,
+} from './roomHelpers';
+import './room.html';
 
-export const chatMessages = {};
-
-const userCanDrop = (_id) => !roomCoordinator.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
-
-const wipeFailedUploads = () => {
-	const uploads = Session.get('uploading');
-
-	if (uploads) {
-		Session.set(
-			'uploading',
-			uploads.filter((upload) => !upload.error),
-		);
-	}
-};
-
-function roomHasGlobalPurge(room) {
-	if (!settings.get('RetentionPolicy_Enabled')) {
-		return false;
-	}
-
-	switch (room.t) {
-		case 'c':
-			return settings.get('RetentionPolicy_AppliesToChannels');
-		case 'p':
-			return settings.get('RetentionPolicy_AppliesToGroups');
-		case 'd':
-			return settings.get('RetentionPolicy_AppliesToDMs');
-	}
-	return false;
-}
-
-function roomHasPurge(room) {
-	if (!room || !settings.get('RetentionPolicy_Enabled')) {
-		return false;
-	}
-
-	if (room.retention && room.retention.enabled !== undefined) {
-		return room.retention.enabled;
-	}
-
-	return roomHasGlobalPurge(room);
-}
-
-function roomFilesOnly(room) {
-	if (!room) {
-		return false;
-	}
-
-	if (room.retention && room.retention.overrideGlobal) {
-		return room.retention.filesOnly;
-	}
-
-	return settings.get('RetentionPolicy_FilesOnly');
-}
-
-function roomExcludePinned(room) {
-	if (!room) {
-		return false;
-	}
-
-	if (room.retention && room.retention.overrideGlobal) {
-		return room.retention.excludePinned;
-	}
-
-	return settings.get('RetentionPolicy_DoNotPrunePinned');
-}
-
-function roomMaxAge(room) {
-	if (!room) {
-		return;
-	}
-	if (!roomHasPurge(room)) {
-		return;
-	}
-
-	if (room.retention && room.retention.overrideGlobal) {
-		return room.retention.maxAge;
-	}
-
-	if (room.t === 'c') {
-		return settings.get('RetentionPolicy_MaxAge_Channels');
-	}
-	if (room.t === 'p') {
-		return settings.get('RetentionPolicy_MaxAge_Groups');
-	}
-	if (room.t === 'd') {
-		return settings.get('RetentionPolicy_MaxAge_DMs');
-	}
-}
-
-async function createFileFromUrl(url) {
-	let response;
-	try {
-		response = await fetch(url);
-	} catch (error) {
-		throw error;
-	}
-
-	const data = await response.blob();
-	const metadata = {
-		type: data.type,
-	};
-	const { mime } = await import('../../../../utils/lib/mimeTypes');
-	const file = new File(
-		[data],
-		`File - ${moment().format(settings.get('Message_TimeAndDateFormat'))}.${mime.extension(data.type)}`,
-		metadata,
-	);
-	return file;
-}
-
-function addToInput(text) {
-	const { input } = chatMessages[RoomManager.openedRoom];
-	const initText = input.value.slice(0, input.selectionStart);
-	const finalText = input.value.slice(input.selectionEnd, input.value.length);
-
-	input.value = initText + text + finalText;
-	$(input).change().trigger('input');
-}
-
-callbacks.add('enter-room', wipeFailedUploads);
-
-export const dropzoneHelpers = {
-	dragAndDrop() {
-		return settings.get('FileUpload_Enabled') && 'dropzone--disabled';
-	},
-
-	isDropzoneDisabled() {
-		return settings.get('FileUpload_Enabled') ? 'dropzone-overlay--enabled' : 'dropzone-overlay--disabled';
-	},
-
-	dragAndDropLabel() {
-		const room = Rooms.findOne({ _id: this.rid });
-		if (isRoomFederated(room)) {
-			return 'FileUpload_Disabled_for_federation';
-		}
-		if (!userCanDrop(this._id)) {
-			return 'error-not-allowed';
-		}
-		if (!settings.get('FileUpload_Enabled')) {
-			return 'FileUpload_Disabled';
-		}
-		return 'Drop_to_upload_file';
-	},
-};
+export { chatMessages, dropzoneHelpers, dropzoneEvents };
 
 Template.roomOld.helpers({
 	...dropzoneHelpers,
@@ -438,89 +303,6 @@ Template.roomOld.helpers({
 	},
 });
 
-export const dropzoneEvents = {
-	'dragenter .dropzone'(e) {
-		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
-
-		if (
-			types != null &&
-			types.length > 0 &&
-			_.some(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1 || type.indexOf('text/plain') !== -1) &&
-			userCanDrop(this._id)
-		) {
-			e.currentTarget.classList.add('over');
-		}
-		e.stopPropagation();
-	},
-
-	'dragleave .dropzone-overlay'(e) {
-		e.currentTarget.parentNode.classList.remove('over');
-		e.stopPropagation();
-	},
-
-	'dragover .dropzone-overlay'(e) {
-		document.querySelectorAll('.over.dropzone').forEach((dropzone) => {
-			if (dropzone !== e.currentTarget.parentNode) {
-				dropzone.classList.remove('over');
-			}
-		});
-		e = e.originalEvent || e;
-		if (['move', 'linkMove'].includes(e.dataTransfer.effectAllowed)) {
-			e.dataTransfer.dropEffect = 'move';
-		} else {
-			e.dataTransfer.dropEffect = 'copy';
-		}
-		e.stopPropagation();
-	},
-
-	async 'dropped .dropzone-overlay'(event, instance) {
-		event.currentTarget.parentNode.classList.remove('over');
-
-		const e = event.originalEvent || event;
-		const room = Rooms.findOne({ _id: this.rid });
-
-		e.stopPropagation();
-		e.preventDefault();
-
-		if (isRoomFederated(room) || !userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
-			return false;
-		}
-
-		let files = (e.dataTransfer && e.dataTransfer.files) || [];
-
-		if (files.length < 1) {
-			const transferData = e.dataTransfer.getData('text') || e.dataTransfer.getData('url');
-
-			if (e.dataTransfer.types.includes('text/uri-list')) {
-				const url = e.dataTransfer.getData('text/html').match('<img.+src=(?:"|\')(.+?)(?:"|\')(?:.+?)>');
-				const imgURL = url && url[1];
-
-				if (!imgURL) {
-					return;
-				}
-
-				const file = await createFileFromUrl(imgURL);
-				if (typeof file === 'string') {
-					return addToInput(file);
-				}
-				files = [file];
-			}
-			if (e.dataTransfer.types.includes('text/plain') && !e.dataTransfer.types.includes('text/x-moz-url')) {
-				return addToInput(transferData.trim());
-			}
-		}
-		const { mime } = await import('../../../../utils/lib/mimeTypes');
-		const filesToUpload = Array.from(files).map((file) => {
-			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
-			return {
-				file,
-				name: file.name,
-			};
-		});
-
-		return instance.onFile && instance.onFile(filesToUpload);
-	},
-};
 Meteor.startup(() => {
 	Template.roomOld.events({
 		...getCommonRoomEvents(),
@@ -816,10 +598,6 @@ Meteor.startup(() => {
 		callbacks.remove('streamNewMessage', this.data._id);
 	});
 
-	const isAtBottom = function (element, scrollThreshold = 0) {
-		return element.scrollTop + scrollThreshold >= element.scrollHeight - element.clientHeight;
-	};
-
 	Template.roomOld.onRendered(function () {
 		const { _id: rid } = this.data;
 
@@ -1041,15 +819,4 @@ Meteor.startup(() => {
 			}
 		});
 	});
-});
-
-callbacks.add('enter-room', (sub) => {
-	if (!sub) {
-		return;
-	}
-	const isAReplyInDMFromChannel = FlowRouter.getQueryParam('reply') && sub.t === 'd';
-	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
-		chatMessages[sub.rid].restoreReplies();
-	}
-	setTimeout(() => readMessage.read(sub.rid), 1000);
 });

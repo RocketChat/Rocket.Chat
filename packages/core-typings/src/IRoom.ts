@@ -272,9 +272,11 @@ export type RoomAdminFieldsType =
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {
+		enabled?: boolean;
 		maxAge: number;
 		filesOnly: boolean;
 		excludePinned: boolean;
 		ignoreThreads: boolean;
+		overrideGlobal?: boolean;
 	};
 }

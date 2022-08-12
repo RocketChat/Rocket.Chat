@@ -11,7 +11,7 @@ import FileUploadModal from '../../../../client/views/room/modals/FileUploadModa
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 import { chatMessages } from '../views/app/room';
 
-type Uploading = {
+export type Uploading = {
 	id: string;
 	name: string;
 	percentage: number;
