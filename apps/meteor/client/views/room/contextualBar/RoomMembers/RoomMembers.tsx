@@ -1,12 +1,34 @@
-import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { IRoom, IUser } from '@rocket.chat/core-typings';
+import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout, SelectOption } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import React, { useMemo, ReactElement, FormEventHandler } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../../../components/VerticalBar';
-import DefaultRow from './DefaultRow';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import VerticalBar from '../../../../components/VerticalBar';
+import RoomMembersRow from './RoomMembersRow';
+
+type RoomMembersProps = {
+	rid: IRoom['_id'];
+	isTeam?: boolean;
+	isDirect?: boolean;
+	loading: boolean;
+	text: string;
+	type: string;
+	setText: FormEventHandler<HTMLElement>;
+	setType: (type: 'online' | 'all') => void;
+	members: IUser[];
+	total: number;
+	error?: Error;
+	onClickClose: () => void;
+	onClickView: (e: HTMLElement) => void;
+	onClickAdd?: () => void;
+	onClickInvite?: () => void;
+	loadMoreItems: (start: number, end: number) => void;
+	renderRow?: ReactElement;
+	reload: () => void;
+};
 
 const RoomMembers = ({
 	loading,
@@ -22,16 +44,16 @@ const RoomMembers = ({
 	total,
 	error,
 	loadMoreItems,
-	renderRow: Row = DefaultRow,
+	renderRow: Row = RoomMembersRow,
 	rid,
 	isTeam,
 	isDirect,
 	reload,
-}) => {
+}: RoomMembersProps): ReactElement => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
 
-	const options = useMemo(
+	const options: SelectOption[] = useMemo(
 		() => [
 			['online', t('Online')],
 			['all', t('All')],
@@ -40,7 +62,7 @@ const RoomMembers = ({
 	);
 
 	const itemData = useMemo(() => ({ onClickView, rid }), [onClickView, rid]);
-	const lm = useMutableCallback((start) => !loading && loadMoreItems(start));
+	const loadMore = useMutableCallback((start, end) => !loading && loadMoreItems(start, end));
 
 	return (
 		<>
@@ -104,11 +126,11 @@ const RoomMembers = ({
 								width: '100%',
 							}}
 							totalCount={total}
-							endReached={lm}
+							endReached={loadMore}
 							overscan={50}
 							data={members}
 							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(index, data) => <Row data={itemData} user={data} index={index} reload={reload} />}
+							itemContent={(index, data): ReactElement => <Row data={itemData} user={data} index={index} reload={reload} />}
 						/>
 					)}
 				</Box>

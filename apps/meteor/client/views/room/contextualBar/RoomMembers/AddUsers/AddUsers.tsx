@@ -1,5 +1,5 @@
 import { IUser } from '@rocket.chat/core-typings';
-import { Field, Button } from '@rocket.chat/fuselage';
+import { Field, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
@@ -25,16 +25,20 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, onChange }: A
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>
-				<Field>
-					<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
-					<UserAutoCompleteMultipleFederated value={users} onChange={onChange} placeholder={t('Choose_users')} />
-				</Field>
+				<FieldGroup>
+					<Field>
+						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
+						<UserAutoCompleteMultipleFederated value={users} onChange={onChange} placeholder={t('Choose_users')} />
+					</Field>
+					<Field>
+						<ButtonGroup>
+							<Button primary disabled={!users || users.length === 0} onClick={onClickSave}>
+								{t('Add_users')}
+							</Button>
+						</ButtonGroup>
+					</Field>
+				</FieldGroup>
 			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
-				<Button primary disabled={!users || users.length === 0} onClick={onClickSave}>
-					{t('Add_users')}
-				</Button>
-			</VerticalBar.Footer>
 		</>
 	);
 };

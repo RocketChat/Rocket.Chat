@@ -16,7 +16,8 @@ import UserInfoActions from './UserInfoActions';
 
 type UserInfoWithDataProps = {
 	uid: IUser['_id'];
-	username: IUser['username'];
+	// username is necessary???
+	username?: IUser['username'];
 	rid: IRoom['_id'];
 	onClose: () => void;
 	onClickBack: () => void;

@@ -1,9 +1,9 @@
 import { IUser, IRoom } from '@rocket.chat/core-typings';
 import React, { memo, MouseEvent, ReactElement } from 'react';
 
-import { MemberItem } from './components/MemberItem';
+import RoomMembersItem from './RoomMembersItem';
 
-type DefaultRowProps = {
+type RoomMembersRowProps = {
 	user: Pick<IUser, 'federated' | 'username' | 'name' | '_id'>;
 	data: {
 		onClickView: (e: MouseEvent<HTMLDivElement>) => void;
@@ -13,15 +13,13 @@ type DefaultRowProps = {
 	reload: () => void;
 };
 
-const DefaultRow = ({ user, data, index, reload }: DefaultRowProps): ReactElement => {
-	const { onClickView, rid } = data;
-
+const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload }: RoomMembersRowProps): ReactElement => {
 	if (!user || !user._id) {
-		return <MemberItem.Skeleton />;
+		return <RoomMembersItem.Skeleton />;
 	}
 
 	return (
-		<MemberItem
+		<RoomMembersItem
 			key={index}
 			username={user.username}
 			_id={user._id}
@@ -34,4 +32,4 @@ const DefaultRow = ({ user, data, index, reload }: DefaultRowProps): ReactElemen
 	);
 };
 
-export default memo(DefaultRow);
+export default memo(RoomMembersRow);

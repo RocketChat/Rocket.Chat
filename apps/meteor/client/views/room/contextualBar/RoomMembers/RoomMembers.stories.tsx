@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import RoomMembers from './List/RoomMembers';
+import RoomMembers from './RoomMembers';
 
 export default {
 	title: 'Room/Contextual Bar/RoomMembers',

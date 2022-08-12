@@ -3,18 +3,18 @@ import { Option, OptionAvatar, OptionColumn, OptionDescription, OptionMenu, Opti
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, useState, MouseEvent } from 'react';
 
-import { ReactiveUserStatus } from '../../../../../../components/UserStatus';
-import UserAvatar from '../../../../../../components/avatar/UserAvatar';
-import { usePreventPropagation } from '../../../../../../hooks/usePreventPropagation';
-import UserActions from './UserActions';
+import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
+import UserActions from './RoomMembersActions';
 
-type MemberItemProps = {
+type RoomMembersItemProps = {
 	onClickView: (e: MouseEvent<HTMLDivElement>) => void;
 	rid: IRoom['_id'];
 	reload: () => void;
 } & Pick<IUser, 'federated' | 'username' | 'name' | '_id'>;
 
-export const MemberItem = ({ _id, name, username, federated, onClickView, rid, reload }: MemberItemProps): ReactElement => {
+const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, reload }: RoomMembersItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
@@ -25,7 +25,7 @@ export const MemberItem = ({ _id, name, username, federated, onClickView, rid, r
 	const preventPropagation = usePreventPropagation();
 
 	return (
-		<Option id={_id} data-username={username} onClick={onClickView} {...handleMenuEvent}>
+		<Option data-username={username} data-userid={_id} onClick={onClickView} {...handleMenuEvent}>
 			<OptionAvatar>
 				<UserAvatar username={username || ''} size='x28' />
 			</OptionAvatar>
@@ -40,4 +40,6 @@ export const MemberItem = ({ _id, name, username, federated, onClickView, rid, r
 	);
 };
 
-MemberItem.Skeleton = Option.Skeleton;
+export default Object.assign(RoomMembersItem, {
+	Skeleton: Option.Skeleton,
+});
