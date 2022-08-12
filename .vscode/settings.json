@@ -1,0 +1,18 @@
+{
+	"eslint.workingDirectories": [
+		{
+			"pattern": "packages/*",
+			"changeProcessCWD": true
+		},
+		{
+			"pattern": "apps/*",
+			"changeProcessCWD": true
+		},
+		{
+			"pattern": "ee/apps/*",
+			"changeProcessCWD": true
+		}
+	],
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"cSpell.words": ["photoswipe", "tmid"]
+}
