@@ -771,12 +771,11 @@ describe('[Users]', function () {
 				.send({
 					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
-					avatarUrl: '',
+					avatarUrl: imgURL,
 					blob: {},
 					contentType: '',
 					service: 'url',
 				})
-				.attach('image', imgURL)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -791,12 +790,11 @@ describe('[Users]', function () {
 				.send({
 					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
-					avatarUrl: '',
+					avatarUrl: imgURL,
 					blob: {},
 					contentType: '',
 					service: 'url',
 				})
-				.attach('image', imgURL)
 				.field({ userId: credentials['X-User-Id'] })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -812,12 +810,11 @@ describe('[Users]', function () {
 				.send({
 					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
-					avatarUrl: '',
+					avatarUrl: imgURL,
 					blob: {},
 					contentType: '',
 					service: 'url',
 				})
-				.attach('image', imgURL)
 				.field({ username: adminUsername })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -834,12 +831,11 @@ describe('[Users]', function () {
 					.send({
 						userId: userCredentials['X-User-Id'],
 						username: adminUsername,
-						avatarUrl: '',
+						avatarUrl: imgURL,
 						blob: {},
 						contentType: '',
 						service: 'url',
 					})
-					.attach('image', imgURL)
 					.field({ userId: credentials['X-User-Id'] })
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -858,12 +854,11 @@ describe('[Users]', function () {
 						.send({
 							userId: userCredentials['X-User-Id'],
 							username: adminUsername,
-							avatarUrl: '',
+							avatarUrl: imgURL,
 							blob: {},
 							contentType: '',
 							service: 'url',
 						})
-						.attach('image', imgURL)
 						.field({ userId: userCredentials['X-User-Id'] })
 						.expect('Content-Type', 'application/json')
 						.expect(200)
