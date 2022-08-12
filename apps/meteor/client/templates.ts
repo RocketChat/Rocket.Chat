@@ -2,6 +2,10 @@ import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
+createTemplateForComponent('HomePage', () => import('./views/home/HomePage'), {
+	attachment: 'at-parent',
+});
+
 createTemplateForComponent('MessageActions', () => import('./components/message/MessageActions'));
 
 createTemplateForComponent('reactAttachments', () => import('./components/message/Attachments'));

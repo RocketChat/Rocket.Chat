@@ -74,8 +74,8 @@ export const findWeeklyUsersRegisteredData = async ({
 		end: convertDateToInt(endOfLastWeek),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
 	}).toArray();
-	const yesterdayUsers = (currentPeriodUsers.find((item) => item._id === yesterday) || {}).users || 0;
-	const todayUsers = (currentPeriodUsers.find((item) => item._id === today) || {}).users || 0;
+	const yesterdayUsers = currentPeriodUsers.find((item) => item._id === yesterday)?.users || 0;
+	const todayUsers = currentPeriodUsers.find((item) => item._id === today)?.users || 0;
 	const currentPeriodTotalUsers = getTotalOfWeekItems(currentPeriodUsers, 'users');
 	const lastPeriodTotalUsers = getTotalOfWeekItems(lastPeriodUsers, 'users');
 	return {

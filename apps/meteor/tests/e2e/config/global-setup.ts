@@ -32,7 +32,7 @@ export default async function (): Promise<void> {
 		await page.locator('.rcx-button--primary.rcx-button >> text="Confirm"').click();
 	}
 
-	await page.waitForSelector('text="Welcome to Rocket.Chat!"');
+	await page.waitForSelector('[data-qa-id="home-header"]');
 	await page.context().storageState({ path: 'admin-session.json' });
 	await browser.close();
 
@@ -48,7 +48,7 @@ export default async function (): Promise<void> {
 		await page.locator('[name=pass]').type('any_password');
 		await page.locator('.login').click();
 
-		await page.waitForSelector('text="Welcome to Rocket.Chat!"');
+		await page.waitForSelector('[data-qa-id="home-header"]');
 		await page.context().storageState({ path: `${user.username}-session.json` });
 		await browser.close();
 	}
