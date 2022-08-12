@@ -5,6 +5,7 @@ import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu, IconButton } from 
 import React, { ReactElement, MouseEvent, ReactNode } from 'react';
 
 import type { VoipFooterMenuOptions } from '../../../../ee/client/hooks/useVoipFooterMenu';
+import { parseOutboundPhoneNumber } from '../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { CallActionsType } from '../../../contexts/CallContext';
 
 type VoipFooterPropsType = {
@@ -96,7 +97,6 @@ export const VoipFooter = ({
 								color={muted ? 'neutral-500' : 'info'}
 								icon='mic'
 								small
-								square
 								onClick={(e): void => {
 									e.stopPropagation();
 									toggleMic(!muted);
@@ -108,7 +108,6 @@ export const VoipFooter = ({
 								icon='pause-unfilled'
 								color={paused ? 'neutral-500' : 'info'}
 								small
-								square
 								onClick={handleHold}
 							/>
 							{options && <Menu color='neutral-500' options={options} />}
@@ -118,7 +117,7 @@ export const VoipFooter = ({
 				<Box display='flex' flexDirection='row' mi='16px' mbe='12px' justifyContent='space-between' alignItems='center'>
 					<Box>
 						<Box color='white' fontScale='p2' withTruncatedText>
-							{caller.callerName || caller.callerId || anonymousText}
+							{caller.callerName || parseOutboundPhoneNumber(caller.callerId) || anonymousText}
 						</Box>
 						<Box color='hint' fontScale='c1' withTruncatedText>
 							{subtitle}

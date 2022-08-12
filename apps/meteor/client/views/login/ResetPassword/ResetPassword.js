@@ -56,8 +56,8 @@ const ResetPassword = () => {
 				} else {
 					await setUserPassword(newPassword);
 				}
-			} catch ({ error, reason = error }) {
-				setError(reason);
+			} catch ({ error, reason }) {
+				setError(reason ?? error);
 			} finally {
 				setIsLoading(false);
 			}
@@ -99,13 +99,11 @@ const ResetPassword = () => {
 					</Field>
 				</Modal.Content>
 				<Modal.Footer>
-					<Field>
-						<Field.Row>
-							<Button primary disabled={isSubmitDisabled} type='submit'>
-								{isLoading ? <Throbber size='x12' inheritColor /> : t('Reset')}
-							</Button>
-						</Field.Row>
-					</Field>
+					<Modal.FooterControllers>
+						<Button primary disabled={isSubmitDisabled} type='submit'>
+							{isLoading ? <Throbber size='x12' inheritColor /> : t('Reset')}
+						</Button>
+					</Modal.FooterControllers>
 				</Modal.Footer>
 			</Modal>
 		</LoginLayout>

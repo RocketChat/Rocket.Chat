@@ -1,7 +1,15 @@
-import { IRoom, IMessage, isTranslatedMessage, isMessageReactionsNormalized, isThreadMainMessage } from '@rocket.chat/core-typings';
+import {
+	IRoom,
+	IMessage,
+	isTranslatedMessage,
+	isMessageReactionsNormalized,
+	MessageAttachment,
+	isThreadMainMessage,
+} from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint, useUserRoom } from '@rocket.chat/ui-contexts';
 import React, { useMemo, FC, memo } from 'react';
 
+import { AutoTranslate } from '../../../../../app/autotranslate/client';
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
 import ToolboxProvider from '../../providers/ToolboxProvider';
@@ -72,8 +80,27 @@ export const MessageListProvider: FC<{
 			useShowTranslated:
 				uid && autoTranslateEnabled && hasSubscription && autoTranslateLanguage
 					? ({ message }): boolean =>
-							message.u && message.u._id !== uid && isTranslatedMessage(message) && Boolean(message.translations[autoTranslateLanguage])
+							Boolean(message.u) &&
+							message.u?._id !== uid &&
+							isTranslatedMessage(message) &&
+							Boolean(message.translations[autoTranslateLanguage]) &&
+							!message.autoTranslateShowInverse
 					: (): boolean => false,
+			useTranslateProvider:
+				autoTranslateEnabled && autoTranslateLanguage
+					? ({ message }): string | boolean =>
+							isTranslatedMessage(message) && AutoTranslate.providersMetadata[message.translationProvider]?.displayName
+					: (): boolean => false,
+			useTranslateAttachments:
+				uid && autoTranslateEnabled && hasSubscription && autoTranslateLanguage
+					? ({ message }): MessageAttachment[] =>
+							(isTranslatedMessage(message) &&
+								message.u?._id !== uid &&
+								message.attachments &&
+								AutoTranslate.translateAttachments(message.attachments, autoTranslateLanguage, !!message.autoTranslateShowInverse)) ||
+							message.attachments ||
+							[]
+					: ({ message }): MessageAttachment[] => message.attachments || [],
 			useShowStarred: hasSubscription
 				? ({ message }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,

@@ -1,8 +1,9 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { isEqual } from 'underscore';
-import { ISetting, ISettingGroup, isSettingEnterprise, SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingGroup, SettingValue } from '@rocket.chat/core-typings';
+import { isSettingEnterprise } from '@rocket.chat/core-typings';
+import type { ISettingsModel } from '@rocket.chat/model-typings';
 
-import type SettingsModel from '../../models/server/models/Settings';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { overwriteSetting } from './functions/overwriteSetting';
 import { overrideSetting } from './functions/overrideSetting';
@@ -83,13 +84,13 @@ const compareSettings = compareSettingsIgnoringKeys([
 ]);
 
 export class SettingsRegistry {
-	private model: typeof SettingsModel;
+	private model: ISettingsModel;
 
 	private store: ICachedSettings;
 
 	private _sorter: { [key: string]: number } = {};
 
-	constructor({ store, model }: { store: ICachedSettings; model: typeof SettingsModel }) {
+	constructor({ store, model }: { store: ICachedSettings; model: ISettingsModel }) {
 		this.store = store;
 		this.model = model;
 	}
@@ -97,7 +98,7 @@ export class SettingsRegistry {
 	/*
 	 * Add a setting
 	 */
-	add(_id: string, value: SettingValue, { sorter, section, group, ...options }: ISettingAddOptions = {}): void {
+	async add(_id: string, value: SettingValue, { sorter, section, group, ...options }: ISettingAddOptions = {}): Promise<void> {
 		if (!_id || value == null) {
 			throw new Error('Invalid arguments');
 		}
@@ -156,7 +157,7 @@ export class SettingsRegistry {
 			const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
 			const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
-			this.model.upsert(
+			await this.model.updateOne(
 				{ _id },
 				{
 					$set: { ...settingOverwrittenProps },
@@ -164,6 +165,7 @@ export class SettingsRegistry {
 						$unset: removedKeys.reduce((unset, key) => ({ ...unset, [key]: 1 }), {}),
 					}),
 				},
+				{ upsert: true },
 			);
 
 			return;
@@ -171,7 +173,7 @@ export class SettingsRegistry {
 
 		if (settingStored && isOverwritten) {
 			if (settingStored.value !== settingFromCodeOverwritten.value) {
-				this.model.upsert({ _id }, settingProps);
+				await this.model.updateOne({ _id }, settingProps, { upsert: true });
 			}
 			return;
 		}
@@ -189,7 +191,7 @@ export class SettingsRegistry {
 
 		const setting = isOverwritten ? settingFromCodeOverwritten : settingOverwrittenDefault;
 
-		this.model.insert(setting); // no need to emit unless we remove the oplog
+		await this.model.insertOne(setting); // no need to emit unless we remove the oplog
 
 		this.store.set(setting);
 	}
@@ -197,10 +199,10 @@ export class SettingsRegistry {
 	/*
 	 * Add a setting group
 	 */
-	addGroup(_id: string, cb: addGroupCallback): void;
+	async addGroup(_id: string, cb: addGroupCallback): Promise<void>;
 
 	// eslint-disable-next-line no-dupe-class-members
-	addGroup(_id: string, groupOptions: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): void {
+	async addGroup(_id: string, groupOptions: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): Promise<void> {
 		if (!_id || (groupOptions instanceof Function && cb)) {
 			throw new Error('Invalid arguments');
 		}
@@ -214,7 +216,7 @@ export class SettingsRegistry {
 
 		if (!this.store.has(_id)) {
 			options.ts = new Date();
-			this.model.insert(options);
+			await this.model.insertOne(options as ISetting);
 			this.store.set(options as ISetting);
 		}
 

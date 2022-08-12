@@ -1,6 +1,6 @@
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import type { IInstanceStatusModel } from '@rocket.chat/model-typings';
-import { Db } from 'mongodb';
+import type { Db } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
