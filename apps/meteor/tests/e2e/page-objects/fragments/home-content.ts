@@ -30,6 +30,12 @@ export class HomeContent {
 		await this.page.keyboard.press('Enter');
 	}
 
+	async dispatchSlashCommand(text: string): Promise<void> {
+		await this.page.locator('[name="msg"]').type(text);
+		await this.page.keyboard.press('Enter');
+		await this.page.keyboard.press('Enter');
+	}
+
 	get btnModalCancel(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
