@@ -47,7 +47,7 @@ test.describe('omnichannel-departaments', () => {
 			await auxContext1.poHomeChannel.content.inputModalAgentForwardComment.type('any_comment');
 			await auxContext1.poHomeChannel.content.btnModalConfirm.click();
 
-			await expect(auxContext1.page.locator(`[data-qa="sidebar-item-title"] >> ${newUser.name}`)).not.toBeVisible();
+			await expect(auxContext1.page.locator(`[data-qa="sidebar-item-title"] >> text=${newUser.name}`)).not.toBeVisible();
 			await auxContext1.page.close();
 			await auxContext2.page.close();
 		});
