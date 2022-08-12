@@ -10,7 +10,7 @@ export default async function injectInitialData() {
 
 	await Promise.all(
 		usersFixtures.map((user) =>
-			connection.db().collection('users').updateOne({ username: user.username }, { $set: user }, { upsert: true }),
+			connection.db().collection('users').updateOne({ _id: user._id }, { $set: user }, { upsert: true }),
 		),
 	);
 
