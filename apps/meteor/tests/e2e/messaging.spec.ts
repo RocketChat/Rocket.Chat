@@ -1,4 +1,4 @@
-import { Browser, Page } from '@playwright/test'
+import type { Browser, Page } from '@playwright/test';
 
 import { expect, test } from './utils/test';
 import { HomeChannel } from './page-objects';

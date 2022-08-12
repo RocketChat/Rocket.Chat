@@ -7,7 +7,7 @@ import { HomeChannel, OmnichannelLiveChat } from './page-objects';
 const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page }> => {
 	const page = await browser.newPage({ storageState });
 	await page.goto('/');
-	return { page  };
+	return { page };
 };
 
 const newUser = {
@@ -32,7 +32,7 @@ test.describe('Livechat', () => {
 
 		test.describe('Send message to online agent', () => {
 			let poAuxContext: { page: Page };
-			
+
 			test.beforeAll(async ({ browser, api }) => {
 				await api.post('/livechat/users/agent', { username: 'user1' });
 

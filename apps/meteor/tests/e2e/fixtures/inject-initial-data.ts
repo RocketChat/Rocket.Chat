@@ -9,9 +9,7 @@ export default async function injectInitialData() {
 	const usersFixtures = [createUserFixture('user1'), createUserFixture('user2'), createUserFixture('user3')];
 
 	await Promise.all(
-		usersFixtures.map((user) =>
-			connection.db().collection('users').updateOne({ _id: user._id }, { $set: user }, { upsert: true }),
-		),
+		usersFixtures.map((user) => connection.db().collection('users').updateOne({ _id: user._id }, { $set: user }, { upsert: true })),
 	);
 
 	await connection

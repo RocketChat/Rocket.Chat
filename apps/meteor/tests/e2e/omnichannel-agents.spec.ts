@@ -1,9 +1,9 @@
-import type { Browser, Page } from '@playwright/test'
+import type { Browser, Page } from '@playwright/test';
+import faker from '@faker-js/faker';
 
 import { test, expect } from './utils/test';
 import { OmnichannelAgents, OmnichannelLiveChat } from './page-objects';
-import { IS_EE } from './config/constants'
-import faker from '@faker-js/faker';
+import { IS_EE } from './config/constants';
 
 const createAuxContext = async (browser: Browser): Promise<{ page: Page; poOmnichannelLiveChat: OmnichannelLiveChat }> => {
 	const page = await browser.newPage();
@@ -70,10 +70,12 @@ test.describe.serial('omnichannel-agents', () => {
 		test('expect enable await queue', async ({ page }) => {
 			await page.goto('/admin/settings/Omnichannel');
 			await page.locator('text=Queue Management').click();
-			await page.locator('text=Waiting queue message❰Message that will be displayed to the visitors when they g >> input[type="text"]').fill('please await');
+			await page
+				.locator('text=Waiting queue message❰Message that will be displayed to the visitors when they g >> input[type="text"]')
+				.fill('please await');
 			await page.locator('text=Waiting queue❰ >> i').first().click();
-			await page.locator('text=Save changes').click();	
-		})
+			await page.locator('text=Save changes').click();
+		});
 
 		test.describe('expect open one client and put new clients on hold ', () => {
 			let poAuxContext1: { page: Page; poOmnichannelLiveChat: OmnichannelLiveChat };
@@ -82,15 +84,15 @@ test.describe.serial('omnichannel-agents', () => {
 			test.beforeAll(async ({ browser }) => {
 				poAuxContext1 = await createAuxContext(browser);
 				poAuxContext2 = await createAuxContext(browser);
-			})
+			});
 
 			test('send message from livechat', async () => {
 				await poAuxContext1.poOmnichannelLiveChat.sendMessage({ email: faker.internet.email(), name: faker.internet.userName() });
 				await poAuxContext2.poOmnichannelLiveChat.sendMessage({ email: faker.internet.email(), name: faker.internet.userName() });
-				
+
 				await poAuxContext1.page.close();
 				await poAuxContext2.page.close();
-			})
+			});
 		});
-	})
+	});
 });
