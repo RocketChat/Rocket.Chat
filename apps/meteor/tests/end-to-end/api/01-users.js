@@ -767,7 +767,14 @@ describe('[Users]', function () {
 		it('should set the avatar of the logged user by a local image', (done) => {
 			request
 				.post(api('users.setAvatarFromService'))
-				.set(userCredentials)
+				.set({
+					userId: userCredentials['X-User-Id'],
+					username: adminUsername,
+					avatarUrl: '',
+					blob: {},
+					contentType: '',
+					service: 'url',
+				})
 				.attach('image', imgURL)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -779,7 +786,14 @@ describe('[Users]', function () {
 		it('should update the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
 			request
 				.post(api('users.setAvatarFromService'))
-				.set(userCredentials)
+				.set({
+					userId: userCredentials['X-User-Id'],
+					username: adminUsername,
+					avatarUrl: '',
+					blob: {},
+					contentType: '',
+					service: 'url',
+				})
 				.attach('image', imgURL)
 				.field({ userId: credentials['X-User-Id'] })
 				.expect('Content-Type', 'application/json')
@@ -792,7 +806,14 @@ describe('[Users]', function () {
 		it('should set the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
 			request
 				.post(api('users.setAvatarFromService'))
-				.set(credentials)
+				.set({
+					userId: userCredentials['X-User-Id'],
+					username: adminUsername,
+					avatarUrl: '',
+					blob: {},
+					contentType: '',
+					service: 'url',
+				})
 				.attach('image', imgURL)
 				.field({ username: adminUsername })
 				.expect('Content-Type', 'application/json')
@@ -806,7 +827,14 @@ describe('[Users]', function () {
 			updatePermission('edit-other-user-avatar', []).then(() => {
 				request
 					.post(api('users.setAvatarFromService'))
-					.set(userCredentials)
+					.set({
+						userId: userCredentials['X-User-Id'],
+						username: adminUsername,
+						avatarUrl: '',
+						blob: {},
+						contentType: '',
+						service: 'url',
+					})
 					.attach('image', imgURL)
 					.field({ userId: credentials['X-User-Id'] })
 					.expect('Content-Type', 'application/json')
@@ -822,7 +850,14 @@ describe('[Users]', function () {
 				updatePermission('edit-other-user-avatar', ['admin']).then(() => {
 					request
 						.post(api('users.setAvatarFromService'))
-						.set(credentials)
+						.set({
+							userId: userCredentials['X-User-Id'],
+							username: adminUsername,
+							avatarUrl: '',
+							blob: {},
+							contentType: '',
+							service: 'url',
+						})
 						.attach('image', imgURL)
 						.field({ userId: userCredentials['X-User-Id'] })
 						.expect('Content-Type', 'application/json')
