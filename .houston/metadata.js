@@ -16,7 +16,7 @@ const getMongoVersion = async function({ version, git }) {
 
 const getNodeNpmVersions = async function({ version, git, request }) {
 	try {
-		const meteorRelease = await git.show([`${ version }:.meteor/release`]);
+		const meteorRelease = await git.show([`${ version }:apps/meteor/.meteor/release`]);
 		if (!/^METEOR@(\d+\.){1,2}\d/.test(meteorRelease)) {
 			return {};
 		}
@@ -38,7 +38,7 @@ const getNodeNpmVersions = async function({ version, git, request }) {
 
 const getAppsEngineVersion = async function({ version, git }) {
 	try {
-		const packageJson = await git.show([`${ version }:package-lock.json`]);
+		const packageJson = await git.show([`${ version }:apps/meteor/package-lock.json`]);
 		const { dependencies } = JSON.parse(packageJson);
 		const { version: appsEngineVersion } = dependencies['@rocket.chat/apps-engine'];
 
