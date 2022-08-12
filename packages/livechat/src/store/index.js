@@ -1,5 +1,6 @@
 import { Component, createContext } from 'preact';
 
+import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
 import Store from './Store';
 
@@ -38,8 +39,26 @@ export const initialState = () => ({
 	businessUnit: null,
 });
 
-const dontPersist = ['messages', 'typing', 'loading', 'alerts', 'unread', 'noMoreMessages', 'modal', 'incomingCallAlert', 'ongoingCall'];
-export const store = new Store(initialState(), { dontPersist });
+const doNotPersistList = ['messages', 'typing', 'loading', 'alerts', 'unread', 'noMoreMessages', 'modal', 'incomingCallAlert', 'ongoingCall'];
+export const store = new Store(initialState(), { doNotPersistList });
+
+window.addEventListener('load', () => {
+	const sessionId = createToken();
+	sessionStorage.setItem('sessionId', sessionId);
+	const { openSessionIds = [] } = store._state;
+	store.setState({ openSessionIds: [sessionId, ...openSessionIds] });
+});
+
+window.addEventListener('visibilitychange', () => {
+	!store._state.minimized && !store._state.triggered && parentCall('openWidget');
+	store._state.iframe.visible ? parentCall('showWidget') : parentCall('hideWidget');
+});
+
+window.addEventListener('beforeunload', () => {
+	const sessionId = sessionStorage.getItem('sessionId');
+	const { openSessionIds = [] } = store._state;
+	store.setState({ openSessionIds: openSessionIds.filter((session) => session !== sessionId) });
+});
 
 if (process.env.NODE_ENV === 'development') {
 	store.on('change', ([, , partialState]) => {
@@ -47,7 +66,6 @@ if (process.env.NODE_ENV === 'development') {
 		console.log('%cstore.setState %c%o', 'color: blue', 'color: initial', partialState);
 	});
 }
-
 
 const StoreContext = createContext();
 

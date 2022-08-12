@@ -1,5 +1,10 @@
 import { validCallbacks } from '../widget';
 
+/**
+ *
+ * @param {string} method
+ * @param {any[] | string} args
+ */
 export function parentCall(method, args = []) {
 	const data = {
 		src: 'rocketchat',
