@@ -5,7 +5,7 @@ import { test, expect } from './utils/test';
 import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 
 const newUser = {
-	name: faker.name.firstName() + faker.datatype.uuid(),
+	name: faker.name.firstName(),
 	email: faker.internet.email(),
 };
 
