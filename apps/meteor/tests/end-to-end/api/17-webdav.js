@@ -22,20 +22,6 @@ describe('[Webdav]', function () {
 	});
 
 	describe('/webdav.removeWebdavAccount', () => {
-		// it('should return my webdav accounts', (done) => {
-		// 	request
-		// 		.post(api('webdav.removeWebdavAccount'))
-		// 		.set(credentials)
-		// 		.send({
-		// 			accountId: credentials['X-User-Id'],
-		// 		})
-		// 		.expect(200)
-		// 		.expect((res) => {
-		// 			expect(res.body).to.have.property('success', true);
-		// 			expect(res.body).to.have.property('accounts').and.to.be.a('array');
-		// 		})
-		// 		.end(done);
-		// });
 		it('should return an error when send an invalid request', (done) => {
 			request
 				.post(api('webdav.removeWebdavAccount'))
