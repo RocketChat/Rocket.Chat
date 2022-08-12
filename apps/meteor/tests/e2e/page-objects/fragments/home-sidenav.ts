@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 export class HomeSidenav {
 	private readonly page: Page;
@@ -7,76 +7,45 @@ export class HomeSidenav {
 		this.page = page;
 	}
 
-	get btnAvatar(): Locator {
-		return this.page.locator('[data-qa="sidebar-avatar-button"]');
-	}
-
-	get linkAdmin(): Locator {
-		return this.page.locator('//li[@class="rcx-option"]//div[contains(text(), "Administration")]');
-	}
-
-	get linkAccount(): Locator {
-		return this.page.locator('//li[@class="rcx-option"]//div[contains(text(), "My Account")]');
-	}
-
-	get btnCreate(): Locator {
-		return this.page.locator('[data-qa="sidebar-create"]');
-	}
-
-	get checkboxChannelType(): Locator {
+	get checkboxPrivateChannel(): Locator {
 		return this.page.locator(
 			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Private")]/../following-sibling::label/i',
 		);
 	}
 
 	get inputChannelName(): Locator {
-		return this.page.locator('#modal-root [placeholder="Channel Name"]');
+		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-name-input"]');
 	}
 
 	get btnCreateChannel(): Locator {
 		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
-	createOptionByText(text: string): Locator {
-		return this.page.locator(`li.rcx-option >> text="${text}"`);
+	async openNewByLabel(text: string): Promise<void> {
+		await this.page.locator('[data-qa="sidebar-create"]').click();
+		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
 	}
 
-	get channelName(): Locator {
-		return this.page.locator('#modal-root [placeholder="Channel Name"]');
+	async logout(): Promise<void> {
+		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
+		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 	}
 
-	get channelType(): Locator {
-		return this.page.locator(
-			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Private")]/../following-sibling::label/i',
-		);
+	async goToMyAccount(): Promise<void> {
+		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
+		await this.page.locator('//li[@class="rcx-option"]//div[contains(text(), "My Account")]').click();
 	}
 
-	async doOpenChat(name: string): Promise<void> {
+	async openChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
 		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
 		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
 	}
 
-	async doOpenProfile(): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
-		await this.page.locator('//li[@class="rcx-option"]//div[contains(text(), "My Account")]').click();
-	}
-
-	async doLogout(): Promise<void> {
-		await this.page.goto('/home');
-		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
-		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
-	}
-
-	async doCreateChannel(channelName: string, isPrivate = false): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-create"]').click();
-		await this.page.locator('li.rcx-option >> text="Channel"').click();
-
-		if (!isPrivate) {
-			await this.channelType.click();
-		}
-
-		await this.channelName.type(channelName);
-		await this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]').click();
+	async createPublicChannel(name: string) {
+		await this.openNewByLabel('Channel');
+		await this.checkboxPrivateChannel.click();
+		await this.inputChannelName.type(name);
+		await this.btnCreateChannel.click();
 	}
 }

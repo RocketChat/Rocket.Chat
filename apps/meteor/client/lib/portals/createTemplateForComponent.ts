@@ -7,7 +7,7 @@ import type { ComponentType, PropsWithoutRef } from 'react';
 import { blazePortals } from './blazePortals';
 import { createLazyPortal } from './createLazyPortal';
 
-export const createTemplateForComponent = <Props extends {} = {}>(
+export const createTemplateForComponent = <Props>(
 	name: string,
 	factory: () => Promise<{ default: ComponentType<Props> }>,
 	options:

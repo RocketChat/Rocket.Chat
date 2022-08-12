@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import { AccountSidenav } from './fragments/account-sidenav';
 
@@ -30,6 +30,10 @@ export class AccountProfile {
 
 	get emailTextInput(): Locator {
 		return this.page.locator('//label[contains(text(), "Email")]/..//input');
+	}
+
+	get btnClose(): Locator {
+		return this.page.locator('button >> i.rcx-icon--name-cross.rcx-icon');
 	}
 
 	get inputToken(): Locator {

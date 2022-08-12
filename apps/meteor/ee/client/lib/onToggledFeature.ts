@@ -17,6 +17,7 @@ export const onToggledFeature = (
 	const observer = new QueryObserver(queryClient, {
 		queryKey: ['ee.features'],
 		queryFn: fetchFeatures,
+		staleTime: Infinity,
 	});
 
 	let enabled = false;

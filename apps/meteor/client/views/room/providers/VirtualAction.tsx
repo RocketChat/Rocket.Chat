@@ -35,7 +35,7 @@ const VirtualAction = ({
 	id: string;
 	action: ToolboxAction;
 	room: IRoom;
-	handleChange: Function;
+	handleChange: (callback: (list: Store<ToolboxAction>) => void) => void;
 }): null => {
 	const config = typeof action === 'function' ? action({ room }) : action;
 

@@ -1,9 +1,9 @@
 import moment from 'moment';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import type { ICronJobs } from '@rocket.chat/core-typings';
+import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import type { ICronJobs, ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
+import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 
@@ -135,7 +135,7 @@ export class BusinessHourManager {
 		finish.forEach(({ day, times }) => this.scheduleCronJob(times, day, 'close', this.closeWorkHoursCallback));
 	}
 
-	private scheduleCronJob(items: string[], day: string, type: string, job: Function): void {
+	private scheduleCronJob(items: string[], day: string, type: string, job: (day: string, hour: string) => void): void {
 		items.forEach((hour) => {
 			const jobName = `${day}/${hour}/${type}`;
 			const time = moment(hour, 'HH:mm');

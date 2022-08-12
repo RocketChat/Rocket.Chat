@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Field, TextInput, FieldGroup, Modal, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Field, TextInput, FieldGroup, Modal, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, ChangeEvent, useCallback } from 'react';
@@ -49,7 +49,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	return (
 		<Modal>
 			<Modal.Header>
-				<Icon size={24} name='info' />
+				<Modal.Icon name='info' />
 				<Modal.Title>{t('Edit_Status')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
@@ -74,14 +74,14 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end' flexGrow={1} maxWidth='full'>
+				<Modal.FooterControllers>
 					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
 					<Button primary onClick={handleSaveStatus} disabled={!!statusTextError}>
 						{t('Save')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);
