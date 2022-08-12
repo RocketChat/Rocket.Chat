@@ -12,6 +12,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: {
+			GET: {
+				permissions: ['manage-livechat-agents'],
+				operation: 'hasAll',
+			},
 			POST: { permissions: ['view-livechat-manager'], operation: 'hasAll' },
 		},
 	},
@@ -25,13 +29,7 @@ API.v1.addRoute(
 			const { text } = this.queryParams;
 
 			if (this.urlParams.type === 'agent') {
-				if (
-					!(await hasAtLeastOnePermissionAsync(this.userId, [
-						'manage-livechat-agents',
-						'transfer-livechat-guest',
-						'edit-omnichannel-contact',
-					]))
-				) {
+				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
 					return API.v1.unauthorized();
 				}
 
@@ -47,7 +45,7 @@ API.v1.addRoute(
 				);
 			}
 			if (this.urlParams.type === 'manager') {
-				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['view-livechat-manager', 'manage-livechat-agents']))) {
+				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['view-livechat-manager']))) {
 					return API.v1.unauthorized();
 				}
 
