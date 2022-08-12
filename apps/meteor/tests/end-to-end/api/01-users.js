@@ -767,7 +767,8 @@ describe('[Users]', function () {
 		it('should set the avatar of the logged user by a local image', (done) => {
 			request
 				.post(api('users.setAvatarFromService'))
-				.set({
+				.set(userCredentials)
+				.send({
 					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
 					avatarUrl: '',
@@ -786,7 +787,8 @@ describe('[Users]', function () {
 		it('should update the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
 			request
 				.post(api('users.setAvatarFromService'))
-				.set({
+				.set(userCredentials)
+				.send({
 					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
 					avatarUrl: '',
@@ -806,7 +808,8 @@ describe('[Users]', function () {
 		it('should set the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
 			request
 				.post(api('users.setAvatarFromService'))
-				.set({
+				.set()
+				.send({
 					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
 					avatarUrl: '',
@@ -827,7 +830,8 @@ describe('[Users]', function () {
 			updatePermission('edit-other-user-avatar', []).then(() => {
 				request
 					.post(api('users.setAvatarFromService'))
-					.set({
+					.set(userCredentials)
+					.send({
 						userId: userCredentials['X-User-Id'],
 						username: adminUsername,
 						avatarUrl: '',
@@ -850,7 +854,8 @@ describe('[Users]', function () {
 				updatePermission('edit-other-user-avatar', ['admin']).then(() => {
 					request
 						.post(api('users.setAvatarFromService'))
-						.set({
+						.set(userCredentials)
+						.send({
 							userId: userCredentials['X-User-Id'],
 							username: adminUsername,
 							avatarUrl: '',
