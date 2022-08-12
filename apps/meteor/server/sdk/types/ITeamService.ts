@@ -113,7 +113,6 @@ export interface ITeamService {
 	getOneByRoomId(teamId: string): Promise<ITeam | null>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
 	autocomplete(uid: string, name: string): Promise<ITeamAutocompleteResult[]>;
-	getMember(teamId: string, userId: string, options?: FindOptions<ITeamMember>): Promise<ITeamMember | null>;
 	getAllPublicTeams(options?: FindOptions<ITeam>): Promise<Array<ITeam>>;
 	getMembersByTeamIds(teamIds: Array<string>, options: FindOptions<ITeamMember>): Promise<Array<ITeamMember>>;
 	update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void>;
