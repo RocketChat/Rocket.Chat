@@ -15,8 +15,8 @@ import type { ITeam } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { Subscriptions, Users } from '../../../models/server';
-import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { Rooms, Users } from '../../../models/server';
+import { canAccessRoom, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { Team } from '../../../../server/sdk';
 import { API } from '../api';
 
@@ -576,10 +576,13 @@ API.v1.addRoute(
 				return API.v1.failure('Team not found');
 			}
 
-			const canViewInfo =
-				(await Team.getMember(teamInfo._id, this.userId)) ||
-				(await Subscriptions.findOneByRoomIdAndUserId(teamInfo.roomId, this.userId)) ||
-				hasPermission(this.userId, 'view-all-teams');
+			const room = Rooms.findOneById(teamInfo.roomId);
+
+			if (!teamInfo) {
+				return API.v1.failure('Room not found');
+			}
+
+			const canViewInfo = canAccessRoom(room, { _id: this.userId }) || hasPermission(this.userId, 'view-all-teams');
 
 			if (!canViewInfo) {
 				return API.v1.unauthorized();
