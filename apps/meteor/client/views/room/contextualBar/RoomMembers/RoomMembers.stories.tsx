@@ -1,3 +1,4 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { action } from '@storybook/addon-actions';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
@@ -24,16 +25,16 @@ Default.args = {
 		{
 			_id: 'rocket.cat',
 			username: 'rocket.cat',
-			status: 'online',
+			status: UserStatus.ONLINE,
 			name: 'Rocket.Cat',
+			_updatedAt: new Date(),
 		},
 	],
 	text: 'filter',
 	type: 'online',
-	setText: action('setText'),
-	setType: action('setType'),
+	setText: action('Lorem Ipsum'),
+	setType: action('online'),
 	total: 123,
-	error: { message: 'Error message' },
 	loadMoreItems: action('loadMoreItems'),
 	rid: '!roomId',
 	isTeam: false,

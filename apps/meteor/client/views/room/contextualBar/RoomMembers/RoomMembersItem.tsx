@@ -9,7 +9,7 @@ import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import UserActions from './RoomMembersActions';
 
 type RoomMembersItemProps = {
-	onClickView: (e: MouseEvent<HTMLDivElement>) => void;
+	onClickView: (e: MouseEvent<HTMLElement>) => void;
 	rid: IRoom['_id'];
 	reload: () => void;
 } & Pick<IUser, 'federated' | 'username' | 'name' | '_id'>;

@@ -2,12 +2,14 @@ import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout, SelectOption } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement, FormEventHandler } from 'react';
+import React, { useMemo, ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
 import RoomMembersRow from './RoomMembersRow';
+
+type RoomMemberUser = Pick<IUser, 'username' | '_id' | '_updatedAt' | 'name' | 'status'>;
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];
@@ -18,15 +20,15 @@ type RoomMembersProps = {
 	type: string;
 	setText: FormEventHandler<HTMLElement>;
 	setType: (type: 'online' | 'all') => void;
-	members: IUser[];
+	members: RoomMemberUser[];
 	total: number;
 	error?: Error;
 	onClickClose: () => void;
-	onClickView: (e: HTMLElement) => void;
+	onClickView: (e: MouseEvent<HTMLElement>) => void;
 	onClickAdd?: () => void;
 	onClickInvite?: () => void;
 	loadMoreItems: (start: number, end: number) => void;
-	renderRow?: ReactElement;
+	renderRow?: (props: ComponentProps<typeof RoomMembersRow>) => ReactElement | null;
 	reload: () => void;
 };
 
@@ -51,7 +53,9 @@ const RoomMembers = ({
 	reload,
 }: RoomMembersProps): ReactElement => {
 	const t = useTranslation();
-	const inputRef = useAutoFocus(true);
+	const inputRef = useAutoFocus<HTMLInputElement>(true);
+	const itemData = useMemo(() => ({ onClickView, rid }), [onClickView, rid]);
+	const loadMore = useMutableCallback((start) => !loading && loadMoreItems(start, Math.min(50, total - start)));
 
 	const options: SelectOption[] = useMemo(
 		() => [
@@ -60,9 +64,6 @@ const RoomMembers = ({
 		],
 		[t],
 	);
-
-	const itemData = useMemo(() => ({ onClickView, rid }), [onClickView, rid]);
-	const loadMore = useMutableCallback((start, end) => !loading && loadMoreItems(start, end));
 
 	return (
 		<>
@@ -83,7 +84,13 @@ const RoomMembers = ({
 								onChange={setText}
 								addon={<Icon name='magnifier' size='x20' />}
 							/>
-							<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
+							<Select
+								flexGrow={0}
+								width='110px'
+								onChange={(value): void => setType(value as 'online' | 'all')}
+								value={type}
+								options={options}
+							/>
 						</Margins>
 					</Box>
 				</Box>

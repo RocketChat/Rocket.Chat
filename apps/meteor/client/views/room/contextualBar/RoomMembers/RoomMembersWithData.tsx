@@ -20,6 +20,8 @@ enum ROOM_MEMBERS_TABS {
 	LIST = 'users-list',
 }
 
+type validRoomType = 'd' | 'p' | 'c';
+
 const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const user = useUser();
 	const room = useUserRoom(rid);
@@ -38,7 +40,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const debouncedText = useDebouncedValue(text, 800);
 
 	const { membersList, loadMoreItems, reload } = useMembersList(
-		useMemo(() => ({ rid, type, limit: 50, debouncedText, roomType: room.t }), [rid, type, debouncedText, room.t]),
+		useMemo(() => ({ rid, type, limit: 50, debouncedText, roomType: room?.t as validRoomType }), [rid, type, debouncedText, room?.t]),
 	);
 
 	const { phase, items, itemCount: total } = useRecordList(membersList);

@@ -6,7 +6,7 @@ import RoomMembersItem from './RoomMembersItem';
 type RoomMembersRowProps = {
 	user: Pick<IUser, 'federated' | 'username' | 'name' | '_id'>;
 	data: {
-		onClickView: (e: MouseEvent<HTMLDivElement>) => void;
+		onClickView: (e: MouseEvent<HTMLElement>) => void;
 		rid: IRoom['_id'];
 	};
 	index: number;
