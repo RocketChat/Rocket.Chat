@@ -20,6 +20,10 @@ export class OmnichannelAgents {
 		return this.page.locator('[placeholder="Search"]');
 	}
 
+	get inputMaxChats(): Locator {
+		return this.page.locator('input[type="number"]');
+	}
+
 	get btnAdd(): Locator {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add"');
 	}
