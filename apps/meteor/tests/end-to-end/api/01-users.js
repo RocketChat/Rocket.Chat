@@ -15,7 +15,7 @@ import {
 	reservedWords,
 } from '../../data/api-data.js';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user.js';
-import { imgURL } from '../../data/interactions.js';
+import { imgURL, avatarURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
@@ -771,7 +771,7 @@ describe('[Users]', function () {
 				.send({
 					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
-					avatarUrl: imgURL,
+					avatarUrl: avatarURL,
 					blob: {},
 					contentType: '',
 					service: 'url',
@@ -790,7 +790,7 @@ describe('[Users]', function () {
 				.send({
 					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
-					avatarUrl: imgURL,
+					avatarUrl: avatarURL,
 					blob: {},
 					contentType: '',
 					service: 'url',
@@ -810,7 +810,7 @@ describe('[Users]', function () {
 				.send({
 					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
-					avatarUrl: imgURL,
+					avatarUrl: avatarURL,
 					blob: {},
 					contentType: '',
 					service: 'url',
@@ -831,7 +831,7 @@ describe('[Users]', function () {
 					.send({
 						userId: userCredentials['X-User-Id'],
 						username: adminUsername,
-						avatarUrl: imgURL,
+						avatarUrl: avatarURL,
 						blob: {},
 						contentType: '',
 						service: 'url',
@@ -854,7 +854,7 @@ describe('[Users]', function () {
 						.send({
 							userId: userCredentials['X-User-Id'],
 							username: adminUsername,
-							avatarUrl: imgURL,
+							avatarUrl: avatarURL,
 							blob: {},
 							contentType: '',
 							service: 'url',
