@@ -111,13 +111,11 @@ const ResetPassword = (): ReactElement => {
 					</Field>
 				</Modal.Content>
 				<Modal.Footer>
-					<Field>
-						<Field.Row>
-							<Button primary disabled={isSubmitDisabled} type='submit'>
-								{isLoading ? <Throbber size='x12' inheritColor /> : t('Reset')}
-							</Button>
-						</Field.Row>
-					</Field>
+					<Modal.FooterControllers>
+						<Button primary disabled={isSubmitDisabled} type='submit'>
+							{isLoading ? <Throbber size='x12' inheritColor /> : t('Reset')}
+						</Button>
+					</Modal.FooterControllers>
 				</Modal.Footer>
 			</Modal>
 		</LoginLayout>

@@ -1,6 +1,8 @@
 export const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000';
 
-export const BASE_API_URL = `${BASE_URL}/api/v1`;
+export const API_PREFIX = '/api/v1';
+
+export const BASE_API_URL = BASE_URL + API_PREFIX;
 
 export const IS_LOCALHOST = BASE_URL.startsWith('http://localhost');
 
