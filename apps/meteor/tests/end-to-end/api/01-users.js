@@ -1796,6 +1796,7 @@ describe('[Users]', function () {
 		it('should send email to user (return success), when is a valid email', (done) => {
 			request
 				.post(api('users.sendConfirmationEmail'))
+				.set(credentials)
 				.send({
 					email: adminEmail,
 				})
@@ -1810,6 +1811,7 @@ describe('[Users]', function () {
 		it('should not send email to user(return error), when is a invalid email', (done) => {
 			request
 				.post(api('users.sendConfirmationEmail'))
+				.set(credentials)
 				.send({
 					email: 'invalidEmail',
 				})
