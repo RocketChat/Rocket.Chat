@@ -1929,6 +1929,9 @@ describe('[Users]', function () {
 			request
 				.get(api('users.checkUsernameAvailability'))
 				.set(userCredentials)
+				.query({
+					username: targetUser.username,
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -1941,7 +1944,10 @@ describe('[Users]', function () {
 		it('should return an error when the user does not exist', (done) => {
 			request
 				.get(api('users.checkUsernameAvailability'))
-				.set('')
+				.set(userCredentials)
+				.query({
+					username: '',
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
