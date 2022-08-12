@@ -10,7 +10,6 @@ test.describe.serial('omnichannel-departments', () => {
 	let poOmnichannelDepartments: OmnichannelDepartments;
 
 	const departmentName = faker.datatype.uuid();
-	const tag = faker.datatype.string(5);
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelDepartments = new OmnichannelDepartments(page);
@@ -43,11 +42,14 @@ test.describe.serial('omnichannel-departments', () => {
 
 	test('expect update adding department tags ', async () => {
 		await poOmnichannelDepartments.inputSearch.fill(departmentName);
+
 		await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
-		await poOmnichannelDepartments.inputTags.fill(tag);
+		await poOmnichannelDepartments.toggleRequestTags.click();
+
+		await poOmnichannelDepartments.inputTags.fill(faker.datatype.string(5));
 		await poOmnichannelDepartments.btnTagsAdd.click();
 
-		await poOmnichannelDepartments.btnSave.isEnabled();
+		await poOmnichannelDepartments.btnSave.click();
 	});
 
 	test('expect delete department', async () => {

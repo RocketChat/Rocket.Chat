@@ -32,6 +32,10 @@ export class OmnichannelDepartments {
 		return this.page.locator('[data-qa="DepartmentEditTextInput-Email"]');
 	}
 
+	get toggleRequestTags() {
+		return this.page.locator('[data-qa="DiscussionToggle-RequestTagBeforeCLosingChat"] span label');
+	}
+
 	get inputTags() {
 		return this.page.locator('[data-qa="DepartmentEditTextInput-ConversationClosingTags"]');
 	}
