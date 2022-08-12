@@ -4,11 +4,6 @@ import type { Browser, Page } from '@playwright/test';
 import { test, expect } from './utils/test';
 import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 
-const newUser = {
-	name: faker.name.firstName(),
-	email: faker.internet.email(),
-};
-
 const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
 	const page = await browser.newPage({ storageState });
 	const poHomeChannel = new HomeChannel(page);
@@ -18,8 +13,12 @@ const createAuxContext = async (browser: Browser, storageState: string): Promise
 
 test.describe('omnichannel-departaments', () => {
 	let poLiveChat: OmnichannelLiveChat;
-
+	let newUser: { email: string; name: string };
 	test.beforeAll(async ({ api }) => {
+		newUser = {
+			name: faker.name.firstName(),
+			email: faker.internet.email(),
+		};
 		await api.post('/livechat/users/agent', { username: 'user1' });
 		await api.post('/livechat/users/manager', { username: 'user1' });
 	});
@@ -48,7 +47,7 @@ test.describe('omnichannel-departaments', () => {
 			await auxContext1.poHomeChannel.content.inputModalAgentForwardComment.type('any_comment');
 			await auxContext1.poHomeChannel.content.btnModalConfirm.click();
 
-			await expect(auxContext1.page.locator('[data-qa="sidebar-item-title"]', { hasText: newUser.name })).not.toBeVisible();
+			await expect(auxContext1.page.locator(`[data-qa="sidebar-item-title"] >> ${newUser.name}`)).not.toBeVisible();
 			await auxContext1.page.close();
 			await auxContext2.page.close();
 		});
