@@ -20,7 +20,7 @@ export const QueueListFilter: QueueListFilterPropsType = ({ setFilter, ...props 
 
 	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
 	const [status, setStatus] = useLocalStorage('status', 'online');
-	const [department, setDepartment] = useLocalStorage<{ label: string; value: string }>('department', { value: 'all', label: t('All') });
+	const [department, setDepartment] = useLocalStorage('department', 'all');
 
 	const handleServedBy = useMutableCallback((e) => setServedBy(e));
 	const handleStatus = useMutableCallback((e) => setStatus(e));
@@ -38,8 +38,8 @@ export const QueueListFilter: QueueListFilterPropsType = ({ setFilter, ...props 
 		if (servedBy !== 'all') {
 			filters.servedBy = servedBy;
 		}
-		if (department?.value && department.value !== 'all') {
-			filters.departmentId = department.value;
+		if (department !== 'all') {
+			filters.departmentId = department;
 		}
 
 		setFilter(filters);
@@ -58,7 +58,7 @@ export const QueueListFilter: QueueListFilterPropsType = ({ setFilter, ...props 
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>
-					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} label={t('All')} onlyMyDepartments />
+					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} onlyMyDepartments />
 				</Box>
 			</Box>
 		</Box>

@@ -37,7 +37,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 	const [guest, setGuest] = useLocalStorage('guest', '');
 	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
 	const [status, setStatus] = useLocalStorage('status', 'all');
-	const [department, setDepartment] = useLocalStorage<{ label: string; value: string }>('department', { value: 'all', label: t('All') });
+	const [department, setDepartment] = useLocalStorage('department', 'all');
 	const [from, setFrom] = useLocalStorage('from', '');
 	const [to, setTo] = useLocalStorage('to', '');
 	const [tags, setTags] = useLocalStorage<never | { label: string; value: string }[]>('tags', []);
@@ -56,7 +56,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 		setGuest('');
 		setServedBy('all');
 		setStatus('all');
-		setDepartment({ value: 'all', label: t('All') });
+		setDepartment('all');
 		setFrom('');
 		setTo('');
 		setTags([]);
@@ -82,7 +82,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 			guest,
 			servedBy,
 			status,
-			...(department?.value && department.value !== 'all' && { department: department.value }),
+			department,
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			tags: tags.map((tag) => tag.label),
@@ -146,7 +146,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>
-					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} label={t('All')} onlyMyDepartments />
+					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} onlyMyDepartments />
 				</Box>
 			</Box>
 			{EETagsComponent && (

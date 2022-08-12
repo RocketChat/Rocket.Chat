@@ -56,21 +56,21 @@ export const useDepartmentsList = (
 				.map((department: any) => {
 					department._updatedAt = new Date(department._updatedAt);
 					department.label = department.name;
-					department.value = { value: department._id, label: department.name };
+					department.value = department._id;
 					return department;
 				});
 
 			options.haveAll &&
 				items.unshift({
 					label: t('All'),
-					value: { value: 'all', label: t('All') },
+					value: 'all',
 					_updatedAt: new Date(),
 				});
 
 			options.haveNone &&
 				items.unshift({
 					label: t('None'),
-					value: { value: '', label: t('None') },
+					value: '',
 					_updatedAt: new Date(),
 				});
 
