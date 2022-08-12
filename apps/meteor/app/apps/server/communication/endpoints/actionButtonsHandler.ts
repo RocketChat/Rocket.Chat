@@ -1,19 +1,20 @@
-import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 
 import { API } from '../../../../api/server';
-import { AppsRestApi } from '../rest';
+import type { AppsRestApi } from '../rest';
 
-export const actionButtonsHandler = (apiManager: AppsRestApi): [Record<string, any>, Record<string, Function>] => [
-	{
-		authRequired: false,
-	},
-	{
-		get(): any {
-			const manager = apiManager._manager as AppManager;
-
-			const buttons = manager.getUIActionButtonManager().getAllActionButtons();
-
-			return API.v1.success(buttons);
+export const actionButtonsHandler = (apiManager: AppsRestApi) =>
+	[
+		{
+			authRequired: false,
 		},
-	},
-];
+		{
+			get(): any {
+				const manager = apiManager._manager as AppManager;
+
+				const buttons = manager.getUIActionButtonManager().getAllActionButtons();
+
+				return API.v1.success(buttons);
+			},
+		},
+	] as const;

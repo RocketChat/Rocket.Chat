@@ -21,7 +21,7 @@ export type IntegrationsEndpoints = {
 	};
 
 	'integrations.list': {
-		GET: (params: PaginatedRequest<{}>) => PaginatedResult<{
+		GET: (params: PaginatedRequest) => PaginatedResult<{
 			integrations: IIntegration[];
 			items: number;
 		}>;

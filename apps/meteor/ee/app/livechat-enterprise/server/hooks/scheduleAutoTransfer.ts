@@ -1,4 +1,4 @@
-import { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
 import { callbacks } from '../../../../../lib/callbacks';
