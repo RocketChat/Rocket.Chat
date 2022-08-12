@@ -26,7 +26,8 @@ export const SMS = {
 	},
 
 	isConfiguredService(name) {
-		return name.toLowerCase() === this.service.toLowerCase();
+		// this.service is already lowercased here
+		return name.toLowerCase() === this.service;
 	},
 };
 
