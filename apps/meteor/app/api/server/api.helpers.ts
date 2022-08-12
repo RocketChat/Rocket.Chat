@@ -48,6 +48,11 @@ export async function checkPermisisonsForInvocation(
 		return false;
 	}
 
+	if (permissions.permissions.length === 0) {
+		// You can pass an empty array of permissions to allow access to the method
+		return true;
+	}
+
 	if (permissions.operation === 'hasAll') {
 		return hasAllPermissionAsync(userId, permissions.permissions);
 	}

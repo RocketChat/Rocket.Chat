@@ -31,6 +31,27 @@ describe('checkPermissionsForInvocation', () => {
 		expect(await checkPermisisonsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.false;
 	});
 
+	it('should return false when no config is provided for that specific method', async () => {
+		const options = {
+			permissionsRequired: {
+				GET: {
+					operation: 'hasAll',
+					permissions: ['view-all', 'view-none'],
+				},
+			},
+		};
+		expect(await checkPermisisonsForInvocation('4r3fsadfasf', options.permissionsRequired, 'POST')).to.be.false;
+	});
+
+	it('should return true path is configured with empty permissions array', async () => {
+		const options = {
+			permissionsRequired: {
+				GET: { permissions: [], operation: 'hasAll' },
+			},
+		};
+		expect(await checkPermisisonsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.true;
+	});
+
 	it('should return true when user has all permissions', async () => {
 		const options: { permissionsRequired: PermissionsPayload } = {
 			permissionsRequired: {
