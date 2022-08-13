@@ -27,16 +27,10 @@ import { handleError } from '../../../../../client/lib/utils/handleError';
 import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { call } from '../../../../../client/lib/utils/call';
-import {
-	roomExcludePinned,
-	roomFilesOnly,
-	roomHasPurge,
-	roomMaxAge,
-	chatMessages,
-	dropzoneHelpers,
-	dropzoneEvents,
-	isAtBottom,
-} from './roomHelpers';
+import { dropzoneHelpers, dropzoneEvents } from './lib/dropzone';
+import { retentionPolicyHelpers } from './lib/retentionPolicy';
+import { chatMessages } from './lib/chatMessages';
+import { isAtBottom } from './lib/scrolling';
 import './room.html';
 
 export { chatMessages, dropzoneHelpers, dropzoneEvents };
@@ -245,29 +239,7 @@ Template.roomOld.helpers({
 			return 'has-leader';
 		}
 	},
-	hasPurge() {
-		const { room } = Template.instance();
-		return roomHasPurge(room);
-	},
-	filesOnly() {
-		const { room } = Template.instance();
-		return roomFilesOnly(room);
-	},
-	excludePinned() {
-		const { room } = Template.instance();
-		return roomExcludePinned(room);
-	},
-	purgeTimeout() {
-		const { room } = Template.instance();
-		moment.relativeTimeThreshold('s', 60);
-		moment.relativeTimeThreshold('ss', 0);
-		moment.relativeTimeThreshold('m', 60);
-		moment.relativeTimeThreshold('h', 24);
-		moment.relativeTimeThreshold('d', 31);
-		moment.relativeTimeThreshold('M', 12);
-
-		return moment.duration(roomMaxAge(room) * 1000 * 60 * 60 * 24).humanize();
-	},
+	...retentionPolicyHelpers,
 	messageContext,
 	openedThread() {
 		FlowRouter.watchPathChange();

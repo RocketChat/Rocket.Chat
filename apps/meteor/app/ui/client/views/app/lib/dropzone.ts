@@ -1,99 +1,13 @@
-import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import moment from 'moment';
 import _ from 'underscore';
 
-import { Users, Rooms } from '../../../../models/client';
-import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
-import { settings } from '../../../../settings/client';
-import { RoomManager } from '../../../../ui-utils/client';
-import type { ChatMessages } from '../../lib/chatMessages';
-
-// Chat Messages
-
-export const chatMessages: Record<IRoom['_id'], ChatMessages> = {};
-
-// Retention Policy
-
-function roomHasGlobalPurge(room: IRoom): boolean {
-	if (!settings.get('RetentionPolicy_Enabled')) {
-		return false;
-	}
-
-	switch (room.t) {
-		case 'c':
-			return settings.get('RetentionPolicy_AppliesToChannels');
-		case 'p':
-			return settings.get('RetentionPolicy_AppliesToGroups');
-		case 'd':
-			return settings.get('RetentionPolicy_AppliesToDMs');
-	}
-
-	return false;
-}
-
-const hasRetentionPolicy = (room: IRoom): room is IRoomWithRetentionPolicy => 'retention' in room;
-
-export function roomHasPurge(room: IRoom): boolean {
-	if (!room || !settings.get('RetentionPolicy_Enabled')) {
-		return false;
-	}
-
-	if (hasRetentionPolicy(room) && room.retention.enabled !== undefined) {
-		return room.retention.enabled;
-	}
-
-	return roomHasGlobalPurge(room);
-}
-
-export function roomFilesOnly(room: IRoom): boolean {
-	if (!room) {
-		return false;
-	}
-
-	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
-		return room.retention.filesOnly;
-	}
-
-	return settings.get('RetentionPolicy_FilesOnly');
-}
-
-export function roomExcludePinned(room: IRoom): boolean {
-	if (!room) {
-		return false;
-	}
-
-	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
-		return room.retention.excludePinned;
-	}
-
-	return settings.get('RetentionPolicy_DoNotPrunePinned');
-}
-
-export function roomMaxAge(room: IRoom): number | undefined {
-	if (!room) {
-		return;
-	}
-	if (!roomHasPurge(room)) {
-		return;
-	}
-
-	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
-		return room.retention.maxAge;
-	}
-
-	if (room.t === 'c') {
-		return settings.get('RetentionPolicy_MaxAge_Channels');
-	}
-	if (room.t === 'p') {
-		return settings.get('RetentionPolicy_MaxAge_Groups');
-	}
-	if (room.t === 'd') {
-		return settings.get('RetentionPolicy_MaxAge_DMs');
-	}
-}
-
-// Drag and Drop
+import { Users, Rooms } from '../../../../../models/client';
+import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
+import { settings } from '../../../../../settings/client';
+import { RoomManager } from '../../../../../ui-utils/client';
+import { chatMessages } from './chatMessages';
 
 const userCanDrop = (rid: IRoom['_id']) =>
 	!roomCoordinator.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
@@ -110,7 +24,7 @@ async function createFileFromUrl(url: string): Promise<File> {
 	const metadata = {
 		type: data.type,
 	};
-	const { mime } = await import('../../../../utils/lib/mimeTypes');
+	const { mime } = await import('../../../../../utils/lib/mimeTypes');
 	const file = new File(
 		[data],
 		`File - ${moment().format(settings.get('Message_TimeAndDateFormat'))}.${mime.extension(data.type)}`,
@@ -245,7 +159,7 @@ export const dropzoneEvents = {
 				return addToInput(transferData?.trim());
 			}
 		}
-		const { mime } = await import('../../../../utils/lib/mimeTypes');
+		const { mime } = await import('../../../../../utils/lib/mimeTypes');
 		const filesToUpload = Array.from(files).map((file) => {
 			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
 			return {
@@ -257,9 +171,3 @@ export const dropzoneEvents = {
 		return instance.onFile?.(filesToUpload);
 	},
 };
-
-// Scrolling
-
-export function isAtBottom(element: HTMLElement, scrollThreshold = 0): boolean {
-	return element.scrollTop + scrollThreshold >= element.scrollHeight - element.clientHeight;
-}
