@@ -6,7 +6,6 @@ import React, { ReactElement, useCallback } from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { useIsCallReady } from '../../../../contexts/CallContext';
-import { useContactName } from '../../../../hooks/omnichannel/useContactName';
 import { CallDialpadButton } from '../CallDialpadButton';
 
 type CallTableRowProps = {
@@ -21,7 +20,6 @@ export const CallTableRow = ({ room, onRowClick }: CallTableRowProps): ReactElem
 	const { _id, fname, callStarted, queue, callDuration = 0, v, direction } = room;
 	const duration = moment.duration(callDuration / 1000, 'seconds');
 	const phoneNumber = Array.isArray(v?.phone) ? v?.phone[0]?.phoneNumber : v?.phone;
-	const contactName = useContactName(phoneNumber);
 
 	const resolveDirectionLabel = useCallback(
 		(direction: IVoipRoom['direction']) => {
@@ -45,7 +43,7 @@ export const CallTableRow = ({ room, onRowClick }: CallTableRowProps): ReactElem
 			qa-user-id={_id}
 			height='40px'
 		>
-			<Table.Cell withTruncatedText>{contactName || parseOutboundPhoneNumber(fname)}</Table.Cell>
+			<Table.Cell withTruncatedText>{parseOutboundPhoneNumber(fname)}</Table.Cell>
 			<Table.Cell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</Table.Cell>
 			<Table.Cell withTruncatedText>{queue}</Table.Cell>
 			<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
