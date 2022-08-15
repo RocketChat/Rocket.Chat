@@ -3466,6 +3466,7 @@
   "Only_works_with_chrome_version_greater_50": "Only works with Chrome browser versions > 50",
   "Only_you_can_see_this_message": "Only you can see this message",
   "Only_invited_users_can_acess_this_channel": "Only invited users can access this Channel",
+  "Only_available_on_Enterprise_learn_more__URL": "Only available on Enterprise. [Learn more](__URL__).",
   "Oops_page_not_found": "Oops, page not found",
   "Oops!": "Oops",
   "Open": "Open",

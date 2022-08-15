@@ -100,7 +100,7 @@ const MemoizedSetting = ({
 			)}
 			{enterpriseCallout && (
 				<Margins block='x16'>
-					<Callout type='info'>{enterpriseCallout}</Callout>
+					<Callout>{enterpriseCallout}</Callout>
 				</Margins>
 			)}
 		</Field>

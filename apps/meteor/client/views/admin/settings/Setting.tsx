@@ -1,6 +1,6 @@
 import { ISettingColor, isSettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSettingStructure, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSettingStructure, useTranslation, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useMemo, useState, useCallback, ReactElement } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
@@ -97,9 +97,13 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const shouldDisableEnterprise = setting.enterprise && !isEnterprise;
 
+	const absoluteUrl = useAbsoluteUrl();
 	const enterpriseCallout = useMemo(
-		() => (shouldDisableEnterprise ? t('This_is_an_enterprise_setting') : undefined),
-		[shouldDisableEnterprise, t],
+		() =>
+			shouldDisableEnterprise ? (
+				<MarkdownText variant='inline' content={t('Only_available_on_Enterprise_learn_more__URL', { URL: absoluteUrl('/admin') })} />
+			) : undefined,
+		[shouldDisableEnterprise, t, absoluteUrl],
 	);
 
 	const hasResetButton =
