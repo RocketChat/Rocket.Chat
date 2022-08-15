@@ -5,10 +5,10 @@ import { test, expect } from './utils/test';
 import { OmnichannelAgents, OmnichannelLiveChat } from './page-objects';
 import { IS_EE } from './config/constants';
 
-const createAuxContext = async (browser: Browser): Promise<{ page: Page; poOmnichannelLiveChat: OmnichannelLiveChat }> => {
-	const page = await browser.newPage();
+const createAuxContext = async (browser: Browser, sessionName?: string): Promise<{ page: Page; poOmnichannelLiveChat: OmnichannelLiveChat }> => {
+	const page = await browser.newPage({ storageState: sessionName });
 	const poOmnichannelLiveChat = new OmnichannelLiveChat(page);
-	await page.goto('/');
+	await page.goto('/livechat');
 	return { page, poOmnichannelLiveChat };
 };
 
@@ -56,7 +56,7 @@ test.describe.serial('omnichannel-agents', () => {
 		test.skip(!IS_EE, 'Enterprise only');
 
 		test('expect add "user1" as agent and set max number chats to 1', async ({ page }) => {
-			await poOmnichannelAgents.inputUsername.type('user2', { delay: 1000 });
+			await poOmnichannelAgents.inputUsername.type('user1', { delay: 1000 });
 			await page.keyboard.press('Enter');
 			await poOmnichannelAgents.btnAdd.click();
 
@@ -75,23 +75,32 @@ test.describe.serial('omnichannel-agents', () => {
 				.fill('please await');
 			await page.locator('text=Waiting queue❰ >> i').first().click();
 			await page.locator('text=Save changes').click();
+			await page.close();
 		});
 
 		test.describe('expect open one client and put new clients on hold ', () => {
 			let poAuxContext1: { page: Page; poOmnichannelLiveChat: OmnichannelLiveChat };
 			let poAuxContext2: { page: Page; poOmnichannelLiveChat: OmnichannelLiveChat };
+			let poAuxContext3: { page: Page; poOmnichannelLiveChat: OmnichannelLiveChat };
 
 			test.beforeAll(async ({ browser }) => {
-				poAuxContext1 = await createAuxContext(browser);
+				poAuxContext1 = await createAuxContext(browser, 'user1-session.json');
 				poAuxContext2 = await createAuxContext(browser);
+				poAuxContext3 = await createAuxContext(browser);
 			});
 
 			test('send message from livechat', async () => {
-				await poAuxContext1.poOmnichannelLiveChat.sendMessage({ email: faker.internet.email(), name: faker.internet.userName() });
-				await poAuxContext2.poOmnichannelLiveChat.sendMessage({ email: faker.internet.email(), name: faker.internet.userName() });
+				await poAuxContext1.page.goto('/home');
 
+				await poAuxContext2.poOmnichannelLiveChat.btnOpenLiveChat('R').click();
+				await poAuxContext2.poOmnichannelLiveChat.sendMessage({ email: faker.internet.email(), name: faker.internet.userName() });
+				
+				await poAuxContext3.poOmnichannelLiveChat.btnOpenLiveChat('R').click();
+				await poAuxContext3.poOmnichannelLiveChat.sendMessage({ email: faker.internet.email(), name: faker.internet.userName() });
+				
 				await poAuxContext1.page.close();
 				await poAuxContext2.page.close();
+				await poAuxContext3.page.close();
 			});
 		});
 	});
