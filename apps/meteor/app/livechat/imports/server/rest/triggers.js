@@ -11,7 +11,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			const triggers = findTriggers({
+			const triggers = await findTriggers({
 				pagination: {
 					offset,
 					count,
