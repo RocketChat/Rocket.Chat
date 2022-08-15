@@ -832,8 +832,8 @@ describe('[Teams]', () => {
 				.expect((response) => {
 					expect(response.body).to.have.property('success', true);
 					expect(response.body).to.have.property('teamInfo');
-					expect(response.body.teamInfo).to.have.property('_id').and.to.be.eq(publicTeam._id);
-					expect(response.body.teamInfo).to.have.property('name').and.to.be.eq(publicTeam.name);
+					expect(response.body.teamInfo).to.have.property('_id', publicTeam._id);
+					expect(response.body.teamInfo).to.have.property('name', publicTeam.name);
 				})
 				.then(() => done())
 				.catch(done);
@@ -850,8 +850,8 @@ describe('[Teams]', () => {
 				.expect((response) => {
 					expect(response.body).to.have.property('success', true);
 					expect(response.body).to.have.property('teamInfo');
-					expect(response.body.teamInfo).to.have.property('_id').and.to.be.eq(publicTeam._id);
-					expect(response.body.teamInfo).to.have.property('name').and.to.be.eq(publicTeam.name);
+					expect(response.body.teamInfo).to.have.property('_id', publicTeam._id);
+					expect(response.body.teamInfo).to.have.property('name', publicTeam.name);
 				})
 				.then(() => done())
 				.catch(done);
