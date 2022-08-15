@@ -47,7 +47,24 @@ export const ReadReceipt = {
 			return;
 		}
 
-		this.storeReadReceipts(Messages.findUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
+		this.storeReadReceipts(Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
+
+		updateMessages(room);
+	},
+
+	markThreadMessagesAsRead(message, userId, userLastSeen) {
+		if (!settings.get('Message_Read_Receipt_Enabled')) {
+			return;
+		}
+
+		const room = Rooms.findOneById(roomId, { fields: { lm: 1 } });
+
+		// if users last seen is greater than room's last message, it means the user already have this room marked as read
+		if (userLastSeen > room.lm) {
+			return;
+		}
+
+		this.storeReadReceipts(Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
 
 		updateMessages(room);
 	},
