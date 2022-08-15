@@ -16,7 +16,7 @@ export interface IPersonalAccessToken extends ILoginToken {
 	type: 'personalAccessToken';
 	createdAt: Date;
 	lastTokenPart: string;
-	name?: string;
+	name: string;
 	bypassTwoFactor?: boolean;
 }
 
@@ -144,6 +144,9 @@ export interface IUser extends IRocketChatRecord {
 	extension?: string;
 	inviteToken?: string;
 	federated?: boolean;
+	canViewAllInfo?: boolean;
+	phone?: string;
+	reason?: string;
 }
 
 export interface IRegisterUser extends IUser {

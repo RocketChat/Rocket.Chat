@@ -1,3 +1,3 @@
-import { IServiceClass } from './ServiceClass';
+import type { IServiceClass } from './ServiceClass';
 
 export type IPushService = IServiceClass;

@@ -56,6 +56,7 @@ type OmnichannelTypesValues =
 	| 'omnichannel_placed_chat_on_hold'
 	| 'omnichannel_on_hold_chat_resumed';
 
+type OtrMessageTypeValues = 'otr' | 'otr-ack';
 type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
 export type MessageTypesValues =
@@ -92,6 +93,7 @@ export type MessageTypesValues =
 	| TeamMessageTypes
 	| VoipMessageTypesValues
 	| OmnichannelTypesValues
+	| OtrMessageTypeValues
 	| OtrSystemMessages;
 
 export type TokenType = 'code' | 'inlinecode' | 'bold' | 'italic' | 'strike' | 'link';
@@ -130,7 +132,7 @@ export interface IMessage extends IRocketChatRecord {
 	replies?: IUser['_id'][];
 	location?: {
 		type: 'Point';
-		coordinates: [string, string];
+		coordinates: [number, number];
 	};
 	starred?: { _id: IUser['_id'] }[];
 	pinned?: boolean;
@@ -143,6 +145,7 @@ export interface IMessage extends IRocketChatRecord {
 	tcount?: number;
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
+	otrAck?: string;
 
 	urls?: MessageUrl[];
 

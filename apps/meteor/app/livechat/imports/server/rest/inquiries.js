@@ -53,32 +53,28 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.take',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		post() {
-			try {
-				check(this.bodyParams, {
-					inquiryId: String,
-					userId: Match.Maybe(String),
-				});
-				if (this.bodyParams.userId && !Users.findOneById(this.bodyParams.userId, { fields: { _id: 1 } })) {
-					return API.v1.failure('The user is invalid');
-				}
-				return API.v1.success({
-					inquiry: Meteor.runAsUser(this.bodyParams.userId || this.userId, () =>
-						Meteor.call('livechat:takeInquiry', this.bodyParams.inquiryId),
-					),
-				});
-			} catch (e) {
-				return API.v1.failure(e);
+			check(this.bodyParams, {
+				inquiryId: String,
+				userId: Match.Maybe(String),
+			});
+			if (this.bodyParams.userId && !Users.findOneById(this.bodyParams.userId, { fields: { _id: 1 } })) {
+				return API.v1.failure('The user is invalid');
 			}
+			return API.v1.success({
+				inquiry: Meteor.runAsUser(this.bodyParams.userId || this.userId, () =>
+					Meteor.call('livechat:takeInquiry', this.bodyParams.inquiryId),
+				),
+			});
 		},
 	},
 );
 
 API.v1.addRoute(
 	'livechat/inquiries.queued',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		get() {
 			const { offset, count } = this.getPaginationItems();
@@ -105,7 +101,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.queuedForUser',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -130,21 +126,18 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.getOne',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			const { roomId } = this.queryParams;
 			if (!roomId) {
 				return API.v1.failure("The 'roomId' param is required");
 			}
 
 			return API.v1.success(
-				Promise.await(
-					findOneInquiryByRoomId({
-						userId: this.userId,
-						roomId,
-					}),
-				),
+				await findOneInquiryByRoomId({
+					roomId,
+				}),
 			);
 		},
 	},

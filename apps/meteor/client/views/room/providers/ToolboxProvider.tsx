@@ -51,14 +51,15 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		});
 	});
 
-	const open = useMutableCallback((actionId, context) => {
+	const open = useMutableCallback((actionId: string, context?: string) => {
 		if (actionId === activeTabBar[0]?.id && context === undefined) {
 			return close();
 		}
+
 		router.push({
 			...params,
 			tab: actionId,
-			context,
+			context: context ?? '',
 		});
 	});
 
@@ -121,8 +122,8 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 
 export const useTabContext = (): unknown | undefined => useContext(ToolboxContext).context;
 export const useTab = (): ToolboxActionConfig | undefined => useContext(ToolboxContext).activeTabBar;
-export const useTabBarOpen = (): Function => useContext(ToolboxContext).open;
+export const useTabBarOpen = (): ((actionId: string, context?: string) => void) => useContext(ToolboxContext).open;
 export const useTabBarClose = (): (() => void) => useContext(ToolboxContext).close;
-export const useTabBarOpenUserInfo = (): Function => useContext(ToolboxContext).openUserInfo;
+export const useTabBarOpenUserInfo = (): ((username: string) => void) => useContext(ToolboxContext).openUserInfo;
 
 export default ToolboxProvider;

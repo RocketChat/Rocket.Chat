@@ -12,10 +12,5 @@ Meteor.startup(() => {
 		import('./startup/messageBoxActions');
 		import('./startup/sync');
 		import('./actionButton');
-		import('./webdavFilePicker.html');
-		import('./webdavFilePicker.css');
-		import('./webdavFilePicker');
-		import('./selectWebdavAccount.html');
-		import('./selectWebdavAccount');
 	});
 });

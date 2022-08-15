@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export const useComponentDidUpdate = (effect: Function, dependencies: unknown[] = []): void => {
+export const useComponentDidUpdate = (effect: () => void, dependencies: unknown[] = []): void => {
 	const hasMounted = useRef(false);
 	useEffect(() => {
 		if (!hasMounted.current) {
