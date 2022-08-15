@@ -71,7 +71,6 @@ export * from './IMethodThisType';
 export * from './IPassword';
 export * from './IBaseData';
 export * from './IOAuthApps';
-export * from './Federation';
 export * from './ISmarshHistory';
 export * from './IReport';
 
