@@ -136,6 +136,8 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	const thread = references?.length ? references : [email.messageId];
 
+	logger.debug(`Received new email conversation with thread ${thread} on inbox ${inbox} from ${email.from.value[0].address}`);
+
 	logger.debug(`Fetching guest for visitor ${email.from.value[0].address}`);
 	const guest = await getGuestByEmail(email.from.value[0].address, email.from.value[0].name, department);
 
