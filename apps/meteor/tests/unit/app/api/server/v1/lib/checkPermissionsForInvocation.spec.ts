@@ -21,14 +21,14 @@ mock('../../../../../../../app/authorization/server/functions/hasPermission', {
 });
 
 // eslint-disable-next-line
-const { checkPermisisonsForInvocation } = mock.reRequire('../../../../../../../app/api/server/api.helpers');
+const { checkPermissionsForInvocation } = mock.reRequire('../../../../../../../app/api/server/api.helpers');
 
 describe('checkPermissionsForInvocation', () => {
 	it('should return false when no permissions are provided', async () => {
 		const options = {
 			permissionsRequired: {},
 		};
-		expect(await checkPermisisonsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.false;
+		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.false;
 	});
 
 	it('should return false when no config is provided for that specific method', async () => {
@@ -61,7 +61,7 @@ describe('checkPermissionsForInvocation', () => {
 				},
 			},
 		};
-		expect(await checkPermisisonsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.true;
+		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.true;
 	});
 
 	it('should read permissions config from * when request method provided doesnt have config', async () => {
@@ -77,7 +77,7 @@ describe('checkPermissionsForInvocation', () => {
 				},
 			},
 		};
-		expect(await checkPermisisonsForInvocation('4r3fsadfasf', options.permissionsRequired, 'PUT')).to.be.true;
+		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'PUT')).to.be.true;
 	});
 
 	it('should return false when user has no permissions', async () => {
@@ -89,7 +89,7 @@ describe('checkPermissionsForInvocation', () => {
 				},
 			},
 		};
-		expect(await checkPermisisonsForInvocation('4r3fsadfasf4', options.permissionsRequired, 'GET')).to.be.false;
+		expect(await checkPermissionsForInvocation('4r3fsadfasf4', options.permissionsRequired, 'GET')).to.be.false;
 	});
 
 	it('should return false when operation is invalid', async () => {
@@ -102,7 +102,7 @@ describe('checkPermissionsForInvocation', () => {
 				},
 			},
 		};
-		expect(await checkPermisisonsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.false;
+		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.false;
 	});
 
 	it('should return true when operation is hasAny and user has at least one listed permission', async () => {
@@ -114,6 +114,6 @@ describe('checkPermissionsForInvocation', () => {
 				},
 			},
 		};
-		expect(await checkPermisisonsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.true;
+		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.true;
 	});
 });

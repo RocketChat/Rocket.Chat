@@ -35,7 +35,6 @@ API.v1.addRoute(
 
 				return API.v1.success(
 					await findAgents({
-						userId: this.userId,
 						text,
 						pagination: {
 							offset,
@@ -52,7 +51,6 @@ API.v1.addRoute(
 
 				return API.v1.success(
 					await findManagers({
-						userId: this.userId,
 						text,
 						pagination: {
 							offset,
