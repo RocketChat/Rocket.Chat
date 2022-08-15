@@ -289,13 +289,16 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
+	findOneOpenByVisitorTokenAndDepartmentIdAndSource(visitorToken, departmentId, source, options) {
 		const query = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
 			departmentId,
 		};
+		if (source) {
+			query['source.type'] = source;
+		}
 
 		return this.findOne(query, options);
 	}

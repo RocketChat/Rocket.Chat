@@ -1,7 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { FederatedUser } from './FederatedUser';
+import type { FederatedUser } from './FederatedUser';
 
 export class FederatedRoom {
 	public externalId: string;

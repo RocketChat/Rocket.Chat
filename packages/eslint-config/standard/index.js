@@ -37,6 +37,7 @@ module.exports = {
 			rules: {
 				'@typescript-eslint/ban-types': 'warn',
 				'@typescript-eslint/ban-ts-comment': 'warn',
+				'@typescript-eslint/consistent-type-imports': 'error',
 				'@typescript-eslint/naming-convention': [
 					'error',
 					{ selector: 'variableLike', format: ['camelCase'], leadingUnderscore: 'allow' },
@@ -81,6 +82,7 @@ module.exports = {
 				'indent': 'off',
 				'jsx-quotes': ['error', 'prefer-single'],
 				'no-dupe-class-members': 'off',
+				'no-empty-function': 'off',
 				'no-redeclare': 'off',
 				'no-spaced-func': 'off',
 				'no-undef': 'off',

@@ -61,14 +61,9 @@ test.describe.parallel('administration', () => {
 	});
 
 	test.describe('Settings', () => {
-		test.beforeEach(async () => {
-			await poAdmin.sidenav.linkSettings.click();
-		});
-
 		test.describe('General', () => {
 			test.beforeEach(async ({ page }) => {
-				await poAdmin.inputSearchSettings.type('general');
-				await page.locator('[data-qa-id="General"] >> text="Open"').click();
+				await page.goto('/admin/settings/General');
 			});
 
 			test('expect be abble to reset a setting after a change', async () => {

@@ -1,5 +1,12 @@
-import { Modal, Field, Select, ButtonGroup, Button, SelectOption, Box } from '@rocket.chat/fuselage';
-import { useTranslation, useAvailableDevices, useToastMessageDispatch, useSetModal, useSelectedDevices } from '@rocket.chat/ui-contexts';
+import { Modal, Field, Select, Button, SelectOption, Box } from '@rocket.chat/fuselage';
+import {
+	useTranslation,
+	useAvailableDevices,
+	useToastMessageDispatch,
+	useSetModal,
+	useSelectedDevices,
+	useIsDeviceManagementEnabled,
+} from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 
@@ -14,6 +21,7 @@ type FieldValues = {
 const DeviceSettingsModal = (): ReactElement => {
 	const setModal = useSetModal();
 	const onCancel = (): void => setModal();
+	const isDeviceManagementEnabled = useIsDeviceManagementEnabled();
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const selectedAudioDevices = useSelectedDevices();
@@ -60,6 +68,11 @@ const DeviceSettingsModal = (): ReactElement => {
 						</Box>
 					</Box>
 				)}
+				{!isDeviceManagementEnabled && (
+					<Box color='danger-600' display='flex' flexDirection='column'>
+						{t('Device_Changes_Not_Available_Insecure_Context')}
+					</Box>
+				)}
 				<Field>
 					<Field.Label>{t('Microphone')}</Field.Label>
 					<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
@@ -86,12 +99,12 @@ const DeviceSettingsModal = (): ReactElement => {
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup stretch w='full'>
+				<Modal.FooterControllers>
 					<Button onClick={(): void => setModal()}>{t('Cancel')}</Button>
 					<Button disabled={!setSinkIdAvailable} primary onClick={handleSubmit(onSubmit)}>
 						{t('Save')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);
