@@ -7,7 +7,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer';
 import { Users } from '../../../models/server';
-import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
+import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
 export class EmailCheck implements ICodeCheck {
 	public readonly name = 'email';

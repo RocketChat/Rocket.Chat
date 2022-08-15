@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { ISocketConnection } from '@rocket.chat/core-typings';
+import type { ISocketConnection } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { LivechatAgentActivity, Sessions } from '@rocket.chat/models';

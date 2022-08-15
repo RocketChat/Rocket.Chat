@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Field, Button, TextInput, Icon, ButtonGroup, Modal } from '@rocket.chat/fuselage';
+import { Field, Button, TextInput, Modal } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useCallback, useEffect, useState, useMemo } from 'react';
@@ -72,7 +72,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 	return (
 		<Modal {...props}>
 			<Modal.Header>
-				<Icon name='mail-arrow-top-right' size={20} />
+				<Modal.Icon name='mail-arrow-top-right' />
 				<Modal.Title>{t('Transcript')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
@@ -107,7 +107,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					{roomOpen && transcriptRequest ? (
 						<Button danger onClick={handleDiscard}>
@@ -123,7 +123,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 							{t('Send')}
 						</Button>
 					)}
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

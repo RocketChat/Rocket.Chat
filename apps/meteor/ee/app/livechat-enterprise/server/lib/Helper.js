@@ -1,9 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import { Rooms as RoomRaw, LivechatRooms as LivechatRoomsRaw, LivechatDepartment as LivechatDepartmentRaw } from '@rocket.chat/models';
+import {
+	Rooms as RoomRaw,
+	LivechatRooms as LivechatRoomsRaw,
+	LivechatDepartment as LivechatDepartmentRaw,
+	LivechatCustomField,
+} from '@rocket.chat/models';
 
 import { memoizeDebounce } from './debounceByParams';
-import { Users, LivechatInquiry, LivechatRooms, Messages, LivechatCustomField } from '../../../../../app/models/server';
+import { Users, LivechatInquiry, LivechatRooms, Messages } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
@@ -248,12 +253,12 @@ export const updatePriorityInquiries = (priority) => {
 	});
 };
 
-export const getLivechatCustomFields = () => {
-	const customFields = LivechatCustomField.find({
+export const getLivechatCustomFields = async () => {
+	const customFields = await LivechatCustomField.find({
 		visibility: 'visible',
 		scope: 'visitor',
 		public: true,
-	}).fetch();
+	}).toArray();
 	return customFields.map(({ _id, label, regexp, required = false, type, defaultValue = null, options }) => ({
 		_id,
 		label,

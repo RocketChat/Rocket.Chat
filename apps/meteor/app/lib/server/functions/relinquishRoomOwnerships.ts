@@ -2,7 +2,7 @@ import { Roles } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload/server';
 import { Subscriptions, Messages, Rooms } from '../../../models/server';
-import { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
+import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
 const bulkRoomCleanUp = (rids: string[]): unknown => {
 	// no bulk deletion for files

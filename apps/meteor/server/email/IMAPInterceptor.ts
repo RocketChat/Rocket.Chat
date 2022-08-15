@@ -2,7 +2,8 @@ import { EventEmitter } from 'events';
 
 import IMAP from 'imap';
 import type Connection from 'imap';
-import { simpleParser, ParsedMail } from 'mailparser';
+import type { ParsedMail } from 'mailparser';
+import { simpleParser } from 'mailparser';
 
 import { logger } from '../features/EmailInbox/logger';
 
@@ -16,7 +17,6 @@ type IMAPOptions = {
 
 export declare interface IMAPInterceptor {
 	on(event: 'email', listener: (email: ParsedMail) => void): this;
-	on(event: string, listener: Function): this;
 }
 
 export class IMAPInterceptor extends EventEmitter {
