@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import type { ILivechatAgent, ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Response } from 'supertest';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
@@ -472,12 +472,6 @@ describe('LIVECHAT - visitors', function () {
 				.catch(done);
 		});
 	});
-});
-
-describe.only('Omnichannel', function () {
-	this.retries(0);
-
-	before((done) => getCredentials(done));
 
 	describe('GET [omnichannel/contact.search]', () => {
 		it('should find a contact by email', (done) => {
