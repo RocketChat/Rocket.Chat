@@ -877,7 +877,7 @@ describe('[Teams]', () => {
 				.get(api('teams.info'))
 				.set(testUserCredentials)
 				.query({
-					teamName: privateTeam._id,
+					teamName: privateTeam.name,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(403)
