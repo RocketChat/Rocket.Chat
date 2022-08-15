@@ -1,13 +1,13 @@
-import { IEmailInbox } from '@rocket.chat/core-typings';
+import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { Response } from 'supertest';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createDepartment } from '../../../data/livechat/rooms';
 
 // TODO: Add tests with actual e-mail servers involved
 
-describe.only('Email inbox', () => {
+describe('Email inbox', () => {
 	before((done) => getCredentials(done));
 	let testInbox = '';
 	before((done) => {
