@@ -790,9 +790,18 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					);
 				}
 			} else if (subscription) {
-				// handle old cases where user was not added to team
-				await Subscriptions.removeById(subscription._id);
-				await Users.removeRoomsByRoomIdsAndUserId([team.roomId], member.userId);
+				const removedUser = usersToRemove.find((u) => u._id === member.userId);
+				if (removedUser) {
+					await removeUserFromRoom(
+						team.roomId,
+						removedUser,
+						uid !== member.userId
+							? {
+									byUser,
+							  }
+							: undefined,
+					);
+				}
 			} else {
 				throw new Error('member-does-not-exist');
 			}
