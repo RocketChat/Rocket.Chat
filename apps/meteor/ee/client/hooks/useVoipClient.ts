@@ -22,7 +22,8 @@ const isSignedResponse = (data: any): data is { result: string } => typeof data?
 // Currently we only support the websocket connection and the SIP proxy connection being from the same host,
 // we need to add a new setting for SIP proxy if we want to support different hosts for them.
 export const useVoipClient = (): UseVoipClientResult => {
-	const [voipEnabled, setVoipEnabled] = useSafely(useState(useSetting('VoIP_Enabled')));
+	const settingVoipEnabled = useSetting('VoIP_Enabled');
+	const [voipEnabled, setVoipEnabled] = useSafely(useState(settingVoipEnabled));
 	const voipRetryCount = useSetting('VoIP_Retry_Count');
 	const enableKeepAlive = useSetting('VoIP_Enable_Keep_Alive_For_Unstable_Networks');
 	const registrationInfo = useEndpoint('GET', '/v1/connector.extension.getRegistrationInfoByUserId');
@@ -33,6 +34,10 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
 
 	const isEE = useHasLicenseModule('voip-enterprise');
+
+	useEffect(() => {
+		setVoipEnabled(settingVoipEnabled);
+	}, [settingVoipEnabled, setVoipEnabled]);
 
 	useEffect(() => {
 		const voipEnableEventHandler = (enabled: boolean): void => {
