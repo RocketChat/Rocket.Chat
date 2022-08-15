@@ -28,7 +28,7 @@ const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalP
 	useEnterKey(handleCallButtonClick, isButtonDisabled);
 
 	return (
-		<Modal maxWidth='400px'>
+		<Modal maxWidth='400px' data-qa-id='omncDialpadModal'>
 			<Modal.Header>
 				<Modal.Title />
 				<Modal.Close onClick={handleClose} />
@@ -57,6 +57,7 @@ const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalP
 					secondary
 					info
 					size='64px'
+					data-qa-id='omncDialpadCallButton'
 					onClick={(): void => {
 						handleCallButtonClick();
 						handleClose();

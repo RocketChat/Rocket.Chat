@@ -46,7 +46,7 @@ const DeviceManagementFeatureModal = ({ close }: { close: () => void }): ReactEl
 	};
 
 	return (
-		<Modal>
+		<Modal data-qa-id='deviceManagementFeatureModal'>
 			<Modal.Header>
 				<Modal.Title withTruncatedText={false}>{t('Workspace_now_using_device_management')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={close} />

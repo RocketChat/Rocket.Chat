@@ -59,5 +59,14 @@ export const OmnichannelCallToggleReady = ({ ...props }): ReactElement => {
 		color: getColor(),
 	};
 
-	return <Sidebar.TopBar.Action disabled={inCall} {...voipCallIcon} {...props} onClick={onClickVoipButton} />;
+	return (
+		<Sidebar.TopBar.Action
+			data-qa-id='omncVoipToggleButton'
+			data-qa-type={registered ? 'enabled' : 'disabled'}
+			disabled={inCall}
+			{...voipCallIcon}
+			{...props}
+			onClick={onClickVoipButton}
+		/>
+	);
 };

@@ -4,5 +4,14 @@ import React, { ReactElement } from 'react';
 
 export const OmnichannelCallToggleLoading = ({ ...props }): ReactElement => {
 	const t = useTranslation();
-	return <Sidebar.TopBar.Action icon='phone' data-title={t('Loading')} disabled {...props} />;
+	return (
+		<Sidebar.TopBar.Action
+			icon='phone'
+			data-title={t('Loading')}
+			data-qa-id='omncVoipToggleButton'
+			data-qa-type='loading'
+			disabled
+			{...props}
+		/>
+	);
 };

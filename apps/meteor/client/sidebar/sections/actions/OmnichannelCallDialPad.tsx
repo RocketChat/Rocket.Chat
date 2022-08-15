@@ -18,6 +18,7 @@ export const OmniChannelCallDialPad = ({ ...props }): ReactElement => {
 			icon='dialpad'
 			onClick={(): void => openDialModal()}
 			disabled={!outBoundCallsEnabledForUser}
+			data-qa-id='omncDialPadButton'
 			{...props}
 		/>
 	);

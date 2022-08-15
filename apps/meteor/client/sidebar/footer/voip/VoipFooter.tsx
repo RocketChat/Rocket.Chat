@@ -78,6 +78,7 @@ export const VoipFooter = ({
 		<SidebarFooter elevated>
 			<Box
 				className={cssClickable}
+				data-qa-id='omncVoipFooter'
 				onClick={(): void => {
 					if (callerState === 'IN_CALL' || callerState === 'ON_HOLD') {
 						openRoom(openedRoomInfo.rid);
@@ -118,8 +119,8 @@ export const VoipFooter = ({
 				</Box>
 				<Box display='flex' flexDirection='row' mi='16px' mbe='12px' justifyContent='space-between' alignItems='center'>
 					<Box>
-						<Box color='white' fontScale='p2' withTruncatedText>
-							{caller.callerName || contactName || anonymousText}
+						<Box color='white' fontScale='p2' withTruncatedText data-qa-id='omncVoipTitle'>
+							{contactName || caller.callerName || anonymousText}
 						</Box>
 						<Box color='hint' fontScale='c1' withTruncatedText>
 							{subtitle}
@@ -134,6 +135,7 @@ export const VoipFooter = ({
 								small
 								square
 								danger
+								data-qa-id='omncVoipRejectButton'
 								onClick={(e): unknown => {
 									e.stopPropagation();
 									muted && toggleMic(false);
@@ -145,7 +147,7 @@ export const VoipFooter = ({
 							</Button>
 						)}
 						{callerState === 'OFFER_RECEIVED' && (
-							<Button title={tooltips.endCall} small square danger onClick={callActions.reject}>
+							<Button title={tooltips.endCall} data-qa-id='omncVoipRejectButton' small square danger onClick={callActions.reject}>
 								<Icon name='phone-off' size='x16' />
 							</Button>
 						)}
