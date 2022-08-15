@@ -1,6 +1,7 @@
-import { AppMetadataStorage, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { AppMetadataStorage } from '@rocket.chat/apps-engine/server/storage';
 
-import { AppsModel } from '../../../models/server/models/apps-model';
+import type { AppsModel } from '../../../models/server/models/apps-model';
 
 export class AppRealStorage extends AppMetadataStorage {
 	constructor(private db: AppsModel) {

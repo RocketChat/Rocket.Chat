@@ -1,56 +1,51 @@
-import { test, expect } from '@playwright/test';
+import { faker } from '@faker-js/faker';
 
-import { Auth, OmnichannelDepartaments } from './page-objects';
+import { test, expect } from './utils/test';
+import { OmnichannelDepartaments } from './page-objects';
 
-test.describe('Department', () => {
-	let pageAuth: Auth;
-	let pageOmnichannelDepartaments: OmnichannelDepartaments;
+test.use({ storageState: 'admin-session.json' });
+
+test.describe.serial('omnichannel-departaments', () => {
+	let poOmnichannelDepartaments: OmnichannelDepartaments;
+
+	const departmentName = faker.datatype.uuid();
 
 	test.beforeEach(async ({ page }) => {
-		pageAuth = new Auth(page);
-		pageOmnichannelDepartaments = new OmnichannelDepartaments(page);
-	});
+		poOmnichannelDepartaments = new OmnichannelDepartaments(page);
 
-	test.beforeEach(async ({ page }) => {
-		await pageAuth.doLogin();
 		await page.goto('/omnichannel');
+		await poOmnichannelDepartaments.sidenav.linkDepartments.click();
 	});
 
-	test.describe('Actions', async () => {
-		test.beforeEach(async () => {
-			await pageOmnichannelDepartaments.departmentsLink.click();
-		});
+	test('expect create new department', async () => {
+		await poOmnichannelDepartaments.btnNew.click();
+		await poOmnichannelDepartaments.btnEnabled.click();
+		await poOmnichannelDepartaments.inputName.fill(departmentName);
+		await poOmnichannelDepartaments.inputEmail.fill(faker.internet.email());
+		await poOmnichannelDepartaments.btnSave.click();
 
-		test.describe('Create and Edit', async () => {
-			test('expect new department is created', async () => {
-				await pageOmnichannelDepartaments.btnNewDepartment.click();
-				await pageOmnichannelDepartaments.doAddDepartments();
-				await expect(pageOmnichannelDepartaments.departmentAdded).toBeVisible();
-			});
+		await poOmnichannelDepartaments.inputSearch.fill(departmentName);
+		await expect(poOmnichannelDepartaments.firstRowInTable).toBeVisible();
+	});
 
-			test('expect department is edited', async () => {
-				await pageOmnichannelDepartaments.departmentAdded.click();
-				await pageOmnichannelDepartaments.doEditDepartments();
-				await expect(pageOmnichannelDepartaments.departmentAdded).toHaveText('any_name_edit');
-			});
-		});
+	test('expect update department name', async () => {
+		await poOmnichannelDepartaments.inputSearch.fill(departmentName);
 
-		test.describe('Delete department', () => {
-			test.beforeEach(async () => {
-				await pageOmnichannelDepartaments.btnTableDeleteDepartment.click();
-			});
+		await poOmnichannelDepartaments.firstRowInTable.locator(`text=${departmentName}`).click();
+		await poOmnichannelDepartaments.inputName.fill(`edited-${departmentName}`);
+		await poOmnichannelDepartaments.btnSave.click();
 
-			test('expect dont show dialog on cancel delete department', async () => {
-				await pageOmnichannelDepartaments.btnModalCancelDeleteDepartment.click();
-				await expect(pageOmnichannelDepartaments.modalDepartment).not.toBeVisible();
-				await expect(pageOmnichannelDepartaments.departmentAdded).toBeVisible();
-			});
+		await poOmnichannelDepartaments.inputSearch.fill(`edited-${departmentName}`);
+		await expect(poOmnichannelDepartaments.firstRowInTable).toBeVisible();
+	});
 
-			test('expect delete departments', async () => {
-				await pageOmnichannelDepartaments.btnModalDeleteDepartment.click();
-				await expect(pageOmnichannelDepartaments.modalDepartment).not.toBeVisible();
-				await expect(pageOmnichannelDepartaments.departmentAdded).not.toBeVisible();
-			});
-		});
+	test('expect delete department', async () => {
+		await poOmnichannelDepartaments.inputSearch.fill(`edited-${departmentName}`);
+
+		await poOmnichannelDepartaments.btnDeletefirstRowInTable.click();
+		await poOmnichannelDepartaments.btnModalConfirmDelete.click();
+
+		await poOmnichannelDepartaments.inputSearch.fill(`edited-${departmentName}`);
+		await expect(poOmnichannelDepartaments.firstRowInTable).toBeHidden();
 	});
 });

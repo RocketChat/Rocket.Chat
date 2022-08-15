@@ -8,7 +8,6 @@ import { SystemLogger } from '../../../server/lib/logger/system';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',
-	// @ts-ignore - LoginCancelledError does in fact exist
 	error: new Meteor.Error(Accounts.LoginCancelledError.numericError, message),
 });
 
