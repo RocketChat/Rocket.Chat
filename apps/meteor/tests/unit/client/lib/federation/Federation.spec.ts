@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import * as Federation from '../../../../../../app/federation-v2/client/Federation';
-import { RoomMemberActions } from '../../../../../../definition/IRoomTypeConfig';
+import * as Federation from '../../../../../client/lib/federation/Federation';
+import { RoomMemberActions } from '../../../../../definition/IRoomTypeConfig';
 
 describe('Federation[Client] - Federation', () => {
 	describe('#actionAllowed()', () => {

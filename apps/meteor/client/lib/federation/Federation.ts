@@ -10,9 +10,8 @@ const allowedActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
 	RoomMemberActions.LEAVE,
 ];
 
-export const actionAllowed = (room: Partial<IRoom>, action: ValueOf<typeof RoomMemberActions>): boolean => {
-	return isDirectMessageRoom(room) && action === RoomMemberActions.REMOVE_USER ? false : allowedActionsInFederatedRooms.includes(action);
-};
+export const actionAllowed = (room: Partial<IRoom>, action: ValueOf<typeof RoomMemberActions>): boolean =>
+	isDirectMessageRoom(room) && action === RoomMemberActions.REMOVE_USER ? false : allowedActionsInFederatedRooms.includes(action);
 
 export const isEditableByTheUser = (user: IUser | undefined, room: IRoom | undefined): boolean => {
 	if (!user || !room) {

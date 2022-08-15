@@ -3,9 +3,9 @@ import { useMutableCallback, useDebouncedValue, useLocalStorage } from '@rocket.
 import { useUserRoom, useAtLeastOnePermission, useUser } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import * as Federation from '../../../../../../app/federation-v2/client/Federation';
 import { useRecordList } from '../../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
+import * as Federation from '../../../../../lib/federation/Federation';
 import { useMembersList } from '../../../../hooks/useMembersList';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import UserInfoWithData from '../../UserInfo';
