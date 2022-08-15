@@ -100,6 +100,13 @@ export const openRoom = async function (type, name, render = true) {
 			return callbacks.run('enter-room', sub);
 		} catch (error) {
 			c.stop();
+
+			if (FlowRouter.getQueryParam('msg')) {
+				FlowRouter.setQueryParams({
+					msg: undefined,
+				});
+			}
+
 			if (type === 'd') {
 				try {
 					const { rid } = await call('createDirectMessage', ...name.split(', '));

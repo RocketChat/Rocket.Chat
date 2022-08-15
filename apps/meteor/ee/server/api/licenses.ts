@@ -1,10 +1,11 @@
 import { check } from 'meteor/check';
+import { Settings } from '@rocket.chat/models';
 
 import { getLicenses, validateFormat, flatModules, getMaxActiveUsers, isEnterprise } from '../../app/license/server/license';
-import { Settings, Users } from '../../../app/models/server';
+import { Users } from '../../../app/models/server';
 import { API } from '../../../app/api/server/api';
 import { hasPermission } from '../../../app/authorization/server';
-import { ILicense } from '../../app/license/definitions/ILicense';
+import type { ILicense } from '../../app/license/definitions/ILicense';
 
 function licenseTransform(license: ILicense): ILicense {
 	return {
@@ -35,7 +36,7 @@ API.v1.addRoute(
 	'licenses.add',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			check(this.bodyParams, {
 				license: String,
 			});
@@ -49,7 +50,7 @@ API.v1.addRoute(
 				return API.v1.failure('Invalid license');
 			}
 
-			Settings.updateValueById('Enterprise_License', license);
+			await Settings.updateValueById('Enterprise_License', license);
 
 			return API.v1.success();
 		},

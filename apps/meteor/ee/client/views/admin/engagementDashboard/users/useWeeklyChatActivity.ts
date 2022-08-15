@@ -1,6 +1,6 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
-import { useQuery } from 'react-query';
 
 type UseWeeklyChatActivityOptions = {
 	displacement: number;

@@ -1,4 +1,4 @@
-import { FindCursor } from 'mongodb';
+import type { FindCursor } from 'mongodb';
 import type { IUser, ISubscription } from '@rocket.chat/core-typings';
 
 import { subscriptionHasRole } from '../../../authorization/server';

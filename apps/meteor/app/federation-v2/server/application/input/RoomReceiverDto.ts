@@ -1,6 +1,6 @@
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import { EVENT_ORIGIN } from '../../domain/IFederationBridge';
+import type { EVENT_ORIGIN } from '../../domain/IFederationBridge';
 
 class BaseRoom {
 	externalRoomId: string;
