@@ -5,8 +5,8 @@ API.v1.addRoute(
 	'livechat/appearance',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			const { appearance } = Promise.await(findAppearance());
+		async get() {
+			const { appearance } = await findAppearance();
 
 			return API.v1.success({
 				appearance,

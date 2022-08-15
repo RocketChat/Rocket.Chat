@@ -38,10 +38,9 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 		total,
 	};
 }
-export async function findAgents({ userId, text, pagination: { offset, count, sort } }) {
+export async function findAgents({ text, pagination: { offset, count, sort } }) {
 	return findUsers({
 		role: 'livechat-agent',
-		userId,
 		text,
 		pagination: {
 			offset,
@@ -51,10 +50,9 @@ export async function findAgents({ userId, text, pagination: { offset, count, so
 	});
 }
 
-export async function findManagers({ userId, text, pagination: { offset, count, sort } }) {
+export async function findManagers({ text, pagination: { offset, count, sort } }) {
 	return findUsers({
 		role: 'livechat-manager',
-		userId,
 		text,
 		pagination: {
 			offset,

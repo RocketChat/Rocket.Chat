@@ -19,7 +19,7 @@ const validateDateParams = (property, date) => {
 
 API.v1.addRoute(
 	'livechat/rooms',
-	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-livechat-rooms', 'view-l-room'], operation: 'hasAny' } } },
+	{ authRequired: true },
 	{
 		get() {
 			const { offset, count } = this.getPaginationItems();
