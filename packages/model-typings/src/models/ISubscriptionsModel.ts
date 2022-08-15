@@ -1,4 +1,4 @@
-import type { FindOptions, FindCursor, UpdateResult } from 'mongodb';
+import type { FindOptions, FindCursor, UpdateResult, Document } from 'mongodb';
 import type { ISubscription, IRole, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
