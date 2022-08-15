@@ -40,7 +40,7 @@ describe('checkPermissionsForInvocation', () => {
 				},
 			},
 		};
-		expect(await checkPermisisonsForInvocation('4r3fsadfasf', options.permissionsRequired, 'POST')).to.be.false;
+		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'POST')).to.be.false;
 	});
 
 	it('should return true path is configured with empty permissions array', async () => {
@@ -49,7 +49,7 @@ describe('checkPermissionsForInvocation', () => {
 				GET: { permissions: [], operation: 'hasAll' },
 			},
 		};
-		expect(await checkPermisisonsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.true;
+		expect(await checkPermissionsForInvocation('4r3fsadfasf', options.permissionsRequired, 'GET')).to.be.true;
 	});
 
 	it('should return true when user has all permissions', async () => {
