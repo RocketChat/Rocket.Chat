@@ -4,7 +4,8 @@ import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../client/contexts/VideoConfContext';
-import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
+import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/useVideoConfWarning';
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';

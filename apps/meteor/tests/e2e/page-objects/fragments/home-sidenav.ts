@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 export class HomeSidenav {
 	private readonly page: Page;
@@ -14,7 +14,7 @@ export class HomeSidenav {
 	}
 
 	get inputChannelName(): Locator {
-		return this.page.locator('#modal-root [placeholder="Channel Name"]');
+		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-name-input"]');
 	}
 
 	get btnCreateChannel(): Locator {

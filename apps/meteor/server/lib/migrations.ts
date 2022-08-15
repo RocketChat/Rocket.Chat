@@ -16,8 +16,8 @@ type IControl = {
 export type IMigration = {
 	name?: string;
 	version: number;
-	up: Function;
-	down?: Function;
+	up: (migration: IMigration) => void;
+	down?: (migration: IMigration) => void;
 };
 
 const log = new Logger('Migrations');

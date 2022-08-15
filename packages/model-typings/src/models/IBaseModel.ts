@@ -28,8 +28,8 @@ type EnhancedOmit<T, K> = string | number extends keyof T
 	: never;
 
 type ExtractIdType<TSchema> = TSchema extends { _id: infer U } // user has defined a type for _id
-	? {} extends U
-		? Exclude<U, {}>
+	? Record<string, unknown> extends U
+		? Exclude<U, Record<string, unknown>>
 		: unknown extends U
 		? ObjectId
 		: U

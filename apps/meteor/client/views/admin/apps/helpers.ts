@@ -19,14 +19,14 @@ const appErroredStatuses = [
 export const apiCurlGetter =
 	(absoluteUrl: (path: string) => string) =>
 	(method: string, api: IApiEndpointMetadata): string[] => {
-		const example = (api.examples && api.examples[method]) || {};
+		const example = api.examples?.[method];
 		return Utilities.curl({
 			url: absoluteUrl(api.computedPath),
 			method,
-			params: example.params,
-			query: example.query,
-			content: example.content,
-			headers: example.headers,
+			params: example?.params,
+			query: example?.query,
+			content: example?.content,
+			headers: example?.headers,
 			auth: '',
 		}).split('\n');
 	};
@@ -71,7 +71,7 @@ export const handleAPIError = (error: {
 	xhr: { responseJSON: { status: any; messages: any; error: any; payload?: any } };
 	message: string;
 }): void => {
-	const message = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+	const message = error.xhr?.responseJSON?.error ?? error.message;
 
 	if (shouldHandleErrorAsWarning(message)) {
 		dispatchToastMessage({ type: 'warning', message });
