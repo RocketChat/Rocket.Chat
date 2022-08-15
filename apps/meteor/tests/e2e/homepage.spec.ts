@@ -82,14 +82,33 @@ test.describe.serial('homepage', () => {
 		expect(regularUserPage.locator('[data-qa-type="PageHeader-title"]')).toContainText('NewTitle');
 	});
 
-	test('expect switch to custom homepage and display custom text', async ({ api }) => {
-		expect((await api.post('/settings/Layout_Custom_Body', { value: true })).status()).toBe(200);
-		expect((await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello</span>' })).status()).toBe(
-			200,
-		);
+	test.describe.serial('Custom Homepage Content', () => {
+		test('expect to show custom homepage text and default homepage', async ({ api }) => {
+			expect((await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello</span>' })).status()).toBe(
+				200,
+			);
 
-		await regularUserPage.goto('/home');
+			await regularUserPage.goto('/home');
 
-		expect(regularUserPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello');
+			expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).toBeVisible();
+
+			expect(regularUserPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello');
+		});
+
+		test('expect switch to custom homepage and display custom text', async ({ api }) => {
+			test.skip(/* !IS_EE */ true, 'Enterprise Only');
+
+			expect((await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello2</span>' })).status()).toBe(
+				200,
+			);
+
+			expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
+
+			await regularUserPage.goto('/home');
+
+			expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).not.toBeVisible();
+
+			expect(regularUserPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello2');
+		});
 	});
 });
