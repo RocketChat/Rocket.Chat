@@ -12,8 +12,8 @@ export class Subscriptions extends Base {
 	constructor(...args) {
 		super(...args);
 
-		this.tryEnsureIndex({ rid: 1 });
 		this.tryEnsureIndex({ rid: 1, ls: 1 });
+		this.tryEnsureIndex({ 'userHighlights.0': 1, 'rid': 1 });
 		this.tryEnsureIndex({ 'rid': 1, 'u._id': 1 }, { unique: 1 });
 		this.tryEnsureIndex({ 'rid': 1, 'u._id': 1, 'open': 1 });
 		this.tryEnsureIndex({ 'rid': 1, 'u.username': 1 });
@@ -28,9 +28,9 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ desktopNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ mobilePushNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ emailNotifications: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ audioNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ autoTranslate: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ autoTranslateLanguage: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ prid: 1 });
 		this.tryEnsureIndex({ 'u._id': 1, 'open': 1, 'department': 1 });
 

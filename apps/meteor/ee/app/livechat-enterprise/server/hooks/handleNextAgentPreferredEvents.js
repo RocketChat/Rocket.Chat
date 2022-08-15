@@ -25,6 +25,10 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 		return defaultAgent;
 	}
 
+	if (!lastChattedAgentPreferred) {
+		return defaultAgent;
+	}
+
 	const { _id: guestId } = defaultGuest;
 	const guest = Promise.await(
 		LivechatVisitors.findOneById(guestId, {
@@ -39,10 +43,6 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	const guestManager = contactManagerPreferred && getDefaultAgent(contactManager?.username);
 	if (guestManager) {
 		return guestManager;
-	}
-
-	if (!lastChattedAgentPreferred) {
-		return defaultAgent;
 	}
 
 	const guestAgent = getDefaultAgent(lastAgent?.username);
