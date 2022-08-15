@@ -767,6 +767,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			const existingMember = await TeamMember.findOneByUserIdAndTeamId(member.userId, team._id);
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(team.roomId, member.userId);
 
+			if (!existingMember && !subscription) {
+				throw new Error('member-does-not-exist');
+			}
+
 			if (existingMember) {
 				if (existingMember.roles?.includes('owner')) {
 					const owners = TeamMember.findByTeamIdAndRole(team._id, 'owner');
@@ -777,33 +781,19 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				}
 
 				TeamMember.removeById(existingMember._id);
-				const removedUser = usersToRemove.find((u) => u._id === existingMember.userId);
-				if (removedUser) {
-					await removeUserFromRoom(
-						team.roomId,
-						removedUser,
-						uid !== member.userId
-							? {
-									byUser,
-							  }
-							: undefined,
-					);
-				}
-			} else if (subscription) {
-				const removedUser = usersToRemove.find((u) => u._id === member.userId);
-				if (removedUser) {
-					await removeUserFromRoom(
-						team.roomId,
-						removedUser,
-						uid !== member.userId
-							? {
-									byUser,
-							  }
-							: undefined,
-					);
-				}
-			} else {
-				throw new Error('member-does-not-exist');
+			}
+
+			const removedUser = usersToRemove.find((u) => u._id === (existingMember || member).userId);
+			if (removedUser) {
+				await removeUserFromRoom(
+					team.roomId,
+					removedUser,
+					uid !== member.userId
+						? {
+								byUser,
+						 }
+						: undefined,
+				);
 			}
 		}
 
