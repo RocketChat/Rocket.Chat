@@ -22,8 +22,4 @@ export class AdminSidenav {
 	get linkSettings(): Locator {
 		return this.page.locator('.flex-nav [href="/admin/settings"]');
 	}
-
-	get linkEngagementDashboard(): Locator {
-		return this.page.locator('.flex-nav [href="/admin/engagement-dashboard"]');
-	}
 }
