@@ -819,6 +819,73 @@ describe('[Teams]', () => {
 		});
 	});
 
+	describe('/teams.info', () => {
+		it('should successfully get a team info by name', (done) => {
+			request
+				.get(api('teams.info'))
+				.set(credentials)
+				.query({
+					teamName: publicTeam.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', true);
+					expect(response.body).to.have.property('teamInfo', publicTeam);
+				})
+				.then(() => done())
+				.catch(done);
+		});
+		it('should successfully get a team info by id', (done) => {
+			request
+				.get(api('teams.info'))
+				.set(credentials)
+				.query({
+					teamId: publicTeam._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', true);
+					expect(response.body).to.have.property('teamInfo', publicTeam);
+				})
+				.then(() => done())
+				.catch(done);
+		});
+		it('should fail if a team is not found', (done) => {
+			request
+				.get(api('teams.info'))
+				.set(credentials)
+				.query({
+					teamName: 'non-existent',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error', 'Team not found');
+				})
+				.then(() => done())
+				.catch(done);
+		});
+		it('should fail if a user doesnt belong to a team', (done) => {
+			request
+				.get(api('teams.info'))
+				.set(testUserCredentials)
+				.query({
+					teamName: privateTeam._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error', 'unauthorized');
+				})
+				.then(() => done())
+				.catch(done);
+		});
+	});
+
 	describe('/teams.delete', () => {
 		describe('deleting an empty team', () => {
 			let roomId;
