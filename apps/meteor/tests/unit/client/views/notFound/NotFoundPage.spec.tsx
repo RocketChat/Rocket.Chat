@@ -6,8 +6,7 @@ import React from 'react';
 import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 import NotFoundPage from '../../../../../client/views/notFound/NotFoundPage';
 
-// TODO: this is broken due to dependency (`react`) resolution tied to hoisted `node_modules`
-describe.skip('views/notFound/NotFoundPage', () => {
+describe('views/notFound/NotFoundPage', () => {
 	it('should look good', async () => {
 		render(<NotFoundPage />);
 

@@ -16,6 +16,14 @@ export class AccountProfile {
 		return this.page.locator('//label[contains(text(), "Name")]/..//input');
 	}
 
+	get inputAvatarLink(): Locator {
+		return this.page.locator('[data-qa-id="UserAvatarEditorLink"]');
+	}
+
+	get btnSetAvatarLink(): Locator {
+		return this.page.locator('[data-qa-id="UserAvatarEditorSetAvatarLink"]');
+	}
+
 	get inputUsername(): Locator {
 		return this.page.locator('//label[contains(text(), "Username")]/..//input');
 	}
@@ -62,5 +70,9 @@ export class AccountProfile {
 
 	get btnRemoveTokenModal(): Locator {
 		return this.page.locator('//button[contains(text(), "Remove")]');
+	}
+
+	get inputImageFile(): Locator {
+		return this.page.locator('input[type=file]');
 	}
 }
