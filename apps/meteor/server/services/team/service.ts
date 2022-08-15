@@ -791,7 +791,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					uid !== member.userId
 						? {
 								byUser,
-						 }
+						  }
 						: undefined,
 				);
 			}
