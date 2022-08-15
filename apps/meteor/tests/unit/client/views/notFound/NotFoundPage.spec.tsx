@@ -10,14 +10,9 @@ describe('views/notFound/NotFoundPage', () => {
 	it('should look good', async () => {
 		render(<NotFoundPage />);
 
-		expect(screen.getByRole('heading', { level: 1, name: 'Oops_page_not_found' })).to.exist;
-		expect(
-			screen.getByRole('status', {
-				name: 'Sorry_page_you_requested_does_not_exist_or_was_deleted',
-			}),
-		).to.exist;
-		expect(screen.getByRole('button', { name: 'Return_to_previous_page' })).to.exist.and.to.not.match(':disabled');
-		expect(screen.getByRole('button', { name: 'Return_to_home' })).to.exist.and.to.not.match(':disabled');
+		expect(screen.getByText('Page_not_found')).to.exist;
+		expect(screen.getByText('Page_not_exist_or_not_permission')).to.exist;
+		expect(screen.getByRole('button', { name: 'Homepage' })).to.exist.and.to.not.match(':disabled');
 	});
 
 	it('should have correct tab order', () => {
@@ -25,7 +20,7 @@ describe('views/notFound/NotFoundPage', () => {
 
 		expect(document.body).to.have.focus;
 		userEvent.tab();
-		expect(screen.getByRole('button', { name: 'Return_to_home' })).to.have.focus;
+		expect(screen.getByRole('button', { name: 'Homepage' })).to.have.focus;
 		userEvent.tab();
 		expect(document.body).to.have.focus;
 	});
@@ -39,7 +34,7 @@ describe('views/notFound/NotFoundPage', () => {
 						<NotFoundPage />
 					</RouterContextMock>,
 				);
-				const button = screen.getByRole('button', { name: 'Return_to_home' });
+				const button = screen.getByRole('button', { name: 'Homepage' });
 
 				userEvent.click(button);
 				await waitFor(() => expect(pushRoute).to.have.been.called.with('home'));
