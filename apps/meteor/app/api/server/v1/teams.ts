@@ -578,7 +578,7 @@ API.v1.addRoute(
 
 			const room = Rooms.findOneById(teamInfo.roomId);
 
-			if (!teamInfo) {
+			if (!room) {
 				return API.v1.failure('Room not found');
 			}
 
