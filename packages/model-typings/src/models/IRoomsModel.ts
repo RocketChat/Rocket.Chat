@@ -81,7 +81,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findRoomsInsideTeams(autoJoin?: boolean): any;
 
-	findOneDirectRoomContainingAllUserIDs(uid: any, options?: any): any;
+	findOneDirectRoomContainingAllUserIDs(uids: string[], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	countByType(t: IRoom['t']): Promise<number>;
 
