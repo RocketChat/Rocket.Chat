@@ -9,7 +9,6 @@ import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import LayoutProvider from './LayoutProvider';
 import ModalProvider from './ModalProvider';
-import { OmnichannelContactsProvider } from './OmnichannelContactsProvider';
 import OmnichannelProvider from './OmnichannelProvider';
 import RouterProvider from './RouterProvider';
 import ServerProvider from './ServerProvider';
@@ -40,9 +39,7 @@ const MeteorProvider: FC = ({ children }) => (
 																<VideoConfProvider>
 																	<CallProvider>
 																		<OmnichannelProvider>
-																			<OmnichannelContactsProvider>
-																				<AttachmentProvider>{children}</AttachmentProvider>
-																			</OmnichannelContactsProvider>
+																			<AttachmentProvider>{children}</AttachmentProvider>
 																		</OmnichannelProvider>
 																	</CallProvider>
 																</VideoConfProvider>
