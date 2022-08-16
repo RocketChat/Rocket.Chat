@@ -4275,6 +4275,7 @@ __metadata:
     "@storybook/testing-library": 0.0.13
     "@tanstack/react-query": ^4.0.10
     "@testing-library/react": ~12.1.5
+    "@testing-library/react-hooks": ^8.0.1
     "@testing-library/user-event": ~13.5.0
     "@types/adm-zip": ^0.5.0
     "@types/bad-words": ^3.0.1
@@ -4314,7 +4315,6 @@ __metadata:
     "@types/meteor": 2.7.1
     "@types/mkdirp": ^1.0.2
     "@types/mocha": ^8.2.3
-    "@types/mock-require": ^2.0.1
     "@types/moment-timezone": ^0.5.30
     "@types/node": ^14.18.21
     "@types/node-rsa": ^1.1.1
@@ -4445,7 +4445,6 @@ __metadata:
     mime-type: ^4.0.0
     mkdirp: ^1.0.4
     mocha: ^9.2.2
-    mock-require: ^3.0.3
     moleculer: ^0.14.21
     moment: ^2.29.3
     moment-timezone: ^0.5.34
@@ -6178,6 +6177,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@testing-library/react-hooks@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "@testing-library/react-hooks@npm:8.0.1"
+  dependencies:
+    "@babel/runtime": ^7.12.5
+    react-error-boundary: ^3.1.0
+  peerDependencies:
+    "@types/react": ^16.9.0 || ^17.0.0
+    react: ^16.9.0 || ^17.0.0
+    react-dom: ^16.9.0 || ^17.0.0
+    react-test-renderer: ^16.9.0 || ^17.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    react-dom:
+      optional: true
+    react-test-renderer:
+      optional: true
+  checksum: 7fe44352e920deb5cb1876f80d64e48615232072c9d5382f1e0284b3aab46bb1c659a040b774c45cdf084a5257b8fe463f7e08695ad8480d8a15635d4d3d1f6d
+  languageName: node
+  linkType: hard
+
 "@testing-library/react@npm:~12.1.5":
   version: 12.1.5
   resolution: "@testing-library/react@npm:12.1.5"
@@ -6874,15 +6895,6 @@ __metadata:
   version: 8.2.3
   resolution: "@types/mocha@npm:8.2.3"
   checksum: b43ed1b642a2ee62bf10792a07d5d21d66ab8b4d2cf5d822c8a7643e77b90009aecc000eefab5f6ddc9eb69004192f84119a6f97a8499e1a13ea082e7a5e71bf
-  languageName: node
-  linkType: hard
-
-"@types/mock-require@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@types/mock-require@npm:2.0.1"
-  dependencies:
-    "@types/node": "*"
-  checksum: 8749a4b3fcb9f3d6ebaeff442f00997ca59c4806bc00fea648a1fd06b1ea8510a6900b8e47070561ddf15ce98abc80dfe24ff21a307c2b0d1a6845bd865f708b
   languageName: node
   linkType: hard
 
@@ -15911,13 +15923,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-caller-file@npm:^1.0.2":
-  version: 1.0.3
-  resolution: "get-caller-file@npm:1.0.3"
-  checksum: 2b90a7f848896abcebcdc0acc627a435bcf05b9cd280599bc980ebfcdc222416c3df12c24c4845f69adc4346728e8966f70b758f9369f3534182791dfbc25c05
-  languageName: node
-  linkType: hard
-
 "get-caller-file@npm:^2.0.1, get-caller-file@npm:^2.0.5":
   version: 2.0.5
   resolution: "get-caller-file@npm:2.0.5"
@@ -21990,16 +21995,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mock-require@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "mock-require@npm:3.0.3"
-  dependencies:
-    get-caller-file: ^1.0.2
-    normalize-path: ^2.1.1
-  checksum: 6355c0bd9d7acb5247155142928b0154ace2913264b42d9a611a85d469ed11048f405efe432ffc627a57efb87ec359589a7419bf680b4fd248612311deb031bd
-  languageName: node
-  linkType: hard
-
 "module-details-from-path@npm:^1.0.3":
   version: 1.0.3
   resolution: "module-details-from-path@npm:1.0.3"
@@ -26192,6 +26187,17 @@ __metadata:
     react: ^0.14.8 || ^15.0.1 || ^16.0.0 || ^17.0.1
     react-dom: ^0.14.8 || ^15.0.1 || ^16.0.0 || ^17.0.1
   checksum: 42bcd4423f12e9ee21b2d3f0c2a28805ff4953bd82b6be4c1f5b5f9a371115aafa36a6f3d82726d43b4912179b79e99550c2b9a772c7fe6a5cd8f7e93ff34ceb
+  languageName: node
+  linkType: hard
+
+"react-error-boundary@npm:^3.1.0":
+  version: 3.1.4
+  resolution: "react-error-boundary@npm:3.1.4"
+  dependencies:
+    "@babel/runtime": ^7.12.5
+  peerDependencies:
+    react: ">=16.13.1"
+  checksum: f36270a5d775a25c8920f854c0d91649ceea417b15b5bc51e270a959b0476647bb79abb4da3be7dd9a4597b029214e8fe43ea914a7f16fa7543c91f784977f1b
   languageName: node
   linkType: hard
 

@@ -1,7 +1,6 @@
-import { render } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import React from 'react';
 import sinon from 'sinon';
 
 const date = new Date('2021-10-27T00:00:00.000Z');
@@ -28,11 +27,6 @@ const baseStubs = {
 	},
 };
 
-const Component = ({ mockFn }: { mockFn: (args: any) => null }): null => {
-	mockFn(baseMessage);
-	return null;
-};
-
 describe('useParsedMessage', () => {
 	it('should call the parse function with message and parse options parameters if all settings is false', () => {
 		const messageParser = sinon.spy();
@@ -42,7 +36,7 @@ describe('useParsedMessage', () => {
 				parse: messageParser,
 			},
 		});
-		render(<Component mockFn={useParsedMessage} />);
+		renderHook(() => useParsedMessage(baseMessage));
 
 		expect(messageParser.calledOnceWith(baseMessage.msg, { colors: false, emoticons: true })).to.be.true;
 	});
@@ -58,7 +52,7 @@ describe('useParsedMessage', () => {
 				parse: messageParser,
 			},
 		});
-		render(<Component mockFn={useParsedMessage} />);
+		renderHook(() => useParsedMessage(baseMessage));
 
 		expect(
 			messageParser.calledOnceWith(baseMessage.msg, {
@@ -80,7 +74,7 @@ describe('useParsedMessage', () => {
 				parse: messageParser,
 			},
 		});
-		render(<Component mockFn={useParsedMessage} />);
+		renderHook(() => useParsedMessage(baseMessage));
 
 		expect(
 			messageParser.calledOnceWith(baseMessage.msg, {
