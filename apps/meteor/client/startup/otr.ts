@@ -1,17 +1,19 @@
-import { IMessage, IOTRMessage } from '@rocket.chat/core-typings';
+import { IMessage, IOTRMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { Notifications } from '../../app/notifications/client';
-import { OtrRoomState } from '../../app/otr/client/OtrRoomState';
-import { OTR } from '../../app/otr/client/rocketchat.otr';
+
+import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
+import OTR from './../../app/otr/client/OTR';
+
 import { t } from '../../app/utils/client';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 
 type NotifyUserData = {
-	roomId?: string;
-	userId?: string;
+	roomId: IRoom['_id'];
+	userId: IUser['_id'];
 };
 
 Meteor.startup(() => {
@@ -21,29 +23,31 @@ Meteor.startup(() => {
 				if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
 					return;
 				}
-				OTR.getInstanceByRoomId(data.roomId).onUserStream(type, data);
+				const OTRInstace = OTR.getInstanceByRoomId(data.roomId);
+
+				if (!OTRInstace) {
+					return;
+				}
+
+				OTRInstace.onUserStream(type, data);
 			});
 		}
 	});
 
 	onClientBeforeSendMessage.use(async (message: IMessage) => {
-		if (
-			message.rid &&
-			OTR.getInstanceByRoomId(message.rid) &&
-			OTR.getInstanceByRoomId(message.rid).state.get() === OtrRoomState.ESTABLISHED
-		) {
-			const msg = await OTR.getInstanceByRoomId(message.rid).encrypt(message);
+		const OTRInstace = OTR.getInstanceByRoomId(message.rid);
+
+		if (message.rid && OTRInstace && OTRInstace.getState() === OtrRoomState.ESTABLISHED) {
+			const msg = await OTRInstace.encrypt(message);
 			return { ...message, msg, t: 'otr' };
 		}
 		return message;
 	});
 
 	onClientMessageReceived.use(async (message: IOTRMessage & { notification?: boolean }) => {
-		if (
-			message.rid &&
-			OTR.getInstanceByRoomId(message.rid) &&
-			OTR.getInstanceByRoomId(message.rid).state.get() === OtrRoomState.ESTABLISHED
-		) {
+		const OTRInstace = OTR.getInstanceByRoomId(message.rid);
+
+		if (message.rid && OTRInstace && OTRInstace.getState() === OtrRoomState.ESTABLISHED) {
 			if (message?.notification) {
 				message.msg = t('Encrypted_message');
 				return message;
@@ -51,7 +55,7 @@ Meteor.startup(() => {
 			if (message.t !== 'otr') {
 				return message;
 			}
-			const otrRoom = OTR.getInstanceByRoomId(message.rid);
+			const otrRoom = OTRInstace;
 			const { _id, text: msg, ack, ts, userId } = await otrRoom.decrypt(message.msg);
 
 			if (ts) message.ts = ts;
