@@ -1,6 +1,6 @@
 import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Users } from '@rocket.chat/models';
+import { Users, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
 import { hasAllPermission, hasPermission, canAccessRoom, roomAccessAttributes } from '../../app/authorization/server';
 import { Subscriptions, Rooms } from '../../app/models/server';
@@ -97,6 +97,21 @@ export class Spotlight {
 		}
 	}
 
+	_searchConnectedUsers(userId, { text, usernames, options, users, match = { startsWith: false, endsWith: false } }) {
+		const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
+
+		users.push(
+			...Promise.await(SubscriptionsRaw.findConnectedUsersExcept(userId, text, usernames, searchFields, options.limit || 5, match), {
+				readPreference: options.readPreference,
+			}).map(this.mapOutsiders),
+		);
+
+		// If the limit was reached, return
+		if (this.processLimitAndUsernames(options, usernames, users)) {
+			return users;
+		}
+	}
+
 	_searchOutsiderUsers({ text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
 		// Then get the outsiders if allowed
 		if (canListOutsiders) {
@@ -146,11 +161,6 @@ export class Spotlight {
 		const canListOutsiders = hasAllPermission(userId, ['view-outside-room', 'view-d-room']);
 		const canListInsiders = canListOutsiders || (rid && canAccessRoom(room, { _id: userId }));
 
-		// If can't list outsiders and, wether, the rid was not passed or the user has no access to the room, return
-		if (!canListOutsiders && !canListInsiders) {
-			return users;
-		}
-
 		const insiderExtraQuery = [];
 
 		if (rid) {
@@ -190,7 +200,7 @@ export class Spotlight {
 		};
 
 		// Exact match for username only
-		if (rid) {
+		if (rid && canListInsiders) {
 			const exactMatch = Promise.await(
 				Users.findOneByUsernameAndRoomIgnoringCase(text, rid, {
 					projection: options.projection,
@@ -216,17 +226,22 @@ export class Spotlight {
 			}
 		}
 
-		// Contains for insiders
-		if (this._searchInsiderUsers(searchParams)) {
+		// Search for insiders
+		if (canListInsiders && this._searchInsiderUsers(searchParams)) {
 			return users;
 		}
 
-		// Contains for outsiders
-		if (this._searchOutsiderUsers(searchParams)) {
+		// Search for users that have rooms in common with the requester
+		if (this._searchConnectedUsers(userId, searchParams)) {
 			return users;
 		}
 
 		if (this._performExtraUserSearches(userId, searchParams)) {
+			return users;
+		}
+
+		// Search for any users in the server
+		if (this._searchOutsiderUsers(searchParams)) {
 			return users;
 		}
 

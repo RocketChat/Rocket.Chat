@@ -114,3 +114,5 @@ export * from './IAutoTranslate';
 export * from './IVideoConference';
 export * from './VideoConferenceCapabilities';
 export * from './VideoConferenceOptions';
+
+export * from './SpotlightUser';
