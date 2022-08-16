@@ -29,7 +29,7 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 			await handleAddWebdavAccount(data);
 			return dispatchToastMessage({ type: 'success', message: t('webdav-account-saved') });
 		} catch (error) {
-			return dispatchToastMessage({ type: 'error', message: error as Error });
+			return dispatchToastMessage({ type: 'error', message: error });
 		} finally {
 			onConfirm();
 			setIsLoading(false);
