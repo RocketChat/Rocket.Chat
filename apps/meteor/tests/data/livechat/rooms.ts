@@ -1,9 +1,7 @@
 import type { IInquiry, ILivechatAgent, ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { adminUsername } from '../user';
-
-type DummyResponse<T, E = 'wrapped'> = 
-	E extends 'wrapped' ? { body: { [k: string]: T } } : { body: T };
+import { DummyResponse } from './utils';
 
 export const createLivechatRoom = (visitorToken: string): Promise<IOmnichannelRoom> =>
 	new Promise((resolve) => {
@@ -13,7 +11,7 @@ export const createLivechatRoom = (visitorToken: string): Promise<IOmnichannelRo
 			.end((_err: Error, res: DummyResponse<IOmnichannelRoom>) => resolve(res.body.room));
 	});
 
-export const createVisitor = (): Promise<ILivechatVisitor> =>
+export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 	new Promise((resolve, reject) => {
 		const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 		const email = `${token}@${token}.com`;
@@ -32,6 +30,7 @@ export const createVisitor = (): Promise<ILivechatVisitor> =>
 						token,
 						phone,
 						customFields: [{ key: 'address', value: 'Rocket.Chat street', overwrite: true }],
+						...(department ? { department } : {}),
 					},
 				})
 				.end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
@@ -94,13 +93,13 @@ export const createDepartment = (agents?: { agentId: string }[]): Promise<ILivec
 	});
 }
 
-export const createAgent = (): Promise<ILivechatAgent> =>
+export const createAgent = (overrideUsername?: string): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/users/agent'))
 			.set(credentials)
 			.send({
-				username: adminUsername,
+				username: overrideUsername || adminUsername,
 			})
 			.end((err: Error, res: DummyResponse<ILivechatAgent>) => {
 				if (err) {
@@ -126,9 +125,9 @@ export const createManager = (): Promise<ILivechatAgent> =>
 			});
 	});
 
-export const makeAgentAvailable = (): Promise<unknown> =>
+export const makeAgentAvailable = (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<unknown> =>
 	new Promise((resolve, reject) => {
-		request.post(api('users.setStatus')).set(credentials).send({
+		request.post(api('users.setStatus')).set(overrideCredentials || credentials).send({
 			message: '',
 			status: 'online',
 		}).end((err: Error, _res: DummyResponse<unknown, 'unwrapped'>) => {
@@ -137,7 +136,7 @@ export const makeAgentAvailable = (): Promise<unknown> =>
 			}
 			request
 			.post(methodCall('livechat/changeLivechatStatus'))
-			.set(credentials)
+			.set(overrideCredentials || credentials)
 			.send({
 				message: JSON.stringify({
 					method: 'livechat/changeLivechatStatus',
@@ -155,3 +154,17 @@ export const makeAgentAvailable = (): Promise<unknown> =>
 		});
 	});
 
+
+export const getLivechatRoomInfo = (roomId: string): Promise<IOmnichannelRoom> => {
+	return new Promise((resolve /* , reject*/) => {
+		request
+			.get(api('channels.info'))
+			.set(credentials)
+			.query({
+				roomId,
+			})
+			.end((_err: Error, req: DummyResponse<IOmnichannelRoom>) => {
+				resolve(req.body.channel);
+			});
+	});
+}

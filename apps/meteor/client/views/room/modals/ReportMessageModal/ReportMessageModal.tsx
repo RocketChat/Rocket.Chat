@@ -31,7 +31,7 @@ const ReportMessageModal = ({ messageText, messageId, onClose }: ReportMessageMo
 			await reportMessage(messageId, description);
 			dispatchToastMessage({ type: 'success', message: t('Report_has_been_sent') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as Error });
+			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
 			onClose();
 		}
