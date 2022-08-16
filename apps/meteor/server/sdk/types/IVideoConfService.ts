@@ -15,7 +15,7 @@ export type VideoConferenceJoinOptions = {
 };
 
 export interface IVideoConfService {
-	create(data: VideoConferenceCreateData): Promise<VideoConferenceInstructions>;
+	create(data: VideoConferenceCreateData, useAppUser?: boolean): Promise<VideoConferenceInstructions>;
 	start(caller: IUser['_id'], rid: string, options: { title?: string; allowRinging?: boolean }): Promise<VideoConferenceInstructions>;
 	join(uid: IUser['_id'] | undefined, callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string>;
 	cancel(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
@@ -33,4 +33,9 @@ export interface IVideoConfService {
 	declineLivechatCall(callId: VideoConference['_id']): Promise<boolean>;
 	diagnoseProvider(uid: string, rid: string, providerName?: string): Promise<string | undefined>;
 	getStatistics(): Promise<IStats['videoConf']>;
+	validateAction(
+		event: string,
+		caller: IUser['_id'],
+		params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] },
+	): Promise<boolean>;
 }

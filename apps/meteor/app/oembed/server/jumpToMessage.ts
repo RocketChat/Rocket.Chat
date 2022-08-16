@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import URL from 'url';
 import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import { ITranslatedMessage, MessageAttachment, isQuoteAttachment } from '@rocket.chat/core-typings';
+import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import { isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
@@ -90,7 +90,7 @@ callbacks.add(
 				author_name: jumpToMessage.alias || jumpToMessage.u.username,
 				author_icon: getUserAvatarURL(jumpToMessage.u.username),
 				message_link: item.url,
-				// @ts-expect-error
+				// @ts-expect-error Type 'MessageAttachment[]' is not assignable to type 'MessageQuoteAttachment[]'.
 				attachments: jumpToMessage.attachments || [],
 				ts: jumpToMessage.ts,
 			});

@@ -79,9 +79,6 @@ export async function searchChats({
 	servedChatsOnly: served,
 	pagination: { offset, count, sort },
 }) {
-	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
 	const room = await LivechatRooms.findOneById(roomId);
 	if (!room) {
 		throw new Error('invalid-room');
@@ -99,15 +96,15 @@ export async function searchChats({
 
 	const [total] = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
-		open: !closedChatsOnly,
-		served,
+		open: closedChatsOnly !== 'true',
+		served: served !== 'true',
 		searchText,
 		onlyCount: true,
 	}).toArray();
 	const cursor = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
-		open: !closedChatsOnly,
-		served,
+		open: closedChatsOnly === 'true',
+		served: served === 'true',
 		searchText,
 		options,
 	});
@@ -122,10 +119,7 @@ export async function searchChats({
 	};
 }
 
-export async function findVisitorsToAutocomplete({ userId, selector }) {
-	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
-		return { items: [] };
-	}
+export async function findVisitorsToAutocomplete({ selector }) {
 	const { exceptions = [], conditions = {} } = selector;
 
 	const options = {

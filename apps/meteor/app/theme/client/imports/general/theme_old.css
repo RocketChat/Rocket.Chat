@@ -66,10 +66,6 @@
 	color: var(--error-color);
 }
 
-.background-error-color {
-	background-color: var(--error-color);
-}
-
 .color-info-font-color {
 	color: var(--info-font-color);
 }
@@ -92,10 +88,6 @@
 
 .error-border {
 	border-color: var(--error-border);
-}
-
-.color-error-contrast {
-	color: var(--error-contrast);
 }
 
 .background-transparent-darkest {
@@ -170,10 +162,6 @@
 	&.active {
 		border-color: var(--primary-background-color);
 	}
-}
-
-.burger i {
-	background-color: var(--primary-font-color);
 }
 
 .input-line {

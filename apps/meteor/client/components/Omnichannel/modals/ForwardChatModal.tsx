@@ -1,5 +1,5 @@
 import { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { Field, Button, TextAreaInput, Modal, Box, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
@@ -76,7 +76,7 @@ const ForwardChatModal = ({
 	return (
 		<Modal {...props} is='form' onSubmit={handleSubmit(onSubmit)}>
 			<Modal.Header>
-				<Icon name='baloon-arrow-top-right' size={20} />
+				<Modal.Icon name='baloon-arrow-top-right' />
 				<Modal.Title>{t('Forward_chat')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
@@ -85,8 +85,6 @@ const ForwardChatModal = ({
 					<Field.Label>{t('Forward_to_department')}</Field.Label>
 					<Field.Row>
 						{
-							// TODO: Definitions on fuselage are incorrect, need to be fixed!
-							// @ts-ignore-next-line
 							<PaginatedSelectFiltered
 								withTitle
 								filter={departmentsFilter as string}
@@ -125,17 +123,17 @@ const ForwardChatModal = ({
 						</Box>
 					</Field.Label>
 					<Field.Row>
-						<TextAreaInput {...register('comment')} rows={8} flexGrow={1} />
+						<TextAreaInput data-qa-id='ForwardChatModalTextAreaInputComment' {...register('comment')} rows={8} flexGrow={1} />
 					</Field.Row>
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					<Button type='submit' disabled={!username && !department} primary>
 						{t('Forward')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

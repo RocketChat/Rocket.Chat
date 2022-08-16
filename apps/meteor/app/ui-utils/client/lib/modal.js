@@ -3,8 +3,8 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
 import { t, getUserPreference } from '../../../utils';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 import './modal.html';
-import { handleError } from '../../../../client/lib/utils/handleError';
 
 let modalStack = [];
 
@@ -258,7 +258,7 @@ Template.rc_modal.events({
 
 			Meteor.call('saveUserPreferences', { dontAskAgainList }, function (error) {
 				if (error) {
-					return handleError(error);
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			});
 		}

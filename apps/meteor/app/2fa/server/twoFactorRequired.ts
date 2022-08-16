@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { checkCodeForUser, ITwoFactorOptions } from './code/index';
+import type { ITwoFactorOptions } from './code/index';
+import { checkCodeForUser } from './code/index';
 
 export function twoFactorRequired<TFunction extends (this: Meteor.MethodThisType, ...args: any[]) => any>(
 	fn: TFunction,

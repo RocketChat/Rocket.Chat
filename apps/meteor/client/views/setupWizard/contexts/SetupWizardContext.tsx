@@ -51,10 +51,9 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 			registerType: 'registered',
 			updates: false,
 		},
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		registrationData: { cloudEmail: '', user_code: '', device_code: '' },
 	},
-	setSetupWizardData: (data: {}) => data,
+	setSetupWizardData: (data) => data,
 	loaded: false,
 	settings: [],
 	skipCloudRegistration: false,

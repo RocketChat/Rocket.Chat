@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
-import { MessageAttachment, FileAttachmentProps } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { MessageAttachment, FileAttachmentProps, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Uploads } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -64,7 +62,7 @@ Meteor.methods({
 				image_size: file.size,
 			};
 
-			if (file.identify && file.identify.size) {
+			if (file.identify?.size) {
 				attachment.image_dimensions = file.identify.size;
 			}
 
