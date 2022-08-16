@@ -8,6 +8,7 @@ import {
 	useTranslation,
 	TranslationKey,
 	useToastMessageDispatch,
+	useEndpoint,
 } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
@@ -27,13 +28,14 @@ const ResetPassword = (): ReactElement => {
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
 
-	const getPasswordPolicy = useMethod('getPasswordPolicy');
+	const getPasswordPolicy = useEndpoint('GET', '/v1/pw.getPolicy');
+	const getPasswordPolicyRest = useEndpoint('GET', '/v1/pw.getPolicyReset');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { data: { enabled: policyEnabled, policy: policies } = {} } = useQuery(
 		['login/password-policy', token],
-		async () => getPasswordPolicy(token ? { token } : undefined),
+		async () => (user || !token ? getPasswordPolicy() : getPasswordPolicyRest({ token })),
 		{
 			onError: (error: any) => {
 				dispatchToastMessage({ type: 'error', message: error });

@@ -162,6 +162,21 @@ const MethodCallAnonSchema = {
 
 export const isMethodCallAnonProps = ajv.compile<MethodCallAnon>(MethodCallAnonSchema);
 
+type PwGetPolicyReset = { token: string };
+
+const PwGetPolicyResetSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const validateParamsPwGetPolicyRest = ajv.compile<PwGetPolicyReset>(PwGetPolicyResetSchema);
+
 export type MiscEndpoints = {
 	'/v1/stdout.queue': {
 		GET: () => {
@@ -190,6 +205,20 @@ export type MiscEndpoints = {
 		GET: (params: Directory) => PaginatedResult<{
 			result: (IUser | IRoom | ITeam)[];
 		}>;
+	};
+
+	'/v1/pw.getPolicy': {
+		GET: () => {
+			enabled: boolean;
+			policy: Array<[string] | [string, Record<string, number>]>;
+		};
+	};
+
+	'/v1/pw.getPolicyReset': {
+		GET: (params: PwGetPolicyReset) => {
+			enabled: boolean;
+			policy: Array<[string] | [string, Record<string, number>]>;
+		};
 	};
 
 	'/v1/method.call/:method': {
