@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/interface-name-prefix */
 import 'meteor/meteor';
-import { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
+import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
 
 declare module 'meteor/meteor' {
 	namespace Meteor {
@@ -27,7 +26,7 @@ declare module 'meteor/meteor' {
 
 		const server: any;
 
-		const runAsUser: (userId: string, scope: Function) => any;
+		const runAsUser: <T>(userId: string, scope: () => T) => T;
 
 		interface MethodThisType {
 			twoFactorChecked: boolean | undefined;
@@ -50,7 +49,6 @@ declare module 'meteor/meteor' {
 
 			_methodInvokers: Record<string, any>;
 
-			// eslint-disable-next-line @typescript-eslint/camelcase
 			_livedata_data(message: IDDPUpdatedMessage): void;
 
 			_stream: {

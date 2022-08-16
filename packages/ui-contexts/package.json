@@ -4,13 +4,13 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "0.31.16",
-		"@rocket.chat/fuselage-hooks": "0.31.16",
+		"@rocket.chat/emitter": "next",
+		"@rocket.chat/fuselage-hooks": "next",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/jest": "^27.4.1",
 		"@types/react": "^17.0.47",
 		"@types/use-sync-external-store": "^0.0.3",
-		"eslint": "^8.18.0",
+		"eslint": "^8.20.0",
 		"jest": "^27.5.1",
 		"mongodb": "^4.3.1",
 		"react": "~17.0.2",
@@ -37,13 +37,5 @@
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	],
-	"eslintConfig": {
-		"extends": [
-			"@rocket.chat/eslint-config"
-		],
-		"ignorePatterns": [
-			"**/dist"
-		]
-	}
+	]
 }

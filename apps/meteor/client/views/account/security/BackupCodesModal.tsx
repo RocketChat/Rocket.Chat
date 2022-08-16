@@ -1,4 +1,4 @@
-import { Box, Button, Icon, ButtonGroup, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
 
@@ -17,7 +17,7 @@ const BackupCodesModal: FC<BackupCodesModalProps> = ({ codes, onClose, ...props 
 	return (
 		<Modal {...props}>
 			<Modal.Header>
-				<Icon name='info' size={20} />
+				<Modal.Icon name='info' />
 				<Modal.Title>{t('Backup_codes')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
@@ -31,11 +31,11 @@ const BackupCodesModal: FC<BackupCodesModalProps> = ({ codes, onClose, ...props 
 				</Box>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button primary onClick={onClose}>
 						{t('Ok')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

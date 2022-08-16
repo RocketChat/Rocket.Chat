@@ -1,4 +1,4 @@
-import { Box, ButtonGroup, Button, Icon, Modal } from '@rocket.chat/fuselage';
+import { Button, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, FC } from 'react';
 
@@ -20,22 +20,18 @@ const ConfirmationModal: FC<ConfirmationModalProps> = ({ onClose, onConfirmActio
 	return (
 		<Modal>
 			<Modal.Header>
-				<Modal.Title display='flex'>
-					<Box mie='x12'>
-						<Icon size='x20' name='modal-warning' color='warning-700' />
-					</Box>
-					{t('Confirmation')}
-				</Modal.Title>
+				<Modal.Icon name='modal-warning' color='warning-700'></Modal.Icon>
+				<Modal.Title>{t('Confirmation')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>{content}</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button onClick={handleConfirm} danger>
 						{labelButton}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

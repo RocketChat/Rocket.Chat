@@ -1,4 +1,4 @@
-import { IServiceClass } from './ServiceClass';
+import type { IServiceClass } from './ServiceClass';
 
 export interface ILicense extends IServiceClass {
 	hasLicense(feature: string): boolean;

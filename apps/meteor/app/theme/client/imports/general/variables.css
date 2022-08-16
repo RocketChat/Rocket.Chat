@@ -110,7 +110,7 @@
 	--flex-tab-webrtc-width: 400px;
 	--flex-tab-webrtc-2-width: 850px;
 	--border: 2px;
-	--border-radius: 2px;
+	--border-radius: 4px;
 	--rc-status-online: var(--rc-color-success);
 	--rc-status-away: var(--rc-color-alert);
 	--rc-status-busy: var(--rc-color-error);

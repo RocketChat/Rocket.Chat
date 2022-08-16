@@ -28,8 +28,8 @@ type EnhancedOmit<T, K> = string | number extends keyof T
 	: never;
 
 type ExtractIdType<TSchema> = TSchema extends { _id: infer U } // user has defined a type for _id
-	? {} extends U
-		? Exclude<U, {}>
+	? Record<string, unknown> extends U
+		? Exclude<U, Record<string, unknown>>
 		: unknown extends U
 		? ObjectId
 		: U
@@ -54,6 +54,8 @@ export type FindPaginated<C> = {
 
 export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 	col: Collection<T>;
+
+	getCollectionName(): string;
 
 	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;
 

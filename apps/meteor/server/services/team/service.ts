@@ -1,7 +1,17 @@
-import { FindOptions, Filter } from 'mongodb';
+import type { FindOptions, Filter } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
-import { IPaginationOptions, IQueryOptions, IRecordsWithTotal, ITeam, ITeamMember, ITeamStats, TEAM_TYPE } from '@rocket.chat/core-typings';
+import type {
+	IRoom,
+	IUser,
+	ISubscription,
+	IPaginationOptions,
+	IQueryOptions,
+	IRecordsWithTotal,
+	ITeam,
+	ITeamMember,
+	ITeamStats,
+} from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 
@@ -11,7 +21,7 @@ import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUser
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { Messages } from '../../../app/models/server';
 import { Room, Authorization } from '../../sdk';
-import {
+import type {
 	IListRoomsFilter,
 	ITeamAutocompleteResult,
 	ITeamCreateParams,
