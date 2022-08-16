@@ -40,7 +40,7 @@ export const createSettings = async (): Promise<void> => {
 		enterprise: true,
 		invalidValue: false,
 		modules: ['livechat-enterprise'],
-		enableQuery: omnichannelEnabledQuery,
+		enableQuery: [omnichannelEnabledQuery, { _id: 'Omnichannel_contact_manager_routing', value: false }],
 	});
 
 	settingsRegistry.addGroup('Omnichannel', function () {
@@ -162,7 +162,7 @@ export const createSettings = async (): Promise<void> => {
 		enterprise: true,
 		invalidValue: false,
 		modules: ['livechat-enterprise'],
-		enableQuery: omnichannelEnabledQuery,
+		enableQuery: [omnichannelEnabledQuery, { _id: 'Livechat_last_chatted_agent_routing', value: false }],
 	});
 
 	settingsRegistry.add('Livechat_auto_close_on_hold_chats_timeout', 3600, {
