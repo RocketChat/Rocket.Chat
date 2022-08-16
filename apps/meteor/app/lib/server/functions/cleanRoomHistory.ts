@@ -28,12 +28,12 @@ export const cleanRoomHistory = function ({
 
 	let fileCount = 0;
 	Messages.findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion, ts, fromUsers, ignoreThreads, {
-		fields: { 'pinned': 1, 'files': 1 },
+		fields: { pinned: 1, files: 1 },
 		limit,
 	}).forEach((document: IMessage) => {
 		const uploadsStore = FileUpload.getStore('Uploads');
 
-		document.files?.forEach(file => uploadsStore.deleteById(file._id));
+		document.files?.forEach((file) => uploadsStore.deleteById(file._id));
 		fileCount++;
 		if (filesOnly) {
 			Messages.update({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });
