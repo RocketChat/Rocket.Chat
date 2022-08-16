@@ -14,7 +14,7 @@ const RemoveAgentButton: FC<{ username: string; reload: () => void }> = ({ usern
 	const handleRemoveClick = useMutableCallback(async () => {
 		try {
 			await removeAgent();
-		} catch (error: any) {
+		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 		reload();
@@ -26,7 +26,7 @@ const RemoveAgentButton: FC<{ username: string; reload: () => void }> = ({ usern
 			try {
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
-			} catch (error: any) {
+			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal();

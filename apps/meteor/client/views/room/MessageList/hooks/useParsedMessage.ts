@@ -8,6 +8,7 @@ import { useAutotranslateLanguage } from './useAutotranslateLanguage';
 
 export function useParsedMessage(message: IMessage & Partial<ITranslatedMessage>): Root {
 	const colors = useSetting('HexColorPreview_Enabled') as boolean;
+	const katexEnabled = useSetting('Katex_Enabled') as boolean;
 	const katexDollarSyntax = useSetting('Katex_Dollar_Syntax') as boolean;
 	const katexParenthesisSyntax = useSetting('Katex_Parenthesis_Syntax') as boolean;
 	const autoTranslateLanguage = useAutotranslateLanguage(message.rid);
@@ -19,10 +20,12 @@ export function useParsedMessage(message: IMessage & Partial<ITranslatedMessage>
 		const parseOptions = {
 			colors,
 			emoticons: true,
-			katex: {
-				dollarSyntax: katexDollarSyntax,
-				parenthesisSyntax: katexParenthesisSyntax,
-			},
+			...(katexEnabled && {
+				katex: {
+					dollarSyntax: katexDollarSyntax,
+					parenthesisSyntax: katexParenthesisSyntax,
+				},
+			}),
 		};
 
 		if (translated && autoTranslateLanguage && translations) {
@@ -37,5 +40,5 @@ export function useParsedMessage(message: IMessage & Partial<ITranslatedMessage>
 		}
 
 		return parse(msg, parseOptions);
-	}, [colors, katexDollarSyntax, katexParenthesisSyntax, autoTranslateLanguage, md, msg, translated, translations]);
+	}, [colors, katexEnabled, katexDollarSyntax, katexParenthesisSyntax, autoTranslateLanguage, md, msg, translated, translations]);
 }

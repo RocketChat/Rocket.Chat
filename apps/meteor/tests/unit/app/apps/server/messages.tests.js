@@ -1,5 +1,5 @@
-import mock from 'mock-require';
 import { expect } from 'chai';
+import proxyquire from 'proxyquire';
 
 import { AppServerOrchestratorMock } from './mocks/orchestrator.mock';
 import { appMessageMock, appMessageInvalidRoomMock } from './mocks/data/messages.data';
@@ -7,12 +7,18 @@ import { MessagesMock } from './mocks/models/Messages.mock';
 import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
 
-mock('../../../../../app/models/server', './mocks/models');
-mock('meteor/random', {
-	id: () => 1,
+const { AppMessagesConverter } = proxyquire.noCallThru().load('../../../../../app/apps/server/converters/messages', {
+	'../../../models/server': {
+		Messages: new MessagesMock(),
+		Rooms: new RoomsMock(),
+		Users: new UsersMock(),
+	},
+	'meteor/random': {
+		Random: {
+			id: () => 1,
+		},
+	},
 });
-
-const { AppMessagesConverter } = require('../../../../../app/apps/server/converters/messages');
 
 describe('The AppMessagesConverter instance', function () {
 	let messagesConverter;

@@ -74,4 +74,25 @@ test.describe.serial('settings-account-profile', () => {
 			await expect(page.locator('.rcx-toastbar.rcx-toastbar--success')).toBeVisible();
 		});
 	});
+
+	test.describe('Change avatar', () => {
+		test.beforeEach(async () => {
+			await poHomeChannel.sidenav.goToMyAccount();
+		});
+
+		test('expect change avatar image by upload', async ({ page }) => {
+			await poAccountProfile.inputImageFile.setInputFiles('./tests/e2e/fixtures/files/test-image.jpeg');
+
+			await poAccountProfile.btnSubmit.click();
+			await expect(page.locator('.rcx-toastbar.rcx-toastbar--success').first()).toBeVisible();
+		});
+
+		test('expect set image from url', async ({ page }) => {
+			await poAccountProfile.inputAvatarLink.fill('https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50');
+			await poAccountProfile.btnSetAvatarLink.click();
+
+			await poAccountProfile.btnSubmit.click();
+			await expect(page.locator('.rcx-toastbar.rcx-toastbar--success').first()).toBeVisible();
+		});
+	});
 });
