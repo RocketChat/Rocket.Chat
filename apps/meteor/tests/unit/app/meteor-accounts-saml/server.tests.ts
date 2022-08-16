@@ -1,9 +1,9 @@
 import { expect } from 'chai';
+import proxyquire from 'proxyquire';
 
 import { AuthorizeRequest } from '../../../../app/meteor-accounts-saml/server/lib/generators/AuthorizeRequest';
 import { LogoutRequest } from '../../../../app/meteor-accounts-saml/server/lib/generators/LogoutRequest';
 import { LogoutResponse } from '../../../../app/meteor-accounts-saml/server/lib/generators/LogoutResponse';
-import { ServiceProviderMetadata } from '../../../../app/meteor-accounts-saml/server/lib/generators/ServiceProviderMetadata';
 import { LogoutRequestParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutRequest';
 import { LogoutResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutResponse';
 import { ResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/Response';
@@ -35,7 +35,18 @@ import {
 	privateKey,
 } from './data';
 import { isTruthy } from '../../../../lib/isTruthy';
-import '../lib/server.mocks';
+
+const { ServiceProviderMetadata } = proxyquire
+	.noCallThru()
+	.load('../../../../app/meteor-accounts-saml/server/lib/generators/ServiceProviderMetadata', {
+		'meteor/meteor': {
+			Meteor: {
+				absoluteUrl() {
+					return 'http://localhost:3000/';
+				},
+			},
+		},
+	});
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {

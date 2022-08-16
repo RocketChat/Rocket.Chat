@@ -52,7 +52,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				try {
 					soundId = await insertOrUpdateSound(soundData);
 				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: String(error) });
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 
 				soundData._id = soundId;
@@ -68,7 +68,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 							uploadCustomSound(reader.result, sound.type, soundData);
 							return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: String(error) });
+							dispatchToastMessage({ type: 'error', message: error });
 						}
 					};
 				}
@@ -105,7 +105,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					</GenericModal>
 				));
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				onChange();
 			}
 		};
