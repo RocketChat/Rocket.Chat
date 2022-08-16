@@ -86,4 +86,3 @@ import '../app/livechat/client';
 import '../app/meteor-autocomplete/client';
 import '../app/theme/client';
 import '../app/custom/client';
-import './lib/federation';
