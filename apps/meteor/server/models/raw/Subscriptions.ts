@@ -241,7 +241,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		exceptions: string[],
 		searchFields: string[],
 		limit: number,
-		{ startsWith = false, endsWith = false }: { startsWith: string | false; endsWith: string | false },
+		{ startsWith = false, endsWith = false }: { startsWith?: string | false; endsWith?: string | false } = {},
 		options: AggregateOptions = {},
 	): Promise<SpotlightUser[]> {
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
