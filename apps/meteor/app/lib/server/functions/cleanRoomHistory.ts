@@ -28,15 +28,12 @@ export const cleanRoomHistory = function ({
 
 	let fileCount = 0;
 	Messages.findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion, ts, fromUsers, ignoreThreads, {
-		fields: { 'file._id': 1, 'file.name': 1, 'pinned': 1 },
+		fields: { 'pinned': 1, 'files': 1 },
 		limit,
 	}).forEach((document: IMessage) => {
-		const thumbName = `thumb-${document.file?.name}`;
-
 		const uploadsStore = FileUpload.getStore('Uploads');
 
-		uploadsStore.deleteById(document.file?._id);
-		uploadsStore.deleteByName(thumbName);
+		document.files?.forEach(file => uploadsStore.deleteById(file._id));
 		fileCount++;
 		if (filesOnly) {
 			Messages.update({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });

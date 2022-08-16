@@ -12,5 +12,4 @@ export interface IUploadsModel extends IBaseModel<IUpload> {
 
 	deleteFile(fileId: string): Promise<DeleteResult>;
 
-	findOneByName(name: string): Promise<IUpload | null>;
 }
