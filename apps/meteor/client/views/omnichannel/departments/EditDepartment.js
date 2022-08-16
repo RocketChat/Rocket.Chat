@@ -58,8 +58,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 	const { department } = data || { department: {} };
 
-	const [[tags, tagsText], setTagsState] = useState(() => [department?.chatClosingTags ?? [], '']);
-	const [newTagsState, setNewTagsState] = useState(false);
+	const initialTags = useMemo(() => department?.chatClosingTags ?? [], [department?.chatClosingTags]);
+	const [[tags, tagsText], setTagsState] = useState(() => [initialTags, '']);
+	const hasTagChanges = useMemo(() => tags.toString() !== initialTags.toString(), [tags, initialTags]);
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
 		name: withDefault(department?.name, ''),
@@ -119,7 +120,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 	const handleTagChipClick = (tag) => () => {
 		setTagsState(([tags, tagsText]) => [tags.filter((_tag) => _tag !== tag), tagsText]);
-		setNewTagsState(true);
 	};
 
 	const handleTagTextSubmit = useMutableCallback(() => {
@@ -132,7 +132,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 			return [[...tags, tagsText], ''];
 		});
-		setNewTagsState(true);
 	});
 
 	const handleTagTextChange = (e) => {
@@ -235,7 +234,11 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	});
 
 	const invalidForm =
-		!name || !email || !validateEmail(email) || !hasUnsavedChanges || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
+		!name ||
+		!email ||
+		!validateEmail(email) ||
+		!(hasUnsavedChanges || hasTagChanges) ||
+		(requestTagBeforeClosingChat && (!tags || tags.length === 0));
 
 	const formId = useUniqueId();
 
@@ -274,12 +277,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 						<Button onClick={handleReturn}>
 							<Icon name='back' /> {t('Back')}
 						</Button>
-						<Button
-							type='submit'
-							form={formId}
-							primary
-							disabled={invalidForm && hasNewAgent && !newTagsState && !(id && agentsHaveChanged())}
-						>
+						<Button type='submit' form={formId} primary disabled={invalidForm && hasNewAgent && !(id && agentsHaveChanged())}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
