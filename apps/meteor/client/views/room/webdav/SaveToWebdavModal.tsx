@@ -65,7 +65,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 					}
 					return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 				} catch (error) {
-					return dispatchToastMessage({ type: 'error', message: error as Error });
+					return dispatchToastMessage({ type: 'error', message: error });
 				} finally {
 					setIsLoading(false);
 					onClose();
