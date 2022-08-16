@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { Settings } from '@rocket.chat/models';
 
-import { Settings } from '../../../app/models/server';
 import { onValidateLicenses, getLicenses } from '../../app/license/server/license';
 
 const handleHadTrial = (): void => {

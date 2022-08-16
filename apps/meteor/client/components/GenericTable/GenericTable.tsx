@@ -15,11 +15,11 @@ const defaultSetParamsValue = (): void => undefined;
 
 export type GenericTableParams = {
 	text?: string;
-	current?: number;
-	itemsPerPage?: 25 | 50 | 100;
+	current: number;
+	itemsPerPage: 25 | 50 | 100;
 };
 
-type GenericTableProps<FilterProps extends { onChange?: (params: GenericTableParams) => void }, ResultProps extends { _id?: Key }> = {
+type GenericTableProps<FilterProps extends { onChange?: (params: GenericTableParams) => void }, ResultProps> = {
 	fixed?: boolean;
 	header?: ReactNode;
 	params?: GenericTableParams;
@@ -34,7 +34,7 @@ type GenericTableProps<FilterProps extends { onChange?: (params: GenericTablePar
 
 const GenericTable = forwardRef(function GenericTable<
 	FilterProps extends { onChange?: (params: GenericTableParams) => void },
-	ResultProps extends { _id?: Key },
+	ResultProps extends { _id?: Key } | object,
 >(
 	{
 		children,
@@ -83,7 +83,7 @@ const GenericTable = forwardRef(function GenericTable<
 						<GenericTableBody>
 							{isLoading && <GenericTableLoadingTable headerCells={headerCells} />}
 							{!isLoading &&
-								((RenderRow && results?.map((props, index: number) => <RenderRow key={props._id || index} {...props} />)) ||
+								((RenderRow && results?.map((props, index) => <RenderRow key={'_id' in props ? props._id : index} {...props} />)) ||
 									(children && results?.map(children)))}
 						</GenericTableBody>
 					</GenericTableV2>

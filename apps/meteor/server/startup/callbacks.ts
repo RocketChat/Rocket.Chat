@@ -22,7 +22,6 @@ callbacks.setMetricsTrackers({
 	trackHook: ({ hook, length }) => {
 		return metrics.rocketchatHooks.startTimer({
 			hook,
-			// eslint-disable-next-line @typescript-eslint/camelcase
 			callbacks_length: length,
 		});
 	},

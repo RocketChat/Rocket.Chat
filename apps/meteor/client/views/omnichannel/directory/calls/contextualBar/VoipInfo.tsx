@@ -4,11 +4,12 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
+import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
+import InfoPanel from '../../../../../components/InfoPanel';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
-import InfoPanel from '../../../../InfoPanel';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import AgentField from '../../chats/contextualBar/AgentField';
 import { InfoField } from './InfoField';
@@ -32,7 +33,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 	const phoneNumber = Array.isArray(v?.phone) ? v?.phone[0]?.phoneNumber : v?.phone;
 	const shouldShowWrapup = useMemo(() => lastMessage?.t === 'voip-call-wrapup' && lastMessage?.msg, [lastMessage]);
 	const shouldShowTags = useMemo(() => tags && tags.length > 0, [tags]);
-	const _name = name || fname;
+	const _name = fname || name;
 
 	return (
 		<>
@@ -56,11 +57,11 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 							<InfoPanel.Label>{t('Contact')}</InfoPanel.Label>
 							<Box display='flex'>
 								<UserAvatar size='x28' username={_name} />
-								<AgentInfoDetails mis='x8' name={_name} status={<UserStatus status={v?.status} />} />
+								<AgentInfoDetails mis='x8' name={parseOutboundPhoneNumber(_name)} status={<UserStatus status={v?.status} />} />
 							</Box>
 						</InfoPanel.Field>
 					)}
-					{phoneNumber && <InfoField label={t('Caller_Id')} info={phoneNumber} />}
+					{phoneNumber && <InfoField label={t('Caller_Id')} info={parseOutboundPhoneNumber(phoneNumber)} />}
 					{queue && <InfoField label={t('Queue')} info={queue} />}
 					{endedAt && <InfoField label={t('Last_Call')} info={endedAt} />}
 					<InfoField label={t('Waiting_Time')} info={waiting || t('Not_Available')} />
@@ -68,7 +69,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 					<InfoField label={t('Hold_Time')} info={hold || t('Not_Available')} />
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Wrap_Up_Notes')}</InfoPanel.Label>
-						<InfoPanel.Text>{shouldShowWrapup ? lastMessage?.msg : t('Not_Available')}</InfoPanel.Text>
+						<InfoPanel.Text withTruncatedText={false}>{shouldShowWrapup ? lastMessage?.msg : t('Not_Available')}</InfoPanel.Text>
 						{shouldShowTags && (
 							<InfoPanel.Text>
 								<Box display='flex' flexDirection='row' alignItems='center'>

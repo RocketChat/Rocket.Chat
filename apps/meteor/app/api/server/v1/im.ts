@@ -1,7 +1,7 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IMessage, IRoom, ISetting, ISubscription, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUpload } from '@rocket.chat/core-typings';
 import {
 	isDmDeleteProps,
 	isDmFileProps,
@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Subscriptions, Uploads, Messages, Rooms, Settings, Users } from '@rocket.chat/models';
+import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermission } from '../../../authorization/server';
@@ -21,6 +21,7 @@ import { API } from '../api';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
+import { settings } from '../../../settings/server';
 
 interface IImFilesObject extends IUpload {
 	userId: string;
@@ -305,12 +306,14 @@ API.v1.addRoute(
 
 			const options = {
 				sort: { username: sort?.username ? sort.username : 1 },
-				projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
+				projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1, federated: 1 },
 				skip: offset,
 				limit: count,
 			};
 
-			const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter, [], options, null, [extraQuery]);
+			const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
+
+			const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter, [], options, searchFields, [extraQuery]);
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -369,13 +372,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const settings = await Settings.findOne<ISetting>(
-				{ _id: 'API_Enable_Direct_Message_History_EndPoint' },
-				{
-					projection: { _id: 1, value: 1 },
-				},
-			);
-			if (settings?.value !== true) {
+			if (settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
 				throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
 					route: '/api/v1/im.messages.others',
 				});
@@ -432,12 +429,12 @@ API.v1.addRoute(
 
 			// TODO: CACHE: Add Breaking notice since we removed the query param
 
-			const subscriptions = await Subscriptions.find({ 'u._id': this.userId, 't': 'd' })
+			const subscriptions = await Subscriptions.find({ 'u._id': this.userId, 't': 'd' }, { projection: { rid: 1 } })
 				.map((item) => item.rid)
 				.toArray();
 
 			const { cursor, totalCount } = Rooms.findPaginated(
-				{ type: 'd', _id: { $in: subscriptions } },
+				{ t: 'd', _id: { $in: subscriptions } },
 				{
 					sort,
 					skip: offset,
@@ -446,15 +443,12 @@ API.v1.addRoute(
 				},
 			);
 
-			const [ims, total] = await Promise.all([
-				cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
-				totalCount,
-			]);
+			const [ims, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				ims,
+				ims: ims.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)),
 				offset,
-				count,
+				count: ims.length,
 				total,
 			});
 		},
@@ -483,13 +477,10 @@ API.v1.addRoute(
 				},
 			);
 
-			const [rooms, total] = await Promise.all([
-				cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
-				totalCount,
-			]);
+			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				ims: rooms,
+				ims: rooms.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)),
 				offset,
 				count: rooms.length,
 				total,

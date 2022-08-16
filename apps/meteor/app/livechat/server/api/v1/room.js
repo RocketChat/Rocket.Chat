@@ -3,6 +3,8 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors, Users } from '@rocket.chat/models';
+import { isLiveChatRoomForwardProps } from '@rocket.chat/rest-typings';
 
 import { settings as rcSettings } from '../../../../settings/server';
 import { Messages, LivechatRooms } from '../../../../models/server';
@@ -146,63 +148,83 @@ API.v1.addRoute('livechat/room.transfer', {
 
 API.v1.addRoute('livechat/room.survey', {
 	async post() {
-		try {
-			check(this.bodyParams, {
-				rid: String,
-				token: String,
-				data: [
-					Match.ObjectIncluding({
-						name: String,
-						value: String,
-					}),
-				],
-			});
+		check(this.bodyParams, {
+			rid: String,
+			token: String,
+			data: [
+				Match.ObjectIncluding({
+					name: String,
+					value: String,
+				}),
+			],
+		});
 
-			const { rid, token, data } = this.bodyParams;
+		const { rid, token, data } = this.bodyParams;
 
-			const visitor = await findGuest(token);
-			if (!visitor) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			const config = await settings();
-			if (!config.survey || !config.survey.items || !config.survey.values) {
-				throw new Meteor.Error('invalid-livechat-config');
-			}
-
-			const updateData = {};
-			for (const item of data) {
-				if ((config.survey.items.includes(item.name) && config.survey.values.includes(item.value)) || item.name === 'additionalFeedback') {
-					updateData[item.name] = item.value;
-				}
-			}
-
-			if (Object.keys(updateData).length === 0) {
-				throw new Meteor.Error('invalid-data');
-			}
-
-			if (!LivechatRooms.updateSurveyFeedbackById(room._id, updateData)) {
-				return API.v1.failure();
-			}
-
-			return API.v1.success({ rid, data: updateData });
-		} catch (e) {
-			return API.v1.failure(e);
+		const visitor = await findGuest(token);
+		if (!visitor) {
+			throw new Meteor.Error('invalid-token');
 		}
+
+		const room = findRoom(token, rid);
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		const config = await settings();
+		if (!config.survey || !config.survey.items || !config.survey.values) {
+			throw new Meteor.Error('invalid-livechat-config');
+		}
+
+		const updateData = {};
+		for (const item of data) {
+			if ((config.survey.items.includes(item.name) && config.survey.values.includes(item.value)) || item.name === 'additionalFeedback') {
+				updateData[item.name] = item.value;
+			}
+		}
+
+		if (Object.keys(updateData).length === 0) {
+			throw new Meteor.Error('invalid-data');
+		}
+
+		if (!LivechatRooms.updateSurveyFeedbackById(room._id, updateData)) {
+			return API.v1.failure();
+		}
+
+		return API.v1.success({ rid, data: updateData });
 	},
 });
 
 API.v1.addRoute(
 	'livechat/room.forward',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room', 'transfer-livechat-guest'], validateParams: isLiveChatRoomForwardProps },
 	{
-		post() {
-			API.v1.success(Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)));
+		async post() {
+			const transferData = this.bodyParams;
+
+			const room = await LivechatRooms.findOneById(this.bodyParams.roomId);
+			if (!room || room.t !== 'l') {
+				throw new Error('error-invalid-room', 'Invalid room');
+			}
+
+			if (!room.open) {
+				throw new Error('This_conversation_is_already_closed');
+			}
+
+			const guest = await LivechatVisitors.findOneById(room.v && room.v._id);
+			transferData.transferredBy = normalizeTransferredByData(Meteor.user() || {}, room);
+			if (transferData.userId) {
+				const userToTransfer = await Users.findOneById(transferData.userId);
+				transferData.transferredTo = {
+					_id: userToTransfer._id,
+					username: userToTransfer.username,
+					name: userToTransfer.name,
+				};
+			}
+
+			const chatForwardedResult = await Livechat.transfer(room, guest, transferData);
+
+			return chatForwardedResult ? API.v1.success() : API.v1.failure();
 		},
 	},
 );
