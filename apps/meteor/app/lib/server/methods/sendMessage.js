@@ -8,7 +8,7 @@ import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
 import { settings } from '../../../settings/server';
 import { messageProperties } from '../../../ui-utils';
-import { Users, Messages, Rooms } from '../../../models';
+import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
@@ -77,6 +77,11 @@ export function executeSendMessage(uid, message) {
 
 	try {
 		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
+		if (isRoomFederated(room)) {
+			return federationRoomServiceSender.sendExternalMessage(
+				FederationRoomSenderConverter.toSendExternalMessageDto(uid, message.rid, message),
+			);
+		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);
@@ -108,13 +113,6 @@ Meteor.methods({
 		}
 
 		try {
-			const room = Rooms.findOneById(message.rid);
-			if (isRoomFederated(room)) {
-				return federationRoomServiceSender.sendExternalMessage(
-					FederationRoomSenderConverter.toSendExternalMessageDto(uid, message.rid, message),
-				);
-			}
-
 			return executeSendMessage(uid, message);
 		} catch (error) {
 			if ((error.error || error.message) === 'error-not-allowed') {

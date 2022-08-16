@@ -1128,14 +1128,13 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	removeRoomByRoomId(rid) {
-		return this.update(
+		return this.updateMany(
 			{
 				__rooms: rid,
 			},
 			{
 				$pull: { __rooms: rid },
 			},
-			{ multi: true },
 		);
 	}
 }
