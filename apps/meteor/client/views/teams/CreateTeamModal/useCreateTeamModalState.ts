@@ -92,7 +92,7 @@ export const useCreateTeamModalState = (onClose: () => void): CreateTeamModalSta
 			}
 
 			const isNotAvailable = await teamNameExists({ roomName: name });
-			if (isNotAvailable) {
+			if (!isNotAvailable) {
 				setNameError(t('Teams_Errors_team_name', { name }));
 			}
 		},
