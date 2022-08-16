@@ -5,7 +5,10 @@ import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/model
 
 import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
-import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
+import {
+	filterBusinessHoursThatMustBeOpened,
+	filterBusinessHoursThatMustBeOpenedByDay,
+} from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 import { bhLogger } from '../lib/logger';
 
@@ -143,7 +146,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		// or if a normal user is converted to agent when a business hour is active
 		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 		const day = currentTime.format('dddd');
-		const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
+		const allActiveBusinessHoursForEntireWeek = await this.BusinessHourRepository.findActiveBusinessHours({
 			projection: {
 				workHours: 1,
 				timezone: 1,
@@ -151,7 +154,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 				active: 1,
 			},
 		});
-		const openedBusinessHours = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
+		const openedBusinessHours = await filterBusinessHoursThatMustBeOpenedByDay(allActiveBusinessHoursForEntireWeek, day);
 		if (!openedBusinessHours.length) {
 			bhLogger.debug(`Business hour status recheck failed for agentId: ${agentId}. No opened business hour found`);
 			return false;
@@ -182,7 +185,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 				// if no such departments found then check default BH and if it is active, then allow the agent to change service status
 				const hasAtLeastOneDepartmentWithNonDefaultBH = departments.some(({ businessHourId }) => {
 					// check if business hour is active
-					return businessHourId && activeBusinessHours.findIndex(({ _id }) => _id === businessHourId) !== -1;
+					return businessHourId && allActiveBusinessHoursForEntireWeek.findIndex(({ _id }) => _id === businessHourId) !== -1;
 				});
 				if (!hasAtLeastOneDepartmentWithNonDefaultBH) {
 					const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);

@@ -14,6 +14,7 @@ export interface IWorkHoursCronJobsWrapper {
 }
 
 export interface ILivechatBusinessHoursModel extends IBaseModel<ILivechatBusinessHour> {
+	findActiveBusinessHours(options?: FindOptions<ILivechatBusinessHour>): Promise<ILivechatBusinessHour[]>;
 	findOneDefaultBusinessHour(options?: undefined): Promise<ILivechatBusinessHour | null>;
 	findOneDefaultBusinessHour(options: FindOptions<ILivechatBusinessHour>): Promise<ILivechatBusinessHour | null>;
 	findOneDefaultBusinessHour<P>(options: FindOptions<P extends ILivechatBusinessHour ? ILivechatBusinessHour : P>): Promise<P | null>;
