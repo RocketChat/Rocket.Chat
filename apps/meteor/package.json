@@ -195,7 +195,7 @@
 		"@nivo/pie": "0.79.1",
 		"@rocket.chat/agenda": "workspace:^",
 		"@rocket.chat/api-client": "workspace:^",
-		"@rocket.chat/apps-engine": "1.33.0",
+		"@rocket.chat/apps-engine": "1.33.0-vm2",
 		"@rocket.chat/cas-validate": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "next",
