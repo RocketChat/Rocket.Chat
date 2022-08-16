@@ -85,7 +85,7 @@ test.describe.serial('channel-management', () => {
 
 	test('expect edit notification preferences of "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.tabs.btnMoreItems.click();
+		await poHomeChannel.tabs.btnMoreItems.click({ force: true });
 		await poHomeChannel.tabs.btnNotificationPreferences.click();
 		await poHomeChannel.tabs.notificationPreferences.updateAllNotificaitonPreferences();
 		await poHomeChannel.tabs.notificationPreferences.btnSave.click();
@@ -95,7 +95,7 @@ test.describe.serial('channel-management', () => {
 
 	test('expect all notification preferences of "targetChannel" to be "Mentions"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.tabs.btnMoreItems.click();
+		await poHomeChannel.tabs.btnMoreItems.click({ force: true });
 		await poHomeChannel.tabs.btnNotificationPreferences.click();
 
 		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Desktop')).toContainText('Mentions');
