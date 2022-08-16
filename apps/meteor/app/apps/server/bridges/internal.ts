@@ -1,9 +1,9 @@
 import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/InternalBridge';
-import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 import { Subscriptions } from '../../../models/server';
 
 export class AppInternalBridge extends InternalBridge {

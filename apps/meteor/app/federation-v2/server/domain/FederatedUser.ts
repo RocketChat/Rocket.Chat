@@ -1,4 +1,4 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export interface IFederatedUserCreationParams {
 	name: string;
@@ -14,7 +14,7 @@ export class FederatedUser {
 	public existsOnlyOnProxyServer: boolean;
 
 	// eslint-disable-next-line
-	private constructor() {}
+	protected constructor() {}
 
 	public static createInstance(externalId: string, params: IFederatedUserCreationParams): FederatedUser {
 		return Object.assign(new FederatedUser(), {

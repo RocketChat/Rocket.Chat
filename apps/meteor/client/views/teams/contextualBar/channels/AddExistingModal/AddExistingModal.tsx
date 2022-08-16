@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Serialized } from '@rocket.chat/core-typings';
-import { ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
+import { Button, Field, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, FC, useCallback } from 'react';
 
@@ -58,7 +58,7 @@ const useAddExistingModalState = (onClose: () => void, teamId: string, reload: (
 			onClose();
 			reload();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 		}
 	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload]);
 
@@ -84,12 +84,12 @@ const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId, reload }
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button disabled={!isAddButtonEnabled} onClick={onAdd} primary>
 						{t('Add')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

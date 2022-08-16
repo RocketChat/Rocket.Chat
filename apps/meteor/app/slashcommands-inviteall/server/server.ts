@@ -93,14 +93,22 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 	};
 }
 
-slashCommands.add('invite-all-to', inviteAll('to'), {
-	description: 'Invite_user_to_join_channel_all_to',
-	params: '#room',
-	permission: ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'],
+slashCommands.add({
+	command: 'invite-all-to',
+	callback: inviteAll('to'),
+	options: {
+		description: 'Invite_user_to_join_channel_all_to',
+		params: '#room',
+		permission: ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'],
+	},
 });
-slashCommands.add('invite-all-from', inviteAll('from'), {
-	description: 'Invite_user_to_join_channel_all_from',
-	params: '#room',
-	permission: 'add-user-to-joined-room',
+slashCommands.add({
+	command: 'invite-all-from',
+	callback: inviteAll('from'),
+	options: {
+		description: 'Invite_user_to_join_channel_all_from',
+		params: '#room',
+		permission: 'add-user-to-joined-room',
+	},
 });
 module.exports = inviteAll;

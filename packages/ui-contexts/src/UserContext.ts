@@ -1,5 +1,5 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import type { ObjectId, FilterQuery } from 'mongodb';
+import type { ObjectId, Filter } from 'mongodb';
 import { createContext } from 'react';
 
 export type SubscriptionQuery =
@@ -37,12 +37,12 @@ export type UserContextValue = {
 		defaultValue?: T,
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T | undefined];
 	querySubscription: (
-		query: FilterQuery<ISubscription>,
+		query: Filter<Pick<ISubscription, 'rid' | 'name'>>,
 		fields?: Fields,
 		sort?: Sort,
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISubscription | undefined];
 	queryRoom: (
-		query: FilterQuery<IRoom>,
+		query: Filter<Pick<IRoom, '_id'>>,
 		fields?: Fields,
 		sort?: Sort,
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => IRoom | undefined];

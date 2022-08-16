@@ -1,9 +1,10 @@
 import moment from 'moment';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 
-import { AbstractBusinessHourBehavior, IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
+import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
+import { AbstractBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 import { bhLogger } from '../lib/logger';
@@ -111,7 +112,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	async onRemoveAgentFromDepartment(options: Record<string, any> = {}): Promise<any> {
 		const { departmentId, agentsId } = options;
 		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'businessHourId'>>(departmentId, {
-			fields: { businessHourId: 1 },
+			projection: { businessHourId: 1 },
 		});
 		if (!department || !agentsId.length) {
 			return options;

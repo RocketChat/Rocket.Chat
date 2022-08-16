@@ -10,7 +10,10 @@ export type BundleFeature =
 	| 'scalability'
 	| 'teams-mention'
 	| 'saml-enterprise'
-	| 'oauth-enterprise';
+	| 'device-management'
+	| 'oauth-enterprise'
+	| 'federation'
+	| 'videoconference-enterprise';
 
 interface IBundle {
 	[key: string]: BundleFeature[];
@@ -30,6 +33,9 @@ const bundles: IBundle = {
 		'teams-mention',
 		'saml-enterprise',
 		'oauth-enterprise',
+		'device-management',
+		'federation',
+		'videoconference-enterprise',
 	],
 	pro: [],
 };

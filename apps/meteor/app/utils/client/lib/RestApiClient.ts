@@ -36,8 +36,9 @@ APIClient.use(async function (request, next) {
 			throw error;
 		}
 
+		const e = await error.json();
+
 		return new Promise(async (resolve, reject) => {
-			const e = await error.json();
 			process2faReturn({
 				error: e,
 				result: null,
@@ -47,7 +48,7 @@ APIClient.use(async function (request, next) {
 					return resolve(
 						next(request[0], request[1], {
 							...request[2],
-							headers: { ...request[2].headers, 'x-2fa-code': code, 'x-2fa-method': method },
+							headers: { ...request[2]?.headers, 'x-2fa-code': code, 'x-2fa-method': method },
 						}),
 					);
 				},

@@ -1,17 +1,21 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
-import { FederationRoomInviteUserDto, FederationRoomSendExternalMessageDto } from '../../../application/input/RoomSenderDto';
+import {
+	FederationAfterLeaveRoomDto,
+	FederationCreateDMAndInviteUserDto,
+	FederationRoomSendExternalMessageDto,
+} from '../../../application/input/RoomSenderDto';
 
 export class FederationRoomSenderConverter {
-	public static toRoomInviteUserDto(
+	public static toCreateDirectMessageRoomDto(
 		internalInviterId: string,
 		internalRoomId: string,
 		externalInviteeId: string,
-	): FederationRoomInviteUserDto {
+	): FederationCreateDMAndInviteUserDto {
 		const normalizedInviteeId = externalInviteeId.replace('@', '');
 		const inviteeUsernameOnly = externalInviteeId.split(':')[0]?.replace('@', '');
 
-		return Object.assign(new FederationRoomInviteUserDto(), {
+		return Object.assign(new FederationCreateDMAndInviteUserDto(), {
 			internalInviterId,
 			internalRoomId,
 			rawInviteeId: externalInviteeId,
@@ -29,6 +33,18 @@ export class FederationRoomSenderConverter {
 			internalRoomId,
 			internalSenderId,
 			message,
+		});
+	}
+
+	public static toAfterLeaveRoom(
+		internalUserId: string,
+		internalRoomId: string,
+		whoRemovedInternalId?: string,
+	): FederationAfterLeaveRoomDto {
+		return Object.assign(new FederationAfterLeaveRoomDto(), {
+			internalRoomId,
+			internalUserId,
+			whoRemovedInternalId,
 		});
 	}
 }

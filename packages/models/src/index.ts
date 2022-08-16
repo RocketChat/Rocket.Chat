@@ -38,8 +38,8 @@ import type {
 	INpsVoteModel,
 	IOAuthAppsModel,
 	IOEmbedCacheModel,
-	IOmnichannelQueueModel,
 	IPbxEventsModel,
+	IPushTokenModel,
 	IPermissionsModel,
 	IReadReceiptsModel,
 	IReportsModel,
@@ -57,6 +57,7 @@ import type {
 	IUserDataFilesModel,
 	IUsersSessionsModel,
 	IUsersModel,
+	IVideoConferenceModel,
 	IVoipRoomModel,
 	IWebdavAccountsModel,
 } from '@rocket.chat/model-typings';
@@ -109,8 +110,8 @@ export const Nps = proxify<INpsModel>('INpsModel');
 export const NpsVote = proxify<INpsVoteModel>('INpsVoteModel');
 export const OAuthApps = proxify<IOAuthAppsModel>('IOAuthAppsModel');
 export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
-export const OmnichannelQueue = proxify<IOmnichannelQueueModel>('IOmnichannelQueueModel');
 export const PbxEvents = proxify<IPbxEventsModel>('IPbxEventsModel');
+export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
 export const Reports = proxify<IReportsModel>('IReportsModel');
@@ -128,5 +129,6 @@ export const Users = proxify<IUsersModel>('IUsersModel');
 export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
+export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
 export const VoipRoom = proxify<IVoipRoomModel>('IVoipRoomModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');

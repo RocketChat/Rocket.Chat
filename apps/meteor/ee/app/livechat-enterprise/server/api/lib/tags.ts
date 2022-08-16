@@ -1,16 +1,17 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatTag } from '@rocket.chat/models';
-import { ILivechatTag } from '@rocket.chat/core-typings';
+import type { ILivechatTag } from '@rocket.chat/core-typings';
+import type { FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 
 type FindTagsParams = {
 	userId: string;
-	text: string;
+	text?: string;
 	pagination: {
 		offset: number;
 		count: number;
-		sort: object;
+		sort: FindOptions<ILivechatTag>['sort'];
 	};
 };
 
@@ -32,18 +33,17 @@ export async function findTags({ userId, text, pagination: { offset, count, sort
 	if (!(await hasPermissionAsync(userId, 'manage-livechat-tags')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
-	const filterReg = new RegExp(escapeRegExp(text), 'i');
-	const query = { ...(text && { $or: [{ name: filterReg }, { description: filterReg }] }) };
+	const query = {
+		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
+	};
 
-	const cursor = LivechatTag.find(query, {
+	const { cursor, totalCount } = LivechatTag.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const tags = await cursor.toArray();
+	const [tags, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		tags,

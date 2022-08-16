@@ -4,7 +4,7 @@ import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/ext
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
-import type { AppScreenshot, App } from '@rocket.chat/core-typings';
+import type { AppScreenshot, App, FeaturedAppsSections } from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
 	'/apps/externalComponents': {
@@ -25,6 +25,22 @@ export type AppsEndpoints = {
 		GET: () => IUIActionButton[];
 	};
 
+	'/apps/languages': {
+		GET: () => {
+			apps: {
+				id: string;
+				languages: {
+					[key: string]: {
+						Params: string;
+						Description: string;
+						Setting_Name: string;
+						Setting_Description: string;
+					};
+				};
+			};
+		};
+	};
+
 	'/apps/public/:appId/get-sidebar-icon': {
 		GET: (params: { icon: string }) => unknown;
 	};
@@ -39,6 +55,14 @@ export type AppsEndpoints = {
 	'/apps/:id/screenshots': {
 		GET: () => {
 			screenshots: AppScreenshot[];
+		};
+	};
+
+	'/apps/:id/languages': {
+		GET: () => {
+			languages: {
+				[key: string]: object;
+			};
 		};
 	};
 
@@ -63,6 +87,18 @@ export type AppsEndpoints = {
 	'/apps/:id/status': {
 		POST: (params: { status: AppStatus }) => {
 			status: string;
+		};
+	};
+
+	'/apps/:id/versions': {
+		GET: () => {
+			apps: App[];
+		};
+	};
+
+	'/apps/featured': {
+		GET: () => {
+			sections: FeaturedAppsSections;
 		};
 	};
 
@@ -93,7 +129,8 @@ export type AppsEndpoints = {
 					id: string;
 					modifiedDate: Date;
 					title: string;
-			  }[]);
+			  }[])
+			| (() => { apps: App[] });
 
 		POST: (params: { appId: string; marketplace: boolean; version: string; permissionsGranted: IPermission[] }) => {
 			app: App;

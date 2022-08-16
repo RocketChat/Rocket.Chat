@@ -1,4 +1,5 @@
 export * from './Apps';
+export * from './FeaturedApps';
 export * from './IRoom';
 export * from './UIKit';
 export * from './IMessage';
@@ -107,5 +108,9 @@ export * from './IVoipServerConfig';
 export * from './IVoipServerConnectivityStatus';
 export * from './IOmnichannelVoipServiceResult';
 export * from './IInquiry';
+export * from './ILivechatPriority';
 
 export * from './IAutoTranslate';
+export * from './IVideoConference';
+export * from './VideoConferenceCapabilities';
+export * from './VideoConferenceOptions';

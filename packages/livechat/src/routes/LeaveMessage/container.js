@@ -31,11 +31,11 @@ export class LeaveMessageContainer extends Component {
 		} finally {
 			await dispatch({ loading: false });
 		}
-	}
+	};
 
 	render = (props) => (
 		<LeaveMessage {...props} onSubmit={this.handleSubmit} />
-	)
+	);
 }
 
 

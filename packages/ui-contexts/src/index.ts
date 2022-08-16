@@ -13,6 +13,7 @@ export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessages
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
 export { UserContext, UserContextValue } from './UserContext';
+export { DeviceContext, Device, IExperimentalHTMLAudioElement, DeviceContextValue } from './DeviceContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
@@ -72,7 +73,18 @@ export { useUserRoom } from './hooks/useUserRoom';
 export { useUserSubscription } from './hooks/useUserSubscription';
 export { useUserSubscriptionByName } from './hooks/useUserSubscriptionByName';
 export { useUserSubscriptions } from './hooks/useUserSubscriptions';
+export { useSelectedDevices } from './hooks/useSelectedDevices';
+export { useDeviceConstraints } from './hooks/useDeviceConstraints';
+export { useAvailableDevices } from './hooks/useAvailableDevices';
+export { useIsDeviceManagementEnabled } from './hooks/useIsDeviceManagementEnabled';
+export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
+export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 
 export { ServerMethods, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethodFunction } from './ServerContext/methods';
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
+export { Fields } from './UserContext';
+
+export interface ITest {
+	test: string;
+}

@@ -63,8 +63,11 @@ if (Meteor.isServer) {
 			const tmpFile = UploadFS.getTempFilePath(fileId);
 
 			const removeTempFile = function () {
-				fs.unlink(tmpFile, function (err) {
-					err && console.error(`ufs: cannot delete temp file "${tmpFile}" (${err.message})`);
+				fs.stat(tmpFile, (err) => {
+					!err &&
+						fs.unlink(tmpFile, (err2) => {
+							err2 && console.error(`ufs: cannot delete temp file "${tmpFile}" (${err2.message})`);
+						});
 				});
 			};
 

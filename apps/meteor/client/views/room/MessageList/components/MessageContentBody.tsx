@@ -2,12 +2,29 @@ import { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { ReactElement } from 'react';
+import { MarkupInteractionContext, Markup, UserMention, ChannelMention } from '@rocket.chat/gazzodown';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 
-import Markup from '../../../../components/gazzodown/Markup';
-import { MarkupInteractionContext } from '../../../../components/gazzodown/MarkupInteractionContext';
+import { emoji } from '../../../../../app/emoji/client';
 import { useMessageActions } from '../../contexts/MessageContext';
+import { useMessageListHighlights } from '../contexts/MessageListContext';
 import { useParsedMessage } from '../hooks/useParsedMessage';
+
+const detectEmoji = (text: string): { name: string; className: string; image?: string; content: string }[] => {
+	const html = Object.values(emoji.packages)
+		.reverse()
+		.reduce((html, { render }) => render(html), text);
+
+	const div = document.createElement('div');
+	div.innerHTML = html;
+	return Array.from(div.querySelectorAll('span')).map((span) => ({
+		name: span.title,
+		className: span.className,
+		image: span.style.backgroundImage || undefined,
+		content: span.innerText,
+	}));
+};
 
 type MessageContentBodyProps = {
 	message: IMessage;
@@ -16,9 +33,50 @@ type MessageContentBodyProps = {
 const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement => {
 	const tokens = useParsedMessage(message);
 
+	const highlights = useMessageListHighlights();
+	const highlightRegex = useMemo(() => {
+		if (!highlights || !highlights.length) {
+			return;
+		}
+
+		const alternatives = highlights.map(({ highlight }) => escapeRegExp(highlight)).join('|');
+		const expression = `(?=^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${alternatives})(?=$|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])`;
+
+		return (): RegExp => new RegExp(expression, 'gmi');
+	}, [highlights]);
+
 	const {
 		actions: { openRoom, openUserCard },
 	} = useMessageActions();
+
+	const resolveUserMention = useCallback(
+		(mention: string) => {
+			if (mention === 'all' || mention === 'here') {
+				return undefined;
+			}
+
+			return message.mentions?.find(({ username }) => username === mention);
+		},
+		[message.mentions],
+	);
+
+	const onUserMentionClick = useCallback(
+		({ username }: UserMention) => {
+			if (!username) {
+				return;
+			}
+
+			return openUserCard(username);
+		},
+		[openUserCard],
+	);
+
+	const resolveChannelMention = useCallback(
+		(mention: string) => message.channels?.find(({ name }) => name === mention),
+		[message.channels],
+	);
+
+	const onChannelMentionClick = useCallback(({ _id: rid }: ChannelMention) => openRoom(rid), [openRoom]);
 
 	return (
 		<Box
@@ -57,10 +115,12 @@ const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement 
 		>
 			<MarkupInteractionContext.Provider
 				value={{
-					mentions: message?.mentions ?? [],
-					channels: message?.channels ?? [],
-					onUserMentionClick: openUserCard,
-					onChannelMentionClick: openRoom,
+					detectEmoji,
+					highlightRegex,
+					resolveUserMention,
+					onUserMentionClick,
+					resolveChannelMention,
+					onChannelMentionClick,
 				}}
 			>
 				<Markup tokens={tokens} />

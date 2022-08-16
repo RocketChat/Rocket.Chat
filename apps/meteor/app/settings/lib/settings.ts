@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import { SettingValue } from '@rocket.chat/core-typings';
+import type { SettingValue } from '@rocket.chat/core-typings';
 
 export type SettingComposedValue<T extends SettingValue = SettingValue> = { key: string; value: T };
 export type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;
@@ -16,9 +16,10 @@ export class SettingsBase {
 	private regexCallbacks = new Map<string, ISettingRegexCallbacks>();
 
 	// private ts = new Date()
-	public get<T extends SettingValue = SettingValue>(_id: RegExp, callback: SettingCallback): void;
 
-	public get<T extends SettingValue = SettingValue>(_id: string, callback: SettingCallback): void;
+	public get(_id: RegExp, callback: SettingCallback): void;
+
+	public get(_id: string, callback: SettingCallback): void;
 
 	public get<T extends SettingValue = SettingValue>(_id: RegExp): SettingComposedValue<T>[];
 
@@ -75,7 +76,7 @@ export class SettingsBase {
 			}, []);
 		}
 
-		return Meteor.settings && Meteor.settings[_id];
+		return Meteor.settings?.[_id];
 	}
 
 	set(_id: string, value: SettingValue, callback: () => void): void {

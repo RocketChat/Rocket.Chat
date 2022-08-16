@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
+import { Button, Icon, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, ComponentProps, ReactElement, ReactNode } from 'react';
 
@@ -9,8 +9,8 @@ type VariantType = 'danger' | 'warning' | 'info' | 'success';
 type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
 	children?: ReactNode;
-	cancelText?: string;
-	confirmText?: string;
+	cancelText?: ReactNode;
+	confirmText?: ReactNode;
 	title?: string | ReactElement;
 	icon?: ComponentProps<typeof Icon>['name'] | ReactElement | null;
 	confirmDisabled?: boolean;
@@ -31,7 +31,7 @@ const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => 
 		case 'danger':
 			return { danger: true };
 		case 'warning':
-			return { warning: true };
+			return { primary: true };
 		default:
 			return {};
 	}
@@ -43,11 +43,11 @@ const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): Reac
 	}
 
 	if (icon === undefined) {
-		return <Icon color={variant} name={iconMap[variant]} size={24} />;
+		return <Modal.Icon color={variant} name={iconMap[variant]} />;
 	}
 
 	if (typeof icon === 'string') {
-		return <Icon color={variant} name={icon} size={24} />;
+		return <Modal.Icon color={variant} name={icon} />;
 	}
 
 	return icon;
@@ -74,23 +74,21 @@ const GenericModal: FC<GenericModalProps> = ({
 			<Modal.Header>
 				{renderIcon(icon, variant)}
 				<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
+				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
 			<Modal.Footer>
-				<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
-					{dontAskAgain}
-					<ButtonGroup align='end' flexGrow={1} maxWidth='full'>
-						{onCancel && (
-							<Button secondary onClick={onCancel}>
-								{cancelText ?? t('Cancel')}
-							</Button>
-						)}
-						<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
-							{confirmText ?? t('Ok')}
+				{dontAskAgain}
+				<Modal.FooterControllers>
+					{onCancel && (
+						<Button secondary onClick={onCancel}>
+							{cancelText ?? t('Cancel')}
 						</Button>
-					</ButtonGroup>
-				</Box>
+					)}
+					<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
+						{confirmText ?? t('Ok')}
+					</Button>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

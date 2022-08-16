@@ -29,7 +29,7 @@ export class RegisterContainer extends Component {
 		if (deptDefault) {
 			return deptDefault._id;
 		}
-	}
+	};
 
 	handleSubmit = async ({ name, email, department, ...customFields }) => {
 		const { dispatch, token } = this.props;
@@ -48,7 +48,7 @@ export class RegisterContainer extends Component {
 		} finally {
 			await dispatch({ loading: false });
 		}
-	}
+	};
 
 	getDepartmentDefault() {
 		const { guestDepartment, departments } = this.props;
@@ -61,14 +61,14 @@ export class RegisterContainer extends Component {
 		const { user: prevUser } = prevProps;
 		const { user } = this.props;
 
-		if (!prevUser && user && user._id) {
+		if ((!prevUser || Object.keys(prevUser).length === 0) && user && user._id) {
 			route('/');
 		}
 	}
 
 	render = (props) => (
 		<Register {...props} onSubmit={this.handleSubmit} departmentDefault={this.getDepartmentDefault()} />
-	)
+	);
 }
 
 export const RegisterConnector = ({ ref, ...props }) => (
