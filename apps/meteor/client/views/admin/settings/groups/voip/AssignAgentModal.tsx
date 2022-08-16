@@ -26,7 +26,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 		try {
 			await assignAgent({ username: agent, extension });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: (error as Error).message });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 		reload();
 		closeModal();

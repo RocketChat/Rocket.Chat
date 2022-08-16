@@ -3,7 +3,6 @@ import { Box, Icon, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselag
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ComponentProps } from 'react';
 
-import { timeAgo } from '../../../../../app/ui/client/views/app/helpers';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -13,6 +12,7 @@ import {
 	GenericTableLoadingRow,
 	GenericTableRow,
 } from '../../../../components/GenericTable';
+import { timeAgo } from '../../../../lib/utils/timeAgo';
 import type { WebdavSortOptions } from './WebdavFilePickerModal';
 import { getNodeFileSize } from './lib/getNodeFileSize';
 import { getNodeIconType } from './lib/getNodeIconType';
@@ -83,7 +83,7 @@ const WebdavFilePickerTable = ({
 											<Box withTruncatedText>{getNodeFileSize(webdavNode.type, webdavNode?.size)}</Box>
 										</GenericTableCell>
 										<GenericTableCell fontScale='p2' color='default'>
-											<Box withTruncatedText>{timeAgo(new Date(), t)}</Box>
+											<Box withTruncatedText>{timeAgo(new Date())}</Box>
 										</GenericTableCell>
 									</GenericTableRow>
 								);

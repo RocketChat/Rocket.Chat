@@ -78,7 +78,7 @@ const WebdavFilePickerModal = ({ rid, onClose, account }: WebdavFilePickerModalP
 			result = await getWebdavFileList(account._id, currentFolder);
 			handleFilterNodes(result.data);
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as Error });
+			dispatchToastMessage({ type: 'error', message: error });
 			onClose();
 		} finally {
 			setIsLoading(false);
@@ -133,7 +133,7 @@ const WebdavFilePickerModal = ({ rid, onClose, account }: WebdavFilePickerModalP
 					file,
 				});
 			} catch (error) {
-				return dispatchToastMessage({ type: 'error', message: error as Error });
+				return dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				setIsLoading(false);
 				onClose();
@@ -155,7 +155,7 @@ const WebdavFilePickerModal = ({ rid, onClose, account }: WebdavFilePickerModalP
 				/>,
 			);
 		} catch (error) {
-			return dispatchToastMessage({ type: 'error', message: error as Error });
+			return dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
