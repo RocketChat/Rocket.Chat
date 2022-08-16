@@ -3,13 +3,11 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { Notifications } from '../../app/notifications/client';
-
 import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
-import OTR from './../../app/otr/client/OTR';
-
 import { t } from '../../app/utils/client';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
+import OTR from '../../app/otr/client/OTR';
 
 type NotifyUserData = {
 	roomId: IRoom['_id'];
