@@ -71,7 +71,6 @@ export const useCreateTeamModalState = (onClose: () => void): CreateTeamModalSta
 	const [nameError, setNameError] = useState<string>();
 
 	const teamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
-	// const teamNameExists = useMethod('roomNameExists');
 
 	const checkName = useDebouncedCallback(
 		async (name: string) => {
