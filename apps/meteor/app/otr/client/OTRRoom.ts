@@ -66,7 +66,7 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	setState(nextState: OtrRoomState): void {
-		const currentState = this.state.get();
+		const currentState = this.getState();
 		if (currentState === nextState) {
 			return;
 		}
@@ -141,7 +141,7 @@ export class OTRRoom implements IOTRRoom {
 		this._userOnlineComputation = Tracker.autorun(() => {
 			const $room = $(`#chat-window-${this._roomId}`);
 			const $title = $('.rc-header__title', $room);
-			if (this.state.get() === OtrRoomState.ESTABLISHED) {
+			if (this.getState() === OtrRoomState.ESTABLISHED) {
 				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
 					$title.prepend("<i class='otr-icon icon-key'></i>");
 				}
@@ -245,6 +245,7 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	async onUserStream(type: string, data: IOnUserStreamData): Promise<void> {
+		console.log({ type, data });
 		switch (type) {
 			case 'handshake':
 				let timeout = 0;
@@ -252,7 +253,7 @@ export class OTRRoom implements IOTRRoom {
 				const establishConnection = async (): Promise<void> => {
 					this.setState(OtrRoomState.ESTABLISHING);
 					Meteor.clearTimeout(timeout);
-
+					console.log({ type, data });
 					try {
 						await this.generateKeyPair();
 						await this.importPublicKey(data.publicKey);
@@ -283,11 +284,11 @@ export class OTRRoom implements IOTRRoom {
 						throw new Meteor.Error('user-not-defined', 'User not defined.');
 					}
 
-					if (data.refresh && this.state.get() === OtrRoomState.ESTABLISHED) {
+					if (data.refresh && this.getState() === OtrRoomState.ESTABLISHED) {
 						this.reset();
 						await establishConnection();
 					} else {
-						if (this.state.get() === OtrRoomState.ESTABLISHED) {
+						if (this.getState() === OtrRoomState.ESTABLISHED) {
 							this.reset();
 						}
 						imperativeModal.open({
@@ -334,7 +335,7 @@ export class OTRRoom implements IOTRRoom {
 				break;
 
 			case 'deny':
-				if (this.state.get() === OtrRoomState.ESTABLISHING) {
+				if (this.getState() === OtrRoomState.ESTABLISHING) {
 					this.reset();
 					this.setState(OtrRoomState.DECLINED);
 				}
@@ -342,12 +343,13 @@ export class OTRRoom implements IOTRRoom {
 
 			case 'end':
 				try {
+					console.log('here');
 					const obj = await Presence.get(this.peerId);
 					if (!obj?.username) {
 						throw new Meteor.Error('user-not-defined', 'User not defined.');
 					}
 
-					if (this.state.get() === OtrRoomState.ESTABLISHED) {
+					if (this.getState() === OtrRoomState.ESTABLISHED) {
 						this.reset();
 						this.setState(OtrRoomState.NOT_STARTED);
 						imperativeModal.open({
