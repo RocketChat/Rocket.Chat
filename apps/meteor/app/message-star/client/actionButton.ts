@@ -16,7 +16,7 @@ Meteor.startup(function () {
 		id: 'star-message',
 		icon: 'star',
 		label: 'Star',
-		context: ['starred', 'message', 'message-mobile', 'threads'],
+		context: ['starred', 'message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			Meteor.call('starMessage', { ...message, starred: true }, function (error: any) {
@@ -44,7 +44,7 @@ Meteor.startup(function () {
 		id: 'unstar-message',
 		icon: 'star',
 		label: 'Unstar_Message',
-		context: ['starred', 'message', 'message-mobile', 'threads'],
+		context: ['starred', 'message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 
@@ -59,7 +59,7 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			return Boolean(message.starred && message.starred.find((star: any) => star._id === user._id));
+			return Boolean(message.starred?.find((star: any) => star._id === user._id));
 		},
 		order: 9,
 		group: 'menu',
@@ -98,7 +98,7 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			return Boolean(message.starred && message.starred.find((star) => star._id === user._id));
+			return Boolean(message.starred?.find((star) => star._id === user._id));
 		},
 		order: 100,
 		group: ['message', 'menu'],
@@ -121,7 +121,7 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			return Boolean(message.starred && message.starred.find((star) => star._id === user._id));
+			return Boolean(message.starred?.find((star) => star._id === user._id));
 		},
 		order: 101,
 		group: 'menu',

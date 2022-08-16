@@ -18,7 +18,7 @@ Meteor.startup(function () {
 			id: 'follow-message',
 			icon: 'bell',
 			label: 'Follow_message',
-			context: ['message', 'message-mobile', 'threads'],
+			context: ['message', 'message-mobile', 'threads', 'federated'],
 			async action(_, { message }) {
 				callWithErrorHandling('followMessage', { mid: message._id }).then(() =>
 					dispatchToastMessage({

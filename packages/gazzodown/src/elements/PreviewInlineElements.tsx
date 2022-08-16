@@ -4,6 +4,7 @@ import { Fragment, ReactElement } from 'react';
 import PreviewCodeElement from '../code/PreviewCodeElement';
 import PreviewColorElement from '../colors/PreviewColorElement';
 import PreviewEmojiElement from '../emoji/PreviewEmojiElement';
+import KatexErrorBoundary from '../katex/KatexErrorBoundary';
 import PreviewKatexElement from '../katex/PreviewKatexElement';
 import PreviewChannelMentionElement from '../mentions/PreviewChannelMentionElement';
 import PreviewUserMentionElement from '../mentions/PreviewUserMentionElement';
@@ -46,7 +47,11 @@ const PreviewInlineElements = ({ children }: PreviewInlineElementsProps): ReactE
 					return <PreviewColorElement key={index} {...child.value} />;
 
 				case 'INLINE_KATEX':
-					return <PreviewKatexElement key={index} code={child.value} />;
+					return (
+						<KatexErrorBoundary key={index} code={child.value}>
+							<PreviewKatexElement code={child.value} />
+						</KatexErrorBoundary>
+					);
 
 				default:
 					return null;

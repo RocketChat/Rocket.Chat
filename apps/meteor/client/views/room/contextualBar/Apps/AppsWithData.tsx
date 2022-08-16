@@ -7,14 +7,14 @@ import {
 	IBlock,
 	IBlockElement,
 	IActionsBlock,
+	InputElementDispatchAction,
 } from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
-import React, { memo, useState, useEffect, useReducer, Dispatch, SyntheticEvent } from 'react';
+import React, { memo, useState, useEffect, useReducer, Dispatch, SyntheticEvent, ContextType } from 'react';
 
 import { triggerBlockAction, triggerCancel, triggerSubmitView, on, off } from '../../../../../app/ui-message/client/ActionManager';
-import { App } from '../../../admin/apps/types';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import Apps from './Apps';
 
@@ -29,6 +29,7 @@ type ActionParams = {
 	actionId: string;
 	value: unknown;
 	viewId?: string;
+	dispatchActionConfig?: InputElementDispatchAction[];
 };
 
 type ViewState = IUIKitContextualBarInteraction & {
@@ -91,16 +92,15 @@ const AppsWithData = ({
 	viewId,
 	roomId,
 	payload,
-	appInfo,
+	appId,
 }: {
 	viewId: string;
 	roomId: string;
 	payload: IUIKitContextualBarInteraction;
-	appInfo: App;
+	appId: string;
 }): JSX.Element => {
 	const closeTabBar = useTabBarClose();
 
-	const { id: appId, name: appName } = appInfo;
 	const [state, setState] = useState<ViewState>(payload);
 	const { view } = state;
 	const [values, updateValues] = useValues(view);
@@ -138,19 +138,37 @@ const AppsWithData = ({
 		}
 	};
 
-	const context = {
-		action: ({ actionId, appId, value, blockId }: ActionParams): Promise<void> =>
-			triggerBlockAction({
-				container: {
-					type: UIKitIncomingInteractionContainerType.VIEW,
-					id: viewId,
-				},
-				actionId,
-				appId,
-				rid: roomId,
-				value,
-				blockId,
-			}),
+	const debouncedBlockAction = useDebouncedCallback(({ actionId, appId, value, blockId }: ActionParams) => {
+		triggerBlockAction({
+			container: {
+				type: UIKitIncomingInteractionContainerType.VIEW,
+				id: viewId,
+			},
+			actionId,
+			appId,
+			value,
+			blockId,
+		});
+	}, 700);
+
+	const context: ContextType<typeof kitContext> = {
+		action: async ({ actionId, appId, value, blockId, dispatchActionConfig }: ActionParams): Promise<void> => {
+			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes(InputElementDispatchAction.ON_CHARACTER_ENTERED)) {
+				await debouncedBlockAction({ actionId, appId, value, blockId });
+			} else {
+				await triggerBlockAction({
+					container: {
+						type: UIKitIncomingInteractionContainerType.VIEW,
+						id: viewId,
+					},
+					actionId,
+					appId,
+					rid: roomId,
+					value,
+					blockId,
+				});
+			}
+		},
 		state: ({ actionId, value, blockId = 'default' }: ActionParams): void => {
 			updateValues({
 				actionId,
@@ -162,7 +180,7 @@ const AppsWithData = ({
 		},
 		...state,
 		values,
-	};
+	} as ContextType<typeof kitContext>;
 
 	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);
@@ -211,7 +229,7 @@ const AppsWithData = ({
 
 	return (
 		<kitContext.Provider value={context}>
-			<Apps onClose={handleClose} onCancel={handleCancel} onSubmit={handleSubmit} view={view} appInfo={{ name: appName, id: appId }} />
+			<Apps onClose={handleClose} onCancel={handleCancel} onSubmit={handleSubmit} view={view} appId={appId} />
 		</kitContext.Provider>
 	);
 };

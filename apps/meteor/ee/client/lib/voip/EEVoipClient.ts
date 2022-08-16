@@ -9,7 +9,7 @@ export class EEVoipClient extends VoIPUser {
 		super(config, mediaRenderer);
 	}
 
-	async makeCall(callee: string, mediaRenderer?: IMediaStreamRenderer): Promise<void> {
+	async makeCallURI(calleeURI: string, mediaRenderer?: IMediaStreamRenderer): Promise<void> {
 		if (mediaRenderer) {
 			this.mediaStreamRendered = mediaRenderer;
 		}
@@ -22,9 +22,9 @@ export class EEVoipClient extends VoIPUser {
 		if (this.callState !== 'REGISTERED') {
 			throw new Error('Incorrect UA state');
 		}
-		const target = UserAgent.makeURI(callee);
+		const target = UserAgent.makeURI(calleeURI);
 		if (!target) {
-			throw new Error(`Failed to create valid URI ${callee}`);
+			throw new Error(`Failed to create valid URI ${calleeURI}`);
 		}
 		// Replace this when device manager code is ready.
 		const constraints = {
@@ -39,18 +39,17 @@ export class EEVoipClient extends VoIPUser {
 		this.session = inviter;
 		this.setupSessionEventHandlers(inviter);
 		this._opInProgress = Operation.OP_SEND_INVITE;
+
 		await inviter.invite({
 			requestDelegate: {
 				onReject: (response: IncomingResponse): void => {
-					let reason = 'unknown';
 					if (response.message.reasonPhrase) {
-						reason = response.message.reasonPhrase;
+						this.emit('callfailed', response.message.reasonPhrase || 'unknown');
 					}
-					console.error(response);
-					this.emit('callfailed', reason);
 				},
 			},
 		});
+
 		this._callState = 'OFFER_SENT';
 		const callerInfo: ICallerInfo = {
 			callerId: inviter.remoteIdentity.uri.user ? inviter.remoteIdentity.uri.user : '',
@@ -59,6 +58,14 @@ export class EEVoipClient extends VoIPUser {
 		};
 		this._callerInfo = callerInfo;
 		this._userState = UserState.UAC;
+		this.emit('stateChanged');
+	}
+
+	async makeCall(calleeNumber: string): Promise<void> {
+		const hasPlusChar = calleeNumber.includes('+');
+
+		const digits = calleeNumber.replace('+', '');
+		this.makeCallURI(`sip:${hasPlusChar ? '*' : ''}${digits}@${this.userConfig.sipRegistrarHostnameOrIP}`);
 	}
 
 	static async create(config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer): Promise<VoIPUser> {

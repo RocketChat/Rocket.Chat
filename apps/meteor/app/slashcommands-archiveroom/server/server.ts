@@ -6,9 +6,9 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 import { api } from '../../../server/sdk/api';
 import { settings } from '../../settings/server';
 
-slashCommands.add(
-	'archive',
-	function Archive(_command, params, item): void {
+slashCommands.add({
+	command: 'archive',
+	callback: function Archive(_command, params, item): void {
 		let channel = params.trim();
 
 		let room;
@@ -64,9 +64,9 @@ slashCommands.add(
 			}),
 		});
 	},
-	{
+	options: {
 		description: 'Archive',
 		params: '#channel',
 		permission: 'archive-room',
 	},
-);
+});

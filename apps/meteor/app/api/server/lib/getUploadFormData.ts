@@ -1,9 +1,9 @@
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 
 import { Meteor } from 'meteor/meteor';
 import type { Request } from 'express';
 import busboy from 'busboy';
-import { ValidateFunction } from 'ajv';
+import type { ValidateFunction } from 'ajv';
 
 type UploadResult = {
 	file: Readable;
@@ -13,26 +13,20 @@ type UploadResult = {
 	fileBuffer: Buffer;
 };
 
-export const getUploadFormData = async <T extends string, K, V extends ValidateFunction<K>>(
+export const getUploadFormData = async <
+	T extends string,
+	K extends Record<string, string> = Record<string, string>,
+	V extends ValidateFunction<K> = ValidateFunction<K>,
+>(
 	{ request }: { request: Request },
 	options: {
 		field?: T;
 		validate?: V;
 	} = {},
-): Promise<
-	[
-		UploadResult,
-		K extends unknown
-			? {
-					[k: string]: string;
-			  }
-			: K,
-		T,
-	]
-> =>
+): Promise<[UploadResult, K, T]> =>
 	new Promise((resolve, reject) => {
 		const bb = busboy({ headers: request.headers, defParamCharset: 'utf8' });
-		const fields: { [K: string]: string } = Object.create(null);
+		const fields = Object.create(null) as K;
 
 		let uploadedFile: UploadResult | undefined;
 
@@ -69,7 +63,7 @@ export const getUploadFormData = async <T extends string, K, V extends ValidateF
 			},
 		);
 
-		bb.on('field', (fieldname, value) => {
+		bb.on('field', (fieldname: keyof K, value: K[keyof K]) => {
 			fields[fieldname] = value;
 		});
 

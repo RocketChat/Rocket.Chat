@@ -2,6 +2,10 @@ import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
+createTemplateForComponent('HomePage', () => import('./views/home/HomePage'), {
+	attachment: 'at-parent',
+});
+
 createTemplateForComponent('MessageActions', () => import('./components/message/MessageActions'));
 
 createTemplateForComponent('reactAttachments', () => import('./components/message/Attachments'));
@@ -122,8 +126,6 @@ createTemplateForComponent('PruneMessages', () => import('./views/room/contextua
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
 
-createTemplateForComponent('Burger', () => import('./components/BurgerMenu'));
-
 createTemplateForComponent('loginLayoutHeader', () => import('./views/login/LoginLayout/Header'));
 
 createTemplateForComponent('loginLayoutFooter', () => import('./views/login/LoginLayout/Footer'));
@@ -156,4 +158,8 @@ createTemplateForComponent('roomNotFound', () => import('./views/room/Room/RoomN
 
 createTemplateForComponent('ComposerNotAvailablePhoneCalls', () => import('./components/voip/composer/NotAvailableOnCall'), {
 	renderContainerView: () => HTML.DIV({ style: 'display: flex; height: 100%; width: 100%' }),
+});
+
+createTemplateForComponent('loggedOutBanner', () => import('../ee/client/components/deviceManagement/LoggedOutBanner'), {
+	renderContainerView: () => HTML.DIV({ style: 'max-width: 520px; margin: 0 auto;' }),
 });

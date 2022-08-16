@@ -1,22 +1,24 @@
-import { IServiceContext } from './types/ServiceClass';
+import type { IServiceContext } from './types/ServiceClass';
 import { proxify, proxifyWithWait } from './lib/proxify';
-import { IAuthorization } from './types/IAuthorization';
-import { IPresence } from './types/IPresence';
-import { IAccount } from './types/IAccount';
-import { ILicense } from './types/ILicense';
-import { IMeteor } from './types/IMeteor';
-import { IUiKitCoreAppService } from './types/IUiKitCoreApp';
-import { IEnterpriseSettings } from './types/IEnterpriseSettings';
-import { IBannerService } from './types/IBannerService';
-import { INPSService } from './types/INPSService';
-import { ITeamService } from './types/ITeamService';
-import { IRoomService } from './types/IRoomService';
-import { IMediaService } from './types/IMediaService';
-import { IVoipService } from './types/IVoipService';
-import { IOmnichannelVoipService } from './types/IOmnichannelVoipService';
-import { IAnalyticsService } from './types/IAnalyticsService';
-import { ILDAPService } from './types/ILDAPService';
-import { ISAUMonitorService } from './types/ISAUMonitorService';
+import type { IAuthorization } from './types/IAuthorization';
+import type { IPresence } from './types/IPresence';
+import type { IAccount } from './types/IAccount';
+import type { ILicense } from './types/ILicense';
+import type { IMeteor } from './types/IMeteor';
+import type { IUiKitCoreAppService } from './types/IUiKitCoreApp';
+import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
+import type { IBannerService } from './types/IBannerService';
+import type { INPSService } from './types/INPSService';
+import type { ITeamService } from './types/ITeamService';
+import type { IRoomService } from './types/IRoomService';
+import type { IMediaService } from './types/IMediaService';
+import type { IVoipService } from './types/IVoipService';
+import type { IOmnichannelVoipService } from './types/IOmnichannelVoipService';
+import type { IAnalyticsService } from './types/IAnalyticsService';
+import type { ILDAPService } from './types/ILDAPService';
+import type { IVideoConfService } from './types/IVideoConfService';
+import type { ISAUMonitorService } from './types/ISAUMonitorService';
+import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import { FibersContextStore } from './lib/ContextStore';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -36,6 +38,8 @@ export const LivechatVoip = proxifyWithWait<IOmnichannelVoipService>('omnichanne
 export const Analytics = proxifyWithWait<IAnalyticsService>('analytics');
 export const LDAP = proxifyWithWait<ILDAPService>('ldap');
 export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
+export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
+export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

@@ -15,7 +15,7 @@ import { SHA256 } from 'meteor/sha';
 import React, { ReactElement, useMemo, useState, useCallback } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import ConfirmOwnerChangeWarningModal from '../../../components/ConfirmOwnerChangeWarningModal';
+import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
 import Page from '../../../components/Page';
 import { useForm } from '../../../hooks/useForm';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
@@ -147,7 +147,7 @@ const AccountProfilePage = (): ReactElement => {
 				commit();
 				dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 			}
 		};
 
@@ -187,7 +187,7 @@ const AccountProfilePage = (): ReactElement => {
 				message: t('Logged_out_of_other_clients_successfully'),
 			});
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 		}
 		setLoggingOut(false);
 	}, [logoutOtherClients, dispatchToastMessage, t]);
@@ -201,16 +201,16 @@ const AccountProfilePage = (): ReactElement => {
 					closeModal();
 					logout();
 				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
+					dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 				}
 			};
 
 			return setModal(() => (
-				<ConfirmOwnerChangeWarningModal
+				<ConfirmOwnerChangeModal
 					onConfirm={handleConfirm}
 					onCancel={closeModal}
 					contentTitle={t(`Delete_User_Warning_${erasureType}` as TranslationKey)}
-					confirmLabel={t('Delete')}
+					confirmText={t('Delete')}
 					shouldChangeOwner={shouldChangeOwner}
 					shouldBeRemoved={shouldBeRemoved}
 				/>
@@ -225,7 +225,7 @@ const AccountProfilePage = (): ReactElement => {
 				await deleteOwnAccount(SHA256(passwordOrUsername));
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
 				logout();
-			} catch (error) {
+			} catch (error: any) {
 				if (error.error === 'user-last-owner') {
 					const { shouldChangeOwner, shouldBeRemoved } = error.details;
 					return handleConfirmOwnerChange(passwordOrUsername, shouldChangeOwner, shouldBeRemoved);

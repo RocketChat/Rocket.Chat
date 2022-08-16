@@ -131,7 +131,7 @@ export interface IMessage extends IRocketChatRecord {
 	replies?: IUser['_id'][];
 	location?: {
 		type: 'Point';
-		coordinates: [string, string];
+		coordinates: [number, number];
 	};
 	starred?: { _id: IUser['_id'] }[];
 	pinned?: boolean;
@@ -144,6 +144,7 @@ export interface IMessage extends IRocketChatRecord {
 	tcount?: number;
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
+	otrAck?: string;
 
 	urls?: MessageUrl[];
 
@@ -195,6 +196,7 @@ export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
 
 export interface ITranslatedMessage extends IMessage {
 	translations: { [key: string]: string } & { original?: string };
+	translationProvider: string;
 	autoTranslateShowInverse?: boolean;
 	autoTranslateFetching?: boolean;
 }
@@ -309,3 +311,15 @@ export type IMessageInbox = IMessage & {
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
 export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;
+
+export type IE2EEMessage = IMessage & {
+	t: 'e2e';
+	e2e: 'pending' | 'done';
+};
+
+export type IOTRMessage = IMessage & {
+	t: 'otr' | 'otr-ack';
+};
+
+export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
+export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr' || message.t === 'otr-ack';

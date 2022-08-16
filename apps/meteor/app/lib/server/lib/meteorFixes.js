@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-
-import { Settings } from '../../../models/server';
+import { Settings } from '@rocket.chat/models';
 
 const timeoutQuery = parseInt(process.env.OBSERVERS_CHECK_TIMEOUT) || 2 * 60 * 1000;
 const interval = parseInt(process.env.OBSERVERS_CHECK_INTERVAL) || 60 * 1000;
@@ -60,8 +59,9 @@ Meteor.setInterval(() => {
  * we will start respecting this and exit the process to prevent these kind of problems.
  */
 
-process.on('unhandledRejection', (error) => {
-	Settings.incrementValueById('Uncaught_Exceptions_Count');
+process.on('unhandledRejection', async (error) => {
+	await Settings.incrementValueById('Uncaught_Exceptions_Count');
+
 	console.error('=== UnHandledPromiseRejection ===');
 	console.error(error);
 	console.error('---------------------------------');

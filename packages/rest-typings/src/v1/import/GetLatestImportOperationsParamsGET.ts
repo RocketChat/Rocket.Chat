@@ -4,19 +4,13 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GetLatestImportOperationsParamsGET = {
-	userId: string;
-};
+export type GetLatestImportOperationsParamsGET = Record<string, unknown>;
 
 const GetLatestImportOperationsParamsGETSchema = {
 	type: 'object',
-	properties: {
-		userId: {
-			type: 'string',
-		},
-	},
+	properties: {},
 	additionalProperties: false,
-	required: ['userId'],
+	required: [],
 };
 
 export const isGetLatestImportOperationsParamsGET = ajv.compile<GetLatestImportOperationsParamsGET>(

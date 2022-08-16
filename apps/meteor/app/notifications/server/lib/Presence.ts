@@ -46,7 +46,7 @@ export class UserPresence {
 
 	run = (args: UserPresenceStreamArgs): void => {
 		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, { ...args, eventName: args.uid }); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
-		(this.publication as any)._session.socket.send(payload);
+		if (payload) this.publication._session.socket?.send(payload);
 	};
 
 	stop(): void {
@@ -69,6 +69,7 @@ export class UserPresence {
 }
 
 export class StreamPresence {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	static getInstance(Streamer: IStreamerConstructor, name = 'user-presence'): IStreamer {
 		return new (class StreamPresence extends Streamer {
 			async _publish(
