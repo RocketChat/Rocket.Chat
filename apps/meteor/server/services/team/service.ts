@@ -767,7 +767,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			const existingMember = await TeamMember.findOneByUserIdAndTeamId(member.userId, team._id);
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(team.roomId, member.userId);
 
-			let removedUser: IUser | undefined;
+			if (!existingMember && !subscription) {
+				throw new Error('member-does-not-exist');
+			}
 
 			if (existingMember) {
 				if (existingMember.roles?.includes('owner')) {
@@ -779,14 +781,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				}
 
 				TeamMember.removeById(existingMember._id);
-				removedUser = usersToRemove.find((u) => u._id === existingMember.userId);
-			} else if (subscription) {
-				// handle old cases where user was not added to team
-				removedUser = usersToRemove.find((u) => u._id === member.userId);
-			} else {
-				throw new Error('member-does-not-exist');
 			}
 
+			const removedUser = usersToRemove.find((u) => u._id === (existingMember || member).userId);
 			if (removedUser) {
 				await removeUserFromRoom(
 					team.roomId,
