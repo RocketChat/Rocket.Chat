@@ -4,7 +4,7 @@ import { test, expect } from './utils/test';
 import { OmnichannelDialpadModal, OmnichannelVoipFooter, OmnichannelSection } from './page-objects';
 import { createAuxContext } from './utils';
 import { createToken } from '../../client/lib/utils/createToken';
-import { IS_EE } from './config/constants';
+// import { IS_EE } from './config/constants';
 
 type PageObjects = {
 	page: Page;
@@ -20,7 +20,7 @@ const createPageObjects = (page: Page) => ({
 	voipFooter: new OmnichannelVoipFooter(page),
 });
 
-test.skip(!IS_EE, 'Omnichannel Voip Footer > Enterprise Only');
+test.skip(true /* IS_EE */, 'Omnichannel Voip Footer > Enterprise Only');
 
 test.use({ storageState: 'admin-session.json' });
 
