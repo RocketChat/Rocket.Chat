@@ -1888,7 +1888,7 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		const testUsername = `test${+new Date()}`;
+		const testUsername = `test-username-123456-${+new Date()}`;
 		let targetUser;
 		let userCredentials;
 		it('register a new user...', (done) => {
@@ -1896,7 +1896,7 @@ describe('[Users]', function () {
 				.post(api('users.register'))
 				.set(credentials)
 				.send({
-					email: `${testUsername}.@teste.com`,
+					email: `${testUsername}.@test-username.com`,
 					username: `${testUsername}test`,
 					name: testUsername,
 					pass: password,
