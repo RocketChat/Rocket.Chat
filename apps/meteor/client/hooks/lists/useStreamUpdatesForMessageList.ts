@@ -27,7 +27,7 @@ const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((me
 	if (params.ignoreDiscussion) {
 		query.drid = { $exists: false };
 	}
-	if (params.users && params.users.length) {
+	if (params.users?.length) {
 		query['u.username'] = { $in: params.users };
 	}
 

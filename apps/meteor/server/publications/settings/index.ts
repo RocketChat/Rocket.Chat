@@ -53,7 +53,7 @@ Meteor.methods({
 
 		const bypass = <T>(settings: T): T => settings;
 
-		const applyFilter = (fn: Function, args: any[]): any => fn(args);
+		const applyFilter = <T extends any[], U>(fn: (args: T) => U, args: T): U => fn(args);
 
 		const getAuthorizedSettingsFiltered = (settings: ISetting[]): ISetting[] =>
 			settings.filter((record) => hasPermission(uid, getSettingPermissionId(record._id)));

@@ -146,9 +146,9 @@ Template.username.events({
 			return;
 		}
 
-		Meteor.call('saveCustomFields', formData, function (err) {
-			if (err != null) {
-				dispatchToastMessage({ type: 'error', message: err.error });
+		Meteor.call('saveCustomFields', formData, function (error) {
+			if (error) {
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 		});
 

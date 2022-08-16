@@ -7,7 +7,6 @@ import { settings } from '../../settings/client';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { Rooms } from '../../models/client';
-import { handleError } from '../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
@@ -21,7 +20,7 @@ Meteor.startup(function () {
 			const { message = messageArgs(this).msg } = props;
 			Meteor.call('starMessage', { ...message, starred: true }, function (error: any) {
 				if (error) {
-					return handleError(error);
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			});
 		},
@@ -50,7 +49,7 @@ Meteor.startup(function () {
 
 			Meteor.call('starMessage', { ...message, starred: false }, function (error?: any) {
 				if (error) {
-					handleError(error);
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			});
 		},
@@ -59,7 +58,7 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			return Boolean(message.starred && message.starred.find((star: any) => star._id === user._id));
+			return Boolean(message.starred?.find((star: any) => star._id === user._id));
 		},
 		order: 9,
 		group: 'menu',
@@ -98,7 +97,7 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			return Boolean(message.starred && message.starred.find((star) => star._id === user._id));
+			return Boolean(message.starred?.find((star) => star._id === user._id));
 		},
 		order: 100,
 		group: ['message', 'menu'],
@@ -121,7 +120,7 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			return Boolean(message.starred && message.starred.find((star) => star._id === user._id));
+			return Boolean(message.starred?.find((star) => star._id === user._id));
 		},
 		order: 101,
 		group: 'menu',

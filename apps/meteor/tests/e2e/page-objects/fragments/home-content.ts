@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 export class HomeContent {
 	private readonly page: Page;
@@ -9,20 +9,12 @@ export class HomeContent {
 		this.page = page;
 	}
 
-	get btnAudioRecod(): Locator {
-		return this.page.locator('[data-qa-id="audio-record"]');
+	get inputMessage(): Locator {
+		return this.page.locator('[name="msg"]');
 	}
 
-	get waitForLastMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
-	}
-
-	get lastMessageRoleAdded(): Locator {
-		return this.page.locator('[data-qa="system-message"] [data-qa-type="system-message-body"]').last();
-	}
-
-	get lastMessage(): Locator {
-		return this.page.locator('.messages-box [data-qa-type="message"]').last();
+	get messagePopUpItems(): Locator {
+		return this.page.locator('.message-popup-items');
 	}
 
 	get lastUserMessage(): Locator {
@@ -33,55 +25,18 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
 	}
 
-	get userCardLinkProfile(): Locator {
-		return this.page.locator('[data-qa="UserCard"] a');
+	async sendMessage(text: string): Promise<void> {
+		await this.page.locator('[name="msg"]').type(text);
+		await this.page.keyboard.press('Enter');
 	}
 
-	get messagePopUp(): Locator {
-		return this.page.locator('.message-popup');
+	async dispatchSlashCommand(text: string): Promise<void> {
+		await this.page.locator('[name="msg"]').type(text);
+		await this.page.keyboard.press('Enter');
+		await this.page.keyboard.press('Enter');
 	}
 
-	get messagePopUpTitle(): Locator {
-		return this.page.locator('.message-popup-title');
-	}
-
-	get messagePopUpItems(): Locator {
-		return this.page.locator('.message-popup-items');
-	}
-
-	get inputMain(): Locator {
-		return this.page.locator('[name="msg"]');
-	}
-
-	get btnSend(): Locator {
-		return this.page.locator('.rc-message-box__icon.js-send');
-	}
-
-	get messagePopUpFirstItem(): Locator {
-		return this.page.locator('.popup-item.selected');
-	}
-
-	get emojiBtn(): Locator {
-		return this.page.locator('.rc-message-box__icon.emoji-picker-icon');
-	}
-
-	get emojiPickerPeopleIcon(): Locator {
-		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-people")]');
-	}
-
-	get emojiGrinning(): Locator {
-		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emoji-grinning")]');
-	}
-
-	get lastMessageForMessageTest(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-body"]');
-	}
-
-	channelTitle(title: string): Locator {
-		return this.page.locator('.rcx-room-header', { hasText: title });
-	}
-
-	get modalCancelButton(): Locator {
+	get btnModalCancel(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
 
@@ -91,7 +46,7 @@ export class HomeContent {
 		);
 	}
 
-	get buttonSend(): Locator {
+	get btnModalConfirm(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 	}
 
@@ -111,76 +66,66 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
 	}
 
-	async setTextToInput(text: string, options: { delay?: number } = {}): Promise<void> {
-		await this.page.locator('[name="msg"]').click({ clickCount: 3 });
-		await this.page.keyboard.press('Backspace');
-		await this.page.locator('[name="msg"]').type(text, { delay: options.delay ?? 0 });
+	get waitForLastMessageTextAttachmentEqualsText(): Locator {
+		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
 	}
 
-	async doSendMessage(text: string): Promise<void> {
-		await this.page.locator('[name="msg"]').type(text);
-		await this.page.keyboard.press('Enter');
+	get btnOptionEditMessage(): Locator {
+		return this.page.locator('[data-qa-id="edit-message"]');
 	}
 
-	async doOpenMessageActionMenu(): Promise<void> {
-		await this.page.locator('[data-qa-type="message"]:last-child').hover();
-		await this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-action-menu"][data-qa-id="menu"]').waitFor();
-		await this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
+	get btnOptionDeleteMessage(): Locator {
+		return this.page.locator('[data-qa-id="delete-message"]');
 	}
 
-	async doReload(): Promise<void> {
-		await this.page.reload({ waitUntil: 'load' });
-		await this.page.waitForSelector('.messages-box');
+	get btnOptionPinMessage(): Locator {
+		return this.page.locator('[data-qa-id="pin-message"]');
 	}
 
-	async openMoreActionMenu(): Promise<void> {
-		await this.page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
-		await this.page.waitForSelector('.rc-popover__content');
+	get btnOptionStarMessage(): Locator {
+		return this.page.locator('[data-qa-id="star-message"]');
 	}
 
-	async doSelectAction(
-		action: 'edit' | 'reply' | 'delete' | 'permalink' | 'copy' | 'quote' | 'star' | 'unread' | 'reaction',
-	): Promise<void> {
-		switch (action) {
-			case 'edit':
-				await this.page.locator('[data-qa-id="edit-message"]').click();
-				await this.page.locator('[name="msg"]').fill('this message was edited');
-				await this.page.keyboard.press('Enter');
-				break;
-			case 'reply':
-				await this.page.locator('[data-qa-id="reply-in-thread"]').click();
-				break;
-			case 'delete':
-				await this.page.locator('[data-qa-id="delete-message"]').click();
-				await this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
-				break;
-			case 'permalink':
-				await this.page.locator('[data-qa-id="permalink"]').click();
-				break;
-			case 'copy':
-				await this.page.locator('[data-qa-id="copy"]').click();
-				break;
-			case 'quote':
-				await this.page.locator('[data-qa-id="quote-message"]').click();
-				await this.page.locator('[name="msg"]').type('this is a quote message');
-				await this.page.keyboard.press('Enter');
-				break;
-			case 'star':
-				await this.page.locator('[data-qa-id="star-message"]').click();
-				break;
-			case 'unread':
-				await this.page.locator('[data-id="mark-message-as-unread"][data-type="message-action"]').click();
-				break;
-			case 'reaction':
-				await this.page.locator('[data-qa-id="reply-in-thread"]').click();
-				await this.emojiPickerPeopleIcon.click();
-				await this.emojiGrinning.click();
-				break;
-		}
+	get btnOptionFileUpload(): Locator {
+		return this.page.locator('[data-qa-id="file-upload"]');
 	}
 
-	async doDragAndDropFile(): Promise<void> {
-		const contract = await fs.readFile('./tests/e2e/utils/fixtures/any_file.txt', 'utf-8');
+	get btnVideoMessage(): Locator {
+		return this.page.locator('.rc-popover__content [data-id="video-message"]');
+	}
+
+	get btnRecordAudio(): Locator {
+		return this.page.locator('[data-qa-id="audio-record"]');
+	}
+
+	get btnMenuMoreActions() {
+		return this.page.locator('[data-qa-id="menu-more-actions"]');
+	}
+
+	get linkUserCard(): Locator {
+		return this.page.locator('[data-qa="UserCard"] a');
+	}
+
+	get btnForwardChat(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
+	}
+
+	get inputModalAgentUserName(): Locator {
+		return this.page.locator('#modal-root input:nth-child(1)');
+	}
+
+	get inputModalAgentForwardComment(): Locator {
+		return this.page.locator('[data-qa-id="ForwardChatModalTextAreaInputComment"]');
+	}
+
+	async pickEmoji(emoji: string, section = 'icon-people') {
+		await this.page.locator('.rc-message-box__icon.emoji-picker-icon').click();
+		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
+		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${emoji}")]`).first().click();
+	}
+
+	async dragAndDropFile(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
 
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
@@ -196,5 +141,11 @@ export class HomeContent {
 			'drop',
 			{ dataTransfer },
 		);
+	}
+
+	async openLastMessageMenu(): Promise<void> {
+		await this.page.locator('[data-qa-type="message"]').last().hover();
+		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').waitFor();
+		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
 	}
 }

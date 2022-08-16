@@ -1,4 +1,4 @@
-import { SettingValue } from '@rocket.chat/core-typings';
+import type { SettingValue } from '@rocket.chat/core-typings';
 import { Users, Settings } from '@rocket.chat/models';
 
 import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/resolveDNS';
@@ -17,7 +17,7 @@ function updateSetting(id: string, value: SettingValue | null): void {
 			Settings.updateValueById(id, value);
 		}
 	} else {
-		Settings.updateValueById(id, undefined);
+		Settings.updateValueById(id, null);
 	}
 }
 
