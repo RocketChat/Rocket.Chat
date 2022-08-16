@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
+import { HomeFlextabChannels } from './home-flextab-channels';
 
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabRoom } from './home-flextab-room';
@@ -10,10 +11,13 @@ export class HomeFlextab {
 
 	readonly room: HomeFlextabRoom;
 
+	readonly channels: HomeFlextabChannels;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.members = new HomeFlextabMembers(page);
 		this.room = new HomeFlextabRoom(page);
+		this.channels = new HomeFlextabChannels(page);
 	}
 
 	get btnTabMembers(): Locator {
@@ -22,6 +26,10 @@ export class HomeFlextab {
 
 	get btnRoomInfo(): Locator {
 		return this.page.locator('[data-qa-id=ToolBoxAction-info-circled]');
+	}
+
+	get btnChannels(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-hash"]');
 	}
 
 	get flexTabViewThreadMessage(): Locator {
