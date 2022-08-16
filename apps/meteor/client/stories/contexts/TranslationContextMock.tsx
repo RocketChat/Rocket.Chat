@@ -1,7 +1,6 @@
+import { TranslationContext, TranslationKey } from '@rocket.chat/ui-contexts';
 import i18next from 'i18next';
 import React, { ContextType, ReactElement, ReactNode, useContext, useMemo } from 'react';
-
-import { TranslationContext } from '../../contexts/TranslationContext';
 
 type TranslationContextMockProps = {
 	children: ReactNode;
@@ -42,7 +41,7 @@ const TranslationContextMock = ({ children }: TranslationContextMockProps): Reac
 			});
 		};
 
-		translate.has = (key: string): boolean => !!key && i18next.exists(key);
+		translate.has = (key: string | undefined): key is TranslationKey => !!key && i18next.exists(key);
 
 		return {
 			...parent,

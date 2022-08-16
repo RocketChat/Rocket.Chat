@@ -1,14 +1,12 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Select, Margins, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useCurrentRoute, useQueryStringParameter, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useRoute, useCurrentRoute, useQueryStringParameter } from '../../../../contexts/RouterContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTabContext } from '../../providers/ToolboxProvider';
 import ThreadComponent from '../../threads/ThreadComponent';
 import Row from './Row';

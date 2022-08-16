@@ -1,8 +1,8 @@
 import { Box, PasswordInput, Icon } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, ChangeEvent, Ref } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import GenericModal from '../GenericModal';
 import { Method, OnConfirm } from './TwoFactorModal';
 

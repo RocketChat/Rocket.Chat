@@ -1,4 +1,5 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
@@ -10,9 +11,6 @@ import {
 	GenericTableLoadingTable,
 } from '../../../components/GenericTable';
 import Page from '../../../components/Page';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import InviteRow from './InviteRow';
@@ -22,7 +20,7 @@ const InvitesPage = (): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const { phase, value, reload } = useEndpointData('listInvites');
+	const { phase, value, reload } = useEndpointData('/v1/listInvites');
 
 	const onRemove = (removeInvite: () => void): void => {
 		const confirmRemove = async (): Promise<void> => {

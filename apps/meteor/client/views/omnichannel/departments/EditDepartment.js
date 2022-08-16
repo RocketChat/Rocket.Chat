@@ -13,21 +13,17 @@ import {
 	PaginatedSelectFiltered,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRoute, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useRef } from 'react';
-import { useSubscription } from 'use-subscription';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import Page from '../../../components/Page';
 import { useRoomsList } from '../../../components/RoomAutoComplete/hooks/useRoomsList';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';
 import { AsyncStatePhase } from '../../../lib/asyncState';
-import { formsSubscription } from '../additionalForms';
+import { useFormsSubscription } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 
 function withDefault(key, defaultValue) {
@@ -45,7 +41,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		useDepartmentForwarding = () => {},
 		useDepartmentBusinessHours = () => {},
 		useSelectForwardDepartment = () => {},
-	} = useSubscription(formsSubscription);
+	} = useFormsSubscription();
 
 	const initialAgents = useRef((data && data.agents) || []);
 
@@ -141,7 +137,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	};
 
 	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
-	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `livechat/department/${id}/agents`);
+	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `/v1/livechat/department/${id}/agents`);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -283,7 +279,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 				<Page.ScrollableContentWithShadow>
 					<FieldGroup w='full' alignSelf='center' maxWidth='x600' id={formId} is='form' autoComplete='off' onSubmit={handleSubmit}>
 						<Field>
-							<Box display='flex' flexDirection='row'>
+							<Box display='flex' data-qa='DepartmentEditToggle-Enabled' flexDirection='row'>
 								<Field.Label>{t('Enabled')}</Field.Label>
 								<Field.Row>
 									<ToggleSwitch flexGrow={1} checked={enabled} onChange={handleEnabled} />
@@ -293,17 +289,30 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 						<Field>
 							<Field.Label>{t('Name')}*</Field.Label>
 							<Field.Row>
-								<TextInput flexGrow={1} error={nameError} value={name} onChange={handleName} placeholder={t('Name')} />
+								<TextInput
+									data-qa='DepartmentEditTextInput-Name'
+									flexGrow={1}
+									error={nameError}
+									value={name}
+									onChange={handleName}
+									placeholder={t('Name')}
+								/>
 							</Field.Row>
 						</Field>
 						<Field>
 							<Field.Label>{t('Description')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput flexGrow={1} value={description} onChange={handleDescription} placeholder={t('Description')} />
+								<TextAreaInput
+									data-qa='DepartmentEditTextInput-Description'
+									flexGrow={1}
+									value={description}
+									onChange={handleDescription}
+									placeholder={t('Description')}
+								/>
 							</Field.Row>
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row'>
+							<Box data-qa='DepartmentEditToggle-ShowOnRegistrationPage' display='flex' flexDirection='row'>
 								<Field.Label>{t('Show_on_registration_page')}</Field.Label>
 								<Field.Row>
 									<ToggleSwitch flexGrow={1} checked={showOnRegistration} onChange={handleShowOnRegistration} />
@@ -314,6 +323,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							<Field.Label>{t('Email')}*</Field.Label>
 							<Field.Row>
 								<TextInput
+									data-qa='DepartmentEditTextInput-Email'
 									flexGrow={1}
 									error={emailError}
 									value={email}
@@ -324,7 +334,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							</Field.Row>
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row'>
+							<Box display='flex' data-qa='DepartmentEditToggle-ShowOnOfflinePage' flexDirection='row'>
 								<Field.Label>{t('Show_on_offline_page')}</Field.Label>
 								<Field.Row>
 									<ToggleSwitch flexGrow={1} checked={showOnOfflineForm} onChange={handleShowOnOfflineForm} />
@@ -335,6 +345,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							<Field.Label>{t('Livechat_DepartmentOfflineMessageToChannel')}</Field.Label>
 							<Field.Row>
 								<PaginatedSelectFiltered
+									data-qa='DepartmentSelect-LivechatDepartmentOfflineMessageToChannel'
 									value={offlineMessageChannelName}
 									onChange={handleOfflineMessageChannelName}
 									flexShrink={0}
@@ -407,10 +418,15 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							</Field>
 						)}
 						<Field>
-							<Box display='flex' flexDirection='row'>
+							<Box display='flex' data-qa='DiscussionToggle-RequestTagBeforeCLosingChat' flexDirection='row'>
 								<Field.Label>{t('Request_tag_before_closing_chat')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch flexGrow={1} checked={requestTagBeforeClosingChat} onChange={handleRequestTagBeforeClosingChat} />
+									<ToggleSwitch
+										data-qa='DiscussionToggle-RequestTagBeforeCLosingChat'
+										flexGrow={1}
+										checked={requestTagBeforeClosingChat}
+										onChange={handleRequestTagBeforeClosingChat}
+									/>
 								</Field.Row>
 							</Box>
 						</Field>
@@ -418,7 +434,13 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							<Field>
 								<Field.Label alignSelf='stretch'>{t('Conversation_closing_tags')}*</Field.Label>
 								<Field.Row>
-									<TextInput error={tagError} value={tagsText} onChange={handleTagTextChange} placeholder={t('Enter_a_tag')} />
+									<TextInput
+										data-qa='DepartmentEditTextInput-ConversationClosingTags'
+										error={tagError}
+										value={tagsText}
+										onChange={handleTagTextChange}
+										placeholder={t('Enter_a_tag')}
+									/>
 									<Button mis='x8' title={t('add')} onClick={handleTagTextSubmit}>
 										{t('Add')}
 									</Button>

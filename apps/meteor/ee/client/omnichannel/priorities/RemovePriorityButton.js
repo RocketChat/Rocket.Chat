@@ -1,13 +1,9 @@
-import { Table, Icon, Button } from '@rocket.chat/fuselage';
+import { Table, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../../client/components/GenericModal';
-import { useSetModal } from '../../../../client/contexts/ModalContext';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { useMethod } from '../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 function RemovePriorityButton({ _id, reload }) {
 	const removePriority = useMethod('livechat:removePriority');
@@ -43,9 +39,7 @@ function RemovePriorityButton({ _id, reload }) {
 
 	return (
 		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
-			<Button small ghost title={t('Remove')} onClick={handleDelete}>
-				<Icon name='trash' size='x16' />
-			</Button>
+			<IconButton icon='trash' mini title={t('Remove')} onClick={handleDelete} />
 		</Table.Cell>
 	);
 }

@@ -1,7 +1,7 @@
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { tooltip } from '../../../app/ui/client/components/tooltip';
-import { useUserPreference } from '../../contexts/UserContext';
 import * as domEvents from '../../lib/utils/domEvents';
 
 export const useTooltipHandling = (): void => {

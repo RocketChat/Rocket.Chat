@@ -1,17 +1,19 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useSetModal,
+	useToastMessageDispatch,
+	useRoute,
+	useUserId,
+	useSetting,
+	usePermission,
+	useMethod,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import MarkdownText from '../../../../components/MarkdownText';
-import { usePermission } from '../../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../../contexts/ModalContext';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useUserId } from '../../../../contexts/UserContext';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -58,9 +60,9 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 
-	const deleteTeam = useEndpointActionExperimental('POST', 'teams.delete');
-	const leaveTeam = useEndpointActionExperimental('POST', 'teams.leave');
-	const convertTeamToChannel = useEndpointActionExperimental('POST', 'teams.convertToChannel');
+	const deleteTeam = useEndpointActionExperimental('POST', '/v1/teams.delete');
+	const leaveTeam = useEndpointActionExperimental('POST', '/V1/teams.leave');
+	const convertTeamToChannel = useEndpointActionExperimental('POST', '/v1/teams.convertToChannel');
 
 	const hideTeam = useMethod('hideRoom');
 

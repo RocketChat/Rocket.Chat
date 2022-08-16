@@ -1,10 +1,8 @@
 import { Box, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, ChangeEvent } from 'react';
 
-import { useEndpoint } from '../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../contexts/TranslationContext';
 import GenericModal from '../GenericModal';
 import { Method, OnConfirm } from './TwoFactorModal';
 
@@ -20,7 +18,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus<HTMLInputElement>();
 
-	const sendEmailCode = useEndpoint('POST', 'users.2fa.sendEmailCode');
+	const sendEmailCode = useEndpoint('POST', '/v1/users.2fa.sendEmailCode');
 
 	const onClickResendCode = async (): Promise<void> => {
 		try {

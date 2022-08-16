@@ -1,8 +1,8 @@
 import { Box, CheckBox } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericTable from '../../../../../components/GenericTable';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import ChannelRow from './ChannelRow';
 
 const ChannelDeletionTable = ({ rooms, params, onChangeParams, onChangeRoomSelection, selectedRooms, onToggleAllRooms }) => {

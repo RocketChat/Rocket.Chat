@@ -361,7 +361,7 @@ describe('[Outgoing Integrations]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'The query parameter "integrationId" is required.');
+					expect(res.body).to.have.property('error', `must have required property 'integrationId' [invalid-params]`);
 				})
 				.end(done);
 		});
@@ -454,6 +454,7 @@ describe('[Outgoing Integrations]', function () {
 					.set(credentials)
 					.send({
 						integrationId: integration._id,
+						type: 'webhook-outgoing',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(403)
@@ -472,6 +473,7 @@ describe('[Outgoing Integrations]', function () {
 					.set(credentials)
 					.send({
 						integrationId: integration._id,
+						type: 'webhook-outgoing',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(403)
@@ -496,7 +498,7 @@ describe('[Outgoing Integrations]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'Invalid integration type.');
+						expect(res.body).to.have.property('error').include(`must match exactly one schema in oneOf`);
 					})
 					.end(done);
 			});

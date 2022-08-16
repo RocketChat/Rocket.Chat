@@ -1,3 +1,4 @@
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import {
 	Field,
 	TextInput,
@@ -15,6 +16,15 @@ import {
 	TextAreaInput,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useSetModal,
+	useSetting,
+	usePermission,
+	useAtLeastOnePermission,
+	useRole,
+	useMethod,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useRef } from 'react';
 
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
@@ -24,11 +34,6 @@ import GenericModal from '../../../../../components/GenericModal';
 import RawText from '../../../../../components/RawText';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
-import { usePermission, useAtLeastOnePermission, useRole } from '../../../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useMethod } from '../../../../../contexts/ServerContext';
-import { useSetting } from '../../../../../contexts/SettingsContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../../hooks/useForm';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
@@ -220,8 +225,8 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const changeArchivation = archived !== !!room.archived;
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
 	const archiveMessage = room.archived ? 'Room_has_been_unarchived' : 'Room_has_been_archived';
-	const saveAction = useEndpointActionExperimental('POST', 'rooms.saveRoomSettings', t('Room_updated_successfully'));
-	const archiveAction = useEndpointActionExperimental('POST', 'rooms.changeArchivationState', t(archiveMessage));
+	const saveAction = useEndpointActionExperimental('POST', '/v1/rooms.saveRoomSettings', t('Room_updated_successfully'));
+	const archiveAction = useEndpointActionExperimental('POST', '/v1/rooms.changeArchivationState', t(archiveMessage));
 
 	const handleSave = useMutableCallback(async () => {
 		const { joinCodeRequired, hideSysMes, ...data } = saveData.current;
@@ -314,7 +319,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Private')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch disabled={!canChangeType} checked={roomType === 'p'} onChange={changeRoomType} />
+								<ToggleSwitch disabled={!canChangeType || isRoomFederated(room)} checked={roomType === 'p'} onChange={changeRoomType} />
 							</Field.Row>
 						</Box>
 						<Field.Hint>{t('Teams_New_Private_Description_Enabled')}</Field.Hint>
@@ -325,7 +330,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Read_only')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch disabled={!canSetRo} checked={readOnly} onChange={handleReadOnly} />
+								<ToggleSwitch disabled={!canSetRo || isRoomFederated(room)} checked={readOnly} onChange={handleReadOnly} />
 							</Field.Row>
 						</Box>
 						<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
@@ -475,7 +480,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				</Field>
 				<Field>
 					<Field.Row>
-						<Button flexGrow={1} primary danger disabled={!canDelete} onClick={handleDelete}>
+						<Button flexGrow={1} danger disabled={!canDelete} onClick={handleDelete}>
 							<Icon name='trash' size='x16' />
 							{t('Delete')}
 						</Button>

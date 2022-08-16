@@ -1,12 +1,10 @@
-import type { IStats } from '@rocket.chat/core-typings';
+import type { IInstanceStatus, IStats } from '@rocket.chat/core-typings';
 import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
+import { usePermission, useServerInformation, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, memo, ReactElement } from 'react';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useMethod, useServerInformation, useEndpoint } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { downloadJsonAs } from '../../../lib/download';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import InformationPage from './InformationPage';
@@ -20,10 +18,10 @@ const InformationRoute = (): ReactElement => {
 	const [isLoading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
 	const [statistics, setStatistics] = useState<IStats>();
-	const [instances, setInstances] = useState([]);
+	const [instances, setInstances] = useState<IInstanceStatus[]>();
 	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(() => (): void => undefined);
-	const getStatistics = useEndpoint('GET', 'statistics');
-	const getInstances = useMethod('instances/get');
+	const getStatistics = useEndpoint('GET', '/v1/statistics');
+	const getInstances = useEndpoint('GET', '/v1/instances.get');
 
 	useEffect(() => {
 		let didCancel = false;
@@ -33,13 +31,13 @@ const InformationRoute = (): ReactElement => {
 			setError(false);
 
 			try {
-				const [statistics, instances] = await Promise.all([getStatistics({ refresh }), getInstances()]);
+				const [statistics, { instances }] = await Promise.all([getStatistics({ refresh: refresh ? 'true' : 'false' }), getInstances()]);
 
 				if (didCancel) {
 					return;
 				}
 				setStatistics(statistics);
-				setInstances(instances);
+				setInstances(instances as IInstanceStatus[]);
 			} catch (error) {
 				setError(!!error);
 			} finally {
@@ -100,7 +98,7 @@ const InformationRoute = (): ReactElement => {
 				canViewStatistics={canViewStatistics}
 				info={info}
 				statistics={statistics}
-				instances={instances}
+				instances={instances || []}
 				onClickRefreshButton={handleClickRefreshButton}
 				onClickDownloadInfo={handleClickDownloadInfo}
 			/>

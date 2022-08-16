@@ -1,13 +1,13 @@
 import { Field, TextInput } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 
 export const DepartmentBusinessHours = ({ bhId }) => {
 	const t = useTranslation();
 	const { value: data } = useEndpointData(
-		'livechat/business-hour',
+		'/v1/livechat/business-hour',
 		useMemo(() => ({ _id: bhId, type: 'custom' }), [bhId]),
 	);
 

@@ -1,13 +1,13 @@
 import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
+import { LivechatInquiry } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { LivechatInquiry } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { RoutingManager } from '../lib/RoutingManager';
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message, room) => {
+	(message, room) => {
 		if (!isOmnichannelRoom(room)) {
 			return message;
 		}
@@ -26,7 +26,7 @@ callbacks.add(
 			return message;
 		}
 
-		await LivechatInquiry.setLastMessageByRoomId(room._id, message);
+		Promise.await(LivechatInquiry.setLastMessageByRoomId(room._id, message));
 
 		return message;
 	},

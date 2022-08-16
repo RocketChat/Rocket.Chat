@@ -1,9 +1,8 @@
 import { Modal, Box, ButtonGroup, Button, Scrollable, Callout, Margins, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 
 const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
@@ -22,7 +21,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 
 	const hasChanges = lastSetLicense !== newLicense;
 
-	const addLicense = useEndpointActionExperimental('POST', 'licenses.add', t('Cloud_License_applied_successfully'));
+	const addLicense = useEndpointActionExperimental('POST', '/v1/licenses.add', t('Cloud_License_applied_successfully'));
 
 	const handlePaste = useMutableCallback(async () => {
 		try {
@@ -95,11 +94,11 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 				{status === 'invalid' && <Callout type='danger'>{t('Cloud_Invalid_license')}</Callout>}
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button primary disabled={!hasChanges || isUpdating} onClick={handleApplyLicense}>
 						{t('Cloud_Apply_license')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

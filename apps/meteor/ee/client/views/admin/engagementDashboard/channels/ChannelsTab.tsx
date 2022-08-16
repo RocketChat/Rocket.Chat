@@ -1,13 +1,13 @@
 import { Box, Icon, Margins, Pagination, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo, useState } from 'react';
 
-import Growth from '../../../../../../client/components/data/Growth';
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import Growth from '../../../../../../client/components/dataView/Growth';
 import Section from '../Section';
-import DownloadDataButton from '../data/DownloadDataButton';
-import PeriodSelector from '../data/PeriodSelector';
-import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
+import DownloadDataButton from '../dataView/DownloadDataButton';
+import PeriodSelector from '../dataView/PeriodSelector';
+import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useChannelsList } from './useChannelsList';
 
 const ChannelsTab = (): ReactElement => {
@@ -84,7 +84,7 @@ const ChannelsTab = (): ReactElement => {
 									<Table.Cell>{i + 1}.</Table.Cell>
 									<Table.Cell>
 										<Margins inlineEnd='x4'>
-											{(t === 'd' && <Icon name='at' />) || (t === 'c' && <Icon name='lock' />) || (t === 'p' && <Icon name='hashtag' />)}
+											{(t === 'd' && <Icon name='at' />) || (t === 'p' && <Icon name='lock' />) || (t === 'c' && <Icon name='hashtag' />)}
 										</Margins>
 										{name}
 									</Table.Cell>

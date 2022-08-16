@@ -1,10 +1,10 @@
 import { Box, Select, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { getDateRange } from '../../../lib/utils/getDateRange';
 import Label from '../components/Label';
 import AgentStatusChart from './charts/AgentStatusChart';

@@ -1,10 +1,8 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import React, { FC, useContext, useMemo } from 'react';
+import { LayoutContext, useQueryStringParameter, useSetting } from '@rocket.chat/ui-contexts';
+import React, { FC, useMemo } from 'react';
 
 import { menu } from '../../app/ui-utils/client';
-import { LayoutContext, SizeLayout, LayoutContextValue } from '../contexts/LayoutContext';
-import { useQueryStringParameter } from '../contexts/RouterContext';
-import { useSetting } from '../contexts/SettingsContext';
 
 const LayoutProvider: FC = ({ children }) => {
 	const showTopNavbarEmbeddedLayout = Boolean(useSetting('UI_Show_top_navbar_embedded_layout'));
@@ -35,9 +33,5 @@ const LayoutProvider: FC = ({ children }) => {
 		/>
 	);
 };
-export default LayoutProvider;
 
-export const useLayoutSizes = (): SizeLayout => useContext(LayoutContext).size;
-export const useLayoutContextualBarExpanded = (): boolean => useContext(LayoutContext).contextualBarExpanded;
-export const useLayoutContextualBarPosition = (): LayoutContextValue['contextualBarPosition'] =>
-	useContext(LayoutContext).contextualBarPosition;
+export default LayoutProvider;

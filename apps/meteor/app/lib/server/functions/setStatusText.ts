@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Users as UsersRaw } from '@rocket.chat/models';
 
 import { Users } from '../../../models/server';
-import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
@@ -34,7 +35,7 @@ export const _setStatusTextPromise = async function (userId: string, statusText:
 	return true;
 };
 
-export const _setStatusText = function (userId: any, statusText: string): unknown {
+export const _setStatusText = function (userId: any, statusText: string): IUser | boolean {
 	statusText = s.trim(statusText);
 	if (statusText.length > 120) {
 		statusText = statusText.substr(0, 120);

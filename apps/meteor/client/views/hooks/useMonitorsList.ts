@@ -1,7 +1,7 @@
 import type { ILivechatMonitorRecord } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
-import { useEndpoint } from '../../contexts/ServerContext';
 import { useScrollableRecordList } from '../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../lib/lists/RecordList';
@@ -21,9 +21,7 @@ export const useMonitorsList = (
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatMonitorRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatMonitorRecord>()), []);
 
-	const endpoint = 'livechat/monitors.list';
-
-	const getMonitors = useEndpoint('GET', endpoint);
+	const getMonitors = useEndpoint('GET', '/v1/livechat/monitors');
 
 	useComponentDidUpdate(() => {
 		options && reload();

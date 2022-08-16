@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { Imports } from '../../../models';
+import { Imports } from '../../../models/server';
 import { Importers, Selection, SelectionChannel, SelectionUser } from '..';
 
 Meteor.methods({

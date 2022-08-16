@@ -7,14 +7,14 @@ import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { Emitter } from '@rocket.chat/emitter';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
+import { waitUntilWrapperExists } from './waitUntilWrapperExists';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from '../../../../client/lib/utils/renderMessageBody';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
-import { getUserPreference } from '../../../utils/client';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import {
 	setHighlightMessage,
@@ -40,22 +40,6 @@ export const normalizeThreadMessage = ({ ...message }) => {
 		}
 	}
 };
-
-export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper') =>
-	document.querySelector(selector) ||
-	new Promise((resolve) => {
-		const observer = new MutationObserver(function (mutations, obs) {
-			const element = document.querySelector(selector);
-			if (element) {
-				obs.disconnect(); // stop observing
-				return resolve(element);
-			}
-		});
-		observer.observe(document, {
-			childList: true,
-			subtree: true,
-		});
-	});
 
 export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatMessage) => {
 	const userId = msg.u && msg.u._id;
@@ -197,8 +181,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
-		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls, showMessageInMainThread);
+		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls);
 
 		this.unqueue();
 
@@ -224,7 +207,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 			room.loaded = 0;
 		}
 
-		const visibleMessages = messages.filter((msg) => !msg.tmid || showMessageInMainThread || msg.tshow);
+		const visibleMessages = messages.filter((msg) => !msg.tmid || msg.tshow);
 
 		room.loaded += visibleMessages.length;
 
@@ -308,13 +291,14 @@ export const RoomHistoryManager = new (class extends Emitter {
 		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
 
 		if (surroundingMessage) {
-			const msgElement = $(`[data-id='${message._id}']`, w);
+			await waitUntilWrapperExists(`[data-id='${message._id}']`);
+			const wrapper = $('.messages-box .wrapper');
+			const msgElement = $(`[data-id='${message._id}']`, wrapper);
 
 			if (msgElement.length === 0) {
 				return;
 			}
 
-			const wrapper = $('.messages-box .wrapper');
 			const pos = wrapper.scrollTop() + msgElement.offset().top - wrapper.height() / 2;
 			wrapper.animate(
 				{
@@ -339,6 +323,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 
 		const room = this.getRoom(message.rid);
 		room.isLoading.set(true);
+		room.hasMore.set(false);
 		let typeName = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
@@ -350,16 +335,12 @@ export const RoomHistoryManager = new (class extends Emitter {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		return Meteor.call('loadSurroundingMessages', message, limit, function (err, result) {
+		return Meteor.call('loadSurroundingMessages', message, limit, async function (err, result) {
 			if (!result || !result.messages) {
 				return;
 			}
-			RoomHistoryManager.clear(message.rid);
-			for (const msg of Array.from(result.messages)) {
-				if (msg.t !== 'command') {
-					upsertMessage({ msg, subscription });
-				}
-			}
+
+			upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 
 			readMessage.refreshUnreadMark(message.rid);
 			RoomManager.updateMentionsMarksOfRoom(typeName);

@@ -1,10 +1,10 @@
 import { Tracker } from 'meteor/tracker';
 import { useMemo } from 'react';
-import { Subscription, Unsubscribe, useSubscription } from 'use-subscription';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 export const useReactiveValue = <T>(computeCurrentValue: () => T): T => {
-	const subscription: Subscription<T> = useMemo(() => {
-		const callbacks = new Set<Unsubscribe>();
+	const [subscribe, getSnapshot] = useMemo(() => {
+		const callbacks = new Set<() => void>();
 
 		let currentValue: T;
 
@@ -15,9 +15,8 @@ export const useReactiveValue = <T>(computeCurrentValue: () => T): T => {
 			});
 		});
 
-		return {
-			getCurrentValue: (): T => currentValue,
-			subscribe: (callback): Unsubscribe => {
+		return [
+			(callback: () => void): (() => void) => {
 				callbacks.add(callback);
 
 				return (): void => {
@@ -28,8 +27,9 @@ export const useReactiveValue = <T>(computeCurrentValue: () => T): T => {
 					}
 				};
 			},
-		};
+			(): T => currentValue,
+		];
 	}, [computeCurrentValue]);
 
-	return useSubscription(subscription);
+	return useSyncExternalStore(subscribe, getSnapshot);
 };

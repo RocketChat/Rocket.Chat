@@ -1,4 +1,4 @@
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 
 export const useUsageLabel = (percentage: number): string => {
 	const fixedPercentage = percentage.toFixed(0);

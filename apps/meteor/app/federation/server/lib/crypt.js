@@ -1,4 +1,5 @@
-import { FederationKeys } from '../../../models/server/raw';
+import { FederationKeys } from '@rocket.chat/models';
+
 import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
 import { cryptLogger } from './logger';

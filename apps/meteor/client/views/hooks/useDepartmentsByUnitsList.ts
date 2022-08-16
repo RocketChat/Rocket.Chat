@@ -1,7 +1,7 @@
 import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
-import { useEndpoint } from '../../contexts/ServerContext';
 import { useScrollableRecordList } from '../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../lib/lists/RecordList';
@@ -21,9 +21,8 @@ export const useDepartmentsByUnitsList = (
 } => {
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
-	const endpoint = `livechat/departments.available-by-unit/${options.unitId || 'none'}` as const;
 
-	const getDepartments = useEndpoint('GET', endpoint);
+	const getDepartments = useEndpoint('GET', `/v1/livechat/units/${options.unitId || 'none'}/departments/available`);
 
 	useComponentDidUpdate(() => {
 		options && reload();

@@ -1,15 +1,16 @@
-import React, { ReactNode, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import React, { useMemo } from 'react';
 import { Option, Badge } from '@rocket.chat/fuselage';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { useSetting } from '../../../client/contexts/SettingsContext';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 import Header from '../../../client/components/Header';
 
 addAction('livestream', ({ room }) => {
 	const enabled = useSetting('Livestream_enabled');
 	const t = useTranslation();
-
+	const federated = isRoomFederated(room);
 	const isLive = room?.streamingOptions?.id && room.streamingOptions.type === 'livestream';
 
 	return useMemo(
@@ -22,6 +23,10 @@ addAction('livestream', ({ room }) => {
 						icon: 'podcast',
 						template: 'liveStreamTab',
 						order: isLive ? -1 : 15,
+						...(federated && {
+							'data-tooltip': federated ? 'Livestream_unavailable_for_federation' : '',
+							'disabled': true,
+						}),
 						renderAction: (props): ReactNode => (
 							<Header.ToolBoxAction {...props}>
 								{isLive ? (
@@ -42,6 +47,6 @@ addAction('livestream', ({ room }) => {
 						),
 				  }
 				: null,
-		[enabled, isLive, t],
+		[enabled, isLive, t, federated],
 	);
 });

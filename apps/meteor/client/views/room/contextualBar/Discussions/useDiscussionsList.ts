@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 
-import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
 import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';
 import { DiscussionsList, DiscussionsListOptions } from '../../../../lib/lists/DiscussionsList';
@@ -17,7 +17,7 @@ export const useDiscussionsList = (
 } => {
 	const discussionsList = useMemo(() => new DiscussionsList(options), [options]);
 
-	const getDiscussions = useEndpoint('GET', 'chat.getDiscussions');
+	const getDiscussions = useEndpoint('GET', '/v1/chat.getDiscussions');
 
 	const fetchMessages = useCallback(
 		async (start, end) => {

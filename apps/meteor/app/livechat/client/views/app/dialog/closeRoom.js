@@ -167,16 +167,16 @@ Template.closeRoom.onCreated(async function () {
 	this.onEnterTag = () => this.invalidTags.set(!validateRoomTags(this.tagsRequired.get(), this.tags.get()));
 
 	const { rid } = Template.currentData();
-	const { room } = await APIClient.v1.get(`rooms.info?roomId=${rid}`);
+	const { room } = await APIClient.get(`/v1/rooms.info`, { roomId: rid });
 	this.tags.set(room?.tags || []);
 
 	if (room?.departmentId) {
-		const { department } = await APIClient.v1.get(`livechat/department/${room.departmentId}?includeAgents=false`);
+		const { department } = await APIClient.get(`/v1/livechat/department/${room.departmentId}`, { includeAgents: false });
 		this.tagsRequired.set(department?.requestTagBeforeClosingChat);
 	}
 
 	const uid = Meteor.userId();
-	const { departments } = await APIClient.v1.get(`livechat/agents/${uid}/departments`);
+	const { departments } = await APIClient.get(`/v1/livechat/agents/${uid}/departments`);
 	const agentDepartments = departments.map((dept) => dept.departmentId);
 	this.agentDepartments.set(agentDepartments);
 

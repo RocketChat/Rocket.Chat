@@ -1,9 +1,8 @@
 import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
-import { Box, Divider } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
+import { useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, Fragment } from 'react';
 
-import { useAbsoluteUrl } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { apiCurlGetter } from './helpers';
 
 type APIsDisplayProps = {
@@ -17,7 +16,6 @@ const APIsDisplay: FC<APIsDisplayProps> = ({ apis }) => {
 
 	return (
 		<>
-			<Divider />
 			<Box display='flex' flexDirection='column'>
 				<Box fontScale='h4' mb='x12'>
 					{t('APIs')}

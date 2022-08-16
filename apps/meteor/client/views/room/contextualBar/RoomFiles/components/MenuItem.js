@@ -1,8 +1,8 @@
 import { Box, Menu, Icon } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import { getURL } from '../../../../../../app/utils/client';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { download } from '../../../../../lib/download';
 
 const MenuItem = ({ _id, name, url, onClickDelete }) => {

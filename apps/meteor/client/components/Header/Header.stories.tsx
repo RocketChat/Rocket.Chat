@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { SettingsContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import Header from '.';
-import { SettingsContext } from '../../contexts/SettingsContext';
 import { useRoomIcon } from '../../hooks/useRoomIcon';
 import ToolBox from '../../views/room/Header/ToolBox';
 import { ActionRenderer, addAction } from '../../views/room/lib/Toolbox';
@@ -30,8 +30,9 @@ export default {
 				value={{
 					hasPrivateAccess: true,
 					isLoading: false,
-					querySetting: (_id) => ({
-						getCurrentValue: () => ({
+					querySetting: (_id) => [
+						() => () => undefined,
+						() => ({
 							_id,
 							type: 'action',
 							value: '',
@@ -44,12 +45,8 @@ export default {
 							sorter: 1,
 							ts: new Date(),
 						}),
-						subscribe: () => () => undefined,
-					}),
-					querySettings: () => ({
-						getCurrentValue: () => [],
-						subscribe: () => () => undefined,
-					}),
+					],
+					querySettings: () => [() => () => undefined, () => []],
 					dispatch: async () => undefined,
 				}}
 			>

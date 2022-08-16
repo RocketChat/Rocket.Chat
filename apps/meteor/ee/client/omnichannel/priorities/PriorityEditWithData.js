@@ -1,15 +1,14 @@
 import { Callout } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import PriorityEdit from './PriorityEdit';
 
 function PriorityEditWithData({ priorityId, reload }) {
-	const query = useMemo(() => ({ priorityId }), [priorityId]);
-	const { value: data, phase: state, error } = useEndpointData('livechat/priorities.getOne', query);
+	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/priorities/${priorityId}`);
 
 	const t = useTranslation();
 

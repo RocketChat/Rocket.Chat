@@ -470,15 +470,6 @@ Meteor.startup(function () {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		this.add('Livechat_RDStation_Token', '', {
-			type: 'string',
-			group: 'Omnichannel',
-			public: false,
-			section: 'RD Station',
-			i18nLabel: 'RDStation_Token',
-			enableQuery: omnichannelEnabledQuery,
-		});
-
 		this.add('Livechat_Routing_Method', 'Auto_Selection', {
 			type: 'select',
 			group: 'Omnichannel',

@@ -1,9 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { FormSkeleton } from './Skeleton';
@@ -38,7 +37,7 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 		[id],
 	);
 
-	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(`rooms.info`, query);
+	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(`/v1/rooms.info`, query);
 
 	if (bar === 'view' && id) {
 		return <Chat rid={id} />;

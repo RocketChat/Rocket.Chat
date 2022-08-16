@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import { Users } from '../../../../../../app/models/server/raw';
 
 export async function findMonitors({ userId, text, pagination: { offset, count, sort } }) {
 	if (!(await hasPermissionAsync(userId, 'manage-livechat-monitors'))) {
@@ -15,7 +15,7 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 		});
 	}
 
-	const cursor = Users.findUsersInRolesWithQuery('livechat-monitor', query, {
+	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery('livechat-monitor', query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
@@ -29,9 +29,7 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 		},
 	});
 
-	const total = await cursor.count();
-
-	const monitors = await cursor.toArray();
+	const [monitors, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		monitors,

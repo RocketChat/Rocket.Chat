@@ -1,14 +1,8 @@
+import { useSetting, useLoadLanguage, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 
-import { useSetting } from '../../../contexts/SettingsContext';
-import { useLoadLanguage, useTranslation } from '../../../contexts/TranslationContext';
 import { filterLanguage } from '../../../lib/utils/filterLanguage';
-
-// eslint-disable-next-line @typescript-eslint/no-namespace
-declare namespace Window {
-	function setLanguage(language: string): void;
-}
 
 const Footer = (): ReactElement => {
 	const t = useTranslation();

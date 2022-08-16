@@ -1,22 +1,19 @@
-import { Table, Icon, Button } from '@rocket.chat/fuselage';
+import { Table, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 
 const RemoveAgentButton: FC<{ username: string; reload: () => void }> = ({ username, reload }) => {
-	const removeAgent = useEndpoint('DELETE', 'omnichannel/agent/extension');
+	const removeAgent = useEndpoint('DELETE', `/v1/omnichannel/agent/extension/${username}`);
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		try {
-			await removeAgent({ username });
+			await removeAgent();
 		} catch (error: any) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -48,9 +45,7 @@ const RemoveAgentButton: FC<{ username: string; reload: () => void }> = ({ usern
 
 	return (
 		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
-			<Button small ghost title={t('Remove_Association')} onClick={handleDelete}>
-				<Icon name='trash' size='x16' />
-			</Button>
+			<IconButton icon='trash' small title={t('Remove_Association')} onClick={handleDelete} />
 		</Table.Cell>
 	);
 };

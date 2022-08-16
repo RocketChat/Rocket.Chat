@@ -1,4 +1,4 @@
-import { Base } from '../../../../app/models';
+import { Base } from '../../../../app/models/server';
 
 class AudtitLog extends Base {
 	constructor() {

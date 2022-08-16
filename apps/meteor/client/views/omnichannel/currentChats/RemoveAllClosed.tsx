@@ -1,8 +1,6 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
+import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
-
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 const RemoveAllClosed: FC<{
 	handleClearFilters: any;
@@ -33,7 +31,7 @@ const RemoveAllClosed: FC<{
 			},
 		}),
 	};
-	return <Menu alignSelf='flex-end' small={false} square options={menuOptions} placement='bottom-start' {...props} />;
+	return <Menu alignSelf='flex-end' small={false} options={menuOptions} placement='bottom-start' {...props} />;
 };
 
 export default RemoveAllClosed;

@@ -7,6 +7,12 @@ interface IMethodArgument {
 		algorithm: string;
 	};
 	resume?: string;
+
+	cas?: boolean;
+
+	totp?: {
+		code: string;
+	};
 }
 
 export interface ILoginAttempt {

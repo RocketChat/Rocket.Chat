@@ -1,17 +1,23 @@
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useSetModal,
+	useToastMessageDispatch,
+	useRoute,
+	useUserRoom,
+	useSetting,
+	usePermission,
+	useEndpoint,
+	useMethod,
+	useTranslation,
+	useUser,
+} from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import * as Federation from '../../../../../../app/federation-v2/client/Federation';
 import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManager';
 import { UiTextContext } from '../../../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../../../components/GenericModal';
-import { usePermission } from '../../../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useRoute } from '../../../../../contexts/RouterContext';
-import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
-import { useSetting } from '../../../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import WarningModal from '../../../../admin/apps/WarningModal';
@@ -34,6 +40,7 @@ const retentionPolicyAppliesTo = {
 const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetState }) => {
 	const onClickClose = useTabBarClose();
 	const t = useTranslation();
+	const user = useUser();
 
 	const room = useUserRoom(rid);
 	room.type = room.t;
@@ -53,21 +60,25 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
-	const deleteRoom = useEndpoint('POST', room.t === 'c' ? 'channels.delete' : 'groups.delete');
+	const deleteRoom = useEndpoint('POST', room.t === 'c' ? '/v1/channels.delete' : '/v1/groups.delete');
 	const hideRoom = useMethod('hideRoom');
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRooms', t('Rooms_added_successfully'));
+	const moveChannelToTeam = useEndpointActionExperimental('POST', '/v1/teams.addRooms', t('Rooms_added_successfully'));
 	const convertRoomToTeam = useEndpointActionExperimental(
 		'POST',
-		type === 'c' ? 'channels.convertToTeam' : 'groups.convertToTeam',
+		type === 'c' ? '/v1/channels.convertToTeam' : '/v1/groups.convertToTeam',
 		t('Success'),
 	);
 
-	const canDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
-	const canEdit = usePermission('edit-room', rid);
-	const canConvertRoomToTeam = usePermission('create-team');
+	const isFederated = isRoomFederated(room);
+	const hasPermissionToDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
+	const hasPermissionToEdit = usePermission('edit-room', rid);
+	const hasPermissionToConvertRoomToTeam = usePermission('create-team');
+	const canDelete = isFederated ? Federation.isEditableByTheUser(user, room) && hasPermissionToDelete : hasPermissionToDelete;
+	const canEdit = isFederated ? Federation.isEditableByTheUser(user, room) && hasPermissionToEdit : hasPermissionToEdit;
+	const canConvertRoomToTeam = isFederated ? false : hasPermissionToConvertRoomToTeam;
 	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 
 	const handleDelete = useMutableCallback(() => {
@@ -195,7 +206,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			onClickDelete={canDelete && handleDelete}
 			onClickLeave={canLeave && handleLeave}
 			onClickHide={joined && handleHide}
-			onClickMoveToTeam={!room.teamId && !prid && canEdit && onMoveToTeam}
+			onClickMoveToTeam={!isRoomFederated(room) && !room.teamId && !prid && canEdit && onMoveToTeam}
 			onClickConvertToTeam={allowConvertToTeam && onConvertToTeam}
 			onClickEnterRoom={onEnterRoom && onClickEnterRoom}
 		/>

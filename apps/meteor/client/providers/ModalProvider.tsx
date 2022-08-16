@@ -1,9 +1,7 @@
-import React, { useState, useMemo, memo, ReactNode, useCallback, ReactElement } from 'react';
+import { ModalContext } from '@rocket.chat/ui-contexts';
+import React, { useState, useMemo, memo, ReactNode, ReactElement } from 'react';
 
 import { modal } from '../../app/ui-utils/client/lib/modal';
-import ModalBackdrop from '../components/modal/ModalBackdrop';
-import ModalPortal from '../components/modal/ModalPortal';
-import { ModalContext } from '../contexts/ModalContext';
 import { useImperativeModal } from '../views/hooks/useImperativeModal';
 
 type ModalProviderProps = {
@@ -14,27 +12,18 @@ const ModalProvider = ({ children }: ModalProviderProps): ReactElement => {
 	const [currentModal, setCurrentModal] = useState<ReactNode>(null);
 
 	const contextValue = useMemo(
-		() =>
-			Object.assign(modal, {
+		() => ({
+			modal: Object.assign(modal, {
 				setModal: setCurrentModal,
 			}),
-		[],
+			currentModal,
+		}),
+		[currentModal],
 	);
 
 	useImperativeModal(setCurrentModal);
 
-	const handleDismiss = useCallback(() => setCurrentModal(null), [setCurrentModal]);
-
-	return (
-		<ModalContext.Provider value={contextValue}>
-			{children}
-			{currentModal && (
-				<ModalPortal>
-					<ModalBackdrop onDismiss={handleDismiss}>{currentModal}</ModalBackdrop>
-				</ModalPortal>
-			)}
-		</ModalContext.Provider>
-	);
+	return <ModalContext.Provider value={contextValue} children={children} />;
 };
 
 export default memo<typeof ModalProvider>(ModalProvider);

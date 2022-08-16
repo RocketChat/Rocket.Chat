@@ -1,8 +1,8 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import FilterByText from '../../../client/components/FilterByText';
 import GenericTable from '../../../client/components/GenericTable';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../client/hooks/useResizeInlineBreakpoint';
 import BusinessHoursRow from './BusinessHoursRow';
 

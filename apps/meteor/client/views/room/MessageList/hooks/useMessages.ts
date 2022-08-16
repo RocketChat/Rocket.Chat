@@ -3,8 +3,7 @@ import { IMessage } from '@rocket.chat/core-typings';
 import { useCallback, useMemo } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
-// import { useSetting } from '../../../../contexts/SettingsContext';
-import { useUserPreference } from '../../../../contexts/UserContext';
+// import { useSetting } from '@rocket.chat/ui-contexts'
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 
 const options = {
@@ -43,7 +42,6 @@ const removePossibleNullValues = ({
 });
 
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
-	const showInMainThread = useUserPreference<boolean>('showMessageInMainThread', false);
 	// const hideSettings = !!useSetting('Hide_System_Messages');
 
 	// const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
@@ -53,11 +51,9 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 		() => ({
 			rid,
 			_hidden: { $ne: true },
-			...(!showInMainThread && {
-				$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
-			}),
+			$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
 		}),
-		[rid, showInMainThread],
+		[rid],
 	);
 
 	// if (hideMessagesOfType.size) {

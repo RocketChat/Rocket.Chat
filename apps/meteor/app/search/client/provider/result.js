@@ -8,7 +8,7 @@ import _ from 'underscore';
 
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { MessageAction, RoomHistoryManager } from '../../../ui-utils';
-import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { Rooms } from '../../../models/client';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 import { goToRoomById } from '../../../../client/lib/utils/goToRoomById';

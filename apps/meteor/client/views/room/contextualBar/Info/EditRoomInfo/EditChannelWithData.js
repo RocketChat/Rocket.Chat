@@ -1,6 +1,6 @@
+import { useUserRoom } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import EditChannel from './EditChannel';
 

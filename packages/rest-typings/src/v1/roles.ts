@@ -1,11 +1,15 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 import type { RocketChatRecordDeleted, IRole, IUserInRole } from '@rocket.chat/core-typings';
 
-const ajv = new Ajv();
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type RoleCreateProps = Pick<IRole, 'name'> & Partial<Pick<IRole, 'description' | 'scope' | 'mandatory2fa'>>;
 
-const roleCreatePropsSchema: JSONSchemaType<RoleCreateProps> = {
+const roleCreatePropsSchema = {
 	type: 'object',
 	properties: {
 		name: {
@@ -29,14 +33,14 @@ const roleCreatePropsSchema: JSONSchemaType<RoleCreateProps> = {
 	additionalProperties: false,
 };
 
-export const isRoleCreateProps = ajv.compile(roleCreatePropsSchema);
+export const isRoleCreateProps = ajv.compile<RoleCreateProps>(roleCreatePropsSchema);
 
 type RoleUpdateProps = {
 	roleId: IRole['_id'];
 	name: IRole['name'];
 } & Partial<RoleCreateProps>;
 
-const roleUpdatePropsSchema: JSONSchemaType<RoleUpdateProps> = {
+const roleUpdatePropsSchema = {
 	type: 'object',
 	properties: {
 		roleId: {
@@ -63,11 +67,11 @@ const roleUpdatePropsSchema: JSONSchemaType<RoleUpdateProps> = {
 	additionalProperties: false,
 };
 
-export const isRoleUpdateProps = ajv.compile(roleUpdatePropsSchema);
+export const isRoleUpdateProps = ajv.compile<RoleUpdateProps>(roleUpdatePropsSchema);
 
 type RoleDeleteProps = { roleId: IRole['_id'] };
 
-const roleDeletePropsSchema: JSONSchemaType<RoleDeleteProps> = {
+const roleDeletePropsSchema = {
 	type: 'object',
 	properties: {
 		roleId: {
@@ -78,7 +82,7 @@ const roleDeletePropsSchema: JSONSchemaType<RoleDeleteProps> = {
 	additionalProperties: false,
 };
 
-export const isRoleDeleteProps = ajv.compile(roleDeletePropsSchema);
+export const isRoleDeleteProps = ajv.compile<RoleDeleteProps>(roleDeletePropsSchema);
 
 type RoleAddUserToRoleProps = {
 	username: string;
@@ -88,7 +92,7 @@ type RoleAddUserToRoleProps = {
 	roomId?: string;
 };
 
-const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
+const roleAddUserToRolePropsSchema = {
 	type: 'object',
 	properties: {
 		username: {
@@ -111,7 +115,7 @@ const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
 	additionalProperties: false,
 };
 
-export const isRoleAddUserToRoleProps = ajv.compile(roleAddUserToRolePropsSchema);
+export const isRoleAddUserToRoleProps = ajv.compile<RoleAddUserToRoleProps>(roleAddUserToRolePropsSchema);
 
 type RoleRemoveUserFromRoleProps = {
 	username: string;
@@ -122,7 +126,7 @@ type RoleRemoveUserFromRoleProps = {
 	scope?: string;
 };
 
-const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRoleProps> = {
+const roleRemoveUserFromRolePropsSchema = {
 	type: 'object',
 	properties: {
 		username: {
@@ -149,19 +153,57 @@ const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRolePr
 	additionalProperties: false,
 };
 
-export const isRoleRemoveUserFromRoleProps = ajv.compile(roleRemoveUserFromRolePropsSchema);
+export const isRoleRemoveUserFromRoleProps = ajv.compile<RoleRemoveUserFromRoleProps>(roleRemoveUserFromRolePropsSchema);
+
+type RolesGetUsersInRoleProps = PaginatedRequest<{
+	roomId?: string;
+	role: string;
+}>;
+
+const RolesGetUsersInRolePropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			nullable: true,
+		},
+		role: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['role'],
+	additionalProperties: false,
+};
+
+export const isRolesGetUsersInRoleProps = ajv.compile<RolesGetUsersInRoleProps>(RolesGetUsersInRolePropsSchema);
 
 type RoleSyncProps = {
 	updatedSince?: string;
 };
 
 export type RolesEndpoints = {
-	'roles.list': {
+	'/v1/roles.list': {
 		GET: () => {
 			roles: IRole[];
 		};
 	};
-	'roles.sync': {
+	'/v1/roles.sync': {
 		GET: (params: RoleSyncProps) => {
 			roles: {
 				update: IRole[];
@@ -169,36 +211,36 @@ export type RolesEndpoints = {
 			};
 		};
 	};
-	'roles.create': {
+	'/v1/roles.create': {
 		POST: (params: RoleCreateProps) => {
 			role: IRole;
 		};
 	};
 
-	'roles.addUserToRole': {
+	'/v1/roles.addUserToRole': {
 		POST: (params: RoleAddUserToRoleProps) => {
 			role: IRole;
 		};
 	};
 
-	'roles.getUsersInRole': {
-		GET: (params: { roomId?: string; role: string; offset?: number; count?: number }) => {
+	'/v1/roles.getUsersInRole': {
+		GET: (params: RolesGetUsersInRoleProps) => {
 			users: IUserInRole[];
 			total: number;
 		};
 	};
 
-	'roles.update': {
+	'/v1/roles.update': {
 		POST: (role: RoleUpdateProps) => {
 			role: IRole;
 		};
 	};
 
-	'roles.delete': {
+	'/v1/roles.delete': {
 		POST: (prop: RoleDeleteProps) => void;
 	};
 
-	'roles.removeUserFromRole': {
+	'/v1/roles.removeUserFromRole': {
 		POST: (props: RoleRemoveUserFromRoleProps) => {
 			role: IRole;
 		};

@@ -1,7 +1,7 @@
 import { SelectFiltered, Field } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useTimezoneNameList } from '../../../../client/hooks/useTimezoneNameList';
 

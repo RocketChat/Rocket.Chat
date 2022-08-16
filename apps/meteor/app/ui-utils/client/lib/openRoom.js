@@ -1,3 +1,4 @@
+import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -6,16 +7,17 @@ import _ from 'underscore';
 
 import { appLayout } from '../../../../client/lib/appLayout';
 import { waitUntilFind } from '../../../../client/lib/utils/waitUntilFind';
-import { Messages, ChatSubscription } from '../../../models';
+import { Messages, ChatSubscription, Rooms, Subscriptions } from '../../../models/client';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { call } from '../../../../client/lib/utils/call';
 import { RoomManager, RoomHistoryManager } from '..';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
-import { Rooms, Subscriptions } from '../../../models/client';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import MainLayout from '../../../../client/views/root/MainLayout';
+import BlazeTemplate from '../../../../client/views/root/BlazeTemplate';
 
 window.currentTracker = undefined;
 
@@ -32,7 +34,7 @@ export const openRoom = async function (type, name, render = true) {
 	window.currentTracker = Tracker.autorun(async function (c) {
 		const user = Meteor.user();
 		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
-			appLayout.renderMainLayout();
+			appLayout.render(<MainLayout />);
 			return;
 		}
 
@@ -53,7 +55,11 @@ export const openRoom = async function (type, name, render = true) {
 			RoomManager.open({ typeName: type + name, rid: room._id });
 
 			if (render) {
-				appLayout.renderMainLayout({ center: 'room' });
+				appLayout.render(
+					<MainLayout>
+						<BlazeTemplate template='room' />
+					</MainLayout>,
+				);
 			}
 
 			c.stop();
@@ -72,7 +78,7 @@ export const openRoom = async function (type, name, render = true) {
 			// update user's room subscription
 			const sub = ChatSubscription.findOne({ rid: room._id });
 			if (sub && sub.open === false) {
-				callWithErrorHandling('openRoom', room._id);
+				await callWithErrorHandling('openRoom', room._id);
 			}
 
 			if (FlowRouter.getQueryParam('msg')) {
@@ -94,6 +100,13 @@ export const openRoom = async function (type, name, render = true) {
 			return callbacks.run('enter-room', sub);
 		} catch (error) {
 			c.stop();
+
+			if (FlowRouter.getQueryParam('msg')) {
+				FlowRouter.setQueryParams({
+					msg: undefined,
+				});
+			}
+
 			if (type === 'd') {
 				try {
 					const { rid } = await call('createDirectMessage', ...name.split(', '));
@@ -104,7 +117,11 @@ export const openRoom = async function (type, name, render = true) {
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });
-			appLayout.renderMainLayout({ center: 'roomNotFound' });
+			appLayout.render(
+				<MainLayout>
+					<BlazeTemplate template='roomNotFound' />
+				</MainLayout>,
+			);
 		}
 	});
 };

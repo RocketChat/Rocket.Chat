@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import { Settings } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
-import { Settings } from '../../../models/server/raw';
 
 Meteor.methods({
 	async refreshOAuthService() {
@@ -23,6 +23,6 @@ Meteor.methods({
 
 		ServiceConfiguration.configurations.remove({});
 
-		await Settings.update({ _id: /^(Accounts_OAuth_|SAML_|CAS_|Blockstack_).+/ }, { $set: { _updatedAt: new Date() } }, { multi: true });
+		await Settings.update({ _id: /^(Accounts_OAuth_|SAML_|CAS_).+/ }, { $set: { _updatedAt: new Date() } }, { multi: true });
 	},
 });

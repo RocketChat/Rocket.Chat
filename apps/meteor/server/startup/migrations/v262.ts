@@ -1,25 +1,17 @@
-import { Settings } from '../../../app/models/server/raw';
+import { Settings } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 262,
 	async up() {
-		const validate = await Settings.findOneById('Livechat_validate_offline_email');
-
-		Settings.update(
-			{
-				_id: 'Omnichannel_validate_emails',
-			},
-			{
-				$set: {
-					value: validate?.value || false,
-				},
-			},
-			{
-				upsert: true,
-			},
-		);
-
-		return Settings.removeById('Livechat_validate_offline_email');
+		// in case server is being updated, we check setup wizard status to determine if should still create the initial channel
+		const setupWizard = await Settings.getValueById('Show_Setup_Wizard');
+		if (setupWizard === 'pending') {
+			// if still pending for some reason, we need to create the initial channel, so keep the setting as false
+			return;
+		}
+		// if the setup wizard is not pending anymore, we assume initial channel was already created once
+		await Settings.updateValueById('Initial_Channel_Created', true);
 	},
 });

@@ -1,5 +1,5 @@
 import { Authorization } from '../../../../server/sdk';
-import { IAuthorization } from '../../../../server/sdk/types/IAuthorization';
+import type { IAuthorization } from '../../../../server/sdk/types/IAuthorization';
 
 export const canAccessRoomAsync = Authorization.canAccessRoom;
 export const canAccessRoomIdAsync = Authorization.canAccessRoomId;
@@ -8,7 +8,6 @@ export const roomAccessAttributes = {
 	t: 1,
 	teamId: 1,
 	prid: 1,
-	tokenpass: 1,
 };
 
 export const canAccessRoom = (...args: Parameters<IAuthorization['canAccessRoom']>): boolean => Promise.await(canAccessRoomAsync(...args));

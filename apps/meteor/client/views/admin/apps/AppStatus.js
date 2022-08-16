@@ -1,14 +1,14 @@
-import { Box, Button, Icon, Throbber } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Throbber, Tooltip, PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import React, { useCallback, useState, memo } from 'react';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useCallback, useState, useRef, memo } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
+import PriceDisplay from './PriceDisplay';
 import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange, handleInstallError } from './helpers';
 
 const installApp = async ({ id, name, version, permissionsGranted }) => {
@@ -33,13 +33,17 @@ const actions = {
 	},
 };
 
-const AppStatus = ({ app, showStatus = true, ...props }) => {
+const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, installed, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState());
-	const [isAppPurchased, setPurchased] = useSafely(useState(app.isPurchased));
+	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
+	const [isHovered, setIsHovered] = useState(false);
 	const setModal = useSetModal();
+	const statusRef = useRef();
 
-	const button = appButtonProps(app);
+	const { price, purchaseType, pricingPlans } = app;
+
+	const button = appButtonProps(app || {});
 	const status = !button && appStatusSpanProps(app);
 
 	const action = button?.action || '';
@@ -104,25 +108,78 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 		showAppPermissionsReviewModal();
 	};
 
+	const AppStatusStyle = {
+		bg: status.label === 'Disabled' ? colors.w100 : colors.p100,
+		color: status.label === 'Disabled' ? colors.w800 : colors.p500,
+	};
+
+	const shouldShowPriceDisplay = isAppDetailsPage && button && button.action !== 'update';
+
 	return (
 		<Box {...props}>
 			{button && (
-				<Button primary disabled={loading} invisible={!showStatus && !loading} minHeight='x40' onClick={handleClick}>
-					{loading ? (
-						<Throbber inheritColor />
-					) : (
-						<>
-							{button.icon && <Icon name={button.icon} />}
-							{t(button.label)}
-						</>
+				<Box
+					bg={isAppDetailsPage ? colors.p100 : 'transparent'}
+					display='flex'
+					flexDirection='row'
+					alignItems='center'
+					justifyContent='center'
+					borderRadius='x2'
+					invisible={!showStatus && !loading}
+				>
+					<Button
+						secondary={button.label !== 'Update'}
+						primary={button.label === 'Update'}
+						fontSize='x12'
+						fontWeight={700}
+						disabled={loading}
+						onClick={handleClick}
+						pi='x8'
+						pb='x6'
+						lineHeight='x12'
+					>
+						{loading ? (
+							<Throbber inheritColor />
+						) : (
+							<>
+								{button.icon && <Icon name={button.icon} mie='x8' />}
+								{t(button.label.replace(' ', '_'))}
+							</>
+						)}
+					</Button>
+					{shouldShowPriceDisplay && (
+						<Box pi='x14' color='primary-500'>
+							{!installed && (
+								<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
+							)}
+						</Box>
 					)}
-				</Button>
+				</Box>
 			)}
 			{status && (
-				<Box color={status.label === 'Disabled' ? 'warning' : 'hint'} display='flex' alignItems='center'>
-					<Icon size='x20' name={status.icon} mie='x4' />
-					{t(status.label)}
-				</Box>
+				<>
+					<Box
+						ref={statusRef}
+						onMouseEnter={() => setIsHovered(true)}
+						onMouseLeave={() => setIsHovered(false)}
+						display='flex'
+						alignItems='center'
+						pi='x8'
+						pb='x8'
+						bg={AppStatusStyle.bg}
+						color={AppStatusStyle.color}
+					>
+						<Icon size='x20' name={status.icon} mie='x4' />
+					</Box>
+					<PositionAnimated
+						anchor={statusRef}
+						placement='top-middle'
+						margin={8}
+						visible={isHovered ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}
+					>
+						<Tooltip bg={colors.n900} color={colors.white}>{`App ${status.label}`}</Tooltip>
+					</PositionAnimated>
+				</>
 			)}
 		</Box>
 	);

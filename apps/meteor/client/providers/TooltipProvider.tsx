@@ -1,9 +1,9 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { TooltipComponent } from '@rocket.chat/ui-client';
+import { TooltipContext } from '@rocket.chat/ui-contexts';
 import React, { FC, useEffect, useState, useMemo, ReactNode, useRef, memo } from 'react';
 
-import { TooltipComponent } from '../components/TooltipComponent';
 import TooltipPortal from '../components/TooltipPortal';
-import { TooltipContext } from '../contexts/TooltipContext';
 
 const TooltipProvider: FC = ({ children }) => {
 	const lastAnchor = useRef<HTMLElement>();
@@ -47,13 +47,17 @@ const TooltipProvider: FC = ({ children }) => {
 			setTooltip(null);
 		};
 
+		const handleClick = (): void => setTooltip(null);
+
 		document.body.addEventListener('mouseover', handleMouseOver);
+		document.body.addEventListener('click', handleClick);
 
 		return (): void => {
 			if (timeout) {
 				clearTimeout(timeout);
 			}
 			document.body.removeEventListener('mouseover', handleMouseOver);
+			document.body.removeEventListener('click', handleClick);
 		};
 	}, [hasHover]);
 

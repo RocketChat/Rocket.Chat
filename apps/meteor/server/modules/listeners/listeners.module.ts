@@ -1,11 +1,12 @@
 import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
-import { parser } from '@rocket.chat/message-parser';
+import { parse } from '@rocket.chat/message-parser';
 
-import { IServiceClass } from '../../sdk/types/ServiceClass';
-import { NotificationsModule } from '../notifications/notifications.module';
+import type { IServiceClass } from '../../sdk/types/ServiceClass';
+import type { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings } from '../../sdk/index';
+import { settings } from '../../../app/settings/server/cached';
 
-const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
+const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
 const STATUS_MAP: { [k: string]: number } = {
 	[UserStatus.OFFLINE]: 0,
@@ -35,8 +36,15 @@ export class ListenersModule {
 		});
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
-			if (message.msg && DISABLE_MESSAGE_PARSER !== 'true') {
-				message.md = parser(message.msg);
+			if (!isMessageParserDisabled && message.msg) {
+				message.md = parse(message.msg, {
+					colors: settings.get('HexColorPreview_Enabled'),
+					emoticons: true,
+					katex: {
+						dollarSyntax: settings.get('Katex_Dollar_Syntax'),
+						parenthesisSyntax: settings.get('Katex_Parenthesis_Syntax'),
+					},
+				});
 			}
 
 			notifications.notifyUserInThisInstance(uid, 'message', {
@@ -278,23 +286,13 @@ export class ListenersModule {
 		service.onEvent('banner.enabled', (bannerId): void => {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
-		service.onEvent('queue.agentcalled', (userId, queuename, callerId): void => {
-			notifications.notifyUserInThisInstance(userId, 'agentcalled', { queuename, callerId });
+
+		service.onEvent('voip.events', (userId, data): void => {
+			notifications.notifyUserInThisInstance(userId, 'voip.events', data);
 		});
-		service.onEvent('queue.agentconnected', (userId, queuename: string, queuedcalls: string, waittimeinqueue: string): void => {
-			notifications.notifyUserInThisInstance(userId, 'agentconnected', { queuename, queuedcalls, waittimeinqueue });
-		});
-		service.onEvent('queue.callerjoined', (userId, queuename, callerid, queuedcalls): void => {
-			notifications.notifyUserInThisInstance(userId, 'callerjoined', { queuename, callerid, queuedcalls });
-		});
-		service.onEvent('queue.queuememberadded', (userId, queuename: string, queuedcalls: string): void => {
-			notifications.notifyUserInThisInstance(userId, 'queuememberadded', { queuename, queuedcalls });
-		});
-		service.onEvent('queue.queuememberremoved', (userId, queuename: string, queuedcalls: string): void => {
-			notifications.notifyUserInThisInstance(userId, 'queuememberremoved', { queuename, queuedcalls });
-		});
-		service.onEvent('queue.callabandoned', (userId, queuename: string, queuedcallafterabandon: string): void => {
-			notifications.notifyUserInThisInstance(userId, 'callabandoned', { queuename, queuedcallafterabandon });
+
+		service.onEvent('call.callerhangup', (userId, data): void => {
+			notifications.notifyUserInThisInstance(userId, 'call.hangup', data);
 		});
 
 		service.onEvent('notify.desktop', (uid, notification): void => {

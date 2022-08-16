@@ -1,4 +1,4 @@
-import { settings } from '../../app/settings';
+import { settings } from '../../app/settings/server';
 import { NPS } from '../sdk';
 
 function runNPS() {

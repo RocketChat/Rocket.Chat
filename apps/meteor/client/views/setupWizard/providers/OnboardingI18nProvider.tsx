@@ -1,10 +1,9 @@
+import { useAbsoluteUrl, useLanguage } from '@rocket.chat/ui-contexts';
 import i18next from 'i18next';
 import i18nextHttpBackend from 'i18next-http-backend';
 import React, { Suspense, memo, ReactElement, useEffect, useState } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
-import { useAbsoluteUrl } from '../../../contexts/ServerContext';
-import { useLanguage } from '../../../contexts/TranslationContext';
 import PageLoading from '../../root/PageLoading';
 
 const useOnboardingI18n = (): typeof i18next => {

@@ -1,18 +1,15 @@
 import { Match, check } from 'meteor/check';
-import { parser } from '@rocket.chat/message-parser';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages } from '../../../models';
+import { Messages } from '../../../models/server';
 import { Apps } from '../../../apps/server';
-import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
+import { isURL } from '../../../../lib/utils/isURL';
 import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
-import { isE2EEMessage } from '../../../../lib/isE2EEMessage';
-
-const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
+import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 
 /**
  * IMPORTANT
@@ -246,13 +243,6 @@ export const sendMessage = function (user, message, room, upsert = false) {
 	parseUrlsInMessage(message);
 
 	message = callbacks.run('beforeSaveMessage', message, room);
-	try {
-		if (message.msg && DISABLE_MESSAGE_PARSER !== 'true' && !isE2EEMessage(message)) {
-			message.md = parser(message.msg);
-		}
-	} catch (e) {
-		SystemLogger.error(e); // errors logged while the parser is at experimental stage
-	}
 	if (message) {
 		if (message._id && upsert) {
 			const { _id } = message;

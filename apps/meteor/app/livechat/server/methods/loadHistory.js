@@ -1,15 +1,16 @@
 import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { loadMessageHistory } from '../../../lib';
-import { LivechatVisitors, LivechatRooms } from '../../../models';
+import { LivechatRooms } from '../../../models/server';
 
 Meteor.methods({
-	'livechat:loadHistory'({ token, rid, end, limit = 20, ls }) {
+	async 'livechat:loadHistory'({ token, rid, end, limit = 20, ls }) {
 		if (!token || typeof token !== 'string') {
 			return;
 		}
 
-		const visitor = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+		const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
 		if (!visitor) {
 			throw new Meteor.Error('invalid-visitor', 'Invalid Visitor', {

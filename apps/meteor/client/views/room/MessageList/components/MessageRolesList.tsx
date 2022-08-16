@@ -1,7 +1,6 @@
 import { MessageRole, MessageRoles } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
-
-import { useTranslation } from '../../../../contexts/TranslationContext';
 
 type MessageRolesListProps = {
 	roles: Array<string>;

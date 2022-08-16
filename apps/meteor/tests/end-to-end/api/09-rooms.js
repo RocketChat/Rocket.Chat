@@ -226,6 +226,58 @@ describe('[Rooms]', function () {
 		});
 	});
 
+	describe('/rooms.nameExists', () => {
+		it('should return 401 unauthorized when user is not logged in', (done) => {
+			request
+				.get(api('rooms.nameExists'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		// eslint-disable-next-line no-unused-vars
+		let testChannel;
+		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+		it('create an channel', (done) => {
+			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
+				testChannel = res.body.channel;
+				done();
+			});
+		});
+		it('should return true if this room name exists', (done) => {
+			request
+				.get(api('rooms.nameExists'))
+				.set(credentials)
+				.query({
+					roomName: testChannelName,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				})
+				.end(done);
+		});
+
+		it('should return an error when send an invalid room', (done) => {
+			request
+				.get(api('rooms.nameExists'))
+				.set(credentials)
+				.query({
+					roomId: 'foo',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/rooms.cleanHistory]', () => {
 		let publicChannel;
 		let privateChannel;
@@ -240,7 +292,7 @@ describe('[Rooms]', function () {
 				.send({ email, name: username, username, password })
 				.end((err, res) => {
 					user = res.body.user;
-					done();
+					done(err);
 				});
 		});
 
@@ -280,13 +332,13 @@ describe('[Rooms]', function () {
 		it('create a private channel', (done) => {
 			createRoom({ type: 'p', name: `testPrivateChannel${+new Date()}` }).end((err, res) => {
 				privateChannel = res.body.group;
-				done();
+				done(err);
 			});
 		});
 		it('create a direct message', (done) => {
 			createRoom({ type: 'd', username: 'rocket.cat' }).end((err, res) => {
-				directMessageChannel = res.body.room;
-				done();
+				directMessageChannel = res.body.room.rid;
+				done(err);
 			});
 		});
 		it('should return success when send a valid public channel', (done) => {
@@ -326,7 +378,7 @@ describe('[Rooms]', function () {
 				.post(api('rooms.cleanHistory'))
 				.set(credentials)
 				.send({
-					roomId: directMessageChannel._id,
+					roomId: directMessageChannel,
 					latest: '2016-12-09T13:42:25.304Z',
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
@@ -342,7 +394,7 @@ describe('[Rooms]', function () {
 				.post(api('rooms.cleanHistory'))
 				.set(userCredentials)
 				.send({
-					roomId: directMessageChannel._id,
+					roomId: directMessageChannel,
 					latest: '2016-12-09T13:42:25.304Z',
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
@@ -953,6 +1005,52 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 	});
+	describe('[/rooms.autocomplete.channelAndPrivate.withPagination]', () => {
+		it('should return an error when the required parameter "selector" is not provided', (done) => {
+			request
+				.get(api('rooms.autocomplete.channelAndPrivate.withPagination'))
+				.set(credentials)
+				.query({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal("The 'selector' param is required");
+				})
+				.end(done);
+		});
+		it('should return the rooms to fill auto complete', (done) => {
+			request
+				.get(api('rooms.autocomplete.channelAndPrivate.withPagination?selector={}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+		it('should return the rooms to fill auto complete even requested with count and offset params', (done) => {
+			request
+				.get(api('rooms.autocomplete.channelAndPrivate.withPagination?selector={}'))
+				.set(credentials)
+				.query({
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/rooms.autocomplete.availableForTeams]', () => {
 		it('should return the rooms to fill auto complete', (done) => {
 			request
@@ -1060,6 +1158,24 @@ describe('[Rooms]', function () {
 			request
 				.get(api('rooms.adminRooms'))
 				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
+		it('should return a list of admin rooms even requested with count and offset params', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					count: 5,
+					offset: 0,
+				})
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);

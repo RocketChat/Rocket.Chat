@@ -1,9 +1,9 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { Field, Select, FieldGroup, SelectOption } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo, FC } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import FileExport from './FileExport';
 import MailExportForm from './MailExportForm';

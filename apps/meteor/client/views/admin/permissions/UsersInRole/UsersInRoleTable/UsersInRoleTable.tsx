@@ -1,15 +1,12 @@
 import { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
 import { Tile, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import UsersInRoleTableRow from './UsersInRoleTableRow';
 
 type UsersInRoleTable = {
@@ -27,7 +24,7 @@ const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total,
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const removeUser = useEndpoint('POST', 'roles.removeUserFromRole');
+	const removeUser = useEndpoint('POST', '/v1/roles.removeUserFromRole');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = paginationData;
 
 	const closeModal = (): void => setModal();
@@ -38,7 +35,7 @@ const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total,
 				await removeUser({ roleId, username, scope: rid });
 				dispatchToastMessage({ type: 'success', message: t('User_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 			} finally {
 				closeModal();
 				reload();

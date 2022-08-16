@@ -1,12 +1,10 @@
 import { Button, Box, Callout, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo } from 'react';
 
 import Page from '../../../../client/components/Page';
 import UserAutoComplete from '../../../../client/components/UserAutoComplete';
-import { useMethod } from '../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import MonitorsTable from './MonitorsTable';
@@ -32,7 +30,7 @@ const MonitorsPage = () => {
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [username, setUsername] = useState('');
 
-	const { value: data, phase: state, reload } = useEndpointData('livechat/monitors.list', useQuery(params, sort));
+	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/monitors', useQuery(params, sort));
 
 	const addMonitor = useMethod('livechat:addMonitor');
 

@@ -2,14 +2,14 @@ import url from 'url';
 import http from 'http';
 import https from 'https';
 
-import { RTMClient } from '@slack/client';
+import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
 
 import { slackLogger } from './logger';
 import { SlackAPI } from './SlackAPI';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import { Messages, Rooms, Users } from '../../models';
-import { settings } from '../../settings';
+import { Messages, Rooms, Users } from '../../models/server';
+import { settings } from '../../settings/server';
 import { deleteMessage, updateMessage, addUserToRoom, removeUserFromRoom, archiveRoom, unarchiveRoom, sendMessage } from '../../lib';
 import { saveRoomName, saveRoomTopic } from '../../channel-settings';
 import { FileUpload } from '../../file-upload';

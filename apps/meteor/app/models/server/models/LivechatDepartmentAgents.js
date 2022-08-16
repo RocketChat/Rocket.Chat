@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { Base } from './_Base';
@@ -14,9 +13,6 @@ export class LivechatDepartmentAgents extends Base {
 		this.tryEnsureIndex({ departmentEnabled: 1 });
 		this.tryEnsureIndex({ agentId: 1 });
 		this.tryEnsureIndex({ username: 1 });
-
-		const collectionObj = this.model.rawCollection();
-		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
 
 	findByDepartmentId(departmentId) {
@@ -96,7 +92,7 @@ export class LivechatDepartmentAgents extends Base {
 
 		const collectionObj = this.model.rawCollection();
 
-		const agent = Promise.await(collectionObj.findAndModify(query, sort, update));
+		const agent = Promise.await(collectionObj.findOneAndUpdate(query, update, { sort, returnNewDocument: 'after' }));
 		if (agent && agent.value) {
 			return {
 				agentId: agent.value.agentId,
@@ -159,7 +155,7 @@ export class LivechatDepartmentAgents extends Base {
 		return this.find(query);
 	}
 
-	getNextBotForDepartment(departmentId, ignoreAgentId) {
+	async getNextBotForDepartment(departmentId, ignoreAgentId) {
 		const agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
@@ -188,7 +184,7 @@ export class LivechatDepartmentAgents extends Base {
 			},
 		};
 
-		const bot = this.findAndModify(query, sort, update);
+		const bot = await this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnNewDocument: 'after' });
 		if (bot && bot.value) {
 			return {
 				agentId: bot.value.agentId,

@@ -1,16 +1,20 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useToastMessageDispatch,
+	useSessionDispatch,
+	useLoginWithPassword,
+	useSettingSetValue,
+	useSettingsDispatch,
+	useRole,
+	useMethod,
+	useEndpoint,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useCallback, useMemo, useState, ReactElement, ContextType } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
-import { useRole } from '../../../contexts/AuthorizationContext';
-import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
-import { useSessionDispatch } from '../../../contexts/SessionContext';
-import { useSettingSetValue, useSettingsDispatch } from '../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useLoginWithPassword } from '../../../contexts/UserContext';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
 import { useStepRouting } from '../hooks/useStepRouting';
@@ -30,7 +34,6 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 		registerType: 'registered',
 		updates: false,
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	registrationData: { cloudEmail: '', device_code: '', user_code: '' },
 };
 
@@ -50,7 +53,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const defineUsername = useMethod('setUsername');
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
-	const createRegistrationIntent = useEndpoint('POST', 'cloud.createRegistrationIntent');
+	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);

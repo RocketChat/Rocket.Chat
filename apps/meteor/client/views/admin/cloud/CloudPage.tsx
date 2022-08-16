@@ -1,13 +1,18 @@
 import { Box, Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useSetModal,
+	useToastMessageDispatch,
+	useQueryStringParameter,
+	useRoute,
+	useRouteParameter,
+	useMethod,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, ReactNode } from 'react';
 
 import Page from '../../../components/Page';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useQueryStringParameter, useRoute, useRouteParameter } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useMethodData } from '../../../hooks/useMethodData';
 import ConnectToCloudSection from './ConnectToCloudSection';
 import ManualWorkspaceRegistrationModal from './ManualWorkspaceRegistrationModal';
 import TroubleshootingSection from './TroubleshootingSection';
@@ -15,8 +20,6 @@ import WhatIsItSection from './WhatIsItSection';
 import WorkspaceLoginSection from './WorkspaceLoginSection';
 import WorkspaceRegistrationSection from './WorkspaceRegistrationSection';
 import { cloudConsoleUrl } from './constants';
-
-const args: [] = [];
 
 const CloudPage = function CloudPage(): ReactNode {
 	const t = useTranslation();
@@ -33,11 +36,9 @@ const CloudPage = function CloudPage(): ReactNode {
 
 	const finishOAuthAuthorization = useMethod('cloud:finishOAuthAuthorization');
 
-	const { reload, ...checkRegisterStatus } = useMethodData('cloud:checkRegisterStatus', args);
-
-	useEffect(() => {
-		console.log('checkRegisterStatus', checkRegisterStatus);
-	}, [checkRegisterStatus]);
+	const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
+	const result = useQuery(['admin/cloud/register-status'], async () => checkCloudRegisterStatus());
+	const reload = useMutableCallback(() => result.refetch());
 
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
 
@@ -60,7 +61,7 @@ const CloudPage = function CloudPage(): ReactNode {
 			try {
 				await finishOAuthAuthorization(code, state);
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 			} finally {
 				cloudRoute.push();
 			}
@@ -84,7 +85,7 @@ const CloudPage = function CloudPage(): ReactNode {
 					dispatchToastMessage({ type: 'success', message: t('Connected') });
 				}
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 			} finally {
 				await reload();
 			}
@@ -101,16 +102,18 @@ const CloudPage = function CloudPage(): ReactNode {
 		setModal(<ManualWorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
 
-	if (checkRegisterStatus.phase === 'loading') {
+	if (result.isLoading || result.isError) {
 		return null;
 	}
 
-	if (checkRegisterStatus.phase === 'rejected') {
-		return null;
-	}
-
-	const isConnectToCloudDesired = checkRegisterStatus.value.connectToCloud;
-	const isWorkspaceRegistered = checkRegisterStatus.value.workspaceRegistered;
+	const {
+		connectToCloud: isConnectToCloudDesired,
+		workspaceRegistered: isWorkspaceRegistered,
+		email,
+		token: resultToken,
+		workspaceId,
+		uniqueId,
+	} = result.data;
 
 	return (
 		<Page>
@@ -136,10 +139,10 @@ const CloudPage = function CloudPage(): ReactNode {
 									</>
 								) : (
 									<WorkspaceRegistrationSection
-										email={checkRegisterStatus.value.email}
-										token={checkRegisterStatus.value.token}
-										workspaceId={checkRegisterStatus.value.workspaceId}
-										uniqueId={checkRegisterStatus.value.uniqueId}
+										email={email}
+										token={resultToken}
+										workspaceId={workspaceId}
+										uniqueId={uniqueId}
 										onRegisterStatusChange={reload}
 									/>
 								)}

@@ -1,8 +1,8 @@
 import { Callout } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import '../../../definition/rest';
@@ -14,7 +14,7 @@ const CannedResponseEditWithData: FC<{
 	reload: () => void;
 	totalDataReload: () => void;
 }> = ({ cannedResponseId, reload, totalDataReload }) => {
-	const { value: data, phase: state, error } = useEndpointData(`canned-responses/${cannedResponseId}`);
+	const { value: data, phase: state, error } = useEndpointData(`/v1/canned-responses/${cannedResponseId}`);
 
 	const t = useTranslation();
 

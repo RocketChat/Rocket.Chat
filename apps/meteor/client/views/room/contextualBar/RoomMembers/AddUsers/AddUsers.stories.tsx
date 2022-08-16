@@ -17,5 +17,5 @@ export default {
 export const Default: ComponentStory<typeof AddUsers> = (args) => <AddUsers {...args} />;
 Default.storyName = 'AddUsers';
 Default.args = {
-	value: 'rocket.cat',
+	users: ['rocket.cat'],
 };

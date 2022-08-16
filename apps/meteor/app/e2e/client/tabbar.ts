@@ -1,10 +1,8 @@
 import { useMemo, useCallback } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 
 import { addAction } from '../../../client/views/room/lib/Toolbox';
-import { useSetting } from '../../../client/contexts/SettingsContext';
-import { usePermission } from '../../../client/contexts/AuthorizationContext';
-import { useMethod } from '../../../client/contexts/ServerContext';
 import { useReactiveValue } from '../../../client/hooks/useReactiveValue';
 import { e2e } from './rocketchat.e2e';
 
@@ -15,10 +13,10 @@ addAction('e2e', ({ room }) => {
 	const canEditRoom = usePermission('edit-room', room._id);
 	const hasPermission = (room.t === 'd' || (canEditRoom && canToggleE2e)) && e2eReady;
 
-	const toggleE2E = useMethod('saveRoomSettings');
+	const toggleE2E = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
 
 	const action = useMutableCallback(() => {
-		toggleE2E(room._id, 'encrypted', !room.encrypted);
+		toggleE2E({ rid: room._id, encrypted: !room.encrypted });
 	});
 
 	const enabledOnRoom = !!room.encrypted;

@@ -1,4 +1,4 @@
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 
 export function userLoggedOut(userId) {
 	if (!userId) {
