@@ -31,7 +31,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const handleAvailableStatusChange = useMutableCallback(async () => {
 		try {
 			await changeAgentStatus();
-		} catch (error: any) {
+		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
