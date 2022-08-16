@@ -14,7 +14,6 @@
 /apps/meteor/app/voip @RocketChat/omnichannel
 /apps/meteor/app/sms @RocketChat/omnichannel
 /apps/meteor/packages/rocketchat-livechat @RocketChat/omnichannel
-/apps/meteor/packages/rocketchat-i18n @RocketChat/translation
 /apps/meteor/server/services/voip @RocketChat/omnichannel
 /apps/meteor/server/services/omnichannel-voip @RocketChat/omnichannel
 /apps/meteor/server/features/EmailInbox @RocketChat/omnichannel
