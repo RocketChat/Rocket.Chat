@@ -1,21 +1,20 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IRoomClosingInfo, IVoipRoom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IVoipRoomModel } from '@rocket.chat/model-typings';
-import type { Collection, Cursor, Db, FilterQuery, FindOneOptions, WithoutProjection, WriteOpResult } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { FindPaginated, IVoipRoomModel } from '@rocket.chat/model-typings';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Logger } from '../../lib/logger/Logger';
 import { BaseRaw } from './BaseRaw';
 
 export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IVoipRoom>>) {
-		super(db, getCollectionName('room'), trash);
+		super(db, 'room', trash);
 	}
 
 	logger = new Logger('VoipRoomsRaw');
 
-	async findOneOpenByVisitorToken(visitorToken: string, options: FindOneOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
-		const query: FilterQuery<IVoipRoom> = {
+	async findOneOpenByVisitorToken(visitorToken: string, options: FindOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
+		const query: Filter<IVoipRoom> = {
 			't': 'v',
 			'open': true,
 			'v.token': visitorToken,
@@ -23,7 +22,7 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		return this.findOne(query, options);
 	}
 
-	findOpenByAgentId(agentId: string): Cursor<IVoipRoom> {
+	findOpenByAgentId(agentId: string): FindCursor<IVoipRoom> {
 		return this.find({
 			't': 'v',
 			'open': true,
@@ -39,8 +38,8 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		});
 	}
 
-	async findOneVoipRoomById(id: string, options: WithoutProjection<FindOneOptions<IVoipRoom>> = {}): Promise<IVoipRoom | null> {
-		const query: FilterQuery<IVoipRoom> = {
+	async findOneVoipRoomById(id: string, options: FindOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
+		const query: Filter<IVoipRoom> = {
 			t: 'v',
 			_id: id,
 		};
@@ -50,9 +49,9 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 	async findOneOpenByRoomIdAndVisitorToken(
 		roomId: string,
 		visitorToken: string,
-		options: FindOneOptions<IVoipRoom> = {},
+		options: FindOptions<IVoipRoom> = {},
 	): Promise<IVoipRoom | null> {
-		const query: FilterQuery<IVoipRoom> = {
+		const query: Filter<IVoipRoom> = {
 			't': 'v',
 			'_id': roomId,
 			'open': true,
@@ -61,8 +60,8 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		return this.findOne(query, options);
 	}
 
-	async findOneByVisitorToken(visitorToken: string, options: FindOneOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
-		const query: FilterQuery<IVoipRoom> = {
+	async findOneByVisitorToken(visitorToken: string, options: FindOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
+		const query: Filter<IVoipRoom> = {
 			't': 'v',
 			'v.token': visitorToken,
 		};
@@ -72,9 +71,9 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 	async findOneByIdAndVisitorToken(
 		_id: IVoipRoom['_id'],
 		visitorToken: string,
-		options: FindOneOptions<IVoipRoom> = {},
+		options: FindOptions<IVoipRoom> = {},
 	): Promise<IVoipRoom | null> {
-		const query: FilterQuery<IVoipRoom> = {
+		const query: Filter<IVoipRoom> = {
 			't': 'v',
 			_id,
 			'v.token': visitorToken,
@@ -82,10 +81,10 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		return this.findOne(query, options);
 	}
 
-	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IRoomClosingInfo): Promise<WriteOpResult> {
+	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IRoomClosingInfo): Promise<Document | UpdateResult> {
 		const { closer, closedBy, closedAt, callDuration, serviceTimeDuration, ...extraData } = closeInfo;
 
-		return this.update(
+		return this.updateOne(
 			{
 				_id: roomId,
 				t: 'v',
@@ -129,24 +128,20 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		direction?: IVoipRoom['direction'];
 		roomName?: string;
 		options?: {
-			sort?: Record<string, unknown>;
+			sort?: FindOptions<IVoipRoom>['sort'];
 			count?: number;
 			fields?: Record<string, unknown>;
 			offset?: number;
 		};
-	}): Cursor<IVoipRoom> {
-		const query: FilterQuery<IVoipRoom> = {
+	}): FindPaginated<FindCursor<IVoipRoom>> {
+		const query: Filter<IVoipRoom> = {
 			t: 'v',
+			...(visitorId && visitorId !== 'undefined' && { 'v._id': visitorId }),
+			...(agents && { $or: [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }] }),
 		};
 
-		if (agents) {
-			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
-		}
 		if (open !== undefined) {
 			query.open = { $exists: open };
-		}
-		if (visitorId && visitorId !== 'undefined') {
-			query['v._id'] = visitorId;
 		}
 		if (createdAt && Object.keys(createdAt).length) {
 			query.ts = {};
@@ -179,7 +174,7 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 			query.name = new RegExp(escapeRegExp(roomName), 'i');
 		}
 
-		return this.find(query, {
+		return this.findPaginated(query, {
 			sort: options.sort || { name: 1 },
 			skip: options.offset,
 			limit: options.count,

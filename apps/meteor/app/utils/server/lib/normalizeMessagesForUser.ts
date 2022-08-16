@@ -1,4 +1,4 @@
-import { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';

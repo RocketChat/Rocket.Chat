@@ -1,4 +1,4 @@
-import { FindOneOptions } from 'mongodb';
+import type { FindOptions } from 'mongodb';
 import type {
 	IAgentExtensionMap,
 	IRoomCreationResponse,
@@ -8,11 +8,11 @@ import type {
 	IUser,
 	IVoipExtensionWithAgentInfo,
 	ILivechatAgent,
+	VoipClientEvents,
 } from '@rocket.chat/core-typings';
-import { VoipClientEvents } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
-import { FindVoipRoomsParams } from '../../services/omnichannel-voip/internalTypes';
+import type { FindVoipRoomsParams } from '../../services/omnichannel-voip/internalTypes';
 
 export interface IOmnichannelVoipService {
 	getFreeExtensions(): Promise<string[]>;
@@ -22,7 +22,7 @@ export interface IOmnichannelVoipService {
 		agent: { agentId: string; username: string },
 		rid: string,
 		direction: IVoipRoom['direction'],
-		options: FindOneOptions<IVoipRoom>,
+		options: FindOptions<IVoipRoom>,
 	): Promise<IRoomCreationResponse>;
 	findRoom(token: string, rid: string): Promise<IVoipRoom | null>;
 	closeRoom(

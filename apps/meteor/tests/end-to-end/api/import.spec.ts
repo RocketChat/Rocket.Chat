@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Response } from 'supertest';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 

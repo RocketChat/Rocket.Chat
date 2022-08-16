@@ -3,7 +3,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings, settingsRegistry } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLUtils } from './Utils';
 import {
 	defaultAuthnContextTemplate,

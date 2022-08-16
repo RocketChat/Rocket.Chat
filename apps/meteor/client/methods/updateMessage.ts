@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TimeSync } from 'meteor/mizzao:timesync';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 import _ from 'underscore';
@@ -20,6 +19,9 @@ Meteor.methods({
 
 		const originalMessage = ChatMessage.findOne(message._id);
 
+		if (!originalMessage) {
+			return;
+		}
 		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
 		let editOwn = false;
@@ -59,11 +61,7 @@ Meteor.methods({
 		}
 
 		Tracker.nonreactive(() => {
-			if (isNaN(TimeSync.serverOffset())) {
-				message.editedAt = new Date();
-			} else {
-				message.editedAt = new Date(Date.now() + TimeSync.serverOffset());
-			}
+			message.editedAt = new Date(Date.now());
 
 			message.editedBy = {
 				_id: uid,

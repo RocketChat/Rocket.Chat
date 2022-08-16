@@ -1,6 +1,7 @@
 import { Agenda } from '@rocket.chat/agenda';
 import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { LivechatRooms, Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server';
@@ -15,7 +16,7 @@ class AutoTransferChatSchedulerClass {
 
 	running: boolean;
 
-	user: {};
+	user: IUser;
 
 	public init(): void {
 		if (this.running) {

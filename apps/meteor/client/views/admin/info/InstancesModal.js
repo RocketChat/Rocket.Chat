@@ -1,4 +1,4 @@
-import { Modal, ButtonGroup, Button, Accordion } from '@rocket.chat/fuselage';
+import { Modal, Button, Accordion } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -92,11 +92,11 @@ const InstancesModal = ({ instances = [], onClose }) => {
 				</Accordion>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button primary onClick={onClose}>
 						{t('Close')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

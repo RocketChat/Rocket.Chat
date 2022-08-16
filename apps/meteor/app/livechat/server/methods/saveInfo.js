@@ -49,7 +49,7 @@ Meteor.methods({
 			delete guestData.phone;
 		}
 
-		const ret = (await Livechat.saveGuest(guestData, userId)) && Livechat.saveRoomInfo(roomData, guestData, userId);
+		const ret = (await Livechat.saveGuest(guestData, userId)) && (await Livechat.saveRoomInfo(roomData, guestData, userId));
 
 		const user = Meteor.users.findOne({ _id: userId }, { fields: { _id: 1, username: 1 } });
 

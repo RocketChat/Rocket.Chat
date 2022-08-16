@@ -75,8 +75,15 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 							<Button square mis='none' onClick={clickReset} disabled={disabled} mie='x4' title={t('Accounts_SetDefaultAvatar')}>
 								<Avatar url={`/avatar/%40${username}`} />
 							</Button>
-							<IconButton icon='upload' square secondary onClick={clickUpload} disabled={disabled} title={t('Upload')} />
-							<IconButton icon='permalink' square secondary onClick={clickUrl} disabled={disabled || urlEmpty} title={t('Add URL')} />
+							<IconButton icon='upload' secondary onClick={clickUpload} disabled={disabled} title={t('Upload')} />
+							<IconButton
+								data-qa-id='UserAvatarEditorSetAvatarLink'
+								icon='permalink'
+								secondary
+								onClick={clickUrl}
+								disabled={disabled || urlEmpty}
+								title={t('Add URL')}
+							/>
 							{suggestions && (
 								<UserAvatarSuggestions
 									suggestions={suggestions}
@@ -89,7 +96,13 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 					</Box>
 					<Margins inlineStart='x4'>
 						<Box>{t('Use_url_for_avatar')}</Box>
-						<TextInput flexGrow={0} placeholder={t('Use_url_for_avatar')} value={avatarFromUrl} onChange={handleAvatarFromUrlChange} />
+						<TextInput
+							data-qa-id='UserAvatarEditorLink'
+							flexGrow={0}
+							placeholder={t('Use_url_for_avatar')}
+							value={avatarFromUrl}
+							onChange={handleAvatarFromUrlChange}
+						/>
 					</Margins>
 				</Box>
 			</Box>

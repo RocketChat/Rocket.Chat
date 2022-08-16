@@ -12,7 +12,7 @@ type MemberItemProps = {
 	onClickView: (e: MouseEvent<HTMLDivElement>) => void;
 	rid: IRoom['_id'];
 	reload: () => void;
-} & IUser;
+} & Pick<IUser, 'federated' | 'username' | 'name' | '_id'>;
 
 export const MemberItem = ({ _id, name, username, federated, onClickView, rid, reload }: MemberItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
@@ -29,7 +29,7 @@ export const MemberItem = ({ _id, name, username, federated, onClickView, rid, r
 			<OptionAvatar>
 				<UserAvatar username={username || ''} size='x28' />
 			</OptionAvatar>
-			<OptionColumn>{federated ? <ReactiveUserStatus uid={_id} /> : <Icon name='globe' size='x16' />}</OptionColumn>
+			<OptionColumn>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={_id} />}</OptionColumn>
 			<OptionContent data-qa={`MemberItem-${username}`}>
 				{name} <OptionDescription>({username})</OptionDescription>
 			</OptionContent>
