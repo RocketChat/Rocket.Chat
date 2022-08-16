@@ -861,7 +861,7 @@ describe('[Teams]', () => {
 				.get(api('teams.info'))
 				.set(credentials)
 				.query({
-					teamName: 'non-existent',
+					teamName: '',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
