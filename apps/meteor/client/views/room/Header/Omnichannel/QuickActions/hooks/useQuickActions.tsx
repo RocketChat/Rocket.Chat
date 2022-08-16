@@ -138,7 +138,7 @@ export const useQuickActions = (
 		}
 	}, [closeModal, discardTranscript, dispatchToastMessage, rid, t]);
 
-	const forwardChat = useMethod('livechat:transfer');
+	const forwardChat = useEndpoint('POST', '/v1/livechat/room.forward');
 
 	const handleForwardChat = useCallback(
 		async (departmentId?: string, userId?: string, comment?: string) => {
@@ -173,7 +173,7 @@ export const useQuickActions = (
 				FlowRouter.go('/');
 				closeModal();
 			} catch (error: any) {
-				handleError(error);
+				dispatchToastMessage({ type: 'error', message: error as any });
 			}
 		},
 		[closeModal, dispatchToastMessage, forwardChat, rid, t],
