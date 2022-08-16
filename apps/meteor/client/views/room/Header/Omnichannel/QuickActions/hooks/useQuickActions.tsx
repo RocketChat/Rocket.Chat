@@ -137,7 +137,7 @@ export const useQuickActions = (
 		}
 	}, [closeModal, discardTranscript, dispatchToastMessage, rid, t]);
 
-	const forwardChat = useMethod('livechat:transfer');
+	const forwardChat = useEndpoint('POST', '/v1/livechat/room.forward');
 
 	const handleForwardChat = useCallback(
 		async (departmentId?: string, userId?: string, comment?: string) => {
