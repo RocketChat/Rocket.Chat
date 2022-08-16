@@ -11,5 +11,4 @@ export interface IUploadsModel extends IBaseModel<IUpload> {
 	updateFileComplete(fileId: string, userId: string, file: object): Promise<UpdateResult | undefined>;
 
 	deleteFile(fileId: string): Promise<DeleteResult>;
-
 }
