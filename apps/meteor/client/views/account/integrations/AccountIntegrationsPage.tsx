@@ -29,7 +29,7 @@ const AccountIntegrationsPage = (): ReactElement => {
 			removeWebdavAccount(selected as string);
 			dispatchToastMessage({ type: 'success', message: t('Webdav_account_removed') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, removeWebdavAccount, selected, t]);
 
