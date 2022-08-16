@@ -7,7 +7,7 @@ import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
 import { Rooms } from '../../../../../models/client';
 import { t } from '../../../../../utils/client';
 
-export const mountPopover = (e: JQuery.ClickEvent, i: Blaze.TemplateInstance, outerContext: unknown) => {
+export const mountPopover = (e: JQuery.TriggeredEvent, i: Blaze.TemplateInstance, outerContext: unknown) => {
 	let context = $(e.target).parents('.message').data('context');
 	if (!context) {
 		context = 'message';

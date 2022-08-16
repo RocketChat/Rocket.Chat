@@ -79,6 +79,10 @@ export class ChatMessages {
 		this.wrapper = wrapper;
 	}
 
+	/**
+	 * @param {HTMLInputElement} input
+	 * @param {{ rid?: string, tmid?: string }} options
+	 */
 	initializeInput(input, { rid, tmid }) {
 		this.input = input;
 		this.$input = $(this.input);

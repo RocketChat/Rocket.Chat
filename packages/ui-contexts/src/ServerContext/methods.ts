@@ -1,4 +1,4 @@
-import type { IRoom, ISetting, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IRoom, ISetting, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
 
 import type { TranslationKey } from '../TranslationContext';
 import type {
@@ -113,6 +113,7 @@ export interface ServerMethods {
 	'saveUserProfile': (...args: any[]) => any;
 	'sendConfirmationEmail': (...args: any[]) => any;
 	'sendInvitationEmail': (...args: any[]) => any;
+	'sendMessage': (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => any;
 	'setAdminStatus': (...args: any[]) => any;
 	'setAsset': (...args: any[]) => any;
 	'setAvatarFromService': (...args: any[]) => any;

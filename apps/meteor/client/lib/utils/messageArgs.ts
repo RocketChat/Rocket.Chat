@@ -3,6 +3,7 @@ import { IMessage, IRoom, ISubscription, IUser, SettingValue } from '@rocket.cha
 export const messageArgs = (
 	context: any,
 ): {
+	context?: 'threads' | 'mentions';
 	msg: IMessage;
 	u: IUser;
 	room: IRoom;

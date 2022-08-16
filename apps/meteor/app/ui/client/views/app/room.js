@@ -1,28 +1,20 @@
 import _ from 'underscore';
-import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Random } from 'meteor/random';
-import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, getUserPreference } from '../../../../utils/client';
-import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models/client';
+import { ChatMessage, RoomRoles, Subscriptions, Rooms } from '../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
-import { messageArgs } from '../../../../../client/lib/utils/messageArgs';
-import { settings } from '../../../../settings/client';
 import { callbacks } from '../../../../../lib/callbacks';
-import { hasAllPermission, hasRole } from '../../../../authorization/client';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
-import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
 import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { call } from '../../../../../client/lib/utils/call';
@@ -31,361 +23,26 @@ import { retentionPolicyHelpers } from './lib/retentionPolicy';
 import { chatMessages } from './lib/chatMessages';
 import { isAtBottom } from './lib/scrolling';
 import { dispatchToastMessage } from '../../../../../client/lib/toast';
+import { roomEvents } from './lib/roomEvents';
+import { roomHelpers } from './lib/roomHelpers';
 import './room.html';
 
 export { chatMessages, dropzoneHelpers, dropzoneEvents };
 
 Template.roomOld.helpers({
 	...dropzoneHelpers,
-	tabBar() {
-		return Template.instance().tabBar;
-	},
-	subscribed() {
-		const { state } = Template.instance();
-		return state.get('subscribed');
-	},
-	messagesHistory() {
-		const { rid } = Template.instance();
-		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
-		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
-		const settingValues = Array.isArray(room?.sysMes) ? room.sysMes : hideSettings.value || [];
-		const hideMessagesOfType = new Set(
-			settingValues.reduce((array, value) => [...array, ...(value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value])], []),
-		);
-		const query = {
-			rid,
-			_hidden: { $ne: true },
-			$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
-		};
-
-		if (hideMessagesOfType.size) {
-			query.t = { $nin: Array.from(hideMessagesOfType.values()) };
-		}
-
-		const options = {
-			sort: {
-				ts: 1,
-			},
-		};
-
-		return ChatMessage.find(query, options);
-	},
-
-	hasMore() {
-		return RoomHistoryManager.hasMore(this._id);
-	},
-
-	hasMoreNext() {
-		return RoomHistoryManager.hasMoreNext(this._id);
-	},
-
-	isLoading() {
-		return RoomHistoryManager.isLoading(this._id);
-	},
-
-	windowId() {
-		return `chat-window-${this._id}`;
-	},
-
-	uploading() {
-		return Session.get('uploading');
-	},
-
-	roomLeader() {
-		const roles = RoomRoles.findOne({
-			'rid': this._id,
-			'roles': 'leader',
-			'u._id': { $ne: Meteor.userId() },
-		});
-		if (roles) {
-			const leader = Users.findOne({ _id: roles.u._id }, { fields: { status: 1, statusText: 1 } }) || {};
-
-			return {
-				...roles.u,
-				name: settings.get('UI_Use_Real_Name') ? roles.u.name || roles.u.username : roles.u.username,
-				status: leader.status || 'offline',
-				statusDisplay: leader.statusText || t(leader.status || 'offline'),
-			};
-		}
-	},
-
-	chatNowLink() {
-		return roomCoordinator.getRouteLink('d', { name: this.username });
-	},
-
-	announcement() {
-		return Template.instance().state.get('announcement');
-	},
-
-	announcementDetails() {
-		const roomData = Session.get(`roomData${this._id}`);
-		if (!roomData) {
-			return false;
-		}
-		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
-			return () => callbacks.run(roomData.announcementDetails.callback, this._id);
-		}
-	},
-
-	messageboxData() {
-		const { sendToBottomIfNecessary, subscription } = Template.instance();
-		const { _id: rid } = this;
-		const isEmbedded = isLayoutEmbedded();
-		const showFormattingTips = settings.get('Message_ShowFormattingTips');
-
-		return {
-			rid,
-			subscription: subscription.get(),
-			isEmbedded,
-			showFormattingTips: showFormattingTips && !isEmbedded,
-			onInputChanged: (input) => {
-				if (!chatMessages[rid]) {
-					return;
-				}
-
-				chatMessages[rid].initializeInput(input, { rid });
-			},
-			onResize: () => sendToBottomIfNecessary && sendToBottomIfNecessary(),
-			onKeyUp: (...args) => chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
-			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
-			onSend: (...args) => chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args),
-		};
-	},
-
-	getAnnouncementStyle() {
-		const { room } = Template.instance();
-		if (!room) {
-			return '';
-		}
-		return room.announcementDetails && room.announcementDetails.style !== undefined ? room.announcementDetails.style : '';
-	},
-
-	maxMessageLength() {
-		return settings.get('Message_MaxAllowedSize');
-	},
-
-	unreadData() {
-		const data = { count: Template.instance().state.get('count') };
-
-		const room = RoomManager.getOpenedRoomByRid(this._id);
-		if (room) {
-			data.since = room.unreadSince.get();
-		}
-
-		return data;
-	},
-
-	containerBarsShow(unreadData, uploading) {
-		const hasUnreadData = unreadData && unreadData.count && unreadData.since;
-		const isUploading = uploading && uploading.length;
-
-		if (hasUnreadData || isUploading) {
-			return 'show';
-		}
-	},
-
-	formatUnreadSince() {
-		if (!this.since) {
-			return;
-		}
-
-		return moment(this.since).calendar(null, { sameDay: 'LT' });
-	},
-	adminClass() {
-		if (hasRole(Meteor.userId(), 'admin')) {
-			return 'admin';
-		}
-	},
-
-	messageViewMode() {
-		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
-		const modes = ['', 'cozy', 'compact'];
-		return modes[viewMode] || modes[0];
-	},
-
-	selectable() {
-		return Template.instance().selectable.get();
-	},
-
-	hideUsername() {
-		return getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
-	},
-
-	hideAvatar() {
-		return getUserPreference(Meteor.userId(), 'displayAvatars') ? undefined : 'hide-avatars';
-	},
-	canPreview() {
-		const { room, state } = Template.instance();
-
-		if (room && room.t !== 'c') {
-			return true;
-		}
-
-		if (settings.get('Accounts_AllowAnonymousRead') === true) {
-			return true;
-		}
-
-		if (hasAllPermission('preview-c-room')) {
-			return true;
-		}
-
-		return state.get('subscribed');
-	},
-	hideLeaderHeader() {
-		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
-	},
-	hasLeader() {
-		if (RoomRoles.findOne({ 'rid': this._id, 'roles': 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
-			return 'has-leader';
-		}
-	},
+	...roomHelpers,
 	...retentionPolicyHelpers,
 	messageContext,
-	openedThread() {
-		FlowRouter.watchPathChange();
-		const tab = FlowRouter.getParam('tab');
-		const mid = FlowRouter.getParam('context');
-		const rid = Template.currentData()._id;
-		const jump = FlowRouter.getQueryParam('jump');
-		const subscription = Template.instance().subscription.get();
+});
 
-		if (tab !== 'thread' || !mid || rid !== Session.get('openedRoom')) {
-			return;
-		}
-
-		const room = Rooms.findOne(
-			{ _id: rid },
-			{
-				fields: {
-					t: 1,
-					usernames: 1,
-					uids: 1,
-					name: 1,
-				},
-			},
-		);
-
-		return {
-			rid,
-			mid,
-			room,
-			jump,
-			subscription,
-		};
-	},
+Template.roomOld.events({
+	...getCommonRoomEvents(),
+	...dropzoneEvents,
+	...roomEvents,
 });
 
 Meteor.startup(() => {
-	Template.roomOld.events({
-		...getCommonRoomEvents(),
-		...dropzoneEvents,
-		'click .toggle-hidden'(e) {
-			const id = e.currentTarget.dataset.message;
-			document.querySelector(`#${id}`).classList.toggle('message--ignored');
-		},
-
-		'click .message'(e, template) {
-			if (template.selectable.get()) {
-				(document.selection != null ? document.selection.empty() : undefined) ||
-					(typeof window.getSelection === 'function' ? window.getSelection().removeAllRanges() : undefined);
-				const data = Blaze.getData(e.currentTarget);
-				const {
-					msg: { _id },
-				} = messageArgs(data);
-
-				if (!template.selectablePointer) {
-					template.selectablePointer = _id;
-				}
-
-				if (!e.shiftKey) {
-					template.selectedMessages = template.getSelectedMessages();
-					template.selectedRange = [];
-					template.selectablePointer = _id;
-				}
-
-				template.selectMessages(_id);
-
-				const selectedMessages = $('.messages-box .message.selected').map((i, message) => message.id);
-				const removeClass = _.difference(selectedMessages, template.getSelectedMessages());
-				const addClass = _.difference(template.getSelectedMessages(), selectedMessages);
-				removeClass.forEach((message) => $(`.messages-box #${message}`).removeClass('selected'));
-				addClass.forEach((message) => $(`.messages-box #${message}`).addClass('selected'));
-			}
-		},
-		'click .jump-recent button'(e, template) {
-			e.preventDefault();
-			template.atBottom = true;
-			RoomHistoryManager.clear(template && template.data && template.data._id);
-			RoomHistoryManager.getMoreIfIsEmpty(this._id);
-		},
-		'load .gallery-item'(e, template) {
-			template.sendToBottomIfNecessary();
-		},
-
-		'rendered .js-block-wrapper'(e, template) {
-			template.sendToBottomIfNecessary();
-		},
-		'click .new-message'(event, instance) {
-			instance.atBottom = true;
-			instance.sendToBottomIfNecessary();
-			chatMessages[RoomManager.openedRoom].input.focus();
-		},
-		'click .upload-progress-close'(e) {
-			e.preventDefault();
-			Session.set(`uploading-cancel-${this.id}`, true);
-		},
-		'click .unread-bar > button.mark-read'(e, t) {
-			readMessage.readNow(t.data._id);
-		},
-
-		'click .unread-bar > button.jump-to'(e, t) {
-			const { _id } = t.data;
-			const room = RoomHistoryManager.getRoom(_id);
-			let message = room && room.firstUnread.get();
-			if (!message) {
-				const subscription = Subscriptions.findOne({ rid: _id });
-				message = ChatMessage.find(
-					{ rid: _id, ts: { $gt: subscription != null ? subscription.ls : undefined } },
-					{ sort: { ts: 1 }, limit: 1 },
-				).fetch()[0];
-			}
-			RoomHistoryManager.getSurroundingMessages(message, 50);
-		},
-		'scroll .wrapper': _.throttle(function (e, t) {
-			const $roomLeader = $('.room-leader');
-			if ($roomLeader.length) {
-				if (e.target.scrollTop < t.lastScrollTop) {
-					t.hideLeaderHeader.set(false);
-				} else if (t.isAtBottom(100) === false && e.target.scrollTop > $roomLeader.height()) {
-					t.hideLeaderHeader.set(true);
-				}
-			}
-			t.lastScrollTop = e.target.scrollTop;
-			const height = e.target.clientHeight;
-			const isLoading = RoomHistoryManager.isLoading(this._id);
-			const hasMore = RoomHistoryManager.hasMore(this._id);
-			const hasMoreNext = RoomHistoryManager.hasMoreNext(this._id);
-
-			if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
-				if (hasMore === true && t.lastScrollTop <= height / 3) {
-					RoomHistoryManager.getMore(this._id);
-				} else if (hasMoreNext === true && Math.ceil(t.lastScrollTop) >= e.target.scrollHeight - height) {
-					RoomHistoryManager.getMoreNext(this._id);
-				}
-			}
-		}, 100),
-
-		'click .time a'(e) {
-			e.preventDefault();
-			const { msg } = messageArgs(this);
-			const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
-			FlowRouter.go(FlowRouter.current().context.pathname, null, {
-				msg: repliedMessageId,
-				hash: Random.id(),
-			});
-		},
-	});
-
 	Template.roomOld.onCreated(function () {
 		// this.scrollOnBottom = true
 		// this.typing = new msgTyping this.data._id
