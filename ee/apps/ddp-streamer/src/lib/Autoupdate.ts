@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { AutoUpdateRecord } from '../../../../../apps/meteor/server/sdk/types/IMeteor';
+import type { AutoUpdateRecord } from '../../../../../apps/meteor/server/sdk/types/IMeteor';
 
 class AutoupdateSingleton extends EventEmitter {
 	private versions = new Map<string, Omit<AutoUpdateRecord, '_id'>>();

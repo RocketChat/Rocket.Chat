@@ -31,7 +31,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const handleAvailableStatusChange = useMutableCallback(async () => {
 		try {
 			await changeAgentStatus();
-		} catch (error: any) {
+		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
@@ -58,7 +58,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 				{isCallEnabled && <OmnichannelCallToggle />}
 				<Sidebar.TopBar.Action {...omnichannelIcon} onClick={handleAvailableStatusChange} />
 				{hasPermissionToSeeContactCenter && (
-					<Sidebar.TopBar.Action title={t('Contact_Center')} icon='contact' onClick={(): void => handleRoute('directory')} />
+					<Sidebar.TopBar.Action title={t('Contact_Center')} icon='address-book' onClick={(): void => handleRoute('directory')} />
 				)}
 				{isCallReady && <OmniChannelCallDialPad />}
 			</Sidebar.TopBar.Actions>

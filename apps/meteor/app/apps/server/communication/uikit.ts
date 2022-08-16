@@ -1,4 +1,5 @@
-import express, { Request, Response } from 'express';
+import type { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { Meteor } from 'meteor/meteor';
@@ -7,7 +8,8 @@ import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definitio
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { settings } from '../../../settings/server';
-import { Apps, AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
+import { Apps } from '../orchestrator';
 import { UiKitCoreApp } from '../../../../server/sdk';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
@@ -57,22 +59,22 @@ Meteor.startup(() => {
 
 router.use(authenticationMiddleware({ rejectUnauthorized: false }));
 
-router.use((req, res, next) => {
+router.use((req: Request, res, next) => {
 	const { 'x-visitor-token': visitorToken } = req.headers;
 
 	if (visitorToken) {
 		req.body.visitor = Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
 	}
 
-	if (!req.body.user && !req.body.visitor) {
+	if (!req.user && !req.body.visitor) {
 		return unauthorized(res);
 	}
 
 	next();
 });
 
-const corsOptions = {
-	origin: (origin: string | undefined, callback: Function): void => {
+const corsOptions: cors.CorsOptions = {
+	origin: (origin, callback) => {
 		if (
 			!origin ||
 			!corsEnabled ||
@@ -82,18 +84,20 @@ const corsOptions = {
 		) {
 			callback(null, true);
 		} else {
-			callback('Not allowed by CORS', false);
+			callback(new Error('Not allowed by CORS'), false);
 		}
 	},
 };
 
 apiServer.use('/api/apps/ui.interaction/', cors(corsOptions), router); // didn't have the rateLimiter option
 
-const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request): {} => {
+const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request) => {
 	if (type === UIKitIncomingInteractionType.BLOCK) {
 		const { type, actionId, triggerId, mid, rid, payload, container } = req.body;
 
-		const { visitor, user } = req.body;
+		const { visitor } = req.body;
+		const { user } = req;
+
 		const room = rid; // orch.getConverters().get('rooms').convertById(rid);
 		const message = mid;
 
@@ -107,7 +111,7 @@ const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request): {}
 			user,
 			visitor,
 			room,
-		};
+		} as const;
 	}
 
 	if (type === UIKitIncomingInteractionType.VIEW_CLOSED) {
@@ -117,7 +121,7 @@ const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request): {}
 			payload: { view, isCleared },
 		} = req.body;
 
-		const { user } = req.body;
+		const { user } = req;
 
 		return {
 			type,
@@ -133,7 +137,7 @@ const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request): {}
 	if (type === UIKitIncomingInteractionType.VIEW_SUBMIT) {
 		const { type, actionId, triggerId, payload } = req.body;
 
-		const { user } = req.body;
+		const { user } = req;
 
 		return {
 			type,
@@ -186,7 +190,7 @@ const appsRoutes =
 
 				const { visitor } = req.body;
 				const room = orch.getConverters()?.get('rooms').convertById(rid);
-				const user = orch.getConverters()?.get('users').convertToApp(req.body.user);
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const message = mid && orch.getConverters()?.get('messages').convertById(mid);
 
 				const action = {
@@ -221,7 +225,7 @@ const appsRoutes =
 					payload: { view, isCleared },
 				} = req.body;
 
-				const user = orch.getConverters()?.get('users').convertToApp(req.body.user);
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 
 				const action = {
 					type,
@@ -247,7 +251,7 @@ const appsRoutes =
 			case UIKitIncomingInteractionType.VIEW_SUBMIT: {
 				const { type, actionId, triggerId, payload } = req.body;
 
-				const user = orch.getConverters()?.get('users').convertToApp(req.body.user);
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 
 				const action = {
 					type,
@@ -279,7 +283,7 @@ const appsRoutes =
 				} = req.body;
 
 				const room = orch.getConverters()?.get('rooms').convertById(rid);
-				const user = orch.getConverters()?.get('users').convertToApp(req.body.user);
+				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 				const message = mid && orch.getConverters()?.get('messages').convertById(mid);
 
 				const action = {

@@ -1,10 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import { BannerPlatform, IBanner, IBannerDismiss, Optional } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { BannerPlatform, IBanner, IBannerDismiss, Optional, IUser } from '@rocket.chat/core-typings';
 import { Banners, BannersDismiss, Users } from '@rocket.chat/models';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { IBannerService } from '../../sdk/types/IBannerService';
+import type { IBannerService } from '../../sdk/types/IBannerService';
 import { api } from '../../sdk/api';
 
 export class BannerService extends ServiceClassInternal implements IBannerService {
@@ -126,7 +125,7 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 
 		const { _id, ...banner } = result;
 
-		Banners.update({ _id }, { ...banner, ...doc, active: true }); // reenable the banner
+		Banners.updateOne({ _id }, { $set: { ...banner, ...doc, active: true } }); // reenable the banner
 
 		api.broadcast('banner.enabled', bannerId);
 		return true;

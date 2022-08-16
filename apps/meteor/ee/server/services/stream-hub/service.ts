@@ -1,6 +1,14 @@
 import '../../startup/broker';
 
 import { api } from '../../../../server/sdk/api';
-import { StreamHub } from './StreamHub';
+import { getConnection } from '../mongo';
+import { registerServiceModels } from '../../lib/registerServiceModels';
 
-api.registerService(new StreamHub());
+getConnection().then(async (db) => {
+	registerServiceModels(db);
+
+	// need to import StreamHub service after models are registered
+	const { StreamHub } = await import('./StreamHub');
+
+	api.registerService(new StreamHub());
+});

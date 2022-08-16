@@ -2,6 +2,10 @@ import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
+createTemplateForComponent('HomePage', () => import('./views/home/HomePage'), {
+	attachment: 'at-parent',
+});
+
 createTemplateForComponent('MessageActions', () => import('./components/message/MessageActions'));
 
 createTemplateForComponent('reactAttachments', () => import('./components/message/Attachments'));
@@ -121,8 +125,6 @@ createTemplateForComponent('channelFilesList', () => import('./views/room/contex
 createTemplateForComponent('PruneMessages', () => import('./views/room/contextualBar/PruneMessages'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
-
-createTemplateForComponent('Burger', () => import('./components/BurgerMenu'));
 
 createTemplateForComponent('loginLayoutHeader', () => import('./views/login/LoginLayout/Header'));
 

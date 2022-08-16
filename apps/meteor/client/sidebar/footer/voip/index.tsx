@@ -2,19 +2,18 @@ import type { VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import {
 	useCallActions,
 	useCallCreateRoom,
 	useCallerInfo,
 	useCallOpenRoom,
+	useIsVoipEnterprise,
 	useOpenedRoomInfo,
 	useQueueCounter,
 	useQueueName,
 } from '../../../contexts/CallContext';
 import SidebarFooterDefault from '../SidebarFooterDefault';
-import { SidebarFooterWatermark } from '../SidebarFooterWatermark';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
 export const VoipFooter = (): ReactElement | null => {
@@ -32,7 +31,7 @@ export const VoipFooter = (): ReactElement | null => {
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
-	const isEE = useHasLicenseModule('voip-enterprise');
+	const isEnterprise = useIsVoipEnterprise();
 
 	const toggleMic = useCallback(
 		(state: boolean) => {
@@ -104,8 +103,7 @@ export const VoipFooter = (): ReactElement | null => {
 			dispatchEvent={dispatchEvent}
 			openedRoomInfo={openedRoomInfo}
 			anonymousText={t('Anonymous')}
-			isEnterprise={isEE === true}
-			children={<SidebarFooterWatermark />}
+			isEnterprise={isEnterprise}
 			options={options}
 		/>
 	);

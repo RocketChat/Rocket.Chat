@@ -4,6 +4,8 @@ import { useMemo, ContextType } from 'react';
 import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
 import type { AppsContext } from '../AppsContext';
 import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
+import { filterAppsByDisabled } from '../helpers/filterAppsByDisabled';
+import { filterAppsByEnabled } from '../helpers/filterAppsByEnabled';
 import { filterAppsByFree } from '../helpers/filterAppsByFree';
 import { filterAppsByPaid } from '../helpers/filterAppsByPaid';
 import { filterAppsByText } from '../helpers/filterAppsByText';
@@ -21,6 +23,7 @@ export const useFilteredApps = ({
 	categories = [],
 	purchaseType,
 	sortingMethod,
+	status,
 }: {
 	appsData: appsDataType;
 	text: string;
@@ -29,6 +32,7 @@ export const useFilteredApps = ({
 	categories?: string[];
 	purchaseType?: string;
 	sortingMethod?: string;
+	status?: string;
 }): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult> => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {
@@ -54,12 +58,15 @@ export const useFilteredApps = ({
 		}
 
 		if (purchaseType && purchaseType !== 'all') {
-			filtered =
-				purchaseType === 'paid' ? filtered.filter((app) => filterAppsByPaid(app)) : filtered.filter((app) => filterAppsByFree(app));
+			filtered = purchaseType === 'paid' ? filtered.filter(filterAppsByPaid) : filtered.filter(filterAppsByFree);
 
-			if (!filtered.length) {
-				shouldShowSearchText = false;
-			}
+			if (!filtered.length) shouldShowSearchText = false;
+		}
+
+		if (status && status !== 'all') {
+			filtered = status === 'enabled' ? filtered.filter(filterAppsByEnabled) : filtered.filter(filterAppsByDisabled);
+
+			if (!filtered.length) shouldShowSearchText = false;
 		}
 
 		if (Boolean(categories.length) && Boolean(text)) {
@@ -83,7 +90,7 @@ export const useFilteredApps = ({
 		const slice = filtered.slice(offset, end);
 
 		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText };
-	}, [appsData.value, sortingMethod, purchaseType, categories, text, current, itemsPerPage]);
+	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, current, itemsPerPage]);
 
 	if (appsData.phase === AsyncStatePhase.RESOLVED) {
 		if (!value) {

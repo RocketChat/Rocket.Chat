@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermission } from '../../../authorization/server';
 
 Meteor.methods({
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	restart_server() {
 		const uid = Meteor.userId();
 
