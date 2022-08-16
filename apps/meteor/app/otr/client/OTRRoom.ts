@@ -238,7 +238,7 @@ export class OTRRoom implements IOTRRoom {
 			}
 			return message;
 		} catch (e) {
-			dispatchToastMessage({ type: 'error', message: String(e) });
+			dispatchToastMessage({ type: 'error', message: e });
 			this.setState(OtrRoomState.ERROR);
 			return message;
 		}
@@ -267,7 +267,7 @@ export class OTRRoom implements IOTRRoom {
 							}
 						});
 					} catch (e) {
-						dispatchToastMessage({ type: 'error', message: String(e) });
+						dispatchToastMessage({ type: 'error', message: e });
 						throw new Meteor.Error('establish-connection-error', 'Establish connection error.');
 					}
 				};
@@ -315,7 +315,7 @@ export class OTRRoom implements IOTRRoom {
 						imperativeModal.close();
 					}, 10000);
 				} catch (e) {
-					dispatchToastMessage({ type: 'error', message: String(e) });
+					dispatchToastMessage({ type: 'error', message: e });
 				}
 				break;
 
@@ -330,7 +330,7 @@ export class OTRRoom implements IOTRRoom {
 					}
 					this.isFirstOTR = false;
 				} catch (e) {
-					dispatchToastMessage({ type: 'error', message: String(e) });
+					dispatchToastMessage({ type: 'error', message: e });
 				}
 				break;
 
@@ -365,7 +365,7 @@ export class OTRRoom implements IOTRRoom {
 						});
 					}
 				} catch (e) {
-					dispatchToastMessage({ type: 'error', message: String(e) });
+					dispatchToastMessage({ type: 'error', message: e });
 				}
 
 				break;
