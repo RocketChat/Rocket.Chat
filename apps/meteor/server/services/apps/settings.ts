@@ -1,4 +1,4 @@
-import { settings, settingsRegistry } from '../../settings/server';
+import { settings, settingsRegistry } from '../../../app/settings/server';
 
 settingsRegistry.addGroup('General', function () {
 	this.section('Apps', function () {
