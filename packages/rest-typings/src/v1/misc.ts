@@ -210,14 +210,14 @@ export type MiscEndpoints = {
 	'/v1/pw.getPolicy': {
 		GET: () => {
 			enabled: boolean;
-			policy: Array<[string] | [string, Record<string, number>]>;
+			policy: [name: string, options?: Record<string, unknown>][];
 		};
 	};
 
 	'/v1/pw.getPolicyReset': {
 		GET: (params: PwGetPolicyReset) => {
 			enabled: boolean;
-			policy: Array<[string] | [string, Record<string, number>]>;
+			policy: [name: string, options?: Record<string, unknown>][];
 		};
 	};
 

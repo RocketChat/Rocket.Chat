@@ -105,7 +105,7 @@ const ResetPassword = (): ReactElement => {
 							<Field.Hint>
 								{policies?.map((policy, index) => (
 									<Box is='p' textAlign='start' key={index}>
-										{t(...policy)}
+										{t(...(policy as unknown as [name: TranslationKey, options?: Record<string, unknown>]))}
 									</Box>
 								))}
 							</Field.Hint>
