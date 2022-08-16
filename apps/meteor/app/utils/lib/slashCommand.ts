@@ -17,6 +17,7 @@ export interface ISlashCommandAddParams<T extends string> {
 	previewer?: SlashCommand['previewer'];
 	previewCallback?: SlashCommand['previewCallback'];
 	appId?: string;
+	description?: string;
 }
 
 export const slashCommands = {
@@ -30,12 +31,13 @@ export const slashCommands = {
 		previewer,
 		previewCallback,
 		appId,
+		description = '',
 	}: ISlashCommandAddParams<T>): void {
 		this.commands[command] = {
 			command,
 			callback,
 			params: options.params,
-			description: options.description,
+			description: options.description || description,
 			permission: options.permission,
 			clientOnly: options.clientOnly || false,
 			result,
