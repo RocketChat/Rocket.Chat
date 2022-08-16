@@ -13,20 +13,18 @@ const createAuxContext = async (browser: Browser, storageState: string): Promise
 
 test.describe('omnichannel-departaments', () => {
 	let poLiveChat: OmnichannelLiveChat;
-	let newUser: { email: string; name: string };
+	const newUser = {
+		name: faker.name.firstName(),
+		email: faker.internet.email(),
+	};
 	test.beforeAll(async ({ api }) => {
-		newUser = {
-			name: faker.name.firstName(),
-			email: faker.internet.email(),
-		};
 		await api.post('/livechat/users/agent', { username: 'user1' });
 		await api.post('/livechat/users/manager', { username: 'user1' });
 	});
 
 	test.describe('Receiving message from user', () => {
 		let auxContext1: { page: Page; poHomeChannel: HomeChannel };
-		test.beforeEach(async ({ browser, api, page }) => {
-			await api.post('/livechat/users/agent', { username: 'user2' });
+		test.beforeEach(async ({ api, browser, page }) => {
 			auxContext1 = await createAuxContext(browser, 'user1-session.json');
 			await page.goto('/livechat');
 			poLiveChat = new OmnichannelLiveChat(page);
@@ -35,6 +33,8 @@ test.describe('omnichannel-departaments', () => {
 
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			await api.post('/livechat/users/agent', { username: 'user2' });
+			await page.close();
 		});
 
 		test('transfer chat to another agent', async ({ browser }) => {
