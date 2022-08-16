@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { handleError } from '../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { settings } from '../../../settings/client';
 
 const getMedia = () => navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
@@ -26,11 +26,13 @@ const sendMessageToWebSocket = (message, ws) => {
 };
 export const call = (...args) =>
 	new Promise(function (resolve, reject) {
-		Meteor.call(...args, function (err, result) {
-			if (err) {
-				handleError(err);
-				reject(err);
+		Meteor.call(...args, function (error, result) {
+			if (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				reject(error);
+				return;
 			}
+
 			resolve(result);
 		});
 	});
@@ -147,9 +149,10 @@ Template.broadcastView.events({
 	},
 	async 'stopStreaming .streaming-popup'(e, i) {
 		await call('setBroadcastStatus', { broadcastId: i.data.broadcast.id, status: 'complete' });
-		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {}, (err) => {
-			if (err) {
-				return handleError(err);
+		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {}, (error) => {
+			if (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				return;
 			}
 			i.editing.set(false);
 			i.streamingOptions.set({});

@@ -13,15 +13,15 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { hasAllPermission } from '../../../authorization';
 import { Users, Rooms } from '../../../models/client';
-import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 export const call = (...args) =>
 	new Promise(function (resolve, reject) {
-		Meteor.call(...args, function (err, result) {
-			if (err) {
-				handleError(err);
-				reject(err);
+		Meteor.call(...args, function (error, result) {
+			if (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				reject(error);
+				return;
 			}
 			resolve(result);
 		});
@@ -146,9 +146,10 @@ Template.liveStreamTab.events({
 
 		const clearedObject = {};
 
-		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', clearedObject, function (err) {
-			if (err) {
-				return handleError(err);
+		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', clearedObject, function (error) {
+			if (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				return;
 			}
 			i.editing.set(false);
 			i.streamingOptions.set(clearedObject);
@@ -172,9 +173,10 @@ Template.liveStreamTab.events({
 			type: 'livestream',
 		};
 
-		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function (err) {
-			if (err) {
-				return handleError(err);
+		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function (error) {
+			if (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				return;
 			}
 			i.editing.set(false);
 			i.streamingOptions.set(streamingOptions);
@@ -236,9 +238,10 @@ Template.liveStreamTab.events({
 			type: 'livestream',
 		};
 
-		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function (err) {
-			if (err) {
-				return handleError(err);
+		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function (error) {
+			if (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				return;
 			}
 			i.editing.set(false);
 			i.streamingOptions.set(streamingOptions);
