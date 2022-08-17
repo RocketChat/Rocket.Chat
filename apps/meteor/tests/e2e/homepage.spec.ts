@@ -11,10 +11,10 @@ const CardIds = {
 	Docs: 'homepage-documentation-card',
 };
 
-const expectCardsToExist = (page: Page, dataQaIds: string[]): void => {
-	dataQaIds.forEach((id) => {
-		expect(page.locator(`[data-qa-id="${id}"]`)).toBeVisible();
-	});
+const expectCardsToExist = async (page: Page, dataQaIds: string[]): Promise<void> => {
+	for await (const dataQaId of dataQaIds) {
+		await expect(page.locator(`[data-qa-id="${dataQaId}"]`)).toBeVisible();
+	}
 };
 
 const EDIT_LAYOUT_PERMISSIONS = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
@@ -39,7 +39,7 @@ test.describe.serial('homepage', () => {
 			).status(),
 		).toBe(200);
 
-		expect(regularUserPage.locator('[data-qa-id="home-header-customize-button"]')).toBeVisible();
+		await expect(regularUserPage.locator('[data-qa-id="home-header-customize-button"]')).toBeVisible();
 
 		expect(
 			(await api.post('/permissions.update', { permissions: EDIT_LAYOUT_PERMISSIONS.map((_id) => ({ _id, roles: ['admin'] })) })).status(),
@@ -53,33 +53,33 @@ test.describe.serial('homepage', () => {
 			(await api.post('/permissions.update', { permissions: CARDS_PERMS.map((_id) => ({ _id, roles: ['admin', 'user'] })) })).status(),
 		).toBe(200);
 
-		expectCardsToExist(regularUserPage, Object.values(CardIds));
+		await expectCardsToExist(regularUserPage, Object.values(CardIds));
 
 		expect((await api.post('/permissions.update', { permissions: CARDS_PERMS.map((_id) => ({ _id, roles: ['admin'] })) })).status()).toBe(
 			200,
 		);
 
-		expectCardsToExist(regularUserPage, [CardIds.Desktop, CardIds.Docs, CardIds.Mobile, CardIds.Rooms]);
+		await expectCardsToExist(regularUserPage, [CardIds.Desktop, CardIds.Docs, CardIds.Mobile, CardIds.Rooms]);
 
-		expect(regularUserPage.locator(`[data-qa-id="${CardIds.Users}"]`)).not.toBeVisible();
+		await expect(regularUserPage.locator(`[data-qa-id="${CardIds.Users}"]`)).not.toBeVisible();
 
-		expect(regularUserPage.locator(`[data-qa-id="${CardIds.Chan}"]`)).not.toBeVisible();
+		await expect(regularUserPage.locator(`[data-qa-id="${CardIds.Chan}"]`)).not.toBeVisible();
 	});
 
 	test('expect welcome text to use Site Name setting', async ({ api }) => {
-		expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).toContainText('Rocket.Chat');
+		await expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).toContainText('Rocket.Chat');
 
 		expect((await api.post('/settings/Site_Name', { value: 'NewSiteName' })).status()).toBe(200);
 
-		expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).toContainText('NewSiteName');
+		await expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).toContainText('NewSiteName');
 	});
 
 	test('expect header text to use Home Title setting', async ({ api }) => {
-		expect(regularUserPage.locator('[data-qa-type="PageHeader-title"]')).toContainText('Home');
+		await expect(regularUserPage.locator('[data-qa-type="PageHeader-title"]')).toContainText('Home');
 
 		expect((await api.post('/settings/Layout_Home_Title', { value: 'NewTitle' })).status()).toBe(200);
 
-		expect(regularUserPage.locator('[data-qa-type="PageHeader-title"]')).toContainText('NewTitle');
+		await expect(regularUserPage.locator('[data-qa-type="PageHeader-title"]')).toContainText('NewTitle');
 	});
 
 	test('expect switch to custom homepage and display custom text', async ({ api }) => {
