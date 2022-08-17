@@ -58,7 +58,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 	const { department } = data || { department: {} };
 
-	const initialTags = useMemo(() => department?.chatClosingTags ?? [], [department?.chatClosingTags]);
+	const [initialTags] = useState(() => department?.chatClosingTags ?? []);
 	const [[tags, tagsText], setTagsState] = useState(() => [initialTags, '']);
 	const hasTagChanges = useMemo(() => tags.toString() !== initialTags.toString(), [tags, initialTags]);
 
