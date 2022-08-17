@@ -1,6 +1,6 @@
-import Agenda from 'agenda';
+import { Agenda } from '@rocket.chat/agenda';
 import { MongoInternals } from 'meteor/mongo';
-import { Collection } from 'mongodb';
+import type { Collection } from 'mongodb';
 
 import { schedulerLogger } from '../lib/logger';
 

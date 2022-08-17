@@ -1,8 +1,8 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users } from '@rocket.chat/models';
-import { Collection } from 'mongodb';
-import { Meteor } from 'meteor/meteor';
+import type { Collection } from 'mongodb';
 import moment from 'moment';
+import type { Job } from '@rocket.chat/agenda';
 
 import { Livechat } from '../../../../../app/livechat/server';
 import { schedulerLogger } from '../lib/logger';
@@ -11,18 +11,18 @@ import { AbstractOmniSchedulerClass } from './AbstractOmniSchedulerClass';
 const JOB_NAME = 'omnichannel_auto_close_on_hold_scheduler';
 
 type JobData = {
-	roomId: string;
+	roomId: IRoom['_id'];
 	comment: string;
 };
 
 // singleton class
-export class AutoCloseOnHoldScheduler extends AbstractOmniSchedulerClass {
-	private static instance: AutoCloseOnHoldScheduler;
+export class AutoCloseOnHoldSchedulerClass extends AbstractOmniSchedulerClass {
+	private static instance: AutoCloseOnHoldSchedulerClass;
 
 	schedulerUser: IUser;
 
 	createJobDefinition(): void {
-		this.scheduler.define<JobData>(JOB_NAME, this.executeJob.bind(this));
+		this.scheduler.define(JOB_NAME, this.executeJob.bind(this));
 	}
 
 	createIndexes(collection: Collection): void {
@@ -34,16 +34,16 @@ export class AutoCloseOnHoldScheduler extends AbstractOmniSchedulerClass {
 		);
 	}
 
-	public static getInstance(): AutoCloseOnHoldScheduler {
-		if (!AutoCloseOnHoldScheduler.instance) {
-			AutoCloseOnHoldScheduler.instance = new AutoCloseOnHoldScheduler();
+	public static getInstance(): AutoCloseOnHoldSchedulerClass {
+		if (!AutoCloseOnHoldSchedulerClass.instance) {
+			AutoCloseOnHoldSchedulerClass.instance = new AutoCloseOnHoldSchedulerClass();
 		}
 
-		return AutoCloseOnHoldScheduler.instance;
+		return AutoCloseOnHoldSchedulerClass.instance;
 	}
 
 	public static initializeScheduler(): void {
-		AutoCloseOnHoldScheduler.getInstance();
+		AutoCloseOnHoldSchedulerClass.getInstance();
 	}
 
 	// cache for SchedulerUser variable
@@ -65,7 +65,7 @@ export class AutoCloseOnHoldScheduler extends AbstractOmniSchedulerClass {
 
 		const when = moment(new Date()).add(timeout, 's').toDate();
 
-		const job = await this.scheduler.schedule<JobData>(when, JOB_NAME, { roomId, comment });
+		const job = await this.scheduler.schedule(when, JOB_NAME, { roomId, comment } as JobData);
 
 		schedulerLogger.debug(`Scheduled ${JOB_NAME} for room ${roomId} at ${job.attrs.nextRunAt}`);
 	}
@@ -78,7 +78,9 @@ export class AutoCloseOnHoldScheduler extends AbstractOmniSchedulerClass {
 		schedulerLogger.debug(`Unscheduled ${JOB_NAME} for room ${roomId} (${totalCancelledJobs} jobs cancelled)`);
 	}
 
-	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
+	private async executeJob(job: Job): Promise<void> {
+		const data = job.attrs.data as JobData;
+
 		schedulerLogger.debug(`Executing ${JOB_NAME} for room ${data.roomId}`);
 
 		const { roomId, comment } = data;
@@ -103,6 +105,4 @@ export class AutoCloseOnHoldScheduler extends AbstractOmniSchedulerClass {
 	}
 }
 
-Meteor.startup(() => {
-	AutoCloseOnHoldScheduler.initializeScheduler();
-});
+export const AutoCloseOnHoldScheduler = AutoCloseOnHoldSchedulerClass.getInstance();

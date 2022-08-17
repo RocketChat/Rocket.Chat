@@ -32,7 +32,8 @@ import './hooks/afterOnHold';
 import './hooks/onTransferFailure';
 import './lib/routing/LoadBalancing';
 import './lib/routing/LoadRotation';
-import './lib/AutoCloseOnHoldScheduler';
+import './jobs/AutoCloseOnHoldScheduler';
+import './jobs/AutoTransferChatScheduler';
 import { onLicense } from '../../license/server';
 import './business-hour';
 

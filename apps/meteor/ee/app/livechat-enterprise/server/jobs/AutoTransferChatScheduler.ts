@@ -1,8 +1,8 @@
-import { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users } from '@rocket.chat/models';
-import { Collection } from 'mongodb';
-import { Meteor } from 'meteor/meteor';
+import type { Collection } from 'mongodb';
 import moment from 'moment';
+import type { Job } from '@rocket.chat/agenda';
 
 import { Livechat } from '../../../../../app/livechat/server';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
@@ -13,17 +13,17 @@ import { AbstractOmniSchedulerClass } from './AbstractOmniSchedulerClass';
 const JOB_NAME = 'omnichannel_auto_transfer_unanswered_chat';
 
 type JobData = {
-	roomId: string;
+	roomId: IRoom['_id'];
 };
 
 // singleton class
-export class AutoTransferChatScheduler extends AbstractOmniSchedulerClass {
-	private static instance: AutoTransferChatScheduler;
+export class AutoTransferChatSchedulerClass extends AbstractOmniSchedulerClass {
+	private static instance: AutoTransferChatSchedulerClass;
 
 	schedulerUser: IUser;
 
 	createJobDefinition(): void {
-		this.scheduler.define<JobData>(JOB_NAME, this.executeJob.bind(this));
+		this.scheduler.define(JOB_NAME, this.executeJob.bind(this));
 	}
 
 	createIndexes(collection: Collection): void {
@@ -35,16 +35,16 @@ export class AutoTransferChatScheduler extends AbstractOmniSchedulerClass {
 		);
 	}
 
-	public static getInstance(): AutoTransferChatScheduler {
-		if (!AutoTransferChatScheduler.instance) {
-			AutoTransferChatScheduler.instance = new AutoTransferChatScheduler();
+	public static getInstance(): AutoTransferChatSchedulerClass {
+		if (!AutoTransferChatSchedulerClass.instance) {
+			AutoTransferChatSchedulerClass.instance = new AutoTransferChatSchedulerClass();
 		}
 
-		return AutoTransferChatScheduler.instance;
+		return AutoTransferChatSchedulerClass.instance;
 	}
 
 	public static initializeScheduler(): void {
-		AutoTransferChatScheduler.getInstance();
+		AutoTransferChatSchedulerClass.getInstance();
 	}
 
 	// cache for SchedulerUser variable
@@ -67,7 +67,7 @@ export class AutoTransferChatScheduler extends AbstractOmniSchedulerClass {
 		const when = moment(new Date()).add(timeout, 's').toDate();
 
 		const [job] = await Promise.all([
-			this.scheduler.schedule<JobData>(when, JOB_NAME, { roomId }),
+			this.scheduler.schedule(when, JOB_NAME, { roomId } as JobData),
 			LivechatRooms.setAutoTransferOngoingById(roomId),
 		]);
 
@@ -87,11 +87,13 @@ export class AutoTransferChatScheduler extends AbstractOmniSchedulerClass {
 
 	private async transferRoom(roomId: string): Promise<boolean> {
 		const room = await LivechatRooms.findOneById<IOmnichannelRoom>(roomId, {
-			_id: 1,
-			v: 1,
-			servedBy: 1,
-			open: 1,
-			departmentId: 1,
+			projection: {
+				_id: 1,
+				v: 1,
+				servedBy: 1,
+				open: 1,
+				departmentId: 1,
+			},
 		});
 		if (!room?.open || !room?.servedBy?._id) {
 			return false;
@@ -118,7 +120,8 @@ export class AutoTransferChatScheduler extends AbstractOmniSchedulerClass {
 		return false;
 	}
 
-	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
+	private async executeJob(job: Job): Promise<void> {
+		const data = job.attrs.data as JobData;
 		schedulerLogger.debug(`Executing ${JOB_NAME} for room ${data.roomId}`);
 		const { roomId } = data;
 
@@ -133,6 +136,4 @@ export class AutoTransferChatScheduler extends AbstractOmniSchedulerClass {
 	}
 }
 
-Meteor.startup(() => {
-	AutoTransferChatScheduler.initializeScheduler();
-});
+export const AutoTransferChatScheduler = AutoTransferChatSchedulerClass.getInstance();

@@ -19,7 +19,7 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { settings } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../lib/callbacks';
-import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
+import { AutoCloseOnHoldScheduler } from '../jobs/AutoCloseOnHoldScheduler';
 
 export const LivechatEnterprise = {
 	addMonitor(username) {

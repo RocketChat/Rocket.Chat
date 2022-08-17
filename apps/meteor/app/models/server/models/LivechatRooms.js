@@ -821,45 +821,6 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	setAutoTransferredAtById(roomId) {
-		const query = {
-			_id: roomId,
-		};
-		const update = {
-			$set: {
-				autoTransferredAt: new Date(),
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	setAutoTransferOngoingById(roomId) {
-		const query = {
-			_id: roomId,
-		};
-		const update = {
-			$set: {
-				autoTransferOngoing: true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	unsetAutoTransferOngoingById(roomId) {
-		const query = {
-			_id: roomId,
-		};
-		const update = {
-			$unset: {
-				autoTransferOngoing: 1,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	changeVisitorByRoomId(roomId, { _id, username, token }) {
 		const query = {
 			_id: roomId,
