@@ -139,6 +139,10 @@ function maxMessageLength() {
 	return settings.get('Message_MaxAllowedSize');
 }
 
+function subscriptionReady(this: { _id: string }) {
+	return RoomManager.getOpenedRoomByRid(this._id).streamActive;
+}
+
 type UnreadData = { count?: number; since?: moment.MomentInput };
 
 function unreadData(this: { _id: string }) {
@@ -271,6 +275,7 @@ export const roomHelpers = {
 	messageboxData,
 	getAnnouncementStyle,
 	maxMessageLength,
+	subscriptionReady,
 	unreadData,
 	containerBarsShow,
 	formatUnreadSince,
