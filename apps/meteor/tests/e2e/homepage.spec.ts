@@ -83,13 +83,16 @@ test.describe.serial('homepage', () => {
 	});
 
 	test('expect switch to custom homepage and display custom text', async ({ api }) => {
-		expect((await api.post('/settings/Layout_Custom_Body', { value: true })).status()).toBe(200);
-		expect((await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello</span>' })).status()).toBe(
-			200,
-		);
+		const responseLayoutCustomBody = await api.post('/settings/Layout_Custom_Body', { value: true });
+		const responseLayoutHomeBody = await api.post('/settings/Layout_Home_Body', {
+			value: '<span data-qa-id="custom-body-span">Hello</span>',
+		});
+
+		expect(responseLayoutCustomBody.status()).toBe(200);
+		expect(responseLayoutHomeBody.status()).toBe(200);
 
 		await regularUserPage.goto('/home');
 
-		expect(regularUserPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello');
+		await expect(regularUserPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello');
 	});
 });
