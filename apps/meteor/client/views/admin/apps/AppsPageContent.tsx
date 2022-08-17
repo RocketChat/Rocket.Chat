@@ -1,37 +1,24 @@
-import {
-	Box,
-	States,
-	StatesAction,
-	StatesActions,
-	StatesIcon,
-	StatesSubtitle,
-	StatesSuggestion,
-	StatesSuggestionList,
-	StatesSuggestionListItem,
-	StatesSuggestionText,
-	StatesTitle,
-	Icon,
-	Pagination,
-} from '@rocket.chat/fuselage';
+import { Pagination, Divider } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import AllAppsSection from './AllAppsSection';
 import { useAppsReload, useAppsResult } from './AppsContext';
 import AppsFilters from './AppsFilters';
+import ConnectionErrorEmptyState from './ConnectionErrorEmptyState';
 import FeaturedAppsSections from './FeaturedAppsSections';
+import NoInstalledAppMatchesEmptyState from './NoInstalledAppMatchesEmptyState';
+import NoInstalledAppsFoundEmptyState from './NoInstalledAppsFoundEmptyState';
+import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInstalledAppMatchesEmptyState';
 import { RadioDropDownGroup } from './definitions/RadioDropDownDefinitions';
 import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
 import { useRadioToggle } from './hooks/useRadioToggle';
 
-const AppsPageContent: FC<{
-	isMarketplace: boolean;
-}> = ({ isMarketplace }) => {
+const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactElement => {
 	const t = useTranslation();
 	const { marketplaceApps, installedApps } = useAppsResult();
 	const [text, setText] = useDebouncedState('', 500);
@@ -118,90 +105,34 @@ const AppsPageContent: FC<{
 			<AllAppsSection appsResult={appsResult} isMarketplace={isMarketplace} />
 
 			{appsResult.phase === AsyncStatePhase.RESOLVED && Boolean(appsResult.value.count) && (
-				<Pagination
-					current={current}
-					itemsPerPage={itemsPerPage}
-					count={appsResult.value.total}
-					onSetItemsPerPage={onSetItemsPerPage}
-					onSetCurrent={onSetCurrent}
-					borderBlockStart={`2px solid ${colors.n300}`}
-					{...paginationProps}
-				/>
+				<>
+					<Divider />
+					<Pagination
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={appsResult.value.total}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
+				</>
 			)}
 
 			{noMarketplaceOrInstalledAppMatches && (
-				<Box mbs='x20'>
-					<States>
-						<StatesIcon name='magnifier' />
-						<StatesTitle>{t('No_app_matches')}</StatesTitle>
-						{appsResult.value.shouldShowSearchText && (
-							<StatesSubtitle>
-								{t('No_marketplace_matches_for')}: <strong>"{text}"</strong>
-							</StatesSubtitle>
-						)}
-						<StatesSuggestion>
-							<StatesSuggestionText>{t('You_can_try_to')}:</StatesSuggestionText>
-							<StatesSuggestionList>
-								<StatesSuggestionListItem>{t('Search_by_category')}</StatesSuggestionListItem>
-								<StatesSuggestionListItem>{t('Search_for_a_more_general_term')}</StatesSuggestionListItem>
-								<StatesSuggestionListItem>{t('Search_for_a_more_specific_term')}</StatesSuggestionListItem>
-								<StatesSuggestionListItem>{t('Check_if_the_spelling_is_correct')}</StatesSuggestionListItem>
-							</StatesSuggestionList>
-						</StatesSuggestion>
-					</States>
-				</Box>
+				<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={appsResult.value.shouldShowSearchText} text={text} />
 			)}
 
 			{noInstalledAppMatches && (
-				<Box mbs='x20'>
-					<States>
-						<StatesIcon name='magnifier' />
-						<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>
-						{appsResult.value.shouldShowSearchText && (
-							<StatesSubtitle>
-								<span>
-									{t('No_app_matches_for')} <strong>"{text}"</strong>
-								</span>
-							</StatesSubtitle>
-						)}
-						<StatesSuggestion>
-							<StatesSuggestionText>{t('Try_searching_in_the_marketplace_instead')}</StatesSuggestionText>
-						</StatesSuggestion>
-						<StatesActions>
-							<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>{t('Search_on_marketplace')}</StatesAction>
-						</StatesActions>
-					</States>
-				</Box>
+				<NoInstalledAppMatchesEmptyState
+					shouldShowSearchText={appsResult.value.shouldShowSearchText}
+					text={text}
+					onButtonClick={(): void => marketplaceRoute.push({ context: '' })}
+				/>
 			)}
 
-			{noInstalledAppsFound && (
-				<Box mbs='x20'>
-					<States>
-						<StatesIcon name='magnifier' />
-						<StatesTitle>{t('No_apps_installed')}</StatesTitle>
-						<StatesSubtitle>{t('Explore_the_marketplace_to_find_awesome_apps')}</StatesSubtitle>
-						<StatesActions>
-							<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>{t('Explore_marketplace')}</StatesAction>
-						</StatesActions>
-					</States>
-				</Box>
-			)}
+			{noInstalledAppsFound && <NoInstalledAppsFoundEmptyState onButtonClick={(): void => marketplaceRoute.push({ context: '' })} />}
 
-			{appsResult.phase === AsyncStatePhase.REJECTED && (
-				<Box mbs='x20'>
-					<States>
-						<StatesIcon variation='danger' name='circle-exclamation' />
-						<StatesTitle>{t('Connection_error')}</StatesTitle>
-						<StatesSubtitle>{t('Marketplace_error')}</StatesSubtitle>
-						<StatesActions>
-							<StatesAction onClick={reload}>
-								<Icon mie='x4' size='x20' name='reload' />
-								{t('Reload_page')}
-							</StatesAction>
-						</StatesActions>
-					</States>
-				</Box>
-			)}
+			{appsResult.phase === AsyncStatePhase.REJECTED && <ConnectionErrorEmptyState onButtonClick={reload} />}
 		</>
 	);
 };

@@ -38,7 +38,7 @@ const BundleChips = ({ bundledIn, isIconOnly }: BundleChipsProps): ReactElement 
 					>
 						<Icon name='bag' size='x20' />
 						{!isIconOnly && (
-							<Box fontWeight='700' fontSize='x12' color='info' style={{ whiteSpace: 'nowrap' }}>
+							<Box fontWeight='c2' fontSize='c2' color='info' style={{ whiteSpace: 'nowrap' }}>
 								{t('bundle_chip_title', {
 									bundleName: bundle.bundleName,
 								})}
