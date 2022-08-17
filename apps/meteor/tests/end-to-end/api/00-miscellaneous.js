@@ -656,4 +656,73 @@ describe('miscellaneous', function () {
 			});
 		});
 	});
+
+	describe('/pw.getPolicy', () => {
+		it('should fail if not logged in', (done) => {
+			request
+				.get(api('pw.getPolicy'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should return policies', (done) => {
+			request
+				.get(api('pw.getPolicy'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('enabled');
+					expect(res.body).to.have.property('policy').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/pw.getPolicyReset', () => {
+		it('should fail if no token provided', (done) => {
+			request
+				.get(api('pw.getPolicyReset'))
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				})
+				.end(done);
+		});
+
+		it('should fail if no token is invalid format', (done) => {
+			request
+				.get(api('pw.getPolicyReset?token=123'))
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
+				})
+				.end(done);
+		});
+
+		// not sure we have a way to get the reset token, looks like it is only sent via email by Meteor
+		it.skip('should return policies if correct token is provided', (done) => {
+			request
+				.get(api('pw.getPolicyReset?token'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('enabled');
+					expect(res.body).to.have.property('policy').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
 });
