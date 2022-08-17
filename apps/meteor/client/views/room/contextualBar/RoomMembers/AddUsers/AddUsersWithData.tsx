@@ -46,8 +46,8 @@ const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): 
 			dispatchToastMessage({ type: 'success', message: t('Users_added') });
 			onClickBack();
 			reload();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 	const onChangeUsersFn = isRoomFederated(room) ? handleUsers : onChangeUsers;
