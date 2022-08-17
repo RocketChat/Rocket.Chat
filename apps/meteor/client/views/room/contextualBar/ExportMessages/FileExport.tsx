@@ -55,7 +55,7 @@ const FileExport: FC<FileExportProps> = ({ onCancel, rid }) => {
 		} catch (error) {
 			dispatchToastMessage({
 				type: 'error',
-				message: error as string | Error,
+				message: error,
 			});
 		}
 	};

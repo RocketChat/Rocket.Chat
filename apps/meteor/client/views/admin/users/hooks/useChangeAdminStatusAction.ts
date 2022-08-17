@@ -17,7 +17,7 @@ export const useChangeAdminStatusAction = (userId: IUser['_id'], isAdmin: boolea
 			dispatchToastMessage({ type: 'success', message: t(message) });
 			onChange();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as Error });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [userId, dispatchToastMessage, isAdmin, onChange, setAdminStatus, t]);
 
