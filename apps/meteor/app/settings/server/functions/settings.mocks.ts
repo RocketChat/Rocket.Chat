@@ -1,7 +1,6 @@
-import mock from 'mock-require';
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import { ICachedSettings } from '../CachedSettings';
+import type { ICachedSettings } from '../CachedSettings';
 
 type Dictionary = {
 	[index: string]: any;
@@ -70,5 +69,3 @@ class SettingsClass {
 }
 
 export const Settings = new SettingsClass();
-
-mock('@rocket.chat/models', { Settings });

@@ -1,4 +1,5 @@
-import http, { IncomingMessage, RequestOptions, ServerResponse } from 'http';
+import type { IncomingMessage, RequestOptions, ServerResponse } from 'http';
+import http from 'http';
 import url from 'url';
 
 import WebSocket from 'ws';

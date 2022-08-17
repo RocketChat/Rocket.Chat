@@ -45,7 +45,7 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 				},
 			});
 		} catch (error) {
-			dispatchToast({ type: 'error', message: error as Error });
+			dispatchToast({ type: 'error', message: error });
 		} finally {
 			onClose();
 		}

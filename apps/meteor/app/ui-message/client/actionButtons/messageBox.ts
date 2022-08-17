@@ -1,5 +1,5 @@
 import { Session } from 'meteor/session';
-import { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
+import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 
 import { Rooms } from '../../../models/client';
 import { messageBox } from '../../../ui-utils/client';

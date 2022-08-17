@@ -19,7 +19,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { IExportOperation, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
+import type { IExportOperation, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
 
 import { Users, Subscriptions } from '../../../models/server';

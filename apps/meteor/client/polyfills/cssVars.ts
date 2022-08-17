@@ -99,7 +99,7 @@ const waitAndInitialize = (): void => {
 };
 
 ((): void => {
-	if (window.CSS && window.CSS.supports && window.CSS.supports('(--foo: red)')) {
+	if (window.CSS?.supports?.('(--foo: red)')) {
 		return;
 	}
 
