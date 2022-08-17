@@ -40,21 +40,13 @@ const ShieldSvgSchema = {
 
 export const isShieldSvgProps = ajv.compile<ShieldSvg>(ShieldSvgSchema);
 
-type Spotlight = { query: string; limit: number; offset: number };
+type Spotlight = { query: string };
 
 const SpotlightSchema = {
 	type: 'object',
 	properties: {
 		query: {
 			type: 'string',
-		},
-		limit: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
 		},
 	},
 	required: ['query'],
@@ -189,8 +181,8 @@ export type MiscEndpoints = {
 
 	'/v1/spotlight': {
 		GET: (params: Spotlight) => {
-			users: Pick<IUser, 'username' | 'name' | 'status' | 'statusText' | 'avatarETag'>[];
-			rooms: IRoom[];
+			users: Pick<Required<IUser>, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
+			rooms: Pick<Required<IRoom>, 't' | 'name' | 'lastMessage' | '_id'>[];
 		};
 	};
 

@@ -1,6 +1,6 @@
 import { IUserStatus } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, TextInput, Field, Select, Icon, SelectOption } from '@rocket.chat/fuselage';
-import { useSetModal, useRoute, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useCallback, ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -29,13 +29,13 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 		defaultValues: { name: status?.name ?? '', statusType: status?.statusType ?? '' },
 	});
 
-	const saveStatus = useMethod('insertOrUpdateUserStatus');
-	const deleteStatus = useMethod('deleteCustomUserStatus');
+	const saveStatus = useEndpoint('POST', _id ? '/v1/custom-user-status.update' : '/v1/custom-user-status.create');
+	const deleteStatus = useEndpoint('POST', '/v1/custom-user-status.delete');
 
 	const handleSave = useCallback(
 		async (data) => {
 			try {
-				await saveStatus({ _id, previousName: name, previousStatusType: statusType, ...data });
+				await saveStatus({ _id, name, statusType, ...data });
 
 				dispatchToastMessage({
 					type: 'success',
@@ -45,7 +45,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 				onReload();
 				route.push({});
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
 		[saveStatus, _id, name, statusType, route, dispatchToastMessage, t, onReload],
@@ -58,12 +58,12 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 
 		const handleDelete = async (): Promise<void> => {
 			try {
-				await deleteStatus(_id);
+				await deleteStatus({ customUserStatusId: _id || '' });
 				dispatchToastMessage({ type: 'success', message: t('Custom_User_Status_Has_Been_Deleted') });
 				onReload();
 				route.push({});
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				setModal(null);
 			}
