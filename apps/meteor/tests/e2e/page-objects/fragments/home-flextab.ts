@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
-import { HomeFlextabChannels } from './home-flextab-channels';
 
+import { HomeFlextabChannels } from './home-flextab-channels';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabRoom } from './home-flextab-room';
 

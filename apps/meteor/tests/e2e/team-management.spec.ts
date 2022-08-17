@@ -64,5 +64,5 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.tabs.channels.inputChannels.type(targetChannel, { delay: 100 });
 		await page.locator(`text=${targetChannel}`).click();
 		await poHomeTeam.tabs.channels.btnAdd.click();
-	})
+	});
 });
