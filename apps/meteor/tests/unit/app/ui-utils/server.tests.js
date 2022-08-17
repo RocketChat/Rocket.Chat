@@ -1,7 +1,13 @@
+import proxyquire from 'proxyquire';
 import { expect } from 'chai';
 
-import './server.mocks.js';
-import { messageProperties } from '../../../../app/ui-utils/lib/MessageProperties';
+const { messageProperties } = proxyquire.noCallThru().load('../../../../app/ui-utils/lib/MessageProperties', {
+	'../../emoji': {
+		emoji: {
+			list: {},
+		},
+	},
+});
 
 const messages = {
 	'Sample Message': 14,
