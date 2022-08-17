@@ -55,7 +55,7 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 
 			setRegisteringTotp(true);
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, enableTotpFn, setQrCode, setRegisteringTotp, setTotpSecret]);
 
@@ -70,7 +70,7 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 
 				dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_disabled') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			closeModal();
 		};
@@ -87,7 +87,7 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 			}
 			setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [authCode, closeModal, dispatchToastMessage, setModal, t, verifyCodeFn]);
 
@@ -101,7 +101,7 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 				}
 				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
 
