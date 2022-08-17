@@ -35,8 +35,12 @@ async function createFileFromUrl(url: string): Promise<File> {
 
 function addToInput(text: string): void {
 	const { input } = chatMessages[RoomManager.openedRoom];
-	const initText = input.value.slice(0, input.selectionStart);
-	const finalText = input.value.slice(input.selectionEnd, input.value.length);
+	if (!input) {
+		return;
+	}
+
+	const initText = input.value.slice(0, input.selectionStart ?? undefined);
+	const finalText = input.value.slice(input.selectionEnd ?? undefined, input.value.length);
 
 	input.value = initText + text + finalText;
 	$(input).change().trigger('input');

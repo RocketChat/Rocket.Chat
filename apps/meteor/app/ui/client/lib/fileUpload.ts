@@ -147,7 +147,8 @@ export const uploadFileWithMessage = async (
 
 type SingleOrArray<T> = T | T[];
 
-type FileUploadProp = SingleOrArray<{
+/* @deprecated */
+export type FileUploadProp = SingleOrArray<{
 	file: File;
 	name: string;
 }>;
@@ -221,8 +222,10 @@ export const fileUpload = async (
 					const localStorageKey = ['messagebox', rid, tmid].filter(Boolean).join('_');
 					const chatMessageKey = [rid, tmid].filter(Boolean).join('-');
 					const { input } = chatMessages[chatMessageKey];
-					input.value = null;
-					$(input).trigger('input');
+					if (input) {
+						input.value = '';
+						$(input).trigger('input');
+					}
 					Meteor._localStorage.removeItem(localStorageKey);
 					imperativeModal.close();
 					uploadNextFile();

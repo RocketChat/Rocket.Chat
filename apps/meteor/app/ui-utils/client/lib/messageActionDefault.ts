@@ -82,6 +82,10 @@ Meteor.startup(async function () {
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const { input } = getChatMessagesFrom(message);
+			if (!input) {
+				return;
+			}
+
 			const $input = $(input);
 
 			let messages = $input.data('reply') || [];

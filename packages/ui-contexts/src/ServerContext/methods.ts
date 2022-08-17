@@ -1,4 +1,4 @@
-import type { AtLeast, IMessage, IRoom, ISetting, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IRoom, ISetting, ISubscription, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
 
 import type { TranslationKey } from '../TranslationContext';
 import type {
@@ -74,6 +74,7 @@ export interface ServerMethods {
 	'followMessage': FollowMessageMethod;
 	'getAvatarSuggestion': (...args: any[]) => any;
 	'getFileFromWebdav': GetFileFromWebdav;
+	'getRoomRoles': (rid: IRoom['_id']) => ISubscription[];
 	'getSetupWizardParameters': () => {
 		settings: ISetting[];
 		serverAlreadyRegistered: boolean;
