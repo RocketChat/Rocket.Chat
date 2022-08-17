@@ -45,6 +45,15 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 		).toArray();
 	}
 
+	findActiveBusinessHours(options: FindOptions<ILivechatBusinessHour> = {}): Promise<ILivechatBusinessHour[]> {
+		return this.find(
+			{
+				active: true,
+			},
+			options,
+		).toArray();
+	}
+
 	findDefaultActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
 		return this.find(
 			{
