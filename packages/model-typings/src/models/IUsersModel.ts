@@ -151,4 +151,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setAsFederated(userId: string): any;
 
 	removeRoomByRoomId(rid: any): any;
+
+	findOneByResetToken(token: string, options: FindOptions<IUser>): Promise<IUser | null>;
 }
