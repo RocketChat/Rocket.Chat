@@ -1,6 +1,6 @@
-import { SettingValue } from '@rocket.chat/core-typings';
+import type { SettingValue } from '@rocket.chat/core-typings';
 
-import { AppServerOrchestrator } from '../../../apps/server/orchestrator';
+import type { AppServerOrchestrator } from '../../../apps/server/orchestrator';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { API } from '../api';
 
