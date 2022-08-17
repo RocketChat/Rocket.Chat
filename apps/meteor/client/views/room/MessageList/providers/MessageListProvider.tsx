@@ -36,7 +36,9 @@ export const MessageListProvider: FC<{
 	const katexDollarSyntaxEnabled = Boolean(useSetting('Katex_Dollar_Syntax'));
 	const katexParenthesisSyntaxEnabled = Boolean(useSetting('Katex_Parenthesis_Syntax'));
 
-	const showRoles = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
+	const displayRolesGlobal = Boolean(useSetting('UI_DisplayRoles'));
+	const hideRolesPreference = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
+	const showRoles = displayRolesGlobal && hideRolesPreference;
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
 
