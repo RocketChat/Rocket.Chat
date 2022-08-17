@@ -2,10 +2,10 @@ import { IRole } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Margins, Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
 import GenericTable from '../../../../components/GenericTable';
-import { useRoute } from '../../../../contexts/RouterContext';
 
 type RoleHeaderProps = {
 	_id: IRole['_id'];

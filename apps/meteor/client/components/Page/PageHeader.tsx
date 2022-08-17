@@ -1,21 +1,24 @@
-import { Box } from '@rocket.chat/fuselage';
-import React, { useContext, FC, ReactNode } from 'react';
+import { Box, IconButton } from '@rocket.chat/fuselage';
+import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useContext, FC, ComponentProps, ReactNode } from 'react';
 
-import { useLayout } from '../../contexts/LayoutContext';
 import BurgerMenu from '../BurgerMenu';
 import TemplateHeader from '../Header';
 import PageContext from './PageContext';
 
 type PageHeaderProps = {
 	title: ReactNode;
-};
+	onClickBack?: () => void;
+	borderBlockEndColor?: string;
+} & Omit<ComponentProps<typeof Box>, 'title'>;
 
-const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, ...props }) => {
+const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickBack, borderBlockEndColor, ...props }) => {
+	const t = useTranslation();
 	const [border] = useContext(PageContext);
 	const { isMobile } = useLayout();
 
 	return (
-		<Box borderBlockEndWidth='x2' borderBlockEndColor={border ? 'neutral-200' : 'transparent'}>
+		<Box borderBlockEndWidth='x2' borderBlockEndColor={borderBlockEndColor ?? border ? 'neutral-200' : 'transparent'} {...props}>
 			<Box
 				marginBlock='x16'
 				marginInline='x24'
@@ -32,7 +35,8 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, ...props
 						<BurgerMenu />
 					</TemplateHeader.ToolBox>
 				)}
-				<Box is='h2' fontScale='h2' flexGrow={1}>
+				{onClickBack && <IconButton small mie='x8' icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
+				<Box is='h2' fontScale='h2' flexGrow={1} data-qa-type='PageHeader-title'>
 					{title}
 				</Box>
 				{children}

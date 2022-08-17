@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ActionButton, Skeleton } from '@rocket.chat/fuselage';
-import React, { forwardRef, ReactNode, ComponentProps } from 'react';
+import { Box, IconButton, Skeleton } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React, { forwardRef, ReactNode, ComponentProps, MouseEvent } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import MarkdownText from '../MarkdownText';
 import * as Status from '../UserStatus';
 import UserAvatar from '../avatar/UserAvatar';
@@ -22,7 +22,7 @@ const clampStyle = css`
 type UserCardProps = {
 	className?: string;
 	style?: ComponentProps<typeof Box>['style'];
-	open?: () => void;
+	open?: (e: MouseEvent<HTMLElement>) => void;
 	name?: string;
 	username?: string;
 	etag?: string;
@@ -70,7 +70,7 @@ const UserCard = forwardRef(function UserCard(
 	const t = useTranslation();
 
 	return (
-		<UserCardContainer className={className} ref={ref} style={style}>
+		<UserCardContainer data-qa='UserCard' className={className} ref={ref} style={style}>
 			<Box>
 				{!username ? <Skeleton width='x124' height='x124' variant='rect' /> : <UserAvatar username={username} etag={etag} size='x124' />}
 				{actions && (
@@ -80,10 +80,10 @@ const UserCard = forwardRef(function UserCard(
 				)}
 			</Box>
 			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
-				<Box mbe='x4' withTruncatedText display='flex'>
+				<Box mbe='x4' withTruncatedText display='flex' alignItems='center'>
 					{!name ? <Skeleton width='100%' /> : <UserCardUsername status={status} name={name} />}
 					{nickname && (
-						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={t('Nickname')} color='hint' mis='x4' fontScale='p2' withTruncatedText>
+						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={nickname} color='hint' mis='x4' fontScale='p2' withTruncatedText>
 							({nickname})
 						</Box>
 					)}
@@ -108,7 +108,7 @@ const UserCard = forwardRef(function UserCard(
 			</Box>
 			{onClose && (
 				<Box>
-					<ActionButton small ghost title={t('Close')} icon='cross' onClick={onClose} />
+					<IconButton small title={t('Close')} icon='cross' onClick={onClose} />
 				</Box>
 			)}
 		</UserCardContainer>

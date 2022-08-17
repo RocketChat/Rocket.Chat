@@ -1,12 +1,18 @@
 import { Meteor } from 'meteor/meteor';
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { handleError } from '../../../../client/lib/utils/handleError';
 
 // Action Links namespace creation.
 export const actionLinks = {
-	actions: new Map<string, Function>(),
-	register(name: string, fn: Function): void {
+	actions: new Map<
+		string,
+		(message: IMessage, params: string, instance?: Blaze.TemplateInstance | ((actionId: string, context: string) => void)) => void
+	>(),
+	register(
+		name: string,
+		fn: (message: IMessage, params: string, instance?: Blaze.TemplateInstance | ((actionId: string, context: string) => void)) => void,
+	): void {
 		actionLinks.actions.set(name, fn);
 	},
 	// getMessage(name, messageId) {
@@ -42,8 +48,8 @@ export const actionLinks = {
 
 	// 	return message;
 	// },
-	run(method: string, message: IMessage, instance: undefined): void {
-		const actionLink = message.actionLinks && message.actionLinks.find((action) => action.method_id === method);
+	run(method: string, message: IMessage, instance?: Blaze.TemplateInstance | ((actionId: string, context: string) => void)): void {
+		const actionLink = message.actionLinks?.find((action) => action.method_id === method);
 
 		if (!actionLink) {
 			throw new Meteor.Error('error-invalid-actionlink', 'Invalid action link');

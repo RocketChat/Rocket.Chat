@@ -1,21 +1,22 @@
 import { Random } from 'meteor/random';
 import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
-import {
+import type {
 	ILivechatMessage,
 	IVisitor,
 	ILivechatRoom,
 	ILivechatTransferData,
 	IDepartment,
 } from '@rocket.chat/apps-engine/definition/livechat';
-import { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
-import { Users, LivechatDepartment, LivechatVisitors, LivechatRooms } from '../../../models/server';
-import { AppServerOrchestrator } from '../orchestrator';
+import { Users, LivechatDepartment, LivechatRooms } from '../../../models/server';
+import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppLivechatBridge extends LivechatBridge {
 	// eslint-disable-next-line no-empty-function
@@ -156,11 +157,11 @@ export class AppLivechatBridge extends LivechatBridge {
 			id: visitor.id,
 		};
 
-		if (visitor.visitorEmails && visitor.visitorEmails.length) {
+		if (visitor.visitorEmails?.length) {
 			registerData.email = visitor.visitorEmails[0].address;
 		}
 
-		if (visitor.phone && visitor.phone.length) {
+		if (visitor.phone?.length) {
 			(registerData as any).phone = { number: visitor.phone[0].phoneNumber };
 		}
 
@@ -216,9 +217,9 @@ export class AppLivechatBridge extends LivechatBridge {
 			console.warn('The method AppLivechatBridge.findVisitors is deprecated. Please consider using its alternatives');
 		}
 
-		return LivechatVisitors.find(query)
-			.fetch()
-			.map((visitor: IVisitor) => this.orch.getConverters()?.get('visitors').convertVisitor(visitor));
+		return (await LivechatVisitors.find(query).toArray()).map(
+			(visitor) => visitor && this.orch.getConverters()?.get('visitors').convertVisitor(visitor),
+		);
 	}
 
 	protected async findVisitorById(id: string, appId: string): Promise<IVisitor | undefined> {
@@ -230,19 +231,28 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected async findVisitorByEmail(email: string, appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is looking for livechat visitors.`);
 
-		return this.orch.getConverters()?.get('visitors').convertVisitor(LivechatVisitors.findOneGuestByEmailAddress(email));
+		return this.orch
+			.getConverters()
+			?.get('visitors')
+			.convertVisitor(await LivechatVisitors.findOneGuestByEmailAddress(email));
 	}
 
 	protected async findVisitorByToken(token: string, appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is looking for livechat visitors.`);
 
-		return this.orch.getConverters()?.get('visitors').convertVisitor(LivechatVisitors.getVisitorByToken(token, {}));
+		return this.orch
+			.getConverters()
+			?.get('visitors')
+			.convertVisitor(await LivechatVisitors.getVisitorByToken(token, {}));
 	}
 
 	protected async findVisitorByPhoneNumber(phoneNumber: string, appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is looking for livechat visitors.`);
 
-		return this.orch.getConverters()?.get('visitors').convertVisitor(LivechatVisitors.findOneVisitorByPhone(phoneNumber));
+		return this.orch
+			.getConverters()
+			?.get('visitors')
+			.convertVisitor(await LivechatVisitors.findOneVisitorByPhone(phoneNumber));
 	}
 
 	protected async findDepartmentByIdOrName(value: string, appId: string): Promise<IDepartment | undefined> {

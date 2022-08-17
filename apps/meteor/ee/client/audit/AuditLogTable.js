@@ -1,7 +1,7 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericTable from '../../../client/components/GenericTable';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useFormatDate } from '../../../client/hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../client/hooks/useFormatDateAndTime';
 import UserRow from './UserRow';

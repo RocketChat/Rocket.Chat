@@ -1,8 +1,7 @@
 /* eslint-disable complexity */
 import { Box, Icon } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
-
-import { useTranslation } from '../../../../contexts/TranslationContext';
 
 const MessageContentIgnored: FC<{ onShowMessageIgnored: () => void }> = ({ onShowMessageIgnored }) => {
 	const t = useTranslation();

@@ -1,11 +1,3 @@
-import './startup/email';
-import './startup/oAuthServicesUpdate';
-import './startup/rateLimiter';
-import './startup/robots';
-import './startup/settings';
-import './startup/settingsOnLoadCdnPrefix';
-import './startup/settingsOnLoadDirectReply';
-import './startup/settingsOnLoadSMTP';
 import '../lib/MessageTypes';
 import './lib/bugsnag';
 import './lib/debug';

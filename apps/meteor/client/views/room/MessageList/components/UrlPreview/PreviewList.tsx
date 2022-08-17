@@ -1,14 +1,14 @@
-import { Box } from '@rocket.chat/fuselage';
+import { MessageBlock } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import { useMessageOembedIsEnabled, useMessageOembedMaxWidth } from '../../../contexts/MessageContext';
+import { useMessageOembedMaxWidth } from '../../../contexts/MessageContext';
 import OEmbedResolver from './OEmbedResolver';
 import UrlPreview from './UrlPreview';
 
 type OembedUrlLegacy = {
 	url: string;
 	meta: Record<string, string>;
-	headers?: { contentLength: string; contentType: string };
+	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
 };
 
 type PreviewType = 'photo' | 'video' | 'link' | 'rich';
@@ -79,28 +79,46 @@ const normalizeMeta = ({ url, meta }: OembedUrlLegacy): PreviewMetadata => {
 	);
 };
 
+const hasContentType = (headers: OembedUrlLegacy['headers']): headers is { contentType: string } =>
+	headers ? 'contentType' in headers : false;
+
 const getHeaderType = (headers: OembedUrlLegacy['headers']): UrlPreview['type'] | undefined => {
-	if (headers?.contentType?.match(/image\/.*/)) {
+	if (!hasContentType(headers)) {
+		return;
+	}
+	if (headers.contentType.match(/image\/.*/)) {
 		return 'image';
 	}
-	if (headers?.contentType?.match(/audio\/.*/)) {
+	if (headers.contentType.match(/audio\/.*/)) {
 		return 'audio';
 	}
-	if (headers?.contentType?.match(/video\/.*/)) {
+	if (headers.contentType.match(/video\/.*/)) {
 		return 'video';
 	}
 };
 
+const isValidPreviewMeta = ({ siteName, siteUrl, authorName, authorUrl, title, description, image, html }: PreviewMetadata): boolean =>
+	!((!siteName || !siteUrl) && (!authorName || !authorUrl) && !title && !description && !image && !html);
+
 const processMetaAndHeaders = (url: OembedUrlLegacy): PreviewData | false => {
-	if (!url.headers) {
+	if (!url.headers && !url.meta) {
 		return false;
 	}
 
-	if (!url.meta) {
-		return { type: 'headers', data: { url: url.url, type: getHeaderType(url.headers), originalType: url.headers?.contentType } };
+	const data = url.meta && Object.values(url.meta) && normalizeMeta(url);
+	if (data && isValidPreviewMeta(data)) {
+		return { type: 'oembed', data };
 	}
 
-	return { type: 'oembed', data: normalizeMeta(url) };
+	const type = getHeaderType(url.headers);
+	if (!type) {
+		return false;
+	}
+
+	return {
+		type: 'headers',
+		data: { url: url.url, type, originalType: hasContentType(url.headers) ? url.headers?.contentType : '' },
+	};
 };
 
 const isPreviewData = (data: PreviewData | false): data is PreviewData => !!data;
@@ -108,24 +126,31 @@ const isPreviewData = (data: PreviewData | false): data is PreviewData => !!data
 const isMetaPreview = (_data: PreviewData['data'], type: PreviewTypes): _data is PreviewMetadata => type === 'oembed';
 
 const PreviewList = ({ urls }: PreviewListProps): ReactElement | null => {
-	const oembedIsEnabled = useMessageOembedIsEnabled();
 	const oembedWidth = useMessageOembedMaxWidth();
 
-	if (!oembedIsEnabled || !urls) {
-		return null;
+	if (!urls) {
+		throw new Error('urls is undefined - PreviewList');
 	}
 
 	const metaAndHeaders = urls.map(processMetaAndHeaders).filter(isPreviewData);
 
 	return (
-		<Box width={oembedWidth}>
+		<>
 			{metaAndHeaders.map(({ type, data }, index) => {
 				if (isMetaPreview(data, type)) {
-					return <OEmbedResolver meta={data} key={index} />;
+					return (
+						<MessageBlock width={oembedWidth} key={index}>
+							<OEmbedResolver meta={data} />
+						</MessageBlock>
+					);
 				}
-				return <UrlPreview {...data} key={index} />;
+				return (
+					<MessageBlock width={oembedWidth} key={index}>
+						<UrlPreview {...data} />
+					</MessageBlock>
+				);
 			})}
-		</Box>
+		</>
 	);
 };
 

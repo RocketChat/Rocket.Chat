@@ -1,39 +1,31 @@
 import { Box, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useLayout, useToastMessageDispatch, useRoute, usePermission, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
-import { usePermission } from '../../contexts/AuthorizationContext';
-import { useIsCallEnabled } from '../../contexts/CallContext';
-import { useLayout } from '../../contexts/LayoutContext';
-import { useOmnichannelShowQueueLink, useOmnichannelAgentAvailable } from '../../contexts/OmnichannelContext';
-import { useRoute } from '../../contexts/RouterContext';
-import { useMethod } from '../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { OmnichannelCallToggle } from './components/OmnichannelCallToggle';
+import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
+import { useOmnichannelAgentAvailable } from '../../hooks/omnichannel/useOmnichannelAgentAvailable';
+import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';
+import { OmniChannelCallDialPad } from './actions/OmnichannelCallDialPad';
+import { OmnichannelCallToggle } from './actions/OmnichannelCallToggle';
 
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const isCallEnabled = useIsCallEnabled();
-	const hasPermission = usePermission('view-omnichannel-contact-center');
+	const isCallReady = useIsCallReady();
+	const hasPermissionToSeeContactCenter = usePermission('view-omnichannel-contact-center');
 	const agentAvailable = useOmnichannelAgentAvailable();
-
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
 	const { sidebar } = useLayout();
 	const directoryRoute = useRoute('omnichannel-directory');
 	const queueListRoute = useRoute('livechat-queue');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const availableIcon = {
+	const omnichannelIcon = {
 		title: agentAvailable ? t('Available') : t('Not_Available'),
 		color: agentAvailable ? 'success' : undefined,
 		icon: agentAvailable ? 'message' : 'message-disabled',
-	} as const;
-
-	const directoryIcon = {
-		title: t('Contact_Center'),
-		icon: 'contact',
 	} as const;
 
 	const handleAvailableStatusChange = useMutableCallback(async () => {
@@ -64,8 +56,11 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 			<Sidebar.TopBar.Actions>
 				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} onClick={(): void => handleRoute('queue')} />}
 				{isCallEnabled && <OmnichannelCallToggle />}
-				<Sidebar.TopBar.Action {...availableIcon} onClick={handleAvailableStatusChange} />
-				{hasPermission && <Sidebar.TopBar.Action {...directoryIcon} onClick={(): void => handleRoute('directory')} />}
+				<Sidebar.TopBar.Action {...omnichannelIcon} onClick={handleAvailableStatusChange} />
+				{hasPermissionToSeeContactCenter && (
+					<Sidebar.TopBar.Action title={t('Contact_Center')} icon='address-book' onClick={(): void => handleRoute('directory')} />
+				)}
+				{isCallReady && <OmniChannelCallDialPad />}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
 	);

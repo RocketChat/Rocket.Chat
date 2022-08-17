@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { FormSkeleton } from '../../Skeleton';
@@ -16,7 +16,14 @@ function VisitorData({ room, reload, reloadInfo, close }) {
 		},
 	} = room;
 
-	const { value: visitor, phase: stateVisitor, error: errorVisitor } = useEndpointData(`livechat/visitors.info?visitorId=${_id}`);
+	const {
+		value: visitor,
+		phase: stateVisitor,
+		error: errorVisitor,
+	} = useEndpointData(
+		'/v1/livechat/visitors.info',
+		useMemo(() => ({ visitorId: _id }), [_id]),
+	);
 
 	if ([stateVisitor].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

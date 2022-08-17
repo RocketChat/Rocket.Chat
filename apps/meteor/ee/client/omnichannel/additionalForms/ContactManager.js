@@ -1,17 +1,17 @@
 import { Field } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import UserAutoComplete from '../../../../client/components/UserAutoComplete';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import AutoCompleteAgent from '../../../../client/components/AutoCompleteAgent';
 
-export const ContactManager = ({ value, handler }) => {
+export const ContactManager = ({ value: userId, handler }) => {
 	const t = useTranslation();
 
 	return (
 		<Field>
 			<Field.Label>{t('Contact_Manager')}</Field.Label>
 			<Field.Row>
-				<UserAutoComplete value={value} onChange={handler} />
+				<AutoCompleteAgent haveNoAgentsSelectedOption value={userId} onChange={handler} />
 			</Field.Row>
 		</Field>
 	);

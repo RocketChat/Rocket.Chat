@@ -1,8 +1,8 @@
 import { MessageToolboxItem, Option } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useState, Fragment, useRef, ComponentProps } from 'react';
 
 import { MessageActionConfig } from '../../../../../../app/ui-utils/client/lib/MessageAction';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { ToolboxDropdown } from './ToolboxDropdown';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order'>;
@@ -29,6 +29,8 @@ export const MessageActionMenu: FC<{
 		[key: string]: MessageActionConfigOption[];
 	};
 
+	const messagesContainer = document.querySelector('.messages-container') || document.body;
+
 	return (
 		<MessageToolboxItem
 			ref={ref}
@@ -38,7 +40,7 @@ export const MessageActionMenu: FC<{
 			data-qa-type='message-action-menu'
 		>
 			{visible && (
-				<ToolboxDropdown reference={ref} {...rest}>
+				<ToolboxDropdown reference={ref} container={messagesContainer} {...rest}>
 					{Object.entries(groupOptions).map(([, options], index, arr) => (
 						<Fragment key={index}>
 							{options.map((option) => (

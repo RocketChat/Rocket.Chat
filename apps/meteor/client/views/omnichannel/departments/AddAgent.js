@@ -1,16 +1,15 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
 function AddAgent({ agentList, setAgentsAdded, setAgentList, ...props }) {
 	const t = useTranslation();
 	const [userId, setUserId] = useState();
-	const getAgent = useEndpointAction('GET', `livechat/users/agent/${userId}`);
+	const getAgent = useEndpointAction('GET', `/v1/livechat/users/agent/${userId}`);
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleAgent = useMutableCallback((e) => setUserId(e));

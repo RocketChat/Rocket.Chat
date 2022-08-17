@@ -63,6 +63,9 @@ Meteor.methods({
 			hideUnreadStatus: {
 				updateMethod: (subscription, value) => Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1'),
 			},
+			hideMentionStatus: {
+				updateMethod: (subscription, value) => Subscriptions.updateHideMentionStatusById(subscription._id, value === '1'),
+			},
 			muteGroupMentions: {
 				updateMethod: (subscription, value) => Subscriptions.updateMuteGroupMentions(subscription._id, value === '1'),
 			},

@@ -1,5 +1,5 @@
 import { LDAPEEManager } from '../../lib/ldap/Manager';
-import { ILDAPEEService } from '../../sdk/types/ILDAPEEService';
+import type { ILDAPEEService } from '../../sdk/types/ILDAPEEService';
 import { ServiceClassInternal } from '../../../../server/sdk/types/ServiceClass';
 
 export class LDAPEEService extends ServiceClassInternal implements ILDAPEEService {

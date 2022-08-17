@@ -1,8 +1,8 @@
 import { Field } from '@rocket.chat/fuselage';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { DAYS_OF_WEEK } from './BusinessHoursForm';
 import TimeRangeInput from './TimeRangeInput';
 

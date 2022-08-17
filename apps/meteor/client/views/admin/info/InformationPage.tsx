@@ -1,12 +1,10 @@
 import type { IInstanceStatus, IServerInfo, IStats } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/fuselage';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { Box, Button, ButtonGroup, Callout, Grid, Icon } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import SeatsCard from '../../../../ee/client/views/admin/info/SeatsCard';
-import { DOUBLE_COLUMN_CARD_WIDTH } from '../../../components/Card';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import DeploymentCard from './DeploymentCard';
 import FederationCard from './FederationCard';
 import LicenseCard from './LicenseCard';
@@ -30,10 +28,6 @@ const InformationPage = memo(function InformationPage({
 	onClickDownloadInfo,
 }: InformationPageProps) {
 	const t = useTranslation();
-
-	const { ref, contentBoxSize: { inlineSize = DOUBLE_COLUMN_CARD_WIDTH } = {} } = useResizeObserver();
-
-	const isSmall = inlineSize < DOUBLE_COLUMN_CARD_WIDTH;
 
 	if (!info) {
 		return null;
@@ -82,15 +76,23 @@ const InformationPage = memo(function InformationPage({
 						</Callout>
 					)}
 
-					<Box display='flex' flexDirection='row' w='full' flexWrap='wrap' justifyContent={isSmall ? 'center' : 'flex-start'} ref={ref}>
-						<Margins all='x8'>
+					<Grid>
+						<Grid.Item xl={3}>
 							<DeploymentCard info={info} statistics={statistics} instances={instances} />
+						</Grid.Item>
+						<Grid.Item xl={3}>
 							<LicenseCard />
-							<UsageCard vertical={isSmall} statistics={statistics} />
+						</Grid.Item>
+						<Grid.Item xl={6} md={8} xs={4} sm={8}>
+							<UsageCard vertical={false} statistics={statistics} />
+						</Grid.Item>
+						<Grid.Item xl={6}>
 							<FederationCard />
+						</Grid.Item>
+						<Grid.Item xl={3}>
 							<SeatsCard />
-						</Margins>
-					</Box>
+						</Grid.Item>
+					</Grid>
 				</Box>
 			</Page.ScrollableContentWithShadow>
 		</Page>

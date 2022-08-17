@@ -227,6 +227,27 @@ describe('[Groups]', function () {
 				})
 				.end(done);
 		});
+		it('should return all groups messages where the last message of array should have the "star" array with USERS star ONLY even requested with count and offset params', (done) => {
+			request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					const { messages } = res.body;
+					const lastMessage = messages.filter((message) => message._id === groupMessage._id)[0];
+					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+				})
+				.end(done);
+		});
 	});
 
 	it('/groups.invite', async () => {
@@ -503,20 +524,39 @@ describe('[Groups]', function () {
 		});
 	});
 
-	it('/groups.history', (done) => {
-		request
-			.get(api('groups.history'))
-			.set(credentials)
-			.query({
-				roomId: group._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('messages');
-			})
-			.end(done);
+	describe('/groups.history', () => {
+		it('should return groups history when searching by roomId', (done) => {
+			request
+				.get(api('groups.history'))
+				.set(credentials)
+				.query({
+					roomId: group._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+				})
+				.end(done);
+		});
+		it('should return groups history when searching by roomId even requested with count and offset params', (done) => {
+			request
+				.get(api('groups.history'))
+				.set(credentials)
+				.query({
+					roomId: group._id,
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+				})
+				.end(done);
+		});
 	});
 
 	it('/groups.archive', (done) => {
@@ -599,15 +639,13 @@ describe('[Groups]', function () {
 		request
 			.get(api('groups.list'))
 			.set(credentials)
-			.query({
-				roomId: group._id,
-			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count');
 				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('groups').and.to.be.an('array');
 			})
 			.end(done);
 	});
@@ -705,43 +743,86 @@ describe('[Groups]', function () {
 				});
 		});
 	});
-
-	it('/groups.members', (done) => {
-		request
-			.get(api('groups.members'))
-			.set(credentials)
-			.query({
-				roomId: group._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('total');
-				expect(res.body).to.have.property('offset');
-				expect(res.body).to.have.property('members').and.to.be.an('array');
-			})
-			.end(done);
+	describe('/groups.files', () => {
+		it('should return group members when searching by roomId', (done) => {
+			request
+				.get(api('groups.members'))
+				.set(credentials)
+				.query({
+					roomId: group._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should return group members when searching by roomId even requested with count and offset params', (done) => {
+			request
+				.get(api('groups.members'))
+				.set(credentials)
+				.query({
+					roomId: group._id,
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+				})
+				.end(done);
+		});
 	});
 
-	it('/groups.files', (done) => {
-		request
-			.get(api('groups.files'))
-			.set(credentials)
-			.query({
-				roomId: group._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('total');
-				expect(res.body).to.have.property('offset');
-				expect(res.body).to.have.property('files').and.to.be.an('array');
-			})
-			.end(done);
+	describe('/groups.files', () => {
+		it('should return group files when searching by roomId', (done) => {
+			request
+				.get(api('groups.files'))
+				.set(credentials)
+				.query({
+					roomId: group._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('files').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should return group files when searching by roomId even requested with count and offset params', (done) => {
+			request
+				.get(api('groups.files'))
+				.set(credentials)
+				.query({
+					roomId: group._id,
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('files').and.to.be.an('array');
+				})
+				.end(done);
+		});
 	});
 
 	describe('/groups.listAll', () => {
@@ -1531,6 +1612,90 @@ describe('[Groups]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', false);
+				})
+				.end(done);
+		});
+	});
+
+	context("Setting: 'Use Real Name': true", () => {
+		let realNameGroup;
+
+		before(async () => {
+			await updateSetting('UI_Use_Real_Name', true);
+
+			await request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({ name: `group-${Date.now()}` })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+
+					realNameGroup = res.body.group;
+				});
+
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid: realNameGroup._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+		after(async () => {
+			await updateSetting('UI_Use_Real_Name', false);
+
+			await request
+				.post(api('groups.delete'))
+				.set(credentials)
+				.send({ roomId: realNameGroup._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('/groups.list', (done) => {
+			request
+				.get(api('groups.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('groups').and.to.be.an('array');
+
+					const retGroup = res.body.groups.find(({ _id }) => _id === realNameGroup._id);
+
+					expect(retGroup).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
+				})
+				.end(done);
+		});
+
+		it('/groups.listAll', (done) => {
+			request
+				.get(api('groups.listAll'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('groups').and.to.be.an('array');
+
+					const retGroup = res.body.groups.find(({ _id }) => _id === realNameGroup._id);
+
+					expect(retGroup).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
 				.end(done);
 		});

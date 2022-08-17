@@ -11,19 +11,18 @@ to: packages/<%= name %>/package.json
 		"eslint": "^8.12.0",
 		"jest": "^27.5.1",
 		"ts-jest": "^27.1.4",
-		"typescript": "~4.3.5"
+		"typescript": "~4.5.5"
 	},
 	"scripts": {
-		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"jest": "jest",
-		"build": "tsc -p tsconfig.json"
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	],
-	"dependencies": {
-	}
+	]
 }

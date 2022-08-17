@@ -1,4 +1,5 @@
-import { MongoClient, Db, Collection } from 'mongodb';
+import { MongoClient } from 'mongodb';
+import type { Db, Collection, MongoClientOptions } from 'mongodb';
 
 const { MONGO_URL = 'mongodb://localhost:27017/rocketchat' } = process.env;
 
@@ -14,23 +15,39 @@ export enum Collections {
 	Settings = 'rocketchat_settings',
 }
 
-let db: Db;
-export async function getConnection(poolSize = 5): Promise<Db> {
-	if (!db) {
-		const client = new MongoClient(MONGO_URL, {
-			useUnifiedTopology: true,
-			useNewUrlParser: true,
-			poolSize,
-		});
+function connectDb(options?: MongoClientOptions): Promise<MongoClient> {
+	const client = new MongoClient(MONGO_URL, options);
 
-		await client.connect();
-		db = client.db(name);
-	}
-
-	return db;
+	return client.connect().catch((error) => {
+		// exits the process in case of any error
+		console.error(error);
+		process.exit(1);
+	});
 }
 
+let db: Db;
+
+export const getConnection = ((): ((options?: MongoClientOptions) => Promise<Db>) => {
+	let client: Promise<MongoClient>;
+
+	return async (options): Promise<Db> => {
+		if (db) {
+			return db;
+		}
+		if (!client) {
+			client = connectDb(options);
+			client.then((c) => {
+				db = c.db(name);
+			});
+		}
+		// if getConnection was called multiple times before it was connected, wait for the connection
+		return (await client).db(name);
+	};
+})();
+
 export async function getCollection<T>(name: Collections): Promise<Collection<T>> {
-	await getConnection();
+	if (!db) {
+		db = await getConnection();
+	}
 	return db.collection<T>(name);
 }

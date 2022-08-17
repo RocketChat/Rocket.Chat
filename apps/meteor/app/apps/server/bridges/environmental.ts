@@ -1,6 +1,6 @@
 import { EnvironmentalVariableBridge } from '@rocket.chat/apps-engine/server/bridges/EnvironmentalVariableBridge';
 
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppEnvironmentalVariableBridge extends EnvironmentalVariableBridge {
 	allowed: Array<string>;
@@ -24,7 +24,15 @@ export class AppEnvironmentalVariableBridge extends EnvironmentalVariableBridge 
 	protected async isReadable(envVarName: string, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${appId} is checking if the environmental variable is readable ${envVarName}.`);
 
-		return this.allowed.includes(envVarName.toUpperCase());
+		return this.allowed.includes(envVarName.toUpperCase()) || this.isAppsOwnVariable(envVarName, appId);
+	}
+
+	protected isAppsOwnVariable(envVarName: string, appId: string): boolean {
+		/**
+		 * Replace the letter `-` with `_` since environment variable name doesn't support it
+		 */
+		const appVariablePrefix = `RC_APPS_${appId.toUpperCase().replace(/-/g, '_')}`;
+		return envVarName.toUpperCase().startsWith(appVariablePrefix);
 	}
 
 	protected async isSet(envVarName: string, appId: string): Promise<boolean> {

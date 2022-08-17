@@ -3,9 +3,11 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors, Users } from '@rocket.chat/models';
+import { isLiveChatRoomForwardProps } from '@rocket.chat/rest-typings';
 
-import { settings as rcSettings } from '../../../../settings';
-import { Messages, LivechatRooms } from '../../../../models';
+import { settings as rcSettings } from '../../../../settings/server';
+import { Messages, LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
@@ -15,7 +17,7 @@ import { canAccessRoom } from '../../../../authorization/server';
 import { addUserToRoom } from '../../../../lib/server/functions';
 
 API.v1.addRoute('livechat/room', {
-	get() {
+	async get() {
 		const defaultCheckParams = {
 			token: String,
 			rid: Match.Maybe(String),
@@ -28,7 +30,7 @@ API.v1.addRoute('livechat/room', {
 
 		const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
 
-		const guest = findGuest(token);
+		const guest = await findGuest(token);
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
@@ -54,7 +56,7 @@ API.v1.addRoute('livechat/room', {
 				},
 			};
 
-			room = Promise.await(getRoom({ guest, rid, agent, roomInfo, extraParams }));
+			room = await getRoom({ guest, rid, agent, roomInfo, extraParams });
 			return API.v1.success(room);
 		}
 
@@ -68,7 +70,7 @@ API.v1.addRoute('livechat/room', {
 });
 
 API.v1.addRoute('livechat/room.close', {
-	post() {
+	async post() {
 		try {
 			check(this.bodyParams, {
 				rid: String,
@@ -77,7 +79,7 @@ API.v1.addRoute('livechat/room.close', {
 
 			const { rid, token } = this.bodyParams;
 
-			const visitor = findGuest(token);
+			const visitor = await findGuest(token);
 			if (!visitor) {
 				throw new Meteor.Error('invalid-token');
 			}
@@ -106,7 +108,7 @@ API.v1.addRoute('livechat/room.close', {
 });
 
 API.v1.addRoute('livechat/room.transfer', {
-	post() {
+	async post() {
 		try {
 			check(this.bodyParams, {
 				rid: String,
@@ -116,7 +118,7 @@ API.v1.addRoute('livechat/room.transfer', {
 
 			const { rid, token, department } = this.bodyParams;
 
-			const guest = findGuest(token);
+			const guest = await findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
@@ -132,7 +134,7 @@ API.v1.addRoute('livechat/room.transfer', {
 			const { _id, username, name } = guest;
 			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
 
-			if (!Promise.await(Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }))) {
+			if (!(await Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }))) {
 				return API.v1.failure();
 			}
 
@@ -145,64 +147,84 @@ API.v1.addRoute('livechat/room.transfer', {
 });
 
 API.v1.addRoute('livechat/room.survey', {
-	post() {
-		try {
-			check(this.bodyParams, {
-				rid: String,
-				token: String,
-				data: [
-					Match.ObjectIncluding({
-						name: String,
-						value: String,
-					}),
-				],
-			});
+	async post() {
+		check(this.bodyParams, {
+			rid: String,
+			token: String,
+			data: [
+				Match.ObjectIncluding({
+					name: String,
+					value: String,
+				}),
+			],
+		});
 
-			const { rid, token, data } = this.bodyParams;
+		const { rid, token, data } = this.bodyParams;
 
-			const visitor = findGuest(token);
-			if (!visitor) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			const config = Promise.await(settings());
-			if (!config.survey || !config.survey.items || !config.survey.values) {
-				throw new Meteor.Error('invalid-livechat-config');
-			}
-
-			const updateData = {};
-			for (const item of data) {
-				if ((config.survey.items.includes(item.name) && config.survey.values.includes(item.value)) || item.name === 'additionalFeedback') {
-					updateData[item.name] = item.value;
-				}
-			}
-
-			if (Object.keys(updateData).length === 0) {
-				throw new Meteor.Error('invalid-data');
-			}
-
-			if (!LivechatRooms.updateSurveyFeedbackById(room._id, updateData)) {
-				return API.v1.failure();
-			}
-
-			return API.v1.success({ rid, data: updateData });
-		} catch (e) {
-			return API.v1.failure(e);
+		const visitor = await findGuest(token);
+		if (!visitor) {
+			throw new Meteor.Error('invalid-token');
 		}
+
+		const room = findRoom(token, rid);
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		const config = await settings();
+		if (!config.survey || !config.survey.items || !config.survey.values) {
+			throw new Meteor.Error('invalid-livechat-config');
+		}
+
+		const updateData = {};
+		for (const item of data) {
+			if ((config.survey.items.includes(item.name) && config.survey.values.includes(item.value)) || item.name === 'additionalFeedback') {
+				updateData[item.name] = item.value;
+			}
+		}
+
+		if (Object.keys(updateData).length === 0) {
+			throw new Meteor.Error('invalid-data');
+		}
+
+		if (!LivechatRooms.updateSurveyFeedbackById(room._id, updateData)) {
+			return API.v1.failure();
+		}
+
+		return API.v1.success({ rid, data: updateData });
 	},
 });
 
 API.v1.addRoute(
 	'livechat/room.forward',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room', 'transfer-livechat-guest'], validateParams: isLiveChatRoomForwardProps },
 	{
-		post() {
-			API.v1.success(Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)));
+		async post() {
+			const transferData = this.bodyParams;
+
+			const room = await LivechatRooms.findOneById(this.bodyParams.roomId);
+			if (!room || room.t !== 'l') {
+				throw new Error('error-invalid-room', 'Invalid room');
+			}
+
+			if (!room.open) {
+				throw new Error('This_conversation_is_already_closed');
+			}
+
+			const guest = await LivechatVisitors.findOneById(room.v && room.v._id);
+			transferData.transferredBy = normalizeTransferredByData(Meteor.user() || {}, room);
+			if (transferData.userId) {
+				const userToTransfer = await Users.findOneById(transferData.userId);
+				transferData.transferredTo = {
+					_id: userToTransfer._id,
+					username: userToTransfer.username,
+					name: userToTransfer.name,
+				};
+			}
+
+			const chatForwardedResult = await Livechat.transfer(room, guest, transferData);
+
+			return chatForwardedResult ? API.v1.success() : API.v1.failure();
 		},
 	},
 );

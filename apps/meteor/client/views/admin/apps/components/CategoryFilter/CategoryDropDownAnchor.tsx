@@ -1,7 +1,6 @@
 import { Box, Button, Icon, Select } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, forwardRef } from 'react';
-
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 
 const CategoryDropDownAnchor = forwardRef<HTMLInputElement, Partial<ComponentProps<typeof Select>> & { selectedCategoriesCount: number }>(
 	function CategoryDropDownAnchor(props, ref) {
@@ -36,7 +35,14 @@ const CategoryDropDownAnchor = forwardRef<HTMLInputElement, Partial<ComponentPro
 						{props.selectedCategoriesCount}
 					</Box>
 				)}
-				<Box is='span' fontWeight='500' fontSize='p2b' color={props.selectedCategoriesCount ? 'alternative' : 'hint'} mi='x4'>
+				<Box
+					is='span'
+					display='flex'
+					flexGrow={1}
+					fontWeight={400}
+					fontSize='p2b'
+					color={props.selectedCategoriesCount ? 'alternative' : 'hint'}
+				>
 					{props.selectedCategoriesCount > 0 ? t('Categories') : t('All_categories')}
 				</Box>
 				<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>

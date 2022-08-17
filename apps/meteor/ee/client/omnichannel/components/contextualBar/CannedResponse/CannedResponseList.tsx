@@ -1,12 +1,12 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { Dispatch, FC, FormEventHandler, memo, MouseEvent, ReactElement, SetStateAction } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
 import VerticalBar from '../../../../../../client/components/VerticalBar';
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useTabContext } from '../../../../../../client/views/room/providers/ToolboxProvider';
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';

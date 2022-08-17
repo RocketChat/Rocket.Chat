@@ -1,11 +1,13 @@
-import '../app/settings/server/startup';
+import './models/startup';
+import '../ee/server/models/startup';
+import './services/startup';
+import '../app/settings/server';
 import '../lib/oauthRedirectUri';
 import './overrides/http';
 import './lib/logger/startup';
 import './importPackages';
 import '../imports/startup/server';
-
-import './services/startup';
+import '../app/lib/server/startup';
 
 import '../ee/server';
 import './lib/pushConfig';
@@ -72,6 +74,7 @@ import './publications/spotlight';
 import './publications/subscription';
 import './routes/avatar';
 import './routes/i18n';
+import './routes/timesync';
 import './stream/stdout';
 import './stream/streamBroadcast';
 import './settings/index';

@@ -1,9 +1,8 @@
 import { Button, ButtonGroup, Icon, Tabs } from '@rocket.chat/fuselage';
+import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, ReactElement } from 'react';
 
 import Page from '../../../components/Page';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import IntegrationsTable from './IntegrationsTable';
 import NewBot from './new/NewBot';
 import NewZapier from './new/NewZapier';

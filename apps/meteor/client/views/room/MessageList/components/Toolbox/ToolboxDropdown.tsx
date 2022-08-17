@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import React, { ReactNode, useRef, ReactElement } from 'react';
 
-import { useLayout } from '../../../../../contexts/LayoutContext';
 import { ToolboxDropdownDesktop } from './ToolboxDropdownDesktop';
 import { ToolboxDropdownMobile } from './ToolboxDropdownMobile';
 
@@ -14,10 +14,12 @@ const style = css`
 `;
 export const ToolboxDropdown = <R extends HTMLElement>({
 	reference,
+	container,
 	children,
 	...rest
 }: {
 	reference: React.RefObject<R>;
+	container: Element;
 	children: ReactNode;
 }): ReactElement => {
 	const { isMobile } = useLayout();
@@ -27,7 +29,7 @@ export const ToolboxDropdown = <R extends HTMLElement>({
 	return (
 		<>
 			<Box className={style} position='fixed' />
-			<DropdownTemplate ref={target} reference={reference} {...rest}>
+			<DropdownTemplate ref={target} reference={reference} container={container} {...rest}>
 				{children}
 			</DropdownTemplate>
 		</>

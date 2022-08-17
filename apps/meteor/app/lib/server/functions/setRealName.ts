@@ -8,14 +8,18 @@ import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
 
-export const _setRealName = function (userId: string, name: string, fullUser: IUser): unknown {
+export const _setRealName = function (userId: string, name: string, fullUser: IUser): IUser | undefined {
 	name = s.trim(name);
 
 	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
-		return false;
+		return;
 	}
 
 	const user = fullUser || Users.findOneById(userId);
+
+	if (!user) {
+		return;
+	}
 
 	// User already has desired name, return
 	if (user.name && s.trim(user.name) === name) {

@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback } from 'react';
 
-import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import RemoveUsersFirstStep from './RemoveUsersFirstStep';
 import RemoveUsersSecondStep from './RemoveUsersSecondStep';
 

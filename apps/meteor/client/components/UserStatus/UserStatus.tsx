@@ -1,7 +1,6 @@
 import { StatusBullet } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ComponentProps, ReactElement } from 'react';
-
-import { useTranslation } from '../../contexts/TranslationContext';
 
 export type UserStatusProps = {
 	small?: boolean;

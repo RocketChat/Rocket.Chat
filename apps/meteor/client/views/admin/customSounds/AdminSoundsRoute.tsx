@@ -1,5 +1,6 @@
-import { Box, Button, Icon, Pagination } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, IconButton, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useCustomSound, useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useCallback, ReactElement } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -14,10 +15,6 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useCustomSound } from '../../../contexts/CustomSoundContext';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
@@ -51,7 +48,7 @@ function CustomSoundsRoute(): ReactElement {
 		500,
 	);
 
-	const { reload, ...result } = useEndpointData('custom-sounds.list', query);
+	const { reload, ...result } = useEndpointData('/v1/custom-sounds.list', query);
 
 	const handleItemClick = useCallback(
 		(_id) => (): void => {
@@ -120,19 +117,16 @@ function CustomSoundsRoute(): ReactElement {
 											<Box withTruncatedText>{sound.name}</Box>
 										</GenericTableCell>
 										<GenericTableCell>
-											<Button
-												ghost
+											<IconButton
+												icon='play'
 												small
-												square
 												aria-label={t('Play')}
-												onClick={(e) => {
+												onClick={(e): void => {
 													e.preventDefault();
 													e.stopPropagation();
 													handlePlay(sound._id);
 												}}
-											>
-												<Icon name='play' size='x20' />
-											</Button>
+											/>
 										</GenericTableCell>
 									</GenericTableRow>
 								))}

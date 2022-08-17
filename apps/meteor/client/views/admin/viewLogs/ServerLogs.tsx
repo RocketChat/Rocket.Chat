@@ -1,10 +1,8 @@
 import { Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useEndpoint, useStream, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useRef, useState, useCallback, ReactElement } from 'react';
 
-import { useEndpoint, useStream } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { ansispan } from './ansispan';
 
 type StdOutLogEntry = {
@@ -25,7 +23,7 @@ const ServerLogs = (): ReactElement => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const getStdoutQueue = useEndpoint('GET', 'stdout.queue');
+	const getStdoutQueue = useEndpoint('GET', '/v1/stdout.queue');
 	const subscribeToStdout = useStream('stdout');
 
 	useEffect(() => {
@@ -34,7 +32,7 @@ const ServerLogs = (): ReactElement => {
 				const { queue } = await getStdoutQueue(undefined);
 				setEntries(queue.map(unserializeEntry).sort(compareEntries));
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
 			}
 		};
 

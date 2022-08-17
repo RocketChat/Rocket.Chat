@@ -1,7 +1,7 @@
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
-import { useEndpoint } from '../../../client/contexts/ServerContext';
 import { useScrollableRecordList } from '../../../client/hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../client/hooks/useComponentDidUpdate';
 import { RecordList } from '../../../client/lib/lists/RecordList';
@@ -21,7 +21,7 @@ export const useAgentsList = (
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatAgent>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatAgent>()), []);
 
-	const getAgents = useEndpoint('GET', 'livechat/users/agent');
+	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
 
 	useComponentDidUpdate(() => {
 		options && reload();

@@ -1,7 +1,7 @@
+import { TranslationContext } from '@rocket.chat/ui-contexts';
 import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
 import React, { useMemo } from 'react';
 
-import { TranslationContext } from '../contexts/TranslationContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const createTranslateFunction = (language) => {

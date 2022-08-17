@@ -1,12 +1,9 @@
 import { Button, ButtonGroup, Icon, Field, FieldGroup, TextInput, Throbber } from '@rocket.chat/fuselage';
+import { useSetModal, useRoute, useQueryStringParameter, useEndpoint, useUpload, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import Page from '../../../components/Page';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useRoute, useQueryStringParameter } from '../../../contexts/RouterContext';
-import { useEndpoint, useUpload } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { useForm } from '../../../hooks/useForm';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
@@ -87,7 +84,7 @@ function AppInstallPage() {
 				<AppPermissionsReviewModal
 					appPermissions={permissions}
 					cancel={cancelAction}
-					confirm={(permissions) => sendFile(permissions, appFile, appId)}
+					confirm={(permissionsGranted) => sendFile(permissionsGranted, appFile, appId)}
 				/>,
 			);
 		}

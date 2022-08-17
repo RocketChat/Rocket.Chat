@@ -1,5 +1,6 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRoute, useUserId, useUserSubscription, useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
@@ -7,10 +8,6 @@ import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 're
 
 import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useEndpoint, useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
@@ -21,7 +18,7 @@ const subscriptionFields = {};
 
 const useThreadMessage = (tmid: string): IMessage => {
 	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
-	const getMessage = useEndpoint('GET', 'chat.getMessage');
+	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(
 		async (params) => {
 			const { message } = await getMessage(params);
@@ -90,7 +87,7 @@ const ThreadComponent: FC<{
 			} catch (error) {
 				dispatchToastMessage({
 					type: 'error',
-					message: error,
+					message: error instanceof Error ? error : String(error),
 				});
 			}
 		},

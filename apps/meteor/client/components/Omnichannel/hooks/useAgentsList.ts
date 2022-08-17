@@ -1,8 +1,7 @@
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../../lib/lists/RecordList';
@@ -10,6 +9,7 @@ import { RecordList } from '../../../lib/lists/RecordList';
 type AgentsListOptions = {
 	text: string;
 	haveAll: boolean;
+	haveNoAgentsSelectedOption: boolean;
 };
 
 export const useAgentsList = (
@@ -23,9 +23,8 @@ export const useAgentsList = (
 	const t = useTranslation();
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatAgent>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatAgent>()), []);
-	const endpoint = 'livechat/users/agent';
 
-	const getAgents = useEndpoint('GET', endpoint);
+	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
 
 	useComponentDidUpdate(() => {
 		options && reload();
@@ -54,12 +53,19 @@ export const useAgentsList = (
 					_updatedAt: new Date(),
 				});
 
+			options.haveNoAgentsSelectedOption &&
+				items.unshift({
+					label: t('Empty_no_agent_selected'),
+					value: 'no-agent-selected',
+					_updatedAt: new Date(),
+				});
+
 			return {
 				items,
 				itemCount: total + 1,
 			};
 		},
-		[getAgents, options.haveAll, options.text, t],
+		[getAgents, options.haveAll, options.haveNoAgentsSelectedOption, options.text, t],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);

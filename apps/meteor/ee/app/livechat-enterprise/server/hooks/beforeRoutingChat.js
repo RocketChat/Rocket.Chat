@@ -1,10 +1,11 @@
+import { LivechatDepartment, LivechatInquiry as LivechatInquiryRaw, LivechatRooms } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { LivechatInquiry } from '../../../../../app/models/server';
 import { dispatchInquiryPosition } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
-import { LivechatDepartment, LivechatInquiry as LivechatInquiryRaw, LivechatRooms } from '../../../../../app/models/server/raw';
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { cbLogger } from '../lib/logger';

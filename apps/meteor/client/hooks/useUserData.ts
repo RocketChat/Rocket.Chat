@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { useSubscription } from 'use-subscription';
+import { useCallback } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { UserPresence, Presence } from '../lib/presence';
 
@@ -11,18 +11,17 @@ import { UserPresence, Presence } from '../lib/presence';
  * @public
  */
 export const useUserData = (uid: string): UserPresence | undefined => {
-	const subscription = useMemo(
-		() => ({
-			getCurrentValue: (): UserPresence | undefined => Presence.store.get(uid),
-			subscribe: (callback: any): any => {
-				Presence.listen(uid, callback);
-				return (): void => {
-					Presence.stop(uid, callback);
-				};
-			},
-		}),
+	const subscription = useCallback(
+		(callback: () => void): (() => void) => {
+			Presence.listen(uid, callback);
+			return (): void => {
+				Presence.stop(uid, callback);
+			};
+		},
 		[uid],
 	);
 
-	return useSubscription(subscription);
+	const getSnapshot = (): UserPresence | undefined => Presence.store.get(uid);
+
+	return useSyncExternalStore(subscription, getSnapshot);
 };

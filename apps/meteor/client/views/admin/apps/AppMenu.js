@@ -1,10 +1,7 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
+import { useSetModal, useMethod, useEndpoint, useTranslation, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
 import WarningModal from './WarningModal';
@@ -13,8 +10,9 @@ import { appEnabledStatuses, warnStatusChange, handleAPIError } from './helpers'
 function AppMenu({ app, ...props }) {
 	const t = useTranslation();
 	const setModal = useSetModal();
-	const appsRoute = useRoute('admin-apps');
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
+	const appsRoute = useRoute('admin-apps');
+	const context = useRouteParameter('context');
 
 	const setAppStatus = useEndpoint('POST', `/apps/${app.id}/status`);
 	const buildExternalUrl = useEndpoint('GET', '/apps');
@@ -37,10 +35,6 @@ function AppMenu({ app, ...props }) {
 			handleAPIError(error);
 		}
 	}, [app.name, setAppStatus]);
-
-	const handleViewLogs = useCallback(() => {
-		appsRoute.push({ context: 'logs', id: app.id });
-	}, [app.id, appsRoute]);
 
 	const handleSubscription = useCallback(async () => {
 		if (!(await checkUserLoggedIn())) {
@@ -71,6 +65,10 @@ function AppMenu({ app, ...props }) {
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
 	}, [checkUserLoggedIn, setModal, closeModal, buildExternalUrl, app.id, app.purchaseType, syncApp]);
+
+	const handleViewLogs = useCallback(() => {
+		appsRoute.push({ context: 'details', id: app.id, version: app.version, tab: 'logs' });
+	}, [app.id, app.version, appsRoute]);
 
 	const handleDisable = useCallback(() => {
 		const confirm = async () => {
@@ -132,48 +130,66 @@ function AppMenu({ app, ...props }) {
 					action: handleSubscription,
 				},
 			}),
-			viewLogs: {
-				label: (
-					<Box>
-						<Icon name='list-alt' size='x16' marginInlineEnd='x4' />
-						{t('View_Logs')}
-					</Box>
-				),
-				action: handleViewLogs,
-			},
-			...(isAppEnabled && {
-				disable: {
+			...(context !== 'details' &&
+				app.installed && {
+					viewLogs: {
+						label: (
+							<Box>
+								<Icon name='list-alt' size='x16' marginInlineEnd='x4' />
+								{t('View_Logs')}
+							</Box>
+						),
+						action: handleViewLogs,
+					},
+				}),
+			...(app.installed &&
+				isAppEnabled && {
+					disable: {
+						label: (
+							<Box color='warning'>
+								<Icon name='ban' size='x16' marginInlineEnd='x4' />
+								{t('Disable')}
+							</Box>
+						),
+						action: handleDisable,
+					},
+				}),
+			...(app.installed &&
+				!isAppEnabled && {
+					enable: {
+						label: (
+							<Box>
+								<Icon name='check' size='x16' marginInlineEnd='x4' />
+								{t('Enable')}
+							</Box>
+						),
+						action: handleEnable,
+					},
+				}),
+			...(app.installed && {
+				uninstall: {
 					label: (
-						<Box color='warning'>
-							<Icon name='ban' size='x16' marginInlineEnd='x4' />
-							{t('Disable')}
+						<Box color='danger'>
+							<Icon name='trash' size='x16' marginInlineEnd='x4' />
+							{t('Uninstall')}
 						</Box>
 					),
-					action: handleDisable,
+					action: handleUninstall,
 				},
 			}),
-			...(!isAppEnabled && {
-				enable: {
-					label: (
-						<Box>
-							<Icon name='check' size='x16' marginInlineEnd='x4' />
-							{t('Enable')}
-						</Box>
-					),
-					action: handleEnable,
-				},
-			}),
-			uninstall: {
-				label: (
-					<Box color='danger'>
-						<Icon name='trash' size='x16' marginInlineEnd='x4' />
-						{t('Uninstall')}
-					</Box>
-				),
-				action: handleUninstall,
-			},
 		}),
-		[canAppBeSubscribed, t, handleSubscription, handleViewLogs, isAppEnabled, handleDisable, handleEnable, handleUninstall],
+		[
+			canAppBeSubscribed,
+			t,
+			handleSubscription,
+			context,
+			handleViewLogs,
+			app.installed,
+			isAppEnabled,
+			handleDisable,
+			handleEnable,
+			handleUninstall,
+		],
 	);
 
 	return <Menu options={menuOptions} placement='bottom-start' {...props} />;

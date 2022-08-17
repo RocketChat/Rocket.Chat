@@ -37,7 +37,7 @@ type SetupWizarContextValue = {
 
 export const SetupWizardContext = createContext<SetupWizarContextValue>({
 	setupWizardData: {
-		adminData: { fullname: '', username: '', companyEmail: '', password: '' },
+		adminData: { fullname: '', username: '', email: '', password: '' },
 		organizationData: {
 			organizationName: '',
 			organizationType: '',
@@ -51,10 +51,9 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 			registerType: 'registered',
 			updates: false,
 		},
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		registrationData: { cloudEmail: '', user_code: '', device_code: '' },
 	},
-	setSetupWizardData: (data: {}) => data,
+	setSetupWizardData: (data) => data,
 	loaded: false,
 	settings: [],
 	skipCloudRegistration: false,

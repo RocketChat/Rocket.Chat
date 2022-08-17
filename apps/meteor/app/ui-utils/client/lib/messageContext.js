@@ -17,8 +17,7 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 const fields = {
 	'name': 1,
 	'username': 1,
-	'settings.preferences.enableLegacyMessages': 1,
-	'settings.preferences.showMessageInMainThread': 1,
+	'settings.preferences.useLegacyMessageTemplate': 1,
 	'settings.preferences.autoImageLoad': 1,
 	'settings.preferences.saveMobileBandwidth': 1,
 	'settings.preferences.collapseMediaByDefault': 1,
@@ -28,7 +27,7 @@ const fields = {
 export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
 	const user = Users.findOne({ _id: uid }, { fields }) || {};
-	// const instance = Template.instance();
+	const instance = Template.instance();
 	const openThread = (e) => {
 		const { rid, mid, tmid } = e.currentTarget.dataset;
 		const room = Rooms.findOne({ _id: rid });
@@ -55,7 +54,7 @@ export function messageContext({ rid } = Template.instance()) {
 					value: msg._id,
 					message: msg,
 				})
-		: (msg, actionlink) => actionLinks.run(actionlink, msg);
+		: (msg, actionlink) => actionLinks.run(actionlink, msg, instance);
 
 	const openDiscussion = (e) => {
 		e.preventDefault();
@@ -115,9 +114,8 @@ export function messageContext({ rid } = Template.instance()) {
 		},
 		settings: {
 			translateLanguage: AutoTranslate.getLanguage(rid),
-			showMessageInMainThread: getUserPreference(user, 'showMessageInMainThread'),
 			autoImageLoad: getUserPreference(user, 'autoImageLoad'),
-			enableLegacyMessages: getUserPreference(user, 'enableLegacyMessages'),
+			useLegacyMessageTemplate: getUserPreference(user, 'useLegacyMessageTemplate'),
 			saveMobileBandwidth: Meteor.Device.isPhone() && getUserPreference(user, 'saveMobileBandwidth'),
 			collapseMediaByDefault: getUserPreference(user, 'collapseMediaByDefault'),
 			showreply: true,

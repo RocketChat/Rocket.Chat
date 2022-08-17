@@ -1,9 +1,8 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useRoute, useRouteParameter } from '../../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useOmnichannelRoom } from '../../../../room/contexts/RoomContext';
 import { useTabBarClose } from '../../../../room/providers/ToolboxProvider';
 import ContactEditWithData from './ContactEditWithData';

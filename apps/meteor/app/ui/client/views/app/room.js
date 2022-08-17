@@ -9,13 +9,13 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { t, getUserPreference } from '../../../../utils/client';
-import { WebRTC } from '../../../../webrtc/client';
-import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
+import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
-import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../../../client/lib/utils/messageArgs';
 import { settings } from '../../../../settings/client';
 import { callbacks } from '../../../../../lib/callbacks';
 import { hasAllPermission, hasRole } from '../../../../authorization/client';
@@ -27,6 +27,8 @@ import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomMan
 import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
 import { handleError } from '../../../../../client/lib/utils/handleError';
 import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
+import { queryClient } from '../../../../../client/lib/queryClient';
+import { call } from '../../../../../client/lib/utils/call';
 
 export const chatMessages = {};
 
@@ -160,6 +162,10 @@ export const dropzoneHelpers = {
 	},
 
 	dragAndDropLabel() {
+		const room = Rooms.findOne({ _id: this.rid });
+		if (isRoomFederated(room)) {
+			return 'FileUpload_Disabled_for_federation';
+		}
 		if (!userCanDrop(this._id)) {
 			return 'error-not-allowed';
 		}
@@ -180,7 +186,6 @@ Template.roomOld.helpers({
 		return state.get('subscribed');
 	},
 	messagesHistory() {
-		const showInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 		const { rid } = Template.instance();
 		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
@@ -191,9 +196,7 @@ Template.roomOld.helpers({
 		const query = {
 			rid,
 			_hidden: { $ne: true },
-			...(!showInMainThread && {
-				$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
-			}),
+			$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
 		};
 
 		if (hideMessagesOfType.size) {
@@ -474,11 +477,12 @@ export const dropzoneEvents = {
 		event.currentTarget.parentNode.classList.remove('over');
 
 		const e = event.originalEvent || event;
+		const room = Rooms.findOne({ _id: this.rid });
 
 		e.stopPropagation();
 		e.preventDefault();
 
-		if (!userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
+		if (isRoomFederated(room) || !userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
 			return false;
 		}
 
@@ -748,16 +752,24 @@ Meteor.startup(() => {
 			this.tabBar.close();
 		};
 
-		Meteor.call('getRoomRoles', this.data._id, function (error, results) {
-			if (error) {
+		queryClient
+			.fetchQuery({
+				queryKey: ['room', this.data._id, 'roles'],
+				queryFn: () => call('getRoomRoles', this.data._id),
+				staleTime: 15_000,
+			})
+			.then((results) => {
+				Array.from(results).forEach(({ _id, ...data }) => {
+					const {
+						rid,
+						u: { _id: uid },
+					} = data;
+					RoomRoles.upsert({ rid, 'u._id': uid }, data);
+				});
+			})
+			.catch((error) => {
 				handleError(error);
-			}
-
-			return Array.from(results).forEach((record) => {
-				delete record._id;
-				RoomRoles.upsert({ 'rid': record.rid, 'u._id': record.u._id }, record);
 			});
-		});
 
 		this.rolesObserve = RoomRoles.find({ rid: this.data._id }).observe({
 			added: (role) => {
@@ -934,16 +946,18 @@ Meteor.startup(() => {
 		}, 500);
 
 		this.autorun(() => {
-			if (rid !== Session.get('openedRoom')) {
-				return;
-			}
+			Tracker.afterFlush(() => {
+				if (rid !== Session.get('openedRoom')) {
+					return;
+				}
 
-			let room = Rooms.findOne({ _id: rid }, { fields: { t: 1 } });
+				let room = Rooms.findOne({ _id: rid }, { fields: { t: 1 } });
 
-			if (room?.t === 'l') {
-				room = Tracker.nonreactive(() => Rooms.findOne({ _id: rid }));
-				roomCoordinator.getRoomDirectives(room.t)?.openCustomProfileTab(this, room, room.v.username);
-			}
+				if (room?.t === 'l') {
+					room = Tracker.nonreactive(() => Rooms.findOne({ _id: rid }));
+					roomCoordinator.getRoomDirectives(room.t)?.openCustomProfileTab(this, room, room.v.username);
+				}
+			});
 		});
 
 		this.autorun(() => {
@@ -994,18 +1008,8 @@ Meteor.startup(() => {
 		readMessage.on(template.data._id, () => this.unreadCount.set(0));
 
 		wrapper.addEventListener('scroll', updateUnreadCount);
-		// salva a data da renderização para exibir alertas de novas mensagens
+		// save the render's date to display new messages alerts
 		$.data(this.firstNode, 'renderedAt', new Date());
-
-		const webrtc = WebRTC.getInstanceByRoomId(template.data._id);
-		if (webrtc) {
-			this.autorun(() => {
-				const remoteItems = webrtc.remoteItems.get();
-				if ((remoteItems && remoteItems.length > 0) || webrtc.localUrl.get()) {
-					return this.tabBar.openUserInfo();
-				}
-			});
-		}
 
 		callbacks.add(
 			'streamNewMessage',

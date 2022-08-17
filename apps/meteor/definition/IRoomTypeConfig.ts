@@ -48,7 +48,7 @@ export const UiTextContext = {
 export interface IRoomTypeConfig {
 	identifier: string;
 	order: number;
-	icon?: string;
+	icon?: 'hash' | 'hashtag' | 'hashtag-lock' | 'at' | 'omnichannel' | 'phone' | 'star';
 	header?: string;
 	label?: string;
 	route?: IRoomTypeRouteConfig;
@@ -70,7 +70,7 @@ export interface IRoomTypeClientDirectives {
 	getAvatarPath: (
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
-	getIcon: (room: Partial<IRoom>) => string | undefined;
+	getIcon: (room: Partial<IRoom>) => IRoomTypeConfig['icon'];
 	getUserStatus: (roomId: string) => string | undefined;
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;

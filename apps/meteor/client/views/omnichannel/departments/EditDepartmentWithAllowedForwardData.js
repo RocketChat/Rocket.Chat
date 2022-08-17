@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditDepartment from './EditDepartment';
@@ -15,7 +15,7 @@ function EditDepartmentWithAllowedForwardData({ data, ...props }) {
 		phase: allowedToForwardState,
 		error: allowedToForwardError,
 	} = useEndpointData(
-		'livechat/department.listByIds',
+		'/v1/livechat/department.listByIds',
 		useMemo(
 			() => ({
 				ids: data && data.department && data.department.departmentsAllowedToForward ? data.department.departmentsAllowedToForward : [],

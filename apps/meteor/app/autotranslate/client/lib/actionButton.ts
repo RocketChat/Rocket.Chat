@@ -6,7 +6,7 @@ import { AutoTranslate } from './autotranslate';
 import { settings } from '../../../settings/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { MessageAction } from '../../../ui-utils/client/lib/MessageAction';
-import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { Messages } from '../../../models/client';
 
 Meteor.startup(() => {
@@ -32,7 +32,7 @@ Meteor.startup(() => {
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
 				condition({ message, user }) {
-					return Boolean(message?.u && message.u._id !== user._id && isTranslatedMessage(message) && !message.translations.original);
+					return Boolean(message?.u && message.u._id !== user._id && isTranslatedMessage(message) && message.autoTranslateShowInverse);
 				},
 				order: 90,
 			});
@@ -54,7 +54,7 @@ Meteor.startup(() => {
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
 				condition({ message, user }) {
-					return Boolean(message?.u && message.u._id !== user._id && isTranslatedMessage(message) && message.translations.original);
+					return Boolean(message?.u && message.u._id !== user._id && isTranslatedMessage(message) && !message.autoTranslateShowInverse);
 				},
 				order: 90,
 			});

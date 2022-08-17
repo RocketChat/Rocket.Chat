@@ -1,12 +1,11 @@
 import _ from 'underscore';
 import type ldapjs from 'ldapjs';
-import { ILDAPEntry } from '@rocket.chat/core-typings';
-import type { IUser, IRoom, ICreatedRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
+import type { ILDAPEntry, IUser, IRoom, ICreatedRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
+import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
-import { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
+import type { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
 import { Rooms } from '../../../../app/models/server';
-import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '../../../../app/models/server/raw';
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
@@ -15,6 +14,7 @@ import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
 import { syncUserRoles } from '../syncUserRoles';
 import { Team } from '../../../../server/sdk';
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
@@ -151,7 +151,7 @@ export class LDAPEEManager extends LDAPManager {
 			filter: filter
 				.replace(/#{username}/g, username)
 				.replace(/#{groupName}/g, groupName)
-				.replace(/#{userdn}/g, dn),
+				.replace(/#{userdn}/g, dn.replace(/\\/g, '\\5c')),
 			scope: 'sub',
 		};
 
@@ -171,7 +171,7 @@ export class LDAPEEManager extends LDAPManager {
 		try {
 			return JSON.parse(json);
 		} catch (err) {
-			logger.error(`Unexpected error : ${err.message}`);
+			logger.error(`Unexpected error : ${err instanceof Error ? err.message : String(err)}`);
 		}
 	}
 
@@ -221,13 +221,16 @@ export class LDAPEEManager extends LDAPManager {
 				continue;
 			}
 
-			const userField = fieldMap[ldapField];
-			const [roleId] = userField.split(/\.(.+)/);
-			allowedRoles.push(roleId);
+			const userFields = ensureArray<string>(fieldMap[ldapField]);
 
-			if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
-				roleList.push(roleId);
-				continue;
+			for await (const userField of userFields) {
+				const [roleId] = userField.split(/\.(.+)/);
+				allowedRoles.push(roleId);
+
+				if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
+					roleList.push(roleId);
+					continue;
+				}
 			}
 		}
 
@@ -279,6 +282,8 @@ export class LDAPEEManager extends LDAPManager {
 
 		logger.debug('syncing user channels');
 		const ldapFields = Object.keys(fieldMap);
+		const channelsToAdd = new Set<string>();
+		const channelsToRemove = new Set<string>();
 
 		for await (const ldapField of ldapFields) {
 			if (!fieldMap[ldapField]) {
@@ -299,19 +304,32 @@ export class LDAPEEManager extends LDAPManager {
 						if (room.teamMain) {
 							logger.error(`Can't add user to channel ${channel} because it is a team.`);
 						} else {
-							addUserToRoom(room._id, user);
-							logger.debug(`Synced user channel ${room._id} from LDAP for ${username}`);
+							channelsToAdd.add(room._id);
 						}
 					} else if (syncUserChannelsRemove && !room.teamMain) {
-						const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
-						if (subscription) {
-							await removeUserFromRoom(room._id, user);
-						}
+						channelsToRemove.add(room._id);
 					}
 				} catch (e) {
 					logger.debug(`Failed to sync user room, user = ${username}, channel = ${channel}`);
 					logger.error(e);
 				}
+			}
+		}
+
+		for (const rid of channelsToAdd) {
+			addUserToRoom(rid, user);
+			logger.debug(`Synced user channel ${rid} from LDAP for ${username}`);
+		}
+
+		for await (const rid of channelsToRemove) {
+			if (channelsToAdd.has(rid)) {
+				return;
+			}
+
+			const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(rid, user._id);
+			if (subscription) {
+				await removeUserFromRoom(rid, user);
+				logger.debug(`Removed user ${username} from channel ${rid}`);
 			}
 		}
 	}
@@ -383,7 +401,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		const searchOptions = {
-			filter: query.replace(/#{username}/g, username).replace(/#{userdn}/g, dn),
+			filter: query.replace(/#{username}/g, username).replace(/#{userdn}/g, dn.replace(/\\/g, '\\5c')),
 			scope: ldap.options.userSearchScope || 'sub',
 			sizeLimit: ldap.options.searchSizeLimit,
 		};

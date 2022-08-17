@@ -1,8 +1,7 @@
 import { lazy, useMemo } from 'react';
+import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
 
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
-import { usePermission } from '../../../../client/contexts/AuthorizationContext';
-import { useSetting } from '../../../../client/contexts/SettingsContext';
 
 addAction('autotranslate', () => {
 	const hasPermission = usePermission('auto-translate');

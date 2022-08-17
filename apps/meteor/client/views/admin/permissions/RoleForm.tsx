@@ -1,8 +1,7 @@
 import { Box, Field, TextInput, Select, ToggleSwitch, SelectOption } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, ReactElement } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
-
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 type RoleFormProps = {
 	className?: string;

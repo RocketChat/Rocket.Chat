@@ -1,4 +1,4 @@
-FROM node:14 as build
+FROM node:14.19.3 as build
 
 WORKDIR /app
 
@@ -12,7 +12,10 @@ COPY ./.yarn/plugins .yarn/plugins
 COPY ./.yarn/releases .yarn/releases
 
 COPY ./packages/core-typings packages/core-typings
+COPY ./packages/eslint-config packages/eslint-config
 COPY ./packages/rest-typings packages/rest-typings
+COPY ./packages/model-typings packages/model-typings
+COPY ./packages/models packages/models
 
 COPY ./apps/meteor/ee/server/services apps/meteor/ee/server/services
 
@@ -23,7 +26,7 @@ COPY ./tsconfig.base.json .
 RUN yarn workspace @rocket.chat/core-typings run build \
     && yarn workspace @rocket.chat/rest-typings run build
 
-FROM node:14-alpine
+FROM node:14.19.3-alpine
 
 ARG SERVICE
 
@@ -34,6 +37,12 @@ COPY --from=build /app/packages/core-typings/dist /app/packages/core-typings/dis
 
 COPY --from=build /app/packages/rest-typings/package.json /app/packages/rest-typings/package.json
 COPY --from=build /app/packages/rest-typings/dist /app/packages/rest-typings/dist
+
+COPY --from=build /app/packages/model-typings/package.json /app/packages/model-typings/package.json
+COPY --from=build /app/packages/model-typings/dist /app/packages/model-typings/dist
+
+COPY --from=build /app/packages/models/package.json /app/packages/models/package.json
+COPY --from=build /app/packages/models/dist /app/packages/models/dist
 
 # add dist/ folder from tsc so we don't need to add all rocket.chat repo
 COPY ./apps/meteor/ee/server/services/dist ./apps/meteor/

@@ -1,17 +1,16 @@
 import { IMessage } from '@rocket.chat/core-typings';
-import React, { ReactNode, useMemo, memo, MouseEvent } from 'react';
+import { useLayout, useCurrentRoute, useRoute, useSetting } from '@rocket.chat/ui-contexts';
+import React, { ReactNode, useMemo, memo, MouseEvent, UIEvent } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
-import { useLayout } from '../../../contexts/LayoutContext';
-import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../hooks/useFormatTime';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { MessageContext } from '../contexts/MessageContext';
+import { useTabBarOpen } from './ToolboxProvider';
 
 export const MessageProvider = memo(function MessageProvider({
 	rid,
@@ -22,6 +21,7 @@ export const MessageProvider = memo(function MessageProvider({
 	broadcast?: boolean;
 	children: ReactNode;
 }) {
+	const tabBarOpen = useTabBarOpen();
 	const [routeName, params, queryStringParams] = useCurrentRoute();
 	const { isEmbedded, isMobile } = useLayout();
 	const oembedEnabled = Boolean(useSetting('API_Embed'));
@@ -35,8 +35,10 @@ export const MessageProvider = memo(function MessageProvider({
 	const dateAndTime = useFormatDateAndTime();
 	const context = useMemo(() => {
 		const openThread =
-			(tmid: string, jump?: string): (() => void) =>
-			(): void => {
+			(tmid: string, jump?: string): ((e: MouseEvent) => void) =>
+			(e: MouseEvent): void => {
+				e.stopPropagation();
+
 				router.replace(
 					{
 						...params,
@@ -73,7 +75,7 @@ export const MessageProvider = memo(function MessageProvider({
 						message: msg,
 					})
 			: (msg: IMessage) => (actionLink: string) => (): void => {
-					actionLinks.run(actionLink, msg, undefined);
+					actionLinks.run(actionLink, msg, tabBarOpen);
 			  };
 		return {
 			oembedEnabled,
@@ -83,7 +85,7 @@ export const MessageProvider = memo(function MessageProvider({
 				runActionLink,
 				openUserCard:
 					(username: string) =>
-					(e: MouseEvent<HTMLDivElement>): void => {
+					(e: UIEvent): void => {
 						openUserCard({
 							username,
 							rid,
@@ -112,7 +114,7 @@ export const MessageProvider = memo(function MessageProvider({
 				dateAndTime,
 			},
 		};
-	}, [isEmbedded, oembedEnabled, isMobile, broadcast, time, dateAndTime, router, params, rid, routeName, queryStringParams]);
+	}, [isEmbedded, oembedEnabled, isMobile, broadcast, time, dateAndTime, router, params, rid, routeName, tabBarOpen, queryStringParams]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 });

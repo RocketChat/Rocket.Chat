@@ -1,9 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { useUserId, useSetting } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ReactNode, useCallback } from 'react';
 
 import { Users } from '../../../../app/models/client';
-import { useSetting } from '../../../contexts/SettingsContext';
-import { useUserId } from '../../../contexts/UserContext';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import BlazeTemplate from '../BlazeTemplate';
 import PasswordChangeCheck from './PasswordChangeCheck';

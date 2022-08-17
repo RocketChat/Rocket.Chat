@@ -11,17 +11,13 @@ import {
 	Margins,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import Page from '../../../components/Page';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';
 
@@ -127,9 +123,9 @@ function EmailInboxForm({ id, data }) {
 
 	const close = useCallback(() => router.push({}), [router]);
 
-	const saveEmailInbox = useEndpoint('POST', 'email-inbox');
-	const deleteAction = useEndpoint('DELETE', `email-inbox/${id}`);
-	const emailAlreadyExistsAction = useEndpoint('GET', `email-inbox.search?email=${email}`);
+	const saveEmailInbox = useEndpoint('POST', '/v1/email-inbox');
+	const deleteAction = useEndpoint('DELETE', `/v1/email-inbox/${id}`);
+	const emailAlreadyExistsAction = useEndpoint('GET', '/v1/email-inbox.search');
 
 	useComponentDidUpdate(() => {
 		setEmailError(!validateEmail(email) ? t('Validate_email_address') : null);
@@ -206,7 +202,7 @@ function EmailInboxForm({ id, data }) {
 		if (!email && !validateEmail(email)) {
 			return;
 		}
-		const { emailInbox } = await emailAlreadyExistsAction();
+		const { emailInbox } = await emailAlreadyExistsAction({ email });
 
 		if (!emailInbox || (id && emailInbox._id === id)) {
 			return;
@@ -356,7 +352,7 @@ function EmailInboxForm({ id, data }) {
 							<Margins blockStart='x16'>
 								<ButtonGroup stretch w='full'>
 									{id && (
-										<Button primary danger onClick={handleDelete}>
+										<Button danger onClick={handleDelete}>
 											{t('Delete')}
 										</Button>
 									)}

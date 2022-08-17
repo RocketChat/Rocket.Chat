@@ -1,13 +1,10 @@
+import { useRouteParameter, useRoute, usePermission, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, FC } from 'react';
 
 import PageSkeleton from '../../../components/PageSkeleton';
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AppDetailsPage from './AppDetailsPage';
 import AppInstallPage from './AppInstallPage';
-import AppLogsPage from './AppLogsPage';
 import AppsPage from './AppsPage';
 import AppsProvider from './AppsProvider';
 
@@ -62,7 +59,6 @@ const AppsRoute: FC = () => {
 		<AppsProvider>
 			{((!context || context === 'installed') && <AppsPage isMarketplace={isMarketplace} />) ||
 				(id && context === 'details' && <AppDetailsPage id={id} />) ||
-				(context === 'logs' && <AppLogsPage id={id} />) ||
 				(context === 'install' && <AppInstallPage />)}
 		</AppsProvider>
 	);

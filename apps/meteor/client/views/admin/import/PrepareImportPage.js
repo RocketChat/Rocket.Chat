@@ -1,5 +1,6 @@
 import { Badge, Box, Button, ButtonGroup, Icon, Margins, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
@@ -13,9 +14,6 @@ import {
 	ImportingErrorStates,
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import Page from '../../../components/Page';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import PrepareChannels from './PrepareChannels';
 import PrepareUsers from './PrepareUsers';
 import { useErrorHandler } from './useErrorHandler';
@@ -55,9 +53,9 @@ function PrepareImportPage() {
 	const newImportRoute = useRoute('admin-import-new');
 	const importProgressRoute = useRoute('admin-import-progress');
 
-	const getImportFileData = useEndpoint('GET', 'getImportFileData');
-	const getCurrentImportOperation = useEndpoint('GET', 'getCurrentImportOperation');
-	const startImport = useEndpoint('POST', 'startImport');
+	const getImportFileData = useEndpoint('GET', '/v1/getImportFileData');
+	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
+	const startImport = useEndpoint('POST', '/v1/startImport');
 
 	useEffect(() => {
 		const streamer = new Meteor.Streamer('importers');
@@ -190,7 +188,7 @@ function PrepareImportPage() {
 		<Page>
 			<Page.Header title={t('Importing_Data')}>
 				<ButtonGroup>
-					<Button ghost onClick={handleBackToImportsButtonClick}>
+					<Button secondary onClick={handleBackToImportsButtonClick}>
 						<Icon name='back' /> {t('Back_to_imports')}
 					</Button>
 					<Button primary disabled={isImporting || handleMinimumImportData()} onClick={handleStartButtonClick}>

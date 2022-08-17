@@ -1,7 +1,7 @@
-import type { IRocketChatRecord } from "./IRocketChatRecord";
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface ICustomEmojiDescriptor extends IRocketChatRecord {
-  name: string;
-  aliases: string[];
-  extension: string;
+	name: string;
+	aliases: string;
+	extension: string;
 }

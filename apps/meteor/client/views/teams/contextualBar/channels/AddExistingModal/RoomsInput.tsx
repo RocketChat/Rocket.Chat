@@ -26,7 +26,7 @@ const useRoomsAutoComplete = (
 		}),
 		[name],
 	);
-	const { value: data } = useEndpointData('rooms.autocomplete.availableForTeams', params);
+	const { value: data } = useEndpointData('/v1/rooms.autocomplete.availableForTeams', params);
 
 	const options = useMemo<AutoCompleteProps['options']>(() => {
 		if (!data) {

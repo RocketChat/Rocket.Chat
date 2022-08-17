@@ -77,7 +77,7 @@
 							</div>
 						{{/with}}
 						<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}} {{hideUsername}} {{hideAvatar}}">
-							<ul aria-live="polite">
+							<ul class="messages-list" aria-live="polite">
 								{{#if canPreview}}
 									{{#if hasMore}}
 										<li class="load-more">
@@ -110,10 +110,10 @@
 										</li>
 									{{/if}}
 								{{/if}}
-								{{# unless $eq (preference 'enableLegacyMessages') true}}
+								{{# unless $eq (preference 'useLegacyMessageTemplate') true}}
 										{{> MessageList rid=rid }}
 								{{/unless}}
-								{{# if $eq (preference 'enableLegacyMessages') true}}
+								{{# if $eq (preference 'useLegacyMessageTemplate') true}}
 									{{# with messageContext}}
 										{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room  actions=actions subscription=subscription settings=settings u=u}}{{/each}}
 									{{/with}}

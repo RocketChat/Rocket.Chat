@@ -26,6 +26,8 @@ export type MessageAttachmentDefault = {
 
 	color?: string;
 
-	rid?: string;
 	t?: IMessage['t'];
+	translations?: {
+		[language: string]: string;
+	};
 } & MessageAttachmentBase;

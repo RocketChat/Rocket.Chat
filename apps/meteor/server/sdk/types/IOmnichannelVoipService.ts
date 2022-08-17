@@ -1,4 +1,4 @@
-import { FindOneOptions } from 'mongodb';
+import type { FindOptions } from 'mongodb';
 import type {
 	IAgentExtensionMap,
 	IRoomCreationResponse,
@@ -8,11 +8,11 @@ import type {
 	IUser,
 	IVoipExtensionWithAgentInfo,
 	ILivechatAgent,
+	VoipClientEvents,
 } from '@rocket.chat/core-typings';
-import { VoipClientEvents } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
-import { FindVoipRoomsParams } from '../../services/omnichannel-voip/internalTypes';
+import type { FindVoipRoomsParams } from '../../services/omnichannel-voip/internalTypes';
 
 export interface IOmnichannelVoipService {
 	getFreeExtensions(): Promise<string[]>;
@@ -21,10 +21,17 @@ export interface IOmnichannelVoipService {
 		guest: ILivechatVisitor,
 		agent: { agentId: string; username: string },
 		rid: string,
-		options: FindOneOptions<IVoipRoom>,
+		direction: IVoipRoom['direction'],
+		options: FindOptions<IVoipRoom>,
 	): Promise<IRoomCreationResponse>;
 	findRoom(token: string, rid: string): Promise<IVoipRoom | null>;
-	closeRoom(closer: ILivechatVisitor | ILivechatAgent, room: IVoipRoom, user: IUser, comment?: string, tags?: string[]): Promise<boolean>;
+	closeRoom(
+		closer: ILivechatVisitor | ILivechatAgent,
+		room: IVoipRoom,
+		user: IUser,
+		sysMessageId?: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
+		options?: { comment?: string | null; tags?: string[] | null },
+	): Promise<boolean>;
 	handleEvent(
 		event: VoipClientEvents,
 		room: IRoom,

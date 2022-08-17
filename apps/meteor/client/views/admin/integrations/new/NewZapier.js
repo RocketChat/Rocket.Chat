@@ -1,7 +1,6 @@
 import { Box, Skeleton, Margins } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
-
-import { useTranslation } from '../../../../contexts/TranslationContext';
 
 const blogSpotStyleScriptImport = (src) =>
 	new Promise((resolve) => {

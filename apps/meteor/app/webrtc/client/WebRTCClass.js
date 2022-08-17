@@ -9,7 +9,7 @@ import { t } from '../../utils';
 import { Notifications } from '../../notifications';
 import { settings } from '../../settings';
 import { modal } from '../../ui-utils';
-import { ChatSubscription } from '../../models';
+import { ChatSubscription } from '../../models/client';
 import { WEB_RTC_EVENTS } from '..';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 

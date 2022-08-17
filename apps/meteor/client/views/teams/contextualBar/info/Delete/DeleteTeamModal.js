@@ -1,7 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useCallback } from 'react';
 
-import { StepOne, StepTwo } from '.';
+import StepOne from './StepOne';
+import StepTwo from './StepTwo';
 
 const STEPS = { LIST_ROOMS: 'LIST_ROOMS', CONFIRM_DELETE: 'CONFIRM_DELETE' };
 
