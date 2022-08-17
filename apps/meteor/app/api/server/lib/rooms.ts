@@ -1,4 +1,4 @@
-import { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -31,7 +31,7 @@ export async function findAdminRooms({
 	const typesToRemove = ['discussions', 'teams'];
 	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
 	const options = {
-		fields: adminFields,
+		projection: adminFields,
 		sort: sort || { default: -1, name: 1 },
 		skip: offset,
 		limit: count,
@@ -63,14 +63,14 @@ export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }):
 		throw new Error('error-not-authorized');
 	}
 
-	return Rooms.findOneById(rid, { fields: adminFields });
+	return Rooms.findOneById(rid, { projection: adminFields });
 }
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<{
 	items: IRoom[];
 }> {
 	const options = {
-		fields: {
+		projection: {
 			_id: 1,
 			fname: 1,
 			name: 1,
@@ -101,7 +101,7 @@ export async function findAdminRoomsAutocomplete({ uid, selector }: { uid: strin
 		throw new Error('error-not-authorized');
 	}
 	const options = {
-		fields: {
+		projection: {
 			_id: 1,
 			fname: 1,
 			name: 1,
@@ -138,7 +138,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 		.map((item: Pick<ISubscription, 'rid'>) => item.rid);
 
 	const options = {
-		fields: {
+		projection: {
 			_id: 1,
 			fname: 1,
 			name: 1,
@@ -164,7 +164,7 @@ export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; n
 	items: IRoom[];
 }> {
 	const options = {
-		fields: {
+		projection: {
 			_id: 1,
 			fname: 1,
 			name: 1,

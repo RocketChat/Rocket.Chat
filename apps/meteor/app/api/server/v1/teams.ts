@@ -11,11 +11,12 @@ import {
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
 } from '@rocket.chat/rest-typings';
-import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { ITeam } from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { Users } from '../../../models/server';
-import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { Rooms, Users } from '../../../models/server';
+import { canAccessRoom, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { Team } from '../../../../server/sdk';
 import { API } from '../api';
 
@@ -573,6 +574,18 @@ API.v1.addRoute(
 			const teamInfo = await getTeamByIdOrName(this.queryParams);
 			if (!teamInfo) {
 				return API.v1.failure('Team not found');
+			}
+
+			const room = Rooms.findOneById(teamInfo.roomId);
+
+			if (!room) {
+				return API.v1.failure('Room not found');
+			}
+
+			const canViewInfo = canAccessRoom(room, { _id: this.userId }) || hasPermission(this.userId, 'view-all-teams');
+
+			if (!canViewInfo) {
+				return API.v1.unauthorized();
 			}
 
 			return API.v1.success({ teamInfo });

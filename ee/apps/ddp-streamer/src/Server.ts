@@ -6,8 +6,8 @@ import { v1 as uuidv1 } from 'uuid';
 
 import { DDP_EVENTS } from './constants';
 import { Publication } from './Publication';
-import { Client } from './Client';
-import { IPacket } from './types/IPacket';
+import type { Client } from './Client';
+import type { IPacket } from './types/IPacket';
 import { MeteorService } from '../../../../apps/meteor/server/sdk';
 import { isMeteorError, MeteorError } from '../../../../apps/meteor/server/sdk/errors';
 import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
@@ -32,7 +32,6 @@ const handleInternalException = (err: unknown, msg: string): MeteorError => {
 	return new MeteorError(500, 'Internal server error');
 };
 
-// eslint-disable-next-line @typescript-eslint/camelcase
 export const SERVER_ID = ejson.stringify({ server_id: '0' });
 
 export class Server extends EventEmitter {

@@ -84,10 +84,10 @@ const ThreadComponent: FC<{
 				}
 
 				await unfollowMessage({ mid });
-			} catch (error) {
+			} catch (error: unknown) {
 				dispatchToastMessage({
 					type: 'error',
-					message: error instanceof Error ? error : String(error),
+					message: error,
 				});
 			}
 		},

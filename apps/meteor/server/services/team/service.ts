@@ -1,7 +1,17 @@
-import { FindOptions, Filter } from 'mongodb';
+import type { FindOptions, Filter } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
-import { IPaginationOptions, IQueryOptions, IRecordsWithTotal, ITeam, ITeamMember, ITeamStats, TEAM_TYPE } from '@rocket.chat/core-typings';
+import type {
+	IRoom,
+	IUser,
+	ISubscription,
+	IPaginationOptions,
+	IQueryOptions,
+	IRecordsWithTotal,
+	ITeam,
+	ITeamMember,
+	ITeamStats,
+} from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 
@@ -11,7 +21,7 @@ import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUser
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { Messages } from '../../../app/models/server';
 import { Room, Authorization } from '../../sdk';
-import {
+import type {
 	IListRoomsFilter,
 	ITeamAutocompleteResult,
 	ITeamCreateParams,
@@ -755,20 +765,25 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			}
 
 			const existingMember = await TeamMember.findOneByUserIdAndTeamId(member.userId, team._id);
-			if (!existingMember) {
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(team.roomId, member.userId);
+
+			if (!existingMember && !subscription) {
 				throw new Error('member-does-not-exist');
 			}
 
-			if (existingMember.roles?.includes('owner')) {
-				const owners = TeamMember.findByTeamIdAndRole(team._id, 'owner');
-				const totalOwners = await owners.count();
-				if (totalOwners === 1) {
-					throw new Error('last-owner-can-not-be-removed');
+			if (existingMember) {
+				if (existingMember.roles?.includes('owner')) {
+					const owners = TeamMember.findByTeamIdAndRole(team._id, 'owner');
+					const totalOwners = await owners.count();
+					if (totalOwners === 1) {
+						throw new Error('last-owner-can-not-be-removed');
+					}
 				}
+
+				TeamMember.removeById(existingMember._id);
 			}
 
-			TeamMember.removeById(existingMember._id);
-			const removedUser = usersToRemove.find((u) => u._id === existingMember.userId);
+			const removedUser = usersToRemove.find((u) => u._id === (existingMember || member).userId);
 			if (removedUser) {
 				await removeUserFromRoom(
 					team.roomId,

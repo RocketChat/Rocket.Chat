@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Modal, Select, Field, FieldGroup } from '@rocket.chat/fuselage';
+import { Button, Modal, Select, Field, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useState, useMemo } from 'react';
@@ -26,7 +26,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 		try {
 			await assignAgent({ username: agent, extension });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: (error as Error).message });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 		reload();
 		closeModal();
@@ -64,12 +64,12 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={closeModal}>{t('Cancel')}</Button>
 					<Button primary disabled={!agent || !extension} onClick={handleAssignment}>
 						{t('Associate')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

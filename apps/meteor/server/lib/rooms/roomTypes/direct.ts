@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { IRoom, AtLeast, isRoomFederated } from '@rocket.chat/core-typings';
+import type { IRoom, AtLeast } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
@@ -40,7 +41,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 	allowMemberAction(room: IRoom, action) {
 		if (isRoomFederated(room)) {
-			return Federation.federationActionAllowed(action);
+			return Federation.actionAllowed(room, action);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:

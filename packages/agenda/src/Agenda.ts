@@ -122,9 +122,9 @@ export class Agenda extends EventEmitter {
 
 		if (config.mongo) {
 			this.mongo(config.mongo, config.db ? config.db.collection : undefined, cb);
-			// @ts-expect-error
+			// @ts-ignore
 			if (config.mongo.s && config.mongo.topology && config.mongo.topology.s) {
-				// @ts-expect-error
+				// @ts-ignore
 				this._mongoUseUnifiedTopology = Boolean(config.mongo?.topology?.s?.options?.useUnifiedTopology);
 			}
 		} else if (config.db) {
@@ -338,7 +338,7 @@ export class Agenda extends EventEmitter {
 
 	private async _createScheduledJob(when: string | Date, name: string, data: IJob['data']): Promise<Job> {
 		const job = this.create(name, data);
-		job.schedule(when).save();
+		await job.schedule(when).save();
 		return job;
 	}
 
@@ -597,7 +597,7 @@ export class Agenda extends EventEmitter {
 
 		// Don't try and access MongoDB if we've lost connection to it.
 		// @ts-ignore
-		const s = this._mdb.s || this._mdb.db.s;
+		const s = this._mdb.s.client || this._mdb.db.s.client;
 		if (s.topology.connections && s.topology.connections().length === 0 && !this._mongoUseUnifiedTopology) {
 			if (s.topology.autoReconnect && !s.topology.isDestroyed()) {
 				// Continue processing but notify that Agenda has lost the connection
