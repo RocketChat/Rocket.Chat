@@ -1,5 +1,4 @@
 import Clipboard from 'clipboard';
-import type { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -20,11 +19,7 @@ import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmb
 import { onClientBeforeSendMessage } from '../../../../../../client/lib/onClientBeforeSendMessage';
 import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
 import { mountPopover } from './mountPopover';
-
-type CommonRoomTemplateInstance = Blaze.TemplateInstance<{
-	rid: string;
-	tabBar: any;
-}>;
+import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
 
 const createMessageTouchEvents = () => {
 	let touchMoved = false;
@@ -108,8 +103,8 @@ const createMessageTouchEvents = () => {
 
 function handleMessageActionButtonClick(this: unknown, event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
 	const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
-	// @ts-ignore
-	button?.action.call(this, event, { tabBar: template.tabBar, rid: template.data.rid });
+	// @ ts-ignore
+	button?.action.call(this, event, { tabbar: template.tabBar });
 }
 
 function handleFollowThreadButtonClick(this: unknown, e: JQuery.ClickEvent) {
@@ -243,8 +238,7 @@ function handleMessageActionMenuClick(this: unknown, e: JQuery.ClickEvent, templ
 		type: 'message-action',
 		id: item.id,
 		modifier: item.color,
-		// @ts-ignore
-		action: () => item.action(e, { tabbar: template.tabbar, message, room }),
+		action: () => item.action(e, { tabbar: template.tabBar, message, room }),
 	}));
 
 	const itemsBelowDivider = ['delete-message', 'report-message'];

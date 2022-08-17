@@ -6,7 +6,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import type { IEditedMessage, IMessage } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { ChatMessage, RoomRoles, Subscriptions, Rooms } from '../../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../../ui-utils/client';
@@ -42,7 +42,7 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 	this.userDetail = new ReactiveVar('');
 	const user = Meteor.user();
 	this.autorun((c) => {
-		const room = Rooms.findOne(
+		const room: IRoom = Rooms.findOne(
 			{ _id: rid },
 			{
 				fields: {
@@ -82,18 +82,13 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 		});
 	});
 
-	this.showUsersOffline = new ReactiveVar(false);
 	this.atBottom = !FlowRouter.getQueryParam('msg');
 	this.unreadCount = new ReactiveVar(0);
 
 	this.selectable = new ReactiveVar(false);
 	this.selectedMessages = [];
 	this.selectedRange = [];
-	this.selectablePointer = null;
-
-	this.flexTemplate = new ReactiveVar(null);
-
-	this.groupDetail = new ReactiveVar(null);
+	this.selectablePointer = undefined;
 
 	this.hideLeaderHeader = new ReactiveVar(false);
 
@@ -102,14 +97,14 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 		$('.messages-box .message.selected').removeClass('selected');
 		this.selectedMessages = [];
 		this.selectedRange = [];
-		this.selectablePointer = null;
+		this.selectablePointer = undefined;
 	};
 
 	this.selectMessages = (to) => {
 		if (this.selectablePointer === to && this.selectedRange.length > 0) {
 			this.selectedRange = [];
 		} else {
-			const message1 = ChatMessage.findOne(this.selectablePointer!);
+			const message1 = ChatMessage.findOne(this.selectablePointer);
 			const message2 = ChatMessage.findOne(to);
 
 			const minTs = _.min([message1.ts, message2.ts]);
@@ -137,12 +132,6 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 		}
 
 		return previewMessages;
-	};
-
-	this.clearUserDetail = () => {
-		this.userDetail.set(null);
-		this.tabBar.setData({});
-		this.tabBar.close();
 	};
 
 	queryClient
