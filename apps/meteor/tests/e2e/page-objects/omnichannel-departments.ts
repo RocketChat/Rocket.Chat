@@ -40,6 +40,10 @@ export class OmnichannelDepartments {
 		return this.page.locator('[data-qa="DepartmentEditTextInput-ConversationClosingTags"]');
 	}
 
+	get invalidInputTags() {
+		return this.page.locator('[data-qa="DepartmentEditTextInput-ConversationClosingTags"]:invalid');
+	}
+
 	get btnTagsAdd() {
 		return this.page.locator('[data-qa="DepartmentEditAddButton-ConversationClosingTags"]');
 	}
