@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import type { Icon } from '@rocket.chat/fuselage';
-import type { IMessage, IUser, ISubscription, IRoom, SettingValue } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
@@ -13,7 +13,7 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ToolboxContextValue } from '../../../../client/views/room/lib/Toolbox/ToolboxContext';
 import { APIClient } from '../../../utils/client';
 
-const getMessage = async (msgId: string): Promise<any> => {
+const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
 	try {
 		const { message } = await APIClient.get('/v1/chat.getMessage', { msgId });
 		return message;
