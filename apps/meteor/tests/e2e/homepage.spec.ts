@@ -11,85 +11,108 @@ const CardIds = {
 	Docs: 'homepage-documentation-card',
 };
 
-const expectCardsToExist = (page: Page, dataQaIds: string[]): void => {
-	dataQaIds.forEach((id) => {
-		expect(page.locator(`[data-qa-id="${id}"]`)).toBeVisible();
-	});
-};
+test.describe('Homepage', () => {
+	test.describe('Admin visualization', () => {
+		test.use({ storageState: 'admin-session.json' });
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/home');
+		});
 
-const EDIT_LAYOUT_PERMISSIONS = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
-
-const CARDS_PERMS = ['create-c', 'create-p', 'view-user-administration'];
-
-test.use({ storageState: 'admin-session.json' });
-
-test.describe.serial('homepage', () => {
-	let regularUserPage: Page;
-
-	test.beforeAll(async ({ browser }) => {
-		regularUserPage = await browser.newPage({ storageState: 'user2-session.json' });
-		await regularUserPage.goto('/home');
-		await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
+		test('expect show customize button if permission granted', async ({ page }) => {
+			expect(page.locator('[data-qa-id="home-header-customize-button"]')).toBeVisible();
+		});
+		test('expect show Cards all the cards for admins', async ({ page }) => {
+			Object.values(CardIds).forEach((id) => {
+				expect(page.locator(`[data-qa-id="${id}"]`)).toBeVisible();
+			});
+		});
 	});
 
-	test('expect show customize button if permission granted', async ({ api }) => {
-		expect(
-			(
-				await api.post('/permissions.update', { permissions: EDIT_LAYOUT_PERMISSIONS.map((_id) => ({ _id, roles: ['admin', 'user'] })) })
-			).status(),
-		).toBe(200);
+	test.describe('Regular visualization', () => {
+		test.use({ storageState: 'user2-session.json' });
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/home');
+		});
 
-		expect(regularUserPage.locator('[data-qa-id="home-header-customize-button"]')).toBeVisible();
+		test('expect to not be able to customize ', async ({ page }) => {
+			expect(page.locator('[data-qa-id="home-header-customize-button"]')).not.toBeVisible();
+		});
 
-		expect(
-			(await api.post('/permissions.update', { permissions: EDIT_LAYOUT_PERMISSIONS.map((_id) => ({ _id, roles: ['admin'] })) })).status(),
-		).toBe(200);
+		test('expect to not be able to add users', async ({ page }) => {
+			expect(page.locator(`[data-qa-id=homepage-add-users-card]`)).toBeVisible();
+		});
 
-		expect(regularUserPage.locator('[data-qa-id="home-header-customize-button"]')).not.toBeVisible();
+		Object.values(CardIds)
+			.filter((id) => id !== CardIds.Users)
+			.forEach((id) => {
+				test(`expect to not be able to see ${id} card`, async ({ page }) => {
+					expect(page.locator(`[data-qa-id="${id}"]`)).toBeVisible();
+				});
+			});
+
+		test('expect header text to have title', async ({ page }) => {
+			expect(page.locator('[data-qa-type="PageHeader-title"]')).toBeVisible();
+		});
+
+		test('expect header text to have welcome text', async ({ page }) => {
+			expect(page.locator('[data-qa-id="homepage-welcome-text"]')).toBeVisible();
+		});
 	});
 
-	test('expect not show Cards that need special permissions', async ({ api }) => {
-		expect(
-			(await api.post('/permissions.update', { permissions: CARDS_PERMS.map((_id) => ({ _id, roles: ['admin', 'user'] })) })).status(),
-		).toBe(200);
+	test.describe('Default Values', () => {
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/home');
+			await page.waitForSelector('data-qa="page-home"');
+		});
 
-		expectCardsToExist(regularUserPage, Object.values(CardIds));
+		test('expect welcome text to be Rocket.Chat', async ({ page }) => {
+			expect(page.locator('[data-qa-id="homepage-welcome-text"]')).toContainText('Rocket.Chat');
+		});
 
-		expect((await api.post('/permissions.update', { permissions: CARDS_PERMS.map((_id) => ({ _id, roles: ['admin'] })) })).status()).toBe(
-			200,
-		);
-
-		expectCardsToExist(regularUserPage, [CardIds.Desktop, CardIds.Docs, CardIds.Mobile, CardIds.Rooms]);
-
-		expect(regularUserPage.locator(`[data-qa-id="${CardIds.Users}"]`)).not.toBeVisible();
-
-		expect(regularUserPage.locator(`[data-qa-id="${CardIds.Chan}"]`)).not.toBeVisible();
+		test('expect header text to be Home', async ({ page }) => {
+			expect(page.locator('[data-qa-type="PageHeader-title"]')).toContainText('Home');
+		});
 	});
 
-	test('expect welcome text to use Site Name setting', async ({ api }) => {
-		expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).toContainText('Rocket.Chat');
+	test.describe('Customization', () => {
+		let regularUserPage: Page;
+		test.beforeAll(async ({ api }) => {
+			expect((await api.post('/settings/Site_Name', { value: 'NewSiteName' })).status()).toBe(200);
+			expect((await api.post('/settings/Layout_Home_Title', { value: 'NewTitle' })).status()).toBe(200);
+		});
 
-		expect((await api.post('/settings/Site_Name', { value: 'NewSiteName' })).status()).toBe(200);
+		test.beforeAll(async ({ browser }) => {
+			regularUserPage = await browser.newPage({ storageState: 'user2-session.json' });
+			await regularUserPage.goto('/home');
+			await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
+		});
 
-		expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).toContainText('NewSiteName');
+		test('expect welcome text to use Site Name setting', async () => {
+			expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).toContainText('NewSiteName');
+		});
+
+		test('expect header text to use Layout Home Title setting', async () => {
+			expect(regularUserPage.locator('[data-qa-type="PageHeader-title"]')).toContainText('NewTitle');
+		});
 	});
 
-	test('expect header text to use Home Title setting', async ({ api }) => {
-		expect(regularUserPage.locator('[data-qa-type="PageHeader-title"]')).toContainText('Home');
+	test.describe('Custom Body', () => {
+		let regularUserPage: Page;
+		test.beforeAll(async ({ api }) => {
+			expect((await api.post('/settings/Layout_Custom_Body', { value: true })).status()).toBe(200);
+			expect((await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello</span>' })).status()).toBe(
+				200,
+			);
+		});
 
-		expect((await api.post('/settings/Layout_Home_Title', { value: 'NewTitle' })).status()).toBe(200);
+		test.beforeAll(async ({ browser }) => {
+			regularUserPage = await browser.newPage({ storageState: 'user2-session.json' });
+			await regularUserPage.goto('/home');
+			await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
+		});
 
-		expect(regularUserPage.locator('[data-qa-type="PageHeader-title"]')).toContainText('NewTitle');
-	});
-
-	test('expect switch to custom homepage and display custom text', async ({ api }) => {
-		expect((await api.post('/settings/Layout_Custom_Body', { value: true })).status()).toBe(200);
-		expect((await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello</span>' })).status()).toBe(
-			200,
-		);
-
-		await regularUserPage.goto('/home');
-
-		expect(regularUserPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello');
+		test('expect switch to custom homepage and display custom text', async () => {
+			expect(regularUserPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello');
+		});
 	});
 });
