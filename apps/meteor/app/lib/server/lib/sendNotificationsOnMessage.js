@@ -372,9 +372,7 @@ export async function sendAllNotifications(message, room) {
 			}),
 		)
 			.then((users) => {
-				const subscriptions = Subscriptions.findByRoomIdAndUserIds(room._id, users, {
-					fields: { 'u._id': 1 },
-				});
+				const subscriptions = Subscriptions.findByRoomIdAndUserIds(room._id, users);
 				users.forEach((userId) => {
 					const subscription = subscriptions.find((subscription) => subscription.u._id === userId);
 

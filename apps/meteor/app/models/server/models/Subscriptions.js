@@ -28,7 +28,6 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ desktopNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ mobilePushNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ emailNotifications: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ audioNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ autoTranslate: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ autoTranslateLanguage: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ prid: 1 });
