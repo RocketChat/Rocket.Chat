@@ -66,8 +66,7 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	setState(nextState: OtrRoomState): void {
-		const currentState = this.getState();
-		if (currentState === nextState) {
+		if (this.getState() === nextState) {
 			return;
 		}
 
@@ -245,7 +244,6 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	async onUserStream(type: string, data: IOnUserStreamData): Promise<void> {
-		console.log({ type, data });
 		switch (type) {
 			case 'handshake':
 				let timeout = 0;
@@ -344,7 +342,6 @@ export class OTRRoom implements IOTRRoom {
 
 			case 'end':
 				try {
-					console.log('here');
 					const obj = await Presence.get(this.peerId);
 					if (!obj?.username) {
 						throw new Meteor.Error('user-not-defined', 'User not defined.');
