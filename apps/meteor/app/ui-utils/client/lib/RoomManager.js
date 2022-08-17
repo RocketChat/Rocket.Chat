@@ -119,8 +119,8 @@ export const RoomManager = new (function () {
 											}
 										}
 
-									  msg.name = room.name || '';
-									  Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+										msg.name = room.name || '';
+										Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 										handleTrackSettingsChange(msg);
 
