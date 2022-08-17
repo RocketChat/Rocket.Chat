@@ -39,7 +39,11 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 			fileData.append('asset', blob, asset);
 			fileData.append('assetName', asset);
 
-			await setAsset(fileData);
+			try {
+				await setAsset(fileData);
+			} catch (e) {
+				dispatchToastMessage({ type: 'error', message: e });
+			}
 		});
 	};
 
@@ -47,7 +51,7 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 		try {
 			await unsetAsset({ assetName: asset });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
