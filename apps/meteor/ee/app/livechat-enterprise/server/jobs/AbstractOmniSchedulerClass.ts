@@ -1,6 +1,6 @@
 import { Agenda } from '@rocket.chat/agenda';
 import { MongoInternals } from 'meteor/mongo';
-import type { Collection } from 'mongodb';
+import type { CreateIndexesOptions, Db, IndexSpecification } from 'mongodb';
 
 import { schedulerLogger } from '../lib/logger';
 
@@ -9,9 +9,13 @@ const SCHEDULER_NAME = 'omnichannel_scheduler';
 export abstract class AbstractOmniSchedulerClass {
 	scheduler: Agenda;
 
+	logger = schedulerLogger;
+
+	db: Db;
+
 	abstract createJobDefinition(): void;
 
-	abstract createIndexes(collection: Collection): void;
+	abstract getIndexesForDB(): { indexSpec: IndexSpecification; options?: CreateIndexesOptions }[];
 
 	protected constructor() {
 		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
@@ -22,23 +26,36 @@ export abstract class AbstractOmniSchedulerClass {
 			defaultConcurrency: 1,
 		});
 
+		this.db = db;
+
 		this.scheduler.on('ready', async () =>
 			this.scheduler.start().then(() => {
-				schedulerLogger.info(`${SCHEDULER_NAME} started`);
+				this.logger.info(`${SCHEDULER_NAME} started`);
 			}),
 		);
 
 		process.on('SIGINT', () => {
-			schedulerLogger.info(`SIGINT received. Stopping ${SCHEDULER_NAME}...`);
+			this.logger.info(`SIGINT received. Stopping ${SCHEDULER_NAME}...`);
 			this.scheduler.stop();
 		});
 		process.on('SIGTERM', () => {
-			schedulerLogger.info(`SIGTERM received. Stopping ${SCHEDULER_NAME}...`);
+			this.logger.info(`SIGTERM received. Stopping ${SCHEDULER_NAME}...`);
 			this.scheduler.stop();
 		});
+	}
 
+	public async init() {
+		this.logger.info(`Initializing ${SCHEDULER_NAME}...`);
 		this.createJobDefinition();
-
-		this.createIndexes(db.collection(SCHEDULER_NAME));
+		this.logger.info(`${SCHEDULER_NAME} initialized. Creating indexes now...`);
+		const indexes = this.getIndexesForDB();
+		for await (const { indexSpec, options } of indexes) {
+			if (options) {
+				await this.db.collection(SCHEDULER_NAME).createIndex(indexSpec, options);
+			} else {
+				await this.db.collection(SCHEDULER_NAME).createIndex(indexSpec);
+			}
+		}
+		this.logger.info(`${SCHEDULER_NAME} indexes created.`);
 	}
 }
