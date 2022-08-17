@@ -41,13 +41,13 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 		return guestManager;
 	}
 
+	if (!lastChattedAgentPreferred) {
+		return defaultAgent;
+	}
+
 	const guestAgent = getDefaultAgent(lastAgent?.username);
 	if (guestAgent) {
 		return guestAgent;
-	}
-
-	if (!lastChattedAgentPreferred) {
-		return defaultAgent;
 	}
 
 	const room = LivechatRooms.findOneLastServedAndClosedByVisitorToken(token, {
