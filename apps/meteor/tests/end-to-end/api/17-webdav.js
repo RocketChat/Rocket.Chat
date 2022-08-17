@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { findWebdavAccountsByUserId } from '../../../app/api/server/lib/webdav';
 
 describe('[Webdav]', function () {
 	this.retries(0);
