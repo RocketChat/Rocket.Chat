@@ -23,8 +23,6 @@ describe('[Webdav]', function () {
 	});
 
 	describe('/webdav.removeWebdavAccount', () => {
-		const accountId = findWebdavAccountsByUserId({ uid: credentials['X-User-Id'] })[0].username;
-
 		it('should return an error when send an invalid request', (done) => {
 			request
 				.post(api('webdav.removeWebdavAccount'))
