@@ -195,9 +195,8 @@ class RocketChatAssetsClass {
 
 		const extension = getExtension(contentType);
 		if (assetInstance.constraints.extensions.includes(extension) === false) {
-			throw new Meteor.Error(contentType, `Invalid file type: ${contentType}`, {
+			throw new Meteor.Error('error-invalid-file-type', `Invalid file type: ${contentType}`, {
 				function: 'RocketChat.Assets.setAsset',
-				errorTitle: 'error-invalid-file-type',
 			});
 		}
 
