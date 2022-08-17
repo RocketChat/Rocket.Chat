@@ -1555,8 +1555,11 @@ settingsRegistry.addGroup('Layout', function () {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Layout_Custom_Body', false, {
+		this.add('Layout_Custom_Body_Only', false, {
+			i18nDescription: 'Layout_Custom_Body_Only_description',
 			type: 'boolean',
+			invalidValue: false,
+			enterprise: true,
 			public: true,
 		});
 		this.add(
