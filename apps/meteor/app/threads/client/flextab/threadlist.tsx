@@ -1,6 +1,8 @@
-import React, { useMemo, lazy, LazyExoticComponent, FC, ReactNode } from 'react';
-import { BadgeProps } from '@rocket.chat/fuselage';
-import { IRoom, isRoomFederated, ISubscription } from '@rocket.chat/core-typings';
+import type { LazyExoticComponent, FC, ReactNode } from 'react';
+import React, { useMemo, lazy } from 'react';
+import type { BadgeProps } from '@rocket.chat/fuselage';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
@@ -26,15 +28,17 @@ addAction('thread', (options) => {
 		() =>
 			threadsEnabled
 				? {
-						'groups': ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-						'id': 'thread',
-						'full': true,
-						'title': 'Threads',
-						'icon': 'thread',
+						groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+						id: 'thread',
+						full: true,
+						title: 'Threads',
+						icon: 'thread',
 						template,
-						'data-tooltip': 'Threads_unavailable_for_federation',
-						'disabled': federated,
-						'renderAction': (props): ReactNode => {
+						...(federated && {
+							'data-tooltip': 'Threads_unavailable_for_federation',
+							'disabled': true,
+						}),
+						renderAction: (props): ReactNode => {
 							const tunread = room.tunread?.length || 0;
 							const tunreadUser = room.tunreadUser?.length || 0;
 							const tunreadGroup = room.tunreadGroup?.length || 0;
@@ -46,7 +50,7 @@ addAction('thread', (options) => {
 								</Header.ToolBoxAction>
 							);
 						},
-						'order': 2,
+						order: 2,
 				  }
 				: null,
 		[threadsEnabled, room.tunread?.length, room.tunreadUser?.length, room.tunreadGroup?.length, federated],

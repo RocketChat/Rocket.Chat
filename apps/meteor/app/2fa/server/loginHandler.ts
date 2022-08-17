@@ -29,10 +29,8 @@ callbacks.add(
 		if (login.type === 'resume' || login.type === 'proxy' || login.methodName === 'verifyEmail') {
 			return login;
 		}
-
-		const [loginArgs] = login.methodArguments;
 		// CAS login doesn't yet support 2FA.
-		if (loginArgs.cas) {
+		if (login.type === 'cas') {
 			return login;
 		}
 
@@ -40,6 +38,7 @@ callbacks.add(
 			return login;
 		}
 
+		const [loginArgs] = login.methodArguments;
 		const { totp } = loginArgs;
 
 		checkCodeForUser({

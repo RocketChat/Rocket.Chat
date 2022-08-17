@@ -23,7 +23,6 @@ import GenericModal from '../../../../client/components/GenericModal';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
 import {
@@ -293,7 +292,7 @@ export class ChatMessages {
 				await this.processMessageSend(message);
 				this.$input.removeData('reply').trigger('dataChange');
 			} catch (error) {
-				handleError(error);
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			return done();
 		}
@@ -312,7 +311,7 @@ export class ChatMessages {
 				this.confirmDeleteMsg(message, done);
 				return;
 			} catch (error) {
-				handleError(error);
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 		}
 

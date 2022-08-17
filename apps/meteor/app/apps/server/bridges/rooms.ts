@@ -1,11 +1,12 @@
-import { RoomType, IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
-import { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { Meteor } from 'meteor/meteor';
 import type { ISubscription } from '@rocket.chat/core-typings';
 
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 
@@ -93,12 +94,7 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
 		this.orch.debugLog(`The App ${appId} is getting the room's members by room id: "${roomId}"`);
 		const subscriptions = await Subscriptions.findByRoomId(roomId, {});
-		return subscriptions.map((sub: ISubscription) =>
-			this.orch
-				.getConverters()
-				?.get('users')
-				.convertById(sub.u && sub.u._id),
-		);
+		return subscriptions.map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u?._id));
 	}
 
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
@@ -159,7 +155,7 @@ export class AppRoomBridge extends RoomBridge {
 
 		const discussion = {
 			prid: rcRoom.prid,
-			t_name: rcRoom.fname, // eslint-disable-line @typescript-eslint/camelcase
+			t_name: rcRoom.fname,
 			pmid: rcMessage ? rcMessage._id : undefined,
 			reply: reply && reply.trim() !== '' ? reply : undefined,
 			users: members.length > 0 ? members : [],

@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users } from '@rocket.chat/models';
 
-import { hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 /**
  * @param {IRole['_id']} role the role id
@@ -17,7 +17,7 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 		});
 	}
 
-	const cursor = await Users.findUsersInRolesWithQuery(role, query, {
+	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery(role, query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
@@ -31,9 +31,7 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 		},
 	});
 
-	const total = await cursor.count();
-
-	const users = await cursor.toArray();
+	const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		users,
@@ -43,7 +41,7 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 	};
 }
 export async function findAgents({ userId, text, pagination: { offset, count, sort } }) {
-	if (!(await hasAllPermissionAsync(userId, ['view-l-room', 'transfer-livechat-guest']))) {
+	if (!(await hasAtLeastOnePermissionAsync(userId, ['manage-livechat-agents', 'transfer-livechat-guest', 'edit-omnichannel-contact']))) {
 		throw new Error('error-not-authorized');
 	}
 

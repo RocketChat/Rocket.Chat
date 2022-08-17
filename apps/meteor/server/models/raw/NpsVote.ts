@@ -1,44 +1,52 @@
-import { INpsVote, INpsVoteStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { INpsVote, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { INpsVoteModel } from '@rocket.chat/model-typings';
-import type { Collection, Cursor, Db, FindOneOptions, IndexSpecification, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Collection, FindCursor, Db, Document, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
+import { INpsVoteStatus } from '@rocket.chat/core-typings';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INpsVote>>) {
-		super(db, getCollectionName('nps_vote'), trash);
+		super(db, 'nps_vote', trash);
 	}
 
-	modelIndexes(): IndexSpecification[] {
+	modelIndexes(): IndexDescription[] {
 		return [{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 }, unique: true }];
 	}
 
-	findNotSentByNpsId(npsId: string, options?: WithoutProjection<FindOneOptions<INpsVote>>): Cursor<INpsVote> {
+	findNotSentByNpsId(npsId: string, options?: Omit<FindOptions<INpsVote>, 'sort' | 'limit'>): FindCursor<INpsVote> {
 		const query = {
 			npsId,
 			status: INpsVoteStatus.NEW,
 		};
-		return this.col.find(query, options).sort({ ts: 1 }).limit(1000);
+		const cursor = options ? this.find(query, options) : this.find(query);
+
+		return cursor.sort({ ts: 1 }).limit(1000);
 	}
 
-	findByNpsIdAndStatus(npsId: string, status: INpsVoteStatus, options?: WithoutProjection<FindOneOptions<INpsVote>>): Cursor<INpsVote> {
+	findByNpsIdAndStatus(npsId: string, status: INpsVoteStatus, options?: FindOptions<INpsVote>): FindCursor<INpsVote> {
 		const query = {
 			npsId,
 			status,
 		};
-		return this.col.find(query, options);
+		if (options) {
+			return this.find(query, options);
+		}
+		return this.find(query);
 	}
 
-	findByNpsId(npsId: string, options?: WithoutProjection<FindOneOptions<INpsVote>>): Cursor<INpsVote> {
+	findByNpsId(npsId: string, options?: FindOptions<INpsVote>): FindCursor<INpsVote> {
 		const query = {
 			npsId,
 		};
-		return this.col.find(query, options);
+		if (options) {
+			return this.find(query, options);
+		}
+		return this.find(query);
 	}
 
-	save(vote: Omit<INpsVote, '_id' | '_updatedAt'>): Promise<UpdateWriteOpResult> {
+	save(vote: Omit<INpsVote, '_id' | '_updatedAt'>): Promise<UpdateResult> {
 		const { npsId, identifier } = vote;
 
 		const query = {
@@ -51,14 +59,14 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 				_updatedAt: new Date(),
 			},
 			$setOnInsert: {
-				_id: new ObjectId().toHexString(),
+				_id: new ObjectId().toHexString(), // TODO this should be done by BaseRaw
 			},
 		};
 
-		return this.col.updateOne(query, update, { upsert: true });
+		return this.updateOne(query, update, { upsert: true });
 	}
 
-	updateVotesToSent(voteIds: string[]): Promise<UpdateWriteOpResult> {
+	updateVotesToSent(voteIds: string[]): Promise<UpdateResult | Document> {
 		const query = {
 			_id: { $in: voteIds },
 		};
@@ -67,10 +75,10 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 				status: INpsVoteStatus.SENT,
 			},
 		};
-		return this.col.updateMany(query, update);
+		return this.updateMany(query, update);
 	}
 
-	updateOldSendingToNewByNpsId(npsId: string): Promise<UpdateWriteOpResult> {
+	updateOldSendingToNewByNpsId(npsId: string): Promise<UpdateResult | Document> {
 		const fiveMinutes = new Date();
 		fiveMinutes.setMinutes(fiveMinutes.getMinutes() - 5);
 
@@ -84,9 +92,9 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 				status: INpsVoteStatus.NEW,
 			},
 			$unset: {
-				sentAt: 1 as 1, // why do you do this to me TypeScript?
+				sentAt: 1 as const, // why do you do this to me TypeScript?
 			},
 		};
-		return this.col.updateMany(query, update);
+		return this.updateMany(query, update);
 	}
 }

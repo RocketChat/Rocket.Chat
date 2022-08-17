@@ -2,15 +2,19 @@ import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import { FederatedRoom } from '../domain/FederatedRoom';
 import { FederatedUser } from '../domain/FederatedUser';
-import { EVENT_ORIGIN, IFederationBridge } from '../domain/IFederationBridge';
-import { RocketChatMessageAdapter } from '../infrastructure/rocket-chat/adapters/Message';
-import { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
-import { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
-import { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
-import {
+import type { IFederationBridge } from '../domain/IFederationBridge';
+import { EVENT_ORIGIN } from '../domain/IFederationBridge';
+import type { RocketChatMessageAdapter } from '../infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
+import type {
 	FederationRoomCreateInputDto,
 	FederationRoomChangeMembershipDto,
 	FederationRoomSendInternalMessageDto,
+	FederationRoomChangeJoinRulesDto,
+	FederationRoomChangeNameDto,
+	FederationRoomChangeTopicDto,
 } from './input/RoomReceiverDto';
 
 export class FederationRoomServiceReceiver {
@@ -90,7 +94,7 @@ export class FederationRoomServiceReceiver {
 
 		if (!(await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviterId))) {
 			const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalInviterId);
-			const name = externalUserProfileInformation.displayname || normalizedInviterId;
+			const name = externalUserProfileInformation?.displayname || normalizedInviterId;
 			const username = isInviterFromTheSameHomeServer ? inviterUsernameOnly : normalizedInviterId;
 			const federatedInviterUser = FederatedUser.createInstance(externalInviterId, {
 				name,
@@ -103,7 +107,7 @@ export class FederationRoomServiceReceiver {
 
 		if (!(await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviteeId))) {
 			const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalInviteeId);
-			const name = externalUserProfileInformation.displayname || normalizedInviteeId;
+			const name = externalUserProfileInformation?.displayname || normalizedInviteeId;
 			const username = isInviteeFromTheSameHomeServer ? inviteeUsernameOnly : normalizedInviteeId;
 			const federatedInviteeUser = FederatedUser.createInstance(externalInviteeId, {
 				name,
@@ -188,5 +192,73 @@ export class FederationRoomServiceReceiver {
 		}
 
 		await this.rocketMessageAdapter.sendMessage(senderUser, text, federatedRoom);
+	}
+
+	public async changeJoinRules(roomJoinRulesChangeInput: FederationRoomChangeJoinRulesDto): Promise<void> {
+		const { externalRoomId, roomType } = roomJoinRulesChangeInput;
+
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		if (federatedRoom.isDirectMessage()) {
+			return;
+		}
+
+		federatedRoom.setRoomType(roomType);
+		await this.rocketRoomAdapter.updateRoomType(federatedRoom);
+	}
+
+	public async changeRoomName(roomChangeNameInput: FederationRoomChangeNameDto): Promise<void> {
+		const { externalRoomId, normalizedRoomName, externalSenderId } = roomChangeNameInput;
+
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		if (federatedRoom.isDirectMessage()) {
+			return;
+		}
+
+		if (federatedRoom.internalReference?.name === normalizedRoomName) {
+			return;
+		}
+
+		const federatedUser = await this.rocketUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!federatedUser) {
+			return;
+		}
+
+		federatedRoom.changeRoomName(normalizedRoomName);
+
+		await this.rocketRoomAdapter.updateRoomName(federatedRoom, federatedUser);
+	}
+
+	public async changeRoomTopic(roomChangeTopicInput: FederationRoomChangeTopicDto): Promise<void> {
+		const { externalRoomId, roomTopic, externalSenderId } = roomChangeTopicInput;
+
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		if (federatedRoom.internalReference?.topic === roomTopic) {
+			return;
+		}
+
+		if (federatedRoom.isDirectMessage()) {
+			return;
+		}
+
+		const federatedUser = await this.rocketUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!federatedUser) {
+			return;
+		}
+
+		federatedRoom.changeRoomTopic(roomTopic);
+
+		await this.rocketRoomAdapter.updateRoomTopic(federatedRoom, federatedUser);
 	}
 }

@@ -36,7 +36,7 @@ const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id, 
 				totalDataReload();
 				dispatchToastMessage({ type: 'success', message: t('Canned_Response_Removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal(null);
 		};

@@ -1,12 +1,10 @@
 import { Button, Field } from '@rocket.chat/fuselage';
-import { useMethod, ServerMethods, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, ServerMethods, useToastMessageDispatch, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
-
-import type keys from '../../../../../packages/rocketchat-i18n/i18n/en.i18n.json';
 
 type ActionSettingInputProps = {
 	_id: string;
-	actionText: keyof typeof keys;
+	actionText: TranslationKey;
 	value: keyof ServerMethods;
 	disabled: boolean;
 	sectionChanged: boolean;
@@ -19,11 +17,11 @@ function ActionSettingInput({ _id, actionText, value, disabled, sectionChanged }
 
 	const handleClick = async (): Promise<void> => {
 		try {
-			const data: { message: keyof typeof keys; params: string[] } = await actionMethod();
+			const data: { message: TranslationKey; params: string[] } = await actionMethod();
 
 			dispatchToastMessage({ type: 'success', message: t(data.message, ...data.params) });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 

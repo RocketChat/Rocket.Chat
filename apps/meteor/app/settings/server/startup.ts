@@ -1,12 +1,13 @@
 import type { ISetting } from '@rocket.chat/core-typings';
+import type { Settings } from '@rocket.chat/models';
 
-import { Settings } from '../../models/server/models/Settings';
-import { ICachedSettings } from './CachedSettings';
+import type { ICachedSettings } from './CachedSettings';
 
-export function initializeSettings({ SettingsModel, settings }: { SettingsModel: Settings; settings: ICachedSettings }): void {
-	SettingsModel.find().forEach((record: ISetting) => {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export async function initializeSettings({ model, settings }: { model: typeof Settings; settings: ICachedSettings }): Promise<void> {
+	await model.find().forEach((record: ISetting) => {
 		settings.set(record);
 	});
 
-	settings.initilized();
+	settings.initialized();
 }
