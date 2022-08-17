@@ -103,7 +103,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 				reload?.();
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: (error as Error).message });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal(null);
 		};

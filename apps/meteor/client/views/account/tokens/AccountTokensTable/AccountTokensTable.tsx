@@ -77,7 +77,7 @@ const AccountTokensTable = (): ReactElement => {
 					reload();
 				} catch (error) {
 					setModal(null);
-					dispatchToastMessage({ type: 'error', message: error as Error });
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			};
 
@@ -105,7 +105,7 @@ const AccountTokensTable = (): ReactElement => {
 					reload();
 					closeModal();
 				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error as Error });
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			};
 

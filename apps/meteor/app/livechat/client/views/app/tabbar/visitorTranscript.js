@@ -3,12 +3,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
-import { handleError } from '../../../../../../client/lib/utils/handleError';
 import { t } from '../../../../../utils';
 import { APIClient } from '../../../../../utils/client';
-import './visitorTranscript.html';
 import { validateEmail } from '../../../../../../lib/emailValidator';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
+import './visitorTranscript.html';
 
 const validateTranscriptData = (instance) => {
 	const subject = instance.$('[name="subject"]').val();
@@ -99,9 +98,10 @@ Template.visitorTranscript.events({
 		const visitor = instance.visitor.get();
 		const { token } = visitor;
 
-		Meteor.call('livechat:sendTranscript', token, rid, email, subject, (err) => {
-			if (err != null) {
-				return handleError(err);
+		Meteor.call('livechat:sendTranscript', token, rid, email, subject, (error) => {
+			if (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				return;
 			}
 
 			dispatchToastMessage({
@@ -125,9 +125,10 @@ Template.visitorTranscript.events({
 		const room = instance.room.get();
 		const { _id: rid } = room;
 
-		Meteor.call('livechat:requestTranscript', rid, email, subject, (err) => {
-			if (err != null) {
-				return handleError(err);
+		Meteor.call('livechat:requestTranscript', rid, email, subject, (error) => {
+			if (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				return;
 			}
 
 			dispatchToastMessage({
@@ -144,9 +145,10 @@ Template.visitorTranscript.events({
 		const room = instance.room.get();
 		const { _id: rid } = room;
 
-		Meteor.call('livechat:discardTranscript', rid, (err) => {
-			if (err != null) {
-				return handleError(err);
+		Meteor.call('livechat:discardTranscript', rid, (error) => {
+			if (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				return;
 			}
 
 			dispatchToastMessage({
