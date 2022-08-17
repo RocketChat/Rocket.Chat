@@ -1,16 +1,18 @@
 import { expect, spy } from 'chai';
-import mock from 'mock-require';
+import proxyquire from 'proxyquire';
 import type fastq from 'fastq';
 
-import { InMemoryQueue } from '../../../../../../../../app/federation-v2/server/infrastructure/queue/InMemoryQueue';
-
-mock('fastq', {
-	promise<C, T = any, R = any>(this: C, handler: fastq.asyncWorker<C, T, R>): Pick<fastq.queueAsPromised<T, R>, 'push'> {
-		return {
-			push: (task) => handler.call(this, task),
-		};
-	},
-});
+const { InMemoryQueue } = proxyquire
+	.noCallThru()
+	.load('../../../../../../../../app/federation-v2/server/infrastructure/queue/InMemoryQueue', {
+		fastq: {
+			promise<C, T = any, R = any>(this: C, handler: fastq.asyncWorker<C, T, R>): Pick<fastq.queueAsPromised<T, R>, 'push'> {
+				return {
+					push: (task) => handler.call(this, task),
+				};
+			},
+		},
+	});
 
 describe('Federation - Infrastructure - Queue - InMemoryQueue', () => {
 	const queue = new InMemoryQueue();

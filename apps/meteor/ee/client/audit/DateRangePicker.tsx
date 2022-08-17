@@ -1,15 +1,15 @@
 import { Box, InputBox, Menu, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, ReactElement, ComponentProps } from 'react';
 
 const date = new Date();
 
-const formatToDateInput = (date) => date.toISOString().slice(0, 10);
+const formatToDateInput = (date: Date): string => date.toISOString().slice(0, 10);
 
 const todayDate = formatToDateInput(date);
 
-const getMonthRange = (monthsToSubtractFromToday) => {
+const getMonthRange = (monthsToSubtractFromToday: number): { start: string; end: string } => {
 	const date = new Date();
 	return {
 		start: formatToDateInput(new Date(date.getFullYear(), date.getMonth() - monthsToSubtractFromToday, 1)),
@@ -17,7 +17,7 @@ const getMonthRange = (monthsToSubtractFromToday) => {
 	};
 };
 
-const getWeekRange = (daysToSubtractFromStart, daysToSubtractFromEnd) => {
+const getWeekRange = (daysToSubtractFromStart: number, daysToSubtractFromEnd: number): { start: string; end: string } => {
 	const date = new Date();
 	return {
 		start: formatToDateInput(new Date(date.getFullYear(), date.getMonth(), date.getDate() - daysToSubtractFromStart)),
@@ -25,7 +25,11 @@ const getWeekRange = (daysToSubtractFromStart, daysToSubtractFromEnd) => {
 	};
 };
 
-const DateRangePicker = ({ onChange = () => {}, ...props }) => {
+type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
+	onChange?: (dateRange: { start: string; end: string }) => void;
+};
+
+const DateRangePicker = ({ onChange, ...props }: DateRangePickerProps): ReactElement => {
 	const t = useTranslation();
 	const [range, setRange] = useState({ start: '', end: '' });
 
@@ -37,7 +41,7 @@ const DateRangePicker = ({ onChange = () => {}, ...props }) => {
 			end: range.end,
 		};
 		setRange(rangeObj);
-		onChange(rangeObj);
+		onChange?.(rangeObj);
 	});
 
 	const handleEnd = useMutableCallback(({ currentTarget }) => {
@@ -46,12 +50,12 @@ const DateRangePicker = ({ onChange = () => {}, ...props }) => {
 			start: range.start,
 		};
 		setRange(rangeObj);
-		onChange(rangeObj);
+		onChange?.(rangeObj);
 	});
 
 	const handleRange = useMutableCallback((range) => {
 		setRange(range);
-		onChange(range);
+		onChange?.(range);
 	});
 
 	useEffect(() => {
@@ -66,42 +70,42 @@ const DateRangePicker = ({ onChange = () => {}, ...props }) => {
 			today: {
 				icon: 'history',
 				label: t('Today'),
-				action: () => {
+				action: (): void => {
 					handleRange(getWeekRange(0, 0));
 				},
 			},
 			yesterday: {
 				icon: 'history',
 				label: t('Yesterday'),
-				action: () => {
+				action: (): void => {
 					handleRange(getWeekRange(1, 1));
 				},
 			},
 			thisWeek: {
 				icon: 'history',
 				label: t('This_week'),
-				action: () => {
+				action: (): void => {
 					handleRange(getWeekRange(7, 0));
 				},
 			},
 			previousWeek: {
 				icon: 'history',
 				label: t('Previous_week'),
-				action: () => {
+				action: (): void => {
 					handleRange(getWeekRange(14, 7));
 				},
 			},
 			thisMonth: {
 				icon: 'history',
 				label: t('This_month'),
-				action: () => {
+				action: (): void => {
 					handleRange(getMonthRange(0));
 				},
 			},
 			lastMonth: {
 				icon: 'history',
 				label: t('Previous_month'),
-				action: () => {
+				action: (): void => {
 					handleRange(getMonthRange(1));
 				},
 			},

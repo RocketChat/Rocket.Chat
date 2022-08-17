@@ -58,8 +58,8 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 			await save(mappedAppearance);
 			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 			commit();
-		} catch (error) {
-			dispatchToastMessage({ type: 'success', message: error instanceof Error ? error : String(error) });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 

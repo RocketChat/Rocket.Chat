@@ -1,13 +1,13 @@
 import { Field } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useState } from 'react';
+import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import React, { ReactElement, useState } from 'react';
 
 import Page from '../../../client/components/Page';
-import { useMethodData } from '../../../client/hooks/useMethodData';
 import AuditLogTable from './AuditLogTable';
 import DateRangePicker from './DateRangePicker';
 
-const AuditLogPage = () => {
+const AuditLogPage = (): ReactElement => {
 	const t = useTranslation();
 
 	const [dateRange, setDateRange] = useState({
@@ -17,17 +17,9 @@ const AuditLogPage = () => {
 
 	const { start, end } = dateRange;
 
-	const params = useMemo(
-		() => [
-			{
-				startDate: new Date(start),
-				endDate: new Date(end),
-			},
-		],
-		[end, start],
-	);
+	const getAudits = useMethod('auditGetAuditions');
 
-	const { value: data } = useMethodData('auditGetAuditions', params);
+	const result = useQuery(['audits', { start, end }], async () => getAudits({ startDate: new Date(start), endDate: new Date(end) }));
 
 	return (
 		<Page>
@@ -39,7 +31,7 @@ const AuditLogPage = () => {
 						<DateRangePicker display='flex' flexGrow={1} onChange={setDateRange} />
 					</Field.Row>
 				</Field>
-				<AuditLogTable data={data} />
+				<AuditLogTable data={result.data} />
 			</Page.Content>
 		</Page>
 	);

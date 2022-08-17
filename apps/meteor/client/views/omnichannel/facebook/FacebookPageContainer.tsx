@@ -1,12 +1,11 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React, { ReactElement } from 'react';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useMethodData } from '../../../hooks/useMethodData';
 import FacebookPage from './FacebookPage';
 
 type PageItem = {
@@ -24,37 +23,30 @@ type InitialStateData = {
 	hasToken: boolean;
 };
 
-const initialStateArgs: [
-	{
-		action: 'initialState';
-	},
-] = [
-	{
-		action: 'initialState',
-	},
-];
-
-const listPageArgs: [
-	{
-		action: 'list-pages';
-	},
-] = [
-	{
-		action: 'list-pages',
-	},
-];
-
-const FacebookPageContainer: FC = () => {
+const FacebookPageContainer = (): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { value: initialStateData, phase: state, reload: reloadInitial } = useMethodData('livechat:facebook', initialStateArgs);
-
-	const { value: pagesData, phase: listState, reload: reloadData } = useMethodData('livechat:facebook', listPageArgs);
-
-	const { enabled, hasToken } = (initialStateData as InitialStateData) || { enabled: false, hasToken: false };
-	const { pages } = (pagesData as unknown as PageData) || { pages: [] };
 
 	const livechatFacebook = useMethod('livechat:facebook');
+
+	const initialStateResult = useQuery(
+		['omnichannel/facebook/initial-state'],
+		async () => livechatFacebook({ action: 'initialState' }) as unknown as Promise<InitialStateData>,
+		{
+			initialData: { enabled: false, hasToken: false },
+		},
+	);
+
+	const listPagesResult = useQuery(
+		['omnichannel/facebook/list-pages'],
+		async () => livechatFacebook({ action: 'list-pages' }) as unknown as Promise<PageData>,
+		{
+			initialData: { pages: [] },
+		},
+	);
+
+	const { enabled, hasToken } = initialStateResult.data ?? { enabled: false, hasToken: false };
+	const { pages } = listPagesResult.data ?? { pages: [] };
 
 	const onToggle = useMutableCallback(async (id, isSubscribed, setSubscribed) => {
 		setSubscribed(!isSubscribed);
@@ -64,8 +56,8 @@ const FacebookPageContainer: FC = () => {
 				action,
 				page: id,
 			});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
 			setSubscribed(isSubscribed);
 		}
 	});
@@ -74,10 +66,10 @@ const FacebookPageContainer: FC = () => {
 		try {
 			await livechatFacebook({ action: 'disable' });
 			dispatchToastMessage({ type: 'success', message: t('Integration_disabled') });
-			reloadInitial();
-			reloadData();
+			initialStateResult.refetch();
+			listPagesResult.refetch();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
@@ -99,19 +91,19 @@ const FacebookPageContainer: FC = () => {
 					onEnable();
 				});
 			} else {
-				reloadInitial();
-				reloadData();
+				initialStateResult.refetch();
+				listPagesResult.refetch();
 			}
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	if (state === AsyncStatePhase.LOADING || listState === AsyncStatePhase.LOADING) {
+	if (initialStateResult.isLoading || listPagesResult.isLoading) {
 		return <PageSkeleton />;
 	}
 
-	if (state === AsyncStatePhase.REJECTED) {
+	if (initialStateResult.isError) {
 		return (
 			<Page>
 				<Page.Header title={t('Edit_Custom_Field')} />
@@ -122,7 +114,7 @@ const FacebookPageContainer: FC = () => {
 		);
 	}
 
-	if (enabled && hasToken && listState === AsyncStatePhase.REJECTED) {
+	if (enabled && hasToken && listPagesResult.isError) {
 		onEnable();
 	}
 
@@ -132,7 +124,7 @@ const FacebookPageContainer: FC = () => {
 			enabled={enabled}
 			hasToken={hasToken}
 			onToggle={onToggle}
-			onRefresh={reloadData}
+			onRefresh={listPagesResult.refetch}
 			onDisable={onDisable}
 			onEnable={onEnable}
 		/>
