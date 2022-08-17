@@ -130,7 +130,11 @@
 						</div>
 					</div>
 					<footer class="footer border-component-color">
-						{{> messageBox messageboxData}}
+						{{#if subscriptionReady}}
+							{{> messageBox messageboxData}}
+						{{else}}
+							{{> ComposerSkeleton}}
+						{{/if}}
 					</footer>
 				</div>
 			</div>
