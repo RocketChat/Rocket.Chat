@@ -1,13 +1,19 @@
 /* eslint-disable import/first */
 import { expect } from 'chai';
-import mock from 'mock-require';
-import '../../../../../../mocks/server/mongodb';
+import proxyquire from 'proxyquire';
 
-import { FederatedUser } from '../../../../../../../app/federation-v2/server/domain/FederatedUser';
+const { FederatedUser } = proxyquire.noCallThru().load('../../../../../../../app/federation-v2/server/domain/FederatedUser', {
+	mongodb: {
+		'ObjectId': class ObjectId {
+			toHexString(): string {
+				return 'hexString';
+			}
+		},
+		'@global': true,
+	},
+});
 
 describe('Federation - Domain - FederatedUser', () => {
-	after(() => mock.stop('mongodb'));
-
 	describe('#createInstance()', () => {
 		it('should create the instance with the internalId as the provided one', () => {
 			const federatedUser = FederatedUser.createInstance('@marcos:matrix.org', {

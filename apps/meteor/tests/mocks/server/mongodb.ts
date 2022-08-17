@@ -1,9 +1,10 @@
-import mock from 'mock-require';
+import proxyquire from 'proxyquire';
 
-mock('mongodb', {
+proxyquire.noCallThru().load('mongodb', {
 	ObjectId: class ObjectId {
 		toHexString(): string {
 			return 'hexString';
 		}
 	},
+	global: true,
 });

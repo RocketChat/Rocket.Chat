@@ -1,19 +1,22 @@
 /* eslint-disable import/first */
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import mock from 'mock-require';
 import { expect } from 'chai';
-import '../../../../../../mocks/server/mongodb';
+import proxyquire from 'proxyquire';
 
-import {
-	AbstractFederatedRoom,
-	DirectMessageFederatedRoom,
-	FederatedRoom,
-	isAnInternalIdentifier,
-} from '../../../../../../../app/federation-v2/server/domain/FederatedRoom';
+const { AbstractFederatedRoom, DirectMessageFederatedRoom, FederatedRoom, isAnInternalIdentifier } = proxyquire
+	.noCallThru()
+	.load('../../../../../../../app/federation-v2/server/domain/FederatedRoom', {
+		mongodb: {
+			'ObjectId': class ObjectId {
+				toHexString(): string {
+					return 'hexString';
+				}
+			},
+			'@global': true,
+		},
+	});
 
 describe('Federation - Domain - FederatedRoom', () => {
-	after(() => mock.stop('mongodb'));
-
 	describe('#isAnInternalIdentifier()', () => {
 		it('should return true if the origin is equal to the localOrigin', () => {
 			expect(isAnInternalIdentifier('localOrigin', 'localOrigin')).to.be.equal(true);

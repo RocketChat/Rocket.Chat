@@ -1,8 +1,6 @@
 import { expect } from 'chai';
-import mock from 'mock-require';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-mock.stop('mongodb');
 const { MongoClient } = require('mongodb');
 
 const { aggregates } = require('../../../../../../server/models/raw/Sessions');

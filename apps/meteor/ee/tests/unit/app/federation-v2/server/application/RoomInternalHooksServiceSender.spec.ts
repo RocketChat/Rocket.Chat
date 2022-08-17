@@ -1,17 +1,44 @@
 /* eslint-disable import/first */
-import mock from 'mock-require';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import proxyquire from 'proxyquire';
 
-import '../../../../../../../tests/mocks/server/mongodb';
-
-import { FederatedRoomEE } from '../../../../../../app/federation-v2/server/domain/FederatedRoom';
-import { FederatedUserEE } from '../../../../../../app/federation-v2/server/domain/FederatedUser';
-import { FederationRoomInternalHooksServiceSender } from '../../../../../../app/federation-v2/server/application/sender/RoomInternalHooksServiceSender';
+const { FederatedRoomEE } = proxyquire.noCallThru().load('../../../../../../app/federation-v2/server/domain/FederatedRoom', {
+	mongodb: {
+		'ObjectId': class ObjectId {
+			toHexString(): string {
+				return 'hexString';
+			}
+		},
+		'@global': true,
+	},
+});
+const { FederatedUserEE } = proxyquire.noCallThru().load('../../../../../../app/federation-v2/server/domain/FederatedUser', {
+	mongodb: {
+		'ObjectId': class ObjectId {
+			toHexString(): string {
+				return 'hexString';
+			}
+		},
+		'@global': true,
+	},
+});
+const { FederationRoomInternalHooksServiceSender } = proxyquire
+	.noCallThru()
+	.load('../../../../../../app/federation-v2/server/application/sender/RoomInternalHooksServiceSender', {
+		mongodb: {
+			'ObjectId': class ObjectId {
+				toHexString(): string {
+					return 'hexString';
+				}
+			},
+			'@global': true,
+		},
+	});
 
 describe('FederationEE - Application - FederationRoomInternalHooksServiceSender', () => {
-	let service: FederationRoomInternalHooksServiceSender;
+	let service: typeof FederationRoomInternalHooksServiceSender;
 	const roomAdapter = {
 		getFederatedRoomByInternalId: sinon.stub(),
 		updateFederatedRoomByInternalRoomId: sinon.stub(),
@@ -68,8 +95,6 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		bridge.getRoomName.reset();
 		bridge.getRoomTopic.reset();
 	});
-
-	after(() => mock.stop('mongodb'));
 
 	describe('#onRoomCreated()', () => {
 		const user = FederatedUserEE.createInstance('externalInviterId', {

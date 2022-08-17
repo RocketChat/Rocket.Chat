@@ -1,18 +1,50 @@
 /* eslint-disable import/first */
-import mock from 'mock-require';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import proxyquire from 'proxyquire';
 
-import '../../../../../../mocks/server/mongodb';
+const { FederationRoomServiceListener } = proxyquire
+	.noCallThru()
+	.load('../../../../../../../app/federation-v2/server/application/RoomServiceListener', {
+		mongodb: {
+			'ObjectId': class ObjectId {
+				toHexString(): string {
+					return 'hexString';
+				}
+			},
+			'@global': true,
+		},
+	});
 
-import { FederationRoomServiceListener } from '../../../../../../../app/federation-v2/server/application/RoomServiceListener';
-import { FederatedUser } from '../../../../../../../app/federation-v2/server/domain/FederatedUser';
-import { DirectMessageFederatedRoom, FederatedRoom } from '../../../../../../../app/federation-v2/server/domain/FederatedRoom';
+const { FederatedUser } = proxyquire.noCallThru().load('../../../../../../../app/federation-v2/server/domain/FederatedUser', {
+	mongodb: {
+		'ObjectId': class ObjectId {
+			toHexString(): string {
+				return 'hexString';
+			}
+		},
+		'@global': true,
+	},
+});
+
+const { DirectMessageFederatedRoom, FederatedRoom } = proxyquire
+	.noCallThru()
+	.load('../../../../../../../app/federation-v2/server/domain/FederatedRoom', {
+		mongodb: {
+			'ObjectId': class ObjectId {
+				toHexString(): string {
+					return 'hexString';
+				}
+			},
+			'@global': true,
+		},
+	});
+
 import { EVENT_ORIGIN } from '../../../../../../../app/federation-v2/server/domain/IFederationBridge';
 
 describe('Federation - Application - FederationRoomServiceListener', () => {
-	let service: FederationRoomServiceListener;
+	let service: typeof FederationRoomServiceListener;
 	const roomAdapter = {
 		getFederatedRoomByExternalId: sinon.stub(),
 		createFederatedRoom: sinon.stub(),
@@ -69,8 +101,6 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		bridge.extractHomeserverOrigin.reset();
 		bridge.joinRoom.reset();
 	});
-
-	after(() => mock.stop('mongodb'));
 
 	describe('#onCreateRoom()', () => {
 		const creator = FederatedUser.createInstance('externalInviterId', {

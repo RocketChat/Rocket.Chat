@@ -1,17 +1,44 @@
 /* eslint-disable import/first */
-import mock from 'mock-require';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import proxyquire from 'proxyquire';
 
-import '../../../../../../../tests/mocks/server/mongodb';
-
-import { FederatedRoomEE } from '../../../../../../app/federation-v2/server/domain/FederatedRoom';
-import { FederatedUserEE } from '../../../../../../app/federation-v2/server/domain/FederatedUser';
-import { FederationDMRoomInternalHooksServiceSender } from '../../../../../../app/federation-v2/server/application/sender/DMRoomInternalHooksServiceSender';
+const { FederatedRoomEE } = proxyquire.noCallThru().load('../../../../../../app/federation-v2/server/domain/FederatedRoom', {
+	mongodb: {
+		'ObjectId': class ObjectId {
+			toHexString(): string {
+				return 'hexString';
+			}
+		},
+		'@global': true,
+	},
+});
+const { FederatedUserEE } = proxyquire.noCallThru().load('../../../../../../app/federation-v2/server/domain/FederatedUser', {
+	mongodb: {
+		'ObjectId': class ObjectId {
+			toHexString(): string {
+				return 'hexString';
+			}
+		},
+		'@global': true,
+	},
+});
+const { FederationDMRoomInternalHooksServiceSender } = proxyquire
+	.noCallThru()
+	.load('../../../../../../app/federation-v2/server/application/sender/DMRoomInternalHooksServiceSender', {
+		mongodb: {
+			'ObjectId': class ObjectId {
+				toHexString(): string {
+					return 'hexString';
+				}
+			},
+			'@global': true,
+		},
+	});
 
 describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSender', () => {
-	let service: FederationDMRoomInternalHooksServiceSender;
+	let service: typeof FederationDMRoomInternalHooksServiceSender;
 	const roomAdapter = {
 		getFederatedRoomByInternalId: sinon.stub(),
 		updateFederatedRoomByInternalRoomId: sinon.stub(),
@@ -57,8 +84,6 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 		bridge.createDirectMessageRoom.reset();
 	});
 
-	after(() => mock.stop('mongodb'));
-
 	describe('#onDirectMessageRoomCreation()', () => {
 		const user = FederatedUserEE.createInstance('externalInviterId', {
 			name: 'normalizedInviterId',
@@ -96,6 +121,7 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 				username: 'username',
 				existsOnlyOnProxyServer: true,
 			});
+			console.log({ inviter });
 			expect(bridge.createUser.calledWith('username', 'name', 'localDomain')).to.be.true;
 			expect(userAdapter.createFederatedUser.calledWith(inviter)).to.be.true;
 		});

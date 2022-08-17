@@ -1,13 +1,47 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import proxyquire from 'proxyquire';
 
-import { FederationRoomServiceSender } from '../../../../../../../../app/federation-v2/server/application/sender/RoomServiceSender';
-import { DirectMessageFederatedRoom, FederatedRoom } from '../../../../../../../../app/federation-v2/server/domain/FederatedRoom';
-import { FederatedUser } from '../../../../../../../../app/federation-v2/server/domain/FederatedUser';
+const { FederationRoomServiceSender } = proxyquire
+	.noCallThru()
+	.load('../../../../../../../../app/federation-v2/server/application/sender/RoomServiceSender', {
+		mongodb: {
+			'ObjectId': class ObjectId {
+				toHexString(): string {
+					return 'hexString';
+				}
+			},
+			'@global': true,
+		},
+	});
+
+const { FederatedUser } = proxyquire.noCallThru().load('../../../../../../../../app/federation-v2/server/domain/FederatedUser', {
+	mongodb: {
+		'ObjectId': class ObjectId {
+			toHexString(): string {
+				return 'hexString';
+			}
+		},
+		'@global': true,
+	},
+});
+
+const { DirectMessageFederatedRoom, FederatedRoom } = proxyquire
+	.noCallThru()
+	.load('../../../../../../../../app/federation-v2/server/domain/FederatedRoom', {
+		mongodb: {
+			'ObjectId': class ObjectId {
+				toHexString(): string {
+					return 'hexString';
+				}
+			},
+			'@global': true,
+		},
+	});
 
 describe('Federation - Application - FederationRoomServiceSender', () => {
-	let service: FederationRoomServiceSender;
+	let service: typeof FederationRoomServiceSender;
 	const roomAdapter = {
 		getFederatedRoomByInternalId: sinon.stub(),
 		createFederatedRoomForDirectMessage: sinon.stub(),
