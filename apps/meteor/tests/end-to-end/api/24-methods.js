@@ -1957,7 +1957,7 @@ describe('Meteor.methods', function () {
 		});
 	});
 
-	describe.only('/apps/is-enabled', () => {
+	describe('/apps/is-enabled', () => {
 		const orch = new AppServerOrchestrator();
 
 		it('should return an error when the required parameter "AppServerOrchestrator" is not provided', (done) => {
