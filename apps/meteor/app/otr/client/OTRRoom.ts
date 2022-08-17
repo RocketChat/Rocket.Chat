@@ -253,8 +253,8 @@ export class OTRRoom implements IOTRRoom {
 				const establishConnection = async (): Promise<void> => {
 					this.setState(OtrRoomState.ESTABLISHING);
 					Meteor.clearTimeout(timeout);
-					console.log({ type, data });
 					try {
+						if (!data.publicKey) throw new Error('Public key is not generated');
 						await this.generateKeyPair();
 						await this.importPublicKey(data.publicKey);
 						await goToRoomById(data.roomId);
@@ -321,6 +321,7 @@ export class OTRRoom implements IOTRRoom {
 
 			case 'acknowledge':
 				try {
+					if (!data.publicKey) throw new Error('Public key is not generated');
 					await this.importPublicKey(data.publicKey);
 
 					this.setState(OtrRoomState.ESTABLISHED);

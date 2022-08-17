@@ -1,13 +1,13 @@
-import { IMessage, IOTRMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { Notifications } from '../../app/notifications/client';
-import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
-import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 import OTR from '../../app/otr/client/OTR';
 import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
 import { t } from '../../app/utils/client';
+import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
+import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 
 type NotifyUserData = {
 	roomId: IRoom['_id'];
@@ -42,7 +42,7 @@ Meteor.startup(() => {
 		return message;
 	});
 
-	onClientMessageReceived.use(async (message: IOTRMessage & { notification?: boolean }) => {
+	onClientMessageReceived.use(async (message: IMessage & { notification?: boolean }) => {
 		const OTRInstace = OTR.getInstanceByRoomId(message.rid);
 
 		if (message.rid && OTRInstace && OTRInstace.getState() === OtrRoomState.ESTABLISHED) {
@@ -54,12 +54,20 @@ Meteor.startup(() => {
 				return message;
 			}
 			const otrRoom = OTRInstace;
-			const { _id, text: msg, ack, ts, userId } = await otrRoom.decrypt(message.msg);
+			const decrypted = await otrRoom.decrypt(message.msg);
+			if (typeof decrypted === 'string') {
+				return { ...message, msg: decrypted };
+			}
+			const { _id, text: msg, ack, ts, userId } = decrypted;
 
 			if (ts) message.ts = ts;
 
-			if (message?.otr?.ack) {
-				const { text: otrAckText } = await otrRoom.decrypt(message.otr.ack);
+			if (message.otrAck) {
+				const decryptedAck = await otrRoom.decrypt(message.otrAck);
+				if (typeof decryptedAck === 'string') {
+					return { ...message, msg: decryptedAck };
+				}
+				const { text: otrAckText } = decryptedAck;
 				if (ack === otrAckText) message.t = 'otr-ack';
 			} else if (userId !== Meteor.userId()) {
 				const encryptedAck = await otrRoom.encryptText(ack);
