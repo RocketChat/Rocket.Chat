@@ -106,7 +106,6 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom body', () => {
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Custom_Body', { value: true })).status()).toBe(200);
 				expect((await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello</span>' })).status()).toBe(
 					200,
 				);
@@ -139,7 +138,6 @@ test.describe.serial('homepage', () => {
 			});
 
 			test.afterAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Custom_Body', { value: false })).status()).toBe(200);
 				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
 			});
 		});
