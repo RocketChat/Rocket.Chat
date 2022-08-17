@@ -9,7 +9,7 @@ import { fileUploadIsValidContentType, APIClient } from '../../../utils/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
-import { chatMessages } from '../views/app/room';
+import { chatMessages } from '../views/app/lib/chatMessages';
 import { getErrorMessage } from '../../../../client/lib/errorHandling';
 
 export type Uploading = {

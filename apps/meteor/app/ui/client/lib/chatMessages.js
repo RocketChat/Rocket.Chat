@@ -1,5 +1,4 @@
 import moment from 'moment';
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -13,7 +12,6 @@ import { fileUpload } from './fileUpload';
 import { t, slashCommands, APIClient } from '../../../utils/client';
 import { messageProperties, MessageTypes, readMessage } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
-import { callbacks } from '../../../../lib/callbacks';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
@@ -29,52 +27,28 @@ import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-
-const messageBoxState = {
-	saveValue: _.debounce(({ rid, tmid }, value) => {
-		const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
-		value ? Meteor._localStorage.setItem(key, value) : Meteor._localStorage.removeItem(key);
-	}, 1000),
-
-	restoreValue: ({ rid, tmid }) => {
-		const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
-		return Meteor._localStorage.getItem(key);
-	},
-
-	restore: ({ rid, tmid }, input) => {
-		const value = messageBoxState.restoreValue({ rid, tmid });
-		if (typeof value === 'string') {
-			messageBoxState.set(input, value);
-		}
-	},
-
-	save: ({ rid, tmid }, input) => {
-		messageBoxState.saveValue({ rid, tmid }, input.value);
-	},
-
-	set: (input, value) => {
-		input.value = value;
-		$(input).trigger('change').trigger('input');
-	},
-
-	purgeAll: () => {
-		Object.keys(Meteor._localStorage)
-			.filter((key) => key.indexOf('messagebox_') === 0)
-			.forEach((key) => Meteor._localStorage.removeItem(key));
-	},
-};
-
-callbacks.add('afterLogoutCleanUp', messageBoxState.purgeAll, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
+import { messageBoxState } from './messageBoxState';
 
 export class ChatMessages {
+	/** @property {Mongo.Collection} */
+	collection;
+
+	/**
+	 * @param {Mongo.Collection} collection
+	 */
 	constructor(collection = ChatMessage) {
 		this.collection = collection;
 	}
 
+	/** @property {Record<string, unknown>} */
 	editing = {};
 
+	/** @property {Record<string, unknown>} */
 	records = {};
 
+	/**
+	 * @param {HTMLElement} wrapper
+	 */
 	initializeWrapper(wrapper) {
 		this.wrapper = wrapper;
 	}
@@ -96,6 +70,9 @@ export class ChatMessages {
 		this.requestInputFocus();
 	}
 
+	/**
+	 * @returns {Promise<void>}
+	 */
 	async restoreReplies() {
 		const mid = FlowRouter.getQueryParam('reply');
 		if (!mid) {
@@ -110,6 +87,9 @@ export class ChatMessages {
 		this.$input.data('reply', [message]).trigger('dataChange');
 	}
 
+	/**
+	 * @return {void}
+	 */
 	requestInputFocus() {
 		setTimeout(() => {
 			if (this.input && window.matchMedia('screen and (min-device-width: 500px)').matches) {
@@ -118,6 +98,9 @@ export class ChatMessages {
 		}, 200);
 	}
 
+	/**
+	 * @return {void}
+	 */
 	recordInputAsDraft() {
 		const message = this.collection.findOne(this.editing.id);
 		const record = this.records[this.editing.id] || {};
@@ -132,12 +115,18 @@ export class ChatMessages {
 		this.records[this.editing.id] = record;
 	}
 
+	/**
+	 * @return {boolean}
+	 */
 	clearCurrentDraft() {
 		const hasValue = this.records[this.editing.id];
 		delete this.records[this.editing.id];
 		return !!hasValue;
 	}
 
+	/**
+	 * @return {boolean}
+	 */
 	resetToDraft(id) {
 		const message = this.collection.findOne(id);
 		const oldValue = this.input.value;
@@ -145,6 +134,9 @@ export class ChatMessages {
 		return oldValue !== message.msg;
 	}
 
+	/**
+	 * @return {void}
+	 */
 	toPrevMessage() {
 		const { element } = this.editing;
 		if (!element) {
@@ -161,6 +153,9 @@ export class ChatMessages {
 		this.clearEditing();
 	}
 
+	/**
+	 * @return {void}
+	 */
 	toNextMessage() {
 		const { element } = this.editing;
 		if (element) {
@@ -177,6 +172,11 @@ export class ChatMessages {
 		}
 	}
 
+	/**
+	 * @param {HTMLElement} element
+	 * @param {boolean=} isEditingTheNextOne
+	 * @return {void}
+	 */
 	edit(element, isEditingTheNextOne) {
 		const message = this.collection.findOne(element.dataset.id);
 
@@ -230,6 +230,9 @@ export class ChatMessages {
 		this.$input.setCursorPosition(cursorPosition);
 	}
 
+	/**
+	 * @return {void}
+	 */
 	clearEditing() {
 		if (!this.editing.element) {
 			this.editing.saved = this.input.value;
@@ -249,6 +252,12 @@ export class ChatMessages {
 		this.$input.setCursorPosition(cursorPosition);
 	}
 
+	/**
+	 * @param {Event} event
+	 * @param {{ rid?: string; tmid?: string; value: string; tshow: unknown }} options
+	 * @param {() => void} done?
+	 * @return {Promise<void>}
+	 */
 	async send(event, { rid, tmid, value, tshow }, done = () => {}) {
 		const threadsEnabled = settings.get('Threads_enabled');
 

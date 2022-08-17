@@ -20,5 +20,7 @@ declare module '*.info' {
 		};
 		marketplaceApiVersion: string;
 		version: string;
+		tag?: string;
+		branch?: string;
 	};
 }

@@ -126,7 +126,16 @@ function messageboxData(this: { _id: string }) {
 		onResize: () => sendToBottomIfNecessary?.(),
 		onKeyUp: (...args: unknown[]) => chatMessages[rid]?.keyup(...args),
 		onKeyDown: (...args: unknown[]) => chatMessages[rid]?.keydown(...args),
-		onSend: (...args: unknown[]) => chatMessages[rid]?.send(...args),
+		onSend: (
+			event: Event,
+			params: {
+				rid?: string;
+				tmid?: string;
+				value: string;
+				tshow: unknown;
+			},
+			done?: () => void,
+		) => chatMessages[rid]?.send(event, params, done),
 	};
 }
 

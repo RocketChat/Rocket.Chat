@@ -26,5 +26,5 @@ export { KonchatNotification } from './lib/notification';
 export { Login, Button } from './lib/rocket';
 export { AudioRecorder } from './lib/recorderjs/audioRecorder';
 export { VideoRecorder } from './lib/recorderjs/videoRecorder';
-export { chatMessages } from './views/app/room';
+export { chatMessages } from './views/app/lib/chatMessages';
 export * from './lib/userPopoverStatus';

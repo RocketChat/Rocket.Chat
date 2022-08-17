@@ -153,7 +153,11 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			getChatMessagesFrom(message).edit(document.getElementById(message.tmid ? `thread-${message._id}` : message._id));
+			const element = document.getElementById(message.tmid ? `thread-${message._id}` : message._id);
+			if (!element) {
+				throw new Error('Message not found');
+			}
+			getChatMessagesFrom(message).edit(element);
 		},
 		condition({ message, subscription, settings }) {
 			if (subscription == null) {

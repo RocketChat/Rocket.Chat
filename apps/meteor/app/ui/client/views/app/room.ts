@@ -4,13 +4,10 @@ import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { dropzoneHelpers, dropzoneEvents } from './lib/dropzone';
 import { retentionPolicyHelpers } from './lib/retentionPolicy';
-import { chatMessages } from './lib/chatMessages';
 import { roomEvents } from './lib/roomEvents';
 import { roomHelpers } from './lib/roomHelpers';
 import { onRoomCreated, onRoomDestroyed, onRoomRendered } from './lib/roomLifeCycleMethods';
 import './room.html';
-
-export { chatMessages, dropzoneHelpers, dropzoneEvents };
 
 Template.roomOld.helpers({
 	...dropzoneHelpers,
