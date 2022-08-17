@@ -40,16 +40,68 @@ test.describe.serial('omnichannel-departments', () => {
 		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 	});
 
-	test('expect update adding department tags ', async () => {
-		await poOmnichannelDepartments.inputSearch.fill(departmentName);
+	test.describe.serial('Tags', () => {
+		test.beforeAll(async () => {
+			await poOmnichannelDepartments.inputSearch.fill(departmentName);
 
-		await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
-		await poOmnichannelDepartments.toggleRequestTags.click();
+			await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
+		});
 
-		await poOmnichannelDepartments.inputTags.fill(faker.datatype.string(5));
-		await poOmnichannelDepartments.btnTagsAdd.click();
+		test('expect save form button be disabled', async () => {
+			await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
+		});
 
-		await poOmnichannelDepartments.btnSave.click();
+		test.describe.serial('Disabled tags state', () => {
+			test('expect to have department tags toggle button', async () => {
+				await expect(poOmnichannelDepartments.toggleRequestTags).toBeVisible();
+			});
+			test('expect have no add tag to department', async () => {
+				await expect(poOmnichannelDepartments.inputTags).not.toBeVisible();
+				await expect(poOmnichannelDepartments.btnTagsAdd).not.toBeVisible();
+			});
+		});
+
+		test.describe.serial('Enabled tags state', () => {
+			test('expect to have form save option disabled', async () => {
+				await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
+			});
+
+			test('expect clicking on toggle button to enable tags', async () => {
+				await poOmnichannelDepartments.toggleRequestTags.click();
+				await expect(poOmnichannelDepartments.inputTags).toBeVisible();
+				await expect(poOmnichannelDepartments.btnTagsAdd).toBeVisible();
+			});
+			test('expect to be invalid if there is no tag added', async () => {
+				await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
+				await expect(poOmnichannelDepartments.invalidInputTags).toBeVisible();
+			});
+
+			test('expect to be not possible adding empty tags', async () => {
+				await poOmnichannelDepartments.inputTags.fill('');
+				await expect(poOmnichannelDepartments.btnTagsAdd).toBeDisabled();
+			});
+
+			test('expect to have add and remove one tag properly tags', async ({ page }) => {
+				const tagName = faker.datatype.string(5);
+				await poOmnichannelDepartments.inputTags.fill(tagName);
+				await poOmnichannelDepartments.btnTagsAdd.click();
+
+				await expect(page.locator(`button text=${tagName}`)).toBeVisible();
+
+				await expect(poOmnichannelDepartments.btnSave).toBeEnabled();
+
+				await page.locator(`button text=${tagName}`).click();
+				await expect(poOmnichannelDepartments.invalidInputTags).toBeVisible();
+				await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
+			});
+			test('expect to not be possible adding same tag twice', async () => {
+				const tagName = faker.datatype.string(5);
+				await poOmnichannelDepartments.inputTags.fill(tagName);
+				await poOmnichannelDepartments.btnTagsAdd.click();
+				await poOmnichannelDepartments.inputTags.fill(tagName);
+				await expect(poOmnichannelDepartments.btnTagsAdd).toBeDisabled();
+			});
+		});
 	});
 
 	test('expect delete department', async () => {
