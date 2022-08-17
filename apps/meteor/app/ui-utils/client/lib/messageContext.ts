@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { Subscriptions, Rooms, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
@@ -24,12 +25,24 @@ const fields = {
 	'settings.preferences.hideRoles': 1,
 };
 
-export function messageContext({ rid } = Template.instance()) {
+export function messageContext(
+	{ rid }: { rid: IRoom['_id'] } = Template.instance() as Blaze.TemplateInstance<Record<string, unknown>> & { rid: IRoom['_id'] },
+) {
 	const uid = Meteor.userId();
 	const user = Users.findOne({ _id: uid }, { fields }) || {};
 	const instance = Template.instance();
-	const openThread = (e) => {
-		const { rid, mid, tmid } = e.currentTarget.dataset;
+	const openThread = (e: Event) => {
+		const { rid, mid, tmid } = (e.currentTarget as HTMLElement | null)?.dataset ?? {};
+		if (!rid) {
+			throw new Error('Missing rid');
+		}
+
+		const context = tmid || mid;
+
+		if (!context) {
+			throw new Error('Missing mid');
+		}
+
 		const room = Rooms.findOne({ _id: rid });
 		FlowRouter.go(
 			FlowRouter.getRouteName(),
@@ -37,34 +50,42 @@ export function messageContext({ rid } = Template.instance()) {
 				rid,
 				name: room.name,
 				tab: 'thread',
-				context: tmid || mid,
+				context,
 			},
-			{
-				jump: tmid && tmid !== mid && mid && mid,
-			},
+			!!tmid && !!mid && tmid !== mid
+				? {
+						jump: mid,
+				  }
+				: {},
 		);
 		e.preventDefault();
 		e.stopPropagation();
 	};
 
 	const runAction = isLayoutEmbedded()
-		? (msg, actionlink) =>
+		? (msg: IMessage, actionlink: string) =>
 				fireGlobalEvent('click-action-link', {
 					actionlink,
 					value: msg._id,
 					message: msg,
 				})
-		: (msg, actionlink) => actionLinks.run(actionlink, msg, instance);
+		: (msg: IMessage, actionlink: string) => actionLinks.run(actionlink, msg, instance);
 
-	const openDiscussion = (e) => {
+	const openDiscussion = (e: Event) => {
 		e.preventDefault();
 		e.stopPropagation();
-		const { drid } = e.currentTarget.dataset;
+		const { drid } = (e.currentTarget as HTMLElement | null)?.dataset ?? {};
+		if (!drid) {
+			throw new Error('Missing drid');
+		}
 		goToRoomById(drid);
 	};
 
-	const replyBroadcast = (e) => {
-		const { username, mid } = e.currentTarget.dataset;
+	const replyBroadcast = (e: Event) => {
+		const { username, mid } = (e.currentTarget as HTMLElement | null)?.dataset ?? {};
+		if (!mid) {
+			throw new Error('Missing mid');
+		}
 		roomCoordinator.openRouteLink('d', { name: username }, { ...FlowRouter.current().queryParams, reply: mid });
 	};
 
@@ -98,8 +119,8 @@ export function messageContext({ rid } = Template.instance()) {
 			openThread() {
 				return openThread;
 			},
-			runAction(msg) {
-				return () => (actionlink) => (e) => {
+			runAction(msg: IMessage) {
+				return () => (actionlink: string) => (e: Event) => {
 					e.preventDefault();
 					e.stopPropagation();
 					runAction(msg, actionlink);
@@ -133,5 +154,5 @@ export function messageContext({ rid } = Template.instance()) {
 			API_EmbedDisabledFor: settings.get('API_EmbedDisabledFor'),
 			Message_GroupingPeriod: settings.get('Message_GroupingPeriod') * 1000,
 		},
-	};
+	} as const;
 }
