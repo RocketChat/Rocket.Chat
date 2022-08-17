@@ -42,7 +42,7 @@ const AddToken = ({ reload, ...props }: { reload: () => void }): ReactElement =>
 			reset();
 			reload();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as Error });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [bypassTwoFactor, createTokenFn, dispatchToastMessage, name, reload, reset, setModal, t, userId]);
 
