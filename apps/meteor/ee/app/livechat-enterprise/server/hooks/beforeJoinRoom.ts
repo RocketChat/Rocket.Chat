@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { isOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -19,10 +19,12 @@ callbacks.add(
 		}
 
 		const { departmentId } = room;
-		const maxNumberSimultaneousChat = getMaxNumberSimultaneousChat({
-			agentId: user._id,
-			departmentId,
-		});
+		const maxNumberSimultaneousChat = Promise.await(
+			getMaxNumberSimultaneousChat({
+				agentId: user._id,
+				departmentId,
+			}),
+		);
 
 		if (maxNumberSimultaneousChat === 0) {
 			return user;

@@ -12,7 +12,6 @@ import { Template } from 'meteor/templating';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { t, getUserPreference } from '../../../../utils/client';
-import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
@@ -22,12 +21,14 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { hasAllPermission, hasRole } from '../../../../authorization/client';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
-import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
 import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
-import { handleError } from '../../../../../client/lib/utils/handleError';
 import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
+import { queryClient } from '../../../../../client/lib/queryClient';
+import { call } from '../../../../../client/lib/utils/call';
+import { dispatchToastMessage } from '../../../../../client/lib/toast';
+import './room.html';
 
 export const chatMessages = {};
 
@@ -304,6 +305,9 @@ Template.roomOld.helpers({
 		return settings.get('Message_MaxAllowedSize');
 	},
 
+	subscriptionReady() {
+		return RoomManager.getOpenedRoomByRid(this._id).streamActive;
+	},
 	unreadData() {
 		const data = { count: Template.instance().state.get('count') };
 
@@ -751,16 +755,24 @@ Meteor.startup(() => {
 			this.tabBar.close();
 		};
 
-		Meteor.call('getRoomRoles', this.data._id, function (error, results) {
-			if (error) {
-				handleError(error);
-			}
-
-			return Array.from(results).forEach((record) => {
-				delete record._id;
-				RoomRoles.upsert({ 'rid': record.rid, 'u._id': record.u._id }, record);
+		queryClient
+			.fetchQuery({
+				queryKey: ['room', this.data._id, 'roles'],
+				queryFn: () => call('getRoomRoles', this.data._id),
+				staleTime: 15_000,
+			})
+			.then((results) => {
+				Array.from(results).forEach(({ _id, ...data }) => {
+					const {
+						rid,
+						u: { _id: uid },
+					} = data;
+					RoomRoles.upsert({ rid, 'u._id': uid }, data);
+				});
+			})
+			.catch((error) => {
+				dispatchToastMessage({ type: 'error', message: error });
 			});
-		});
 
 		this.rolesObserve = RoomRoles.find({ rid: this.data._id }).observe({
 			added: (role) => {
@@ -999,18 +1011,8 @@ Meteor.startup(() => {
 		readMessage.on(template.data._id, () => this.unreadCount.set(0));
 
 		wrapper.addEventListener('scroll', updateUnreadCount);
-		// salva a data da renderização para exibir alertas de novas mensagens
+		// save the render's date to display new messages alerts
 		$.data(this.firstNode, 'renderedAt', new Date());
-
-		const webrtc = WebRTC.getInstanceByRoomId(template.data._id);
-		if (webrtc) {
-			this.autorun(() => {
-				const remoteItems = webrtc.remoteItems.get();
-				if ((remoteItems && remoteItems.length > 0) || webrtc.localUrl.get()) {
-					return this.tabBar.openUserInfo();
-				}
-			});
-		}
 
 		callbacks.add(
 			'streamNewMessage',

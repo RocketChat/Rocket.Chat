@@ -10,6 +10,7 @@ import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 import { chatMessages } from '../views/app/room';
+import { getErrorMessage } from '../../../../client/lib/errorHandling';
 
 type Uploading = {
 	id: string;
@@ -19,7 +20,6 @@ type Uploading = {
 };
 
 declare module 'meteor/session' {
-	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Session {
 		function get(key: 'uploading'): Uploading[];
@@ -130,12 +130,12 @@ export const uploadFileWithMessage = async (
 		if (!Session.get('uploading').length) {
 			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
 		}
-	} catch (error: any) {
+	} catch (error: unknown) {
 		const uploads = Session.get('uploading');
 		uploads
 			.filter((u) => u.id === upload.id)
 			.forEach((u) => {
-				u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+				u.error = new Error(getErrorMessage(error));
 				u.percentage = 0;
 			});
 		if (!uploads.length) {

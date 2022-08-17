@@ -1,5 +1,5 @@
-import { MatrixEventType } from './MatrixEventType';
-import { EventContent } from './IMatrixEventContent';
+import type { MatrixEventType } from './MatrixEventType';
+import type { EventContent } from './IMatrixEventContent';
 
 export interface IMatrixEvent<T extends MatrixEventType> {
 	age: number;

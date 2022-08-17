@@ -15,11 +15,11 @@ export class Avatar extends Component {
 
 	state = {
 		errored: false,
-	}
+	};
 
 	handleError = () => {
 		this.setState({ errored: true });
-	}
+	};
 
 	render = ({ small, large, src, description, status, className, style }, { errored }) => (
 		<div
@@ -40,5 +40,5 @@ export class Avatar extends Component {
 				<span className={createClassName(styles, 'avatar__status', { small, large, status })} />
 			)}
 		</div>
-	)
+	);
 }

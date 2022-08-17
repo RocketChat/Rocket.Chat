@@ -3,9 +3,9 @@ import path from 'path';
 import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
+import { Settings } from '@rocket.chat/models';
 
 import { Base, ProgressStep } from '../../importer/server';
-import { Settings as SettingsRaw } from '../../models/server';
 
 export class HipChatEnterpriseImporter extends Base {
 	constructor(info, importRecord) {
@@ -53,7 +53,7 @@ export class HipChatEnterpriseImporter extends Base {
 			this.converter.addUser(newUser);
 		}
 
-		SettingsRaw.incrementValueById('Hipchat_Enterprise_Importer_Count', count);
+		await Settings.incrementValueById('Hipchat_Enterprise_Importer_Count', count);
 		super.updateRecord({ 'count.users': count });
 		super.addCountToTotal(count);
 	}

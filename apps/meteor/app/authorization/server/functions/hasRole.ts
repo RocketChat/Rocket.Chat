@@ -29,4 +29,4 @@ export const hasRole = (...args: Parameters<typeof hasRoleAsync>): boolean => Pr
 
 export const hasAnyRole = (...args: Parameters<typeof hasAnyRoleAsync>): boolean => Promise.await(hasAnyRoleAsync(...args));
 
-export const subscriptionHasRole = (sub: ISubscription, role: IRole['_id']): boolean | undefined => sub.roles && sub.roles.includes(role);
+export const subscriptionHasRole = (sub: ISubscription, role: IRole['_id']): boolean | undefined => sub.roles?.includes(role);

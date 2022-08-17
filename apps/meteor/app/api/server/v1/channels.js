@@ -11,6 +11,7 @@ import { API } from '../api';
 import { settings } from '../../../settings/server';
 import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { addUserToFileObj } from '../helpers/addUserToFileObj';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
@@ -276,12 +277,6 @@ API.v1.addRoute(
 				params: this.requestParams(),
 				checkedArchived: false,
 			});
-			const addUserObjectToEveryObject = (file) => {
-				if (file.userId) {
-					file = this.insertUserObject({ object: file, userId: file.userId });
-				}
-				return file;
-			};
 
 			if (!canAccessRoom(findResult, { _id: this.userId })) {
 				return API.v1.unauthorized();
@@ -299,10 +294,10 @@ API.v1.addRoute(
 				projection: fields,
 			});
 
-			const [files, total] = await Promise.all([cursor.map(addUserObjectToEveryObject).toArray(), totalCount]);
+			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				files,
+				files: await addUserToFileObj(files),
 				count: files.length,
 				offset,
 				total,
@@ -460,13 +455,10 @@ API.v1.addRoute(
 				projection: fields,
 			});
 
-			const [channels, total] = await Promise.all([
-				cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
-				totalCount,
-			]);
+			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				channels,
+				channels: channels.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 				count: channels.length,
 				offset,
 				total,
@@ -497,13 +489,10 @@ API.v1.addRoute(
 				projection: fields,
 			});
 
-			const [channels, total] = await Promise.all([
-				cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
-				totalCount,
-			]);
+			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				channels,
+				channels: channels.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 				offset,
 				count: channels.length,
 				total,

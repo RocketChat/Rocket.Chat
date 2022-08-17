@@ -29,7 +29,7 @@ const AgentInfoActions = ({ reload }: { reload: () => void }): ReactElement => {
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal();
 		};

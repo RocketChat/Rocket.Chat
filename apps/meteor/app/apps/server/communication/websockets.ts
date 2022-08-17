@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { ISetting } from '@rocket.chat/core-typings';
-import { IStreamer } from 'meteor/rocketchat:streamer';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { ISetting } from '@rocket.chat/core-typings';
+import type { IStreamer } from 'meteor/rocketchat:streamer';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import notifications from '../../../notifications/server/lib/Notifications';
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 
 export enum AppEvents {
 	APP_ADDED = 'app/added',
