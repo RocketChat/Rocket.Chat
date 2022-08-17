@@ -5,11 +5,11 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatRoom, CachedChatRoom } from '../../../../models/client';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
-import './livechatReadOnly.html';
 import { APIClient } from '../../../../utils/client';
 import { RoomManager } from '../../../../ui-utils/client/lib/RoomManager';
 import { inquiryDataStream } from '../../lib/stream/inquiry';
-import { handleError } from '../../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../../client/lib/toast';
+import './livechatReadOnly.html';
 
 Template.livechatReadOnly.helpers({
 	inquiryOpen() {
@@ -66,7 +66,7 @@ Template.livechatReadOnly.events({
 				throw new Meteor.Error('error-join-room', 'Error joining room');
 			}
 		} catch (error) {
-			handleError(error);
+			dispatchToastMessage({ type: 'error', message: error });
 			throw error;
 		}
 	},

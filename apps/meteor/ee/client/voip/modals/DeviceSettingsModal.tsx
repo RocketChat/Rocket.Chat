@@ -49,7 +49,7 @@ const DeviceSettingsModal = (): ReactElement => {
 			setModal();
 			dispatchToastMessage({ type: 'success', message: t('Devices_Set') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
