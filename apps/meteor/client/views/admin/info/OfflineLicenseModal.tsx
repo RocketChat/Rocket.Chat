@@ -104,11 +104,11 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 				{status === 'invalid' && <Callout type='danger'>{t('Cloud_Invalid_license')}</Callout>}
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button primary disabled={!hasChanges || isUpdating} onClick={handleApplyLicense}>
 						{t('Cloud_Apply_license')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

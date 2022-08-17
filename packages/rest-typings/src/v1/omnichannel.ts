@@ -268,6 +268,43 @@ const LiveChatRoomJoinSchema = {
 
 export const isLiveChatRoomJoinProps = ajv.compile<LiveChatRoomJoin>(LiveChatRoomJoinSchema);
 
+type LiveChatRoomForward = {
+	roomId: string;
+	userId?: string;
+	departmentId?: string;
+	comment?: string;
+	clientAction?: boolean;
+};
+
+const LiveChatRoomForwardSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		userId: {
+			type: 'string',
+			nullable: true,
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+		comment: {
+			type: 'string',
+			nullable: true,
+		},
+		clientAction: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isLiveChatRoomForwardProps = ajv.compile<LiveChatRoomForward>(LiveChatRoomForwardSchema);
+
 type LivechatMonitorsListProps = PaginatedRequest<{ text: string }>;
 
 const LivechatMonitorsListSchema = {
@@ -381,7 +418,95 @@ const LivechatDepartmentSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentProps = ajv.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
+export const isGETLivechatDepartmentProps = ajv.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
+
+type POSTLivechatDepartmentProps = {
+	department: {
+		enabled: boolean;
+		name: string;
+		email: string;
+		description?: string;
+		showOnRegistration: boolean;
+		showOnOfflineForm: boolean;
+		requestTagsBeforeClosingChat?: boolean;
+		chatClosingTags?: string[];
+		fallbackForwardDepartment?: string;
+	};
+	agents: { agentId: string; count?: number; order?: number }[];
+};
+
+const POSTLivechatDepartmentSchema = {
+	type: 'object',
+	properties: {
+		department: {
+			type: 'object',
+			properties: {
+				enabled: {
+					type: 'boolean',
+				},
+				name: {
+					type: 'string',
+				},
+				description: {
+					type: 'string',
+					nullable: true,
+				},
+				showOnRegistration: {
+					type: 'boolean',
+				},
+				showOnOfflineForm: {
+					type: 'boolean',
+				},
+				requestTagsBeforeClosingChat: {
+					type: 'boolean',
+					nullable: true,
+				},
+				chatClosingTags: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				fallbackForwardDepartment: {
+					type: 'string',
+					nullable: true,
+				},
+				email: {
+					type: 'string',
+				},
+			},
+			required: ['name', 'email', 'enabled', 'showOnRegistration', 'showOnOfflineForm'],
+			additionalProperties: true,
+		},
+		agents: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					agentId: {
+						type: 'string',
+					},
+					count: {
+						type: 'number',
+						nullable: true,
+					},
+					order: {
+						type: 'number',
+						nullable: true,
+					},
+				},
+				required: ['agentId'],
+				additionalProperties: false,
+			},
+			nullable: true,
+		},
+	},
+	required: ['department'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatDepartmentProps = ajv.compile<POSTLivechatDepartmentProps>(POSTLivechatDepartmentSchema);
 
 type LivechatDepartmentsAvailableByUnitIdProps = PaginatedRequest<{ text: string; onlyMyDepartments?: 'true' | 'false' }>;
 
@@ -452,7 +577,7 @@ const LivechatDepartmentsByUnitSchema = {
 
 export const isLivechatDepartmentsByUnitProps = ajv.compile<LivechatDepartmentsByUnitProps>(LivechatDepartmentsByUnitSchema);
 
-type LivechatDepartmentsByUnitIdProps = PaginatedRequest<{}>;
+type LivechatDepartmentsByUnitIdProps = PaginatedRequest;
 
 const LivechatDepartmentsByUnitIdSchema = {
 	type: 'object',
@@ -941,6 +1066,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/room.join': {
 		GET: (params: LiveChatRoomJoin) => { success: boolean };
+	};
+	'/v1/livechat/room.forward': {
+		POST: (params: LiveChatRoomForward) => { success: boolean };
 	};
 	'/v1/livechat/monitors': {
 		GET: (params: LivechatMonitorsListProps) => PaginatedResult<{

@@ -1,5 +1,5 @@
 import { ResponsiveHeatMap } from '@nivo/heatmap';
-import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
@@ -43,11 +43,19 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 
 		const values = Array.from(
 			{ length: 24 },
-			(_, hour) =>
-				({
-					hour: String(hour),
-					...dates.map((date) => ({ [date.toISOString()]: 0 })).reduce((obj, elem) => ({ ...obj, ...elem }), {}),
-				} as { [date: string]: number } & { hour: string }),
+			(
+				_,
+				hour,
+			): {
+				id: string;
+				data: {
+					x: string;
+					y: number;
+				}[];
+			} => ({
+				id: String(hour),
+				data: dates.map((date) => ({ x: date.toISOString(), y: 0 })),
+			}),
 		);
 
 		const timezoneOffset = moment().utcOffset() / 60;
@@ -56,7 +64,10 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 			const date = utc ? moment.utc([year, month - 1, day, hour]) : moment([year, month - 1, day, hour]).add(timezoneOffset, 'hours');
 
 			if (utc || (!date.isSame(data.end) && !date.clone().startOf('day').isSame(data.start))) {
-				values[date.hour()][date.endOf('day').toISOString()] += users;
+				const dataPoint = values[date.hour()].data.find((point) => point.x === date.endOf('day').toISOString());
+				if (dataPoint) {
+					dataPoint.y += users;
+				}
 			}
 		}
 
@@ -99,25 +110,27 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 							>
 								<ResponsiveHeatMap
 									data={values}
-									indexBy='hour'
-									keys={dates}
-									padding={4}
+									xInnerPadding={0.1}
+									yInnerPadding={0.25}
 									margin={{
 										// TODO: Get it from theme
 										left: 60,
 										bottom: 20,
 									}}
-									colors={[
-										// TODO: Get it from theme
-										colors.p100,
-										colors.p200,
-										colors.p300,
-										colors.p400,
-										colors.p500,
-										colors.p600,
-										colors.p700,
-									]}
-									cellOpacity={1}
+									colors={{
+										type: 'quantize',
+										colors: [
+											// TODO: Get it from theme
+											colors.p100,
+											colors.p200,
+											colors.p300,
+											colors.p400,
+											colors.p500,
+											colors.p600,
+											colors.p700,
+										],
+									}}
+									emptyColor='transparent'
 									enableLabels={false}
 									axisTop={null}
 									axisRight={null}
@@ -140,8 +153,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 									}}
 									hoverTarget='cell'
 									animate={dates && dates.length <= 7}
-									motionStiffness={90}
-									motionDamping={15}
+									motionConfig='stiff'
 									theme={{
 										// TODO: Get it from theme
 										axis: {
@@ -166,11 +178,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 											},
 										},
 									}}
-									tooltip={({ value }): ReactElement => (
-										<Box fontScale='p1m' color='alternative'>
-											{t('Value_users', { value })}
-										</Box>
-									)}
+									tooltip={({ cell }): ReactElement => <Tooltip>{t('Value_users', { value: cell.data.y })}</Tooltip>}
 								/>
 							</Box>
 						</Box>
