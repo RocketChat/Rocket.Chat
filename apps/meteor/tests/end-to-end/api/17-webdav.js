@@ -25,25 +25,25 @@ describe('[Webdav]', function () {
 	describe('/webdav.removeWebdavAccount', () => {
 		const accountId = findWebdavAccountsByUserId({ uid: credentials['X-User-Id'] })[0].username;
 
-		it('should return my webdav accounts', (done) => {
-			request
-				.post(api('webdav.removeWebdavAccount'))
-				.set(credentials)
-				.send({
-					accountId,
-				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('accounts').and.to.be.a('array');
-				})
-				.end(done);
-		});
 		it('should return an error when send an invalid request', (done) => {
 			request
 				.post(api('webdav.removeWebdavAccount'))
 				.set(credentials)
 				.send({})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+		it('should return an error when using an invalid account id', (done) => {
+			request
+				.post(api('webdav.removeWebdavAccount'))
+				.set(credentials)
+				.send({
+					accountId: 'invalid-id',
+				})
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
