@@ -18,7 +18,7 @@ export const useResetE2EEKeyAction = (userId: IUser['_id']): Action | undefined 
 			await resetE2EEKeyRequest({ userId });
 			dispatchToastMessage({ type: 'success', message: t('Users_key_has_been_reset') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as Error });
+			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
 			setModal();
 		}

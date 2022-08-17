@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -73,7 +72,7 @@ callbacks.add(
 			cbLogger.debug('Callback with error. Agent reached max amount of simultaneous chats');
 			callbacks.run('livechat.onMaxNumberSimultaneousChatsReached', inquiry);
 			if (options.clientAction && !options.forwardingToDepartment) {
-				throw new Meteor.Error('error-max-number-simultaneous-chats-reached', 'Not allowed');
+				throw new Error('error-max-number-simultaneous-chats-reached');
 			}
 
 			return null;
