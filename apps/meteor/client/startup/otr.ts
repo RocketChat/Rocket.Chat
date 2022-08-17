@@ -21,31 +21,31 @@ Meteor.startup(() => {
 				if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
 					return;
 				}
-				const OTRInstace = OTR.getInstanceByRoomId(data.roomId);
+				const OTRInstance = OTR.getInstanceByRoomId(data.roomId);
 
-				if (!OTRInstace) {
+				if (!OTRInstance) {
 					return;
 				}
 
-				OTRInstace.onUserStream(type, data);
+				OTRInstance.onUserStream(type, data);
 			});
 		}
 	});
 
 	onClientBeforeSendMessage.use(async (message: IMessage) => {
-		const OTRInstace = OTR.getInstanceByRoomId(message.rid);
+		const OTRInstance = OTR.getInstanceByRoomId(message.rid);
 
-		if (message.rid && OTRInstace && OTRInstace.getState() === OtrRoomState.ESTABLISHED) {
-			const msg = await OTRInstace.encrypt(message);
+		if (message.rid && OTRInstance && OTRInstance.getState() === OtrRoomState.ESTABLISHED) {
+			const msg = await OTRInstance.encrypt(message);
 			return { ...message, msg, t: 'otr' };
 		}
 		return message;
 	});
 
 	onClientMessageReceived.use(async (message: IMessage & { notification?: boolean }) => {
-		const OTRInstace = OTR.getInstanceByRoomId(message.rid);
+		const OTRInstance = OTR.getInstanceByRoomId(message.rid);
 
-		if (message.rid && OTRInstace && OTRInstace.getState() === OtrRoomState.ESTABLISHED) {
+		if (message.rid && OTRInstance && OTRInstance.getState() === OtrRoomState.ESTABLISHED) {
 			if (message?.notification) {
 				message.msg = t('Encrypted_message');
 				return message;
@@ -53,8 +53,8 @@ Meteor.startup(() => {
 			if (message.t !== 'otr') {
 				return message;
 			}
-			const otrRoom = OTRInstace;
-			const decrypted = await otrRoom.decrypt(message.msg);
+      
+			const decrypted = await OTRInstance.decrypt(message.msg);
 			if (typeof decrypted === 'string') {
 				return { ...message, msg: decrypted };
 			}
@@ -63,14 +63,14 @@ Meteor.startup(() => {
 			if (ts) message.ts = ts;
 
 			if (message.otrAck) {
-				const decryptedAck = await otrRoom.decrypt(message.otrAck);
+				const decryptedAck = await OTRInstance.decrypt(message.otrAck);
 				if (typeof decryptedAck === 'string') {
 					return { ...message, msg: decryptedAck };
 				}
 				const { text: otrAckText } = decryptedAck;
 				if (ack === otrAckText) message.t = 'otr-ack';
 			} else if (userId !== Meteor.userId()) {
-				const encryptedAck = await otrRoom.encryptText(ack);
+				const encryptedAck = await OTRInstance.encryptText(ack);
 
 				Meteor.call('updateOTRAck', { message, ack: encryptedAck });
 			}
