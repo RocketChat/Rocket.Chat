@@ -66,7 +66,7 @@ export const ReadReceipt = {
 		this.storeReadReceipts(
 			messages.filter((message) => missingReceipts.includes(message._id)),
 			roomId,
-			userId
+			userId,
 		);
 	},
 
