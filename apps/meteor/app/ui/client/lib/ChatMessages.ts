@@ -268,7 +268,7 @@ export class ChatMessages {
 		}
 
 		if (!this.input) {
-			return;
+			throw new Error('Input is not defined');
 		}
 
 		messageBoxState.save({ rid, tmid }, this.input);
@@ -349,11 +349,7 @@ export class ChatMessages {
 			return;
 		}
 
-		if (!this.editing.id) {
-			return;
-		}
-
-		if (await this.processMessageEditing({ ...message, _id: this.editing.id })) {
+		if (this.editing.id && (await this.processMessageEditing({ ...message, _id: this.editing.id }))) {
 			return;
 		}
 
@@ -475,6 +471,7 @@ export class ChatMessages {
 				}
 
 				if (!settings.get('Message_AllowUnrecognizedSlashCommand')) {
+					console.error(TAPi18n.__('No_such_command', { command: escapeHTML(command) }));
 					const invalidCommandMsg = {
 						_id: Random.id(),
 						rid: msgObject.rid,

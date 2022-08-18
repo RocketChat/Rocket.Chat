@@ -82,6 +82,7 @@ export interface ServerMethods {
 		hasAdmin: boolean;
 	};
 	'getSingleMessage': (mid: IMessage['_id']) => IMessage;
+	'getThreadMessages': (params: { tmid: IMessage['_id'] }) => IMessage[];
 	'getUsersOfRoom': (...args: any[]) => any;
 	'getWebdavFileList': GetWebdavFileList;
 	'getWebdavFilePreview': GetWebdavFilePreview;

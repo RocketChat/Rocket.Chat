@@ -78,6 +78,12 @@ export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreacti
 	return collection.direct.upsert({ _id }, messageToUpsert);
 };
 
+/**
+ * @param {Object} options
+ * @param {IMessage[]} options.msgs
+ * @param {ISubscription} [options.subscription]
+ * @param {import('meteor/mongo').Mongo.Collection=} collection
+ */
 export function upsertMessageBulk({ msgs, subscription }, collection = ChatMessage) {
 	const uid = Tracker.nonreactive(() => Meteor.userId());
 	const { queries } = ChatMessage;
