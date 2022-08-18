@@ -16,6 +16,7 @@ export type UsersSaveUserProfileParamsPOST = {
 		typedPassword?: string;
 		newPassword?: string;
 	};
+	customFields?: Record<string, unknown>;
 };
 
 const UsersSaveUserProfileParamsPostSchema = {
@@ -63,6 +64,10 @@ const UsersSaveUserProfileParamsPostSchema = {
 			},
 			required: [],
 			additionalProperties: false,
+		},
+		customFields: {
+			type: 'object',
+			nullable: true,
 		},
 	},
 	required: ['data'],

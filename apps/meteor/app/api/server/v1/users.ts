@@ -132,15 +132,15 @@ API.v1.addRoute(
 	{
 		post() {
 			const userData = {
-				email: this.bodyParams.data.email,
-				realname: this.bodyParams.data.realname,
-				username: this.bodyParams.data.username,
-				nickname: this.bodyParams.data.nickname,
-				statusText: this.bodyParams.data.statusText,
-				statusType: this.bodyParams.data.statusType,
-				bio: this.bodyParams.data.bio,
-				newPassword: this.bodyParams.data.newPassword,
-				typedPassword: this.bodyParams.data.currentPassword,
+				email: this.bodyParams.userData.email,
+				realname: this.bodyParams.userData.realname,
+				username: this.bodyParams.userData.username,
+				nickname: this.bodyParams.userData.nickname,
+				statusText: this.bodyParams.userData.statusText,
+				statusType: this.bodyParams.userData.statusType,
+				bio: this.bodyParams.userData.bio,
+				newPassword: this.bodyParams.userData.newPassword,
+				typedPassword: this.bodyParams.userData.currentPassword,
 			};
 
 			// saveUserProfile now uses the default two factor authentication procedures, so we need to provide that
