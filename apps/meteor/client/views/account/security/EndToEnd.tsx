@@ -46,7 +46,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 			reset();
 			dispatchToastMessage({ type: 'success', message: t('Encryption_key_saved_successfully') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, password, reset, t]);
 
@@ -58,7 +58,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 				handleLogout();
 			}
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, resetE2eKey, handleLogout, t]);
 
