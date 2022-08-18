@@ -116,7 +116,7 @@ function messageboxData(this: { _id: string }) {
 		subscription: subscription.get(),
 		isEmbedded,
 		showFormattingTips: showFormattingTips && !isEmbedded,
-		onInputChanged: (input: HTMLInputElement) => {
+		onInputChanged: (input: HTMLTextAreaElement) => {
 			if (!chatMessages[rid]) {
 				return;
 			}
@@ -124,12 +124,21 @@ function messageboxData(this: { _id: string }) {
 			chatMessages[rid].initializeInput(input, { rid });
 		},
 		onResize: () => sendToBottomIfNecessary?.(),
-		onKeyUp: (...args: unknown[]) => chatMessages[rid]?.keyup(...args),
-		onKeyDown: (...args: unknown[]) => chatMessages[rid]?.keydown(...args),
+		onKeyUp: (
+			event: KeyboardEvent,
+			{
+				rid,
+				tmid,
+			}: {
+				rid: string;
+				tmid?: string | undefined;
+			},
+		) => chatMessages[rid]?.keyup(event, { rid, tmid }),
+		onKeyDown: (event: KeyboardEvent) => chatMessages[rid]?.keydown(event),
 		onSend: (
 			event: Event,
 			params: {
-				rid?: string;
+				rid: string;
 				tmid?: string;
 				value: string;
 				tshow: unknown;

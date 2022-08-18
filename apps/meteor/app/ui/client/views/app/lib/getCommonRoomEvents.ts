@@ -2,6 +2,7 @@ import Clipboard from 'clipboard';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { popover, MessageAction } from '../../../../../ui-utils/client';
@@ -210,12 +211,12 @@ function handleRespondWithQuotedMessageActionButtonClick(event: JQuery.ClickEven
 async function handleSendMessageActionButtonClick(event: JQuery.ClickEvent, instance: CommonRoomTemplateInstance) {
 	const { rid } = instance.data;
 	const msg = event.currentTarget.value;
-	let msgObject = { _id: Random.id(), rid, msg };
+	let msgObject = { _id: Random.id(), rid, msg } as IMessage;
 	if (!msg) {
 		return;
 	}
 
-	msgObject = await onClientBeforeSendMessage(msgObject);
+	msgObject = (await onClientBeforeSendMessage(msgObject)) as IMessage;
 
 	const _chatMessages = chatMessages[rid];
 	if (_chatMessages && (await _chatMessages.processSlashCommand(msgObject))) {

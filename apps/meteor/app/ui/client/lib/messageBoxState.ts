@@ -13,18 +13,18 @@ export const messageBoxState = {
 		return Meteor._localStorage.getItem(key);
 	},
 
-	restore: ({ rid, tmid }: { rid?: IMessage['rid']; tmid?: IMessage['tmid'] }, input: HTMLInputElement) => {
+	restore: ({ rid, tmid }: { rid?: IMessage['rid']; tmid?: IMessage['tmid'] }, input: HTMLTextAreaElement) => {
 		const value = messageBoxState.restoreValue({ rid, tmid });
 		if (typeof value === 'string') {
 			messageBoxState.set(input, value);
 		}
 	},
 
-	save: ({ rid, tmid }: { rid?: IMessage['rid']; tmid?: IMessage['tmid'] }, input: HTMLInputElement) => {
+	save: ({ rid, tmid }: { rid?: IMessage['rid']; tmid?: IMessage['tmid'] }, input: HTMLTextAreaElement) => {
 		messageBoxState.saveValue({ rid, tmid }, input.value);
 	},
 
-	set: (input: HTMLInputElement, value: string) => {
+	set: (input: HTMLTextAreaElement, value: string) => {
 		input.value = value;
 		$(input).trigger('change').trigger('input');
 	},

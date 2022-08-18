@@ -19,7 +19,7 @@ import './components/selectDropdown.html';
 
 import './components/tooltip';
 
-export { ChatMessages } from './lib/chatMessages';
+export { ChatMessages } from './lib/ChatMessages';
 export { fileUpload } from './lib/fileUpload';
 export { UserAction, USER_ACTIVITIES } from './lib/UserAction';
 export { KonchatNotification } from './lib/notification';

@@ -67,6 +67,7 @@ export interface ServerMethods {
 	'deleteCustomSound': (...args: any[]) => any;
 	'deleteCustomUserStatus': (...args: any[]) => any;
 	'deleteFileMessage': (...args: any[]) => any;
+	'deleteMessage': ({ _id }: Pick<IMessage, '_id'>) => void;
 	'deleteOAuthApp': (...args: any[]) => any;
 	'deleteUserOwnAccount': (...args: any[]) => any;
 	'e2e.resetOwnE2EKey': (...args: any[]) => any;
@@ -80,6 +81,7 @@ export interface ServerMethods {
 		serverAlreadyRegistered: boolean;
 		hasAdmin: boolean;
 	};
+	'getSingleMessage': (mid: IMessage['_id']) => IMessage;
 	'getUsersOfRoom': (...args: any[]) => any;
 	'getWebdavFileList': GetWebdavFileList;
 	'getWebdavFilePreview': GetWebdavFilePreview;
@@ -118,6 +120,7 @@ export interface ServerMethods {
 	'setAdminStatus': (...args: any[]) => any;
 	'setAsset': (...args: any[]) => any;
 	'setAvatarFromService': (...args: any[]) => any;
+	'setReaction': (reaction: string, mid: IMessage['_id']) => void;
 	'setUsername': (...args: any[]) => any;
 	'setUserPassword': (...args: any[]) => any;
 	'setUserStatus': (statusType: IUser['status'], statusText: IUser['statusText']) => void;
@@ -128,6 +131,7 @@ export interface ServerMethods {
 	'unreadMessages': (...args: any[]) => any;
 	'unsetAsset': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
+	'updateMessage': (message: IMessage) => void;
 	'updateOAuthApp': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;

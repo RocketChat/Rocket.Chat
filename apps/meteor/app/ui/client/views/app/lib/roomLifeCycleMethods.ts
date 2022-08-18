@@ -11,7 +11,7 @@ import type { IEditedMessage, IMessage, IRoom } from '@rocket.chat/core-typings'
 import { ChatMessage, RoomRoles, Subscriptions, Rooms } from '../../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../../ui-utils/client';
 import { callbacks } from '../../../../../../lib/callbacks';
-import { ChatMessages } from '../../../lib/chatMessages';
+import { ChatMessages } from '../../../lib/ChatMessages';
 import { fileUpload } from '../../../lib/fileUpload';
 import { RoomManager as NewRoomManager } from '../../../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
@@ -229,7 +229,7 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 	wrapper.addEventListener('MessageGroup', afterMessageGroup);
 
 	chatMessages[rid].initializeWrapper(this.find('.wrapper'));
-	chatMessages[rid].initializeInput(this.find('.js-input-message') as HTMLInputElement, { rid });
+	chatMessages[rid].initializeInput(this.find('.js-input-message') as HTMLTextAreaElement, { rid });
 
 	const wrapperUl = this.find('.wrapper > ul');
 	const newMessage = this.find('.new-message');
