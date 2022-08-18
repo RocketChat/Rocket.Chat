@@ -39,7 +39,7 @@ export class HomeSidenav {
 	async openChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
 		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
+		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
 	}
 
 	async createPublicChannel(name: string) {
