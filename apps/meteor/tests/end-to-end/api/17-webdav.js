@@ -39,7 +39,7 @@ describe('[Webdav]', function () {
 				.post(api('webdav.removeWebdavAccount'))
 				.set(credentials)
 				.send({
-					accountId: 'invalid-id',
+					accountId: {},
 				})
 				.expect(400)
 				.expect((res) => {
