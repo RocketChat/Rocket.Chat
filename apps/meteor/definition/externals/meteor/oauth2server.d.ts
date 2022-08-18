@@ -1,7 +1,7 @@
 declare module 'meteor/rocketchat:oauth2-server' {
-	import { Mongo } from 'meteor/mongo';
-	import { HandleFunction } from 'connect';
-	import { Request, Response } from 'express';
+	import type { Mongo } from 'meteor/mongo';
+	import type { HandleFunction } from 'connect';
+	import type { Request, Response } from 'express';
 
 	export class OAuth2Server {
 		constructor(opts: {

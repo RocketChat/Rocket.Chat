@@ -1,11 +1,11 @@
 import { ResponsiveHeatMap } from '@nivo/heatmap';
-import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
-import Section from '../Section';
+import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import DownloadDataButton from '../dataView/DownloadDataButton';
 import PeriodSelector from '../dataView/PeriodSelector';
 import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
@@ -43,11 +43,19 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 
 		const values = Array.from(
 			{ length: 24 },
-			(_, hour) =>
-				({
-					hour: String(hour),
-					...dates.map((date) => ({ [date.toISOString()]: 0 })).reduce((obj, elem) => ({ ...obj, ...elem }), {}),
-				} as { [date: string]: number } & { hour: string }),
+			(
+				_,
+				hour,
+			): {
+				id: string;
+				data: {
+					x: string;
+					y: number;
+				}[];
+			} => ({
+				id: String(hour),
+				data: dates.map((date) => ({ x: date.toISOString(), y: 0 })),
+			}),
 		);
 
 		const timezoneOffset = moment().utcOffset() / 60;
@@ -56,7 +64,10 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 			const date = utc ? moment.utc([year, month - 1, day, hour]) : moment([year, month - 1, day, hour]).add(timezoneOffset, 'hours');
 
 			if (utc || (!date.isSame(data.end) && !date.clone().startOf('day').isSame(data.start))) {
-				values[date.hour()][date.endOf('day').toISOString()] += users;
+				const dataPoint = values[date.hour()].data.find((point) => point.x === date.endOf('day').toISOString());
+				if (dataPoint) {
+					dataPoint.y += users;
+				}
 			}
 		}
 
@@ -64,28 +75,25 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 	}, [data, utc]);
 
 	return (
-		<Section
-			title={t('Users_by_time_of_day')}
-			filter={
-				<>
-					<PeriodSelector {...periodSelectorProps} />
-					<DownloadDataButton
-						attachmentName={`UsersByTimeOfTheDaySection_start_${data?.start}_end_${data?.end}`}
-						headers={['Date', 'Users']}
-						dataAvailable={!!data}
-						dataExtractor={(): unknown[][] | undefined =>
-							data?.week
-								?.map(({ users, hour, day, month, year }) => ({
-									date: moment([year, month - 1, day, hour, 0, 0, 0]),
-									users,
-								}))
-								?.sort((a, b) => a.date.diff(b.date))
-								?.map(({ date, users }) => [date.toISOString(), users])
-						}
-					/>
-				</>
-			}
-		>
+		<>
+			<EngagementDashboardCardFilter>
+				<PeriodSelector {...periodSelectorProps} />
+				<DownloadDataButton
+					attachmentName={`UsersByTimeOfTheDaySection_start_${data?.start}_end_${data?.end}`}
+					headers={['Date', 'Users']}
+					dataAvailable={!!data}
+					dataExtractor={(): unknown[][] | undefined =>
+						data?.week
+							?.map(({ users, hour, day, month, year }) => ({
+								date: moment([year, month - 1, day, hour, 0, 0, 0]),
+								users,
+							}))
+							?.sort((a, b) => a.date.diff(b.date))
+							?.map(({ date, users }) => [date.toISOString(), users])
+					}
+				/>
+			</EngagementDashboardCardFilter>
+
 			{values ? (
 				<Box display='flex' style={{ height: 696 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
@@ -99,25 +107,27 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 							>
 								<ResponsiveHeatMap
 									data={values}
-									indexBy='hour'
-									keys={dates}
-									padding={4}
+									xInnerPadding={0.1}
+									yInnerPadding={0.25}
 									margin={{
 										// TODO: Get it from theme
 										left: 60,
 										bottom: 20,
 									}}
-									colors={[
-										// TODO: Get it from theme
-										colors.p100,
-										colors.p200,
-										colors.p300,
-										colors.p400,
-										colors.p500,
-										colors.p600,
-										colors.p700,
-									]}
-									cellOpacity={1}
+									colors={{
+										type: 'quantize',
+										colors: [
+											// TODO: Get it from theme
+											colors.p100,
+											colors.p200,
+											colors.p300,
+											colors.p400,
+											colors.p500,
+											colors.p600,
+											colors.p700,
+										],
+									}}
+									emptyColor='transparent'
 									enableLabels={false}
 									axisTop={null}
 									axisRight={null}
@@ -140,8 +150,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 									}}
 									hoverTarget='cell'
 									animate={dates && dates.length <= 7}
-									motionStiffness={90}
-									motionDamping={15}
+									motionConfig='stiff'
 									theme={{
 										// TODO: Get it from theme
 										axis: {
@@ -166,11 +175,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 											},
 										},
 									}}
-									tooltip={({ value }): ReactElement => (
-										<Box fontScale='p1m' color='alternative'>
-											{t('Value_users', { value })}
-										</Box>
-									)}
+									tooltip={({ cell }): ReactElement => <Tooltip>{t('Value_users', { value: cell.data.y })}</Tooltip>}
 								/>
 							</Box>
 						</Box>
@@ -179,7 +184,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 			) : (
 				<Skeleton variant='rect' height={696} />
 			)}
-		</Section>
+		</>
 	);
 };
 

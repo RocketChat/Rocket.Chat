@@ -224,6 +224,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'remove-slackbridge-links', roles: ['admin'] },
 		{ _id: 'view-import-operations', roles: ['admin'] },
 		{ _id: 'clear-oembed-cache', roles: ['admin'] },
+		{ _id: 'videoconf-ring-users', roles: ['admin', 'owner', 'moderator', 'user'] },
 	];
 
 	for await (const permission of permissions) {
@@ -278,7 +279,7 @@ export const upsertPermissions = async (): Promise<void> => {
 			roles: [],
 		};
 		// copy previously assigned roles if available
-		if (previousSettingPermissions[permissionId] && previousSettingPermissions[permissionId].roles) {
+		if (previousSettingPermissions[permissionId]?.roles) {
 			permission.roles = previousSettingPermissions[permissionId].roles;
 		}
 		if (setting.group) {
@@ -293,17 +294,17 @@ export const upsertPermissions = async (): Promise<void> => {
 				_id: permissionId,
 				...permission,
 			},
-			{ fields: { _id: 1 } },
+			{ projection: { _id: 1 } },
 		);
 
 		if (!existent) {
 			try {
-				await Permissions.update({ _id: permissionId }, { $set: permission }, { upsert: true });
+				await Permissions.updateOne({ _id: permissionId }, { $set: permission }, { upsert: true });
 			} catch (e) {
 				if (!(e as Error).message.includes('E11000')) {
 					// E11000 refers to a MongoDB error that can occur when using unique indexes for upserts
 					// https://docs.mongodb.com/manual/reference/method/db.collection.update/#use-unique-indexes
-					await Permissions.update({ _id: permissionId }, { $set: permission }, { upsert: true });
+					await Permissions.updateOne({ _id: permissionId }, { $set: permission }, { upsert: true });
 				}
 			}
 		}

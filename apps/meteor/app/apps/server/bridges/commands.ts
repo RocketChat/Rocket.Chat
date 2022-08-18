@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { SlashCommandContext, ISlashCommand, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
+import type { ISlashCommand, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
+import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
 import type { IMessage, RequiredField, SlashCommand } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../../utils/server';
 import { Utilities } from '../../lib/misc/Utilities';
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 import { parseParameters } from '../../../../lib/utils/parseParameters';
 
 export class AppCommandsBridge extends CommandBridge {

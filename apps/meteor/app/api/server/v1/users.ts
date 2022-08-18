@@ -16,7 +16,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { IExportOperation, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
+import type { IExportOperation, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
 
 import { Users, Subscriptions } from '../../../models/server';
@@ -366,6 +366,7 @@ API.v1.addRoute(
 								t: 1,
 								roles: 1,
 								unread: 1,
+								federated: 1,
 							},
 							sort: {
 								t: 1,
@@ -398,7 +399,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const nonEmptyQuery = getNonEmptyQuery(query);
+			const nonEmptyQuery = getNonEmptyQuery(query, hasPermission(this.userId, 'view-full-other-user-info'));
 			const nonEmptyFields = getNonEmptyFields(fields);
 
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
@@ -413,6 +414,7 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
 						inclusiveFieldsKeys.includes('username') && 'username.*',
 						inclusiveFieldsKeys.includes('name') && 'name.*',
+						inclusiveFieldsKeys.includes('type') && 'type.*',
 					].filter(Boolean) as string[],
 					this.queryOperations,
 				)
@@ -976,10 +978,16 @@ API.v1.addRoute(
 		post() {
 			check(
 				this.bodyParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe(String),
-					message: Match.Maybe(String),
-				}),
+				Match.OneOf(
+					Match.ObjectIncluding({
+						status: Match.Maybe(String),
+						message: String,
+					}),
+					Match.ObjectIncluding({
+						status: String,
+						message: Match.Maybe(String),
+					}),
+				),
 			);
 
 			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {

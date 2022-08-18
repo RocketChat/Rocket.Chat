@@ -1,5 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { getPeriodRange, Period } from '../dataView/periods';
 
@@ -15,8 +15,8 @@ export const useUsersByTimeOfTheDay = ({ period, utc }: UseUsersByTimeOfTheDayOp
 			const { start, end } = getPeriodRange(period, utc);
 
 			const response = await getUsersByTimeOfTheDay({
-				start,
-				end,
+				start: start.toISOString(),
+				end: end.toISOString(),
 			});
 
 			return response
@@ -29,6 +29,7 @@ export const useUsersByTimeOfTheDay = ({ period, utc }: UseUsersByTimeOfTheDayOp
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
 		},
 	);
 };

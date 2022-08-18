@@ -1,7 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { IUser } from '@rocket.chat/core-typings';
-import { Filter } from 'mongodb';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { Filter } from 'mongodb';
 import { Users } from '@rocket.chat/models';
+import type { Mongo } from 'meteor/mongo';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
@@ -52,9 +53,8 @@ export async function findUsersToAutocomplete({
 
 /**
  * Returns a new query object with the inclusive fields only
- * @param {Object} query search query for matching rows
  */
-export function getInclusiveFields(query: { [k: string]: 1 }): {} {
+export function getInclusiveFields(query: Record<string, 1 | 0>): Record<string, 1> {
 	const newQuery = Object.create(null);
 
 	for (const [key, value] of Object.entries(query)) {
@@ -68,9 +68,9 @@ export function getInclusiveFields(query: { [k: string]: 1 }): {} {
 
 /**
  * get the default fields if **fields** are empty (`{}`) or `undefined`/`null`
- * @param {Object|null|undefined} fields the fields from parsed jsonQuery
+ * @param fields the fields from parsed jsonQuery
  */
-export function getNonEmptyFields(fields: { [k: string]: 1 | 0 }): { [k: string]: 1 } {
+export function getNonEmptyFields(fields: Record<string, 1 | 0>): Record<string, 1 | 0> {
 	const defaultFields = {
 		name: 1,
 		username: 1,
@@ -80,6 +80,7 @@ export function getNonEmptyFields(fields: { [k: string]: 1 | 0 }): { [k: string]
 		active: 1,
 		avatarETag: 1,
 		lastLogin: 1,
+		type: 1,
 	} as const;
 
 	if (!fields || Object.keys(fields).length === 0) {
@@ -89,28 +90,18 @@ export function getNonEmptyFields(fields: { [k: string]: 1 | 0 }): { [k: string]
 	return { ...defaultFields, ...fields };
 }
 
-const _defaultQuery = {
-	$or: [
-		{ 'emails.address': { $regex: '', $options: 'i' } },
-		{ username: { $regex: '', $options: 'i' } },
-		{ name: { $regex: '', $options: 'i' } },
-	],
-};
-
 /**
  * get the default query if **query** is empty (`{}`) or `undefined`/`null`
- * @param {Object|null|undefined} query the query from parsed jsonQuery
+ * @param query the query from parsed jsonQuery
  */
-
-type Query = { [k: string]: unknown };
-export function getNonEmptyQuery(query: Query): typeof _defaultQuery | (typeof _defaultQuery & Query) {
-	const defaultQuery = {
-		$or: [
-			{ 'emails.address': { $regex: '', $options: 'i' } },
-			{ username: { $regex: '', $options: 'i' } },
-			{ name: { $regex: '', $options: 'i' } },
-		],
+export function getNonEmptyQuery<T extends IUser>(query: Mongo.Query<T> | undefined | null, canSeeAllUserInfo?: boolean): Mongo.Query<T> {
+	const defaultQuery: Mongo.Query<IUser> = {
+		$or: [{ username: { $regex: '', $options: 'i' } }, { name: { $regex: '', $options: 'i' } }],
 	};
+
+	if (canSeeAllUserInfo) {
+		defaultQuery.$or?.push({ 'emails.address': { $regex: '', $options: 'i' } });
+	}
 
 	if (!query || Object.keys(query).length === 0) {
 		return defaultQuery;

@@ -4,7 +4,7 @@ import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/ext
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
-import type { AppScreenshot, App } from '@rocket.chat/core-typings';
+import type { AppScreenshot, App, FeaturedAppsSections } from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
 	'/apps/externalComponents': {
@@ -87,6 +87,18 @@ export type AppsEndpoints = {
 	'/apps/:id/status': {
 		POST: (params: { status: AppStatus }) => {
 			status: string;
+		};
+	};
+
+	'/apps/:id/versions': {
+		GET: () => {
+			apps: App[];
+		};
+	};
+
+	'/apps/featured': {
+		GET: () => {
+			sections: FeaturedAppsSections;
 		};
 	};
 

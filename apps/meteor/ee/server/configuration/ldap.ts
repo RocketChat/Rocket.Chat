@@ -3,7 +3,7 @@ import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
 
 import { LDAPEE } from '../sdk';
 import { settings } from '../../../app/settings/server';
-import { LDAPConnection } from '../../../server/lib/ldap/Connection';
+import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
 import { cronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 import { LDAPEEManager } from '../lib/ldap/Manager';
@@ -16,7 +16,7 @@ Meteor.startup(() =>
 		addSettings();
 
 		// Configure background sync cronjob
-		function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => {}): () => void {
+		function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => void): () => void {
 			let lastSchedule: string;
 			return function addCronJobDebounced(): void {
 				if (settings.get('LDAP_Enable') !== true || settings.get(enableSetting) !== true) {

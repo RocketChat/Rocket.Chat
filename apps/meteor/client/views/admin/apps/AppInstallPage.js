@@ -84,7 +84,7 @@ function AppInstallPage() {
 				<AppPermissionsReviewModal
 					appPermissions={permissions}
 					cancel={cancelAction}
-					confirm={(permissions) => sendFile(permissions, appFile, appId)}
+					confirm={(permissionsGranted) => sendFile(permissionsGranted, appFile, appId)}
 				/>,
 			);
 		}
