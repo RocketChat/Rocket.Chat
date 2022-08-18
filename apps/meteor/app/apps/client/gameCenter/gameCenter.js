@@ -3,15 +3,15 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import { modal } from '../../../ui-utils/client';
 import { APIClient, t } from '../../../utils/client';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 import './gameCenter.html';
-import { handleError } from '../../../../client/lib/utils/handleError';
 
 const getExternalComponents = async (instance) => {
 	try {
 		const { externalComponents } = await APIClient.get('/apps/externalComponents');
 		instance.games.set(externalComponents);
-	} catch (e) {
-		handleError(e);
+	} catch (error) {
+		dispatchToastMessage({ type: 'error', message: error });
 	}
 
 	instance.isLoading.set(false);

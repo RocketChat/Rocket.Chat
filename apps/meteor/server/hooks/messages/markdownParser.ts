@@ -16,10 +16,12 @@ if (process.env.DISABLE_MESSAGE_PARSER !== 'true') {
 				message.md = parse(message.msg, {
 					colors: settings.get('HexColorPreview_Enabled'),
 					emoticons: true,
-					katex: {
-						dollarSyntax: settings.get('Katex_Dollar_Syntax'),
-						parenthesisSyntax: settings.get('Katex_Parenthesis_Syntax'),
-					},
+					...(settings.get('Katex_Enabled') && {
+						katex: {
+							dollarSyntax: settings.get('Katex_Dollar_Syntax'),
+							parenthesisSyntax: settings.get('Katex_Parenthesis_Syntax'),
+						},
+					}),
 				});
 			} catch (e) {
 				SystemLogger.error(e); // errors logged while the parser is at experimental stage

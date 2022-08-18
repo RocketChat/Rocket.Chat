@@ -98,36 +98,40 @@ export const RoomManager = new (function () {
 
 						if (room != null) {
 							if (record.streamActive !== true) {
-								record.streamActive = true;
-								msgStream.on(record.rid, async (msg) => {
-									// Should not send message to room if room has not loaded all the current messages
-									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
-										return;
-									}
-									// Do not load command messages into channel
-									if (msg.t !== 'command') {
-										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
-										const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
-										upsertMessage({ msg, subscription });
-
-										msg.room = {
-											type,
-											name,
-										};
-										if (isNew) {
-											callbacks.run('streamNewMessage', msg);
+								msgStream
+									.on(record.rid, async (msg) => {
+										// Should not send message to room if room has not loaded all the current messages
+										if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
+											return;
 										}
-									}
+										// Do not load command messages into channel
+										if (msg.t !== 'command') {
+											const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+											const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
+											upsertMessage({ msg, subscription });
 
-									msg.name = room.name;
-									Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+											msg.room = {
+												type,
+												name,
+											};
+											if (isNew) {
+												callbacks.run('streamNewMessage', msg);
+											}
+										}
 
-									handleTrackSettingsChange(msg);
+										msg.name = room.name;
+										Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
-									callbacks.run('streamMessage', msg);
+										handleTrackSettingsChange(msg);
 
-									return fireGlobalEvent('new-message', msg);
-								});
+										callbacks.run('streamMessage', msg);
+
+										return fireGlobalEvent('new-message', msg);
+									})
+									.then(() => {
+										record.streamActive = true;
+										Dep.changed();
+									});
 								Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 								Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 							}
@@ -141,6 +145,7 @@ export const RoomManager = new (function () {
 		}
 
 		getOpenedRoomByRid(rid) {
+			Dep.depend();
 			return Object.keys(openedRooms)
 				.map((typeName) => openedRooms[typeName])
 				.find((openedRoom) => openedRoom.rid === rid);
