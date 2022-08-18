@@ -92,7 +92,7 @@ export async function configureEmailInboxes(): Promise<void> {
 }
 
 Meteor.startup(() => {
-	settings.watch('Livechat_Routing_Method', (_) => {
+	settings.watchOnce('Livechat_Routing_Method', (_) => {
 		configureEmailInboxes();
 	});
 });
