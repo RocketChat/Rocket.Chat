@@ -56,8 +56,8 @@ const FacebookPageContainer = (): ReactElement => {
 				action,
 				page: id,
 			});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
 			setSubscribed(isSubscribed);
 		}
 	});
@@ -69,7 +69,7 @@ const FacebookPageContainer = (): ReactElement => {
 			initialStateResult.refetch();
 			listPagesResult.refetch();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
@@ -94,8 +94,8 @@ const FacebookPageContainer = (): ReactElement => {
 				initialStateResult.refetch();
 				listPagesResult.refetch();
 			}
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
