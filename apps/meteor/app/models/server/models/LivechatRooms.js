@@ -198,7 +198,7 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
-			'email.thread': { $elemMatch: { $in: emailThread } },
+			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.reference': '$regex'(emailThread.join('|')) }],
 		};
 
 		return this.findOne(query, options);
@@ -208,7 +208,7 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
-			'email.thread': { $elemMatch: { $in: emailThread } },
+			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.reference': '$regex'(emailThread.join('|')) }],
 			...(departmentId && { departmentId }),
 		};
 
@@ -220,7 +220,7 @@ export class LivechatRooms extends Base {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
-			'email.thread': { $elemMatch: { $in: emailThread } },
+			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.reference': '$regex'(emailThread.join('|')) }],
 		};
 
 		return this.findOne(query, options);

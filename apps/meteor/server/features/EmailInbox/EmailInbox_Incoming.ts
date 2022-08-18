@@ -133,7 +133,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	}
 
 	const references = typeof email.references === 'string' ? [email.references] : email.references;
-	const initialRef = [email.messageId, email.inReplyTo].filter((t): boolean => !!t) as string[];
+	const initialRef = [email.messageId, email.inReplyTo].filter((t) => !!t) as string[];
 	// thread = references.flatmap(t => t.split(','))
 	const thread = (references?.length ? references : [])
 		.reduce((acc: string[], t: string) => acc.concat(t.split(',')), [])
