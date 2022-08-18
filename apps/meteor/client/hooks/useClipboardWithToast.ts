@@ -7,6 +7,6 @@ export default function useClipboardWithToast(text: string): UseClipboardReturn 
 
 	return useClipboard(text, {
 		onCopySuccess: useMutableCallback(() => dispatchToastMessage({ type: 'success', message: t('Copied') })),
-		onCopyError: useMutableCallback((e) => dispatchToastMessage({ type: 'error', message: String(e) })),
+		onCopyError: useMutableCallback((e) => dispatchToastMessage({ type: 'error', message: e })),
 	});
 }
