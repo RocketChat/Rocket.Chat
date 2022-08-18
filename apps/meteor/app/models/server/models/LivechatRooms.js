@@ -198,7 +198,7 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
-			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.reference': '$regex'(emailThread.join('|')) }],
+			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
 		};
 
 		return this.findOne(query, options);
@@ -208,7 +208,7 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
-			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.reference': '$regex'(emailThread.join('|')) }],
+			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
 			...(departmentId && { departmentId }),
 		};
 
@@ -220,7 +220,7 @@ export class LivechatRooms extends Base {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
-			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.reference': '$regex'(emailThread.join('|')) }],
+			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
 		};
 
 		return this.findOne(query, options);
@@ -229,7 +229,7 @@ export class LivechatRooms extends Base {
 	updateEmailThreadByRoomId(roomId, threadIds) {
 		const query = {
 			$addToSet: {
-				'email.thread': [...threadIds],
+				'email.thread': threadIds,
 			},
 		};
 
