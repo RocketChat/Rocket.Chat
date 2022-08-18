@@ -1134,7 +1134,7 @@ API.v1.addRoute(
 );
 
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
-	const userRegisterRoute = '/apiusers.registerpost';
+	const userRegisterRoute = '/api/v1/users.registerpost';
 
 	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
 });
