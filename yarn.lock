@@ -3735,7 +3735,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.33.0, @rocket.chat/apps-engine@npm:^1.32.0":
+"@rocket.chat/apps-engine@npm:1.34.0-alpha.13":
+  version: 1.34.0-alpha.13
+  resolution: "@rocket.chat/apps-engine@npm:1.34.0-alpha.13"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+  checksum: b31bd9a7e7599b81ddbf8cd28399e83a65d2fb107f946516b847a827f15cd7266d00bb613a03c828e779d00b09b44c43eb59929fff2ba17999e134703770b745
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/apps-engine@npm:^1.32.0":
   version: 1.33.0
   resolution: "@rocket.chat/apps-engine@npm:1.33.0"
   dependencies:
@@ -4282,7 +4296,7 @@ __metadata:
     "@playwright/test": ^1.22.2
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.33.0
+    "@rocket.chat/apps-engine": 1.34.0-alpha.13
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": next
