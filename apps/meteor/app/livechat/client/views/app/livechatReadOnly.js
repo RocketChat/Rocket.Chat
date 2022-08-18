@@ -6,7 +6,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ChatRoom, CachedChatRoom } from '../../../../models/client';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import { APIClient } from '../../../../utils/client';
-import { RoomManager } from '../../../../ui-utils/client/lib/RoomManager';
+import { RoomManager } from '../../../../ui-utils/client';
 import { inquiryDataStream } from '../../lib/stream/inquiry';
 import { dispatchToastMessage } from '../../../../../client/lib/toast';
 import './livechatReadOnly.html';
