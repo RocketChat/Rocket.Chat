@@ -45,7 +45,12 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	const [usernameError, setUsernameError] = useState<string | undefined>();
 	const [avatarSuggestions, setAvatarSuggestions] = useSafely(
 		useState<{
-			[key: string]: { service: string; blob: string };
+			[key: string]: {
+				blob: string;
+				contentType: string;
+				service: string;
+				url: string;
+			};
 		}>({}),
 	);
 
@@ -87,7 +92,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 			await sendConfirmationEmail({ email });
 			dispatchToastMessage({ type: 'success', message: t('Verification_email_sent') });
 		} catch (error: unknown) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: typeof error === 'string' ? error : (error as Error).message });
 		}
 	}, [dispatchToastMessage, email, previousEmail, sendConfirmationEmail, t]);
 
@@ -182,7 +187,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 							username={username}
 							setAvatarObj={handleAvatar}
 							disabled={!allowUserAvatarChange}
-							suggestions={avatarSuggestions}
+							suggestions={Array(avatarSuggestions)}
 						/>
 					</Field>
 				),
