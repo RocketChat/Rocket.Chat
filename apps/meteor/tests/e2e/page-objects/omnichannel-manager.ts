@@ -21,7 +21,7 @@ export class OmnichannelManager {
 	}
 
 	firstRowInTable(userId: string) {
-		return this.page.locator(`[data-qa="GenericTableManagerInfoBody"] [qa-user-id="${userId}"]`);
+		return this.page.locator(`[data-qa-id="GenericTableManagerInfoBody"] [qa-user-id="${userId}"]`);
 	}
 
 	get btnDeleteFirstRowInTable() {
