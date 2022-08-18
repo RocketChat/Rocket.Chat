@@ -53,6 +53,8 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		removeUserFromRoom: sinon.stub(),
 		addUserToRoom: sinon.stub(),
 		isUserAlreadyJoined: sinon.stub(),
+		getInternalRoomById: sinon.stub(),
+		updateFederatedRoomByInternalRoomId: sinon.stub(),
 		updateRoomType: sinon.stub(),
 		updateRoomName: sinon.stub(),
 		updateRoomTopic: sinon.stub(),
@@ -91,9 +93,11 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		roomAdapter.getFederatedRoomByExternalId.reset();
 		roomAdapter.updateRoomType.reset();
 		roomAdapter.updateRoomName.reset();
+		roomAdapter.updateFederatedRoomByInternalRoomId.reset();
 		roomAdapter.updateRoomTopic.reset();
 		roomAdapter.removeUserFromRoom.reset();
 		roomAdapter.isUserAlreadyJoined.reset();
+		roomAdapter.getInternalRoomById.reset();
 		roomAdapter.addUserToRoom.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.createFederatedUser.reset();
@@ -108,6 +112,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			username: 'normalizedInviterId',
 			existsOnlyOnProxyServer: false,
 		});
+
 		it('should NOT create users nor room if the room already exists', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
 			await service.onCreateRoom({} as any);
@@ -120,6 +125,40 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
 			await service.onCreateRoom({ wasInternallyProgramaticallyCreated: true } as any);
 
+			expect(roomAdapter.createFederatedRoom.called).to.be.false;
+			expect(userAdapter.createFederatedUser.called).to.be.false;
+		});
+
+		it('should NOT update the room if it was created internally and programatically but it is not a DM message and dont create the room', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			roomAdapter.getInternalRoomById.resolves({ t: 'c' });
+			await service.onCreateRoom({ wasInternallyProgramaticallyCreated: true } as any);
+
+			expect(roomAdapter.updateFederatedRoomByInternalRoomId.called).to.be.false;
+			expect(roomAdapter.createFederatedRoom.called).to.be.false;
+			expect(userAdapter.createFederatedUser.called).to.be.false;
+		});
+
+		it('should NOT update the room if it was created internally and programatically but it does not exists and dont create the room', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			roomAdapter.getInternalRoomById.resolves(undefined);
+			await service.onCreateRoom({ wasInternallyProgramaticallyCreated: true } as any);
+
+			expect(roomAdapter.updateFederatedRoomByInternalRoomId.called).to.be.false;
+			expect(roomAdapter.createFederatedRoom.called).to.be.false;
+			expect(userAdapter.createFederatedUser.called).to.be.false;
+		});
+
+		it('should update the room if it was created internally and programatically but it is a DM message but it should NOT create a new DM Room(this is necessary due to a race condition on matrix events)', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			roomAdapter.getInternalRoomById.resolves({ t: 'd' });
+			await service.onCreateRoom({
+				wasInternallyProgramaticallyCreated: true,
+				internalRoomId: 'internalRoomId',
+				externalRoomId: 'externalRoomId',
+			} as any);
+
+			expect(roomAdapter.updateFederatedRoomByInternalRoomId.calledWith('internalRoomId', 'externalRoomId')).to.be.true;
 			expect(roomAdapter.createFederatedRoom.called).to.be.false;
 			expect(userAdapter.createFederatedUser.called).to.be.false;
 		});

@@ -6,6 +6,7 @@ export interface IMatrixEventContentRoomCreated extends IBaseEventContent {
 	creator: string;
 	room_version: string;
 	was_internally_programatically_created?: boolean;
+	internalRoomId?: string;
 }
 
 export class MatrixEventRoomCreated extends AbstractMatrixEvent {

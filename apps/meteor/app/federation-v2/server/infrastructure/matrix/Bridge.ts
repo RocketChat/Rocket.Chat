@@ -117,7 +117,11 @@ export class MatrixBridge implements IFederationBridge {
 		return matrixUserId;
 	}
 
-	public async createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[]): Promise<string> {
+	public async createDirectMessageRoom(
+		externalCreatorId: string,
+		externalInviteeIds: string[],
+		extraData: Record<string, any> = {},
+	): Promise<string> {
 		const intent = this.bridgeInstance.getIntent(externalCreatorId);
 
 		const visibility = MatrixRoomVisibility.PRIVATE;
@@ -131,6 +135,7 @@ export class MatrixBridge implements IFederationBridge {
 				invite: externalInviteeIds,
 				creation_content: {
 					was_internally_programatically_created: true,
+					...extraData,
 				},
 			},
 		});

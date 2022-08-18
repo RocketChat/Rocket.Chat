@@ -13,7 +13,7 @@ export interface IFederationBridge {
 	onFederationAvailabilityChanged(enabled: boolean): Promise<void>;
 	getUserProfileInformation(externalUserId: string): Promise<IExternalUserProfileInformation | undefined>;
 	joinRoom(externalRoomId: string, externalUserId: string): Promise<void>;
-	createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[]): Promise<string>;
+	createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[], extraData?: Record<string, any>): Promise<string>;
 	inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void>;
 	sendMessage(externalRoomId: string, externaSenderId: string, text: string): Promise<void>;
 	createUser(username: string, name: string, domain: string): Promise<string>;

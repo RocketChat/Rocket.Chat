@@ -25,7 +25,7 @@ export class FederationRoomServiceSender extends FederationService {
 	}
 
 	public async createDirectMessageRoomAndInviteUser(roomCreateDMAndInviteUserInput: FederationCreateDMAndInviteUserDto): Promise<void> {
-		const { normalizedInviteeId, rawInviteeId, internalInviterId, inviteeUsernameOnly } = roomCreateDMAndInviteUserInput;
+		const { normalizedInviteeId, rawInviteeId, internalInviterId, inviteeUsernameOnly, internalRoomId } = roomCreateDMAndInviteUserInput;
 
 		const internalInviterUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId);
 		if (!internalInviterUser) {
@@ -56,9 +56,11 @@ export class FederationRoomServiceSender extends FederationService {
 		]);
 
 		if (!internalFederatedRoom) {
-			const externalRoomId = await this.bridge.createDirectMessageRoom(federatedInviterUser.getExternalId(), [
-				federatedInviteeUser.getExternalId(),
-			]);
+			const externalRoomId = await this.bridge.createDirectMessageRoom(
+				federatedInviterUser.getExternalId(),
+				[federatedInviteeUser.getExternalId()],
+				{ internalRoomId },
+			);
 			const newFederatedRoom = DirectMessageFederatedRoom.createInstance(externalRoomId, federatedInviterUser, [
 				federatedInviterUser,
 				federatedInviteeUser,

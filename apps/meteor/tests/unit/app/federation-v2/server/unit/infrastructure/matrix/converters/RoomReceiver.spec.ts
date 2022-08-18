@@ -18,7 +18,7 @@ import { RoomMembershipChangedEventType } from '../../../../../../../../../app/f
 describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', () => {
 	describe('#toRoomCreateDto()', () => {
 		const event = {
-			content: { was_internally_programatically_created: true, name: 'roomName' },
+			content: { was_internally_programatically_created: true, name: 'roomName', internalRoomId: 'internalRoomId' },
 			room_id: '!roomId:matrix.org',
 			sender: '@marcos.defendi:matrix.org',
 		};
@@ -79,6 +79,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 				wasInternallyProgramaticallyCreated: true,
 				externalRoomName: undefined,
 				roomType: undefined,
+				internalRoomId: 'internalRoomId',
 			});
 		});
 	});

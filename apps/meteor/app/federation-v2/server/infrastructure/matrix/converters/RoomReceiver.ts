@@ -102,6 +102,7 @@ export class MatrixRoomReceiverConverter {
 			externalInviterId: externalEvent.sender,
 			normalizedInviterId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
 			wasInternallyProgramaticallyCreated: externalEvent.content?.was_internally_programatically_created || false,
+			internalRoomId: externalEvent.content?.internalRoomId,
 		});
 	}
 

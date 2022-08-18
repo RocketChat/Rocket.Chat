@@ -13,6 +13,7 @@ export interface IFederationCreateInputDto extends IFederationReceiverBaseRoomIn
 	externalRoomName?: string;
 	roomType?: RoomType;
 	wasInternallyProgramaticallyCreated?: boolean;
+	internalRoomId?: string;
 }
 
 export interface IFederationChangeMembershipInputDto extends IFederationReceiverBaseRoomInputDto {
@@ -70,6 +71,7 @@ export class FederationRoomCreateInputDto extends FederationBaseRoomInputDto {
 		wasInternallyProgramaticallyCreated,
 		roomType,
 		externalRoomName,
+		internalRoomId,
 	}: IFederationCreateInputDto) {
 		super({ externalRoomId, normalizedRoomId });
 		this.externalInviterId = externalInviterId;
@@ -77,6 +79,7 @@ export class FederationRoomCreateInputDto extends FederationBaseRoomInputDto {
 		this.wasInternallyProgramaticallyCreated = wasInternallyProgramaticallyCreated;
 		this.roomType = roomType;
 		this.externalRoomName = externalRoomName;
+		this.internalRoomId = internalRoomId;
 	}
 
 	externalInviterId: string;
@@ -84,6 +87,8 @@ export class FederationRoomCreateInputDto extends FederationBaseRoomInputDto {
 	normalizedInviterId: string;
 
 	wasInternallyProgramaticallyCreated?: boolean;
+
+	internalRoomId?: string;
 
 	externalRoomName?: string;
 

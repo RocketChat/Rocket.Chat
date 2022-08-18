@@ -126,4 +126,9 @@ export class RocketChatRoomAdapter {
 
 		return FederatedRoom.createWithInternalReference(externalRoomId, room);
 	}
+
+	public async updateFederatedRoomByInternalRoomId(internalRoomId: string, externalRoomId: string): Promise<void> {
+		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(internalRoomId, externalRoomId);
+		await Rooms.setAsFederated(internalRoomId);
+	}
 }

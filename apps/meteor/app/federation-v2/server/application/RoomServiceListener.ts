@@ -39,9 +39,18 @@ export class FederationRoomServiceListener extends FederationService {
 			normalizedRoomId,
 			roomType,
 			wasInternallyProgramaticallyCreated = false,
+			internalRoomId = '',
 		} = roomCreateInput;
 
-		if ((await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId)) || wasInternallyProgramaticallyCreated) {
+		if (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId)) {
+			return;
+		}
+		if (wasInternallyProgramaticallyCreated) {
+			const room = await this.internalRoomAdapter.getInternalRoomById(internalRoomId);
+			if (!room || !isDirectMessageRoom(room)) {
+				return;
+			}
+			await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, externalRoomId);
 			return;
 		}
 
