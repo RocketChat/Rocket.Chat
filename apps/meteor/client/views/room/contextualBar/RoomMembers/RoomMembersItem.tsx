@@ -1,5 +1,15 @@
 import { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Option, OptionAvatar, OptionColumn, OptionDescription, OptionMenu, OptionContent, Icon, IconButton } from '@rocket.chat/fuselage';
+import {
+	Option,
+	OptionAvatar,
+	OptionColumn,
+	OptionDescription,
+	OptionMenu,
+	OptionContent,
+	Icon,
+	IconButton,
+	OptionSkeleton,
+} from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, useState, MouseEvent } from 'react';
 
