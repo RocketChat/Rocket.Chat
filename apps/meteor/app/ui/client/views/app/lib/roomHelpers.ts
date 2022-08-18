@@ -13,7 +13,7 @@ import { callbacks } from '../../../../../../lib/callbacks';
 import { hasAllPermission, hasRole } from '../../../../../authorization/client';
 import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
-import { chatMessages } from './chatMessages';
+import { chatMessages } from '../../../lib/ChatMessages';
 import type { RoomTemplateInstance } from './RoomTemplateInstance';
 
 function tabBar() {

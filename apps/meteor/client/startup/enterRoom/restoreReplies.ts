@@ -1,7 +1,7 @@
 import { ISubscription } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { chatMessages } from '../../../app/ui/client/views/app/lib/chatMessages';
+import { chatMessages } from '../../../app/ui/client/lib/ChatMessages';
 import { callbacks } from '../../../lib/callbacks';
 
 callbacks.add('enter-room', (sub?: ISubscription) => {

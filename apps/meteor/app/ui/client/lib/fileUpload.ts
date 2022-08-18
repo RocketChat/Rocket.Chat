@@ -4,12 +4,12 @@ import { Random } from 'meteor/random';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/client';
-import { UserAction, USER_ACTIVITIES } from '../index';
+import { UserAction, USER_ACTIVITIES } from './UserAction';
 import { fileUploadIsValidContentType, APIClient } from '../../../utils/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
-import { chatMessages } from '../views/app/lib/chatMessages';
+import { chatMessages } from './ChatMessages';
 import { getErrorMessage } from '../../../../client/lib/errorHandling';
 
 export type Uploading = {

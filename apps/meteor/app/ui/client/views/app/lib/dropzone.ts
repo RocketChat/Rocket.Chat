@@ -7,7 +7,7 @@ import { Users, Rooms } from '../../../../../models/client';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
 import { settings } from '../../../../../settings/client';
 import { RoomManager } from '../../../../../ui-utils/client';
-import { chatMessages } from './chatMessages';
+import { chatMessages } from '../../../lib/ChatMessages';
 
 const userCanDrop = (rid: IRoom['_id']) =>
 	!roomCoordinator.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));

@@ -11,13 +11,12 @@ import type { IEditedMessage, IMessage, IRoom } from '@rocket.chat/core-typings'
 import { ChatMessage, RoomRoles, Subscriptions, Rooms } from '../../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../../ui-utils/client';
 import { callbacks } from '../../../../../../lib/callbacks';
-import { ChatMessages } from '../../../lib/ChatMessages';
+import { ChatMessages, chatMessages } from '../../../lib/ChatMessages';
 import { fileUpload } from '../../../lib/fileUpload';
 import { RoomManager as NewRoomManager } from '../../../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
 import { queryClient } from '../../../../../../client/lib/queryClient';
 import { call } from '../../../../../../client/lib/utils/call';
-import { chatMessages } from './chatMessages';
 import { isAtBottom } from './scrolling';
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 import type { RoomTemplateInstance } from './RoomTemplateInstance';

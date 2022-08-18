@@ -13,7 +13,7 @@ import { openUserCard } from '../../../lib/UserCard';
 import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
 import { ChatMessage, Rooms, Messages } from '../../../../../models/client';
 import { t } from '../../../../../utils/client';
-import { chatMessages } from './chatMessages';
+import { chatMessages } from '../../../lib/ChatMessages';
 import { EmojiEvents } from '../../../../../reactions/client/init';
 import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';

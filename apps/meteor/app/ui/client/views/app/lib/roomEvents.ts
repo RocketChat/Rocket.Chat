@@ -8,7 +8,7 @@ import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { ChatMessage, Subscriptions } from '../../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../../ui-utils/client';
 import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
-import { chatMessages } from './chatMessages';
+import { chatMessages } from '../../../lib/ChatMessages';
 import type { RoomTemplateInstance } from './RoomTemplateInstance';
 
 function handleToggleHiddenButtonClick(e: JQuery.ClickEvent) {

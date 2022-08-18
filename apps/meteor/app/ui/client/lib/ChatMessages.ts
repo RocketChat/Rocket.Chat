@@ -640,3 +640,5 @@ export class ChatMessages {
 		}
 	}
 }
+
+export const chatMessages: Record<IRoom['_id'], ChatMessages> = {};
