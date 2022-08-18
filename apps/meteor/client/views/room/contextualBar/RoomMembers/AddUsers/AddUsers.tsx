@@ -30,15 +30,15 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, onChange }: A
 						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
 						<UserAutoCompleteMultipleFederated value={users} onChange={onChange} placeholder={t('Choose_users')} />
 					</Field>
-					<Field>
-						<ButtonGroup>
-							<Button primary disabled={!users || users.length === 0} onClick={onClickSave}>
-								{t('Add_users')}
-							</Button>
-						</ButtonGroup>
-					</Field>
 				</FieldGroup>
 			</VerticalBar.ScrollableContent>
+			<VerticalBar.Footer>
+				<ButtonGroup stretch>
+					<Button primary disabled={!users || users.length === 0} onClick={onClickSave}>
+						{t('Add_users')}
+					</Button>
+				</ButtonGroup>
+			</VerticalBar.Footer>
 		</>
 	);
 };
