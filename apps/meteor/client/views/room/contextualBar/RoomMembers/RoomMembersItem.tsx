@@ -51,5 +51,5 @@ const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, rel
 };
 
 export default Object.assign(RoomMembersItem, {
-	Skeleton: Option.Skeleton,
+	Skeleton: OptionSkeleton,
 });
