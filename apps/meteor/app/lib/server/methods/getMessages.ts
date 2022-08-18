@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { canAccessRoomId } from '../../../authorization/server';
-import { Messages } from '../../../models/server';
+import { Messages, Rooms } from '../../../models/server';
 
 Meteor.methods({
 	getMessages(messages) {
@@ -16,9 +16,22 @@ Meteor.methods({
 
 		const msgs = Messages.findVisibleByIds(messages).fetch() as IMessage[];
 		const rids = [...new Set(msgs.map((m) => m.rid))];
+		const prids = [
+			...new Set(
+				rids.reduce<string[]>((prids, rid) => {
+					const room = Rooms.findOneById(rid);
 
-		if (!rids.every((_id) => canAccessRoomId(_id, uid))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
+					if (room?.prid) {
+						prids.push(room.prid);
+					}
+
+					return prids;
+				}, []),
+			),
+		];
+
+		if (!rids.every((_id) => canAccessRoomId(_id, uid)) || !prids.every((_id) => canAccessRoomId(_id, uid))) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', 'getSingleMessage');
 		}
 
 		return msgs;

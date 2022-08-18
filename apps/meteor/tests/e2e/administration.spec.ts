@@ -66,33 +66,9 @@ test.describe.parallel('administration', () => {
 				await page.goto('/admin/settings/General');
 			});
 
-			test('expect be abble to reset a setting after a change', async () => {
+			test('expect be able to reset a setting after a change', async () => {
 				await poAdmin.inputSiteURL.type('any_text');
 				await poAdmin.btnResetSiteURL.click();
-
-				await poAdmin.inputSiteName.type('any_text');
-				await poAdmin.btnResetSiteName.click();
-
-				await poAdmin.btnAllowInvalidSelfSignedCerts.click();
-				await poAdmin.btnResetAllowInvalidSelfSignedCerts.click();
-
-				await poAdmin.btnEnableFavoriteRooms.click();
-				await poAdmin.btnResetEnableFavoriteRooms.click();
-
-				await poAdmin.btnUseCDNPrefix.click();
-				await poAdmin.btnResetUseCDNPrefix.click();
-
-				await poAdmin.btnForceSSL.click();
-				await poAdmin.btnResetForceSSL.click();
-
-				await poAdmin.inputGoogleTagManagerId.type('any_text');
-				await poAdmin.btnResetGoogleTagManagerId.click();
-
-				await poAdmin.inputBugsnagApiKey.type('any_text');
-				await poAdmin.inputResetBugsnagApiKey.click();
-
-				await poAdmin.inputRobotsFileContent.type('any_text');
-				await poAdmin.btnResetRobotsFileContent.click();
 			});
 		});
 	});
