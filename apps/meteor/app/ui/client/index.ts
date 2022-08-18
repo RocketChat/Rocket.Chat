@@ -5,6 +5,7 @@ import './lib/menu';
 import './lib/parentTemplate';
 import './lib/codeMirror';
 import './lib/textarea-cursor';
+import './views/app/room.ts';
 import './views/app/roomSearch.html';
 import './views/app/userSearch.html';
 import './views/app/roomSearch';
