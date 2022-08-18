@@ -805,7 +805,7 @@ describe('[Users]', function () {
 		it('should set the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
 			request
 				.post(api('users.setAvatarFromService'))
-				.set()
+				.set(userCredentials)
 				.send({
 					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
