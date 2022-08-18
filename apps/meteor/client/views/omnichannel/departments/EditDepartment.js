@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useMemo, useState, useRef, useCallback } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import Page from '../../../components/Page';
@@ -58,7 +58,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 	const { department } = data || { department: {} };
 
-	const [[tags, tagsText], setTagsState] = useState(() => [department?.chatClosingTags ?? [], '']);
+	const [initialTags] = useState(() => department?.chatClosingTags ?? []);
+	const [[tags, tagsText], setTagsState] = useState(() => [initialTags, '']);
+	const hasTagChanges = useMemo(() => tags.toString() !== initialTags.toString(), [tags, initialTags]);
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
 		name: withDefault(department?.name, ''),
@@ -120,7 +122,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		setTagsState(([tags, tagsText]) => [tags.filter((_tag) => _tag !== tag), tagsText]);
 	};
 
-	const handleTagTextSubmit = useMutableCallback(() => {
+	const handleTagTextSubmit = useCallback(() => {
 		setTagsState((state) => {
 			const [tags, tagsText] = state;
 
@@ -130,7 +132,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 			return [[...tags, tagsText], ''];
 		});
-	});
+	}, []);
 
 	const handleTagTextChange = (e) => {
 		setTagsState(([tags]) => [tags, e.target.value]);
@@ -232,7 +234,11 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	});
 
 	const invalidForm =
-		!name || !email || !validateEmail(email) || !hasUnsavedChanges || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
+		!name ||
+		!email ||
+		!validateEmail(email) ||
+		!(hasUnsavedChanges || hasTagChanges) ||
+		(requestTagBeforeClosingChat && (!tags || tags.length === 0));
 
 	const formId = useUniqueId();
 
@@ -441,7 +447,13 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 										onChange={handleTagTextChange}
 										placeholder={t('Enter_a_tag')}
 									/>
-									<Button mis='x8' title={t('add')} onClick={handleTagTextSubmit}>
+									<Button
+										disabled={Boolean(!tagsText.trim()) || tags.includes(tagsText)}
+										data-qa='DepartmentEditAddButton-ConversationClosingTags'
+										mis='x8'
+										title={t('add')}
+										onClick={handleTagTextSubmit}
+									>
 										{t('Add')}
 									</Button>
 								</Field.Row>
