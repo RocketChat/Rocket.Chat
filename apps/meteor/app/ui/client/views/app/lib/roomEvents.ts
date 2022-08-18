@@ -62,7 +62,8 @@ function handleBlockWrapperRendered(_e: JQuery.TriggeredEvent, template: RoomTem
 function handleNewMessageButtonClick(_event: JQuery.ClickEvent, instance: RoomTemplateInstance) {
 	instance.atBottom = true;
 	instance.sendToBottomIfNecessary();
-	chatMessages[RoomManager.openedRoom].input?.focus();
+	const input = RoomManager.openedRoom ? chatMessages[RoomManager.openedRoom].input : undefined;
+	input?.focus();
 }
 
 function handleUploadProgressCloseButtonClick(this: { id: string }, e: JQuery.ClickEvent) {

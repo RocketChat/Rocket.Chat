@@ -8,11 +8,10 @@ import { Emitter } from '@rocket.chat/emitter';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { waitUntilWrapperExists } from './waitUntilWrapperExists';
-import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from '../../../../client/lib/utils/renderMessageBody';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models/client';
+import { ChatMessage, ChatSubscription } from '../../../models/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
@@ -176,15 +175,10 @@ export const RoomHistoryManager = new (class extends Emitter {
 		}
 
 		let ls = undefined;
-		let typeName = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid });
 		if (subscription) {
 			({ ls } = subscription);
-			typeName = subscription.t + subscription.name;
-		} else {
-			const curRoomDoc = ChatRoom.findOne({ _id: rid });
-			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
 		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls);
@@ -233,7 +227,6 @@ export const RoomHistoryManager = new (class extends Emitter {
 		room.isLoading.set(false);
 		waitAfterFlush(() => {
 			readMessage.refreshUnreadMark(rid);
-			return RoomManager.updateMentionsMarksOfRoom(typeName);
 		});
 	}
 
@@ -251,16 +244,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 
 		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: -1 } });
 
-		let typeName = undefined;
-
 		const subscription = ChatSubscription.findOne({ rid });
-		if (subscription) {
-			// const { ls } = subscription;
-			typeName = subscription.t + subscription.name;
-		} else {
-			const curRoomDoc = ChatRoom.findOne({ _id: rid });
-			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
-		}
 
 		if (lastMessage?.ts) {
 			const { ts } = lastMessage;
@@ -269,8 +253,6 @@ export const RoomHistoryManager = new (class extends Emitter {
 				msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
 				subscription,
 			});
-
-			Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 			room.isLoading.set(false);
 			if (!room.loaded) {
@@ -330,16 +312,8 @@ export const RoomHistoryManager = new (class extends Emitter {
 		const room = this.getRoom(message.rid);
 		room.isLoading.set(true);
 		room.hasMore.set(false);
-		let typeName = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
-		if (subscription) {
-			// const { ls } = subscription;
-			typeName = subscription.t + subscription.name;
-		} else {
-			const curRoomDoc = ChatRoom.findOne({ _id: message.rid });
-			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
-		}
 
 		return Meteor.call('loadSurroundingMessages', message, limit, async function (err, result) {
 			if (!result || !result.messages) {
@@ -349,7 +323,6 @@ export const RoomHistoryManager = new (class extends Emitter {
 			upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 
 			readMessage.refreshUnreadMark(message.rid);
-			RoomManager.updateMentionsMarksOfRoom(typeName);
 
 			Tracker.afterFlush(async () => {
 				await waitUntilWrapperExists(`[data-id='${message._id}']`);

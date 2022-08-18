@@ -93,6 +93,7 @@ export interface ServerMethods {
 	'instances/get': (...args: any[]) => any;
 	'joinRoom': JoinRoomMethod;
 	'leaveRoom': (...args: any[]) => any;
+	'loadMissedMessages': (rid: IRoom['_id'], ts: Date) => IMessage[];
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
 	'personalAccessTokens:generateToken': (...args: any[]) => any;

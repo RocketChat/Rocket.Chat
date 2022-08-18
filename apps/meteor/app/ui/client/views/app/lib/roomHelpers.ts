@@ -158,7 +158,7 @@ function maxMessageLength() {
 }
 
 function subscriptionReady(this: { _id: string }) {
-	return RoomManager.getOpenedRoomByRid(this._id).streamActive;
+	return RoomManager.getOpenedRoomByRid(this._id)?.streamActive ?? false;
 }
 
 type UnreadData = { count?: number; since?: moment.MomentInput };

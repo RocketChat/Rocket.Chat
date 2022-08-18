@@ -34,7 +34,7 @@ async function createFileFromUrl(url: string): Promise<File> {
 }
 
 function addToInput(text: string): void {
-	const { input } = chatMessages[RoomManager.openedRoom];
+	const input = RoomManager.openedRoom ? chatMessages[RoomManager.openedRoom].input : undefined;
 	if (!input) {
 		return;
 	}
