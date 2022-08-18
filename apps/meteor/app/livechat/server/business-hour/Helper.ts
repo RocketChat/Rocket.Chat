@@ -28,6 +28,17 @@ export const filterBusinessHoursThatMustBeOpened = async (
 		}));
 };
 
+export const filterBusinessHoursThatMustBeOpenedByDay = async (
+	businessHours: ILivechatBusinessHour[],
+	day: string, // Format: moment.format('dddd')
+): Promise<Pick<ILivechatBusinessHour, '_id' | 'type'>[]> => {
+	return filterBusinessHoursThatMustBeOpened(
+		businessHours.filter((businessHour) =>
+			businessHour.workHours.some((workHour) => workHour.start.utc.dayOfWeek === day || workHour.finish.utc.dayOfWeek === day),
+		),
+	);
+};
+
 export const openBusinessHourDefault = async (): Promise<void> => {
 	await Users.removeBusinessHoursFromAllUsers();
 	const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');

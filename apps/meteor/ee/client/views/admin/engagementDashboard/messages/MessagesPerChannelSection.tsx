@@ -4,7 +4,7 @@ import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
-import Section from '../Section';
+import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import DownloadDataButton from '../dataView/DownloadDataButton';
 import LegendSymbol from '../dataView/LegendSymbol';
 import PeriodSelector from '../dataView/PeriodSelector';
@@ -39,20 +39,17 @@ const MessagesPerChannelSection = (): ReactElement => {
 	);
 
 	return (
-		<Section
-			title={t('Where_are_the_messages_being_sent?')}
-			filter={
-				<>
-					<PeriodSelector {...periodSelectorProps} />
-					<DownloadDataButton
-						attachmentName={`MessagesPerChannelSection_start_${messageOriginsData?.start}_end_${messageOriginsData?.end}`}
-						headers={['Room Type', 'Messages']}
-						dataAvailable={!!messageOriginsData}
-						dataExtractor={(): unknown[][] | undefined => messageOriginsData?.origins.map(({ t, messages }) => [t, messages])}
-					/>
-				</>
-			}
-		>
+		<>
+			<EngagementDashboardCardFilter>
+				<PeriodSelector {...periodSelectorProps} />
+				<DownloadDataButton
+					attachmentName={`MessagesPerChannelSection_start_${messageOriginsData?.start}_end_${messageOriginsData?.end}`}
+					headers={['Room Type', 'Messages']}
+					dataAvailable={!!messageOriginsData}
+					dataExtractor={(): unknown[][] | undefined => messageOriginsData?.origins.map(({ t, messages }) => [t, messages])}
+				/>
+			</EngagementDashboardCardFilter>
+
 			<Flex.Container>
 				<Margins inline='neg-x12'>
 					<Box>
@@ -224,7 +221,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 					</Box>
 				</Margins>
 			</Flex.Container>
-		</Section>
+		</>
 	);
 };
 
