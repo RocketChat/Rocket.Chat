@@ -821,48 +821,18 @@ describe('[Users]', function () {
 				})
 				.end(done);
 		});
-		it("should prevent from updating someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
+		it('should return an error if the correct params are not provided', (done) => {
 			updatePermission('edit-other-user-avatar', []).then(() => {
 				request
 					.post(api('users.setAvatarFromService'))
 					.set(userCredentials)
-					.send({
-						userId: userCredentials['X-User-Id'],
-						username: adminUsername,
-						avatarUrl: avatarURL,
-						blob: {},
-						contentType: '',
-						service: 'url',
-					})
+					.send({})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					})
 					.end(done);
-			});
-		});
-		it('should allow users with the edit-other-user-avatar permission to update avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
-			updateSetting('Accounts_AllowUserAvatarChange', false).then(() => {
-				updatePermission('edit-other-user-avatar', ['admin']).then(() => {
-					request
-						.post(api('users.setAvatarFromService'))
-						.set(userCredentials)
-						.send({
-							userId: userCredentials['X-User-Id'],
-							username: adminUsername,
-							avatarUrl: avatarURL,
-							blob: {},
-							contentType: '',
-							service: 'url',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
-						.end(done);
-				});
 			});
 		});
 	});
