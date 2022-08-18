@@ -21,14 +21,14 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { hasAllPermission, hasRole } from '../../../../authorization/client';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
-import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
 import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
-import { handleError } from '../../../../../client/lib/utils/handleError';
 import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { call } from '../../../../../client/lib/utils/call';
+import { dispatchToastMessage } from '../../../../../client/lib/toast';
+import './room.html';
 
 export const chatMessages = {};
 
@@ -305,6 +305,9 @@ Template.roomOld.helpers({
 		return settings.get('Message_MaxAllowedSize');
 	},
 
+	subscriptionReady() {
+		return RoomManager.getOpenedRoomByRid(this._id).streamActive;
+	},
 	unreadData() {
 		const data = { count: Template.instance().state.get('count') };
 
@@ -768,7 +771,7 @@ Meteor.startup(() => {
 				});
 			})
 			.catch((error) => {
-				handleError(error);
+				dispatchToastMessage({ type: 'error', message: error });
 			});
 
 		this.rolesObserve = RoomRoles.find({ rid: this.data._id }).observe({
