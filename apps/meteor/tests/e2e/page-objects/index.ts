@@ -7,3 +7,4 @@ export * from './home-discussion';
 export * from './omnichannel-agents';
 export * from './omnichannel-departments';
 export * from './omnichannel-livechat';
+export * from './omnichannel-custom-fields';

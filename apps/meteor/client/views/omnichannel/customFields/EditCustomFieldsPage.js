@@ -70,7 +70,7 @@ const EditCustomFieldsPage = ({ customField, id, reload }) => {
 						<Icon size='x16' name='back' />
 						{t('Back')}
 					</Button>
-					<Button primary onClick={handleSave} disabled={!canSave}>
+					<Button data-qa-id='BtnSaveEditCustomFieldsPage' primary onClick={handleSave} disabled={!canSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

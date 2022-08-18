@@ -14,4 +14,8 @@ export class OmnichannelSidenav {
 	get linkAgents(): Locator {
 		return this.page.locator('a[href="omnichannel/agents"]');
 	}
+
+	get linkCustomFields(): Locator {
+		return this.page.locator('a[href="/omnichannel/customfields"]');
+	}
 }
