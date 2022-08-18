@@ -13,8 +13,10 @@ import {
 	isMethodCallProps,
 	isMethodCallAnonProps,
 	isMeteorCall,
+	validateParamsPwGetPolicyRest,
 } from '@rocket.chat/rest-typings';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users as UsersRaw } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
@@ -24,6 +26,7 @@ import { getDefaultUserFields } from '../../../utils/server/functions/getDefault
 import { getURL } from '../../../utils/lib/getURL';
 import { getLogs } from '../../../../server/stream/stdout';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { passwordPolicy } from '../../../lib/server';
 
 /**
  * @openapi
@@ -379,6 +382,44 @@ API.v1.addRoute(
 				offset,
 				total: result.total,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'pw.getPolicy',
+	{
+		authRequired: true,
+	},
+	{
+		get() {
+			return API.v1.success(passwordPolicy.getPasswordPolicy());
+		},
+	},
+);
+
+API.v1.addRoute(
+	'pw.getPolicyReset',
+	{
+		authRequired: false,
+		validateParams: validateParamsPwGetPolicyRest,
+	},
+	{
+		async get() {
+			check(
+				this.queryParams,
+				Match.ObjectIncluding({
+					token: String,
+				}),
+			);
+			const { token } = this.queryParams;
+
+			const user = await UsersRaw.findOneByResetToken(token, { projection: { _id: 1 } });
+			if (!user) {
+				return API.v1.unauthorized();
+			}
+
+			return API.v1.success(passwordPolicy.getPasswordPolicy());
 		},
 	},
 );
