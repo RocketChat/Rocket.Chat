@@ -136,6 +136,7 @@ export class IMAPInterceptor extends EventEmitter {
 	// Fetch all UNSEEN messages and pass them for further processing
 	getEmails(): void {
 		this.imap.search(this.options.filter, (err, newEmails) => {
+			logger.debug(`IMAP search on inbox ${this.config.user} returned ${newEmails.length} new emails: `, newEmails);
 			if (err) {
 				logger.error(err);
 				throw err;
@@ -149,7 +150,7 @@ export class IMAPInterceptor extends EventEmitter {
 				});
 
 				fetch.on('message', (msg, seqno) => {
-					logger.info('Message received', seqno);
+					logger.debug('E-mail received', seqno, msg);
 
 					msg.on('body', (stream, type) => {
 						if (type.which !== '') {

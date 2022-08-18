@@ -7,7 +7,7 @@ import { Uploads } from '@rocket.chat/models';
 import { callbacks } from '../../../lib/callbacks';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
-import { Messages, Rooms, Users } from '../../../app/models/server';
+import { Messages, Rooms, Users, LivechatRooms } from '../../../app/models/server';
 import type { Inbox } from './EmailInbox';
 import { inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -37,8 +37,8 @@ const sendErrorReplyMessage = (error: string, options: any): void => {
 	sendMessage(user, message, { _id: options.rid });
 };
 
-function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): void {
-	inbox.smtp
+function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<any> {
+	return inbox.smtp
 		.sendMail({
 			from: inbox.config.senderInfo
 				? {
@@ -50,6 +50,7 @@ function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): void {
 		})
 		.then((info) => {
 			logger.info('Message sent: %s', info.messageId);
+			return info;
 		})
 		.catch((error) => {
 			logger.error('Error sending Email reply: %s', error.message);
@@ -117,7 +118,7 @@ slashCommands.add({
 						sender: message.u.username,
 						rid: message.rid,
 					},
-				);
+				).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
 		});
 
 		Messages.update(
@@ -217,7 +218,7 @@ callbacks.add(
 				sender: message.u.username,
 				rid: room._id,
 			},
-		);
+		).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
 
 		message.msg = match.groups.text;
 

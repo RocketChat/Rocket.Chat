@@ -198,7 +198,7 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
-			'email.thread': emailThread,
+			'email.thread': { $elemMatch: { $in: emailThread } },
 		};
 
 		return this.findOne(query, options);
@@ -208,7 +208,7 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
-			'email.thread': { $in: emailThread },
+			'email.thread': { $elemMatch: { $in: emailThread } },
 			...(departmentId && { departmentId }),
 		};
 
@@ -220,10 +220,20 @@ export class LivechatRooms extends Base {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
-			'email.thread': emailThread,
+			'email.thread': { $elemMatch: { $in: emailThread } },
 		};
 
 		return this.findOne(query, options);
+	}
+
+	updateEmailThreadByRoomId(roomId, threadIds) {
+		const query = {
+			$addToSet: {
+				'email.thread': [...threadIds],
+			},
+		};
+
+		return this.update({ _id: roomId }, query);
 	}
 
 	findOneLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
