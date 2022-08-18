@@ -20,6 +20,7 @@ import MessageContentBody from './MessageContentBody';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
 import PreviewList from './UrlPreview';
+import VideoConfMessages from './VideoConfMessage/VideoConfMessages';
 
 const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
 	message,
@@ -57,6 +58,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 			)}
 			{message.blocks && (
 				<MessageBlock fixedWidth>
+					{message?.blocks?.map((block, index) => block.appId === 'videoconf-core' && <VideoConfMessages key={index} />)}
 					<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
 				</MessageBlock>
 			)}

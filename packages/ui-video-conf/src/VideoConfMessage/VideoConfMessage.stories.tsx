@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 
 import '@rocket.chat/icons/dist/rocketchat.css';
 import { VideoConfMessage, VideoConfMessageIcon, VideoConfMessageRow, VideoConfMessageText } from '.';
+import VideoConfMessageSkeleton from './VideoConfMessageSkeleton';
 
 export default {
 	title: 'Components/VideoConfMessage',
@@ -116,3 +117,5 @@ export const CallEnded: ComponentStory<typeof VideoConfMessage> = () => (
 		</VideoConfMessageRow>
 	</VideoConfMessage>
 );
+
+export const Loading: ComponentStory<typeof VideoConfMessage> = () => <VideoConfMessageSkeleton />;
