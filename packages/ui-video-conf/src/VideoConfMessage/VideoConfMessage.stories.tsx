@@ -5,6 +5,10 @@ import type { ReactElement } from 'react';
 import '@rocket.chat/icons/dist/rocketchat.css';
 import { VideoConfMessage, VideoConfMessageIcon, VideoConfMessageRow, VideoConfMessageText } from '.';
 import VideoConfMessageSkeleton from './VideoConfMessageSkeleton';
+import VideoConfMessageFooter from './VideoConfMessageFooter';
+import VideoConfMessageUserStack from './VideoConfMessageUserStack';
+import VideoConfMessageAction from './VideoConfMessageAction';
+import VideoConfMessageFooterText from './VideoConfMessageFooterText';
 
 export default {
 	title: 'Components/VideoConfMessage',
@@ -42,79 +46,64 @@ const avatarUrl =
 export const CallingDM: ComponentStory<typeof VideoConfMessage> = () => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
-			<VideoConfMessageIcon name='phone-in' backgroundColor='primary-200' color='primary-600' />
-			<VideoConfMessageText fontScale='c2'>Calling...</VideoConfMessageText>
+			<VideoConfMessageIcon variant='incoming' />
+			<VideoConfMessageText>Calling...</VideoConfMessageText>
 		</VideoConfMessageRow>
-		<VideoConfMessageRow backgroundColor='neutral-100'>
-			<Button small primary>
-				Join
-			</Button>
-			<VideoConfMessageText>Waiting for answer</VideoConfMessageText>
-		</VideoConfMessageRow>
+		<VideoConfMessageFooter>
+			<VideoConfMessageAction primary>Join</VideoConfMessageAction>
+			<VideoConfMessageFooterText>Waiting for answer</VideoConfMessageFooterText>
+		</VideoConfMessageFooter>
 	</VideoConfMessage>
 );
 
 export const CallEndedDM: ComponentStory<typeof VideoConfMessage> = () => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
-			<VideoConfMessageIcon name='phone-off' backgroundColor='neutral-400' color='neutral-700' />
-			<VideoConfMessageText fontScale='c2'>Call ended</VideoConfMessageText>
+			<VideoConfMessageIcon />
+			<VideoConfMessageText>Call ended</VideoConfMessageText>
 		</VideoConfMessageRow>
-		<VideoConfMessageRow backgroundColor='neutral-100'>
-			<Button small secondary>
-				Call back
-			</Button>
-			<VideoConfMessageText>Call was not answered</VideoConfMessageText>
-		</VideoConfMessageRow>
+		<VideoConfMessageFooter>
+			<VideoConfMessageAction>Call Back</VideoConfMessageAction>
+			<VideoConfMessageFooterText>Call was not answered</VideoConfMessageFooterText>
+		</VideoConfMessageFooter>
 	</VideoConfMessage>
 );
 
 export const CallOngoing: ComponentStory<typeof VideoConfMessage> = () => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
-			<VideoConfMessageIcon name='phone' backgroundColor='success-200' color='success-800' />
-			<VideoConfMessageText fontScale='c2'>Call ongoing</VideoConfMessageText>
+			<VideoConfMessageIcon variant='outgoing' />
+			<VideoConfMessageText>Call ongoing</VideoConfMessageText>
 		</VideoConfMessageRow>
-		<VideoConfMessageRow backgroundColor='neutral-100'>
-			<Button small primary>
-				Join
-			</Button>
-			<Box display='flex' alignItems='center' mis='x8'>
+		<VideoConfMessageFooter>
+			<VideoConfMessageAction primary>Join</VideoConfMessageAction>
+			<VideoConfMessageUserStack>
 				{Array(3)
 					.fill('')
 					.map((_, index) => (
-						<Box mie='x4'>
-							<Avatar key={index} size='x28' url={avatarUrl} />
-						</Box>
+						<Avatar key={index} size='x28' url={avatarUrl} />
 					))}
-				<Box fontScale='c1' mis='x4'>
-					Joined
-				</Box>
-			</Box>
-		</VideoConfMessageRow>
+			</VideoConfMessageUserStack>
+			<VideoConfMessageFooterText>Joined</VideoConfMessageFooterText>
+		</VideoConfMessageFooter>
 	</VideoConfMessage>
 );
 
 export const CallEnded: ComponentStory<typeof VideoConfMessage> = () => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
-			<VideoConfMessageIcon name='phone-off' backgroundColor='neutral-400' color='neutral-700' />
-			<VideoConfMessageText fontScale='c2'>Call ended</VideoConfMessageText>
+			<VideoConfMessageIcon />
+			<VideoConfMessageText>Call ended</VideoConfMessageText>
 		</VideoConfMessageRow>
-		<VideoConfMessageRow backgroundColor='neutral-100'>
-			<Box display='flex' alignItems='center' mis='x8'>
+		<VideoConfMessageFooter>
+			<VideoConfMessageUserStack>
 				{Array(3)
 					.fill('')
 					.map((_, index) => (
-						<Box mie='x4'>
-							<Avatar key={index} size='x28' url={avatarUrl} />
-						</Box>
+						<Avatar key={index} size='x28' url={avatarUrl} />
 					))}
-				<Box fontScale='c1' mis='x4'>
-					Joined
-				</Box>
-			</Box>
-		</VideoConfMessageRow>
+			</VideoConfMessageUserStack>
+		</VideoConfMessageFooter>
 	</VideoConfMessage>
 );
 
