@@ -33,7 +33,7 @@ export const QuoteAttachment: FC<MessageQuoteAttachment & { rid: string }> = ({
 	ts,
 	text,
 	attachments,
-	rid
+	rid,
 }) => {
 	const format = useTimeAgo();
 	return (
@@ -61,7 +61,7 @@ export const QuoteAttachment: FC<MessageQuoteAttachment & { rid: string }> = ({
 					<MarkdownText parseEmoji variant='document' content={text} />
 					{attachments && (
 						<AttachmentInner>
-							<Attachments attachments={attachments} rid={rid}/>
+							<Attachments attachments={attachments} rid={rid} />
 						</AttachmentInner>
 					)}
 				</AttachmentDetails>

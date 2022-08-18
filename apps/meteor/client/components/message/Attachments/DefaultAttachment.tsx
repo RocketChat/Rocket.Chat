@@ -1,6 +1,7 @@
 import { isActionAttachment, MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import React, { FC, ReactNode, ComponentProps } from 'react';
 
+import { useDecryptedMessage } from '../../../hooks/useDecryptedMessage';
 import MarkdownText from '../../MarkdownText';
 import { ActionAttachment } from './ActionAttachtment';
 import AttachmentAuthor from './Attachment/AttachmentAuthor';
@@ -23,8 +24,10 @@ const applyMarkdownIfRequires = (
 	variant: ComponentProps<typeof MarkdownText>['variant'] = 'inline',
 ): ReactNode => (list?.includes(key) ? <MarkdownText parseEmoji variant={variant} content={text} /> : text);
 
-const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
+const DefaultAttachment: FC<MessageAttachmentDefault & { rid: string }> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
+
+	const decryptedAttachmentText = useDecryptedMessage({ ...attachment, msg: attachment.text });
 
 	return (
 		<AttachmentBlock
@@ -68,8 +71,8 @@ const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 				)}
 				{!collapsed && (
 					<>
-						{attachment.text && (
-							<AttachmentText>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text, 'document')}</AttachmentText>
+						{decryptedAttachmentText && (
+							<AttachmentText>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', decryptedAttachmentText, 'document')}</AttachmentText>
 						)}
 						{/* {attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />} */}
 						{attachment.fields && (
