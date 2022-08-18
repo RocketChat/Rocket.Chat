@@ -6,7 +6,7 @@ import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/dataView/CounterSet';
-import Section from '../Section';
+import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import DownloadDataButton from '../dataView/DownloadDataButton';
 import PeriodSelector from '../dataView/PeriodSelector';
 import { usePeriodLabel } from '../dataView/usePeriodLabel';
@@ -42,20 +42,17 @@ const MessagesSentSection = (): ReactElement => {
 	}, [data]);
 
 	return (
-		<Section
-			title={t('Messages_sent')}
-			filter={
-				<>
-					<PeriodSelector {...periodSelectorProps} />
-					<DownloadDataButton
-						attachmentName={`MessagesSentSection_start_${data?.start}_end_${data?.end}`}
-						headers={['Date', 'Messages']}
-						dataAvailable={!!data}
-						dataExtractor={(): unknown[][] | undefined => values?.map(({ date, newMessages }) => [date, newMessages])}
-					/>
-				</>
-			}
-		>
+		<>
+			<EngagementDashboardCardFilter>
+				<PeriodSelector {...periodSelectorProps} />
+				<DownloadDataButton
+					attachmentName={`MessagesSentSection_start_${data?.start}_end_${data?.end}`}
+					headers={['Date', 'Messages']}
+					dataAvailable={!!data}
+					dataExtractor={(): unknown[][] | undefined => values?.map(({ date, newMessages }) => [date, newMessages])}
+				/>
+			</EngagementDashboardCardFilter>
+
 			<CounterSet
 				counters={[
 					{
@@ -153,7 +150,7 @@ const MessagesSentSection = (): ReactElement => {
 					<Skeleton variant='rect' height={240} />
 				)}
 			</Flex.Container>
-		</Section>
+		</>
 	);
 };
 
