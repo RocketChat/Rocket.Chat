@@ -71,7 +71,6 @@ export const useCreateTeamModalState = (onClose: () => void): CreateTeamModalSta
 	const [nameError, setNameError] = useState<string>();
 
 	const teamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
-	// const teamNameExists = useMethod('roomNameExists');
 
 	const checkName = useDebouncedCallback(
 		async (name: string) => {
@@ -91,8 +90,8 @@ export const useCreateTeamModalState = (onClose: () => void): CreateTeamModalSta
 				return;
 			}
 
-			const isNotAvailable = await teamNameExists({ roomName: name });
-			if (isNotAvailable) {
+			const { exists } = await teamNameExists({ roomName: name });
+			if (exists) {
 				setNameError(t('Teams_Errors_team_name', { name }));
 			}
 		},

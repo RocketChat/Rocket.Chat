@@ -2,8 +2,6 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import '../../../../lib/server.mocks';
-
 import { FederationRoomServiceReceiver } from '../../../../../../../app/federation-v2/server/application/RoomServiceReceiver';
 import { FederatedUser } from '../../../../../../../app/federation-v2/server/domain/FederatedUser';
 import { FederatedRoom } from '../../../../../../../app/federation-v2/server/domain/FederatedRoom';
