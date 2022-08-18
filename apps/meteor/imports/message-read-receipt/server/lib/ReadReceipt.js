@@ -52,21 +52,22 @@ export const ReadReceipt = {
 		updateMessages(room);
 	},
 
-	markThreadMessagesAsRead(message, userId, userLastSeen) {
+	markThreadMessagesAsRead(message, roomId, userId) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
 
-		const room = Rooms.findOneById(roomId, { fields: { lm: 1 } });
+		const messages = Messages.findVisibleThreadByThreadId(message._id).fetch();
+		const existingReceiptsMessageIds = Promise.await(this.getManyReceiptsByUserId(messages, userId)).map((receipt) => receipt.messageId);
 
-		// if users last seen is greater than room's last message, it means the user already have this room marked as read
-		if (userLastSeen > room.lm) {
-			return;
-		}
+		const readMessageIds = messages.map((m) => m._id);
+		const missingReceipts = readMessageIds.filter((message) => !existingReceiptsMessageIds.includes(message));
 
-		this.storeReadReceipts(Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
-
-		updateMessages(room);
+		this.storeReadReceipts(
+			messages.filter((message) => missingReceipts.includes(message._id)),
+			roomId,
+			userId
+		);
 	},
 
 	markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
@@ -123,5 +124,12 @@ export const ReadReceipt = {
 					: Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
 			})),
 		);
+	},
+
+	async getManyReceiptsByUserId(messages, userId) {
+		const messageIds = messages.map((m) => m._id);
+
+		const receipts = await ReadReceipts.findByMessageIdsAndUserId(messageIds, userId).toArray();
+		return Promise.all(receipts);
 	},
 };

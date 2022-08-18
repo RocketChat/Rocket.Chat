@@ -1140,31 +1140,6 @@ export class Messages extends Base {
 		});
 	}
 
-	findUnreadThreadMessagesByRoomAndDate(rid, after) {
-		const query = {
-			unread: true,
-			rid,
-			$or: [
-				{
-					tmid: { $exists: false },
-				},
-				{
-					tshow: true,
-				},
-			],
-		};
-
-		if (after) {
-			query.ts = { $gt: after };
-		}
-
-		return this.find(query, {
-			fields: {
-				_id: 1,
-			},
-		});
-	}
-
 	/**
 	 * Copy metadata from the discussion to the system message in the parent channel
 	 * which links to the discussion.

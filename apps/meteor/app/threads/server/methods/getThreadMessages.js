@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Messages, Rooms } from '../../../models/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { canAccessRoom } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { readThread } from '../functions';
@@ -41,6 +42,7 @@ Meteor.methods({
 			sort: { ts: -1 },
 		}).fetch();
 
+		callbacks.runAsync('afterReadThread', thread, { rid: room._id, uid: user._id });
 		return [thread, ...result];
 	},
 });

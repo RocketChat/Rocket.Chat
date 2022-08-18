@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { settings } from '../../app/settings/server';
 import { Messages, Rooms } from '../../app/models/server';
-import { markRoomAsRead } from '../lib/markRoomAsRead';
+import { markThreadAsRead } from '../lib/markThreadAsRead';
 import { canAccessRoom } from '../../app/authorization/server';
 import { readThread } from '../../app/threads/server/functions';
 
@@ -30,6 +30,6 @@ Meteor.methods({
 		}
 
 		readThread({ userId: user._id, rid: thread.rid, tmid });
-		Promise.await(markRoomAsRead(thread.rid, user._id));
+		Promise.await(markThreadAsRead(thread, thread.rid, user._id));
 	},
 });

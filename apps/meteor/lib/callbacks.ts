@@ -42,6 +42,7 @@ type EventLikeCallbackSignatures = {
 	'validateUserRoles': (userData: Partial<IUser>) => void;
 	'workspaceLicenseChanged': (license: string) => void;
 	'afterReadMessages': (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen: Date }) => void;
+	'afterReadThread': (message: IMessage, params: { rid: IRoom['_id']; uid: IUser['_id'] }) => void;
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;

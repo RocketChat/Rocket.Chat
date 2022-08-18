@@ -32,3 +32,12 @@ callbacks.add(
 	callbacks.priority.MEDIUM,
 	'message-read-receipt-afterReadMessages',
 );
+
+callbacks.add(
+	'afterReadThread',
+	(message, { rid, uid }) => {
+		ReadReceipt.markThreadMessagesAsRead(message, rid, uid);
+	},
+	callbacks.priority.MEDIUM,
+	'message-read-receipt-afterReadThread',
+);

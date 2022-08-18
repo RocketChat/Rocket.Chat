@@ -16,4 +16,11 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 	findByMessageId(messageId: string): FindCursor<ReadReceipt> {
 		return this.find({ messageId });
 	}
+
+	findByMessageIdsAndUserId(messageIds: string[], userId: string): FindCursor<ReadReceipt> {
+		return this.find({
+			messageId: { $in: messageIds },
+			userId,
+		});
+	}
 }
