@@ -45,7 +45,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 				onReload();
 				route.push({});
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
 		[saveStatus, _id, name, statusType, route, dispatchToastMessage, t, onReload],
@@ -63,7 +63,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 				onReload();
 				route.push({});
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				setModal(null);
 			}

@@ -34,7 +34,7 @@ const OAuthAddApp = (): ReactElement => {
 			close();
 			dispatchToastMessage({ type: 'success', message: t('Application_added') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
