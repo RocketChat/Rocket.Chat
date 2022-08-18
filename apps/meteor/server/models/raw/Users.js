@@ -1126,4 +1126,8 @@ export class UsersRaw extends BaseRaw {
 		};
 		return this.updateOne(query, update);
 	}
+
+	findOneByResetToken(token, options) {
+		return this.findOne({ 'services.password.reset.token': token }, options);
+	}
 }
