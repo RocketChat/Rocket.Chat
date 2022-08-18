@@ -795,7 +795,6 @@ describe('[Users]', function () {
 					contentType: '',
 					service: 'url',
 				})
-				.field({ userId: credentials['X-User-Id'] })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -815,7 +814,6 @@ describe('[Users]', function () {
 					contentType: '',
 					service: 'url',
 				})
-				.field({ username: adminUsername })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -836,7 +834,6 @@ describe('[Users]', function () {
 						contentType: '',
 						service: 'url',
 					})
-					.field({ userId: credentials['X-User-Id'] })
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {
@@ -859,7 +856,6 @@ describe('[Users]', function () {
 							contentType: '',
 							service: 'url',
 						})
-						.field({ userId: userCredentials['X-User-Id'] })
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
