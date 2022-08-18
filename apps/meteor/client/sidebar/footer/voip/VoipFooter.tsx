@@ -6,7 +6,7 @@ import React, { ReactElement, MouseEvent, ReactNode } from 'react';
 
 import type { VoipFooterMenuOptions } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import { CallActionsType } from '../../../contexts/CallContext';
-import { useContactName } from '../../../hooks/omnichannel/useContactName';
+import { useOmnichannelContact } from '../../../hooks/omnichannel/useOmnichannelContact';
 
 type VoipFooterPropsType = {
 	caller: ICallerInfo;
@@ -58,7 +58,7 @@ export const VoipFooter = ({
 	children,
 	options,
 }: VoipFooterPropsType): ReactElement => {
-	const contactName = useContactName(caller.callerId);
+	const contact = useOmnichannelContact(caller.callerId);
 
 	const cssClickable =
 		callerState === 'IN_CALL' || callerState === 'ON_HOLD'
@@ -120,7 +120,7 @@ export const VoipFooter = ({
 				<Box display='flex' flexDirection='row' mi='16px' mbe='12px' justifyContent='space-between' alignItems='center'>
 					<Box>
 						<Box color='white' fontScale='p2' withTruncatedText data-qa-id='omncVoipTitle'>
-							{contactName || caller.callerName || anonymousText}
+							{contact.name || caller.callerName || contact.phone || anonymousText}
 						</Box>
 						<Box color='hint' fontScale='c1' withTruncatedText>
 							{subtitle}
