@@ -21,7 +21,6 @@ import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
-import './messageBoxFollow';
 import './thread.html';
 
 type ThreadTemplateInstance = Blaze.TemplateInstance<{

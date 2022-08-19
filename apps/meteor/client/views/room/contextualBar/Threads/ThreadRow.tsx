@@ -1,13 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, MouseEvent } from 'react';
+import React, { memo, MouseEvent, ReactElement } from 'react';
 
 import { useDecryptedMessage } from '../../../../hooks/useDecryptedMessage';
-import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { clickableItem } from '../../../../lib/clickableItem';
 import { normalizeThreadMessage } from '../../../../lib/normalizeThreadMessage';
 import { callWithErrorHandling } from '../../../../lib/utils/callWithErrorHandling';
-import ThreadListMessage from './components/Message';
+import ThreadListMessage from './components/ThreadListMessage';
 import { mapProps } from './mapProps';
 
 const Thread = memo(mapProps(clickableItem(ThreadListMessage)));
@@ -33,10 +31,7 @@ type ThreadRowProps = {
 	onClick: (threadId: string) => void;
 };
 
-const Row: FC<ThreadRowProps> = memo(function Row({ thread, showRealNames, unread, unreadUser, unreadGroup, userId, onClick }) {
-	const t = useTranslation();
-	const formatDate = useTimeAgo();
-
+function ThreadRow({ thread, showRealNames, unread, unreadUser, unreadGroup, userId, onClick }: ThreadRowProps): ReactElement {
 	const decryptedMsg = useDecryptedMessage(thread);
 	const msg = normalizeThreadMessage({ ...thread, msg: decryptedMsg });
 
@@ -57,12 +52,10 @@ const Row: FC<ThreadRowProps> = memo(function Row({ thread, showRealNames, unrea
 			following={thread.replies?.includes(userId)}
 			data-id={thread._id}
 			msg={msg}
-			t={t}
-			formatDate={formatDate}
 			handleFollowButton={(e: MouseEvent<HTMLElement>): unknown => handleFollowButton(e, thread._id)}
 			onClick={onClick}
 		/>
 	);
-});
+}
 
-export default Row;
+export default memo(ThreadRow);

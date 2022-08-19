@@ -1,20 +1,32 @@
+import { IMessage } from '@rocket.chat/core-typings';
 import { Message, Box, IconButton } from '@rocket.chat/fuselage';
-import React from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React, { ComponentProps, memo, MouseEventHandler, ReactElement, ReactNode } from 'react';
 
 import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import * as NotificationStatus from '../../../../../components/message/NotificationStatus';
 import { followStyle, anchor } from '../../../../../components/message/helpers/followSyle';
+import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 
-function isIterable(obj) {
-	// checks for null and undefined
-	if (obj == null) {
-		return false;
-	}
-	return typeof obj[Symbol.iterator] === 'function';
-}
+type ThreadListMessageProps = {
+	_id: IMessage['_id'];
+	msg: IMessage['msg'];
+	following: boolean;
+	username: IMessage['u']['username'];
+	name?: IMessage['u']['name'];
+	ts: IMessage['ts'];
+	replies: IMessage['replies'];
+	participants: ReactNode;
+	handleFollowButton: MouseEventHandler;
+	unread: boolean;
+	mention: number;
+	all: boolean;
+	tlm: number;
+	className?: string | string[];
+} & Omit<ComponentProps<typeof Message>, 'className'>;
 
-export default React.memo(function MessageThread({
+function ThreadListMessage({
 	_id,
 	msg,
 	following,
@@ -27,17 +39,18 @@ export default React.memo(function MessageThread({
 	unread,
 	mention,
 	all,
-	t = (e) => e,
-	formatDate = (e) => e,
 	tlm,
 	className = [],
 	...props
-}) {
+}: ThreadListMessageProps): ReactElement {
+	const t = useTranslation();
+	const formatDate = useTimeAgo();
+
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 	return (
-		<Box className={className} pb='x8'>
-			<Message {...props} className={[...(isIterable(className) ? className : [className]), !following && followStyle].filter(Boolean)}>
+		<Box className={[className, !following && followStyle].flat()} pb='x8'>
+			<Message {...props}>
 				<Message.LeftContainer>
 					<UserAvatar username={username} className='rcx-message__avatar' size='x36' />
 				</Message.LeftContainer>
@@ -78,11 +91,13 @@ export default React.memo(function MessageThread({
 						title={actionLabel}
 						aria-label={actionLabel}
 					/>
-					{(mention && <NotificationStatus.Me mb='x24' />) ||
-						(all && <NotificationStatus.All mb='x24' />) ||
-						(unread && <NotificationStatus.Unread mb='x24' />)}
+					<Box mb={24}>
+						{(mention && <NotificationStatus.Me />) || (all && <NotificationStatus.All />) || (unread && <NotificationStatus.Unread />)}
+					</Box>
 				</Message.ContainerFixed>
 			</Message>
 		</Box>
 	);
-});
+}
+
+export default memo(ThreadListMessage);
