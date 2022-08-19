@@ -27,7 +27,7 @@ const RemoveChatButton: FC<{ _id: string; reload: () => void }> = ({ _id, reload
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal(null);
 		};

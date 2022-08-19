@@ -122,9 +122,9 @@ export class Agenda extends EventEmitter {
 
 		if (config.mongo) {
 			this.mongo(config.mongo, config.db ? config.db.collection : undefined, cb);
-			// @ts-expect-error
+			// @ts-ignore
 			if (config.mongo.s && config.mongo.topology && config.mongo.topology.s) {
-				// @ts-expect-error
+				// @ts-ignore
 				this._mongoUseUnifiedTopology = Boolean(config.mongo?.topology?.s?.options?.useUnifiedTopology);
 			}
 		} else if (config.db) {

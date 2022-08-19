@@ -1,6 +1,7 @@
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import { HomeFlextabMembers } from './home-flextab-members';
+import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
 import { HomeFlextabRoom } from './home-flextab-room';
 
 export class HomeFlextab {
@@ -10,10 +11,13 @@ export class HomeFlextab {
 
 	readonly room: HomeFlextabRoom;
 
+	readonly notificationPreferences: HomeFlextabNotificationPreferences;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.members = new HomeFlextabMembers(page);
 		this.room = new HomeFlextabRoom(page);
+		this.notificationPreferences = new HomeFlextabNotificationPreferences(page);
 	}
 
 	get btnTabMembers(): Locator {
@@ -22,6 +26,14 @@ export class HomeFlextab {
 
 	get btnRoomInfo(): Locator {
 		return this.page.locator('[data-qa-id=ToolBoxAction-info-circled]');
+	}
+
+	get kebab(): Locator {
+		return this.page.locator('[data-qa-id=ToolBox-Menu]');
+	}
+
+	get btnNotificationPreferences(): Locator {
+		return this.page.locator('[data-qa-id=ToolBoxAction-bell]');
 	}
 
 	get flexTabViewThreadMessage(): Locator {

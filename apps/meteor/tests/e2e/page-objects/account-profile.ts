@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import { AccountSidenav } from './fragments/account-sidenav';
 
@@ -14,6 +14,14 @@ export class AccountProfile {
 
 	get inputName(): Locator {
 		return this.page.locator('//label[contains(text(), "Name")]/..//input');
+	}
+
+	get inputAvatarLink(): Locator {
+		return this.page.locator('[data-qa-id="UserAvatarEditorLink"]');
+	}
+
+	get btnSetAvatarLink(): Locator {
+		return this.page.locator('[data-qa-id="UserAvatarEditorSetAvatarLink"]');
 	}
 
 	get inputUsername(): Locator {
@@ -62,5 +70,9 @@ export class AccountProfile {
 
 	get btnRemoveTokenModal(): Locator {
 		return this.page.locator('//button[contains(text(), "Remove")]');
+	}
+
+	get inputImageFile(): Locator {
+		return this.page.locator('input[type=file]');
 	}
 }

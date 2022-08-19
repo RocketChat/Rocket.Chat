@@ -1,4 +1,4 @@
-import { AutoComplete, Box, Option, OptionAvatar, OptionContent, Chip } from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Option, OptionAvatar, OptionContent, Chip, OptionDescription } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { ComponentProps, memo, ReactElement, useMemo, useState } from 'react';
 
@@ -56,7 +56,7 @@ const UserAutoCompleteMultiple = ({ onChange, ...props }: UserAutoCompleteMultip
 						<UserAvatar username={value} size='x20' />
 					</OptionAvatar>
 					<OptionContent>
-						{label} <Option.Description>({value})</Option.Description>
+						{label} <OptionDescription>({value})</OptionDescription>
 					</OptionContent>
 				</Option>
 			)}

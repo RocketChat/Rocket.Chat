@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import { AdminSidenav } from './fragments';
 import { AdminFlextab } from './fragments/admin-flextab';

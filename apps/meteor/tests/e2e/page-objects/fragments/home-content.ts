@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 export class HomeContent {
 	private readonly page: Page;
@@ -27,6 +27,12 @@ export class HomeContent {
 
 	async sendMessage(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
+		await this.page.keyboard.press('Enter');
+	}
+
+	async dispatchSlashCommand(text: string): Promise<void> {
+		await this.page.locator('[name="msg"]').type(text);
+		await this.page.keyboard.press('Enter');
 		await this.page.keyboard.press('Enter');
 	}
 
@@ -98,6 +104,18 @@ export class HomeContent {
 
 	get linkUserCard(): Locator {
 		return this.page.locator('[data-qa="UserCard"] a');
+	}
+
+	get btnForwardChat(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
+	}
+
+	get inputModalAgentUserName(): Locator {
+		return this.page.locator('#modal-root input:nth-child(1)');
+	}
+
+	get inputModalAgentForwardComment(): Locator {
+		return this.page.locator('[data-qa-id="ForwardChatModalTextAreaInputComment"]');
 	}
 
 	async pickEmoji(emoji: string, section = 'icon-people') {

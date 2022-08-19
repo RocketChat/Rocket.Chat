@@ -5,11 +5,11 @@ import less from 'less';
 import Autoprefixer from 'less-plugin-autoprefixer';
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
+import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../settings/server';
 import { Logger } from '../../logger';
 import { addStyle } from '../../ui-master/server/inject';
-import { Settings } from '../../models/server';
 
 const logger = new Logger('rocketchat:theme');
 

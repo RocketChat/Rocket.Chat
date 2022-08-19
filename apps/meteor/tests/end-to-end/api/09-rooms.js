@@ -226,6 +226,58 @@ describe('[Rooms]', function () {
 		});
 	});
 
+	describe('/rooms.nameExists', () => {
+		it('should return 401 unauthorized when user is not logged in', (done) => {
+			request
+				.get(api('rooms.nameExists'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		// eslint-disable-next-line no-unused-vars
+		let testChannel;
+		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+		it('create an channel', (done) => {
+			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
+				testChannel = res.body.channel;
+				done();
+			});
+		});
+		it('should return true if this room name exists', (done) => {
+			request
+				.get(api('rooms.nameExists'))
+				.set(credentials)
+				.query({
+					roomName: testChannelName,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', true);
+				})
+				.end(done);
+		});
+
+		it('should return an error when send an invalid room', (done) => {
+			request
+				.get(api('rooms.nameExists'))
+				.set(credentials)
+				.query({
+					roomId: 'foo',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/rooms.cleanHistory]', () => {
 		let publicChannel;
 		let privateChannel;
@@ -302,6 +354,51 @@ describe('[Rooms]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should successfully delete an image and thumbnail from public channel', (done) => {
+			request
+				.post(api(`rooms.upload/${publicChannel._id}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message._id', message._id);
+					expect(res.body).to.have.nested.property('message.rid', publicChannel._id);
+					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
+					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+				});
+
+			request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			request
+				.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomId: publicChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array');
+					expect(res.body.files).to.have.lengthOf(0);
 				})
 				.end(done);
 		});
