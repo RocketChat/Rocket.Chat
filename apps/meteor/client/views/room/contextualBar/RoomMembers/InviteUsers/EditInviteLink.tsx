@@ -1,15 +1,20 @@
-import { Box, Field, Select, Button, InputBox, SelectOption } from '@rocket.chat/fuselage';
+import { Box, Field, Select, Button, SelectOption } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, useState } from 'react';
+import React, { ReactElement, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 type EditInviteLinkProps = {
 	daysAndMaxUses: { days: string; maxUses: string };
 	onClickNewLink: (daysAndMaxUses: { days: string; maxUses: string }) => void;
 };
 
-const EditInviteLink = ({ daysAndMaxUses: { days, maxUses }, onClickNewLink }: EditInviteLinkProps): ReactElement => {
+const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps): ReactElement => {
 	const t = useTranslation();
-	const [daysAndMaxUses, setDaysAndMaxUses] = useState({ days, maxUses });
+	const {
+		handleSubmit,
+		formState: { isDirty },
+		control,
+	} = useForm({ defaultValues: { days: daysAndMaxUses.days, maxUses: daysAndMaxUses.maxUses } });
 
 	const daysOptions: SelectOption[] = useMemo(
 		() => [
@@ -39,31 +44,29 @@ const EditInviteLink = ({ daysAndMaxUses: { days, maxUses }, onClickNewLink }: E
 			<Field>
 				<Field.Label flexGrow={0}>{t('Expiration_(Days)')}</Field.Label>
 				<Field.Row>
-					{!daysAndMaxUses.days && <InputBox.Skeleton />}
-					{daysAndMaxUses.days && (
-						<Select
-							value={daysAndMaxUses.days}
-							onChange={(value): void => setDaysAndMaxUses((prevState) => ({ ...prevState, days: value }))}
-							options={daysOptions}
-						/>
-					)}
+					<Controller
+						name='days'
+						control={control}
+						render={({ field: { onChange, value, name, ref } }): ReactElement => (
+							<Select ref={ref} name={name} value={value} onChange={onChange} options={daysOptions} />
+						)}
+					/>
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label flexGrow={0}>{t('Max_number_of_uses')}</Field.Label>
 				<Field.Row>
-					{!daysAndMaxUses.maxUses && <InputBox.Skeleton />}
-					{daysAndMaxUses.maxUses && (
-						<Select
-							value={daysAndMaxUses.maxUses}
-							onChange={(value): void => setDaysAndMaxUses((prevState) => ({ ...prevState, maxUses: value }))}
-							options={maxUsesOptions}
-						/>
-					)}
+					<Controller
+						name='maxUses'
+						control={control}
+						render={({ field: { onChange, value, name, ref } }): ReactElement => (
+							<Select ref={ref} name={name} value={value} onChange={onChange} options={maxUsesOptions} />
+						)}
+					/>
 				</Field.Row>
 			</Field>
 			<Box mbs='x8'>
-				<Button primary onClick={(): void => onClickNewLink(daysAndMaxUses)}>
+				<Button disabled={!isDirty} primary onClick={handleSubmit(onClickNewLink)}>
 					{t('Generate_New_Link')}
 				</Button>
 			</Box>

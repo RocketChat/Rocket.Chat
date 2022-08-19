@@ -1,7 +1,7 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, ReactElement, useCallback } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
@@ -65,23 +65,17 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 		return t('Your_invite_link_will_never_expire');
 	});
 
-	const handleInvite = useCallback(async (): Promise<void> => {
-		try {
-			const data = await findOrCreateInvite({ rid, days: Number(days), maxUses: Number(maxUses) });
-			setInviteState((prevState) => ({ ...prevState, url: data?.url, caption: linkExpirationText(data) }));
-			dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
-		} catch (error) {
-			setInviteState((prevState) => ({ ...prevState, error: error as Error }));
-		}
-	}, [t, days, maxUses, findOrCreateInvite, linkExpirationText, rid, dispatchToastMessage]);
-
 	useEffect(() => {
-		if (isEditing) {
-			return;
-		}
-
-		handleInvite();
-	}, [findOrCreateInvite, isEditing, linkExpirationText, rid, days, maxUses, handleInvite]);
+		(async (): Promise<void> => {
+			try {
+				const data = await findOrCreateInvite({ rid, days: Number(days), maxUses: Number(maxUses) });
+				setInviteState((prevState) => ({ ...prevState, url: data?.url, caption: linkExpirationText(data) }));
+				dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
+			} catch (error) {
+				setInviteState((prevState) => ({ ...prevState, error: error as Error }));
+			}
+		})();
+	}, [dispatchToastMessage, t, findOrCreateInvite, linkExpirationText, rid, days, maxUses]);
 
 	const handleGenerateLink = useMutableCallback((daysAndMaxUses) => {
 		setInviteState((prevState) => ({ ...prevState, daysAndMaxUses, isEditing: false }));
