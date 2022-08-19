@@ -36,6 +36,11 @@ export class HomeSidenav {
 		await this.page.locator('//li[@class="rcx-option"]//div[contains(text(), "My Account")]').click();
 	}
 
+	async switchStatus(status: 'offline' | 'online'): Promise<void> {
+		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
+		await this.page.locator(`text=${status}`).click();
+	}
+
 	async openChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
 		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
