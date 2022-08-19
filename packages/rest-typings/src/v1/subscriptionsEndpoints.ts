@@ -88,24 +88,24 @@ const SubscriptionsUnreadSchema = {
 export const isSubscriptionsUnreadProps = ajv.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
 
 export type SubscriptionsEndpoints = {
-	'subscriptions.get': {
+	'/v1/subscriptions.get': {
 		GET: (params: SubscriptionsGet) => {
 			update: ISubscription[];
 			remove: (Pick<ISubscription, '_id'> & { _deletedAt: Date })[];
 		};
 	};
 
-	'subscriptions.getOne': {
+	'/v1/subscriptions.getOne': {
 		GET: (params: SubscriptionsGetOne) => {
 			subscription: ISubscription | null;
 		};
 	};
 
-	'subscriptions.read': {
+	'/v1/subscriptions.read': {
 		POST: (params: SubscriptionsRead) => void;
 	};
 
-	'subscriptions.unread': {
+	'/v1/subscriptions.unread': {
 		POST: (params: SubscriptionsUnread) => void;
 	};
 };

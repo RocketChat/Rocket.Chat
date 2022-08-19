@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Field, TextInput, FieldGroup, Modal, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, ChangeEvent, useCallback } from 'react';
 
 import UserStatusMenu from '../../components/UserStatusMenu';
@@ -15,13 +15,14 @@ type EditStatusModalProps = {
 
 const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModalProps): ReactElement => {
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
-	const setUserStatus = useMethod('setUserStatus');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const t = useTranslation();
 	const [statusText, setStatusText] = useState(userStatusText);
 	const [statusType, setStatusType] = useState(userStatus);
 	const [statusTextError, setStatusTextError] = useState<string | undefined>();
+
+	const setUserStatus = useEndpoint('POST', '/v1/users.setStatus');
 
 	const handleStatusText = useMutableCallback((e: ChangeEvent<HTMLInputElement>): void => {
 		setStatusText(e.currentTarget.value);
@@ -37,14 +38,14 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 
 	const handleSaveStatus = useCallback(async () => {
 		try {
-			await setUserStatus(statusType, statusText);
+			await setUserStatus({ message: statusText, status: statusType });
 			dispatchToastMessage({ type: 'success', message: t('StatusMessage_Changed_Successfully') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 
 		onClose();
-	}, [dispatchToastMessage, statusType, statusText, setUserStatus, onClose, t]);
+	}, [dispatchToastMessage, setUserStatus, statusText, statusType, onClose, t]);
 
 	return (
 		<Modal>
