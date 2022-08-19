@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
-import mock from 'mock-require';
+import mock from 'proxyquire';
 
 import type { PermissionsPayload } from '../../../../../../../app/api/server/api.helpers';
 
@@ -11,17 +11,19 @@ const userPermissions: { [k: string]: string[] } = {
 	'4r3fsadfasf4': [],
 };
 
-mock('../../../../../../../app/authorization/server/functions/hasPermission', {
-	hasAllPermissionAsync: (userId: string, permissions: string[]): boolean => {
-		return permissions.every((permission) => userPermissions[userId].includes(permission));
+const mocks = {
+	'../../authorization/server/functions/hasPermission': {
+		hasAllPermissionAsync: (userId: string, permissions: string[]): boolean => {
+			return permissions.every((permission) => userPermissions[userId].includes(permission));
+		},
+		hasAtLeastOnePermissionAsync: (userId: string, permissions: string[]): boolean => {
+			return permissions.some((permission) => userPermissions[userId].includes(permission));
+		},
 	},
-	hasAtLeastOnePermissionAsync: (userId: string, permissions: string[]): boolean => {
-		return permissions.some((permission) => userPermissions[userId].includes(permission));
-	},
-});
+};
 
 // eslint-disable-next-line
-const { checkPermissionsForInvocation } = mock.reRequire('../../../../../../../app/api/server/api.helpers');
+const { checkPermissionsForInvocation } = mock.noCallThru().load('../../../../../../../app/api/server/api.helpers', mocks);
 
 describe('checkPermissionsForInvocation', () => {
 	it('should return false when no permissions are provided', async () => {

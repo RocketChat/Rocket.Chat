@@ -462,6 +462,8 @@ export class APIClass extends Restivus {
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => Promise.await(originalAction.apply(this))) || API.v1.success();
 
+						console.log('------------------------------------------------------');
+						console.log(result);
 						log.http({
 							status: result.statusCode,
 							responseTime: Date.now() - startTime,
