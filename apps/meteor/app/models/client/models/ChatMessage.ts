@@ -2,10 +2,6 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Mongo } from 'meteor/mongo';
 
 class ChatMessageCollection extends Mongo.Collection<IMessage & { ignored?: boolean }> {
-	direct: Mongo.Collection<IMessage, IMessage>;
-
-	queries: unknown[];
-
 	constructor() {
 		super(null);
 	}
@@ -28,4 +24,9 @@ class ChatMessageCollection extends Mongo.Collection<IMessage & { ignored?: bool
 	}
 }
 
-export const ChatMessage = new ChatMessageCollection();
+// TODO: check if we can dodge these missing typings from Meteor Collection Hooks
+export const ChatMessage = new ChatMessageCollection() as unknown as Mongo.Collection<IMessage & { ignored?: boolean }> & {
+	direct: Mongo.Collection<IMessage, IMessage>;
+
+	queries: unknown[];
+};
