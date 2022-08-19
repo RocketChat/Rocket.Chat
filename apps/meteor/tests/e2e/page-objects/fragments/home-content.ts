@@ -110,6 +110,14 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
 	}
 
+	get btnCloseChat(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
+	}
+
+	get inputModalClosingComment(): Locator {
+		return this.page.locator('#modal-root input:nth-child(1)');
+	}
+
 	get inputModalAgentUserName(): Locator {
 		return this.page.locator('#modal-root input:nth-child(1)');
 	}
