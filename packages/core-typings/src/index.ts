@@ -38,11 +38,7 @@ export * from './IUser';
 
 export * from './ee/ILicense/ILicense';
 
-export * from './IImport';
-export * from './IImportUser';
-export * from './IImportRecord';
-export * from './IImportMessage';
-export * from './IImportChannel';
+export * from './import';
 export * from './IIncomingMessage';
 export * from './IExportOperation';
 export * from './INotification';

@@ -1,5 +1,5 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IUser } from './IUser';
+import type { IRocketChatRecord } from '../IRocketChatRecord';
+import type { IUser } from '../IUser';
 
 export interface IImport extends IRocketChatRecord {
 	type: string;
