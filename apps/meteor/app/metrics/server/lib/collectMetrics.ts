@@ -80,6 +80,10 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.totalDirectMessages.set(statistics.totalDirectMessages);
 	metrics.totalLivechatMessages.set(statistics.totalLivechatMessages);
 
+	// Livechat stats
+	metrics.totalLivechatVisitors.set(statistics.totalLivechatVisitors);
+	metrics.totalLivechatAgents.set(statistics.totalLivechatAgents);
+
 	metrics.pushQueue.set(statistics.pushQueue || 0);
 };
 
