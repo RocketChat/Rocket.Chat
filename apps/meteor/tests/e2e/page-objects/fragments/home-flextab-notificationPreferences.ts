@@ -33,7 +33,7 @@ export class HomeFlextabNotificationPreferences {
 		await this.selectOptionByLabel('Mentions');
 	}
 
-	async updateAllNotificaitonPreferences(): Promise<void> {
+	async updateAllNotificationPreferences(): Promise<void> {
 		await this.updateDevicePreference('Desktop');
 		await this.updateDevicePreference('Mobile');
 		await this.updateDevicePreference('Email');
