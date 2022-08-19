@@ -1,21 +1,13 @@
-import { useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { format } from 'date-fns';
 
 import { UpgradeTabVariant, getUpgradeTabType } from '../../../lib/getUpgradeTabType';
+import { useLicense } from '../../hooks/useLicense';
 
 export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; trialEndDate: string | undefined; isLoading: boolean } => {
-	const getRegistrationStatus = useEndpoint('GET', '/v1/cloud.registrationStatus');
-	const getLicenses = useEndpoint('GET', '/v1/licenses.get');
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
 
-	const { data: registrationStatusData } = useQuery(['registrationStatus'], () => getRegistrationStatus());
-	const { data: getValidLicensesData, isSuccess } = useQuery(['licenses'], () => getLicenses(), {
-		enabled: !!registrationStatusData,
-	});
-
-	const { registrationStatus } = registrationStatusData ?? {};
-	const { licenses } = getValidLicensesData ?? {};
+	const { licenses, isSuccess, registrationStatus } = useLicense();
 
 	const registered = registrationStatus?.workspaceRegistered ?? false;
 	const hasValidLicense = (licenses?.length ?? 0) > 0;

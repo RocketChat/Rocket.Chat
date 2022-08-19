@@ -2,6 +2,8 @@ import { Box, Button, Scrollable, Throbber, Modal } from '@rocket.chat/fuselage'
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ChangeEvent, FC, useState } from 'react';
 
+import { queryClient } from '../../../lib/queryClient';
+
 type PasteStepProps = {
 	onBackButtonClick: () => void;
 	onFinish: () => void;
@@ -25,6 +27,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 
 		try {
 			await registerManually({ cloudBlob: cloudKey });
+			queryClient.invalidateQueries(['registrationStatus', 'licenses', 'licenses.isEnterprise']);
 			dispatchToastMessage({ type: 'success', message: t('Cloud_register_success') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });

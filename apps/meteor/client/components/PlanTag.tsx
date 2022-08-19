@@ -7,7 +7,7 @@ import { useIsEnterprise } from '../hooks/useIsEnterprise';
 function PlanTag(): ReactElement {
 	const [plans, setPlans] = useState<string[]>([]);
 
-	const isEnterprise = useIsEnterprise();
+	const { isEnterprise } = useIsEnterprise();
 	useEffect(() => {
 		const developmentTag = process.env.NODE_ENV === 'development' ? 'Development' : null;
 		const enterpriseTag = isEnterprise ? 'Enterprise' : null;

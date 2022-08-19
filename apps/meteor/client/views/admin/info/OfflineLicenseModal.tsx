@@ -3,6 +3,8 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, FormEvent, ReactElement, useState } from 'react';
 
+import { queryClient } from '../../../lib/queryClient';
+
 type OfflineLicenseModalProps = {
 	onClose: () => void;
 	license: string;
@@ -42,6 +44,8 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 		try {
 			setIsUpdating(true);
 			await addLicense({ license: newLicense });
+			queryClient.invalidateQueries(['registrationStatus', 'licenses', 'licenses.isEnterprise']);
+
 			dispatchToastMessage({ type: 'success', message: t('Cloud_License_applied_successfully') });
 			onClose();
 		} catch (error) {

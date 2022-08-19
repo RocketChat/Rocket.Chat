@@ -15,6 +15,7 @@ import React, { useCallback, useMemo, useState, ReactElement, ContextType } from
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
+import { queryClient } from '../../../lib/queryClient';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
 import { useStepRouting } from '../hooks/useStepRouting';
@@ -171,6 +172,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		try {
 			await saveOrganizationData();
 			const { intentData } = await createRegistrationIntent({ resend, email });
+			queryClient.invalidateQueries(['registrationStatus', 'licenses', 'licenses.isEnterprise']);
 
 			setSetupWizardData((prevState) => ({
 				...prevState,
