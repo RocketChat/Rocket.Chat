@@ -1,0 +1,14 @@
+{
+  "entryFile": "",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/v2/*Controller.ts"],
+  "spec": {
+    "outputDirectory": "public/",
+    "specVersion": 3,
+    "basePath": "api/v2"
+  },
+  "routes": {
+    "routesDir": "src/",
+		"middlewareTemplate": "src/config/tsoa-generator.hbs"
+  }
+}

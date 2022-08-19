@@ -1,5 +1,5 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import type { IRoom, IUser, IMessage } from '@rocket.chat/core-typings';
+import { Users, Rooms, Messages } from '@rocket.chat/models';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import type { ICreateRoomParams, IRoomService } from '../../sdk/types/IRoomService';
@@ -35,5 +35,25 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		return true;
+	}
+
+	async getAll(name?: string, options?: { limit: number }): Promise<IRoom[]> {
+		const cursor = name ? Rooms.findByNameContaining(name) : Rooms.find();
+
+		if (options?.limit) {
+			cursor.limit(options.limit);
+		}
+
+		return cursor.toArray();
+	}
+
+	async getMessages(rid: string, options?: { limit: number }): Promise<IMessage[]> {
+		const cursor = Messages.find({ rid });
+
+		if (options?.limit) {
+			cursor.limit(options.limit);
+		}
+
+		return cursor.toArray();
 	}
 }

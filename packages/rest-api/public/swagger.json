@@ -1,0 +1,2051 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"RoomID": {
+				"type": "string"
+			},
+			"RoomType": {
+				"type": "string",
+				"enum": [
+					"c",
+					"d",
+					"p",
+					"l",
+					"v"
+				]
+			},
+			"Pick_IUser._id-or-username-or-name_": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"_id"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"CallStatus": {
+				"type": "string",
+				"enum": [
+					"ringing",
+					"ended",
+					"declined",
+					"ongoing"
+				]
+			},
+			"Pick_IRoom.Exclude_keyofIRoom.lastMessage__": {
+				"properties": {
+					"_id": {
+						"$ref": "#/components/schemas/RoomID"
+					},
+					"t": {
+						"$ref": "#/components/schemas/RoomType"
+					},
+					"name": {
+						"type": "string"
+					},
+					"fname": {
+						"type": "string"
+					},
+					"msgs": {
+						"type": "number",
+						"format": "double"
+					},
+					"default": {
+						"type": "boolean",
+						"enum": [
+							true
+						],
+						"nullable": false
+					},
+					"broadcast": {
+						"type": "boolean",
+						"enum": [
+							true
+						],
+						"nullable": false
+					},
+					"featured": {
+						"type": "boolean",
+						"enum": [
+							true
+						],
+						"nullable": false
+					},
+					"announcement": {
+						"type": "string"
+					},
+					"encrypted": {
+						"type": "boolean"
+					},
+					"topic": {
+						"type": "string"
+					},
+					"reactWhenReadOnly": {
+						"type": "boolean"
+					},
+					"sysMes": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"u": {
+						"$ref": "#/components/schemas/Pick_IUser._id-or-username-or-name_"
+					},
+					"uids": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"lm": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"usersCount": {
+						"type": "number",
+						"format": "double"
+					},
+					"callStatus": {
+						"$ref": "#/components/schemas/CallStatus"
+					},
+					"webRtcCallStartTime": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"servedBy": {
+						"properties": {
+							"_id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"_id"
+						],
+						"type": "object"
+					},
+					"streamingOptions": {
+						"properties": {
+							"type": {
+								"type": "string"
+							},
+							"id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"type"
+						],
+						"type": "object"
+					},
+					"prid": {
+						"type": "string"
+					},
+					"avatarETag": {
+						"type": "string"
+					},
+					"teamMain": {
+						"type": "boolean"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"teamDefault": {
+						"type": "boolean"
+					},
+					"open": {
+						"type": "boolean"
+					},
+					"autoTranslateLanguage": {
+						"type": "string"
+					},
+					"autoTranslate": {
+						"type": "boolean"
+					},
+					"unread": {
+						"type": "number",
+						"format": "double"
+					},
+					"alert": {
+						"type": "boolean"
+					},
+					"hideUnreadStatus": {
+						"type": "boolean"
+					},
+					"hideMentionStatus": {
+						"type": "boolean"
+					},
+					"muted": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"unmuted": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"usernames": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"ts": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"cl": {
+						"type": "boolean"
+					},
+					"ro": {
+						"type": "boolean"
+					},
+					"favorite": {
+						"type": "boolean"
+					},
+					"archived": {
+						"type": "boolean"
+					},
+					"description": {
+						"type": "string"
+					},
+					"createdOTR": {
+						"type": "boolean"
+					},
+					"e2eKeyId": {
+						"type": "string"
+					},
+					"federated": {
+						"type": "boolean"
+					},
+					"channel": {
+						"properties": {
+							"_id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"_id"
+						],
+						"type": "object"
+					},
+					"_updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"_id",
+					"t",
+					"msgs",
+					"u",
+					"usersCount",
+					"autoTranslateLanguage",
+					"_updatedAt"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_IRoom.lastMessage_": {
+				"$ref": "#/components/schemas/Pick_IRoom.Exclude_keyofIRoom.lastMessage__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"RoomWithoutMessage": {
+				"$ref": "#/components/schemas/Omit_IRoom.lastMessage_"
+			},
+			"LivechatMessageTypes": {
+				"type": "string",
+				"enum": [
+					"livechat_navigation_history",
+					"livechat_transfer_history",
+					"livechat_transcript_history",
+					"livechat_video_call",
+					"livechat_webrtc_video_call"
+				]
+			},
+			"TeamMessageTypes": {
+				"type": "string",
+				"enum": [
+					"removed-user-from-team",
+					"added-user-to-team",
+					"ult",
+					"user-converted-to-team",
+					"user-converted-to-channel",
+					"user-removed-room-from-team",
+					"user-deleted-room-from-team",
+					"user-added-room-to-team",
+					"ujt"
+				]
+			},
+			"VoipMessageTypesValues": {
+				"type": "string",
+				"enum": [
+					"voip-call-started",
+					"voip-call-declined",
+					"voip-call-on-hold",
+					"voip-call-unhold",
+					"voip-call-ended",
+					"voip-call-duration",
+					"voip-call-wrapup",
+					"voip-call-ended-unexpectedly"
+				]
+			},
+			"OmnichannelTypesValues": {
+				"type": "string",
+				"enum": [
+					"livechat_transfer_history_fallback",
+					"livechat-close",
+					"omnichannel_placed_chat_on_hold",
+					"omnichannel_on_hold_chat_resumed"
+				]
+			},
+			"OtrSystemMessages": {
+				"type": "string",
+				"enum": [
+					"user_joined_otr",
+					"user_requested_otr_key_refresh",
+					"user_key_refreshed_successfully"
+				]
+			},
+			"MessageTypesValues": {
+				"anyOf": [
+					{
+						"$ref": "#/components/schemas/LivechatMessageTypes"
+					},
+					{
+						"$ref": "#/components/schemas/TeamMessageTypes"
+					},
+					{
+						"$ref": "#/components/schemas/VoipMessageTypesValues"
+					},
+					{
+						"$ref": "#/components/schemas/OmnichannelTypesValues"
+					},
+					{
+						"$ref": "#/components/schemas/OtrSystemMessages"
+					},
+					{
+						"type": "string",
+						"enum": [
+							"e2e",
+							"otr",
+							"otr-ack",
+							"uj",
+							"ul",
+							"ru",
+							"au",
+							"mute_unmute",
+							"r",
+							"ut",
+							"wm",
+							"rm",
+							"subscription-role-added",
+							"subscription-role-removed",
+							"room-archived",
+							"room-unarchived",
+							"room_changed_privacy",
+							"room_changed_description",
+							"room_changed_announcement",
+							"room_changed_avatar",
+							"room_changed_topic",
+							"room_e2e_enabled",
+							"room_e2e_disabled",
+							"user-muted",
+							"user-unmuted",
+							"room-removed-read-only",
+							"room-set-read-only",
+							"room-allowed-reacting",
+							"room-disallowed-reacting"
+						]
+					}
+				]
+			},
+			"Required_Pick_IUser._id-or-username-or-name__": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"_id",
+					"name",
+					"username"
+				],
+				"type": "object",
+				"description": "Make all properties in T required"
+			},
+			"MentionType": {
+				"type": "string",
+				"enum": [
+					"user",
+					"team"
+				]
+			},
+			"Pick_IRoom._id-or-name_": {
+				"properties": {
+					"_id": {
+						"$ref": "#/components/schemas/RoomID"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"_id"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"FileProp": {
+				"properties": {
+					"size": {
+						"type": "number",
+						"format": "double"
+					},
+					"format": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"_id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"size",
+					"format",
+					"type",
+					"name",
+					"_id"
+				],
+				"type": "object"
+			},
+			"Action": {
+				"properties": {
+					"msg_processing_type": {
+						"type": "string",
+						"enum": [
+							"sendMessage",
+							"respondWithMessage",
+							"respondWithQuotedMessage"
+						]
+					},
+					"msg_in_chat_window": {
+						"type": "boolean",
+						"enum": [
+							true
+						],
+						"nullable": false
+					},
+					"is_webview": {
+						"type": "boolean",
+						"enum": [
+							true
+						],
+						"nullable": false
+					},
+					"image_url": {
+						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					},
+					"msg": {
+						"type": "string"
+					},
+					"text": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"button"
+						],
+						"nullable": false
+					},
+					"msgId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"text",
+					"type"
+				],
+				"type": "object"
+			},
+			"MessageAttachmentBase": {
+				"properties": {
+					"title_link_download": {
+						"type": "boolean"
+					},
+					"title_link": {
+						"type": "string"
+					},
+					"text": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"collapsed": {
+						"type": "boolean"
+					},
+					"ts": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"title": {
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"MessageAttachmentAction": {
+				"allOf": [
+					{
+						"properties": {
+							"actions": {
+								"items": {
+									"$ref": "#/components/schemas/Action"
+								},
+								"type": "array"
+							},
+							"button_alignment": {
+								"type": "string",
+								"enum": [
+									"horizontal",
+									"vertical"
+								]
+							}
+						},
+						"required": [
+							"actions"
+						],
+						"type": "object"
+					},
+					{
+						"$ref": "#/components/schemas/MessageAttachmentBase"
+					}
+				]
+			},
+			"FieldProps": {
+				"properties": {
+					"value": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"short": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"value",
+					"title"
+				],
+				"type": "object"
+			},
+			"Dimensions": {
+				"properties": {
+					"height": {
+						"type": "number",
+						"format": "double"
+					},
+					"width": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"height",
+					"width"
+				],
+				"type": "object"
+			},
+			"MarkdownFields": {
+				"type": "string",
+				"enum": [
+					"text",
+					"pretext",
+					"fields"
+				]
+			},
+			"MessageAttachmentDefault": {
+				"allOf": [
+					{
+						"properties": {
+							"translations": {
+								"properties": {},
+								"additionalProperties": {
+									"type": "string"
+								},
+								"type": "object"
+							},
+							"color": {
+								"type": "string"
+							},
+							"thumb_url": {
+								"type": "string"
+							},
+							"text": {
+								"type": "string"
+							},
+							"pretext": {
+								"type": "string"
+							},
+							"mrkdwn_in": {
+								"items": {
+									"$ref": "#/components/schemas/MarkdownFields"
+								},
+								"type": "array"
+							},
+							"image_dimensions": {
+								"$ref": "#/components/schemas/Dimensions"
+							},
+							"image_url": {
+								"type": "string"
+							},
+							"fields": {
+								"items": {
+									"$ref": "#/components/schemas/FieldProps"
+								},
+								"type": "array"
+							},
+							"author_name": {
+								"type": "string"
+							},
+							"author_link": {
+								"type": "string"
+							},
+							"author_icon": {
+								"type": "string"
+							}
+						},
+						"type": "object"
+					},
+					{
+						"$ref": "#/components/schemas/MessageAttachmentBase"
+					}
+				]
+			},
+			"VideoAttachmentProps": {
+				"allOf": [
+					{
+						"properties": {
+							"file": {
+								"$ref": "#/components/schemas/FileProp"
+							},
+							"video_size": {
+								"type": "number",
+								"format": "double"
+							},
+							"video_type": {
+								"type": "string"
+							},
+							"video_url": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"video_size",
+							"video_type",
+							"video_url"
+						],
+						"type": "object"
+					},
+					{
+						"$ref": "#/components/schemas/MessageAttachmentBase"
+					}
+				]
+			},
+			"ImageAttachmentProps": {
+				"allOf": [
+					{
+						"properties": {
+							"file": {
+								"$ref": "#/components/schemas/FileProp"
+							},
+							"image_size": {
+								"type": "number",
+								"format": "double"
+							},
+							"image_type": {
+								"type": "string"
+							},
+							"image_url": {
+								"type": "string"
+							},
+							"image_preview": {
+								"type": "string"
+							},
+							"image_dimensions": {
+								"$ref": "#/components/schemas/Dimensions"
+							}
+						},
+						"required": [
+							"image_type",
+							"image_url"
+						],
+						"type": "object"
+					},
+					{
+						"$ref": "#/components/schemas/MessageAttachmentBase"
+					}
+				]
+			},
+			"AudioAttachmentProps": {
+				"allOf": [
+					{
+						"properties": {
+							"file": {
+								"$ref": "#/components/schemas/FileProp"
+							},
+							"audio_size": {
+								"type": "number",
+								"format": "double"
+							},
+							"audio_type": {
+								"type": "string"
+							},
+							"audio_url": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"audio_type",
+							"audio_url"
+						],
+						"type": "object"
+					},
+					{
+						"$ref": "#/components/schemas/MessageAttachmentBase"
+					}
+				]
+			},
+			"FileAttachmentProps": {
+				"allOf": [
+					{
+						"properties": {
+							"file": {
+								"$ref": "#/components/schemas/FileProp"
+							},
+							"type": {
+								"type": "string",
+								"enum": [
+									"file"
+								],
+								"nullable": false
+							}
+						},
+						"required": [
+							"type"
+						],
+						"type": "object"
+					},
+					{
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/VideoAttachmentProps"
+							},
+							{
+								"$ref": "#/components/schemas/ImageAttachmentProps"
+							},
+							{
+								"$ref": "#/components/schemas/AudioAttachmentProps"
+							}
+						]
+					}
+				]
+			},
+			"MessageQuoteAttachment": {
+				"allOf": [
+					{
+						"properties": {
+							"attachments": {
+								"items": {
+									"$ref": "#/components/schemas/MessageQuoteAttachment"
+								},
+								"type": "array"
+							},
+							"text": {
+								"type": "string"
+							},
+							"message_link": {
+								"type": "string"
+							},
+							"author_icon": {
+								"type": "string"
+							},
+							"author_link": {
+								"type": "string"
+							},
+							"author_name": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"text",
+							"author_icon",
+							"author_link",
+							"author_name"
+						],
+						"type": "object"
+					},
+					{
+						"$ref": "#/components/schemas/MessageAttachmentBase"
+					}
+				]
+			},
+			"MessageAttachment": {
+				"anyOf": [
+					{
+						"$ref": "#/components/schemas/MessageAttachmentAction"
+					},
+					{
+						"$ref": "#/components/schemas/MessageAttachmentDefault"
+					},
+					{
+						"$ref": "#/components/schemas/FileAttachmentProps"
+					},
+					{
+						"$ref": "#/components/schemas/MessageQuoteAttachment"
+					}
+				]
+			},
+			"TokenType": {
+				"type": "string",
+				"enum": [
+					"code",
+					"inlinecode",
+					"bold",
+					"italic",
+					"strike",
+					"link"
+				]
+			},
+			"TokenExtra": {
+				"properties": {
+					"noHtml": {
+						"type": "string"
+					},
+					"highlight": {
+						"type": "boolean"
+					}
+				},
+				"type": "object"
+			},
+			"Token": {
+				"allOf": [
+					{
+						"properties": {
+							"noHtml": {
+								"type": "string"
+							},
+							"type": {
+								"$ref": "#/components/schemas/TokenType"
+							},
+							"text": {
+								"type": "string"
+							},
+							"token": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"text",
+							"token"
+						],
+						"type": "object"
+					},
+					{
+						"$ref": "#/components/schemas/TokenExtra"
+					}
+				]
+			},
+			"Pick_IMessage.Exclude_keyofIMessage.MessageFieldsIgnored__": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"t": {
+						"$ref": "#/components/schemas/MessageTypesValues"
+					},
+					"u": {
+						"$ref": "#/components/schemas/Required_Pick_IUser._id-or-username-or-name__"
+					},
+					"unread": {
+						"type": "boolean"
+					},
+					"ts": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"_updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"rid": {
+						"$ref": "#/components/schemas/RoomID"
+					},
+					"msg": {
+						"type": "string"
+					},
+					"tmid": {
+						"type": "string"
+					},
+					"mentions": {
+						"items": {
+							"allOf": [
+								{
+									"properties": {
+										"type": {
+											"$ref": "#/components/schemas/MentionType"
+										}
+									},
+									"required": [
+										"type"
+									],
+									"type": "object"
+								},
+								{
+									"$ref": "#/components/schemas/Pick_IUser._id-or-username-or-name_"
+								}
+							]
+						},
+						"type": "array"
+					},
+					"groupable": {
+						"type": "boolean",
+						"enum": [
+							false
+						],
+						"nullable": false
+					},
+					"channels": {
+						"items": {
+							"$ref": "#/components/schemas/Pick_IRoom._id-or-name_"
+						},
+						"type": "array"
+					},
+					"alias": {
+						"type": "string"
+					},
+					"ignored": {
+						"type": "boolean"
+					},
+					"_hidden": {
+						"type": "boolean"
+					},
+					"imported": {
+						"type": "boolean"
+					},
+					"replies": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"starred": {
+						"items": {
+							"properties": {
+								"_id": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"_id"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"pinned": {
+						"type": "boolean"
+					},
+					"temp": {
+						"type": "boolean"
+					},
+					"drid": {
+						"$ref": "#/components/schemas/RoomID"
+					},
+					"tlm": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"dcount": {
+						"type": "number",
+						"format": "double"
+					},
+					"tcount": {
+						"type": "number",
+						"format": "double"
+					},
+					"e2e": {
+						"type": "string",
+						"enum": [
+							"pending",
+							"done"
+						]
+					},
+					"actionLinks": {
+						"items": {
+							"properties": {
+								"params": {
+									"type": "string"
+								},
+								"method_id": {
+									"type": "string"
+								},
+								"label": {
+									"type": "string"
+								},
+								"i18nLabel": {},
+								"icon": {
+									"type": "string",
+									"enum": [
+										"file",
+										"avatar",
+										"emoji",
+										"user",
+										"team",
+										"address-book",
+										"arrow-back",
+										"arrow-collapse",
+										"arrow-down",
+										"arrow-down-box",
+										"arrow-expand",
+										"arrow-fall",
+										"arrow-forward",
+										"arrow-jump",
+										"arrow-loop",
+										"arrow-return",
+										"arrow-rise",
+										"arrow-stack-up",
+										"arrow-up-box",
+										"at",
+										"backspace",
+										"bag",
+										"ball",
+										"balloon",
+										"balloon-arrow-left",
+										"balloon-arrow-top-right",
+										"balloon-close-top-right",
+										"balloon-ellipsis",
+										"balloon-exclamation",
+										"balloon-off",
+										"balloons",
+										"balloon-text",
+										"ban",
+										"bell",
+										"bell-off",
+										"bold",
+										"book",
+										"brush",
+										"burger",
+										"burger-arrow-left",
+										"business",
+										"calendar",
+										"camera",
+										"card",
+										"check",
+										"chevron-down",
+										"chevron-expand",
+										"chevron-left",
+										"chevron-right",
+										"chevron-up",
+										"circle-arrow-down",
+										"circle-check",
+										"circle-cross",
+										"circle-exclamation",
+										"circle-half",
+										"circle-quarter",
+										"circle-three-quarters",
+										"clip",
+										"clipboard",
+										"clock",
+										"cloud-arrow-up",
+										"cloud-plus",
+										"code",
+										"cog",
+										"condensed-view",
+										"copy",
+										"crop",
+										"cross",
+										"cross-small",
+										"cube",
+										"customize",
+										"desktop",
+										"dialpad",
+										"doc",
+										"document-eye",
+										"doner",
+										"emoji-neutral",
+										"emoji-plus",
+										"eraser",
+										"error-circle",
+										"exit",
+										"extended-view",
+										"eye",
+										"eye-off",
+										"fingerprint",
+										"flag",
+										"folder",
+										"globe",
+										"globe-cross",
+										"globe-off",
+										"group-by-type",
+										"hash",
+										"hashtag-lock",
+										"h-bar",
+										"headphone",
+										"headphone-off",
+										"headset",
+										"help",
+										"history",
+										"home",
+										"image",
+										"info",
+										"italic",
+										"joystick",
+										"kebab",
+										"key",
+										"keyboard",
+										"language",
+										"link",
+										"list-bullets",
+										"list-numbers",
+										"live",
+										"lock",
+										"login",
+										"magnifier",
+										"mail",
+										"mail-arrow-top-right",
+										"meatballs",
+										"medium-view",
+										"members",
+										"mic",
+										"mic-off",
+										"mobile",
+										"mobile-check",
+										"mobile-exclamation",
+										"moon",
+										"musical-note",
+										"new-window",
+										"notebook-hashtag",
+										"notebook-hashtag-crossed",
+										"pause",
+										"pause-unfilled",
+										"pencil",
+										"pencil-box",
+										"phone",
+										"phone-disabled",
+										"phone-in",
+										"phone-issue",
+										"phone-off",
+										"phone-out",
+										"pin",
+										"pin-map",
+										"play",
+										"plus",
+										"plus-small",
+										"podcast",
+										"quote",
+										"rec",
+										"refresh",
+										"send",
+										"send-filled",
+										"sheet",
+										"shield",
+										"shield-blank",
+										"shield-check",
+										"signal",
+										"sms",
+										"sort",
+										"sort-az",
+										"squares",
+										"stack",
+										"star",
+										"star-filled",
+										"stopwatch",
+										"strike",
+										"success-circle",
+										"sun",
+										"team-arrow-right",
+										"team-lock",
+										"text-decrease",
+										"text-increase",
+										"trash",
+										"underline",
+										"undo",
+										"user-arrow-right",
+										"user-plus",
+										"video",
+										"video-disabled",
+										"video-filled",
+										"video-off",
+										"volume",
+										"volume-disabled",
+										"volume-lock",
+										"volume-off",
+										"warning",
+										"zip",
+										"add-reaction",
+										"add-user",
+										"attachment",
+										"audio",
+										"back",
+										"baloon-arrow-left",
+										"baloon-arrow-top-right",
+										"baloon-close-top-right",
+										"baloon-ellipsis",
+										"baloon-exclamation",
+										"baloons",
+										"baloon-text",
+										"cancel",
+										"canned-response",
+										"chat",
+										"checkmark-circled",
+										"circled-arrow-down",
+										"computer",
+										"contact",
+										"discover",
+										"discussion",
+										"download",
+										"edit",
+										"edit-rounded",
+										"file-document",
+										"file-generic",
+										"file-google-drive",
+										"file-pdf",
+										"files-audio",
+										"file-sheets",
+										"files-video",
+										"files-zip",
+										"game",
+										"hashtag",
+										"import",
+										"info-circled",
+										"jump",
+										"jump-to-message",
+										"map-pin",
+										"menu",
+										"message",
+										"message-disabled",
+										"modal-warning",
+										"multiline",
+										"omnichannel",
+										"permalink",
+										"post",
+										"queue",
+										"reload",
+										"reply-directly",
+										"report",
+										"send-active",
+										"share",
+										"shield-alt",
+										"sign-out",
+										"sort-amount-down",
+										"th-list",
+										"thread",
+										"upload",
+										"user-rounded",
+										"circle",
+										"file-keynote",
+										"hand-pointer",
+										"list",
+										"list-alt",
+										"livechat",
+										"loading",
+										"play-solid",
+										"reply",
+										"adobe",
+										"facebook",
+										"github",
+										"gitlab",
+										"google",
+										"google-drive",
+										"hubot",
+										"linkedin",
+										"twitter"
+									],
+									"nullable": false
+								}
+							},
+							"required": [
+								"params",
+								"method_id",
+								"label",
+								"i18nLabel",
+								"icon"
+							],
+							"type": "object"
+						},
+						"type": "array",
+						"deprecated": true
+					},
+					"file": {
+						"$ref": "#/components/schemas/FileProp",
+						"deprecated": true
+					},
+					"files": {
+						"items": {
+							"$ref": "#/components/schemas/FileProp"
+						},
+						"type": "array"
+					},
+					"attachments": {
+						"items": {
+							"$ref": "#/components/schemas/MessageAttachment"
+						},
+						"type": "array"
+					},
+					"reactions": {
+						"properties": {},
+						"additionalProperties": {
+							"properties": {
+								"usernames": {
+									"items": {
+										"type": "string"
+									},
+									"type": "array"
+								},
+								"names": {
+									"items": {
+										"type": "string"
+									},
+									"type": "array"
+								}
+							},
+							"required": [
+								"usernames"
+							],
+							"type": "object"
+						},
+						"type": "object"
+					},
+					"private": {
+						"type": "boolean"
+					},
+					"bot": {
+						"type": "boolean"
+					},
+					"sentByEmail": {
+						"type": "boolean"
+					},
+					"webRtcCallEndTs": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"role": {
+						"type": "string"
+					},
+					"avatar": {
+						"type": "string"
+					},
+					"emoji": {
+						"type": "string"
+					},
+					"tokens": {
+						"items": {
+							"$ref": "#/components/schemas/Token"
+						},
+						"type": "array"
+					},
+					"html": {
+						"type": "string"
+					},
+					"token": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"_id",
+					"u",
+					"ts",
+					"_updatedAt",
+					"rid",
+					"msg"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_IMessage.MessageFieldsIgnored_": {
+				"$ref": "#/components/schemas/Pick_IMessage.Exclude_keyofIMessage.MessageFieldsIgnored__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"MessageCompatible": {
+				"$ref": "#/components/schemas/Omit_IMessage.MessageFieldsIgnored_"
+			},
+			"IUserEmailVerificationToken": {
+				"properties": {
+					"token": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"when": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"token",
+					"address",
+					"when"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IMeteorLoginToken": {
+				"properties": {
+					"hashedToken": {
+						"type": "string"
+					},
+					"twoFactorAuthorizedUntil": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"twoFactorAuthorizedHash": {
+						"type": "string"
+					},
+					"when": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"hashedToken",
+					"when"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IPersonalAccessToken": {
+				"properties": {
+					"hashedToken": {
+						"type": "string"
+					},
+					"twoFactorAuthorizedUntil": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"twoFactorAuthorizedHash": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"personalAccessToken"
+						],
+						"nullable": false
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"lastTokenPart": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"bypassTwoFactor": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"hashedToken",
+					"type",
+					"createdAt",
+					"lastTokenPart",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LoginToken": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/IMeteorLoginToken"
+					},
+					{
+						"$ref": "#/components/schemas/IPersonalAccessToken"
+					}
+				]
+			},
+			"IUserEmailCode": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"expire": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"code",
+					"expire"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IUserServices": {
+				"properties": {
+					"password": {
+						"properties": {
+							"bcrypt": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"bcrypt"
+						],
+						"type": "object"
+					},
+					"passwordHistory": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"email": {
+						"properties": {
+							"verificationTokens": {
+								"items": {
+									"$ref": "#/components/schemas/IUserEmailVerificationToken"
+								},
+								"type": "array"
+							}
+						},
+						"type": "object"
+					},
+					"resume": {
+						"properties": {
+							"loginTokens": {
+								"items": {
+									"$ref": "#/components/schemas/LoginToken"
+								},
+								"type": "array"
+							}
+						},
+						"type": "object"
+					},
+					"cloud": {},
+					"google": {},
+					"facebook": {},
+					"github": {},
+					"totp": {
+						"properties": {
+							"secret": {
+								"type": "string"
+							},
+							"hashedBackup": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							"enabled": {
+								"type": "boolean"
+							}
+						},
+						"required": [
+							"secret",
+							"hashedBackup",
+							"enabled"
+						],
+						"type": "object"
+					},
+					"email2fa": {
+						"properties": {
+							"changedAt": {
+								"type": "string",
+								"format": "date-time"
+							},
+							"enabled": {
+								"type": "boolean"
+							}
+						},
+						"required": [
+							"changedAt",
+							"enabled"
+						],
+						"type": "object"
+					},
+					"emailCode": {
+						"items": {
+							"$ref": "#/components/schemas/IUserEmailCode"
+						},
+						"type": "array"
+					},
+					"saml": {
+						"properties": {
+							"nameID": {
+								"type": "string"
+							},
+							"idpSession": {
+								"type": "string"
+							},
+							"idp": {
+								"type": "string"
+							},
+							"provider": {
+								"type": "string"
+							},
+							"inResponseTo": {
+								"type": "string"
+							}
+						},
+						"type": "object"
+					},
+					"ldap": {
+						"properties": {
+							"idAttribute": {
+								"type": "string"
+							},
+							"id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"id"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"emailCode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IUserEmail": {
+				"properties": {
+					"address": {
+						"type": "string"
+					},
+					"verified": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"address"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserStatus": {
+				"enum": [
+					"online",
+					"away",
+					"offline",
+					"busy"
+				],
+				"type": "string"
+			},
+			"IUserSettings": {
+				"properties": {
+					"profile": {},
+					"preferences": {
+						"properties": {},
+						"additionalProperties": {},
+						"type": "object"
+					}
+				},
+				"required": [
+					"profile",
+					"preferences"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IUser": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"_updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"roles": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"type": {
+						"type": "string"
+					},
+					"active": {
+						"type": "boolean"
+					},
+					"username": {
+						"type": "string"
+					},
+					"nickname": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"services": {
+						"$ref": "#/components/schemas/IUserServices"
+					},
+					"emails": {
+						"items": {
+							"$ref": "#/components/schemas/IUserEmail"
+						},
+						"type": "array"
+					},
+					"status": {
+						"$ref": "#/components/schemas/UserStatus"
+					},
+					"statusConnection": {
+						"type": "string"
+					},
+					"lastLogin": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"bio": {
+						"type": "string"
+					},
+					"avatarOrigin": {
+						"type": "string"
+					},
+					"avatarETag": {
+						"type": "string"
+					},
+					"avatarUrl": {
+						"type": "string"
+					},
+					"utcOffset": {
+						"type": "number",
+						"format": "double"
+					},
+					"language": {
+						"type": "string"
+					},
+					"statusDefault": {
+						"$ref": "#/components/schemas/UserStatus"
+					},
+					"statusText": {
+						"type": "string"
+					},
+					"oauth": {
+						"properties": {
+							"authorizedClients": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							}
+						},
+						"required": [
+							"authorizedClients"
+						],
+						"type": "object"
+					},
+					"statusLivechat": {
+						"type": "string"
+					},
+					"e2e": {
+						"properties": {
+							"public_key": {
+								"type": "string"
+							},
+							"private_key": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"public_key",
+							"private_key"
+						],
+						"type": "object"
+					},
+					"requirePasswordChange": {
+						"type": "boolean"
+					},
+					"customFields": {
+						"properties": {},
+						"additionalProperties": {},
+						"type": "object"
+					},
+					"settings": {
+						"$ref": "#/components/schemas/IUserSettings"
+					},
+					"defaultRoom": {
+						"type": "string"
+					},
+					"ldap": {
+						"type": "boolean"
+					},
+					"extension": {
+						"type": "string"
+					},
+					"inviteToken": {
+						"type": "string"
+					},
+					"federated": {
+						"type": "boolean"
+					},
+					"canViewAllInfo": {
+						"type": "boolean"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"reason": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"_id",
+					"_updatedAt",
+					"createdAt",
+					"roles",
+					"type",
+					"active"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pick_IUser.username_": {
+				"properties": {
+					"username": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"UserCreationParams": {
+				"$ref": "#/components/schemas/Pick_IUser.username_"
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "@rocket.chat/rest-api",
+		"version": "1.0.0",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {
+			"name": "Diego Sampaio ",
+			"email": "chinello@gmail.com"
+		}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/rooms": {
+			"get": {
+				"operationId": "GetRooms",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/RoomWithoutMessage"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/rooms/{roomId}/messages": {
+			"get": {
+				"operationId": "GetRoomMessages",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/MessageCompatible"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "roomId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/users/{userId}": {
+			"get": {
+				"operationId": "GetUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IUser"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/users": {
+			"get": {
+				"operationId": "GetUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IUser"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "CreateUser",
+				"responses": {
+					"201": {
+						"description": "Created"
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserCreationParams"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/api/v2"
+		}
+	]
+}
