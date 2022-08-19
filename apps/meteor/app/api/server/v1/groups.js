@@ -1137,9 +1137,9 @@ API.v1.addRoute(
 			});
 
 			Meteor.call('saveRoomSettings', findResult.rid, 'encrypted', this.bodyParams.encrypted);
-
+			const room = Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude });
 			return API.v1.success({
-				group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
+				group: this.composeRoomWithLastMessage(room, this.userId),
 			});
 		},
 	},

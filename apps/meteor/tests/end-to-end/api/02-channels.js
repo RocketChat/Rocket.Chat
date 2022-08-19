@@ -22,6 +22,59 @@ function getRoomInfo(roomId) {
 	});
 }
 
+function createNoCodeChannel(credentials, apiPublicChannelName) {
+	return new Promise((resolve, reject) => {
+		request
+			.post(api('channels.create'))
+			.set(credentials)
+			.send({
+				name: apiPublicChannelName,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				const testChannelNoCode = res.body.channel;
+				resolve(testChannelNoCode);
+			})
+			.end((err) => (err ? reject(err) : resolve()));
+	});
+}
+function createCodeChannel(credentials, apiPublicChannelName) {
+	return new Promise((resolve, reject) => {
+		request
+			.post(api('channels.create'))
+			.set(credentials)
+			.send({
+				name: apiPublicChannelName,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				const testChannelWithCode = res.body.channel;
+				resolve(testChannelWithCode);
+			})
+			.end((err) => (err ? reject(err) : resolve()));
+	});
+}
+function setCodeForChannel(credentials, channelId, code) {
+	return new Promise((resolve, reject) => {
+		request
+			.post(api('channels.setJoinCode'))
+			.set(credentials)
+			.send({
+				roomId: channelId,
+				joinCode: code,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				resolve();
+			})
+			.end((err) => (err ? reject(err) : resolve()));
+	});
+}
+
 describe('[Channels]', function () {
 	this.retries(0);
 
@@ -421,76 +474,25 @@ describe('[Channels]', function () {
 		let testChannelWithCode;
 		let testUser;
 		let testUserCredentials;
-		before('Create test user', (done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					testUser = res.body.user;
-					done();
-				});
+		let testUserAdmin;
+		let testUserAdminCredentials;
+
+		this.timeout(20000);
+
+		before('Create test users and login', async () => {
+			testUserAdmin = await createUser({ roles: ['user', 'admin'] });
+			testUserAdminCredentials = await login(testUserAdmin.username, password);
+			testUser = await createUser({ roles: ['user'] });
+			testUserCredentials = await login(testUser.username, password);
 		});
-		before('Login as test user', (done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: testUser.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					testUserCredentials = {};
-					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
-					testUserCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
+		before('Create no code channel', async () => {
+			testChannelNoCode = await createNoCodeChannel(testUserCredentials, `${apiPublicChannelName}-nojoincode`);
 		});
-		before('Create no code channel', (done) => {
-			request
-				.post(api('channels.create'))
-				.set(testUserCredentials)
-				.send({
-					name: `${apiPublicChannelName}-nojoincode`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					testChannelNoCode = res.body.channel;
-				})
-				.end(done);
+		before('Create code channel', async () => {
+			testChannelWithCode = await createCodeChannel(testUserCredentials, `${apiPublicChannelName}-withjoincode`);
 		});
-		before('Create code channel', (done) => {
-			request
-				.post(api('channels.create'))
-				.set(testUserCredentials)
-				.send({
-					name: `${apiPublicChannelName}-withjoincode`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					testChannelWithCode = res.body.channel;
-				})
-				.end(done);
-		});
-		before('Set code for channel', (done) => {
-			request
-				.post(api('channels.setJoinCode'))
-				.set(testUserCredentials)
-				.send({
-					roomId: testChannelWithCode._id,
-					joinCode: '123',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+		before('Set code for channel', async () => {
+			await setCodeForChannel(testUserAdminCredentials, testChannelWithCode._id, '123');
 		});
 
 		it('should fail if invalid channel', (done) => {

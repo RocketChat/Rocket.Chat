@@ -16,7 +16,7 @@ export const addUserToRoom = function (
 	silenced?: boolean,
 ): boolean | unknown {
 	const now = new Date();
-	const room: IRoom = Rooms.findOneById(rid);
+	const room: IRoom = Rooms.findOne({ _id: rid });
 
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 	if (

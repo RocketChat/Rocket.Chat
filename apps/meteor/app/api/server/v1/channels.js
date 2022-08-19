@@ -781,7 +781,6 @@ API.v1.addRoute(
 			}
 
 			const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
 			Meteor.runAsUser(this.userId, () => {
 				Meteor.call('saveRoomSettings', findResult._id, 'joinCode', this.bodyParams.joinCode);
 			});

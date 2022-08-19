@@ -8,7 +8,7 @@ import { updateSetting, updatePermission } from '../../data/permissions.helper';
 
 describe('[Direct Messages]', function () {
 	this.retries(0);
-
+	this.timeout(20000);
 	before((done) => getCredentials(done));
 
 	it('/chat.postMessage', (done) => {

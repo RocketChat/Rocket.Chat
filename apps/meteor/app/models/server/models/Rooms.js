@@ -902,31 +902,6 @@ export class Rooms extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	setJoinCodeById(_id, joinCode) {
-		let update;
-		const query = { _id };
-
-		if ((joinCode != null ? joinCode.trim() : undefined) !== '') {
-			update = {
-				$set: {
-					joinCodeRequired: true,
-					joinCode,
-				},
-			};
-		} else {
-			update = {
-				$set: {
-					joinCodeRequired: false,
-				},
-				$unset: {
-					joinCode: 1,
-				},
-			};
-		}
-
-		return this.update(query, update);
-	}
-
 	setUserById(_id, user) {
 		const query = { _id };
 
@@ -1017,133 +992,6 @@ export class Rooms extends Base {
 			},
 			$addToSet: {
 				unmuted: username,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	saveFeaturedById(_id, featured) {
-		const query = { _id };
-		const set = ['true', true].includes(featured);
-
-		const update = {
-			[set ? '$set' : '$unset']: {
-				featured: true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	saveDefaultById(_id, defaultValue) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				default: defaultValue,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	saveFavoriteById(_id, favorite, defaultValue) {
-		const query = { _id };
-
-		const update = {
-			...(favorite && defaultValue && { $set: { favorite } }),
-			...((!favorite || !defaultValue) && { $unset: { favorite: 1 } }),
-		};
-
-		return this.update(query, update);
-	}
-
-	saveRetentionEnabledById(_id, value) {
-		const query = { _id };
-
-		const update = {};
-
-		if (value == null) {
-			update.$unset = { 'retention.enabled': true };
-		} else {
-			update.$set = { 'retention.enabled': !!value };
-		}
-
-		return this.update(query, update);
-	}
-
-	saveRetentionMaxAgeById(_id, value) {
-		const query = { _id };
-
-		value = Number(value);
-		if (!value) {
-			value = 30;
-		}
-
-		const update = {
-			$set: {
-				'retention.maxAge': value,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	saveRetentionExcludePinnedById(_id, value) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				'retention.excludePinned': value === true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	saveRetentionIgnoreThreadsById(_id, value) {
-		const query = { _id };
-
-		const update = {
-			[value === true ? '$set' : '$unset']: {
-				'retention.ignoreThreads': true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	saveRetentionFilesOnlyById(_id, value) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				'retention.filesOnly': value === true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	saveRetentionOverrideGlobalById(_id, value) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				'retention.overrideGlobal': value === true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	saveEncryptedById(_id, value) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				encrypted: value === true,
 			},
 		};
 
@@ -1274,6 +1122,18 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				createdOTR: true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	saveEncryptedById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				encrypted: value === true,
 			},
 		};
 

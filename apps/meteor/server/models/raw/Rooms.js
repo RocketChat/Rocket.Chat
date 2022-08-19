@@ -1,5 +1,6 @@
 import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -312,6 +313,23 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	async findBySubscriptionTypeAndUserId(type, userId, options) {
+		const data = await Subscriptions.findByUserIdAndType(userId, type, {
+			fields: { rid: 1 },
+		})
+			.map((item) => item.rid)
+			.toArray();
+
+		const query = {
+			t: type,
+			_id: {
+				$in: data,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	unsetTeamId(teamId, options = {}) {
 		const query = { teamId };
 		const update = {
@@ -343,6 +361,31 @@ export class RoomsRaw extends BaseRaw {
 
 	setTeamDefaultById(rid, teamDefault, options = {}) {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
+	}
+
+	setJoinCodeById(rid, joinCode) {
+		let update;
+		const query = { _id: rid };
+
+		if ((joinCode !== null ? joinCode.trim() : undefined) !== '') {
+			update = {
+				$set: {
+					joinCodeRequired: true,
+					joinCode,
+				},
+			};
+		} else {
+			update = {
+				$set: {
+					joinCodeRequired: false,
+				},
+				$unset: {
+					joinCode: 1,
+				},
+			};
+		}
+
+		return this.updateOne(query, update);
 	}
 
 	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
@@ -453,6 +496,21 @@ export class RoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { allowDiskUse: true, readPreference });
 	}
 
+	findOneByIdOrName(_idOrName, options) {
+		const query = {
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneByName(name, options = {}) {
 		return this.col.findOne({ name }, options);
 	}
@@ -538,6 +596,133 @@ export class RoomsRaw extends BaseRaw {
 
 	setRoomTopicById(roomId, topic) {
 		return this.update({ _id: roomId }, { $set: { description: topic } });
+	}
+
+	saveDefaultById(_id, defaultValue) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				default: defaultValue,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveFeaturedById(_id, featured) {
+		const query = { _id };
+		const set = ['true', true].includes(featured);
+
+		const update = {
+			[set ? '$set' : '$unset']: {
+				featured: true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionEnabledById(_id, value) {
+		const query = { _id };
+
+		const update = {};
+
+		if (value === null) {
+			update.$unset = { 'retention.enabled': true };
+		} else {
+			update.$set = { 'retention.enabled': !!value };
+		}
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionMaxAgeById(_id, value) {
+		const query = { _id };
+
+		value = Number(value);
+		if (!value) {
+			value = 30;
+		}
+
+		const update = {
+			$set: {
+				'retention.maxAge': value,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionExcludePinnedById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				'retention.excludePinned': value === true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionFilesOnlyById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				'retention.filesOnly': value === true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionIgnoreThreadsById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			[value === true ? '$set' : '$unset']: {
+				'retention.ignoreThreads': true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionOverrideGlobalById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				'retention.overrideGlobal': value === true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveFavoriteById(_id, favorite, defaultValue) {
+		const query = { _id };
+
+		const update = {
+			...(favorite && defaultValue && { $set: { favorite } }),
+			...((!favorite || !defaultValue) && { $unset: { favorite: 1 } }),
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveEncryptedById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				encrypted: value === true,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 
 	findByE2E(options) {

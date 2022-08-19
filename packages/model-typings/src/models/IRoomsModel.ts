@@ -1,4 +1,4 @@
-import type { FindCursor, AggregationCursor, Document, FindOptions } from 'mongodb';
+import type { AggregationCursor, FindCursor, Document, FindOptions } from 'mongodb';
 import type { IRoom } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -34,6 +34,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid: any, name: any, groupsToAccept: any, options: any): any;
 
+	findBySubscriptionTypeAndUserId<T>(type: string, uid: string, options?: any): Promise<any>;
+
 	unsetTeamId(teamId: any, options?: any): any;
 
 	unsetTeamById(rid: any, options?: any): any;
@@ -46,6 +48,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setTeamDefaultById(rid: any, teamDefault: any, options?: any): any;
 
+	setJoinCodeById(rid: string, joinCode: string): Promise<any>;
+
 	findChannelsWithNumberOfMessagesBetweenDate(params: {
 		start: any;
 		end: any;
@@ -54,6 +58,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		onlyCount?: boolean;
 		options?: any;
 	}): any;
+
+	findOneByIdOrName(idOrName: string, options?: any): Promise<any>;
 
 	findOneByName(name: any, options?: any): any;
 
@@ -76,6 +82,17 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setRoomNameById(roomId: any, name: any, fname: any): any;
 
 	setRoomTopicById(roomId: any, topic: any): any;
+
+	saveDefaultById(_id: string, defaultValue: boolean): Promise<any>;
+	saveFeaturedById(_id: string, featured: boolean): Promise<any>;
+	saveRetentionEnabledById(_id: string, value: boolean | null): Promise<any>;
+	saveRetentionMaxAgeById(_id: string, value: number | null): Promise<any>;
+	saveRetentionExcludePinnedById(_id: string, value: boolean | null): Promise<any>;
+	saveRetentionFilesOnlyById(_id: string, value: boolean | null): Promise<any>;
+	saveRetentionIgnoreThreadsById(_id: string, value: boolean | null): Promise<any>;
+	saveRetentionOverrideGlobalById(_id: string, value: boolean | null): Promise<any>;
+	saveFavoriteById(_id: string, favorite: boolean, defaultValue?: boolean): Promise<any>;
+	saveEncryptedById(_id: string, encrypted: boolean): Promise<any>;
 
 	findByE2E(options: any): any;
 
