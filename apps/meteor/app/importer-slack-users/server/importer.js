@@ -42,6 +42,7 @@ export class SlackUsersImporter extends Base {
 				importIds: [email],
 				username,
 				name,
+				type: 'user',
 			};
 
 			switch (user[2]) {
@@ -50,6 +51,7 @@ export class SlackUsersImporter extends Base {
 					break;
 				case 'Bot':
 					newUser.roles = ['bot'];
+					newUser.type = 'bot';
 					break;
 				case 'Deactivated':
 					newUser.deleted = true;
