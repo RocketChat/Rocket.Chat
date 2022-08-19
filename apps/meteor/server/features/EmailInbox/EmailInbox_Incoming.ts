@@ -1,4 +1,5 @@
-import stripHtml from 'string-strip-html';
+/* eslint-disable @typescript-eslint/camelcase */
+import { convert } from 'html-to-text';
 import { Random } from 'meteor/random';
 import type { ParsedMail, Attachment } from 'mailparser';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -163,7 +164,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	if (email.html) {
 		// Try to remove the signature and history
-		msg = stripHtml(email.html.replace(/<div name="messageSignatureSection.+/s, '')).result;
+		msg = convert(email.html.replace(/<div name="messageSignatureSection.+/s, ''));
 	}
 
 	const rid = room?._id ?? Random.id();
