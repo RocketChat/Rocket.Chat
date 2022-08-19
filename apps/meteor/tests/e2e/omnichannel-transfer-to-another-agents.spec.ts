@@ -1,8 +1,8 @@
-import { faker, faker } from '@faker-js/faker';
-import type { Browser, Page, Browser, Page } from '@playwright/test';
+import { faker } from '@faker-js/faker';
+import type { Browser, Page } from '@playwright/test';
 
-import { test, expect, test, expect } from './utils/test';
-import { OmnichannelLiveChat, HomeChannel, OmnichannelLiveChat, HomeChannel } from './page-objects';
+import { test, expect } from './utils/test';
+import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 
 const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
 	const page = await browser.newPage({ storageState });
@@ -34,11 +34,15 @@ test.describe('omnichannel-departments', () => {
 		poLiveChat = new OmnichannelLiveChat(page);
 	});
 
-	test.describe('Receiving message from user', () => {
-		let auxContext1: { page: Page; poHomeChannel: HomeChannel };
-		test.beforeEach(async ({ browser, api, page }) => {
-			await api.post('/livechat/users/agent', { username: 'user2' });
-			auxContext1 = await createAuxContext(browser, 'user1-session.json');
+	test.afterAll(async ({ api }) => {
+		await api.delete('/livechat/users/agent/user1');
+		await api.delete('/livechat/users/manager/user1');
+
+		await api.delete('/livechat/users/agent/user2');
+	});
+
+	test('Receiving a message from visitor', async ({ browser, api, page }) => {
+		await test.step('Expect send a message as a visitor', async () => {
 			await page.goto('/livechat');
 			await poLiveChat.btnOpenLiveChat('R').click();
 			await poLiveChat.sendMessage(newUser, false);
@@ -47,15 +51,9 @@ test.describe('omnichannel-departments', () => {
 			// Set user user 2 as agent
 		});
 
-		test('transfer chat to another agent', async ({ browser }) => {
-			const auxContext2 = await createAuxContext(browser, 'user2-session.json');
-
-			await auxContext1.poHomeChannel.sidenav.openChat(newUser.name);
-			await auxContext1.poHomeChannel.content.btnForwardChat.click();
-			await auxContext1.poHomeChannel.content.inputModalAgentUserName.type('user2');
-			await auxContext1.page.locator('.rcx-option .rcx-option__wrapper >> text="user2"').click();
-			await auxContext1.poHomeChannel.content.inputModalAgentForwardComment.type('any_comment');
-			await auxContext1.poHomeChannel.content.btnModalConfirm.click();
+		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
+			await agent1.poHomeChannel.sidenav.openChat(newUser.name);
+		});
 
 		await test.step('Expect to connect as agent 2', async () => {
 			agent2 = await createAuxContext(browser, 'user2-session.json');
@@ -70,7 +68,6 @@ test.describe('omnichannel-departments', () => {
 			await agent1.poHomeChannel.content.btnModalConfirm.click();
 			await expect(agent1.poHomeChannel.toastSuccess).toBeVisible();
 		});
->>>>>>> develop
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 2', async () => {
 			await agent2.poHomeChannel.sidenav.openChat(newUser.name);
