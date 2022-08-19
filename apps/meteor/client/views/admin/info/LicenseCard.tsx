@@ -14,8 +14,8 @@ const LicenseCard = (): ReactElement => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
-	const currentLicense = useSetting('Enterprise_License');
-	const licenseStatus = useSetting('Enterprise_License_Status');
+	const currentLicense = useSetting('Enterprise_License') as string;
+	const licenseStatus = useSetting('Enterprise_License_Status') as string;
 
 	const isAirGapped = true;
 
