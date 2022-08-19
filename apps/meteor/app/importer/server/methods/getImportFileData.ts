@@ -1,8 +1,8 @@
-import type { IImportFileData } from '@rocket.chat/core-typings';
 import path from 'path';
 import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
+import type { IImportFileData } from '@rocket.chat/core-typings';
 
 import { RocketChatImportFileInstance } from '../startup/store';
 import { hasPermission } from '../../../authorization/server';
