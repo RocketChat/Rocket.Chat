@@ -12,8 +12,8 @@ export class Subscriptions extends Base {
 	constructor(...args) {
 		super(...args);
 
+		this.tryEnsureIndex({ rid: 1 });
 		this.tryEnsureIndex({ rid: 1, ls: 1 });
-		this.tryEnsureIndex({ 'userHighlights.0': 1, 'rid': 1 });
 		this.tryEnsureIndex({ 'rid': 1, 'u._id': 1 }, { unique: 1 });
 		this.tryEnsureIndex({ 'rid': 1, 'u._id': 1, 'open': 1 });
 		this.tryEnsureIndex({ 'rid': 1, 'u.username': 1 });
