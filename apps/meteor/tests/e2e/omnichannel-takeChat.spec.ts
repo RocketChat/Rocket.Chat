@@ -1,16 +1,27 @@
 import { faker } from '@faker-js/faker';
+import type { Browser, Page } from '@playwright/test';
 
 import { test, expect } from './utils/test';
 import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 
 test.use({ storageState: 'user1-session.json' });
 
+const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
+	const page = await browser.newPage({ storageState });
+	const poHomeChannel = new HomeChannel(page);
+	await page.goto('/');
+	await page.locator('.main-content').waitFor();
+
+	return { page, poHomeChannel };
+};
+
 test.describe('omnichannel-takeChat', () => {
 	let poLiveChat: OmnichannelLiveChat;
-	let poHomeChannel: HomeChannel;
 	let newVisitor: { email: string; name: string };
 
-	test.beforeAll(async ({ api }) => {
+	let agent: { page: Page; poHomeChannel: HomeChannel };
+
+	test.beforeAll(async ({ api, browser }) => {
 		// make "user-1" an agent and manager
 		let statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
 		expect(statusCode).toBe(200);
@@ -22,9 +33,14 @@ test.describe('omnichannel-takeChat', () => {
 		// turn off setting which allows offline agents to chat
 		statusCode = (await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false })).status();
 		expect(statusCode).toBe(200);
+
+		agent = await createAuxContext(browser, 'user1-session.json');
 	});
 
 	test.beforeEach(async ({ page }) => {
+		// make "user-1" online
+		await agent.poHomeChannel.sidenav.switchStatus('online');
+
 		// start a new chat for each test
 		newVisitor = {
 			name: faker.name.firstName(),
@@ -36,11 +52,6 @@ test.describe('omnichannel-takeChat', () => {
 		await poLiveChat.sendMessage(newVisitor, false);
 		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 		await poLiveChat.btnSendMessageToOnlineAgent.click();
-	});
-
-	test.beforeEach(async ({ page }) => {
-		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -58,27 +69,24 @@ test.describe('omnichannel-takeChat', () => {
 	});
 
 	test('expect "user1" to be able to take the chat from the queue', async () => {
-		// make "user-1" online
-		await poHomeChannel.sidenav.switchStatus('online');
+		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await expect(agent.poHomeChannel.content.takeOmnichannelChatButton).toBeVisible();
+		await agent.poHomeChannel.content.takeOmnichannelChatButton.click();
 
-		await poHomeChannel.sidenav.openChat(newVisitor.name);
-		await expect(poHomeChannel.content.takeOmnichannelChatButton).toBeVisible();
-		await poHomeChannel.content.takeOmnichannelChatButton.click();
-
-		await poHomeChannel.sidenav.openChat(newVisitor.name);
-		await expect(poHomeChannel.content.takeOmnichannelChatButton).not.toBeVisible();
-		await expect(poHomeChannel.content.inputMessage).toBeVisible();
+		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await expect(agent.poHomeChannel.content.takeOmnichannelChatButton).not.toBeVisible();
+		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
 	});
 
-	test('expect "user1" to not able able to take chat from queue in-case its user status is offline', async ({ page }) => {
+	test('expect "user1" to not able able to take chat from queue in-case its user status is offline', async () => {
 		// make "user-1" offline
-		await poHomeChannel.sidenav.switchStatus('offline');
+		await agent.poHomeChannel.sidenav.switchStatus('offline');
 
-		await poHomeChannel.sidenav.openChat(newVisitor.name);
-		await expect(poHomeChannel.content.takeOmnichannelChatButton).toBeVisible();
-		await poHomeChannel.content.takeOmnichannelChatButton.click();
+		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await expect(agent.poHomeChannel.content.takeOmnichannelChatButton).toBeVisible();
+		await agent.poHomeChannel.content.takeOmnichannelChatButton.click();
 
 		// expect to see error message
-		await expect(page.locator('text=Agent status is offline or Omnichannel service is not active')).toBeVisible();
+		await expect(agent.page.locator('text=Agent status is offline or Omnichannel service is not active')).toBeVisible();
 	});
 });

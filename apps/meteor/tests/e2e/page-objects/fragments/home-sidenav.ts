@@ -38,7 +38,7 @@ export class HomeSidenav {
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
-		await this.page.locator(`text=${status}`).click();
+		await this.page.locator(`//li[@class="rcx-option"]//div[contains(text(), "${status}")]`).click();
 	}
 
 	async openChat(name: string): Promise<void> {
