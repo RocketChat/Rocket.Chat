@@ -5,10 +5,10 @@ import React, { FC, memo, MouseEvent } from 'react';
 import { useDecryptedMessage } from '../../../../hooks/useDecryptedMessage';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { clickableItem } from '../../../../lib/clickableItem';
+import { normalizeThreadMessage } from '../../../../lib/normalizeThreadMessage';
 import { callWithErrorHandling } from '../../../../lib/utils/callWithErrorHandling';
 import ThreadListMessage from './components/Message';
 import { mapProps } from './mapProps';
-import { normalizeThreadMessage } from './normalizeThreadMessage';
 
 const Thread = memo(mapProps(clickableItem(ThreadListMessage)));
 

@@ -1,4 +1,14 @@
-import type { AtLeast, IMessage, IRoom, ISetting, ISubscription, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
+import type {
+	AtLeast,
+	ICreatedRoom,
+	IMessage,
+	IRoom,
+	ISetting,
+	ISubscription,
+	ISupportedLanguage,
+	IUser,
+	RoomType,
+} from '@rocket.chat/core-typings';
 
 import type { TranslationKey } from '../TranslationContext';
 import type {
@@ -64,6 +74,7 @@ export interface ServerMethods {
 	'cloud:logout': (...args: any[]) => any;
 	'cloud:registerWorkspace': (...args: any[]) => any;
 	'cloud:syncWorkspace': (...args: any[]) => any;
+	'createDirectMessage': (...usernames: Exclude<IUser['username'], undefined>[]) => ICreatedRoom;
 	'deleteCustomSound': (...args: any[]) => any;
 	'deleteCustomUserStatus': (...args: any[]) => any;
 	'deleteFileMessage': (...args: any[]) => any;
@@ -75,6 +86,49 @@ export interface ServerMethods {
 	'followMessage': FollowMessageMethod;
 	'getAvatarSuggestion': (...args: any[]) => any;
 	'getFileFromWebdav': GetFileFromWebdav;
+	'getMessages': (messages: IMessage['_id'][]) => IMessage[];
+	'getRoomByTypeAndName': (
+		type: RoomType,
+		name: string,
+	) => Pick<
+		IRoom,
+		| '_id'
+		| 'name'
+		| 'fname'
+		| 't'
+		| 'cl'
+		| 'u'
+		| 'lm'
+		| 'teamId'
+		| 'teamMain'
+		| 'topic'
+		| 'announcement'
+		| 'announcementDetails'
+		| 'muted'
+		| 'unmuted'
+		| '_updatedAt'
+		| 'archived'
+		| 'description'
+		| 'default'
+		| 'lastMessage'
+		| 'prid'
+		| 'avatarETag'
+		| 'usersCount'
+		| 'msgs'
+		| 'open'
+		| 'ro'
+		| 'reactWhenReadOnly'
+		| 'sysMes'
+		| 'streamingOptions'
+		| 'broadcast'
+		| 'encrypted'
+		| 'e2eKeyId'
+		| 'servedBy'
+		| 'ts'
+		| 'federated'
+		| 'usernames'
+		| 'uids'
+	>;
 	'getRoomRoles': (rid: IRoom['_id']) => ISubscription[];
 	'getSetupWizardParameters': () => {
 		settings: ISetting[];
@@ -113,7 +167,7 @@ export interface ServerMethods {
 		messages: IMessage[];
 	};
 	'loadSurroundingMessages': (
-		message: IMessage,
+		message: Pick<IMessage, '_id' | 'rid'> & { ts?: Date },
 		limit?: number,
 	) => {
 		messages: IMessage[];
@@ -122,6 +176,7 @@ export interface ServerMethods {
 	};
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
+	'openRoom': (rid: IRoom['_id']) => ISubscription;
 	'personalAccessTokens:generateToken': (...args: any[]) => any;
 	'personalAccessTokens:regenerateToken': (...args: any[]) => any;
 	'personalAccessTokens:removeToken': (...args: any[]) => any;

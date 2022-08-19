@@ -4,11 +4,12 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
+import type { RoomType } from '@rocket.chat/core-typings';
 
 import { appLayout } from '../../../../client/lib/appLayout';
 import { waitUntilFind } from '../../../../client/lib/utils/waitUntilFind';
 import { Messages, ChatSubscription, Rooms, Subscriptions } from '../../../models/client';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { call } from '../../../../client/lib/utils/call';
@@ -19,19 +20,9 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import MainLayout from '../../../../client/views/root/MainLayout';
 import BlazeTemplate from '../../../../client/views/root/BlazeTemplate';
 
-window.currentTracker = undefined;
-
-// cleanup session when hot reloading
-Session.set('openedRoom', null);
-
-NewRoomManager.on('changed', (rid) => {
-	Session.set('openedRoom', rid);
-	RoomManager.openedRoom = rid;
-});
-
-export const openRoom = async function (type, name, render = true) {
-	window.currentTracker && window.currentTracker.stop();
-	window.currentTracker = Tracker.autorun(async function (c) {
+export async function openRoom(type: RoomType, name: string, render = true) {
+	RoomManager.currentTracker?.stop();
+	RoomManager.currentTracker = Tracker.autorun(async function (c) {
 		const user = Meteor.user();
 		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
 			appLayout.render(<MainLayout />);
@@ -64,8 +55,8 @@ export const openRoom = async function (type, name, render = true) {
 
 			c.stop();
 
-			if (window.currentTracker) {
-				window.currentTracker = undefined;
+			if (RoomManager.currentTracker) {
+				RoomManager.currentTracker = undefined;
 			}
 
 			NewRoomManager.open(room._id);
@@ -93,7 +84,7 @@ export const openRoom = async function (type, name, render = true) {
 
 				RoomHistoryManager.getSurroundingMessages(msg);
 				FlowRouter.setQueryParams({
-					msg: undefined,
+					msg: null,
 				});
 			}
 
@@ -103,7 +94,7 @@ export const openRoom = async function (type, name, render = true) {
 
 			if (FlowRouter.getQueryParam('msg')) {
 				FlowRouter.setQueryParams({
-					msg: undefined,
+					msg: null,
 				});
 			}
 
@@ -124,4 +115,4 @@ export const openRoom = async function (type, name, render = true) {
 			);
 		}
 	});
-};
+}

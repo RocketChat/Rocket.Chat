@@ -4,7 +4,6 @@ import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import _ from 'underscore';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
@@ -107,7 +106,9 @@ function closeOlderRooms() {
 		return;
 	}
 
-	const roomsToClose = _.sortBy(_.values(openedRooms), 'lastSeen').reverse().slice(maxRoomsOpen);
+	const roomsToClose = Object.values(openedRooms)
+		.sort((a, b) => (a.lastSeen?.getTime() ?? 0) - (b.lastSeen?.getTime() ?? 0))
+		.slice(maxRoomsOpen);
 	return Array.from(roomsToClose).map((roomToClose) => close(roomToClose.typeName));
 }
 
@@ -252,6 +253,8 @@ function open({ typeName, rid }: { typeName: string; rid: IRoom['_id'] }) {
 
 let openedRoom: string | undefined = undefined;
 
+let currentTracker: Tracker.Computation | undefined = undefined;
+
 export const RoomManager = {
 	get openedRoom() {
 		return openedRoom;
@@ -276,4 +279,12 @@ export const RoomManager = {
 	},
 
 	open,
+
+	get currentTracker() {
+		return currentTracker;
+	},
+
+	set currentTracker(tracker) {
+		currentTracker = tracker;
+	},
 };

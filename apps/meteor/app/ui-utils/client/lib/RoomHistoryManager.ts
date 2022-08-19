@@ -6,42 +6,20 @@ import { Blaze } from 'meteor/blaze';
 import { v4 as uuidv4 } from 'uuid';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { Emitter } from '@rocket.chat/emitter';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 
 import { waitUntilWrapperExists } from './waitUntilWrapperExists';
 import { readMessage } from './readMessages';
-import { renderMessageBody } from '../../../../client/lib/utils/renderMessageBody';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ChatMessage, ChatSubscription } from '../../../models/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 import type { RoomTemplateInstance } from '../../../ui/client/views/app/lib/RoomTemplateInstance';
-
-export function normalizeThreadMessage({ ...message }: Readonly<Pick<IMessage, 'msg' | 'mentions' | 'attachments'>>) {
-	if (message.msg) {
-		message.msg = filterMarkdown(message.msg);
-		delete message.mentions;
-		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
-	}
-
-	if (message.attachments) {
-		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
-
-		if (attachment?.description) {
-			return escapeHTML(attachment.description);
-		}
-
-		if (attachment?.title) {
-			return escapeHTML(attachment.title);
-		}
-	}
-}
+import { normalizeThreadMessage } from '../../../../client/lib/normalizeThreadMessage';
 
 export async function upsertMessage(
 	{
@@ -60,12 +38,6 @@ export async function upsertMessage(
 	if (subscription?.ignored?.includes(userId)) {
 		msg.ignored = true;
 	}
-
-	// const roles = [
-	// 	(userId && UserRoles.findOne(userId, { fields: { roles: 1 } })) || {},
-	// 	(userId && RoomRoles.findOne({ rid: msg.rid, 'u._id': userId })) || {},
-	// ].map((e) => e.roles);
-	// msg.roles = _.union.apply(_.union, roles);
 
 	if (msg.t === 'e2e' && !msg.file) {
 		msg.e2e = 'pending';
@@ -320,7 +292,7 @@ class RoomHistoryManagerClass extends Emitter {
 		room.loaded = undefined;
 	}
 
-	public async getSurroundingMessages(message?: IMessage, limit = defaultLimit) {
+	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }, limit = defaultLimit) {
 		if (!message || !message.rid) {
 			return;
 		}
