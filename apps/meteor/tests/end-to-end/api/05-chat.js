@@ -512,7 +512,6 @@ describe('[Chat]', function () {
 	});
 
 	describe('/chat.sendMessage', () => {
-		// FIXME do here
 		it("should throw an error when the required param 'rid' is not sent", (done) => {
 			request
 				.post(api('chat.sendMessage'))
