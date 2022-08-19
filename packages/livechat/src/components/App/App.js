@@ -1,4 +1,5 @@
 import { Router } from 'preact-router';
+import { lazy, Suspense } from 'preact/compat';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 import { parse } from 'query-string';
 import { useTranslation } from 'react-i18next';
@@ -10,13 +11,6 @@ import Hooks from '../../lib/hooks';
 import { isRTL } from '../../lib/isRTL';
 import { parentCall } from '../../lib/parentCall';
 import userPresence from '../../lib/userPresence';
-import { ChatConnector } from '../../routes/Chat';
-import ChatFinished from '../../routes/ChatFinished';
-import GDPRAgreement from '../../routes/GDPRAgreement';
-import LeaveMessage from '../../routes/LeaveMessage';
-import Register from '../../routes/Register';
-import SwitchDepartment from '../../routes/SwitchDepartment';
-import TriggerMessage from '../../routes/TriggerMessage';
 import { visibility, isActiveSession } from '../helpers';
 import { handleDisableNotifications, handleDismissAlert, handleEnableNotifications, handleMinimize, handleOpenWindow, handleRestore, handleRoute, handleTriggers, handleVisibilityChange } from './handlers';
 
@@ -117,15 +111,25 @@ export const App = ({
 		return null;
 	}
 
+	const ChatConnectorComponent = lazy(() => import('../../routes/Chat'));
+	const ChatFinishedComponent = lazy(() => import('../../routes/ChatFinished'));
+	const GDPRAgreementComponent = lazy(() => import('../../routes/GDPRAgreement'));
+	const LeaveMessageComponent = lazy(() => import('../../routes/LeaveMessage'));
+	const RegisterComponent = lazy(() => import('../../routes/Register'));
+	const SwitchDepartmentComponent = lazy(() => import('../../routes/SwitchDepartment'));
+	const TriggerMessageComponent = lazy(() => import('../../routes/TriggerMessage'));
+
 	return (
 		<Router history={history} onChange={() => handleRoute({ config, gdpr, triggered, user })}>
-			<ChatConnector default path='/' {...screenProps} />
-			<ChatFinished path='/chat-finished' {...screenProps} />
-			<GDPRAgreement path='/gdpr' {...screenProps} />
-			<LeaveMessage path='/leave-message' {...screenProps} />
-			<Register path='/register' {...screenProps} />
-			<SwitchDepartment path='/switch-department' {...screenProps} />
-			<TriggerMessage path='/trigger-messages' {...screenProps} />
+			<Suspense fallback={null}>
+				<ChatConnectorComponent default path='/' {...screenProps} />
+				<ChatFinishedComponent path='/chat-finished' {...screenProps} />
+				<GDPRAgreementComponent path='/gdpr' {...screenProps} />
+				<LeaveMessageComponent path='/leave-message' {...screenProps} />
+				<RegisterComponent path='/register' {...screenProps} />
+				<SwitchDepartmentComponent path='/switch-department' {...screenProps} />
+				<TriggerMessageComponent path='/trigger-messages' {...screenProps} />
+			</Suspense>
 		</Router>
 	);
 };
