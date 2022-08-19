@@ -1,41 +1,64 @@
+import { ISettingBase } from '@rocket.chat/core-typings';
 import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, ReactElement } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
 import MemoizedSetting from '../settings/MemoizedSetting';
 
-const useAppTranslation = (appId) => {
+type AppTranslationFunction = {
+	(key: string, ...replaces: unknown[]): string;
+	has: (key: string | undefined) => boolean;
+};
+const useAppTranslation = (appId: string): AppTranslationFunction => {
 	const t = useTranslation();
 
 	const tApp = useCallback(
-		(key, ...args) => {
+		(key: string, ...args: unknown[]) => {
 			if (!key) {
 				return '';
 			}
-
 			const appKey = `project:apps-${appId}-${key}`;
-			return t(t.has(appKey) ? appKey : key, ...args);
-		},
-		[t, appId],
-	);
 
-	tApp.has = useCallback(
-		(key) => {
-			if (!key) {
-				return false;
+			if (t.has(appKey)) {
+				return t(appKey, ...args);
 			}
-
-			return t.has(`project:apps-${appId}-${key}`) || t.has(key);
+			if (t.has(key)) {
+				return t(key, ...args);
+			}
+			return key;
 		},
 		[t, appId],
 	);
 
-	return tApp;
+	return Object.assign(tApp, {
+		has: useCallback(
+			(key: string | undefined) => {
+				if (!key) {
+					return false;
+				}
+
+				return t.has(`project:apps-${appId}-${key}`) || t.has(key);
+			},
+			[t, appId],
+		),
+	});
 };
 
-function AppSetting({ appSetting, onChange, value, ...props }) {
+type AppSettingProps = {
+	appSetting: {
+		id: string;
+		type: ISettingBase['type'];
+		i18nLabel: string;
+		i18nDescription: string;
+		values: { key: string; i18nLabel: string }[];
+		required: boolean;
+	};
+	onChange: any;
+	value: string;
+};
+function AppSetting({ appSetting, onChange, value, ...props }: AppSettingProps): ReactElement {
 	const appId = useRouteParameter('id');
-	const tApp = useAppTranslation(appId);
+	const tApp = useAppTranslation(appId || '');
 
 	const { id, type, i18nLabel, i18nDescription, values, required } = appSetting;
 
@@ -66,7 +89,7 @@ function AppSetting({ appSetting, onChange, value, ...props }) {
 			value={value}
 			onChangeValue={onChange}
 			_id={id}
-			values={translatedValues}
+			{...({ values: translatedValues } as any)}
 			{...props}
 		/>
 	);
