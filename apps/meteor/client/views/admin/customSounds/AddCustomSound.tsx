@@ -1,5 +1,5 @@
 import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, ReactElement, FormEvent } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
@@ -19,7 +19,7 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 	const [name, setName] = useState('');
 	const [sound, setSound] = useState<{ name: string }>();
 
-	const uploadCustomSound = useMethod('uploadCustomSound');
+	const uploadCustomSound = useEndpoint('POST', '/v1/custom-sounds.uploadCustomSound');
 
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 

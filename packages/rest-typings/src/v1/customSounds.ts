@@ -33,12 +33,49 @@ const CustomSoundsListSchema = {
 	additionalProperties: false,
 };
 
-export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSoundsListSchema);
+export const isCustomSoundsListSchemaProps = ajv.compile<CustomSoundsList>(CustomSoundsListSchema);
+
+type UploadCustomSound = {
+	binaryContent: string;
+	contentType: string;
+	soundData: ICustomSound;
+};
+
+const UploadCustomSoundSchema = {
+	type: 'object',
+	properties: {
+		binaryContent: {
+			type: 'string',
+		},
+		contentType: {
+			type: 'string',
+		},
+		soundData: {
+			type: 'object',
+			properties: {
+				name: {
+					type: 'string',
+				},
+				statusType: {
+					type: 'string',
+				},
+			},
+		},
+		required: ['binaryContent', 'contentType', 'soundData'],
+		additionalProperties: false,
+	},
+};
+
+export const isUploadCustomSoundProps = ajv.compile<UploadCustomSound>(UploadCustomSoundSchema);
 
 export type CustomSoundEndpoint = {
 	'/v1/custom-sounds.list': {
 		GET: (params: CustomSoundsList) => PaginatedResult<{
 			sounds: ICustomSound[];
 		}>;
+	};
+
+	'/v1/custom-sounds.uploadCustomSound': {
+		POST: (params: UploadCustomSound) => void;
 	};
 };

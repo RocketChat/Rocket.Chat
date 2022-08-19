@@ -7,7 +7,8 @@ import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 Meteor.methods({
 	uploadCustomSound(binaryContent, contentType, soundData) {
-		if (!hasPermission(this.userId, 'manage-sounds')) {
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		if (!hasPermission(this.userId!, 'manage-sounds')) {
 			throw new Meteor.Error('not_authorized');
 		}
 
