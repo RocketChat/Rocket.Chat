@@ -4,8 +4,6 @@ import type { Browser, Page } from '@playwright/test';
 import { test, expect } from './utils/test';
 import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 
-test.use({ storageState: 'user1-session.json' });
-
 const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
 	const page = await browser.newPage({ storageState });
 	const poHomeChannel = new HomeChannel(page);
@@ -69,7 +67,7 @@ test.describe('omnichannel-takeChat', () => {
 	});
 
 	test('expect "user1" to be able to take the chat from the queue', async () => {
-		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
 		await expect(agent.poHomeChannel.content.takeOmnichannelChatButton).toBeVisible();
 		await agent.poHomeChannel.content.takeOmnichannelChatButton.click();
 
@@ -82,7 +80,7 @@ test.describe('omnichannel-takeChat', () => {
 		// make "user-1" offline
 		await agent.poHomeChannel.sidenav.switchStatus('offline');
 
-		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
 		await expect(agent.poHomeChannel.content.takeOmnichannelChatButton).toBeVisible();
 		await agent.poHomeChannel.content.takeOmnichannelChatButton.click();
 

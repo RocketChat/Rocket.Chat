@@ -62,13 +62,13 @@ export const test = baseTest.extend<BaseTest>({
 
 		await use({
 			get(uri: string, prefix = API_PREFIX) {
-				return request.get(BASE_API_URL + prefix + uri, { headers });
+				return request.get(BASE_URL + prefix + uri, { headers });
 			},
 			post(uri: string, data: AnyObj, prefix = API_PREFIX) {
 				return request.post(BASE_URL + prefix + uri, { headers, data });
 			},
 			put(uri: string, data: AnyObj, prefix = API_PREFIX) {
-				return request.put(BASE_API_URL + prefix + uri, { headers, data });
+				return request.put(BASE_URL + prefix + uri, { headers, data });
 			},
 			delete(uri: string, prefix = API_PREFIX) {
 				return request.delete(BASE_URL + prefix + uri, { headers });
