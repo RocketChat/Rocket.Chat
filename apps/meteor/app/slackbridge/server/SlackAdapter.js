@@ -33,7 +33,7 @@ export default class SlackAdapter {
 	 * Connect to the remote Slack server using the passed in token API and register for Slack events
 	 * @param apiToken
 	 */
-	connect(apiToken) {
+	async connect(apiToken) {
 		this.apiToken = apiToken;
 
 		if (RTMClient != null) {
@@ -41,7 +41,18 @@ export default class SlackAdapter {
 		}
 		this.slackAPI = new SlackAPI(this.apiToken);
 		this.rtm = new RTMClient(this.apiToken);
-		this.rtm.start();
+
+		await this.rtm
+			.start()
+			.then((res) => slackLogger.debug('Connecting to slack', res))
+			.catch((err) => {
+				slackLogger.error('Error attempting to connect to Slack', err);
+				if (err.data.error === 'invalid_auth') {
+					throw new Error('The provided token is invalid');
+				}
+				throw new Error(err);
+			});
+
 		this.registerForEvents();
 
 		Meteor.startup(() => {
@@ -58,7 +69,9 @@ export default class SlackAdapter {
 	 * Unregister for slack events and disconnect from Slack
 	 */
 	disconnect() {
-		this.rtm.disconnect && this.rtm.disconnect();
+		if (this.rtm.connected && this.rtm.disconnect) {
+			this.rtm.disconnect();
+		}
 	}
 
 	setRocket(rocket) {
