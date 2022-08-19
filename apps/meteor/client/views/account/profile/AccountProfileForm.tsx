@@ -187,7 +187,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 							username={username}
 							setAvatarObj={handleAvatar}
 							disabled={!allowUserAvatarChange}
-							suggestions={Array(avatarSuggestions)}
+							suggestions={avatarSuggestions as any}
 						/>
 					</Field>
 				),
