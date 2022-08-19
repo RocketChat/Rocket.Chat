@@ -91,8 +91,8 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 			});
 			closeModal(null);
 			reloadCannedList?.();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [values, saveCannedResponse, dispatchToastMessage, t, closeModal, reloadCannedList]);
 

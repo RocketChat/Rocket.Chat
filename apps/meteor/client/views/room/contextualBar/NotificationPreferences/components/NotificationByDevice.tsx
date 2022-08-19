@@ -17,6 +17,7 @@ export const NotificationByDevice = ({ device, icon, children }: NotificationByD
 				</Box>
 			</Box>
 		}
+		data-qa-id={`${device}-notifications`}
 	>
 		<FieldGroup>{children}</FieldGroup>
 	</Accordion.Item>

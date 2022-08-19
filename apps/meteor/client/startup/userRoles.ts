@@ -4,14 +4,15 @@ import { Tracker } from 'meteor/tracker';
 
 import { UserRoles, RoomRoles, ChatMessage } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
-import { handleError } from '../lib/utils/handleError';
+import { dispatchToastMessage } from '../lib/toast';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (Meteor.userId()) {
 			Meteor.call('getUserRoles', (error: Error, results: IRocketChatRecord[]) => {
 				if (error) {
-					return handleError(error);
+					dispatchToastMessage({ type: 'error', message: error });
+					return;
 				}
 
 				for (const record of results) {

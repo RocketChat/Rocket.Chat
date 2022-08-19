@@ -99,7 +99,7 @@ const GroupPage: FC<GroupPageProps> = ({
 
 			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as string });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
