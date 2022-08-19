@@ -91091,6 +91091,69 @@
           ]
         }
       ]
+    },
+    "4.8.4": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26532",
+          "title": "[FIX]  Endpoints `im.list` not working with Use Real Name setting",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.8.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "5.0.4": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26617",
+          "title": "Regression: Fix services Docker build",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.0.4",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26608",
+          "title": "Chore: Fix services image publish do DockerHub",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.0.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26579",
+          "title": "[FIX][ENTERPRISE] User not marked as offline on log out when using micro services",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.0.4",
+          "contributors": [
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
