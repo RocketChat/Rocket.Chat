@@ -1,4 +1,35 @@
 
+# 5.0.4
+`2022-08-19  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** User not marked as offline on log out when using micro services ([#26579](https://github.com/RocketChat/Rocket.Chat/pull/26579) by [@kodiakhq[bot]](https://github.com/kodiakhq[bot]))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Fix services image publish do DockerHub ([#26608](https://github.com/RocketChat/Rocket.Chat/pull/26608))
+
+- Regression: Fix services Docker build ([#26617](https://github.com/RocketChat/Rocket.Chat/pull/26617))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@kodiakhq[bot]](https://github.com/kodiakhq[bot])
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 5.0.3
 `2022-08-11  ·  3 🐛  ·  1 🔍  ·  8 👩‍💻👨‍💻`
 
@@ -264,7 +295,7 @@
 
 - Create Team with a member list of usernames ([#25868](https://github.com/RocketChat/Rocket.Chat/pull/25868))
 
-- Enable outbound calling for EE (#25843) ([#25960](https://github.com/RocketChat/Rocket.Chat/pull/25960))
+- Enable outbound calling for EE (#25843) ([#25960](https://github.com/RocketChat/Rocket.Chat/pull/25960) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Engagement Metrics - Phase 2 ([#25505](https://github.com/RocketChat/Rocket.Chat/pull/25505))
 
@@ -365,7 +396,7 @@
 
   <img width="556" alt="image" src="https://user-images.githubusercontent.com/5263975/162099800-15806953-f2f5-4905-a424-3f095076bc1d.png">
 
-- New button for network outage ([#25499](https://github.com/RocketChat/Rocket.Chat/pull/25499))
+- New button for network outage ([#25499](https://github.com/RocketChat/Rocket.Chat/pull/25499) by [@amolghode1981](https://github.com/amolghode1981))
 
   When network outage happens it should be conveyed to the user with special icon. This icon should not be clickable.
   Network outage handling is handled in https://app.clickup.com/t/245c0d8 task.
@@ -397,7 +428,7 @@
 
   - Adds flag responsible for overwriting #general channel creation
 
-- VoIP Input/Output Device Selection ([#25966](https://github.com/RocketChat/Rocket.Chat/pull/25966))
+- VoIP Input/Output Device Selection ([#25966](https://github.com/RocketChat/Rocket.Chat/pull/25966) by [@amolghode1981](https://github.com/amolghode1981))
 
 ### 🚀 Improvements
 
@@ -547,7 +578,7 @@
 
   Added `ToolboxProvider` to `MessageListProvider` and fixed actionLink.js open function exec
 
-- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170))
+- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170) by [@amolghode1981](https://github.com/amolghode1981))
 
   Agent gets disconnected (or Unregistered) from asterisk in multiple ways. The goal is that agent should remain online
   unless agent explicitly logs off.
@@ -613,7 +644,7 @@
 
 - Fixing app contextual bar functionality ([#25615](https://github.com/RocketChat/Rocket.Chat/pull/25615))
 
-- Fixing Network connectivity issues with SIP client. ([#25391](https://github.com/RocketChat/Rocket.Chat/pull/25391))
+- Fixing Network connectivity issues with SIP client. ([#25391](https://github.com/RocketChat/Rocket.Chat/pull/25391) by [@amolghode1981](https://github.com/amolghode1981))
 
   The previous PR https://github.com/RocketChat/Rocket.Chat/pull/25170 did not handle the issues completely.
   This PR is expected to handle  
@@ -867,7 +898,7 @@
 
   To prevent this issue to happen it was added a cached and out-of-scope snapshot variable to the hook using `useSyncExternalStore`
 
-- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230))
+- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230) by [@amolghode1981](https://github.com/amolghode1981))
 
   Initially it was thought that the issue occurs because of the race condition while changing the client settings vs those settings reflected on server side. So a natural solution to solve this is to wait for setting change event 'private-settings-changed'. Then if 'VoIP_Enabled' is updated and it is true, set voipEnabled  to true in useVoipClient.ts (on client side)
 
@@ -1124,7 +1155,7 @@
 
 - Chore: Convert useUpdateAvatar to TS and type avatar endpoints ([#25430](https://github.com/RocketChat/Rocket.Chat/pull/25430))
 
-- Chore: Converting files from app/livechat folder from JS to TS ([#25658](https://github.com/RocketChat/Rocket.Chat/pull/25658))
+- Chore: Converting files from app/livechat folder from JS to TS ([#25658](https://github.com/RocketChat/Rocket.Chat/pull/25658) by [@amolghode1981](https://github.com/amolghode1981))
 
   Converting files from apps/meteor/app/livechat/lib/ from JS to TS
 
@@ -1987,6 +2018,7 @@
 - [@Kunalvrm555](https://github.com/Kunalvrm555)
 - [@Sh0uld](https://github.com/Sh0uld)
 - [@aakash-gitdev](https://github.com/aakash-gitdev)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@divinespear](https://github.com/divinespear)
@@ -2013,7 +2045,6 @@
 - [@alansikora](https://github.com/alansikora)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
 - [@aleksandernsilva](https://github.com/aleksandernsilva)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@cauefcr](https://github.com/cauefcr)
 - [@csuadev](https://github.com/csuadev)
@@ -2047,6 +2078,23 @@
 - [@tmontini](https://github.com/tmontini)
 - [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 4.8.4
+`2022-08-11  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Endpoints `im.list` not working with Use Real Name setting ([#26532](https://github.com/RocketChat/Rocket.Chat/pull/26532))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 4.8.3
 `2022-08-02  ·  4 🐛  ·  4 👩‍💻👨‍💻`
@@ -2256,7 +2304,7 @@
 
   <img width="556" alt="image" src="https://user-images.githubusercontent.com/5263975/162099800-15806953-f2f5-4905-a424-3f095076bc1d.png">
 
-- New button for network outage ([#25499](https://github.com/RocketChat/Rocket.Chat/pull/25499))
+- New button for network outage ([#25499](https://github.com/RocketChat/Rocket.Chat/pull/25499) by [@amolghode1981](https://github.com/amolghode1981))
 
   When network outage happens it should be conveyed to the user with special icon. This icon should not be clickable.
   Network outage handling is handled in https://app.clickup.com/t/245c0d8 task.
@@ -2377,7 +2425,7 @@
 
   Added `ToolboxProvider` to `MessageListProvider` and fixed actionLink.js open function exec
 
-- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170))
+- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170) by [@amolghode1981](https://github.com/amolghode1981))
 
   Agent gets disconnected (or Unregistered) from asterisk in multiple ways. The goal is that agent should remain online
   unless agent explicitly logs off.
@@ -2423,7 +2471,7 @@
 
 - Fixing app contextual bar functionality ([#25615](https://github.com/RocketChat/Rocket.Chat/pull/25615))
 
-- Fixing Network connectivity issues with SIP client. ([#25391](https://github.com/RocketChat/Rocket.Chat/pull/25391))
+- Fixing Network connectivity issues with SIP client. ([#25391](https://github.com/RocketChat/Rocket.Chat/pull/25391) by [@amolghode1981](https://github.com/amolghode1981))
 
   The previous PR https://github.com/RocketChat/Rocket.Chat/pull/25170 did not handle the issues completely.
   This PR is expected to handle  
@@ -2557,7 +2605,7 @@
 
 - Video and Audio not skipping forward ([#19866](https://github.com/RocketChat/Rocket.Chat/pull/19866))
 
-- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230))
+- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230) by [@amolghode1981](https://github.com/amolghode1981))
 
   Initially it was thought that the issue occurs because of the race condition while changing the client settings vs those settings reflected on server side. So a natural solution to solve this is to wait for setting change event 'private-settings-changed'. Then if 'VoIP_Enabled' is updated and it is true, set voipEnabled  to true in useVoipClient.ts (on client side)
 
@@ -2980,6 +3028,7 @@
 
 - [@Himanshu664](https://github.com/Himanshu664)
 - [@aakash-gitdev](https://github.com/aakash-gitdev)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@divinespear](https://github.com/divinespear)
@@ -3002,7 +3051,6 @@
 - [@alansikora](https://github.com/alansikora)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
 - [@aleksandernsilva](https://github.com/aleksandernsilva)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@cauefcr](https://github.com/cauefcr)
 - [@d-gubert](https://github.com/d-gubert)
@@ -3255,7 +3303,7 @@
   - After:
   ![image](https://user-images.githubusercontent.com/30026625/161831092-9ee77b51-b083-4f45-9c48-ab2e0511c4d6.png)
 
-- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170))
+- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170) by [@amolghode1981](https://github.com/amolghode1981))
 
   Agent gets disconnected (or Unregistered) from asterisk in multiple ways. The goal is that agent should remain online
   unless agent explicitly logs off.
@@ -3370,7 +3418,7 @@
 
 - Video and Audio not skipping forward ([#19866](https://github.com/RocketChat/Rocket.Chat/pull/19866))
 
-- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230))
+- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230) by [@amolghode1981](https://github.com/amolghode1981))
 
   Initially it was thought that the issue occurs because of the race condition while changing the client settings vs those settings reflected on server side. So a natural solution to solve this is to wait for setting change event 'private-settings-changed'. Then if 'VoIP_Enabled' is updated and it is true, set voipEnabled  to true in useVoipClient.ts (on client side)
 
@@ -3562,6 +3610,7 @@
 
 - [@Himanshu664](https://github.com/Himanshu664)
 - [@aakash-gitdev](https://github.com/aakash-gitdev)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@kibonusp](https://github.com/kibonusp)
@@ -3576,7 +3625,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@alansikora](https://github.com/alansikora)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
 - [@dougfabris](https://github.com/dougfabris)
@@ -3899,11 +3947,11 @@
 
 - Typo in wrap-up term ([#24661](https://github.com/RocketChat/Rocket.Chat/pull/24661))
 
-- VoIP button gets disabled whenever user status changes ([#24789](https://github.com/RocketChat/Rocket.Chat/pull/24789))
+- VoIP button gets disabled whenever user status changes ([#24789](https://github.com/RocketChat/Rocket.Chat/pull/24789) by [@amolghode1981](https://github.com/amolghode1981))
 
 - VoIP Enable/Disable setting on CallContext/CallProvider Notifications ([#24607](https://github.com/RocketChat/Rocket.Chat/pull/24607))
 
-- Voip Stream Reinitialization Error ([#24657](https://github.com/RocketChat/Rocket.Chat/pull/24657))
+- Voip Stream Reinitialization Error ([#24657](https://github.com/RocketChat/Rocket.Chat/pull/24657) by [@amolghode1981](https://github.com/amolghode1981))
 
 - VoipExtensionsPage component call ([#24792](https://github.com/RocketChat/Rocket.Chat/pull/24792))
 
@@ -4054,7 +4102,7 @@
   ![image](https://user-images.githubusercontent.com/55164754/160981416-555bcaa1-c075-4260-937c-64523472da43.png)
   ![image](https://user-images.githubusercontent.com/55164754/160981452-6eae4e74-8425-4073-8256-472aba72b9db.png)
 
-- Regression: Error is raised when there's no Asterisk queue available yet ([#24980](https://github.com/RocketChat/Rocket.Chat/pull/24980))
+- Regression: Error is raised when there's no Asterisk queue available yet ([#24980](https://github.com/RocketChat/Rocket.Chat/pull/24980) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Fix account service login expiration ([#24920](https://github.com/RocketChat/Rocket.Chat/pull/24920))
 
@@ -4077,6 +4125,7 @@
 - [@JMoVS](https://github.com/JMoVS)
 - [@Muramatsu2602](https://github.com/Muramatsu2602)
 - [@aadishJ01](https://github.com/aadishJ01)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@aswinidev](https://github.com/aswinidev)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@eduardofcabrera](https://github.com/eduardofcabrera)
@@ -4089,7 +4138,6 @@
 - [@KevLehman](https://github.com/KevLehman)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@cauefcr](https://github.com/cauefcr)
 - [@debdutdeb](https://github.com/debdutdeb)
 - [@dougfabris](https://github.com/dougfabris)
@@ -4243,7 +4291,7 @@
 
 - Show only enabled departments on forward ([#24829](https://github.com/RocketChat/Rocket.Chat/pull/24829))
 
-- VoIP button gets disabled whenever user status changes ([#24789](https://github.com/RocketChat/Rocket.Chat/pull/24789))
+- VoIP button gets disabled whenever user status changes ([#24789](https://github.com/RocketChat/Rocket.Chat/pull/24789) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Wrong param usage on queue summary call ([#24799](https://github.com/RocketChat/Rocket.Chat/pull/24799))
 
@@ -4255,10 +4303,13 @@
 
 </details>
 
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@amolghode1981](https://github.com/amolghode1981)
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@KevLehman](https://github.com/KevLehman)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@ggazzo](https://github.com/ggazzo)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tiagoevanp](https://github.com/tiagoevanp)
@@ -4362,7 +4413,7 @@
 
 - VoIP Enable/Disable setting on CallContext/CallProvider Notifications ([#24607](https://github.com/RocketChat/Rocket.Chat/pull/24607))
 
-- Voip Stream Reinitialization Error ([#24657](https://github.com/RocketChat/Rocket.Chat/pull/24657))
+- Voip Stream Reinitialization Error ([#24657](https://github.com/RocketChat/Rocket.Chat/pull/24657) by [@amolghode1981](https://github.com/amolghode1981))
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -4370,20 +4421,20 @@
 
 - Chore: Update Livechat ([#24754](https://github.com/RocketChat/Rocket.Chat/pull/24754))
 
-- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
+- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@amolghode1981](https://github.com/amolghode1981) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
 
 </details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@Aman-Maheshwari](https://github.com/Aman-Maheshwari)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@KevLehman](https://github.com/KevLehman)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@juliajforesti](https://github.com/juliajforesti)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
@@ -4412,7 +4463,7 @@
   Demo gif:
   ![Marketplace sort filter](https://user-images.githubusercontent.com/43561537/155033709-e07a6306-a85a-4f7f-9624-b53ba5dd7fa9.gif)
 
-- VoIP Support for Omnichannel ([#23102](https://github.com/RocketChat/Rocket.Chat/pull/23102))
+- VoIP Support for Omnichannel ([#23102](https://github.com/RocketChat/Rocket.Chat/pull/23102) by [@amolghode1981](https://github.com/amolghode1981))
 
   - Created VoipService to manage VoIP connections and PBX connection  
   - Created LivechatVoipService that will handle custom cases for livechat (creating rooms, assigning chats to queue, actions when call is finished, etc)  
@@ -4726,11 +4777,11 @@
 
 - Regression: Fixes in Voice Contextual Bar and Directory ([#24596](https://github.com/RocketChat/Rocket.Chat/pull/24596))
 
-- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624))
+- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Mark all rooms as read modal closing instantly. ([#24610](https://github.com/RocketChat/Rocket.Chat/pull/24610))
 
-- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602))
+- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602) by [@amolghode1981](https://github.com/amolghode1981))
 
   The audio was not rendered because of re-rendering of react element based on
   queueCounter and roomInfo. queueCounter and roomInfo cause the dom to re-render when call gets accepted
@@ -4748,7 +4799,7 @@
 
 - Regression: Prevent connect to asterisk when VoIP is disabled ([#24601](https://github.com/RocketChat/Rocket.Chat/pull/24601))
 
-- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635))
+- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Refresh server connection when MI server settings change ([#24649](https://github.com/RocketChat/Rocket.Chat/pull/24649))
 
@@ -4761,6 +4812,7 @@
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@LucasFASouza](https://github.com/LucasFASouza)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@aswinidev](https://github.com/aswinidev)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@eduardofcabrera](https://github.com/eduardofcabrera)
@@ -4773,7 +4825,6 @@
 - [@KevLehman](https://github.com/KevLehman)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
 - [@dougfabris](https://github.com/dougfabris)
@@ -4846,7 +4897,7 @@
 
   - Adds flag responsible for overwriting #general channel creation
 
-- VoIP Support for Omnichannel ([#23102](https://github.com/RocketChat/Rocket.Chat/pull/23102))
+- VoIP Support for Omnichannel ([#23102](https://github.com/RocketChat/Rocket.Chat/pull/23102) by [@amolghode1981](https://github.com/amolghode1981))
 
   - Created VoipService to manage VoIP connections and PBX connection  
   - Created LivechatVoipService that will handle custom cases for livechat (creating rooms, assigning chats to queue, actions when call is finished, etc)  
@@ -5058,7 +5109,7 @@
 
 - auto-join team channels not honoring user preferences ([#24779](https://github.com/RocketChat/Rocket.Chat/pull/24779) by [@ostjen](https://github.com/ostjen))
 
-- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170))
+- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170) by [@amolghode1981](https://github.com/amolghode1981))
 
   Agent gets disconnected (or Unregistered) from asterisk in multiple ways. The goal is that agent should remain online
   unless agent explicitly logs off.
@@ -5262,7 +5313,7 @@
 
 - Video and Audio not skipping forward ([#19866](https://github.com/RocketChat/Rocket.Chat/pull/19866))
 
-- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230))
+- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230) by [@amolghode1981](https://github.com/amolghode1981))
 
   Initially it was thought that the issue occurs because of the race condition while changing the client settings vs those settings reflected on server side. So a natural solution to solve this is to wait for setting change event 'private-settings-changed'. Then if 'VoIP_Enabled' is updated and it is true, set voipEnabled  to true in useVoipClient.ts (on client side)
 
@@ -5659,7 +5710,7 @@
 
 - Regression: Encode registration info as JWT when signing key is provided ([#24626](https://github.com/RocketChat/Rocket.Chat/pull/24626))
 
-- Regression: Error is raised when there's no Asterisk queue available yet ([#24980](https://github.com/RocketChat/Rocket.Chat/pull/24980))
+- Regression: Error is raised when there's no Asterisk queue available yet ([#24980](https://github.com/RocketChat/Rocket.Chat/pull/24980) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Error setting user avatars and mentioning rooms on Slack Import ([#24585](https://github.com/RocketChat/Rocket.Chat/pull/24585))
 
@@ -5726,7 +5777,7 @@
 
 - Regression: Fixes in Voice Contextual Bar and Directory ([#24596](https://github.com/RocketChat/Rocket.Chat/pull/24596))
 
-- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624))
+- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Improve Sidenav open/close handling and fixed codeql configs and E2E tests ([#24756](https://github.com/RocketChat/Rocket.Chat/pull/24756))
 
@@ -5734,7 +5785,7 @@
 
 - Regression: Messages in new message template Crashing. ([#25327](https://github.com/RocketChat/Rocket.Chat/pull/25327))
 
-- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602))
+- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602) by [@amolghode1981](https://github.com/amolghode1981))
 
   The audio was not rendered because of re-rendering of react element based on
   queueCounter and roomInfo. queueCounter and roomInfo cause the dom to re-render when call gets accepted
@@ -5752,7 +5803,7 @@
 
 - Regression: Prevent connect to asterisk when VoIP is disabled ([#24601](https://github.com/RocketChat/Rocket.Chat/pull/24601))
 
-- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635))
+- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Refresh server connection when MI server settings change ([#24649](https://github.com/RocketChat/Rocket.Chat/pull/24649))
 
@@ -5780,17 +5831,17 @@
 
 - Release 4.5.0 ([#24652](https://github.com/RocketChat/Rocket.Chat/pull/24652) by [@LucasFASouza](https://github.com/LucasFASouza) & [@aswinidev](https://github.com/aswinidev) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@lingohub[bot]](https://github.com/lingohub[bot]) & [@ostjen](https://github.com/ostjen))
 
-- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
+- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@amolghode1981](https://github.com/amolghode1981) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
 
 - Release 4.5.2 ([#24814](https://github.com/RocketChat/Rocket.Chat/pull/24814))
 
-- Release 4.5.3 ([#24884](https://github.com/RocketChat/Rocket.Chat/pull/24884))
+- Release 4.5.3 ([#24884](https://github.com/RocketChat/Rocket.Chat/pull/24884) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Release 4.5.4 ([#24938](https://github.com/RocketChat/Rocket.Chat/pull/24938))
 
 - Release 4.5.5 ([#24998](https://github.com/RocketChat/Rocket.Chat/pull/24998))
 
-- Release 4.6.0 ([#25027](https://github.com/RocketChat/Rocket.Chat/pull/25027) by [@aswinidev](https://github.com/aswinidev) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@eduardofcabrera](https://github.com/eduardofcabrera) & [@lingohub[bot]](https://github.com/lingohub[bot]))
+- Release 4.6.0 ([#25027](https://github.com/RocketChat/Rocket.Chat/pull/25027) by [@amolghode1981](https://github.com/amolghode1981) & [@aswinidev](https://github.com/aswinidev) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@eduardofcabrera](https://github.com/eduardofcabrera) & [@lingohub[bot]](https://github.com/lingohub[bot]))
 
 - Release 4.6.1 ([#25095](https://github.com/RocketChat/Rocket.Chat/pull/25095))
 
@@ -5815,6 +5866,7 @@
 - [@Muramatsu2602](https://github.com/Muramatsu2602)
 - [@aadishJ01](https://github.com/aadishJ01)
 - [@aakash-gitdev](https://github.com/aakash-gitdev)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@aswinidev](https://github.com/aswinidev)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
@@ -5838,7 +5890,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@alansikora](https://github.com/alansikora)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@cauefcr](https://github.com/cauefcr)
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
@@ -5920,7 +5971,7 @@
 
   - Adds flag responsible for overwriting #general channel creation
 
-- VoIP Support for Omnichannel ([#23102](https://github.com/RocketChat/Rocket.Chat/pull/23102))
+- VoIP Support for Omnichannel ([#23102](https://github.com/RocketChat/Rocket.Chat/pull/23102) by [@amolghode1981](https://github.com/amolghode1981))
 
   - Created VoipService to manage VoIP connections and PBX connection  
   - Created LivechatVoipService that will handle custom cases for livechat (creating rooms, assigning chats to queue, actions when call is finished, etc)  
@@ -6132,7 +6183,7 @@
 
 - auto-join team channels not honoring user preferences ([#24779](https://github.com/RocketChat/Rocket.Chat/pull/24779) by [@ostjen](https://github.com/ostjen))
 
-- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170))
+- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170) by [@amolghode1981](https://github.com/amolghode1981))
 
   Agent gets disconnected (or Unregistered) from asterisk in multiple ways. The goal is that agent should remain online
   unless agent explicitly logs off.
@@ -6336,7 +6387,7 @@
 
 - Video and Audio not skipping forward ([#19866](https://github.com/RocketChat/Rocket.Chat/pull/19866))
 
-- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230))
+- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230) by [@amolghode1981](https://github.com/amolghode1981))
 
   Initially it was thought that the issue occurs because of the race condition while changing the client settings vs those settings reflected on server side. So a natural solution to solve this is to wait for setting change event 'private-settings-changed'. Then if 'VoIP_Enabled' is updated and it is true, set voipEnabled  to true in useVoipClient.ts (on client side)
 
@@ -6733,7 +6784,7 @@
 
 - Regression: Encode registration info as JWT when signing key is provided ([#24626](https://github.com/RocketChat/Rocket.Chat/pull/24626))
 
-- Regression: Error is raised when there's no Asterisk queue available yet ([#24980](https://github.com/RocketChat/Rocket.Chat/pull/24980))
+- Regression: Error is raised when there's no Asterisk queue available yet ([#24980](https://github.com/RocketChat/Rocket.Chat/pull/24980) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Error setting user avatars and mentioning rooms on Slack Import ([#24585](https://github.com/RocketChat/Rocket.Chat/pull/24585))
 
@@ -6800,7 +6851,7 @@
 
 - Regression: Fixes in Voice Contextual Bar and Directory ([#24596](https://github.com/RocketChat/Rocket.Chat/pull/24596))
 
-- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624))
+- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Improve Sidenav open/close handling and fixed codeql configs and E2E tests ([#24756](https://github.com/RocketChat/Rocket.Chat/pull/24756))
 
@@ -6808,7 +6859,7 @@
 
 - Regression: Messages in new message template Crashing. ([#25327](https://github.com/RocketChat/Rocket.Chat/pull/25327))
 
-- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602))
+- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602) by [@amolghode1981](https://github.com/amolghode1981))
 
   The audio was not rendered because of re-rendering of react element based on
   queueCounter and roomInfo. queueCounter and roomInfo cause the dom to re-render when call gets accepted
@@ -6826,7 +6877,7 @@
 
 - Regression: Prevent connect to asterisk when VoIP is disabled ([#24601](https://github.com/RocketChat/Rocket.Chat/pull/24601))
 
-- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635))
+- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Refresh server connection when MI server settings change ([#24649](https://github.com/RocketChat/Rocket.Chat/pull/24649))
 
@@ -6854,17 +6905,17 @@
 
 - Release 4.5.0 ([#24652](https://github.com/RocketChat/Rocket.Chat/pull/24652) by [@LucasFASouza](https://github.com/LucasFASouza) & [@aswinidev](https://github.com/aswinidev) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@lingohub[bot]](https://github.com/lingohub[bot]) & [@ostjen](https://github.com/ostjen))
 
-- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
+- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@amolghode1981](https://github.com/amolghode1981) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
 
 - Release 4.5.2 ([#24814](https://github.com/RocketChat/Rocket.Chat/pull/24814))
 
-- Release 4.5.3 ([#24884](https://github.com/RocketChat/Rocket.Chat/pull/24884))
+- Release 4.5.3 ([#24884](https://github.com/RocketChat/Rocket.Chat/pull/24884) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Release 4.5.4 ([#24938](https://github.com/RocketChat/Rocket.Chat/pull/24938))
 
 - Release 4.5.5 ([#24998](https://github.com/RocketChat/Rocket.Chat/pull/24998))
 
-- Release 4.6.0 ([#25027](https://github.com/RocketChat/Rocket.Chat/pull/25027) by [@aswinidev](https://github.com/aswinidev) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@eduardofcabrera](https://github.com/eduardofcabrera) & [@lingohub[bot]](https://github.com/lingohub[bot]))
+- Release 4.6.0 ([#25027](https://github.com/RocketChat/Rocket.Chat/pull/25027) by [@amolghode1981](https://github.com/amolghode1981) & [@aswinidev](https://github.com/aswinidev) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@eduardofcabrera](https://github.com/eduardofcabrera) & [@lingohub[bot]](https://github.com/lingohub[bot]))
 
 - Release 4.6.1 ([#25095](https://github.com/RocketChat/Rocket.Chat/pull/25095))
 
@@ -6889,6 +6940,7 @@
 - [@Muramatsu2602](https://github.com/Muramatsu2602)
 - [@aadishJ01](https://github.com/aadishJ01)
 - [@aakash-gitdev](https://github.com/aakash-gitdev)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@aswinidev](https://github.com/aswinidev)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
@@ -6912,7 +6964,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@alansikora](https://github.com/alansikora)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@cauefcr](https://github.com/cauefcr)
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
