@@ -1,7 +1,7 @@
 import { Users } from '@rocket.chat/models';
 
 import { RocketChatUserAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/User';
-import { FederatedUserEE } from '../../../domain/FederatedUser';
+import type { FederatedUserEE } from '../../../domain/FederatedUser';
 
 export class RocketChatUserAdapterEE extends RocketChatUserAdapter {
 	public async createLocalUser(federatedUser: FederatedUserEE): Promise<void> {

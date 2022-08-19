@@ -1,4 +1,4 @@
-import { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
+import type { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
 import { VideoConf } from '../../sdk';
 
 export class VideoConfModule implements IUiKitCoreApp {

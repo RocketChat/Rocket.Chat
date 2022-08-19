@@ -1,4 +1,4 @@
-import { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
+import type { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
 import { Banner } from '../../sdk';
 
 export class BannerModule implements IUiKitCoreApp {
