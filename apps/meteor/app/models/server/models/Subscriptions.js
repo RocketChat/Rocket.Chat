@@ -30,6 +30,7 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ emailNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ autoTranslate: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ autoTranslateLanguage: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ prid: 1 });
 		this.tryEnsureIndex({ 'u._id': 1, 'open': 1, 'department': 1 });
 
