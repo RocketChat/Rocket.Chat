@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-const Title: FC = ({ children }) => (
-	<Box mb='x8' fontScale='p2m'>
+const CardTitle: FC = ({ children }) => (
+	<Box mb='x8' fontScale='h4'>
 		{children}
 	</Box>
 );
 
-export default Title;
+export default CardTitle;

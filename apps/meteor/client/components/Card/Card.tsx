@@ -7,10 +7,8 @@ type CardProps = {
 
 const Card: FC<CardProps> = ({ variant, ...props }: CardProps) => (
 	<Box
-		borderRadius='x2'
-		pbs='x20'
-		pbe='x28'
-		pi='x20'
+		borderRadius='x4'
+		p='x20'
 		height='full'
 		display='flex'
 		flexDirection='column'
