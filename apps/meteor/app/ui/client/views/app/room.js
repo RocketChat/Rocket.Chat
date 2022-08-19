@@ -305,6 +305,9 @@ Template.roomOld.helpers({
 		return settings.get('Message_MaxAllowedSize');
 	},
 
+	subscriptionReady() {
+		return RoomManager.getOpenedRoomByRid(this._id).streamActive;
+	},
 	unreadData() {
 		const data = { count: Template.instance().state.get('count') };
 
