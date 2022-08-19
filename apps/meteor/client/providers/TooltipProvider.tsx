@@ -47,7 +47,10 @@ const TooltipProvider: FC = ({ children }) => {
 			setTooltip(null);
 		};
 
-		const handleClick = (): void => setTooltip(null);
+		const handleClick = (): void => {
+			setTooltip(null);
+			clearTimeout(timeout);
+		};
 
 		document.body.addEventListener('mouseover', handleMouseOver);
 		document.body.addEventListener('click', handleClick);
