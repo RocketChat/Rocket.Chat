@@ -653,4 +653,14 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.findPaginated(query, options);
 	}
+
+	findDirectRoomContainingAllUsernames(usernames, options) {
+		const query = {
+			t: 'd',
+			usernames: { $size: usernames.length, $all: usernames },
+			usersCount: usernames.length,
+		};
+
+		return this.findOne(query, options);
+	}
 }

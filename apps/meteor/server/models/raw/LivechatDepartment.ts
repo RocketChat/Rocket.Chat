@@ -68,6 +68,37 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 		return this.find(query, options);
 	}
 
+	findOneByIdOrName(
+		term: ILivechatDepartmentRecord['_id' | 'name'],
+		options: FindOptions<ILivechatDepartmentRecord>,
+	): Promise<ILivechatDepartmentRecord | null> {
+		const query = {
+			$or: [
+				{
+					_id: term,
+				},
+				{
+					name: term,
+				},
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findEnabledWithAgents(projection?: FindOptions<ILivechatDepartmentRecord>): FindCursor<ILivechatDepartmentRecord> {
+		const query = {
+			numAgents: { $gt: 0 },
+			enabled: true,
+		};
+
+		if (projection) {
+			return this.find(query, { projection });
+		}
+
+		return this.find(query);
+	}
+
 	addBusinessHourToDepartmentsByIds(ids: string[] = [], businessHourId: string): Promise<Document | UpdateResult> {
 		const query = {
 			_id: { $in: ids },

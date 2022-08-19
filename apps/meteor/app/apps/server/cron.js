@@ -3,11 +3,10 @@ import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Users } from '@rocket.chat/models';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../cloud/server';
-import { Users } from '../../models/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
 
 const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdminsAboutInvalidApps(apps) {
@@ -33,7 +32,7 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdmi
 				msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(rocketCatMessage, adminUser.language)}`,
 			}),
 			banners: ({ adminUser }) => {
-				Users.removeBannerById(adminUser._id, { id });
+				Promise.await(Users.removeBannerById(adminUser._id, { id }));
 
 				return [
 					{
@@ -79,7 +78,7 @@ export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(function _appsUp
 	const baseUrl = Apps.getMarketplaceUrl();
 	const workspaceIdSetting = Promise.await(Settings.getValueById('Cloud_Workspace_Id'));
 
-	const currentSeats = Users.getActiveLocalUserCount();
+	const currentSeats = Promise.await(Users.getActiveLocalUserCount());
 
 	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps?seats=${currentSeats}`;
 	const options = {

@@ -1,6 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
+import { settings } from '../../../app/settings/server';
 
 export class UsersRaw extends BaseRaw {
 	constructor(db, trash) {
@@ -63,6 +64,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findOneByUsername(username, options = null) {
+		// @NOTE why not use the escaping done in the meteor meteor here?
 		const query = { username };
 
 		return this.findOne(query, options);
@@ -240,6 +242,21 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	getActiveLocalUserCount() {
+		return this.findActive().toArray().length - this.findActiveRemote().toArray().length;
+	}
+
+	findActiveRemote(options = {}) {
+		return this.find(
+			{
+				active: true,
+				isRemote: true,
+				roles: { $ne: ['guest'] },
+			},
+			options,
+		);
 	}
 
 	findByIds(userIds, options = {}) {
@@ -484,6 +501,30 @@ export class UsersRaw extends BaseRaw {
 
 		const [agent] = await this.col.aggregate(aggregate).toArray();
 		return agent;
+	}
+
+	async getAgentInfo(agentId) {
+		// TODO: Create class Agent
+		const query = {
+			_id: agentId,
+		};
+
+		const options = {
+			projection: {
+				name: 1,
+				username: 1,
+				phone: 1,
+				customFields: 1,
+				status: 1,
+				livechat: 1,
+			},
+		};
+
+		if (settings.get('Livechat_show_agent_email')) {
+			options.fields.emails = 1;
+		}
+
+		return this.findOne(query, options);
 	}
 
 	findAllResumeTokensByUserId(userId) {
@@ -994,6 +1035,16 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	removeBannerById(_id, banner) {
+		const update = {
+			$unset: {
+				[`banners.${banner.id}`]: true,
+			},
+		};
+
+		return this.update({ _id }, update);
 	}
 
 	async isUserInRoleScope(uid) {

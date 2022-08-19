@@ -1,10 +1,9 @@
 import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/InternalBridge';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Subscriptions } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../orchestrator';
-import { Subscriptions } from '../../../models/server';
 
 export class AppInternalBridge extends InternalBridge {
 	// eslint-disable-next-line no-empty-function
@@ -12,16 +11,16 @@ export class AppInternalBridge extends InternalBridge {
 		super();
 	}
 
-	protected getUsernamesOfRoomById(roomId: string): Array<string> {
+	protected async getUsernamesOfRoomById(roomId: string): Promise<Array<string>> {
 		if (!roomId) {
 			return [];
 		}
 
-		const records = Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
-			fields: {
+		const records = await Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
+			projection: {
 				'u.username': 1,
 			},
-		}).fetch();
+		}).toArray();
 
 		if (!records || records.length === 0) {
 			return [];

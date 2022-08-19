@@ -2,10 +2,9 @@ import { Random } from 'meteor/random';
 import { UserPresence } from 'meteor/konecty:user-presence';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
-import { Subscriptions, Users as UsersRaw } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../lib/server/functions';
-import { Users } from '../../../models/server';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppUserBridge extends UserBridge {
@@ -29,7 +28,11 @@ export class AppUserBridge extends UserBridge {
 	protected async getAppUser(appId?: string): Promise<IUser | undefined> {
 		this.orch.debugLog(`The App ${appId} is getting its assigned user`);
 
-		const user = Users.findOneByAppId(appId, {});
+		if (!appId) {
+			throw new Error('No appId provided');
+		}
+
+		const user = await Users.findOneByAppId(appId, {});
 
 		return this.orch.getConverters()?.get('users').convertToApp(user);
 	}
@@ -52,7 +55,7 @@ export class AppUserBridge extends UserBridge {
 					throw new Error(`The username "${user.username}" is already being used. Rename or remove the user using it to install this App`);
 				}
 
-				Users.insert(user);
+				await Users.insertOne(user);
 
 				if (options?.avatarUrl) {
 					setUserAvatar(user, options.avatarUrl, '', 'local');
@@ -98,7 +101,8 @@ export class AppUserBridge extends UserBridge {
 		const { status } = fields;
 		delete fields.status;
 
-		await UsersRaw.update({ _id: user.id }, { $set: fields as any });
+		// @NOTE what fields? shouldn't it be 'projection' here?
+		await Users.update({ _id: user.id }, { $set: fields as any });
 
 		if (status) {
 			UserPresence.setDefaultStatus(user.id, status);
