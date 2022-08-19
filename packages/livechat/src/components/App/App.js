@@ -1,5 +1,5 @@
+import AsyncRoute from 'preact-async-route';
 import { Router } from 'preact-router';
-import { lazy, Suspense } from 'preact/compat';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 import { parse } from 'query-string';
 import { useTranslation } from 'react-i18next';
@@ -36,18 +36,6 @@ export const App = ({
 
 	const fn = useMemo(() => handleVisibilityChange(dispatch), [dispatch]);
 
-	const checkPoppedOutWindow = () => {
-		// Checking if the window is poppedOut and setting parent minimized if yes for the restore purpose
-		const { dispatch } = this.props;
-		const poppedOut = parse(window.location.search).mode === 'popout';
-
-		setState((prevState) => ({ ...prevState, poppedOut }));
-
-		if (poppedOut) {
-			dispatch({ minimized: false });
-		}
-	};
-
 	const screenProps = {
 		notificationsEnabled: sound && sound.enabled,
 		minimized: !state.poppedOut && (minimized || undocked),
@@ -71,11 +59,22 @@ export const App = ({
 			parentCall(iframe.visible ? 'showWidget' : 'hideWidget');
 
 			visibility.addListener(fn);
-			this.handleVisibilityChange();
+			handleVisibilityChange(dispatch);
 			window.addEventListener('beforeunload', () => {
 				visibility.removeListener(fn);
 				dispatch({ minimized: true, undocked: false });
 			});
+		};
+
+		const checkPoppedOutWindow = () => {
+			// Checking if the window is poppedOut and setting parent minimized if yes for the restore purpose
+			const poppedOut = parse(window.location.search).mode === 'popout';
+
+			setState((prevState) => ({ ...prevState, poppedOut }));
+
+			if (poppedOut) {
+				dispatch({ minimized: false });
+			}
 		};
 
 		const initialize = async () => {
@@ -111,25 +110,23 @@ export const App = ({
 		return null;
 	}
 
-	const ChatConnectorComponent = lazy(() => import('../../routes/Chat'));
-	const ChatFinishedComponent = lazy(() => import('../../routes/ChatFinished'));
-	const GDPRAgreementComponent = lazy(() => import('../../routes/GDPRAgreement'));
-	const LeaveMessageComponent = lazy(() => import('../../routes/LeaveMessage'));
-	const RegisterComponent = lazy(() => import('../../routes/Register'));
-	const SwitchDepartmentComponent = lazy(() => import('../../routes/SwitchDepartment'));
-	const TriggerMessageComponent = lazy(() => import('../../routes/TriggerMessage'));
+	const ChatConnectorComponent = () => import('../../routes/Chat').then((module) => module.default);
+	const ChatFinishedComponent = () => import('../../routes/ChatFinished').then((module) => module.default);
+	const GDPRAgreementComponent = () => import('../../routes/GDPRAgreement').then((module) => module.default);
+	const LeaveMessageComponent = () => import('../../routes/LeaveMessage').then((module) => module.default);
+	const RegisterComponent = () => import('../../routes/Register').then((module) => module.default);
+	const SwitchDepartmentComponent = () => import('../../routes/SwitchDepartment').then((module) => module.default);
+	const TriggerMessageComponent = () => import('../../routes/TriggerMessage').then((module) => module.default);
 
 	return (
 		<Router history={history} onChange={() => handleRoute({ config, gdpr, triggered, user })}>
-			<Suspense fallback={null}>
-				<ChatConnectorComponent default path='/' {...screenProps} />
-				<ChatFinishedComponent path='/chat-finished' {...screenProps} />
-				<GDPRAgreementComponent path='/gdpr' {...screenProps} />
-				<LeaveMessageComponent path='/leave-message' {...screenProps} />
-				<RegisterComponent path='/register' {...screenProps} />
-				<SwitchDepartmentComponent path='/switch-department' {...screenProps} />
-				<TriggerMessageComponent path='/trigger-messages' {...screenProps} />
-			</Suspense>
+			<AsyncRoute default path='/' getComponent={ChatConnectorComponent} {...screenProps} />
+			<AsyncRoute path='/chat-finished' getComponent={ChatFinishedComponent} {...screenProps} />
+			<AsyncRoute path='/gdpr' getComponent={GDPRAgreementComponent} {...screenProps} />
+			<AsyncRoute path='/leave-message' getComponent={LeaveMessageComponent} {...screenProps} />
+			<AsyncRoute path='/register' getComponent={RegisterComponent} {...screenProps} />
+			<AsyncRoute path='/switch-department' getComponent={SwitchDepartmentComponent} {...screenProps} />
+			<AsyncRoute path='/trigger-messages' getComponent={TriggerMessageComponent} {...screenProps} />
 		</Router>
 	);
 };

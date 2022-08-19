@@ -4206,6 +4206,7 @@ __metadata:
     postcss-scss: ^4.0.4
     postcss-selector-not: ^4.0.1
     preact: ^10.8.2
+    preact-async-route: ^2.2.1
     preact-router: ^3.2.1
     query-string: ^7.1.1
     react-dom: ~17.0.2
@@ -25380,6 +25381,13 @@ __metadata:
   version: 2.2.0
   resolution: "postis@npm:2.2.0"
   checksum: 8ea343bca0329c5d8c53407760942d3bf43111b071f643cc09efd14b878fb62d7c77ce38fb86c51f0901b1f8047582c10af5c032abdb79ff47277f951ddd277c
+  languageName: node
+  linkType: hard
+
+"preact-async-route@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "preact-async-route@npm:2.2.1"
+  checksum: 81c3f55235166f29ba88d61e6b116da2268dbb90af1c86446de9dcbf509d9481d6c248acae3944502e71904e7285e8da80d761b2a469adb5e35c3b94d465a36e
   languageName: node
   linkType: hard
 

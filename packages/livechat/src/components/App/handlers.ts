@@ -63,6 +63,7 @@ export const handleRoute = async ({
         )
             && !triggered
             && !(user && user.token);
+
         if (showRegistrationForm) {
             return route('/register');
         }
@@ -140,6 +141,6 @@ export const handleDismissAlert = ({ dispatch, alerts, id } :
     dispatch({ alerts: alerts.filter((alert: {id: String}) => alert.id !== id) });
 };
 
-export const handleVisibilityChange = ({ dispatch }: any) => {
+export const handleVisibilityChange = (dispatch: (partialState: unknown) => void) => {
     return () => dispatch({ visible: !visibility.hidden });
 };
