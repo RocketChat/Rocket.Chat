@@ -48,6 +48,7 @@ type MemoizedSettingProps = {
 	hint?: ReactNode;
 	callout?: ReactNode;
 	value?: SettingValue;
+	values?: Record<string, unknown>[];
 	editor?: SettingEditor;
 	onChangeValue?: (value: unknown) => void;
 	onChangeEditor?: (value: unknown) => void;

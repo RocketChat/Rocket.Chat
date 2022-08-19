@@ -53,7 +53,7 @@ type AppSettingProps = {
 		values: { key: string; i18nLabel: string }[];
 		required: boolean;
 	};
-	onChange: any;
+	onChange: (value: unknown) => void;
 	value: string;
 };
 function AppSetting({ appSetting, onChange, value, ...props }: AppSettingProps): ReactElement {
@@ -89,7 +89,7 @@ function AppSetting({ appSetting, onChange, value, ...props }: AppSettingProps):
 			value={value}
 			onChangeValue={onChange}
 			_id={id}
-			{...({ values: translatedValues } as any)}
+			values={translatedValues}
 			{...props}
 		/>
 	);
