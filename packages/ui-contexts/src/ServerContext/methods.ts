@@ -95,8 +95,8 @@ export interface ServerMethods {
 	'leaveRoom': (...args: any[]) => any;
 	'loadHistory': (
 		rid: IRoom['_id'],
-		ts: Date,
-		limit: number,
+		ts?: Date,
+		limit?: number,
 		ls?: number,
 		showThreadMessages?: boolean,
 	) => {

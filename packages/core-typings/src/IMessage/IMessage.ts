@@ -127,8 +127,6 @@ export interface IMessage extends IRocketChatRecord {
 	alias?: string;
 	md?: ReturnType<typeof parser>;
 
-	// TODO: chapter day frontend - wrong type
-	ignored?: boolean;
 	_hidden?: boolean;
 	imported?: boolean;
 	replies?: IUser['_id'][];

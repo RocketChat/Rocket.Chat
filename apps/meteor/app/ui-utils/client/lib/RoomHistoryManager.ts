@@ -49,7 +49,7 @@ export async function upsertMessage(
 		subscription,
 		uid = Tracker.nonreactive(() => Meteor.userId()) ?? undefined,
 	}: {
-		msg: IMessage;
+		msg: IMessage & { ignored?: boolean };
 		subscription?: ISubscription;
 		uid?: IUser['_id'];
 	},

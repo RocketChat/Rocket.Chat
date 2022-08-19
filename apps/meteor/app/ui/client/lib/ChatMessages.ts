@@ -6,6 +6,7 @@ import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { Mongo } from 'meteor/mongo';
 
 import { KonchatNotification } from './notification';
 import { fileUpload } from './fileUpload';
@@ -52,7 +53,12 @@ export class ChatMessages {
 
 	$input: JQuery<HTMLTextAreaElement> | undefined;
 
-	constructor(public collection = ChatMessage) {}
+	constructor(
+		public collection: Mongo.Collection<IMessage> & {
+			direct: Mongo.Collection<IMessage>;
+			queries: unknown[];
+		} = ChatMessage,
+	) {}
 
 	initializeWrapper(wrapper: HTMLElement) {
 		this.wrapper = wrapper;
@@ -105,6 +111,9 @@ export class ChatMessages {
 		}
 
 		const message = this.collection.findOne(id);
+		if (!message) {
+			throw new Error('Message not found');
+		}
 		const draft = input.value;
 
 		if (draft === message.msg) {
@@ -135,6 +144,10 @@ export class ChatMessages {
 		}
 
 		const message = this.collection.findOne(id);
+		if (!message) {
+			throw new Error('Message not found');
+		}
+
 		const oldValue = input.value;
 		messageBoxState.set(input, message.msg);
 		return oldValue !== message.msg;
@@ -174,6 +187,9 @@ export class ChatMessages {
 
 	edit(element: HTMLElement, isEditingTheNextOne?: boolean) {
 		const message = this.collection.findOne(element.dataset.id);
+		if (!message) {
+			throw new Error('Message not found');
+		}
 
 		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
@@ -256,7 +272,7 @@ export class ChatMessages {
 
 	async send(
 		_event: Event,
-		{ rid, tmid, value, tshow }: { rid: string; tmid?: string; value: string; tshow: unknown },
+		{ rid, tmid, value, tshow }: { rid: string; tmid?: string; value: string; tshow?: boolean },
 		done: () => void = () => undefined,
 	) {
 		const threadsEnabled = settings.get('Threads_enabled');
@@ -300,7 +316,6 @@ export class ChatMessages {
 			const message = await onClientBeforeSendMessage({
 				_id: Random.id(),
 				rid,
-				// @ts-ignore
 				tshow,
 				tmid,
 				msg,
@@ -318,6 +333,9 @@ export class ChatMessages {
 
 		if (this.editing.id) {
 			const message = this.collection.findOne(this.editing.id);
+			if (!message) {
+				throw new Error('Message not found');
+			}
 			const isDescription = message.attachments?.[0]?.description;
 
 			try {
@@ -373,6 +391,9 @@ export class ChatMessages {
 		}
 
 		const lastMessage = this.collection.findOne({ rid, tmid }, { fields: { ts: 1 }, sort: { ts: -1 } });
+		if (!lastMessage) {
+			throw new Error('Message not found');
+		}
 		await callWithErrorHandling('setReaction', reaction, lastMessage._id);
 		return true;
 	}
@@ -478,12 +499,14 @@ export class ChatMessages {
 						ts: new Date(),
 						msg: TAPi18n.__('No_such_command', { command: escapeHTML(command) }),
 						u: {
-							username: settings.get('InternalHubot_Username') || 'rocket.cat',
+							_id: 'rocket.cat',
+							username: 'rocket.cat',
+							name: 'Rocket.Cat',
 						},
 						private: true,
 					};
 
-					this.collection.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
+					this.collection.upsert({ _id: invalidCommandMsg._id }, { $set: invalidCommandMsg });
 					return true;
 				}
 			}

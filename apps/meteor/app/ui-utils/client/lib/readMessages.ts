@@ -125,7 +125,7 @@ export class ReadMessage extends Emitter {
 					ts: -1,
 				},
 			},
-		);
+		) as { ts: Date } | undefined;
 		const { unreadNotLoaded } = RoomHistoryManager.getRoom(rid);
 
 		if (lastReadRecord == null && unreadNotLoaded.get() === 0) {

@@ -106,8 +106,12 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 			const message1 = ChatMessage.findOne(this.selectablePointer);
 			const message2 = ChatMessage.findOne(to);
 
-			const minTs = _.min([message1.ts, message2.ts]);
-			const maxTs = _.max([message1.ts, message2.ts]);
+			if (!message1 || !message2) {
+				throw new Error('Invalid message selection');
+			}
+
+			const minTs = _.min([message1.ts, message2.ts]) as Date;
+			const maxTs = _.max([message1.ts, message2.ts]) as Date;
 
 			this.selectedRange = _.pluck(ChatMessage.find({ rid: message1.rid, ts: { $gte: minTs, $lte: maxTs } }).fetch(), '_id');
 		}

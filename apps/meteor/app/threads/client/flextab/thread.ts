@@ -119,7 +119,7 @@ Template.thread.helpers({
 					rid: string;
 					tmid?: string | undefined;
 					value: string;
-					tshow: unknown;
+					tshow?: boolean;
 				},
 				done?: () => void,
 			) => {

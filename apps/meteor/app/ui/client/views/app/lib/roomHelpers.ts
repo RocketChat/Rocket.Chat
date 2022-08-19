@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
 
 import { t, getUserPreference } from '../../../../../utils/client';
 import { ChatMessage, RoomRoles, Users, Rooms } from '../../../../../models/client';
@@ -29,17 +29,20 @@ function messagesHistory() {
 	const { rid } = Template.instance() as RoomTemplateInstance;
 	const room: Pick<IRoom, 'sysMes'> = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 	const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
-	const settingValues: unknown[] = Array.isArray(room?.sysMes) ? room.sysMes : hideSettings.value || [];
+	const settingValues: MessageTypesValues[] = Array.isArray(room?.sysMes) ? room.sysMes : hideSettings.value || [];
 	const hideMessagesOfType = new Set(
 		settingValues.reduce(
-			(array: unknown[], value: unknown) => [...array, ...(value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value])],
+			(array: MessageTypesValues[], value: MessageTypesValues) => [
+				...array,
+				...(value === 'mute_unmute' ? (['user-muted', 'user-unmuted'] as const) : ([value] as const)),
+			],
 			[],
 		),
 	);
-	const query = {
+	const query: Mongo.Query<IMessage> = {
 		rid,
 		_hidden: { $ne: true },
-		$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
+		$or: [{ tmid: { $exists: true } }, { tshow: { $eq: true } }],
 		...(hideMessagesOfType.size && { t: { $nin: Array.from(hideMessagesOfType.values()) } }),
 	};
 
@@ -141,7 +144,7 @@ function messageboxData(this: { _id: string }) {
 				rid: string;
 				tmid?: string;
 				value: string;
-				tshow: unknown;
+				tshow?: boolean;
 			},
 			done?: () => void,
 		) => chatMessages[rid]?.send(event, params, done),

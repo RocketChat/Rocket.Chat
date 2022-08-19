@@ -21,9 +21,14 @@ Meteor.startup(() => {
 
 	CachedCollectionManager.onLogin(() => {
 		Notifications.onUser('subscriptions-changed', (_action: unknown, sub: ISubscription) => {
-			const ignored = sub?.ignored ? { $nin: sub.ignored } : { $exists: true };
-
-			ChatMessage.update({ rid: sub.rid, ignored }, { $unset: { ignored: true } }, { multi: true });
+			ChatMessage.update(
+				{
+					rid: sub.rid,
+					...(sub?.ignored ? { 'u._id': { $nin: sub.ignored } } : { ignored: { $exists: true } }),
+				},
+				{ $unset: { ignored: true } },
+				{ multi: true },
+			);
 			if (sub?.ignored) {
 				ChatMessage.update(
 					{ 'rid': sub.rid, 't': { $ne: 'command' }, 'u._id': { $in: sub.ignored } },
