@@ -1,5 +1,5 @@
-import { IMatrixEvent } from '../definitions/IMatrixEvent';
-import { MatrixEventType } from '../definitions/MatrixEventType';
+import type { IMatrixEvent } from '../definitions/IMatrixEvent';
+import type { MatrixEventType } from '../definitions/MatrixEventType';
 
 export abstract class MatrixBaseEventHandler<T extends MatrixEventType> {
 	protected type: T;

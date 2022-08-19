@@ -87,12 +87,7 @@ Template.loginServices.events({
 				return;
 			}
 
-			if (error.reason) {
-				dispatchToastMessage({ type: 'error', message: error.reason });
-				return;
-			}
-
-			dispatchToastMessage({ type: 'error', message: error.message });
+			dispatchToastMessage({ type: 'error', message: error });
 		});
 	},
 });

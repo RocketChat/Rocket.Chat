@@ -25,7 +25,7 @@ export const useEndpointUpload = (
 
 				return result as any;
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return { success: false };
 			}
 		},

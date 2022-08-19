@@ -128,7 +128,7 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 		} catch (error) {
 			dispatchToastMessage({
 				type: 'error',
-				message: error as string | Error,
+				message: error,
 			});
 		}
 	};

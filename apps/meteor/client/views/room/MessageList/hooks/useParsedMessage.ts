@@ -8,32 +8,37 @@ import { useAutotranslateLanguage } from './useAutotranslateLanguage';
 
 export function useParsedMessage(message: IMessage & Partial<ITranslatedMessage>): Root {
 	const colors = useSetting('HexColorPreview_Enabled') as boolean;
+	const katexEnabled = useSetting('Katex_Enabled') as boolean;
 	const katexDollarSyntax = useSetting('Katex_Dollar_Syntax') as boolean;
 	const katexParenthesisSyntax = useSetting('Katex_Parenthesis_Syntax') as boolean;
 	const autoTranslateLanguage = useAutotranslateLanguage(message.rid);
 	const translated = useShowTranslated({ message });
+	const translations = isTranslatedMessage(message) ? message.translations : undefined;
+	const { md, msg } = message;
 
 	return useMemo(() => {
 		const parseOptions = {
 			colors,
 			emoticons: true,
-			katex: {
-				dollarSyntax: katexDollarSyntax,
-				parenthesisSyntax: katexParenthesisSyntax,
-			},
+			...(katexEnabled && {
+				katex: {
+					dollarSyntax: katexDollarSyntax,
+					parenthesisSyntax: katexParenthesisSyntax,
+				},
+			}),
 		};
 
-		if (translated && autoTranslateLanguage && isTranslatedMessage(message)) {
-			return parse(message.translations[autoTranslateLanguage], parseOptions);
+		if (translated && autoTranslateLanguage && translations) {
+			return parse(translations[autoTranslateLanguage], parseOptions);
 		}
-		if (message.md) {
-			return message.md;
+		if (md) {
+			return md;
 		}
 
-		if (!message.msg) {
+		if (!msg) {
 			return [];
 		}
 
-		return parse(message.msg, parseOptions);
-	}, [colors, katexDollarSyntax, katexParenthesisSyntax, autoTranslateLanguage, message.md, message.msg, message.translations]);
+		return parse(msg, parseOptions);
+	}, [colors, katexEnabled, katexDollarSyntax, katexParenthesisSyntax, autoTranslateLanguage, md, msg, translated, translations]);
 }
