@@ -93,7 +93,33 @@ export interface ServerMethods {
 	'instances/get': (...args: any[]) => any;
 	'joinRoom': JoinRoomMethod;
 	'leaveRoom': (...args: any[]) => any;
+	'loadHistory': (
+		rid: IRoom['_id'],
+		ts: Date,
+		limit: number,
+		ls?: number,
+		showThreadMessages?: boolean,
+	) => {
+		messages: IMessage[];
+		firstUnread: IMessage;
+		unreadNotLoaded: number;
+	};
 	'loadMissedMessages': (rid: IRoom['_id'], ts: Date) => IMessage[];
+	'loadNextMessages': (
+		rid: IRoom['_id'],
+		end?: Date,
+		limit?: number,
+	) => {
+		messages: IMessage[];
+	};
+	'loadSurroundingMessages': (
+		message: IMessage,
+		limit?: number,
+	) => {
+		messages: IMessage[];
+		moreBefore: boolean;
+		moreAfter: boolean;
+	};
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
 	'personalAccessTokens:generateToken': (...args: any[]) => any;

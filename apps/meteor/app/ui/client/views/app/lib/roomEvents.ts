@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import type { IRoom, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { ChatMessage, Subscriptions } from '../../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../../ui-utils/client';
@@ -44,7 +44,7 @@ function handleMessageClick(e: JQuery.ClickEvent, template: RoomTemplateInstance
 	}
 }
 
-function handleJumpToRecentButtonClick(this: { _id: unknown }, e: JQuery.ClickEvent, template: RoomTemplateInstance) {
+function handleJumpToRecentButtonClick(this: { _id: IRoom['_id'] }, e: JQuery.ClickEvent, template: RoomTemplateInstance) {
 	e.preventDefault();
 	template.atBottom = true;
 	RoomHistoryManager.clear(template?.data?._id);
@@ -89,7 +89,7 @@ function handleUnreadBarJumpToButtonClick(_e: JQuery.ClickEvent, t: RoomTemplate
 	RoomHistoryManager.getSurroundingMessages(message, 50);
 }
 
-const handleWrapperScroll = _.throttle(function (this: { _id: unknown }, e: JQuery.ScrollEvent, t: RoomTemplateInstance) {
+const handleWrapperScroll = _.throttle(function (this: { _id: IRoom['_id'] }, e: JQuery.ScrollEvent, t: RoomTemplateInstance) {
 	const $roomLeader = $('.room-leader');
 	if ($roomLeader.length) {
 		if (e.target.scrollTop < t.lastScrollTop) {

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import type { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
@@ -6,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { Emitter } from '@rocket.chat/emitter';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 
 import { waitUntilWrapperExists } from './waitUntilWrapperExists';
 import { readMessage } from './readMessages';
@@ -19,8 +21,9 @@ import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
+import type { RoomTemplateInstance } from '../../../ui/client/views/app/lib/RoomTemplateInstance';
 
-export const normalizeThreadMessage = ({ ...message }) => {
+export function normalizeThreadMessage({ ...message }: Readonly<Pick<IMessage, 'msg' | 'mentions' | 'attachments'>>) {
 	if (message.msg) {
 		message.msg = filterMarkdown(message.msg);
 		delete message.mentions;
@@ -30,20 +33,31 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.attachments) {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
-		if (attachment && attachment.description) {
+		if (attachment?.description) {
 			return escapeHTML(attachment.description);
 		}
 
-		if (attachment && attachment.title) {
+		if (attachment?.title) {
 			return escapeHTML(attachment.title);
 		}
 	}
-};
+}
 
-export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatMessage) => {
-	const userId = msg.u && msg.u._id;
+export async function upsertMessage(
+	{
+		msg,
+		subscription,
+		uid = Tracker.nonreactive(() => Meteor.userId()) ?? undefined,
+	}: {
+		msg: IMessage;
+		subscription?: ISubscription;
+		uid?: IUser['_id'];
+	},
+	{ direct } = ChatMessage as Mongo.Collection<IMessage> & { direct: Mongo.Collection<IMessage> },
+) {
+	const userId = msg.u?._id;
 
-	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
+	if (subscription?.ignored?.includes(userId)) {
 		msg.ignored = true;
 	}
 
@@ -61,11 +75,11 @@ export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreacti
 	const { _id, ...messageToUpsert } = msg;
 
 	if (msg.tcount) {
-		collection.direct.update(
+		direct.update(
 			{ tmid: _id },
 			{
 				$set: {
-					following: msg.replies && msg.replies.indexOf(uid) > -1,
+					following: uid && (msg.replies?.includes(uid) ?? false),
 					threadMsg: normalizeThreadMessage(messageToUpsert),
 					repliesCount: msg.tcount,
 				},
@@ -74,46 +88,53 @@ export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreacti
 		);
 	}
 
-	return collection.direct.upsert({ _id }, messageToUpsert);
-};
+	return direct.upsert({ _id }, { $set: messageToUpsert });
+}
 
-/**
- * @param {Object} options
- * @param {IMessage[]} options.msgs
- * @param {ISubscription} [options.subscription]
- * @param {import('meteor/mongo').Mongo.Collection=} collection
- */
-export function upsertMessageBulk({ msgs, subscription }, collection = ChatMessage) {
-	const uid = Tracker.nonreactive(() => Meteor.userId());
-	const { queries } = ChatMessage;
+export function upsertMessageBulk(
+	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
+	collection = ChatMessage as Mongo.Collection<IMessage> & { direct: Mongo.Collection<IMessage>; queries: unknown[] },
+) {
+	const uid = Tracker.nonreactive(() => Meteor.userId()) ?? undefined;
+	const { queries } = collection;
 	collection.queries = [];
 	msgs.forEach((msg, index) => {
 		if (index === msgs.length - 1) {
-			ChatMessage.queries = queries;
+			collection.queries = queries;
 		}
 		upsertMessage({ msg, subscription, uid }, collection);
 	});
 }
 
-const defaultLimit = parseInt(getConfig('roomListLimit')) || 50;
+const defaultLimit = parseInt(getConfig('roomListLimit') ?? '50') || 50;
 
-const waitAfterFlush = (fn) => setTimeout(() => Tracker.afterFlush(fn), 10);
+const waitAfterFlush = (fn: () => void) => setTimeout(() => Tracker.afterFlush(fn), 10);
 
-export const RoomHistoryManager = new (class extends Emitter {
-	constructor() {
-		super();
-		this.histories = {};
-		this.requestsList = [];
-	}
+class RoomHistoryManagerClass extends Emitter {
+	private lastRequest?: Date;
 
-	getRoom(rid) {
+	private histories: Record<
+		IRoom['_id'],
+		{
+			hasMore: ReactiveVar<boolean>;
+			hasMoreNext: ReactiveVar<boolean>;
+			isLoading: ReactiveVar<boolean>;
+			unreadNotLoaded: ReactiveVar<number>;
+			firstUnread: ReactiveVar<IMessage | undefined>;
+			loaded: number | undefined;
+		}
+	> = {};
+
+	private requestsList: string[] = [];
+
+	public getRoom(rid: IRoom['_id']) {
 		if (!this.histories[rid]) {
 			this.histories[rid] = {
 				hasMore: new ReactiveVar(true),
 				hasMoreNext: new ReactiveVar(false),
 				isLoading: new ReactiveVar(false),
 				unreadNotLoaded: new ReactiveVar(0),
-				firstUnread: new ReactiveVar(),
+				firstUnread: new ReactiveVar(undefined),
 				loaded: undefined,
 			};
 		}
@@ -121,7 +142,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 		return this.histories[rid];
 	}
 
-	async queue() {
+	private async queue(): Promise<void> {
 		return new Promise((resolve) => {
 			const requestId = uuidv4();
 			const done = () => {
@@ -136,15 +157,15 @@ export const RoomHistoryManager = new (class extends Emitter {
 		});
 	}
 
-	run(fn) {
-		const difference = differenceInMilliseconds(new Date(), this.lastRequest);
-		if (!this.lastRequest || difference > 500) {
+	private run(fn: () => void) {
+		const difference = this.lastRequest ? differenceInMilliseconds(new Date(), this.lastRequest) : Infinity;
+		if (difference > 500) {
 			return fn();
 		}
 		return setTimeout(fn, 500 - difference);
 	}
 
-	unqueue() {
+	private unqueue() {
 		const requestId = this.requestsList.pop();
 		if (!requestId) {
 			return;
@@ -152,11 +173,11 @@ export const RoomHistoryManager = new (class extends Emitter {
 		this.run(() => this.emit(requestId));
 	}
 
-	async getMore(rid, limit = defaultLimit) {
+	public async getMore(rid: IRoom['_id'], limit = defaultLimit): Promise<void> {
 		let ts;
 		const room = this.getRoom(rid);
 
-		if (room.hasMore.curValue !== true) {
+		if (Tracker.nonreactive(() => room.hasMore.get()) !== true) {
 			return;
 		}
 
@@ -185,8 +206,8 @@ export const RoomHistoryManager = new (class extends Emitter {
 
 		this.unqueue();
 
-		let previousHeight;
-		let scroll;
+		let previousHeight: number | undefined;
+		let scroll: number | undefined;
 		const { messages = [] } = result;
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
@@ -220,8 +241,8 @@ export const RoomHistoryManager = new (class extends Emitter {
 		}
 
 		waitAfterFlush(() => {
-			const heightDiff = wrapper.scrollHeight - previousHeight;
-			wrapper.scrollTop = scroll + heightDiff;
+			const heightDiff = wrapper.scrollHeight - (previousHeight ?? 0);
+			wrapper.scrollTop = (scroll ?? 0) + heightDiff;
 		});
 
 		room.isLoading.set(false);
@@ -230,14 +251,14 @@ export const RoomHistoryManager = new (class extends Emitter {
 		});
 	}
 
-	async getMoreNext(rid, limit = defaultLimit) {
+	public async getMoreNext(rid: IRoom['_id'], limit = defaultLimit) {
 		const room = this.getRoom(rid);
-		if (room.hasMoreNext.curValue !== true) {
+		if (Tracker.nonreactive(() => room.hasMoreNext.get()) !== true) {
 			return;
 		}
 
 		await this.queue();
-		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
+		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance() as RoomTemplateInstance;
 		instance.atBottom = false;
 
 		room.isLoading.set(true);
@@ -267,14 +288,46 @@ export const RoomHistoryManager = new (class extends Emitter {
 		this.unqueue();
 	}
 
-	async getSurroundingMessages(message, limit = defaultLimit) {
+	public hasMore(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+		return room.hasMore.get();
+	}
+
+	public hasMoreNext(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+		return room.hasMoreNext.get();
+	}
+
+	public getMoreIfIsEmpty(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+
+		if (room.loaded === undefined) {
+			return this.getMore(rid);
+		}
+	}
+
+	public isLoading(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+		return room.isLoading.get();
+	}
+
+	public async clear(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+		ChatMessage.remove({ rid });
+		room.isLoading.set(true);
+		room.hasMore.set(true);
+		room.hasMoreNext.set(false);
+		room.loaded = undefined;
+	}
+
+	public async getSurroundingMessages(message?: IMessage, limit = defaultLimit) {
 		if (!message || !message.rid) {
 			return;
 		}
 
-		const w = await waitUntilWrapperExists();
+		const w = (await waitUntilWrapperExists()) as HTMLElement;
 
-		const instance = Blaze.getView(w).templateInstance();
+		const instance = Blaze.getView(w).templateInstance() as RoomTemplateInstance;
 
 		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
 
@@ -287,7 +340,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 				return;
 			}
 
-			const pos = wrapper.scrollTop() + msgElement.offset().top - wrapper.height() / 2;
+			const pos = (wrapper.scrollTop() ?? NaN) + (msgElement.offset()?.top ?? NaN) - (wrapper.height() ?? NaN) / 2;
 			wrapper.animate(
 				{
 					scrollTop: pos,
@@ -315,86 +368,56 @@ export const RoomHistoryManager = new (class extends Emitter {
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
 
-		return Meteor.call('loadSurroundingMessages', message, limit, async function (err, result) {
-			if (!result || !result.messages) {
+		const result = await callWithErrorHandling('loadSurroundingMessages', message, limit);
+
+		if (!result || !result.messages) {
+			return;
+		}
+
+		upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
+
+		readMessage.refreshUnreadMark(message.rid);
+
+		Tracker.afterFlush(async () => {
+			await waitUntilWrapperExists(`[data-id='${message._id}']`);
+			const wrapper = $('.messages-box .wrapper');
+			const msgElement = $(`[data-id=${message._id}]`, wrapper);
+
+			if (msgElement.length === 0) {
 				return;
 			}
 
-			upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
+			const pos = (wrapper.scrollTop() ?? NaN) + (msgElement.offset()?.top ?? NaN) - (wrapper.height() ?? NaN) / 2;
+			wrapper.animate(
+				{
+					scrollTop: pos,
+				},
+				500,
+			);
 
-			readMessage.refreshUnreadMark(message.rid);
+			msgElement.addClass('highlight');
+			setHighlightMessage(message._id);
 
-			Tracker.afterFlush(async () => {
-				await waitUntilWrapperExists(`[data-id='${message._id}']`);
-				const wrapper = $('.messages-box .wrapper');
-				const msgElement = $(`[data-id=${message._id}]`, wrapper);
+			room.isLoading.set(false);
+			const messages = wrapper[0];
+			instance.atBottom = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
 
-				if (msgElement.length === 0) {
-					return;
-				}
+			setTimeout(() => {
+				msgElement.removeClass('highlight');
+			}, 500);
 
-				const pos = wrapper.scrollTop() + msgElement.offset().top - wrapper.height() / 2;
-				wrapper.animate(
-					{
-						scrollTop: pos,
-					},
-					500,
-				);
-
-				msgElement.addClass('highlight');
-				setHighlightMessage(message._id);
-
-				room.isLoading.set(false);
-				const messages = wrapper[0];
-				instance.atBottom = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
-
-				setTimeout(() => {
-					msgElement.removeClass('highlight');
-				}, 500);
-
-				setTimeout(() => {
-					clearHighlightMessage();
-				}, 1000);
-			});
-
-			if (!room.loaded) {
-				room.loaded = 0;
-			}
-			room.loaded += result.messages.length;
-			room.hasMore.set(result.moreBefore);
-			return room.hasMoreNext.set(result.moreAfter);
+			setTimeout(() => {
+				clearHighlightMessage();
+			}, 1000);
 		});
-	}
 
-	hasMore(rid) {
-		const room = this.getRoom(rid);
-		return room.hasMore.get();
-	}
-
-	hasMoreNext(rid) {
-		const room = this.getRoom(rid);
-		return room.hasMoreNext.get();
-	}
-
-	getMoreIfIsEmpty(rid) {
-		const room = this.getRoom(rid);
-
-		if (room.loaded === undefined) {
-			return this.getMore(rid);
+		if (!room.loaded) {
+			room.loaded = 0;
 		}
+		room.loaded += result.messages.length;
+		room.hasMore.set(result.moreBefore);
+		room.hasMoreNext.set(result.moreAfter);
 	}
+}
 
-	isLoading(rid) {
-		const room = this.getRoom(rid);
-		return room.isLoading.get();
-	}
-
-	async clear(rid) {
-		const room = this.getRoom(rid);
-		ChatMessage.remove({ rid });
-		room.isLoading.set(true);
-		room.hasMore.set(true);
-		room.hasMoreNext.set(false);
-		room.loaded = undefined;
-	}
-})();
+export const RoomHistoryManager = new RoomHistoryManagerClass();

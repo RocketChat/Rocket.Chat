@@ -28,7 +28,10 @@ type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
 }> & {
 	firstNode: HTMLElement;
-	Threads: Mongo.Collection<IMessage>;
+	Threads: Mongo.Collection<IMessage> & {
+		direct: Mongo.Collection<IMessage>;
+		queries: unknown[];
+	};
 	threadsObserve?: Meteor.LiveQueryHandle;
 	chatMessages: ChatMessages;
 	callbackRemove?: () => void;
@@ -167,7 +170,10 @@ Template.thread.helpers({
 });
 
 Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
-	this.Threads = new Mongo.Collection(null);
+	this.Threads = new Mongo.Collection(null) as Mongo.Collection<IMessage> & {
+		direct: Mongo.Collection<IMessage>;
+		queries: unknown[];
+	};
 
 	const preferenceState = getUserPreference(Meteor.userId(), 'alsoSendThreadToChannel');
 
