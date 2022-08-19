@@ -100,7 +100,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 			agentsRoute.push({});
 			reset();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as string });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 		commit();
 		commitMaxChats();

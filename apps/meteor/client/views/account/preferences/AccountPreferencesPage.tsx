@@ -120,8 +120,8 @@ const AccountPreferencesPage = (): ReactElement => {
 			Object.values(commitRef.current).forEach((fn) => (fn as () => void)());
 
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
-		} catch (e) {
-			dispatchToastMessage({ type: 'error', message: String(e) });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, saveFn, t]);
 

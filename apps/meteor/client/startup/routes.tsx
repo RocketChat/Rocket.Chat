@@ -11,7 +11,6 @@ import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
-import { handleError } from '../lib/utils/handleError';
 import BlazeTemplate from '../views/root/BlazeTemplate';
 import MainLayout from '../views/root/MainLayout';
 
@@ -102,13 +101,9 @@ FlowRouter.route('/home', {
 			FlowRouter.setQueryParams({
 				saml_idp_credentialToken: null,
 			});
-			(Meteor as any).loginWithSamlToken(token, (error?: any) => {
+			(Meteor as any).loginWithSamlToken(token, (error?: unknown) => {
 				if (error) {
-					if (error.reason) {
-						dispatchToastMessage({ type: 'error', message: error.reason });
-					} else {
-						handleError(error);
-					}
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 
 				appLayout.render(
