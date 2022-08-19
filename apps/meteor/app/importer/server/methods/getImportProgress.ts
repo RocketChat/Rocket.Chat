@@ -1,10 +1,11 @@
+import type { IImportProgress } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization/server';
 import { Imports } from '../../../models/server';
 import { Importers } from '..';
 
-export const executeGetImportProgress = (): any => {
+export const executeGetImportProgress = (): IImportProgress => {
 	const operation = Imports.findLastImport();
 	if (!operation) {
 		throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', 'getImportProgress');

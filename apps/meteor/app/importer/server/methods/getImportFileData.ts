@@ -1,3 +1,4 @@
+import type { IImportFileData } from '@rocket.chat/core-typings';
 import path from 'path';
 import fs from 'fs';
 
@@ -9,7 +10,7 @@ import { Imports } from '../../../models/server';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Importers } from '..';
 
-export const executeGetImportFileData = async (): Promise<any> => {
+export const executeGetImportFileData = async (): Promise<IImportFileData | { waiting: true }> => {
 	const operation = Imports.findLastImport();
 	if (!operation) {
 		throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', 'getImportFileData');

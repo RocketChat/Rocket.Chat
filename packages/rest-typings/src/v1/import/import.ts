@@ -1,4 +1,4 @@
-import type { IImport, IImportChannel, IImportUser } from '@rocket.chat/core-typings';
+import type { IImport, IImportFileData, IImportProgress } from '@rocket.chat/core-typings';
 
 import type { DownloadPublicImportFileParamsPOST } from './DownloadPublicImportFileParamsPOST';
 import type { StartImportParamsPOST } from './StartImportParamsPOST';
@@ -15,22 +15,10 @@ export type ImportEndpoints = {
 		POST: (params: StartImportParamsPOST) => void;
 	};
 	'/v1/getImportFileData': {
-		GET: () => {
-			users: Array<IImportUser>;
-			channels: Array<IImportChannel>;
-			message_count: number;
-		};
+		GET: () => IImportFileData | { waiting: true };
 	};
 	'/v1/getImportProgress': {
-		GET: () => {
-			key: string;
-			name: string;
-			step: string;
-			count: {
-				completed: number;
-				total: number;
-			};
-		};
+		GET: () => IImportProgress;
 	};
 	'/v1/getLatestImportOperations': {
 		GET: () => Array<IImport>;
