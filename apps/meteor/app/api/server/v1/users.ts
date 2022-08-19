@@ -106,6 +106,8 @@ API.v1.addRoute(
 				typedPassword: this.bodyParams.data.currentPassword,
 			};
 
+			const { customFields } = this.bodyParams.data;
+
 			// saveUserProfile now uses the default two factor authentication procedures, so we need to provide that
 			const twoFactorOptions = !userData.typedPassword
 				? null
@@ -114,7 +116,7 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 				  };
 
-			Meteor.call('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
+			Meteor.call('saveUserProfile', userData, customFields, twoFactorOptions);
 
 			return API.v1.success({
 				user: Users.findOneById(this.userId, { fields: API.v1.defaultFieldsToExclude }),
@@ -140,7 +142,7 @@ API.v1.addRoute(
 				statusType: this.bodyParams.userData.statusType,
 				bio: this.bodyParams.userData.bio,
 				newPassword: this.bodyParams.userData.newPassword,
-				typedPassword: this.bodyParams.userData.currentPassword,
+				typedPassword: this.bodyParams.userData.typedPassword,
 			};
 
 			// saveUserProfile now uses the default two factor authentication procedures, so we need to provide that

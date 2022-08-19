@@ -335,6 +335,23 @@ export type UsersEndpoints = {
 	'/v1/users.delete': {
 		POST: (params: { userId: IUser['_id']; confirmRelinquish?: boolean }) => void;
 	};
+
+	'/v1/users.updateOwnBasicInfo': {
+		POST: (params: {
+			userData: {
+				email: string;
+				realname: string;
+				username: string;
+				nickname: string;
+				statusText: string;
+				newPassword: string;
+				typedPassword: string;
+			};
+			customFields: {
+				[key: string]: unknown;
+			};
+		}) => void;
+	};
 };
 
 export * from './users/UserCreateParamsPOST';
