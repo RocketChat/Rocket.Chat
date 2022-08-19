@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Messages as MessagesRaw } from '@rocket.chat/models';
+import { Messages as MessagesRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
 import { Messages } from '../../../models/server';
 import { canAccessRoom, canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
@@ -212,16 +212,21 @@ API.v1.addRoute(
 	'chat.sendMessage',
 	{ authRequired: true },
 	{
-		post() {
-			if (!this.bodyParams.message) {
+		async post() {
+			const { message } = this.bodyParams;
+			if (!message) {
 				throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
 			}
 
+			if (!canAccessRoomId(message.rid, this.userId) || !(await SubscriptionsRaw.countByRoomIdAndUserId(message.rid, this.userId))) {
+				throw new Meteor.Error('error-room-not-found', 'The provided room id does not match any public or private rooms.');
+			}
+
 			const sent = executeSendMessage(this.userId, this.bodyParams.message);
-			const [message] = normalizeMessagesForUser([sent], this.userId);
+			const [normalizedMessage] = normalizeMessagesForUser([sent], this.userId);
 
 			return API.v1.success({
-				message,
+				message: normalizedMessage,
 			});
 		},
 	},
