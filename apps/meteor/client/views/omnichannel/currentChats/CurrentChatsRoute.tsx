@@ -307,8 +307,8 @@ const CurrentChatsRoute = (): ReactElement => {
 					)}
 				</Page.Content>
 			</Page>
-			{id === 'custom-fields' && (
-				<CustomFieldsVerticalBar setCustomFields={setCustomFields} customFields={customFields} allCustomFields={allCustomFields} />
+			{id === 'custom-fields' && hasCustomFields && (
+				<CustomFieldsVerticalBar setCustomFields={setCustomFields} allCustomFields={allCustomFields?.customFields || []} />
 			)}
 		</Page>
 	);

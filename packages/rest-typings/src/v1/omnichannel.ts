@@ -674,6 +674,19 @@ const LivechatQueuePropsSchema = {
 
 export const isLivechatQueueProps = ajv.compile<LivechatQueueProps>(LivechatQueuePropsSchema);
 
+export type OmnichannelCustomFieldEndpointPayload = {
+	defaultValue: string;
+	label: string;
+	options: string;
+	public: false;
+	regexp: string;
+	required: boolean;
+	scope: 'visitor' | 'room';
+	type: 'select' | 'text';
+	visibility: string;
+	_id: string;
+};
+
 type CannedResponsesProps = PaginatedRequest<{
 	scope?: string;
 	departmentId?: string;
@@ -1099,20 +1112,7 @@ export type OmnichannelEndpoints = {
 
 	'/v1/livechat/custom-fields': {
 		GET: (params?: LivechatCustomFieldsProps) => PaginatedResult<{
-			customFields: [
-				{
-					defaultValue: string;
-					label: string;
-					options: unknown;
-					public: false;
-					regexp: string;
-					required: boolean;
-					scope: 'visitor' | 'room';
-					type: 'select' | 'text';
-					visibility: string;
-					_id: string;
-				},
-			];
+			customFields: [OmnichannelCustomFieldEndpointPayload];
 		}>;
 	};
 	'/v1/livechat/rooms': {

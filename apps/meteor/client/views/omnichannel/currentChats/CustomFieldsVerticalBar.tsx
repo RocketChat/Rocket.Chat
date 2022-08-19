@@ -1,20 +1,18 @@
-import { Field, TextInput } from '@rocket.chat/fuselage';
+import { Field, TextInput, Select } from '@rocket.chat/fuselage';
+import { OmnichannelCustomFieldEndpointPayload } from '@rocket.chat/rest-typings/src/v1/omnichannel';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, Dispatch, SetStateAction, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import VerticalBar from '../../../components/VerticalBar';
 
 type CustomFieldsVerticalBarProps = {
-	customFields: { [key: string]: string };
 	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string }>>;
-	allCustomFields: unknown;
+	allCustomFields: OmnichannelCustomFieldEndpointPayload[];
 };
 
 const CustomFieldsVerticalBar = ({ setCustomFields, allCustomFields }: CustomFieldsVerticalBarProps): ReactElement => {
-	console.log(allCustomFields);
-
-	const { register, watch } = useForm({ mode: 'onChange' });
+	const { register, watch, control } = useForm({ mode: 'onChange' });
 
 	// TODO: When we refactor the other CurrentChat's fields to use react-hook-form, we need to change this to use the form controller
 
@@ -34,16 +32,31 @@ const CustomFieldsVerticalBar = ({ setCustomFields, allCustomFields }: CustomFie
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent is='form'>
 				{/* TODO: REMOVE FILTER ONCE THE ENDPOINT SUPPORTS A SCOPE PARAMETER */}
-				{allCustomFields?.customFields
+				{allCustomFields
 					.filter((customField) => customField.scope !== 'visitor')
-					.map((customField) => customfield(
-						<Field>
-							<Field.Label>{customField.label}</Field.Label>
-							<Field.Row>
-								<TextInput flexGrow={1} {...register(customField._id)} />
-							</Field.Row>
-						</Field>
-					))}
+					.map((customField: OmnichannelCustomFieldEndpointPayload) =>
+						customField.type === 'select' ? (
+							<Field>
+								<Field.Label>{customField.label}</Field.Label>
+								<Field.Row>
+									<Controller
+										name={customField._id}
+										control={control}
+										render={({ field }): ReactElement => (
+											<Select {...field} options={customField.options.split(',').map((item) => [item, item])} />
+										)}
+									/>
+								</Field.Row>
+							</Field>
+						) : (
+							<Field>
+								<Field.Label>{customField.label}</Field.Label>
+								<Field.Row>
+									<TextInput flexGrow={1} {...register(customField._id)} />
+								</Field.Row>
+							</Field>
+						),
+					)}
 			</VerticalBar.ScrollableContent>
 		</VerticalBar>
 	);
