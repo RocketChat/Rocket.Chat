@@ -1,10 +1,10 @@
 import { ISettingColor, isSettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSettingStructure, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSettingStructure, useTranslation, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useMemo, useState, useCallback, ReactElement } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { useEditableSetting, useEditableSettingsDispatch } from '../EditableSettingsContext';
+import { useEditableSetting, useEditableSettingsDispatch, useIsEnterprise } from '../EditableSettingsContext';
 import MemoizedSetting from './MemoizedSetting';
 import SettingSkeleton from './SettingSkeleton';
 
@@ -17,6 +17,7 @@ type SettingProps = {
 function Setting({ className = undefined, settingId, sectionChanged }: SettingProps): ReactElement {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
+	const isEnterprise = useIsEnterprise();
 
 	if (!setting || !persistedSetting) {
 		throw new Error(`Setting ${settingId} not found`);
@@ -93,7 +94,20 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 		[i18nDescription, t],
 	);
 	const callout = useMemo(() => (alert && t.has(alert) ? <span dangerouslySetInnerHTML={{ __html: t(alert) }} /> : undefined), [alert, t]);
+
+	const shouldDisableEnterprise = setting.enterprise && !isEnterprise;
+
+	const absoluteUrl = useAbsoluteUrl();
+	const enterpriseCallout = useMemo(
+		() =>
+			shouldDisableEnterprise ? (
+				<MarkdownText variant='inline' content={t('Only_available_on_Enterprise_learn_more__URL', { URL: absoluteUrl('/admin') })} />
+			) : undefined,
+		[shouldDisableEnterprise, t, absoluteUrl],
+	);
+
 	const hasResetButton =
+		!shouldDisableEnterprise &&
 		!readonly &&
 		type !== 'asset' &&
 		((isSettingColor(setting) && JSON.stringify(setting.packageEditor) !== JSON.stringify(editor)) ||
@@ -108,8 +122,10 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			label={label || undefined}
 			hint={hint}
 			callout={callout}
+			enterpriseCallout={enterpriseCallout}
 			sectionChanged={sectionChanged}
 			{...setting}
+			disabled={setting.disabled || shouldDisableEnterprise}
 			value={value}
 			editor={editor}
 			hasResetButton={hasResetButton}
