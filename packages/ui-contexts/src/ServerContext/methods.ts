@@ -1,5 +1,6 @@
 import type { IRoom, ISetting, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
 
+import type { TranslationKey } from '../TranslationContext';
 import type {
 	AddWebdavAccount,
 	GetWebdavFileList,
@@ -156,6 +157,10 @@ export interface ServerMethods {
 			outside: boolean;
 			avatarETag?: string;
 		}[];
+	};
+	'getPasswordPolicy': (params?: { token: string }) => {
+		enabled: boolean;
+		policy: [name: TranslationKey, options?: Record<string, unknown>][];
 	};
 }
 
