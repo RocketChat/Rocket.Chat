@@ -71,11 +71,11 @@ class AppClientOrchestrator {
 		return this._manager;
 	}
 
-	public handleError(error: Error): void {
+	public handleError(error: unknown): void {
 		if (hasAtLeastOnePermission(['manage-apps'])) {
 			dispatchToastMessage({
 				type: 'error',
-				message: error.message,
+				message: error,
 			});
 		}
 	}

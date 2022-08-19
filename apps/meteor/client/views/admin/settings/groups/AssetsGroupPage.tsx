@@ -25,7 +25,7 @@ function AssetsGroupPage({ _id, ...group }: AssetsGroupPageProps): ReactElement 
 				message: t('Clients_will_refresh_in_a_few_seconds'),
 			});
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 

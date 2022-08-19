@@ -106,6 +106,18 @@ export class HomeContent {
 		return this.page.locator('[data-qa="UserCard"] a');
 	}
 
+	get btnForwardChat(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
+	}
+
+	get inputModalAgentUserName(): Locator {
+		return this.page.locator('#modal-root input:nth-child(1)');
+	}
+
+	get inputModalAgentForwardComment(): Locator {
+		return this.page.locator('[data-qa-id="ForwardChatModalTextAreaInputComment"]');
+	}
+
 	async pickEmoji(emoji: string, section = 'icon-people') {
 		await this.page.locator('.rc-message-box__icon.emoji-picker-icon').click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
