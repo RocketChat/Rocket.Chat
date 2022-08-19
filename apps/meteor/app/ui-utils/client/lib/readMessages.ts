@@ -1,31 +1,39 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Emitter } from '@rocket.chat/emitter';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
 import { ChatSubscription, ChatMessage } from '../../../models/client';
-/* DEFINITIONS
-- If window loses focus user needs to scroll or click/touch some place
-- On hit ESC enable read, force read of current room and remove unread mark
-- When user change room disable read until user interaction
-- Only read if mark of *first-unread* is visible for user or if flag *force* was passed
-- Always read the opened room
-- The default method *read* has a delay of 2000ms to prevent multiple reads and to user be able to see the mark
-*/
 
-// Meteor.startup ->
-// window.addEventListener 'focus', ->
-// readMessage.refreshUnreadMark(undefined, true)
+export class ReadMessage extends Emitter {
+	protected enabled: boolean;
 
-export const readMessage = new (class extends Emitter {
+	protected debug = false;
+
 	constructor() {
 		super();
-		this.debug = false;
 		this.enable();
 	}
 
-	read(rid = Session.get('openedRoom')) {
+	protected log(...args: any[]) {
+		return this.debug && console.log(...args);
+	}
+
+	public enable() {
+		this.enabled = document.hasFocus();
+	}
+
+	public disable() {
+		this.enabled = false;
+	}
+
+	public isEnable() {
+		return this.enabled === true;
+	}
+
+	public read(rid: IRoom['_id'] = Session.get('openedRoom')) {
 		if (!this.enabled) {
 			this.log('readMessage -> readNow canceled by enabled: false');
 			return;
@@ -52,7 +60,7 @@ export const readMessage = new (class extends Emitter {
 		const unreadMark = $('.message.first-unread, .rcx-message-divider--unread');
 		if (unreadMark.length > 0) {
 			const position = unreadMark.position();
-			const visible = (position != null ? position.top : undefined) >= 0;
+			const visible = (position ? position.top : 0) >= 0;
 
 			if (!visible) {
 				this.log('readMessage -> readNow canceled, unread mark visible:', visible);
@@ -66,7 +74,7 @@ export const readMessage = new (class extends Emitter {
 		return this.readNow(rid);
 	}
 
-	readNow(rid = Session.get('openedRoom')) {
+	public readNow(rid: IRoom['_id'] = Session.get('openedRoom')) {
 		if (rid == null) {
 			this.log('readMessage -> readNow canceled, no rid informed');
 			return;
@@ -84,23 +92,7 @@ export const readMessage = new (class extends Emitter {
 		});
 	}
 
-	log(...args) {
-		return this.debug && console.log(...args);
-	}
-
-	disable() {
-		this.enabled = false;
-	}
-
-	enable() {
-		this.enabled = document.hasFocus();
-	}
-
-	isEnable() {
-		return this.enabled === true;
-	}
-
-	refreshUnreadMark(rid) {
+	public refreshUnreadMark(rid: IRoom['_id']) {
 		if (rid == null) {
 			return;
 		}
@@ -169,28 +161,6 @@ export const readMessage = new (class extends Emitter {
 			$(`.message#${firstUnreadRecord._id}`).addClass('first-unread');
 		}
 	}
-})();
+}
 
-Meteor.startup(function () {
-	$(window)
-		.on('blur', () => readMessage.disable())
-		.on('focus', () => {
-			readMessage.enable();
-			readMessage.read();
-		})
-		.on('touchend', () => {
-			readMessage.enable();
-		})
-		.on('keyup', (e) => {
-			const key = e.which;
-			if (key === 27) {
-				// ESCAPE KEY
-				const rid = Session.get('openedRoom');
-				if (!rid) {
-					return;
-				}
-				readMessage.readNow(rid);
-				readMessage.refreshUnreadMark(rid);
-			}
-		});
-});
+export const readMessage = new ReadMessage();

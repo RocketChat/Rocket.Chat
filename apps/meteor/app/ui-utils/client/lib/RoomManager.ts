@@ -62,6 +62,7 @@ const openedRooms: Record<
 		streamActive?: boolean;
 		unreadSince: ReactiveVar<Date | undefined>;
 		lastSeen?: Date;
+		unreadFirstId?: string;
 	}
 > = {};
 

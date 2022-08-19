@@ -19,6 +19,7 @@ import './messageTypes';
 import './notifications';
 import './oauth';
 import './otr';
+import './readMessage';
 import './readReceipt';
 import './reloadRoomAfterLogin';
 import './renderMessage';
