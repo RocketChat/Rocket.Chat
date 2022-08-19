@@ -15,10 +15,11 @@ type FilterByTextType = FC<{
 	setFilter: Dispatch<SetStateAction<any>>;
 	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string }>>;
 	customFields: { [key: string]: string };
+	hasCustomFields: boolean;
 	reload?: () => void;
 }>;
 
-const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCustomFields, ...props }) => {
+const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCustomFields, hasCustomFields, ...props }) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
@@ -138,7 +139,11 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 					<InputBox type='date' flexShrink={0} placeholder={t('To')} onChange={handleTo} value={to} data-qa='current-chats-to' />
 				</Box>
 
-				<RemoveAllClosed handleClearFilters={handleClearFilters} handleRemoveClosed={handleRemoveClosed} />
+				<RemoveAllClosed
+					handleClearFilters={handleClearFilters}
+					handleRemoveClosed={handleRemoveClosed}
+					hasCustomFields={hasCustomFields}
+				/>
 			</Box>
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>

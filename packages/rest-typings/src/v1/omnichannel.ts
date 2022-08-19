@@ -717,7 +717,7 @@ const CannedResponsesPropsSchema = {
 
 export const isCannedResponsesProps = ajv.compile<CannedResponsesProps>(CannedResponsesPropsSchema);
 
-type LivechatCustomFieldsProps = PaginatedRequest<{ text: string }>;
+type LivechatCustomFieldsProps = PaginatedRequest<{ text?: string }>;
 
 const LivechatCustomFieldsSchema = {
 	type: 'object',
@@ -1098,11 +1098,19 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/custom-fields': {
-		GET: (params: LivechatCustomFieldsProps) => PaginatedResult<{
+		GET: (params?: LivechatCustomFieldsProps) => PaginatedResult<{
 			customFields: [
 				{
-					_id: string;
+					defaultValue: string;
 					label: string;
+					options: unknown;
+					public: false;
+					regexp: string;
+					required: boolean;
+					scope: 'visitor' | 'room';
+					type: 'select' | 'text';
+					visibility: string;
+					_id: string;
 				},
 			];
 		}>;

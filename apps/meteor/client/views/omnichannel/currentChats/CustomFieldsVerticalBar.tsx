@@ -4,15 +4,15 @@ import React, { ReactElement, Dispatch, SetStateAction, useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 
 type CustomFieldsVerticalBarProps = {
 	customFields: { [key: string]: string };
 	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string }>>;
+	allCustomFields: unknown;
 };
 
-const CustomFieldsVerticalBar = ({ setCustomFields }: CustomFieldsVerticalBarProps): ReactElement => {
-	const { value: allCustomFields } = useEndpointData('/v1/livechat/custom-fields');
+const CustomFieldsVerticalBar = ({ setCustomFields, allCustomFields }: CustomFieldsVerticalBarProps): ReactElement => {
+	console.log(allCustomFields);
 
 	const { register, watch } = useForm({ mode: 'onChange' });
 
@@ -33,14 +33,17 @@ const CustomFieldsVerticalBar = ({ setCustomFields }: CustomFieldsVerticalBarPro
 				<VerticalBar.Close onClick={(): void => currentChatsRoute.push({ context: '' })} />
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent is='form'>
-				{allCustomFields?.customFields.map((customField) => (
-					<Field>
-						<Field.Label>{customField.label}</Field.Label>
-						<Field.Row>
-							<TextInput flexGrow={1} {...register(customField._id)} />
-						</Field.Row>
-					</Field>
-				))}
+				{/* TODO: REMOVE FILTER ONCE THE ENDPOINT SUPPORTS A SCOPE PARAMETER */}
+				{allCustomFields?.customFields
+					.filter((customField) => customField.scope !== 'visitor')
+					.map((customField) => customfield(
+						<Field>
+							<Field.Label>{customField.label}</Field.Label>
+							<Field.Row>
+								<TextInput flexGrow={1} {...register(customField._id)} />
+							</Field.Row>
+						</Field>
+					))}
 			</VerticalBar.ScrollableContent>
 		</VerticalBar>
 	);

@@ -5,7 +5,8 @@ import React, { FC } from 'react';
 const RemoveAllClosed: FC<{
 	handleClearFilters: any;
 	handleRemoveClosed: any;
-}> = ({ handleClearFilters, handleRemoveClosed, ...props }) => {
+	hasCustomFields: boolean;
+}> = ({ handleClearFilters, handleRemoveClosed, hasCustomFields, ...props }) => {
 	const t = useTranslation();
 	const directoryRoute = useRoute('omnichannel-current-chats');
 	const canRemove = usePermission('remove-closed-livechat-rooms');
@@ -32,17 +33,18 @@ const RemoveAllClosed: FC<{
 				action: handleRemoveClosed,
 			},
 		}),
-		...(canViewCustomFields && {
-			customFields: {
-				label: (
-					<Box data-qa='current-chats-options-customFields'>
-						<Icon name='magnifier' size='x16' marginInlineEnd='x4' />
-						{t('Custom_Fields')}
-					</Box>
-				),
-				action: (): void => directoryRoute.push({ context: 'custom-fields' }),
-			},
-		}),
+		...(canViewCustomFields &&
+			hasCustomFields && {
+				customFields: {
+					label: (
+						<Box data-qa='current-chats-options-customFields'>
+							<Icon name='magnifier' size='x16' marginInlineEnd='x4' />
+							{t('Custom_Fields')}
+						</Box>
+					),
+					action: (): void => directoryRoute.push({ context: 'custom-fields' }),
+				},
+			}),
 	};
 	return (
 		<Menu alignSelf='flex-end' small={false} options={menuOptions} placement='bottom-start' data-qa='current-chats-options' {...props} />

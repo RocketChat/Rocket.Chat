@@ -24,6 +24,7 @@ import Chat from '../directory/chats/Chat';
 import CustomFieldsVerticalBar from './CustomFieldsVerticalBar';
 import FilterByText from './FilterByText';
 import RemoveChatButton from './RemoveChatButton';
+import { useAllCustomFields } from './useAllCustomFields';
 
 type useQueryType = (
 	debouncedParams: {
@@ -145,14 +146,19 @@ const CurrentChatsRoute = (): ReactElement => {
 	) as ['fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open', 'asc' | 'desc'];
 
 	const query = useQuery(debouncedParams, debouncedCustomFields, debouncedSort);
-
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const directoryRoute = useRoute('omnichannel-current-chats');
 
 	const { reload, ...result } = useEndpointData('/v1/livechat/rooms', query);
+	const { data: allCustomFields } = useAllCustomFields();
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+
+	const hasCustomFields = useMemo(
+		() => !!allCustomFields?.customFields?.find((customField) => customField.scope === 'room'),
+		[allCustomFields],
+	);
 
 	const onRowClick = useMutableCallback((_id) => {
 		directoryRoute.push({ id: _id });
@@ -207,7 +213,12 @@ const CurrentChatsRoute = (): ReactElement => {
 			<Page>
 				<Page.Header title={t('Current_Chats')} />
 				<Box pi='24px'>
-					<FilterByText setFilter={setParams} setCustomFields={setCustomFields} customFields={customFields} />
+					<FilterByText
+						setFilter={setParams}
+						setCustomFields={setCustomFields}
+						customFields={customFields}
+						hasCustomFields={hasCustomFields}
+					/>
 				</Box>
 				<Page.Content>
 					<GenericTable>
@@ -296,7 +307,9 @@ const CurrentChatsRoute = (): ReactElement => {
 					)}
 				</Page.Content>
 			</Page>
-			{id === 'custom-fields' && <CustomFieldsVerticalBar setCustomFields={setCustomFields} customFields={customFields} />}
+			{id === 'custom-fields' && (
+				<CustomFieldsVerticalBar setCustomFields={setCustomFields} customFields={customFields} allCustomFields={allCustomFields} />
+			)}
 		</Page>
 	);
 };
