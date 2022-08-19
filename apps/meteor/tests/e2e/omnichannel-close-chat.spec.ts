@@ -13,7 +13,7 @@ const createAuxContext = async (browser: Browser, storageState: string): Promise
 	return { page, poHomeChannel };
 };
 
-test.describe('omnichannel-departments', () => {
+test.describe('Omnichannel close chat', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newUser: { email: string; name: string };
 
