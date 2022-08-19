@@ -1,7 +1,7 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction, Icon } from '@rocket.chat/fuselage';
-import { ErrorBoundary } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ReactNode } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 const MessageListErrorBoundary = ({ children }: { children: ReactNode }): ReactElement => {
 	const t = useTranslation();

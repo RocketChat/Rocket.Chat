@@ -5,9 +5,9 @@ import CustomHomePage from './CustomHomePage';
 import DefaultHomePage from './DefaultHomePage';
 
 const HomePage = (): ReactElement => {
-	const custom = useSetting('Layout_Custom_Body');
+	const customOnly = useSetting('Layout_Custom_Body_Only');
 
-	if (custom) {
+	if (customOnly) {
 		return <CustomHomePage />;
 	}
 

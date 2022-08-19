@@ -1,11 +1,15 @@
 import { Modal, Box, ButtonGroup, Button, Scrollable, Callout, Margins, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { ComponentProps, FormEvent, ReactElement, useState } from 'react';
 
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
+type OfflineLicenseModalProps = {
+	onClose: () => void;
+	license: string;
+	licenseStatus: string;
+} & ComponentProps<typeof Modal>;
 
-const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
+const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: OfflineLicenseModalProps): ReactElement => {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -15,13 +19,11 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 	const [status, setStatus] = useState(licenseStatus);
 	const [lastSetLicense, setLastSetLicense] = useState(license);
 
-	const handleNewLicense = (e) => {
+	const handleNewLicense = (e: FormEvent<HTMLInputElement>): void => {
 		setNewLicense(e.currentTarget.value);
 	};
 
 	const hasChanges = lastSetLicense !== newLicense;
-
-	const addLicense = useEndpointActionExperimental('POST', '/v1/licenses.add', t('Cloud_License_applied_successfully'));
 
 	const handlePaste = useMutableCallback(async () => {
 		try {
@@ -32,16 +34,24 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 		}
 	});
 
+	const addLicense = useEndpoint('POST', '/v1/licenses.add');
+
 	const handleApplyLicense = useMutableCallback(async () => {
-		setIsUpdating(true);
 		setLastSetLicense(newLicense);
-		const data = await addLicense({ license: newLicense });
-		if (data.success) {
+
+		try {
+			setIsUpdating(true);
+			await addLicense({ license: newLicense });
+			dispatchToastMessage({ type: 'success', message: t('Cloud_License_applied_successfully') });
 			onClose();
-			return;
+		} catch (error) {
+			dispatchToastMessage({
+				type: 'error',
+				message: error && typeof error === 'object' && 'error' in error ? (error as any).error : String(error),
+			});
+			setIsUpdating(false);
+			setStatus('invalid');
 		}
-		setIsUpdating(false);
-		setStatus('invalid');
 	});
 
 	return (
@@ -62,7 +72,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 					pb='x8'
 					flexGrow={1}
 					backgroundColor='neutral-800'
-					mb={status === 'invalid' && 'x8'}
+					mb={status === 'invalid' ? 'x8' : undefined}
 				>
 					<Margins block='x8'>
 						<Scrollable vertical>

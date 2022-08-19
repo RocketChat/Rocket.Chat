@@ -31,8 +31,8 @@ const ServerLogs = (): ReactElement => {
 			try {
 				const { queue } = await getStdoutQueue(undefined);
 				setEntries(queue.map(unserializeEntry).sort(compareEntries));
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			} catch (error: unknown) {
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
 

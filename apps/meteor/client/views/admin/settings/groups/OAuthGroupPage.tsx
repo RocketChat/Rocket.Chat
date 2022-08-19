@@ -38,7 +38,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 			await refreshOAuthService();
 			dispatchToastMessage({ type: 'success', message: t('Done') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
@@ -48,7 +48,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 				await addOAuthService(text);
 				dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_added') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error as Error });
+				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				setModal(null);
 			}
@@ -72,7 +72,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 							await removeOAuthService(id);
 							dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_removed') });
 						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: error as Error });
+							dispatchToastMessage({ type: 'error', message: error });
 						} finally {
 							setModal(null);
 						}
