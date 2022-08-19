@@ -6,6 +6,7 @@ import { Tracker } from 'meteor/tracker';
 import type { FilterOperators } from 'mongodb';
 import React, { useEffect, useMemo, FunctionComponent, useRef, MutableRefObject } from 'react';
 
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { createReactiveSubscriptionFactory } from '../../../providers/createReactiveSubscriptionFactory';
 import { EditableSettingsContext, EditableSetting, EditableSettingsContextValue } from '../EditableSettingsContext';
 
@@ -180,6 +181,8 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 		Tracker.flush();
 	});
 
+	const isEnterprise = useIsEnterprise();
+
 	const contextValue = useMemo<EditableSettingsContextValue>(
 		() => ({
 			queryEditableSetting,
@@ -187,8 +190,9 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 			queryGroupSections,
 			queryGroupTabs,
 			dispatch,
+			isEnterprise,
 		}),
-		[queryEditableSetting, queryEditableSettings, queryGroupSections, queryGroupTabs, dispatch],
+		[queryEditableSetting, queryEditableSettings, queryGroupSections, queryGroupTabs, dispatch, isEnterprise],
 	);
 
 	return <EditableSettingsContext.Provider children={children} value={contextValue} />;
