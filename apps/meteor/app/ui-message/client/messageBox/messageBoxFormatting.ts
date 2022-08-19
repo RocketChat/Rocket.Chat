@@ -1,7 +1,17 @@
 import { Markdown } from '../../../markdown/client';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/client';
 
-export const formattingButtons = [
+type FormattingButton = {
+	label: string;
+	icon?: string;
+	pattern?: string;
+	text?: () => string | undefined;
+	link?: string;
+	command?: string;
+	condition?: () => boolean;
+};
+
+export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
 		label: 'bold',
 		icon: 'bold',
@@ -63,9 +73,9 @@ export const formattingButtons = [
 		link: 'https://khan.github.io/KaTeX/function-support.html',
 		condition: () => settings.get('Katex_Enabled'),
 	},
-];
+] as const;
 
-export function applyFormatting(pattern, input) {
+export function applyFormatting(pattern: string, input: HTMLTextAreaElement) {
 	const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 	const initText = input.value.slice(0, selectionStart);
 	const selectedText = input.value.slice(selectionStart, selectionEnd);
@@ -73,19 +83,19 @@ export function applyFormatting(pattern, input) {
 
 	input.focus();
 
-	const startPattern = pattern.substr(0, pattern.indexOf('{{text}}'));
-	const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.substr(selectionStart - index - 1, 1) === char);
+	const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
+	const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.slice(selectionStart - index - 1, 1) === char);
 
 	if (startPatternFound) {
-		const endPattern = pattern.substr(pattern.indexOf('{{text}}') + '{{text}}'.length);
-		const endPatternFound = [...endPattern].every((char, index) => input.value.substr(selectionEnd + index, 1) === char);
+		const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
+		const endPatternFound = [...endPattern].every((char, index) => input.value.slice(selectionEnd + index, 1) === char);
 
 		if (endPatternFound) {
 			input.selectionStart = selectionStart - startPattern.length;
 			input.selectionEnd = selectionEnd + endPattern.length;
 
 			if (!document.execCommand || !document.execCommand('insertText', false, selectedText)) {
-				input.value = initText.substr(0, initText.length - startPattern.length) + selectedText + finalText.substr(endPattern.length);
+				input.value = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
 			}
 
 			input.selectionStart = selectionStart - startPattern.length;

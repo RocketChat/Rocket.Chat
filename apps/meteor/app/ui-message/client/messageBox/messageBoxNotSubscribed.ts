@@ -5,9 +5,9 @@ import { Template } from 'meteor/templating';
 import { settings } from '../../../settings/client';
 import { RoomManager, RoomHistoryManager } from '../../../ui-utils/client';
 import { hasAllPermission } from '../../../authorization/client';
-import './messageBoxNotSubscribed.html';
 import { call } from '../../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import './messageBoxNotSubscribed.html';
 
 Template.messageBoxNotSubscribed.helpers({
 	customTemplate() {
@@ -22,7 +22,7 @@ Template.messageBoxNotSubscribed.helpers({
 	},
 	isJoinCodeRequired() {
 		const room = Session.get(`roomData${this.rid}`);
-		return room && room.joinCodeRequired;
+		return room?.joinCodeRequired;
 	},
 	isAnonymousReadAllowed() {
 		return Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead') === true;
@@ -37,29 +37,32 @@ Template.messageBoxNotSubscribed.helpers({
 });
 
 Template.messageBoxNotSubscribed.events({
-	async 'click .js-join-code'(event) {
+	async 'click .js-join-code'(event: JQuery.ClickEvent) {
 		event.stopPropagation();
 		event.preventDefault();
 
-		const joinCodeInput = Template.instance().find('[name=joinCode]');
-		const joinCode = joinCodeInput && joinCodeInput.value;
+		const joinCodeInput = Template.instance().find('[name=joinCode]') as HTMLInputElement;
+		const joinCode = joinCodeInput?.value;
 
 		await call('joinRoom', this.rid, joinCode);
 
 		if (hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this.rid).loaded === 0) {
-			RoomManager.getOpenedRoomByRid(this.rid).streamActive = false;
-			RoomManager.getOpenedRoomByRid(this.rid).ready = false;
-			RoomHistoryManager.getRoom(this.rid).loaded = null;
+			const openedRoom = RoomManager.getOpenedRoomByRid(this.rid);
+			if (openedRoom) {
+				openedRoom.streamActive = false;
+				openedRoom.ready = false;
+			}
+			RoomHistoryManager.getRoom(this.rid).loaded = undefined;
 			RoomManager.computation.invalidate();
 		}
 	},
-	'click .js-register'(event) {
+	'click .js-register'(event: JQuery.ClickEvent) {
 		event.stopPropagation();
 		event.preventDefault();
 
 		Session.set('forceLogin', true);
 	},
-	async 'click .js-register-anonymous'(event) {
+	async 'click .js-register-anonymous'(event: JQuery.ClickEvent) {
 		event.stopPropagation();
 		event.preventDefault();
 

@@ -3,9 +3,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
 import { VRecDialog } from '../../../ui-vrecord/client';
-import { messageBox } from '../../../ui-utils';
+import { messageBox } from '../../../ui-utils/client';
 import { fileUpload } from '../../../ui';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ShareLocationModal from '../../../../client/views/room/ShareLocation/ShareLocationModal';
 
@@ -13,11 +13,7 @@ messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',
 	icon: 'video',
 	condition: () =>
-		(navigator.mediaDevices ||
-			navigator.getUserMedia ||
-			navigator.webkitGetUserMedia ||
-			navigator.mozGetUserMedia ||
-			navigator.msGetUserMedia) &&
+		navigator.mediaDevices &&
 		window.MediaRecorder &&
 		settings.get('FileUpload_Enabled') &&
 		settings.get('Message_VideoRecorderEnabled') &&
@@ -44,7 +40,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 
 		$input.one('change', async function (e) {
 			const { mime } = await import('../../../utils/lib/mimeTypes');
-			const filesToUpload = [...e.target.files].map((file) => {
+			const filesToUpload = Array.from(e.target.files ?? []).map((file) => {
 				Object.defineProperty(file, 'type', {
 					value: mime.lookup(file.name),
 				});
@@ -54,7 +50,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload, $('.js-input-message', messageBox).get(0), { rid, tmid });
+			fileUpload(filesToUpload, $('.js-input-message', messageBox).get(0) as HTMLTextAreaElement | undefined, { rid, tmid });
 			$input.remove();
 		});
 
@@ -81,7 +77,7 @@ messageBox.actions.add('Share', 'My_location', {
 Meteor.startup(() => {
 	Tracker.autorun(() => {
 		const isMapViewEnabled = settings.get('MapView_Enabled') === true;
-		const isGeolocationCurrentPositionSupported = navigator.geolocation && navigator.geolocation.getCurrentPosition;
+		const isGeolocationCurrentPositionSupported = Boolean(navigator.geolocation?.getCurrentPosition);
 		const googleMapsApiKey = settings.get('MapView_GMapsAPIKey');
 		canGetGeolocation.set(isMapViewEnabled && isGeolocationCurrentPositionSupported && googleMapsApiKey && googleMapsApiKey.length);
 	});

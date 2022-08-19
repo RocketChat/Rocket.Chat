@@ -156,7 +156,7 @@ export type FileUploadProp = SingleOrArray<{
 /* @deprecated */
 export const fileUpload = async (
 	f: FileUploadProp,
-	input: HTMLTextAreaElement,
+	input: HTMLTextAreaElement | undefined,
 	{
 		rid,
 		tmid,
@@ -173,8 +173,8 @@ export const fileUpload = async (
 
 	const files = Array.isArray(f) ? f : [f];
 
-	const replies = $(input).data('reply') || [];
-	const mention = $(input).data('mention-user') || false;
+	const replies = input ? $(input).data('reply') : [];
+	const mention = input ? $(input).data('mention-user') : false;
 
 	let msg = '';
 

@@ -1,3 +1,4 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Template } from 'meteor/templating';
 import './messageBoxReplyPreview.html';
 
@@ -9,7 +10,7 @@ Template.messageBoxReplyPreview.helpers({
 });
 
 Template.messageBoxReplyPreview.events({
-	'click .cancel-reply'(event) {
+	'click .cancel-reply'(event: JQuery.ClickEvent) {
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -17,7 +18,7 @@ Template.messageBoxReplyPreview.events({
 		const $input = $(this.input);
 
 		this.input.focus();
-		const messages = $input.data('reply') || [];
+		const messages: IMessage[] = $input.data('reply') || [];
 		const filtered = messages.filter(({ _id }) => _id !== mid);
 
 		$input.data('reply', filtered).trigger('dataChange');

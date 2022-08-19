@@ -1,10 +1,10 @@
 import { Template } from 'meteor/templating';
 
-import './messageBoxReadOnly.html';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import './messageBoxReadOnly.html';
 
 Template.messageBoxReadOnly.helpers({
 	customTemplate() {
-		return roomCoordinator.getRoomTypeConfigById(this.rid).readOnlyTpl;
+		return roomCoordinator.getRoomTypeConfigById(this.rid)?.readOnlyTpl ?? false;
 	},
 });

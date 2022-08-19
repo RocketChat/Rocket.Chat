@@ -1,8 +1,8 @@
 import _ from 'underscore';
 
-const replaceWhitespaces = (whitespaces) => `${'&nbsp;'.repeat(whitespaces.length - 1)} `;
+const replaceWhitespaces = (whitespaces: string) => `${'&nbsp;'.repeat(whitespaces.length - 1)} `;
 
-export const setupAutogrow = (textarea, shadow, callback) => {
+export const setupAutogrow = (textarea: HTMLTextAreaElement, shadow: HTMLElement, callback: () => void) => {
 	const width = textarea.clientWidth;
 	const height = textarea.clientHeight;
 	const { font, lineHeight, maxHeight: maxHeightPx } = window.getComputedStyle(textarea);
@@ -66,7 +66,7 @@ export const setupAutogrow = (textarea, shadow, callback) => {
 		textarea.style.overflow = overflow;
 		textarea.style.height = `${height}px`;
 
-		callback && callback();
+		callback?.();
 	};
 
 	const updateThrottled = _.throttle(update, 300);

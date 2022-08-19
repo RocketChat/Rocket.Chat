@@ -1,7 +1,10 @@
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+
 type MessageBoxAction = {
 	label: string;
 	id: string;
-	action: () => void;
+	icon?: string;
+	action: (params: { rid: IRoom['_id']; tmid?: IMessage['_id']; event: Event; messageBox: HTMLElement }) => void;
 	condition?: () => boolean;
 };
 
@@ -34,6 +37,10 @@ export class MessageBoxActions {
 		this.actions[group] = this.actions[group].filter((action) => !expression.test(action.id));
 		return this.actions[group];
 	}
+
+	get(): Record<string, MessageBoxAction[]>;
+
+	get(group: string): MessageBoxAction[];
 
 	get(group?: string) {
 		if (!group) {
