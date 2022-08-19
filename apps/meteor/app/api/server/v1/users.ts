@@ -106,7 +106,7 @@ API.v1.addRoute(
 				typedPassword: this.bodyParams.data.currentPassword,
 			};
 
-			const { customFields } = this.bodyParams.data;
+			const { customFields } = this.bodyParams;
 
 			// saveUserProfile now uses the default two factor authentication procedures, so we need to provide that
 			const twoFactorOptions = !userData.typedPassword
