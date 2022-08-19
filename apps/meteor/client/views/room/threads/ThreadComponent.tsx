@@ -16,7 +16,7 @@ import ThreadView from './ThreadView';
 
 const subscriptionFields = {};
 
-const useThreadMessage = (tmid: string): IMessage => {
+const useThreadMessage = (tmid: string): IMessage | undefined => {
 	const [message, setMessage] = useState<IMessage | undefined>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(
@@ -48,10 +48,6 @@ const useThreadMessage = (tmid: string): IMessage => {
 			computation.stop();
 		};
 	}, [getMessageParsed, tmid]);
-
-	if (!message) {
-		throw new Error('Message not found');
-	}
 
 	return message;
 };

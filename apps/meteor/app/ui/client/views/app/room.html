@@ -111,13 +111,14 @@
 									{{/if}}
 								{{/if}}
 								{{#unless $eq (preference 'useLegacyMessageTemplate') true}}
-										{{> MessageList rid=rid }}
-								{{/unless}}
-								{{#if $eq (preference 'useLegacyMessageTemplate') true}}
+									{{> MessageList rid=rid }}
+								{{else}}
 									{{#with messageContext}}
-										{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room  actions=actions subscription=subscription settings=settings u=u}}{{/each}}
+										{{#each msg in messagesHistory}}
+											{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room actions=actions subscription=subscription settings=settings u=u}}
+										{{/each}}
 									{{/with}}
-								{{/if}}
+								{{/unless}}
 
 								{{#if hasMoreNext}}
 									<li class="load-more">

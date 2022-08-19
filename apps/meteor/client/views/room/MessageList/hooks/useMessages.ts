@@ -52,7 +52,7 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 		() => ({
 			rid,
 			_hidden: { $ne: true },
-			$or: [{ tmid: { $exists: true } }, { tshow: { $eq: true } }],
+			$or: [{ tmid: { $exists: false } }, { tshow: { $eq: true } }],
 		}),
 		[rid],
 	);

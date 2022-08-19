@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import type { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
@@ -31,7 +30,7 @@ export async function upsertMessage(
 		subscription?: ISubscription;
 		uid?: IUser['_id'];
 	},
-	{ direct } = ChatMessage as Mongo.Collection<IMessage> & { direct: Mongo.Collection<IMessage> },
+	{ direct } = ChatMessage,
 ) {
 	const userId = msg.u?._id;
 
@@ -63,10 +62,7 @@ export async function upsertMessage(
 	return direct.upsert({ _id }, { $set: messageToUpsert });
 }
 
-export function upsertMessageBulk(
-	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
-	collection = ChatMessage as Mongo.Collection<IMessage> & { direct: Mongo.Collection<IMessage>; queries: unknown[] },
-) {
+export function upsertMessageBulk({ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription }, collection = ChatMessage) {
 	const uid = Tracker.nonreactive(() => Meteor.userId()) ?? undefined;
 	const { queries } = collection;
 	collection.queries = [];
@@ -213,8 +209,8 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		waitAfterFlush(() => {
-			const heightDiff = wrapper.scrollHeight - (previousHeight ?? 0);
-			wrapper.scrollTop = (scroll ?? 0) + heightDiff;
+			const heightDiff = wrapper.scrollHeight - (previousHeight ?? NaN);
+			wrapper.scrollTop = (scroll ?? NaN) + heightDiff;
 		});
 
 		room.isLoading.set(false);
