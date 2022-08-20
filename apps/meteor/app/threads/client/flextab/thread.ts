@@ -6,7 +6,7 @@ import { Session } from 'meteor/session';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import type { IMessage, IEditedMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IEditedMessage, ISubscription } from '@rocket.chat/core-typings';
 
 import { ChatMessages, chatMessages, chatMessages as allChatMessages } from '../../../ui';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
@@ -85,7 +85,7 @@ Template.thread.helpers({
 
 		return Threads.find({ tmid, _id: { $ne: tmid } }, { sort });
 	},
-	messageContext() {
+	messageContext(this: { mainMessage: IMessage }) {
 		const result = messageContext.call(this, { rid: this.mainMessage.rid });
 		return {
 			...result,
@@ -101,7 +101,7 @@ Template.thread.helpers({
 		const {
 			mainMessage: { rid, _id: tmid },
 			subscription,
-		} = Template.currentData();
+		} = Template.currentData() as { mainMessage: IMessage; subscription: ISubscription };
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		const alsoSendPreferenceState = getUserPreference(Meteor.userId(), 'alsoSendThreadToChannel');
