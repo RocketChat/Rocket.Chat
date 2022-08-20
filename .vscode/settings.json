@@ -14,10 +14,16 @@
 		}
 	],
 	"typescript.tsdk": "./node_modules/typescript/lib",
+	"typescript.preferences.importModuleSpecifier": "relative",
+	"typescript.preferences.importModuleSpecifierEnding": "minimal",
+	"typescript.updateImportsOnFileMove.enabled": "always",
 	"cSpell.words": [
 		"livechat",
 		"omnichannel",
 		"photoswipe",
 		"tmid"
-	]
+	],
+	"editor.formatOnSave": true,
+	"editor.formatOnSaveMode": "file",
+	"editor.formatOnPaste": false
 }

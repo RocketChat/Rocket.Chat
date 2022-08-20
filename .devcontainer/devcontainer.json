@@ -1,0 +1,55 @@
+{
+  "name": "Rocket.Chat",
+  "build": {
+    // TODO add meteor package volume?
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "args": {
+      // managed manually
+      "METEOR_VERSION": "2.7.3",
+      "NODE_VERSION": "14.19.3",
+      "LOCAL_USERNAME": "${localEnv:USER}"
+    }
+  },
+  "workspaceFolder": "/home/${localEnv:USER}/Rocket.Chat",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/${localEnv:USER}/Rocket.Chat,type=bind,consistency=consistent,bind-nonrecursive=false",
+  "userEnvProbe": "loginInteractiveShell",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb"
+  },
+  "forwardPorts": [
+    3000,
+    3001
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "Rocket.Chat Interface",
+      "protocol": "http",
+      "requireLocalPort": true,
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "Meteor MongoDB Connection",
+      "requireLocalPort": false,
+      "onAutoForward": "silent"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "typescript.tsserver.maxTsServerMemory": 4096,
+      },
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "gruntfuggly.todo-tree"
+      ]
+    }
+  },
+  "remoteUser": "${localEnv:USER}",
+  "postCreateCommand": [
+    "yarn"
+  ],
+  "waitFor": "postCreateCommand",
+  "updateRemoteUserUID": true
+}
