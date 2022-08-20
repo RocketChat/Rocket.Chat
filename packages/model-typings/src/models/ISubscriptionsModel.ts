@@ -1,4 +1,5 @@
-import type { FindOptions, FindCursor, UpdateResult, DeleteResult } from 'mongodb';
+import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document } from 'mongodb';
+
 import type { ISubscription, IRole, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
@@ -58,4 +59,10 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
 	removeByRoomId(roomId: string): Promise<DeleteResult>;
+
+	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document>;
+
+	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
+
+	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
 }
