@@ -41,6 +41,7 @@
         "typescript.tsserver.maxTsServerMemory": 4096,
       },
       "extensions": [
+        "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "gruntfuggly.todo-tree"
       ]
