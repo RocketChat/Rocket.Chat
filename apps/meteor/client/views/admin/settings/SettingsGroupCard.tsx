@@ -35,9 +35,7 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCard): React
 
 	return (
 		<Card data-qa-id={id} variant='light'>
-			<Card.Title>
-				<Box fontScale='h4'>{t(title)}</Box>
-			</Card.Title>
+			<Card.Title>{t(title)}</Card.Title>
 			<Card.Body height='x88'>
 				<Box className={clampStyle}>
 					{description && t.has(description) && <MarkdownText variant='inlineWithoutBreaks' content={t(description)} />}
