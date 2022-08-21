@@ -292,12 +292,22 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'room_e2e_enabled',
 		system: true,
-		message: 'Enabled_E2E_Encryption_for_this_room',
+		message: 'This_room_encryption_has_been_enabled_by__username_',
+		data(message) {
+			return {
+				username: message.u.username,
+			};
+		},
 	});
 	MessageTypes.registerType({
 		id: 'room_e2e_disabled',
 		system: true,
-		message: 'Disabled_E2E_Encryption_for_this_room',
+		message: 'This_room_encryption_has_been_disabled_by__username_',
+		data(message) {
+			return {
+				username: message.u.username,
+			};
+		},
 	});
 });
 
