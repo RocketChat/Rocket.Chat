@@ -4,7 +4,7 @@ import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
-import Section from '../Section';
+import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import DownloadDataButton from '../dataView/DownloadDataButton';
 import LegendSymbol from '../dataView/LegendSymbol';
 import PeriodSelector from '../dataView/PeriodSelector';
@@ -39,20 +39,17 @@ const MessagesPerChannelSection = (): ReactElement => {
 	);
 
 	return (
-		<Section
-			title={t('Where_are_the_messages_being_sent?')}
-			filter={
-				<>
-					<PeriodSelector {...periodSelectorProps} />
-					<DownloadDataButton
-						attachmentName={`MessagesPerChannelSection_start_${messageOriginsData?.start}_end_${messageOriginsData?.end}`}
-						headers={['Room Type', 'Messages']}
-						dataAvailable={!!messageOriginsData}
-						dataExtractor={(): unknown[][] | undefined => messageOriginsData?.origins.map(({ t, messages }) => [t, messages])}
-					/>
-				</>
-			}
-		>
+		<>
+			<EngagementDashboardCardFilter>
+				<PeriodSelector {...periodSelectorProps} />
+				<DownloadDataButton
+					attachmentName={`MessagesPerChannelSection_start_${messageOriginsData?.start}_end_${messageOriginsData?.end}`}
+					headers={['Room Type', 'Messages']}
+					dataAvailable={!!messageOriginsData}
+					dataExtractor={(): unknown[][] | undefined => messageOriginsData?.origins.map(({ t, messages }) => [t, messages])}
+				/>
+			</EngagementDashboardCardFilter>
+
 			<Flex.Container>
 				<Margins inline='neg-x12'>
 					<Box>
@@ -86,15 +83,15 @@ const MessagesPerChannelSection = (): ReactElement => {
 																			color: colors.w500,
 																		},
 																		{
-																			id: 'c',
+																			id: 'p',
 																			label: t('Private_Channels'),
-																			value: pie.c,
+																			value: pie.p,
 																			color: colors.s500,
 																		},
 																		{
-																			id: 'p',
+																			id: 'c',
 																			label: t('Public_Channels'),
-																			value: pie.p,
+																			value: pie.c,
 																			color: colors.p500,
 																		},
 																	]}
@@ -130,10 +127,9 @@ const MessagesPerChannelSection = (): ReactElement => {
 																			},
 																		},
 																	}}
-																	// @ts-ignore
-																	tooltip={({ value }): ReactElement => (
+																	tooltip={({ datum }): ReactElement => (
 																		<Box fontScale='p1m' color='alternative'>
-																			{t('Value_messages', { value })}
+																			{t('Value_messages', { value: datum.value })}
 																		</Box>
 																	)}
 																/>
@@ -194,8 +190,8 @@ const MessagesPerChannelSection = (): ReactElement => {
 														<Table.Cell>
 															<Margins inlineEnd='x4'>
 																{(t === 'd' && <Icon name='at' />) ||
-																	(t === 'c' && <Icon name='lock' />) ||
-																	(t === 'p' && <Icon name='hashtag' />)}
+																	(t === 'p' && <Icon name='lock' />) ||
+																	(t === 'c' && <Icon name='hashtag' />)}
 															</Margins>
 															{name}
 														</Table.Cell>
@@ -225,7 +221,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 					</Box>
 				</Margins>
 			</Flex.Container>
-		</Section>
+		</>
 	);
 };
 

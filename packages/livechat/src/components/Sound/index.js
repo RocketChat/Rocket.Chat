@@ -3,11 +3,11 @@ import { Component } from 'preact';
 export class Sound extends Component {
 	play = () => {
 		this.audio.play();
-	}
+	};
 
 	handleRef = (audio) => {
 		this.audio = audio;
-	}
+	};
 
 	handlePlayProp = () => {
 		const { play, dismissNotification } = this.props;
@@ -21,7 +21,7 @@ export class Sound extends Component {
 			this.audio.pause();
 			this.audio.currentTime = 0;
 		}
-	}
+	};
 
 	componentDidMount() {
 		this.handlePlayProp();
@@ -39,5 +39,5 @@ export class Sound extends Component {
 			onEnded={onStop}
 			type='audio/mpeg'
 		/>
-	)
+	);
 }

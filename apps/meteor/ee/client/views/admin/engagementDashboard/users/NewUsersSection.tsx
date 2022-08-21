@@ -8,7 +8,7 @@ import React, { ReactElement, useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/dataView/CounterSet';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
-import Section from '../Section';
+import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import DownloadDataButton from '../dataView/DownloadDataButton';
 import PeriodSelector from '../dataView/PeriodSelector';
 import { usePeriodLabel } from '../dataView/usePeriodLabel';
@@ -78,20 +78,16 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 	}, [data, utc]);
 
 	return (
-		<Section
-			title={t('New_users')}
-			filter={
-				<>
-					<PeriodSelector {...periodSelectorProps} />
-					<DownloadDataButton
-						attachmentName={`NewUsersSection_start_${data?.start}_end_${data?.end}`}
-						headers={['Date', 'New Users']}
-						dataAvailable={!!data}
-						dataExtractor={(): unknown[][] | undefined => values?.map(({ date, newUsers }) => [date, newUsers])}
-					/>
-				</>
-			}
-		>
+		<>
+			<EngagementDashboardCardFilter>
+				<PeriodSelector {...periodSelectorProps} />
+				<DownloadDataButton
+					attachmentName={`NewUsersSection_start_${data?.start}_end_${data?.end}`}
+					headers={['Date', 'New Users']}
+					dataAvailable={!!data}
+					dataExtractor={(): unknown[][] | undefined => values?.map(({ date, newUsers }) => [date, newUsers])}
+				/>
+			</EngagementDashboardCardFilter>
 			<CounterSet
 				counters={[
 					{
@@ -195,7 +191,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 					</Box>
 				)}
 			</Flex.Container>
-		</Section>
+		</>
 	);
 };
 

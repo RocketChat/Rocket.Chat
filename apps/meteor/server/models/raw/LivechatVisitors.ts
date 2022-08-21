@@ -142,7 +142,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		const project = {
 			$project: {
 				// TODO: move this logic to client
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				custom_name: { $concat: ['$username', ' - ', '$name'] },
 				...projection,
 			},
@@ -287,7 +286,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	removeById(_id: string): Promise<DeleteResult> {
-		return this.removeById(_id);
+		return this.deleteOne({ _id });
 	}
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {

@@ -10,7 +10,6 @@ const getCustomSoundId = (sound) => `custom-sound-${sound}`;
 class CustomSoundsClass {
 	constructor() {
 		this.list = new ReactiveVar({});
-		this.add({ _id: 'calling', name: 'Calling', extension: 'mp3', src: getURL('sounds/calling.mp3') });
 		this.add({ _id: 'chime', name: 'Chime', extension: 'mp3', src: getURL('sounds/chime.mp3') });
 		this.add({ _id: 'door', name: 'Door', extension: 'mp3', src: getURL('sounds/door.mp3') });
 		this.add({ _id: 'beep', name: 'Beep', extension: 'mp3', src: getURL('sounds/beep.mp3') });
@@ -52,6 +51,8 @@ class CustomSoundsClass {
 			extension: 'mp3',
 			src: getURL('sounds/call-ended.mp3'),
 		});
+		this.add({ _id: 'dialtone', name: 'Dialtone', extension: 'mp3', src: getURL('sounds/dialtone.mp3') });
+		this.add({ _id: 'ringtone', name: 'Ringtone', extension: 'mp3', src: getURL('sounds/ringtone.mp3') });
 	}
 
 	add(sound) {

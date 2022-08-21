@@ -7,7 +7,7 @@ import { Users } from '@rocket.chat/models';
 
 import { metrics } from '../../../app/metrics';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { AutoUpdateRecord, IMeteor } from '../../sdk/types/IMeteor';
+import type { AutoUpdateRecord, IMeteor } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
 import { Livechat } from '../../../app/livechat/server';
 import { settings } from '../../../app/settings/server';
@@ -21,7 +21,7 @@ import notifications from '../../../app/notifications/server/lib/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 import { use } from '../../../app/settings/server/Middleware';
-import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
+import type { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 
 type Callbacks = {
 	added(id: string, record: object): void;
@@ -33,6 +33,8 @@ let processOnChange: (diff: Record<string, any>, id: string) => void;
 // eslint-disable-next-line no-undef
 const disableOplog = !!(Package as any)['disable-oplog'];
 const serviceConfigCallbacks = new Set<Callbacks>();
+
+const disableMsgRoundtripTracking = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING).toLowerCase());
 
 if (disableOplog) {
 	// Stores the callbacks for the disconnection reactivity bellow
@@ -49,7 +51,10 @@ if (disableOplog) {
 		}: {
 			collectionName: string;
 			selector: Record<string, any>;
-			options?: { fields?: Record<string, number> };
+			options?: {
+				projection?: Record<string, number>;
+				fields?: Record<string, number>;
+			};
 		},
 		_ordered: boolean,
 		callbacks: Callbacks,
@@ -58,7 +63,14 @@ if (disableOplog) {
 		let cbs: Set<{ hashedToken: string; callbacks: Callbacks }>;
 		let data: { hashedToken: string; callbacks: Callbacks };
 		if (callbacks?.added) {
-			const records = Promise.await(mongo.rawCollection(collectionName).find(selector, { projection: options.fields }).toArray());
+			const records = Promise.await(
+				mongo
+					.rawCollection(collectionName)
+					.find(selector, {
+						...(options.projection || options.fields ? { projection: options.projection || options.fields } : {}),
+					})
+					.toArray(),
+			);
 			for (const { _id, ...fields } of records) {
 				callbacks.added(String(_id), fields);
 			}
@@ -92,19 +104,20 @@ if (disableOplog) {
 	// Re-implement meteor's reactivity that uses observe to disconnect sessions when the token
 	// associated was removed
 	processOnChange = (diff: Record<string, any>, id: string): void => {
+		if (!diff || !('services.resume.loginTokens' in diff)) {
+			return;
+		}
 		const loginTokens: undefined | { hashedToken: string }[] = diff['services.resume.loginTokens'];
-		if (loginTokens) {
-			const tokens = loginTokens.map(({ hashedToken }) => hashedToken);
+		const tokens = loginTokens?.map(({ hashedToken }) => hashedToken);
 
-			const cbs = userCallbacks.get(id);
-			if (cbs) {
-				[...cbs]
-					.filter(({ hashedToken }) => !tokens.includes(hashedToken))
-					.forEach((item) => {
-						item.callbacks.removed(id);
-						cbs.delete(item);
-					});
-			}
+		const cbs = userCallbacks.get(id);
+		if (cbs) {
+			[...cbs]
+				.filter(({ hashedToken }) => tokens === undefined || !tokens.includes(hashedToken))
+				.forEach((item) => {
+					item.callbacks.removed(id);
+					cbs.delete(item);
+				});
 		}
 	};
 }
@@ -247,7 +260,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			configureEmailInboxes();
 		});
 
-		if (!process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING) {
+		if (!disableMsgRoundtripTracking) {
 			this.onEvent('watch.messages', ({ message }) => {
 				if (message?._updatedAt) {
 					metrics.messageRoundtripTime.set(Date.now() - message._updatedAt.getDate());

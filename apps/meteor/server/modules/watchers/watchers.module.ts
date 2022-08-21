@@ -1,76 +1,46 @@
 import mem from 'mem';
 import type {
-	IMessage,
 	ISubscription,
-	IRole,
-	IRoom,
-	IBaseData,
-	IPermission,
-	ILivechatInquiryRecord,
-	IUserSession,
 	IUser,
 	ILoginServiceConfiguration,
-	IInstanceStatus,
 	IIntegrationHistory,
 	ILivechatDepartmentAgents,
+	IMessage,
+	IPermission,
+	ISetting,
+	IRoom,
+	IInstanceStatus,
 	IIntegration,
 	IEmailInbox,
 	IPbxEvent,
+	SettingValue,
+	ILivechatInquiryRecord,
+	IRole,
+	IUserSession,
 } from '@rocket.chat/core-typings';
-import { ISetting, SettingValue } from '@rocket.chat/core-typings';
 import {
-	IBaseModel,
-	IEmailInboxModel,
-	IInstanceStatusModel,
-	IIntegrationHistoryModel,
-	IIntegrationsModel,
-	ILivechatDepartmentAgentsModel,
-	ILivechatInquiryModel,
-	ILoginServiceConfigurationModel,
-	IMessagesModel,
-	IPbxEventsModel,
-	IPermissionsModel,
-	IRolesModel,
-	IRoomsModel,
-	ISettingsModel,
-	ISubscriptionsModel,
-	IUsersModel,
-	IUsersSessionsModel,
-} from '@rocket.chat/model-typings';
+	Subscriptions,
+	Messages,
+	Users,
+	Settings,
+	Roles,
+	UsersSessions,
+	LivechatInquiry,
+	LivechatDepartmentAgents,
+	Rooms,
+	LoginServiceConfiguration,
+	InstanceStatus,
+	IntegrationHistory,
+	Integrations,
+	EmailInbox,
+	PbxEvents,
+	Permissions,
+} from '@rocket.chat/models';
 
 import { subscriptionFields, roomFields } from './publishFields';
-import { EventSignatures } from '../../sdk/lib/Events';
+import type { EventSignatures } from '../../sdk/lib/Events';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
-
-interface IModelsParam {
-	Subscriptions: ISubscriptionsModel;
-	Permissions: IPermissionsModel;
-	Users: IUsersModel;
-	Settings: ISettingsModel;
-	Messages: IMessagesModel;
-	LivechatInquiry: ILivechatInquiryModel;
-	LivechatDepartmentAgents: ILivechatDepartmentAgentsModel;
-	UsersSessions: IUsersSessionsModel;
-	Roles: IRolesModel;
-	Rooms: IRoomsModel;
-	LoginServiceConfiguration: ILoginServiceConfigurationModel;
-	InstanceStatus: IInstanceStatusModel;
-	IntegrationHistory: IIntegrationHistoryModel;
-	Integrations: IIntegrationsModel;
-	EmailInbox: IEmailInboxModel;
-	PbxEvents: IPbxEventsModel;
-}
-
-interface IChange<T> {
-	action: 'insert' | 'update' | 'remove';
-	clientAction: 'inserted' | 'updated' | 'removed';
-	id: string;
-	data?: T;
-	diff?: Record<string, any>;
-	unset?: Record<string, number>;
-}
-
-type Watcher = <T extends IBaseData>(model: IBaseModel<T>, fn: (event: IChange<T>) => void) => void;
+import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
@@ -90,26 +60,12 @@ const hasKeys =
 const hasRoomFields = hasKeys(Object.keys(roomFields));
 const hasSubscriptionFields = hasKeys(Object.keys(subscriptionFields));
 
-export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
-	const {
-		Messages,
-		Users,
-		Settings,
-		Subscriptions,
-		UsersSessions,
-		Roles,
-		Permissions,
-		LivechatInquiry,
-		LivechatDepartmentAgents,
-		Rooms,
-		LoginServiceConfiguration,
-		InstanceStatus,
-		IntegrationHistory,
-		Integrations,
-		EmailInbox,
-		PbxEvents,
-	} = models;
+let watcherStarted = false;
+export function isWatcherRunning(): boolean {
+	return watcherStarted;
+}
 
+export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallback): void {
 	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
 	const getUserNameCached = mem(
@@ -120,7 +76,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		{ maxAge: 10000 },
 	);
 
-	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
+	watcher.on<IMessage>(Messages.getCollectionName(), async ({ clientAction, id, data }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
@@ -156,7 +112,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 	});
 
-	watch<ISubscription>(Subscriptions, async ({ clientAction, id, data, diff }) => {
+	watcher.on<ISubscription>(Subscriptions.getCollectionName(), async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated': {
@@ -186,7 +142,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 	});
 
-	watch<IRole>(Roles, async ({ clientAction, id, data, diff }) => {
+	watcher.on<IRole>(Roles.getCollectionName(), async ({ clientAction, id, data, diff }) => {
 		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
 			// avoid useless changes
 			return;
@@ -205,7 +161,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	});
 
 	if (isPresenceMonitorEnabled()) {
-		watch<IUserSession>(UsersSessions, async ({ clientAction, id, data: eventData }) => {
+		watcher.on<IUserSession>(UsersSessions.getCollectionName(), async ({ clientAction, id, data: eventData }) => {
 			switch (clientAction) {
 				case 'inserted':
 				case 'updated':
@@ -223,7 +179,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		});
 	}
 
-	watch<ILivechatInquiryRecord>(LivechatInquiry, async ({ clientAction, id, data, diff }) => {
+	watcher.on<ILivechatInquiryRecord>(LivechatInquiry.getCollectionName(), async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
@@ -242,7 +198,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.inquiries', { clientAction, inquiry: data, diff });
 	});
 
-	watch<ILivechatDepartmentAgents>(LivechatDepartmentAgents, async ({ clientAction, id, diff }) => {
+	watcher.on<ILivechatDepartmentAgents>(LivechatDepartmentAgents.getCollectionName(), async ({ clientAction, id, diff }) => {
 		if (clientAction === 'removed') {
 			const data = await LivechatDepartmentAgents.trashFindOneById<Pick<ILivechatDepartmentAgents, 'agentId' | 'departmentId'>>(id, {
 				projection: { agentId: 1, departmentId: 1 },
@@ -263,7 +219,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.livechatDepartmentAgents', { clientAction, id, data, diff });
 	});
 
-	watch<IPermission>(Permissions, async ({ clientAction, id, data: eventData, diff }) => {
+	watcher.on<IPermission>(Permissions.getCollectionName(), async ({ clientAction, id, data: eventData, diff }) => {
 		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
 			// avoid useless changes
 			return;
@@ -298,7 +254,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 	});
 
-	watch<ISetting>(Settings, async ({ clientAction, id, data, diff }) => {
+	watcher.on<ISetting>(Settings.getCollectionName(), async ({ clientAction, id, data, diff }) => {
 		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
 			// avoid useless changes
 			return;
@@ -325,7 +281,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.settings', { clientAction, setting });
 	});
 
-	watch<IRoom>(Rooms, async ({ clientAction, id, data, diff }) => {
+	watcher.on<IRoom>(Rooms.getCollectionName(), async ({ clientAction, id, data, diff }) => {
 		if (clientAction === 'removed') {
 			broadcast('watch.rooms', { clientAction, room: { _id: id } });
 			return;
@@ -345,7 +301,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 
 	// TODO: Prevent flood from database on username change, what causes changes on all past messages from that user
 	// and most of those messages are not loaded by the clients.
-	watch<IUser>(Users, ({ clientAction, id, data, diff, unset }) => {
+	watcher.on<IUser>(Users.getCollectionName(), ({ clientAction, id, data, diff, unset }) => {
 		// LivechatCount is updated each time an agent is routed to a chat. This prop is not used on the UI so we don't need
 		// to broadcast events originated by it when it's the only update on the user
 		if (diff && Object.keys(diff).length === 1 && 'livechatCount' in diff) {
@@ -355,7 +311,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.users', { clientAction, data, diff, unset, id });
 	});
 
-	watch<ILoginServiceConfiguration>(LoginServiceConfiguration, async ({ clientAction, id }) => {
+	watcher.on<ILoginServiceConfiguration>(LoginServiceConfiguration.getCollectionName(), async ({ clientAction, id }) => {
 		const data = await LoginServiceConfiguration.findOne<Omit<ILoginServiceConfiguration, 'secret'>>(id, { projection: { secret: 0 } });
 		if (!data) {
 			return;
@@ -364,11 +320,11 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.loginServiceConfiguration', { clientAction, data, id });
 	});
 
-	watch<IInstanceStatus>(InstanceStatus, ({ clientAction, id, data, diff }) => {
+	watcher.on<IInstanceStatus>(InstanceStatus.getCollectionName(), ({ clientAction, id, data, diff }) => {
 		broadcast('watch.instanceStatus', { clientAction, data, diff, id });
 	});
 
-	watch<IIntegrationHistory>(IntegrationHistory, async ({ clientAction, id, data, diff }) => {
+	watcher.on<IIntegrationHistory>(IntegrationHistory.getCollectionName(), async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'updated': {
 				const history = await IntegrationHistory.findOneById<Pick<IIntegrationHistory, 'integration'>>(id, {
@@ -390,7 +346,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 	});
 
-	watch<IIntegration>(Integrations, async ({ clientAction, id, data: eventData }) => {
+	watcher.on<IIntegration>(Integrations.getCollectionName(), async ({ clientAction, id, data: eventData }) => {
 		if (clientAction === 'removed') {
 			broadcast('watch.integrations', { clientAction, id, data: { _id: id } });
 			return;
@@ -404,7 +360,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.integrations', { clientAction, data, id });
 	});
 
-	watch<IEmailInbox>(EmailInbox, async ({ clientAction, id, data: eventData }) => {
+	watcher.on<IEmailInbox>(EmailInbox.getCollectionName(), async ({ clientAction, id, data: eventData }) => {
 		if (clientAction === 'removed') {
 			broadcast('watch.emailInbox', { clientAction, id, data: { _id: id } });
 			return;
@@ -418,7 +374,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.emailInbox', { clientAction, data, id });
 	});
 
-	watch<IPbxEvent>(PbxEvents, async ({ clientAction, id, data: eventData }) => {
+	watcher.on<IPbxEvent>(PbxEvents.getCollectionName(), async ({ clientAction, id, data: eventData }) => {
 		// For now, we just care about insertions here
 		if (clientAction === 'inserted') {
 			const data = eventData ?? (await PbxEvents.findOneById(id));
@@ -431,4 +387,6 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			broadcast('watch.pbxevents', { clientAction, data, id });
 		}
 	});
+
+	watcherStarted = true;
 }

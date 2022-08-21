@@ -1,4 +1,5 @@
-import { IRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { Federation } from '../../../../app/federation-v2/server/infrastructure/rocket-chat/Federation';
 import { settings } from '../../../../app/settings/server';
@@ -29,7 +30,7 @@ roomCoordinator.add(PrivateRoomType, {
 
 	allowMemberAction(_room, action) {
 		if (isRoomFederated(_room as IRoom)) {
-			return Federation.federationActionAllowed(action);
+			return Federation.actionAllowed(_room, action);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:

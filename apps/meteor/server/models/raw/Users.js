@@ -272,6 +272,12 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query);
 	}
 
+	async findOneByAppId(appId, options) {
+		const query = { appId };
+
+		return this.findOne(query, options);
+	}
+
 	findLDAPUsers(options) {
 		const query = { ldap: true };
 
@@ -407,18 +413,14 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	async setLastRoutingTime(userId) {
-		const result = await this.col.findAndModify(
+		const result = await this.findOneAndUpdate(
 			{ _id: userId },
-			{
-				sort: {
-					_id: 1,
-				},
-			},
 			{
 				$set: {
 					lastRoutingTime: new Date(),
 				},
 			},
+			{ returnDocument: 'after' },
 		);
 		return result.value;
 	}
@@ -1000,7 +1002,7 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const options = {
-			fields: { _id: 1 },
+			projection: { _id: 1 },
 		};
 
 		const found = await this.findOne(query, options);
@@ -1123,5 +1125,9 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 		return this.updateOne(query, update);
+	}
+
+	findOneByResetToken(token, options) {
+		return this.findOne({ 'services.password.reset.token': token }, options);
 	}
 }

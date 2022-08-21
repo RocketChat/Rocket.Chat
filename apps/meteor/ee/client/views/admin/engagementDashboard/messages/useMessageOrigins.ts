@@ -1,5 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { getPeriodRange, Period } from '../dataView/periods';
 
@@ -15,8 +15,8 @@ export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) => {
 			const { start, end } = getPeriodRange(period);
 
 			const response = await getMessageOrigins({
-				start,
-				end,
+				start: start.toISOString(),
+				end: end.toISOString(),
 			});
 
 			return response
@@ -29,6 +29,7 @@ export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) => {
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
 		},
 	);
 };
