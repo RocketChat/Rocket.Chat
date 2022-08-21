@@ -89,7 +89,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 					unread={Boolean(subscription?.tunread?.includes(message._id))}
 					mention={Boolean(subscription?.tunreadUser?.includes(message._id))}
 					all={Boolean(subscription?.tunreadGroup?.includes(message._id))}
-					participants={message && message.replies ? message?.replies.length : 0}
+					participants={message?.replies?.length || 0}
 				/>
 			)}
 
