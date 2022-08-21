@@ -1,20 +1,20 @@
-import { IOAuthApp, IOAuthAppParams } from '@rocket.chat/apps-engine/definition/accessors/IOAuthApps';
+import type { IOAuthApp, IOAuthAppParams } from '@rocket.chat/apps-engine/definition/accessors/IOAuthApp';
 import { OAuthAppsBridge } from '@rocket.chat/apps-engine/server/bridges/OAuthAppsBridge';
-import { IOAuthApps } from '@rocket.chat/core-typings';
+import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps, Users } from '@rocket.chat/models';
 import { Random } from 'meteor/random';
 import { v4 as uuidv4 } from 'uuid';
 
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppOAuthAppsBridge extends OAuthAppsBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}
 
-	protected async create(OAuthApp: IOAuthAppParams, appId: string): Promise<string | null> {
+	protected async create(oAuthApp: IOAuthAppParams, appId: string): Promise<string | null> {
 		this.orch.debugLog(`The App ${appId} is creating a new OAuth app.`);
-		const { clientId, clientSecret } = OAuthApp;
+		const { clientId, clientSecret } = oAuthApp;
 		const botUser = await Users.findOne({ appId });
 		if (!botUser) {
 			this.orch.debugLog('Unable to find the bot`s user');
@@ -25,7 +25,7 @@ export class AppOAuthAppsBridge extends OAuthAppsBridge {
 
 		return (
 			await OAuthApps.insertOne({
-				...OAuthApp,
+				...oAuthApp,
 				_id: uuidv4(),
 				appId,
 				clientId: clientId ?? Random.id(),
@@ -64,9 +64,9 @@ export class AppOAuthAppsBridge extends OAuthAppsBridge {
 		return OAuthApps.find({ name, appId }).toArray() as unknown as Array<IOAuthApp>;
 	}
 
-	protected async update(OAuthApp: IOAuthAppParams, id: string, appId: string): Promise<void> {
+	protected async update(oAuthApp: IOAuthAppParams, id: string, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating the OAuth app ${id}.`);
-		await OAuthApps.updateOne({ _id: id, appId }, { $set: OAuthApp }, { upsert: true });
+		await OAuthApps.updateOne({ _id: id, appId }, { $set: oAuthApp }, { upsert: true });
 	}
 
 	protected async delete(id: string, appId: string): Promise<void> {
