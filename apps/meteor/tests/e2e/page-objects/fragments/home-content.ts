@@ -115,7 +115,7 @@ export class HomeContent {
 	}
 
 	get inputModalClosingComment(): Locator {
-		return this.page.locator('#modal-root input:nth-child(1)');
+		return this.page.locator('#modal-root input:nth-child(1)[name="comment"]');
 	}
 
 	get inputModalAgentUserName(): Locator {
