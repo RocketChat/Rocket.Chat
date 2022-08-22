@@ -15,7 +15,13 @@ Meteor.methods({
 
 		const inquiry = LivechatInquiry.findOneById(inquiryId);
 
-		if (!inquiry || inquiry.status === 'taken') {
+		if (!inquiry) {
+			throw new Meteor.Error('error-not-found', 'Inquiry not found', {
+				method: 'livechat:takeInquiry',
+			});
+		}
+
+		if (inquiry.status === 'taken') {
 			throw new Meteor.Error('error-inquiry-taken', 'Inquiry already taken', {
 				method: 'livechat:takeInquiry',
 			});
