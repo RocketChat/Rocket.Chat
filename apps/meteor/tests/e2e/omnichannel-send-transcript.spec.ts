@@ -26,6 +26,8 @@ test.describe('omnichannel-transcript', () => {
 
 		// Set user user 1 as manager and agent
 		await api.post('/livechat/users/agent', { username: 'user1' });
+		await api.post('/livechat/users/manager', { username: 'user1' });
+
 		agent = await createAuxContext(browser, 'user1-session.json');
 	});
 	test.beforeEach(async ({ page }) => {
