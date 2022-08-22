@@ -4100,25 +4100,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-ui-kit@npm:next":
-  version: 0.32.0-dev.70
-  resolution: "@rocket.chat/fuselage-ui-kit@npm:0.32.0-dev.70"
-  dependencies:
-    "@rocket.chat/ui-kit": ~0.32.0-dev.55
-    tslib: ^2.3.1
-  peerDependencies:
-    "@rocket.chat/fuselage": "*"
-    "@rocket.chat/fuselage-hooks": "*"
-    "@rocket.chat/fuselage-polyfills": "*"
-    "@rocket.chat/icons": "*"
-    "@rocket.chat/styled": "*"
-    react: ^17.0.2
-    react-dom: ^17.0.2
-  checksum: 173ca663f36444a12e8f432904a284e9c13de038c6b74d174bd0243462c0d3a2f37d514981adcdddd939d82488eef61f3f4065b8c5714a4eb3478c30d0e80594
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/fuselage-ui-kit@workspace:packages/fuselage-ui-kit":
+"@rocket.chat/fuselage-ui-kit@workspace:^, @rocket.chat/fuselage-ui-kit@workspace:packages/fuselage-ui-kit":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/fuselage-ui-kit@workspace:packages/fuselage-ui-kit"
   dependencies:
@@ -4130,7 +4112,9 @@ __metadata:
     "@rocket.chat/icons": next
     "@rocket.chat/prettier-config": next
     "@rocket.chat/styled": next
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": next
+    "@rocket.chat/ui-video-conf": "workspace:^"
     "@storybook/addon-essentials": ~6.4.18
     "@storybook/addons": ~6.4.18
     "@storybook/builder-webpack5": ~6.4.18
@@ -4138,6 +4122,7 @@ __metadata:
     "@storybook/react": ~6.4.18
     "@storybook/source-loader": ~6.4.18
     "@storybook/theming": ~6.4.18
+    "@tanstack/react-query": ^4.2.1
     "@types/react": ~17.0.39
     "@types/react-dom": ^17.0.11
     babel-loader: ~8.2.3
@@ -4159,6 +4144,7 @@ __metadata:
     "@rocket.chat/fuselage-polyfills": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
+    "@tanstack/react-query": "*"
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -4283,7 +4269,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": next
     "@rocket.chat/logo": next
     "@rocket.chat/sdk": ^1.0.0-alpha.42
-    "@rocket.chat/ui-kit": ^0.14.1
+    "@rocket.chat/ui-kit": next
     "@storybook/addon-actions": ^6.5.9
     "@storybook/addon-backgrounds": ^6.5.9
     "@storybook/addon-essentials": ^6.5.9
@@ -4428,7 +4414,7 @@ __metadata:
     "@rocket.chat/fuselage-polyfills": next
     "@rocket.chat/fuselage-toastbar": next
     "@rocket.chat/fuselage-tokens": next
-    "@rocket.chat/fuselage-ui-kit": next
+    "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/icons": next
     "@rocket.chat/layout": next
@@ -4935,17 +4921,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-kit@npm:^0.14.1":
-  version: 0.14.1
-  resolution: "@rocket.chat/ui-kit@npm:0.14.1"
-  checksum: c9da95fbb079b2bbd39d746552083f0a67171347f303a3f27cad875f0eedf8d121d372fd0671c2ba9b2cd93b727fec10b01fe906cd71057a98872338c58f48bb
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/ui-kit@npm:next, @rocket.chat/ui-kit@npm:~0.32.0-dev.55":
-  version: 0.32.0-dev.55
-  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.55"
-  checksum: 8abeb7772fa9f8b2d309ba05ec460284bca6457115a4032da04ca74d4bf9064db389719e127cf541f6c98e5068f928b9242bf76be2bcfcfc2ed3e57850a46363
+"@rocket.chat/ui-kit@npm:next":
+  version: 0.32.0-dev.60
+  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.60"
+  checksum: e45a30b248f9b536c0ea22556f3c2fa4e0844e588a355f1bb6d606cf1bbef5551494ff12df16cac268446836d5cc35cb2e86e0a35e4b9cd211c0d77b732d3951
   languageName: node
   linkType: hard
 
@@ -8618,6 +8597,26 @@ __metadata:
     react-native:
       optional: true
   checksum: b5f7501f977f4262fe80e510f5d58f3b49163ff7232603a839b7184431db7309c38ab55c5856a9d31a3c5219dd5031f9174e9dfcc78408300d0424b3000b9034
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "@tanstack/react-query@npm:4.2.1"
+  dependencies:
+    "@tanstack/query-core": ^4.0.0-beta.1
+    "@types/use-sync-external-store": ^0.0.3
+    use-sync-external-store: ^1.2.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-native: "*"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: bbf3a808645c26c649971dc182bb9a7ed7a1d89f6456b60685c6081b8be6ae84ae83b39c7eacb96c4f3b6677ca001d8114037329951987b7a8d65de53b28c862
   languageName: node
   linkType: hard
 

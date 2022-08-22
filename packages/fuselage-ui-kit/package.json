@@ -43,6 +43,7 @@
     "@rocket.chat/fuselage-polyfills": "*",
     "@rocket.chat/icons": "*",
     "@rocket.chat/styled": "*",
+    "@tanstack/react-query": "*",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
@@ -62,6 +63,7 @@
     "@storybook/react": "~6.4.18",
     "@storybook/source-loader": "~6.4.18",
     "@storybook/theming": "~6.4.18",
+    "@tanstack/react-query": "^4.2.1",
     "@types/react": "~17.0.39",
     "@types/react-dom": "^17.0.11",
     "babel-loader": "~8.2.3",
@@ -78,7 +80,9 @@
     "webpack": "~5.68.0"
   },
   "dependencies": {
+    "@rocket.chat/ui-contexts": "workspace:^",
     "@rocket.chat/ui-kit": "next",
+    "@rocket.chat/ui-video-conf": "workspace:^",
     "tslib": "^2.3.1"
   }
 }

@@ -58,8 +58,20 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 			)}
 			{message.blocks && (
 				<MessageBlock fixedWidth>
-					{message?.blocks?.map((block, index) => block.appId === 'videoconf-core' && <VideoConfMessages key={index} />)}
-					<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
+					<MessageBlockUiKit
+						mid={message._id}
+						blocks={message?.blocks?.map((block) => {
+							if (block.appId === 'videoconf-core') {
+								return {
+									type: 'video_conf',
+									callId: '6303d0f00620f3a4ada39f85',
+								};
+							}
+							return block;
+						})}
+						appId
+						rid={message.rid}
+					/>
 				</MessageBlock>
 			)}
 			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} />}

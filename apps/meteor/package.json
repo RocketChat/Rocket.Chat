@@ -209,7 +209,7 @@
 		"@rocket.chat/fuselage-polyfills": "next",
 		"@rocket.chat/fuselage-toastbar": "next",
 		"@rocket.chat/fuselage-tokens": "next",
-		"@rocket.chat/fuselage-ui-kit": "next",
+		"@rocket.chat/fuselage-ui-kit": "workspace:^",
 		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/icons": "next",
 		"@rocket.chat/layout": "next",
