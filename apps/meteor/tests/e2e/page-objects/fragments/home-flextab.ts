@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { HomeFlextabChannels } from './home-flextab-channels';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
 import { HomeFlextabRoom } from './home-flextab-room';
@@ -11,12 +12,15 @@ export class HomeFlextab {
 
 	readonly room: HomeFlextabRoom;
 
+	readonly channels: HomeFlextabChannels;
+
 	readonly notificationPreferences: HomeFlextabNotificationPreferences;
 
 	constructor(page: Page) {
 		this.page = page;
 		this.members = new HomeFlextabMembers(page);
 		this.room = new HomeFlextabRoom(page);
+		this.channels = new HomeFlextabChannels(page);
 		this.notificationPreferences = new HomeFlextabNotificationPreferences(page);
 	}
 
@@ -26,6 +30,10 @@ export class HomeFlextab {
 
 	get btnRoomInfo(): Locator {
 		return this.page.locator('[data-qa-id=ToolBoxAction-info-circled]');
+	}
+
+	get btnChannels(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-hash"]');
 	}
 
 	get kebab(): Locator {
