@@ -186,9 +186,9 @@ export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props
 					</Modal.Content>
 				</>
 			)}
-			<Modal.Footer>
+			<Modal.Footer justifyContent='space-between'>
 				{currentStep === 2 && (
-					<Box mbs='x8' color='hint' fontSize='x12' position='absolute'>
+					<Box color='hint' fontSize='x12'>
 						{t('Federation_DNS_info_update')}
 					</Box>
 				)}
