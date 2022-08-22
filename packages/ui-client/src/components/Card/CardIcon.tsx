@@ -1,5 +1,5 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactElement, ReactNode } from 'react';
 
 type CardIconProps = { children: ReactNode } | ComponentProps<typeof Icon>;
 

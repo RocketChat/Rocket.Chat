@@ -1,5 +1,5 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import type { FC } from 'react';
 
 const CardFooter: FC = ({ children }) => <ButtonGroup medium>{children}</ButtonGroup>;
 

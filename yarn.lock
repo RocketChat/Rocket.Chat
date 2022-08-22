@@ -4822,6 +4822,7 @@ __metadata:
     "@rocket.chat/css-in-js": next
     "@rocket.chat/fuselage": next
     "@rocket.chat/fuselage-hooks": next
+    "@rocket.chat/icons": next
     "@storybook/addon-actions": ~6.5.10
     "@storybook/addon-docs": ~6.5.10
     "@storybook/addon-essentials": ~6.5.10

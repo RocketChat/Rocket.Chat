@@ -1,12 +1,11 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { TextSeparator } from '@rocket.chat/ui-client';
+import { TextSeparator, Card } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
-import Card from '../../../components/Card';
 import { UserStatus } from '../../../components/UserStatus';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 
