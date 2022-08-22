@@ -6,5 +6,5 @@ export * from './home-channel';
 export * from './home-discussion';
 export * from './home-team';
 export * from './omnichannel-agents';
-export * from './omnichannel-departaments';
+export * from './omnichannel-departments';
 export * from './omnichannel-livechat';
