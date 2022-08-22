@@ -2885,7 +2885,7 @@
   "Room_archived": "ოთახი დაარქივებულია",
   "room_changed_announcement": null,
   "room_changed_description": null,
-  "room_changed_topic": "ოთახის თემა შეიცვალა: <em>__room_topic__</em>  <em>__user_by__</em>",
+  "room_changed_topic": "ოთახის თემა შეიცვალა: __room_topic__  __user_by__",
   "Room_default_change_to_private_will_be_default_no_more": "ეს არის დეფაულტ არხი და პირად ჯგუფად გადაკეთების შემთხვევაში აღარ იქნება დეფაულტ არხი.გსურთ გაგრძელება?",
   "Room_description_changed_successfully": "ოთახის აღწერა წარმატებით შეიცვალა",
   "Room_has_been_archived": "ოთახი დაარქივებულია",
