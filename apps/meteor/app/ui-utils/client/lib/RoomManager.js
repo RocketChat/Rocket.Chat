@@ -100,10 +100,6 @@ export const RoomManager = new (function () {
 							if (record.streamActive !== true) {
 								msgStream
 									.on(record.rid, async (msg) => {
-										// Should not send message to room if room has not loaded all the current messages
-										if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
-											return;
-										}
 										// Do not load command messages into channel
 										if (msg.t !== 'command') {
 											const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
