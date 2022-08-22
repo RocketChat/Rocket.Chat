@@ -28,7 +28,7 @@ export class HomeFlextab {
 		return this.page.locator('[data-qa-id=ToolBoxAction-info-circled]');
 	}
 
-	get btnMoreItems(): Locator {
+	get kebab(): Locator {
 		return this.page.locator('[data-qa-id=ToolBox-Menu]');
 	}
 
