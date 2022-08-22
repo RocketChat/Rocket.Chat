@@ -65,7 +65,7 @@ export class OmnichannelCurrentChats {
 	}
 
 	get table(): Locator {
-		return this.page.locator('[data-qa="GenericTableCurrentChatsBody"]');
+		return this.page.locator('.rcx-table');
 	}
 
 	get tableHeaderName(): Locator {
