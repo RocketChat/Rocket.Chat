@@ -11,7 +11,6 @@ Meteor.startup(function () {
 		data(message) {
 			return {
 				room_name: message.msg,
-				user_by: message.u.username,
 			};
 		},
 	});
@@ -22,7 +21,6 @@ Meteor.startup(function () {
 		data(message) {
 			return {
 				user_added: message.msg,
-				user_by: message.u.username,
 			};
 		},
 	});
@@ -43,7 +41,6 @@ Meteor.startup(function () {
 		data(message) {
 			return {
 				user_removed: message.msg,
-				user_by: message.u.username,
 			};
 		},
 	});
@@ -190,7 +187,6 @@ Meteor.startup(function () {
 		data(message) {
 			return {
 				user_muted: message.msg,
-				user_by: message.u.username,
 			};
 		},
 	});
@@ -201,7 +197,6 @@ Meteor.startup(function () {
 		data(message) {
 			return {
 				user_unmuted: message.msg,
-				user_by: message.u.username,
 			};
 		},
 	});
@@ -233,61 +228,31 @@ Meteor.startup(function () {
 		id: 'room-archived',
 		system: true,
 		message: 'This_room_has_been_archived_by__username_',
-		data(message) {
-			return {
-				username: message.u.username,
-			};
-		},
 	});
 	MessageTypes.registerType({
 		id: 'room-unarchived',
 		system: true,
 		message: 'This_room_has_been_unarchived_by__username_',
-		data(message) {
-			return {
-				username: message.u.username,
-			};
-		},
 	});
 	MessageTypes.registerType({
 		id: 'room-removed-read-only',
 		system: true,
 		message: 'room_removed_read_only',
-		data(message) {
-			return {
-				user_by: message.u.username,
-			};
-		},
 	});
 	MessageTypes.registerType({
 		id: 'room-set-read-only',
 		system: true,
 		message: 'room_set_read_only',
-		data(message) {
-			return {
-				user_by: message.u.username,
-			};
-		},
 	});
 	MessageTypes.registerType({
 		id: 'room-allowed-reacting',
 		system: true,
 		message: 'room_allowed_reacting',
-		data(message) {
-			return {
-				user_by: message.u.username,
-			};
-		},
 	});
 	MessageTypes.registerType({
 		id: 'room-disallowed-reacting',
 		system: true,
 		message: 'room_disallowed_reacting',
-		data(message) {
-			return {
-				user_by: message.u.username,
-			};
-		},
 	});
 	MessageTypes.registerType({
 		id: 'room_e2e_enabled',
