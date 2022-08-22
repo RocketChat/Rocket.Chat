@@ -4890,6 +4890,7 @@ __metadata:
     eslint-plugin-anti-trojan-source: ^1.1.0
     eslint-plugin-react: ^7.30.1
     eslint-plugin-react-hooks: ^4.6.0
+    eslint-plugin-testing-library: ^5.6.0
     jest: ^27.5.1
     react: ~17.0.2
     ts-jest: ^27.1.4
@@ -15731,6 +15732,17 @@ __metadata:
   peerDependencies:
     eslint: ^7.5.0 || ^8.0.0
   checksum: 558994da12e6a9ff0c4f71c2e63a23746b6323d171062032843591e0fca6ce3811f979cf82e11db003c8b4f1d9842cb75301bfaa9e88d1a399b11ea6686aadcc
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-testing-library@npm:^5.6.0":
+  version: 5.6.0
+  resolution: "eslint-plugin-testing-library@npm:5.6.0"
+  dependencies:
+    "@typescript-eslint/utils": ^5.13.0
+  peerDependencies:
+    eslint: ^7.5.0 || ^8.0.0
+  checksum: 52cd25709f782bd6ff7f1aed02995a7f8b1020abfa385922947d3fd03f057f954274480ddc4c264f14061f6c59827fa7ef4699f560ffb52bfe585fb4c93b0f16
   languageName: node
   linkType: hard
 
