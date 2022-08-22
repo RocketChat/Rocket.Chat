@@ -13,7 +13,7 @@ type EmailInboxEditWithDataProps = {
 
 const EmailInboxEditWithData = ({ id }: EmailInboxEditWithDataProps): ReactElement => {
 	const t = useTranslation();
-	const { value: data, error, phase: state } = useEndpointData(`email-inbox/${id}`);
+	const { value: data, error, phase: state } = useEndpointData(`/v1/email-inbox/${id}`);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

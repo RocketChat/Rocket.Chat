@@ -14,7 +14,7 @@ const LeaveTeamModalWithRooms = ({ teamId, onCancel, onConfirm }) => {
 
 	const userId = useUserId();
 
-	const listRooms = useEndpoint('GET', 'teams.listRoomsOfUser');
+	const listRooms = useEndpoint('GET', '/v1/teams.listRoomsOfUser');
 	const { resolve, reject, reset, phase, value } = useAsyncState([]);
 
 	const fetchData = useCallback(() => {

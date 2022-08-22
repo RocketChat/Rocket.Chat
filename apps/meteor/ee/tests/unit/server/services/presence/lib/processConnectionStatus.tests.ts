@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { expect } from 'chai';
 import { UserStatus } from '@rocket.chat/core-typings';
 

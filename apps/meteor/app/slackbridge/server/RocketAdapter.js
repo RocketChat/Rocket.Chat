@@ -7,8 +7,8 @@ import { Random } from 'meteor/random';
 
 import { rocketLogger } from './logger';
 import { callbacks } from '../../../lib/callbacks';
-import { settings } from '../../settings';
-import { Messages, Rooms, Users } from '../../models';
+import { settings } from '../../settings/server';
+import { Messages, Rooms, Users } from '../../models/server';
 import { createRoom, sendMessage, setUserAvatar } from '../../lib';
 
 export default class RocketAdapter {

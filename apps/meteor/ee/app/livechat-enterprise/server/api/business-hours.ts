@@ -2,7 +2,7 @@ import { API } from '../../../../../app/api/server';
 import { findBusinessHours } from '../business-hour/lib/business-hour';
 
 API.v1.addRoute(
-	'livechat/business-hours.list',
+	'livechat/business-hours',
 	{ authRequired: true },
 	{
 		async get() {

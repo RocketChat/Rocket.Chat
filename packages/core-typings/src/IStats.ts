@@ -119,6 +119,7 @@ export interface IStats {
 		totalFailed: number | false;
 	};
 	services: Record<string, unknown>;
+	importer: Record<string, unknown>;
 	settings: ISettingStatisticsObject;
 	integrations: {
 		totalIntegrations: number;
@@ -145,4 +146,55 @@ export interface IStats {
 	messageAuditLoad: number;
 	dashboardCount: number;
 	joinJitsiButton: number;
+	totalBroadcastRooms: number;
+	totalRoomsWithActiveLivestream: number;
+	totalTriggeredEmails: number;
+	totalRoomsWithStarred: number;
+	totalRoomsWithPinned: number;
+	totalUserEmail2fa: number;
+	totalUserTOTP: number;
+	totalStarred: number;
+	totalPinned: number;
+	totalLinkInvitation: number;
+	totalEmailInvitation: number;
+	totalE2ERooms: number;
+	logoChange: boolean;
+	homeTitleChanged: boolean;
+	homeBodyChanged: boolean;
+	customCSSChanged: boolean;
+	onLogoutCustomScriptChanged: boolean;
+	loggedOutCustomScriptChanged: boolean;
+	loggedInCustomScriptChanged: boolean;
+	roomsInsideTeams: number;
+	showHomeButton: boolean;
+	totalEncryptedMessages: number;
+	totalLinkInvitationUses: number;
+	totalManuallyAddedUsers: number;
+	videoConf: {
+		videoConference: {
+			started: number;
+			ended: number;
+		};
+		direct: {
+			calling: number;
+			started: number;
+			ended: number;
+		};
+		livechat: {
+			started: number;
+			ended: number;
+		};
+		settings: {
+			provider: string;
+			dms: boolean;
+			channels: boolean;
+			groups: boolean;
+			teams: boolean;
+		};
+	};
+	totalSubscriptionRoles: number;
+	totalUserRoles: number;
+	totalWebRTCCalls: number;
+	matrixBridgeEnabled: boolean;
+	uncaughtExceptionsCount: number;
 }

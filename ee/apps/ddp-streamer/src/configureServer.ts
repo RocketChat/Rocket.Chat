@@ -164,6 +164,11 @@ server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
 	const { userId, connection } = info;
 
 	api.broadcast('accounts.logout', { userId, connection });
+
+	if (!userId) {
+		return;
+	}
+	Presence.removeConnection(userId, connection.id);
 });
 
 server.on(DDP_EVENTS.DISCONNECTED, (info) => {

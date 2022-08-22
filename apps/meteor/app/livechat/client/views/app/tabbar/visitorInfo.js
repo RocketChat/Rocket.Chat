@@ -9,18 +9,18 @@ import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
 import { modal } from '../../../../../ui-utils';
-import { Subscriptions } from '../../../../../models';
+import { Subscriptions } from '../../../../../models/client';
 import { settings } from '../../../../../settings';
 import { t } from '../../../../../utils';
 import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
-import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
 import { RoomManager } from '../../../../../ui-utils/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
 import { Markdown } from '../../../../../markdown/client';
-import { handleError } from '../../../../../../client/lib/utils/handleError';
 import { formatDateAndTime } from '../../../../../../client/lib/utils/formatDateAndTime';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
+import { dispatchToastMessage } from '../../../../../../client/lib/toast';
+import './visitorInfo.html';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -279,7 +279,8 @@ Template.visitorInfo.events({
 			const comment = TAPi18n.__('Chat_closed_by_agent');
 			return Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true }, function (error /* , result*/) {
 				if (error) {
-					return handleError(error);
+					dispatchToastMessage({ type: 'error', message: error });
+					return;
 				}
 
 				modal.open({
@@ -320,7 +321,7 @@ Template.visitorInfo.events({
 			() => {
 				Meteor.call('livechat:returnAsInquiry', this.rid, function (error /* , result*/) {
 					if (error) {
-						handleError(error);
+						dispatchToastMessage({ type: 'error', message: error });
 					} else {
 						Session.set('openedRoom');
 						FlowRouter.go('/home');
@@ -355,7 +356,7 @@ Template.visitorInfo.events({
 				confirmButtonText: t('Yes'),
 			},
 			async () => {
-				const { success } = await APIClient.v1.post('livechat/room.onHold', { roomId: this.rid });
+				const { success } = await APIClient.post('/v1/livechat/room.onHold', { roomId: this.rid });
 				if (success) {
 					modal.open({
 						title: t('Chat_On_Hold'),
@@ -382,7 +383,7 @@ Template.visitorInfo.onCreated(function () {
 	this.room = new ReactiveVar({});
 
 	this.updateVisitor = async (visitorId) => {
-		const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${visitorId}`);
+		const { visitor } = await APIClient.get('/v1/livechat/visitors.info', { visitorId });
 		this.user.set(visitor);
 	};
 
@@ -409,7 +410,7 @@ Template.visitorInfo.onCreated(function () {
 	});
 
 	const loadRoomData = async (rid) => {
-		const { room } = await APIClient.v1.get(`rooms.info?roomId=${rid}`);
+		const { room } = await APIClient.get('/v1/rooms.info', { roomId: rid });
 		this.updateRoom(room);
 	};
 
@@ -420,7 +421,7 @@ Template.visitorInfo.onCreated(function () {
 
 	this.autorun(async () => {
 		if (this.departmentId.get()) {
-			const { department } = await APIClient.v1.get(`livechat/department/${this.departmentId.get()}?includeAgents=false`);
+			const { department } = await APIClient.get(`/v1/livechat/department/${this.departmentId.get()}`, { includeAgents: false });
 			this.department.set(department);
 		}
 	});

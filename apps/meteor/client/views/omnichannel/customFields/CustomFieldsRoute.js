@@ -57,7 +57,7 @@ const CustomFieldsRoute = () => {
 			}),
 	);
 
-	const { value: data, reload } = useEndpointData('livechat/custom-fields', query);
+	const { value: data, reload } = useEndpointData('/v1/livechat/custom-fields', query);
 
 	const header = useMemo(
 		() =>

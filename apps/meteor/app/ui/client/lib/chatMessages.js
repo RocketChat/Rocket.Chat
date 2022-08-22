@@ -23,7 +23,6 @@ import GenericModal from '../../../../client/components/GenericModal';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
 import {
@@ -293,7 +292,7 @@ export class ChatMessages {
 				await this.processMessageSend(message);
 				this.$input.removeData('reply').trigger('dataChange');
 			} catch (error) {
-				handleError(error);
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			return done();
 		}
@@ -312,7 +311,7 @@ export class ChatMessages {
 				this.confirmDeleteMsg(message, done);
 				return;
 			} catch (error) {
-				handleError(error);
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 		}
 
@@ -416,19 +415,19 @@ export class ChatMessages {
 
 	async processSlashCommand(msgObject) {
 		if (msgObject.msg[0] === '/') {
-			const match = msgObject.msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
+			const match = msgObject.msg.match(/^\/([^\s]+)/m);
 			if (match) {
-				let command;
-				if (slashCommands.commands[match[1]]) {
-					const commandOptions = slashCommands.commands[match[1]];
-					command = match[1];
-					const param = match[2] || '';
+				const command = match[1];
+
+				if (slashCommands.commands[command]) {
+					const commandOptions = slashCommands.commands[command];
+					const param = msgObject.msg.replace(/^\/([^\s]+)/m, '');
 
 					if (!commandOptions.permission || hasAtLeastOnePermission(commandOptions.permission, Session.get('openedRoom'))) {
 						if (commandOptions.clientOnly) {
 							commandOptions.callback(command, param, msgObject);
 						} else {
-							APIClient.v1.post('statistics.telemetry', { params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command }] });
+							APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command }] });
 							const triggerId = generateTriggerId(slashCommands.commands[command].appId);
 							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject, triggerId }, (err, result) => {
 								typeof commandOptions.result === 'function' &&
@@ -449,7 +448,7 @@ export class ChatMessages {
 						_id: Random.id(),
 						rid: msgObject.rid,
 						ts: new Date(),
-						msg: TAPi18n.__('No_such_command', { command: escapeHTML(match[1]) }),
+						msg: TAPi18n.__('No_such_command', { command: escapeHTML(command) }),
 						u: {
 							username: settings.get('InternalHubot_Username') || 'rocket.cat',
 						},

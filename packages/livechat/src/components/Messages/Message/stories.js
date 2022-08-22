@@ -239,9 +239,6 @@ WithAudioAttachment.args = {
 		audio_url: sampleAudio,
 	}],
 };
-WithAudioAttachment.parameters = {
-	loki: { skip: true },
-};
 
 export const WithVideoAttachment = (args) => (
 	<Message
@@ -262,9 +259,6 @@ WithVideoAttachment.args = {
 	attachments: [{
 		video_url: sampleVideo,
 	}],
-};
-WithVideoAttachment.parameters = {
-	loki: { skip: true },
 };
 
 export const WithImageAttachment = (args) => (
@@ -342,9 +336,6 @@ WithMultipleAttachments.args = {
 			title: 'Untitled pdf file',
 		},
 	],
-};
-WithMultipleAttachments.parameters = {
-	loki: { skip: true },
 };
 
 export const WithUiKitBlocks = (args) => (

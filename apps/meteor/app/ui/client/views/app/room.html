@@ -77,7 +77,7 @@
 							</div>
 						{{/with}}
 						<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}} {{hideUsername}} {{hideAvatar}}">
-							<ul aria-live="polite">
+							<ul class="messages-list" aria-live="polite">
 								{{#if canPreview}}
 									{{#if hasMore}}
 										<li class="load-more">
@@ -110,14 +110,14 @@
 										</li>
 									{{/if}}
 								{{/if}}
-								{{# if $eq (preference 'enableNewMessageTemplate') true}}
+								{{# unless $eq (preference 'useLegacyMessageTemplate') true}}
 										{{> MessageList rid=rid }}
-								{{/if}}
-								{{# unless $eq (preference 'enableNewMessageTemplate') true}}
+								{{/unless}}
+								{{# if $eq (preference 'useLegacyMessageTemplate') true}}
 									{{# with messageContext}}
 										{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room  actions=actions subscription=subscription settings=settings u=u}}{{/each}}
 									{{/with}}
-								{{/unless}}
+								{{/if}}
 
 								{{#if hasMoreNext}}
 									<li class="load-more">
@@ -130,7 +130,11 @@
 						</div>
 					</div>
 					<footer class="footer border-component-color">
-						{{> messageBox messageboxData}}
+						{{#if subscriptionReady}}
+							{{> messageBox messageboxData}}
+						{{else}}
+							{{> ComposerSkeleton}}
+						{{/if}}
 					</footer>
 				</div>
 			</div>

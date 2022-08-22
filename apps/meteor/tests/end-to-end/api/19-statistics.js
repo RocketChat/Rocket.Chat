@@ -83,5 +83,25 @@ describe('[Statistics]', function () {
 					.end(done);
 			});
 		});
+		it('should return an array with the statistics even requested with count and offset params', (done) => {
+			updatePermission('view-statistics', ['admin']).then(() => {
+				request
+					.get(api('statistics.list'))
+					.set(credentials)
+					.query({
+						count: 5,
+						offset: 0,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('statistics').and.to.be.an('array');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					})
+					.end(done);
+			});
+		});
 	});
 });

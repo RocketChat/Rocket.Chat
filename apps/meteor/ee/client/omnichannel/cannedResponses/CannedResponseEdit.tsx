@@ -30,7 +30,7 @@ const CannedResponseEdit: FC<{
 		}),
 	);
 
-	const saveCannedResponse = useEndpoint('POST', 'canned-responses');
+	const saveCannedResponse = useEndpoint('POST', '/v1/canned-responses');
 
 	const hasManagerPermission = usePermission('view-all-canned-responses');
 	const hasMonitorPermission = usePermission('save-department-canned-responses');
@@ -121,7 +121,7 @@ const CannedResponseEdit: FC<{
 			reload();
 			totalDataReload();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as Error });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [values, saveCannedResponse, dispatchToastMessage, t, Route, reload, totalDataReload]);
 

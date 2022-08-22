@@ -1,4 +1,4 @@
-import { LivechatRooms, Messages } from '../../../../models/server/raw';
+import { LivechatRooms, Messages } from '@rocket.chat/models';
 
 export const findAllRoomsAsync = async ({ start, end, answered, departmentId, options = {} }) => {
 	if (!start || !end) {

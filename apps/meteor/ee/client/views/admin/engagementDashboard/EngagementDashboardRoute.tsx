@@ -24,7 +24,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		}
 	}, [routeName, engagementDashboardRoute, tab]);
 
-	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
+	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry', {
 		params: [{ eventName: 'updateCounter', settingsId: 'Engagement_Dashboard_Load_Count' }],
 	});
 

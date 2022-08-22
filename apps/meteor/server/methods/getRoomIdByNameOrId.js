@@ -2,7 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Rooms } from '../../app/models';
+import { Rooms } from '../../app/models/server';
 import { canAccessRoom } from '../../app/authorization';
 
 Meteor.methods({

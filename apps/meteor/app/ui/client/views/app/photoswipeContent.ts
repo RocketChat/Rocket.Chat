@@ -3,7 +3,7 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type PhotoSwipe from 'photoswipe';
-import type PhotoSwipeUiDefault from 'photoswipe/dist/photoswipe-ui-default';
+import PhotoSwipeUIDefault from 'photoswipe/dist/photoswipe-ui-default';
 
 const parseLength = (x: unknown): number | undefined => {
 	const length = typeof x === 'string' ? parseInt(x, 10) : undefined;
@@ -25,7 +25,7 @@ const getImageSize = (src: string): Promise<[w: number, h: number]> =>
 		img.src = src;
 	});
 
-type Slide = PhotoSwipeUiDefault.Item & { description?: string };
+type Slide = PhotoSwipe.Item & { description?: string; title?: string };
 
 const fromElementToSlide = async (element: Element): Promise<Slide | null> => {
 	if (!(element instanceof HTMLElement)) {
@@ -70,18 +70,12 @@ const fromElementToSlide = async (element: Element): Promise<Slide | null> => {
 	return null;
 };
 
-let currentGallery: PhotoSwipe<PhotoSwipeUiDefault.Options> | null = null;
+let currentGallery: PhotoSwipe<PhotoSwipe.Options> | null = null;
 
-const initGallery = async (items: Slide[], options: PhotoSwipeUiDefault.Options): Promise<void> => {
-	const [
-		{ default: PhotoSwipe },
-		{ default: PhotoSwipeUiDefault }, // eslint-disable-line @typescript-eslint/camelcase
-	] = await Promise.all([
+const initGallery = async (items: Slide[], options: PhotoSwipe.Options): Promise<void> => {
+	const [{ default: PhotoSwipe }] = await Promise.all([
 		import('photoswipe'),
-		import('photoswipe/dist/photoswipe-ui-default'),
-		// @ts-ignore
 		import('photoswipe/dist/photoswipe.css'),
-		// @ts-ignore
 		import('./photoswipeContent.html'),
 	]);
 
@@ -94,7 +88,7 @@ const initGallery = async (items: Slide[], options: PhotoSwipeUiDefault.Options)
 			throw new Error('Photoswipe container element not found');
 		}
 
-		currentGallery = new PhotoSwipe(container, PhotoSwipeUiDefault, items, options);
+		currentGallery = new PhotoSwipe(container, PhotoSwipeUIDefault, items, options);
 
 		currentGallery.listen('destroy', () => {
 			currentGallery = null;
@@ -104,13 +98,11 @@ const initGallery = async (items: Slide[], options: PhotoSwipeUiDefault.Options)
 	}
 };
 
-const defaultGalleryOptions: PhotoSwipeUiDefault.Options = {
+const defaultGalleryOptions = {
 	bgOpacity: 0.7,
-	showHideOpacity: true,
-	counterEl: false,
-	shareEl: false,
-	clickToCloseNonZoomable: false,
 	index: 0,
+	wheelToZoom: true,
+	padding: { top: 20, bottom: 40, left: 100, right: 100 },
 	addCaptionHTMLFn(item: Slide, captionEl: HTMLElement): boolean {
 		captionEl.children[0].innerHTML = `
 			${escapeHTML(item.title ?? '')}<br/>

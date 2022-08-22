@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer';
-import { Users } from '../../../models/server/raw/index';
 
 const sendResetNotification = async function (uid: string): Promise<void> {
 	const user = await Users.findOneById<Pick<IUser, 'language' | 'emails'>>(uid, {
@@ -45,9 +45,10 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 					html,
 				} as any);
 			} catch (error) {
-				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
+				const message = error instanceof Error ? error.message : String(error);
+				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 					function: 'resetUserTOTP',
-					message: error.message,
+					message,
 				});
 			}
 		});

@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper.js';
 import { createUser, login } from '../../data/users.helper';
-import { password } from '../../data/user';
+import { adminUsername, password } from '../../data/user';
 
 describe('[Teams]', () => {
 	before((done) => getCredentials(done));
@@ -76,6 +76,45 @@ describe('[Teams]', () => {
 					publicTeam = res.body.team;
 				})
 				.end(done);
+		});
+
+		it('should create a public team with a member', (done) => {
+			request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: `test-team-${Date.now()}`,
+					type: 0,
+					members: [testUser.username],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('team');
+					expect(res.body).to.have.nested.property('team._id');
+					publicTeam = res.body.team;
+				})
+				.then((response) => {
+					const teamId = response.body.team._id;
+					return request
+						.get(api('teams.members'))
+						.set(credentials)
+						.query({ teamId })
+						.expect(200)
+						.expect((response) => {
+							expect(response.body).to.have.property('success', true);
+							expect(response.body).to.have.property('members');
+
+							// remove admin user from members because it's added automatically as owner
+							const members = response.body.members.filter(({ user }) => user.username !== adminUsername);
+
+							const [member] = members;
+							expect(member.user.username).to.be.equal(testUser.username);
+						});
+				})
+				.then(() => done())
+				.catch(done);
 		});
 
 		it('should create private team with a defined owner', (done) => {
@@ -780,6 +819,77 @@ describe('[Teams]', () => {
 		});
 	});
 
+	describe('/teams.info', () => {
+		it('should successfully get a team info by name', (done) => {
+			request
+				.get(api('teams.info'))
+				.set(credentials)
+				.query({
+					teamName: publicTeam.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', true);
+					expect(response.body).to.have.property('teamInfo');
+					expect(response.body.teamInfo).to.have.property('_id', publicTeam._id);
+					expect(response.body.teamInfo).to.have.property('name', publicTeam.name);
+				})
+				.then(() => done())
+				.catch(done);
+		});
+		it('should successfully get a team info by id', (done) => {
+			request
+				.get(api('teams.info'))
+				.set(credentials)
+				.query({
+					teamId: publicTeam._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', true);
+					expect(response.body).to.have.property('teamInfo');
+					expect(response.body.teamInfo).to.have.property('_id', publicTeam._id);
+					expect(response.body.teamInfo).to.have.property('name', publicTeam.name);
+				})
+				.then(() => done())
+				.catch(done);
+		});
+		it('should fail if a team is not found', (done) => {
+			request
+				.get(api('teams.info'))
+				.set(credentials)
+				.query({
+					teamName: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error', 'Team not found');
+				})
+				.then(() => done())
+				.catch(done);
+		});
+		it('should fail if a user doesnt belong to a team', (done) => {
+			request
+				.get(api('teams.info'))
+				.set(testUserCredentials)
+				.query({
+					teamName: privateTeam.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error', 'unauthorized');
+				})
+				.then(() => done())
+				.catch(done);
+		});
+	});
+
 	describe('/teams.delete', () => {
 		describe('deleting an empty team', () => {
 			let roomId;
@@ -1230,6 +1340,8 @@ describe('[Teams]', () => {
 					message: JSON.stringify({
 						method: 'addUsersToRoom',
 						params: [{ rid: privateRoom3._id, users: [testUser.username] }],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1348,6 +1460,27 @@ describe('[Teams]', () => {
 					.end(done);
 			});
 		});
+		it('should return all rooms for public team even requested with count and offset params', (done) => {
+			updatePermission('view-all-team-channels', ['user']).then(() => {
+				request
+					.get(api('teams.listRooms'))
+					.set(testUserCredentials)
+					.query({
+						teamId: publicTeam._id,
+						count: 5,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('rooms');
+						expect(res.body.rooms).to.be.an('array');
+						expect(res.body.rooms.length).to.equal(2);
+					})
+					.end(done);
+			});
+		});
 
 		it('should return public rooms for private team', (done) => {
 			updatePermission('view-all-team-channels', []).then(() => {
@@ -1357,6 +1490,29 @@ describe('[Teams]', () => {
 						.set(credentials)
 						.query({
 							teamId: privateTeam._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('rooms');
+							expect(res.body.rooms).to.be.an('array');
+							expect(res.body.rooms.length).to.equal(2);
+						})
+						.end(done);
+				});
+			});
+		});
+		it('should return public rooms for private team even requested with count and offset params', (done) => {
+			updatePermission('view-all-team-channels', []).then(() => {
+				updatePermission('view-all-teams', ['admin']).then(() => {
+					request
+						.get(api('teams.listRooms'))
+						.set(credentials)
+						.query({
+							teamId: privateTeam._id,
+							count: 5,
+							offset: 0,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -1584,6 +1740,8 @@ describe('[Teams]', () => {
 						message: JSON.stringify({
 							method: 'saveUserPreferences',
 							params: [{ emailNotificationMode: 'nothing' }],
+							id: 'id',
+							msg: 'method',
 						}),
 					})
 					.expect(200);

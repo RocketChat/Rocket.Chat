@@ -1,8 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, FC } from 'react';
+import React, { useMemo, ReactElement } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
-import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import Announcement from '../Announcement';
 import Header from '../Header';
@@ -16,7 +16,7 @@ import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider'
 import { useTab, useTabBarOpen, useTabBarClose, useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import LazyComponent from './LazyComponent';
 
-export const Room: FC<{}> = () => {
+export const Room = (): ReactElement => {
 	const room = useRoom();
 	const t = useTranslation();
 	const tab = useTab();
@@ -43,7 +43,7 @@ export const Room: FC<{}> = () => {
 			</RoomTemplate.Body>
 			{tab && (
 				<RoomTemplate.Aside data-qa-tabbar-name={tab.id}>
-					<ErrorBoundary>
+					<ErrorBoundary fallback={null}>
 						<SelectedMessagesProvider>
 							{typeof tab.template === 'string' && (
 								<VerticalBarOldActions {...tab} name={tab.template} tabBar={tabBar} rid={room._id} _id={room._id} />
@@ -56,19 +56,19 @@ export const Room: FC<{}> = () => {
 				</RoomTemplate.Aside>
 			)}
 			{appsContextualBarContext && (
-				<SelectedMessagesProvider>
-					<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBarContext.viewId}>
-						<ErrorBoundary>
+				<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBarContext.viewId}>
+					<SelectedMessagesProvider>
+						<ErrorBoundary fallback={null}>
 							<LazyComponent
 								template={AppsContextualBar}
 								viewId={appsContextualBarContext.viewId}
 								roomId={appsContextualBarContext.roomId}
 								payload={appsContextualBarContext.payload}
-								appInfo={appsContextualBarContext.appInfo}
+								appId={appsContextualBarContext.appId}
 							/>
 						</ErrorBoundary>
-					</RoomTemplate.Aside>
-				</SelectedMessagesProvider>
+					</SelectedMessagesProvider>
+				</RoomTemplate.Aside>
 			)}
 		</RoomTemplate>
 	);

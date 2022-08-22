@@ -11,10 +11,9 @@ import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { callbacks } from '../../../../lib/callbacks';
 import { Notifications } from '../../../notifications';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -44,7 +43,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 export const RoomManager = new (function () {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
-	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
+	const roomStream = new Meteor.Streamer('room-data');
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
 
@@ -99,36 +98,36 @@ export const RoomManager = new (function () {
 
 						if (room != null) {
 							if (record.streamActive !== true) {
-								record.streamActive = true;
-								msgStream.on(record.rid, async (msg) => {
-									// Should not send message to room if room has not loaded all the current messages
-									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
-										return;
-									}
-									// Do not load command messages into channel
-									if (msg.t !== 'command') {
-										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
-										const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
-										upsertMessage({ msg, subscription });
+								msgStream
+									.on(record.rid, async (msg) => {
+										// Do not load command messages into channel
+										if (msg.t !== 'command') {
+											const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+											const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
+											upsertMessage({ msg, subscription });
 
-										msg.room = {
-											type,
-											name,
-										};
-										if (isNew) {
-											callbacks.run('streamNewMessage', msg);
+											msg.room = {
+												type,
+												name,
+											};
+											if (isNew) {
+												callbacks.run('streamNewMessage', msg);
+											}
 										}
-									}
 
-									msg.name = room.name;
-									Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+										msg.name = room.name;
+										Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
-									handleTrackSettingsChange(msg);
+										handleTrackSettingsChange(msg);
 
-									callbacks.run('streamMessage', msg);
+										callbacks.run('streamMessage', msg);
 
-									return fireGlobalEvent('new-message', msg);
-								});
+										return fireGlobalEvent('new-message', msg);
+									})
+									.then(() => {
+										record.streamActive = true;
+										Dep.changed();
+									});
 								Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 								Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 							}
@@ -142,6 +141,7 @@ export const RoomManager = new (function () {
 		}
 
 		getOpenedRoomByRid(rid) {
+			Dep.depend();
 			return Object.keys(openedRooms)
 				.map((typeName) => openedRooms[typeName])
 				.find((openedRoom) => openedRoom.rid === rid);

@@ -45,7 +45,7 @@ const CustomEmoji: FC<CustomEmojiProps> = function CustomEmoji({ onClick, reload
 		500,
 	);
 
-	const { value: data, phase, reload: reloadEndPoint } = useEndpointData('emoji-custom.all', query);
+	const { value: data, phase, reload: reloadEndPoint } = useEndpointData('/v1/emoji-custom.all', query);
 
 	useEffect(() => {
 		reload.current = reloadEndPoint;

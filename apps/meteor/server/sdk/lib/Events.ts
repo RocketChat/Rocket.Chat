@@ -1,4 +1,4 @@
-import { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type {
 	IEmailInbox,
 	IEmoji,
@@ -22,9 +22,10 @@ import type {
 	IInvite,
 	IWebdavAccount,
 	ICustomSound,
+	VoipEventDataSignature,
 } from '@rocket.chat/core-typings';
 
-import { AutoUpdateRecord } from '../types/IMeteor';
+import type { AutoUpdateRecord } from '../types/IMeteor';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
@@ -123,12 +124,10 @@ export type EventSignatures = {
 		diff?: undefined | Record<string, any>;
 		id: string;
 	}): void;
-	'queue.agentcalled'(userid: string, queuename: string, callerid: Record<string, string>): void;
-	'queue.agentconnected'(userid: string, queuename: string, queuedcalls: string, waittimeinqueue: string): void;
-	'queue.callerjoined'(userid: string, queuename: string, callerid: Record<string, string>, queuedcalls: string): void;
-	'queue.queuememberadded'(userid: string, queuename: string, queuedcalls: string): void;
-	'queue.queuememberremoved'(userid: string, queuename: string, queuedcalls: string): void;
-	'queue.callabandoned'(userid: string, queuename: string, queuedcallafterabandon: string): void;
+
+	// Send all events from here
+	'voip.events'(userId: string, data: VoipEventDataSignature): void;
+	'call.callerhangup'(userId: string, data: { roomId: string }): void;
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
 };

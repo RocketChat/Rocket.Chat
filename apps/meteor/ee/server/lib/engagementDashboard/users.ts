@@ -1,7 +1,7 @@
 import moment from 'moment';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users, Analytics, Sessions } from '@rocket.chat/models';
 
-import { Users, Analytics, Sessions } from '../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
 export const handleUserCreated = (user: IUser): IUser => {
@@ -25,10 +25,14 @@ export const fillFirstDaysOfUsersIfNeeded = async (date: Date): Promise<void> =>
 	}).toArray();
 	if (!usersFromAnalytics.length) {
 		const startOfPeriod = moment(date).subtract(90, 'days').toDate();
-		const users = await Users.getTotalOfRegisteredUsersByDate({
+		const users = (await Users.getTotalOfRegisteredUsersByDate({
 			start: startOfPeriod,
 			end: date,
-		});
+		})) as {
+			date: string;
+			users: number;
+			type: 'users';
+		}[];
 		users.forEach((user) =>
 			Analytics.insertOne({
 				...user,
@@ -70,8 +74,8 @@ export const findWeeklyUsersRegisteredData = async ({
 		end: convertDateToInt(endOfLastWeek),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
 	}).toArray();
-	const yesterdayUsers = (currentPeriodUsers.find((item) => item._id === yesterday) || {}).users || 0;
-	const todayUsers = (currentPeriodUsers.find((item) => item._id === today) || {}).users || 0;
+	const yesterdayUsers = currentPeriodUsers.find((item) => item._id === yesterday)?.users || 0;
+	const todayUsers = currentPeriodUsers.find((item) => item._id === today)?.users || 0;
 	const currentPeriodTotalUsers = getTotalOfWeekItems(currentPeriodUsers, 'users');
 	const lastPeriodTotalUsers = getTotalOfWeekItems(lastPeriodUsers, 'users');
 	return {

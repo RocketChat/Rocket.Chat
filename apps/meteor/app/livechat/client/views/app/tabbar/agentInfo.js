@@ -7,11 +7,11 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { getCustomFormTemplate } from '../customTemplates/register';
-import './agentInfo.html';
 import { modal } from '../../../../../ui-utils';
 import { t, APIClient } from '../../../../../utils/client';
 import { hasPermission } from '../../../../../authorization';
-import { handleError } from '../../../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../../../client/lib/toast';
+import './agentInfo.html';
 
 const customFieldsTemplate = () => getCustomFormTemplate('livechatAgentInfoForm');
 
@@ -118,7 +118,8 @@ Template.agentInfo.events({
 			() => {
 				Meteor.call('livechat:removeAgent', this.username, (error) => {
 					if (error) {
-						return handleError(error);
+						dispatchToastMessage({ type: 'error', message: error });
+						return;
 					}
 
 					const { tabBar, onRemoveAgent } = instance;
@@ -153,14 +154,14 @@ Template.agentInfo.onCreated(async function () {
 	this.tabBar = Template.currentData().tabBar;
 	this.onRemoveAgent = Template.currentData().onRemoveAgent;
 
-	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
+	const { departments } = await APIClient.get('/v1/livechat/department?sort={"name": 1}');
 	this.departments.set(departments);
 	this.availableDepartments.set(departments.filter(({ enabled }) => enabled));
 
 	const loadAgentData = async (agentId) => {
 		this.ready.set(false);
-		const { user } = await APIClient.v1.get(`livechat/users/agent/${agentId}`);
-		const { departments } = await APIClient.v1.get(`livechat/agents/${agentId}/departments`);
+		const { user } = await APIClient.get(`/v1/livechat/users/agent/${agentId}`);
+		const { departments } = await APIClient.get(`/v1/livechat/agents/${agentId}/departments`);
 		this.agent.set(user);
 		this.agentDepartments.set((departments || []).map((department) => department.departmentId));
 		this.ready.set(true);

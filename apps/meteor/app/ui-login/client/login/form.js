@@ -9,7 +9,6 @@ import _ from 'underscore';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils';
-import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Template.loginForm.helpers({
@@ -95,9 +94,9 @@ Template.loginForm.events({
 				return;
 			}
 			if (state === 'forgot-password') {
-				Meteor.call('sendForgotPasswordEmail', formData.email?.trim(), (err) => {
-					if (err) {
-						handleError(err);
+				Meteor.call('sendForgotPasswordEmail', formData.email?.trim(), (error) => {
+					if (error) {
+						dispatchToastMessage({ type: 'error', message: error });
 						return instance.state.set('login');
 					}
 					instance.loading.set(false);
@@ -115,7 +114,7 @@ Template.loginForm.events({
 						if (error.reason === 'Email already exists.') {
 							dispatchToastMessage({ type: 'error', message: t('Email_already_exists') });
 						} else {
-							handleError(error);
+							dispatchToastMessage({ type: 'error', message: error });
 						}
 						return;
 					}

@@ -49,5 +49,4 @@ export const isIQueueMembershipDetails = (obj: any): obj is IQueueMembershipDeta
 export const isIExtensionDetails = (prop: any): prop is IExtensionDetails =>
 	prop.extension !== undefined && prop.password !== undefined && prop.authtype !== undefined && prop.state !== undefined;
 
-export const isIRegistrationInfo = (prop: any): prop is IRegistrationInfo =>
-	prop.hasOwnProperty('host') && prop.hasOwnProperty('callServerConfig') && prop.hasOwnProperty('extensionDetails');
+export const isIRegistrationInfo = (prop: any): prop is IRegistrationInfo => 'callServerConfig' in prop && 'extensionDetails' in prop;

@@ -4,12 +4,12 @@ import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
+import { Roles, Settings, Users as UsersRaw } from '@rocket.chat/models';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Settings, Users } from '../../../models/server';
-import { Roles, Users as UsersRaw } from '../../../models/server/raw';
+import { Users } from '../../../models/server';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
@@ -17,6 +17,8 @@ import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLo
 import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
+import { AppEvents, Apps } from '../../../apps/server/orchestrator';
+import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -210,6 +212,10 @@ Accounts.onCreateUser(function (options, user = {}) {
 	}
 
 	callbacks.run('onCreateUser', options, user);
+
+	// App IPostUserCreated event hook
+	Promise.await(Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: safeGetMeteorUser() }));
+
 	return user;
 });
 
@@ -289,7 +295,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 	if (!roles.includes('admin') && !hasAdmin) {
 		roles.push('admin');
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			Promise.await(Settings.updateValueById('Show_Setup_Wizard', 'in_progress'));
 		}
 	}
 
@@ -352,6 +358,15 @@ Accounts.validateLoginAttempt(function (login) {
 	Meteor.defer(function () {
 		return callbacks.run('afterValidateLogin', login);
 	});
+
+	/**
+	 * Trigger the event only when the
+	 * user does login in Rocket.chat
+	 */
+	if (login.type !== 'resume') {
+		// App IPostUserLoggedIn event hook
+		Promise.await(Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user));
+	}
 
 	return true;
 });

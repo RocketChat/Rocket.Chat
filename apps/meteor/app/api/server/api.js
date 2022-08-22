@@ -379,6 +379,34 @@ export class APIClass extends Restivus {
 						...getRestPayload(this.request.body),
 					});
 
+					// If the endpoint requires authentication only if anonymous read is disabled, load the user info if it was provided
+					if (!options.authRequired && options.authOrAnonRequired) {
+						const { 'x-user-id': userId, 'x-auth-token': userToken } = this.request.headers;
+						if (userId && userToken) {
+							this.user = Meteor.users.findOne(
+								{
+									'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
+									'_id': userId,
+								},
+								{
+									fields: getDefaultUserFields(),
+								},
+							);
+
+							this.userId = this.user?._id;
+						}
+
+						if (!this.user && !settings.get('Accounts_AllowAnonymousRead')) {
+							return {
+								statusCode: 401,
+								body: {
+									status: 'error',
+									message: 'You must be logged in to do this.',
+								},
+							};
+						}
+					}
+
 					const objectForRateLimitMatch = {
 						IPAddr: this.requestIp,
 						route: `${this.request.route}${this.request.method.toLowerCase()}`,
@@ -397,9 +425,16 @@ export class APIClass extends Restivus {
 					try {
 						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
-						if (_options.validateParams && !_options.validateParams(this.request.method === 'GET' ? this.queryParams : this.bodyParams)) {
-							throw new Meteor.Error('invalid-params', _options.validateParams.errors?.map((error) => error.message).join('\n '));
+						if (_options.validateParams) {
+							const requestMethod = this.request.method;
+							const validatorFunc =
+								typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
+
+							if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
+								throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error) => error.message).join('\n '));
+							}
 						}
+
 						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, _options.permissionsRequired))) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
 								permissions: _options.permissionsRequired,
@@ -424,6 +459,9 @@ export class APIClass extends Restivus {
 							options: _options,
 							connection,
 						});
+
+						this.queryOperations = options.queryOperations;
+						this.queryFields = options.queryFields;
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => Promise.await(originalAction.apply(this))) || API.v1.success();
 

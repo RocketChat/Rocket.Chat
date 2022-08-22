@@ -1,7 +1,7 @@
 // import { BaseBroker } from './BaseBroker';
-import { IBroker } from '../types/IBroker';
-import type { IServiceClass } from '../types/ServiceClass';
-import { EventSignatures } from './Events';
+import type { IBroker } from '../types/IBroker';
+import type { ServiceClass } from '../types/ServiceClass';
+import type { EventSignatures } from './Events';
 import { LocalBroker } from './LocalBroker';
 
 export class Api {

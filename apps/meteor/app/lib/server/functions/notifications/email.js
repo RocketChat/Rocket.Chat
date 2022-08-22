@@ -164,7 +164,7 @@ export function getEmailData({ message, receiver, sender, subscription, room, em
 		// Reply-To header with format "username+messageId@domain"
 		email.headers['Reply-To'] = `${replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0]}${settings.get(
 			'Direct_Reply_Separator',
-		)}${message._id}@${replyto.split('@')[1]}`;
+		)}${message.tmid || message._id}@${replyto.split('@')[1]}`;
 	}
 
 	metrics.notificationsSent.inc({ notification_type: 'email' });

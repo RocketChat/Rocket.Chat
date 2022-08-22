@@ -10,6 +10,7 @@ import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
+import { AppEvents, Apps } from '../../app/apps/server/orchestrator';
 
 function saveUserProfile(settings, customFields) {
 	if (!rcSettings.get('Accounts_AllowUserProfileChange')) {
@@ -117,6 +118,10 @@ function saveUserProfile(settings, customFields) {
 	if (customFields && Object.keys(customFields).length) {
 		saveCustomFields(this.userId, customFields);
 	}
+
+	// App IPostUserUpdated event hook
+	const updatedUser = Users.findOneById(this.userId);
+	Promise.await(Apps.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user }));
 
 	return true;
 }

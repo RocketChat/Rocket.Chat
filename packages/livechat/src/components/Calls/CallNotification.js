@@ -44,7 +44,7 @@ const CallNotification = ({
 	const acceptClick = async () => {
 		setShow(!{ show });
 		switch (callProvider) {
-			case constants.jitsiCallStartedMessageType: {
+			case 'video-conference': {
 				window.open(url, rid);
 				await dispatch({
 					incomingCallAlert: { show: false, url, callProvider },

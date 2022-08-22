@@ -1,6 +1,6 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { AsyncStatePhase } from '../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../client/hooks/useEndpointData';
@@ -14,7 +14,17 @@ const BusinessHoursTableContainer = () => {
 		value: data,
 		phase: state,
 		reload,
-	} = useEndpointData(`livechat/business-hours.list?count=${params.itemsPerPage}&offset=${params.current}&name=${params.text}`);
+	} = useEndpointData(
+		'/v1/livechat/business-hours',
+		useMemo(
+			() => ({
+				count: params.itemsPerPage,
+				offset: params.current,
+				name: params.text,
+			}),
+			[params],
+		),
+	);
 
 	if (state === AsyncStatePhase.REJECTED) {
 		return <Callout>{t('Error')}: error</Callout>;

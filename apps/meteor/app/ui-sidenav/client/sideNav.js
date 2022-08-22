@@ -7,7 +7,7 @@ import { Template } from 'meteor/templating';
 import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
 import { getUserPreference } from '../../utils';
-import { Users } from '../../models';
+import { Users } from '../../models/client';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 Template.sideNav.helpers({
