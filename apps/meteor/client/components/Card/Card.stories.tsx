@@ -1,9 +1,9 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { TextSeparator } from '@rocket.chat/ui-client';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import Card from '.';
-import TextSeparator from '../../views/admin/info/TextSeparator';
 import { UserStatus } from '../UserStatus';
 
 export default {

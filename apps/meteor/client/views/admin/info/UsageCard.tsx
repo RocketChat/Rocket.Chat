@@ -1,6 +1,7 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { TextSeparator } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
@@ -8,7 +9,6 @@ import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseMo
 import Card from '../../../components/Card';
 import { UserStatus } from '../../../components/UserStatus';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
-import TextSeparator from './TextSeparator';
 
 type UsageCardProps = {
 	statistics: IStats;

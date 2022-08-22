@@ -1,3 +1,4 @@
 export * from './ExternalLink';
 export * from './DotLeader';
+export { default as TextSeparator } from './TextSeparator';
 export * from './TooltipComponent';
