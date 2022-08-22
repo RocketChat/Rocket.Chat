@@ -4922,9 +4922,9 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/ui-kit@npm:next":
-  version: 0.32.0-dev.60
-  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.60"
-  checksum: e45a30b248f9b536c0ea22556f3c2fa4e0844e588a355f1bb6d606cf1bbef5551494ff12df16cac268446836d5cc35cb2e86e0a35e4b9cd211c0d77b732d3951
+  version: 0.32.0-dev.62
+  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.62"
+  checksum: 7b9a79c72b4e90a7437b55d5b7f028ada45ee54a4d17f5c24aab2ba34cca22162b4ef874888f19ae2a37aa9107ec0a3debe4ffb0a42d7ffdddc6e15009a6df03
   languageName: node
   linkType: hard
 
