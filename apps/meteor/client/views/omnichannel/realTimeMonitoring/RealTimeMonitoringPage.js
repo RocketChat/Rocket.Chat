@@ -30,7 +30,7 @@ const RealTimeMonitoringPage = () => {
 
 	const departmentParams = useMemo(
 		() => ({
-			...(department?.value && { departmentId: department?.value }),
+			...(department && { departmentId: department }),
 		}),
 		[department],
 	);
