@@ -1,4 +1,24 @@
 
+# 3.11.6
+`2022-08-22  ·  2 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.22.2`
+
+### 🐛 Bug fixes
+
+
+- Support DISABLE_PRESENCE_MONITOR env var in new DB watchers ([#22257](https://github.com/RocketChat/Rocket.Chat/pull/22257))
+
+- User presence being processes even if presence monitor was disabled ([#22927](https://github.com/RocketChat/Rocket.Chat/pull/22927))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.11.5
 `2021-04-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 

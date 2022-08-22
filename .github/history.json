@@ -55425,6 +55425,35 @@
           ]
         }
       ]
+    },
+    "3.11.6": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.2",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22927",
+          "title": "[FIX] User presence being processes even if presence monitor was disabled",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22257",
+          "title": "[FIX] Support DISABLE_PRESENCE_MONITOR env var in new DB watchers",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.5",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
