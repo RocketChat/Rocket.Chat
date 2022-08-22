@@ -35,7 +35,6 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, isRoomFederat
 						) : (
 							<UserAutoCompleteMultiple value={users} onChange={onChange} placeholder={t('Choose_users')} />
 						)}
-						<UserAutoCompleteMultipleFederated value={users} onChange={onChange} placeholder={t('Choose_users')} />
 					</Field>
 				</FieldGroup>
 			</VerticalBar.ScrollableContent>
