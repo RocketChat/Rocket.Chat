@@ -3189,7 +3189,7 @@
   "No_results_found_for": "Nenhum resultado encontrado para:",
   "No_snippet_messages": "Não há snippets",
   "No_starred_messages": "Não há mensagens favoritas",
-  "No_such_command": "Nenhum comando deste tipo: `/ __command__`",
+  "No_such_command": "Nenhum comando deste tipo: `/__command__`",
   "No_Threads": "Nenhuma conversa encontrada",
   "URL_room_suffix": "Sufixo do URL da sala",
   "Nobody_available": "Ninguém disponível",
