@@ -101,8 +101,10 @@ const useQuery: useQueryType = (
 		}
 
 		if (customFields && Object.keys(customFields).length > 0) {
-			const customFieldsQuery = Object.fromEntries(Object.entries(customFields).filter(([key, value]) => value !== ''));
-			Object.keys(customFieldsQuery).length > 0 && (query.customFields = JSON.stringify(customFieldsQuery));
+			const customFieldsQuery = Object.fromEntries(Object.entries(customFields).filter((item) => item[1] !== ''));
+			if (Object.keys(customFieldsQuery).length > 0) {
+				query.customFields = JSON.stringify(customFieldsQuery);
+			}
 		}
 
 		return query;

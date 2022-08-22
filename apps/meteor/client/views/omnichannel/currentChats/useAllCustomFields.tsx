@@ -1,8 +1,8 @@
+import { OperationResult } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useAllCustomFields = () => {
+export const useAllCustomFields = (): UseQueryResult<OperationResult<'GET', '/v1/livechat/custom-fields'>> => {
 	const allCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
 
 	return useQuery(['livechat/custom-fields'], async () => allCustomFields());
