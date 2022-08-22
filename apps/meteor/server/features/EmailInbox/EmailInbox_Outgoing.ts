@@ -37,7 +37,7 @@ const sendErrorReplyMessage = (error: string, options: any): void => {
 	sendMessage(user, message, { _id: options.rid });
 };
 
-function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<any> {
+async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
 	return inbox.smtp
 		.sendMail({
 			from: inbox.config.senderInfo

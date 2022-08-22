@@ -133,11 +133,8 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	}
 
 	const references = typeof email.references === 'string' ? [email.references] : email.references;
-	const initialRef = [email.messageId, email.inReplyTo].filter((t) => !!t) as string[];
-	// thread = references.flatmap(t => t.split(','))
-	const thread = (references?.length ? references : [])
-		.reduce((acc: string[], t: string) => acc.concat(t.split(',')), [])
-		.concat(initialRef);
+	const initialRef = [email.messageId, email.inReplyTo].filter(Boolean) as string[];
+	const thread = (references?.length ? references : []).flatMap((t: string) => t.split(',')).concat(initialRef);
 
 	logger.debug(`Received new email conversation with thread ${thread} on inbox ${inbox} from ${email.from.value[0].address}`);
 

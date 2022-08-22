@@ -108,14 +108,6 @@ export class IMAPInterceptor extends EventEmitter {
 			logger.info('IMAP stopped');
 			callback?.();
 		});
-		callback?.();
-	}
-
-	restart(): void {
-		this.stop(() => {
-			logger.info('Restarting IMAP ....');
-			this.start();
-		});
 	}
 
 	reconnect(): void {
