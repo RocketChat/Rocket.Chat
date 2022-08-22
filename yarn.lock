@@ -4819,17 +4819,21 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
   dependencies:
+    "@rocket.chat/css-in-js": next
     "@rocket.chat/fuselage": next
+    "@rocket.chat/fuselage-hooks": next
     "@storybook/addon-actions": ~6.5.10
     "@storybook/addon-docs": ~6.5.10
     "@storybook/addon-essentials": ~6.5.10
     "@storybook/addon-interactions": ~6.5.10
     "@storybook/addon-links": ~6.5.10
+    "@storybook/addon-postcss": ~2.0.0
     "@storybook/builder-webpack4": ~6.5.10
     "@storybook/manager-webpack4": ~6.5.10
     "@storybook/react": ~6.5.10
     "@storybook/testing-library": ~0.0.13
     "@types/jest": ^27.4.1
+    "@types/postcss-url": ^10
     "@types/react": ~17.0.47
     eslint: ^8.20.0
     eslint-plugin-anti-trojan-source: ^1.1.0
@@ -4837,6 +4841,13 @@ __metadata:
     eslint-plugin-react-hooks: ^4.6.0
     eslint-plugin-testing-library: ^5.6.0
     jest: ^27.5.1
+    postcss: ~8.4.16
+    postcss-custom-properties: ~12.1.8
+    postcss-easy-import: ~4.0.0
+    postcss-load-config: ~4.0.1
+    postcss-media-minmax: ~5.0.0
+    postcss-nested: ~5.0.6
+    postcss-url: ~10.1.3
     react: ~17.0.2
     ts-jest: ^27.1.4
     typescript: ~4.5.5
@@ -7444,6 +7455,16 @@ __metadata:
   version: 4.1.2
   resolution: "@types/photoswipe@npm:4.1.2"
   checksum: 58f9b85171b5d24a70dea8b7cd68eaaef29159f05130f2284320ef438874c538f00e81763d4025d79fb03366180cff12e01c4a40d04a0c823ca4df656ee8b912
+  languageName: node
+  linkType: hard
+
+"@types/postcss-url@npm:^10":
+  version: 10.0.0
+  resolution: "@types/postcss-url@npm:10.0.0"
+  dependencies:
+    "@types/node": "*"
+    postcss: ^8.0.0
+  checksum: 6e818bb5768c6aa83fb9e18e6485ac512b89f3389a93e26f3352ee9c69b34115b6c02b0c83dc39a8237054982486471c9f006e3324f20e53f80c61bfa44f83dc
   languageName: node
   linkType: hard
 
@@ -25333,6 +25354,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postcss-custom-properties@npm:~12.1.8":
+  version: 12.1.8
+  resolution: "postcss-custom-properties@npm:12.1.8"
+  dependencies:
+    postcss-value-parser: ^4.2.0
+  peerDependencies:
+    postcss: ^8.4
+  checksum: 4615b8181fe61c2df9f3a739b3257a9d76d00088c8fc3c502a59de52b25ab90be3d65ece8d372bcd1f9f8ba6bb99da5075707f9f11cb3522826a5d3553265ee5
+  languageName: node
+  linkType: hard
+
 "postcss-dir-pseudo-class@npm:^5.0.0":
   version: 5.0.0
   resolution: "postcss-dir-pseudo-class@npm:5.0.0"
@@ -25395,6 +25427,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postcss-easy-import@npm:~4.0.0":
+  version: 4.0.0
+  resolution: "postcss-easy-import@npm:4.0.0"
+  dependencies:
+    globby: ^6.1.0
+    is-glob: ^4.0.0
+    lodash: ^4.17.4
+    object-assign: ^4.0.1
+    pify: ^3.0.0
+    postcss-import: ^14.0.0
+    resolve: ^1.1.7
+  peerDependencies:
+    postcss: ^8.4.6
+  checksum: bd14e7f6ca188a4d7d01b6f2f36c2e943cc2a6cbd0f4b501b2da23d93223a7eee5e91353d47637c99713deaa0adb3d6e37e3e106c6a084b451745c0b6103b2ca
+  languageName: node
+  linkType: hard
+
 "postcss-flexbugs-fixes@npm:^4.2.1":
   version: 4.2.1
   resolution: "postcss-flexbugs-fixes@npm:4.2.1"
@@ -25426,6 +25475,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postcss-import@npm:^14.0.0":
+  version: 14.1.0
+  resolution: "postcss-import@npm:14.1.0"
+  dependencies:
+    postcss-value-parser: ^4.0.0
+    read-cache: ^1.0.0
+    resolve: ^1.1.7
+  peerDependencies:
+    postcss: ^8.0.0
+  checksum: cd45d406e90f67cdab9524352e573cc6b4462b790934a05954e929a6653ebd31288ceebc8ce3c3ed7117ae672d9ebbec57df0bceec0a56e9b259c2e71d47ca86
+  languageName: node
+  linkType: hard
+
 "postcss-load-config@npm:^2.0.0":
   version: 2.1.2
   resolution: "postcss-load-config@npm:2.1.2"
@@ -25451,6 +25513,24 @@ __metadata:
     ts-node:
       optional: true
   checksum: 1c589504c2d90b1568aecae8238ab993c17dba2c44f848a8f13619ba556d26a1c09644d5e6361b5784e721e94af37b604992f9f3dc0483e687a0cc1cc5029a34
+  languageName: node
+  linkType: hard
+
+"postcss-load-config@npm:~4.0.1":
+  version: 4.0.1
+  resolution: "postcss-load-config@npm:4.0.1"
+  dependencies:
+    lilconfig: ^2.0.5
+    yaml: ^2.1.1
+  peerDependencies:
+    postcss: ">=8.0.9"
+    ts-node: ">=9.0.0"
+  peerDependenciesMeta:
+    postcss:
+      optional: true
+    ts-node:
+      optional: true
+  checksum: b61f890499ed7dcda1e36c20a9582b17d745bad5e2b2c7bc96942465e406bc43ae03f270c08e60d1e29dab1ee50cb26970b5eb20c9aae30e066e20bd607ae4e4
   languageName: node
   linkType: hard
 
@@ -25491,7 +25571,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-media-minmax@npm:^5.0.0":
+"postcss-media-minmax@npm:^5.0.0, postcss-media-minmax@npm:~5.0.0":
   version: 5.0.0
   resolution: "postcss-media-minmax@npm:5.0.0"
   peerDependencies:
@@ -25666,7 +25746,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-nested@npm:^5.0.6":
+"postcss-nested@npm:^5.0.6, postcss-nested@npm:~5.0.6":
   version: 5.0.6
   resolution: "postcss-nested@npm:5.0.6"
   dependencies:
@@ -25909,7 +25989,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-url@npm:^10.1.3":
+"postcss-url@npm:^10.1.3, postcss-url@npm:~10.1.3":
   version: 10.1.3
   resolution: "postcss-url@npm:10.1.3"
   dependencies:
@@ -25930,7 +26010,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-value-parser@npm:^4.0.2, postcss-value-parser@npm:^4.1.0, postcss-value-parser@npm:^4.2.0":
+"postcss-value-parser@npm:^4.0.0, postcss-value-parser@npm:^4.0.2, postcss-value-parser@npm:^4.1.0, postcss-value-parser@npm:^4.2.0":
   version: 4.2.0
   resolution: "postcss-value-parser@npm:4.2.0"
   checksum: 819ffab0c9d51cf0acbabf8996dffbfafbafa57afc0e4c98db88b67f2094cb44488758f06e5da95d7036f19556a4a732525e84289a425f4f6fd8e412a9d7442f
@@ -25969,7 +26049,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.2.15":
+"postcss@npm:^8.0.0, postcss@npm:^8.2.15, postcss@npm:~8.4.16":
   version: 8.4.16
   resolution: "postcss@npm:8.4.16"
   dependencies:
@@ -33460,6 +33540,13 @@ __metadata:
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
   checksum: ce4ada136e8a78a0b08dc10b4b900936912d15de59905b2bf415b4d33c63df1d555d23acb2a41b23cf9fb5da41c256441afca3d6509de7247daa062fd2c5ea5f
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "yaml@npm:2.1.1"
+  checksum: f48bb209918aa57cfaf78ef6448d1a1f8187f45c746f933268b7023dc59e5456004611879126c9bb5ea55b0a2b1c2b392dfde436931ece0c703a3d754562bb96
   languageName: node
   linkType: hard
 
