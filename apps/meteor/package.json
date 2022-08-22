@@ -285,6 +285,7 @@
 		"googleapis": "^104.0.0",
 		"grapheme-splitter": "^1.0.4",
 		"he": "^1.2.0",
+		"highlight.js": "^11.6.0",
 		"hljs9": "npm:highlight.js@^9.18.5",
 		"http-proxy-agent": "^5.0.0",
 		"human-interval": "^2.0.0",

@@ -4531,6 +4531,7 @@ __metadata:
     googleapis: ^104.0.0
     grapheme-splitter: ^1.0.4
     he: ^1.2.0
+    highlight.js: ^11.6.0
     hljs9: "npm:highlight.js@^9.18.5"
     http-proxy-agent: ^5.0.0
     human-interval: ^2.0.0
@@ -17566,6 +17567,13 @@ __metadata:
   version: 11.5.1
   resolution: "highlight.js@npm:11.5.1"
   checksum: bff556101d7691c6275ad19318e368fc971cd0621ef3d86222f5373df7d8191a2fc1ffd47f118138cbcf85e5fe91cfeefaecd6184f49a3ec18090955efc9edef
+  languageName: node
+  linkType: hard
+
+"highlight.js@npm:^11.6.0":
+  version: 11.6.0
+  resolution: "highlight.js@npm:11.6.0"
+  checksum: 3908eb34a4b442ca1e20c1ae6415ea935fbbcdb2b532a89948d82b0fa4ad41fc5de3802a0de4e88a0bcb7d97d4445579048cd2aab1d105ac47f59dd58a9a98ae
   languageName: node
   linkType: hard
 
