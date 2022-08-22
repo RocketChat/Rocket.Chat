@@ -56,9 +56,9 @@ const DeviceManagementFeatureModal = ({ close }: { close: () => void }): ReactEl
 					<FeatureModalBullets key={index} title={title} subtitle={subtitle} icon={icon} />
 				))}
 			</Modal.Content>
-			<Modal.Footer>
+			<Modal.Footer justifyContent='space-between'>
+				<ExternalLink to={documentationURL}>{t('Learn_more')}</ExternalLink>
 				<Modal.FooterControllers>
-					<ExternalLink to={documentationURL}>{t('Learn_more')}</ExternalLink>
 					<Button onClick={handleGotit}>{t('Got_it')}</Button>
 				</Modal.FooterControllers>
 			</Modal.Footer>
