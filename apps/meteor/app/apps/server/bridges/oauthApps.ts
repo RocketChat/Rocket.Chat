@@ -16,9 +16,9 @@ export class AppOAuthAppsBridge extends OAuthAppsBridge {
 		this.orch.debugLog(`The App ${appId} is creating a new OAuth app.`);
 		const { clientId, clientSecret } = oAuthApp;
 		const botUser = await Users.findOne({ appId });
+
 		if (!botUser) {
-			this.orch.debugLog('Unable to find the bot`s user');
-			return null;
+			throw new Error(`The user for app ${appId} is not registered.`);
 		}
 
 		const { _id, username } = botUser;
@@ -43,9 +43,9 @@ export class AppOAuthAppsBridge extends OAuthAppsBridge {
 		this.orch.debugLog(`The App ${appId} is getting the OAuth app by ID ${id}.`);
 		const data = await OAuthApps.findOne({ _id: id, appId });
 		if (data) {
-			const { _id, _createdAt, _createdBy, _updatedAt } = data as any;
+			const { _id, _createdAt, _createdBy, _updatedAt, ...rest } = data as any;
 			return {
-				...data,
+				...rest,
 				id: _id,
 				createdAt: _createdAt.toDateString(),
 				createdBy: {
