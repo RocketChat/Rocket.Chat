@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 import { WebdavAccounts } from '@rocket.chat/models';
 
 import { api } from '../../../../server/sdk/api';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	async removeWebdavAccount(accountId) {
@@ -15,6 +16,8 @@ Meteor.methods({
 		}
 
 		check(accountId, String);
+
+		methodDeprecationLogger.warn('removeWebdavAccount will be deprecated in future versions of Rocket.Chat');
 
 		const removed = await WebdavAccounts.removeByUserAndId(accountId, userId);
 		if (removed) {
