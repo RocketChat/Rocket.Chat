@@ -7,9 +7,9 @@ import { t } from '../../app/utils/client';
 
 Meteor.startup(() => {
 	MessageTypes.registerType({
-		id: 'room_changed_privacy',
+		id: 'room_changed_type',
 		system: true,
-		message: 'room_changed_privacy',
+		message: 'room_changed_type',
 		data(message: IMessage) {
 			return {
 				room_type: t(message.msg),
@@ -18,9 +18,9 @@ Meteor.startup(() => {
 	});
 
 	MessageTypes.registerType({
-		id: 'room_changed_topic',
+		id: 'room_changed_topic_to',
 		system: true,
-		message: 'room_changed_topic',
+		message: 'room_changed_topic_to',
 		data(message: IMessage) {
 			return {
 				room_topic: escapeHTML(message.msg || `(${t('None').toLowerCase()})`),
@@ -29,9 +29,9 @@ Meteor.startup(() => {
 	});
 
 	MessageTypes.registerType({
-		id: 'room_changed_avatar',
+		id: 'room_avatar_changed',
 		system: true,
-		message: 'room_changed_avatar',
+		message: 'room_avatar_changed',
 	});
 
 	MessageTypes.registerType({

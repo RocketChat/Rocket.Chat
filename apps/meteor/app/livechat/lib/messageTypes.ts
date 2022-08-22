@@ -108,7 +108,7 @@ MessageTypes.registerType({
 		}
 		return escapeHTML(message.msg);
 	},
-	message: 'room_changed_privacy',
+	message: 'room_changed_type',
 });
 
 MessageTypes.registerType({

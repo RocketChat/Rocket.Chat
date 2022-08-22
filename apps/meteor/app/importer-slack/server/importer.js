@@ -339,7 +339,7 @@ export class SlackImporter extends Base {
 				return true;
 			case 'channel_topic':
 			case 'group_topic':
-				newMessage.t = 'room_changed_topic';
+				newMessage.t = 'room_changed_topic_to';
 				newMessage.groupable = false;
 				newMessage.msg = message.topic;
 				return true;
