@@ -1,10 +1,16 @@
 import { Box } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
+import { ISettings } from '../../../../app/apps/client/@types/IOrchestrator';
 import AppSetting from './AppSetting';
 
-const AppSettingsAssembler = ({ settings, values, handlers }) => (
+type AppSettingsAssemblerProps = {
+	settings: ISettings;
+	values: Record<string, unknown>;
+	handlers: Record<string, (eventOrValue: unknown) => void>;
+};
+const AppSettingsAssembler = ({ settings, values, handlers }: AppSettingsAssemblerProps): ReactElement => (
 	<Box>
 		{Object.values(settings).map((current) => {
 			const { id } = current;
