@@ -12,12 +12,13 @@ export const useLicense = (): {
 	const getRegistrationStatus = useEndpoint('GET', '/v1/cloud.registrationStatus');
 	const getLicenses = useEndpoint('GET', '/v1/licenses.get');
 
-	const { data: registrationStatusData } = useQuery(['registrationStatus'], () => getRegistrationStatus(), {
+	const { data: registrationStatusData } = useQuery(['licenses', 'getRegistrationStatus'], () => getRegistrationStatus(), {
 		refetchOnWindowFocus: false,
 		keepPreviousData: true,
 		staleTime: Infinity,
 	});
-	const { data, isError, isLoading, isSuccess } = useQuery(['licenses'], () => getLicenses(), {
+
+	const { data, isError, isLoading, isSuccess } = useQuery(['licenses', 'getLicenses'], () => getLicenses(), {
 		staleTime: Infinity,
 		keepPreviousData: true,
 		refetchOnWindowFocus: false,

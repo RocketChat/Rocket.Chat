@@ -27,7 +27,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 
 		try {
 			await registerManually({ cloudBlob: cloudKey });
-			queryClient.invalidateQueries(['registrationStatus', 'licenses', 'licenses.isEnterprise']);
+			queryClient.invalidateQueries(['licenses']);
 			dispatchToastMessage({ type: 'success', message: t('Cloud_register_success') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });

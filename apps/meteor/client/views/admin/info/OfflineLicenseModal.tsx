@@ -40,11 +40,10 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 
 	const handleApplyLicense = useMutableCallback(async () => {
 		setLastSetLicense(newLicense);
-
 		try {
 			setIsUpdating(true);
 			await addLicense({ license: newLicense });
-			queryClient.invalidateQueries(['registrationStatus', 'licenses', 'licenses.isEnterprise']);
+			queryClient.invalidateQueries(['licenses']);
 
 			dispatchToastMessage({ type: 'success', message: t('Cloud_License_applied_successfully') });
 			onClose();

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export const useIsEnterprise = (): { isEnterprise: boolean; isLoading: boolean } => {
 	const isEnterpriseEdition = useEndpoint('GET', '/v1/licenses.isEnterprise');
-	const { data, isLoading } = useQuery(['licenses.isEnterprise'], () => isEnterpriseEdition(), {
+	const { data, isLoading } = useQuery(['licenses', 'isEnterprise'], () => isEnterpriseEdition(), {
 		keepPreviousData: true,
 		refetchOnWindowFocus: false,
 		staleTime: Infinity,
