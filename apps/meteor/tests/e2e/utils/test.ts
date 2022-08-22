@@ -68,10 +68,10 @@ export const test = baseTest.extend<BaseTest>({
 				return request.post(BASE_URL + prefix + uri, { headers, data });
 			},
 			put(uri: string, data: AnyObj, prefix = API_PREFIX) {
-				return request.put(BASE_API_URL + prefix + uri, { headers, data });
+				return request.put(BASE_URL + prefix + uri, { headers, data });
 			},
 			delete(uri: string, prefix = API_PREFIX) {
-				return request.delete(BASE_API_URL + prefix + uri, { headers });
+				return request.delete(BASE_URL + prefix + uri, { headers });
 			},
 		});
 	},
