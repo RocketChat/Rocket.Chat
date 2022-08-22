@@ -13,7 +13,7 @@ services:
       - 'MONGO_OPLOG_URL=${MONGO_OPLOG_URL}'
       - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info
-      - 'ENTERPRISE_LICENSE=${ENTERPRISE_LICENSE}'
+      - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE}'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
