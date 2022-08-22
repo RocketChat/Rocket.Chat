@@ -62,7 +62,7 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.tabs.btnChannels.click();
 		await poHomeTeam.tabs.channels.btnAddExisting.click();
 		await poHomeTeam.tabs.channels.inputChannels.type(targetChannel, { delay: 100 });
-		await page.locator(`text=${targetChannel}`).click();
+		await page.locator(`.rcx-option__content:has-text("${targetChannel}")`).click();
 		await poHomeTeam.tabs.channels.btnAdd.click();
 	});
 });
