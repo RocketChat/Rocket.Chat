@@ -13,18 +13,18 @@ import {
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, useState, MouseEvent } from 'react';
 
-import { ReactiveUserStatus } from '../../../../../../components/UserStatus';
-import UserAvatar from '../../../../../../components/avatar/UserAvatar';
-import { usePreventPropagation } from '../../../../../../hooks/usePreventPropagation';
-import UserActions from './UserActions';
+import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
+import UserActions from './RoomMembersActions';
 
-type MemberItemProps = {
-	onClickView: (e: MouseEvent<HTMLDivElement>) => void;
+type RoomMembersItemProps = {
+	onClickView: (e: MouseEvent<HTMLElement>) => void;
 	rid: IRoom['_id'];
 	reload: () => void;
 } & Pick<IUser, 'federated' | 'username' | 'name' | '_id'>;
 
-export const MemberItem = ({ _id, name, username, federated, onClickView, rid, reload }: MemberItemProps): ReactElement => {
+const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, reload }: RoomMembersItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
@@ -35,7 +35,7 @@ export const MemberItem = ({ _id, name, username, federated, onClickView, rid, r
 	const preventPropagation = usePreventPropagation();
 
 	return (
-		<Option id={_id} data-username={username} onClick={onClickView} {...handleMenuEvent}>
+		<Option data-username={username} data-userid={_id} onClick={onClickView} {...handleMenuEvent}>
 			<OptionAvatar>
 				<UserAvatar username={username || ''} size='x28' />
 			</OptionAvatar>
@@ -50,4 +50,6 @@ export const MemberItem = ({ _id, name, username, federated, onClickView, rid, r
 	);
 };
 
-MemberItem.Skeleton = OptionSkeleton;
+export default Object.assign(RoomMembersItem, {
+	Skeleton: OptionSkeleton,
+});
