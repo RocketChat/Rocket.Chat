@@ -5,7 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isThreadMainMessage, isThreadMessage } from '@rocket.chat/core-typings';
 
 import { timeAgo } from '../../../client/lib/utils/timeAgo';
 import { formatDateAndTime } from '../../../client/lib/utils/formatDateAndTime';
@@ -510,6 +510,12 @@ Template.message.helpers({
 	},
 	readReceipt() {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
+			return;
+		}
+
+		const { msg } = this;
+
+		if (isThreadMessage(msg) && !isThreadMainMessage(msg)) {
 			return;
 		}
 
