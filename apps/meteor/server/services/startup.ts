@@ -38,7 +38,7 @@ api.registerService(new UiKitCoreApp());
 api.registerService(new PushService());
 api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
-api.registerService(new Presence(db));
+api.registerService(new Presence());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

@@ -105,7 +105,7 @@ export class AppUserBridge extends UserBridge {
 			fields.statusDefault = status;
 		}
 
-		await UsersRaw.updateOne({ _id: user.id }, { $set: fields });
+		await UsersRaw.updateOne({ _id: user.id }, { $set: fields as any });
 
 		return true;
 	}

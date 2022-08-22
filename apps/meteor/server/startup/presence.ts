@@ -1,8 +1,8 @@
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { InstanceStatus as InstanceStatusModel, UsersSessions } from '@rocket.chat/models';
 
-import { InstanceStatus as InstanceStatusModel, UsersSessions } from '../../app/models/server/raw';
 import { isPresenceMonitorEnabled } from '../lib/isPresenceMonitorEnabled';
 import { Presence } from '../sdk';
 

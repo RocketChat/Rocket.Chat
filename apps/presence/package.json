@@ -28,6 +28,7 @@
 	],
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/models": "workspace:^",
 		"fibers": "5.0.1",
 		"mongodb": "3.6.10"
 	}

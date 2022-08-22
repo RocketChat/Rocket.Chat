@@ -1,35 +1,14 @@
-import { Db } from 'mongodb';
-import { IUser, UserStatus } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
+import { Users, UsersSessions } from '@rocket.chat/models';
 
-import { UsersRaw } from '../../meteor/app/models/server/raw/Users';
-import { UsersSessionsRaw } from '../../meteor/app/models/server/raw/UsersSessions';
 import type { IPresence } from '../../meteor/server/sdk/types/IPresence';
 import type { IBrokerNode } from '../../meteor/server/sdk/types/IBroker';
 import { ServiceClass } from '../../meteor/server/sdk/types/ServiceClass';
 import { processPresenceAndStatus } from './lib/processConnectionStatus';
 
 export class Presence extends ServiceClass implements IPresence {
-	private UsersSessions: UsersSessionsRaw;
-
-	private Users: UsersRaw;
-
-	constructor(db: Db) {
-		super();
-
-		this.name = 'presence';
-
-		const Trash = db.collection('rocketchat__trash');
-
-		const UsersCol = db.collection('users');
-
-		const Users = new UsersRaw(UsersCol, Trash);
-		const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), Trash, {
-			preventSetUpdatedAt: true,
-		});
-
-		this.Users = Users;
-		this.UsersSessions = UsersSessions;
-	}
+	protected name = 'presence';
 
 	async onNodeDisconnected({ node }: { node: IBrokerNode }): Promise<void> {
 		console.log('onNodeDisconnected', node);
@@ -53,7 +32,7 @@ export class Presence extends ServiceClass implements IPresence {
 		// 	connection.metadata = metadata;
 		// }
 
-		await this.UsersSessions.addConnectionById(uid, {
+		await UsersSessions.addConnectionById(uid, {
 			id: session,
 			instanceId: nodeId,
 			status: UserStatus.ONLINE,
@@ -67,7 +46,7 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async removeConnection(uid: string, session: string): Promise<{ uid: string; session: string }> {
-		await this.UsersSessions.removeConnectionByConnectionId(session);
+		await UsersSessions.removeConnectionByConnectionId(session);
 
 		await this.updateUserPresence(uid);
 
@@ -79,9 +58,9 @@ export class Presence extends ServiceClass implements IPresence {
 
 	async removeLostConnections(nodeID?: string): Promise<string[]> {
 		if (nodeID) {
-			const affectedUsers = await this.UsersSessions.findByInstanceId(nodeID).toArray();
+			const affectedUsers = await UsersSessions.findByInstanceId(nodeID).toArray();
 
-			const { modifiedCount } = await this.UsersSessions.removeConnectionsFromInstanceId(nodeID);
+			const { modifiedCount } = await UsersSessions.removeConnectionsFromInstanceId(nodeID);
 
 			if (modifiedCount === 0) {
 				return [];
@@ -102,7 +81,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 		const ids = nodes.filter((node) => node.available).map(({ id }) => id);
 
-		const affectedUsers = await this.UsersSessions.find(
+		const affectedUsers = await UsersSessions.find(
 			{
 				'connections.instanceId': {
 					$exists: true,
@@ -121,7 +100,7 @@ export class Presence extends ServiceClass implements IPresence {
 				},
 			},
 		};
-		const { modifiedCount } = await this.UsersSessions.updateMany({}, update);
+		const { modifiedCount } = await UsersSessions.updateMany({}, update);
 
 		if (modifiedCount === 0) {
 			return [];
@@ -134,11 +113,11 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async setStatus(uid: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {
-		const userSessions = (await this.UsersSessions.findOneById(uid)) || { connections: [] };
+		const userSessions = (await UsersSessions.findOneById(uid)) || { connections: [] };
 
 		const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
 
-		const result = await this.Users.updateStatusById(uid, {
+		const result = await Users.updateStatusById(uid, {
 			statusDefault,
 			status,
 			statusConnection,
@@ -146,7 +125,7 @@ export class Presence extends ServiceClass implements IPresence {
 		});
 
 		if (result.modifiedCount > 0) {
-			const user = await this.Users.findOneById<Pick<IUser, 'username'>>(uid, { projection: { username: 1 } });
+			const user = await Users.findOneById<Pick<IUser, 'username'>>(uid, { projection: { username: 1 } });
 			this.api.broadcast('presence.status', {
 				user: { _id: uid, username: user?.username, status, statusText },
 			});
@@ -156,7 +135,7 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {
-		const result = await this.UsersSessions.updateConnectionStatusById(uid, session, status);
+		const result = await UsersSessions.updateConnectionStatusById(uid, session, status);
 
 		await this.updateUserPresence(uid);
 
@@ -164,7 +143,7 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async updateUserPresence(uid: string): Promise<void> {
-		const user = await this.Users.findOneById<Pick<IUser, 'username' | 'statusDefault' | 'statusText'>>(uid, {
+		const user = await Users.findOneById<Pick<IUser, 'username' | 'statusDefault' | 'statusText'>>(uid, {
 			projection: {
 				username: 1,
 				statusDefault: 1,
@@ -175,13 +154,13 @@ export class Presence extends ServiceClass implements IPresence {
 			return;
 		}
 
-		const userSessions = (await this.UsersSessions.findOneById(uid)) || { connections: [] };
+		const userSessions = (await UsersSessions.findOneById(uid)) || { connections: [] };
 
 		const { statusDefault } = user;
 
 		const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
 
-		const result = await this.Users.updateStatusById(uid, {
+		const result = await Users.updateStatusById(uid, {
 			status,
 			statusConnection,
 		});

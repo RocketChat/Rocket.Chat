@@ -1,6 +1,6 @@
 // import { BaseBroker } from './BaseBroker';
 import type { IBroker } from '../types/IBroker';
-import type { ServiceClass } from '../types/ServiceClass';
+import type { IServiceClass } from '../types/ServiceClass';
 import type { EventSignatures } from './Events';
 import { LocalBroker } from './LocalBroker';
 
