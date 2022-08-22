@@ -100,10 +100,15 @@ export const AutoTranslate = {
 
 			c.stop();
 
-			[this.providersMetadata, this.supportedLanguages] = await Promise.all([
-				callWithErrorHandling('autoTranslate.getProviderUiMetadata'),
-				callWithErrorHandling('autoTranslate.getSupportedLanguages', 'en'),
-			]);
+			try {
+				[this.providersMetadata, this.supportedLanguages] = await Promise.all([
+					callWithErrorHandling('autoTranslate.getProviderUiMetadata'),
+					callWithErrorHandling('autoTranslate.getSupportedLanguages', 'en'),
+				]);
+			} catch (e: unknown) {
+				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data
+				console.error((e as Error).message);
+			}
 		});
 
 		Subscriptions.find().observeChanges({
