@@ -50,8 +50,8 @@ test.describe.serial('Current Chats', () => {
 		test('expect show removeAllClosed option', async () => {
 			await expect(pageOmnichannelCurrentChats.removeAllClosedOption).toBeVisible();
 		});
-		test('expect show custom fields option', async () => {
-			await expect(pageOmnichannelCurrentChats.customFieldsOption).toBeVisible();
+		test('expect not to show custom fields option', async () => {
+			await expect(pageOmnichannelCurrentChats.customFieldsOption).not.toBeVisible();
 		});
 	});
 
