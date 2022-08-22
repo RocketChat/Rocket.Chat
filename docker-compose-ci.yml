@@ -9,12 +9,13 @@ services:
     environment:
       - TEST_MODE=true
       - EXIT_UNHANDLEDPROMISEREJECTION=true
-      - "MONGO_URL=${MONGO_URL}"
-      - "MONGO_OPLOG_URL=${MONGO_OPLOG_URL}"
-      - "TRANSPORTER=${TRANSPORTER}"
+      - 'MONGO_URL=${MONGO_URL}'
+      - 'MONGO_OPLOG_URL=${MONGO_OPLOG_URL}'
+      - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info
+      - 'ENTERPRISE_LICENSE=${ENTERPRISE_LICENSE}'
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     depends_on:
       - traefik
     labels:
@@ -30,11 +31,11 @@ services:
         SERVICE: authorization
     image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
     environment:
-      - "MONGO_URL=${MONGO_URL}"
-      - TRANSPORTER=nats://nats:4222
+      - 'MONGO_URL=${MONGO_URL}'
+      - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
 
@@ -46,10 +47,10 @@ services:
     image: ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
-      - TRANSPORTER=nats://nats:4222
+      - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
 
@@ -61,10 +62,10 @@ services:
     image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
-      - TRANSPORTER=nats://nats:4222
+      - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
 
@@ -76,10 +77,10 @@ services:
     image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
-      - TRANSPORTER=nats://nats:4222
+      - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
       - traefik
@@ -97,19 +98,19 @@ services:
     image: ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
-      - TRANSPORTER=nats://nats:4222
+      - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
 
   nats:
     image: nats:2.6-alpine
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     ports:
-      - "4222:4222"
+      - '4222:4222'
 
   traefik:
     image: traefik:v2.8
