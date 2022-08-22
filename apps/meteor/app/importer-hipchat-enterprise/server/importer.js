@@ -211,7 +211,7 @@ export class HipChatEnterpriseImporter extends Base {
 				count++;
 			} else if (m.TopicRoomMessage) {
 				const newMessage = this.convertImportedMessage(m.TopicRoomMessage, rid, 'topic');
-				newMessage.t = 'room_changed_topic_to';
+				newMessage.t = 'room_changed_topic';
 
 				this.converter.addMessage(newMessage);
 				count++;

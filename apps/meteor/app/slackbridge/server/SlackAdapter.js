@@ -962,7 +962,7 @@ export default class SlackAdapter {
 	processTopicMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
-				'room_changed_topic_to',
+				'room_changed_topic',
 				rocketChannel._id,
 				slackMessage.topic,
 				rocketUser,
@@ -976,7 +976,7 @@ export default class SlackAdapter {
 	processPurposeMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
-				'room_changed_topic_to',
+				'room_changed_topic',
 				rocketChannel._id,
 				slackMessage.purpose,
 				rocketUser,

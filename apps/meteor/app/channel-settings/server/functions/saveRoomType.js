@@ -49,7 +49,7 @@ export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
 				lng: (user && user.language) || settings.get('Language') || 'en',
 			}).toLowerCase();
 		}
-		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_type', rid, message, user);
+		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_privacy', rid, message, user);
 	}
 	return result;
 };

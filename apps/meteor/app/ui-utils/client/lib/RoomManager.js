@@ -54,7 +54,7 @@ export const RoomManager = new (function () {
 		}
 
 		Tracker.nonreactive(() => {
-			if (msg.t === 'room_changed_type') {
+			if (msg.t === 'room_changed_privacy') {
 				const type = FlowRouter.current().route.name === 'channel' ? 'c' : 'p';
 				RoomManager.close(type + FlowRouter.getParam('name'));
 
