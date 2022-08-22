@@ -176,9 +176,9 @@ const computation = Tracker.autorun(() => {
 					(
 						roomMessagesStream.on(record.rid, async (msg) => {
 							// Should not send message to room if room has not loaded all the current messages
-							if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
-								return;
-							}
+							// if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
+							// 	return;
+							// }
 							// Do not load command messages into channel
 							if (msg.t !== 'command') {
 								const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
