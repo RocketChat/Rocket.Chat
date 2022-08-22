@@ -1,7 +1,6 @@
 import type { Page } from '@playwright/test';
 
 import { IS_EE } from './config/constants';
-
 import { expect, test } from './utils/test';
 
 const CardIds = {
