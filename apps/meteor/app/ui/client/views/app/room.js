@@ -495,14 +495,14 @@ export const dropzoneEvents = {
 			const transferData = e.dataTransfer.getData('text') || e.dataTransfer.getData('url');
 
 			if (e.dataTransfer.types.includes('text/uri-list')) {
-				const url = e.dataTransfer.getData('text/html').match('<img.+src=(?:"|\')(.+?)(?:"|\')(?:.+?)>');
-				const imgURL = url && url[1];
+				const url = e.dataTransfer.getData('text/html').match('<a[^>]+href="(.*?)"[^>]*>');
+				const mediaURL = url && url[1];
 
-				if (!imgURL) {
+				if (!mediaURL) {
 					return;
 				}
 
-				const file = await createFileFromUrl(imgURL);
+				const file = await createFileFromUrl(mediaURL);
 				if (typeof file === 'string') {
 					return addToInput(file);
 				}
