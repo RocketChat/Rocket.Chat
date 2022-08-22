@@ -15,6 +15,8 @@ import {
 import React from 'react';
 
 import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManager';
+import * as Federation from '../../../../../../app/federation-v2/client/Federation';
+import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { UiTextContext } from '../../../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
