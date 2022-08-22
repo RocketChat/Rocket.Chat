@@ -307,11 +307,12 @@ export class OTRRoom implements IOTRRoom {
 								},
 							},
 						});
+					
+						timeout = Meteor.setTimeout(() => {
+							this.setState(OtrRoomState.TIMEOUT);
+							imperativeModal.close();
+						}, 10000);
 					}
-					timeout = Meteor.setTimeout(() => {
-						this.setState(OtrRoomState.TIMEOUT);
-						imperativeModal.close();
-					}, 10000);
 				} catch (e) {
 					dispatchToastMessage({ type: 'error', message: e });
 				}
