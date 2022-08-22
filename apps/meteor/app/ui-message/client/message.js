@@ -5,7 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { isRoomFederated, isThreadMainMessage, isThreadMessage } from '@rocket.chat/core-typings';
+import { isRoomFederated, isThreadMessage } from '@rocket.chat/core-typings';
 
 import { timeAgo } from '../../../client/lib/utils/timeAgo';
 import { formatDateAndTime } from '../../../client/lib/utils/formatDateAndTime';
@@ -515,7 +515,7 @@ Template.message.helpers({
 
 		const { msg } = this;
 
-		if (isThreadMessage(msg) && !isThreadMainMessage(msg)) {
+		if (isThreadMessage(msg)) {
 			return;
 		}
 
