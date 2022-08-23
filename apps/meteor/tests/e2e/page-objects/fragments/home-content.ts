@@ -110,6 +110,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
 	}
 
+	get btnSendTranscript(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-mail-arrow-top-right"]');
+	}
+
 	get inputModalAgentUserName(): Locator {
 		return this.page.locator('#modal-root input:nth-child(1)');
 	}
