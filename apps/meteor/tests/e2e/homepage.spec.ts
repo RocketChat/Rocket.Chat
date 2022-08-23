@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 
+import { ignoreModal } from './utils/ignore-modals';
 import { expect, test } from './utils/test';
 
 const CardIds = {
@@ -26,10 +27,12 @@ test.use({ storageState: 'admin-session.json' });
 test.describe.serial('homepage', () => {
 	let regularUserPage: Page;
 
-	test.beforeAll(async ({ browser }) => {
+	test.beforeAll(async ({ browser, api }) => {
 		regularUserPage = await browser.newPage({ storageState: 'user2-session.json' });
 		await regularUserPage.goto('/home');
 		await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
+
+		await ignoreModal(api);
 	});
 
 	test('expect show customize button if permission granted', async ({ api }) => {

@@ -1,6 +1,7 @@
 import { expect, test } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel, createAuxContext } from './utils';
+import { ignoreModal } from './utils/ignore-modals';
 
 test.use({ storageState: 'user1-session.json' });
 
@@ -12,10 +13,11 @@ test.describe.serial('Messaging', () => {
 		targetChannel = await createTargetChannel(api);
 	});
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, api }) => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
+		await ignoreModal(api);
 	});
 
 	test('expect show "hello word" in both contexts (targetChannel)', async ({ browser }) => {

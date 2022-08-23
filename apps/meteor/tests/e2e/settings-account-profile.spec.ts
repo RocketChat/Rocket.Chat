@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { test, expect } from './utils/test';
 import { HomeChannel, AccountProfile } from './page-objects';
+import { ignoreModal } from './utils/ignore-modals';
 
 test.use({ storageState: 'user3-session.json' });
 
@@ -11,11 +12,12 @@ test.describe.serial('settings-account-profile', () => {
 
 	const token = faker.random.alpha(10);
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, api }) => {
 		poHomeChannel = new HomeChannel(page);
 		poAccountProfile = new AccountProfile(page);
 
 		await page.goto('/home');
+		await ignoreModal(api);
 	});
 
 	// FIXME: solve test intermitencies

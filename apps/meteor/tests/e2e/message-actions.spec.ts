@@ -1,6 +1,7 @@
 import { expect, test } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { ignoreModal } from './utils/ignore-modals';
 
 test.use({ storageState: 'admin-session.json' });
 
@@ -12,11 +13,13 @@ test.describe.serial('message-actions', () => {
 		targetChannel = await createTargetChannel(api);
 	});
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, api }) => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat(targetChannel);
+
+		await ignoreModal(api);
 	});
 
 	test('expect reply the message', async ({ page }) => {

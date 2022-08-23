@@ -11,13 +11,15 @@ const PATH_NYC_OUTPUT = path.join(process.cwd(), '.nyc_output');
 
 export type AnyObj = { [key: string]: any };
 
+export type ApiTest = {
+	get(uri: string, prefix?: string): Promise<APIResponse>;
+	post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
+	put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
+	delete(uri: string, prefix?: string): Promise<APIResponse>;
+};
+
 export type BaseTest = {
-	api: {
-		get(uri: string, prefix?: string): Promise<APIResponse>;
-		post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
-		put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
-		delete(uri: string, prefix?: string): Promise<APIResponse>;
-	};
+	api: ApiTest;
 };
 
 export const test = baseTest.extend<BaseTest>({

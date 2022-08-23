@@ -3,6 +3,7 @@ import type { Browser, Page } from '@playwright/test';
 
 import { test, expect } from './utils/test';
 import { OmnichannelLiveChat, HomeChannel } from './page-objects';
+import { ignoreModal } from './utils/ignore-modals';
 
 const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
 	const page = await browser.newPage({ storageState });
@@ -21,6 +22,8 @@ test.describe('omnichannel-departaments', () => {
 		};
 		await api.post('/livechat/users/agent', { username: 'user1' });
 		await api.post('/livechat/users/manager', { username: 'user1' });
+
+		await ignoreModal(api);
 	});
 
 	test.describe('Receiving message from user', () => {
