@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, AggregateOptions } from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document, AggregateOptions } from 'mongodb';
 import { Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
 
@@ -347,5 +347,63 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				options,
 			)
 			.toArray();
+	}
+
+	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document> {
+		if (inc == null) {
+			inc = 1;
+		}
+		const query = {
+			'rid': roomId,
+			'u._id': {
+				$nin: userIds,
+			},
+		};
+
+		const update = {
+			$set: {
+				alert: true,
+				open: true,
+			},
+			$inc: {
+				unread: inc,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document> {
+		const query = {
+			'rid': roomId,
+			'u._id': {
+				$ne: userId,
+			},
+			'alert': { $ne: true },
+		};
+
+		const update = {
+			$set: {
+				alert: true,
+			},
+		};
+		return this.updateMany(query, update);
+	}
+
+	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document> {
+		const query = {
+			'rid': roomId,
+			'u._id': {
+				$ne: userId,
+			},
+			'open': { $ne: true },
+		};
+
+		const update = {
+			$set: {
+				open: true,
+			},
+		};
+		return this.updateMany(query, update);
 	}
 }

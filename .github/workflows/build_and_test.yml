@@ -266,8 +266,8 @@ jobs:
 
       - name: Start containers
         env:
-          MONGO_URL: "mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true"
-          MONGO_OPLOG_URL: "mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true"
+          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
+          MONGO_OPLOG_URL: 'mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true'
         run: |
           export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -440,11 +440,12 @@ jobs:
 
       - name: Start containers
         env:
-          MONGO_URL: "mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true"
-          RC_DOCKERFILE: "${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
-          RC_DOCKER_TAG: "${{ needs.release-versions.outputs.gh-docker-tag }}.official"
+          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
+          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
+          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
           TRANSPORTER: nats://nats:4222
+          ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
         run: |
           export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -759,7 +760,7 @@ jobs:
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:${{ needs.release-versions.outputs.gh-docker-tag }}.${{ matrix.release }}"
+          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:${{ needs.release-versions.outputs.gh-docker-tag }}"
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
