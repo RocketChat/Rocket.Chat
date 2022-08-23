@@ -765,20 +765,25 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			}
 
 			const existingMember = await TeamMember.findOneByUserIdAndTeamId(member.userId, team._id);
-			if (!existingMember) {
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(team.roomId, member.userId);
+
+			if (!existingMember && !subscription) {
 				throw new Error('member-does-not-exist');
 			}
 
-			if (existingMember.roles?.includes('owner')) {
-				const owners = TeamMember.findByTeamIdAndRole(team._id, 'owner');
-				const totalOwners = await owners.count();
-				if (totalOwners === 1) {
-					throw new Error('last-owner-can-not-be-removed');
+			if (existingMember) {
+				if (existingMember.roles?.includes('owner')) {
+					const owners = TeamMember.findByTeamIdAndRole(team._id, 'owner');
+					const totalOwners = await owners.count();
+					if (totalOwners === 1) {
+						throw new Error('last-owner-can-not-be-removed');
+					}
 				}
+
+				TeamMember.removeById(existingMember._id);
 			}
 
-			TeamMember.removeById(existingMember._id);
-			const removedUser = usersToRemove.find((u) => u._id === existingMember.userId);
+			const removedUser = usersToRemove.find((u) => u._id === (existingMember || member).userId);
 			if (removedUser) {
 				await removeUserFromRoom(
 					team.roomId,
