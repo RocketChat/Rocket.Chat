@@ -1,4 +1,5 @@
-import { ISettingBase } from '@rocket.chat/core-typings';
+import { ISettingSelectValue } from '@rocket.chat/apps-engine/definition/settings';
+import { ISettingBase, SettingValue } from '@rocket.chat/core-typings';
 import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, ReactElement } from 'react';
 
@@ -49,12 +50,12 @@ type AppSettingProps = {
 		id: string;
 		type: ISettingBase['type'];
 		i18nLabel: string;
-		i18nDescription: string;
-		values: { key: string; i18nLabel: string }[];
+		i18nDescription?: string;
+		values?: ISettingSelectValue[];
 		required: boolean;
 	};
-	onChange: (value: unknown) => void;
-	value: string;
+	onChange: (value: SettingValue) => void;
+	value: SettingValue;
 };
 function AppSetting({ appSetting, onChange, value, ...props }: AppSettingProps): ReactElement {
 	const appId = useRouteParameter('id');
