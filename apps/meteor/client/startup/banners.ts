@@ -1,4 +1,5 @@
 import { BannerPlatform } from '@rocket.chat/core-typings';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -20,6 +21,12 @@ const fetchInitialBanners = async (): Promise<void> => {
 				if (!user?.username) {
 					return;
 				}
+				FlowRouter.watchPathChange();
+
+				if (FlowRouter.getRouteName() === 'setup-wizard') {
+					return;
+				}
+
 				setTimeout(() => {
 					imperativeModal.open({
 						component: DeviceManagementFeatureModal,
