@@ -4,7 +4,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms } from '../../../../../app/models/server';
 import { cbLogger } from '../lib/logger';
-import { AutoTransferChatScheduler } from '../jobs/AutoTransferChatScheduler';
+import { OmniEEService } from '../../../../server/sdk';
 
 let autoTransferTimeout = 0;
 
@@ -27,7 +27,7 @@ const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> =
 	}
 
 	cbLogger.debug(`Callback success. Room ${room._id} will be scheduled to be auto transfered after ${autoTransferTimeout} seconds`);
-	await AutoTransferChatScheduler.scheduleRoom(rid, autoTransferTimeout as number);
+	await OmniEEService.monitorUnansweredRoomForAutoTransfer(rid, autoTransferTimeout);
 
 	return inquiry;
 };
@@ -52,7 +52,7 @@ const handleAfterSaveMessage = (message: any = {}, room: any = {}): IMessage => 
 		return message;
 	}
 
-	Promise.await(AutoTransferChatScheduler.unscheduleRoom(rid));
+	Promise.await(OmniEEService.cancelMonitorUnansweredRoomForAutoTransfer(rid));
 	return message;
 };
 
@@ -71,7 +71,7 @@ const handleAfterCloseRoom = (room: any = {}): IRoom => {
 		return room;
 	}
 
-	Promise.await(AutoTransferChatScheduler.unscheduleRoom(rid));
+	Promise.await(OmniEEService.cancelMonitorUnansweredRoomForAutoTransfer(rid));
 	return room;
 };
 

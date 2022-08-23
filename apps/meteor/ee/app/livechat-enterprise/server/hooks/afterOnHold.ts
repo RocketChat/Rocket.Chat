@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';
-import { AutoCloseOnHoldScheduler } from '../jobs/AutoCloseOnHoldScheduler';
+import { OmniEEService } from '../../../../server/sdk';
 
 let autoCloseOnHoldChatTimeout = 0;
 
@@ -20,7 +20,7 @@ const handleAfterOnHold = async (room: any = {}): Promise<any> => {
 	}
 
 	cbLogger.debug(`Scheduling room ${rid} to be closed in ${autoCloseOnHoldChatTimeout} seconds`);
-	await AutoCloseOnHoldScheduler.scheduleRoom(
+	await OmniEEService.monitorOnHoldRoomForAutoClose(
 		room._id,
 		autoCloseOnHoldChatTimeout,
 		settings.get('Livechat_auto_close_on_hold_chats_custom_message') ||
