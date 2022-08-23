@@ -1,19 +1,18 @@
-import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useMemo } from 'react';
+import { Field, TextInput, ButtonGroup, Button, Select } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useMethod, useTranslation, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import React, { useMemo, useCallback, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
-import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import Tags from '../../../../../components/Omnichannel/Tags';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
-import { useForm } from '../../../../../hooks/useForm';
-import { useFormsSubscription } from '../../../additionalForms';
+import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 import { FormSkeleton } from '../../Skeleton';
+import { useCustomFields } from './hooks/useCustomFields';
+import { usePriorities } from './hooks/usePriorities';
 
-const initialValuesRoom = {
+const CUSTOM_FIELDS_PERMISSION = ['view-livechat-room-customfields', 'edit-livechat-room-customfields'];
+const DEFAULT_VALUES = {
 	topic: '',
 	tags: [],
 	livechatData: {},
@@ -22,129 +21,139 @@ const initialValuesRoom = {
 
 const getInitialValuesRoom = (room) => {
 	if (!room) {
-		return initialValuesRoom;
+		return DEFAULT_VALUES;
 	}
 
-	const { topic, tags, livechatData, priorityId } = room;
-
 	return {
-		topic: topic ?? '',
-		tags: tags ?? [],
-		livechatData: livechatData ?? {},
-		priorityId: priorityId ?? '',
+		topic: room.topic ?? '',
+		tags: room.tags ?? [],
+		livechatData: room.livechatData ?? {},
+		priorityId: room.priorityId ?? '',
 	};
 };
 
-function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
-	const t = useTranslation();
-
-	const { values: valuesRoom, handlers: handlersRoom, hasUnsavedChanges: hasUnsavedChangesRoom } = useForm(getInitialValuesRoom(room));
-	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
-
-	const { handleTopic, handleTags, handlePriorityId } = handlersRoom;
-	const { topic, tags, priorityId } = valuesRoom;
-
-	const forms = useFormsSubscription();
-
-	const { usePrioritiesSelect = () => {} } = forms;
-
-	const PrioritiesSelect = usePrioritiesSelect();
-
-	const {
-		values: valueCustom,
-		handlers: handleValueCustom,
-		hasUnsavedChanges: hasUnsavedChangesCustomFields,
-	} = useForm({
-		livechatData: valuesRoom.livechatData,
+const jsonConverterToValidFormat = (customFields) => {
+	const jsonObj = {};
+	customFields.forEach(({ _id, label, visibility, options, scope, defaultValue, required }) => {
+		(visibility === 'visible') & (scope === 'room') &&
+			(jsonObj[_id] = {
+				label,
+				type: options ? 'select' : 'text',
+				required,
+				defaultValue,
+				options: options && options.split(',').map((item) => item.trim()),
+			});
 	});
 
-	const { handleLivechatData } = handleValueCustom;
-	const { livechatData } = valueCustom;
+	return jsonObj;
+};
 
-	const [customFieldsError, setCustomFieldsError] = useState([]);
+const RoomEdit = ({ room, visitor, reload, reloadInfo, close }) => {
+	const t = useTranslation();
 
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('/v1/livechat/custom-fields');
-	const { value: prioritiesResult = {}, phase: statePriorities } = useEndpointData('/v1/livechat/priorities');
-
-	const jsonConverterToValidFormat = (customFields) => {
-		const jsonObj = {};
-		customFields.forEach(({ _id, label, visibility, options, scope, defaultValue, required }) => {
-			(visibility === 'visible') & (scope === 'room') &&
-				(jsonObj[_id] = {
-					label,
-					type: options ? 'select' : 'text',
-					required,
-					defaultValue,
-					options: options && options.split(',').map((item) => item.trim()),
-				});
-		});
-		return jsonObj;
-	};
-
-	const jsonCustomField = useMemo(
-		() => (allCustomFields && allCustomFields.customFields ? jsonConverterToValidFormat(allCustomFields.customFields) : {}),
-		[allCustomFields],
-	);
-
+	const isEnterprise = useIsEnterprise();
+	const viewCustomFields = useAtLeastOnePermission(CUSTOM_FIELDS_PERMISSION);
 	const dispatchToastMessage = useToastMessageDispatch();
-
 	const saveRoom = useMethod('livechat:saveInfo');
 
-	const handleSave = useMutableCallback(async (e) => {
-		e.preventDefault();
-		const userData = {
-			_id: visitor._id,
-		};
+	const [customFieldsErrors, setCustomFieldsErrors] = useState([]);
+
+	const {
+		control,
+		register,
+		getValues,
+		formState: { isDirty },
+	} = useForm({ defaultValues: getInitialValuesRoom(room) });
+
+	const { data: customFieldsData, isError: customFieldsError, isLoading: customFieldsLoading } = useCustomFields();
+	const { data: prioritiesData, isError: prioritiesError, isLoading: prioritiesLoading } = usePriorities();
+
+	const jsonCustomField = useMemo(
+		() => (customFieldsData?.customFields ? jsonConverterToValidFormat(customFieldsData.customFields) : {}),
+		[customFieldsData],
+	);
+
+	const handleSubmit = useCallback(async () => {
+		const values = getValues();
+		const guestData = { _id: visitor._id };
 
 		const roomData = {
 			_id: room._id,
-			topic,
-			tags: tags.sort(),
-			livechatData,
-			...(priorityId && { priorityId }),
+			topic: values.topic,
+			tags: values.tags.sort(),
+			livechatData: values.livechatData,
+			...(values.priorityId && { priorityId: values.priorityId }),
 		};
 
 		try {
-			saveRoom(userData, roomData);
+			saveRoom(guestData, roomData);
+
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+
 			reload && reload();
 			reloadInfo && reloadInfo();
+
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	});
+	}, [close, dispatchToastMessage, getValues, reload, reloadInfo, room._id, saveRoom, t, visitor._id]);
 
-	const formIsValid = (hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) && customFieldsError.length === 0;
-
-	if ([stateCustomFields, statePriorities].includes(AsyncStatePhase.LOADING)) {
+	if (!customFieldsData || !prioritiesData || customFieldsLoading || customFieldsError || prioritiesLoading || prioritiesError) {
 		return <FormSkeleton />;
 	}
-
-	const { priorities } = prioritiesResult;
 
 	return (
 		<>
 			<VerticalBar.ScrollableContent is='form'>
-				{canViewCustomFields() && allCustomFields && (
-					<CustomFieldsForm
-						jsonCustomFields={jsonCustomField}
-						customFieldsData={livechatData}
-						setCustomFieldsData={handleLivechatData}
-						setCustomFieldsError={setCustomFieldsError}
+				{viewCustomFields && (
+					<Controller
+						control={control}
+						name='livechatData'
+						render={({ field: { name, value, onChange } }) => (
+							<CustomFieldsForm
+								name={name}
+								jsonCustomFields={jsonCustomField}
+								customFieldsData={value}
+								setCustomFieldsData={onChange}
+								setCustomFieldsError={(errors) => {
+									setCustomFieldsErrors(errors);
+								}}
+							/>
+						)}
 					/>
 				)}
 				<Field>
 					<Field.Label>{t('Topic')}</Field.Label>
 					<Field.Row>
-						<TextInput flexGrow={1} value={topic} onChange={handleTopic} />
+						<TextInput flexGrow={1} {...register('topic')} />
 					</Field.Row>
 				</Field>
 				<Field>
-					<Tags tags={tags} handler={handleTags} />
+					<Controller
+						control={control}
+						name='tags'
+						render={({ field: { name, value, onChange } }) => <Tags name={name} tags={value} handler={onChange} />}
+					/>
 				</Field>
-				{PrioritiesSelect && priorities && priorities.length > 0 && (
-					<PrioritiesSelect value={priorityId} label={t('Priority')} options={priorities} handler={handlePriorityId} />
+				{isEnterprise && (
+					<Field>
+						<Field.Label>{t('Priority')}</Field.Label>
+						<Field.Row>
+							<Controller
+								control={control}
+								name='priorityId'
+								render={({ field: { name, value, onChange } }) => (
+									<Select
+										name={name}
+										value={value}
+										options={prioritiesData.priorities.map((priority) => [priority._id, priority.name])}
+										onChange={onChange}
+									/>
+								)}
+							/>
+						</Field.Row>
+					</Field>
 				)}
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
@@ -152,13 +161,13 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 					<Button flexGrow={1} onClick={close}>
 						{t('Cancel')}
 					</Button>
-					<Button mie='none' flexGrow={1} onClick={handleSave} disabled={!formIsValid} primary>
+					<Button mie='none' flexGrow={1} onClick={handleSubmit} disabled={!isDirty && customFieldsErrors.length > 0} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>
 	);
-}
+};
 
 export default RoomEdit;

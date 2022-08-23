@@ -15,7 +15,6 @@ import type EeTextAreaInput from './EeTextAreaInput';
 import type EeTextInput from './EeTextInput';
 import type MaxChatsPerAgentContainer from './MaxChatsPerAgentContainer';
 import type MaxChatsPerAgentDisplay from './MaxChatsPerAgentDisplay';
-import type PrioritiesSelect from './PrioritiesSelect';
 
 declare module '../../../../client/views/omnichannel/additionalForms' {
 	interface EEFormHooks {
@@ -32,7 +31,6 @@ declare module '../../../../client/views/omnichannel/additionalForms' {
 		useCurrentChatTags?: () => LazyExoticComponent<typeof CurrentChatTags>;
 		useDepartmentBusinessHours?: () => LazyExoticComponent<typeof DepartmentBusinessHours>;
 		useDepartmentForwarding?: () => LazyExoticComponent<typeof DepartmentForwarding>;
-		usePrioritiesSelect?: () => LazyExoticComponent<typeof PrioritiesSelect>;
 		useSelectForwardDepartment?: () => LazyExoticComponent<typeof AutoCompleteDepartment>;
 	}
 }
@@ -55,7 +53,6 @@ hasLicense('livechat-enterprise').then((enabled) => {
 		useCurrentChatTags: () => useMemo(() => lazy(() => import('../tags/CurrentChatTags')), []),
 		useDepartmentBusinessHours: () => useMemo(() => lazy(() => import('./DepartmentBusinessHours')), []),
 		useDepartmentForwarding: () => useMemo(() => lazy(() => import('./DepartmentForwarding')), []),
-		usePrioritiesSelect: () => useMemo(() => lazy(() => import('./PrioritiesSelect')), []),
 		useSelectForwardDepartment: () => useMemo(() => lazy(() => import('../../../../client/components/AutoCompleteDepartment')), []),
 	});
 });
