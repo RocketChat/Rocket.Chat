@@ -11,16 +11,18 @@ export class AppInternalBridge extends InternalBridge {
 		super();
 	}
 
-	protected async getUsernamesOfRoomById(roomId: string): Promise<Array<string>> {
+	protected getUsernamesOfRoomById(roomId: string): Array<string> {
 		if (!roomId) {
 			return [];
 		}
 
-		const records = await Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
-			projection: {
-				'u.username': 1,
-			},
-		}).toArray();
+		const records = Promise.await(
+			Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
+				projection: {
+					'u.username': 1,
+				},
+			}).toArray(),
+		);
 
 		if (!records || records.length === 0) {
 			return [];

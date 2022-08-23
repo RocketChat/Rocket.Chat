@@ -1,5 +1,5 @@
-import type { IPersitenceItem } from '@rocket.chat/apps-engine/definition/persistence/IPersitenceItem';
+import type { IPersistenceItem } from '@rocket.chat/apps-engine/definition/persistence';
 
 import type { IBaseModel } from './IBaseModel';
 
-export type IAppsPersistenceModel = IBaseModel<IPersitenceItem>;
+export type IAppsPersistenceModel = IBaseModel<IPersistenceItem>;

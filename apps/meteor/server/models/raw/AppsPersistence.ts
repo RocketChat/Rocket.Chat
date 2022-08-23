@@ -1,4 +1,4 @@
-import type { IPersitenceItem as IAppsPersistenceItem } from '@rocket.chat/apps-engine/definition/persistence/IPersitenceItem';
+import type { IPersistenceItem as IAppsPersistenceItem } from '@rocket.chat/apps-engine/definition/persistence';
 import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
 import type { Db, IndexDescription } from 'mongodb';
 
