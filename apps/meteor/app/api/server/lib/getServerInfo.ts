@@ -3,7 +3,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 
 type ServerInfo =
 	| {
-			info: Info;
+			info: typeof Info;
 	  }
 	| {
 			version: string | undefined;

@@ -39,7 +39,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }: UserCardWith
 			_id,
 			name = username,
 			roles = defaultValue,
-			statusText,
+			statusText = defaultValue,
 			bio = defaultValue,
 			utcOffset = defaultValue,
 			nickname,
