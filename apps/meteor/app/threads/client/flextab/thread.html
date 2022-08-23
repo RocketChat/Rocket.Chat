@@ -3,7 +3,7 @@
 		<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
 		<div class="thread-list js-scroll-thread">
 			<ul class="thread">
-				{{# with messageContext}}
+				{{#with messageContext}}
 				{{#if isLoading}}
 					<li class="load-more">
 						{{> loading}}
@@ -19,7 +19,7 @@
 		</div>
 		{{> messageBox messageBoxData}}
 		<footer class="thread-footer">
-			{{# with checkboxData }}
+			{{#with checkboxData }}
 				<div style="display: flex;">
 					{{> Checkbox . }}
 				</div>

@@ -89,11 +89,11 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 					throw new Error(t('No_messages_found_to_prune'));
 				}
 
-				dispatchToastMessage({ type: 'success', message: `${count} ${t('messages_pruned')}` });
+				dispatchToastMessage({ type: 'success', message: t('__count__message_pruned', { count }) });
 				closeModal();
 				reset();
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			} catch (error: unknown) {
+				dispatchToastMessage({ type: 'error', message: error });
 				closeModal();
 			}
 		};

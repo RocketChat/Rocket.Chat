@@ -21,7 +21,7 @@ function ActionSettingInput({ _id, actionText, value, disabled, sectionChanged }
 
 			dispatchToastMessage({ type: 'success', message: t(data.message, ...data.params) });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
