@@ -15,7 +15,9 @@ const DepartmentField = ({ departmentId }) => {
 		return <FormSkeleton />;
 	}
 
-	const { department: name } = data;
+	const {
+		department: { name },
+	} = data;
 
 	return (
 		<Field>
