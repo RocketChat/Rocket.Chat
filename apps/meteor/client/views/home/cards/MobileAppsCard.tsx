@@ -1,9 +1,7 @@
 import { Button } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { ExternalLink, Card } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
-
-import Card from '../../../components/Card';
 
 const GOOGLE_PLAY_URL = 'https://go.rocket.chat/i/hp-mobile-app-google';
 const APP_STORE_URL = 'https://go.rocket.chat/i/hp-mobile-app-apple';
