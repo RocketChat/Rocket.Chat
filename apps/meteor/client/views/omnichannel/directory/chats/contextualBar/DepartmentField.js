@@ -15,14 +15,10 @@ const DepartmentField = ({ departmentId }) => {
 		return <FormSkeleton />;
 	}
 
-	const {
-		department: { name },
-	} = data;
-
 	return (
 		<Field>
 			<Label>{t('Department')}</Label>
-			<Info>{name || t('Department_not_found')}</Info>
+			<Info>{data.department?.name || t('Department_not_found')}</Info>
 		</Field>
 	);
 };
