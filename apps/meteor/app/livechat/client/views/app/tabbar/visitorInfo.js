@@ -14,7 +14,6 @@ import { settings } from '../../../../../settings';
 import { t } from '../../../../../utils';
 import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import { APIClient } from '../../../../../utils/client';
-import { RoomManager } from '../../../../../ui-utils/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
 import { Markdown } from '../../../../../markdown/client';
 import { formatDateAndTime } from '../../../../../../client/lib/utils/formatDateAndTime';
@@ -414,8 +413,10 @@ Template.visitorInfo.onCreated(function () {
 		this.updateRoom(room);
 	};
 
+	this.roomDataStream = new Meteor.Streamer('room-data');
+
 	if (rid) {
-		RoomManager.roomStream.on(rid, this.updateRoom);
+		this.roomDataStream.on(rid, this.updateRoom);
 		loadRoomData(rid);
 	}
 
@@ -436,5 +437,5 @@ Template.visitorInfo.onCreated(function () {
 
 Template.visitorInfo.onDestroyed(function () {
 	const { rid } = Template.currentData();
-	RoomManager.roomStream.removeListener(rid, this.updateRoom);
+	this.roomDataStream.removeListener(rid, this.updateRoom);
 });
