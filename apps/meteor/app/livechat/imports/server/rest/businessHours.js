@@ -3,11 +3,11 @@ import { findLivechatBusinessHour } from '../../../server/api/lib/businessHours'
 
 API.v1.addRoute(
 	'livechat/business-hour',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-business-hours'] },
 	{
-		get() {
+		async get() {
 			const { _id, type } = this.queryParams;
-			const { businessHour } = Promise.await(findLivechatBusinessHour(this.userId, _id, type));
+			const { businessHour } = await findLivechatBusinessHour(_id, type);
 			return API.v1.success({
 				businessHour,
 			});

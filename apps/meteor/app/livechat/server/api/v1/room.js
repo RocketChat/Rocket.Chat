@@ -231,7 +231,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.visitor',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		put() {
 			try {
@@ -270,7 +270,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.join',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		get() {
 			try {
