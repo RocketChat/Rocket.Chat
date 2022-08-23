@@ -21,7 +21,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	...props
 }) => {
 	const isMessageHighlight = useIsMessageHighlight(message._id);
-	const [isMessageIgnored, toggleMessageIgnored] = useToggle(message.ignored);
+	const [isMessageIgnored, toggleMessageIgnored] = useToggle((message as { ignored?: boolean }).ignored ?? false);
 	const {
 		actions: { openUserCard },
 	} = useMessageActions();
