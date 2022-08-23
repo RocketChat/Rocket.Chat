@@ -40,7 +40,10 @@ class AudioEncoder extends Emitter {
 	handleWorkerMessage = (event) => {
 		switch (event.data.command) {
 			case 'end': {
-				const blob = new Blob(event.data.buffer, { type: 'audio/mpeg' });
+				// prepend mp3 magic number to the buffer
+				const magicNoPrefix = new Int8Array([73, 68, 51, 3, 0, 0, 0, 0, 0, 0]);
+				const bufferWithMagicNo = [magicNoPrefix, ...event.data.buffer];
+				const blob = new Blob(bufferWithMagicNo, { type: 'audio/mpeg' });
 				this.emit('encoded', blob);
 				this.worker.terminate();
 				break;

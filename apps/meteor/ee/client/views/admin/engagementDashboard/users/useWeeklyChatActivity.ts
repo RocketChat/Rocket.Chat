@@ -1,6 +1,6 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
-import { useQuery } from 'react-query';
 
 type UseWeeklyChatActivityOptions = {
 	displacement: number;
@@ -17,7 +17,7 @@ export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivi
 			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day')).subtract(displacement, 'weeks').toDate();
 
 			const response = await getWeeklyChatActivity({
-				start: day,
+				start: day.toISOString(),
 			});
 
 			return response
@@ -29,6 +29,7 @@ export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivi
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
 		},
 	);
 };

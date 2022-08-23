@@ -24,6 +24,9 @@ export interface IRoom extends IRocketChatRecord {
 	broadcast?: true;
 	featured?: true;
 	announcement?: string;
+	announcementDetails?: {
+		style?: string;
+	};
 	encrypted?: boolean;
 	topic?: string;
 
@@ -193,6 +196,7 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
 	t: 'v';
+	name: string;
 	// The timestamp when call was started
 	callStarted: Date;
 	// The amount of time the call lasted, in milliseconds
@@ -271,9 +275,11 @@ export type RoomAdminFieldsType =
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {
+		enabled?: boolean;
 		maxAge: number;
 		filesOnly: boolean;
 		excludePinned: boolean;
 		ignoreThreads: boolean;
+		overrideGlobal?: boolean;
 	};
 }

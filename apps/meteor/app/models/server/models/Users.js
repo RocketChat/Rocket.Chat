@@ -11,20 +11,22 @@ import { settings } from '../../../settings/server';
 const queryStatusAgentOnline = (extraFilters = {}) => ({
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
-	$or: [
-		{
-			status: {
-				$exists: true,
-				$ne: 'offline',
+	...(!settings.get('Livechat_enabled_when_agent_idle') && {
+		$or: [
+			{
+				status: {
+					$exists: true,
+					$ne: 'offline',
+				},
+				roles: {
+					$ne: 'bot',
+				},
 			},
-			roles: {
-				$ne: 'bot',
+			{
+				roles: 'bot',
 			},
-		},
-		{
-			roles: 'bot',
-		},
-	],
+		],
+	}),
 	...extraFilters,
 	...(settings.get('Livechat_enabled_when_agent_idle') === false && {
 		statusConnection: { $ne: 'away' },
@@ -239,7 +241,7 @@ export class Users extends Base {
 		return [];
 	}
 
-	getNextBotAgent(ignoreAgentId) {
+	async getNextBotAgent(ignoreAgentId) {
 		// TODO: Create class Agent
 		const query = {
 			roles: {
@@ -259,7 +261,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = await this.model.rawCollection().findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -642,7 +644,7 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findOneByAppId(appId, options) {
+	findOneByAppId(appId, options = {}) {
 		const query = { appId };
 
 		return this.findOne(query, options);

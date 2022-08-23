@@ -1,9 +1,9 @@
-import { Db, Collection } from 'mongodb';
+import type { Db, Collection } from 'mongodb';
 import mem from 'mem';
 import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users, Roles } from '@rocket.chat/models';
 
-import { IAuthorization, RoomAccessValidator } from '../../sdk/types/IAuthorization';
+import type { IAuthorization, RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 import { canAccessRoom } from './canAccessRoom';

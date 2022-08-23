@@ -1,3 +1,4 @@
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import {
 	Field,
 	TextInput,
@@ -318,7 +319,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Private')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch disabled={!canChangeType} checked={roomType === 'p'} onChange={changeRoomType} />
+								<ToggleSwitch disabled={!canChangeType || isRoomFederated(room)} checked={roomType === 'p'} onChange={changeRoomType} />
 							</Field.Row>
 						</Box>
 						<Field.Hint>{t('Teams_New_Private_Description_Enabled')}</Field.Hint>
@@ -329,7 +330,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Read_only')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch disabled={!canSetRo} checked={readOnly} onChange={handleReadOnly} />
+								<ToggleSwitch disabled={!canSetRo || isRoomFederated(room)} checked={readOnly} onChange={handleReadOnly} />
 							</Field.Row>
 						</Box>
 						<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>

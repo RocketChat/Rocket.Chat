@@ -24,8 +24,6 @@ const CategoryDropDown: FC<{
 			}
 
 			onMouseEventPreventSideEffects(e);
-
-			return false;
 		},
 		[toggleCollapsed],
 	);
