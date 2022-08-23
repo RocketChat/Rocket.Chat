@@ -266,8 +266,8 @@ jobs:
 
       - name: Start containers
         env:
-          MONGO_URL: "mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true"
-          MONGO_OPLOG_URL: "mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true"
+          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
+          MONGO_OPLOG_URL: 'mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true'
         run: |
           export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -440,11 +440,12 @@ jobs:
 
       - name: Start containers
         env:
-          MONGO_URL: "mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true"
-          RC_DOCKERFILE: "${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
-          RC_DOCKER_TAG: "${{ needs.release-versions.outputs.gh-docker-tag }}.official"
+          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
+          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
+          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
           TRANSPORTER: nats://nats:4222
+          ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
         run: |
           export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -754,34 +755,45 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Publish Docker images
+      - name: Get Docker image name
+        id: gh-docker
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-          IMAGE_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}"
-
-          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:${IMAGE_TAG}"
+          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:${{ needs.release-versions.outputs.gh-docker-tag }}"
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
-          docker pull $GH_IMAGE_NAME
+          echo "::set-output name=gh-image-name::${GH_IMAGE_NAME}"
+
+      - name: Pull Docker image
+        run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
+
+      - name: Publish Docker images
+        run: |
+          DH_IMAGE_NAME="rocketchat/${{ matrix.service }}-service"
 
           # 'develop' or 'tag'
           DOCKER_TAG=$GITHUB_REF_NAME
 
-          docker tag $GH_IMAGE_NAME rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}
-          docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}
+          echo "DH_IMAGE_NAME: $DH_IMAGE_NAME"
+          echo "DOCKER_TAG: $DOCKER_TAG"
+
+          # tag and push the specific tag version
+          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$DOCKER_TAG
+          docker push $DH_IMAGE_NAME:$DOCKER_TAG
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             RELEASE="${{ needs.release-versions.outputs.release }}"
+            echo "RELEASE: $RELEASE"
 
             if [[ $RELEASE == 'latest' ]]; then
               if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
-                docker tag rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} rocketchat/${{ matrix.service }}-service:${RELEASE}
-                docker push rocketchat/${{ matrix.service }}-service:${RELEASE}
+                docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
+                docker push $DH_IMAGE_NAME:$RELEASE
               fi
             else
-              docker tag rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} rocketchat/${{ matrix.service }}-service:${RELEASE}
-              docker push rocketchat/${{ matrix.service }}-service:${RELEASE}
+              docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
+              docker push $DH_IMAGE_NAME:$RELEASE
             fi
           fi
