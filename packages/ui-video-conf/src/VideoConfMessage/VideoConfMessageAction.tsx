@@ -1,9 +1,13 @@
 import { Box, Button } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { AllHTMLAttributes, ReactElement, ReactNode } from 'react';
 
-const VideoConfMessageAction = ({ children, primary }: { children: ReactNode; primary?: boolean }): ReactElement => (
+const VideoConfMessageAction = ({
+	children,
+	primary,
+	...props
+}: { children: ReactNode; primary?: boolean } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>): ReactElement => (
 	<Box mi='x4'>
-		<Button small primary={primary}>
+		<Button small primary={primary} {...props}>
 			{children}
 		</Button>
 	</Box>

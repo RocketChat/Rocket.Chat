@@ -46,5 +46,8 @@
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	]
+	],
+	"dependencies": {
+		"@rocket.chat/emitter": "^0.31.16"
+	}
 }

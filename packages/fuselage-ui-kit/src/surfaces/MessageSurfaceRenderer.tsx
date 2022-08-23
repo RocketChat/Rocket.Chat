@@ -1,9 +1,6 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 import React from 'react';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-
-const qc = new QueryClient();
 
 import VideoConferenceBlock from '../blocks/VideoConferenceBlock/VideoConferenceBlock';
 import { FuselageSurfaceRenderer } from './FuselageSurfaceRenderer';
@@ -29,15 +26,13 @@ export class FuselageMessageSurfaceRenderer extends FuselageSurfaceRenderer {
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
-        <QueryClientProvider client={qc}>
-          <VideoConferenceBlock
-            key={index}
-            block={block}
-            context={context}
-            index={index}
-            surfaceRenderer={this}
-          />
-        </QueryClientProvider>
+        <VideoConferenceBlock
+          key={index}
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
       );
     }
 

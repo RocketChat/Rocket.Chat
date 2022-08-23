@@ -1,4 +1,4 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
 
 const VideoConfMessageFooterText = ({ children }: { children: ReactNode }): ReactElement => (

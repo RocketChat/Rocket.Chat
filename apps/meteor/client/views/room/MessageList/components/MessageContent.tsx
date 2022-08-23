@@ -20,7 +20,6 @@ import MessageContentBody from './MessageContentBody';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
 import PreviewList from './UrlPreview';
-import VideoConfMessages from './VideoConfMessage/VideoConfMessages';
 
 const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
 	message,
@@ -56,19 +55,26 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</MessageBody>
 			)}
-			{message.blocks && (
+			{message.blocks !== undefined && (
 				<MessageBlock fixedWidth>
 					<MessageBlockUiKit
 						mid={message._id}
-						blocks={message?.blocks?.map((block) => {
-							if (block.appId === 'videoconf-core') {
-								return {
-									type: 'video_conf',
-									callId: '6303d0f00620f3a4ada39f85',
-								};
-							}
-							return block;
-						})}
+						blocks={message.blocks
+							.map((block) => {
+								if (block.appId === 'videoconf-core') {
+									if (block.type !== 'actions') {
+										return null;
+									}
+									return {
+										type: 'video_conf',
+										blockId: block.elements[0].blockId,
+										callId: '6303d0f00620f3a4ada39f85',
+										appId: 'videoconf-core',
+									};
+								}
+								return block;
+							})
+							.filter(Boolean)}
 						appId
 						rid={message.rid}
 					/>
