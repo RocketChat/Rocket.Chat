@@ -548,21 +548,6 @@ export const checkServiceStatus = ({ guest, agent }) => {
 	return users && users.count() > 0;
 };
 
-export const userCanTakeInquiry = (user) => {
-	check(
-		user,
-		Match.ObjectIncluding({
-			status: String,
-			statusLivechat: String,
-			roles: [String],
-		}),
-	);
-
-	const { roles, status, statusLivechat } = user;
-	// TODO: hasRole when the user has already been fetched from DB
-	return (status !== 'offline' && statusLivechat === 'available') || roles.includes('bot');
-};
-
 export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) => {
 	check(departmentId, String);
 	check(

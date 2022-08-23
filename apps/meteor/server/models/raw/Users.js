@@ -447,7 +447,6 @@ export class UsersRaw extends BaseRaw {
 			{
 				$match: {
 					_id: userId,
-					status: { $exists: true, $ne: 'offline' },
 					statusLivechat: 'available',
 					roles: 'livechat-agent',
 				},

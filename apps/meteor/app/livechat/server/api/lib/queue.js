@@ -1,12 +1,6 @@
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-
-export async function findQueueMetrics({ userId, agentId, includeOfflineAgents, departmentId, pagination: { offset, count, sort } }) {
-	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
-
+export async function findQueueMetrics({ agentId, includeOfflineAgents, departmentId, pagination: { offset, count, sort } }) {
 	const result = await LivechatRooms.getQueueMetrics({
 		departmentId,
 		agentId,
