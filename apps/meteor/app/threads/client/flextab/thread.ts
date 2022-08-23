@@ -28,7 +28,7 @@ type ThreadTemplateInstance = Blaze.TemplateInstance<{
 }> & {
 	firstNode: HTMLElement;
 	Threads: Mongo.Collection<IMessage> & {
-		direct: Mongo.Collection<IMessage>;
+		direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 		queries: unknown[];
 	};
 	threadsObserve?: Meteor.LiveQueryHandle;
@@ -170,7 +170,7 @@ Template.thread.helpers({
 
 Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
 	this.Threads = new Mongo.Collection(null) as Mongo.Collection<IMessage> & {
-		direct: Mongo.Collection<IMessage>;
+		direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 		queries: unknown[];
 	};
 

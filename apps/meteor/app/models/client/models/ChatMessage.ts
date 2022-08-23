@@ -26,7 +26,7 @@ class ChatMessageCollection extends Mongo.Collection<IMessage & { ignored?: bool
 
 // TODO: check if we can dodge these missing typings from Meteor Collection Hooks
 export const ChatMessage = new ChatMessageCollection() as unknown as Mongo.Collection<IMessage & { ignored?: boolean }> & {
-	direct: Mongo.Collection<IMessage, IMessage>;
+	direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 
 	queries: unknown[];
 };
