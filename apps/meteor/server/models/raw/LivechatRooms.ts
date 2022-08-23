@@ -1,14 +1,30 @@
-import { BaseRaw } from './BaseRaw';
-import { getValue } from '../../../app/settings/server/raw';
+import type { ILivechatDepartment, IOmnichannelRoom, RocketChatRecordDeleted, ILivechatAgent } from '@rocket.chat/core-typings';
+import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import type { Collection, Db, Document, Filter, FindCursor, UpdateResult, AggregationCursor } from 'mongodb';
 
-export class LivechatRoomsRaw extends BaseRaw {
-	constructor(db, trash) {
+import { getValue } from '../../../app/settings/server/raw';
+import { BaseRaw } from './BaseRaw';
+
+type T = any;
+
+export class LivechatRoomsRaw extends BaseRaw<T> implements ILivechatRoomsModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<T>>) {
 		super(db, 'room', trash);
 	}
 
-	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {
-		const match = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
-		const matchUsers = { $match: {} };
+	getQueueMetrics({
+		departmentId,
+		agentId,
+		includeOfflineAgents,
+		options = {},
+	}: {
+		departmentId: any;
+		agentId: any;
+		includeOfflineAgents: any;
+		options?: any;
+	}) {
+		const match: Document = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
+		const matchUsers: Document = { $match: {} };
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
@@ -88,7 +104,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			firstParams.push(matchUsers);
 		}
 		const sort = { $sort: options.sort || { chats: -1 } };
-		const pagination = [sort];
+		const pagination: Document = [sort];
 
 		if (options.offset) {
 			pagination.push({ $skip: options.offset });
@@ -108,8 +124,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	async findAllNumberOfAbandonedRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	async findAllNumberOfAbandonedRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: { start: any; end: any } & { departmentId: any } & { onlyCount?: boolean | undefined } & { options?: any }) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'metrics.visitorInactivity': {
@@ -152,8 +174,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	async findPercentageOfAbandonedRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	async findPercentageOfAbandonedRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: { start: any; end: any } & { departmentId: any } & { onlyCount?: boolean | undefined } & { options?: any }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
@@ -212,8 +240,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllAverageOfChatDurationTime({ start, end, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	findAllAverageOfChatDurationTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: { start: any; end: any } & { departmentId: any } & { onlyCount?: boolean | undefined } & { options?: any }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start) },
@@ -256,8 +290,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllAverageWaitingTime({ start, end, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	findAllAverageWaitingTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: { start: any; end: any } & { departmentId: any } & { onlyCount?: boolean | undefined } & { options?: any }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
@@ -302,8 +342,15 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllRooms({ start, end, answered, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	findAllRooms({
+		start,
+		end,
+		answered,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: { start: any; end: any } & { departmentId: any } & { onlyCount?: boolean | undefined } & { options?: any } & { answered: any }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
@@ -345,8 +392,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllServiceTime({ start, end, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	findAllServiceTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: { start: any; end: any; departmentId: any; onlyCount?: boolean | undefined } & { options?: any }) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'ts': { $gte: new Date(start) },
@@ -389,8 +442,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllNumberOfTransferredRooms({ start, end, departmentId, options = {} }) {
-		const match = {
+	findAllNumberOfTransferredRooms({ start, end, departmentId, options = {} }: { start: any; end: any; departmentId: any; options?: any }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
@@ -508,8 +561,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { allowDiskUse: true }).toArray();
 	}
 
-	countAllOpenChatsBetweenDate({ start, end, departmentId }) {
-		const query = {
+	countAllOpenChatsBetweenDate({ start, end, departmentId }: { start: any; end: any; departmentId: any }) {
+		const query: Filter<T> = {
 			't': 'l',
 			'metrics.chatDuration': {
 				$exists: false,
@@ -536,8 +589,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query).count();
 	}
 
-	countAllClosedChatsBetweenDate({ start, end, departmentId }) {
-		const query = {
+	countAllClosedChatsBetweenDate({ start, end, departmentId }: { start: any; end: any; departmentId: any }) {
+		const query: Filter<T> = {
 			't': 'l',
 			'metrics.chatDuration': {
 				$exists: true,
@@ -550,8 +603,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query).count();
 	}
 
-	countAllQueuedChatsBetweenDate({ start, end, departmentId }) {
-		const query = {
+	countAllQueuedChatsBetweenDate({ start, end, departmentId }: { start: any; end: any; departmentId: any }) {
+		const query: Filter<T> = {
 			t: 'l',
 			servedBy: { $exists: false },
 			open: true,
@@ -563,8 +616,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query).count();
 	}
 
-	countAllOpenChatsByAgentBetweenDate({ start, end, departmentId }) {
-		const match = {
+	countAllOpenChatsByAgentBetweenDate({ start, end, departmentId }: { start: any; end: any; departmentId: any }) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'servedBy.username': { $exists: true },
@@ -597,8 +650,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group]).toArray();
 	}
 
-	countAllOnHoldChatsByAgentBetweenDate({ start, end, departmentId }) {
-		const match = {
+	countAllOnHoldChatsByAgentBetweenDate({ start, end, departmentId }: { start: any; end: any; departmentId: any }) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'servedBy.username': { $exists: true },
@@ -622,8 +675,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group]).toArray();
 	}
 
-	countAllClosedChatsByAgentBetweenDate({ start, end, departmentId }) {
-		const match = {
+	countAllClosedChatsByAgentBetweenDate({ start, end, departmentId }: { start: any; end: any; departmentId: any }) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'open': { $exists: false },
@@ -644,8 +697,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group]).toArray();
 	}
 
-	countAllOpenChatsByDepartmentBetweenDate({ start, end, departmentId }) {
-		const match = {
+	countAllOpenChatsByDepartmentBetweenDate({ start, end, departmentId }: { start: any; end: any; departmentId: any }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				open: true,
@@ -690,8 +743,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId }) {
-		const match = {
+	countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId }: { start: any; end: any; departmentId: any }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				open: { $exists: false },
@@ -736,8 +789,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	calculateResponseTimingsBetweenDates({ start, end, departmentId }) {
-		const match = {
+	calculateResponseTimingsBetweenDates({ start, end, departmentId }: { start: any; end: any; departmentId: any }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
@@ -779,8 +832,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group, project]).toArray();
 	}
 
-	calculateReactionTimingsBetweenDates({ start, end, departmentId }) {
-		const match = {
+	calculateReactionTimingsBetweenDates({ start, end, departmentId }: { start: any; end: any; departmentId: any }) {
+		const match: Document = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
@@ -822,8 +875,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group, project]).toArray();
 	}
 
-	calculateDurationTimingsBetweenDates({ start, end, departmentId }) {
-		const match = {
+	calculateDurationTimingsBetweenDates({ start, end, departmentId }: { start: any; end: any; departmentId: any }) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'ts': { $gte: new Date(start), $lte: new Date(end) },
@@ -866,8 +919,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group, project]).toArray();
 	}
 
-	findAllAverageOfServiceTime({ start, end, departmentId, onlyCount = false, options = {} }) {
-		const match = {
+	findAllAverageOfServiceTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: any;
+		end: any;
+		departmentId: any;
+		onlyCount?: boolean | undefined;
+		options?: any;
+	}) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'ts': { $gte: new Date(start), $lte: new Date(end) },
@@ -899,7 +964,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [match, group, project, sort];
+		const params: Document[] = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -913,7 +978,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findByVisitorId(visitorId, options) {
+	findByVisitorId(visitorId: any, options: any) {
 		const query = {
 			't': 'l',
 			'v._id': visitorId,
@@ -921,7 +986,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findPaginatedByVisitorId(visitorId, options) {
+	findPaginatedByVisitorId(visitorId: any, options: any) {
 		const query = {
 			't': 'l',
 			'v._id': visitorId,
@@ -929,7 +994,21 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, searchText, open, served, onlyCount = false, options = {} }) {
+	findRoomsByVisitorIdAndMessageWithCriteria({
+		visitorId,
+		searchText,
+		open,
+		served,
+		onlyCount = false,
+		options = {},
+	}: {
+		visitorId: any;
+		searchText: any;
+		open: any;
+		served: any;
+		onlyCount?: boolean | undefined;
+		options?: any;
+	}) {
 		const match = {
 			$match: {
 				'v._id': visitorId,
@@ -949,7 +1028,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			$match: { 'messages.msg': { $regex: `.*${searchText}.*` } },
 		};
 
-		const params = [match, lookup];
+		const params: Document[] = [match, lookup];
 
 		if (matchMessages) {
 			params.push(matchMessages);
@@ -1013,8 +1092,22 @@ export class LivechatRoomsRaw extends BaseRaw {
 		roomIds,
 		onhold,
 		options = {},
+	}: {
+		agents: any;
+		roomName: any;
+		departmentId: any;
+		open: any;
+		served: any;
+		createdAt: any;
+		closedAt: any;
+		tags: any;
+		customFields: any;
+		visitorId: any;
+		roomIds: any;
+		onhold: any;
+		options?: any;
 	}) {
-		const query = {
+		const query: Filter<T> = {
 			t: 'l',
 		};
 		if (agents) {
@@ -1081,8 +1174,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		});
 	}
 
-	getOnHoldConversationsBetweenDate(from, to, departmentId) {
-		const query = {
+	getOnHoldConversationsBetweenDate(from: any, to: any, departmentId: any) {
+		const query: Filter<T> = {
 			onHold: {
 				$exists: true,
 				$eq: true,
@@ -1100,7 +1193,17 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query).count();
 	}
 
-	findAllServiceTimeByAgent({ start, end, onlyCount = false, options = {} }) {
+	findAllServiceTimeByAgent({
+		start,
+		end,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: any;
+		end: any;
+		options?: any;
+		onlyCount?: boolean | undefined;
+	}) {
 		const match = {
 			$match: {
 				't': 'l',
@@ -1128,7 +1231,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 		const sort = { $sort: options.sort || { username: 1 } };
-		const params = [match, group, project, sort];
+		const params: Document[] = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -1142,8 +1245,50 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllAverageServiceTimeByAgents({ start, end, onlyCount = false, options = {} }) {
-		const match = {
+	findAllAverageServiceTimeByAgents(params: {
+		start: Date;
+		end: Date;
+		options?: {
+			sort?: Record<string, number>;
+			offset?: number;
+			count?: number;
+		};
+		onlyCount: true;
+	}): AggregationCursor<{ total: number }>;
+
+	findAllAverageServiceTimeByAgents(params: {
+		start: Date;
+		end: Date;
+		options?: {
+			sort?: Record<string, number>;
+			offset?: number;
+			count?: number;
+		};
+		onlyCount?: boolean;
+	}): AggregationCursor<{
+		_id: ILivechatAgent['_id'];
+		username: ILivechatAgent['username'];
+		name: ILivechatAgent['name'];
+		active: ILivechatAgent['active'];
+		averageServiceTimeInSeconds: number;
+	}>;
+
+	findAllAverageServiceTimeByAgents({
+		start,
+		end,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
+		options?: {
+			sort?: Record<string, number>;
+			offset?: number;
+			count?: number;
+		};
+		onlyCount?: boolean;
+	}) {
+		const match: Document = {
 			$match: {
 				't': 'l',
 				'servedBy._id': { $exists: true },
@@ -1154,14 +1299,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			},
 		};
-		const group = {
+		const group: Document = {
 			$group: {
 				_id: { _id: '$servedBy._id', username: '$servedBy.username' },
 				chats: { $sum: 1 },
 				serviceTimeDuration: { $sum: '$metrics.serviceTimeDuration' },
 			},
 		};
-		const project = {
+		const project: Document = {
 			$project: {
 				_id: '$_id._id',
 				username: '$_id.username',
@@ -1174,7 +1319,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			},
 		};
-		const sort = { $sort: options.sort || { username: 1 } };
+		const sort: Document = { $sort: options.sort || { username: 1 } };
 		const params = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
@@ -1189,11 +1334,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	setDepartmentByRoomId(roomId, departmentId) {
-		return this.update({ _id: roomId }, { $set: { departmentId } });
+	setDepartmentByRoomId(roomId: IOmnichannelRoom['_id'], departmentId: ILivechatDepartment['_id']): Promise<UpdateResult> {
+		return this.updateOne({ _id: roomId }, { $set: { departmentId } });
 	}
 
-	findOpen() {
+	findOpen(): FindCursor<IOmnichannelRoom> {
 		return this.find({ t: 'l', open: true });
 	}
 }

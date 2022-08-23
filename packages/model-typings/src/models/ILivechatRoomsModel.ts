@@ -1,4 +1,5 @@
-import type { IRocketChatRecord } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { AggregationCursor, FindCursor, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -19,7 +20,7 @@ type WithOptions = {
 	options?: any;
 };
 
-export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
+export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	getQueueMetrics(params: { departmentId: any; agentId: any; includeOfflineAgents: any; options?: any }): any;
 
 	findAllNumberOfAbandonedRooms(params: Period & WithDepartment & WithOnlyCount & WithOptions): Promise<any>;
@@ -93,9 +94,34 @@ export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
 
 	findAllServiceTimeByAgent(params: Period & WithOptions & WithOnlyCount): any;
 
-	findAllAverageServiceTimeByAgents(params: Period & WithOptions & WithOnlyCount): any;
+	findAllAverageServiceTimeByAgents(params: {
+		start: Date;
+		end: Date;
+		options?: {
+			sort?: Record<string, number>;
+			offset?: number;
+			count?: number;
+		};
+		onlyCount: true;
+	}): AggregationCursor<{ total: number }>;
+	findAllAverageServiceTimeByAgents(params: {
+		start: Date;
+		end: Date;
+		options?: {
+			sort?: Record<string, number>;
+			offset?: number;
+			count?: number;
+		};
+		onlyCount?: boolean;
+	}): AggregationCursor<{
+		_id: ILivechatAgent['_id'];
+		username: ILivechatAgent['username'];
+		name: ILivechatAgent['name'];
+		active: ILivechatAgent['active'];
+		averageServiceTimeInSeconds: number;
+	}>;
 
-	setDepartmentByRoomId(roomId: any, departmentId: any): any;
+	setDepartmentByRoomId(roomId: IOmnichannelRoom['_id'], departmentId: ILivechatDepartment['_id']): Promise<UpdateResult>;
 
-	findOpen(): any;
+	findOpen(): FindCursor<IOmnichannelRoom>;
 }
