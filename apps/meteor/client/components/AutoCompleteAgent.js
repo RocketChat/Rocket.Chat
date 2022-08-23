@@ -44,6 +44,7 @@ const AutoCompleteAgent = (props) => {
 			filter={agentsFilter}
 			setFilter={setAgentsFilter}
 			options={sortedByName}
+			data-qa='autocomplete-agent'
 			endReached={agentsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreAgents(start, Math.min(50, agentsTotal))}
 		/>
 	);

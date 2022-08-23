@@ -26,7 +26,7 @@ Meteor.startup(function () {
 				imperativeModal.open({
 					component: CreateDiscussion,
 					props: {
-						defaultParentRoom: room.prid || room._id,
+						defaultParentRoom: room?.prid || room?._id,
 						onClose: imperativeModal.close,
 						parentMessageId: message._id,
 						nameSuggestion: message?.msg?.substr(0, 140),
