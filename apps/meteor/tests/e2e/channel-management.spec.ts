@@ -30,6 +30,14 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 	});
 
+	test('expect create invite to the room', async () => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.tabs.btnTabMembers.click();
+		await poHomeChannel.tabs.members.inviteUser();
+
+		await expect(poHomeChannel.toastSuccess).toBeVisible();
+	});
+
 	test('expect mute "user1"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
@@ -84,5 +92,25 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.sidenav.openChat(`NAME-EDITED-${targetChannel}`);
 
 		await expect(page).toHaveURL(`/channel/NAME-EDITED-${targetChannel}`);
+	});
+
+	test.skip('expect edit notification preferences of "targetChannel"', async () => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await poHomeChannel.tabs.btnNotificationPreferences.click({ force: true });
+		await poHomeChannel.tabs.notificationPreferences.updateAllNotificationPreferences();
+		await poHomeChannel.tabs.notificationPreferences.btnSave.click();
+
+		await expect(poHomeChannel.toastSuccess).toBeVisible();
+	});
+
+	test.skip('expect all notification preferences of "targetChannel" to be "Mentions"', async () => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await poHomeChannel.tabs.btnNotificationPreferences.click({ force: true });
+
+		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Desktop')).toContainText('Mentions');
+		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Mobile')).toContainText('Mentions');
+		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Email')).toContainText('Mentions');
 	});
 });

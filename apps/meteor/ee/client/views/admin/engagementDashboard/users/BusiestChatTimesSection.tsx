@@ -2,7 +2,7 @@ import { Select } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo, useState } from 'react';
 
-import Section from '../Section';
+import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import ContentForDays from './ContentForDays';
 import ContentForHours from './ContentForHours';
 
@@ -42,17 +42,17 @@ const BusiestChatTimesSection = ({ timezone }: BusiestChatTimesSectionProps): Re
 	)[timeUnit];
 
 	return (
-		<Section
-			title={t('When_is_the_chat_busier?')}
-			filter={<Select options={timeUnitOptions} value={timeUnit} onChange={handleTimeUnitChange} />}
-		>
+		<>
+			<EngagementDashboardCardFilter>
+				<Select options={timeUnitOptions} value={timeUnit} onChange={handleTimeUnitChange} />
+			</EngagementDashboardCardFilter>
 			<Content
 				displacement={displacement}
 				onPreviousDateClick={handlePreviousDateClick}
 				onNextDateClick={handleNextDateClick}
 				timezone={timezone}
 			/>
-		</Section>
+		</>
 	);
 };
 

@@ -197,7 +197,6 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 	const placeholder = [t('Search'), shortcut].filter(Boolean).join(' ');
 
 	const { data: items = [], isLoading } = useSearchItems(filterText);
-	console.log({ items, isLoading });
 
 	const itemData = useMemo(
 		() => ({
