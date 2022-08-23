@@ -55,7 +55,7 @@ export class ChatMessages {
 
 	constructor(
 		public collection: Mongo.Collection<IMessage> & {
-			direct: Mongo.Collection<IMessage>;
+			direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 			queries: unknown[];
 		} = ChatMessage,
 	) {}

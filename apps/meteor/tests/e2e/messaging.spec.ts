@@ -26,7 +26,11 @@ test.describe.serial('Messaging', () => {
 		await poHomeChannel.content.sendMessage('hello world');
 
 		await expect(auxContext.poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
-		await expect(poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+		await expect(
+			poHomeChannel.content.lastUserMessage.locator(':not(.rcx-message--pending)', {
+				hasText: 'hello world',
+			}),
+		).toBeVisible();
 
 		await auxContext.page.close();
 	});
