@@ -545,15 +545,6 @@ jobs:
             sleep 10
           done
 
-          # TODO we need to restart rocket.chat to be able to catch up the license. This is a workaround until we have a better solution
-          docker compose -f docker-compose-ci.yml restart rocketchat
-
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
-            echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && exit 1
-            sleep 10
-          done
-
           cd ./apps/meteor
 
           E2E_COVERAGE=true IS_EE=true yarn test:e2e
