@@ -756,9 +756,7 @@ export class UsersRaw extends BaseRaw {
 				statusConnection,
 				...(statusDefault && { statusDefault }),
 				...(statusText && {
-					statusText: String(statusText || '')
-						.trim()
-						.substr(0, 120),
+					statusText: String(statusText).trim().substr(0, 120),
 				}),
 			},
 		};
