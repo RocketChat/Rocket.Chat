@@ -27,7 +27,7 @@ const applyMarkdownIfRequires = (
 const DefaultAttachment: FC<MessageAttachmentDefault & { rid: string }> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
 
-	const decryptedAttachmentText = useDecryptedMessage({ ...attachment, msg: attachment.text } as IMessage);
+	const attachmentMessage = useDecryptedMessage({ ...attachment, msg: attachment.text } as IMessage);
 
 	return (
 		<AttachmentBlock
@@ -71,8 +71,8 @@ const DefaultAttachment: FC<MessageAttachmentDefault & { rid: string }> = (attac
 				)}
 				{!collapsed && (
 					<>
-						{decryptedAttachmentText && (
-							<AttachmentText>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', decryptedAttachmentText, 'document')}</AttachmentText>
+						{attachmentMessage && (
+							<AttachmentText>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachmentMessage, 'document')}</AttachmentText>
 						)}
 						{/* {attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />} */}
 						{attachment.fields && (
