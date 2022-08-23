@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import type { APIResponse } from '@playwright/test';
 import { test as baseTest } from '@playwright/test';
 
-import { BASE_API_URL, ADMIN_CREDENTIALS } from '../config/constants';
+import { BASE_API_URL, BASE_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 
 const PATH_NYC_OUTPUT = path.join(process.cwd(), '.nyc_output');
 
@@ -13,10 +13,10 @@ export type AnyObj = { [key: string]: any };
 
 export type BaseTest = {
 	api: {
-		get(uri: string): Promise<APIResponse>;
-		post(uri: string, data: AnyObj): Promise<APIResponse>;
-		put(uri: string, data: AnyObj): Promise<APIResponse>;
-		delete(uri: string): Promise<APIResponse>;
+		get(uri: string, prefix?: string): Promise<APIResponse>;
+		post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
+		put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
+		delete(uri: string, prefix?: string): Promise<APIResponse>;
 	};
 };
 
@@ -61,17 +61,17 @@ export const test = baseTest.extend<BaseTest>({
 		};
 
 		await use({
-			get(uri: string) {
-				return request.get(BASE_API_URL + uri, { headers });
+			get(uri: string, prefix = API_PREFIX) {
+				return request.get(BASE_URL + prefix + uri, { headers });
 			},
-			post(uri: string, data: AnyObj) {
-				return request.post(BASE_API_URL + uri, { headers, data });
+			post(uri: string, data: AnyObj, prefix = API_PREFIX) {
+				return request.post(BASE_URL + prefix + uri, { headers, data });
 			},
-			put(uri: string, data: AnyObj) {
-				return request.put(BASE_API_URL + uri, { headers, data });
+			put(uri: string, data: AnyObj, prefix = API_PREFIX) {
+				return request.put(BASE_URL + prefix + uri, { headers, data });
 			},
-			delete(uri: string) {
-				return request.delete(BASE_API_URL + uri, { headers });
+			delete(uri: string, prefix = API_PREFIX) {
+				return request.delete(BASE_URL + prefix + uri, { headers });
 			},
 		});
 	},

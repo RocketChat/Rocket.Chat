@@ -226,6 +226,7 @@ Meteor.startup(function () {
 			type: 'boolean',
 			group: 'Omnichannel',
 			i18nLabel: 'Accept_new_livechats_when_agent_is_idle',
+			public: true,
 			enableQuery: omnichannelEnabledQuery,
 		});
 

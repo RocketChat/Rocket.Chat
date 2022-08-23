@@ -34,7 +34,7 @@ export const useConfirmOwnerChanges = (): ((
 					/>,
 				);
 			}
-			dispatchToastMessage({ type: 'error', message: error as Error });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 };

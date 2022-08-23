@@ -30,6 +30,12 @@ export class HomeContent {
 		await this.page.keyboard.press('Enter');
 	}
 
+	async dispatchSlashCommand(text: string): Promise<void> {
+		await this.page.locator('[name="msg"]').type(text);
+		await this.page.keyboard.press('Enter');
+		await this.page.keyboard.press('Enter');
+	}
+
 	get btnModalCancel(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
@@ -100,6 +106,22 @@ export class HomeContent {
 		return this.page.locator('[data-qa="UserCard"] a');
 	}
 
+	get btnForwardChat(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
+	}
+
+	get btnSendTranscript(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-mail-arrow-top-right"]');
+	}
+
+	get inputModalAgentUserName(): Locator {
+		return this.page.locator('#modal-root input:nth-child(1)');
+	}
+
+	get inputModalAgentForwardComment(): Locator {
+		return this.page.locator('[data-qa-id="ForwardChatModalTextAreaInputComment"]');
+	}
+
 	async pickEmoji(emoji: string, section = 'icon-people') {
 		await this.page.locator('.rc-message-box__icon.emoji-picker-icon').click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
@@ -129,5 +151,9 @@ export class HomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().hover();
 		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').waitFor();
 		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
+	}
+
+	get takeOmnichannelChatButton(): Locator {
+		return this.page.locator('button.rc-button >> text=Take it!');
 	}
 }

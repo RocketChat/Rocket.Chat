@@ -59,13 +59,17 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}
-			<ThreadMessageRow onClick={!message.ignored && !isSelecting ? openThread(message.tmid, message._id) : undefined}>
+			<ThreadMessageRow
+				onClick={!(message as { ignored?: boolean }).ignored && !isSelecting ? openThread(message.tmid, message._id) : undefined}
+			>
 				<ThreadMessageLeftContainer>
 					{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
-					<ThreadMessageBody>{message.ignored ? t('Message_Ignored') : <ThreadMessagePreviewBody message={message} />}</ThreadMessageBody>
+					<ThreadMessageBody>
+						{(message as { ignored?: boolean }).ignored ? t('Message_Ignored') : <ThreadMessagePreviewBody message={message} />}
+					</ThreadMessageBody>
 				</ThreadMessageContainer>
 			</ThreadMessageRow>
 		</ThreadMessageTemplate>
