@@ -61,8 +61,8 @@ export const OmnichannelCallToggleReady = ({ ...props }): ReactElement => {
 
 	return (
 		<Sidebar.TopBar.Action
-			data-qa-id='omncVoipToggleButton'
-			data-qa-type={registered ? 'enabled' : 'disabled'}
+			aria-label={t('VoIP_Toggle')}
+			aria-checked={registered}
 			disabled={inCall}
 			{...voipCallIcon}
 			{...props}

@@ -12,10 +12,10 @@ export class OmnichannelSection {
 	}
 
 	get btnVoipToggle(): Locator {
-		return this.page.locator('button[data-qa-id="omncVoipToggleButton"]');
+		return this.page.locator('role=button[name="Enable/Disable VoIP"]');
 	}
 
 	get btnDialpad(): Locator {
-		return this.page.locator('button[data-qa-id="omncDialPadButton"]');
+		return this.page.locator('role=button[name="Open Dialpad"]');
 	}
 }

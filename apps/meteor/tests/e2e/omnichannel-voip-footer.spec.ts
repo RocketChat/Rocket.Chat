@@ -103,7 +103,18 @@ test.describe('Omnichannel VoIP Footer', () => {
 		await expect(user.omncSection.btnVoipToggle).toBeEnabled();
 		await page.waitForTimeout(2000);
 		await user.omncSection.btnVoipToggle.click();
-		await expect(user.omncSection.btnVoipToggle).toHaveAttribute('data-qa-type', 'enabled');
+		await expect(user.omncSection.btnVoipToggle).toHaveAttribute('aria-checked', 'true');
+	});
+
+	test.afterAll(async ({ api }) => {
+		// Remove users from extensions
+		await Promise.all([
+			api.delete(`/omnichannel/agent/extension/user1`),
+			api.delete(`/omnichannel/agent/extension/rocketchat.internal.admin.test`),
+		]);
+
+		// Remove users from extensions
+		await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/agent/rocketchat.internal.admin.test')]);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -125,50 +136,51 @@ test.describe('Omnichannel VoIP Footer', () => {
 		await expect(omncSection.btnVoipToggle).toBeEnabled();
 		await page.waitForTimeout(2000);
 		await admin.omncSection.btnVoipToggle.click();
-		await expect(omncSection.btnVoipToggle).toHaveAttribute('data-qa-type', 'enabled');
+		await expect(omncSection.btnVoipToggle).toHaveAttribute('aria-checked', 'true');
 	});
 
-	test('expect voip footer to identify known contact', async () => {
-		const { page, omncSection, dialpadModal, voipFooter } = admin;
+	test('VoIP call identification', async () => {
+		await test.step('expect voip footer to identify known contact', async () => {
+			const { omncSection, dialpadModal, voipFooter } = admin;
 
-		// Open dialpad modal
-		await expect(omncSection.btnDialpad).toBeEnabled();
-		await omncSection.btnDialpad.click();
+			// Open dialpad modal
+			await expect(omncSection.btnDialpad).toBeEnabled();
+			await omncSection.btnDialpad.click();
 
-		// Dial number and call
-		await expect(dialpadModal.element).toBeVisible();
-		await dialpadModal.inputPhoneNumber.type('80017');
-		await expect(dialpadModal.btnCall).toBeEnabled();
-		await dialpadModal.btnCall.click();
-		await page.pause();
+			// Dial number and call
+			await expect(dialpadModal.element).toBeVisible();
+			await dialpadModal.inputPhoneNumber.type('80017');
+			await expect(dialpadModal.btnCall).toBeEnabled();
+			await dialpadModal.btnCall.click();
 
-		// Check if contact name is there
-		await expect(voipFooter.element).toBeVisible({ timeout: 10000 });
-		await expect(voipFooter.textTitle).toHaveText('Test User One');
+			// Check if contact name is there
+			await expect(voipFooter.element).toBeVisible({ timeout: 10000 });
+			await expect(voipFooter.textTitle).toHaveText('Test User One');
 
-		// Reject the call
-		await voipFooter.btnReject.click();
-	});
+			// Reject the call
+			await voipFooter.btnEndCall.click();
+		});
 
-	test('expect voip footer to fallback to phone number for unknown contact', async () => {
-		const { omncSection, dialpadModal, voipFooter } = user;
+		await test.step('expect voip footer to fallback to phone number for unknown contact', async () => {
+			const { omncSection, dialpadModal, voipFooter } = user;
 
-		// Open dialpad modal
-		await expect(omncSection.btnDialpad).toBeEnabled();
-		await omncSection.btnDialpad.click();
+			// Open dialpad modal
+			await expect(omncSection.btnDialpad).toBeEnabled();
+			await omncSection.btnDialpad.click();
 
-		// Dial number and call
-		await expect(dialpadModal.element).toBeVisible();
-		await dialpadModal.inputPhoneNumber.type('80018');
-		await expect(dialpadModal.btnCall).toBeEnabled();
-		await dialpadModal.btnCall.click();
+			// Dial number and call
+			await expect(dialpadModal.element).toBeVisible();
+			await dialpadModal.inputPhoneNumber.type('80018');
+			await expect(dialpadModal.btnCall).toBeEnabled();
+			await dialpadModal.btnCall.click();
 
-		// Check if contact name is there
-		await voipFooter.element.waitFor();
-		await expect(voipFooter.element).toBeVisible({ timeout: 10000 });
-		await expect(voipFooter.textTitle).toHaveText('80018');
+			// Check if contact name is there
+			await voipFooter.element.waitFor();
+			await expect(voipFooter.element).toBeVisible({ timeout: 10000 });
+			await expect(voipFooter.textTitle).toHaveText('80018');
 
-		// Reject the call
-		await voipFooter.btnReject.click();
+			// Reject the call
+			await voipFooter.btnEndCall.click();
+		});
 	});
 });

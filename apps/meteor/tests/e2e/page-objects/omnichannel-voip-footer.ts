@@ -12,7 +12,11 @@ export class OmnichannelVoipFooter {
 	}
 
 	get btnReject(): Locator {
-		return this.page.locator('[data-qa-id="omncVoipRejectButton"]');
+		return this.page.locator('role=button[name="Reject call"]');
+	}
+
+	get btnEndCall(): Locator {
+		return this.page.locator('role=button[name="End call"]');
 	}
 
 	get textTitle(): Locator {

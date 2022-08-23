@@ -2,6 +2,7 @@ import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo, VoIpCallerInfo, VoipClientEvents } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, MouseEvent, ReactNode } from 'react';
 
 import type { VoipFooterMenuOptions } from '../../../../ee/client/hooks/useVoipFooterMenu';
@@ -59,6 +60,7 @@ export const VoipFooter = ({
 	options,
 }: VoipFooterPropsType): ReactElement => {
 	const contact = useOmnichannelContact(caller.callerId);
+	const t = useTranslation();
 
 	const cssClickable =
 		callerState === 'IN_CALL' || callerState === 'ON_HOLD'
@@ -135,7 +137,7 @@ export const VoipFooter = ({
 								small
 								square
 								danger
-								data-qa-id='omncVoipRejectButton'
+								aria-label={t('End_call')}
 								onClick={(e): unknown => {
 									e.stopPropagation();
 									muted && toggleMic(false);
@@ -147,7 +149,7 @@ export const VoipFooter = ({
 							</Button>
 						)}
 						{callerState === 'OFFER_RECEIVED' && (
-							<Button title={tooltips.endCall} data-qa-id='omncVoipRejectButton' small square danger onClick={callActions.reject}>
+							<Button title={tooltips.endCall} aria-label={t('Reject_call')} small square danger onClick={callActions.reject}>
 								<Icon name='phone-off' size='x16' />
 							</Button>
 						)}
