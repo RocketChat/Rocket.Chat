@@ -1,9 +1,7 @@
 import { Button } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { ExternalLink, Card } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
-
-import Card from '../../../components/Card';
 
 const WINDOWS_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-windows';
 const LINUX_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-linux';

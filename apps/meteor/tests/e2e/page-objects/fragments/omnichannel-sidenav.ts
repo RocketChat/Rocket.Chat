@@ -15,7 +15,12 @@ export class OmnichannelSidenav {
 		return this.page.locator('a[href="omnichannel/agents"]');
 	}
 
+
 	get linkCustomFields(): Locator {
 		return this.page.locator('a[href="/omnichannel/customfields"]');
+  }
+  
+	get linkCurrentChats(): Locator {
+		return this.page.locator('a[href="omnichannel/current"]');
 	}
 }

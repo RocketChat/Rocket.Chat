@@ -88,7 +88,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		}
 	}
 
-	openRoom(type: string, name: string, render = true): void {
+	openRoom(type: RoomType, name: string, render = true): void {
 		openRoom(type, name, render);
 	}
 
