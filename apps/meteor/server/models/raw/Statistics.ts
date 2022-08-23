@@ -1,12 +1,12 @@
-import type { IStats, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IStats } from '@rocket.chat/core-typings';
 import type { IStatisticsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexDescription } from 'mongodb';
+import type { Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
-	constructor(db: Db, trashCollection: Collection<RocketChatRecordDeleted<IStats>>) {
-		super(db, 'statistics', trashCollection);
+	constructor(db: Db) {
+		super(db, 'statistics');
 	}
 
 	protected modelIndexes(): IndexDescription[] {

@@ -1,9 +1,9 @@
 import { VideoConferenceBridge } from '@rocket.chat/apps-engine/server/bridges/VideoConferenceBridge';
-import { AppVideoConference, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
-import { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
+import type { AppVideoConference, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
+import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 
 import { VideoConf } from '../../../../server/sdk';
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import type { AppVideoConferencesConverter } from '../converters/videoConferences';
 

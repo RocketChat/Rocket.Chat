@@ -42,7 +42,7 @@
 
 		max-height: 70%;
 
-		padding: var(--popover-padding);
+		padding: 0.5rem;
 
 		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
@@ -55,7 +55,7 @@
 		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 
 		&--templateless {
-			padding: var(--popover-padding) 0;
+			padding: 0.5rem 0;
 		}
 	}
 
@@ -84,10 +84,6 @@
 	&__title {
 		flex: 1;
 
-		margin-bottom: 8px;
-
-		padding: 0 var(--popover-padding);
-
 		text-transform: uppercase;
 
 		color: var(--popover-title-color);
@@ -95,6 +91,8 @@
 		font-size: var(--popover-title-text-size);
 
 		font-weight: 600;
+		padding-block: 8px 4px;
+		padding-inline: 1rem;
 	}
 
 	&__item {

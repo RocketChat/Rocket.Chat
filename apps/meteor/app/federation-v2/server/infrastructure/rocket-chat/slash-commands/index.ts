@@ -5,7 +5,7 @@ import { federationRoomServiceSender } from '../../..';
 import { FederationRoomSenderConverter } from '../converters/RoomSender';
 import { slashCommands } from '../../../../../utils/lib/slashCommand';
 
-const FEDERATION_COMMANDS: Record<string, Function> = {
+const FEDERATION_COMMANDS: Record<string, (currentUserId: string, roomId: string, invitee: string) => Promise<void>> = {
 	dm: async (currentUserId: string, roomId: string, invitee: string) =>
 		federationRoomServiceSender.createDirectMessageRoomAndInviteUser(
 			FederationRoomSenderConverter.toCreateDirectMessageRoomDto(currentUserId, roomId, invitee),
@@ -26,7 +26,7 @@ const executeSlashCommand = async (
 	providedCommand: string,
 	stringParams: string | undefined,
 	item: Record<string, any>,
-	commands: Record<string, Function>,
+	commands: Record<string, (currentUserId: string, roomId: string, invitee: string) => Promise<void>>,
 ): Promise<void> => {
 	if (providedCommand !== 'federation' || !stringParams) {
 		return;

@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Users } from '../../../models/server';
 import { SAMLServiceProvider } from '../lib/ServiceProvider';
 import { SAMLUtils } from '../lib/Utils';
-import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 /**
  * Fetch SAML provider configs for given 'provider'.

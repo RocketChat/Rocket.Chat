@@ -1,4 +1,4 @@
-import { ILivechatMonitor } from '@rocket.chat/core-typings';
+import type { ILivechatMonitor } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../../app/api/server';
 import { findMonitors, findMonitorByUsername } from './lib/monitors';

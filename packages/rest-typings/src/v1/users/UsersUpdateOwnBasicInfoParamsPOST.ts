@@ -14,7 +14,7 @@ export type UsersUpdateOwnBasicInfoParamsPOST = {
 		currentPassword?: string;
 		newPassword?: string;
 	};
-	customFields?: {};
+	customFields?: Record<string, unknown>;
 };
 
 const UsersUpdateOwnBasicInfoParamsPostSchema = {
