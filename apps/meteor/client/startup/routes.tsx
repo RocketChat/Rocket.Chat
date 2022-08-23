@@ -3,7 +3,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
@@ -175,18 +174,6 @@ FlowRouter.route('/legal-notice', {
 	name: 'legal-notice',
 	action: () => {
 		appLayout.render(<CMSPage page='Layout_Legal_Notice' />);
-	},
-});
-
-FlowRouter.route('/room-not-found/:type/:name', {
-	name: 'room-not-found',
-	action: ({ type, name } = {}) => {
-		Session.set('roomNotFound', { type, name });
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='roomNotFound' />
-			</MainLayout>,
-		);
 	},
 });
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -19,6 +19,8 @@ import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import MainLayout from '../../../../client/views/root/MainLayout';
 import BlazeTemplate from '../../../../client/views/root/BlazeTemplate';
+
+const RoomNotFound = lazy(() => import('../../../../client/views/room/RoomNotFound'));
 
 export async function openRoom(type: RoomType, name: string, render = true) {
 	RoomManager.currentTracker?.stop();
@@ -107,10 +109,9 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 					console.error(error);
 				}
 			}
-			Session.set('roomNotFound', { type, name, error });
 			appLayout.render(
 				<MainLayout>
-					<BlazeTemplate template='roomNotFound' />
+					<RoomNotFound />
 				</MainLayout>,
 			);
 		}
