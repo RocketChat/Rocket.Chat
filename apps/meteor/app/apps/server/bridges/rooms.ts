@@ -119,14 +119,6 @@ export class AppRoomBridge extends RoomBridge {
 
 		Rooms.update(rm._id, rm);
 
-		if (rm.archived !== roomBeforeUpdate.archived) {
-			if (rm.archived) {
-				archiveRoom(rm._id, true);
-			} else {
-				unarchiveRoom(rm._id, true);
-			}
-		}
-
 		for (const username of members) {
 			const member = Users.findOneByUsername(username, {});
 
@@ -178,5 +170,27 @@ export class AppRoomBridge extends RoomBridge {
 		});
 
 		return rid;
+	}
+
+	protected async archiveRoom(room: IRoom, appId: string): Promise<boolean> {
+		this.orch.debugLog(`The App ${appId} is archiving a room`);
+		try {
+			archiveRoom(room.id);
+		} catch (error) {
+			this.orch.getRocketChatLogger().error(error);
+			return false;
+		}
+		return true;
+	}
+
+	protected async unarchiveRoom(room: IRoom, appId: string): Promise<boolean> {
+		this.orch.debugLog(`The App ${appId} is unarchiving a room`);
+		try {
+			unarchiveRoom(room.id);
+		} catch (error) {
+			this.orch.getRocketChatLogger().error(error);
+			return false;
+		}
+		return true;
 	}
 }
