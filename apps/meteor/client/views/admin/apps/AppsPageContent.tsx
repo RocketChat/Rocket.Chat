@@ -1,4 +1,4 @@
-import { Pagination, Divider } from '@rocket.chat/fuselage';
+import { Pagination, Divider, Skeleton, Box } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo, useState } from 'react';
@@ -84,6 +84,8 @@ const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactEl
 		sortFilterStructure.items.find((item) => item.checked)?.id !== 'mru' ||
 		selectedCategories.length > 0;
 
+	const loadingRows = Array.from({ length: 3 }, (_, i) => <Skeleton key={i} height='x56' mbe='x8' width='100%' variant='rect' />);
+
 	return (
 		<>
 			<AppsFilters
@@ -99,6 +101,21 @@ const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactEl
 				statusFilterStructure={statusFilterStructure}
 				statusFilterOnSelected={statusFilterOnSelected}
 			/>
+
+			{appsResult.phase === AsyncStatePhase.LOADING && (
+				<>
+					<Box mbe='x36'>
+						<Skeleton height='x28' width='x150' mbe='x20' variant='rect' />
+						{loadingRows}
+					</Box>
+					<Box mbe='x36'>
+						<Skeleton height='x28' width='x150' mbe='x20' variant='rect' />
+						{loadingRows}
+					</Box>
+					<Skeleton height='x28' width='x150' mbe='x20' variant='rect' />
+					{loadingRows}
+				</>
+			)}
 
 			<FeaturedAppsSections appsResult={appsResult} isMarketplace={isMarketplace} isFiltered={isFiltered} />
 

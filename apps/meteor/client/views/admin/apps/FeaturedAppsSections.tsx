@@ -1,5 +1,4 @@
 import { App } from '@rocket.chat/core-typings';
-import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { PaginatedResult } from '@rocket.chat/rest-typings';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
@@ -25,25 +24,6 @@ const FeaturedAppsSections = ({ appsResult, isMarketplace, isFiltered }: Feature
 		Boolean(appsResult.value.count) &&
 		Boolean(featuredApps.value.sections) &&
 		!isFiltered;
-
-	const loadingFeaturedSections = Array.from({ length: 3 }, (_, i) => (
-		<Skeleton key={i} height='x56' mbe='x8' width='100%' variant='rect' />
-	));
-
-	if (featuredApps.phase === AsyncStatePhase.LOADING) {
-		return (
-			<>
-				<Box mbe='x36'>
-					<Skeleton height='x28' width='x150' mbe='x20' variant='rect' />
-					{loadingFeaturedSections}
-				</Box>
-				<Box mbe='x36'>
-					<Skeleton height='x28' width='x150' mbe='x20' variant='rect' />
-					{loadingFeaturedSections}
-				</Box>
-			</>
-		);
-	}
 
 	if (shouldShowFeaturedSections && isMarketplace) {
 		return (
