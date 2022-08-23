@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { FC, CSSProperties, ComponentProps } from 'react';
+import type { FC, CSSProperties, ComponentProps } from 'react';
 
 type CardBodyProps = {
 	flexDirection?: CSSProperties['flexDirection'];
