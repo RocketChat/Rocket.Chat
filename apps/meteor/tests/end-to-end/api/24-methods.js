@@ -376,7 +376,7 @@ describe('Meteor.methods', function () {
 						params: [
 							{
 								tmid: firstMessage._id,
-							}
+							},
 						],
 					}),
 				})
