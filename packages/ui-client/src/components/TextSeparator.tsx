@@ -1,8 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import { DotLeader } from '@rocket.chat/ui-client';
-import React from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
-const TextSeparator = ({ label, value }) => (
+import { DotLeader } from './DotLeader';
+
+type TextSeparatorProps = {
+	label: ReactNode;
+	value: ReactNode;
+};
+
+const TextSeparator = ({ label, value }: TextSeparatorProps): ReactElement => (
 	<Box display='flex' flexDirection='row' mb='x4'>
 		<Box display='inline-flex' alignItems='center'>
 			{label}
