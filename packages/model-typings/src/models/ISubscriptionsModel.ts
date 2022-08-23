@@ -63,6 +63,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		exceptions: string[],
 		searchFields: string[],
 		limit: number,
+		roomType?: ISubscription['t'],
 		{ startsWith, endsWith }?: { startsWith?: string | false; endsWith?: string | false },
 		options?: AggregateOptions,
 	): Promise<SpotlightUser[]>;

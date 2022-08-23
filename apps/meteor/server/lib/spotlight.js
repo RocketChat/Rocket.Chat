@@ -97,13 +97,16 @@ export class Spotlight {
 		}
 	}
 
-	_searchConnectedUsers(userId, { text, usernames, options, users, match = { startsWith: false, endsWith: false } }) {
+	_searchConnectedUsers(userId, { text, usernames, options, users, match = { startsWith: false, endsWith: false } }, roomType) {
 		const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
 
 		users.push(
-			...Promise.await(SubscriptionsRaw.findConnectedUsersExcept(userId, text, usernames, searchFields, options.limit || 5, match), {
-				readPreference: options.readPreference,
-			}).map(this.mapOutsiders),
+			...Promise.await(
+				SubscriptionsRaw.findConnectedUsersExcept(userId, text, usernames, searchFields, options.limit || 5, roomType, match),
+				{
+					readPreference: options.readPreference,
+				},
+			).map(this.mapOutsiders),
 		);
 
 		// If the limit was reached, return
@@ -226,22 +229,29 @@ export class Spotlight {
 			}
 		}
 
-		// Search for insiders
-		if (canListInsiders && this._searchInsiderUsers(searchParams)) {
-			return users;
+		if (canListInsiders && rid) {
+			// Search for insiders
+			if (this._searchInsiderUsers(searchParams)) {
+				return users;
+			}
+
+			// Search for users that the requester has DMs with
+			if (this._searchConnectedUsers(userId, searchParams, 'd')) {
+				return users;
+			}
 		}
 
-		// Search for users that have rooms in common with the requester
-		if (this._searchConnectedUsers(userId, searchParams)) {
+		// If the user can search outsiders, search for any user in the server
+		// Otherwise, search for users that are subscribed to the same rooms as the requester
+		if (canListOutsiders) {
+			if (this._searchOutsiderUsers(searchParams)) {
+				return users;
+			}
+		} else if (this._searchConnectedUsers(userId, searchParams)) {
 			return users;
 		}
 
 		if (this._performExtraUserSearches(userId, searchParams)) {
-			return users;
-		}
-
-		// Search for any users in the server
-		if (this._searchOutsiderUsers(searchParams)) {
 			return users;
 		}
 

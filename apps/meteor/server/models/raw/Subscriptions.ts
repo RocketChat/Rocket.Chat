@@ -241,6 +241,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		exceptions: string[],
 		searchFields: string[],
 		limit: number,
+		roomType?: ISubscription['t'],
 		{ startsWith = false, endsWith = false }: { startsWith?: string | false; endsWith?: string | false } = {},
 		options: AggregateOptions = {},
 	): Promise<SpotlightUser[]> {
@@ -257,6 +258,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 					{
 						$match: {
 							'u._id': userId,
+							...(roomType ? { t: roomType } : {}),
 						},
 					},
 					// Group by room id and drop all other subcription data
