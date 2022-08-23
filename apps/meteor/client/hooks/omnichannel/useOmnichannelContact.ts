@@ -29,5 +29,5 @@ export const useOmnichannelContact = (ogPhone: string, name = ''): Contact => {
 		return createContact(phone, contact);
 	});
 
-	return isLoading || isError ? defaultContact : contact;
+	return isLoading || isError || !contact ? defaultContact : contact;
 };
