@@ -38,14 +38,20 @@
     "bump-next": "bump-next"
   },
   "peerDependencies": {
+    "@rocket.chat/apps-engine": "~1.30.0",
+    "@rocket.chat/eslint-config": "workspace:^",
     "@rocket.chat/fuselage": "*",
     "@rocket.chat/fuselage-hooks": "*",
     "@rocket.chat/fuselage-polyfills": "*",
     "@rocket.chat/icons": "*",
+    "@rocket.chat/prettier-config": "*",
     "@rocket.chat/styled": "*",
+    "@rocket.chat/ui-contexts": "workspace:^",
+    "@rocket.chat/ui-kit": "*",
+    "@rocket.chat/ui-video-conf": "workspace:^",
     "@tanstack/react-query": "*",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react": "*",
+    "react-dom": "*"
   },
   "devDependencies": {
     "@rocket.chat/apps-engine": "~1.30.0",
@@ -56,6 +62,9 @@
     "@rocket.chat/icons": "next",
     "@rocket.chat/prettier-config": "next",
     "@rocket.chat/styled": "next",
+    "@rocket.chat/ui-contexts": "workspace:^",
+    "@rocket.chat/ui-kit": "next",
+    "@rocket.chat/ui-video-conf": "workspace:^",
     "@storybook/addon-essentials": "~6.5.10",
     "@storybook/addons": "~6.5.10",
     "@storybook/builder-webpack5": "~6.5.10",
@@ -76,13 +85,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
+    "tslib": "^2.3.1",
     "typescript": "~4.3.5",
     "webpack": "~5.68.0"
-  },
-  "dependencies": {
-    "@rocket.chat/ui-contexts": "workspace:^",
-    "@rocket.chat/ui-kit": "next",
-    "@rocket.chat/ui-video-conf": "workspace:^",
-    "tslib": "^2.3.1"
   }
 }
