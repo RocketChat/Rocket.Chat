@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 
-import { messageBox } from './messageBox';
+import { messageBox } from './messageBox.ts';
 import { MessageAction } from './MessageAction';
 import { isRTLScriptLanguage } from '../../../../client/lib/utils/isRTLScriptLanguage';
 

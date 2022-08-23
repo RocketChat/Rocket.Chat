@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -103,7 +103,7 @@ Meteor.startup(() => {
 		});
 
 		// Encrypt messages before sending
-		offClientBeforeSendMessage = onClientBeforeSendMessage.use(async (message: IMessage) => {
+		offClientBeforeSendMessage = onClientBeforeSendMessage.use(async (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => {
 			const e2eRoom = await e2e.getInstanceByRoomId(message.rid);
 
 			if (!e2eRoom) {
