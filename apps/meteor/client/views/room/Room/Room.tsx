@@ -7,11 +7,11 @@ import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import Announcement from '../Announcement';
 import Header from '../Header';
 import BlazeTemplate from '../components/BlazeTemplate';
-import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
 import { useRoom } from '../contexts/RoomContext';
 import AppsContextualBar from '../contextualBar/Apps';
 import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
+import RoomLayout from '../layout/RoomLayout';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useTab, useTabBarOpen, useTabBarClose, useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import LazyComponent from './LazyComponent';
@@ -33,16 +33,18 @@ export const Room = (): ReactElement => {
 	const tabBar = useMemo(() => ({ open, close, isOpen, openUserInfo }), [open, close, isOpen, openUserInfo]);
 
 	return (
-		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
-			<RoomTemplate.Header>
-				<Header room={room} />
-			</RoomTemplate.Header>
-			<RoomTemplate.Body>
-				{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
-				<BlazeTemplate onClick={hideFlexTab ? close : undefined} name='roomOld' tabBar={tabBar} rid={room._id} _id={room._id} />
-			</RoomTemplate.Body>
-			{tab && (
-				<RoomTemplate.Aside data-qa-tabbar-name={tab.id}>
+		<RoomLayout
+			aria-label={t('Channel')}
+			data-qa-rc-room={room._id}
+			header={<Header room={room} />}
+			body={
+				<>
+					{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
+					<BlazeTemplate onClick={hideFlexTab ? close : undefined} name='roomOld' tabBar={tabBar} rid={room._id} _id={room._id} />
+				</>
+			}
+			aside={
+				(tab && (
 					<ErrorBoundary fallback={null}>
 						<SelectedMessagesProvider>
 							{typeof tab.template === 'string' && (
@@ -53,10 +55,8 @@ export const Room = (): ReactElement => {
 							)}
 						</SelectedMessagesProvider>
 					</ErrorBoundary>
-				</RoomTemplate.Aside>
-			)}
-			{appsContextualBarContext && (
-				<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBarContext.viewId}>
+				)) ||
+				(appsContextualBarContext && (
 					<SelectedMessagesProvider>
 						<ErrorBoundary fallback={null}>
 							<LazyComponent
@@ -68,8 +68,8 @@ export const Room = (): ReactElement => {
 							/>
 						</ErrorBoundary>
 					</SelectedMessagesProvider>
-				</RoomTemplate.Aside>
-			)}
-		</RoomTemplate>
+				))
+			}
+		/>
 	);
 };
