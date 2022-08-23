@@ -4302,14 +4302,13 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@types/jest": ^27.4.1
-    "@types/mongodb": ^3.6.20
     "@types/node": ^14.18.12
-    eslint: ^8.12.0
+    eslint: ^8.21.0
     fibers: 5.0.1
     jest: ^27.5.1
-    mongodb: 3.6.10
+    mongodb: ^4.3.1
     ts-jest: ^27.1.4
-    typescript: ~4.3.5
+    typescript: ~4.5.5
   languageName: unknown
   linkType: soft
 
@@ -23428,36 +23427,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:3.6.10":
-  version: 3.6.10
-  resolution: "mongodb@npm:3.6.10"
-  dependencies:
-    bl: ^2.2.1
-    bson: ^1.1.4
-    denque: ^1.4.1
-    optional-require: ^1.0.3
-    safe-buffer: ^5.1.2
-    saslprep: ^1.0.0
-  dependenciesMeta:
-    saslprep:
-      optional: true
-  peerDependenciesMeta:
-    aws4:
-      optional: true
-    bson-ext:
-      optional: true
-    kerberos:
-      optional: true
-    mongodb-client-encryption:
-      optional: true
-    mongodb-extjson:
-      optional: true
-    snappy:
-      optional: true
-  checksum: 9dcf5d26b189f899f4eb31225971c84abaacf8f62d6158a4851baaf758c716779c08085ff09b510a0c627e172b8080bffe093f37bc06d2990a7b48c625b0818d
-  languageName: node
-  linkType: hard
-
 "mongodb@npm:^3.7.3":
   version: 3.7.3
   resolution: "mongodb@npm:3.7.3"
@@ -24662,7 +24631,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"optional-require@npm:^1.0.3, optional-require@npm:^1.1.8":
+"optional-require@npm:^1.1.8":
   version: 1.1.8
   resolution: "optional-require@npm:1.1.8"
   dependencies:
