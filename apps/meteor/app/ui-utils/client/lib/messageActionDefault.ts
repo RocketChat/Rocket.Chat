@@ -77,19 +77,14 @@ Meteor.startup(async function () {
 	MessageAction.addButton({
 		id: 'share-message',
 		icon: 'arrow-forward',
-		label: 'Share_message',
+		label: 'Share_Message',
 		context: ['message', 'message-mobile', 'threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			imperativeModal.open({
 				component: ShareMessageModal,
 				props: {
-					message: message.msg,
-					username: message.u.username,
-					time: message.ts,
-					// 	file: file.file,
-					// 	fileName: file.name,
-					// 	fileDescription: messageBoxText,
+					message,
 					onClose: (): void => {
 						imperativeModal.close();
 					},
@@ -99,8 +94,8 @@ Meteor.startup(async function () {
 				},
 			});
 		},
-		condition() {
-			return true;
+		condition({ message }) {
+			return message.u._id === Meteor.userId();
 		},
 		order: 0,
 		group: ['message', 'menu'],
