@@ -36,11 +36,7 @@ describe('LIVECHAT - visitors', function () {
 					.get(api('livechat/visitors.info?visitorId=invalid'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
-					})
+					.expect(403)
 					.end(done);
 			});
 		});
@@ -79,11 +75,7 @@ describe('LIVECHAT - visitors', function () {
 					.get(api('livechat/visitors.pagesVisited/room-id'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
-					})
+					.expect(403)
 					.end(done);
 			});
 		});
@@ -130,11 +122,7 @@ describe('LIVECHAT - visitors', function () {
 					.get(api('livechat/visitors.chatHistory/room/room-id/visitor/visitor-id'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
-					})
+					.expect(403)
 					.end(done);
 			});
 		});

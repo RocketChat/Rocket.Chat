@@ -22,15 +22,7 @@ describe('LIVECHAT - inquiries', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', [])
 				.then(() => {
-					request
-						.get(api('livechat/inquiries.list'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(403)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body.error).to.be.equal('unauthorized');
-						});
+					request.get(api('livechat/inquiries.list')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 				})
 				.then(() => done());
 		});
