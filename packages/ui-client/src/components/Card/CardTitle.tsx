@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import type { FC } from 'react';
 
 const CardTitle: FC = ({ children }) => (
 	<Box mb='x8' fontScale='h4'>
