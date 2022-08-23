@@ -124,7 +124,7 @@ describe('licenses', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('isEnterprise', false);
+					expect(res.body).to.have.property('isEnterprise', Boolean(process.env.IS_EE));
 				})
 				.end(done);
 		});
@@ -136,7 +136,7 @@ describe('licenses', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('isEnterprise', false);
+					expect(res.body).to.have.property('isEnterprise', Boolean(process.env.IS_EE));
 				})
 				.end(done);
 		});
