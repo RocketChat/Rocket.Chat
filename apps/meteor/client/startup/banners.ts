@@ -21,20 +21,16 @@ const fetchInitialBanners = async (): Promise<void> => {
 				if (!user?.username) {
 					return;
 				}
-				FlowRouter.watchPathChange();
 
-				if (FlowRouter.getRouteName() === 'setup-wizard') {
-					return;
-				}
-
-				setTimeout(() => {
-					imperativeModal.open({
-						component: DeviceManagementFeatureModal,
-						props: {
-							close: imperativeModal.close,
-						},
-					});
-				}, 2000);
+				process.env.TEST_MODE &&
+					setTimeout(() => {
+						imperativeModal.open({
+							component: DeviceManagementFeatureModal,
+							props: {
+								close: imperativeModal.close,
+							},
+						});
+					}, 2000);
 				computation.stop();
 			});
 			continue;
@@ -82,6 +78,12 @@ Meteor.startup(() => {
 		unwatchBanners?.();
 
 		if (!Meteor.userId()) {
+			return;
+		}
+
+		FlowRouter.watchPathChange();
+
+		if (FlowRouter.getRouteName() === 'setup-wizard') {
 			return;
 		}
 
