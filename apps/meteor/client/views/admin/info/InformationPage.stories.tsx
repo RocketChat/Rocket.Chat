@@ -192,7 +192,7 @@ export default {
 			uniqueOSOfLastWeek: { data: [], day: 0, month: 0, year: 0 },
 			uniqueOSOfLastMonth: { data: [], day: 0, month: 0, year: 0 },
 			apps: {
-				engineVersion: 0,
+				engineVersion: 'x.y.z',
 				enabled: false,
 				totalInstalled: 0,
 				totalActive: 0,
