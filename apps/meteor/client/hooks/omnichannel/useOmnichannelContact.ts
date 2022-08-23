@@ -1,6 +1,7 @@
 import { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 
@@ -14,22 +15,19 @@ const createContact = (phone: string, data: Pick<ILivechatVisitor, 'name'> | nul
 	name: data?.name || '',
 });
 
-export const useOmnichannelContact = (phone: string): Contact => {
+export const useOmnichannelContact = (ogPhone: string, name = ''): Contact => {
 	const getContactBy = useEndpoint('GET', '/v1/omnichannel/contact.search');
-	const safePhone = parseOutboundPhoneNumber(phone);
-	const [contact, setContact] = useState<Contact>({ phone: safePhone, name: safePhone });
+	const phone = parseOutboundPhoneNumber(ogPhone);
+	const [defaultContact] = useState<Contact>({ phone, name });
 
-	const getContactByPhone = useCallback(
-		async (phone: string): Promise<Contact> => {
-			const data = await getContactBy({ phone });
-			return createContact(phone, data.contact);
-		},
-		[getContactBy],
-	);
+	const {
+		data: contact,
+		isLoading,
+		isError,
+	} = useQuery(['getContactsByPhone', phone], async (): Promise<Contact> => {
+		const { contact } = await getContactBy({ phone });
+		return createContact(phone, contact);
+	});
 
-	useEffect(() => {
-		getContactByPhone(safePhone).then(setContact);
-	}, [safePhone, getContactByPhone]);
-
-	return contact;
+	return isLoading || isError ? defaultContact : contact;
 };
