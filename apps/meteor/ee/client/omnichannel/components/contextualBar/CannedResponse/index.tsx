@@ -49,8 +49,10 @@ export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 
 		const { input } = chatMessages[room._id];
 
-		input.value = text;
-		input.focus();
+		if (input) {
+			input.value = text;
+			input.focus();
+		}
 	};
 
 	const onClickCreate = (): void => {
