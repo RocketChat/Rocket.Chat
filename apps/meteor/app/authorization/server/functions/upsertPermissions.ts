@@ -224,6 +224,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'remove-slackbridge-links', roles: ['admin'] },
 		{ _id: 'view-import-operations', roles: ['admin'] },
 		{ _id: 'clear-oembed-cache', roles: ['admin'] },
+		{ _id: 'videoconf-ring-users', roles: ['admin', 'owner', 'moderator', 'user'] },
 	];
 
 	for await (const permission of permissions) {
@@ -278,7 +279,7 @@ export const upsertPermissions = async (): Promise<void> => {
 			roles: [],
 		};
 		// copy previously assigned roles if available
-		if (previousSettingPermissions[permissionId] && previousSettingPermissions[permissionId].roles) {
+		if (previousSettingPermissions[permissionId]?.roles) {
 			permission.roles = previousSettingPermissions[permissionId].roles;
 		}
 		if (setting.group) {

@@ -19,9 +19,9 @@ import React, { Dispatch, ReactElement, SetStateAction, useCallback, useMemo, us
 import { validateEmail } from '../../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
-import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../components/UserStatus';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
+import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import { AccountFormValues } from './AccountProfilePage';
 
 type AccountProfileFormProps = {
@@ -32,6 +32,7 @@ type AccountProfileFormProps = {
 	onSaveStateChange: Dispatch<SetStateAction<boolean>>;
 };
 
+// TODO: Replace this form using React Hook Form
 const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChange, ...props }: AccountProfileFormProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -80,8 +81,8 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		try {
 			await sendConfirmationEmail(email);
 			dispatchToastMessage({ type: 'success', message: t('Verification_email_sent') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, email, previousEmail, sendConfirmationEmail, t]);
 
@@ -142,11 +143,20 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 
 		return undefined;
 	}, [statusText, t]);
+
+	const bioError = useMemo(() => {
+		if (bio && bio.length > BIO_TEXT_MAX_LENGTH) {
+			return t('Max_length_is', BIO_TEXT_MAX_LENGTH);
+		}
+
+		return undefined;
+	}, [bio, t]);
+
 	const {
 		emails: [{ verified = false } = { verified: false }],
 	} = user as any;
 
-	const canSave = !![!!passwordError, !!emailError, !!usernameError, !!nameError, !!statusTextError].filter(Boolean);
+	const canSave = !![!!passwordError, !!emailError, !!usernameError, !!nameError, !!statusTextError, !!bioError].filter(Boolean);
 
 	useEffect(() => {
 		onSaveStateChange(canSave);
@@ -251,6 +261,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 						<Field.Label>{t('Bio')}</Field.Label>
 						<Field.Row>
 							<TextAreaInput
+								error={bioError}
 								rows={3}
 								flexGrow={1}
 								value={bio}
@@ -258,9 +269,10 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 								addon={<Icon name='edit' size='x20' alignSelf='center' />}
 							/>
 						</Field.Row>
+						<Field.Error>{bioError}</Field.Error>
 					</Field>
 				),
-				[bio, handleBio, t],
+				[bio, handleBio, bioError, t],
 			)}
 			<Field>
 				<Grid>

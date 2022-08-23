@@ -1,8 +1,10 @@
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import { MatrixBridge } from '../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge';
+import { MatrixEventType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixEventType';
 import { MatrixRoomVisibility } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomVisibility';
-import { IFederationBridgeEE } from '../../domain/IFederationBridge';
+import type { IFederationBridgeEE } from '../../domain/IFederationBridge';
+import type { IMatrixEvent } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/IMatrixEvent';
 
 export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE {
 	constructor(
@@ -12,7 +14,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		protected bridgeUrl: string,
 		protected bridgePort: number,
 		protected homeServerRegistrationFile: Record<string, any>,
-		protected eventHandler: Function,
+		protected eventHandler: (event: IMatrixEvent<MatrixEventType>) => void,
 	) {
 		super(appServiceId, homeServerUrl, homeServerDomain, bridgeUrl, bridgePort, homeServerRegistrationFile, eventHandler);
 		this.logInfo();
@@ -32,15 +34,32 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 				topic: roomTopic,
 				visibility,
 				preset,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				creation_content: {
-					// eslint-disable-next-line @typescript-eslint/camelcase
 					was_internally_programatically_created: true,
 				},
 			},
 		});
 
 		return matrixRoom.room_id;
+	}
+
+	public async getRoomName(externalRoomId: string, externalUserId: string): Promise<string> {
+		const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as Record<string, any>[];
+
+		return (roomState || []).find((event) => event?.type === MatrixEventType.ROOM_NAME_CHANGED)?.content?.name || '';
+	}
+
+	public async getRoomTopic(externalRoomId: string, externalUserId: string): Promise<string> {
+		const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as Record<string, any>[];
+		return (roomState || []).find((event) => event?.type === MatrixEventType.ROOM_TOPIC_CHANGED)?.content?.topic || '';
+	}
+
+	public async setRoomName(externalRoomId: string, externalUserId: string, roomName: string): Promise<void> {
+		await this.bridgeInstance.getIntent(externalUserId).setRoomName(externalRoomId, roomName);
+	}
+
+	public async setRoomTopic(externalRoomId: string, externalUserId: string, roomTopic: string): Promise<void> {
+		await this.bridgeInstance.getIntent(externalUserId).setRoomTopic(externalRoomId, roomTopic);
 	}
 
 	public getInstance(): IFederationBridgeEE {

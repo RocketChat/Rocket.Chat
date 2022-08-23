@@ -1,5 +1,15 @@
 import { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Option, OptionAvatar, OptionColumn, OptionDescription, OptionMenu, OptionContent, Icon, IconButton } from '@rocket.chat/fuselage';
+import {
+	Option,
+	OptionAvatar,
+	OptionColumn,
+	OptionDescription,
+	OptionMenu,
+	OptionContent,
+	Icon,
+	IconButton,
+	OptionSkeleton,
+} from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, useState, MouseEvent } from 'react';
 
@@ -12,7 +22,7 @@ type MemberItemProps = {
 	onClickView: (e: MouseEvent<HTMLDivElement>) => void;
 	rid: IRoom['_id'];
 	reload: () => void;
-} & IUser;
+} & Pick<IUser, 'federated' | 'username' | 'name' | '_id'>;
 
 export const MemberItem = ({ _id, name, username, federated, onClickView, rid, reload }: MemberItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
@@ -40,4 +50,4 @@ export const MemberItem = ({ _id, name, username, federated, onClickView, rid, r
 	);
 };
 
-MemberItem.Skeleton = Option.Skeleton;
+MemberItem.Skeleton = OptionSkeleton;

@@ -7,6 +7,8 @@ import { LivechatRooms, Subscriptions, Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
 
+// Deprecated in favor of "livechat/room.forward" endpoint
+// TODO: Deprecated: Remove in v6.0.0
 Meteor.methods({
 	async 'livechat:transfer'(transferData) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {

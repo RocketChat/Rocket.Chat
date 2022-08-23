@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { FileAttachmentProps, FileProp, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';

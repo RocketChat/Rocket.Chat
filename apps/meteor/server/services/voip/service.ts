@@ -1,18 +1,19 @@
-import { Db } from 'mongodb';
+import type { Db } from 'mongodb';
 import mem from 'mem';
-import {
-	ServerType,
-	isICallServerConfigData,
+import { ServerType, isICallServerConfigData, isIExtensionDetails } from '@rocket.chat/core-typings';
+import type {
+	IVoipConnectorResult,
+	IQueueDetails,
+	IQueueSummary,
+	IManagementServerConnectionStatus,
 	IVoipCallServerConfig,
 	IVoipManagementServerConfig,
 	IQueueMembershipDetails,
 	IQueueMembershipSubscription,
 	IRegistrationInfo,
-	isIExtensionDetails,
 } from '@rocket.chat/core-typings';
-import type { IVoipConnectorResult, IQueueDetails, IQueueSummary, IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
 
-import { IVoipService } from '../../sdk/types/IVoipService';
+import type { IVoipService } from '../../sdk/types/IVoipService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { CommandHandler } from './connector/asterisk/CommandHandler';

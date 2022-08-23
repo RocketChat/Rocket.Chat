@@ -13,18 +13,18 @@
  * We shall be using only AMI interface in the for now. Other interfaces will be
  * added as and when required.
  */
-import { Db } from 'mongodb';
-import type { IVoipConnectorResult, IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
-import { IManagementConfigData, ServerType } from '@rocket.chat/core-typings';
+import type { Db } from 'mongodb';
+import type { IVoipConnectorResult, IManagementServerConnectionStatus, IManagementConfigData } from '@rocket.chat/core-typings';
 
 import { Commands } from './Commands';
-import { IConnection } from './IConnection';
+import type { IConnection } from './IConnection';
 import { Logger } from '../../../../lib/logger/Logger';
-import { Command, CommandType } from './Command';
+import type { Command } from './Command';
+import { CommandType } from './Command';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
 import { WebsocketConnection } from '../websocket/WebsocketConnection';
-import { getServerConfigDataFromSettings } from '../../lib/Helper';
+import { getManagementServerConfig } from '../../lib/Helper';
 
 const version = 'Asterisk Connector 1.0';
 
@@ -45,12 +45,9 @@ export class CommandHandler {
 
 	async initConnection(commandType: CommandType): Promise<void> {
 		// Initialize available connections
-		// const connection = new AMIConnection();
 		const connection = new AMIConnection();
-		let config: any = null;
-		if (commandType === CommandType.AMI) {
-			config = getServerConfigDataFromSettings(ServerType.MANAGEMENT);
-		}
+
+		const config = commandType === CommandType.AMI ? getManagementServerConfig() : undefined;
 		if (!config) {
 			this.logger.warn('Management server configuration not found');
 			return;
@@ -64,6 +61,12 @@ export class CommandHandler {
 			this.connections.get(commandType)?.closeConnection();
 			this.connections.delete(commandType);
 		}
+
+		if (!config.host) {
+			this.logger.error('Invalid host');
+			return;
+		}
+
 		try {
 			await connection.connect(
 				config.host,
@@ -73,10 +76,14 @@ export class CommandHandler {
 			);
 			this.connections.set(commandType, connection);
 			this.continuousMonitor = CommandFactory.getCommandObject(Commands.event_stream, this.db);
-			this.continuousMonitor.connection = this.connections.get(this.continuousMonitor.type) as IConnection;
+			const continuousMonitor = this.connections.get(this.continuousMonitor.type);
+			if (!continuousMonitor) {
+				throw new Error(`No connection for ${this.continuousMonitor.type}`);
+			}
+			this.continuousMonitor.connection = continuousMonitor;
 			this.continuousMonitor.initMonitor({});
-		} catch (error: any) {
-			this.logger.error({ msg: 'Management server connection error', error });
+		} catch (err: unknown) {
+			this.logger.error({ msg: 'Management server connection error', err });
 		}
 	}
 

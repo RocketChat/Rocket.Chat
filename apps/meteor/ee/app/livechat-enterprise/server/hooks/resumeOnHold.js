@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { LivechatRooms } from '../../../../../app/models/server';
 
-const handleAfterSaveMessage = (message, { _id: rid }) => {
+const handleAfterSaveMessage = (message, roomParams) => {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
@@ -14,14 +15,20 @@ const handleAfterSaveMessage = (message, { _id: rid }) => {
 		return message;
 	}
 
-	// Need to read the room every time, the room object is not updated
-	const room = LivechatRooms.findOneById(rid, { t: 1, v: 1, onHold: 1 });
-	if (!room) {
+	if (!isOmnichannelRoom(roomParams)) {
 		return message;
 	}
 
+	const { _id: rid, t: roomType, v: roomVisitor } = roomParams;
+
 	// message valid only if it is a livechat room
-	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
+	if (!(typeof roomType !== 'undefined' && roomType === 'l' && roomVisitor && roomVisitor.token)) {
+		return message;
+	}
+
+	// Need to read the room every time, the room object is not updated
+	const room = LivechatRooms.findOneById(rid, { t: 1, v: 1, onHold: 1 });
+	if (!room) {
 		return message;
 	}
 

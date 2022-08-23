@@ -1,10 +1,11 @@
-import { IUIActionButton, IUActionButtonWhen } from '@rocket.chat/apps-engine/definition/ui/IUIActionButtonDescriptor';
+import type { IUIActionButton, IUActionButtonWhen } from '@rocket.chat/apps-engine/definition/ui/IUIActionButtonDescriptor';
+import type { UserStatus } from '@rocket.chat/core-typings';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { Meteor } from 'meteor/meteor';
 
 import { SideNav } from './SideNav';
 import { applyDropdownActionButtonFilters } from '../../../ui-message/client/actionButtons/lib/applyButtonFilters';
+import { APIClient } from '../../../utils/client';
 
 export interface IAppAccountBoxItem extends IUIActionButton {
 	name: string;
@@ -31,8 +32,8 @@ export class AccountBoxBase {
 
 	private status = 0;
 
-	public setStatus(status: number, statusText: string): any {
-		return Meteor.call('setUserStatus', status, statusText);
+	public setStatus(status: UserStatus, statusText: string): any {
+		return APIClient.post('/v1/users.setStatus', { status, message: statusText });
 	}
 
 	public open(): void {

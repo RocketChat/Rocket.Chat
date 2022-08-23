@@ -1,31 +1,29 @@
-import type { IFederationServer } from '@rocket.chat/core-typings';
 import { Box, Throbber } from '@rocket.chat/fuselage';
-import React, { useMemo, ReactElement } from 'react';
-
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { usePolledMethodData } from '../../../hooks/usePolledMethodData';
-
-type FederationServer = { value: { data: IFederationServer[] } | undefined; phase: AsyncStatePhase };
+import { useMethod } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import React, { ReactElement } from 'react';
 
 function ServersSection(): ReactElement | null {
-	const { value: serversData, phase: serversStatus }: FederationServer = usePolledMethodData(
-		'federation:getServers',
-		useMemo(() => [], []),
-		10000,
-	);
+	const getFederationServers = useMethod('federation:getServers');
 
-	if (serversStatus === AsyncStatePhase.LOADING) {
+	const result = useQuery(['admin/federation-dashboard/servers'], async () => getFederationServers(), {
+		refetchInterval: 10_000,
+	});
+
+	if (result.isLoading) {
 		return <Throbber alignItems='center' />;
 	}
 
-	if (serversData?.data?.length === 0) {
+	if (result.isError || result.data.data.length === 0) {
 		return null;
 	}
+
+	const servers = result.data.data;
 
 	return (
 		<Box withRichContent>
 			<ul>
-				{serversData?.data?.map(({ domain }) => (
+				{servers.map(({ domain }) => (
 					<li key={domain}>{domain}</li>
 				))}
 			</ul>

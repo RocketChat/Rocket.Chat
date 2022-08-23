@@ -2,6 +2,10 @@ import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
+createTemplateForComponent('HomePage', () => import('./views/home/HomePage'), {
+	attachment: 'at-parent',
+});
+
 createTemplateForComponent('MessageActions', () => import('./components/message/MessageActions'));
 
 createTemplateForComponent('reactAttachments', () => import('./components/message/Attachments'));
@@ -159,3 +163,5 @@ createTemplateForComponent('ComposerNotAvailablePhoneCalls', () => import('./com
 createTemplateForComponent('loggedOutBanner', () => import('../ee/client/components/deviceManagement/LoggedOutBanner'), {
 	renderContainerView: () => HTML.DIV({ style: 'max-width: 520px; margin: 0 auto;' }),
 });
+
+createTemplateForComponent('ComposerSkeleton', () => import('./views/room/Room/ComposerSkeleton'));

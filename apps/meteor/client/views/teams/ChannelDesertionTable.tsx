@@ -12,7 +12,7 @@ type ChannelDesertionTableProps = {
 	lastOwnerWarning: boolean | undefined;
 	rooms: (Serialized<IRoom> & { isLastOwner?: string })[] | undefined;
 	eligibleRoomsLength: number | undefined;
-	params?: {};
+	params?: { current: number; itemsPerPage: 25 | 50 | 100 };
 	onChangeParams?: () => void;
 	onChangeRoomSelection: (room: Serialized<IRoom>) => void;
 	selectedRooms: { [key: string]: Serialized<IRoom> };
@@ -66,7 +66,7 @@ const ChannelDesertionTable: FC<ChannelDesertionTableProps> = ({
 						formatDate={formatDate}
 						room={room}
 						onChange={onChangeRoomSelection}
-						selected={!!selectedRooms[room._id]}
+						selected={'_id' in room && room._id ? !!selectedRooms[room._id] : false}
 						lastOwnerWarning={lastOwnerWarning}
 					/>
 				)}

@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { ServerResponse, IncomingMessage } from 'http';
+import type { ServerResponse, IncomingMessage } from 'http';
 
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
@@ -7,15 +7,15 @@ import { WebAppHashing } from 'meteor/webapp-hashing';
 import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
-import { NextHandleFunction } from 'connect';
-import { IRocketChatAssets, IRocketChatAsset } from '@rocket.chat/core-typings';
+import type { NextHandleFunction } from 'connect';
+import type { IRocketChatAssets, IRocketChatAsset, IRocketChatAssetCache } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
 import { getExtension } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization/server';
 import { RocketChatFile } from '../../file';
-import { Settings } from '../../models/server';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',
@@ -40,7 +40,6 @@ const assets: IRocketChatAssets = {
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_ico: {
 		label: 'favicon (ico)',
 		defaultUrl: 'favicon.ico',
@@ -57,7 +56,6 @@ const assets: IRocketChatAssets = {
 			extensions: ['svg'],
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_16: {
 		label: 'favicon 16x16 (png)',
 		defaultUrl: 'images/logo/favicon-16x16.png',
@@ -68,7 +66,6 @@ const assets: IRocketChatAssets = {
 			height: 16,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_32: {
 		label: 'favicon 32x32 (png)',
 		defaultUrl: 'images/logo/favicon-32x32.png',
@@ -79,7 +76,6 @@ const assets: IRocketChatAssets = {
 			height: 32,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_192: {
 		label: 'android-chrome 192x192 (png)',
 		defaultUrl: 'images/logo/android-chrome-192x192.png',
@@ -90,7 +86,6 @@ const assets: IRocketChatAssets = {
 			height: 192,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_512: {
 		label: 'android-chrome 512x512 (png)',
 		defaultUrl: 'images/logo/android-chrome-512x512.png',
@@ -101,7 +96,6 @@ const assets: IRocketChatAssets = {
 			height: 512,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	touchicon_180: {
 		label: 'apple-touch-icon 180x180 (png)',
 		defaultUrl: 'images/logo/apple-touch-icon.png',
@@ -112,7 +106,6 @@ const assets: IRocketChatAssets = {
 			height: 180,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	touchicon_180_pre: {
 		label: 'apple-touch-icon-precomposed 180x180 (png)',
 		defaultUrl: 'images/logo/apple-touch-icon-precomposed.png',
@@ -123,7 +116,6 @@ const assets: IRocketChatAssets = {
 			height: 180,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_70: {
 		label: 'mstile 70x70 (png)',
 		defaultUrl: 'images/logo/mstile-70x70.png',
@@ -134,7 +126,6 @@ const assets: IRocketChatAssets = {
 			height: 70,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_144: {
 		label: 'mstile 144x144 (png)',
 		defaultUrl: 'images/logo/mstile-144x144.png',
@@ -145,7 +136,6 @@ const assets: IRocketChatAssets = {
 			height: 144,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_150: {
 		label: 'mstile 150x150 (png)',
 		defaultUrl: 'images/logo/mstile-150x150.png',
@@ -156,7 +146,6 @@ const assets: IRocketChatAssets = {
 			height: 150,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_310_square: {
 		label: 'mstile 310x310 (png)',
 		defaultUrl: 'images/logo/mstile-310x310.png',
@@ -167,7 +156,6 @@ const assets: IRocketChatAssets = {
 			height: 310,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_310_wide: {
 		label: 'mstile 310x150 (png)',
 		defaultUrl: 'images/logo/mstile-310x150.png',
@@ -178,7 +166,6 @@ const assets: IRocketChatAssets = {
 			height: 150,
 		},
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	safari_pinned: {
 		label: 'safari pinned tab (svg)',
 		defaultUrl: 'images/logo/safari-pinned-tab.svg',
@@ -208,9 +195,8 @@ class RocketChatAssetsClass {
 
 		const extension = getExtension(contentType);
 		if (assetInstance.constraints.extensions.includes(extension) === false) {
-			throw new Meteor.Error(contentType, `Invalid file type: ${contentType}`, {
+			throw new Meteor.Error('error-invalid-file-type', `Invalid file type: ${contentType}`, {
 				function: 'RocketChat.Assets.setAsset',
-				errorTitle: 'error-invalid-file-type',
 			});
 		}
 
@@ -270,7 +256,7 @@ class RocketChatAssetsClass {
 	}
 
 	public refreshClients(): boolean {
-		return (process.emit as Function)('message', {
+		return process.emit('message', {
 			refresh: 'client',
 		});
 	}
@@ -360,7 +346,7 @@ function addAssetToSetting(asset: string, value: IRocketChatAsset): void {
 
 	if (typeof currentValue === 'object' && currentValue.defaultUrl !== getAssetByKey(asset).defaultUrl) {
 		currentValue.defaultUrl = getAssetByKey(asset).defaultUrl;
-		Settings.updateValueById(key, currentValue);
+		Promise.await(Settings.updateValueById(key, currentValue));
 	}
 }
 
@@ -371,9 +357,9 @@ for (const key of Object.keys(assets)) {
 
 settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
 
-Meteor.startup(function () {
-	return Meteor.setTimeout(function () {
-		return (process.emit as Function)('message', {
+Meteor.startup(() => {
+	Meteor.setTimeout(() => {
+		process.emit('message', {
 			refresh: 'client',
 		});
 	}, 200);
@@ -381,14 +367,14 @@ Meteor.startup(function () {
 
 const { calculateClientHash } = WebAppHashing;
 
-WebAppHashing.calculateClientHash = function (manifest: Record<string, any>, includeFilter: Function, runtimeConfigOverride: any): string {
+WebAppHashing.calculateClientHash = function (manifest, includeFilter, runtimeConfigOverride): string {
 	for (const key of Object.keys(assets)) {
 		const value = getAssetByKey(key);
 		if (!value.cache && !value.defaultUrl) {
 			continue;
 		}
 
-		let cache = {};
+		let cache: IRocketChatAssetCache;
 		if (value.cache) {
 			cache = {
 				path: value.cache.path,
@@ -517,7 +503,7 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 
 	const reqModifiedHeader = req.headers['if-modified-since'];
 	if (reqModifiedHeader) {
-		if (reqModifiedHeader === (file.uploadDate && file.uploadDate.toUTCString())) {
+		if (reqModifiedHeader === file.uploadDate?.toUTCString()) {
 			res.setHeader('Last-Modified', reqModifiedHeader);
 			res.writeHead(304);
 			res.end();
@@ -536,9 +522,9 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 		return;
 	}
 
-	res.setHeader('Last-Modified', (file.uploadDate && file.uploadDate.toUTCString()) || new Date().toUTCString());
-	res.setHeader('Content-Type', file.contentType);
-	res.setHeader('Content-Length', file.size);
+	res.setHeader('Last-Modified', file.uploadDate?.toUTCString() || new Date().toUTCString());
+	if (file.contentType) res.setHeader('Content-Type', file.contentType);
+	if (file.size) res.setHeader('Content-Length', file.size);
 	res.writeHead(200);
 	res.end(file.content);
 });
