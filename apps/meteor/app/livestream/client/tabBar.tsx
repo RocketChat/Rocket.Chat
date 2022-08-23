@@ -1,4 +1,5 @@
-import React, { ReactNode, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import React, { useMemo } from 'react';
 import { Option, Badge } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { isRoomFederated } from '@rocket.chat/core-typings';

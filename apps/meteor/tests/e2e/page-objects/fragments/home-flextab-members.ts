@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 export class HomeFlextabMembers {
 	private readonly page: Page;
@@ -12,6 +12,10 @@ export class HomeFlextabMembers {
 		await this.page.locator('//label[contains(text(), "Choose users")]/..//input').type(username);
 		await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${username}`).first().click();
 		await this.page.locator('//button[contains(text(), "Add users")]').click();
+	}
+
+	async inviteUser() {
+		await this.page.locator('//button[contains(text(), "Invite Link")]').click();
 	}
 
 	async muteUser(username: string) {

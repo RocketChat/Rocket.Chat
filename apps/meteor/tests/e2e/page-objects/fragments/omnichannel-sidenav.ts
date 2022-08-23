@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 export class OmnichannelSidenav {
 	private readonly page: Page;
@@ -13,5 +13,9 @@ export class OmnichannelSidenav {
 
 	get linkAgents(): Locator {
 		return this.page.locator('a[href="omnichannel/agents"]');
+	}
+
+	get linkCurrentChats(): Locator {
+		return this.page.locator('a[href="omnichannel/current"]');
 	}
 }

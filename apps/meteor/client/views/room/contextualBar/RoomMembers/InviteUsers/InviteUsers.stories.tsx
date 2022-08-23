@@ -19,5 +19,4 @@ Default.storyName = 'InviteUsers';
 Default.args = {
 	linkText: 'https://go.rocket.chat/invite?host=open.rocket.chat&path=invite%2F5sBs3a',
 	captionText: 'Expire on February 4, 2020 4:45 PM.',
-	error: 'Error message',
 };

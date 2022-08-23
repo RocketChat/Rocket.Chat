@@ -20,6 +20,8 @@ const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	process.exit(errorCode);
 };
 
+const skipMongoDbDeprecationCheck = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_CHECK).toLowerCase());
+
 Meteor.startup(function () {
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
 
@@ -82,7 +84,7 @@ Meteor.startup(function () {
 		showSuccessBox('SERVER RUNNING', msg);
 
 		// Deprecation
-		if (!semver.satisfies(semver.coerce(mongoVersion), '>=4.4.0')) {
+		if (!skipMongoDbDeprecationCheck && !semver.satisfies(semver.coerce(mongoVersion), '>=4.4.0')) {
 			msg = [
 				`YOUR CURRENT MONGODB VERSION (${mongoVersion}) IS DEPRECATED.`,
 				'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 6.0.0 AND GREATER,',
