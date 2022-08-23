@@ -2,10 +2,10 @@ import { ISetting } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Card } from '@rocket.chat/ui-client';
 import { useRoute, TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import Card from '../../../components/Card';
 import MarkdownText from '../../../components/MarkdownText';
 
 const clampStyle = css`

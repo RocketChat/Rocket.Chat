@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import type { FC } from 'react';
 
 type CardProps = {
 	variant?: 'light' | 'tint';
