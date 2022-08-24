@@ -307,6 +307,11 @@ export class ChatMessages {
 					return done();
 				}
 
+				if (message.attachments && message.attachments.length > 0) {
+					this.clearEditing();
+					return;
+				}
+
 				this.resetToDraft(this.editing.id);
 				this.confirmDeleteMsg(message, done);
 				return;
