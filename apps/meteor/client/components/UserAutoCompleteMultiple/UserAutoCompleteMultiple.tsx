@@ -51,7 +51,7 @@ const UserAutoCompleteMultiple = ({ onChange, ...props }: UserAutoCompleteMultip
 				))
 			}
 			renderItem={({ value, label, ...props }): ReactElement => (
-				<Option key={value} {...props}>
+				<Option data-qa-type='autocomplete-user-option' key={value} {...props}>
 					<OptionAvatar>
 						<UserAvatar username={value} size='x20' />
 					</OptionAvatar>
