@@ -4,10 +4,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type DownloadPendingFilesParamsPOST = {
-	userId: string;
-	count: number;
-};
+export type DownloadPendingFilesParamsPOST = Record<string, unknown>;
 
 const DownloadPendingFilesParamsPOSTSchema = {
 	type: 'object',
