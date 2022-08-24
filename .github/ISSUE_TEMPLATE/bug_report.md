@@ -53,5 +53,7 @@ If you are experiencing a bug please search our issues to be sure it is not alre
 
 ### Relevant logs:
 
+For browser version, browser logs, screen recording, network requests: You can make a recording with [Bird Eats Bug](https://birdeatsbug.com/).
+
 <!-- Logs from both SERVER and BROWSER -->
 <!-- For more information about collecting logs please see: https://rocket.chat/docs/contributing/reporting-issues#gathering-logs -->
