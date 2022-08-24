@@ -189,16 +189,17 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	async findOneByEmailAndPhoneAndCustomField(
-		email: string,
-		phone: string,
-		customFields: { [key: string]: string },
+		email: string | null | undefined,
+		phone: string | null | undefined,
+		customFields?: { [key: string]: string },
 	): Promise<ILivechatVisitor | null> {
 		const query = Object.assign(
 			{},
 			{
 				...(email && { visitorEmails: { address: email } }),
 				...(phone && { phone: { phoneNumber: phone } }),
-				...(Object.keys(customFields).length &&
+				...(customFields &&
+					Object.keys(customFields).length &&
 					Object.fromEntries(
 						Object.keys(customFields).map((fieldName: string) => [
 							`livechatData.${fieldName}`,

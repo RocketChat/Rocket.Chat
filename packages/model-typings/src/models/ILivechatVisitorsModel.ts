@@ -25,9 +25,9 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>>;
 
 	findOneByEmailAndPhoneAndCustomField(
-		email: string,
-		phone: string,
-		customFields: { [key: string]: string },
+		email: string | null | undefined,
+		phone: string | null | undefined,
+		customFields?: { [key: string]: string },
 	): Promise<ILivechatVisitor | null>;
 
 	removeContactManagerByUsername(manager: string): Promise<UpdateResult | Document>;
