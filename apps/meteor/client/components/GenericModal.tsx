@@ -77,7 +77,7 @@ const GenericModal: FC<GenericModalProps> = ({
 				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
-			<Modal.Footer>
+			<Modal.Footer justifyContent={dontAskAgain ? 'space-between' : 'end'}>
 				{dontAskAgain}
 				<Modal.FooterControllers>
 					{onCancel && (

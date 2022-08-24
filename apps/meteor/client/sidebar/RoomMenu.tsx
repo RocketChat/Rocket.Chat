@@ -16,7 +16,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement, useMemo } from 'react';
 
-import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
+import { RoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
