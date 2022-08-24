@@ -1,17 +1,22 @@
 import { Meteor } from 'meteor/meteor';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { RocketChatFile } from '../../../file';
 import { RocketChatImportFileInstance } from '../startup/store';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Importers } from '..';
 
-export const executeUploadImportFile = (userId, binaryContent, contentType, fileName, importerKey) => {
+export const executeUploadImportFile = (
+	userId: IUser['_id'],
+	binaryContent: string,
+	contentType: string,
+	fileName: string,
+	importerKey: string,
+): void => {
 	const importer = Importers.get(importerKey);
 	if (!importer) {
-		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, {
-			method: 'uploadImportFile',
-		});
+		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'uploadImportFile');
 	}
 
 	importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
@@ -43,13 +48,11 @@ Meteor.methods({
 		const userId = Meteor.userId();
 
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'uploadImportFile' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'uploadImportFile');
 		}
 
 		if (!hasPermission(userId, 'run-import')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', {
-				method: 'uploadImportFile',
-			});
+			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'uploadImportFile');
 		}
 
 		executeUploadImportFile(userId, binaryContent, contentType, fileName, importerKey);
