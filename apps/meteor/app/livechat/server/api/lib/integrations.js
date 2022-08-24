@@ -1,12 +1,6 @@
 import { Settings } from '@rocket.chat/models';
 
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-
-export async function findIntegrationSettings({ userId }) {
-	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
-		throw new Error('error-not-authorized');
-	}
-
+export async function findIntegrationSettings() {
 	const settings = await Settings.findByIds([
 		'Livechat_webhookUrl',
 		'Livechat_secret_token',
