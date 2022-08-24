@@ -4,6 +4,7 @@ declare module 'meteor/kadira:flow-router' {
 	type Context = {
 		params: Record<string, string>;
 		queryParams: Record<string, string>;
+		pathname: string;
 	};
 
 	export type RouteOptions = {

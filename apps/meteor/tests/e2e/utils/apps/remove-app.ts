@@ -7,5 +7,5 @@ import { appsEndpoint } from './apps-data';
  */
 
 export const removeAppById = async (api: BaseTest['api'], id: string) => {
-	await api.delete(appsEndpoint(`/${id}`), '');
+	await api.delete(appsEndpoint(`/${id}`));
 };
