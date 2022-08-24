@@ -72,8 +72,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { userId } = this;
-			const suggestions = Meteor.call('getAvatarSuggestion', userId);
+			const suggestions = Meteor.call('getAvatarSuggestion');
 
 			return API.v1.success({ suggestions });
 		},
@@ -760,13 +759,11 @@ API.v1.addRoute(
 		post() {
 			const { email } = this.bodyParams;
 
-			if (!email) {
-				throw new Meteor.Error('error-parameter-required', 'email is required');
-			}
+			if(Meteor.call('sendConfirmationEmail', email)) {
+				return API.v1.success();
 
-			// Should we verify the email first?
-			Meteor.call('sendConfirmationEmail', email);
-			return API.v1.success();
+			}
+			return API.v1.error();
 		},
 	},
 );

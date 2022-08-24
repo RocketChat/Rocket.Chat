@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import { Users } from '@rocket.chat/models';
 
 import { getAvatarSuggestionForUser } from '../../app/lib/server/functions/getAvatarSuggestionForUser';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
-	async getAvatarSuggestion(userId) {
+	async getAvatarSuggestion() {
 		methodDeprecationLogger.warn('getAvatarSuggestion will be deprecated in future versions of Rocket.Chat');
-		if (!userId) {
+
+		const user = Meteor.user() as IUser | undefined;
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'getAvatarSuggestion',
 			});
 		}
 
-		const user = await Users.findOneById(userId);
-
-		return getAvatarSuggestionForUser(user!);
+		return getAvatarSuggestionForUser(user);
 	},
 });

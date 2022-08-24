@@ -3,18 +3,12 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv({ coerceTypes: true });
 
-export type UsersGetAvatarSuggestionParamsGET = {
-	userId: string;
-};
+export type UsersGetAvatarSuggestionParamsGET = {};
 
 const UsersGetAvatarSuggestionParamsGETSchema = {
 	type: 'object',
-	properties: {
-		userId: {
-			type: 'string',
-		},
-	},
-	required: ['userId'],
+	properties: {},
+	required: [],
 	additionalProperties: false,
 };
 

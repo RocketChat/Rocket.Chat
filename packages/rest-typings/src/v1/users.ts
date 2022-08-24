@@ -11,6 +11,7 @@ import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import type { UsersSendConfirmationEmailParamsPOST } from '..';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -120,7 +121,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.sendConfirmationEmail': {
-		POST: (params: { email: string }) => void;
+		POST: (params: UsersSendConfirmationEmailParamsPOST) => void;
 	};
 
 	'/v1/users.listTeams': {
@@ -228,14 +229,13 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.getAvatarSuggestion': {
-		GET: (params: { userId: string }) => {
+		GET: () => {
 			suggestions: Record<string, { blob: string; contentType: string; service: string; url: string }>;
 		};
 	};
 
 	'/v1/users.checkUsernameAvailability': {
 		GET: (params: { username: string }) => {
-			// result: Record<string, unknown>;
 			result: boolean;
 		};
 	};

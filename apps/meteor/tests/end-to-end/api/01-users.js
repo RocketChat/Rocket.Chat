@@ -1816,9 +1816,9 @@ describe('[Users]', function () {
 					email: 'invalidEmail',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
 		});
@@ -1828,7 +1828,7 @@ describe('[Users]', function () {
 		const testUsername = `test${+new Date()}`;
 		let targetUser;
 		let userCredentials;
-		it('register a new user...', (done) => {
+		before('register a new user...', (done) => {
 			request
 				.post(api('users.register'))
 				.set(credentials)
@@ -1845,7 +1845,7 @@ describe('[Users]', function () {
 				})
 				.end(done);
 		});
-		it('Login...', (done) => {
+		before('Login...', (done) => {
 			request
 				.post(api('login'))
 				.send({
@@ -1870,7 +1870,7 @@ describe('[Users]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.result).to.be.equal(testUsername);
+					expect(res.body.result).to.be.exists();
 				})
 				.end(done);
 		});
@@ -1925,7 +1925,7 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		it('should return true if the username is available', (done) => {
+		it('should return true if the username is the same user username set', (done) => {
 			request
 				.get(api('users.checkUsernameAvailability'))
 				.set(userCredentials)
@@ -1941,18 +1941,31 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		it('should return an error when the user does not exist', (done) => {
+		it('should return true if the username is available', (done) => {
+			request
+			.get(api('users.checkUsernameAvailability'))
+			.set(userCredentials)
+			.query({
+				username: `${targetUser.username}-${+new Date()}`,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.result).to.be.equal(true);
+			})
+			.end(done);
+		});
+
+		it('should return an error when the username is invalid', (done) => {
 			request
 				.get(api('users.checkUsernameAvailability'))
 				.set(userCredentials)
-				.query({
-					username: '',
-				})
+				.query()
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
 				})
 				.end(done);
 		});

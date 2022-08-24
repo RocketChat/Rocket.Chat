@@ -9,17 +9,17 @@ Meteor.methods({
 	checkUsernameAvailability(username) {
 		check(username, String);
 
-		if (!Meteor.userId()) {
+		const user = Meteor.user();
+
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
 		}
 
-		const user = Meteor.user();
-
-		if (user?.username && !settings.get('Accounts_AllowUsernameChange')) {
+		if (user.username && !settings.get('Accounts_AllowUsernameChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
 		}
 
-		if (user?.username === username) {
+		if (user.username === username) {
 			return true;
 		}
 		return checkUsernameAvailability(username);

@@ -92,7 +92,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 			await sendConfirmationEmail({ email });
 			dispatchToastMessage({ type: 'success', message: t('Verification_email_sent') });
 		} catch (error: unknown) {
-			dispatchToastMessage({ type: 'error', message: typeof error === 'string' ? error : (error as Error).message });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, email, previousEmail, sendConfirmationEmail, t]);
 
