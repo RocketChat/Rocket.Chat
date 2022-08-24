@@ -16,7 +16,7 @@ import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider'
 import { useTab, useTabBarOpen, useTabBarClose, useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import LazyComponent from './LazyComponent';
 
-export const Room = (): ReactElement => {
+const Room = (): ReactElement => {
 	const room = useRoom();
 	const t = useTranslation();
 	const tab = useTab();
@@ -50,7 +50,7 @@ export const Room = (): ReactElement => {
 							{typeof tab.template === 'string' && (
 								<VerticalBarOldActions {...tab} name={tab.template} tabBar={tabBar} rid={room._id} _id={room._id} />
 							)}
-							{typeof tab.template !== 'string' && (
+							{typeof tab.template !== 'string' && typeof tab.template !== 'undefined' && (
 								<LazyComponent template={tab.template} tabBar={tabBar} rid={room._id} teamId={room.teamId} _id={room._id} />
 							)}
 						</SelectedMessagesProvider>
@@ -73,3 +73,5 @@ export const Room = (): ReactElement => {
 		/>
 	);
 };
+
+export default Room;
