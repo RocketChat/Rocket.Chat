@@ -38,10 +38,7 @@ export * from './IUser';
 
 export * from './ee/ILicense/ILicense';
 
-export * from './IImportUser';
-export * from './IImportRecord';
-export * from './IImportMessage';
-export * from './IImportChannel';
+export * from './import';
 export * from './IIncomingMessage';
 export * from './IExportOperation';
 export * from './INotification';
@@ -114,3 +111,5 @@ export * from './IAutoTranslate';
 export * from './IVideoConference';
 export * from './VideoConferenceCapabilities';
 export * from './VideoConferenceOptions';
+
+export * from './SpotlightUser';
