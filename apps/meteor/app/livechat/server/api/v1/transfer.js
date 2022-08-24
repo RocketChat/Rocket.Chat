@@ -7,9 +7,9 @@ import { findLivechatTransferHistory } from '../lib/transfer';
 
 API.v1.addRoute(
 	'livechat/transfer.history/:rid',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-rooms'] },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				rid: String,
 			});
@@ -24,17 +24,14 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			const history = Promise.await(
-				findLivechatTransferHistory({
-					userId: this.userId,
-					rid,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+			const history = await findLivechatTransferHistory({
+				rid,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
 
 			return API.v1.success(history);
 		},

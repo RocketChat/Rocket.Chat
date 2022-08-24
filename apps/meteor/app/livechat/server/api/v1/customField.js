@@ -70,24 +70,21 @@ API.v1.addRoute('livechat/custom.fields', {
 
 API.v1.addRoute(
 	'livechat/custom-fields',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { text } = this.queryParams;
 
-			const customFields = Promise.await(
-				findLivechatCustomFields({
-					userId: this.userId,
-					text,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+			const customFields = await findLivechatCustomFields({
+				text,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
 
 			return API.v1.success(customFields);
 		},
@@ -96,13 +93,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/custom-fields/:_id',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				_id: String,
 			});
-			const { customField } = Promise.await(findCustomFieldById({ userId: this.userId, customFieldId: this.urlParams._id }));
+			const { customField } = await findCustomFieldById({ customFieldId: this.urlParams._id });
 
 			return API.v1.success({
 				customField,
