@@ -7,7 +7,7 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/fuselage": "next",
 		"@rocket.chat/fuselage-hooks": "next",
-		"@rocket.chat/icons": "^0.31.16",
+		"@rocket.chat/icons": "next",
 		"@rocket.chat/styled": "next",
 		"@storybook/addon-actions": "^6.5.10",
 		"@storybook/addon-docs": "^6.5.10",

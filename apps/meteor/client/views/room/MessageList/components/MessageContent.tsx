@@ -59,19 +59,17 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 				<MessageBlock fixedWidth>
 					<MessageBlockUiKit
 						mid={message._id}
-						blocks={message.blocks
-							.map((block) => {
-								if (block.appId === 'videoconf-core') {
-									return {
-										type: 'video_conf',
-										blockId: (block as any).elements?.[0].blockId,
-										callId: '6303d0f00620f3a4ada39f85',
-										appId: 'videoconf-core',
-									};
-								}
-								return block;
-							})
-							.filter(Boolean)}
+						blocks={message.blocks.map((block) => {
+							if (block.appId === 'videoconf-core') {
+								return {
+									type: 'video_conf',
+									blockId: (block as any).elements?.[0].blockId,
+									callId: (block as any).elements?.[0].blockId,
+									appId: 'videoconf-core',
+								};
+							}
+							return block;
+						})}
 						appId
 						rid={message.rid}
 					/>

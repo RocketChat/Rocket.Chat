@@ -7,7 +7,6 @@
 		"@mdx-js/react": "^1.6.22",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "next",
-		"@rocket.chat/fuselage": "next",
 		"@rocket.chat/fuselage-tokens": "next",
 		"@rocket.chat/message-parser": "next",
 		"@rocket.chat/styled": "next",
@@ -61,16 +60,16 @@
 		"/dist"
 	],
 	"peerDependencies": {
-		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/core-typings": "*",
 		"@rocket.chat/css-in-js": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-tokens": "*",
 		"@rocket.chat/message-parser": "*",
 		"@rocket.chat/styled": "*",
-		"@rocket.chat/ui-client": "workspace:^",
-		"@rocket.chat/ui-contexts": "workspace:^",
+		"@rocket.chat/ui-client": "*",
+		"@rocket.chat/ui-contexts": "*",
 		"katex": "*",
-		"react": "~17.0.2"
+		"react": "*"
 	},
 	"dependencies": {
 		"highlight.js": "^11.5.1",
