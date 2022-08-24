@@ -3249,7 +3249,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.33.0, @rocket.chat/apps-engine@npm:^1.32.0":
+"@rocket.chat/apps-engine@npm:1.34.0-alpha.13":
+  version: 1.34.0-alpha.13
+  resolution: "@rocket.chat/apps-engine@npm:1.34.0-alpha.13"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+  checksum: b31bd9a7e7599b81ddbf8cd28399e83a65d2fb107f946516b847a827f15cd7266d00bb613a03c828e779d00b09b44c43eb59929fff2ba17999e134703770b745
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/apps-engine@npm:^1.32.0":
   version: 1.33.0
   resolution: "@rocket.chat/apps-engine@npm:1.33.0"
   dependencies:
@@ -3856,7 +3870,7 @@ __metadata:
     "@playwright/test": ^1.22.2
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.33.0
+    "@rocket.chat/apps-engine": 1.34.0-alpha.13
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": next
@@ -3907,6 +3921,7 @@ __metadata:
     "@types/body-parser": ^1.19.2
     "@types/busboy": ^1.5.0
     "@types/chai": ^4.3.1
+    "@types/chai-as-promised": ^7
     "@types/chai-datetime": 0.0.37
     "@types/chai-dom": 0.0.13
     "@types/chai-spies": ^1.0.3
@@ -3988,6 +4003,7 @@ __metadata:
     busboy: ^1.6.0
     bytebuffer: 5.0.1
     chai: ^4.3.6
+    chai-as-promised: ^7.1.1
     chai-datetime: ^1.8.0
     chai-dom: ^1.11.0
     chai-spies: ^1.0.0
@@ -6277,6 +6293,15 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: ffa7bf25c0395f6927526b7d97e70cd2df789e4ca0d231e41855fb08542fa236891ce457d83cc50cac6e5cef6be092ab80597070dcf1413f736462690a23e987
+  languageName: node
+  linkType: hard
+
+"@types/chai-as-promised@npm:^7":
+  version: 7.1.5
+  resolution: "@types/chai-as-promised@npm:7.1.5"
+  dependencies:
+    "@types/chai": "*"
+  checksum: 7c1345c6e32513d52d8e562ec173c23161648d6b792046525f18803a9932d7b3ad3dca8f0181e3c529ec42b106099f174e34edeb184d61dc93e32c98b5132fd4
   languageName: node
   linkType: hard
 
@@ -10506,6 +10531,17 @@ __metadata:
   version: 1.1.0
   resolution: "ccount@npm:1.1.0"
   checksum: b335a79d0aa4308919cf7507babcfa04ac63d389ebed49dbf26990d4607c8a4713cde93cc83e707d84571ddfe1e7615dad248be9bc422ae4c188210f71b08b78
+  languageName: node
+  linkType: hard
+
+"chai-as-promised@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "chai-as-promised@npm:7.1.1"
+  dependencies:
+    check-error: ^1.0.2
+  peerDependencies:
+    chai: ">= 2.1.2 < 5"
+  checksum: 7262868a5b51a12af4e432838ddf97a893109266a505808e1868ba63a12de7ee1166e9d43b5c501a190c377c1b11ecb9ff8e093c89f097ad96c397e8ec0f8d6a
   languageName: node
   linkType: hard
 
