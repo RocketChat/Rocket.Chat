@@ -13,54 +13,79 @@ const createAuxContext = async (browser: Browser, storageState: string): Promise
 	return { page, poHomeChannel };
 };
 
-test.describe('omnichannel-departments', () => {
+test.describe('omnichannel-transfer-to-another-agent', () => {
 	let poLiveChat: OmnichannelLiveChat;
-	let newUser: { email: string; name: string };
+	let newVisitor: { email: string; name: string };
 
 	let agent1: { page: Page; poHomeChannel: HomeChannel };
 	let agent2: { page: Page; poHomeChannel: HomeChannel };
 	test.beforeAll(async ({ api, browser }) => {
-		newUser = {
+		// Set user user 1 as manager and agent
+		let statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
+		expect(statusCode).toBe(200);
+		statusCode = (await api.post('/livechat/users/agent', { username: 'user2' })).status();
+		expect(statusCode).toBe(200);
+		statusCode = (await api.post('/livechat/users/manager', { username: 'user1' })).status();
+		expect(statusCode).toBe(200);
+
+		// turn off setting which allows offline agents to chat
+		statusCode = (await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false })).status();
+		expect(statusCode).toBe(200);
+
+		agent1 = await createAuxContext(browser, 'user1-session.json');
+		agent2 = await createAuxContext(browser, 'user2-session.json');
+	});
+	test.beforeEach(async ({ page }) => {
+		// make "user-1" online & "user-2" offline so that chat can be automatically routed to "user-1"
+		await agent1.poHomeChannel.sidenav.switchStatus('online');
+		await agent2.poHomeChannel.sidenav.switchStatus('offline');
+
+		// start a new chat for each test
+		newVisitor = {
 			name: faker.name.firstName(),
 			email: faker.internet.email(),
 		};
-
-		// Set user user 1 as manager and agent
-		await api.post('/livechat/users/agent', { username: 'user1' });
-		await api.post('/livechat/users/manager', { username: 'user1' });
-		agent1 = await createAuxContext(browser, 'user1-session.json');
-	});
-	test.beforeEach(async ({ page }) => {
 		poLiveChat = new OmnichannelLiveChat(page);
+		await page.goto('/livechat');
+		await poLiveChat.btnOpenLiveChat('R').click();
+		await poLiveChat.sendMessage(newVisitor, false);
+		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+		await poLiveChat.btnSendMessageToOnlineAgent.click();
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await api.delete('/livechat/users/manager/user1');
+		// delete "user-1" & "user-2" from agents & managers
+		let statusCode = (await api.delete('/livechat/users/agent/user1')).status();
+		expect(statusCode).toBe(200);
+		statusCode = (await api.delete('/livechat/users/manager/user1')).status();
+		expect(statusCode).toBe(200);
+		statusCode = (await api.delete('/livechat/users/agent/user2')).status();
+		expect(statusCode).toBe(200);
 
-		await api.delete('/livechat/users/agent/user2');
+		// turn on setting which allows offline agents to chat
+		statusCode = (await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true })).status();
+		expect(statusCode).toBe(200);
 	});
 
-	test('Receiving a message from visitor', async ({ browser, api, page }) => {
-		await test.step('Expect send a message as a visitor', async () => {
-			await page.goto('/livechat');
-			await poLiveChat.btnOpenLiveChat('R').click();
-			await poLiveChat.sendMessage(newUser, false);
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
-			// Set user user 2 as agent
-		});
-
+	test('transfer omnichannel chat to another agent', async () => {
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent1.poHomeChannel.sidenav.openChat(newUser.name);
+			await agent1.poHomeChannel.sidenav.openChat(newVisitor.name);
 		});
 
-		await test.step('Expect to connect as agent 2', async () => {
-			agent2 = await createAuxContext(browser, 'user2-session.json');
-			// TODO: We cannot assign a user as agent before, because now the agent can be assigned even offline, since we dont have endpoint to turn agent offline I'm doing this :x
-			await api.post('/livechat/users/agent', { username: 'user2' });
+		await test.step('Expect to not be able to transfer chat to "user-2" when that user is offline', async () => {
+			await agent2.poHomeChannel.sidenav.switchStatus('offline');
+
+			await agent1.poHomeChannel.content.btnForwardChat.click();
+			await agent1.poHomeChannel.content.inputModalAgentUserName.type('user2');
+			await expect(agent1.page.locator('text=Empty')).toBeVisible();
+
+			await agent1.page.goto('/');
 		});
-		await test.step('Expect to be able to transfer an omnichannel to conversation to agent 2 as agent 1', async () => {
+
+		await test.step('Expect to be able to transfer an omnichannel to conversation to agent 2 as agent 1 when agent 2 is online', async () => {
+			await agent2.poHomeChannel.sidenav.switchStatus('online');
+
+			await agent1.poHomeChannel.sidenav.openChat(newVisitor.name);
 			await agent1.poHomeChannel.content.btnForwardChat.click();
 			await agent1.poHomeChannel.content.inputModalAgentUserName.type('user2');
 			await agent1.page.locator('.rcx-option .rcx-option__wrapper >> text="user2"').click();
@@ -70,7 +95,7 @@ test.describe('omnichannel-departments', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 2', async () => {
-			await agent2.poHomeChannel.sidenav.openChat(newUser.name);
+			await agent2.poHomeChannel.sidenav.openChat(newVisitor.name);
 		});
 	});
 });

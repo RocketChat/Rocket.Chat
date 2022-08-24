@@ -14,6 +14,10 @@ export class HomeFlextabMembers {
 		await this.page.locator('//button[contains(text(), "Add users")]').click();
 	}
 
+	async inviteUser() {
+		await this.page.locator('//button[contains(text(), "Invite Link")]').click();
+	}
+
 	async muteUser(username: string) {
 		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
 		await this.page.locator('[data-qa="UserUserInfo-menu"]').click();
