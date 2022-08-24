@@ -1,13 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatCustomField } from '@rocket.chat/models';
 
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-
-export async function findLivechatCustomFields({ userId, text, pagination: { offset, count, sort } }) {
-	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
-
+export async function findLivechatCustomFields({ text, pagination: { offset, count, sort } }) {
 	const query = {
 		...(text && {
 			$or: [{ label: new RegExp(escapeRegExp(text), 'i') }, { _id: new RegExp(escapeRegExp(text), 'i') }],
@@ -30,11 +24,7 @@ export async function findLivechatCustomFields({ userId, text, pagination: { off
 	};
 }
 
-export async function findCustomFieldById({ userId, customFieldId }) {
-	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
-
+export async function findCustomFieldById({ customFieldId }) {
 	return {
 		customField: await LivechatCustomField.findOneById(customFieldId),
 	};
