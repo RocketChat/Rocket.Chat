@@ -116,7 +116,7 @@ export class HomeContent {
 
 	get inputModalClosingComment(): Locator {
 		return this.page.locator('#modal-root input:nth-child(1)[name="comment"]');
-  }
+	}
 
 	get btnSendTranscript(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-mail-arrow-top-right"]');
