@@ -242,7 +242,7 @@ const settingSavers = {
 		saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
 	},
 	favorite({ value, rid, user }) {
-		Subscriptions.setFavoriteByRoomIdAndUserId(rid, user._id, value.favorite);
+		Subscriptions.updateOne({ rid, 'u._id': user._id }, { $set: { f: value ?? true } });
 	},
 	async roomAvatar({ value, rid, user }) {
 		await setRoomAvatar(rid, value, user);
