@@ -1,7 +1,6 @@
 import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document, AggregateOptions } from 'mongodb';
 import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
 
-
 import type { IBaseModel } from './IBaseModel';
 
 export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
