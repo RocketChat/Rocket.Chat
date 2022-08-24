@@ -50,7 +50,7 @@ export class ListenersModule {
 			notifications.notifyUserInThisInstance(uid, 'message', {
 				groupable: false,
 				...message,
-				_id: String(Date.now()),
+				_id: message._id || String(Date.now()),
 				rid,
 				ts: new Date(),
 			});

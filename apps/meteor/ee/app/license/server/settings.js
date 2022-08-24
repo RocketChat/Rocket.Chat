@@ -25,6 +25,10 @@ settings.watch('Enterprise_License', (license) => {
 		return;
 	}
 
+	if (license === process.env.ROCKETCHAT_LICENSE) {
+		return;
+	}
+
 	if (!addLicense(license)) {
 		Settings.updateValueById('Enterprise_License_Status', 'Invalid');
 		return;
@@ -34,6 +38,8 @@ settings.watch('Enterprise_License', (license) => {
 });
 
 if (process.env.ROCKETCHAT_LICENSE) {
+	addLicense(process.env.ROCKETCHAT_LICENSE);
+
 	Meteor.startup(() => {
 		if (settings.get('Enterprise_License')) {
 			console.warn(

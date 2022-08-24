@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 
+import { IS_EE } from './config/constants';
 import { expect, test } from './utils/test';
 
 const CardIds = {
@@ -122,7 +123,7 @@ test.describe.serial('homepage', () => {
 			});
 
 			test.describe('enterprise edition', () => {
-				test.skip(/* !IS_EE */ true, 'Enterprise Only');
+				test.skip(!IS_EE, 'Enterprise Only');
 
 				test.beforeAll(async ({ api }) => {
 					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
