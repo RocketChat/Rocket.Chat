@@ -21,7 +21,14 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 		emailOrPhone: string,
 		nameOrUsername: RegExp,
 		options: FindOptions<ILivechatVisitor>,
+		allowedCustomFields: string[],
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>>;
+
+	findOneByEmailAndPhoneAndCustomField(
+		email: string,
+		phone: string,
+		customFields: { [key: string]: string },
+	): Promise<ILivechatVisitor | null>;
 
 	removeContactManagerByUsername(manager: string): Promise<UpdateResult | Document>;
 

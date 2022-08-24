@@ -1,4 +1,4 @@
-import { LivechatVisitors, Messages, LivechatRooms } from '@rocket.chat/models';
+import { LivechatVisitors, Messages, LivechatRooms, LivechatCustomField } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
 
@@ -134,6 +134,8 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
 	nameOrUsername,
 	pagination: { offset, count, sort },
 }) {
+	const allowedCF = LivechatCustomField.findMatchingCustomFields('visitor', true, { projection: { _id: 1 } });
+
 	const { cursor, totalCount } = await LivechatVisitors.findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
 		emailOrPhone,
 		nameOrUsername,
@@ -150,6 +152,7 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
 				lastChat: 1,
 			},
 		},
+		(await allowedCF).map((cf) => cf._id),
 	);
 
 	const [visitors, total] = await Promise.all([cursor.toArray(), totalCount]);

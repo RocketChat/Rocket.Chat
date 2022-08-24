@@ -13,7 +13,7 @@ import type {
 	DeleteResult,
 	UpdateFilter,
 } from 'mongodb';
-import { Settings, LivechatCustomField } from '@rocket.chat/models';
+import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
@@ -163,9 +163,8 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		emailOrPhone: string,
 		nameOrUsername: RegExp,
 		options: FindOptions<ILivechatVisitor>,
+		allowedCustomFields: string[] = [],
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
-		const allowedCF = LivechatCustomField.find({ scope: 'visitor', searchable: true }, { projection: { _id: 1 } }).map(({ _id }) => _id);
-
 		const query = {
 			$or: [
 				{
@@ -181,11 +180,35 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 					username: nameOrUsername,
 				},
 				// nameorusername is a clean regex, so we should be good
-				...(await allowedCF.toArray().then((cf) => cf.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })))),
+
+				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
 			],
 		};
 
 		return this.findPaginated(query, options);
+	}
+
+	async findOneByEmailAndPhoneAndCustomField(
+		email: string,
+		phone: string,
+		customFields: { [key: string]: string },
+	): Promise<ILivechatVisitor | null> {
+		const query = Object.assign(
+			{},
+			{
+				...(email && { visitorEmails: { address: email } }),
+				...(phone && { phone: { phoneNumber: phone } }),
+				...(Object.keys(customFields).length &&
+					Object.fromEntries(
+						Object.keys(customFields).map((fieldName: string) => [
+							`livechatData.${fieldName}`,
+							new RegExp(escapeRegExp(customFields[fieldName]), 'i'),
+						]),
+					)),
+			},
+		);
+
+		return this.findOne(query);
 	}
 
 	async updateLivechatDataByToken(

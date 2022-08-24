@@ -1,7 +1,6 @@
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { API } from '../../../../api/server';
 import { Contacts } from '../../lib/Contacts';
@@ -58,32 +57,14 @@ API.v1.addRoute(
 			let foundCF = {};
 			if (custom) {
 				const customObj = Object.fromEntries(Array.from(new URLSearchParams(custom)));
-
 				foundCF = Object.fromEntries(
-					(
-						await LivechatCustomField.find(
-							{ scope: 'visitor', searchable: true, _id: { $in: Object.keys(customObj) } },
-							{
-								projection: {
-									_id: 1,
-								},
-							},
-						).toArray()
-					).map(({ _id }) => [`livechatData.${_id}`, new RegExp(escapeRegExp(customObj[_id]), 'i')]),
+					(await LivechatCustomField.findMatchingCustomFieldsNames('visitor', true, Object.keys(customObj))).map((id: string) => [
+						id,
+						customObj[id],
+					]),
 				);
 			}
-
-			const query = Object.assign(
-				{},
-				{
-					...(email && { visitorEmails: { address: email } }),
-					...(phone && { phone: { phoneNumber: phone } }),
-					...(Object.keys(foundCF).length && foundCF),
-				},
-			);
-
-			// If no valid query items are provided, return null (to avoid returning a random visitor)
-			const contact = Object.keys(query).length ? await LivechatVisitors.findOne(query) : null;
+			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, foundCF);
 			return API.v1.success({ contact });
 		},
 	},
