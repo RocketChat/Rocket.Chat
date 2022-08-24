@@ -7,7 +7,7 @@ import { Contacts } from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async post() {
 			check(this.bodyParams, {
@@ -41,7 +41,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'omnichannel/contact.search',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async get() {
 			check(this.queryParams, {
