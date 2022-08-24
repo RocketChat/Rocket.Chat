@@ -1,7 +1,6 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { hasPermission } from '../../../../authorization/server';
 import {
 	findAllChatsStatus,
 	getProductivityMetrics,
@@ -17,12 +16,9 @@ import { Users } from '../../../../models/server';
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversation-totalizers',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -50,12 +46,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/agents-productivity-totalizers',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -83,12 +76,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/chats-totalizers',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -114,12 +104,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/productivity-totalizers',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -148,12 +135,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -179,12 +163,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats-per-agent',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -210,13 +191,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/agents-status',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
-
 			const { departmentId } = this.requestParams();
 			check(departmentId, Match.Maybe(String));
 
@@ -229,12 +206,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats-per-department',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -260,12 +234,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/timings',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
