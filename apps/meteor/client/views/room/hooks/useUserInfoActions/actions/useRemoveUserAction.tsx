@@ -5,9 +5,9 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { usePermission, useSetModal, useTranslation, useUser, useUserRoom } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import * as Federation from '../../../../../../app/federation-v2/client/Federation';
 import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
+import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { Action } from '../../../../hooks/useActionSpread';
 import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUsersModal';
