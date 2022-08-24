@@ -268,7 +268,6 @@ jobs:
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
           MONGO_OPLOG_URL: 'mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true'
-          VOIP_MANAGEMENT_SERVER_PWD: ${{ secrets.VOIP_MANAGEMENT_SERVER_PWD }}
         run: |
           export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -447,7 +446,6 @@ jobs:
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
           TRANSPORTER: nats://nats:4222
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
-          VOIP_MANAGEMENT_SERVER_PWD: ${{ secrets.VOIP_MANAGEMENT_SERVER_PWD }}
         run: |
           export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
