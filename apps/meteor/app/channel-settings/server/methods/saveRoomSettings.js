@@ -20,6 +20,7 @@ import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { Team } from '../../../../server/sdk';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
+import { saveFavoriteRoom } from '../functions/saveFavoriteRoom';
 
 const fields = [
 	'roomAvatar',
@@ -242,7 +243,8 @@ const settingSavers = {
 		saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
 	},
 	favorite({ value, rid, user }) {
-		Subscriptions.updateOne({ rid, 'u._id': user._id }, { $set: { f: value ?? true } });
+		const { favorite } = value;
+		saveFavoriteRoom(rid, user._id, favorite);
 	},
 	async roomAvatar({ value, rid, user }) {
 		await setRoomAvatar(rid, value, user);
