@@ -10,12 +10,18 @@ type Contact = {
 	phone: string;
 };
 
+type ContactQuery = {
+	isLoading: boolean;
+	isError: boolean;
+	contact: Contact;
+};
+
 const createContact = (phone: string, data: Pick<ILivechatVisitor, 'name'> | null): Contact => ({
 	phone,
 	name: data?.name || '',
 });
 
-export const useOmnichannelContact = (ogPhone: string, name = ''): Contact => {
+export const useOmnichannelContact = (ogPhone: string, name = ''): ContactQuery => {
 	const getContactBy = useEndpoint('GET', '/v1/omnichannel/contact.search');
 	const phone = parseOutboundPhoneNumber(ogPhone);
 	const [defaultContact] = useState<Contact>({ phone, name });
@@ -29,5 +35,9 @@ export const useOmnichannelContact = (ogPhone: string, name = ''): Contact => {
 		return createContact(phone, contact);
 	});
 
-	return isLoading || isError || !contact ? defaultContact : contact;
+	return {
+		contact: contact || defaultContact,
+		isLoading,
+		isError,
+	};
 };

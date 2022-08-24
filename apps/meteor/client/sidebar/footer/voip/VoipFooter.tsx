@@ -59,7 +59,7 @@ export const VoipFooter = ({
 	children,
 	options,
 }: VoipFooterPropsType): ReactElement => {
-	const contact = useOmnichannelContact(caller.callerId);
+	const { contact } = useOmnichannelContact(caller.callerId);
 	const t = useTranslation();
 
 	const cssClickable =
