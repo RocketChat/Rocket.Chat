@@ -1001,6 +1001,16 @@ export class Users extends Base {
 		);
 	}
 
+	findActiveFederated(options = {}) {
+		return this.find(
+			{
+				active: true,
+				federated: true,
+			},
+			options,
+		);
+	}
+
 	getSAMLByIdAndSAMLProvider(_id, provider) {
 		return this.findOne(
 			{
@@ -1603,7 +1613,7 @@ Find users to send a message by email if:
 	}
 
 	getActiveLocalUserCount() {
-		return this.findActive().count() - this.findActiveRemote().count();
+		return this.findActive().count() - this.findActiveRemote().count() - this.findActiveFederated().count();
 	}
 
 	getActiveLocalGuestCount(idExceptions = []) {

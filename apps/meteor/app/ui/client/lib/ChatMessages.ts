@@ -54,8 +54,8 @@ export class ChatMessages {
 	$input: JQuery<HTMLTextAreaElement> | undefined;
 
 	constructor(
-		public collection: Mongo.Collection<IMessage> & {
-			direct: Mongo.Collection<IMessage>;
+		public collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
+			direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 			queries: unknown[];
 		} = ChatMessage,
 	) {}

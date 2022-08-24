@@ -64,7 +64,7 @@ const handleOnAgentAssignmentFailed = async ({
 
 callbacks.add(
 	'livechat.onAgentAssignmentFailed',
-	handleOnAgentAssignmentFailed,
+	({ inquiry, room, options }) => Promise.await(handleOnAgentAssignmentFailed({ inquiry, room, options })),
 	callbacks.priority.HIGH,
 	'livechat-agent-assignment-failed',
 );
