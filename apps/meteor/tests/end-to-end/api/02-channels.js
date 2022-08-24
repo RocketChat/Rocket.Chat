@@ -2008,8 +2008,6 @@ describe('[Channels]', function () {
 			const channelInfoResponse = await request.get(api('channels.info')).set(credentials).query({ roomId: testChannel._id });
 			const { channel } = channelInfoResponse.body;
 
-			console.log('channel: ', channel);
-
 			return expect(channel.usersCount).to.be.equals(3);
 		});
 	});

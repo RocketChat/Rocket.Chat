@@ -5,7 +5,6 @@ import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { Messages, LivechatRooms } from '../../../../models/server';
-import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api/server';
 import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
@@ -275,13 +274,9 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 
 API.v1.addRoute(
 	'livechat/messages',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async post() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
-
 			if (!this.bodyParams.visitor) {
 				return API.v1.failure('Body param "visitor" is required');
 			}

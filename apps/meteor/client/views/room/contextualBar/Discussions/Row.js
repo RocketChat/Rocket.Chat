@@ -3,9 +3,9 @@ import React, { memo } from 'react';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { clickableItem } from '../../../../lib/clickableItem';
+import { normalizeThreadMessage } from '../../../../lib/normalizeThreadMessage';
 import DiscussionListMessage from './components/Message';
 import { mapProps } from './mapProps';
-import { normalizeThreadMessage } from './normalizeThreadMessage';
 
 const Discussion = memo(mapProps(clickableItem(DiscussionListMessage)));
 

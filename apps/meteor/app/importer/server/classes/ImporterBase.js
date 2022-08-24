@@ -291,8 +291,8 @@ export class Base {
 			this.progress.count.completed = 0;
 		}
 
-		this.progress.count.total = this.importRecord.count.total || 0;
-		this.progress.count.completed = this.importRecord.count.completed || 0;
+		this.progress.count.total = this.importRecord.count?.total || 0;
+		this.progress.count.completed = this.importRecord.count?.completed || 0;
 	}
 
 	/**
