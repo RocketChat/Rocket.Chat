@@ -46,29 +46,21 @@ test.describe('Omnichannel VoIP Footer', () => {
 		});
 
 		// Configure VoIP
-		await api.post('/method.call/saveSettings', {
-			message: JSON.stringify({
-				msg: 'method',
-				id: '84',
-				method: 'saveSettings',
-				params: [
-					[
-						{ _id: 'VoIP_Enabled', value: true },
-						{ _id: 'VoIP_Management_Server_Host', value: 'omni-asterisk.dev.rocket.chat' },
-						{ _id: 'VoIP_Management_Server_Port', value: 5038 },
-						{ _id: 'VoIP_Management_Server_Name', value: 'OminiAsterisk' },
-						{ _id: 'VoIP_Management_Server_Username', value: 'sales.rocket.chat' },
-						{ _id: 'VoIP_Management_Server_Password', value: 'rocket@123' },
-						{ _id: 'VoIP_Server_Name', value: 'OmniAsterisk' },
-						{ _id: 'VoIP_Server_Websocket_Path', value: 'wss://omni-asterisk.dev.rocket.chat/ws' },
-					],
-					{
-						twoFactorCode: 'b6769a5ae0a6071ecabbe868dbdfa925f856c2bb3d910f93cb39479c64ca221e',
-						twoFactorMethod: 'password',
-					},
-				],
-			}),
-		});
+		const expectedSettings = {
+			VoIP_Enabled: true,
+			VoIP_Management_Server_Host: 'omni-asterisk.dev.rocket.chat',
+			VoIP_Management_Server_Port: 5038,
+			VoIP_Management_Server_Name: 'OminiAsterisk',
+			VoIP_Management_Server_Username: 'sales.rocket.chat',
+			VoIP_Server_Name: 'OmniAsterisk',
+			VoIP_Server_Websocket_Path: 'wss://omni-asterisk.dev.rocket.chat/ws',
+		};
+		const promises = [];
+		for (const [key, value] of Object.entries(expectedSettings)) {
+			promises.push(api.post(`/settings/${key}`, { value }));
+		}
+		const allResults = await Promise.all(promises);
+		expect(allResults.every(({ status }) => status() === 200)).toBe(true);
 
 		// Add agent
 		await Promise.all([
