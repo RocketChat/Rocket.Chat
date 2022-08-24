@@ -28,7 +28,6 @@ const applyMarkdownIfRequires = (
 const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
 	const rid = useOpenedRoom();
-	console.log('openedRoom', rid);
 	const attachmentMessage = useDecryptedMessage({ ...attachment, msg: attachment.text, rid } as IMessage);
 
 	return (
