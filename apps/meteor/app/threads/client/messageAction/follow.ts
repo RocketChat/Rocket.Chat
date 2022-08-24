@@ -20,6 +20,10 @@ Meteor.startup(function () {
 			label: 'Follow_message',
 			context: ['message', 'message-mobile', 'threads', 'federated'],
 			async action(_, { message }) {
+				if (!message) {
+					return;
+				}
+
 				callWithErrorHandling('followMessage', { mid: message._id }).then(() =>
 					dispatchToastMessage({
 						type: 'success',

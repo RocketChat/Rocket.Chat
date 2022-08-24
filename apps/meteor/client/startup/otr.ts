@@ -1,4 +1,4 @@
-import { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { IMessage, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -32,7 +32,7 @@ Meteor.startup(() => {
 		}
 	});
 
-	onClientBeforeSendMessage.use(async (message: IMessage) => {
+	onClientBeforeSendMessage.use(async (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => {
 		const instanceByRoomId = OTR.getInstanceByRoomId(message.rid);
 
 		if (message.rid && instanceByRoomId && instanceByRoomId.getState() === OtrRoomState.ESTABLISHED) {

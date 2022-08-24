@@ -207,7 +207,7 @@ export class OTRRoom implements IOTRRoom {
 		}
 	}
 
-	async encrypt(message: IMessage): Promise<string> {
+	async encrypt(message: Pick<IMessage, '_id' | 'msg'>): Promise<string> {
 		try {
 			const data = new TextEncoder().encode(
 				EJSON.stringify({

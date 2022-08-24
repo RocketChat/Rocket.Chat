@@ -88,6 +88,7 @@ export type MessageTypesValues =
 	| 'room-set-read-only'
 	| 'room-allowed-reacting'
 	| 'room-disallowed-reacting'
+	| 'command'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
@@ -112,6 +113,7 @@ export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
 	tmid?: string;
+	tshow?: boolean;
 	ts: Date;
 	mentions?: ({
 		type: MentionType;
@@ -124,8 +126,6 @@ export interface IMessage extends IRocketChatRecord {
 	alias?: string;
 	md?: ReturnType<typeof parser>;
 
-	// TODO: chapter day frontend - wrong type
-	ignored?: boolean;
 	_hidden?: boolean;
 	imported?: boolean;
 	replies?: IUser['_id'][];
