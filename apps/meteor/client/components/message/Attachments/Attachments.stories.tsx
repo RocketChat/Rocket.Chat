@@ -90,16 +90,16 @@ const message = {
 	attachments: [field, image],
 };
 
-export const Default: ComponentStory<typeof Attachments> = () => <Attachments attachments={message.attachments} rid='GENERAL' />;
+export const Default: ComponentStory<typeof Attachments> = () => <Attachments attachments={message.attachments} />;
 
-export const Fields: ComponentStory<typeof Attachments> = () => <Attachments attachments={[field]} rid='GENERAL' />;
+export const Fields: ComponentStory<typeof Attachments> = () => <Attachments attachments={[field]} />;
 
 export const FailingImage: ComponentStory<typeof Attachments> = () => (
-	<Attachments attachments={[{ ...image, image_url: 'invalid.url' } as FileAttachmentProps]} rid='GENERAL' />
+	<Attachments attachments={[{ ...image, image_url: 'invalid.url' } as FileAttachmentProps]} />
 );
 
-export const Image: ComponentStory<typeof Attachments> = () => <Attachments attachments={[image]} rid='GENERAL' />;
+export const Image: ComponentStory<typeof Attachments> = () => <Attachments attachments={[image]} />;
 
-export const Video: ComponentStory<typeof Attachments> = () => <Attachments attachments={[video]} file={{} as FileProp} rid='GENERAL' />;
+export const Video: ComponentStory<typeof Attachments> = () => <Attachments attachments={[video]} file={{} as FileProp} />;
 
-export const Audio: ComponentStory<typeof Attachments> = () => <Attachments attachments={[audio]} file={{} as FileProp} rid='GENERAL' />;
+export const Audio: ComponentStory<typeof Attachments> = () => <Attachments attachments={[audio]} file={{} as FileProp} />;

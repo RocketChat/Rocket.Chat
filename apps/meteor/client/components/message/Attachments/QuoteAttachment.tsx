@@ -25,7 +25,7 @@ const hover = css`
 	}
 `;
 
-export const QuoteAttachment: FC<MessageQuoteAttachment & { rid: string }> = ({
+export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
 	author_icon: url,
 	author_name: name,
 	author_link: authorLink,
@@ -33,7 +33,6 @@ export const QuoteAttachment: FC<MessageQuoteAttachment & { rid: string }> = ({
 	ts,
 	text,
 	attachments,
-	rid,
 }) => {
 	const format = useTimeAgo();
 	return (
@@ -61,7 +60,7 @@ export const QuoteAttachment: FC<MessageQuoteAttachment & { rid: string }> = ({
 					<MarkdownText parseEmoji variant='document' content={text} />
 					{attachments && (
 						<AttachmentInner>
-							<Attachments attachments={attachments} rid={rid} />
+							<Attachments attachments={attachments} />
 						</AttachmentInner>
 					)}
 				</AttachmentDetails>

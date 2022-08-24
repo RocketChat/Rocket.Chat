@@ -82,7 +82,7 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 				</MessageSystemBlock>
 				{message.attachments && (
 					<MessageSystemBlock>
-						<Attachments attachments={message.attachments} file={message.file} rid={message.rid} />
+						<Attachments attachments={message.attachments} file={message.file} />
 					</MessageSystemBlock>
 				)}
 				{message.actionLinks?.length && (

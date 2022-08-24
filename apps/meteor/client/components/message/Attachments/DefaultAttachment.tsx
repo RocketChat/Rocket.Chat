@@ -2,6 +2,7 @@ import { IMessage, isActionAttachment, MarkdownFields, MessageAttachmentDefault 
 import React, { FC, ReactNode, ComponentProps } from 'react';
 
 import { useDecryptedMessage } from '../../../hooks/useDecryptedMessage';
+import { useOpenedRoom } from '../../../lib/RoomManager';
 import MarkdownText from '../../MarkdownText';
 import { ActionAttachment } from './ActionAttachtment';
 import AttachmentAuthor from './Attachment/AttachmentAuthor';
@@ -24,10 +25,11 @@ const applyMarkdownIfRequires = (
 	variant: ComponentProps<typeof MarkdownText>['variant'] = 'inline',
 ): ReactNode => (list?.includes(key) ? <MarkdownText parseEmoji variant={variant} content={text} /> : text);
 
-const DefaultAttachment: FC<MessageAttachmentDefault & { rid: string }> = (attachment) => {
+const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
-
-	const attachmentMessage = useDecryptedMessage({ ...attachment, msg: attachment.text } as IMessage);
+	const rid = useOpenedRoom();
+	console.log('openedRoom', rid);
+	const attachmentMessage = useDecryptedMessage({ ...attachment, msg: attachment.text, rid } as IMessage);
 
 	return (
 		<AttachmentBlock
