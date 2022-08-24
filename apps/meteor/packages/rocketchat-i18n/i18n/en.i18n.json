@@ -3927,7 +3927,7 @@
   "room_changed_privacy": "Room type changed to: <em>__room_type__</em> by <em>__user_by__</em>",
   "room_changed_topic": "Room topic changed to: <em>__room_topic__</em> by <em>__user_by__</em>",
   "room_changed_type": "changed room to __room_type__",
-  "room_changed_topic_to": "Changed room topic to __room_topic__",
+  "room_changed_topic_to": "changed room topic to __room_topic__",
   "Room_default_change_to_private_will_be_default_no_more": "This is a default channel and changing it to a private group will cause it to no longer be a default channel. Do you want to proceed?",
   "Room_description_changed_successfully": "Room description changed successfully",
   "room_disallowed_reacting": "Room disallowed reacting by <em>__user_by__</em>",
