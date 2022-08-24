@@ -55,12 +55,10 @@ test.describe('Omnichannel VoIP Footer', () => {
 			VoIP_Server_Name: 'OmniAsterisk',
 			VoIP_Server_Websocket_Path: 'wss://omni-asterisk.dev.rocket.chat/ws',
 		};
-		const promises = [];
-		for (const [key, value] of Object.entries(expectedSettings)) {
-			promises.push(api.post(`/settings/${key}`, { value }));
-		}
+
+		const promises = Object.entries(expectedSettings).map(([key, value]) => api.post(`/settings/${key}`, { value }));
 		const allResults = await Promise.all(promises);
-		expect(allResults.every(({ status }) => status() === 200)).toBe(true);
+		expect(allResults.every((res) => res.status() === 200)).toBe(true);
 
 		// Add agent
 		await Promise.all([
