@@ -11,7 +11,6 @@ export class MatrixBridgedUserRaw extends BaseRaw<IMatrixBridgedUser> implements
 
 	protected modelIndexes(): IndexDescription[] {
 		return [
-			{ key: { uid: 1, mui: 1 }, unique: true, sparse: true },
 			{ key: { uid: 1 }, unique: true, sparse: true },
 			{ key: { mui: 1 }, unique: true, sparse: true },
 		];

@@ -5,7 +5,7 @@ import { RocketChatUserAdapter } from '../../../../../../../app/federation-v2/se
 
 export class RocketChatUserAdapterEE extends RocketChatUserAdapter {
 	public async createLocalUser(internalUser: IUser): Promise<void> {
-		const existingLocalUser = await Users.findOneByUsername(internalUser.username || '');
+		const existingLocalUser = internalUser.username && (await Users.findOneByUsername(internalUser.username, { projection: { _id: 1 } }));
 		if (existingLocalUser) {
 			return;
 		}

@@ -11,7 +11,6 @@ export class MatrixBridgedRoomRaw extends BaseRaw<IMatrixBridgedRoom> implements
 
 	protected modelIndexes(): IndexDescription[] {
 		return [
-			{ key: { rid: 1, mri: 1 }, unique: true, sparse: true },
 			{ key: { rid: 1 }, unique: true, sparse: true },
 			{ key: { mri: 1 }, unique: true, sparse: true },
 		];

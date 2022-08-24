@@ -38,11 +38,11 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async createFederatedRoom(federatedRoom: FederatedRoom): Promise<void> {
-		const { rid, _id } = createRoom(
-			federatedRoom.getRoomType(),
-			federatedRoom.getName(),
-			federatedRoom.getCreatorUsername() || federatedRoom.getCreatorId(),
-		);
+		const usernameOrId = federatedRoom.getCreatorUsername() || federatedRoom.getCreatorId();
+		if (!usernameOrId) {
+			throw new Error('Cannot create a room without a creator');
+		}
+		const { rid, _id } = createRoom(federatedRoom.getRoomType(), federatedRoom.getName(), usernameOrId);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
 		await Rooms.setAsFederated(roomId);
@@ -56,16 +56,25 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async createFederatedRoomForDirectMessage(federatedRoom: DirectMessageFederatedRoom): Promise<void> {
+		const creatorId = federatedRoom.getCreatorId();
+		const usernameOrId = federatedRoom.getCreatorUsername() || creatorId;
+		if (!usernameOrId) {
+			throw new Error('Cannot create a room without a creator');
+		}
+		if (!creatorId) {
+			throw new Error('Cannot create a room without a creator');
+		}
+
 		const readonly = false;
 		const extraData = undefined;
 		const { rid, _id } = createRoom(
 			federatedRoom.getRoomType(),
 			federatedRoom.getName(),
-			federatedRoom.getCreatorUsername() || federatedRoom.getCreatorId(),
+			usernameOrId,
 			federatedRoom.getMembersUsernames(),
 			readonly,
 			extraData,
-			{ creator: federatedRoom.getCreatorId() },
+			{ creator: creatorId },
 		);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
@@ -88,13 +97,13 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async addUserToRoom(federatedRoom: FederatedRoom, inviteeUser: FederatedUser, inviterUser: FederatedUser): Promise<void> {
-		Promise.resolve(addUserToRoom(federatedRoom.getInternalId(), inviteeUser.getInternalReference(), inviterUser.getInternalReference()));
+		addUserToRoom(federatedRoom.getInternalId(), inviteeUser.getInternalReference(), inviterUser.getInternalReference());
 	}
 
 	public async removeUserFromRoom(federatedRoom: FederatedRoom, affectedUser: FederatedUser, byUser: FederatedUser): Promise<void> {
 		const userHasBeenRemoved = byUser.getInternalId() !== affectedUser.getInternalId();
 		const options = userHasBeenRemoved ? { byUser: byUser.getInternalReference() } : undefined;
-		Promise.resolve(removeUserFromRoom(federatedRoom.getInternalId(), affectedUser.getInternalReference(), options));
+		removeUserFromRoom(federatedRoom.getInternalId(), affectedUser.getInternalReference(), options);
 	}
 
 	public async isUserAlreadyJoined(internalRoomId: string, internalUserId: string): Promise<boolean> {

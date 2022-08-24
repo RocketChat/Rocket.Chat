@@ -77,9 +77,9 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 	public async canCreateDirectMessageFromUI(internalUsers: (IUser | string)[]): Promise<void> {
 		const usernames: string[] = internalUsers.map((user) => {
 			if (this.isAddingANewExternalUser(user)) {
-				return user as string;
+				return user;
 			}
-			return (user as IUser).username || '';
+			return user.username || '';
 		});
 		const atLeastOneExternalUser =
 			usernames.some(
@@ -91,7 +91,7 @@ export class FederationRoomInternalHooksValidator extends FederationService {
 		}
 	}
 
-	private isAddingANewExternalUser(user: IUser | string): boolean {
+	private isAddingANewExternalUser(user: IUser | string): user is string {
 		return typeof user === 'string';
 	}
 }

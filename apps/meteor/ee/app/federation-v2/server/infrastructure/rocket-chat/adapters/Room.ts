@@ -3,6 +3,6 @@ import { createDirectMessage } from '../../../../../../../server/methods/createD
 
 export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
 	public async createLocalDirectMessageRoom(members: string[], creatorId: string): Promise<void> {
-		return Promise.resolve(createDirectMessage(members, creatorId));
+		createDirectMessage(members, creatorId);
 	}
 }

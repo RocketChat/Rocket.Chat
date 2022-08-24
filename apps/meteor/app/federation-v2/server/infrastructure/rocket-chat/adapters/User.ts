@@ -73,7 +73,7 @@ export class RocketChatUserAdapter {
 	}
 
 	public async createFederatedUser(federatedUser: FederatedUser): Promise<void> {
-		const existingLocalUser = await Users.findOneByUsername(federatedUser.getUsername() || '');
+		const existingLocalUser = federatedUser.getUsername() && (await Users.findOneByUsername(federatedUser.getUsername() as string));
 		if (existingLocalUser) {
 			return MatrixBridgedUser.createOrUpdateByLocalId(existingLocalUser._id, federatedUser.getExternalId(), federatedUser.isRemote());
 		}

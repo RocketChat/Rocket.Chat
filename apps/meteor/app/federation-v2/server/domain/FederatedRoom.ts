@@ -13,9 +13,9 @@ export abstract class AbstractFederatedRoom {
 
 	protected internalId: string;
 
-	protected internalReference: IRoom;
+	protected internalReference: Partial<IRoom>;
 
-	protected constructor({ externalId, internalReference }: { externalId: string; internalReference: IRoom }) {
+	protected constructor({ externalId, internalReference }: { externalId: string; internalReference: Partial<IRoom> }) {
 		this.externalId = externalId;
 		this.internalReference = internalReference;
 		this.internalId = internalReference._id || new ObjectId().toHexString();
@@ -51,7 +51,7 @@ export abstract class AbstractFederatedRoom {
 		return isAnInternalIdentifier(fromOriginName, proxyServerOriginName);
 	}
 
-	public getInternalReference(): Readonly<IRoom> {
+	public getInternalReference(): Readonly<Partial<IRoom>> {
 		return Object.freeze({
 			...this.internalReference,
 			_id: this.internalId,
@@ -62,7 +62,7 @@ export abstract class AbstractFederatedRoom {
 		return this.internalReference.u?.username;
 	}
 
-	public getCreatorId(): string {
+	public getCreatorId(): string | undefined {
 		return this.internalReference.u?._id;
 	}
 
@@ -98,7 +98,7 @@ export abstract class AbstractFederatedRoom {
 }
 
 export class FederatedRoom extends AbstractFederatedRoom {
-	protected constructor({ externalId, internalReference }: { externalId: string; internalReference: IRoom }) {
+	protected constructor({ externalId, internalReference }: { externalId: string; internalReference: Partial<IRoom> }) {
 		super({ externalId, internalReference });
 	}
 
@@ -120,7 +120,7 @@ export class FederatedRoom extends AbstractFederatedRoom {
 				name: roomName,
 				fname: roomName,
 				u: creator.getInternalReference(),
-			} as unknown as IRoom,
+			},
 		});
 	}
 
@@ -148,7 +148,7 @@ export class DirectMessageFederatedRoom extends AbstractFederatedRoom {
 		members,
 	}: {
 		externalId: string;
-		internalReference: IRoom;
+		internalReference: Partial<IRoom>;
 		members: FederatedUser[];
 	}) {
 		super({ externalId, internalReference });
@@ -162,7 +162,7 @@ export class DirectMessageFederatedRoom extends AbstractFederatedRoom {
 			internalReference: {
 				t: RoomType.DIRECT_MESSAGE,
 				u: creator.getInternalReference(),
-			} as unknown as IRoom,
+			},
 		});
 	}
 
