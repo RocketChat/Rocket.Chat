@@ -10,6 +10,5 @@ export const useOmnichannelContactLabel = (caller: ICallerInfo): string => {
 
 	const { data } = useQuery(['getContactsByPhone', phone], async () => getContactBy({ phone }).then(({ contact }) => contact));
 
-	// TODO: callerName is typed as required so maybe we should not use phone as fallback
 	return data?.name || caller.callerName || phone;
 };

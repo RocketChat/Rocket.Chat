@@ -119,9 +119,6 @@ export const VoipFooter = ({
 				<Box display='flex' flexDirection='row' mi='16px' mbe='12px' justifyContent='space-between' alignItems='center'>
 					<Box>
 						<Box color='white' fontScale='p2' withTruncatedText>
-							{/* TODO: Check what is the point of having  Anonymous here, 
-								since callerId and callerName are required and they act as a fallback
-							*/}
 							{contactLabel || t('Anonymous')}
 						</Box>
 						<Box color='hint' fontScale='c1' withTruncatedText>
