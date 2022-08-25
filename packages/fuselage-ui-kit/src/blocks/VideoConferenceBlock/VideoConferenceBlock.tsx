@@ -22,9 +22,12 @@ import { kitContext } from '../..';
 
 type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
 
+const MAX_USERS = 6;
+
 const VideoConferenceBlock = ({
   block,
 }: VideoConferenceBlockProps): ReactElement => {
+  const t = useTranslation();
   const { callId, appId = 'videoconf-core' } = block;
   const surfaceType = useSurfaceType();
 
@@ -39,10 +42,7 @@ const VideoConferenceBlock = ({
   }
 
   const getUserAvatarPath = useUserAvatarPath();
-
   const result = useVideoConfDataStream({ rid, callId });
-
-  const t = useTranslation();
 
   const joinHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
     action(
@@ -50,7 +50,20 @@ const VideoConferenceBlock = ({
         blockId: block.blockId || '',
         appId,
         actionId: 'join',
-        value: '???',
+        value: block.blockId || '',
+        viewId,
+      },
+      e
+    );
+  };
+
+  const callAgainHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
+    action(
+      {
+        blockId: rid || '',
+        appId,
+        actionId: 'callBack',
+        value: rid || '',
         viewId,
       },
       e
@@ -65,46 +78,105 @@ const VideoConferenceBlock = ({
         <VideoConfMessage>
           <VideoConfMessageRow>
             <VideoConfMessageIcon />
-            <VideoConfMessageText>{t('Call ended')}</VideoConfMessageText>
+            <VideoConfMessageText>{t('Call_ended')}</VideoConfMessageText>
           </VideoConfMessageRow>
           <VideoConfMessageFooter>
-            <VideoConfMessageAction>{t('Call Back')}</VideoConfMessageAction>
+            {data.type === 'direct' && (
+              <>
+                <VideoConfMessageAction onClick={callAgainHandler}>
+                  {t('Call_back')}
+                </VideoConfMessageAction>
+                <VideoConfMessageFooterText>
+                  {t('Call_was_not_answered')}
+                </VideoConfMessageFooterText>
+              </>
+            )}
+            {data.type !== 'direct' &&
+              (data.users.length ? (
+                <>
+                  <VideoConfMessageUserStack>
+                    {data.users.map(({ username }, index) =>
+                      data.users.length <= MAX_USERS ? (
+                        <Avatar
+                          size='x28'
+                          key={index}
+                          title={username}
+                          url={getUserAvatarPath(username as string)}
+                        />
+                      ) : (
+                        <></>
+                      )
+                    )}
+                  </VideoConfMessageUserStack>
+                  <VideoConfMessageFooterText>
+                    {data.users.length > 6
+                      ? `+ ${MAX_USERS - data.users.length} ${t('Joined')}`
+                      : t('Joined')}
+                  </VideoConfMessageFooterText>
+                </>
+              ) : (
+                <VideoConfMessageFooterText>
+                  {t('Call_was_not_answered')}
+                </VideoConfMessageFooterText>
+              ))}
+          </VideoConfMessageFooter>
+        </VideoConfMessage>
+      );
+    }
+
+    if (data.type === 'direct' && data.status === 0) {
+      return (
+        <VideoConfMessage>
+          <VideoConfMessageRow>
+            <VideoConfMessageIcon variant='incoming' />
+            <VideoConfMessageText>{t('Calling')}</VideoConfMessageText>
+          </VideoConfMessageRow>
+          <VideoConfMessageFooter>
+            <VideoConfMessageAction primary onClick={joinHandler}>
+              {t('Join')}
+            </VideoConfMessageAction>
             <VideoConfMessageFooterText>
-              {t('Call was not answered')}
+              {t('Waiting_for_answer')}
             </VideoConfMessageFooterText>
           </VideoConfMessageFooter>
         </VideoConfMessage>
       );
     }
 
-    if (data.status === 1) {
-      return (
-        <VideoConfMessage>
-          <VideoConfMessageRow>
-            <VideoConfMessageIcon variant='outgoing' />
-            <VideoConfMessageText>{t('Call ongoing')}</VideoConfMessageText>
-          </VideoConfMessageRow>
-          <VideoConfMessageFooter>
-            <VideoConfMessageAction primary onClick={joinHandler}>
-              {t('Join')}
-            </VideoConfMessageAction>
-            <VideoConfMessageUserStack>
-              {data.users.map(({ username }, index) => (
+    return (
+      <VideoConfMessage>
+        <VideoConfMessageRow>
+          <VideoConfMessageIcon variant='outgoing' />
+          <VideoConfMessageText>{t('Call_ongoing')}</VideoConfMessageText>
+        </VideoConfMessageRow>
+        <VideoConfMessageFooter>
+          <VideoConfMessageAction primary onClick={joinHandler}>
+            {t('Join')}
+          </VideoConfMessageAction>
+          <VideoConfMessageUserStack>
+            {data.users.map(({ username }, index) =>
+              data.users.length <= MAX_USERS ? (
                 <Avatar
                   size='x28'
                   key={index}
+                  title={username}
                   url={getUserAvatarPath(username as string)}
                 />
-              ))}
-            </VideoConfMessageUserStack>
-            <VideoConfMessageFooterText>
-              {t('Joined')}
-            </VideoConfMessageFooterText>
-          </VideoConfMessageFooter>
-        </VideoConfMessage>
-      );
-    }
+              ) : (
+                <></>
+              )
+            )}
+          </VideoConfMessageUserStack>
+          <VideoConfMessageFooterText>
+            {data.users.length > 6
+              ? `+ ${MAX_USERS - data.users.length} ${t('Joined')}`
+              : t('Joined')}
+          </VideoConfMessageFooterText>
+        </VideoConfMessageFooter>
+      </VideoConfMessage>
+    );
   }
+
   return <VideoConfMessageSkeleton />;
 };
 

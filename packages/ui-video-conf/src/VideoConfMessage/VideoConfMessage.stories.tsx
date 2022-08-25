@@ -1,14 +1,14 @@
-import { MessageDivider, Message, Avatar, Box, Button } from '@rocket.chat/fuselage';
+import { MessageDivider, Message, Avatar, Box } from '@rocket.chat/fuselage';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import type { ReactElement } from 'react';
 
 import '@rocket.chat/icons/dist/rocketchat.css';
 import { VideoConfMessage, VideoConfMessageIcon, VideoConfMessageRow, VideoConfMessageText } from '.';
-import VideoConfMessageSkeleton from './VideoConfMessageSkeleton';
-import VideoConfMessageFooter from './VideoConfMessageFooter';
-import VideoConfMessageUserStack from './VideoConfMessageUserStack';
 import VideoConfMessageAction from './VideoConfMessageAction';
+import VideoConfMessageFooter from './VideoConfMessageFooter';
 import VideoConfMessageFooterText from './VideoConfMessageFooterText';
+import VideoConfMessageSkeleton from './VideoConfMessageSkeleton';
+import VideoConfMessageUserStack from './VideoConfMessageUserStack';
 
 export default {
 	title: 'Components/VideoConfMessage',

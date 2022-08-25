@@ -88,5 +88,3 @@ export { Fields } from './UserContext';
 export interface ITest {
 	test: string;
 }
-
-console.log('asd');
