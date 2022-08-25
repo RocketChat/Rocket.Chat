@@ -27,7 +27,7 @@ type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
 }> & {
 	firstNode: HTMLElement;
-	Threads: Mongo.Collection<IMessage> & {
+	Threads: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
 		direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 		queries: unknown[];
 	};
@@ -169,7 +169,7 @@ Template.thread.helpers({
 });
 
 Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
-	this.Threads = new Mongo.Collection(null) as Mongo.Collection<IMessage> & {
+	this.Threads = new Mongo.Collection(null) as Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
 		direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 		queries: unknown[];
 	};
@@ -304,10 +304,10 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 			},
 		).observe({
 			added: ({ _id, ...message }: IMessage) => {
-				this.Threads.upsert({ _id }, { $set: message });
+				this.Threads.upsert({ _id }, message);
 			},
 			changed: ({ _id, ...message }: IMessage) => {
-				this.Threads.update({ _id }, { $set: message });
+				this.Threads.update({ _id }, message);
 			},
 			removed: ({ _id }: IMessage) => this.Threads.remove(_id),
 		});
