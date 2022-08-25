@@ -36,7 +36,7 @@ test.describe.serial('omnichannel-agents', () => {
 		await expect(page.locator(`[qa-user-id="${newField}"] td:nth-child(2)`)).toHaveText(newLabel);
 	});
 
-	test('expect remove "user1" as agent', async () => {
+	test('expect remove "new_field"', async () => {
 		await poOmnichannelCustomFields.inputSearch.fill(newField);
 		await poOmnichannelCustomFields.btnDeletefirstRowInTable.click();
 		await poOmnichannelCustomFields.btnModalRemove.click();
