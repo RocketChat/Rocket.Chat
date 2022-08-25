@@ -31,7 +31,7 @@ export const useAvatarTemplate = (
 		})();
 
 		const renderRoomAvatar: ComponentType<IRoom & { rid: string }> = (room) => (
-			<RoomAvatar key={room.rid || room._id} size={size} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
+			<RoomAvatar size={size} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
 		);
 
 		return renderRoomAvatar;
