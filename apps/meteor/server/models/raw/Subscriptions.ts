@@ -1,8 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document, AggregateOptions } from 'mongodb';
-import { Users } from '@rocket.chat/models';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, DeleteResult, Document, AggregateOptions } from 'mongodb';
+import { Rooms, Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
 
 import { BaseRaw } from './BaseRaw';
@@ -233,6 +233,22 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		return this.find(query, options || {});
+	}
+
+	async removeByRoomId(roomId: string): Promise<DeleteResult> {
+		const query = {
+			rid: roomId,
+		};
+
+		const result = await this.deleteMany(query);
+
+		if (Match.test(result, Number) && result > 0) {
+			await Rooms.incUsersCountByIds([roomId], -result);
+		}
+
+		await Users.removeRoomByRoomId(roomId);
+
+		return result;
 	}
 
 	async findConnectedUsersExcept(

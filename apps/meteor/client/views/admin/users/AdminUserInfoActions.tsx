@@ -14,13 +14,22 @@ import { useResetTOTPAction } from './hooks/useResetTOTPAction';
 type AdminUserInfoActionsProps = {
 	username: IUser['username'];
 	userId: IUser['_id'];
+	isAFederatedUser: IUser['federated'];
 	isActive: boolean;
 	isAdmin: boolean;
 	onChange: () => void;
 	onReload: () => void;
 };
 
-const AdminUserInfoActions = ({ username, userId, isActive, isAdmin, onChange, onReload }: AdminUserInfoActionsProps): ReactElement => {
+const AdminUserInfoActions = ({
+	username,
+	userId,
+	isAFederatedUser,
+	isActive,
+	isAdmin,
+	onChange,
+	onReload,
+}: AdminUserInfoActionsProps): ReactElement => {
 	const t = useTranslation();
 	const directRoute = useRoute('direct');
 	const userRoute = useRoute('admin-users');
@@ -57,6 +66,7 @@ const AdminUserInfoActions = ({ username, userId, isActive, isAdmin, onChange, o
 				directMessage: {
 					icon: 'balloon',
 					label: t('Direct_Message'),
+					title: t('Direct_Message'),
 					action: directMessageClick,
 				},
 			}),
@@ -64,7 +74,9 @@ const AdminUserInfoActions = ({ username, userId, isActive, isAdmin, onChange, o
 				editUser: {
 					icon: 'edit',
 					label: t('Edit'),
+					title: isAFederatedUser ? t('Edit_Federated_User_Not_Allowed') : t('Edit'),
 					action: editUserClick,
+					disabled: isAFederatedUser,
 				},
 			}),
 			...(changeAdminStatusAction && { makeAdmin: changeAdminStatusAction }),
@@ -84,6 +96,7 @@ const AdminUserInfoActions = ({ username, userId, isActive, isAdmin, onChange, o
 			deleteUserAction,
 			resetE2EKeyAction,
 			resetTOTPAction,
+			isAFederatedUser,
 		],
 	);
 
@@ -110,8 +123,8 @@ const AdminUserInfoActions = ({ username, userId, isActive, isAdmin, onChange, o
 
 	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]: any): ReactElement => (
-			<UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon} />
+		const mapAction = ([key, { label, icon, action, disabled, title }]: any): ReactElement => (
+			<UserInfo.Action key={key} title={title} label={label} onClick={action} disabled={disabled} icon={icon} />
 		);
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
