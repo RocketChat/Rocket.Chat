@@ -102,7 +102,6 @@ export const VoipFooter = (): ReactElement | null => {
 			callsInQueue={getCallsInQueueText}
 			dispatchEvent={dispatchEvent}
 			openedRoomInfo={openedRoomInfo}
-			anonymousText={t('Anonymous')}
 			isEnterprise={isEnterprise}
 			options={options}
 		/>

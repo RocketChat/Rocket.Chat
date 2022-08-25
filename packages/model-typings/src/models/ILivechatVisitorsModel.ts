@@ -17,11 +17,18 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 			custom_name: string;
 		}
 	>;
-	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsername(
+	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
 		emailOrPhone: string,
 		nameOrUsername: RegExp,
-		options: FindOptions<ILivechatVisitor>,
-	): FindPaginated<FindCursor<ILivechatVisitor>>;
+		allowedCustomFields: string[],
+		options?: FindOptions<ILivechatVisitor>,
+	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>>;
+
+	findOneByEmailAndPhoneAndCustomField(
+		email: string | null | undefined,
+		phone: string | null | undefined,
+		customFields?: { [key: string]: RegExp },
+	): Promise<ILivechatVisitor | null>;
 
 	removeContactManagerByUsername(manager: string): Promise<UpdateResult | Document>;
 
