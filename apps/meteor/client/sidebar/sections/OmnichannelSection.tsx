@@ -51,7 +51,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 
 	// The className is a paliative while we make TopBar.ToolBox optional on fuselage
 	return (
-		<Sidebar.TopBar.ToolBox className='omnichannel-sidebar' data-qa-id='omncSection' {...props}>
+		<Sidebar.TopBar.ToolBox className='omnichannel-sidebar' {...props}>
 			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
 			<Sidebar.TopBar.Actions>
 				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} onClick={(): void => handleRoute('queue')} />}

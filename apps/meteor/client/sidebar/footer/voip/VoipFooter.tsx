@@ -7,7 +7,7 @@ import React, { ReactElement, MouseEvent, ReactNode } from 'react';
 
 import type { VoipFooterMenuOptions } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import { CallActionsType } from '../../../contexts/CallContext';
-import { useOmnichannelContact } from '../../../hooks/omnichannel/useOmnichannelContact';
+import { useOmnichannelContactLabel } from './hooks/useOmnichannelContactLabel';
 
 type VoipFooterPropsType = {
 	caller: ICallerInfo;
@@ -32,7 +32,6 @@ type VoipFooterPropsType = {
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	openedRoomInfo: { v: { token?: string | undefined }; rid: string };
-	anonymousText: string;
 	isEnterprise: boolean;
 	children?: ReactNode;
 	options: VoipFooterMenuOptions;
@@ -54,12 +53,11 @@ export const VoipFooter = ({
 	callsInQueue,
 	dispatchEvent,
 	openedRoomInfo,
-	anonymousText,
 	isEnterprise = false,
 	children,
 	options,
 }: VoipFooterPropsType): ReactElement => {
-	const { contact } = useOmnichannelContact(caller.callerId);
+	const contactLabel = useOmnichannelContactLabel(caller);
 	const t = useTranslation();
 
 	const cssClickable =
@@ -80,7 +78,6 @@ export const VoipFooter = ({
 		<SidebarFooter elevated>
 			<Box
 				className={cssClickable}
-				data-qa-id='omncVoipFooter'
 				onClick={(): void => {
 					if (callerState === 'IN_CALL' || callerState === 'ON_HOLD') {
 						openRoom(openedRoomInfo.rid);
@@ -121,8 +118,11 @@ export const VoipFooter = ({
 				</Box>
 				<Box display='flex' flexDirection='row' mi='16px' mbe='12px' justifyContent='space-between' alignItems='center'>
 					<Box>
-						<Box color='white' fontScale='p2' withTruncatedText data-qa-id='omncVoipTitle'>
-							{contact.name || caller.callerName || contact.phone || anonymousText}
+						<Box color='white' fontScale='p2' withTruncatedText>
+							{/* TODO: Check what is the point of having  Anonymous here, 
+								since callerId and callerName are required and they act as a fallback
+							*/}
+							{contactLabel || t('Anonymous')}
 						</Box>
 						<Box color='hint' fontScale='c1' withTruncatedText>
 							{subtitle}
