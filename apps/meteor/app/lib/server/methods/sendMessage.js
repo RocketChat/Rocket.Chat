@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
@@ -76,6 +77,11 @@ export function executeSendMessage(uid, message) {
 
 	try {
 		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
+		if (isRoomFederated(room)) {
+			return federationRoomServiceSender.sendExternalMessage(
+				FederationRoomSenderConverter.toSendExternalMessageDto(uid, message.rid, message),
+			);
+		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);
@@ -107,12 +113,6 @@ Meteor.methods({
 		}
 
 		try {
-			if (Promise.await(federationRoomServiceSender.isAFederatedRoom(message.rid))) {
-				return federationRoomServiceSender.sendMessageFromRocketChat(
-					FederationRoomSenderConverter.toSendExternalMessageDto(uid, message.rid, message),
-				);
-			}
-
 			return executeSendMessage(uid, message);
 		} catch (error) {
 			if ((error.error || error.message) === 'error-not-allowed') {

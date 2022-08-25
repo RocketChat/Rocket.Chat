@@ -1,3 +1,5 @@
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, LivechatRooms } from '../../../models/server';
@@ -194,7 +196,7 @@ callbacks.add(
 	'livechat.saveInfo',
 	(room) => {
 		// Do not send to CRM if the chat is still open
-		if (room.open) {
+		if (!isOmnichannelRoom(room) || room.open) {
 			return room;
 		}
 
@@ -208,17 +210,16 @@ callbacks.add(
 	'afterSaveMessage',
 	function (message, room) {
 		// only call webhook if it is a livechat room
-		if (room.t !== 'l' || room.v == null || room.v.token == null) {
+		if (!isOmnichannelRoom(room) || !room?.v?.token) {
 			return message;
 		}
 
 		// if the message has a token, it was sent from the visitor
 		// if not, it was sent from the agent
-		if (message.token) {
-			if (!settings.get('Livechat_webhook_on_visitor_message')) {
-				return message;
-			}
-		} else if (!settings.get('Livechat_webhook_on_agent_message')) {
+		if (message.token && !settings.get('Livechat_webhook_on_visitor_message')) {
+			return message;
+		}
+		if (!settings.get('Livechat_webhook_on_agent_message')) {
 			return message;
 		}
 		// if the message has a type means it is a special message (like the closing comment), so skips

@@ -203,3 +203,7 @@ metrics.meteorFacts = new client.Gauge({
 	labelNames: ['pkg', 'fact'],
 	help: 'internal meteor facts',
 });
+
+// Livechat metrics
+metrics.totalLivechatVisitors = new client.Gauge({ name: 'rocketchat_visitors_total', help: 'total of visitors' });
+metrics.totalLivechatAgents = new client.Gauge({ name: 'rocketchat_agents_total', help: 'total of agents' });

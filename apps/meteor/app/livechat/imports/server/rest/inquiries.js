@@ -4,18 +4,14 @@ import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { LivechatInquiry } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { hasPermission } from '../../../../authorization';
 import { Users, LivechatDepartment } from '../../../../models/server';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { department } = this.requestParams();
