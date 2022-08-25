@@ -1976,7 +1976,6 @@ describe('Meteor.methods', function () {
 			request
 				.get(api('/apps/is-enabled'))
 				.set(credentials)
-				.query({ orch })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
