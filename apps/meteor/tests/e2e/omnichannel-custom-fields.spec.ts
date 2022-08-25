@@ -13,7 +13,7 @@ test.describe.serial('omnichannel-agents', () => {
 		await poOmnichannelCustomFields.sidenav.linkCustomFields.click();
 	});
 
-	test('expect add  new  "custom field"', async ({ page }) => {
+	test('expect add new "custom field"', async ({ page }) => {
 		await poOmnichannelCustomFields.btnAdd.click();
 
 		await page.waitForURL('/omnichannel/customfields/new');
