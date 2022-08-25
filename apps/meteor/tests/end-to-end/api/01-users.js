@@ -65,6 +65,43 @@ function deleteTestUser(user) {
 	});
 }
 
+function leaveChannel(userCredentials, roomId) {
+	return new Promise((resolve) => {
+		request
+			.post(api('channels.leave'))
+			.set(userCredentials)
+			.send({
+				roomId,
+			})
+			.end(resolve);
+	});
+}
+
+function createChannel(userCredentials, name) {
+	return new Promise((resolve, reject) => {
+		request
+			.post(api('channels.create'))
+			.set(userCredentials)
+			.send({
+				name,
+			})
+			.then((res) => resolve(res.body.channel._id))
+			.catch(reject);
+	});
+}
+
+function joinChannel(userCredentials, roomId) {
+	return new Promise((resolve) => {
+		request
+			.post(api('channels.join'))
+			.set(userCredentials)
+			.send({
+				roomId,
+			})
+			.end(resolve);
+	});
+}
+
 describe('[Users]', function () {
 	this.retries(0);
 
@@ -3084,11 +3121,34 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.autocomplete]', () => {
-		it('should return an empty list when the user does not have the necessary permission', (done) => {
-			updatePermission('view-outside-room', []).then(() => {
+		describe('[without permission]', () => {
+			let user;
+			let userCredentials;
+			let user2;
+			let user2Credentials;
+			let roomId;
+
+			this.timeout(20000);
+
+			before(async () => {
+				user = await createTestUser();
+				user2 = await createTestUser();
+
+				userCredentials = await loginTestUser(user);
+				user2Credentials = await loginTestUser(user2);
+
+				await updatePermission('view-outside-room', []);
+
+				await leaveChannel(userCredentials, 'GENERAL');
+				await leaveChannel(user2Credentials, 'GENERAL');
+
+				roomId = await createChannel(userCredentials, `channel.autocomplete.${Date.now()}`);
+			});
+
+			it('should return an empty list when the user does not have any subscription', (done) => {
 				request
 					.get(api('users.autocomplete?selector={}'))
-					.set(credentials)
+					.set(userCredentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
@@ -3097,32 +3157,50 @@ describe('[Users]', function () {
 					})
 					.end(done);
 			});
+
+			it('should return users that are subscribed to the same rooms as the requester', (done) => {
+				joinChannel(user2Credentials, roomId).then(() => {
+					request
+						.get(api('users.autocomplete?selector={}'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
+						})
+						.end(done);
+				});
+			});
 		});
-		it('should return an error when the required parameter "selector" is not provided', (done) => {
-			updatePermission('view-outside-room', ['admin', 'user']).then(() => {
+
+		describe('[with permission]', () => {
+			it('should return an error when the required parameter "selector" is not provided', (done) => {
+				updatePermission('view-outside-room', ['admin', 'user']).then(() => {
+					request
+						.get(api('users.autocomplete'))
+						.set(credentials)
+						.query({})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+			});
+			it('should return the users to fill auto complete', (done) => {
 				request
-					.get(api('users.autocomplete'))
+					.get(api('users.autocomplete?selector={}'))
 					.set(credentials)
-					.query({})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(200)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array');
 					})
 					.end(done);
 			});
-		});
-		it('should return the users to fill auto complete', (done) => {
-			request
-				.get(api('users.autocomplete?selector={}'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('items').and.to.be.an('array');
-				})
-				.end(done);
 		});
 	});
 
