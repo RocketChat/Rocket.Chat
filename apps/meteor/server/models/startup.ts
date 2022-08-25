@@ -26,6 +26,8 @@ import './LivechatRooms';
 import './LivechatTrigger';
 import './LivechatVisitors';
 import './LoginServiceConfiguration';
+import './MatrixBridgedRoom';
+import './MatrixBridgedUser';
 import './Messages';
 import './NotificationQueue';
 import './Nps';
