@@ -190,7 +190,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	async findOneByEmailAndPhoneAndCustomField(
 		email: string | null | undefined,
 		phone: string | null | undefined,
-		customFields?: { [key: string]: string },
+		customFields?: { [key: string]: RegExp },
 	): Promise<ILivechatVisitor | null> {
 		const query = Object.assign(
 			{},
