@@ -7,7 +7,8 @@ describe('Federation - Infrastructure - Matrix - MatrixEventsHandler', () => {
 		const spyFn = spy();
 		const myHandler = new MatrixEventsHandler([
 			{
-				equals: (eventType: string): boolean => eventType === 'eventType',
+				eventType: 'eventType',
+				equals: (event: any): boolean => event.type === 'eventType',
 				handle: spyFn,
 			},
 		] as any);

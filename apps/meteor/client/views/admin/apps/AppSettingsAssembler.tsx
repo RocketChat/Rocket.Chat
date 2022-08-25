@@ -1,3 +1,4 @@
+import { SettingValue } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
 import React, { ReactElement } from 'react';
@@ -7,8 +8,8 @@ import AppSetting from './AppSetting';
 
 type AppSettingsAssemblerProps = {
 	settings: ISettings;
-	values: Record<string, unknown>;
-	handlers: Record<string, (eventOrValue: unknown) => void>;
+	values: Record<string, SettingValue>;
+	handlers: Record<string, (eventOrValue: SettingValue) => void>;
 };
 const AppSettingsAssembler = ({ settings, values, handlers }: AppSettingsAssemblerProps): ReactElement => (
 	<Box>
