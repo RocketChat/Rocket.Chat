@@ -63,7 +63,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-params');
 			}
 
-			const foundCF = (async () => {
+			const foundCF = await (async () => {
 				if (!custom) {
 					return {};
 				}
@@ -77,7 +77,7 @@ API.v1.addRoute(
 				return Object.fromEntries(customFields.map(({ _id }) => [`livechatData.${_id}`, new RegExp(escapeRegExp(customCF[_id]), 'i')]));
 			})();
 
-			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, await foundCF);
+			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, foundCF);
 			return API.v1.success({ contact });
 		},
 	},
