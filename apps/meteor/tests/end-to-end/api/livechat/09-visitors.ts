@@ -480,6 +480,20 @@ describe('LIVECHAT - visitors', function () {
 		it('should fail if its trying to find by an empty string', async () => {
 			await request.get(api('omnichannel/contact.search?email=')).set(credentials).expect('Content-Type', 'application/json').expect(400);
 		});
+		it('should fail if custom is passed but is not JSON serializable', async () => {
+			await request
+				.get(api('omnichannel/contact.search?custom={a":1}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+		it('should fail if custom is an empty object and no email|phone are provided', async () => {
+			await request
+				.get(api('omnichannel/contact.search?custom={}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
 		it('should find a contact by email', (done) => {
 			createVisitor()
 				.then((visitor: ILivechatVisitor) => {
@@ -548,7 +562,7 @@ describe('LIVECHAT - visitors', function () {
 				.then(() => createVisitor())
 				.then(() => {
 					request
-						.get(api(`omnichannel/contact.search?custom=${new URLSearchParams({ address: 'Rocket.Chat' }).toString()}`))
+						.get(api(`omnichannel/contact.search?custom=${JSON.stringify({ address: 'Rocket.Chat' })}`))
 						.set(credentials)
 						.send()
 						.expect('Content-Type', 'application/json')
@@ -569,7 +583,43 @@ describe('LIVECHAT - visitors', function () {
 
 		it('should return null if an invalid set of custom fields is passed and no other params are sent', async () => {
 			const res = await request
-				.get(api(`omnichannel/contact.search?custom=${new URLSearchParams({ nope: 'Rocket.Chat' }).toString()}`))
+				.get(api(`omnichannel/contact.search?custom=${JSON.stringify({ nope: 'nel' })}`))
+				.set(credentials)
+				.send();
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact).to.be.null;
+		});
+
+		it('should not break if more than 1 custom field are passed', async () => {
+			const res = await request
+				.get(api(`omnichannel/contact.search?custom=${JSON.stringify({ nope: 'nel', another: 'field' })}`))
+				.set(credentials)
+				.send();
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact).to.be.null;
+		});
+
+		it('should not break if bad things are passed as custom field keys', async () => {
+			const res = await request
+				.get(api(`omnichannel/contact.search?custom=${JSON.stringify({ $regex: 'nel' })}`))
+				.set(credentials)
+				.send();
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact).to.be.null;
+		});
+
+		it('should not break if bad things are passed as custom field keys 2', async () => {
+			const res = await request
+				.get(api(`omnichannel/contact.search?custom=${JSON.stringify({ '$regex: { very-bad }': 'nel' })}`))
+				.set(credentials)
+				.send();
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact).to.be.null;
+		});
+
+		it('should not break if bad things are passed as custom field values', async () => {
+			const res = await request
+				.get(api(`omnichannel/contact.search?custom=${JSON.stringify({ nope: '^((ab)*)+$' })}`))
 				.set(credentials)
 				.send();
 			expect(res.body).to.have.property('success', true);

@@ -52,22 +52,32 @@ API.v1.addRoute(
 			});
 			const { email, phone, custom } = this.queryParams;
 
-			if (!email && !phone && !custom) {
+			let customCF: { [k: string]: string } = {};
+			try {
+				customCF = custom && JSON.parse(custom);
+			} catch (e) {
+				throw new Meteor.Error('error-invalid-params-custom');
+			}
+
+			if (!email && !phone && !Object.keys(customCF).length) {
 				throw new Meteor.Error('error-invalid-params');
 			}
+
 			const foundCF = (async () => {
 				if (!custom) {
 					return {};
 				}
 
-				const customObj = Object.fromEntries(Array.from(new URLSearchParams(custom)));
+				const cfIds = Object.keys(customCF);
 
-				const customFields = await LivechatCustomField.findMatchingCustomFieldsByIds(Object.keys(customObj), 'visitor', true).toArray();
+				const customFields = await LivechatCustomField.findMatchingCustomFieldsByIds(Object.keys(cfIds), 'visitor', true, {
+					projection: { _id: 1 },
+				}).toArray();
 
-				return Object.fromEntries(customFields.map(({ _id }) => [`livechatData.${_id}`, new RegExp(escapeRegExp(customObj[_id], 'i'))]));
+				return Object.fromEntries(customFields.map(({ _id }) => [`livechatData.${_id}`, new RegExp(escapeRegExp(customCF[_id]), 'i')]));
 			})();
 
-			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, foundCF);
+			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, await foundCF);
 			return API.v1.success({ contact });
 		},
 	},
