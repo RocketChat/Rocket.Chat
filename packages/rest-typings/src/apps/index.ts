@@ -97,7 +97,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/is-enabled': {
-		GET: (this: { orch: Record<string, unknown>; [key: string]: unknown }) => {
+		GET: () => {
 			result: boolean;
 		};
 	};
