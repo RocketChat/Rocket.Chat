@@ -10,7 +10,12 @@ export interface ILivechatCustomFieldModel extends IBaseModel<ILivechatCustomFie
 	findMatchingCustomFields(
 		scope: ILivechatCustomField['scope'],
 		searchable: boolean,
-		options: FindOptions<ILivechatCustomField>,
-		extraFilter: { [key: string]: string | string[] | { [key: string]: string | string[] } },
+		options?: FindOptions<ILivechatCustomField>,
+	): FindCursor<ILivechatCustomField>;
+	findMatchingCustomFieldsByIds(
+		ids: ILivechatCustomField['_id'][],
+		scope: ILivechatCustomField['scope'],
+		searchable: boolean,
+		options?: FindOptions<ILivechatCustomField>,
 	): FindCursor<ILivechatCustomField>;
 }

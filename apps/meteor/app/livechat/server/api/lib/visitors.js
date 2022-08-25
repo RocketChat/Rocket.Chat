@@ -141,6 +141,7 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
 	const { cursor, totalCount } = await LivechatVisitors.findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
 		emailOrPhone,
 		nameOrUsername,
+		allowedCF,
 		{
 			sort: sort || { ts: -1 },
 			skip: offset,
@@ -154,7 +155,6 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
 				lastChat: 1,
 			},
 		},
-		allowedCF,
 	);
 
 	const [visitors, total] = await Promise.all([cursor.toArray(), totalCount]);

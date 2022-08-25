@@ -162,8 +162,8 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	async findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
 		emailOrPhone: string,
 		nameOrUsername: RegExp,
-		options: FindOptions<ILivechatVisitor>,
 		allowedCustomFields: string[] = [],
+		options?: FindOptions<ILivechatVisitor>,
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
 		const query = {
 			$or: [
@@ -180,7 +180,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 					username: nameOrUsername,
 				},
 				// nameorusername is a clean regex, so we should be good
-
 				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
 			],
 		};
@@ -198,14 +197,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{
 				...(email && { visitorEmails: { address: email } }),
 				...(phone && { phone: { phoneNumber: phone } }),
-				...(customFields &&
-					Object.keys(customFields).length &&
-					Object.fromEntries(
-						Object.keys(customFields).map((fieldName: string) => [
-							`livechatData.${fieldName}`,
-							new RegExp(escapeRegExp(customFields[fieldName]), 'i'),
-						]),
-					)),
+				...customFields,
 			},
 		);
 

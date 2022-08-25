@@ -20,13 +20,26 @@ export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> implem
 	findMatchingCustomFields(
 		scope: ILivechatCustomField['scope'],
 		searchable = true,
-		options: FindOptions<ILivechatCustomField> = {},
-		extraFilter: { [key: string]: string | string[] | { [key: string]: string | string[] } } = {},
+		options?: FindOptions<ILivechatCustomField>,
 	): FindCursor<ILivechatCustomField> {
 		const query = {
 			scope,
 			searchable,
-			...extraFilter,
+		};
+
+		return this.find(query, options);
+	}
+
+	findMatchingCustomFieldsByIds(
+		ids: ILivechatCustomField['_id'][],
+		scope: ILivechatCustomField['scope'],
+		searchable = true,
+		options?: FindOptions<ILivechatCustomField>,
+	): FindCursor<ILivechatCustomField> {
+		const query = {
+			_id: { $in: ids },
+			scope,
+			searchable,
 		};
 
 		return this.find(query, options);
