@@ -3090,6 +3090,7 @@
   "Max_number_of_chats_per_agent": "Max. number of simultaneous chats",
   "Max_number_of_chats_per_agent_description": "The max. number of simultaneous chats that the agents can attend",
   "Max_number_of_uses": "Max number of uses",
+  "Max_Retry": "Maximum attemps to reconnect to the server",
   "Maximum": "Maximum",
   "Maximum_number_of_guests_reached": "Maximum number of guests reached",
   "Me": "Me",
