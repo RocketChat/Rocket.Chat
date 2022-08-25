@@ -1,9 +1,11 @@
+import crypto from 'crypto';
+
 import yaml from 'js-yaml';
-import { SHA256 } from 'meteor/sha';
 import { v4 as uuidv4 } from 'uuid';
 import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../../../../settings/server';
+import type { IFederationBridgeRegistrationFile } from '../../matrix/Bridge';
 
 const EVERYTHING_REGEX = '.*';
 const LISTEN_RULES = EVERYTHING_REGEX;
@@ -31,10 +33,9 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public getBridgePort(): number {
-		const [, , port] = this.getBridgeUrl().split(':');
+		const [, , port = '3300'] = this.getBridgeUrl().split(':');
 
-		// The port should be 3300 if none is specified on the URL
-		return parseInt(port || '3300');
+		return parseInt(port);
 	}
 
 	public getHomeServerUrl(): string {
@@ -57,8 +58,8 @@ export class RocketChatSettingsAdapter {
 		return settings.get('Federation_Matrix_enabled') === true;
 	}
 
-	public onFederationEnabledStatusChanged(callback: Function): void {
-		settings.watchMultiple(
+	public onFederationEnabledStatusChanged(callback: (enabled: boolean) => Promise<void>): () => void {
+		return settings.watchMultiple<boolean>(
 			[
 				'Federation_Matrix_enabled',
 				'Federation_Matrix_id',
@@ -69,19 +70,18 @@ export class RocketChatSettingsAdapter {
 				'Federation_Matrix_bridge_url',
 				'Federation_Matrix_bridge_localpart',
 			],
-			([enabled]) => callback(enabled),
+			([enabled]) => Promise.await(callback(enabled === true)),
 		);
 	}
 
-	public generateRegistrationFileObject(): Record<string, any> {
-		/* eslint-disable @typescript-eslint/camelcase */
+	public generateRegistrationFileObject(): IFederationBridgeRegistrationFile {
 		return {
 			id: this.getApplicationServiceId(),
-			hs_token: this.getApplicationHomeServerToken(),
-			as_token: this.getApplicationApplicationServiceToken(),
-			url: this.getBridgeUrl(),
-			sender_localpart: this.getBridgeBotUsername(),
-			namespaces: {
+			homeserverToken: this.getApplicationHomeServerToken(),
+			applicationServiceToken: this.getApplicationApplicationServiceToken(),
+			bridgeUrl: this.getBridgeUrl(),
+			botName: this.getBridgeBotUsername(),
+			listenTo: {
 				users: [
 					{
 						exclusive: false,
@@ -102,11 +102,21 @@ export class RocketChatSettingsAdapter {
 				],
 			},
 		};
-		/* eslint-enable @typescript-eslint/camelcase */
 	}
 
 	private async updateRegistrationFile(): Promise<void> {
-		await Settings.updateValueById('Federation_Matrix_registration_file', yaml.dump(this.generateRegistrationFileObject()));
+		const registrationFile = this.generateRegistrationFileObject();
+		await Settings.updateValueById(
+			'Federation_Matrix_registration_file',
+			yaml.dump({
+				id: registrationFile.id,
+				hs_token: registrationFile.homeserverToken,
+				as_token: registrationFile.applicationServiceToken,
+				url: registrationFile.bridgeUrl,
+				sender_localpart: registrationFile.botName,
+				namespaces: registrationFile.listenTo,
+			}),
+		);
 	}
 
 	private watchChangesAndUpdateRegistrationFile(): void {
@@ -137,8 +147,8 @@ export class RocketChatSettingsAdapter {
 				});
 
 				const uniqueId = settings.get('uniqueID') || uuidv4().slice(0, 15).replace(new RegExp('-', 'g'), '_');
-				const hsToken = SHA256(`hs_${uniqueId}`);
-				const asToken = SHA256(`as_${uniqueId}`);
+				const homeserverToken = crypto.createHash('sha256').update(`hs_${uniqueId}`).digest('hex');
+				const applicationServiceToken = crypto.createHash('sha256').update(`as_${uniqueId}`).digest('hex');
 
 				this.add('Federation_Matrix_id', `rocketchat_${uniqueId}`, {
 					readonly: true,
@@ -147,14 +157,14 @@ export class RocketChatSettingsAdapter {
 					i18nDescription: 'Federation_Matrix_id_desc',
 				});
 
-				this.add('Federation_Matrix_hs_token', hsToken, {
+				this.add('Federation_Matrix_hs_token', homeserverToken, {
 					readonly: true,
 					type: 'string',
 					i18nLabel: 'Federation_Matrix_hs_token',
 					i18nDescription: 'Federation_Matrix_hs_token_desc',
 				});
 
-				this.add('Federation_Matrix_as_token', asToken, {
+				this.add('Federation_Matrix_as_token', applicationServiceToken, {
 					readonly: true,
 					type: 'string',
 					i18nLabel: 'Federation_Matrix_as_token',

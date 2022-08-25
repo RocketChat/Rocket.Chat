@@ -1,4 +1,5 @@
 import { BannerPlatform } from '@rocket.chat/core-typings';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -15,14 +16,23 @@ const fetchInitialBanners = async (): Promise<void> => {
 
 	for (const banner of response.banners) {
 		if (banner._id === 'device-management') {
-			setTimeout(() => {
-				imperativeModal.open({
-					component: DeviceManagementFeatureModal,
-					props: {
-						close: imperativeModal.close,
-					},
-				});
-			}, 2000);
+			Tracker.autorun((computation) => {
+				const user = Meteor.user();
+				if (!user?.username) {
+					return;
+				}
+
+				process.env.TEST_MODE &&
+					setTimeout(() => {
+						imperativeModal.open({
+							component: DeviceManagementFeatureModal,
+							props: {
+								close: imperativeModal.close,
+							},
+						});
+					}, 2000);
+				computation.stop();
+			});
 			continue;
 		}
 
@@ -68,6 +78,12 @@ Meteor.startup(() => {
 		unwatchBanners?.();
 
 		if (!Meteor.userId()) {
+			return;
+		}
+
+		FlowRouter.watchPathChange();
+
+		if (FlowRouter.getRouteName() === 'setup-wizard') {
 			return;
 		}
 

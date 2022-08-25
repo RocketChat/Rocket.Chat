@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
-import Mail from 'nodemailer/lib/mailer';
+import type Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IEmailInbox, IUser, IMessage } from '@rocket.chat/core-typings';
@@ -9,7 +8,8 @@ import { callbacks } from '../../../lib/callbacks';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
 import { Messages, Rooms, Users } from '../../../app/models/server';
-import { Inbox, inboxes } from './EmailInbox';
+import type { Inbox } from './EmailInbox';
+import { inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 

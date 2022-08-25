@@ -1,5 +1,6 @@
 import type { SyncedCron } from 'meteor/littledata:synced-cron';
-import { VideoConference, VideoConferenceStatus } from '@rocket.chat/core-typings';
+import type { VideoConference } from '@rocket.chat/core-typings';
+import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 
 import { VideoConf } from '../sdk';

@@ -6,7 +6,7 @@ import AvatarUrlProvider from './AvatarUrlProvider';
 import { CallProvider } from './CallProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
-import { DeviceProvider } from './DeviceProvider';
+import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import LayoutProvider from './LayoutProvider';
 import ModalProvider from './ModalProvider';
 import OmnichannelProvider from './OmnichannelProvider';
@@ -33,19 +33,19 @@ const MeteorProvider: FC = ({ children }) => (
 										<AvatarUrlProvider>
 											<CustomSoundProvider>
 												<UserProvider>
-													<ModalProvider>
-														<AuthorizationProvider>
-															<VideoConfProvider>
-																<DeviceProvider>
+													<DeviceProvider>
+														<ModalProvider>
+															<AuthorizationProvider>
+																<VideoConfProvider>
 																	<CallProvider>
 																		<OmnichannelProvider>
 																			<AttachmentProvider>{children}</AttachmentProvider>
 																		</OmnichannelProvider>
 																	</CallProvider>
-																</DeviceProvider>
-															</VideoConfProvider>
-														</AuthorizationProvider>
-													</ModalProvider>
+																</VideoConfProvider>
+															</AuthorizationProvider>
+														</ModalProvider>
+													</DeviceProvider>
 												</UserProvider>
 											</CustomSoundProvider>
 										</AvatarUrlProvider>

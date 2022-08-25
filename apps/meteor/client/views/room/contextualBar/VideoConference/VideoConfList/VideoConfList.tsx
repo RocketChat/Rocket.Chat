@@ -7,7 +7,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { handleError } from '../../../../../lib/utils/handleError';
+import { getErrorMessage } from '../../../../../lib/errorHandling';
 import VideoConfListItem from './VideoConfListItem';
 
 type VideoConfListProps = {
@@ -46,7 +46,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 							<States>
 								<StatesIcon name='circle-exclamation' variation='danger' />
 								<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-								<StatesSubtitle>{handleError(error, false)}</StatesSubtitle>
+								<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
 							</States>
 						)}
 						{!error && total === 0 && (

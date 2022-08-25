@@ -1,4 +1,4 @@
-import { IUser } from '@rocket.chat/core-typings';
+import { isUserFederated, IUser } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, ReactElement } from 'react';
@@ -37,6 +37,14 @@ const EditUserWithData = ({ uid, onReload, ...props }: EditUserWithDataProps): R
 		return (
 			<Callout m='x16' type='danger'>
 				{t('User_not_found')}
+			</Callout>
+		);
+	}
+
+	if (data?.user && isUserFederated({ federated: data?.user.federated })) {
+		return (
+			<Callout m='x16' type='danger'>
+				{t('Edit_Federated_User_Not_Allowed')}
 			</Callout>
 		);
 	}

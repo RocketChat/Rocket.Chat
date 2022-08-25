@@ -2,7 +2,7 @@ import { useRouteParameter, usePermission } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import PermissionsTable from './PermissionsTable/PermissionsTable';
+import PermissionsTable from './PermissionsTable';
 import UsersInRole from './UsersInRole';
 
 const PermissionsRouter = (): ReactElement => {

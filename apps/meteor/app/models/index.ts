@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 if (Meteor.isClient) {
-	module.exports = require('./client/index.js');
+	module.exports = require('./client/index');
 }
 if (Meteor.isServer) {
-	module.exports = require('./server/index.js');
+	module.exports = require('./server/index');
 }

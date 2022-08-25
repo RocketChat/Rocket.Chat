@@ -1,5 +1,13 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isUserFederated } from '@rocket.chat/core-typings';
 
+import {
+	extractServerNameFromExternalIdentifier,
+	formatExternalUserIdToInternalUsernameFormat,
+	isAnExternalIdentifierFormat,
+	isAnExternalUserIdFormat,
+	removeExternalSpecificCharsFromExternalIdentifier,
+} from '../../../../../../../app/federation-v2/server/infrastructure/matrix/converters/RoomReceiver';
 import {
 	FederationBeforeAddUserToARoomDto,
 	FederationBeforeDirectMessageRoomCreationDto,
@@ -10,6 +18,56 @@ import {
 	FederationRoomInviteUserDto,
 	FederationSetupRoomDto,
 } from '../../../application/input/RoomSenderDto';
+import type { IFederationInviteeDto } from '../../../application/input/RoomSenderDto';
+
+const ensureUserHasAHomeServer = (username: string, localHomeServer: string): string => {
+	return username?.includes(':') ? username : `${username}:${localHomeServer}`;
+};
+
+const isAnExistentUser = (invitee: IUser | string): boolean => typeof invitee !== 'string';
+
+const normalizeInvitees = (externalInviteesUsername: string[], homeServerDomainName: string): IFederationInviteeDto[] => {
+	return externalInviteesUsername
+		.filter(Boolean)
+		.map((inviteeUsername) => ensureUserHasAHomeServer(inviteeUsername, homeServerDomainName))
+		.map((inviteeUsername) => ({
+			normalizedInviteeId: removeExternalSpecificCharsFromExternalIdentifier(inviteeUsername),
+			inviteeUsernameOnly: formatExternalUserIdToInternalUsernameFormat(inviteeUsername),
+			rawInviteeId: `@${removeExternalSpecificCharsFromExternalIdentifier(inviteeUsername)}`,
+		}));
+};
+
+const getInviteesUsername = (externalInvitees: (IUser | string)[]): string[] => {
+	return externalInvitees
+		.map((invitee) => {
+			return isAnExistentUser(invitee) ? (invitee as IUser)?.username || '' : (invitee as string);
+		})
+		.filter(Boolean);
+};
+
+const getExternalUsersToBeInvited = (invitees: (IUser | string)[]): (IUser | string)[] => {
+	const externalAndNonExistentInviteesUsername = invitees.filter((invitee: IUser | string) => !isAnExistentUser(invitee));
+	const externalExistentUsers = invitees
+		.filter(isAnExistentUser)
+		.filter((invitee) => isUserFederated(invitee as IUser) || isAnExternalIdentifierFormat((invitee as IUser).username || ''));
+
+	return [...externalAndNonExistentInviteesUsername, ...externalExistentUsers];
+};
+
+const getInternalUsernames = (invitees: (IUser | string)[]): string[] => {
+	return invitees
+		.filter(isAnExistentUser)
+		.map((invitee) => (invitee as IUser).username || '')
+		.filter(Boolean);
+};
+
+const getAllUsersExceptOwnerByUserId = (invitees: (IUser | string)[], ownerId: string): (IUser | string)[] =>
+	invitees.filter(Boolean).filter((invitee) => {
+		return isAnExistentUser(invitee) ? (invitee as IUser)._id !== ownerId : invitee;
+	});
+
+const getAllUsersExceptOwnerByUsername = (invitees: string[], ownerUsername: string): string[] =>
+	invitees.filter(Boolean).filter((inviteeUsername) => inviteeUsername !== ownerUsername);
 
 export class FederationRoomSenderConverterEE {
 	public static toRoomInviteUserDto(
@@ -17,10 +75,10 @@ export class FederationRoomSenderConverterEE {
 		internalRoomId: string,
 		externalInviteeId: string,
 	): FederationRoomInviteUserDto {
-		const normalizedInviteeId = externalInviteeId.replace('@', '');
-		const inviteeUsernameOnly = externalInviteeId.split(':')[0]?.replace('@', '');
+		const normalizedInviteeId = removeExternalSpecificCharsFromExternalIdentifier(externalInviteeId);
+		const inviteeUsernameOnly = formatExternalUserIdToInternalUsernameFormat(externalInviteeId);
 
-		return Object.assign(new FederationRoomInviteUserDto(), {
+		return new FederationRoomInviteUserDto({
 			internalInviterId,
 			internalRoomId,
 			rawInviteeId: externalInviteeId,
@@ -30,7 +88,7 @@ export class FederationRoomSenderConverterEE {
 	}
 
 	public static toSetupRoomDto(internalInviterId: string, internalRoomId: string): FederationSetupRoomDto {
-		return Object.assign(new FederationSetupRoomDto(), {
+		return new FederationSetupRoomDto({
 			internalInviterId,
 			internalRoomId,
 		});
@@ -43,10 +101,10 @@ export class FederationRoomSenderConverterEE {
 		externalInviteesUsername: string[],
 		homeServerDomainName: string,
 	): FederationOnRoomCreationDto {
-		const withoutOwner = externalInviteesUsername.filter(Boolean).filter((inviteeUsername) => inviteeUsername !== internalInviterUsername);
-		const users = FederationRoomSenderConverterEE.normalizeInvitees(withoutOwner, homeServerDomainName);
+		const allExceptOwner = getAllUsersExceptOwnerByUsername(externalInviteesUsername, internalInviterUsername);
+		const users = normalizeInvitees(allExceptOwner, homeServerDomainName);
 
-		return Object.assign(new FederationOnRoomCreationDto(), {
+		return new FederationOnRoomCreationDto({
 			internalInviterId,
 			internalRoomId,
 			invitees: users,
@@ -60,18 +118,20 @@ export class FederationRoomSenderConverterEE {
 		externalInvitees: IUser[] | string[],
 		homeServerDomainName: string,
 	): FederationOnUsersAddedToARoomDto {
-		const externalInviteesUsername: string[] = FederationRoomSenderConverterEE.getInviteesUsername(externalInvitees);
+		const externalInviteesUsername: string[] = getInviteesUsername(externalInvitees);
 		const externalInviterId =
-			internalInviterUsername.includes(':') && internalInviterUsername !== homeServerDomainName ? internalInviterId : undefined;
+			isAnExternalIdentifierFormat(internalInviterUsername) &&
+			extractServerNameFromExternalIdentifier(internalInviterUsername) !== homeServerDomainName &&
+			internalInviterId;
 
-		const withoutOwner = externalInviteesUsername.filter(Boolean).filter((inviteeUsername) => inviteeUsername !== internalInviterUsername);
-		const users = FederationRoomSenderConverterEE.normalizeInvitees(withoutOwner, homeServerDomainName);
+		const allExceptOwner = getAllUsersExceptOwnerByUsername(externalInviteesUsername, internalInviterUsername);
+		const users = normalizeInvitees(allExceptOwner, homeServerDomainName);
 
-		return Object.assign(new FederationOnUsersAddedToARoomDto(), {
+		return new FederationOnUsersAddedToARoomDto({
 			internalInviterId,
 			internalRoomId,
 			invitees: users,
-			...(externalInviterId ? { externalInviterId } : {}),
+			inviteComesFromAnExternalHomeServer: Boolean(externalInviterId),
 		});
 	}
 
@@ -81,29 +141,20 @@ export class FederationRoomSenderConverterEE {
 		externalInvitees: (IUser | string)[],
 		homeServerDomainName: string,
 	): FederationOnDirectMessageRoomCreationDto {
-		const withoutOwner = externalInvitees.filter(Boolean).filter((invitee) => {
-			if (typeof invitee === 'string') {
-				return invitee;
-			}
-			return invitee._id !== internalInviterId;
-		});
-		const externalInviterId = internalInviterId.includes('@') && internalInviterId.includes(':') ? internalInviterId : undefined;
-		const externalUsersToBeInvited = FederationRoomSenderConverterEE.getExternalUsersToBeInvited(withoutOwner);
-		let allUsernamesToBeInvited = FederationRoomSenderConverterEE.getInviteesUsername(externalUsersToBeInvited);
-		if (allUsernamesToBeInvited.length > 0) {
-			const internalUsernamesToBeInvitedAsWell = FederationRoomSenderConverterEE.getInternalUsernames(withoutOwner).filter(
-				(internal) => !allUsernamesToBeInvited.includes(internal),
-			);
-			allUsernamesToBeInvited = [...allUsernamesToBeInvited, ...internalUsernamesToBeInvitedAsWell];
-		}
+		const allExceptOwner = getAllUsersExceptOwnerByUserId(externalInvitees, internalInviterId);
+		const externalUsernamesToBeInvited: string[] = getInviteesUsername(getExternalUsersToBeInvited(allExceptOwner));
+		const internalUsernamesToBeInvited: string[] = getInternalUsernames(allExceptOwner).filter(
+			(internal) => !externalUsernamesToBeInvited.includes(internal),
+		);
+		const allUsernamesToBeInvited: string[] = [...externalUsernamesToBeInvited, ...internalUsernamesToBeInvited];
 
-		const users = FederationRoomSenderConverterEE.normalizeInvitees(allUsernamesToBeInvited, homeServerDomainName);
+		const externalInviterId = isAnExternalUserIdFormat(internalInviterId) && internalInviterId;
 
-		return Object.assign(new FederationOnDirectMessageRoomCreationDto(), {
+		return new FederationOnDirectMessageRoomCreationDto({
 			internalInviterId,
 			internalRoomId,
-			invitees: users,
-			...(externalInviterId ? { externalInviterId } : {}),
+			invitees: normalizeInvitees(allUsernamesToBeInvited, homeServerDomainName),
+			inviteComesFromAnExternalHomeServer: Boolean(externalInviterId),
 		});
 	}
 
@@ -111,12 +162,11 @@ export class FederationRoomSenderConverterEE {
 		members: (IUser | string)[],
 		homeServerDomainName: string,
 	): FederationBeforeDirectMessageRoomCreationDto {
-		const invitees = FederationRoomSenderConverterEE.getExternalUsersToBeInvited(members);
-		const inviteesUsername = FederationRoomSenderConverterEE.getInviteesUsername(invitees);
-		const users = FederationRoomSenderConverterEE.normalizeInvitees(inviteesUsername, homeServerDomainName);
+		const invitees = getExternalUsersToBeInvited(members);
+		const inviteesUsername = getInviteesUsername(invitees);
 
-		return Object.assign(new FederationBeforeDirectMessageRoomCreationDto(), {
-			invitees: users,
+		return new FederationBeforeDirectMessageRoomCreationDto({
+			invitees: normalizeInvitees(inviteesUsername, homeServerDomainName),
 		});
 	}
 
@@ -125,57 +175,18 @@ export class FederationRoomSenderConverterEE {
 		internalRoom: IRoom,
 		homeServerDomainName: string,
 	): FederationBeforeAddUserToARoomDto {
-		const dto = FederationRoomSenderConverterEE.toBeforeDirectMessageCreatedDto(members, homeServerDomainName);
+		const { invitees } = FederationRoomSenderConverterEE.toBeforeDirectMessageCreatedDto(members, homeServerDomainName);
 
-		return Object.assign(dto, {
+		return new FederationBeforeAddUserToARoomDto({
 			internalRoomId: internalRoom._id,
-		}) as FederationBeforeAddUserToARoomDto;
-	}
-
-	public static toCreateDirectMessageDto(internalInviterId: string, invitees: string[]): FederationCreateDirectMessageDto {
-		return Object.assign(new FederationCreateDirectMessageDto(), {
-			internalInviterId,
 			invitees,
 		});
 	}
 
-	private static ensureUserHasAHomeServer(username: string, localHomeServer: string): string {
-		return username?.includes(':') ? username : `${username}:${localHomeServer}`;
-	}
-
-	private static normalizeInvitees(externalInviteesUsername: string[], homeServerDomainName: string): Record<string, any> {
-		return externalInviteesUsername
-			.filter(Boolean)
-			.map((inviteeUsername) => FederationRoomSenderConverterEE.ensureUserHasAHomeServer(inviteeUsername, homeServerDomainName))
-			.map((inviteeUsername) => ({
-				normalizedInviteeId: inviteeUsername.replace('@', ''),
-				inviteeUsernameOnly: inviteeUsername.split(':')[0]?.replace('@', ''),
-				rawInviteeId: `@${inviteeUsername.replace('@', '')}`,
-			}));
-	}
-
-	private static getInviteesUsername(externalInvitees: (IUser | string)[]): string[] {
-		return externalInvitees.map((invitee) => {
-			if (typeof invitee === 'string') {
-				return invitee;
-			}
-			return invitee.username as string;
+	public static toCreateDirectMessageDto(internalInviterId: string, invitees: string[]): FederationCreateDirectMessageDto {
+		return new FederationCreateDirectMessageDto({
+			internalInviterId,
+			invitees,
 		});
-	}
-
-	private static getExternalUsersToBeInvited(invitees: (IUser | string)[]): (IUser | string)[] {
-		const externalAndNonExistentInviteesUsername = invitees.filter((invitee: IUser | string) => typeof invitee === 'string');
-		const externalExistentUsers = invitees
-			.filter((invitee) => typeof invitee !== 'string')
-			.filter((invitee) => (invitee as IUser).federated === true || (invitee as IUser).username?.includes(':'));
-
-		return [...externalAndNonExistentInviteesUsername, ...externalExistentUsers];
-	}
-
-	private static getInternalUsernames(invitees: (IUser | string)[]): string[] {
-		return invitees
-			.filter((invitee) => typeof invitee !== 'string')
-			.map((invitee) => (invitee as IUser).username as string)
-			.filter(Boolean);
 	}
 }

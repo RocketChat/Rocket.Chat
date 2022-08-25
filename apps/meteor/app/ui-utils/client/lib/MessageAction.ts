@@ -1,16 +1,16 @@
-import { ComponentProps, MouseEvent } from 'react';
+import type { ComponentProps } from 'react';
 import _ from 'underscore';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { Icon } from '@rocket.chat/fuselage';
-import { IMessage, IUser, ISubscription, IRoom, SettingValue } from '@rocket.chat/core-typings';
-import { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { Icon } from '@rocket.chat/fuselage';
+import type { IMessage, IUser, ISubscription, IRoom, SettingValue } from '@rocket.chat/core-typings';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
-import { ToolboxContextValue } from '../../../../client/views/room/lib/Toolbox/ToolboxContext';
+import type { ToolboxContextValue } from '../../../../client/views/room/lib/Toolbox/ToolboxContext';
 
 const call = (method: string, ...args: any[]): Promise<any> =>
 	new Promise((resolve, reject) => {
@@ -53,9 +53,9 @@ export type MessageActionConfig = {
 	color?: string;
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
-	action: <E extends HTMLOrSVGElement>(
-		e: MouseEvent<E>,
-		{ message, tabbar, room }: { message: IMessage; tabbar: ToolboxContextValue; room: IRoom },
+	action: (
+		e: Pick<Event, 'preventDefault' | 'stopPropagation'>,
+		{ message, tabbar, room }: { message?: IMessage; tabbar: ToolboxContextValue; room?: IRoom },
 	) => any;
 	condition?: (props: MessageActionConditionProps) => boolean;
 };

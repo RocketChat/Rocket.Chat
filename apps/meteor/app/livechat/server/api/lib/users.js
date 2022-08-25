@@ -1,8 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users } from '@rocket.chat/models';
 
-import { hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-
 /**
  * @param {IRole['_id']} role the role id
  * @param {string} text
@@ -40,14 +38,9 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 		total,
 	};
 }
-export async function findAgents({ userId, text, pagination: { offset, count, sort } }) {
-	if (!(await hasAllPermissionAsync(userId, ['view-l-room', 'transfer-livechat-guest']))) {
-		throw new Error('error-not-authorized');
-	}
-
+export async function findAgents({ text, pagination: { offset, count, sort } }) {
 	return findUsers({
 		role: 'livechat-agent',
-		userId,
 		text,
 		pagination: {
 			offset,
@@ -57,14 +50,9 @@ export async function findAgents({ userId, text, pagination: { offset, count, so
 	});
 }
 
-export async function findManagers({ userId, text, pagination: { offset, count, sort } }) {
-	if (!(await hasAllPermissionAsync(userId, ['view-livechat-manager', 'manage-livechat-agents']))) {
-		throw new Error('error-not-authorized');
-	}
-
+export async function findManagers({ text, pagination: { offset, count, sort } }) {
 	return findUsers({
 		role: 'livechat-manager',
-		userId,
 		text,
 		pagination: {
 			offset,

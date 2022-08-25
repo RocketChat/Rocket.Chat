@@ -13,14 +13,13 @@ import { Subscriptions } from '../../../../../models/client';
 import { settings } from '../../../../../settings';
 import { t } from '../../../../../utils';
 import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
-import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
-import { RoomManager } from '../../../../../ui-utils/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
 import { Markdown } from '../../../../../markdown/client';
-import { handleError } from '../../../../../../client/lib/utils/handleError';
 import { formatDateAndTime } from '../../../../../../client/lib/utils/formatDateAndTime';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
+import { dispatchToastMessage } from '../../../../../../client/lib/toast';
+import './visitorInfo.html';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -279,7 +278,8 @@ Template.visitorInfo.events({
 			const comment = TAPi18n.__('Chat_closed_by_agent');
 			return Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true }, function (error /* , result*/) {
 				if (error) {
-					return handleError(error);
+					dispatchToastMessage({ type: 'error', message: error });
+					return;
 				}
 
 				modal.open({
@@ -320,7 +320,7 @@ Template.visitorInfo.events({
 			() => {
 				Meteor.call('livechat:returnAsInquiry', this.rid, function (error /* , result*/) {
 					if (error) {
-						handleError(error);
+						dispatchToastMessage({ type: 'error', message: error });
 					} else {
 						Session.set('openedRoom');
 						FlowRouter.go('/home');
@@ -413,8 +413,10 @@ Template.visitorInfo.onCreated(function () {
 		this.updateRoom(room);
 	};
 
+	this.roomDataStream = new Meteor.Streamer('room-data');
+
 	if (rid) {
-		RoomManager.roomStream.on(rid, this.updateRoom);
+		this.roomDataStream.on(rid, this.updateRoom);
 		loadRoomData(rid);
 	}
 
@@ -435,5 +437,5 @@ Template.visitorInfo.onCreated(function () {
 
 Template.visitorInfo.onDestroyed(function () {
 	const { rid } = Template.currentData();
-	RoomManager.roomStream.removeListener(rid, this.updateRoom);
+	this.roomDataStream.removeListener(rid, this.updateRoom);
 });

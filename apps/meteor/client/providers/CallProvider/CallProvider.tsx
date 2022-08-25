@@ -149,8 +149,12 @@ export const CallProvider: FC = ({ children }) => {
 
 		setQueueAggregator(voipClient.getAggregator());
 
-		return (): void => voipClient.unregister();
-	}, [result]);
+		return (): void => {
+			if (clientState === 'registered') {
+				return voipClient.unregister();
+			}
+		};
+	}, [result, clientState]);
 
 	const openRoom = useCallback((rid: IVoipRoom['_id']): void => {
 		roomCoordinator.openRouteLink('v', { rid });
@@ -393,6 +397,8 @@ export const CallProvider: FC = ({ children }) => {
 				case 'Address Incomplete':
 					openDialModal({ errorMessage: t('Dialed_number_is_incomplete') });
 					break;
+				case 'Request Terminated':
+					break;
 				default:
 					openDialModal({ errorMessage: t('Something_went_wrong_try_again_later') });
 			}
@@ -499,6 +505,7 @@ export const CallProvider: FC = ({ children }) => {
 			openRoom,
 			createRoom,
 			closeRoom,
+			networkStatus,
 			openWrapUpModal,
 			changeAudioOutputDevice,
 			changeAudioInputDevice,
@@ -520,6 +527,7 @@ export const CallProvider: FC = ({ children }) => {
 		openWrapUpModal,
 		changeAudioOutputDevice,
 		changeAudioInputDevice,
+		networkStatus,
 	]);
 
 	return (

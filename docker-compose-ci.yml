@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  rocketchat:
+    build:
+      dockerfile: ${RC_DOCKERFILE}
+      context: /tmp/build
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${RC_DOCKER_TAG}
+    environment:
+      - TEST_MODE=true
+      - EXIT_UNHANDLEDPROMISEREJECTION=true
+      - 'MONGO_URL=${MONGO_URL}'
+      - 'MONGO_OPLOG_URL=${MONGO_OPLOG_URL}'
+      - 'TRANSPORTER=${TRANSPORTER}'
+      - MOLECULER_LOG_LEVEL=info
+      - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE}'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - traefik
+    labels:
+      traefik.enable: true
+      traefik.http.services.rocketchat.loadbalancer.server.port: 3000
+      traefik.http.routers.rocketchat.service: rocketchat
+      traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
+
+  authorization-service:
+    build:
+      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      args:
+        SERVICE: authorization
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
+    environment:
+      - 'MONGO_URL=${MONGO_URL}'
+      - 'TRANSPORTER=${TRANSPORTER}'
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - nats
+
+  account-service:
+    build:
+      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      args:
+        SERVICE: account
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${DOCKER_TAG}
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - 'TRANSPORTER=${TRANSPORTER}'
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - nats
+
+  presence-service:
+    build:
+      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      args:
+        SERVICE: presence
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - 'TRANSPORTER=${TRANSPORTER}'
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - nats
+
+  ddp-streamer-service:
+    build:
+      dockerfile: ee/apps/ddp-streamer/Dockerfile
+      args:
+        SERVICE: ddp-streamer
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - 'TRANSPORTER=${TRANSPORTER}'
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - nats
+      - traefik
+    labels:
+      traefik.enable: true
+      traefik.http.services.ddp-streamer-service.loadbalancer.server.port: 3000
+      traefik.http.routers.ddp-streamer-service.service: ddp-streamer-service
+      traefik.http.routers.ddp-streamer-service.rule: PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)
+
+  stream-hub-service:
+    build:
+      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      args:
+        SERVICE: stream-hub
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${DOCKER_TAG}
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - 'TRANSPORTER=${TRANSPORTER}'
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - nats
+
+  nats:
+    image: nats:2.6-alpine
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '4222:4222'
+
+  traefik:
+    image: traefik:v2.8
+    command:
+      - --providers.docker=true
+    ports:
+      - 3000:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

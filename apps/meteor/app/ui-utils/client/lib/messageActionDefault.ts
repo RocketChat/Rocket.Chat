@@ -3,20 +3,20 @@ import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
-import { modal } from './modal';
 import { MessageAction } from './MessageAction';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
+import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
 import CreateDiscussion from '../../../../client/components/CreateDiscussion/CreateDiscussion';
 import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { ChatMessages } from '../../../ui/client';
+import type { ChatMessages } from '../../../ui/client';
 
 export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
 	// checks if the message is not already on the list
@@ -82,6 +82,10 @@ Meteor.startup(async function () {
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const { input } = getChatMessagesFrom(message);
+			if (!input) {
+				return;
+			}
+
 			const $input = $(input);
 
 			let messages = $input.data('reply') || [];
@@ -149,7 +153,11 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			getChatMessagesFrom(message).edit(document.getElementById(message.tmid ? `thread-${message._id}` : message._id));
+			const element = document.getElementById(message.tmid ? `thread-${message._id}` : message._id);
+			if (!element) {
+				throw new Error('Message not found');
+			}
+			getChatMessagesFrom(message).edit(element);
 		},
 		condition({ message, subscription, settings }) {
 			if (subscription == null) {
@@ -216,40 +224,14 @@ Meteor.startup(async function () {
 		color: 'alert',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			modal.open(
-				{
-					title: TAPi18n.__('Report_this_message_question_mark'),
-					text: message.msg || (message.attachments && message.attachments[0]?.description) || message.file?.name,
-					inputPlaceholder: TAPi18n.__('Why_do_you_want_to_report_question_mark'),
-					type: 'input',
-					showCancelButton: true,
-					confirmButtonColor: '#DD6B55',
-					confirmButtonText: TAPi18n.__('Report_exclamation_mark'),
-					cancelButtonText: TAPi18n.__('Cancel'),
-					closeOnConfirm: false,
-					html: false,
+			imperativeModal.open({
+				component: ReportMessageModal,
+				props: {
+					messageText: message.msg || message.attachments?.[0]?.description || message.file?.name,
+					messageId: message._id,
+					onClose: imperativeModal.close,
 				},
-				(inputValue: string | boolean) => {
-					if (inputValue === false) {
-						return false;
-					}
-
-					if (typeof inputValue === 'string' && !inputValue.trim()) {
-						modal.showInputError(TAPi18n.__('You_need_to_write_something'));
-						return false;
-					}
-
-					Meteor.call('reportMessage', message._id, inputValue);
-
-					modal.open({
-						title: TAPi18n.__('Report_sent'),
-						text: TAPi18n.__('Thank_you_exclamation_mark'),
-						type: 'success',
-						timer: 1000,
-						showConfirmButton: false,
-					});
-				},
-			);
+			});
 		},
 		condition({ subscription, room }) {
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
@@ -293,7 +275,7 @@ Meteor.startup(async function () {
 			imperativeModal.open({
 				component: CreateDiscussion,
 				props: {
-					defaultParentRoom: room.prid || room._id,
+					defaultParentRoom: room?.prid || room?._id,
 					onClose: imperativeModal.close,
 					parentMessageId: message._id,
 					nameSuggestion: message?.msg?.substr(0, 140),

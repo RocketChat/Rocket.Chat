@@ -1,10 +1,10 @@
-import { Box, Field, Modal, IconButton } from '@rocket.chat/fuselage';
+import { Field, Modal, IconButton } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
-import MaskedInput from 'react-text-mask';
 
 import { DialInput } from './DialInput';
 import Pad from './Pad';
 import { useDialPad } from './hooks/useDialPad';
+import { useEnterKey } from './hooks/useEnterKey';
 
 type DialPadModalProps = {
 	initialValue?: string;
@@ -21,10 +21,12 @@ const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalP
 		handleOnChange,
 		handleBackspaceClick,
 		handlePadButtonClick,
+		handlePadButtonLongPressed,
 		handleCallButtonClick,
 	} = useDialPad({ initialValue, errorMessage });
 
-	const mask = (rawValue = ''): (string | RegExp)[] => ['+', /[1-9]/].concat(rawValue.split('').map(() => /\d/));
+	useEnterKey(handleCallButtonClick, isButtonDisabled);
+
 	return (
 		<Modal maxWidth='400px'>
 			<Modal.Header>
@@ -33,42 +35,33 @@ const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalP
 			</Modal.Header>
 			<Modal.Content display='flex' justifyContent='center' flexDirection='column'>
 				<Field>
-					<MaskedInput
-						mask={mask}
-						guide={false}
-						render={(ref): ReactElement => (
-							<DialInput
-								ref={ref}
-								inputName={inputName}
-								inputRef={inputRef}
-								inputError={inputError}
-								handleBackspaceClick={handleBackspaceClick}
-								isButtonDisabled={isButtonDisabled}
-								handleOnChange={handleOnChange}
-							/>
-						)}
+					<DialInput
+						ref={inputRef}
+						inputName={inputName}
+						inputError={inputError}
+						handleBackspaceClick={handleBackspaceClick}
+						isButtonDisabled={isButtonDisabled}
+						handleOnChange={handleOnChange}
 					/>
 					<Field.Error h='20px' textAlign='center'>
 						{inputError}
 					</Field.Error>
 				</Field>
-				<Pad onClickPadButton={handlePadButtonClick} />
+				<Pad onClickPadButton={handlePadButtonClick} onLongPressPadButton={handlePadButtonLongPressed} />
 			</Modal.Content>
-			<Modal.Footer>
-				<Box display='flex' justifyContent='center'>
-					<IconButton
-						icon='phone'
-						disabled={isButtonDisabled}
-						borderRadius='full'
-						secondary
-						info
-						size='64px'
-						onClick={(): void => {
-							handleCallButtonClick();
-							handleClose();
-						}}
-					/>
-				</Box>
+			<Modal.Footer justifyContent='center'>
+				<IconButton
+					icon='phone'
+					disabled={isButtonDisabled}
+					borderRadius='full'
+					secondary
+					info
+					size='64px'
+					onClick={(): void => {
+						handleCallButtonClick();
+						handleClose();
+					}}
+				/>
 			</Modal.Footer>
 		</Modal>
 	);

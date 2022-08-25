@@ -3,7 +3,8 @@ import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
-import { IBanner, BannerPlatform } from '@rocket.chat/core-typings';
+import type { IBanner } from '@rocket.chat/core-typings';
+import { BannerPlatform } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../app/settings/server';
 import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';

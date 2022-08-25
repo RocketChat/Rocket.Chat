@@ -33,7 +33,8 @@ const InformationPage = memo(function InformationPage({
 		return null;
 	}
 
-	const alertOplogForMultipleInstances = statistics && statistics.instanceCount > 1 && !statistics.oplogEnabled;
+	const usingMultipleInstances = statistics?.instanceCount > 1;
+	const alertOplogForMultipleInstances = usingMultipleInstances && !statistics.oplogEnabled;
 
 	return (
 		<Page data-qa='admin-info'>
@@ -52,6 +53,7 @@ const InformationPage = memo(function InformationPage({
 
 			<Page.ScrollableContentWithShadow>
 				<Box marginBlock='none' marginInline='auto' width='full'>
+					{usingMultipleInstances && <Callout type='danger' title={t('Multiple_monolith_instances_alert')} marginBlockEnd='x16'></Callout>}
 					{alertOplogForMultipleInstances && (
 						<Callout
 							type='danger'
@@ -83,14 +85,13 @@ const InformationPage = memo(function InformationPage({
 						<Grid.Item xl={3}>
 							<LicenseCard />
 						</Grid.Item>
-						<Grid.Item xl={4}>
+						<Grid.Item xl={6} md={8} xs={4} sm={8}>
 							<UsageCard vertical={false} statistics={statistics} />
 						</Grid.Item>
-						<Grid.Item xl={2}></Grid.Item>
 						<Grid.Item xl={6}>
 							<FederationCard />
 						</Grid.Item>
-						<Grid.Item xl={6}>
+						<Grid.Item xl={3}>
 							<SeatsCard />
 						</Grid.Item>
 					</Grid>

@@ -2,16 +2,16 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback } from 'react';
 
-import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient } from '../../../contexts/CallContext';
+import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient, useVoipNetworkStatus } from '../../../contexts/CallContext';
 
-export const OmnichannelCallToggleReady = (): ReactElement => {
+export const OmnichannelCallToggleReady = ({ ...props }): ReactElement => {
 	const t = useTranslation();
 
 	const caller = useCallerInfo();
 	const unregister = useCallUnregisterClient();
 	const register = useCallRegisterClient();
 
-	const networkStatus = ['ERROR'].includes(caller.state) ? 'offline' : 'online';
+	const networkStatus = useVoipNetworkStatus();
 	const registered = !['ERROR', 'INITIAL', 'UNREGISTERED'].includes(caller.state);
 	const inCall = ['IN_CALL'].includes(caller.state);
 
@@ -59,5 +59,5 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		color: getColor(),
 	};
 
-	return <Sidebar.TopBar.Action disabled={inCall} {...voipCallIcon} onClick={onClickVoipButton} />;
+	return <Sidebar.TopBar.Action disabled={inCall} {...voipCallIcon} {...props} onClick={onClickVoipButton} />;
 };
