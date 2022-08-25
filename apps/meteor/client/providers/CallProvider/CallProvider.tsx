@@ -36,6 +36,7 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { isOutboundClient, useVoipClient } from '../../../ee/client/hooks/useVoipClient';
+import { parseOutboundPhoneNumber } from '../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
 import { CallContext, CallContextValue, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';
@@ -166,11 +167,12 @@ export const CallProvider: FC = ({ children }) => {
 				return '';
 			}
 			try {
+				const phone = parseOutboundPhoneNumber(caller.callerId);
 				const { visitor } = await visitorEndpoint({
 					visitor: {
 						token: Random.id(),
-						phone: caller.callerId,
-						name: caller.callerName || caller.callerId,
+						phone,
+						name: caller.callerName || phone,
 					},
 				});
 				const voipRoom = await voipEndpoint({ token: visitor.token, agentId: user._id, direction });
@@ -389,12 +391,14 @@ export const CallProvider: FC = ({ children }) => {
 			stopAllRingback();
 		};
 
-		const onCallFailed = (reason: 'Not Found' | 'Address Incomplete' | string): void => {
+		const onCallFailed = (reason: 'Not Found' | 'Address Incomplete' | 'Request Terminated' | string): void => {
 			switch (reason) {
 				case 'Not Found':
+					// This happens when the call matches dialplan and goes to the world, but the trunk doesnt find the number.
 					openDialModal({ errorMessage: t('Dialed_number_doesnt_exist') });
 					break;
 				case 'Address Incomplete':
+					// This happens when the dialed number doesnt match a valid asterisk dialplan pattern or the number is invalid.
 					openDialModal({ errorMessage: t('Dialed_number_is_incomplete') });
 					break;
 				case 'Request Terminated':
