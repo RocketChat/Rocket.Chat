@@ -9,6 +9,3 @@ export * from './omnichannel-agents';
 export * from './omnichannel-departments';
 export * from './omnichannel-current-chats';
 export * from './omnichannel-livechat';
-export * from './omnichannel-section';
-export * from './omnichannel-voip-footer';
-export * from './omnichannel-dialpad-modal';
