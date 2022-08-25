@@ -24,6 +24,7 @@ Meteor.methods({
 				scope: String,
 				visibility: String,
 				regexp: String,
+				searchable: Boolean,
 			}),
 		);
 
