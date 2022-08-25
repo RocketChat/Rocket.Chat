@@ -2,10 +2,6 @@ import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
-createTemplateForComponent('HomePage', () => import('./views/home/HomePage'), {
-	attachment: 'at-parent',
-});
-
 createTemplateForComponent('MessageActions', () => import('./components/message/MessageActions'));
 
 createTemplateForComponent('reactAttachments', () => import('./components/message/Attachments'));
@@ -58,58 +54,6 @@ createTemplateForComponent('omnichannelFlex', () => import('./views/omnichannel/
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
 });
 
-createTemplateForComponent('DiscussionMessageList', () => import('./views/room/contextualBar/Discussions'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('ThreadsList', () => import('./views/room/contextualBar/Threads'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('ExportMessages', () => import('./views/room/contextualBar/ExportMessages'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('KeyboardShortcuts', () => import('./views/room/contextualBar/KeyboardShortcuts'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('AutoTranslate', () => import('./views/room/contextualBar/AutoTranslate'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('NotificationsPreferences', () => import('./views/room/contextualBar/NotificationPreferences'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('membersList', () => import('./views/room/contextualBar/RoomMembers'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('OTR', () => import('./views/room/contextualBar/OTR'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('EditRoomInfo', () => import('./views/room/contextualBar/Info/EditRoomInfo'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('RoomInfo', () => import('./views/room/contextualBar/Info/RoomInfo'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('UserInfoWithData', () => import('./views/room/contextualBar/UserInfo'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('channelFilesList', () => import('./views/room/contextualBar/RoomFiles'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('PruneMessages', () => import('./views/room/contextualBar/PruneMessages'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
 createTemplateForComponent('loginLayoutHeader', () => import('./views/login/LoginLayout/Header'));
 
 createTemplateForComponent('loginLayoutFooter', () => import('./views/login/LoginLayout/Footer'));
@@ -127,12 +71,6 @@ createTemplateForComponent('adminFlex', () => import('./views/admin/sidebar/Admi
 createTemplateForComponent('accountFlex', () => import('./views/account/AccountSidebar'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
 });
-
-createTemplateForComponent('SortList', () => import('./components/SortList'));
-
-createTemplateForComponent('CreateRoomList', () => import('./sidebar/header/actions/CreateRoomList'));
-
-createTemplateForComponent('UserDropdown', () => import('./sidebar/header/UserDropdown'));
 
 createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));
 
