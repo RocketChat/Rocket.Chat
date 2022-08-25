@@ -57,12 +57,17 @@ API.v1.addRoute(
 			let foundCF = {};
 			if (custom) {
 				const customObj = Object.fromEntries(Array.from(new URLSearchParams(custom)));
-				foundCF = Object.fromEntries(
-					(await LivechatCustomField.findMatchingCustomFieldsNames('visitor', true, Object.keys(customObj))).map((id: string) => [
-						id,
-						customObj[id],
-					]),
-				);
+				const customFields = await LivechatCustomField.findMatchingCustomFields(
+					'visitor',
+					true,
+					{},
+					{ _id: { $in: Object.keys(customObj) } },
+				)
+					.map(({ _id }) => _id)
+					.map((id: string) => [id, customObj[id]])
+					.toArray();
+
+				foundCF = Object.fromEntries(customFields);
 			}
 			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, foundCF);
 			return API.v1.success({ contact });

@@ -17,25 +17,19 @@ export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> implem
 		return this.find({ scope }, options || {});
 	}
 
-	async findMatchingCustomFields(
+	findMatchingCustomFields(
 		scope: ILivechatCustomField['scope'],
 		searchable = true,
 		options: FindOptions<ILivechatCustomField> = {},
 		extraFilter: { [key: string]: string | string[] | { [key: string]: string | string[] } } = {},
-	): Promise<ILivechatCustomField[]> {
+	): FindCursor<ILivechatCustomField> {
 		const query = {
 			scope,
 			searchable,
 			...extraFilter,
 		};
 
-		return this.find(query, options).toArray();
-	}
-
-	async findMatchingCustomFieldsNames(scope: ILivechatCustomField['scope'], searchable = true, names: string[]) {
-		return (await this.findMatchingCustomFields(scope, searchable, { projection: { _id: 1 } }, { _id: { $in: names } })).map(
-			({ _id }) => _id,
-		);
+		return this.find(query, options);
 	}
 
 	async createOrUpdateCustomField(

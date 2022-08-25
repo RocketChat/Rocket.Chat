@@ -134,7 +134,9 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
 	nameOrUsername,
 	pagination: { offset, count, sort },
 }) {
-	const allowedCF = LivechatCustomField.findMatchingCustomFields('visitor', true, { projection: { _id: 1 } });
+	const allowedCF = await LivechatCustomField.findMatchingCustomFields('visitor', true, { projection: { _id: 1 } })
+		.map((cf) => cf._id)
+		.toArray();
 
 	const { cursor, totalCount } = await LivechatVisitors.findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
 		emailOrPhone,
@@ -152,7 +154,7 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
 				lastChat: 1,
 			},
 		},
-		(await allowedCF).map((cf) => cf._id),
+		allowedCF,
 	);
 
 	const [visitors, total] = await Promise.all([cursor.toArray(), totalCount]);

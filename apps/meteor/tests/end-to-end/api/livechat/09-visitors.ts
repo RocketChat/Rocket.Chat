@@ -474,11 +474,17 @@ describe('LIVECHAT - visitors', function () {
 	});
 
 	describe('GET [omnichannel/contact.search]', () => {
+		it('should fail if no email|phone|custom params are passed as query', async () => {
+			await request.get(api('omnichannel/contact.search')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+		});
+		it('should fail if its trying to find by an empty string', async () => {
+			await request.get(api('omnichannel/contact.search?email=')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+		});
 		it('should find a contact by email', (done) => {
 			createVisitor()
 				.then((visitor: ILivechatVisitor) => {
 					request
-						.get(api(`omnichannel/contact.search?email=${visitor.visitorEmails![0].address}`))
+						.get(api(`omnichannel/contact.search?email=${visitor.visitorEmails?.[0].address}`))
 						.set(credentials)
 						.send()
 						.expect('Content-Type', 'application/json')
@@ -559,6 +565,15 @@ describe('LIVECHAT - visitors', function () {
 				})
 				.then(() => done())
 				.catch(done);
+		});
+
+		it('should return null if an invalid set of custom fields is passed and no other params are sent', async () => {
+			const res = await request
+				.get(api(`omnichannel/contact.search?custom=${new URLSearchParams({ nope: 'Rocket.Chat' }).toString()}`))
+				.set(credentials)
+				.send();
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact).to.be.null;
 		});
 	});
 });

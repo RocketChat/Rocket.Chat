@@ -12,6 +12,5 @@ export interface ILivechatCustomFieldModel extends IBaseModel<ILivechatCustomFie
 		searchable: boolean,
 		options: FindOptions<ILivechatCustomField>,
 		extraFilter: { [key: string]: string | string[] | { [key: string]: string | string[] } },
-	): Promise<ILivechatCustomField[]>;
-	findMatchingCustomFieldsNames(scope: ILivechatCustomField['scope'], searchable: boolean, names: string[]): Promise<string[]>;
+	): FindCursor<ILivechatCustomField>;
 }
