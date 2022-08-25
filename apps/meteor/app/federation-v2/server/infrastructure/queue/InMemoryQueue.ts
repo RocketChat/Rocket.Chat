@@ -1,9 +1,11 @@
 import fastq from 'fastq';
 
+import type { AbstractMatrixEvent } from '../matrix/definitions/AbstractMatrixEvent';
+
 export class InMemoryQueue {
 	private instance: any;
 
-	public setHandler<C, T = any, R = any>(handler: fastq.asyncWorker<C, T, R>, concurrency: number): void {
+	public setHandler(handler: (event: AbstractMatrixEvent) => Promise<void>, concurrency: number): void {
 		this.instance = fastq.promise(handler, concurrency);
 	}
 
