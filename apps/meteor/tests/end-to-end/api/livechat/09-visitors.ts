@@ -452,6 +452,30 @@ describe('LIVECHAT - visitors', function () {
 				.catch(done);
 		});
 	});
+
+	describe('livechat/visitor.status', () => {
+		it('should return an error if token is not present as body param', async () => {
+			const res = await request.post(api('livechat/visitor.status')).set(credentials).expect(400);
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should return an error if status is not present as body param', async () => {
+			const res = await request.post(api('livechat/visitor.status')).set(credentials).send({ token: '123' }).expect(400);
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should return an error if token is not a valid guest token', async () => {
+			const res = await request.post(api('livechat/visitor.status')).set(credentials).send({ token: '123', status: 'online' }).expect(400);
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should update visitor status if all things are valid', async () => {
+			const visitor = await createVisitor();
+			const res = await request
+				.post(api('livechat/visitor.status'))
+				.set(credentials)
+				.send({ token: visitor.token, status: 'online' })
+				.expect(200);
+			expect(res.body).to.have.property('success', true);
+		});
+	});
 });
 
 // TODO: Missing tests for the following endpoints:

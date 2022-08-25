@@ -734,5 +734,158 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe('livechat/messages.history/rid', () => {});
+	describe('livechat/messages.history/rid', () => {
+		it('should fail if token is not sent as query param', async () => {
+			await request.get(api('livechat/messages.history/test')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+		});
+		it('should fail if token is not a valid guest token', async () => {
+			await request
+				.get(api('livechat/messages.history/test'))
+				.set(credentials)
+				.query({ token: 'test' })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+		it('should fail if token is good, but rid is not valid', async () => {
+			const visitor = await createVisitor();
+			await request
+				.get(api('livechat/messages.history/fadsfdsafads'))
+				.set(credentials)
+				.query({ token: visitor.token })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+		it('should return message history for a valid room', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await sendMessage(room._id, 'Hello', visitor.token);
+
+			const { body } = await request
+				.get(api(`livechat/messages.history/${room._id}`))
+				.set(credentials)
+				.query({ token: visitor.token })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('messages').of.length(2);
+			expect(body.messages[0]).to.have.property('msg', 'Hello');
+			expect(body.messages[1]).to.have.property('t', 'livechat-started');
+		});
+		it('should return message history for a valid room with pagination', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await sendMessage(room._id, 'Hello', visitor.token);
+
+			const { body } = await request
+				.get(api(`livechat/messages.history/${room._id}`))
+				.set(credentials)
+				.query({ token: visitor.token, limit: 1 })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('messages').of.length(1);
+			expect(body.messages[0]).to.have.property('msg', 'Hello');
+		});
+		it('should return message history for a valid room with pagination and offset', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await sendMessage(room._id, 'Hello', visitor.token);
+
+			const { body } = await request
+				.get(api(`livechat/messages.history/${room._id}`))
+				.set(credentials)
+				.query({ token: visitor.token, limit: 1, offset: 1 })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('messages').of.length(1);
+			expect(body.messages[0]).to.have.property('t', 'livechat-started');
+		});
+		it('should return message history for a valid date filtering (max date)', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await sendMessage(room._id, 'Hello', visitor.token);
+			const sendMessageTs = new Date();
+			await sendMessage(room._id, 'Hello2', visitor.token);
+
+			const { body } = await request
+				.get(api(`livechat/messages.history/${room._id}`))
+				.set(credentials)
+				.query({ token: visitor.token, end: sendMessageTs.toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('messages').of.length(2);
+			expect(body.messages[0]).to.have.property('msg', 'Hello');
+			expect(body.messages[1]).to.have.property('t', 'livechat-started');
+		});
+	});
+
+	describe('livechat/messages', () => {
+		it('should fail if visitor is not sent as body param', async () => {
+			await request.post(api('livechat/messages')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+		});
+
+		it('should fail if visitor.token is not sent as body param', async () => {
+			await request
+				.post(api('livechat/messages'))
+				.set(credentials)
+				.send({ visitor: {} })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should fail if messages is not sent as body param', async () => {
+			await request
+				.post(api('livechat/messages'))
+				.set(credentials)
+				.send({ visitor: { token: 'test' } })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should fail if messages is not an array', async () => {
+			await request
+				.post(api('livechat/messages'))
+				.set(credentials)
+				.send({ visitor: { token: 'test' }, messages: {} })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should fail if messages is an empty array', async () => {
+			await request
+				.post(api('livechat/messages'))
+				.set(credentials)
+				.send({ visitor: { token: 'test' }, messages: [] })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should be able to create messages on a room', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await sendMessage(room._id, 'Hello', visitor.token);
+
+			const { body } = await request
+				.post(api('livechat/messages'))
+				.set(credentials)
+				.send({ visitor: { token: visitor.token }, messages: [{ msg: 'Hello' }, { msg: 'Hello 2' }] })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('messages').of.length(2);
+			expect(body.messages[0]).to.have.property('msg', 'Hello');
+			expect(body.messages[0]).to.have.property('ts');
+			expect(body.messages[0]).to.have.property('username', visitor.username);
+			expect(body.messages[1]).to.have.property('msg', 'Hello 2');
+			expect(body.messages[1]).to.have.property('ts');
+			expect(body.messages[1]).to.have.property('username', visitor.username);
+		});
+	});
 });

@@ -204,65 +204,61 @@ API.v1.addRoute('livechat/message/:_id', {
 
 API.v1.addRoute('livechat/messages.history/:rid', {
 	async get() {
-		try {
-			check(this.urlParams, {
-				rid: String,
-			});
+		check(this.urlParams, {
+			rid: String,
+		});
 
-			const { offset } = this.getPaginationItems();
-			const { searchText: text, token } = this.queryParams;
-			const { rid } = this.urlParams;
-			const { sort } = this.parseJsonQuery();
+		const { offset } = this.getPaginationItems();
+		const { searchText: text, token } = this.queryParams;
+		const { rid } = this.urlParams;
+		const { sort } = this.parseJsonQuery();
 
-			if (!token) {
-				throw new Meteor.Error('error-token-param-not-provided', 'The required "token" query param is missing.');
-			}
-
-			const guest = await findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			let ls = undefined;
-			if (this.queryParams.ls) {
-				ls = new Date(this.queryParams.ls);
-			}
-
-			let end = undefined;
-			if (this.queryParams.end) {
-				end = new Date(this.queryParams.end);
-			}
-
-			let limit = 20;
-			if (this.queryParams.limit) {
-				limit = parseInt(this.queryParams.limit);
-			}
-
-			const messages = loadMessageHistory({
-				userId: guest._id,
-				rid,
-				end,
-				limit,
-				ls,
-				sort,
-				offset,
-				text,
-			}).messages.map((...args) => Promise.await(normalizeMessageFileUpload(...args)));
-			return API.v1.success({ messages });
-		} catch (e) {
-			return API.v1.failure(e);
+		if (!token) {
+			throw new Meteor.Error('error-token-param-not-provided', 'The required "token" query param is missing.');
 		}
+
+		const guest = await findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
+		}
+
+		const room = findRoom(token, rid);
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		let ls = undefined;
+		if (this.queryParams.ls) {
+			ls = new Date(this.queryParams.ls);
+		}
+
+		let end = undefined;
+		if (this.queryParams.end) {
+			end = new Date(this.queryParams.end);
+		}
+
+		let limit = 20;
+		if (this.queryParams.limit) {
+			limit = parseInt(this.queryParams.limit);
+		}
+
+		const messages = loadMessageHistory({
+			userId: guest._id,
+			rid,
+			end,
+			limit,
+			ls,
+			sort,
+			offset,
+			text,
+		}).messages.map((...args) => Promise.await(normalizeMessageFileUpload(...args)));
+		return API.v1.success({ messages });
 	},
 });
 
 API.v1.addRoute(
 	'livechat/messages',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{ authRequired: true },
 	{
 		async post() {
 			if (!this.bodyParams.visitor) {
