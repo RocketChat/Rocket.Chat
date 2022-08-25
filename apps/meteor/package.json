@@ -280,7 +280,7 @@
 		"fastq": "^1.13.0",
 		"fflate": "^0.7.3",
 		"fibers": "^5.0.1",
-		"file-type": "^16.5.3",
+		"file-type": "^18.0.0",
 		"filenamify": "^4.3.0",
 		"filesize": "^3.6.1",
 		"google-libphonenumber": "^3.2.28",
