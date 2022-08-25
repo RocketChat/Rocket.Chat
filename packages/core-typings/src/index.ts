@@ -3,6 +3,7 @@ export * from './FeaturedApps';
 export * from './IRoom';
 export * from './UIKit';
 export * from './IMessage';
+export * from './federation';
 export * from './Serialized';
 export * from './ISetting';
 export * from './ISubscription';
@@ -67,7 +68,6 @@ export * from './IMethodThisType';
 export * from './IPassword';
 export * from './IBaseData';
 export * from './IOAuthApps';
-export * from './Federation';
 export * from './ISmarshHistory';
 export * from './IReport';
 
