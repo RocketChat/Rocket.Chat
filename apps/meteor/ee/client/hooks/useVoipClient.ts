@@ -38,10 +38,6 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const isEE = useHasLicenseModule('voip-enterprise');
 	const voipEnabled = settingVoipEnabled && voipConnectorEnabled;
 
-	useEffect(() => {
-		setVoipConnectorEnabled(settingVoipEnabled);
-	}, [settingVoipEnabled, setVoipConnectorEnabled]);
-
 	useEffect(
 		() =>
 			subscribeToNotifyLoggedIn(`voip.statuschanged`, (enabled: boolean): void => {
