@@ -3,6 +3,7 @@ import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/f
 import { useSession, useCurrentRoute, useRoute, useUserId, useSetting } from '@rocket.chat/ui-contexts';
 import React, { ReactNode, useContext, useMemo, useState, useLayoutEffect, useEffect } from 'react';
 
+import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
 import { removeTabBarContext, setTabBarContext, ToolboxContext, ToolboxEventHandler } from '../lib/Toolbox/ToolboxContext';
 import { Store } from '../lib/Toolbox/generator';
 import { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
@@ -125,5 +126,19 @@ export const useTab = (): ToolboxActionConfig | undefined => useContext(ToolboxC
 export const useTabBarOpen = (): ((actionId: string, context?: string) => void) => useContext(ToolboxContext).open;
 export const useTabBarClose = (): (() => void) => useContext(ToolboxContext).close;
 export const useTabBarOpenUserInfo = (): ((username: string) => void) => useContext(ToolboxContext).openUserInfo;
+export const useTabBarAPI = (): {
+	open: (actionId: string, context?: string | undefined) => void;
+	close: () => void;
+	isOpen: () => boolean;
+	openUserInfo: (username: string) => void;
+} => {
+	const open = useTabBarOpen();
+	const close = useTabBarClose();
+	const tab = useTab();
+	const appsContextualBarContext = useAppsContextualBar();
+	const isOpen = useMutableCallback(() => !!tab?.template || !!appsContextualBarContext);
+	const openUserInfo = useTabBarOpenUserInfo();
+	return useMemo(() => ({ open, close, isOpen, openUserInfo }), [open, close, isOpen, openUserInfo]);
+};
 
 export default ToolboxProvider;

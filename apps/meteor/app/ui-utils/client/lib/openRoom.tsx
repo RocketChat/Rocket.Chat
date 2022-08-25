@@ -1,9 +1,8 @@
-import React, { lazy } from 'react';
+import React, { Suspense } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import _ from 'underscore';
 import type { RoomType } from '@rocket.chat/core-typings';
 
 import { appLayout } from '../../../../client/lib/appLayout';
@@ -18,22 +17,21 @@ import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManage
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import MainLayout from '../../../../client/views/root/MainLayout';
-import BlazeTemplate from '../../../../client/views/root/BlazeTemplate';
-
-const RoomNotFound = lazy(() => import('../../../../client/views/room/RoomNotFound'));
+import { omit } from '../../../../lib/utils/omit';
+import { RoomSkeleton, RoomProvider, Room, RoomNotFound } from '../../../../client/views/room';
 
 export async function openRoom(type: RoomType, name: string, render = true) {
 	RoomManager.currentTracker?.stop();
-	RoomManager.currentTracker = Tracker.autorun(async function (c) {
+	RoomManager.currentTracker = Tracker.autorun(async (c) => {
 		const user = Meteor.user();
-		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
+		if ((user && !user.username) || (!user && settings.get('Accounts_AllowAnonymousRead') === false)) {
 			appLayout.render(<MainLayout />);
 			return;
 		}
 
 		try {
 			const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name) || (await call('getRoomByTypeAndName', type, name));
-			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
+			Rooms.upsert({ _id: room._id }, omit(room, '_id'));
 
 			if (room._id !== name && type === 'd') {
 				// Redirect old url using username to rid
@@ -50,7 +48,11 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 			if (render) {
 				appLayout.render(
 					<MainLayout>
-						<BlazeTemplate template='room' />
+						<Suspense fallback={<RoomSkeleton />}>
+							<RoomProvider rid={room._id}>
+								<Room />
+							</RoomProvider>
+						</Suspense>
 					</MainLayout>,
 				);
 			}
@@ -64,7 +66,7 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 			NewRoomManager.open(room._id);
 			Session.set('openedRoom', room._id);
 
-			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
+			fireGlobalEvent('room-opened', omit(room, 'usernames'));
 
 			Session.set('editRoomTitle', false);
 			// KonchatNotification.removeRoomNotification(params._id)

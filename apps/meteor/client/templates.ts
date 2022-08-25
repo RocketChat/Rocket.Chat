@@ -74,10 +74,6 @@ createTemplateForComponent('KeyboardShortcuts', () => import('./views/room/conte
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
 
-createTemplateForComponent('room', () => import('./views/room/Room'), {
-	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
-});
-
 createTemplateForComponent('AutoTranslate', () => import('./views/room/contextualBar/AutoTranslate'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
