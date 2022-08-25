@@ -1,5 +1,4 @@
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
-import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IAppStorageItem, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IAppsModel } from '@rocket.chat/model-typings';
 import type { Db, Collection } from 'mongodb';
 

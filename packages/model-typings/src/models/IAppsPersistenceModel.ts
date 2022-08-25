@@ -2,4 +2,7 @@ import type { IPersistenceItem } from '@rocket.chat/apps-engine/definition/persi
 
 import type { IBaseModel } from './IBaseModel';
 
-export type IAppsPersistenceModel = IBaseModel<IPersistenceItem>;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IAppsPersistenceModel extends IBaseModel<IPersistenceItem> {
+	//
+}

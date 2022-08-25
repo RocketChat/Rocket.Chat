@@ -1,4 +1,4 @@
-export { AppRealLogsStorage } from './logs-storage';
+export { AppRealLogsStorage } from './LogsStorage';
 export { AppRealStorage } from './AppRealStorage';
 export { AppFileSystemSourceStorage } from './AppFileSystemSourceStorage';
 export { AppGridFSSourceStorage } from './AppGridFSSourceStorage';
