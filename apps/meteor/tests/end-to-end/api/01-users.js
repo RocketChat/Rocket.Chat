@@ -1943,18 +1943,18 @@ describe('[Users]', function () {
 
 		it('should return true if the username is available', (done) => {
 			request
-			.get(api('users.checkUsernameAvailability'))
-			.set(userCredentials)
-			.query({
-				username: `${targetUser.username}-${+new Date()}`,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body.result).to.be.equal(true);
-			})
-			.end(done);
+				.get(api('users.checkUsernameAvailability'))
+				.set(userCredentials)
+				.query({
+					username: `${targetUser.username}-${+new Date()}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.result).to.be.equal(true);
+				})
+				.end(done);
 		});
 
 		it('should return an error when the username is invalid', (done) => {
