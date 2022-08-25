@@ -1,66 +1,45 @@
+import type { ILoggerStorageEntry } from '@rocket.chat/apps-engine/server/logging';
 import { AppConsole } from '@rocket.chat/apps-engine/server/logging';
+import type { IAppLogStorageFindOptions } from '@rocket.chat/apps-engine/server/storage';
 import { AppLogStorage } from '@rocket.chat/apps-engine/server/storage';
+import type { IAppsLogsModel } from '@rocket.chat/model-typings';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 export class AppRealLogsStorage extends AppLogStorage {
-	constructor(model) {
+	constructor(private db: IAppsLogsModel) {
 		super('mongodb');
-		this.db = model;
 	}
 
-	find(...args) {
-		return new Promise((resolve, reject) => {
-			let docs;
-
-			try {
-				docs = this.db.find(...args).fetch();
-			} catch (e) {
-				return reject(e);
-			}
-
-			resolve(docs);
-		});
+	public async find(
+		query: {
+			[field: string]: any;
+		},
+		options?: IAppLogStorageFindOptions,
+	): Promise<Array<ILoggerStorageEntry>> {
+		return this.db.find(query, options).toArray();
 	}
 
-	storeEntries(appId, logger) {
-		return new Promise((resolve, reject) => {
-			const item = AppConsole.toStorageEntry(appId, logger);
+	public async storeEntries(appId: string, logger: AppConsole): Promise<ILoggerStorageEntry> {
+		const item = AppConsole.toStorageEntry(appId, logger);
 
-			item.instanceId = InstanceStatus.id();
+		item.instanceId = InstanceStatus.id();
 
-			try {
-				const id = this.db.insert(item);
+		const { insertedId } = await this.db.insertOne(item);
 
-				resolve(this.db.findOneById(id));
-			} catch (e) {
-				reject(e);
-			}
-		});
+		const entry = await this.db.findOne({ _id: insertedId });
+
+		if (!entry) {
+			throw new Error(`Could not find log entry ${insertedId}`);
+		}
+
+		return entry;
 	}
 
-	getEntriesFor(appId) {
-		return new Promise((resolve, reject) => {
-			let docs;
-
-			try {
-				docs = this.db.find({ appId }).fetch();
-			} catch (e) {
-				return reject(e);
-			}
-
-			resolve(docs);
-		});
+	public async getEntriesFor(appId: string): Promise<Array<ILoggerStorageEntry>> {
+		return this.db.find({ appId }).toArray();
 	}
 
-	removeEntriesFor(appId) {
-		return new Promise((resolve, reject) => {
-			try {
-				this.db.remove({ appId });
-			} catch (e) {
-				return reject(e);
-			}
-
-			resolve();
-		});
+	public async removeEntriesFor(appId: string): Promise<void> {
+		await this.db.deleteOne({ appId });
 	}
 }
