@@ -804,7 +804,7 @@ describe('LIVECHAT - rooms', function () {
 
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('messages').of.length(1);
-			expect(body.messages[0]).to.have.property('t', 'livechat-started');
+			expect(body.messages[0]).to.have.property('t');
 		});
 		it('should return message history for a valid date filtering (max date)', async () => {
 			const visitor = await createVisitor();
