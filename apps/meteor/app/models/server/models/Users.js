@@ -1655,6 +1655,10 @@ Find users to send a message by email if:
 			},
 		});
 	}
+
+	countRoomMembers(roomId) {
+		return this.find({ __rooms: roomId, active: true }).count();
+	}
 }
 
 export default new Users(Meteor.users, true);

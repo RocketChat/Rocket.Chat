@@ -2869,6 +2869,7 @@
   "Max_number_of_chats_per_agent": "Número máximo de conversas simultâneas",
   "Max_number_of_chats_per_agent_description": "Número máximo de conversas simultâneas de que um agente pode participar",
   "Max_number_of_uses": "Número máximo de usos",
+  "Max_Retry": "Número máximo de tentativas de conexão com o servidor",
   "Maximum": "Máximo",
   "Maximum_number_of_guests_reached": "Número máximo de visitantes atingido",
   "Me": "Eu",
