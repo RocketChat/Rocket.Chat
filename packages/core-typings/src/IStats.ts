@@ -112,7 +112,7 @@ export interface IStats {
 	uniqueOSOfLastWeek: OSSessionAggregationResult;
 	uniqueOSOfLastMonth: OSSessionAggregationResult;
 	apps: {
-		engineVersion: number;
+		engineVersion: string;
 		enabled: SettingValue;
 		totalInstalled: number | false;
 		totalActive: number | false;
