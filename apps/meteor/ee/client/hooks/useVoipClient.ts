@@ -2,7 +2,7 @@ import { IRegistrationInfo, WorkflowTypes } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { KJUR } from 'jsrsasign';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { VoIPUser } from '../../../client/lib/voip/VoIPUser';
 import { useWebRtcServers } from '../../../client/providers/CallProvider/hooks/useWebRtcServers';
@@ -22,8 +22,10 @@ const isSignedResponse = (data: any): data is { result: string } => typeof data?
 // Currently we only support the websocket connection and the SIP proxy connection being from the same host,
 // we need to add a new setting for SIP proxy if we want to support different hosts for them.
 export const useVoipClient = (): UseVoipClientResult => {
-	const settingVoipEnabled = useSetting('VoIP_Enabled');
-	const [voipEnabled, setVoipEnabled] = useSafely(useState(settingVoipEnabled));
+	const voipSettingEnabled = Boolean(useSetting('VoIP_Enabled'));
+
+	const [voipConnectorEnabled, setVoipEnabled] = useSafely(useState(voipSettingEnabled));
+
 	const voipRetryCount = useSetting('VoIP_Retry_Count');
 	const enableKeepAlive = useSetting('VoIP_Enable_Keep_Alive_For_Unstable_Networks');
 	const registrationInfo = useEndpoint('GET', '/v1/connector.extension.getRegistrationInfoByUserId');
@@ -35,16 +37,15 @@ export const useVoipClient = (): UseVoipClientResult => {
 
 	const isEE = useHasLicenseModule('voip-enterprise');
 
-	useEffect(() => {
-		setVoipEnabled(settingVoipEnabled);
-	}, [settingVoipEnabled, setVoipEnabled]);
+	const voipEnabled = voipSettingEnabled && voipConnectorEnabled;
 
-	useEffect(() => {
-		const voipEnableEventHandler = (enabled: boolean): void => {
-			setVoipEnabled(enabled);
-		};
-		return subscribeToNotifyLoggedIn(`voip.statuschanged`, voipEnableEventHandler);
-	}, [setResult, setVoipEnabled, subscribeToNotifyLoggedIn]);
+	useEffect(
+		() =>
+			subscribeToNotifyLoggedIn(`voip.statuschanged`, (enabled: boolean): void => {
+				setVoipEnabled(enabled);
+			}),
+		[setResult, setVoipEnabled, subscribeToNotifyLoggedIn],
+	);
 
 	useEffect(() => {
 		const uid = user?._id;
