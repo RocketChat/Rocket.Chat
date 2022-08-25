@@ -15,11 +15,7 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 	const { name, id, description, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed, isMarketplace, bundledIn } =
 		props;
 
-	const [isAppNameTruncated, isBundleTextVisible, isDescriptionVisible] = useMediaQueries(
-		'(max-width: 510px)',
-		'(max-width: 887px)',
-		'(min-width: 1200px)',
-	);
+	const [isAppNameTruncated, isDescriptionVisible] = useMediaQueries('(max-width: 510px)', '(min-width: 1200px)');
 
 	const appsRoute = useRoute('admin-apps');
 	const marketplaceRoute = useRoute('admin-marketplace');
@@ -90,7 +86,7 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 				<Box display='flex' mie='x16' alignItems='center' color='default'>
 					{bundledIn && Boolean(bundledIn.length) && (
 						<Box display='flex' alignItems='center' color='default' mie='x16'>
-							<BundleChips bundledIn={bundledIn} isIconOnly={isBundleTextVisible} />
+							<BundleChips bundledIn={bundledIn} />
 						</Box>
 					)}
 					{isDescriptionVisible && (

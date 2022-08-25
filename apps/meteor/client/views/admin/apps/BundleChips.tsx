@@ -1,4 +1,4 @@
-import { Box, Icon, PositionAnimated, AnimatedVisibility, Tooltip } from '@rocket.chat/fuselage';
+import { Box, PositionAnimated, AnimatedVisibility, Tooltip } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { RefObject, useRef, useState, ReactElement, Fragment } from 'react';
 
@@ -10,10 +10,9 @@ type BundleChipsProps = {
 		bundleName: string;
 		apps: App[];
 	}[];
-	isIconOnly?: boolean;
 };
 
-const BundleChips = ({ bundledIn, isIconOnly }: BundleChipsProps): ReactElement => {
+const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 	const t = useTranslation();
 
 	const bundleRef = useRef<Element>();
@@ -28,7 +27,7 @@ const BundleChips = ({ bundledIn, isIconOnly }: BundleChipsProps): ReactElement 
 						flexDirection='row'
 						alignItems='center'
 						justifyContent='center'
-						backgroundColor='disabled'
+						backgroundColor='primary'
 						pi='x4'
 						height='x20'
 						borderRadius='x2'
@@ -36,14 +35,11 @@ const BundleChips = ({ bundledIn, isIconOnly }: BundleChipsProps): ReactElement 
 						onMouseEnter={(): void => setIsHovered(true)}
 						onMouseLeave={(): void => setIsHovered(false)}
 					>
-						<Icon name='bag' size='x20' />
-						{!isIconOnly && (
-							<Box fontWeight='c2' fontSize='c2' color='info' style={{ whiteSpace: 'nowrap' }}>
-								{t('bundle_chip_title', {
-									bundleName: bundle.bundleName,
-								})}
-							</Box>
-						)}
+						<Box fontWeight='c2' fontSize='c2' color='surface' style={{ whiteSpace: 'nowrap' }}>
+							{t('bundle_chip_title', {
+								bundleName: bundle.bundleName,
+							})}
+						</Box>
 					</Box>
 					<PositionAnimated
 						anchor={bundleRef as RefObject<Element>}
