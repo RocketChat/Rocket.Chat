@@ -14,6 +14,7 @@ const initialValues = {
 	scope: 'visitor',
 	visibility: true,
 	regexp: '',
+	searchable: true,
 };
 
 const NewCustomFieldsPage = ({ reload }) => {
