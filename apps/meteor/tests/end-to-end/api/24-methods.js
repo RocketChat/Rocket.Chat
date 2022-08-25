@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 
-import { AppServerOrchestrator } from '../../../app/apps/server/orchestrator.js';
 import { getCredentials, request, methodCall, api, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper.js';
 
