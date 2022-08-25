@@ -243,7 +243,7 @@ Meteor.startup(() => {
 			const isEnabled =  await APIClient.get('/apps/is-enabled');
 
 			Apps.getAppClientManager().initialize();
-			Apps.load((await isEnabled(this)).result);
+			Apps.load(isEnabled);
 		} catch (error) {
 			Apps.handleError(error as Error);
 		}
