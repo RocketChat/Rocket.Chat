@@ -5,7 +5,7 @@ import { Users, LivechatInquiry } from '../../../models/server';
 import { RoutingManager } from '../lib/RoutingManager';
 
 Meteor.methods({
-	'livechat:takeInquiry'(inquiryId, options) {
+	async 'livechat:takeInquiry'(inquiryId, options) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:takeInquiry',
@@ -40,6 +40,10 @@ Meteor.methods({
 			username: user.username,
 		};
 
-		return RoutingManager.takeInquiry(inquiry, agent, options);
+		try {
+			await RoutingManager.takeInquiry(inquiry, agent, options);
+		} catch (e) {
+			throw new Meteor.Error(e.message);
+		}
 	},
 });

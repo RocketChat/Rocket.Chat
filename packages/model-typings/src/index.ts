@@ -60,3 +60,5 @@ export * from './models/IUsersSessionsModel';
 export * from './models/IVideoConferenceModel';
 export * from './models/IVoipRoomModel';
 export * from './models/IWebdavAccountsModel';
+export * from './models/IMatrixBridgeRoomModel';
+export * from './models/IMatrixBridgeUserModel';

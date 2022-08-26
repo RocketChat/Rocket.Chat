@@ -494,7 +494,7 @@ jobs:
 
           cd ./apps/meteor
           for i in $(seq 1 5); do
-            npm run testapi && s=0 && break || s=$?;
+            IS_EE=true npm run testapi && s=0 && break || s=$?;
 
             docker compose -f ../../docker-compose-ci.yml logs --tail=100
 
