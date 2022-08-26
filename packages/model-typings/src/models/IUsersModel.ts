@@ -153,4 +153,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeRoomByRoomId(rid: any): any;
 
 	findOneByResetToken(token: string, options: FindOptions<IUser>): Promise<IUser | null>;
+
+	setFederationAvatarUrlById(userId: string, federationAvatarUrl: string): Promise<void>;
 }

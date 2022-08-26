@@ -1,4 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../../../lib/callbacks';
 
@@ -7,7 +8,7 @@ export class FederationHooksEE {
 		callbacks.add(
 			'federation.afterCreateFederatedRoom',
 			(room: IRoom, { owner, originalMemberList }): void => {
-				if (!room.federated) {
+				if (!room || !isRoomFederated(room)) {
 					return;
 				}
 				Promise.await(callback(room, owner, originalMemberList));
@@ -21,7 +22,7 @@ export class FederationHooksEE {
 		callbacks.add(
 			'afterAddedToRoom',
 			(params: { user: IUser; inviter: IUser }, room: IRoom): void => {
-				if (!room.federated) {
+				if (!room || !isRoomFederated(room)) {
 					return;
 				}
 				Promise.await(callback(room, params.inviter, [params.user]));
@@ -54,7 +55,7 @@ export class FederationHooksEE {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
 			(params: { user: IUser | string }, room: IRoom): void => {
-				if (!room.federated) {
+				if (!room || !isRoomFederated(room)) {
 					return;
 				}
 				Promise.await(callback(params.user, room));

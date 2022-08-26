@@ -18,4 +18,12 @@ export class Federation {
 	public static isAFederatedUsername(username: string): boolean {
 		return username.includes('@') && username.includes(':');
 	}
+
+	public static escapeExternalFederationEventId(externalEventId: string): string {
+		return externalEventId.replace(/\$/g, '__sign__');
+	}
+
+	public static unescapeExternalFederationEventId(externalEventId: string): string {
+		return externalEventId.replace(/__sign__/g, '$');
+	}
 }

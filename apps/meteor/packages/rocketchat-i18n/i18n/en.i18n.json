@@ -2114,8 +2114,6 @@
   "files": "files",
   "Files": "Files",
   "Files_only": "Only remove the attached files, keep messages",
-  "Files_unavailable_for_federation": "Files are unavailable for Federated rooms",
-  "files_pruned": "files pruned",
   "FileSize_Bytes": "__fileSize__ Bytes",
   "FileSize_KB": "__fileSize__ KB",
   "FileSize_MB": "__fileSize__ MB",

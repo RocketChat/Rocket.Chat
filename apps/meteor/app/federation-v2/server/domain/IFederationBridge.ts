@@ -23,4 +23,16 @@ export interface IFederationBridge {
 	leaveRoom(externalRoomId: string, externalUserId: string): Promise<void>;
 	kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void>;
 	logFederationStartupInfo(info?: string): void;
+	getReadStreamForFileFromUrl(externaUserId: string, fileUrl: string): Promise<ReadableStream>;
+	redactEvent(externalRoomId: string, externalUserId: string, externalEventId: string): Promise<void>;
+	updateMessage(externalRoomId: string, externalUserId: string, externalEventId: string, newMessageText: string): Promise<void>;
+	sendMessageReaction(externalRoomId: string, externalUserId: string, externalEventId: string, reaction: string): Promise<string>;
+	sendMessageFileToRoom(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string },
+	): Promise<void>;
+	uploadContent(externalSenderId: string, content: Buffer, options?: { name?: string; type?: string }): Promise<string | undefined>;
+	convertMatrixUrlToHttp(externalUserId: string, matrixUrl: string): string;
 }

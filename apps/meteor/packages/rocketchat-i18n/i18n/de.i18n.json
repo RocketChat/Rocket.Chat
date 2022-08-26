@@ -2081,8 +2081,6 @@
   "files": "Dateien",
   "Files": "Dateien",
   "Files_only": "Entferne nur die angehängten Dateien, behalte Nachrichten",
-  "Files_unavailable_for_federation": "Dateien sind für Verbundräume nicht verfügbar",
-  "files_pruned": "Dateien gelöscht",
   "FileSize_Bytes": "__fileSize__ Bytes",
   "FileSize_KB": "__fileSize__ KB",
   "FileSize_MB": "__fileSize__ MB",

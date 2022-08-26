@@ -2,6 +2,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Random } from 'meteor/random';
 import { Meteor } from 'meteor/meteor';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/client';
 import { UserAction, USER_ACTIVITIES } from './UserAction';
@@ -11,6 +12,7 @@ import FileUploadModal from '../../../../client/views/room/modals/FileUploadModa
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 import { chatMessages } from './ChatMessages';
 import { getErrorMessage } from '../../../../client/lib/errorHandling';
+import { Rooms } from '../../../models/client';
 
 export type Uploading = {
 	id: string;
@@ -188,6 +190,7 @@ export const fileUpload = async (
 
 	const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
 	const messageBoxText = Meteor._localStorage.getItem(key) || '';
+	const room = Rooms.findOne({ _id: rid });
 
 	const uploadNextFile = (): void => {
 		const file = files.pop();
@@ -201,6 +204,7 @@ export const fileUpload = async (
 				file: file.file,
 				fileName: file.name,
 				fileDescription: messageBoxText,
+				showDescription: !isRoomFederated(room),
 				onClose: (): void => {
 					imperativeModal.close();
 					uploadNextFile();

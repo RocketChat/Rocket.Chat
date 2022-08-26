@@ -12,4 +12,5 @@ export interface IUpload extends IRocketChatRecord {
 	userId?: string;
 	progress?: number;
 	etag?: string;
+	size?: number;
 }

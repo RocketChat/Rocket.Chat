@@ -1,8 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { isDeletedMessage, isEditedMessage, isMessageFromMatrixFederation } from '@rocket.chat/core-typings';
 
-import { DirectMessageFederatedRoom } from '../../domain/FederatedRoom';
+import { DirectMessageFederatedRoom, FederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
 import type { IFederationBridge } from '../../domain/IFederationBridge';
+import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
@@ -13,12 +15,14 @@ import type {
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
 } from '../input/RoomSenderDto';
+import { getExternalMessageSender } from './MessageSenders';
 
 export class FederationRoomServiceSender extends FederationService {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapter,
 		protected internalUserAdapter: RocketChatUserAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
+		protected internalFileAdapter: RocketChatFileAdapter,
 		protected bridge: IFederationBridge,
 	) {
 		super(bridge, internalUserAdapter, internalSettingsAdapter);
@@ -140,7 +144,6 @@ export class FederationRoomServiceSender extends FederationService {
 
 	public async sendExternalMessage(roomSendExternalMessageInput: FederationRoomSendExternalMessageDto): Promise<IMessage> {
 		const { internalRoomId, internalSenderId, message } = roomSendExternalMessageInput;
-
 		const federatedSender = await this.internalUserAdapter.getFederatedUserByInternalId(internalSenderId);
 		if (!federatedSender) {
 			throw new Error(`Could not find user id for ${internalSenderId}`);
@@ -150,9 +153,81 @@ export class FederationRoomServiceSender extends FederationService {
 		if (!federatedRoom) {
 			throw new Error(`Could not find room id for ${internalRoomId}`);
 		}
-
-		await this.bridge.sendMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message.msg);
+		await getExternalMessageSender(message, this.bridge, this.internalFileAdapter).sendMessage(
+			federatedRoom.getExternalId(),
+			federatedSender.getExternalId(),
+			message,
+		);
 
 		return message; // this need to be here due to a limitation in the internal API that was expecting the return of the sendMessage function.
+	}
+
+	public async afterMessageDeleted(internalMessage: IMessage, internalRoomId: string): Promise<void> {
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const federatedUser =
+			federatedRoom.getCreatorId() && (await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getCreatorId() as string));
+		if (!federatedUser) {
+			return;
+		}
+
+		if (!isMessageFromMatrixFederation(internalMessage) || isDeletedMessage(internalMessage)) {
+			return;
+		}
+
+		const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
+			this.internalSettingsAdapter.getHomeServerDomain(),
+		);
+		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
+			this.internalSettingsAdapter.getHomeServerDomain(),
+		);
+		if (!isRoomFromTheSameHomeServer || !isUserFromTheSameHomeServer) {
+			return;
+		}
+
+		await this.bridge.redactEvent(
+			federatedRoom.getExternalId(),
+			federatedUser.getExternalId(),
+			internalMessage.federation?.eventId as string,
+		);
+	}
+
+	public async afterMessageUpdated(internalMessage: IMessage, internalRoomId: string, internalUserId: string): Promise<void> {
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
+		if (!federatedUser) {
+			return;
+		}
+		if (!isMessageFromMatrixFederation(internalMessage) || !isEditedMessage(internalMessage) || internalMessage.u._id !== internalUserId) {
+			return;
+		}
+
+		const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
+			this.internalSettingsAdapter.getHomeServerDomain(),
+		);
+		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
+			this.internalSettingsAdapter.getHomeServerDomain(),
+		);
+		if (!isRoomFromTheSameHomeServer || !isUserFromTheSameHomeServer) {
+			return;
+		}
+
+		await this.bridge.updateMessage(
+			federatedRoom.getExternalId(),
+			federatedUser.getExternalId(),
+			internalMessage.federation?.eventId as string,
+			internalMessage.msg,
+		);
 	}
 }
