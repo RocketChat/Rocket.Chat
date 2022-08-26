@@ -4162,7 +4162,7 @@ __metadata:
     use-sync-external-store: ^1.2.0
     uuid: ^8.3.2
     vm2: ^3.9.9
-    webdav: ^4.10.0
+    webdav: ^4.11.0
     webpack: ^4.46.0
     xml-crypto: ^2.1.3
     xml-encryption: 2.0.0
@@ -21860,7 +21860,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^5.0.1":
+"minimatch@npm:^5.1.0":
   version: 5.1.0
   resolution: "minimatch@npm:5.1.0"
   dependencies:
@@ -31959,9 +31959,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webdav@npm:^4.10.0":
-  version: 4.10.0
-  resolution: "webdav@npm:4.10.0"
+"webdav@npm:^4.11.0":
+  version: 4.11.0
+  resolution: "webdav@npm:4.11.0"
   dependencies:
     axios: ^0.27.2
     base-64: ^1.0.0
@@ -31971,12 +31971,12 @@ __metadata:
     hot-patcher: ^0.5.0
     layerr: ^0.1.2
     md5: ^2.3.0
-    minimatch: ^5.0.1
+    minimatch: ^5.1.0
     nested-property: ^4.0.0
     path-posix: ^1.0.0
     url-join: ^4.0.1
     url-parse: ^1.5.10
-  checksum: 0cfea9c233cfb8c490b6f6be01cb789f20fd01dbfe0ebc8f89057000390117a7cdbd55501c5fc248f54f2393d529cc60a058bf982d96e7e2507a7c99528444ab
+  checksum: 0a7aab0a3118deea20485d3c417fda40e71c3930b866a92cfff5dedce4a25c0fbed0cd083bf14ac5a4ee7cab55136265d5011b2601cbb2a1b359da551910ec97
   languageName: node
   linkType: hard
 
