@@ -56,7 +56,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 			<Sidebar.TopBar.Actions>
 				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} onClick={(): void => handleRoute('queue')} />}
 				{isCallEnabled && <OmnichannelCallToggle />}
-				<Sidebar.TopBar.Action {...omnichannelIcon} onClick={handleAvailableStatusChange} />
+				<Sidebar.TopBar.Action id={'omnichannel-status-toggle'} {...omnichannelIcon} onClick={handleAvailableStatusChange} />
 				{hasPermissionToSeeContactCenter && (
 					<Sidebar.TopBar.Action title={t('Contact_Center')} icon='address-book' onClick={(): void => handleRoute('directory')} />
 				)}

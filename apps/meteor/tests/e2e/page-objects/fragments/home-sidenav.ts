@@ -1,5 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { expect } from '../../utils/test';
+
 export class HomeSidenav {
 	private readonly page: Page;
 
@@ -39,6 +41,27 @@ export class HomeSidenav {
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
 		await this.page.locator(`//li[@class="rcx-option"]//div[contains(text(), "${status}")]`).click();
+	}
+
+	async switchOmnichannelStatus(status: 'offline' | 'online') {
+		// button has a id of "omnichannel-status-toggle"
+		const toggleButton = this.page.locator('#omnichannel-status-toggle');
+		expect(toggleButton).toBeVisible();
+
+		const currentStatus: 'Available' | 'Not Available' = (await toggleButton.getAttribute('title')) as any;
+		if (status === 'offline') {
+			if (currentStatus === 'Available') {
+				await toggleButton.click();
+			}
+		} else if (currentStatus === 'Not Available') {
+			console.log('Switching omnichannel status to online');
+			await toggleButton.click();
+		}
+
+		await this.page.waitForTimeout(500);
+
+		const newStatus: 'Available' | 'Not Available' = (await this.page.locator('#omnichannel-status-toggle').getAttribute('title')) as any;
+		expect(newStatus).toBe(status === 'offline' ? 'Not Available' : 'Available');
 	}
 
 	async openChat(name: string): Promise<void> {

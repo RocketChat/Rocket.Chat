@@ -31,10 +31,6 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
 		expect(statusCode).toBe(200);
 
-		// turn on auto selection routing
-		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
-		expect(statusCode).toBe(200);
-
 		// make auto close on-hold chats timeout to be 5 seconds
 		statusCode = (await api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 5 })).status();
 		expect(statusCode).toBe(200);
@@ -96,12 +92,8 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		// turn off manual selection routing
-		let statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
-		expect(statusCode).toBe(200);
-
 		// delete "user-1" from agents
-		statusCode = (await api.delete('/livechat/users/agent/user1')).status();
+		let statusCode = (await api.delete('/livechat/users/agent/user1')).status();
 		expect(statusCode).toBe(200);
 
 		// reset auto close on-hold chats timeout
