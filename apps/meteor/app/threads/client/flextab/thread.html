@@ -3,7 +3,7 @@
 		<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
 		<div class="thread-list js-scroll-thread">
 			<ul class="thread" style="{{threadListStyle}}">
-				{{# with messageContext}}
+				{{#with messageContext}}
 					{{#if isLoading}}
 						<li class="load-more">
 							{{> loading}}
