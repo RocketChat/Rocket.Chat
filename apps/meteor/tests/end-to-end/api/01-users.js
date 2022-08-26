@@ -1870,7 +1870,7 @@ describe('[Users]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.result).to.be.exists();
+					expect(res.body).to.exist;
 				})
 				.end(done);
 		});
