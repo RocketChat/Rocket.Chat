@@ -12,7 +12,6 @@ import {
 	isUsersUpdateOwnBasicInfoParamsPOST,
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
-	isUsersGetAvatarSuggestionParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
@@ -68,7 +67,6 @@ API.v1.addRoute(
 	'users.getAvatarSuggestion',
 	{
 		authRequired: true,
-		validateParams: isUsersGetAvatarSuggestionParamsGET,
 	},
 	{
 		async get() {
