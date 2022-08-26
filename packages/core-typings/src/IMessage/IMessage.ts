@@ -164,7 +164,7 @@ export interface IMessage extends IRocketChatRecord {
 	attachments?: MessageAttachment[];
 
 	reactions?: {
-		[key: string]: { names?: (string | undefined)[]; usernames: string[], federationReactionEventIds?: Record<string, string> };
+		[key: string]: { names?: (string | undefined)[]; usernames: string[]; federationReactionEventIds?: Record<string, string> };
 	};
 
 	private?: boolean;
@@ -197,8 +197,10 @@ export interface IEditedMessage extends IMessage {
 }
 
 export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
-export const isDeletedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message && message.t === 'rm';
-export const isMessageFromMatrixFederation = (message: IMessage): boolean => 'federation' in message && Boolean(message.federation?.eventId);
+export const isDeletedMessage = (message: IMessage): message is IEditedMessage =>
+	'editedAt' in message && 'editedBy' in message && message.t === 'rm';
+export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
+	'federation' in message && Boolean(message.federation?.eventId);
 
 export interface ITranslatedMessage extends IMessage {
 	translations: { [key: string]: string } & { original?: string };
