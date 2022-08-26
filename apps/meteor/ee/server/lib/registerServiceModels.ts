@@ -1,4 +1,11 @@
 import type { Collection, Db } from 'mongodb';
+import type {
+	ILivechatDepartmentAgents,
+	ILivechatInquiryRecord,
+	ISetting,
+	ISubscription,
+	RocketChatRecordDeleted,
+} from '@rocket.chat/core-typings';
 import { registerModel } from '@rocket.chat/models';
 
 import { RolesRaw } from '../../../server/models/raw/Roles';
@@ -24,8 +31,11 @@ import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
 export function registerServiceModels(db: Db, trash?: Collection): void {
 	registerModel('IRolesModel', () => new RolesRaw(db));
 	registerModel('IRoomsModel', () => new RoomsRaw(db));
-	registerModel('ISettingsModel', () => new SettingsRaw(db));
-	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db, trash));
+	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as unknown as Collection<RocketChatRecordDeleted<ISetting>>));
+	registerModel(
+		'ISubscriptionsModel',
+		() => new SubscriptionsRaw(db, trash as unknown as Collection<RocketChatRecordDeleted<ISubscription>>),
+	);
 	registerModel('ITeamModel', () => new TeamRaw(db));
 	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
 	registerModel('IUsersModel', () => new UsersRaw(db));
@@ -33,8 +43,14 @@ export function registerServiceModels(db: Db, trash?: Collection): void {
 	// @ts-ignore-error
 	registerModel('IMessagesModel', () => new MessagesRaw(db));
 
-	registerModel('ILivechatInquiryModel', () => new LivechatInquiryRaw(db));
-	registerModel('ILivechatDepartmentAgentsModel', () => new LivechatDepartmentAgentsRaw(db));
+	registerModel(
+		'ILivechatInquiryModel',
+		() => new LivechatInquiryRaw(db, trash as unknown as Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>),
+	);
+	registerModel(
+		'ILivechatDepartmentAgentsModel',
+		() => new LivechatDepartmentAgentsRaw(db, trash as unknown as Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>),
+	);
 	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
 	registerModel('IPermissionsModel', () => new PermissionsRaw(db));
 	registerModel('ILoginServiceConfigurationModel', () => new LoginServiceConfigurationRaw(db));
@@ -43,4 +59,4 @@ export function registerServiceModels(db: Db, trash?: Collection): void {
 	registerModel('IIntegrationsModel', () => new IntegrationsRaw(db));
 	registerModel('IEmailInboxModel', () => new EmailInboxRaw(db));
 	registerModel('IPbxEventsModel', () => new PbxEventsRaw(db));
-};
+}
