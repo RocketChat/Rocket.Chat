@@ -135,10 +135,10 @@ export class ListenersModule {
 
 			// emit a removed event on msg stream to remove the user's stream-room-messages subscription when the user is removed from room
 			if (clientAction === 'removed') {
-				notifications.streamRoomMessage.emit(subscription.u._id, clientAction, subscription);
+				notifications.streamRoomMessage.__emit(subscription.u._id, clientAction, subscription);
 			}
 
-			notifications.streamUser.emit(subscription.u._id, clientAction, subscription);
+			notifications.streamUser.__emit(subscription.u._id, clientAction, subscription);
 
 			notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', clientAction, subscription);
 		});
