@@ -8,10 +8,21 @@ export const useReactiveValue = <T>(computeCurrentValue: () => T): T => {
 
 		let currentValue: T;
 
-		const computation = Tracker.autorun(() => {
+		let computation = Tracker.autorun(() => {
 			currentValue = computeCurrentValue();
 			callbacks.forEach((callback) => {
 				callback();
+			});
+		});
+
+		computation.onInvalidate(() => {
+			if (!computation.stopped) return;
+
+			computation = Tracker.autorun(() => {
+				currentValue = computeCurrentValue();
+				callbacks.forEach((callback) => {
+					callback();
+				});
 			});
 		});
 

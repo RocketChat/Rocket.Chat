@@ -1,10 +1,16 @@
+/* eslint-disable react/no-multi-comp */
 import { useRole, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useLayoutEffect, useMemo, useRef } from 'react';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import React, { memo, ReactElement, useCallback, useRef } from 'react';
 
+import { RoomTemplateInstance } from '../../../../../app/ui/client/views/app/lib/RoomTemplateInstance';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
+import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import Announcement from '../../Announcement';
 import { useRoom } from '../../contexts/RoomContext';
 import { useTabBarAPI } from '../../providers/ToolboxProvider';
+import ComposerContainer from './ComposerContainer';
 import DropTargetOverlay from './DropTargetOverlay';
 import { useFileUploadDropTarget } from './useFileUploadDropTarget';
 
@@ -18,27 +24,53 @@ const RoomBody = (): ReactElement => {
 
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(room);
 
-	const ref = useRef<HTMLDivElement>(null);
+	const roomOldViewRef = useRef<Blaze.View>();
+	const divRef = useCallback(
+		(div: HTMLDivElement | null): void => {
+			if (div?.parentElement) {
+				roomOldViewRef.current = Blaze.renderWithData(
+					Template.roomOld,
+					{
+						tabBar,
+						rid: room._id,
+						_id: room._id,
+					},
+					div.parentElement,
+					div,
+				);
+				return;
+			}
 
-	const props = useMemo(
-		() => ({
-			tabBar,
-			rid: room._id,
-			_id: room._id,
-		}),
+			if (roomOldViewRef.current) {
+				Blaze.remove(roomOldViewRef.current);
+				roomOldViewRef.current = undefined;
+			}
+		},
 		[room._id, tabBar],
 	);
 
-	useLayoutEffect(() => {
-		if (!ref.current || !ref.current.parentElement) {
-			return;
-		}
+	const subscription = useReactiveValue(
+		useCallback(
+			() =>
+				(roomOldViewRef.current &&
+					(
+						Blaze.getView(roomOldViewRef.current.firstNode() as HTMLElement).templateInstance() as RoomTemplateInstance
+					).subscription.get()) ??
+				undefined,
+			[],
+		),
+	);
 
-		const view = Blaze.renderWithData(Template.roomOld, props, ref.current.parentElement, ref.current);
-		return (): void => {
-			view && Blaze.remove(view);
-		};
-	}, [props]);
+	const sendToBottomIfNecessary = useReactiveValue(
+		useCallback(
+			() =>
+				(roomOldViewRef.current &&
+					(Blaze.getView(roomOldViewRef.current.firstNode() as HTMLElement).templateInstance() as RoomTemplateInstance)
+						.sendToBottomIfNecessary) ??
+				undefined,
+			[],
+		),
+	);
 
 	return (
 		<>
@@ -53,7 +85,8 @@ const RoomBody = (): ReactElement => {
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
-							<div ref={ref} />
+							<div ref={divRef} />
+							<ComposerContainer rid={room._id} subscription={subscription} sendToBottomIfNecessary={sendToBottomIfNecessary} />
 						</div>
 					</div>
 				</section>

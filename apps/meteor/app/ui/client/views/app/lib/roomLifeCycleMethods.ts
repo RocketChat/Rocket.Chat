@@ -12,7 +12,6 @@ import { ChatMessage, RoomRoles, Subscriptions, Rooms } from '../../../../../mod
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../../ui-utils/client';
 import { callbacks } from '../../../../../../lib/callbacks';
 import { ChatMessages, chatMessages } from '../../../lib/ChatMessages';
-import { fileUpload } from '../../../lib/fileUpload';
 import { RoomManager as NewRoomManager } from '../../../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
 import { queryClient } from '../../../../../../client/lib/queryClient';
@@ -26,13 +25,6 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 	// this.typing = new msgTyping this.data._id
 	const rid = this.data._id;
 	this.tabBar = this.data.tabBar;
-
-	this.onFile = (filesToUpload) => {
-		const { input } = chatMessages[rid];
-		if (!input) return;
-
-		fileUpload(filesToUpload, input, { rid });
-	};
 
 	this.rid = rid;
 

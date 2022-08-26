@@ -3,7 +3,6 @@ import type { Blaze } from 'meteor/blaze';
 import type { ReactiveDict } from 'meteor/reactive-dict';
 import type { ReactiveVar } from 'meteor/reactive-var';
 
-import type { FileUploadProp } from '../../../lib/fileUpload';
 import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
 
 export type RoomTemplateInstance = CommonRoomTemplateInstance &
@@ -39,6 +38,5 @@ export type RoomTemplateInstance = CommonRoomTemplateInstance &
 		unreadCount: ReactiveVar<number>;
 		rolesObserve: Meteor.LiveQueryHandle | undefined;
 		onWindowResize: () => void;
-		onFile: (files: FileUploadProp) => void;
 		userDetail: ReactiveVar<string>;
 	};

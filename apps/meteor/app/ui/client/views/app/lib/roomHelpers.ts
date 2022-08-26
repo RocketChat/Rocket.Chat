@@ -11,9 +11,7 @@ import { RoomHistoryManager, RoomManager } from '../../../../../ui-utils/client'
 import { settings } from '../../../../../settings/client';
 import { callbacks } from '../../../../../../lib/callbacks';
 import { hasAllPermission, hasRole } from '../../../../../authorization/client';
-import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
-import { chatMessages } from '../../../lib/ChatMessages';
 import type { RoomTemplateInstance } from './RoomTemplateInstance';
 
 function tabBar() {
@@ -108,49 +106,6 @@ function announcementDetails(this: { _id: string }) {
 	}
 }
 
-function messageboxData(this: { _id: string }) {
-	const { sendToBottomIfNecessary, subscription } = Template.instance() as RoomTemplateInstance;
-	const { _id: rid } = this;
-	const isEmbedded = isLayoutEmbedded();
-	const showFormattingTips = settings.get('Message_ShowFormattingTips');
-
-	return {
-		rid,
-		subscription: subscription.get(),
-		isEmbedded,
-		showFormattingTips: showFormattingTips && !isEmbedded,
-		onInputChanged: (input: HTMLTextAreaElement) => {
-			if (!chatMessages[rid]) {
-				return;
-			}
-
-			chatMessages[rid].initializeInput(input, { rid });
-		},
-		onResize: () => sendToBottomIfNecessary?.(),
-		onKeyUp: (
-			event: KeyboardEvent,
-			{
-				rid,
-				tmid,
-			}: {
-				rid: string;
-				tmid?: string | undefined;
-			},
-		) => chatMessages[rid]?.keyup(event, { rid, tmid }),
-		onKeyDown: (event: KeyboardEvent) => chatMessages[rid]?.keydown(event),
-		onSend: (
-			event: Event,
-			params: {
-				rid: string;
-				tmid?: string;
-				value: string;
-				tshow?: boolean;
-			},
-			done?: () => void,
-		) => chatMessages[rid]?.send(event, params, done),
-	};
-}
-
 function getAnnouncementStyle() {
 	const { room } = Template.instance() as RoomTemplateInstance;
 	return room?.announcementDetails?.style ?? '';
@@ -158,10 +113,6 @@ function getAnnouncementStyle() {
 
 function maxMessageLength() {
 	return settings.get('Message_MaxAllowedSize');
-}
-
-function subscriptionReady(this: { _id: string }) {
-	return RoomManager.getOpenedRoomByRid(this._id)?.streamActive ?? false;
 }
 
 type UnreadData = { count?: number; since?: moment.MomentInput };
@@ -293,10 +244,8 @@ export const roomHelpers = {
 	chatNowLink,
 	announcement,
 	announcementDetails,
-	messageboxData,
 	getAnnouncementStyle,
 	maxMessageLength,
-	subscriptionReady,
 	unreadData,
 	containerBarsShow,
 	formatUnreadSince,
