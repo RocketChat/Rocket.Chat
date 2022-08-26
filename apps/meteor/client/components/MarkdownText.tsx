@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
 import React, { ComponentProps, FC, useMemo } from 'react';
-
+import { settings } from "../../app/settings/client";
 import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
 
 type MarkdownTextParams = {
@@ -109,7 +109,9 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 			}
 		})();
 
-		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
+		const URIschemes = new RegExp('^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp|' + `${settings.get('Markdown_URIAllowedSchemes')}` + '):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))', 'i')
+
+		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: URIschemes});
 	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji]);
 
 	return __html ? (

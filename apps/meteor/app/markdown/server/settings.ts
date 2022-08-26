@@ -30,6 +30,14 @@ settingsRegistry.add('Markdown_Headers', false, {
 	public: true,
 	enableQuery: enableQueryOriginal,
 });
+settingsRegistry.add('Markdown_URIAllowedSchemes', ' ', {
+	type: 'string',
+	group: 'Message',
+	section: 'Markdown',
+	public: true,
+	i18nDescription: 'Markdown_URIAllowedSchemes_Description',
+	enableQuery: enableQueryOriginal,
+}); 
 settingsRegistry.add('Markdown_SupportSchemesForLink', 'http,https', {
 	type: 'string',
 	group: 'Message',
@@ -38,7 +46,6 @@ settingsRegistry.add('Markdown_SupportSchemesForLink', 'http,https', {
 	i18nDescription: 'Markdown_SupportSchemesForLink_Description',
 	enableQuery: enableQueryOriginal,
 });
-
 const enableQueryMarked = { _id: 'Markdown_Parser', value: 'marked' };
 settingsRegistry.add('Markdown_Marked_GFM', true, {
 	type: 'boolean',

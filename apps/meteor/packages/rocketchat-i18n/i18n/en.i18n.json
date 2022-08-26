@@ -3025,6 +3025,8 @@
   "Markdown_Marked_Smartypants": "Enable Marked Smartypants",
   "Markdown_Marked_Tables": "Enable Marked Tables",
   "Markdown_Parser": "Markdown Parser",
+  "Markdown_URIAllowedSchemes": "Allowed specific protocols handlers in URL attributes",
+  "Markdown_URIAllowedSchemes_Description": "It is necessary to write schemes as follows: notes|files|etc",
   "Markdown_SupportSchemesForLink": "Markdown Support Schemes for Link",
   "Markdown_SupportSchemesForLink_Description": "Comma-separated list of allowed schemes",
   "Marketplace": "Marketplace",
