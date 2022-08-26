@@ -2,10 +2,12 @@ import type { Job } from '@rocket.chat/agenda';
 import type { IOmnichannelRoom, IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users } from '@rocket.chat/models';
 import moment from 'moment';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Livechat } from '../../../../app/livechat/server';
 import { forwardRoomToAgent } from '../../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../../app/livechat/server/lib/RoutingManager';
+import { settings } from '../../../../app/settings/server';
 import { ServiceClassInternal } from '../../../../server/sdk/types/ServiceClass';
 import { schedulerLogger } from '../../../app/livechat-enterprise/server/lib/logger';
 import { OmniJobSchedularService } from '../../sdk';
@@ -139,8 +141,11 @@ export class OmniEEService extends ServiceClassInternal implements IOmniEEServic
 			servedBy: { _id: ignoreAgentId },
 		} = room;
 
+		const comment = TAPi18n.__('Livechat_auto_transfer_unanswered_chats_comment', {
+			duration: settings.get('Livechat_auto_transfer_chat_timeout'),
+		});
 		if (!RoutingManager.getConfig().autoAssignAgent) {
-			return Livechat.returnRoomAsInquiry(room._id, departmentId);
+			return Livechat.returnRoomAsInquiry(room._id, departmentId, comment);
 		}
 
 		const agent = await RoutingManager.getNextAgent(departmentId, ignoreAgentId);
@@ -149,6 +154,7 @@ export class OmniEEService extends ServiceClassInternal implements IOmniEEServic
 				userId: agent.agentId,
 				transferredBy: await this.getSystemUser(),
 				transferredTo: agent,
+				comment,
 			});
 		}
 
