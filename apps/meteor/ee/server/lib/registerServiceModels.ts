@@ -1,4 +1,4 @@
-import type { Db } from 'mongodb';
+import type { Collection, Db } from 'mongodb';
 import { registerModel } from '@rocket.chat/models';
 
 import { RolesRaw } from '../../../server/models/raw/Roles';
@@ -21,7 +21,7 @@ import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
 import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
 
 // TODO add trash param to appropiate model instances
-export const registerServiceModels = (db: Db, trash?: any): void => {
+export function registerServiceModels(db: Db, trash?: Collection): void {
 	registerModel('IRolesModel', () => new RolesRaw(db));
 	registerModel('IRoomsModel', () => new RoomsRaw(db));
 	registerModel('ISettingsModel', () => new SettingsRaw(db));

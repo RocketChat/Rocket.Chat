@@ -27,12 +27,12 @@ function connectDb(options?: MongoClientOptions): Promise<MongoClient> {
 
 let db: Db;
 
-export const getConnection = ((): ((options?: MongoClientOptions) => Promise<{ database: Db; trash: Collection }>) => {
+export const getConnection = ((): ((options?: MongoClientOptions) => Promise<Db>) => {
 	let client: Promise<MongoClient>;
 
-	return async (options): Promise<{ database: Db; trash: Collection }> => {
+	return async (options): Promise<Db> => {
 		if (db) {
-			return { database: db, trash: db.collection(Collections.Trash) };
+			return db;
 		}
 		if (!client) {
 			client = connectDb(options);
@@ -42,14 +42,13 @@ export const getConnection = ((): ((options?: MongoClientOptions) => Promise<{ d
 		}
 
 		// if getConnection was called multiple times before it was connected, wait for the connection
-		const database = (await client).db(name);
-		return { database, trash: database.collection(Collections.Trash) };
+		return (await client).db(name);
 	};
 })();
 
 export async function getCollection<T>(name: Collections): Promise<Collection<T>> {
 	if (!db) {
-		db = (await getConnection()).database;
+		db = await getConnection();
 	}
 	return db.collection<T>(name);
 }
