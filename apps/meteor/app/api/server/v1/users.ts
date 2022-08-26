@@ -762,7 +762,7 @@ API.v1.addRoute(
 			if (Meteor.call('sendConfirmationEmail', email)) {
 				return API.v1.success();
 			}
-			return API.v1.error();
+			return API.v1.failure();
 		},
 	},
 );
