@@ -1,5 +1,5 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, Suspense } from 'react';
+import React, { createElement, ReactElement, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import VerticalBarSkeleton from '../../../components/VerticalBar/VerticalBarSkeleton';
@@ -12,7 +12,6 @@ import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
 import RoomLayout from '../layout/RoomLayout';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useTab, useTabBarAPI } from '../providers/ToolboxProvider';
-import LazyComponent from './LazyComponent';
 
 const Room = (): ReactElement => {
 	const t = useTranslation();
@@ -38,7 +37,9 @@ const Room = (): ReactElement => {
 								<VerticalBarOldActions {...tab} name={tab.template} tabBar={tabBar} rid={room._id} _id={room._id} />
 							)}
 							{typeof tab.template !== 'string' && typeof tab.template !== 'undefined' && (
-								<LazyComponent template={tab.template} tabBar={tabBar} rid={room._id} teamId={room.teamId} _id={room._id} />
+								<Suspense fallback={<VerticalBarSkeleton />}>
+									{createElement(tab.template, { tabBar, _id: room._id, rid: room._id, teamId: room.teamId })}
+								</Suspense>
 							)}
 						</SelectedMessagesProvider>
 					</ErrorBoundary>
