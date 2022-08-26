@@ -862,5 +862,15 @@ export class AppsRestApi {
 				},
 			},
 		);
+
+		this.api.addRoute(
+			'is-enabled',
+			{ authRequired: true },
+			{
+				get() {
+					return orchestrator.isEnabled();
+				},
+			},
+		);
 	}
 }

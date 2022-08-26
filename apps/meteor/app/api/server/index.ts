@@ -9,7 +9,6 @@ import './helpers/isUserFromParams';
 import './helpers/parseJsonQuery';
 import './helpers/requestParams';
 import './helpers/isWidget';
-import './helpers/appsIsEnabled';
 import './default/info';
 import './v1/assets';
 import './v1/channels.js';
