@@ -136,7 +136,7 @@ export const createRoom = function <T extends RoomType>(
 			try {
 				callbacks.run('federation.beforeAddUserAToRoom', { user: member, inviter: owner }, room);
 			} catch (error) {
-				throw new Meteor.Error((error as any)?.message);
+				continue;
 			}
 
 			const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
