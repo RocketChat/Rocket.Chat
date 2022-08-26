@@ -13,8 +13,6 @@ import ImportData from './models/ImportData';
 
 export { FederationRoomEvents } from './models/FederationRoomEvents';
 
-export { MatrixBridgedRoom } from './models/MatrixBridgedRoom';
-export { MatrixBridgedUser } from './models/MatrixBridgedUser';
 export {
 	Base,
 	BaseDb,

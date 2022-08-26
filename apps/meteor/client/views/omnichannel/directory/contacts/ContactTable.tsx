@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Icon, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box } from '@rocket.chat/fuselage';
 import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
@@ -27,13 +26,6 @@ type ContactTableProps = {
 	setContactReload(fn: () => void): void;
 };
 
-export const rcxCallDialButton = css`
-	&:not(:hover) {
-		.rcx-call-dial-button {
-			display: none !important;
-		}
-	}
-`;
 function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastchat'>('username');
@@ -128,7 +120,7 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 				</GenericTableHeader>
 				{result.phase === AsyncStatePhase.RESOLVED && (
 					<GenericTableBody>
-						{result.value.visitors.map(({ _id, username, fname, visitorEmails, phone, lastChat }) => {
+						{result.value.visitors.map(({ _id, username, fname, name, visitorEmails, phone, lastChat }) => {
 							const phoneNumber = phone?.length && phone[0].phoneNumber;
 							const visitorEmail = visitorEmails?.length && visitorEmails[0].address;
 
@@ -140,11 +132,11 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 									role='link'
 									height='40px'
 									qa-user-id={_id}
-									className={rcxCallDialButton}
+									rcx-show-call-button-on-hover
 									onClick={onRowClick(_id)}
 								>
 									<GenericTableCell withTruncatedText>{username}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(fname)}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(fname || name)}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>

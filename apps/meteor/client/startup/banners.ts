@@ -1,4 +1,5 @@
 import { BannerPlatform } from '@rocket.chat/core-typings';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -20,14 +21,16 @@ const fetchInitialBanners = async (): Promise<void> => {
 				if (!user?.username) {
 					return;
 				}
-				setTimeout(() => {
-					imperativeModal.open({
-						component: DeviceManagementFeatureModal,
-						props: {
-							close: imperativeModal.close,
-						},
-					});
-				}, 2000);
+
+				process.env.TEST_MODE &&
+					setTimeout(() => {
+						imperativeModal.open({
+							component: DeviceManagementFeatureModal,
+							props: {
+								close: imperativeModal.close,
+							},
+						});
+					}, 2000);
 				computation.stop();
 			});
 			continue;
@@ -78,6 +81,26 @@ Meteor.startup(() => {
 			return;
 		}
 
+		if (Tracker.nonreactive(() => FlowRouter.getRouteName()) === 'setup-wizard') {
+			Tracker.autorun((c) => {
+				if (FlowRouter.getRouteName() !== 'setup-wizard') {
+					unwatchBanners = Tracker.nonreactive(watchBanners);
+					c.stop();
+				}
+			});
+			return;
+		}
+
 		unwatchBanners = Tracker.nonreactive(watchBanners);
+	});
+});
+
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		if (!Meteor.userId()) {
+			return;
+		}
+
+		console.log(FlowRouter.getRouteName());
 	});
 });
