@@ -145,8 +145,8 @@ const AccountProfilePage = (): ReactElement => {
 				}
 				commit();
 				dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			} catch (error: unknown) {
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
 
@@ -185,8 +185,8 @@ const AccountProfilePage = (): ReactElement => {
 				type: 'success',
 				message: t('Logged_out_of_other_clients_successfully'),
 			});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 		setLoggingOut(false);
 	}, [logoutOtherClients, dispatchToastMessage, t]);
@@ -199,8 +199,8 @@ const AccountProfilePage = (): ReactElement => {
 					dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
 					closeModal();
 					logout();
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+				} catch (error: unknown) {
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			};
 
