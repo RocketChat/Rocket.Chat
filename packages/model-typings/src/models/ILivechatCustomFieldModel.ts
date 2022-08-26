@@ -7,4 +7,15 @@ import type { IBaseModel } from './IBaseModel';
 export interface ILivechatCustomFieldModel extends IBaseModel<ILivechatCustomField> {
 	findByScope<T = ILivechatCustomField>(scope: ILivechatCustomField['scope'], options?: FindOptions<T>): FindCursor<T>;
 	findByScope(scope: ILivechatCustomField['scope'], options?: FindOptions<ILivechatCustomField>): FindCursor<ILivechatCustomField>;
+	findMatchingCustomFields(
+		scope: ILivechatCustomField['scope'],
+		searchable: boolean,
+		options?: FindOptions<ILivechatCustomField>,
+	): FindCursor<ILivechatCustomField>;
+	findMatchingCustomFieldsByIds(
+		ids: ILivechatCustomField['_id'][],
+		scope: ILivechatCustomField['scope'],
+		searchable: boolean,
+		options?: FindOptions<ILivechatCustomField>,
+	): FindCursor<ILivechatCustomField>;
 }

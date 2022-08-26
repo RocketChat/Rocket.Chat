@@ -11,6 +11,7 @@ export function loadMessageHistory({
 	limit = 20,
 	ls,
 	showThreadMessages = true,
+	offset = 0,
 }: {
 	userId: string;
 	rid: string;
@@ -18,6 +19,7 @@ export function loadMessageHistory({
 	limit: number;
 	ls: string;
 	showThreadMessages: boolean;
+	offset: number;
 }) {
 	const room = Rooms.findOneById(rid, { fields: { sysMes: 1 } });
 
@@ -28,6 +30,7 @@ export function loadMessageHistory({
 			ts: -1,
 		},
 		limit,
+		skip: offset,
 		fields: {},
 	};
 
