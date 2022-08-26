@@ -19,12 +19,15 @@ Meteor.startup(function () {
 			label: 'Unfollow_message',
 			context: ['message', 'message-mobile', 'threads', 'federated'],
 			async action(_, { message }) {
-				callWithErrorHandling('unfollowMessage', { mid: message._id }).then(() =>
-					dispatchToastMessage({
-						type: 'success',
-						message: TAPi18n.__('You_unfollowed_this_message'),
-					}),
-				);
+				if (!message) {
+					return;
+				}
+
+				await callWithErrorHandling('unfollowMessage', { mid: message._id });
+				dispatchToastMessage({
+					type: 'success',
+					message: TAPi18n.__('You_unfollowed_this_message'),
+				});
 			},
 			condition({ message: { _id, tmid, replies = [] }, user, context }) {
 				if (tmid || context) {

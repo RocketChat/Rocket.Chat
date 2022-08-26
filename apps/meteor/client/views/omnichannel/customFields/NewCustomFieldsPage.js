@@ -14,6 +14,7 @@ const initialValues = {
 	scope: 'visitor',
 	visibility: true,
 	regexp: '',
+	searchable: true,
 };
 
 const NewCustomFieldsPage = ({ reload }) => {
@@ -69,7 +70,7 @@ const NewCustomFieldsPage = ({ reload }) => {
 						<Icon size='x16' name='back' />
 						{t('Back')}
 					</Button>
-					<Button primary onClick={handleSave} disabled={!canSave}>
+					<Button data-qa-id='NewCustomFieldsPageButtonSave' primary onClick={handleSave} disabled={!canSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

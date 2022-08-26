@@ -18,7 +18,7 @@ export const useResetTOTPAction = (userId: IUser['_id']): Action | undefined => 
 			await resetTOTPRequest({ userId });
 			dispatchToastMessage({ type: 'success', message: t('Users_TOTP_has_been_reset') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as Error });
+			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
 			setModal();
 		}

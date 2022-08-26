@@ -65,6 +65,14 @@ declare module 'meteor/meteor' {
 			};
 
 			onMessage(message: string): void;
+
+			status(): {
+				connected: boolean;
+				retryCount?: number;
+				retryTime?: number;
+				status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
+				reconnect: () => void;
+			};
 		}
 
 		const connection: IMeteorConnection;

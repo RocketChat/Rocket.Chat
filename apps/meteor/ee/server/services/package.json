@@ -51,7 +51,7 @@
 		"sodium-plus": "^0.9.0",
 		"underscore.string": "^3.3.6",
 		"uuid": "^8.3.2",
-		"ws": "^8.8.0"
+		"ws": "^8.8.1"
 	},
 	"devDependencies": {
 		"@rocket.chat/icons": "next",

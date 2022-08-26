@@ -60,6 +60,8 @@ declare module 'meteor/rocketchat:streamer' {
 
 		removeListener(event: string, fn: (...data: any[]) => void): void;
 
+		removeAllListeners(event: string): void;
+
 		__emit(...data: any[]): void;
 
 		_emit(eventName: string, args: any[], origin: Connection | undefined, broadcast: boolean, transform?: TransformMessage): boolean;

@@ -27,7 +27,7 @@ const RemoveChatButton: FC<{ _id: string; reload: () => void }> = ({ _id, reload
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal(null);
 		};
@@ -42,7 +42,7 @@ const RemoveChatButton: FC<{ _id: string; reload: () => void }> = ({ _id, reload
 	});
 
 	return (
-		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
+		<Table.Cell fontScale='p2' color='hint' withTruncatedText data-qa='current-chats-cell-delete'>
 			<IconButton small icon='trash' title={t('Remove')} onClick={handleDelete} />
 		</Table.Cell>
 	);

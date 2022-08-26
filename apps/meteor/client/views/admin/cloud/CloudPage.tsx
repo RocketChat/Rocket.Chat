@@ -60,8 +60,8 @@ const CloudPage = function CloudPage(): ReactNode {
 
 			try {
 				await finishOAuthAuthorization(code, state);
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			} catch (error: unknown) {
+				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				cloudRoute.push();
 			}
@@ -84,10 +84,10 @@ const CloudPage = function CloudPage(): ReactNode {
 
 					dispatchToastMessage({ type: 'success', message: t('Connected') });
 				}
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			} catch (error: unknown) {
+				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
-				await reload();
+				reload();
 			}
 		};
 

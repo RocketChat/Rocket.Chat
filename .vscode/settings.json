@@ -14,5 +14,10 @@
 		}
 	],
 	"typescript.tsdk": "./node_modules/typescript/lib",
-	"cSpell.words": ["photoswipe", "tmid"]
+	"cSpell.words": [
+		"livechat",
+		"omnichannel",
+		"photoswipe",
+		"tmid"
+	]
 }
