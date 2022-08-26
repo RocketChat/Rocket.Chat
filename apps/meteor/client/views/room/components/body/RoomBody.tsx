@@ -38,6 +38,14 @@ const RoomBody = (): ReactElement => {
 					div.parentElement,
 					div,
 				);
+
+				div.parentElement.addEventListener(
+					'dragenter',
+					(event) => {
+						fileUploadTriggerProps.onDragEnter(event as any); // TODO: WHY?
+					},
+					{ capture: true },
+				);
 				return;
 			}
 
@@ -46,7 +54,7 @@ const RoomBody = (): ReactElement => {
 				roomOldViewRef.current = undefined;
 			}
 		},
-		[room._id, tabBar],
+		[fileUploadTriggerProps, room._id, tabBar],
 	);
 
 	const subscription = useReactiveValue(
