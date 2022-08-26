@@ -20,12 +20,12 @@ import { IntegrationsRaw } from '../../../server/models/raw/Integrations';
 import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
 import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
 
-// TODO add trash param to model instances
-export const registerServiceModels = (db: Db): void => {
+// TODO add trash param to appropiate model instances
+export const registerServiceModels = (db: Db, trash?: any): void => {
 	registerModel('IRolesModel', () => new RolesRaw(db));
 	registerModel('IRoomsModel', () => new RoomsRaw(db));
 	registerModel('ISettingsModel', () => new SettingsRaw(db));
-	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db));
+	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db, trash));
 	registerModel('ITeamModel', () => new TeamRaw(db));
 	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
 	registerModel('IUsersModel', () => new UsersRaw(db));

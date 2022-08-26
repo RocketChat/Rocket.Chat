@@ -9,7 +9,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 	protected name = 'hub';
 
 	async created(): Promise<void> {
-		const db = await getConnection({ maxPoolSize: 1 });
+		const db = (await getConnection({ maxPoolSize: 1 })).database;
 
 		const watcher = new DatabaseWatcher({ db });
 

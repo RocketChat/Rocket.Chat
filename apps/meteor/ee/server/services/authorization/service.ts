@@ -5,8 +5,8 @@ import { Authorization } from '../../../../server/services/authorization/service
 import { getConnection } from '../mongo';
 import { registerServiceModels } from '../../lib/registerServiceModels';
 
-getConnection().then((db) => {
-	registerServiceModels(db);
+getConnection().then(({ database, trash }) => {
+	registerServiceModels(database, trash);
 
-	api.registerService(new Authorization(db));
+	api.registerService(new Authorization(database));
 });

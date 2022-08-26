@@ -5,8 +5,8 @@ import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/reg
 
 export const notifications = new NotificationsModule(Stream);
 
-getConnection().then((db) => {
-	registerServiceModels(db);
+getConnection().then(({ database, trash }) => {
+	registerServiceModels(database, trash);
 
 	notifications.configure();
 });

@@ -9,7 +9,7 @@ export enum Collections {
 	Subscriptions = 'rocketchat_subscription',
 	UserSession = 'usersSessions',
 	User = 'users',
-	Trash = 'rocketchat_trash',
+	Trash = 'rocketchat__trash',
 	Messages = 'rocketchat_message',
 	Rooms = 'rocketchat_room',
 	Settings = 'rocketchat_settings',
@@ -27,12 +27,12 @@ function connectDb(options?: MongoClientOptions): Promise<MongoClient> {
 
 let db: Db;
 
-export const getConnection = ((): ((options?: MongoClientOptions) => Promise<Db>) => {
+export const getConnection = ((): ((options?: MongoClientOptions) => Promise<{ database: Db; trash: Collection }>) => {
 	let client: Promise<MongoClient>;
 
-	return async (options): Promise<Db> => {
+	return async (options): Promise<{ database: Db; trash: Collection }> => {
 		if (db) {
-			return db;
+			return { database: db, trash: db.collection(Collections.Trash) };
 		}
 		if (!client) {
 			client = connectDb(options);
@@ -40,14 +40,16 @@ export const getConnection = ((): ((options?: MongoClientOptions) => Promise<Db>
 				db = c.db(name);
 			});
 		}
+
 		// if getConnection was called multiple times before it was connected, wait for the connection
-		return (await client).db(name);
+		const database = (await client).db(name);
+		return { database, trash: database.collection(Collections.Trash) };
 	};
 })();
 
 export async function getCollection<T>(name: Collections): Promise<Collection<T>> {
 	if (!db) {
-		db = await getConnection();
+		db = (await getConnection()).database;
 	}
 	return db.collection<T>(name);
 }
