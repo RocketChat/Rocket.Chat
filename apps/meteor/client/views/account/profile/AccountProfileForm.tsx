@@ -121,7 +121,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 
 	useEffect(() => {
 		const getSuggestions = async (): Promise<void> => {
-			const { suggestions } = await getAvatarSuggestions({ userId: user!._id });
+			const { suggestions } = await getAvatarSuggestions();
 			setAvatarSuggestions(suggestions);
 		};
 		getSuggestions();
