@@ -14,8 +14,9 @@ export default {
 		launchOptions: {
 			// force GPU hardware acceleration
 			// (even in headless mode)
-			args: ['--use-gl=egl'],
+			args: ['--use-gl=egl', '--use-fake-ui-for-media-stream'],
 		},
+		permissions: ['microphone'],
 	},
 	outputDir: 'tests/e2e/.playwright',
 	reporter: process.env.CI ? 'github' : 'list',
