@@ -37,18 +37,20 @@ export class FederationMessageServiceSender {
 			return;
 		}
 
-		const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
-		);
-		if (!isRoomFromTheSameHomeServer) {
-			return;
-		}
+		// const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
+		// 	this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
+		// 	this.internalSettingsAdapter.getHomeServerDomain(),
+		// );
+		// console.log({ isRoomFromTheSameHomeServer })
+		// if (!isRoomFromTheSameHomeServer) {
+		// 	return;
+		// }
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(federatedSender.getExternalId()),
 			this.internalSettingsAdapter.getHomeServerDomain(),
 		);
-		if (!isRoomFromTheSameHomeServer || !isUserFromTheSameHomeServer) {
+		// console.log({ isUserFromTheSameHomeServer })
+		if (/*!isRoomFromTheSameHomeServer || */!isUserFromTheSameHomeServer) {
 			return;
 		}
 
@@ -85,18 +87,18 @@ export class FederationMessageServiceSender {
 			return;
 		}
 
-		const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
-		);
-		if (!isRoomFromTheSameHomeServer) {
-			return;
-		}
+		// const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
+		// 	this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
+		// 	this.internalSettingsAdapter.getHomeServerDomain(),
+		// );
+		// if (!isRoomFromTheSameHomeServer) {
+		// 	return;
+		// }
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(federatedSender.getExternalId()),
 			this.internalSettingsAdapter.getHomeServerDomain(),
 		);
-		if (!isRoomFromTheSameHomeServer || !isUserFromTheSameHomeServer) {
+		if (/*!isRoomFromTheSameHomeServer || */!isUserFromTheSameHomeServer) {
 			return;
 		}
 		// TODO: leaked business logic, move this to the domain layer
