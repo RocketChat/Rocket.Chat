@@ -37,7 +37,7 @@ settingsRegistry.add('Markdown_URIAllowedSchemes', ' ', {
 	public: true,
 	i18nDescription: 'Markdown_URIAllowedSchemes_Description',
 	enableQuery: enableQueryOriginal,
-}); 
+});
 settingsRegistry.add('Markdown_SupportSchemesForLink', 'http,https', {
 	type: 'string',
 	group: 'Message',
