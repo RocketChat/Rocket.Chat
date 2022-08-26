@@ -3,11 +3,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { getCustomFormTemplate } from '../customTemplates/register';
-import './agentEdit.html';
 import { hasPermission } from '../../../../../authorization';
 import { t, APIClient } from '../../../../../utils/client';
-import { handleError } from '../../../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
+import './agentEdit.html';
 
 Template.agentEdit.helpers({
 	canEditDepartment() {
@@ -80,7 +79,8 @@ Template.agentEdit.events({
 		const agentDepartments = instance.agentDepartments.get();
 		Meteor.call('livechat:saveAgentInfo', _id, agentData, agentDepartments, (error) => {
 			if (error) {
-				return handleError(error);
+				dispatchToastMessage({ type: 'error', message: error });
+				return;
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });

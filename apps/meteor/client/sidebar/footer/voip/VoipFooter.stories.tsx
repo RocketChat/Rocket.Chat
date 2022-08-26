@@ -90,7 +90,6 @@ const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
 				callsInQueue='2 Calls In Queue'
 				dispatchEvent={() => null}
 				openedRoomInfo={{ v: { token: '' }, rid: '' }}
-				anonymousText={'Anonymous'}
 				options={{
 					deviceSettings: {
 						label: (

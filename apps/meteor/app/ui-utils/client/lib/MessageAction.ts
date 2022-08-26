@@ -1,4 +1,4 @@
-import type { ComponentProps, MouseEvent } from 'react';
+import type { ComponentProps } from 'react';
 import _ from 'underscore';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
@@ -53,9 +53,9 @@ export type MessageActionConfig = {
 	color?: string;
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
-	action: <E extends HTMLOrSVGElement>(
-		e: MouseEvent<E>,
-		{ message, tabbar, room }: { message: IMessage; tabbar: ToolboxContextValue; room: IRoom },
+	action: (
+		e: Pick<Event, 'preventDefault' | 'stopPropagation'>,
+		{ message, tabbar, room }: { message?: IMessage; tabbar: ToolboxContextValue; room?: IRoom },
 	) => any;
 	condition?: (props: MessageActionConditionProps) => boolean;
 };

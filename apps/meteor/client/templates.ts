@@ -88,18 +88,6 @@ createTemplateForComponent('NotificationsPreferences', () => import('./views/roo
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
 
-createTemplateForComponent('InviteUsers', () => import('./views/room/contextualBar/RoomMembers/InviteUsers'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('EditInvite', () => import('./views/room/contextualBar/RoomMembers/EditInvite'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
-createTemplateForComponent('AddUsers', () => import('./views/room/contextualBar/RoomMembers/AddUsers'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
-});
-
 createTemplateForComponent('membersList', () => import('./views/room/contextualBar/RoomMembers'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
@@ -165,3 +153,5 @@ createTemplateForComponent('ComposerNotAvailablePhoneCalls', () => import('./com
 createTemplateForComponent('loggedOutBanner', () => import('../ee/client/components/deviceManagement/LoggedOutBanner'), {
 	renderContainerView: () => HTML.DIV({ style: 'max-width: 520px; margin: 0 auto;' }),
 });
+
+createTemplateForComponent('ComposerSkeleton', () => import('./views/room/Room/ComposerSkeleton'));

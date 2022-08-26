@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { IMessage } from '@rocket.chat/core-typings';
+import { Mongo } from 'meteor/mongo';
 import { useCallback, useMemo } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
@@ -47,11 +48,11 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 	// const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 	// const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings || [];
 	// const hideMessagesOfType = new Set(settingValues.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
-	const query = useMemo(
+	const query: Mongo.Query<IMessage> = useMemo(
 		() => ({
 			rid,
 			_hidden: { $ne: true },
-			$or: [{ tmid: { $exists: 0 } }, { tshow: { $eq: true } }],
+			$or: [{ tmid: { $exists: false } }, { tshow: { $eq: true } }],
 		}),
 		[rid],
 	);

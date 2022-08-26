@@ -1,9 +1,9 @@
 import { Box, Button, ButtonGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Card } from '@rocket.chat/ui-client';
 import { useSetModal, useSetting, useSettingSetValue, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import Card from '../../../../components/Card';
 import SettingsProvider from '../../../../providers/SettingsProvider';
 import { CardHeader, Section } from './components';
 import { FederationModal } from './components/FederationModal';

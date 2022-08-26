@@ -16,7 +16,7 @@ export function changeSettingValue(record: ISetting): SettingValue {
 	}
 
 	if (!record.modules?.length) {
-		return record.invalidValue;
+		return record.value;
 	}
 
 	for (const moduleName of record.modules) {
