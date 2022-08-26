@@ -54,7 +54,7 @@ class MessageParser extends UiKitParserMessage {
 		return <ContextBlock key={index} {...element} parser={this} />;
 	};
 
-	plainText = (element, context, index) => {
+	plain_text = (element, context, index) => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
