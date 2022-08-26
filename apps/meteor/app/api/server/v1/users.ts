@@ -759,9 +759,8 @@ API.v1.addRoute(
 		post() {
 			const { email } = this.bodyParams;
 
-			if(Meteor.call('sendConfirmationEmail', email)) {
+			if (Meteor.call('sendConfirmationEmail', email)) {
 				return API.v1.success();
-
 			}
 			return API.v1.error();
 		},
