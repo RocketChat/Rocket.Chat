@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { AsyncStatePhase } from '../../lib/asyncState';
 import { RecordList } from '../../lib/lists/RecordList';
 
-type RecordListValue<T> = {
+export type RecordListValue<T> = {
 	phase: AsyncStatePhase;
 	items: T[];
 	itemCount: number;
