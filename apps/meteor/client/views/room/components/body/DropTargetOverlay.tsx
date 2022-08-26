@@ -65,6 +65,7 @@ function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDism
 	return (
 		<Box
 			role='dialog'
+			data-qa='DropTargetOverlay'
 			position='absolute'
 			zIndex={1_000_000}
 			inset={0}
