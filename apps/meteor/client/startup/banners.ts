@@ -81,12 +81,26 @@ Meteor.startup(() => {
 			return;
 		}
 
-		FlowRouter.watchPathChange();
-
-		if (FlowRouter.getRouteName() === 'setup-wizard') {
+		if (Tracker.nonreactive(() => FlowRouter.getRouteName()) === 'setup-wizard') {
+			Tracker.autorun((c) => {
+				if (FlowRouter.getRouteName() !== 'setup-wizard') {
+					unwatchBanners = Tracker.nonreactive(watchBanners);
+					c.stop();
+				}
+			});
 			return;
 		}
 
 		unwatchBanners = Tracker.nonreactive(watchBanners);
+	});
+});
+
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		if (!Meteor.userId()) {
+			return;
+		}
+
+		console.log(FlowRouter.getRouteName());
 	});
 });
