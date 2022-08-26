@@ -7,7 +7,7 @@ import { AsyncStatePhase } from '../lib/asyncState';
 import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
 type AutoCompleteAgentProps = {
-	value: string | number | readonly string[];
+	value: string;
 	onChange: (value: string) => void;
 	haveAll?: boolean;
 	haveNoAgentsSelectedOption?: boolean;
