@@ -1957,7 +1957,6 @@ describe('Meteor.methods', function () {
 	});
 
 	describe('/apps/is-enabled', () => {
-
 		it('should return an error when the required parameter "AppServerOrchestrator" is not provided', (done) => {
 			request
 				.get(api('/apps/is-enabled'))
