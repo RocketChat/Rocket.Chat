@@ -1,14 +1,13 @@
 import { Field, TextInput, ButtonGroup, Button, Select } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import React, { useCallback } from 'react';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 
-import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
+import CustomFieldsForm from '../../../../../components/Omnichannel/CustomFieldsForm';
 import Tags from '../../../../../components/Omnichannel/Tags';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 import { FormSkeleton } from '../../Skeleton';
-import { useCustomFields } from './hooks/useCustomFields';
 import { usePriorities } from './hooks/usePriorities';
 
 const CUSTOM_FIELDS_PERMISSION = ['view-livechat-room-customfields', 'edit-livechat-room-customfields'];
@@ -32,22 +31,6 @@ const getInitialValuesRoom = (room) => {
 	};
 };
 
-const jsonConverterToValidFormat = (customFields) => {
-	const jsonObj = {};
-	customFields.forEach(({ _id, label, visibility, options, scope, defaultValue, required }) => {
-		(visibility === 'visible') & (scope === 'room') &&
-			(jsonObj[_id] = {
-				label,
-				type: options ? 'select' : 'text',
-				required,
-				defaultValue,
-				options: options && options.split(',').map((item) => item.trim()),
-			});
-	});
-
-	return jsonObj;
-};
-
 const RoomEdit = ({ room, visitor, reload, reloadInfo, close }) => {
 	const t = useTranslation();
 
@@ -56,22 +39,16 @@ const RoomEdit = ({ room, visitor, reload, reloadInfo, close }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const saveRoom = useMethod('livechat:saveInfo');
 
-	const [customFieldsErrors, setCustomFieldsErrors] = useState([]);
+	const methods = useForm({ defaultValues: getInitialValuesRoom(room), mode: 'onChange' });
 
 	const {
 		control,
 		register,
 		getValues,
-		formState: { isDirty },
-	} = useForm({ defaultValues: getInitialValuesRoom(room) });
+		formState: { isDirty, isValid },
+	} = methods;
 
-	const { data: customFieldsData, isError: customFieldsError, isLoading: customFieldsLoading } = useCustomFields();
 	const { data: prioritiesData, isError: prioritiesError, isLoading: prioritiesLoading } = usePriorities();
-
-	const jsonCustomField = useMemo(
-		() => (customFieldsData?.customFields ? jsonConverterToValidFormat(customFieldsData.customFields) : {}),
-		[customFieldsData],
-	);
 
 	const handleSubmit = useCallback(async () => {
 		const values = getValues();
@@ -99,30 +76,14 @@ const RoomEdit = ({ room, visitor, reload, reloadInfo, close }) => {
 		}
 	}, [close, dispatchToastMessage, getValues, reload, reloadInfo, room._id, saveRoom, t, visitor._id]);
 
-	if (!customFieldsData || !prioritiesData || customFieldsLoading || customFieldsError || prioritiesLoading || prioritiesError) {
+	if (!prioritiesData || prioritiesLoading || prioritiesError) {
 		return <FormSkeleton />;
 	}
 
 	return (
-		<>
+		<FormProvider {...methods}>
 			<VerticalBar.ScrollableContent is='form'>
-				{viewCustomFields && (
-					<Controller
-						control={control}
-						name='livechatData'
-						render={({ field: { name, value, onChange } }) => (
-							<CustomFieldsForm
-								name={name}
-								jsonCustomFields={jsonCustomField}
-								customFieldsData={value}
-								setCustomFieldsData={onChange}
-								setCustomFieldsError={(errors) => {
-									setCustomFieldsErrors(errors);
-								}}
-							/>
-						)}
-					/>
-				)}
+				{viewCustomFields && <CustomFieldsForm />}
 				<Field>
 					<Field.Label>{t('Topic')}</Field.Label>
 					<Field.Row>
@@ -161,12 +122,12 @@ const RoomEdit = ({ room, visitor, reload, reloadInfo, close }) => {
 					<Button flexGrow={1} onClick={close}>
 						{t('Cancel')}
 					</Button>
-					<Button mie='none' flexGrow={1} onClick={handleSubmit} disabled={!isDirty && customFieldsErrors.length > 0} primary>
+					<Button mie='none' flexGrow={1} onClick={handleSubmit} disabled={!isDirty || !isValid} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 			</VerticalBar.Footer>
-		</>
+		</FormProvider>
 	);
 };
 

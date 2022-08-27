@@ -4545,6 +4545,7 @@
   "The_emails_are_being_sent": "The emails are being sent.",
   "The_empty_room__roomName__will_be_removed_automatically": "The empty room <span style=\"font-weight: bold;\">__roomName__</span> will be removed automatically.",
   "The_field_is_required": "The field %s is required.",
+  "The_field_is_not_valid": "The field %s is not valid.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "The image resize will not work because we can not detect ImageMagick or GraphicsMagick installed on your server.",
   "The_message_is_a_discussion_you_will_not_be_able_to_recover": "The message is a discussion you will not be able to recover the messages!",
   "The_mobile_notifications_were_disabled_to_all_users_go_to_Admin_Push_to_enable_the_Push_Gateway_again": "The mobile notifications were disabled to all users, go to \"Admin > Push\" to enable the Push Gateway again",
