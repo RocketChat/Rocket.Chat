@@ -15,7 +15,7 @@ export const CustomSelectInput = forwardRef<
 		formState: { errors },
 	} = useFormContext();
 
-	const mappedOptions = useMemo(() => data.options.split(';').map<[string, string]>((value) => [value, value]), [data.options]);
+	const mappedOptions = useMemo(() => data.options.split(',').map<[string, string]>((value) => [value, value]), [data.options]);
 
 	const errorMessage = useMemo(() => {
 		if (errors?.livechatData && errors?.livechatData[data._id]?.type === 'required') {
