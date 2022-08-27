@@ -719,7 +719,7 @@ export type OmnichannelCustomFieldEndpointPayload = {
 	regexp: string;
 	required: boolean;
 	scope: 'visitor' | 'room';
-	type: 'select' | 'text';
+	type: 'select' | 'input';
 	visibility: string;
 	_id: string;
 };

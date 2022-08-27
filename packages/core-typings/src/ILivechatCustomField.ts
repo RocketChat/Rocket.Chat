@@ -3,7 +3,7 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 export interface ILivechatCustomField extends IRocketChatRecord {
 	label: string;
 	scope: 'visitor' | 'room';
-	visibility: string;
+	visibility: 'visible' | 'hidden';
 	type?: string;
 	regexp?: string;
 	required?: boolean;
