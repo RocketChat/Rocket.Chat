@@ -1957,15 +1957,13 @@ describe('Meteor.methods', function () {
 	});
 
 	describe('/apps/is-enabled', () => {
-		it('should return an error when the required parameter "AppServerOrchestrator" is not provided', (done) => {
+		it('should return 401 unauthorized', (done) => {
 			request
 				.get(api('/apps/is-enabled'))
-				.set(credentials)
-				.query()
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('result', false);
+					expect(res.body).to.have.property('message');
 				})
 				.end(done);
 		});
