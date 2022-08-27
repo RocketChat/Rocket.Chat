@@ -1,4 +1,3 @@
-import validation from 'ajv/dist/vocabularies/validation';
 import React, { ReactElement } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -24,6 +23,7 @@ const CustomFieldsForm = (): ReactElement | null => {
 	return (
 		<>
 			{data.customFields.map((customField) => {
+				// TODO: REMOVE FILTER ONCE THE ENDPOINT SUPPORTS A SCOPE PARAMETER
 				if (customField.scope !== 'room') {
 					return null;
 				}
