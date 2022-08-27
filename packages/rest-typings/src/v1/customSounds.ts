@@ -38,7 +38,7 @@ export const isCustomSoundsListSchemaProps = ajv.compile<CustomSoundsList>(Custo
 type UploadCustomSound = {
 	binaryContent: string;
 	contentType: string;
-	soundData: ICustomSound;
+	soundData: Record<string, unknown>;
 };
 
 const UploadCustomSoundSchema = {
@@ -52,14 +52,6 @@ const UploadCustomSoundSchema = {
 		},
 		soundData: {
 			type: 'object',
-			properties: {
-				name: {
-					type: 'string',
-				},
-				statusType: {
-					type: 'string',
-				},
-			},
 		},
 		required: ['binaryContent', 'contentType', 'soundData'],
 		additionalProperties: false,

@@ -51,10 +51,14 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 				reader.readAsBinaryString(soundFile);
 				reader.onloadend = (): void => {
 					try {
-						uploadCustomSound(reader.result, soundFile.type, {
-							...soundData,
-							_id: soundId,
-							random: Math.round(Math.random() * 1000),
+						uploadCustomSound({
+							binaryContent: reader.result as string,
+							contentType: soundFile.type,
+							soundData: {
+								...soundData,
+								_id: soundId,
+								random: Math.round(Math.random() * 1000),
+							},
 						});
 						dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 					} catch (error) {

@@ -36,7 +36,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { binaryContent, contentType, soundData } = this.bodyParams();
+			const { binaryContent, contentType, soundData } = this.bodyParams;
 
 			const result = Meteor.call('uploadCustomSound', binaryContent, contentType, soundData);
 
