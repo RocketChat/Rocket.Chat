@@ -345,5 +345,8 @@ export class ListenersModule {
 		service.onEvent('connector.statuschanged', (enabled): void => {
 			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
 		});
+		service.onEvent('omnichannel.room', (roomId, data): void => {
+			notifications.streamLivechatRoom.emitWithoutBroadcast(roomId, data);
+		});
 	}
 }
