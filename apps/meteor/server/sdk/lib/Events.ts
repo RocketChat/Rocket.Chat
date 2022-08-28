@@ -124,6 +124,10 @@ export type EventSignatures = {
 		diff?: undefined | Record<string, any>;
 		id: string;
 	}): void;
+	'omnichannel.room'(
+		roomId: string,
+		data: { type: 'agentStatus'; status: string } | { type: 'queueData' | 'agentData'; data: { [k: string]: unknown } },
+	): void;
 
 	// Send all events from here
 	'voip.events'(userId: string, data: VoipEventDataSignature): void;
