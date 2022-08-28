@@ -169,6 +169,17 @@ export class ListenersModule {
 				});
 			}
 
+			// Don't do notifications for updating inquiries when the only thing changing is the queue metadata
+			if (
+				clientAction === 'updated' &&
+				diff?.hasOwnProperty('lockedAt') &&
+				diff?.hasOwnProperty('locked') &&
+				diff?.hasOwnProperty('_updatedAt') &&
+				Object.keys(diff).length === 3
+			) {
+				return;
+			}
+
 			notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
 				...inquiry,
 				clientAction,
