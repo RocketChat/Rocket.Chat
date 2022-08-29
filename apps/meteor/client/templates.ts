@@ -114,10 +114,6 @@ createTemplateForComponent('PruneMessages', () => import('./views/room/contextua
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
 
-createTemplateForComponent('loginLayoutHeader', () => import('./views/login/LoginLayout/Header'));
-
-createTemplateForComponent('loginLayoutFooter', () => import('./views/login/LoginLayout/Footer'));
-
 createTemplateForComponent('ModalBlock', () => import('./views/blocks/ConnectedModalBlock'), {
 	renderContainerView: () => HTML.DIV({ style: 'display: flex; width: 100%; height: 100%;' }),
 });
@@ -153,3 +149,9 @@ createTemplateForComponent('loggedOutBanner', () => import('../ee/client/compone
 });
 
 createTemplateForComponent('ComposerSkeleton', () => import('./views/room/Room/ComposerSkeleton'));
+
+createTemplateForComponent('loginLayoutHeader', () => import('./views/login/LoginLayout/LoginLayoutHeader'));
+
+createTemplateForComponent('loginLayoutFooter', () => import('./views/login/LoginLayout/Footer'));
+
+createTemplateForComponent('loginLayout', () => import('./views/login/LoginLayout/LoginPage'));

@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 
 import { useAssetPath } from './useAssetPath';
 
-const Header = (): ReactElement => {
+const LoginLayoutHeader = (): ReactElement => {
 	const logoUrl = useAssetPath('Assets_logo');
 
 	return (
@@ -14,4 +14,4 @@ const Header = (): ReactElement => {
 	);
 };
 
-export default Header;
+export default LoginLayoutHeader;

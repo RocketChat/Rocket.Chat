@@ -1,7 +1,7 @@
 import React, { ReactElement, ReactNode } from 'react';
 
 import Footer from './Footer';
-import Header from './Header';
+import Header from './LoginLayoutHeader';
 import { useAssetPath } from './useAssetPath';
 
 type LoginLayoutProps = {
