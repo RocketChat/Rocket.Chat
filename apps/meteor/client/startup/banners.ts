@@ -94,13 +94,3 @@ Meteor.startup(() => {
 		unwatchBanners = Tracker.nonreactive(watchBanners);
 	});
 });
-
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		if (!Meteor.userId()) {
-			return;
-		}
-
-		console.log(FlowRouter.getRouteName());
-	});
-});
