@@ -81,20 +81,12 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		// noop
 	}
 
-	tryEnsureIndex(index: IndexSpecification, options: CreateIndexesOptions) {
-		try {
-			return this.col.createIndex(index, options);
-		} catch (e) {
-			console.error('Error creating index:', this.name, '->', index, options, e);
-		}
+	tryEnsureIndex(index: IndexSpecification, options: CreateIndexesOptions): Promise<string> {
+		return this.col.createIndex(index, options);
 	}
 
-	tryDropIndex(index: string) {
-		try {
-			return this.col.dropIndex(index);
-		} catch (e) {
-			console.error('Error dropping index:', this.name, '->', index, e);
-		}
+	tryDropIndex(index: string): Promise<Document> {
+		return this.col.dropIndex(index);
 	}
 
 	getCollectionName(): string {

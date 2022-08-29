@@ -64,7 +64,6 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findOneByUsername(username, options = null) {
-		// @NOTE why not use the escaping done in the meteor meteor here?
 		const query = { username };
 
 		return this.findOne(query, options);
@@ -503,7 +502,6 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	async getAgentInfo(agentId) {
-		// TODO: Create class Agent
 		const query = {
 			_id: agentId,
 		};
@@ -1043,7 +1041,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.update({ _id }, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	async isUserInRoleScope(uid) {
