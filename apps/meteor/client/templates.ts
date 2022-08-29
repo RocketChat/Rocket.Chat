@@ -35,7 +35,23 @@ createTemplateForComponent(
 	},
 );
 
-createTemplateForComponent('RoomForeword', () => import('./components/RoomForeword'), {
+createTemplateForComponent('LeaderBar', () => import('./views/room/components/body/LeaderBar'), {
+	attachment: 'at-parent',
+});
+
+createTemplateForComponent('UnreadMessagesIndicator', () => import('./views/room/components/body/UnreadMessagesIndicator'), {
+	attachment: 'at-parent',
+});
+
+createTemplateForComponent('UploadProgressIndicator', () => import('./views/room/components/body/UploadProgressIndicator'), {
+	attachment: 'at-parent',
+});
+
+createTemplateForComponent('RetentionPolicyWarning', () => import('./views/room/components/body/RetentionPolicyWarning'), {
+	attachment: 'at-parent',
+});
+
+createTemplateForComponent('RoomForeword', () => import('./views/room/components/body/RoomForeword'), {
 	attachment: 'at-parent',
 });
 

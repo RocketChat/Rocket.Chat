@@ -1,4 +1,4 @@
-import moment from 'moment';
+import type moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
@@ -6,13 +6,14 @@ import { Template } from 'meteor/templating';
 import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
 
 import { t, getUserPreference } from '../../../../../utils/client';
-import { ChatMessage, RoomRoles, Users, Rooms } from '../../../../../models/client';
-import { RoomHistoryManager, RoomManager } from '../../../../../ui-utils/client';
+import { ChatMessage, RoomRoles, Users, Rooms, Subscriptions } from '../../../../../models/client';
+import { readMessage, RoomHistoryManager, RoomManager } from '../../../../../ui-utils/client';
 import { settings } from '../../../../../settings/client';
 import { callbacks } from '../../../../../../lib/callbacks';
 import { hasAllPermission, hasRole } from '../../../../../authorization/client';
-import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
 import type { RoomTemplateInstance } from './RoomTemplateInstance';
+import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
+import { openUserCard } from '../../../lib/UserCard';
 
 function tabBar() {
 	return (Template.instance() as RoomTemplateInstance).tabBar;
@@ -91,10 +92,6 @@ function roomLeader(this: { _id: string }) {
 	}
 }
 
-function chatNowLink(this: { username: string }) {
-	return roomCoordinator.getRouteLink('d', { name: this.username });
-}
-
 function announcement() {
 	return (Template.instance() as RoomTemplateInstance).state.get('announcement');
 }
@@ -135,14 +132,6 @@ function containerBarsShow(unreadData: UnreadData, uploading: unknown[]) {
 	if (hasUnreadData || isUploading) {
 		return 'show';
 	}
-}
-
-function formatUnreadSince(this: UnreadData) {
-	if (!this.since) {
-		return;
-	}
-
-	return moment(this.since).calendar(null, { sameDay: 'LT' });
 }
 
 function adminClass() {
@@ -231,6 +220,61 @@ function openedThread() {
 	};
 }
 
+function handleUnreadBarJumpToButtonClick() {
+	const rid = Template.parentData()._id;
+
+	return (event: MouseEvent) => {
+		event.preventDefault();
+
+		const room = RoomHistoryManager.getRoom(rid);
+		let message = room?.firstUnread.get();
+		if (!message) {
+			const subscription = Subscriptions.findOne({ rid });
+			message = ChatMessage.findOne({ rid, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 });
+		}
+		RoomHistoryManager.getSurroundingMessages(message, 50);
+	};
+}
+
+function handleMarkAsReadButtonClick() {
+	const rid = Template.parentData()._id;
+
+	return (event: MouseEvent) => {
+		event.preventDefault();
+
+		readMessage.readNow(rid);
+	};
+}
+
+function handleUploadProgressCloseButtonClick(id: string) {
+	return () => {
+		return (event: MouseEvent): void => {
+			event.preventDefault();
+			Session.set(`uploading-cancel-${id}`, true);
+		};
+	};
+}
+
+function handleOpenUserCardButtonClick(this: { username: string }) {
+	const instance = Template.instance() as CommonRoomTemplateInstance;
+	const { username } = this;
+
+	return (event: MouseEvent): void => {
+		event.preventDefault();
+		event.stopPropagation();
+
+		openUserCard({
+			username,
+			rid: instance.data.rid,
+			target: event.currentTarget,
+			open: (e: MouseEvent) => {
+				e.preventDefault();
+				instance.data.tabBar.openUserInfo(username);
+			},
+		});
+	};
+}
+
 export const roomHelpers = {
 	tabBar,
 	subscribed,
@@ -241,14 +285,12 @@ export const roomHelpers = {
 	windowId,
 	uploading,
 	roomLeader,
-	chatNowLink,
 	announcement,
 	announcementDetails,
 	getAnnouncementStyle,
 	maxMessageLength,
 	unreadData,
 	containerBarsShow,
-	formatUnreadSince,
 	adminClass,
 	messageViewMode,
 	selectable,
@@ -258,4 +300,8 @@ export const roomHelpers = {
 	hideLeaderHeader,
 	hasLeader,
 	openedThread,
+	handleUnreadBarJumpToButtonClick,
+	handleMarkAsReadButtonClick,
+	handleUploadProgressCloseButtonClick,
+	handleOpenUserCardButtonClick,
 };

@@ -44,6 +44,8 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 			},
 		);
 
+		this.room = room;
+
 		if (room.t !== 'd') {
 			return c.stop();
 		}

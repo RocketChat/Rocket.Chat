@@ -330,11 +330,6 @@
 		}
 	}
 
-	& .ticks-bar {
-		right: auto;
-		left: 2px;
-	}
-
 	& .fixed-title {
 		right: 0;
 		left: auto;

@@ -2,11 +2,9 @@ import _ from 'underscore';
 import { Random } from 'meteor/random';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Session } from 'meteor/session';
 import type { IRoom, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 
-import { ChatMessage, Subscriptions } from '../../../../../models/client';
-import { RoomHistoryManager, RoomManager, readMessage } from '../../../../../ui-utils/client';
+import { RoomHistoryManager, RoomManager } from '../../../../../ui-utils/client';
 import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
 import { chatMessages } from '../../../lib/ChatMessages';
 import type { RoomTemplateInstance } from './RoomTemplateInstance';
@@ -66,29 +64,6 @@ function handleNewMessageButtonClick(_event: JQuery.ClickEvent, instance: RoomTe
 	input?.focus();
 }
 
-function handleUploadProgressCloseButtonClick(this: { id: string }, e: JQuery.ClickEvent) {
-	e.preventDefault();
-	Session.set(`uploading-cancel-${this.id}`, true);
-}
-
-function handleMarkAsReadButtonClick(_e: JQuery.ClickEvent, t: RoomTemplateInstance) {
-	readMessage.readNow(t.data._id);
-}
-
-function handleUnreadBarJumpToButtonClick(_e: JQuery.ClickEvent, t: RoomTemplateInstance) {
-	const { _id } = t.data;
-	const room = RoomHistoryManager.getRoom(_id);
-	let message = room?.firstUnread.get();
-	if (!message) {
-		const subscription = Subscriptions.findOne({ rid: _id });
-		message = ChatMessage.find(
-			{ rid: _id, ts: { $gt: subscription != null ? subscription.ls : undefined } },
-			{ sort: { ts: 1 }, limit: 1 },
-		).fetch()[0];
-	}
-	RoomHistoryManager.getSurroundingMessages(message, 50);
-}
-
 const handleWrapperScroll = _.throttle(function (this: { _id: IRoom['_id'] }, e: JQuery.ScrollEvent, t: RoomTemplateInstance) {
 	const $roomLeader = $('.room-leader');
 	if ($roomLeader.length) {
@@ -130,9 +105,6 @@ export const roomEvents = {
 	'load .gallery-item': handleGalleryItemLoad,
 	'rendered .js-block-wrapper': handleBlockWrapperRendered,
 	'click .new-message': handleNewMessageButtonClick,
-	'click .upload-progress-close': handleUploadProgressCloseButtonClick,
-	'click .unread-bar > button.mark-read': handleMarkAsReadButtonClick,
-	'click .unread-bar > button.jump-to': handleUnreadBarJumpToButtonClick,
 	'scroll .wrapper': handleWrapperScroll,
 	'click .time a': handleTimeClick,
 };
