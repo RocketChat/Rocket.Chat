@@ -138,7 +138,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
 		inbox: string;
-		thread: string;
+		thread: string[];
 		replyTo: string;
 		subject: string;
 	};
