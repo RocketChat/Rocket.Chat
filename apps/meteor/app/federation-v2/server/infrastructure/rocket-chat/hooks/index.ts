@@ -3,7 +3,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { callbacks } from '../../../../../../lib/callbacks';
 
 export class FederationHooks {
-	public static afterLeaveRoom(callback: (user: IUser, room: IRoom) => void): void {
+	public static afterUserLeaveRoom(callback: (user: IUser, room: IRoom) => Promise<void>): void {
 		callbacks.add(
 			'afterLeaveRoom',
 			(user: IUser, room: IRoom | undefined): void => {
@@ -17,7 +17,7 @@ export class FederationHooks {
 		);
 	}
 
-	public static afterRemoveFromRoom(callback: (removedUser: IUser, room: IRoom, userWhoRemoved: IUser) => void): void {
+	public static onUserRemovedFromRoom(callback: (removedUser: IUser, room: IRoom, userWhoRemoved: IUser) => Promise<void>): void {
 		callbacks.add(
 			'afterRemoveFromRoom',
 			(params: { removedUser: IUser; userWhoRemoved: IUser }, room: IRoom | undefined): void => {
@@ -31,41 +31,41 @@ export class FederationHooks {
 		);
 	}
 
-	public static canAddTheUserToTheRoom(callback: (user: string | IUser, room: IRoom) => void): void {
+	public static canAddFederatedUserToNonFederatedRoom(callback: (user: IUser | string, room: IRoom) => Promise<void>): void {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
 			(params: { user: IUser | string }, room: IRoom): void => {
 				Promise.await(callback(params.user, room));
 			},
 			callbacks.priority.HIGH,
-			'federation-v2-can-add-user-to-the-room',
+			'federation-v2-can-add-federated-user-to-non-federated-room',
 		);
 	}
 
-	public static canAddUsersToTheRoom(callback: (user: IUser | string, inviter: IUser, room: IRoom) => void): void {
+	public static canAddFederatedUserToFederatedRoom(callback: (user: IUser | string, inviter: IUser, room: IRoom) => Promise<void>): void {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
 			(params: { user: IUser | string; inviter: IUser }, room: IRoom): void => {
 				Promise.await(callback(params.user, params.inviter, room));
 			},
 			callbacks.priority.HIGH,
-			'federation-v2-can-add-users-to-the-room',
+			'federation-v2-can-add-federated-user-to-federated-room',
 		);
 	}
 
-	public static beforeCreateDirectMessage(callback: (members: IUser[]) => void): void {
+	public static canCreateDirectMessageFromUI(callback: (members: IUser[]) => Promise<void>): void {
 		callbacks.add(
 			'federation.beforeCreateDirectMessage',
 			(members: IUser[]): void => {
 				Promise.await(callback(members));
 			},
 			callbacks.priority.HIGH,
-			'federation-v2-before-create-direct-message-ce',
+			'federation-v2-can-create-direct-message-from-ui-ce',
 		);
 	}
 
 	public static removeCEValidation(): void {
-		callbacks.remove('federation.beforeAddUserAToRoom', 'federation-v2-can-add-users-to-the-room');
-		callbacks.remove('federation.beforeCreateDirectMessage', 'federation-v2-before-create-direct-message-ce');
+		callbacks.remove('federation.beforeAddUserAToRoom', 'federation-v2-can-add-federated-user-to-federated-room');
+		callbacks.remove('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce');
 	}
 }
