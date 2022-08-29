@@ -1,6 +1,49 @@
 
 # 5.1.0 (Under Release Candidate Process)
 
+## 5.1.0-rc.1
+`2022-08-29  ·  2 🐛  ·  6 🔍  ·  7 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** Omnichannel real time data on micro services ([#26703](https://github.com/RocketChat/Rocket.Chat/pull/26703))
+
+- Omnichannel inquiries being updated even if not needed ([#26692](https://github.com/RocketChat/Rocket.Chat/pull/26692))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Convert AutoCompleteAgent to tsx ([#26704](https://github.com/RocketChat/Rocket.Chat/pull/26704))
+
+- Chore: create a test for managers screen ([#26581](https://github.com/RocketChat/Rocket.Chat/pull/26581))
+
+- Chore: Engagement Dashboard end to end tests ([#26702](https://github.com/RocketChat/Rocket.Chat/pull/26702))
+
+  Adding tests to check the behavior of the Engagement Dashboard for the Enterprise Edition license. 
+  The tests include:   
+  - Visibility and navigation of page and tabs  
+  - Fallback component on widgets error
+
+- Chore: Remove & Test cannedResponse meteor templates ([#26706](https://github.com/RocketChat/Rocket.Chat/pull/26706))
+
+- Chore: Remove visitor, agent and customTemplate meteor templates ([#26700](https://github.com/RocketChat/Rocket.Chat/pull/26700))
+
+- Regression: Remove log from banners.ts ([#26699](https://github.com/RocketChat/Rocket.Chat/pull/26699))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@weslley543](https://github.com/weslley543)
+
 ## 5.1.0-rc.0
 `2022-08-26  ·  8 🎉  ·  7 🚀  ·  49 🐛  ·  110 🔍  ·  37 👩‍💻👨‍💻`
 
@@ -578,6 +621,165 @@
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.0.4
+`2022-08-19  ·  1 🐛  ·  3 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** User not marked as offline on log out when using micro services ([#26579](https://github.com/RocketChat/Rocket.Chat/pull/26579) by [@kodiakhq[bot]](https://github.com/kodiakhq[bot]))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Fix services image publish do DockerHub ([#26608](https://github.com/RocketChat/Rocket.Chat/pull/26608))
+
+- Regression: Fix services Docker build ([#26617](https://github.com/RocketChat/Rocket.Chat/pull/26617))
+
+- Release 5.0.4 ([#26620](https://github.com/RocketChat/Rocket.Chat/pull/26620))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@kodiakhq[bot]](https://github.com/kodiakhq[bot])
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.0.3
+`2022-08-11  ·  3 🐛  ·  2 🔍  ·  8 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Chats holds to load history for some time ([#26425](https://github.com/RocketChat/Rocket.Chat/pull/26425))
+
+- Endpoints not working when using "Use Real Name" setting ([#26530](https://github.com/RocketChat/Rocket.Chat/pull/26530) by [@kodiakhq[bot]](https://github.com/kodiakhq[bot]))
+
+  The list of endpoints affected is:
+  
+  - `/api/v1/channels.list`  
+  - `/api/v1/channels.list.joined`  
+  - `/api/v1/groups.list`  
+  - `/api/v1/groups.listAll`  
+  - `/api/v1/im.list`  
+  - `/api/v1/im.list.everyone`
+
+- LDAP fails to sync teams when the user DN has escaped characters. ([#26535](https://github.com/RocketChat/Rocket.Chat/pull/26535) by [@kodiakhq[bot]](https://github.com/kodiakhq[bot]))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: validateParams to accept different validators per request method ([#26357](https://github.com/RocketChat/Rocket.Chat/pull/26357))
+
+- Release 5.0.3 ([#26551](https://github.com/RocketChat/Rocket.Chat/pull/26551))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@kodiakhq[bot]](https://github.com/kodiakhq[bot])
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.0.2
+`2022-08-08  ·  2 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Empty results on `im.list` endpoint ([#26438](https://github.com/RocketChat/Rocket.Chat/pull/26438))
+
+- Undefined MediaDevices error on HTTP ([#26396](https://github.com/RocketChat/Rocket.Chat/pull/26396))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 5.0.2 ([#26507](https://github.com/RocketChat/Rocket.Chat/pull/26507))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@albuquerquefabio](https://github.com/albuquerquefabio)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.0.1
+`2022-08-02  ·  1 🚀  ·  1 🐛  ·  4 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🚀 Improvements
+
+
+- Use single change stream to watch DB changes ([#26336](https://github.com/RocketChat/Rocket.Chat/pull/26336))
+
+### 🐛 Bug fixes
+
+
+- Not possible to deactivate users ([#26323](https://github.com/RocketChat/Rocket.Chat/pull/26323))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Convert UserCardWithData to ts ([#26192](https://github.com/RocketChat/Rocket.Chat/pull/26192) by [@kodiakhq[bot]](https://github.com/kodiakhq[bot]))
+
+- Chore: Remove square prop from IconButton ([#26343](https://github.com/RocketChat/Rocket.Chat/pull/26343) by [@kodiakhq[bot]](https://github.com/kodiakhq[bot]))
+
+- Regression: Fix app privacy links opening in desktop client instead of browser ([#26368](https://github.com/RocketChat/Rocket.Chat/pull/26368))
+
+  Demo gif:
+  ![privacy-links](https://user-images.githubusercontent.com/43561537/181083695-bc37b5c2-8aa5-4714-9098-9ad02d2fc2bb.gif)
+
+- Release 5.0.1 ([#26450](https://github.com/RocketChat/Rocket.Chat/pull/26450))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@kodiakhq[bot]](https://github.com/kodiakhq[bot])
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 5.0.0
 `2022-07-21  ·  14 ️️️⚠️  ·  33 🎉  ·  20 🚀  ·  110 🐛  ·  389 🔍  ·  63 👩‍💻👨‍💻`
@@ -19926,7 +20128,7 @@
 
 - Revert fix package-lock.json ([#15563](https://github.com/RocketChat/Rocket.Chat/pull/15563))
 
-- Updating license term ([#15476](https://github.com/RocketChat/Rocket.Chat/pull/15476))
+- Updating license term ([#15476](https://github.com/RocketChat/Rocket.Chat/pull/15476) by [@mar-v](https://github.com/mar-v))
 
 </details>
 
@@ -19939,6 +20141,7 @@
 - [@hmagarotto](https://github.com/hmagarotto)
 - [@juanpetterson](https://github.com/juanpetterson)
 - [@knrt10](https://github.com/knrt10)
+- [@mar-v](https://github.com/mar-v)
 - [@mohamedar97](https://github.com/mohamedar97)
 - [@nstseek](https://github.com/nstseek)
 - [@oguhpereira](https://github.com/oguhpereira)
@@ -19956,7 +20159,6 @@
 - [@d-gubert](https://github.com/d-gubert)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
-- [@mar-v](https://github.com/mar-v)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
