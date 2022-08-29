@@ -21,7 +21,7 @@ API.v1.addRoute(
 	'livechat/rooms',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
 			const { agents, departmentId, open, tags, roomName, onhold } = this.requestParams();
@@ -44,28 +44,29 @@ API.v1.addRoute(
 			}
 
 			if (customFields) {
-				const parsedCustomFields = JSON.parse(customFields);
-				check(parsedCustomFields, Object);
-				if (Object.keys(parsedCustomFields).length) {
+				try {
+					const parsedCustomFields = JSON.parse(customFields);
+					check(parsedCustomFields, Object);
+					// Model's already checking for the keys, so we don't need to do it here.
 					customFields = parsedCustomFields;
+				} catch (e) {
+					throw new Error('The "customFields" query parameter must be a valid JSON.');
 				}
 			}
 
 			return API.v1.success(
-				Promise.await(
-					findRooms({
-						agents,
-						roomName,
-						departmentId,
-						open: open && open === 'true',
-						createdAt,
-						closedAt,
-						tags,
-						customFields,
-						onhold,
-						options: { offset, count, sort, fields },
-					}),
-				),
+				await findRooms({
+					agents,
+					roomName,
+					departmentId,
+					open: open && open === 'true',
+					createdAt,
+					closedAt,
+					tags,
+					customFields,
+					onhold,
+					options: { offset, count, sort, fields },
+				}),
 			);
 		},
 	},
