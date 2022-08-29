@@ -54,7 +54,6 @@ export class HomeSidenav {
 				await toggleButton.click();
 			}
 		} else if (currentStatus === 'Not Available') {
-			console.log('Switching omnichannel status to online');
 			await toggleButton.click();
 		}
 
