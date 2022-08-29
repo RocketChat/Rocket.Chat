@@ -10,7 +10,6 @@ test.describe('engagement-dashboard', () => {
 		test.beforeEach(async ({ page }) => {
 			await page.goto('/admin/engagement-dashboard"');
 			await page.route('**/api/v1/engagement-dashboard/**', (route) => route.abort());
-			await expect(page.locator('[data-qa="EngagementDashboardPage"]')).toBeVisible();
 		});
 
 		test('expect to show 4 fallback errors components inside widget at Users Tab', async ({ page }) => {
