@@ -392,11 +392,14 @@ export const Livechat = {
 
 		const customFields = {};
 
-		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
+		// Skip custom fields fetch/update if we're not updating custom fields on endpoint
+		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+			Livechat.logger.debug(`Saving custom fields for visitor ${_id}`);
+
 			const fields = LivechatCustomField.findByScope('visitor');
 			for await (const field of fields) {
 				if (!livechatData.hasOwnProperty(field._id)) {
-					return;
+					continue;
 				}
 				const value = s.trim(livechatData[field._id]);
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
@@ -408,6 +411,7 @@ export const Livechat = {
 				customFields[field._id] = value;
 			}
 			updateData.livechatData = customFields;
+			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields for visitor ${_id}`);
 		}
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
@@ -584,7 +588,9 @@ export const Livechat = {
 		const { livechatData = {} } = roomData;
 		const customFields = {};
 
-		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
+		// Same: only update custom fields when we're actually updating them
+		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+			Livechat.logger.debug(`Updating custom fields on room ${roomData._id}`);
 			const fields = LivechatCustomField.findByScope('room');
 			for await (const field of fields) {
 				if (!livechatData.hasOwnProperty(field._id)) {
@@ -600,9 +606,11 @@ export const Livechat = {
 				customFields[field._id] = value;
 			}
 			roomData.livechatData = customFields;
+			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields on room ${roomData._id}`);
 		}
 
 		if (!LivechatRooms.saveRoomById(roomData)) {
+			Livechat.logger.debug(`Failed to save room information on room ${roomData._id}`);
 			return false;
 		}
 
@@ -611,7 +619,7 @@ export const Livechat = {
 		});
 		callbacks.runAsync('livechat.saveRoom', roomData);
 
-		if (!_.isEmpty(guestData.name)) {
+		if (guestData?.name?.trim().length) {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
 			return (
