@@ -3,6 +3,13 @@ import { queriesLogger } from '../../../livechat-enterprise/server/lib/logger';
 import { addQueryRestrictionsToRoomsModel } from '../../../livechat-enterprise/server/lib/query.helper';
 import { overwriteClassOnLicense } from '../../../license/server';
 
+declare module '@rocket.chat/model-typings' {
+	export interface ILivechatRoomsModel {
+		associateRoomsWithDepartmentToUnit: (departments: string[], unit: string) => Promise<void>;
+		removeUnitAssociationFromRooms: (unit: string) => Promise<void>;
+	}
+}
+
 const applyRestrictions = (method: 'find' | 'update' | 'findPaginated') =>
 	function (originalFn: any, originalQuery: object, ...args: any) {
 		const query = addQueryRestrictionsToRoomsModel(originalQuery);
