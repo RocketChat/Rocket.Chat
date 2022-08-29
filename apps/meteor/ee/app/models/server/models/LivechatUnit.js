@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import LivechatDepartmentInstance, { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
 import { getUnitsFromUser } from '../../../livechat-enterprise/server/lib/units';
@@ -105,6 +106,8 @@ export class LivechatUnit extends LivechatDepartment {
 			);
 		});
 
+		Promise.await(LivechatRooms.associateRoomsWithDepartmentToUnit(departmentsToSave, _id));
+
 		return _.extend(record, { _id });
 	}
 
@@ -129,6 +132,7 @@ export class LivechatUnit extends LivechatDepartment {
 	removeById(_id) {
 		LivechatUnitMonitors.removeByUnitId(_id);
 		this.removeParentAndAncestorById(_id);
+		Promise.await(LivechatRooms.removeUnitAssociationFromRooms(_id));
 
 		const query = { _id };
 		return this.remove(query);
