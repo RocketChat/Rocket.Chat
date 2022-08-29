@@ -32,6 +32,7 @@ API.v1.addRoute(
 			check(open, Match.Maybe(String));
 			check(onhold, Match.Maybe(String));
 			check(tags, Match.Maybe([String]));
+			check(customFields, Match.Maybe(Object));
 
 			createdAt = validateDateParams('createdAt', createdAt);
 			closedAt = validateDateParams('closedAt', closedAt);
@@ -42,7 +43,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			if (customFields) {
+			if (customFields && Object.keys(customFields).length) {
 				customFields = JSON.parse(customFields);
 			}
 
