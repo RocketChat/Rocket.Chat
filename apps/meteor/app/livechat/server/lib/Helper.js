@@ -21,11 +21,11 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings/server';
 import { Apps, AppEvents } from '../../../apps/server';
-import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
+import { api } from '../../../../server/sdk/api';
 
 const logger = new Logger('LivechatHelper');
 
@@ -268,7 +268,7 @@ export const normalizeAgent = (agentId) => {
 export const dispatchAgentDelegated = (rid, agentId) => {
 	const agent = normalizeAgent(agentId);
 
-	notifications.streamLivechatRoom.emit(rid, {
+	api.broadcast('omnichannel.room', rid, {
 		type: 'agentData',
 		data: agent,
 	});

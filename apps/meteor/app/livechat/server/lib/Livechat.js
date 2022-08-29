@@ -39,10 +39,10 @@ import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents, validateEmail } from './Helper';
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
-import notifications from '../../../notifications/server/lib/Notifications';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
 import { VideoConf } from '../../../../server/sdk';
+import { api } from '../../../../server/sdk/api';
 
 const logger = new Logger('Livechat');
 
@@ -1358,7 +1358,7 @@ export const Livechat = {
 		}
 
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			notifications.streamLivechatRoom.emit(room._id, {
+			api.broadcast('omnichannel.room', room._id, {
 				type: 'agentStatus',
 				status,
 			});
@@ -1374,7 +1374,7 @@ export const Livechat = {
 	},
 
 	notifyRoomVisitorChange(roomId, visitor) {
-		notifications.streamLivechatRoom.emit(roomId, {
+		api.broadcast('omnichannel.room', roomId, {
 			type: 'visitorData',
 			visitor,
 		});
