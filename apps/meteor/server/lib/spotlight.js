@@ -1,6 +1,6 @@
 import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Users } from '@rocket.chat/models';
+import { Users, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
 import { hasAllPermission, hasPermission, canAccessRoom, roomAccessAttributes } from '../../app/authorization/server';
 import { Subscriptions, Rooms } from '../../app/models/server';
@@ -97,6 +97,24 @@ export class Spotlight {
 		}
 	}
 
+	_searchConnectedUsers(userId, { text, usernames, options, users, match = { startsWith: false, endsWith: false } }, roomType) {
+		const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
+
+		users.push(
+			...Promise.await(
+				SubscriptionsRaw.findConnectedUsersExcept(userId, text, usernames, searchFields, options.limit || 5, roomType, match),
+				{
+					readPreference: options.readPreference,
+				},
+			).map(this.mapOutsiders),
+		);
+
+		// If the limit was reached, return
+		if (this.processLimitAndUsernames(options, usernames, users)) {
+			return users;
+		}
+	}
+
 	_searchOutsiderUsers({ text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
 		// Then get the outsiders if allowed
 		if (canListOutsiders) {
@@ -146,11 +164,6 @@ export class Spotlight {
 		const canListOutsiders = hasAllPermission(userId, ['view-outside-room', 'view-d-room']);
 		const canListInsiders = canListOutsiders || (rid && canAccessRoom(room, { _id: userId }));
 
-		// If can't list outsiders and, wether, the rid was not passed or the user has no access to the room, return
-		if (!canListOutsiders && !canListInsiders) {
-			return users;
-		}
-
 		const insiderExtraQuery = [];
 
 		if (rid) {
@@ -190,7 +203,7 @@ export class Spotlight {
 		};
 
 		// Exact match for username only
-		if (rid) {
+		if (rid && canListInsiders) {
 			const exactMatch = Promise.await(
 				Users.findOneByUsernameAndRoomIgnoringCase(text, rid, {
 					projection: options.projection,
@@ -216,13 +229,25 @@ export class Spotlight {
 			}
 		}
 
-		// Contains for insiders
-		if (this._searchInsiderUsers(searchParams)) {
-			return users;
+		if (canListInsiders && rid) {
+			// Search for insiders
+			if (this._searchInsiderUsers(searchParams)) {
+				return users;
+			}
+
+			// Search for users that the requester has DMs with
+			if (this._searchConnectedUsers(userId, searchParams, 'd')) {
+				return users;
+			}
 		}
 
-		// Contains for outsiders
-		if (this._searchOutsiderUsers(searchParams)) {
+		// If the user can search outsiders, search for any user in the server
+		// Otherwise, search for users that are subscribed to the same rooms as the requester
+		if (canListOutsiders) {
+			if (this._searchOutsiderUsers(searchParams)) {
+				return users;
+			}
+		} else if (this._searchConnectedUsers(userId, searchParams)) {
 			return users;
 		}
 

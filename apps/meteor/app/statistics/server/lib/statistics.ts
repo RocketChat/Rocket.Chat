@@ -82,7 +82,7 @@ export const statistics = {
 		const uniqueID = await Settings.findOne('uniqueID');
 		statistics.uniqueId = settings.get('uniqueID');
 		if (uniqueID) {
-			statistics.installedAt = String(uniqueID.createdAt);
+			statistics.installedAt = uniqueID.createdAt.toISOString();
 		}
 
 		if (Info) {

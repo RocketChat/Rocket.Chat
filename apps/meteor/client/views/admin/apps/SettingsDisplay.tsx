@@ -1,4 +1,5 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import { SettingValue } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo, useEffect, MutableRefObject } from 'react';
@@ -23,7 +24,11 @@ const SettingsDisplay: FC<SettingsDisplayProps> = ({ settings, setHasUnsavedChan
 		return Object.values(settings).reduce((ret, { id, value, packageValue }) => ({ ...ret, [id]: value ?? packageValue }), {});
 	}, [stringifiedSettings]);
 
-	const { values, handlers, hasUnsavedChanges } = useForm(reducedSettings);
+	const { values, handlers, hasUnsavedChanges } = useForm(reducedSettings) as {
+		values: Record<string, SettingValue>;
+		handlers: Record<string, (eventOrValue: SettingValue) => void>;
+		hasUnsavedChanges: boolean;
+	};
 	const stringifiedValues = JSON.stringify(values);
 
 	useEffect(() => {
