@@ -1,4 +1,28 @@
 
+# 5.0.5
+`2022-08-29  ·  3 🐛  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** Omnichannel real time data on micro services ([#26703](https://github.com/RocketChat/Rocket.Chat/pull/26703))
+
+- Business Units endpoints not filtering by Unit type ([#26713](https://github.com/RocketChat/Rocket.Chat/pull/26713))
+
+- Omnichannel inquiries being updated even if not needed ([#26692](https://github.com/RocketChat/Rocket.Chat/pull/26692))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Harmeet221](https://github.com/Harmeet221)
+- [@KevLehman](https://github.com/KevLehman)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 5.0.4
 `2022-08-19  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
@@ -13333,6 +13357,32 @@
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
+# 3.11.6
+`2022-08-22  ·  2 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+
+- Support DISABLE_PRESENCE_MONITOR env var in new DB watchers ([#22257](https://github.com/RocketChat/Rocket.Chat/pull/22257))
+
+- User presence being processes even if presence monitor was disabled ([#22927](https://github.com/RocketChat/Rocket.Chat/pull/22927))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Change Ubuntu version to 20.04 on all GitHub Actions ([#23200](https://github.com/RocketChat/Rocket.Chat/pull/23200))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.11.5
 `2021-04-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
@@ -19463,7 +19513,7 @@
 
 - Revert fix package-lock.json ([#15563](https://github.com/RocketChat/Rocket.Chat/pull/15563))
 
-- Updating license term ([#15476](https://github.com/RocketChat/Rocket.Chat/pull/15476))
+- Updating license term ([#15476](https://github.com/RocketChat/Rocket.Chat/pull/15476) by [@mar-v](https://github.com/mar-v))
 
 </details>
 
@@ -19476,6 +19526,7 @@
 - [@hmagarotto](https://github.com/hmagarotto)
 - [@juanpetterson](https://github.com/juanpetterson)
 - [@knrt10](https://github.com/knrt10)
+- [@mar-v](https://github.com/mar-v)
 - [@mohamedar97](https://github.com/mohamedar97)
 - [@nstseek](https://github.com/nstseek)
 - [@oguhpereira](https://github.com/oguhpereira)
@@ -19493,7 +19544,6 @@
 - [@d-gubert](https://github.com/d-gubert)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
-- [@mar-v](https://github.com/mar-v)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
