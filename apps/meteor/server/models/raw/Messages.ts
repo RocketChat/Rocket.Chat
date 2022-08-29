@@ -15,7 +15,7 @@ import type {
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
-import { Federation } from '../../../app/federation-v2/server/Federation';
+import { escapeExternalFederationEventId } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/MessageConverter';
 
 // @ts-ignore Circular reference on field 'attachments'
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
@@ -359,7 +359,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ _id },
 			{
 				$set: {
-					[`reactions.${reaction}.federationReactionEventIds.${Federation.escapeExternalFederationEventId(federationEventId)}`]: username,
+					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username,
 				},
 			},
 		);
@@ -370,7 +370,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ _id },
 			{
 				$unset: {
-					[`reactions.${reaction}.federationReactionEventIds.${Federation.escapeExternalFederationEventId(federationEventId)}`]: 1,
+					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: 1,
 				},
 			},
 		);
@@ -404,7 +404,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 						$match: {
 							$and: [
 								{ 'reactions.v.usernames': { $in: [username] } },
-								{ [`reactions.v.federationReactionEventIds.${Federation.escapeExternalFederationEventId(federationEventId)}`]: username },
+								{ [`reactions.v.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username },
 							],
 						},
 					},
