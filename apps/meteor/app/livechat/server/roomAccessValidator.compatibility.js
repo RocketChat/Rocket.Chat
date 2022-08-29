@@ -53,7 +53,7 @@ export const validators = [
 				},
 				{
 					department: { $exists: false }, // No department == public queue
-				}
+				},
 			],
 		};
 
