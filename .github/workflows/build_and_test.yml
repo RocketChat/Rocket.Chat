@@ -250,8 +250,9 @@ jobs:
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
 
       - name: Unit Test
-        run: cd ./apps/meteor
-             yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+        run: |
+          cd ./apps/meteor
+          yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - uses: codecov/codecov-action@v3
         with:
