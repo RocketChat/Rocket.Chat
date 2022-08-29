@@ -1,14 +1,24 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, ReactElement, useMemo, useState } from 'react';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../lib/asyncState';
 import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
-const AutoCompleteAgent = (props) => {
-	const { value, onChange = () => {}, haveAll = false, haveNoAgentsSelectedOption = false } = props;
-	const [agentsFilter, setAgentsFilter] = useState('');
+type AutoCompleteAgentProps = {
+	value: string;
+	onChange: (value: string) => void;
+	haveAll?: boolean;
+	haveNoAgentsSelectedOption?: boolean;
+};
+const AutoCompleteAgent = ({
+	value,
+	onChange,
+	haveAll = false,
+	haveNoAgentsSelectedOption = false,
+}: AutoCompleteAgentProps): ReactElement => {
+	const [agentsFilter, setAgentsFilter] = useState<string>('');
 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
 
@@ -19,17 +29,13 @@ const AutoCompleteAgent = (props) => {
 		),
 	);
 
-	const { phase: agentsPhase, items: agentsItems, itemCount: agentsTotal } = useRecordList(AgentsList);
+	const { phase: agentsPhase, itemCount: agentsTotal, items: agentsItems } = useRecordList(AgentsList);
 
 	const sortedByName = agentsItems.sort((a, b) => {
-		if (['all', 'no-agent-selected'].includes(a.value)) {
-			return -1;
-		}
-
-		if (a.username > b.username) {
+		if (a.label > b.label) {
 			return 1;
 		}
-		if (a.username < b.username) {
+		if (a.label < b.label) {
 			return -1;
 		}
 
@@ -42,10 +48,12 @@ const AutoCompleteAgent = (props) => {
 			onChange={onChange}
 			flexShrink={0}
 			filter={agentsFilter}
-			setFilter={setAgentsFilter}
+			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
 			options={sortedByName}
 			data-qa='autocomplete-agent'
-			endReached={agentsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreAgents(start, Math.min(50, agentsTotal))}
+			endReached={
+				agentsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreAgents(start, Math.min(50, agentsTotal))
+			}
 		/>
 	);
 };

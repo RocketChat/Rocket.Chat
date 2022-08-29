@@ -30,8 +30,7 @@ export async function findUnits({
 
 	const query = { ...(text && { $or: [{ name: filter }] }) };
 
-	// TODO need to enfore type IOmnichannelBusinessUnit on LivechatUnit model, so don't need to use generic everywhere
-	const { cursor, totalCount } = LivechatUnit.findPaginated<IOmnichannelBusinessUnit>(query, {
+	const { cursor, totalCount } = LivechatUnit.findPaginatedUnits(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
