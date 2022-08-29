@@ -56,22 +56,22 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRoomsRaw, {
 			],
 		};
 		const update = { $set: { departmentAncestors: [unitId] } };
-		queriesLogger.error({ msg: `LivechatRoomsRaw.associateRoomsWithDepartmentToUnit - association step`, query, update });
-		const associationResult = await this.update(query, update, { multi: true });
-		queriesLogger.error({ msg: `LivechatRoomsRaw.associateRoomsWithDepartmentToUnit - association step`, result: associationResult });
+		queriesLogger.debug({ msg: `LivechatRoomsRaw.associateRoomsWithDepartmentToUnit - association step`, query, update });
+		const associationResult = await this.updateMany(query, update);
+		queriesLogger.debug({ msg: `LivechatRoomsRaw.associateRoomsWithDepartmentToUnit - association step`, result: associationResult });
 
 		const queryToDisassociateOldRoomsConnectedToUnit = {
 			departmentAncestors: unitId,
 			departmentId: { $nin: departments },
 		};
 		const updateToDisassociateRooms = { $unset: { departmentAncestors: 1 } };
-		queriesLogger.error({
+		queriesLogger.debug({
 			msg: `LivechatRoomsRaw.associateRoomsWithDepartmentToUnit - disassociation step`,
 			query: queryToDisassociateOldRoomsConnectedToUnit,
 			update: updateToDisassociateRooms,
 		});
-		const disassociationResult = await this.update(queryToDisassociateOldRoomsConnectedToUnit, updateToDisassociateRooms, { multi: true });
-		queriesLogger.error({ msg: `LivechatRoomsRaw.associateRoomsWithDepartmentToUnit - disassociation step`, result: disassociationResult });
+		const disassociationResult = await this.updateMany(queryToDisassociateOldRoomsConnectedToUnit, updateToDisassociateRooms);
+		queriesLogger.debug({ msg: `LivechatRoomsRaw.associateRoomsWithDepartmentToUnit - disassociation step`, result: disassociationResult });
 	},
 	async removeUnitAssociationFromRooms(_, unitId: string) {
 		const query = {
@@ -79,7 +79,7 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRoomsRaw, {
 		};
 		const update = { $unset: { departmentAncestors: 1 } };
 		queriesLogger.debug({ msg: `LivechatRoomsRaw.removeUnitAssociationFromRooms`, query, update });
-		const result = await this.update(query, update, { multi: true });
+		const result = await this.updateMany(query, update);
 		queriesLogger.debug({ msg: `LivechatRoomsRaw.removeUnitAssociationFromRooms`, result });
 	},
 });
