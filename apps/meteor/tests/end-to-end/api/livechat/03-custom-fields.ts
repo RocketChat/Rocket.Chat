@@ -18,16 +18,7 @@ describe('LIVECHAT - custom fields', function () {
 	describe('livechat/custom-fields', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-l-room', []).then(() => {
-				request
-					.get(api('livechat/custom-fields'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
-					})
-					.end(done);
+				request.get(api('livechat/custom-fields')).set(credentials).expect('Content-Type', 'application/json').expect(403).end(done);
 			});
 		});
 		it('should return an array of custom fields', (done) => {
@@ -77,11 +68,7 @@ describe('LIVECHAT - custom fields', function () {
 					.get(api('livechat/custom-fields/invalid-id'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
-					})
+					.expect(403)
 					.end(() => updatePermission('view-l-room', ['admin']).then(done));
 			});
 		});

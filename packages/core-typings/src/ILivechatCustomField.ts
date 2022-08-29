@@ -10,4 +10,5 @@ export interface ILivechatCustomField extends IRocketChatRecord {
 	defaultValue?: string;
 	options?: string;
 	public?: boolean;
+	searchable?: boolean;
 }
