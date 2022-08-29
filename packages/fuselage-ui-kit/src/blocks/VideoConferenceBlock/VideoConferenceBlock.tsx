@@ -100,7 +100,7 @@ const VideoConferenceBlock = ({
                         <Avatar
                           size='x28'
                           key={index}
-                          title={username}
+                          data-tooltip={username}
                           url={getUserAvatarPath(username as string)}
                         />
                       ) : (
@@ -159,7 +159,7 @@ const VideoConferenceBlock = ({
                 <Avatar
                   size='x28'
                   key={index}
-                  title={username}
+                  data-tooltip={username}
                   url={getUserAvatarPath(username as string)}
                 />
               ) : (
