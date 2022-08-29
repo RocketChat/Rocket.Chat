@@ -1,10 +1,19 @@
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { Form } from '@rocket.chat/layout';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useLoginMethod } from './hooks/useLoginMethod';
+
+type LoginErrors =
+	| 'error-user-is-not-activated'
+	| 'error-invalid-email'
+	| 'error-login-blocked-for-ip'
+	| 'error-login-blocked-for-user'
+	| 'error-license-user-limit-reached'
+	| 'user-not-found'
+	| 'error-app-user-is-not-allowed-to-login';
 
 export const LoginForm = (): ReactElement => {
 	const {
@@ -16,6 +25,8 @@ export const LoginForm = (): ReactElement => {
 		username: string;
 		password: string;
 	}>();
+
+	const [errorOnSubmit, setErrorOnSubmit] = useState<LoginErrors | undefined>(undefined);
 
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');
 
@@ -29,15 +40,20 @@ export const LoginForm = (): ReactElement => {
 		return <>{null}</>;
 	}
 
-	console.log('errors', errors);
 	return (
 		<Form
 			onSubmit={handleSubmit(async (data) => {
 				try {
 					await login(data.username, data.password);
 				} catch (error: any) {
-					setError('username', { type: 'user-not-found' });
-					setError('password', { type: 'user-not-found' });
+					if ('error' in error) {
+						setErrorOnSubmit(error.error);
+						return;
+					}
+
+					setErrorOnSubmit('user-not-found');
+					setError('username', { type: 'user-not-found', message: t('User_not_found') });
+					setError('password', { type: 'user-not-found', message: t('User_not_found') });
 				}
 			})}
 		>
@@ -47,13 +63,14 @@ export const LoginForm = (): ReactElement => {
 			<Form.Container>
 				<FieldGroup>
 					<Field>
-						<Field.Label htmlFor='username'>{t('form.adminInfoForm.fields.fullName.label')}</Field.Label>
+						<Field.Label htmlFor='username'>{t('Email_or_username')}</Field.Label>
 						<Field.Row>
 							<TextInput
 								{...register('username', {
 									required: true,
 								})}
-								error={errors.username}
+								placeholder={t('Email_Placeholder')}
+								error={errors.username?.message}
 								aria-invalid={errors.username ? 'true' : 'false'}
 								id='username'
 							/>
@@ -62,13 +79,14 @@ export const LoginForm = (): ReactElement => {
 					</Field>
 
 					<Field>
-						<Field.Label htmlFor='password'>{t('form.adminInfoForm.fields.fullName.label')}</Field.Label>
+						<Field.Label htmlFor='password'>{t('Password')}</Field.Label>
 						<Field.Row>
 							<PasswordInput
 								{...register('password', {
 									required: true,
 								})}
-								error={errors.password}
+								placeholder={'*****'}
+								error={errors.password?.message}
 								aria-invalid={errors.password ? 'true' : 'false'}
 								id='password'
 							/>
@@ -82,7 +100,19 @@ export const LoginForm = (): ReactElement => {
 					</Field>
 				</FieldGroup>
 				<FieldGroup>
-					{errors.username?.type === 'user-not-found' && <Callout type='danger'>{t('User_not_found_or_incorrect_password')}</Callout>}
+					{errorOnSubmit === 'error-user-is-not-activated' && <Callout type='warning'>{t('Wait_activation_warning')}</Callout>}
+
+					{errorOnSubmit === 'error-app-user-is-not-allowed-to-login' && (
+						<Callout type='danger'>{t('App_user_not_allowed_to_login')}</Callout>
+					)}
+					{errorOnSubmit === 'user-not-found' && <Callout type='danger'>{t('User_not_found_or_incorrect_password')}</Callout>}
+					{errorOnSubmit === 'error-login-blocked-for-ip' && <Callout type='danger'>{t('Error_login_blocked_for_ip')}</Callout>}
+					{errorOnSubmit === 'error-login-blocked-for-user' && <Callout type='danger'>{t('Error_login_blocked_for_user')}</Callout>}
+
+					{errorOnSubmit === 'error-license-user-limit-reached' && (
+						<Callout type='warning'>{t('error-license-user-limit-reached')}</Callout>
+					)}
+					{/* error-invalid-email */}
 				</FieldGroup>
 			</Form.Container>
 			<Form.Footer>
@@ -94,49 +124,6 @@ export const LoginForm = (): ReactElement => {
 			</Form.Footer>
 		</Form>
 	);
-	//     {{#if showFormLogin}}
-	//     <div class="rc-input">
-	//         <label class="rc-input__label" for="emailOrUsername">
-	//             <div class="rc-input__wrapper">
-	//                 <input name="emailOrUsername" id="emailOrUsername" type="text" class="rc-input__element"
-	//                     autocapitalize="off" autocorrect="off"
-	//                     placeholder="{{emailOrUsernamePlaceholder}}" autofocus>
-	//                 <div class="input-error"></div>
-	//             </div>
-	//         </label>
-	//     </div>
-	//     <div class="rc-input">
-	//         <label class="rc-input__label" for="pass">
-	//             <div class="rc-input__wrapper">
-	//                 <input name="pass" id="pass" type="password" class="rc-input__element"
-	//                     autocapitalize="off" autocorrect="off"
-	//                     placeholder="{{passwordPlaceholder}}" autofocus>
-	//                 <div class="input-error"></div>
-	//             </div>
-	//         </label>
-	//     </div>
-
-	//     <div class="rc-button__group rc-button__group--vertical">
-	// 				{{#if state 'login'}}
-	// 					{{#if showFormLogin}}
-	// 						<button class='rc-button rc-button--primary login'>{{btnLoginSave}}</button>
-	// 					{{/if}}
-
-	//
-	// 						{{#if linkReplacementText}}
-	// 							<div class="register-link-replacement">
-	// 								{{{linkReplacementText}}}
-	// 							</div>
-	// 						{{/if}}
-	// 					{{/if}}
-	// 				{{else}}
-	// 					<div class="rc-button__group rc-button__group--vertical">
-	// 						<button class='rc-button rc-button--primary login'>{{btnLoginSave}}</button>
-	// 					</div>
-	// 				{{/if}}
-	// 			</div>
-	// 		{{/if}}
-	// {{/if}}
 };
 
 export default LoginForm;
