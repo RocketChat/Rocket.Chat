@@ -110,8 +110,32 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
 	}
 
+	get btnCloseChat(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
+	}
+
+	get btnContactInformation(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
+	}
+
+	get btnContactEdit(): Locator {
+		return this.page.locator('.rcx-vertical-bar button:has-text("Edit")');
+	}
+
+	get inputModalClosingComment(): Locator {
+		return this.page.locator('#modal-root input:nth-child(1)[name="comment"]');
+	}
+
 	get btnSendTranscript(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-mail-arrow-top-right"]');
+	}
+
+	get btnCannedResponses(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-canned-response"]');
+	}
+
+	get btnNewCannedResponse(): Locator {
+		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
 	}
 
 	get inputModalAgentUserName(): Locator {
@@ -151,5 +175,9 @@ export class HomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().hover();
 		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').waitFor();
 		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
+	}
+
+	get takeOmnichannelChatButton(): Locator {
+		return this.page.locator('button.rc-button >> text=Take it!');
 	}
 }

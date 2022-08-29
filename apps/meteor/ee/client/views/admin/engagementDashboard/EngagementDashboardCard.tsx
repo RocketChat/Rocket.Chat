@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
+import { Card } from '@rocket.chat/ui-client';
 import React, { ReactElement, ReactNode } from 'react';
 
-import Card from '../../../../../client/components/Card';
 import EngagementDashboardCardErrorBoundary from './EngagementDashboardCardErrorBoundary';
 
 type EngagementDashboardCardProps = {
