@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isDeletedMessage, isEditedMessage, isMessageFromMatrixFederation } from '@rocket.chat/core-typings';
 
-import { DirectMessageFederatedRoom, FederatedRoom } from '../../domain/FederatedRoom';
+import { DirectMessageFederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
 import type { IFederationBridge } from '../../domain/IFederationBridge';
 import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
@@ -81,7 +81,7 @@ export class FederationRoomServiceSender extends FederationService {
 
 		if (!federatedRoom) {
 			throw new Error(
-				`Could not find room id for users: ${ [federatedInviteeUser.getInternalId(), federatedInviterUser.getInternalId()].join(' ') }`,
+				`Could not find room id for users: ${[federatedInviteeUser.getInternalId(), federatedInviterUser.getInternalId()].join(' ')}`,
 			);
 		}
 
@@ -146,12 +146,12 @@ export class FederationRoomServiceSender extends FederationService {
 		const { internalRoomId, internalSenderId, message } = roomSendExternalMessageInput;
 		const federatedSender = await this.internalUserAdapter.getFederatedUserByInternalId(internalSenderId);
 		if (!federatedSender) {
-			throw new Error(`Could not find user id for ${ internalSenderId }`);
+			throw new Error(`Could not find user id for ${internalSenderId}`);
 		}
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 		if (!federatedRoom) {
-			throw new Error(`Could not find room id for ${ internalRoomId }`);
+			throw new Error(`Could not find room id for ${internalRoomId}`);
 		}
 		await getExternalMessageSender(message, this.bridge, this.internalFileAdapter).sendMessage(
 			federatedRoom.getExternalId(),
@@ -168,8 +168,7 @@ export class FederationRoomServiceSender extends FederationService {
 			return;
 		}
 
-		const federatedUser =
-			internalMessage.u._id && (await this.internalUserAdapter.getFederatedUserByInternalId(internalMessage.u._id));
+		const federatedUser = internalMessage.u?._id && (await this.internalUserAdapter.getFederatedUserByInternalId(internalMessage.u._id));
 		if (!federatedUser) {
 			return;
 		}
@@ -178,15 +177,11 @@ export class FederationRoomServiceSender extends FederationService {
 			return;
 		}
 
-		// const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
-		// 	this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
-		// 	this.internalSettingsAdapter.getHomeServerDomain(),
-		// );
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
 			this.internalSettingsAdapter.getHomeServerDomain(),
 		);
-		if (/*!isRoomFromTheSameHomeServer || */!isUserFromTheSameHomeServer) {
+		if (!isUserFromTheSameHomeServer) {
 			return;
 		}
 
@@ -211,15 +206,11 @@ export class FederationRoomServiceSender extends FederationService {
 			return;
 		}
 
-		// const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
-		// 	this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
-		// 	this.internalSettingsAdapter.getHomeServerDomain(),
-		// );
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
 			this.internalSettingsAdapter.getHomeServerDomain(),
 		);
-		if (/*!isRoomFromTheSameHomeServer || */!isUserFromTheSameHomeServer) {
+		if (!isUserFromTheSameHomeServer) {
 			return;
 		}
 

@@ -1,7 +1,6 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isMessageFromMatrixFederation } from '@rocket.chat/core-typings';
 
-import { FederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
 import type { IFederationBridge } from '../../domain/IFederationBridge';
 import { Federation } from '../../Federation';
@@ -37,20 +36,11 @@ export class FederationMessageServiceSender {
 			return;
 		}
 
-		// const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
-		// 	this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
-		// 	this.internalSettingsAdapter.getHomeServerDomain(),
-		// );
-		// console.log({ isRoomFromTheSameHomeServer })
-		// if (!isRoomFromTheSameHomeServer) {
-		// 	return;
-		// }
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(federatedSender.getExternalId()),
 			this.internalSettingsAdapter.getHomeServerDomain(),
 		);
-		// console.log({ isUserFromTheSameHomeServer })
-		if (/*!isRoomFromTheSameHomeServer || */!isUserFromTheSameHomeServer) {
+		if (!isUserFromTheSameHomeServer) {
 			return;
 		}
 
@@ -87,18 +77,11 @@ export class FederationMessageServiceSender {
 			return;
 		}
 
-		// const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
-		// 	this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
-		// 	this.internalSettingsAdapter.getHomeServerDomain(),
-		// );
-		// if (!isRoomFromTheSameHomeServer) {
-		// 	return;
-		// }
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(federatedSender.getExternalId()),
 			this.internalSettingsAdapter.getHomeServerDomain(),
 		);
-		if (/*!isRoomFromTheSameHomeServer || */!isUserFromTheSameHomeServer) {
+		if (!isUserFromTheSameHomeServer) {
 			return;
 		}
 		// TODO: leaked business logic, move this to the domain layer

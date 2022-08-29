@@ -42,4 +42,23 @@ export class RocketChatFileAdapter {
 	public async getFileRecordById(fileId: string): Promise<IUpload | undefined | null> {
 		return Uploads.findOneById(fileId);
 	}
+
+	public async extractMetadataFromFile(file: IUpload): Promise<{ height?: number; width?: number; format?: string }> {
+		if (file.type?.startsWith('image/')) {
+			const metadata = await FileUpload.extractMetadata(file);
+
+			return {
+				format: metadata.format,
+				height: metadata.height,
+				width: metadata.width,
+			};
+		}
+		if (file.type?.startsWith('video/')) {
+			return {
+				height: 200,
+				width: 250,
+			};
+		}
+		return {};
+	}
 }

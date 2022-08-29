@@ -25,11 +25,17 @@ class FileExternalMessageSender implements IExternalMessageSender {
 		}
 
 		const buffer = await this.internalFileHelper.getBufferFromFileRecord(file);
+		const metadata = await this.internalFileHelper.extractMetadataFromFile(file);
 
 		await this.bridge.sendMessageFileToRoom(externalRoomId, externalSenderId, buffer, {
 			filename: file.name,
 			fileSize: file.size,
 			mimeType: file.type,
+			metadata: {
+				width: metadata?.width,
+				height: metadata?.height,
+				format: metadata?.format,
+			},
 		});
 	}
 }

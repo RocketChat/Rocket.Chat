@@ -31,7 +31,7 @@ export interface IFederationBridge {
 		externalRoomId: string,
 		externaSenderId: string,
 		content: Buffer,
-		fileDetails: { filename: string; fileSize: number; mimeType: string },
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
 	): Promise<void>;
 	uploadContent(externalSenderId: string, content: Buffer, options?: { name?: string; type?: string }): Promise<string | undefined>;
 	convertMatrixUrlToHttp(externalUserId: string, matrixUrl: string): string;

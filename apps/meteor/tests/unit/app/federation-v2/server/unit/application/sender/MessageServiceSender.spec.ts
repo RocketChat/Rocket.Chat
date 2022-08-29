@@ -127,22 +127,8 @@ describe('Federation - Application - FederationMessageServiceSender', () => {
 			expect(bridge.sendMessageReaction.called).to.be.false;
 		});
 
-		it('should not send the reaction if the room is not from the same home server', async () => {
-			bridge.extractHomeserverOrigin.returns('externalDomain');
-			roomAdapter.getFederatedRoomByInternalId.resolves(room);
-			userAdapter.getFederatedUserByInternalId.resolves(user);
-			await service.sendExternalMessageReaction(
-				{ rid: 'roomId', federation: { eventId: 'eventId' } } as any,
-				{ _id: 'id' } as any,
-				'reaction',
-			);
-
-			expect(bridge.sendMessageReaction.called).to.be.false;
-		});
-
 		it('should not send the reaction if the user is not from the same home server', async () => {
-			bridge.extractHomeserverOrigin.onCall(0).returns('localDomain');
-			bridge.extractHomeserverOrigin.onCall(1).returns('externalDomain');
+			bridge.extractHomeserverOrigin.returns('externalDomain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			await service.sendExternalMessageReaction(
@@ -236,36 +222,22 @@ describe('Federation - Application - FederationMessageServiceSender', () => {
 			expect(bridge.sendMessageReaction.called).to.be.false;
 		});
 
-		it('should not send the unreaction if the room is not from the same home server', async () => {
+		it('should not send the unreaction if the user is not from the same home server', async () => {
+			bridge.extractHomeserverOrigin.onCall(0).returns('localDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('externalDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			await service.sendExternalMessageUnReaction(
+				{ rid: 'roomId', federation: { eventId: 'eventId' } } as any,
+				{ _id: 'id' } as any,
+				'reaction',
+			);
+
+			expect(bridge.sendMessageReaction.called).to.be.false;
+		});
+
+		it('should not send the unreaction if the user is not from the same home server', async () => {
 			bridge.extractHomeserverOrigin.returns('externalDomain');
-			roomAdapter.getFederatedRoomByInternalId.resolves(room);
-			userAdapter.getFederatedUserByInternalId.resolves(user);
-			await service.sendExternalMessageUnReaction(
-				{ rid: 'roomId', federation: { eventId: 'eventId' } } as any,
-				{ _id: 'id' } as any,
-				'reaction',
-			);
-
-			expect(bridge.sendMessageReaction.called).to.be.false;
-		});
-
-		it('should not send the unreaction if the user is not from the same home server', async () => {
-			bridge.extractHomeserverOrigin.onCall(0).returns('localDomain');
-			bridge.extractHomeserverOrigin.onCall(1).returns('externalDomain');
-			roomAdapter.getFederatedRoomByInternalId.resolves(room);
-			userAdapter.getFederatedUserByInternalId.resolves(user);
-			await service.sendExternalMessageUnReaction(
-				{ rid: 'roomId', federation: { eventId: 'eventId' } } as any,
-				{ _id: 'id' } as any,
-				'reaction',
-			);
-
-			expect(bridge.sendMessageReaction.called).to.be.false;
-		});
-
-		it('should not send the unreaction if the user is not from the same home server', async () => {
-			bridge.extractHomeserverOrigin.onCall(0).returns('localDomain');
-			bridge.extractHomeserverOrigin.onCall(1).returns('externalDomain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			await service.sendExternalMessageUnReaction(

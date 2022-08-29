@@ -436,7 +436,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 
 		it('should not delete the message remotely if the room does not exists', async () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
-			await service.afterMessageDeleted({ msg: 'msg' } as any, 'internalRoomId');
+			await service.afterMessageDeleted({ msg: 'msg', u: { _id: 'id' } } as any, 'internalRoomId');
 
 			expect(bridge.redactEvent.called).to.be.false;
 		});
@@ -444,7 +444,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		it('should not delete the message remotely if the user does not exists', async () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getFederatedUserByInternalId.resolves(undefined);
-			await service.afterMessageDeleted({ msg: 'msg' } as any, 'internalRoomId');
+			await service.afterMessageDeleted({ msg: 'msg', u: { _id: 'id' } } as any, 'internalRoomId');
 
 			expect(bridge.redactEvent.called).to.be.false;
 		});
@@ -452,7 +452,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		it('should not delete the message remotely if the message is not an external one', async () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
-			await service.afterMessageDeleted({ msg: 'msg' } as any, 'internalRoomId');
+			await service.afterMessageDeleted({ msg: 'msg', u: { _id: 'id' } } as any, 'internalRoomId');
 
 			expect(bridge.redactEvent.called).to.be.false;
 		});
@@ -467,6 +467,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 					editedAt: new Date(),
 					editedBy: 'id',
 					t: 'rm',
+					u: { _id: 'id' },
 				} as any,
 				'internalRoomId',
 			);
@@ -474,7 +475,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			expect(bridge.redactEvent.called).to.be.false;
 		});
 
-		it('should not delete the message remotely if the room is not from the same home server', async () => {
+		it('should not delete the message remotely if the user is not from the same home server', async () => {
 			bridge.extractHomeserverOrigin.returns('externalDomain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
@@ -482,6 +483,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				{
 					msg: 'msg',
 					federationEventId: 'id',
+					u: { _id: 'id' },
 				} as any,
 				'internalRoomId',
 			);
@@ -497,6 +499,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				{
 					msg: 'msg',
 					federation: { eventId: 'federationEventId' },
+					u: { _id: 'id' },
 				} as any,
 				'internalRoomId',
 			);
@@ -548,7 +551,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			expect(bridge.updateMessage.called).to.be.false;
 		});
 
-		it('should not update the message remotely if the room is not from the same home server', async () => {
+		it('should not update the message remotely if the user is not from the same home server', async () => {
 			bridge.extractHomeserverOrigin.returns('externalDomain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getFederatedUserByInternalId.resolves(user);

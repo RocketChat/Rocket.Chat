@@ -12,6 +12,7 @@ describe('Federation - Application - Message Senders', () => {
 	const fileAdapter = {
 		getBufferFromFileRecord: sinon.stub(),
 		getFileRecordById: sinon.stub(),
+		extractMetadataFromFile: sinon.stub(),
 	};
 
 	afterEach(() => {
@@ -19,6 +20,7 @@ describe('Federation - Application - Message Senders', () => {
 		bridge.sendMessageFileToRoom.reset();
 		fileAdapter.getBufferFromFileRecord.reset();
 		fileAdapter.getFileRecordById.reset();
+		fileAdapter.extractMetadataFromFile.reset();
 	});
 
 	describe('TextExternalMessageSender', () => {
@@ -75,6 +77,11 @@ describe('Federation - Application - Message Senders', () => {
 							filename: 'filename',
 							fileSize: 12,
 							mimeType: 'image/png',
+							metadata: {
+								width: undefined,
+								height: undefined,
+								format: undefined,
+							},
 						},
 					),
 				).to.be.true;
