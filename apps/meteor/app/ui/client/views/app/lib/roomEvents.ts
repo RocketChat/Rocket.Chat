@@ -15,7 +15,7 @@ function handleToggleHiddenButtonClick(e: JQuery.ClickEvent) {
 }
 
 function handleMessageClick(e: JQuery.ClickEvent, template: RoomTemplateInstance) {
-	if (template.selectable.get()) {
+	if (template.state.get('selectable')) {
 		window.getSelection?.()?.removeAllRanges();
 		const data = Blaze.getData(e.currentTarget);
 		const {
@@ -64,13 +64,13 @@ function handleNewMessageButtonClick(_event: JQuery.ClickEvent, instance: RoomTe
 	input?.focus();
 }
 
-const handleWrapperScroll = _.throttle(function (this: { _id: IRoom['_id'] }, e: JQuery.ScrollEvent, t: RoomTemplateInstance) {
+function handleWrapperScroll(this: { _id: IRoom['_id'] }, e: JQuery.ScrollEvent, t: RoomTemplateInstance) {
 	const $roomLeader = $('.room-leader');
 	if ($roomLeader.length) {
 		if (e.target.scrollTop < t.lastScrollTop) {
-			t.hideLeaderHeader.set(false);
+			t.state.set('hideLeaderHeader', false);
 		} else if (t.isAtBottom(100) === false && e.target.scrollTop > ($roomLeader.height() ?? 0)) {
-			t.hideLeaderHeader.set(true);
+			t.state.set('hideLeaderHeader', true);
 		}
 	}
 	t.lastScrollTop = e.target.scrollTop;
@@ -86,7 +86,7 @@ const handleWrapperScroll = _.throttle(function (this: { _id: IRoom['_id'] }, e:
 			RoomHistoryManager.getMoreNext(this._id);
 		}
 	}
-}, 100);
+}
 
 function handleTimeClick(this: unknown, e: JQuery.ClickEvent) {
 	e.preventDefault();
@@ -105,6 +105,6 @@ export const roomEvents = {
 	'load .gallery-item': handleGalleryItemLoad,
 	'rendered .js-block-wrapper': handleBlockWrapperRendered,
 	'click .new-message': handleNewMessageButtonClick,
-	'scroll .wrapper': handleWrapperScroll,
+	'scroll .wrapper': _.throttle(handleWrapperScroll, 100),
 	'click .time a': handleTimeClick,
 };

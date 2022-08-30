@@ -35,6 +35,10 @@ createTemplateForComponent(
 	},
 );
 
+createTemplateForComponent('LoadingMessageIndicator', () => import('./views/room/components/body/LoadingMessageIndicator'), {
+	attachment: 'at-parent',
+});
+
 createTemplateForComponent('LeaderBar', () => import('./views/room/components/body/LeaderBar'), {
 	attachment: 'at-parent',
 });

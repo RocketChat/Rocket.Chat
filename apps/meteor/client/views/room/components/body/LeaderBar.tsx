@@ -1,5 +1,5 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode, useMemo } from 'react';
+import React, { ReactElement, ReactNode, UIEvent, useMemo } from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -10,7 +10,7 @@ type LeaderBarProps = {
 	status: 'online' | 'offline' | 'busy' | 'away' | 'loading';
 	statusDisplay: ReactNode;
 	hideLeaderHeader: boolean;
-	onAvatarClick?: () => void;
+	onAvatarClick?: (event: UIEvent) => void;
 };
 
 const LeaderBar = ({ name, username, status, statusDisplay, hideLeaderHeader, onAvatarClick }: LeaderBarProps): ReactElement => {

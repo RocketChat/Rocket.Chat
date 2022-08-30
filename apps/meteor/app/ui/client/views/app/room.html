@@ -1,22 +1,18 @@
 <template name="roomOld">
-	<div class="container-bars {{containerBarsShow unreadData uploading}}">
-		{{#with unreadData}}
-			{{#if since}}
-				{{#if count}}
-					{{> UnreadMessagesIndicator count=count since=since onJumpButtonClick=handleUnreadBarJumpToButtonClick onMarkAsReadButtonClick=handleMarkAsReadButtonClick}}
-				{{/if}}
-			{{/if}}
-		{{/with}}
-		{{#each uploading}}
-			{{> UploadProgressIndicator name=name percentage=percentage error=error onClose=(handleUploadProgressCloseButtonClick id)}}
+	<div class="container-bars {{containerBarsClassName}}">
+		{{#if hasUnreadData}}
+			{{> UnreadMessagesIndicator unreadMessagesIndicatorProps}}
+		{{/if}}
+		{{#each upload in uploads}}
+			{{> UploadProgressIndicator (uploadProgressIndicatorProps upload)}}
 		{{/each}}
 	</div>
-	<div class="messages-box {{#if selectable}}selectable{{/if}} {{messageViewMode}} {{hasLeader}}">
-		<button class="new-message background-primary-action-color color-content-background-color not">
+	<div class="messages-box {{messagesBoxClassName}}">
+		<button class="new-message background-primary-action-color color-content-background-color {{newMessageClassName}}">
 			<i class="icon-down-big"></i>
 			{{_ "New_messages"}}
 		</button>
-		<div class="jump-recent background-component-color {{#unless hasMoreNext}}not{{/unless}}">
+		<div class="jump-recent background-component-color {{jumpRecentClassName}}">
 			<button>{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></button>
 		</div>
 		{{#unless canPreview}}
@@ -26,16 +22,14 @@
 				</div>
 			</div>
 		{{/unless}}
-		{{#with roomLeader}}
-			{{> LeaderBar name=name username=username status=status statusDisplay=statusDisplay hideLeaderHeader=hideLeaderHeader onAvatarClick=handleOpenUserCardButtonClick}}
-		{{/with}}
-		<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}} {{hideUsername}} {{hideAvatar}}">
+		{{> LeaderBar leaderBarProps}}
+		<div class="wrapper {{wrapperClassName}}">
 			<ul class="messages-list" aria-live="polite">
 				{{#if canPreview}}
 					{{#if hasMore}}
 						<li class="load-more">
 							{{#if isLoading}}
-								{{> loading}}
+								{{> LoadingMessageIndicator}}
 							{{/if}}
 						</li>
 					{{else}}
@@ -47,20 +41,20 @@
 						</li>
 					{{/if}}
 				{{/if}}
-				{{#unless $eq (preference 'useLegacyMessageTemplate') true}}
-					{{> MessageList rid=rid }}
-				{{else}}
+				{{#if $eq (preference 'useLegacyMessageTemplate') true}}
 					{{#with messageContext}}
 						{{#each msg in messagesHistory}}
 							{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room actions=actions subscription=subscription settings=settings u=u}}
 						{{/each}}
 					{{/with}}
-				{{/unless}}
+				{{else}}
+					{{> MessageList rid=rid }}
+				{{/if}}
 
 				{{#if hasMoreNext}}
 					<li class="load-more">
 						{{#if isLoading}}
-							{{> loading}}
+							{{> LoadingMessageIndicator}}
 						{{/if}}
 					</li>
 				{{/if}}
