@@ -1,6 +1,6 @@
 import { ISettingColor, isSettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSettingStructure, useTranslation, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
+import { useSettingStructure, useTranslation, useAbsoluteUrl, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useMemo, useState, useCallback, ReactElement } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
@@ -88,7 +88,8 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const { _id, disabled, readonly, type, packageValue, i18nLabel, i18nDescription, alert, invisible } = setting;
 
-	const label = (t.has(i18nLabel) && t(i18nLabel)) || (t.has(_id) && t(_id));
+	const label = (i18nLabel && t(i18nLabel as TranslationKey)) || (_id && t(_id as TranslationKey));
+
 	const hint = useMemo(
 		() => (t.has(i18nDescription) ? <MarkdownText variant='inline' preserveHtml content={t(i18nDescription)} /> : undefined),
 		[i18nDescription, t],
