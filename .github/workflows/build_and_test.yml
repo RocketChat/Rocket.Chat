@@ -250,15 +250,19 @@ jobs:
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
 
       - name: Unit Test
-        run: |
-          cd ./apps/meteor
-          yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - uses: codecov/codecov-action@v3
         with:
           directory: ./apps/meteor
           flags: unit-tests
           verbose: true
+
+      - name: Store coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: unit-tests-coverage
+          path: ./apps/meteor/coverage*
 
       - name: Restore build
         uses: actions/download-artifact@v2

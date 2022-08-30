@@ -35,7 +35,7 @@
 		"test:e2e": "playwright test",
 		"test:e2e:nyc": "nyc report --reporter=text-summary --reporter=lcov",
 		"testapi": "mocha --config ./.mocharc.api.js",
-		"testunit": "nyc -r html npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server",
+		"testunit": "nyc -r lcov npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server",
 		".testunit:server": "mocha --config ./.mocharc.js",
 		".testunit:client": "mocha --config ./.mocharc.client.js",
 		".testunit:definition": "mocha --config ./.mocharc.definition.js",
