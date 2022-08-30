@@ -1,6 +1,6 @@
 import { App } from '@rocket.chat/core-typings';
 import { PaginatedResult } from '@rocket.chat/rest-typings';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -32,7 +32,7 @@ const FeaturedAppsSections = ({ appsResult, isMarketplace, isFiltered }: Feature
 					<AppsList
 						key={section.slug}
 						apps={normalizeFeaturedApps(section.apps, appsResult.value.items)}
-						title={t(section.i18nLabel as TranslationKey)}
+						title={t.has(section.i18nLabel) ? t(section.i18nLabel) : section.i18nLabel}
 						isMarketplace={isMarketplace}
 						mbe='x36'
 					/>
