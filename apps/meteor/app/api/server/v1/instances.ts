@@ -1,4 +1,4 @@
-import type { IInstanceStatus } from '@rocket.chat/core-typings';
+import type { IInstanceRecord } from '@rocket.chat/core-typings';
 import { InstanceStatus } from '@rocket.chat/models';
 
 import { getInstanceConnection } from '../../../../server/stream/streamBroadcast';
@@ -17,7 +17,7 @@ API.v1.addRoute(
 			const instances = await InstanceStatus.find().toArray();
 
 			return API.v1.success({
-				instances: instances.map((instance: IInstanceStatus) => {
+				instances: instances.map((instance: IInstanceRecord) => {
 					const connection = getInstanceConnection(instance);
 
 					if (connection) {

@@ -1,19 +1,9 @@
-import type { IInstanceStatus } from '@rocket.chat/core-typings';
+import type { IInstanceStatus, IInstanceRecord } from '@rocket.chat/core-typings';
 
 export type InstancesEndpoints = {
 	'/v1/instances.get': {
 		GET: () => {
-			instances: (
-				| IInstanceStatus
-				| {
-						connection: {
-							address: string;
-							currentStatus: IInstanceStatus['currentStatus'];
-							instanceRecord: IInstanceStatus['instanceRecord'];
-							broadcastAuth: boolean;
-						};
-				  }
-			)[];
+			instances: (IInstanceRecord | (IInstanceRecord & Omit<IInstanceStatus, 'instanceRecord'>))[];
 		};
 	};
 };

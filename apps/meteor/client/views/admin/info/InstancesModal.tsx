@@ -1,5 +1,6 @@
-import type { IInstanceStatus } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import { Modal, Button, Accordion } from '@rocket.chat/fuselage';
+import { OperationResult } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
@@ -7,13 +8,15 @@ import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import DescriptionList from './DescriptionList';
 
 type InstancesModalProps = {
-	instances: Array<IInstanceStatus>;
+	instances: Serialized<OperationResult<'GET', '/v1/instances.get'>>['instances'];
 	onClose: () => void;
 };
 const InstancesModal = ({ instances = [], onClose }: InstancesModalProps): ReactElement => {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
+
+	console.log(instances);
 
 	return (
 		<Modal width='x600'>

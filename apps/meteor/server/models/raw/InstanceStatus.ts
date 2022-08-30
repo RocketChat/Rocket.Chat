@@ -1,10 +1,10 @@
-import type { IInstanceStatus } from '@rocket.chat/core-typings';
+import type { IInstanceRecord } from '@rocket.chat/core-typings';
 import type { IInstanceStatusModel } from '@rocket.chat/model-typings';
 import type { Db } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
-export class InstanceStatusRaw extends BaseRaw<IInstanceStatus> implements IInstanceStatusModel {
+export class InstanceStatusRaw extends BaseRaw<IInstanceRecord> implements IInstanceStatusModel {
 	constructor(db: Db) {
 		super(db, 'instances', undefined, {
 			preventSetUpdatedAt: true,

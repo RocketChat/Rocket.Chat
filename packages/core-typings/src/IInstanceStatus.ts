@@ -1,3 +1,5 @@
+import type { IInstanceRecord } from './IInstanceRecord';
+
 export interface IInstanceStatus {
 	_id: string;
 	extraInformation?: {
@@ -11,18 +13,7 @@ export interface IInstanceStatus {
 		retryTime: number;
 		status: string;
 	};
-	instanceRecord?: {
-		name: string;
-		pid: number;
-		_createdAt: Date;
-		_id: string;
-		_updatedAt: Date;
-		extraInformation: {
-			host: string;
-			nodeVersion: string;
-			port: string;
-		};
-	};
+	instanceRecord?: IInstanceRecord;
 
 	broadcastAuth: boolean;
 }
