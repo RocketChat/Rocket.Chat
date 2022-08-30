@@ -1,6 +1,5 @@
 import type moment from 'moment';
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
@@ -9,15 +8,10 @@ import { t, getUserPreference } from '../../../../../utils/client';
 import { ChatMessage, RoomRoles, Users, Rooms, Subscriptions } from '../../../../../models/client';
 import { readMessage, RoomHistoryManager, RoomManager } from '../../../../../ui-utils/client';
 import { settings } from '../../../../../settings/client';
-import { callbacks } from '../../../../../../lib/callbacks';
-import { hasAllPermission, hasRole } from '../../../../../authorization/client';
+import { hasAllPermission } from '../../../../../authorization/client';
 import type { RoomTemplateInstance } from './RoomTemplateInstance';
 import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
 import { openUserCard } from '../../../lib/UserCard';
-
-function tabBar() {
-	return (Template.instance() as RoomTemplateInstance).tabBar;
-}
 
 function subscribed() {
 	const { state } = Template.instance() as RoomTemplateInstance;
@@ -66,10 +60,6 @@ function isLoading(this: { _id: string }) {
 	return RoomHistoryManager.isLoading(this._id);
 }
 
-function windowId(this: { _id: string }) {
-	return `chat-window-${this._id}`;
-}
-
 function uploading() {
 	return Session.get('uploading');
 }
@@ -92,26 +82,6 @@ function roomLeader(this: { _id: string }) {
 	}
 }
 
-function announcement() {
-	return (Template.instance() as RoomTemplateInstance).state.get('announcement');
-}
-
-function announcementDetails(this: { _id: string }) {
-	const roomData = Session.get(`roomData${this._id}`);
-	if (roomData?.announcementDetails?.callback) {
-		return () => callbacks.run(roomData.announcementDetails.callback, this._id);
-	}
-}
-
-function getAnnouncementStyle() {
-	const { room } = Template.instance() as RoomTemplateInstance;
-	return room?.announcementDetails?.style ?? '';
-}
-
-function maxMessageLength() {
-	return settings.get('Message_MaxAllowedSize');
-}
-
 type UnreadData = { count?: number; since?: moment.MomentInput };
 
 function unreadData(this: { _id: string }) {
@@ -131,13 +101,6 @@ function containerBarsShow(unreadData: UnreadData, uploading: unknown[]) {
 
 	if (hasUnreadData || isUploading) {
 		return 'show';
-	}
-}
-
-function adminClass() {
-	const uid = Meteor.userId();
-	if (uid && hasRole(uid, 'admin')) {
-		return 'admin';
 	}
 }
 
@@ -185,39 +148,6 @@ function hasLeader(this: { _id: string }) {
 	if (RoomRoles.findOne({ 'rid': this._id, 'roles': 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
 		return 'has-leader';
 	}
-}
-
-function openedThread() {
-	FlowRouter.watchPathChange();
-	const tab = FlowRouter.getParam('tab');
-	const mid = FlowRouter.getParam('context');
-	const rid = Template.currentData()._id;
-	const jump = FlowRouter.getQueryParam('jump');
-	const subscription = (Template.instance() as RoomTemplateInstance).subscription.get();
-
-	if (tab !== 'thread' || !mid || rid !== Session.get('openedRoom')) {
-		return;
-	}
-
-	const room = Rooms.findOne(
-		{ _id: rid },
-		{
-			fields: {
-				t: 1,
-				usernames: 1,
-				uids: 1,
-				name: 1,
-			},
-		},
-	);
-
-	return {
-		rid,
-		mid,
-		room,
-		jump,
-		subscription,
-	};
 }
 
 function handleUnreadBarJumpToButtonClick() {
@@ -276,22 +206,15 @@ function handleOpenUserCardButtonClick(this: { username: string }) {
 }
 
 export const roomHelpers = {
-	tabBar,
 	subscribed,
 	messagesHistory,
 	hasMore,
 	hasMoreNext,
 	isLoading,
-	windowId,
 	uploading,
 	roomLeader,
-	announcement,
-	announcementDetails,
-	getAnnouncementStyle,
-	maxMessageLength,
 	unreadData,
 	containerBarsShow,
-	adminClass,
 	messageViewMode,
 	selectable,
 	hideUsername,
@@ -299,7 +222,6 @@ export const roomHelpers = {
 	canPreview,
 	hideLeaderHeader,
 	hasLeader,
-	openedThread,
 	handleUnreadBarJumpToButtonClick,
 	handleMarkAsReadButtonClick,
 	handleUploadProgressCloseButtonClick,
