@@ -9,7 +9,7 @@ export enum Collections {
 	Subscriptions = 'rocketchat_subscription',
 	UserSession = 'usersSessions',
 	User = 'users',
-	Trash = 'rocketchat_trash',
+	Trash = 'rocketchat__trash',
 	Messages = 'rocketchat_message',
 	Rooms = 'rocketchat_room',
 	Settings = 'rocketchat_settings',
@@ -40,6 +40,7 @@ export const getConnection = ((): ((options?: MongoClientOptions) => Promise<Db>
 				db = c.db(name);
 			});
 		}
+
 		// if getConnection was called multiple times before it was connected, wait for the connection
 		return (await client).db(name);
 	};
