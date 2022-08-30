@@ -307,7 +307,6 @@ export class OTRRoom implements IOTRRoom {
 								},
 							},
 						});
-					
 						timeout = Meteor.setTimeout(() => {
 							this.setState(OtrRoomState.TIMEOUT);
 							imperativeModal.close();
