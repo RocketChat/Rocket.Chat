@@ -45,11 +45,12 @@ export class Presence extends ServiceClass implements IPresence {
 		// 	});
 		// }
 
-		this.onEvent('watch.instanceStatus', async ({ clientAction, id }): Promise<void> => {
-			if (clientAction === 'removed') {
-				this.removeLostConnections(id);
-			}
-		});
+		// TODO this will be replaced by 'onNodeDisconnected' event
+		// this.onEvent('watch.instanceStatus', async ({ clientAction, id }): Promise<void> => {
+		// 	if (clientAction === 'removed') {
+		// 		this.removeLostConnections(id);
+		// 	}
+		// });
 	}
 
 	async newConnection(uid: string, session: string, nodeId: string): Promise<{ uid: string; connectionId: string } | undefined> {
