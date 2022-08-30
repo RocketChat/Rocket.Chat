@@ -63,7 +63,11 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 			<Field.Row>
 				<div className='settings-file-preview'>
 					{value?.url ? (
-						<div className='preview' style={{ backgroundImage: `url(${value.url}?_dc=${Random.id()})` }} />
+						<div
+							className='preview'
+							style={{ backgroundImage: `url(${value.url}?_dc=${Random.id()})` }}
+							data-qa-setting-id='assets-preview'
+						/>
 					) : (
 						<div className='preview no-file background-transparent-light secondary-font-color'>
 							<Icon name='upload' />
@@ -72,7 +76,7 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 					<div className='action'>
 						{value?.url ? (
 							<Button onClick={handleDeleteButtonClick}>
-								<Icon name='trash' />
+								<Icon name='trash' data-qa-setting-delete-id={_id} />
 								{t('Delete')}
 							</Button>
 						) : (
@@ -83,6 +87,7 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 									type='file'
 									accept={`.${fileConstraints?.extensions?.join(', .')}`}
 									onChange={handleUpload}
+									data-qa-setting-id={_id}
 								/>
 							</div>
 						)}

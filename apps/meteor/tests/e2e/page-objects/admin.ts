@@ -95,4 +95,16 @@ export class Admin {
 	get btnResetRobotsFileContent(): Locator {
 		return this.page.locator('[data-qa-reset-setting-id="Robot_Instructions_File_Content"]');
 	}
+
+	get btnAssetsSettings(): Locator {
+		return this.page.locator('[data-qa-id="Assets"] [data-qa-type="settings-card-button"]');
+	}
+
+	get btnDeleteAssetsLogo(): Locator {
+		return this.page.locator('[data-qa-setting-delete-id="Assets_logo"]');
+	}
+
+	get inputAssetsLogo(): Locator {
+		return this.page.locator('[data-qa-setting-id="Assets_logo"]');
+	}
 }
