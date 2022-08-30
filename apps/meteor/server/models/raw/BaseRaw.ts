@@ -1,4 +1,4 @@
-import {
+import type {
 	BulkWriteOptions,
 	ChangeStream,
 	Collection,
@@ -9,7 +9,6 @@ import {
 	IndexDescription,
 	InsertOneOptions,
 	ModifyResult,
-	ObjectId,
 	OptionalUnlessRequiredId,
 	UpdateFilter,
 	WithId,
@@ -23,6 +22,7 @@ import {
 	DeleteResult,
 	DeleteOptions,
 } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import type { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
 import { getCollectionName } from '@rocket.chat/models';
@@ -146,7 +146,6 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 	async findOne<P>(query: Filter<T> | string = {}, options?: any): Promise<WithId<T> | WithId<P> | null> {
 		const q = typeof query === 'string' ? ({ _id: query } as unknown as Filter<T>) : query;
-
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 		if (optionsDef) {
 			return this.col.findOne(q, optionsDef);
@@ -160,7 +159,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 	find(query?: Filter<T>): FindCursor<ResultFields<T, C>>;
 
-	find<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindCursor<P>;
+	find<P = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindCursor<P>;
 
 	find<P>(query: Filter<T> | undefined = {}, options?: FindOptions<P extends T ? T : P>): FindCursor<WithId<P>> | FindCursor<WithId<T>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);

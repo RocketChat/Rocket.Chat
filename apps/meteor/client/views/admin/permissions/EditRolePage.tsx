@@ -51,7 +51,7 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			router.push({});
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
@@ -68,7 +68,7 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 
 				router.push({});
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				setModal();
 			}
 		};

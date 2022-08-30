@@ -11,7 +11,7 @@ import { useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
 
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
-	<Option label={title} icon={icon} {...props} />
+	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} {...props} />
 );
 
 type ToolBoxProps = {

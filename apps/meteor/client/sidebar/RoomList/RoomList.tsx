@@ -1,3 +1,4 @@
+import { IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useSession, useUserPreference, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
@@ -12,6 +13,8 @@ import { useSidebarPaletteColor } from '../hooks/useSidebarPaletteColor';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from './Row';
 import ScrollerWithCustomProps from './ScrollerWithCustomProps';
+
+const computeItemKey = (index: number, room: IRoom): IRoom['_id'] | number => room._id || index;
 
 const RoomList = (): ReactElement => {
 	useSidebarPaletteColor();
@@ -50,6 +53,7 @@ const RoomList = (): ReactElement => {
 				totalCount={roomsList.length}
 				data={roomsList}
 				components={{ Scroller: ScrollerWithCustomProps }}
+				computeItemKey={computeItemKey}
 				itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
 			/>
 		</Box>

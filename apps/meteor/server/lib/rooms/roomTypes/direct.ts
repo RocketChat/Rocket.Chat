@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { IRoom, AtLeast, isRoomFederated } from '@rocket.chat/core-typings';
+import type { IRoom, AtLeast } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
@@ -7,7 +8,7 @@ import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoo
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
 import { Subscriptions } from '../../../../app/models/server';
-import { Federation } from '../../../../app/federation-v2/server/infrastructure/rocket-chat/Federation';
+import { Federation } from '../../../../app/federation-v2/server/Federation';
 
 export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 

@@ -4,15 +4,6 @@ import React, { ReactElement, useCallback } from 'react';
 
 import ListItem from '../Sidebar/ListItem';
 
-const style = {
-	textTransform: 'uppercase',
-};
-
-const checkBoxStyle = {
-	paddingLeft: '24px',
-	paddingInlineStart: '24px',
-};
-
 function SortModeList(): ReactElement {
 	const t = useTranslation();
 	const saveUserPreferences = useMethod('saveUserPreferences');
@@ -26,24 +17,17 @@ function SortModeList(): ReactElement {
 
 	return (
 		<>
-			<OptionTitle {...({ style } as any)}>{t('Sort_By')}</OptionTitle>
-			<ul className='rc-popover__list'>
+			<OptionTitle>{t('Sort_By')}</OptionTitle>
+			<ul>
 				<ListItem
 					icon={'clock'}
 					text={t('Activity')}
-					input={<RadioButton style={checkBoxStyle} name='sidebarSortby' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />}
+					input={<RadioButton pis='x24' name='sidebarSortby' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />}
 				/>
 				<ListItem
 					icon={'sort-az'}
 					text={t('Name')}
-					input={
-						<RadioButton
-							style={checkBoxStyle}
-							name='sidebarSortby'
-							onChange={setToAlphabetical}
-							checked={sidebarSortBy === 'alphabetical'}
-						/>
-					}
+					input={<RadioButton pis='x24' name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />}
 				/>
 			</ul>
 		</>

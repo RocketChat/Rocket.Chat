@@ -1,6 +1,8 @@
 import { MongoInternals } from 'meteor/mongo';
-import { GridFSBucket, GridFSBucketWriteStream, ObjectId } from 'mongodb';
-import { AppSourceStorage, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { GridFSBucket, GridFSBucketWriteStream } from 'mongodb';
+import { ObjectId } from 'mongodb';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { AppSourceStorage } from '@rocket.chat/apps-engine/server/storage';
 
 import { streamToBuffer } from '../../../file-upload/server/lib/streamToBuffer';
 

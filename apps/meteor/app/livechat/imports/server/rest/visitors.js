@@ -8,19 +8,19 @@ import {
 	findChatHistory,
 	searchChats,
 	findVisitorsToAutocomplete,
-	findVisitorsByEmailOrPhoneOrNameOrUsername,
+	findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField,
 } from '../../../server/api/lib/visitors';
 
 API.v1.addRoute(
 	'livechat/visitors.info',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			check(this.queryParams, {
 				visitorId: String,
 			});
 
-			const visitor = Promise.await(findVisitorInfo({ userId: this.userId, visitorId: this.queryParams.visitorId }));
+			const visitor = await findVisitorInfo({ visitorId: this.queryParams.visitorId });
 
 			return API.v1.success(visitor);
 		},
@@ -29,27 +29,23 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/visitors.pagesVisited/:roomId',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				roomId: String,
 			});
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			const pages = Promise.await(
-				findVisitedPages({
-					userId: this.userId,
-					roomId: this.urlParams.roomId,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
-
+			const pages = await findVisitedPages({
+				roomId: this.urlParams.roomId,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
 			return API.v1.success(pages);
 		},
 	},
@@ -57,27 +53,25 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/visitors.chatHistory/room/:roomId/visitor/:visitorId',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				visitorId: String,
 				roomId: String,
 			});
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
-			const history = Promise.await(
-				findChatHistory({
-					userId: this.userId,
-					roomId: this.urlParams.roomId,
-					visitorId: this.urlParams.visitorId,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+			const history = await findChatHistory({
+				userId: this.userId,
+				roomId: this.urlParams.roomId,
+				visitorId: this.urlParams.visitorId,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
 
 			return API.v1.success(history);
 		},
@@ -86,9 +80,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/visitors.searchChats/room/:roomId/visitor/:visitorId',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				visitorId: String,
 				roomId: String,
@@ -97,21 +91,19 @@ API.v1.addRoute(
 			const { searchText, closedChatsOnly, servedChatsOnly } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
-			const history = Promise.await(
-				searchChats({
-					userId: this.userId,
-					roomId,
-					visitorId,
-					searchText,
-					closedChatsOnly,
-					servedChatsOnly,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+			const history = await searchChats({
+				userId: this.userId,
+				roomId,
+				visitorId,
+				searchText,
+				closedChatsOnly,
+				servedChatsOnly,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
 			return API.v1.success(history);
 		},
 	},
@@ -119,21 +111,19 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/visitors.autocomplete',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			const { selector } = this.queryParams;
 			if (!selector) {
 				return API.v1.failure("The 'selector' param is required");
 			}
 
 			return API.v1.success(
-				Promise.await(
-					findVisitorsToAutocomplete({
-						userId: this.userId,
-						selector: JSON.parse(selector),
-					}),
-				),
+				await findVisitorsToAutocomplete({
+					userId: this.userId,
+					selector: JSON.parse(selector),
+				}),
 			);
 		},
 	},
@@ -141,7 +131,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/visitors.search',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async get() {
 			const { term } = this.requestParams();
@@ -154,7 +144,7 @@ API.v1.addRoute(
 			const nameOrUsername = new RegExp(escapeRegExp(term), 'i');
 
 			return API.v1.success(
-				await findVisitorsByEmailOrPhoneOrNameOrUsername({
+				await findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
 					userId: this.userId,
 					emailOrPhone: term,
 					nameOrUsername,

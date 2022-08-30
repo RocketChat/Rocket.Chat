@@ -1,4 +1,4 @@
-import { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type {
 	IEmailInbox,
 	IEmoji,
@@ -25,7 +25,7 @@ import type {
 	VoipEventDataSignature,
 } from '@rocket.chat/core-typings';
 
-import { AutoUpdateRecord } from '../types/IMeteor';
+import type { AutoUpdateRecord } from '../types/IMeteor';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
@@ -124,6 +124,10 @@ export type EventSignatures = {
 		diff?: undefined | Record<string, any>;
 		id: string;
 	}): void;
+	'omnichannel.room'(
+		roomId: string,
+		data: { type: 'agentStatus'; status: string } | { type: 'queueData' | 'agentData'; data: { [k: string]: unknown } },
+	): void;
 
 	// Send all events from here
 	'voip.events'(userId: string, data: VoipEventDataSignature): void;

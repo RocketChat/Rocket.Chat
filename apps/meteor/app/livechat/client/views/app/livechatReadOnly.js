@@ -5,11 +5,10 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatRoom, CachedChatRoom } from '../../../../models/client';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
-import './livechatReadOnly.html';
 import { APIClient } from '../../../../utils/client';
-import { RoomManager } from '../../../../ui-utils/client/lib/RoomManager';
 import { inquiryDataStream } from '../../lib/stream/inquiry';
-import { handleError } from '../../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../../client/lib/toast';
+import './livechatReadOnly.html';
 
 Template.livechatReadOnly.helpers({
 	inquiryOpen() {
@@ -66,7 +65,7 @@ Template.livechatReadOnly.events({
 				throw new Meteor.Error('error-join-room', 'Error joining room');
 			}
 		} catch (error) {
-			handleError(error);
+			dispatchToastMessage({ type: 'error', message: error });
 			throw error;
 		}
 	},
@@ -91,6 +90,8 @@ Template.livechatReadOnly.onCreated(async function () {
 		this.inquiry.set(inquiry);
 	};
 
+	this.roomDataStream = new Meteor.Streamer('room-data');
+
 	Meteor.call('livechat:getRoutingConfig', (err, config) => {
 		if (config) {
 			this.routingConfig.set(config);
@@ -108,7 +109,7 @@ Template.livechatReadOnly.onCreated(async function () {
 		const { room } = await APIClient.get(`/v1/rooms.info`, { roomId });
 		this.room.set(room);
 		if (room && room._id) {
-			RoomManager.roomStream.on(roomId, (room) => this.room.set(room));
+			this.roomDataStream.on(roomId, (room) => this.room.set(room));
 		}
 
 		this.preparing.set(false);
@@ -124,5 +125,5 @@ Template.livechatReadOnly.onDestroyed(function () {
 	}
 
 	const { rid } = Template.currentData();
-	RoomManager.roomStream.removeListener(rid);
+	this.roomDataStream.removeListener(rid);
 });

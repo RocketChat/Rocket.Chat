@@ -78,10 +78,11 @@ tests/end-to-end/temporary_staged_test
 .screenshots
 /private/livechat
 /storybook-static
-/tests/e2e/test-failures
+/tests/e2e/.playwright
 coverage
 .nyc_output
 /data
 tests/e2e/test-failures/
 out.txt
 dist
+*-session.json

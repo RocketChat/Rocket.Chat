@@ -5,9 +5,9 @@ import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslatio
 import React, { useMemo, useRef, useState, FC, ReactElement } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import UserInfo from '../../../components/UserInfo';
 import VerticalBar from '../../../components/VerticalBar';
 import { useForm } from '../../../hooks/useForm';
-import UserInfo from '../../room/contextualBar/UserInfo';
 import { useFormsSubscription } from '../additionalForms';
 
 // TODO: TYPE:
@@ -100,7 +100,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 			agentsRoute.push({});
 			reset();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as string });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 		commit();
 		commitMaxChats();
@@ -108,9 +108,11 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 
 	return (
 		<VerticalBar.ScrollableContent is='form' {...props}>
-			<Box alignSelf='center'>
-				<UserInfo.Avatar data-qa='AgentEdit-Avatar' margin='auto' size={'x332'} title={username} username={username} />
-			</Box>
+			{username && (
+				<Box alignSelf='center'>
+					<UserInfo.Avatar data-qa='AgentEdit-Avatar' username={username} />
+				</Box>
+			)}
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>

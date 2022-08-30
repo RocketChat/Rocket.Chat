@@ -1,10 +1,12 @@
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { callbacks } from '../../../../lib/callbacks';
 import { LivechatRooms } from '../../../models/server';
 
 callbacks.add(
 	'afterSaveMessage',
 	function (message, room) {
-		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
+		if (!(isOmnichannelRoom(room) && room.v.token)) {
 			return message;
 		}
 		if (message.token) {

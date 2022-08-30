@@ -2,8 +2,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
-import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
-import { IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 
 import { Apps } from '../../../apps/server';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
@@ -12,7 +11,7 @@ import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
 import { Team } from '../../../../server/sdk';
-import { ICreateRoomParams, ISubscriptionExtraData } from '../../../../server/sdk/types/IRoomService';
+import type { ICreateRoomParams, ISubscriptionExtraData } from '../../../../server/sdk/types/IRoomService';
 
 const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && s.trim(name).length > 0;
@@ -137,7 +136,7 @@ export const createRoom = function <T extends RoomType>(
 			try {
 				callbacks.run('federation.beforeAddUserAToRoom', { user: member, inviter: owner }, room);
 			} catch (error) {
-				throw new Meteor.Error((error as any)?.message);
+				continue;
 			}
 
 			const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
