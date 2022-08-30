@@ -1,9 +1,14 @@
-import { Box, Table } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import { Box, Table, TableBody } from '@rocket.chat/fuselage';
+import React, { memo, ReactNode, ReactElement } from 'react';
 
 import DescriptionListEntry from './DescriptionListEntry';
 
-const DescriptionList = ({ children, title, ...props }) => (
+type DescriptionListProps = {
+	children: ReactNode;
+	title?: ReactNode;
+};
+
+const DescriptionList = ({ children, title, ...props }: DescriptionListProps): ReactElement => (
 	<>
 		{title && (
 			<Box display='flex' justifyContent='flex-end' width='30%' paddingInline='x8'>
@@ -11,7 +16,7 @@ const DescriptionList = ({ children, title, ...props }) => (
 			</Box>
 		)}
 		<Table striped marginBlockEnd='x32' width='full' {...props}>
-			<Table.Body>{children}</Table.Body>
+			<TableBody>{children}</TableBody>
 		</Table>
 	</>
 );

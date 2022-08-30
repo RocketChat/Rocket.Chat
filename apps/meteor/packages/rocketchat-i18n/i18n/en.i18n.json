@@ -2328,6 +2328,7 @@
   "How_to_handle_open_sessions_when_agent_goes_offline": "How to Handle Open Sessions When Agent Goes Offline",
   "HTML": "HTML",
   "I_Saved_My_Password": "I Saved My Password",
+  "ID": "ID",
   "Idle_Time_Limit": "Idle Time Limit",
   "Idle_Time_Limit_Description": "Period of time until status changes to away. Value needs to be in seconds.",
   "if_they_are_from": "(if they are from %s)",
