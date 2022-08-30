@@ -5,7 +5,7 @@
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "next",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage": "next",
+		"@rocket.chat/fuselage": "0.32.0-dev.129",
 		"@rocket.chat/fuselage-hooks": "next",
 		"@rocket.chat/styled": "next",
 		"@types/jest": "^27.4.1",
