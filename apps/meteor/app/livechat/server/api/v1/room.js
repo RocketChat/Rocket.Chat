@@ -71,78 +71,70 @@ API.v1.addRoute('livechat/room', {
 
 API.v1.addRoute('livechat/room.close', {
 	async post() {
-		try {
-			check(this.bodyParams, {
-				rid: String,
-				token: String,
-			});
+		check(this.bodyParams, {
+			rid: String,
+			token: String,
+		});
 
-			const { rid, token } = this.bodyParams;
+		const { rid, token } = this.bodyParams;
 
-			const visitor = await findGuest(token);
-			if (!visitor) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			if (!room.open) {
-				throw new Meteor.Error('room-closed');
-			}
-
-			const language = rcSettings.get('Language') || 'en';
-			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
-
-			if (!Livechat.closeRoom({ visitor, room, comment })) {
-				return API.v1.failure();
-			}
-
-			return API.v1.success({ rid, comment });
-		} catch (e) {
-			return API.v1.failure(e);
+		const visitor = await findGuest(token);
+		if (!visitor) {
+			throw new Meteor.Error('invalid-token');
 		}
+
+		const room = findRoom(token, rid);
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		if (!room.open) {
+			throw new Meteor.Error('room-closed');
+		}
+
+		const language = rcSettings.get('Language') || 'en';
+		const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
+
+		if (!Livechat.closeRoom({ visitor, room, comment })) {
+			return API.v1.failure();
+		}
+
+		return API.v1.success({ rid, comment });
 	},
 });
 
 API.v1.addRoute('livechat/room.transfer', {
 	async post() {
-		try {
-			check(this.bodyParams, {
-				rid: String,
-				token: String,
-				department: String,
-			});
+		check(this.bodyParams, {
+			rid: String,
+			token: String,
+			department: String,
+		});
 
-			const { rid, token, department } = this.bodyParams;
+		const { rid, token, department } = this.bodyParams;
 
-			const guest = await findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			let room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			// update visited page history to not expire
-			Messages.keepHistoryForToken(token);
-
-			const { _id, username, name } = guest;
-			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
-
-			if (!(await Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }))) {
-				return API.v1.failure();
-			}
-
-			room = findRoom(token, rid);
-			return API.v1.success({ room });
-		} catch (e) {
-			return API.v1.failure(e);
+		const guest = await findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
 		}
+
+		let room = findRoom(token, rid);
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		// update visited page history to not expire
+		Messages.keepHistoryForToken(token);
+
+		const { _id, username, name } = guest;
+		const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
+
+		if (!(await Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }))) {
+			return API.v1.failure();
+		}
+
+		room = findRoom(token, rid);
+		return API.v1.success({ room });
 	},
 });
 
@@ -233,7 +225,7 @@ API.v1.addRoute(
 	'livechat/room.visitor',
 	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		put() {
+		async put() {
 			// This endpoint is deprecated and will be removed in future versions.
 			check(this.bodyParams, {
 				rid: String,
@@ -269,7 +261,7 @@ API.v1.addRoute(
 	'livechat/room.join',
 	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			check(this.queryParams, { roomId: String });
 
 			const { roomId } = this.queryParams;

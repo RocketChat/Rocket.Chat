@@ -9,7 +9,7 @@ import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 API.v1.addRoute(
 	'livechat/room.onHold',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		post() {
 			const { roomId } = this.bodyParams;

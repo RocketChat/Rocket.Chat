@@ -32,7 +32,7 @@ API.v1.addRoute('livechat/agent.info/:rid/:token', {
 });
 
 API.v1.addRoute('livechat/agent.next/:token', {
-	get() {
+	async get() {
 		check(this.urlParams, {
 			token: String,
 		});
@@ -55,7 +55,7 @@ API.v1.addRoute('livechat/agent.next/:token', {
 			}
 		}
 
-		const agentData = Promise.await(Livechat.getNextAgent(department));
+		const agentData = Livechat.getNextAgent(department);
 		if (!agentData) {
 			throw new Meteor.Error('agent-not-found');
 		}

@@ -5,7 +5,10 @@ import { findMonitors, findMonitorByUsername } from './lib/monitors';
 
 API.v1.addRoute(
 	'livechat/monitors',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: { GET: { permissions: ['view-livechat-manager', 'manage-livechat-units'], operation: 'hasAny' } },
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -29,7 +32,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/monitors/:username',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: { GET: { permissions: ['view-livechat-manager', 'manage-livechat-units'], operation: 'hasAny' } },
+	},
 	{
 		async get() {
 			const { username } = this.urlParams;

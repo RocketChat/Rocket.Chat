@@ -5,7 +5,7 @@ import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../lib/De
 
 API.v1.addRoute(
 	'livechat/units/:unitId/monitors',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
 	{
 		async get() {
 			const { unitId } = this.urlParams;
@@ -46,7 +46,7 @@ API.v1.addRoute(
 		},
 		async post() {
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
-			return LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments);
+			return API.v1.success(LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments));
 		},
 	},
 );
@@ -80,7 +80,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/units/:unitId/departments',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -100,7 +100,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/units/:unitId/departments/available',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
