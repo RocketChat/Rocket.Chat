@@ -2,6 +2,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { createRoom } from '../../data/rooms.helper';
+import { sendSimpleMessage } from '../../data/chat.helper.js';
 
 describe('[Subscriptions]', function () {
 	this.retries(0);
@@ -205,6 +206,46 @@ describe('[Subscriptions]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('should mark public channels messages and threads as read', (done) => {
+			let createdThreadMessage;
+
+			sendSimpleMessage({
+				roomId: testChannel._id,
+				text: 'Message to create thread',
+			}).end((err, message) => {
+				createdThreadMessage = message.body.message;
+				sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'Thread Message',
+					tmid: createdThreadMessage._id,
+				});
+			});
+
+			request
+				.post(api('subscriptions.read'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			request
+				.post(api('subscriptions.getOne'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).not.to.have.property('tunread');
 				})
 				.end(done);
 		});
