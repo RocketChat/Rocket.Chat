@@ -41,7 +41,7 @@ function messagesHistory() {
 	const query: Mongo.Query<IMessage> = {
 		rid,
 		_hidden: { $ne: true },
-		$or: [{ tmid: { $exists: true } }, { tshow: { $eq: true } }],
+		$or: [{ tmid: { $exists: false } }, { tshow: { $eq: true } }],
 		...(hideMessagesOfType.size && { t: { $nin: Array.from(hideMessagesOfType.values()) } }),
 	};
 
