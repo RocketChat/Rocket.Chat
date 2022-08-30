@@ -558,8 +558,10 @@ jobs:
           done
 
           cd ./apps/meteor
+          rm -rf .nyc_output
+          rm -rf coverage
 
-          IS_EE=true yarn test:e2e
+          E2E_COVERAGE=true IS_EE=true yarn test:e2e
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
@@ -567,6 +569,22 @@ jobs:
         with:
           name: e2e-ee-testtrace
           path: ./apps/meteor/tests/e2e/.playwright*
+
+      - name: Extract e2e:ee:coverage
+        run: |
+          cd ./apps/meteor
+          yarn test:e2e:nyc
+      - uses: codecov/codecov-action@v3
+        with:
+          directory: ./apps/meteor
+          flags: e2e
+          verbose: true
+
+      - name: Store e2e-ee-coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: e2e-ee-coverage
+          path: ./apps/meteor/coverage*
 
   deploy:
     runs-on: ubuntu-20.04
