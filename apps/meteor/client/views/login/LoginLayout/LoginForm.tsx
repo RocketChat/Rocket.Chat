@@ -8,6 +8,7 @@ import { Trans } from 'react-i18next';
 import LoginEmailConfirmationForm from './LoginEmailConfirmation';
 import { useLoginMethod } from './hooks/useLoginMethod';
 import { DispatchLoginRouter } from './hooks/useLoginRouter';
+import { LoginServices } from './LoginServices';
 
 type LoginErrors =
 	| 'error-user-is-not-activated'
@@ -76,6 +77,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 				<Form.Title>{t('Login')}</Form.Title>
 			</Form.Header>
 			<Form.Container>
+				<LoginServices />
 				<FieldGroup>
 					<Field>
 						<Field.Label htmlFor='username'>{t('Email_or_username')}</Field.Label>

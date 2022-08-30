@@ -4,6 +4,7 @@ export { AvatarUrlContext, AvatarUrlContextValue } from './AvatarUrlContext';
 export { ConnectionStatusContext, ConnectionStatusContextValue } from './ConnectionStatusContext';
 export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContext';
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
+export { LoginContext, LoginContextValue } from './LoginContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
 export { RouterContext, RouterContextValue } from './RouterContext';
 export { ServerContext, ServerContextValue } from './ServerContext';
@@ -37,6 +38,7 @@ export { useLayoutContextualBarPosition } from './hooks/useLayoutContextualBarPo
 export { useLayoutSizes } from './hooks/useLayoutSizes';
 export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
+export { useLoginServices } from './hooks/useLoginServices';
 export { useLogout } from './hooks/useLogout';
 export { useMediaUrl } from './hooks/useMediaUrl';
 export { useMethod } from './hooks/useMethod';
