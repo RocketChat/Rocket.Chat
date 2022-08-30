@@ -3,6 +3,7 @@ import { LivechatRooms } from '@rocket.chat/models';
 import { callbacks } from '../../../../../lib/callbacks';
 import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 import { cbLogger } from '../lib/logger';
+import LegacyLivechatRoomsModel from '../../../../../app/models/server/models/LivechatRooms';
 
 callbacks.add(
 	'livechat.afterForwardChatToDepartment',
@@ -14,7 +15,7 @@ callbacks.add(
 			cbLogger.debug('Skipping callback. No room found');
 			return options;
 		}
-		LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
+		LegacyLivechatRoomsModel.unsetPredictedVisitorAbandonmentByRoomId(room._id);
 
 		const department = LivechatDepartment.findOneById(newDepartmentId, {
 			fields: { ancestors: 1 },
@@ -32,7 +33,7 @@ callbacks.add(
 		}
 
 		cbLogger.debug(`Updating department ${newDepartmentId} ancestors for room ${rid}`);
-		LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors);
+		Promise.await(LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors));
 
 		return options;
 	},
