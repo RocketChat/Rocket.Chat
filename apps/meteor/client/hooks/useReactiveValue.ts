@@ -8,23 +8,16 @@ export const useReactiveValue = <T>(computeCurrentValue: () => T): T => {
 
 		let currentValue: T;
 
-		let computation = Tracker.autorun(() => {
+		const computation = Tracker.autorun(() => {
 			currentValue = computeCurrentValue();
 			callbacks.forEach((callback) => {
 				callback();
 			});
 		});
 
-		computation.onInvalidate(() => {
-			if (!computation.stopped) return;
+		const { stop } = computation;
 
-			computation = Tracker.autorun(() => {
-				currentValue = computeCurrentValue();
-				callbacks.forEach((callback) => {
-					callback();
-				});
-			});
-		});
+		computation.stop = (): void => undefined;
 
 		return [
 			(callback: () => void): (() => void) => {
@@ -34,6 +27,7 @@ export const useReactiveValue = <T>(computeCurrentValue: () => T): T => {
 					callbacks.delete(callback);
 
 					if (callbacks.size === 0) {
+						computation.stop = stop;
 						computation.stop();
 					}
 				};
