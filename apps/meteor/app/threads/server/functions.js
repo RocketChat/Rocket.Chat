@@ -1,5 +1,6 @@
 import { Messages, Subscriptions } from '../../models/server';
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
+import { callbacks } from '../../../lib/callbacks';
 
 export const reply = ({ tmid }, message, parentMessage, followers) => {
 	const { rid, ts, u, editedAt } = message;
@@ -65,16 +66,17 @@ export const unfollow = ({ tmid, rid, uid }) => {
 	return Messages.removeThreadFollowerByThreadId(tmid, uid);
 };
 
-export const readThread = ({ userId, rid, tmid }) => {
+export const readThread = ({ uid, rid, thread }) => {
 	const fields = { tunread: 1 };
-	const sub = Subscriptions.findOneByRoomIdAndUserId(rid, userId, { fields });
+	const sub = Subscriptions.findOneByRoomIdAndUserId(rid, uid, { fields });
 	if (!sub) {
 		return;
 	}
 	// if the thread being marked as read is the last one unread also clear the unread subscription flag
-	const clearAlert = sub.tunread?.length <= 1 && sub.tunread.includes(tmid);
+	const clearAlert = sub.tunread?.length <= 1 && sub.tunread.includes(thread._id);
 
-	Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert);
+	Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, uid, thread._id, clearAlert);
+	callbacks.runAsync('afterReadThread', thread, { rid, uid });
 };
 
 export const readAllThreads = (rid, userId) => Subscriptions.removeAllUnreadThreadsByRoomIdAndUserId(rid, userId);

@@ -57,7 +57,7 @@ export const ReadReceipt = {
 			return;
 		}
 
-		const messages = Messages.findVisibleThreadByThreadId(message._id).fetch();
+		const messages = Messages.findVisibleThreadByThreadId(message._id, { fields: { _id: 1 } }).fetch();
 		const existingReceiptsMessageIds = Promise.await(this.getManyReceiptsByUserId(messages, userId)).map((receipt) => receipt.messageId);
 
 		const readMessageIds = messages.map((m) => m._id);
