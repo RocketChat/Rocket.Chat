@@ -131,6 +131,8 @@ const CurrentChatsRoute = (): ReactElement => {
 	const onHeaderClick = useMutableCallback((id) => {
 		if (sortBy === id) {
 			setSort(id, sortDirection === 'asc' ? 'desc' : 'asc');
+		} else {
+			setSort(id, 'asc');
 		}
 	});
 
