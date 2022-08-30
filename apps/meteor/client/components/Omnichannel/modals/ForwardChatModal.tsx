@@ -1,7 +1,7 @@
 import { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Field, Button, TextAreaInput, Modal, Box, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -23,6 +23,7 @@ const ForwardChatModal = ({
 }): ReactElement => {
 	const t = useTranslation();
 	const getUserData = useEndpoint('GET', '/v1/users.info');
+	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle') as boolean;
 
 	const { getValues, handleSubmit, register, setFocus, setValue, watch } = useForm();
 
@@ -43,7 +44,26 @@ const ForwardChatModal = ({
 	const hasDepartments = useMemo(() => departments && departments.length > 0, [departments]);
 
 	const _id = { $ne: room.servedBy?._id };
-	const conditions = { _id, status: { $ne: 'offline' }, statusLivechat: 'available' };
+	const conditions = {
+		_id,
+		...(!idleAgentsAllowedForForwarding && {
+			$or: [
+				{
+					status: {
+						$exists: true,
+						$ne: 'offline',
+					},
+					roles: {
+						$ne: 'bot',
+					},
+				},
+				{
+					roles: 'bot',
+				},
+			],
+		}),
+		statusLivechat: 'available',
+	};
 
 	const endReached = useCallback(
 		(start) => {

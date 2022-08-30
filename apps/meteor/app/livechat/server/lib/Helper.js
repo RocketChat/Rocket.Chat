@@ -21,11 +21,11 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings/server';
 import { Apps, AppEvents } from '../../../apps/server';
-import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
+import { api } from '../../../../server/sdk/api';
 
 const logger = new Logger('LivechatHelper');
 
@@ -268,7 +268,7 @@ export const normalizeAgent = (agentId) => {
 export const dispatchAgentDelegated = (rid, agentId) => {
 	const agent = normalizeAgent(agentId);
 
-	notifications.streamLivechatRoom.emit(rid, {
+	api.broadcast('omnichannel.room', rid, {
 		type: 'agentData',
 		data: agent,
 	});
@@ -546,21 +546,6 @@ export const checkServiceStatus = ({ guest, agent }) => {
 	const { agentId } = agent;
 	const users = Users.findOnlineAgents(agentId);
 	return users && users.count() > 0;
-};
-
-export const userCanTakeInquiry = (user) => {
-	check(
-		user,
-		Match.ObjectIncluding({
-			status: String,
-			statusLivechat: String,
-			roles: [String],
-		}),
-	);
-
-	const { roles, status, statusLivechat } = user;
-	// TODO: hasRole when the user has already been fetched from DB
-	return (status !== 'offline' && statusLivechat === 'available') || roles.includes('bot');
 };
 
 export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) => {
