@@ -39,7 +39,7 @@ type useQueryType = (
 		itemsPerPage: 25 | 50 | 100;
 		current: number;
 	},
-	customFields: { [key: string]: string },
+	customFields: { [key: string]: string } | undefined,
 	[column, direction]: [string, 'asc' | 'desc'],
 ) => LivechatRoomsProps | undefined;
 
@@ -101,7 +101,7 @@ const useQuery: useQueryType = (
 		}
 
 		if (customFields && Object.keys(customFields).length > 0) {
-			const customFieldsQuery = Object.fromEntries(Object.entries(customFields).filter((item) => item[1] !== ''));
+			const customFieldsQuery = Object.fromEntries(Object.entries(customFields).filter((item) => item[1] !== undefined && item[1] !== ''));
 			if (Object.keys(customFieldsQuery).length > 0) {
 				query.customFields = JSON.stringify(customFieldsQuery);
 			}
@@ -112,7 +112,7 @@ const useQuery: useQueryType = (
 
 const CurrentChatsRoute = (): ReactElement => {
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open'>('fname');
-	const [customFields, setCustomFields] = useState<{ [key: string]: string }>({});
+	const [customFields, setCustomFields] = useState<{ [key: string]: string } | undefined>();
 	const [params, setParams] = useState({
 		guest: '',
 		fname: '',
