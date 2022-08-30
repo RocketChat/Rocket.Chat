@@ -1957,12 +1957,14 @@ describe('Meteor.methods', function () {
 	});
 
 	describe('/apps/is-enabled', () => {
-		it('should return 401 unauthorized', (done) => {
+		it('should fail if not logged in', (done) => {
 			request
 				.get(api('/apps/is-enabled'))
+				.set({})
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
 				})
 				.end(done);
