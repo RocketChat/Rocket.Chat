@@ -325,10 +325,6 @@ describe('LIVECHAT - Agents', function () {
 	});
 
 	describe('livechat/agent.info/:rid/:token', () => {
-		before((done) => {
-			updateSetting('Livechat_Routing_Method', 'Manual_Selection').then(() => done());
-		});
-
 		it('should fail when token in url params is not valid', async () => {
 			await request.get(api(`livechat/agent.info/soemthing/invalid-token`)).expect(400);
 		});
@@ -337,6 +333,7 @@ describe('LIVECHAT - Agents', function () {
 			await request.get(api(`livechat/agent.info/invalid-rid/${visitor.token}`)).expect(400);
 		});
 		it('should fail when room is not being served by any agent', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await request.get(api(`livechat/agent.info/${room._id}/${visitor.token}`)).expect(400);
