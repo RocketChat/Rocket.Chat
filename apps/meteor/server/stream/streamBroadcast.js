@@ -68,7 +68,7 @@ function startMatrixBroadcast() {
 		added: Meteor.bindEnvironment((record) => {
 			cache.set(record._id, record);
 
-			if (cache.size() > 1) {
+			if (cache.size > 1) {
 				logger.warn(TAPi18n.__('Multiple_monolith_instances_alert'));
 			}
 

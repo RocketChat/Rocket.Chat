@@ -1,4 +1,4 @@
-import type { IInquiry, ILivechatAgent, ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IInquiry, ILivechatAgent, ILivechatDepartment, ILivechatVisitor, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { adminUsername } from '../user';
 import { DummyResponse } from './utils';
@@ -163,8 +163,27 @@ export const getLivechatRoomInfo = (roomId: string): Promise<IOmnichannelRoom> =
 			.query({
 				roomId,
 			})
-			.end((_err: Error, req: DummyResponse<IOmnichannelRoom>) => {
-				resolve(req.body.channel);
+			.end((_err: Error, res: DummyResponse<IOmnichannelRoom>) => {
+				resolve(res.body.channel);
+			});
+	});
+}
+
+export const sendMessage = (roomId: string, message: string, visitorToken: string): Promise<IMessage> => {
+	return new Promise((resolve, reject) => {
+		request
+			.post(api('livechat/message'))
+			.set(credentials)
+			.send({
+				rid: roomId,
+				msg: message,
+				token: visitorToken,
+			})
+			.end((err: Error, res: DummyResponse<IMessage>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.message);
 			});
 	});
 }
