@@ -61,9 +61,9 @@ const RoomBody = (): ReactElement => {
 		useCallback(
 			() =>
 				(roomOldViewRef.current &&
-					(Blaze.getView(roomOldViewRef.current.firstNode() as HTMLElement).templateInstance() as RoomTemplateInstance).state.get(
-						'subscription',
-					)) ??
+					(
+						Blaze.getView(roomOldViewRef.current.firstNode() as HTMLElement).templateInstance() as RoomTemplateInstance
+					).subscription.get()) ??
 				undefined,
 			[],
 		),

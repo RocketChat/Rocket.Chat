@@ -1,12 +1,19 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, UIEvent } from 'react';
+import React, { ReactElement } from 'react';
 
-type UploadProgressIndicatorProps = {
-	name: string;
-	percentage: number;
-	error?: string;
-	onClose?: (event: UIEvent) => void;
-};
+type UploadProgressIndicatorProps =
+	| {
+			name: string;
+			percentage: number;
+			error?: never;
+			onClose?: () => void;
+	  }
+	| {
+			name: string;
+			percentage?: never;
+			error: string;
+			onClose?: () => void;
+	  };
 
 const UploadProgressIndicator = ({ name, percentage, error, onClose }: UploadProgressIndicatorProps): ReactElement => {
 	const t = useTranslation();

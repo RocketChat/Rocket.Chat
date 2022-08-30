@@ -1,19 +1,28 @@
+import type moment from 'moment';
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import type { IMessage, IRoom, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
-import type { ComponentProps, UIEvent } from 'react';
+import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
 
 import { t, getUserPreference } from '../../../../../utils/client';
 import { ChatMessage, RoomRoles, Users, Rooms, Subscriptions } from '../../../../../models/client';
 import { readMessage, RoomHistoryManager, RoomManager } from '../../../../../ui-utils/client';
 import { settings } from '../../../../../settings/client';
-import { hasAllPermission } from '../../../../../authorization/client';
+import { callbacks } from '../../../../../../lib/callbacks';
+import { hasAllPermission, hasRole } from '../../../../../authorization/client';
 import type { RoomTemplateInstance } from './RoomTemplateInstance';
+import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
 import { openUserCard } from '../../../lib/UserCard';
-import type UnreadMessagesIndicator from '../../../../../../client/views/room/components/body/UnreadMessagesIndicator';
-import type UploadProgressIndicator from '../../../../../../client/views/room/components/body/UploadProgressIndicator';
-import type LeaderBar from '../../../../../../client/views/room/components/body/LeaderBar';
+
+function tabBar() {
+	return (Template.instance() as RoomTemplateInstance).tabBar;
+}
+
+function subscribed() {
+	const { state } = Template.instance() as RoomTemplateInstance;
+	return state.get('subscribed');
+}
 
 function messagesHistory() {
 	const { rid } = Template.instance() as RoomTemplateInstance;
@@ -57,8 +66,97 @@ function isLoading(this: { _id: string }) {
 	return RoomHistoryManager.isLoading(this._id);
 }
 
-function uploads() {
+function windowId(this: { _id: string }) {
+	return `chat-window-${this._id}`;
+}
+
+function uploading() {
 	return Session.get('uploading');
+}
+
+function roomLeader(this: { _id: string }) {
+	const roles = RoomRoles.findOne({
+		'rid': this._id,
+		'roles': 'leader',
+		'u._id': { $ne: Meteor.userId() },
+	});
+	if (roles) {
+		const leader = Users.findOne({ _id: roles.u._id }, { fields: { status: 1, statusText: 1 } }) || {};
+
+		return {
+			...roles.u,
+			name: settings.get('UI_Use_Real_Name') ? roles.u.name || roles.u.username : roles.u.username,
+			status: leader.status || 'offline',
+			statusDisplay: leader.statusText || t(leader.status || 'offline'),
+		};
+	}
+}
+
+function announcement() {
+	return (Template.instance() as RoomTemplateInstance).state.get('announcement');
+}
+
+function announcementDetails(this: { _id: string }) {
+	const roomData = Session.get(`roomData${this._id}`);
+	if (roomData?.announcementDetails?.callback) {
+		return () => callbacks.run(roomData.announcementDetails.callback, this._id);
+	}
+}
+
+function getAnnouncementStyle() {
+	const { room } = Template.instance() as RoomTemplateInstance;
+	return room?.announcementDetails?.style ?? '';
+}
+
+function maxMessageLength() {
+	return settings.get('Message_MaxAllowedSize');
+}
+
+type UnreadData = { count?: number; since?: moment.MomentInput };
+
+function unreadData(this: { _id: string }) {
+	const data: UnreadData = { count: (Template.instance() as RoomTemplateInstance).state.get('count'), since: undefined };
+
+	const room = RoomManager.getOpenedRoomByRid(this._id);
+	if (room) {
+		data.since = room.unreadSince.get();
+	}
+
+	return data;
+}
+
+function containerBarsShow(unreadData: UnreadData, uploading: unknown[]) {
+	const hasUnreadData = Boolean(unreadData?.count && unreadData.since);
+	const isUploading = Boolean(uploading?.length);
+
+	if (hasUnreadData || isUploading) {
+		return 'show';
+	}
+}
+
+function adminClass() {
+	const uid = Meteor.userId();
+	if (uid && hasRole(uid, 'admin')) {
+		return 'admin';
+	}
+}
+
+function messageViewMode() {
+	const modes = ['', 'cozy', 'compact'] as const;
+	const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode') as keyof typeof modes;
+	return modes[viewMode] || modes[0];
+}
+
+function selectable() {
+	return (Template.instance() as RoomTemplateInstance).selectable.get();
+}
+
+function hideUsername() {
+	return getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
+}
+
+function hideAvatar() {
+	return getUserPreference(Meteor.userId(), 'displayAvatars') ? undefined : 'hide-avatars';
 }
 
 function canPreview() {
@@ -79,68 +177,53 @@ function canPreview() {
 	return state.get('subscribed');
 }
 
-function containerBarsClassName(): string {
-	const { state, rid } = Template.instance() as RoomTemplateInstance;
-	const unreadCount = state.get('count');
-	const unreadSince = RoomManager.getOpenedRoomByRid(rid)?.unreadSince.get();
-	const uploading = Session.get('uploading') as unknown[];
-
-	const hasUnreadData = Boolean(unreadCount) && Boolean(unreadSince);
-	const isUploading = Boolean(uploading?.length);
-
-	return [(hasUnreadData || isUploading) && 'show'].filter(Boolean).join(' ');
+function hideLeaderHeader() {
+	return (Template.instance() as RoomTemplateInstance).hideLeaderHeader.get() ? 'animated-hidden' : '';
 }
 
-function messagesBoxClassName(): string {
-	const { rid, state } = Template.instance() as RoomTemplateInstance;
-
-	const uid = Meteor.userId();
-	const modes = ['', 'cozy', 'compact'] as const;
-	const viewMode = getUserPreference(uid, 'messageViewMode') as keyof typeof modes;
-	const leader = RoomRoles.findOne({ rid, 'roles': 'leader', 'u._id': { $ne: uid } }, { fields: { _id: 1 } });
-
-	return [state.get('selectable') && 'selectable', modes[viewMode] || modes[0], leader && 'has-leader'].filter(Boolean).join(' ');
+function hasLeader(this: { _id: string }) {
+	if (RoomRoles.findOne({ 'rid': this._id, 'roles': 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
+		return 'has-leader';
+	}
 }
 
-function newMessageClassName(): string {
-	const { state } = Template.instance() as RoomTemplateInstance;
+function openedThread() {
+	FlowRouter.watchPathChange();
+	const tab = FlowRouter.getParam('tab');
+	const mid = FlowRouter.getParam('context');
+	const rid = Template.currentData()._id;
+	const jump = FlowRouter.getQueryParam('jump');
+	const subscription = (Template.instance() as RoomTemplateInstance).subscription.get();
 
-	return [!state.get('newMessage') && 'not'].filter(Boolean).join(' ');
+	if (tab !== 'thread' || !mid || rid !== Session.get('openedRoom')) {
+		return;
+	}
+
+	const room = Rooms.findOne(
+		{ _id: rid },
+		{
+			fields: {
+				t: 1,
+				usernames: 1,
+				uids: 1,
+				name: 1,
+			},
+		},
+	);
+
+	return {
+		rid,
+		mid,
+		room,
+		jump,
+		subscription,
+	};
 }
 
-function jumpRecentClassName(): string {
-	const { rid } = Template.instance() as RoomTemplateInstance;
+function handleUnreadBarJumpToButtonClick() {
+	const rid = Template.parentData()._id;
 
-	return [!RoomHistoryManager.hasMoreNext(rid) && 'not'].filter(Boolean).join(' ');
-}
-
-function wrapperClassName(): string {
-	const { rid } = Template.instance() as RoomTemplateInstance;
-
-	const uid = Meteor.userId();
-	const hideUsernames = getUserPreference(uid, 'hideUsernames');
-	const displayAvatars = getUserPreference(uid, 'displayAvatars');
-
-	return [RoomHistoryManager.hasMoreNext(rid) && 'has-more-next', hideUsernames && 'hide-usernames', !displayAvatars && 'hide-avatars']
-		.filter(Boolean)
-		.join(' ');
-}
-
-function hasUnreadData(): boolean {
-	const { state, rid } = Template.instance() as RoomTemplateInstance;
-
-	const unreadCount = state.get('count') ?? 0;
-	const unreadSince = RoomManager.getOpenedRoomByRid(rid)?.unreadSince.get();
-	return Boolean(unreadCount) && Boolean(unreadSince);
-}
-
-function unreadMessagesIndicatorProps(): ComponentProps<typeof UnreadMessagesIndicator> {
-	const { state, rid } = Template.instance() as RoomTemplateInstance;
-
-	const unreadCount = state.get('count') ?? 0;
-	const unreadSince = RoomManager.getOpenedRoomByRid(rid)?.unreadSince.get();
-
-	const handleJumpButtonClick = (event: UIEvent) => {
+	return (event: MouseEvent) => {
 		event.preventDefault();
 
 		const room = RoomHistoryManager.getRoom(rid);
@@ -151,111 +234,74 @@ function unreadMessagesIndicatorProps(): ComponentProps<typeof UnreadMessagesInd
 		}
 		RoomHistoryManager.getSurroundingMessages(message, 50);
 	};
+}
 
-	const handleMarkAsReadButtonClick = (event: UIEvent) => {
+function handleMarkAsReadButtonClick() {
+	const rid = Template.parentData()._id;
+
+	return (event: MouseEvent) => {
 		event.preventDefault();
 
 		readMessage.readNow(rid);
 	};
-
-	return {
-		count: unreadCount,
-		since: unreadSince,
-		onJumpButtonClick: handleJumpButtonClick,
-		onMarkAsReadButtonClick: handleMarkAsReadButtonClick,
-	};
 }
 
-function uploadProgressIndicatorProps({
-	id,
-	name,
-	percentage,
-	error,
-}: {
-	id: string;
-	name: string;
-	percentage: number;
-	error: string;
-}): ComponentProps<typeof UploadProgressIndicator> {
-	const handleClose = (event: UIEvent): void => {
-		event.preventDefault();
-		Session.set(`uploading-cancel-${id}`, true);
-	};
-
-	return {
-		name,
-		percentage,
-		error,
-		onClose: handleClose,
-	};
-}
-
-function leaderBarProps(): ComponentProps<typeof LeaderBar> {
-	const {
-		rid,
-		state,
-		data: { tabBar },
-	} = Template.instance() as RoomTemplateInstance;
-
-	const useRealName = settings.get('UI_Use_Real_Name');
-	const uid = Meteor.userId();
-	const leaderRoomRole = RoomRoles.findOne({
-		rid,
-		'roles': 'leader',
-		'u._id': { $ne: uid },
-	}) as { u: Pick<IUser, '_id' | 'username' | 'name'> };
-	if (leaderRoomRole) {
-		const leader = Users.findOne({ _id: leaderRoomRole.u._id }, { fields: { status: 1, statusText: 1 } }) || {};
-		const { username = '' } = leaderRoomRole.u;
-
-		const handleOpenUserCardButtonClick = (event: UIEvent): void => {
+function handleUploadProgressCloseButtonClick(id: string) {
+	return () => {
+		return (event: MouseEvent): void => {
 			event.preventDefault();
-			event.stopPropagation();
-
-			openUserCard({
-				username,
-				rid,
-				target: event.currentTarget,
-				open: (event: MouseEvent) => {
-					event.preventDefault();
-					tabBar.openUserInfo(username);
-				},
-			});
+			Session.set(`uploading-cancel-${id}`, true);
 		};
+	};
+}
 
-		return {
-			name: useRealName ? leaderRoomRole.u.name || username : username,
+function handleOpenUserCardButtonClick(this: { username: string }) {
+	const instance = Template.instance() as CommonRoomTemplateInstance;
+	const { username } = this;
+
+	return (event: MouseEvent): void => {
+		event.preventDefault();
+		event.stopPropagation();
+
+		openUserCard({
 			username,
-			status: leader.status || 'offline',
-			statusDisplay: leader.statusText || t(leader.status || 'offline'),
-			hideLeaderHeader: state.get('hideLeaderHeader') ?? false,
-			onAvatarClick: handleOpenUserCardButtonClick,
-		};
-	}
-
-	return {
-		name: '',
-		username: '',
-		status: 'offline',
-		statusDisplay: t('offline'),
-		hideLeaderHeader: state.get('hideLeaderHeader') ?? false,
+			rid: instance.data.rid,
+			target: event.currentTarget,
+			open: (e: MouseEvent) => {
+				e.preventDefault();
+				instance.data.tabBar.openUserInfo(username);
+			},
+		});
 	};
 }
 
 export const roomHelpers = {
-	containerBarsClassName,
-	messagesBoxClassName,
-	newMessageClassName,
-	jumpRecentClassName,
-	wrapperClassName,
-	hasUnreadData,
-	unreadMessagesIndicatorProps,
-	uploads,
-	uploadProgressIndicatorProps,
-	leaderBarProps,
+	tabBar,
+	subscribed,
 	messagesHistory,
 	hasMore,
 	hasMoreNext,
 	isLoading,
+	windowId,
+	uploading,
+	roomLeader,
+	announcement,
+	announcementDetails,
+	getAnnouncementStyle,
+	maxMessageLength,
+	unreadData,
+	containerBarsShow,
+	adminClass,
+	messageViewMode,
+	selectable,
+	hideUsername,
+	hideAvatar,
 	canPreview,
+	hideLeaderHeader,
+	hasLeader,
+	openedThread,
+	handleUnreadBarJumpToButtonClick,
+	handleMarkAsReadButtonClick,
+	handleUploadProgressCloseButtonClick,
+	handleOpenUserCardButtonClick,
 };

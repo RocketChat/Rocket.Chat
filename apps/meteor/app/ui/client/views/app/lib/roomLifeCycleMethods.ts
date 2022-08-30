@@ -2,6 +2,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -20,21 +21,16 @@ import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 import type { RoomTemplateInstance } from './RoomTemplateInstance';
 
 export function onRoomCreated(this: RoomTemplateInstance) {
+	// this.scrollOnBottom = true
+	// this.typing = new msgTyping this.data._id
 	const rid = this.data._id;
 	this.tabBar = this.data.tabBar;
 
 	this.rid = rid;
 
+	this.subscription = new ReactiveVar(null);
 	this.state = new ReactiveDict();
-	this.state.set({
-		newMessage: false,
-		userDetail: '',
-		unreadCount: 0,
-		subscription: undefined,
-		hideLeaderHeader: false,
-		selectable: false,
-	});
-
+	this.userDetail = new ReactiveVar('');
 	const user = Meteor.user();
 	this.autorun((c) => {
 		const room: IRoom = Rooms.findOne(
@@ -58,10 +54,8 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 			return;
 		}
 		const usernames = Array.from(new Set(room.usernames));
-		this.state.set(
-			'userDetail',
-			this.state.get('userDetail') ||
-				(usernames.length === 1 ? usernames[0] : usernames.filter((username) => username !== user?.username)[0]),
+		this.userDetail.set(
+			this.userDetail.get() || (usernames.length === 1 ? usernames[0] : usernames.filter((username) => username !== user?.username)[0]),
 		);
 	});
 
@@ -73,7 +67,7 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 
 	this.autorun(() => {
 		const subscription = Subscriptions.findOne({ rid });
-		this.state.set('subscription', undefined);
+		this.subscription.set(subscription);
 		this.state.set({
 			subscribed: !!subscription,
 			autoTranslate: subscription?.autoTranslate,
@@ -82,13 +76,17 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 	});
 
 	this.atBottom = !FlowRouter.getQueryParam('msg');
+	this.unreadCount = new ReactiveVar(0);
 
+	this.selectable = new ReactiveVar(false);
 	this.selectedMessages = [];
 	this.selectedRange = [];
 	this.selectablePointer = undefined;
 
+	this.hideLeaderHeader = new ReactiveVar(false);
+
 	this.resetSelection = (enabled: boolean) => {
-		this.state.set('selectable', enabled);
+		this.selectable.set(enabled);
 		$('.messages-box .message.selected').removeClass('selected');
 		this.selectedMessages = [];
 		this.selectedRange = [];
@@ -188,6 +186,8 @@ export function onRoomDestroyed(this: RoomTemplateInstance) {
 	// @ts-ignore
 	readMessage.off(this.data._id);
 
+	window.removeEventListener('resize', this.onWindowResize);
+
 	this.observer?.disconnect();
 
 	const chatMessage = chatMessages[this.data._id];
@@ -229,12 +229,13 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 	chatMessages[rid].initializeInput(this.find('.js-input-message') as HTMLTextAreaElement, { rid });
 
 	const wrapperUl = this.find('.wrapper > ul');
+	const newMessage = this.find('.new-message');
 
 	const messageBox = $('.messages-box');
 
 	this.isAtBottom = function (scrollThreshold = 0) {
 		if (isAtBottom(wrapper, scrollThreshold)) {
-			this.state.set('newMessage', false);
+			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 			return true;
 		}
 		return false;
@@ -242,7 +243,7 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 
 	this.sendToBottom = function () {
 		wrapper.scrollTo(30, wrapper.scrollHeight);
-		this.state.set('newMessage', false);
+		newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 	};
 
 	this.checkIfScrollIsAtBottom = () => {
@@ -304,14 +305,12 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 			const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 
 			if (!lastInvisibleMessageOnScreen || !lastInvisibleMessageOnScreen.id) {
-				this.state.set('unreadCount', 0);
-				return;
+				return this.unreadCount.set(0);
 			}
 
 			const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
 			if (!lastMessage) {
-				this.state.set('unreadCount', 0);
-				return;
+				return this.unreadCount.set(0);
 			}
 
 			this.state.set('lastMessage', lastMessage.ts);
@@ -359,7 +358,7 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 
 		const subscription = Subscriptions.findOne({ rid }, { fields: { ls: 1 } });
 		if (!subscription) {
-			this.state.set('unreadCount', 0);
+			this.unreadCount.set(0);
 			return;
 		}
 
@@ -368,11 +367,11 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 			ts: { $lte: lastMessage, $gt: subscription?.ls },
 		}).count();
 
-		this.state.set('unreadCount', count);
+		this.unreadCount.set(count);
 	});
 
 	this.autorun(() => {
-		const count = RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() + (this.state.get('unreadCount') ?? 0);
+		const count = RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() + this.unreadCount.get();
 		this.state.set('count', count);
 	});
 
@@ -385,9 +384,7 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 		readMessage.refreshUnreadMark(rid);
 	});
 
-	readMessage.on(this.data._id, () => {
-		this.state.set('unreadCount', 0);
-	});
+	readMessage.on(this.data._id, () => this.unreadCount.set(0));
 
 	wrapper.addEventListener('scroll', updateUnreadCount);
 	// save the render's date to display new messages alerts
@@ -405,7 +402,7 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 			}
 
 			if (!this.isAtBottom()) {
-				this.state.set('newMessage', true);
+				newMessage.classList.remove('not');
 			}
 		},
 		callbacks.priority.MEDIUM,

@@ -1,6 +1,7 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { Blaze } from 'meteor/blaze';
 import type { ReactiveDict } from 'meteor/reactive-dict';
+import type { ReactiveVar } from 'meteor/reactive-var';
 
 import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
 
@@ -8,6 +9,7 @@ export type RoomTemplateInstance = CommonRoomTemplateInstance &
 	Blaze.TemplateInstance<{
 		_id: string;
 	}> & {
+		selectable: ReactiveVar<boolean>;
 		resetSelection: (enabled: boolean) => void;
 		selectedMessages: unknown[];
 		getSelectedMessages: () => unknown[];
@@ -19,6 +21,7 @@ export type RoomTemplateInstance = CommonRoomTemplateInstance &
 		checkIfScrollIsAtBottom: () => void;
 		observer: ResizeObserver | undefined;
 		lastScrollTop: number;
+		hideLeaderHeader: ReactiveVar<boolean>;
 		isAtBottom: (threshold?: number) => boolean;
 		sendToBottom: () => void;
 		state: ReactiveDict<{
@@ -28,14 +31,12 @@ export type RoomTemplateInstance = CommonRoomTemplateInstance &
 			lastMessage: Date;
 			autoTranslate: unknown;
 			autoTranslateLanguage: unknown;
-			newMessage: boolean;
-			userDetail: string;
-			unreadCount: number;
-			subscription: ISubscription;
-			hideLeaderHeader: boolean;
-			selectable: boolean;
 		}>;
 		rid: string;
+		subscription: ReactiveVar<ISubscription | null>;
 		room: IRoom | undefined;
+		unreadCount: ReactiveVar<number>;
 		rolesObserve: Meteor.LiveQueryHandle | undefined;
+		onWindowResize: () => void;
+		userDetail: ReactiveVar<string>;
 	};

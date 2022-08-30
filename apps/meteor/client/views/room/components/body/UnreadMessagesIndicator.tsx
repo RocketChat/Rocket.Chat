@@ -1,13 +1,13 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, UIEvent } from 'react';
+import React, { ReactElement } from 'react';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 
 type UnreadMessagesIndicatorProps = {
 	count: number;
 	since?: Date;
-	onJumpButtonClick: (event: UIEvent) => void;
-	onMarkAsReadButtonClick: (event: UIEvent) => void;
+	onJumpButtonClick: () => void;
+	onMarkAsReadButtonClick: () => void;
 };
 
 const UnreadMessagesIndicator = ({
