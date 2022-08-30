@@ -1,11 +1,13 @@
-import { MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import { MessageQuoteAttachment, IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { FC } from 'react';
+import React, { ReactElement } from 'react';
 
 import Attachments from '.';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import MessageMarkup from '../../../views/room/MessageList/components/MessageMarkup';
+import { useParsedMessage } from '../../../views/room/MessageList/hooks/useParsedMessage';
 import MarkdownText from '../../MarkdownText';
 import AttachmentAuthor from './Attachment/AttachmentAuthor';
 import AttachmentAuthorAvatar from './Attachment/AttachmentAuthorAvatar';
@@ -25,16 +27,26 @@ const hover = css`
 	}
 `;
 
-export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
-	author_icon: url,
-	author_name: name,
-	author_link: authorLink,
-	message_link: messageLink,
-	ts,
-	text,
-	attachments,
-}) => {
+type QuoteAttachmentProps = {
+	attachment: MessageQuoteAttachment;
+	message: IMessage;
+};
+
+export const QuoteAttachment = ({ attachment, message }: QuoteAttachmentProps): ReactElement => {
 	const format = useTimeAgo();
+
+	const msg: IMessage = {
+		_id: message._id,
+		ts: message.ts,
+		u: message.u,
+		_updatedAt: message._updatedAt,
+		rid: message.rid,
+		md: undefined,
+		msg: attachment.text,
+	};
+
+	const tokens = useParsedMessage(msg);
+
 	return (
 		<>
 			<AttachmentContent className={hover} width='full'>
@@ -44,23 +56,28 @@ export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
 					borderWidth='x2'
 					borderStyle='solid'
 					borderColor='neutral-200'
-					borderInlineStartColor='neutral-600'
+					borderInlineStartColor='neutral-500'
 				>
 					<AttachmentAuthor>
-						<AttachmentAuthorAvatar url={url} />
-						<AttachmentAuthorName {...(authorLink && { is: 'a', href: authorLink, target: '_blank', color: undefined })}>
-							{name}
+						<AttachmentAuthorAvatar url={attachment.author_icon} />
+						<AttachmentAuthorName
+							{...(attachment.author_name && { is: 'a', href: attachment.author_link, target: '_blank', color: 'info' })}
+						>
+							{attachment.author_name}
 						</AttachmentAuthorName>
-						{ts && (
-							<Box fontScale='c1' {...(messageLink ? { is: 'a', href: messageLink } : { color: 'hint' })}>
-								{format(ts)}
+						{attachment.ts && (
+							<Box
+								fontScale='c1'
+								{...(attachment.message_link ? { is: 'a', href: attachment.message_link, color: 'hint' } : { color: 'hint' })}
+							>
+								{format(attachment.ts)}
 							</Box>
 						)}
 					</AttachmentAuthor>
-					<MarkdownText parseEmoji variant='document' content={text} />
-					{attachments && (
+					{tokens ? <MessageMarkup tokens={tokens} /> : <MarkdownText parseEmoji variant='document' content={attachment.text} />}
+					{attachment.attachments && (
 						<AttachmentInner>
-							<Attachments attachments={attachments} />
+							<Attachments attachments={attachment.attachments} message={message} />
 						</AttachmentInner>
 					)}
 				</AttachmentDetails>

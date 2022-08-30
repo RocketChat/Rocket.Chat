@@ -1,16 +1,22 @@
-import { FileProp, MessageAttachmentBase } from '@rocket.chat/core-typings';
-import React, { FC } from 'react';
+import { FileProp, MessageAttachmentBase, IMessage } from '@rocket.chat/core-typings';
+import React, { ReactElement } from 'react';
 
 import { useBlockRendered } from '../hooks/useBlockRendered';
 import Item from './Item';
 
-const Attachments: FC<{ attachments: Array<MessageAttachmentBase>; file?: FileProp }> = ({ attachments = null, file }): any => {
+type AttachmentsProps = {
+	file?: FileProp;
+	attachments: MessageAttachmentBase[];
+	message: IMessage;
+};
+
+const Attachments = ({ attachments, file, message }: AttachmentsProps): ReactElement => {
 	const { className, ref } = useBlockRendered<HTMLDivElement>();
 	return (
 		<>
 			<div className={className} ref={ref} />
 			{attachments?.map((attachment, index) => (
-				<Item key={index} file={file} attachment={attachment} />
+				<Item key={index} file={file} attachment={attachment} message={message} />
 			))}
 		</>
 	);

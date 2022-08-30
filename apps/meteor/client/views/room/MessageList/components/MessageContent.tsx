@@ -60,7 +60,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 					<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
 				</MessageBlock>
 			)}
-			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} />}
+			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} message={message} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
 
