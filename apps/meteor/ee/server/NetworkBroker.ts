@@ -35,6 +35,7 @@ export class NetworkBroker implements IBroker {
 
 		this.metrics = broker.metrics;
 
+		// TODO move this to a proper startup method?
 		this.started = this.broker.start();
 	}
 

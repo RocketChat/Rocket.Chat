@@ -1,5 +1,4 @@
 import { MongoInternals } from 'meteor/mongo';
-import { Presence } from '@rocket.chat/presence';
 
 import { AnalyticsService } from './analytics/service';
 import { api } from '../sdk/api';
@@ -38,13 +37,15 @@ api.registerService(new UiKitCoreApp());
 api.registerService(new PushService());
 api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
-api.registerService(new Presence());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {
 	(async (): Promise<void> => {
+		const { Presence } = await import('@rocket.chat/presence');
+
 		const { Authorization } = await import('./authorization/service');
 
+		api.registerService(new Presence());
 		api.registerService(new Authorization(db));
 	})();
 }

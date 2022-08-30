@@ -11,6 +11,7 @@ export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
 
 	async onNodeDisconnected({ node }: { node: IBrokerNode }): Promise<void> {
+		// TODO need to make sure this is working
 		console.log('onNodeDisconnected', node);
 
 		const affectedUsers = await this.removeLostConnections(node.id);
@@ -22,6 +23,33 @@ export class Presence extends ServiceClass implements IPresence {
 			const affectedUsers = await this.removeLostConnections();
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 		}, 100);
+
+		// TODO show presence be reactive to database records or just websocket events?
+		// if (isPresenceMonitorEnabled()) {
+		// 	this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {
+		// 		if (clientAction === 'removed') {
+		// 			UserPresenceMonitor.processUserSession(
+		// 				{
+		// 					_id: userSession._id,
+		// 					connections: [
+		// 						{
+		// 							fake: true,
+		// 						},
+		// 					],
+		// 				},
+		// 				'removed',
+		// 			);
+		// 		}
+
+		// 		UserPresenceMonitor.processUserSession(userSession, minimongoChangeMap[clientAction]);
+		// 	});
+		// }
+
+		this.onEvent('watch.instanceStatus', async ({ clientAction, id }): Promise<void> => {
+			if (clientAction === 'removed') {
+				this.removeLostConnections(id);
+			}
+		});
 	}
 
 	async newConnection(uid: string, session: string, nodeId: string): Promise<{ uid: string; connectionId: string } | undefined> {
