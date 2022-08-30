@@ -41,7 +41,7 @@ export async function findAllCannedResponses({ userId }) {
 			agentId: userId,
 		},
 		{
-			fields: {
+			projection: {
 				departmentId: 1,
 			},
 		},
