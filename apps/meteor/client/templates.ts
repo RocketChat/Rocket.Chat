@@ -154,4 +154,4 @@ createTemplateForComponent('loginLayoutHeader', () => import('./views/login/Logi
 
 createTemplateForComponent('loginLayoutFooter', () => import('./views/login/LoginLayout/Footer'));
 
-createTemplateForComponent('loginLayout', () => import('./views/login/LoginLayout/LoginPage'));
+createTemplateForComponent('loginLayout', () => import('./views/login/LoginLayout/LoginPageRouter'));

@@ -4,14 +4,7 @@ import { useMemo } from 'react';
 
 type Methods = 'loginWithLDAP' | 'loginWithCrowd' | 'loginWithPassword';
 
-type LoginErrors =
-	| 'error-user-is-not-activated'
-	| 'error-invalid-email'
-	| 'error-login-blocked-for-ip'
-	| 'error-login-blocked-for-user'
-	| 'error-license-user-limit-reached';
-
-export const useLoginMethod = (callback: (error: LoginErrors) => void): ((username: string, password: string) => void) => {
+export const useLoginMethod = (): ((username: string, password: string) => void) => {
 	const isLdapEnabled = Boolean(useSetting('LDAP_Enable'));
 	const isCrowdEnabled = Boolean(useSetting('CROWD_Enable'));
 
@@ -33,9 +26,9 @@ export const useLoginMethod = (callback: (error: LoginErrors) => void): ((userna
 							reject(err);
 						}
 
-						return resolve(callback(result));
+						return resolve(result);
 					}),
 				),
-		[loginMethod, callback],
+		[loginMethod],
 	);
 };
