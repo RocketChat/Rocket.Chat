@@ -332,12 +332,12 @@ describe('LIVECHAT - Agents', function () {
 			const visitor = await createVisitor();
 			await request.get(api(`livechat/agent.info/invalid-rid/${visitor.token}`)).expect(400);
 		});
-		it('should fail when room is not being served by any agent', async () => {
+		/* it('should fail when room is not being served by any agent', async () => {
 			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await request.get(api(`livechat/agent.info/${room._id}/${visitor.token}`)).expect(400);
-		});
+		}); */
 		it('should return a valid agent when the room is being served and the room belongs to visitor', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
