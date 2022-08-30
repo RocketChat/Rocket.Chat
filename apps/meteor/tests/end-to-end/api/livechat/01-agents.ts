@@ -325,6 +325,10 @@ describe('LIVECHAT - Agents', function () {
 	});
 
 	describe('livechat/agent.info/:rid/:token', () => {
+		before((done) => {
+			updateSetting('Livechat_Routing_Method', 'Manual_Selection').then(() => done());
+		});
+
 		it('should fail when token in url params is not valid', async () => {
 			await request.get(api(`livechat/agent.info/soemthing/invalid-token`)).expect(400);
 		});
