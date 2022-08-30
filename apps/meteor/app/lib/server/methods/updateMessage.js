@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import moment from 'moment';
-import { isFileAttachment } from '@rocket.chat/core-typings';
 
 import { Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -21,10 +20,8 @@ Meteor.methods({
 		if (!originalMessage || !originalMessage._id) {
 			return;
 		}
-		const originalMsg =
-			originalMessage?.attachments?.[0] && isFileAttachment(originalMessage.attachments[0])
-				? originalMessage.attachments[0].description ?? ''
-				: originalMessage.msg;
+
+		const originalMsg = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
 
 		if (originalMsg === message.msg) {
 			return;
@@ -73,7 +70,7 @@ Meteor.methods({
 		canSendMessage(message.rid, { uid: user._id, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist
-		if (originalMessage.attachments && originalMessage.attachments.length > 0) {
+		if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {
 			message.attachments = originalMessage.attachments;
 			message.attachments[0].description = message.msg;
 			message.msg = originalMessage.msg;
