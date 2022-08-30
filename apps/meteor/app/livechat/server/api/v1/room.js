@@ -235,7 +235,7 @@ API.v1.addRoute(
 
 			const { rid, newVisitorId, oldVisitorId } = this.bodyParams;
 
-			const { visitor } = Promise.await(findVisitorInfo({ userId: this.userId, visitorId: newVisitorId }));
+			const { visitor } = await findVisitorInfo({ userId: this.userId, visitorId: newVisitorId });
 			if (!visitor) {
 				throw new Meteor.Error('invalid-visitor');
 			}
