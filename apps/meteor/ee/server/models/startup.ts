@@ -3,3 +3,4 @@ import './LivechatPriority';
 import './LivechatTag';
 import './LivechatUnit';
 import './LivechatUnitMonitors';
+import './LivechatRooms';

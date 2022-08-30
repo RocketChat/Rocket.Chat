@@ -14,13 +14,6 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRooms, {
 	find: applyRestrictions('find'),
 	update: applyRestrictions('update'),
 	remove: applyRestrictions('remove'),
-	updateDepartmentAncestorsById(originalFn, _id, departmentAncestors) {
-		const query = {
-			_id,
-		};
-		const update = departmentAncestors ? { $set: { departmentAncestors } } : { $unset: { departmentAncestors: 1 } };
-		return this.update(query, update);
-	},
 });
 
 LivechatRooms.prototype.setPredictedVisitorAbandonment = function (roomId, willBeAbandonedAt) {
