@@ -1,5 +1,6 @@
 import { check, Match } from 'meteor/check';
 import { EmailInbox } from '@rocket.chat/models';
+import { isEmailInboxSendMail } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailInbox } from '../lib/emailInbox';
@@ -163,6 +164,27 @@ API.v1.addRoute(
 			await sendTestEmailToInbox(emailInbox, user);
 
 			return API.v1.success({ _id });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'email-inbox.sendMail',
+	{
+		authRequired: true,
+		validateParams: isEmailInboxSendMail,
+	},
+	{
+		async post() {
+			if (!hasPermission(this.userId, 'manage-email-inbox')) {
+				throw new Error('error-not-allowed');
+			}
+
+			const { from, subject, body, dryrun, query } = this.bodyParams;
+
+			const result = Meteor.call('Mailer.sendMail', from, subject, body, dryrun, query);
+
+			return API.v1.success(result);
 		},
 	},
 );

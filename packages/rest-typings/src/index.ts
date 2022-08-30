@@ -243,3 +243,4 @@ export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/import';
 export * from './v1/voip';
+export * from './v1/email-inbox';

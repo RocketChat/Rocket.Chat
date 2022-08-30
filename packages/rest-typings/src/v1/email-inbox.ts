@@ -156,21 +156,62 @@ const EmailInboxSearchPropsSchema = {
 
 export const isEmailInboxSearch = ajv.compile<EmailInboxSearchProps>(EmailInboxSearchPropsSchema);
 
+type EmailInboxSendMail = {
+	from: string;
+	subject: string;
+	body: string;
+	dryrun: boolean;
+	query: string;
+};
+
+const EmailInboxSendMailSchema = {
+	type: 'object',
+	properties: {
+		from: {
+			type: 'string',
+		},
+		subject: {
+			type: 'string',
+		},
+		body: {
+			type: 'string',
+		},
+		dryrun: {
+			type: 'boolean',
+		},
+		query: {
+			type: 'string',
+		},
+	},
+	required: ['from', 'subject', 'body', 'dryrun', 'query'],
+	additionalProperties: false,
+};
+
+export const isEmailInboxSendMail = ajv.compile<EmailInboxSendMail>(EmailInboxSendMailSchema);
+
 export type EmailInboxEndpoints = {
 	'/v1/email-inbox.list': {
 		GET: (params: EmailInboxListProps) => PaginatedResult<{ emailInboxes: IEmailInbox[] }>;
 	};
+
 	'/v1/email-inbox': {
 		POST: (params: EmailInboxProps) => { _id: string };
 	};
+
 	'/v1/email-inbox/:_id': {
 		GET: () => IEmailInbox | null;
 		DELETE: () => { _id: string };
 	};
+
 	'/v1/email-inbox.search': {
 		GET: (params: EmailInboxSearchProps) => { emailInbox: IEmailInbox | null };
 	};
+
 	'/v1/email-inbox.send-test/:_id': {
 		POST: () => { _id: string };
+	};
+
+	'/v1/email-inbox.sendMail': {
+		POST: (params: EmailInboxSendMail) => void;
 	};
 };
