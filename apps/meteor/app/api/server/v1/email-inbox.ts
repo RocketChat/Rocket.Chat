@@ -169,20 +169,20 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'email-inbox.sendMail',
+	'mailer',
 	{
 		authRequired: true,
 		validateParams: isEmailInboxSendMail,
 	},
 	{
 		async post() {
-			if (!hasPermission(this.userId, 'manage-email-inbox')) {
+			if (!hasPermission(this.userId, 'send-mail')) {
 				throw new Error('error-not-allowed');
 			}
 
 			const { from, subject, body, dryrun, query } = this.bodyParams;
 
-			const result = Meteor.call('Mailer.sendMail', from, subject, body, dryrun, query);
+			const result = Meteor.call('Mailer.sendMail', from, subject, body, Boolean(dryrun), query);
 
 			return API.v1.success(result);
 		},

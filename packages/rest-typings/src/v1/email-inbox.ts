@@ -160,8 +160,8 @@ type EmailInboxSendMail = {
 	from: string;
 	subject: string;
 	body: string;
-	dryrun: boolean;
-	query: string;
+	dryrun?: boolean;
+	query?: string;
 };
 
 const EmailInboxSendMailSchema = {
@@ -178,12 +178,14 @@ const EmailInboxSendMailSchema = {
 		},
 		dryrun: {
 			type: 'boolean',
+			nullable: true,
 		},
 		query: {
 			type: 'string',
+			nullable: true,
 		},
 	},
-	required: ['from', 'subject', 'body', 'dryrun', 'query'],
+	required: ['from', 'subject', 'body'],
 	additionalProperties: false,
 };
 
@@ -211,7 +213,7 @@ export type EmailInboxEndpoints = {
 		POST: () => { _id: string };
 	};
 
-	'/v1/email-inbox.sendMail': {
+	'/v1/mailer': {
 		POST: (params: EmailInboxSendMail) => void;
 	};
 };

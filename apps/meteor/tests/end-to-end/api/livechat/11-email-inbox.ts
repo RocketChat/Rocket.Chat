@@ -92,75 +92,18 @@ describe('Email inbox', () => {
 	});
 });
 
-describe('Email inbox sendMail', () => {
-	before((done) => getCredentials(done));
-	let testInbox = '';
-	before((done) => {
-		createDepartment()
-			.then((dept) =>
-				request
-					.post(api('email-inbox'))
-					.set(credentials)
-					.send({
-						active: true,
-						name: 'test-email-inbox##',
-						email: 'test-email@example.com',
-						description: 'test email inbox',
-						senderInfo: 'test email inbox',
-						department: dept.name,
-						smtp: {
-							server: 'smtp.example.com',
-							port: 587,
-							username: 'example@example.com',
-							password: 'not-a-real-password',
-							secure: true,
-						},
-						imap: {
-							server: 'imap.example.com',
-							port: 993,
-							username: 'example@example.com',
-							password: 'not-a-real-password',
-							secure: true,
-							maxRetries: 10,
-						},
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success');
-						if (res.body.success === true) {
-							testInbox = res.body._id;
-						} else {
-							expect(res.body).to.have.property('error');
-							expect(res.body.error.includes('E11000')).to.be.eq(true);
-						}
-					}),
-			)
-			.finally(done);
-	});
-	after((done) => {
-		if (testInbox) {
+describe('Mailer', () => {	
+	describe('POST mailer', () => {
+		it('should send an email if the payload is correct', (done) => {
 			request
-				.delete(api(`email-inbox/${testInbox}`))
-				.set(credentials)
-				.send()
-				.expect(200)
-				.end(() => done());
-			return;
-		}
-		done();
-	});
-	describe('POST email-inbox.sendMail', () => {
-		it('should send an email if the request is correct', (done) => {
-			request
-				.post(api('email-inbox.sendMail'))
+				.post(api('mailer'))
 				.set(credentials)
 				.send({
 					from: 'test-email@example.com',
 					subject: 'Test email subject',
 					body: 'Test email body',
-					dryrun: true,
-					query: '',
+					// dryrun: true,
+					// query: '',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
