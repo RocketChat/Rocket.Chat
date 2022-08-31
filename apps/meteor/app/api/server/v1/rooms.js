@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Rooms as RoomsRaw } from '@rocket.chat/models';
+import { isRoomsInfoProps } from '@rocket.chat/rest-typings/dist/v1/rooms';
 
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models/server';
@@ -17,7 +18,6 @@ import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authoriz
 import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
-import { isRoomsInfoProps } from '@rocket.chat/rest-typings/dist/v1/rooms';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	const { roomId, roomName } = params;

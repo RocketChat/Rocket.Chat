@@ -1,7 +1,8 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
+import { Match } from 'meteor/check';
 import { Integrations, Messages as MessagesRaw, Uploads, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
+import { isGroupsMembersProps, isRoomIdOrRoomNameProps } from '@rocket.chat/rest-typings/dist/v1/groups';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
@@ -19,8 +20,6 @@ import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
-import { getChannelHistory } from '../../../../app/lib/server/methods/getChannelHistory';
-import { isGroupsMembersProps, isRoomIdOrRoomNameProps } from '@rocket.chat/rest-typings/dist/v1/groups';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
@@ -508,15 +507,14 @@ API.v1.addRoute(
 				return API.v1.success({
 					group: this.composeRoomWithLastMessage(room, this.userId),
 				});
-			} else {
-				// remove room object lastMessage
-				const group = Object.assign({}, room);
-				delete group.lastMessage;
-
-				return API.v1.success({
-					group,
-				});
 			}
+			// remove room object lastMessage
+			const group = Object.assign({}, room);
+			delete group.lastMessage;
+
+			return API.v1.success({
+				group,
+			});
 		},
 	},
 );
