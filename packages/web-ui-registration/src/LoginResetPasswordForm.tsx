@@ -1,12 +1,14 @@
 import { FieldGroup, TextInput, Field, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useLoginSendEmailConfirmation } from './hooks/useLoginSendEmailConfirmation';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter';
+import { useSendForgotPassword } from './hooks/useSendForgotPassword';
 
-export const LoginEmailConfirmationForm = ({ email, onBackToLogin }: { email?: string; onBackToLogin: () => void }): ReactElement => {
+export const LoginResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const t = useTranslation();
 
 	const [sent, setSent] = useState<boolean>(false);
@@ -16,35 +18,29 @@ export const LoginEmailConfirmationForm = ({ email, onBackToLogin }: { email?: s
 		formState: { errors },
 	} = useForm<{
 		email: string;
-	}>({
-		defaultValues: {
-			email,
-		},
-	});
+	}>();
 
-	const sendEmail = useLoginSendEmailConfirmation();
+	const resetPassword = useSendForgotPassword();
 
 	return (
 		<Form
 			onSubmit={handleSubmit((data) => {
-				sendEmail({ email: data.email });
+				resetPassword({ email: data.email });
 				setSent(true);
 			})}
 		>
 			<Form.Header>
-				<Form.Title>{t('Confirmation')}</Form.Title>
-				<Form.Subtitle>{t('registration.page.emailVerification.subTitle')}</Form.Subtitle>
+				<Form.Title>{t('Reset_password')}</Form.Title>
 			</Form.Header>
 			<Form.Container>
 				<FieldGroup>
 					<Field>
-						<Field.Label htmlFor='email'>{t('Email')}*</Field.Label>
+						<Field.Label htmlFor='email'>{t('Email')}</Field.Label>
 						<Field.Row>
 							<TextInput
 								{...register('email', {
 									required: true,
 								})}
-								disabled={Boolean(email)}
 								error={errors.email && t('onboarding.component.form.requiredField')}
 								aria-invalid={errors?.email?.type === 'required'}
 								placeholder={t('Email_Placeholder')}
@@ -56,27 +52,27 @@ export const LoginEmailConfirmationForm = ({ email, onBackToLogin }: { email?: s
 				</FieldGroup>
 				{sent && (
 					<FieldGroup>
-						<Callout type='success'>{t('registration.page.emailVerification.sent')}</Callout>
+						<Callout type='warning'>{t('If_this_email_is_registered')}</Callout>
 					</FieldGroup>
 				)}
 			</Form.Container>
 			<Form.Footer>
 				<ButtonGroup>
 					<Button type='submit' primary>
-						{t('Send_confirmation_email')}
+						{t('Submit')}
 					</Button>
 				</ButtonGroup>
 
 				<ActionLink
 					onClick={(): void => {
-						onBackToLogin();
+						setLoginRoute('login');
 					}}
 				>
-					Back to login
+					Back to Login
 				</ActionLink>
 			</Form.Footer>
 		</Form>
 	);
 };
 
-export default LoginEmailConfirmationForm;
+export default LoginResetPasswordForm;

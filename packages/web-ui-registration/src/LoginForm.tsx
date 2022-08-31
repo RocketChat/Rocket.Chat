@@ -1,13 +1,14 @@
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans } from 'react-i18next';
 
 import LoginEmailConfirmationForm from './LoginEmailConfirmation';
 import { useLoginMethod } from './hooks/useLoginMethod';
-import { DispatchLoginRouter } from './hooks/useLoginRouter';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { LoginServices } from './LoginServices';
 
 type LoginErrors =

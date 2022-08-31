@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 
 export const PoweredBy = (): ReactElement => (
 	<div className='powered-by'>

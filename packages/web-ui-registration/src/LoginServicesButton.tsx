@@ -1,6 +1,7 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useLoginService, LoginService } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { LoginService } from '@rocket.chat/ui-contexts';
+import { useLoginService } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
 
 export const LoginServicesButton = <T extends LoginService>(props: T): ReactElement => {
 	const handler = useLoginService(props);

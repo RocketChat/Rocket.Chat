@@ -5,7 +5,8 @@ import {
 	HorizontalWizardLayoutTitle,
 	HorizontalWizardLayoutFooter,
 } from '@rocket.chat/layout';
-import React, { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import Footer from '../Footer';
 import PoweredBy from '../LoginPoweredBy';

@@ -1,10 +1,10 @@
 import { ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useLoginServices, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactNode } from 'react';
+import type { ReactElement } from 'react';
 
 import { LoginServicesButton } from './LoginServicesButton';
 
-export const LoginServices = (): ReactNode => {
+export const LoginServices = (): ReactElement | null => {
 	const services = useLoginServices();
 	const t = useTranslation();
 	if (services.length === 0) {
@@ -15,7 +15,7 @@ export const LoginServices = (): ReactNode => {
 		<>
 			<ButtonGroup vertical stretch small>
 				{services.map((service) => (
-					<LoginServicesButton key={service.name} {...service} />
+					<LoginServicesButton key={service.service} {...service} />
 				))}
 			</ButtonGroup>
 			<Divider children={t('or')} />
