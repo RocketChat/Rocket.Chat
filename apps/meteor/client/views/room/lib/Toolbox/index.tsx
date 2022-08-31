@@ -35,6 +35,7 @@ export type ToolboxActionConfig = {
 	'hotkey'?: string;
 	'action'?: (e?: MouseEvent<HTMLElement>) => void;
 	'template'?: string | FC | LazyExoticComponent<FC<{ rid: string; tabBar: any }>>;
+	'featured'?: boolean;
 };
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;
