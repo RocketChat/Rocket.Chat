@@ -68,9 +68,9 @@ const handleWrapperScroll = _.throttle(function (this: { _id: IRoom['_id'] }, e:
 	const $roomLeader = $('.room-leader');
 	if ($roomLeader.length) {
 		if (e.target.scrollTop < t.lastScrollTop) {
-			t.hideLeaderHeader.set(false);
+			t.data.setHideLeaderHeader(false);
 		} else if (t.isAtBottom(100) === false && e.target.scrollTop > ($roomLeader.height() ?? 0)) {
-			t.hideLeaderHeader.set(true);
+			t.data.setHideLeaderHeader(true);
 		}
 	}
 	t.lastScrollTop = e.target.scrollTop;

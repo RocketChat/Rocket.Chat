@@ -132,7 +132,8 @@ function canPreview() {
 }
 
 function hideLeaderHeader() {
-	return (Template.instance() as RoomTemplateInstance).hideLeaderHeader.get() ? 'animated-hidden' : '';
+	const { hideLeaderHeader } = Template.currentData() as RoomTemplateInstance['data'];
+	return hideLeaderHeader ? 'animated-hidden' : '';
 }
 
 function hasLeader(this: { _id: string }) {

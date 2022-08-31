@@ -1,6 +1,5 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { Blaze } from 'meteor/blaze';
-import type { ReactiveVar } from 'meteor/reactive-var';
 import type { Dispatch, SetStateAction } from 'react';
 
 import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
@@ -17,6 +16,11 @@ export type RoomTemplateInstance = CommonRoomTemplateInstance &
 		subscribed: boolean;
 		lastMessage: Date | undefined;
 		setLastMessage: Dispatch<SetStateAction<Date | undefined>>;
+		userDetail: string;
+		hideLeaderHeader: boolean;
+		setHideLeaderHeader: Dispatch<SetStateAction<boolean>>;
+		unreadCount: number;
+		setUnreadCount: Dispatch<SetStateAction<number>>;
 	}> & {
 		resetSelection: (enabled: boolean) => void;
 		selectedMessages: unknown[];
@@ -29,10 +33,7 @@ export type RoomTemplateInstance = CommonRoomTemplateInstance &
 		checkIfScrollIsAtBottom: () => void;
 		observer: ResizeObserver | undefined;
 		lastScrollTop: number;
-		hideLeaderHeader: ReactiveVar<boolean>;
 		isAtBottom: (threshold?: number) => boolean;
 		sendToBottom: () => void;
-		unreadCount: ReactiveVar<number>;
 		rolesObserve: Meteor.LiveQueryHandle | undefined;
-		userDetail: ReactiveVar<string>;
 	};

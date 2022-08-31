@@ -1,8 +1,9 @@
 import { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import React, { memo, ReactElement, useCallback, useRef } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useRef } from 'react';
 
 import { chatMessages } from '../../../../../app/ui';
 import { RoomManager } from '../../../../../app/ui-utils/client';
@@ -17,9 +18,27 @@ type ComposerContainerProps = {
 };
 
 const ComposerContainer = ({ rid, subscription, sendToBottomIfNecessary }: ComposerContainerProps): ReactElement => {
-	const messageBoxViewRef = useRef<Blaze.View>();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const showFormattingTips = useSetting('Message_ShowFormattingTips') as boolean;
+
+	const messageBoxViewRef = useRef<Blaze.View>();
+	const messageBoxViewDataRef = useRef(
+		new ReactiveVar({
+			rid,
+			subscription,
+			isEmbedded: isLayoutEmbedded,
+			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
+		}),
+	);
+
+	useEffect(() => {
+		messageBoxViewDataRef.current.set({
+			rid,
+			subscription,
+			isEmbedded: isLayoutEmbedded,
+			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
+		});
+	}, [isLayoutEmbedded, rid, showFormattingTips, subscription]);
 
 	const footerRef = useCallback(
 		(footer: HTMLElement | null) => {
@@ -27,10 +46,7 @@ const ComposerContainer = ({ rid, subscription, sendToBottomIfNecessary }: Compo
 				messageBoxViewRef.current = Blaze.renderWithData(
 					Template.messageBox,
 					() => ({
-						rid,
-						subscription,
-						isEmbedded: isLayoutEmbedded,
-						showFormattingTips: showFormattingTips && !isLayoutEmbedded,
+						...messageBoxViewDataRef.current.get(),
 						onInputChanged: (input: HTMLTextAreaElement): void => {
 							chatMessages[rid]?.initializeInput(input, { rid });
 						},
@@ -67,7 +83,7 @@ const ComposerContainer = ({ rid, subscription, sendToBottomIfNecessary }: Compo
 				messageBoxViewRef.current = undefined;
 			}
 		},
-		[isLayoutEmbedded, rid, sendToBottomIfNecessary, showFormattingTips, subscription],
+		[rid, sendToBottomIfNecessary],
 	);
 
 	const subscriptionReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));

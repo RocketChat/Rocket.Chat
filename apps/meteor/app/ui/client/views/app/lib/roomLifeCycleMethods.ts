@@ -1,10 +1,9 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import type { IEditedMessage, IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage } from '@rocket.chat/core-typings';
 import { Template } from 'meteor/templating';
 
 import { ChatMessage, RoomRoles, Subscriptions, Rooms } from '../../../../../models/client';
@@ -20,43 +19,11 @@ import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 import type { RoomTemplateInstance } from './RoomTemplateInstance';
 
 export function onRoomCreated(this: RoomTemplateInstance) {
-	const { _id: rid } = this.data;
-
-	this.userDetail = new ReactiveVar('');
-	const user = Meteor.user();
-	this.autorun((c) => {
-		const room: IRoom = Rooms.findOne(
-			{ _id: rid },
-			{
-				fields: {
-					t: 1,
-					usernames: 1,
-					uids: 1,
-				},
-			},
-		);
-
-		if (room.t !== 'd') {
-			return c.stop();
-		}
-
-		if (roomCoordinator.getRoomDirectives(room.t)?.isGroupChat(room)) {
-			return;
-		}
-		const usernames = Array.from(new Set(room.usernames));
-		this.userDetail.set(
-			this.userDetail.get() || (usernames.length === 1 ? usernames[0] : usernames.filter((username) => username !== user?.username)[0]),
-		);
-	});
-
 	this.atBottom = !FlowRouter.getQueryParam('msg');
-	this.unreadCount = new ReactiveVar(0);
 
 	this.selectedMessages = [];
 	this.selectedRange = [];
 	this.selectablePointer = undefined;
-
-	this.hideLeaderHeader = new ReactiveVar(false);
 
 	this.resetSelection = (enabled: boolean) => {
 		this.data.setSelectable(enabled);
@@ -276,12 +243,12 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 			const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 
 			if (!lastInvisibleMessageOnScreen || !lastInvisibleMessageOnScreen.id) {
-				return this.unreadCount.set(0);
+				return this.data.setUnreadCount(0);
 			}
 
 			const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
 			if (!lastMessage) {
-				return this.unreadCount.set(0);
+				return this.data.setUnreadCount(0);
 			}
 
 			this.data.setLastMessage(lastMessage.ts);
@@ -325,11 +292,11 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 	});
 
 	this.autorun(() => {
-		const { lastMessage } = Template.currentData() as RoomTemplateInstance['data'];
+		const { lastMessage, setUnreadCount } = Template.currentData() as RoomTemplateInstance['data'];
 
 		const subscription = Subscriptions.findOne({ rid }, { fields: { ls: 1 } });
 		if (!subscription) {
-			this.unreadCount.set(0);
+			setUnreadCount(0);
 			return;
 		}
 
@@ -338,12 +305,12 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 			ts: { $lte: lastMessage, $gt: subscription?.ls },
 		}).count();
 
-		this.unreadCount.set(count);
+		setUnreadCount(count);
 	});
 
 	this.autorun(() => {
-		const { setCount } = Template.currentData() as RoomTemplateInstance['data'];
-		const count = RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() + this.unreadCount.get();
+		const { setCount, unreadCount } = Template.currentData() as RoomTemplateInstance['data'];
+		const count = RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() + unreadCount;
 		setCount(count);
 	});
 
@@ -356,7 +323,7 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 		readMessage.refreshUnreadMark(rid);
 	});
 
-	readMessage.on(this.data._id, () => this.unreadCount.set(0));
+	readMessage.on(this.data._id, () => this.data.setUnreadCount(0));
 
 	wrapper.addEventListener('scroll', updateUnreadCount);
 	// save the render's date to display new messages alerts

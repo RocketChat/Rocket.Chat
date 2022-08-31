@@ -1,14 +1,15 @@
 /* eslint-disable react/no-multi-comp */
-import { useRole, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useRole, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import React, { memo, ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Subscriptions } from '../../../../../app/models/client';
 import { RoomTemplateInstance } from '../../../../../app/ui/client/views/app/lib/RoomTemplateInstance';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import Announcement from '../../Announcement';
 import { useRoom } from '../../contexts/RoomContext';
 import { useTabBarAPI } from '../../providers/ToolboxProvider';
@@ -20,6 +21,7 @@ const RoomBody = (): ReactElement => {
 	const t = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
+	const user = useUser();
 	const hideFlexTab = useUserPreference('hideFlexTab');
 	const tabBar = useTabBarAPI();
 	const admin = useRole('admin');
@@ -27,6 +29,21 @@ const RoomBody = (): ReactElement => {
 	const [count, setCount] = useState(0);
 	const [selectable, setSelectable] = useState(false);
 	const [lastMessage, setLastMessage] = useState<Date | undefined>();
+	const userDetail = useMemo(() => {
+		if (room.t !== 'd') {
+			return '';
+		}
+
+		if (roomCoordinator.getRoomDirectives(room.t)?.isGroupChat(room)) {
+			return '';
+		}
+
+		const usernames = Array.from(new Set(room.usernames));
+
+		return usernames.length === 1 ? usernames[0] : usernames.filter((username) => username !== user?.username)[0];
+	}, [room, user?.username]);
+	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
+	const [unreadCount, setUnreadCount] = useState(0);
 
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(room);
 
@@ -45,6 +62,11 @@ const RoomBody = (): ReactElement => {
 			subscribed: !!subscription,
 			lastMessage,
 			setLastMessage,
+			userDetail,
+			hideLeaderHeader,
+			setHideLeaderHeader,
+			unreadCount,
+			setUnreadCount,
 		}),
 	);
 
@@ -62,8 +84,13 @@ const RoomBody = (): ReactElement => {
 			subscribed: !!subscription,
 			lastMessage,
 			setLastMessage,
+			userDetail,
+			hideLeaderHeader,
+			setHideLeaderHeader,
+			unreadCount,
+			setUnreadCount,
 		});
-	}, [count, lastMessage, room, selectable, subscription, tabBar]);
+	}, [count, hideLeaderHeader, lastMessage, room, selectable, subscription, tabBar, unreadCount, userDetail]);
 
 	const divRef = useCallback(
 		(div: HTMLDivElement | null): void => {
