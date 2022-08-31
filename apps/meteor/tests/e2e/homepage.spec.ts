@@ -11,7 +11,6 @@ const CardIds = {
 	Desktop: 'homepage-desktop-apps-card',
 	Docs: 'homepage-documentation-card',
 };
-
 test.use({ storageState: 'admin-session.json' });
 
 test.describe.serial('homepage', () => {
