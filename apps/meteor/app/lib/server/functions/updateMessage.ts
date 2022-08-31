@@ -46,13 +46,14 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 	message = callbacks.run('beforeSaveMessage', message);
 
 	const { _id, ...editedMessage } = message;
+	const unsetData = {};
 
 	if (!editedMessage.msg) {
-		Messages.unsetMarkdown(_id);
+		unsetData.md = 1;
 		delete editedMessage.md;
 	}
 
-	Messages.update({ _id }, { $set: editedMessage });
+	Messages.update({ _id }, { $set: editedMessage, $unset: unsetData });
 
 	const room = Rooms.findOneById(message.rid);
 
