@@ -123,6 +123,7 @@ describe('Meteor.methods', function () {
 
 	describe('[@getReadReceipts]', () => {
 		let rid = false;
+		let ls = false;
 		let firstMessage = false;
 		let firstThreadMessage = false;
 
@@ -159,7 +160,7 @@ describe('Meteor.methods', function () {
 		before('create room', (done) => {
 			channelName = `methods-receipts-test-channel-${Date.now()}`;
 			request
-				.post(api('groups.create'))
+				.post(api('channels.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -169,11 +170,11 @@ describe('Meteor.methods', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('group._id');
-					expect(res.body).to.have.nested.property('group.name', channelName);
-					expect(res.body).to.have.nested.property('group.t', 'p');
-					expect(res.body).to.have.nested.property('group.msgs', 0);
-					rid = res.body.group._id;
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', channelName);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', 0);
+					rid = res.body.channel._id;
 				})
 				.end(done);
 		});
@@ -200,7 +201,7 @@ describe('Meteor.methods', function () {
 		before('send sample message into thread', (done) => {
 			request
 				.post(api('chat.sendMessage'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
 					message: {
 						text: 'Second Sample message',
@@ -266,7 +267,7 @@ describe('Meteor.methods', function () {
 		it("should return the sender's read receipt for a message sent in a thread", (done) => {
 			request
 				.post(methodCall('getReadReceipts'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
 					message: JSON.stringify({
 						method: 'getReadReceipts',
@@ -284,7 +285,7 @@ describe('Meteor.methods', function () {
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('result').that.is.an('array');
 					expect(data.result.length).to.equal(1);
-					expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
+					expect(data.result[0]).to.have.property('userId', user._id);
 				})
 				.end(done);
 		});
@@ -364,10 +365,26 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
-		it('should read thread messages with the invited user', (done) => {
+		it('should return an unread thread for the room owner', (done) => {
+			request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({
+					roomId: rid,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body.subscription).to.have.property('tunread', [firstMessage._id]);
+				})
+				.end(done);
+		});
+
+		it('should read thread messages with the room owner', (done) => {
 			request
 				.post(methodCall('getThreadMessages'))
-				.set(userCredentials)
+				.set(credentials)
 				.send({
 					message: JSON.stringify({
 						id: 'id',
@@ -393,7 +410,23 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
-		it("should return the invited user's read receipt for a message sent in a thread after it is read", (done) => {
+		it('should return no unread threads for the room owner after reading the thread', (done) => {
+			request
+				.get(api('subscriptions.getOne'))
+				.set(userCredentials)
+				.query({
+					roomId: rid,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body.subscription).to.have.property('tunread', []);
+				})
+				.end(done);
+		});
+
+		it("should return the room owner's read receipt for a message sent in a thread after it is read", (done) => {
 			request
 				.post(methodCall('getReadReceipts'))
 				.set(credentials)
