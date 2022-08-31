@@ -13,8 +13,8 @@ import RemoveAllClosed from './RemoveAllClosed';
 
 type FilterByTextType = FC<{
 	setFilter: Dispatch<SetStateAction<any>>;
-	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string }>>;
-	customFields: { [key: string]: string };
+	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string } | undefined>>;
+	customFields: { [key: string]: string } | undefined;
 	hasCustomFields: boolean;
 	reload?: () => void;
 }>;
@@ -55,7 +55,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 		setFrom('');
 		setTo('');
 		setTags([]);
-		setCustomFields({});
+		setCustomFields(undefined);
 	});
 
 	const forms = useFormsSubscription() as any;
