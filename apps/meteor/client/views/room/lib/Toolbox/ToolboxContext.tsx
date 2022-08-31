@@ -17,6 +17,7 @@ export type ToolboxContextValue = {
 	openUserInfo: (username: string) => void;
 	close: () => void;
 	activeTabBar?: ToolboxActionConfig;
+	setData?: (data: Record<string, unknown>) => void;
 };
 
 export const ToolboxContext = createContext<ToolboxContextValue>({

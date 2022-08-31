@@ -447,7 +447,6 @@ export class UsersRaw extends BaseRaw {
 			{
 				$match: {
 					_id: userId,
-					status: { $exists: true, $ne: 'offline' },
 					statusLivechat: 'available',
 					roles: 'livechat-agent',
 				},
@@ -1125,6 +1124,17 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 		return this.updateOne(query, update);
+	}
+
+	removeRoomByRoomId(rid) {
+		return this.updateMany(
+			{
+				__rooms: rid,
+			},
+			{
+				$pull: { __rooms: rid },
+			},
+		);
 	}
 
 	findOneByResetToken(token, options) {

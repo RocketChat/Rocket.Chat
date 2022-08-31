@@ -1,10 +1,9 @@
 import { Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { ExternalLink, Card } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import Card from '../../../../../client/components/Card';
 import UsagePieGraph from '../../../../../client/views/admin/info/UsagePieGraph';
 import { useRequestSeatsLink } from '../users/useRequestSeatsLink';
 import { useSeatsCap } from '../users/useSeatsCap';

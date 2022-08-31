@@ -13,6 +13,7 @@ const applyRestrictions = (method) =>
 overwriteClassOnLicense('livechat-enterprise', LivechatRoomsRaw, {
 	find: applyRestrictions('find'),
 	update: applyRestrictions('update'),
+	findPaginated: applyRestrictions('findPaginated'),
 	remove: applyRestrictions('remove'),
 	updateDepartmentAncestorsById(originalFn, _id, departmentAncestors) {
 		const query = {
