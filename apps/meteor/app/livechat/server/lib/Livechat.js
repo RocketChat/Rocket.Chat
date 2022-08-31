@@ -392,8 +392,7 @@ export const Livechat = {
 
 		const customFields = {};
 
-		// Skip custom fields fetch/update if we're not updating custom fields on endpoint
-		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
 			Livechat.logger.debug(`Saving custom fields for visitor ${_id}`);
 
 			const fields = LivechatCustomField.findByScope('visitor');
@@ -588,9 +587,9 @@ export const Livechat = {
 		const { livechatData = {} } = roomData;
 		const customFields = {};
 
-		// Same: only update custom fields when we're actually updating them
-		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
 			Livechat.logger.debug(`Updating custom fields on room ${roomData._id}`);
+
 			const fields = LivechatCustomField.findByScope('room');
 			for await (const field of fields) {
 				if (!livechatData.hasOwnProperty(field._id)) {
