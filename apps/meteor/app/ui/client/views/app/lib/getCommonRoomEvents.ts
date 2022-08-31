@@ -105,7 +105,7 @@ const createMessageTouchEvents = () => {
 function handleMessageActionButtonClick(this: unknown, event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
 	const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
 	// @ ts-ignore
-	button?.action.call(this, event, { tabbar: template.tabBar });
+	button?.action.call(this, event, { tabbar: template.data.tabBar });
 }
 
 function handleFollowThreadButtonClick(this: unknown, e: JQuery.ClickEvent) {
@@ -239,7 +239,7 @@ function handleMessageActionMenuClick(this: unknown, e: JQuery.ClickEvent, templ
 		type: 'message-action',
 		id: item.id,
 		modifier: item.color,
-		action: () => item.action(e, { tabbar: template.tabBar, message, room }),
+		action: () => item.action(e, { tabbar: template.data.tabBar, message, room }),
 	}));
 
 	const itemsBelowDivider = ['delete-message', 'report-message'];

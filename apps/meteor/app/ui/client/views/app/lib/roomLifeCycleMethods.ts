@@ -1,12 +1,11 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { Template } from 'meteor/templating';
 import type { IEditedMessage, IMessage, IRoom } from '@rocket.chat/core-typings';
+import { Template } from 'meteor/templating';
 
 import { ChatMessage, RoomRoles, Subscriptions, Rooms } from '../../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../../ui-utils/client';
@@ -21,15 +20,8 @@ import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 import type { RoomTemplateInstance } from './RoomTemplateInstance';
 
 export function onRoomCreated(this: RoomTemplateInstance) {
-	// this.scrollOnBottom = true
-	// this.typing = new msgTyping this.data._id
-	const rid = this.data._id;
-	this.tabBar = this.data.tabBar;
+	const { _id: rid } = this.data;
 
-	this.rid = rid;
-
-	this.subscription = new ReactiveVar(null);
-	this.state = new ReactiveDict();
 	this.userDetail = new ReactiveVar('');
 	const user = Meteor.user();
 	this.autorun((c) => {
@@ -44,8 +36,6 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 			},
 		);
 
-		this.room = room;
-
 		if (room.t !== 'd') {
 			return c.stop();
 		}
@@ -59,26 +49,9 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 		);
 	});
 
-	this.autorun(() => {
-		const rid = Template.currentData()._id;
-		const room = Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } });
-		this.state.set('announcement', room.announcement);
-	});
-
-	this.autorun(() => {
-		const subscription = Subscriptions.findOne({ rid });
-		this.subscription.set(subscription);
-		this.state.set({
-			subscribed: !!subscription,
-			autoTranslate: subscription?.autoTranslate,
-			autoTranslateLanguage: subscription?.autoTranslateLanguage,
-		});
-	});
-
 	this.atBottom = !FlowRouter.getQueryParam('msg');
 	this.unreadCount = new ReactiveVar(0);
 
-	this.selectable = new ReactiveVar(false);
 	this.selectedMessages = [];
 	this.selectedRange = [];
 	this.selectablePointer = undefined;
@@ -86,7 +59,7 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 	this.hideLeaderHeader = new ReactiveVar(false);
 
 	this.resetSelection = (enabled: boolean) => {
-		this.selectable.set(enabled);
+		this.data.setSelectable(enabled);
 		$('.messages-box .message.selected').removeClass('selected');
 		this.selectedMessages = [];
 		this.selectedRange = [];
@@ -185,8 +158,6 @@ export function onRoomDestroyed(this: RoomTemplateInstance) {
 
 	// @ts-ignore
 	readMessage.off(this.data._id);
-
-	window.removeEventListener('resize', this.onWindowResize);
 
 	this.observer?.disconnect();
 
@@ -313,7 +284,7 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 				return this.unreadCount.set(0);
 			}
 
-			this.state.set('lastMessage', lastMessage.ts);
+			this.data.setLastMessage(lastMessage.ts);
 		});
 	}, 300);
 
@@ -354,7 +325,7 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 	});
 
 	this.autorun(() => {
-		const lastMessage = this.state.get('lastMessage');
+		const { lastMessage } = Template.currentData() as RoomTemplateInstance['data'];
 
 		const subscription = Subscriptions.findOne({ rid }, { fields: { ls: 1 } });
 		if (!subscription) {
@@ -371,13 +342,14 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 	});
 
 	this.autorun(() => {
+		const { setCount } = Template.currentData() as RoomTemplateInstance['data'];
 		const count = RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() + this.unreadCount.get();
-		this.state.set('count', count);
+		setCount(count);
 	});
 
 	this.autorun(() => {
+		const { count } = Template.currentData() as RoomTemplateInstance['data'];
 		Rooms.findOne(rid);
-		const count = this.state.get('count');
 		if (count === 0) {
 			return read();
 		}

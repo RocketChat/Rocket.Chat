@@ -14,6 +14,7 @@ import { actionLinks } from '../../../action-links/client';
 import { goToRoomById } from '../../../../client/lib/utils/goToRoomById';
 import { isLayoutEmbedded } from '../../../../client/lib/utils/isLayoutEmbedded';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import type { CommonRoomTemplateInstance } from '../../../ui/client/views/app/lib/CommonRoomTemplateInstance';
 
 const fields = {
 	'name': 1,
@@ -25,9 +26,7 @@ const fields = {
 	'settings.preferences.hideRoles': 1,
 };
 
-export function messageContext(
-	{ rid }: { rid: IRoom['_id'] } = Template.instance() as Blaze.TemplateInstance<Record<string, unknown>> & { rid: IRoom['_id'] },
-) {
+export function messageContext({ rid }: { rid: IRoom['_id'] } = (Template.instance() as CommonRoomTemplateInstance).data) {
 	const uid = Meteor.userId();
 	const user = Users.findOne({ _id: uid }, { fields }) || {};
 	const instance = Template.instance();

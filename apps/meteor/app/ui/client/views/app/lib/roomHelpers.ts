@@ -13,13 +13,8 @@ import type { RoomTemplateInstance } from './RoomTemplateInstance';
 import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
 import { openUserCard } from '../../../lib/UserCard';
 
-function subscribed() {
-	const { state } = Template.instance() as RoomTemplateInstance;
-	return state.get('subscribed');
-}
-
 function messagesHistory() {
-	const { rid } = Template.instance() as RoomTemplateInstance;
+	const { rid } = (Template.instance() as RoomTemplateInstance).data;
 	const room: Pick<IRoom, 'sysMes'> = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 	const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
 	const settingValues: MessageTypesValues[] = Array.isArray(room?.sysMes) ? room.sysMes : hideSettings.value || [];
@@ -85,7 +80,7 @@ function roomLeader(this: { _id: string }) {
 type UnreadData = { count?: number; since?: moment.MomentInput };
 
 function unreadData(this: { _id: string }) {
-	const data: UnreadData = { count: (Template.instance() as RoomTemplateInstance).state.get('count'), since: undefined };
+	const data: UnreadData = { count: (Template.currentData() as RoomTemplateInstance['data']).count, since: undefined };
 
 	const room = RoomManager.getOpenedRoomByRid(this._id);
 	if (room) {
@@ -110,10 +105,6 @@ function messageViewMode() {
 	return modes[viewMode] || modes[0];
 }
 
-function selectable() {
-	return (Template.instance() as RoomTemplateInstance).selectable.get();
-}
-
 function hideUsername() {
 	return getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
 }
@@ -123,7 +114,7 @@ function hideAvatar() {
 }
 
 function canPreview() {
-	const { room, state } = Template.instance() as RoomTemplateInstance;
+	const { room, subscribed } = Template.currentData() as RoomTemplateInstance['data'];
 
 	if (room && room.t !== 'c') {
 		return true;
@@ -137,7 +128,7 @@ function canPreview() {
 		return true;
 	}
 
-	return state.get('subscribed');
+	return subscribed;
 }
 
 function hideLeaderHeader() {
@@ -151,7 +142,7 @@ function hasLeader(this: { _id: string }) {
 }
 
 function handleUnreadBarJumpToButtonClick() {
-	const rid = Template.parentData()._id;
+	const rid = Template.currentData()._id;
 
 	return (event: MouseEvent) => {
 		event.preventDefault();
@@ -167,7 +158,7 @@ function handleUnreadBarJumpToButtonClick() {
 }
 
 function handleMarkAsReadButtonClick() {
-	const rid = Template.parentData()._id;
+	const rid = Template.currentData()._id;
 
 	return (event: MouseEvent) => {
 		event.preventDefault();
@@ -177,12 +168,11 @@ function handleMarkAsReadButtonClick() {
 }
 
 function handleUploadProgressCloseButtonClick(id: string) {
-	return () => {
-		return (event: MouseEvent): void => {
+	return () =>
+		(event: MouseEvent): void => {
 			event.preventDefault();
 			Session.set(`uploading-cancel-${id}`, true);
 		};
-	};
 }
 
 function handleOpenUserCardButtonClick(this: { username: string }) {
@@ -206,7 +196,6 @@ function handleOpenUserCardButtonClick(this: { username: string }) {
 }
 
 export const roomHelpers = {
-	subscribed,
 	messagesHistory,
 	hasMore,
 	hasMoreNext,
@@ -216,7 +205,6 @@ export const roomHelpers = {
 	unreadData,
 	containerBarsShow,
 	messageViewMode,
-	selectable,
 	hideUsername,
 	hideAvatar,
 	canPreview,

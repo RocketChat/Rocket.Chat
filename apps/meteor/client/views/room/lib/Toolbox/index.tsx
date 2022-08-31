@@ -3,6 +3,7 @@ import { Box, Option, Icon } from '@rocket.chat/fuselage';
 import { TranslationKey } from '@rocket.chat/ui-contexts';
 import { ReactNode, MouseEvent, ComponentProps, ComponentType } from 'react';
 
+import { ToolboxContextValue } from './ToolboxContext';
 import { generator, Events as GeneratorEvents } from './generator';
 
 type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null;
@@ -37,12 +38,7 @@ export type ToolboxActionConfig = {
 	'template'?:
 		| string
 		| ComponentType<{
-				tabBar: {
-					open: (actionId: string, context?: string | undefined) => void;
-					close: () => void;
-					isOpen: () => boolean;
-					openUserInfo: (username: string) => void;
-				};
+				tabBar: ToolboxContextValue;
 				_id: IRoom['_id'];
 				rid: IRoom['_id'];
 				teamId: IRoom['teamId'];

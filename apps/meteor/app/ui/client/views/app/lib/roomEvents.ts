@@ -15,7 +15,7 @@ function handleToggleHiddenButtonClick(e: JQuery.ClickEvent) {
 }
 
 function handleMessageClick(e: JQuery.ClickEvent, template: RoomTemplateInstance) {
-	if (template.selectable.get()) {
+	if (template.data.selectable) {
 		window.getSelection?.()?.removeAllRanges();
 		const data = Blaze.getData(e.currentTarget);
 		const {

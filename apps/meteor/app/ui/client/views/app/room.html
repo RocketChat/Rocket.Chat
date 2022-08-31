@@ -1,14 +1,12 @@
 <template name="roomOld">
 	<div class="container-bars {{containerBarsShow unreadData uploading}}">
-		{{#with unreadData}}
-			{{#if since}}
-				{{#if count}}
-					{{> UnreadMessagesIndicator count=count since=since onJumpButtonClick=handleUnreadBarJumpToButtonClick onMarkAsReadButtonClick=handleMarkAsReadButtonClick}}
-				{{/if}}
+		{{#if unreadData.since}}
+			{{#if unreadData.count}}
+				{{> UnreadMessagesIndicator count=unreadData.count since=unreadData.since onJumpButtonClick=handleUnreadBarJumpToButtonClick onMarkAsReadButtonClick=handleMarkAsReadButtonClick}}
 			{{/if}}
-		{{/with}}
-		{{#each uploading}}
-			{{> UploadProgressIndicator name=name percentage=percentage error=error onClose=(handleUploadProgressCloseButtonClick id)}}
+		{{/if}}
+		{{#each upload in uploading}}
+			{{> UploadProgressIndicator name=upload.name percentage=upload.percentage error=upload.error onClose=(handleUploadProgressCloseButtonClick upload.id)}}
 		{{/each}}
 	</div>
 	<div class="messages-box {{#if selectable}}selectable{{/if}} {{messageViewMode}} {{hasLeader}}">
@@ -26,9 +24,9 @@
 				</div>
 			</div>
 		{{/unless}}
-		{{#with roomLeader}}
-			{{> LeaderBar name=name username=username status=status statusDisplay=statusDisplay hideLeaderHeader=hideLeaderHeader onAvatarClick=handleOpenUserCardButtonClick}}
-		{{/with}}
+		{{#if roomLeader}}
+			{{> LeaderBar roomLeader hideLeaderHeader=hideLeaderHeader onAvatarClick=handleOpenUserCardButtonClick}}
+		{{/if}}
 		<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}} {{hideUsername}} {{hideAvatar}}">
 			<ul class="messages-list" aria-live="polite">
 				{{#if canPreview}}
@@ -47,15 +45,13 @@
 						</li>
 					{{/if}}
 				{{/if}}
-				{{#unless $eq (preference 'useLegacyMessageTemplate') true}}
-					{{> MessageList rid=rid }}
+				{{#if $eq (preference 'useLegacyMessageTemplate') true}}
+					{{#each msg in messagesHistory}}
+						{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=messageContext.room actions=messageContext.actions subscription=messageContext.subscription settings=messageContext.settings u=messageContext.u}}
+					{{/each}}
 				{{else}}
-					{{#with messageContext}}
-						{{#each msg in messagesHistory}}
-							{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room actions=actions subscription=subscription settings=settings u=u}}
-						{{/each}}
-					{{/with}}
-				{{/unless}}
+					{{> MessageList rid=rid }}
+				{{/if}}
 
 				{{#if hasMoreNext}}
 					<li class="load-more">
