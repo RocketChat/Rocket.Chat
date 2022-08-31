@@ -93135,6 +93135,97 @@
           ]
         }
       ]
+    },
+    "5.0.5": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26718",
+          "title": "Release 5.0.5",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26713",
+          "title": "[FIX] Business Units endpoints not filtering by Unit type",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.5",
+          "contributors": [
+            "KevLehman",
+            "Harmeet221",
+            "web-flow",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "26703",
+          "title": "[FIX][ENTERPRISE] Omnichannel real time data on micro services",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.5",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26692",
+          "title": "[FIX] Omnichannel inquiries being updated even if not needed",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.5",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
+    },
+    "5.1.0-rc.2": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26753",
+          "title": "Regression: REST setUserPublicAndPrivateKeys",
+          "userLogin": "ggazzo",
+          "milestone": "5.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "26745",
+          "title": "Regression: Workaround to handle auto stopped computations 😞 ",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "26713",
+          "title": "[FIX] Business Units endpoints not filtering by Unit type",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.5",
+          "contributors": [
+            "KevLehman",
+            "Harmeet221",
+            "web-flow",
+            "murtaza98"
+          ]
+        }
+      ]
     }
   }
 }

@@ -1,6 +1,31 @@
 
 # 5.1.0 (Under Release Candidate Process)
 
+## 5.1.0-rc.2
+`2022-08-31  ·  1 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Business Units endpoints not filtering by Unit type ([#26713](https://github.com/RocketChat/Rocket.Chat/pull/26713))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: REST setUserPublicAndPrivateKeys ([#26753](https://github.com/RocketChat/Rocket.Chat/pull/26753))
+
+- Regression: Workaround to handle auto stopped computations 😞  ([#26745](https://github.com/RocketChat/Rocket.Chat/pull/26745))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Harmeet221](https://github.com/Harmeet221)
+- [@KevLehman](https://github.com/KevLehman)
+- [@ggazzo](https://github.com/ggazzo)
+- [@murtaza98](https://github.com/murtaza98)
+
 ## 5.1.0-rc.1
 `2022-08-29  ·  2 🐛  ·  6 🔍  ·  7 👩‍💻👨‍💻`
 
@@ -621,6 +646,38 @@
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.0.5
+`2022-08-29  ·  3 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** Omnichannel real time data on micro services ([#26703](https://github.com/RocketChat/Rocket.Chat/pull/26703))
+
+- Business Units endpoints not filtering by Unit type ([#26713](https://github.com/RocketChat/Rocket.Chat/pull/26713))
+
+- Omnichannel inquiries being updated even if not needed ([#26692](https://github.com/RocketChat/Rocket.Chat/pull/26692))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 5.0.5 ([#26718](https://github.com/RocketChat/Rocket.Chat/pull/26718))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Harmeet221](https://github.com/Harmeet221)
+- [@KevLehman](https://github.com/KevLehman)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 5.0.4
 `2022-08-19  ·  1 🐛  ·  3 🔍  ·  3 👩‍💻👨‍💻`
