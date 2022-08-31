@@ -273,7 +273,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (call.messages.started) {
-			await Messages.setBlocksById(call.messages.started, [this.buildVideoConfBlock(call._id)]);
+			const name =
+				(settings.get<boolean>('UI_Use_Real_Name') ? call.createdBy.name : call.createdBy.username) || call.createdBy.username || '';
+			const text = TAPi18n.__('video_livechat_missed', { username: name });
+			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
 		}
 
 		await VideoConferenceModel.setDataById(call._id, {
