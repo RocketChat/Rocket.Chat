@@ -1,4 +1,4 @@
-import { IEditedMessage, isFileAttachment } from '@rocket.chat/core-typings';
+import { IEditedMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
@@ -27,11 +27,8 @@ Meteor.methods({
 		const editAllowed = settings.get('Message_AllowEditing');
 		let editOwn = false;
 
-		const originalMsg =
-			originalMessage?.attachments?.[0] && isFileAttachment(originalMessage.attachments[0])
-				? originalMessage.attachments[0].description ?? ''
-				: originalMessage.msg;
-		console.log('og msg = ', originalMsg);
+		const originalMsg = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
+
 		if (originalMsg === message.msg) {
 			return;
 		}

@@ -1317,6 +1317,10 @@ export class Messages extends Base {
 		};
 		return this.update(query, update);
 	}
+
+	unsetMarkdown(messageId) {
+		return this.update({ _id: messageId }, { $unset: { md: 1 } });
+	}
 }
 
 export default new Messages();

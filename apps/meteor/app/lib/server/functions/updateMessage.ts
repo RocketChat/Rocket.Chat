@@ -47,6 +47,11 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 
 	const { _id, ...editedMessage } = message;
 
+	if (!editedMessage.msg) {
+		Messages.unsetMarkdown(_id);
+		delete editedMessage.md;
+	}
+
 	Messages.update({ _id }, { $set: editedMessage });
 
 	const room = Rooms.findOneById(message.rid);
