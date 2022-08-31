@@ -1,9 +1,9 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { Header } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, FC, ComponentProps } from 'react';
 
-import Header from '../../../../../components/Header';
 import { useQuickActions } from './hooks/useQuickActions';
 
 type QuickActionsProps = {
@@ -31,7 +31,7 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 					'key': id,
 				};
 
-				return <Header.ToolBoxAction {...props} />;
+				return <Header.ToolBox.Action {...props} />;
 			})}
 		</ButtonGroup>
 	);

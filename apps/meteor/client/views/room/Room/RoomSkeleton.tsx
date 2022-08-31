@@ -1,7 +1,7 @@
 import { Skeleton, Box } from '@rocket.chat/fuselage';
+import { Header } from '@rocket.chat/ui-client';
 import React, { FC, memo } from 'react';
 
-import Header from '../../../components/Header';
 import VerticalBarSkeleton from '../../../components/VerticalBar/VerticalBarSkeleton';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import ComposerSkeleton from './ComposerSkeleton';

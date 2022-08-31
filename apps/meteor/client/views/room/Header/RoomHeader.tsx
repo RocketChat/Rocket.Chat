@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { Header } from '@rocket.chat/ui-client';
 import React, { FC } from 'react';
 
-import Header from '../../../components/Header';
 import MarkdownText from '../../../components/MarkdownText';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import ParentRoomWithData from './ParentRoomWithData';
