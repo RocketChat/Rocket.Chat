@@ -711,6 +711,19 @@ const LivechatQueuePropsSchema = {
 
 export const isLivechatQueueProps = ajv.compile<LivechatQueueProps>(LivechatQueuePropsSchema);
 
+export type OmnichannelCustomFieldEndpointPayload = {
+	defaultValue: string;
+	label: string;
+	options: string;
+	public: false;
+	regexp: string;
+	required: boolean;
+	scope: 'visitor' | 'room';
+	type: 'select' | 'text';
+	visibility: string;
+	_id: string;
+};
+
 type CannedResponsesProps = PaginatedRequest<{
 	scope?: string;
 	departmentId?: string;
@@ -754,7 +767,7 @@ const CannedResponsesPropsSchema = {
 
 export const isCannedResponsesProps = ajv.compile<CannedResponsesProps>(CannedResponsesPropsSchema);
 
-type LivechatCustomFieldsProps = PaginatedRequest<{ text: string }>;
+type LivechatCustomFieldsProps = PaginatedRequest<{ text?: string }>;
 
 const LivechatCustomFieldsSchema = {
 	type: 'object',
@@ -785,18 +798,17 @@ const LivechatCustomFieldsSchema = {
 
 export const isLivechatCustomFieldsProps = ajv.compile<LivechatCustomFieldsProps>(LivechatCustomFieldsSchema);
 
-type LivechatRoomsProps = {
-	guest: string;
-	fname: string;
-	servedBy: string[];
-	status: string;
-	department: string;
-	from: string;
-	to: string;
-	customFields: any;
-	current: number;
-	itemsPerPage: number;
-	tags: string[];
+export type LivechatRoomsProps = {
+	roomName?: string;
+	offset?: number;
+	createdAt?: string;
+	open?: boolean;
+	agents?: string[];
+	closedAt?: string;
+	departmentId?: string;
+	tags?: string[];
+	customFields?: string;
+	onhold?: boolean;
 };
 
 const LivechatRoomsSchema = {
@@ -1139,13 +1151,8 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/custom-fields': {
-		GET: (params: LivechatCustomFieldsProps) => PaginatedResult<{
-			customFields: [
-				{
-					_id: string;
-					label: string;
-				},
-			];
+		GET: (params?: LivechatCustomFieldsProps) => PaginatedResult<{
+			customFields: [OmnichannelCustomFieldEndpointPayload];
 		}>;
 	};
 	'/v1/livechat/rooms': {
@@ -1267,13 +1274,13 @@ export type OmnichannelEndpoints = {
 			}>,
 		) => PaginatedResult<{ visitors: any[] }>;
 	};
-	'omnichannel/contact': {
+	'/v1/omnichannel/contact': {
 		POST: (params: POSTOmnichannelContactProps) => { contact: string };
 
 		GET: (params: GETOmnichannelContactProps) => { contact: ILivechatVisitor | null };
 	};
 
-	'omnichannel/contact.search': {
+	'/v1/omnichannel/contact.search': {
 		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
 	};
 };

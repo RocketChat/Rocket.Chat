@@ -20,6 +20,7 @@ const defaultFields = {
 	statusText: 1,
 	avatarETag: 1,
 	extension: 1,
+	federated: 1,
 } as const;
 
 const fullFields = {

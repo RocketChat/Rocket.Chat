@@ -1,5 +1,5 @@
-import type { FindOptions, FindCursor, UpdateResult } from 'mongodb';
-import type { ISubscription, IRole, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document, AggregateOptions } from 'mongodb';
+import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -56,4 +56,23 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findByRolesAndRoomId({ roles, rid }: { roles: string; rid?: string }, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
 	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+
+	removeByRoomId(roomId: string): Promise<DeleteResult>;
+
+	findConnectedUsersExcept(
+		userId: string,
+		searchTerm: string,
+		exceptions: string[],
+		searchFields: string[],
+		limit: number,
+		roomType?: ISubscription['t'],
+		{ startsWith, endsWith }?: { startsWith?: string | false; endsWith?: string | false },
+		options?: AggregateOptions,
+	): Promise<SpotlightUser[]>;
+
+	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document>;
+
+	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
+
+	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
 }

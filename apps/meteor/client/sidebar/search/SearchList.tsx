@@ -140,6 +140,7 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 		{
 			staleTime: 60_000,
 			keepPreviousData: true,
+			placeholderData: localRooms,
 		},
 	);
 };
@@ -197,7 +198,6 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 	const placeholder = [t('Search'), shortcut].filter(Boolean).join(' ');
 
 	const { data: items = [], isLoading } = useSearchItems(filterText);
-	console.log({ items, isLoading });
 
 	const itemData = useMemo(
 		() => ({

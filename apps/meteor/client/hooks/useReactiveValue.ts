@@ -15,6 +15,10 @@ export const useReactiveValue = <T>(computeCurrentValue: () => T): T => {
 			});
 		});
 
+		const { stop } = computation;
+
+		computation.stop = (): void => undefined;
+
 		return [
 			(callback: () => void): (() => void) => {
 				callbacks.add(callback);
@@ -23,6 +27,7 @@ export const useReactiveValue = <T>(computeCurrentValue: () => T): T => {
 					callbacks.delete(callback);
 
 					if (callbacks.size === 0) {
+						computation.stop = stop;
 						computation.stop();
 					}
 				};

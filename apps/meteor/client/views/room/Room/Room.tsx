@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { ErrorBoundary } from '@rocket.chat/ui-client';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, ReactElement } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import Announcement from '../Announcement';
@@ -43,7 +43,7 @@ export const Room = (): ReactElement => {
 			</RoomTemplate.Body>
 			{tab && (
 				<RoomTemplate.Aside data-qa-tabbar-name={tab.id}>
-					<ErrorBoundary>
+					<ErrorBoundary fallback={null}>
 						<SelectedMessagesProvider>
 							{typeof tab.template === 'string' && (
 								<VerticalBarOldActions {...tab} name={tab.template} tabBar={tabBar} rid={room._id} _id={room._id} />
@@ -58,7 +58,7 @@ export const Room = (): ReactElement => {
 			{appsContextualBarContext && (
 				<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBarContext.viewId}>
 					<SelectedMessagesProvider>
-						<ErrorBoundary>
+						<ErrorBoundary fallback={null}>
 							<LazyComponent
 								template={AppsContextualBar}
 								viewId={appsContextualBarContext.viewId}
