@@ -146,7 +146,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (call.messages.started) {
-			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(call._id)]);
+			await Messages.setBlocksById(call.messages.started, [this.buildVideoConfBlock(call._id)]);
 		}
 
 		await VideoConferenceModel.setDataById(callId, {
@@ -273,7 +273,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (call.messages.started) {
-			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(call._id)]);
+			await Messages.setBlocksById(call.messages.started, [this.buildVideoConfBlock(call._id)]);
 		}
 
 		await VideoConferenceModel.setDataById(call._id, {
@@ -422,46 +422,19 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return videoConfTypes.getTypeForRoom(room, allowRinging);
 	}
 
-	private async createMessage(
-		rid: IRoom['_id'],
-		providerName: string,
-		extraData: Partial<IMessage> = {},
-		createdBy?: IUser,
-	): Promise<IMessage['_id']> {
+	private async createMessage(call: VideoConference, createdBy?: IUser, customBlocks?: IMessage['blocks']): Promise<IMessage['_id']> {
 		const record = {
 			msg: '',
 			groupable: false,
-			...extraData,
+			blocks: customBlocks || [this.buildVideoConfBlock(call._id)],
 		};
 
-		const room = await Rooms.findOneById(rid);
-		const appId = videoConfProviders.getProviderAppId(providerName);
+		const room = await Rooms.findOneById(call.rid);
+		const appId = videoConfProviders.getProviderAppId(call.providerName);
 		const user = createdBy || (appId && (await Users.findOneByAppId(appId))) || (await Users.findOneById('rocket.cat'));
 
 		const message = sendMessage(user, record, room, false);
 		return message._id;
-	}
-
-	private async createDirectCallMessage(call: IDirectVideoConference, user: IUser): Promise<IMessage['_id']> {
-		return this.createMessage(
-			call.rid,
-			call.providerName,
-			{
-				blocks: [this.buildMessageBlock(call._id)],
-			},
-			user,
-		);
-	}
-
-	private async createGroupCallMessage(call: IGroupVideoConference, user: IUser, useAppUser = true): Promise<IMessage['_id']> {
-		return this.createMessage(
-			call.rid,
-			call.providerName,
-			{
-				blocks: [this.buildMessageBlock(call._id)],
-			} as Partial<IMessage>,
-			useAppUser ? undefined : user,
-		);
 	}
 
 	private async validateProvider(providerName: string): Promise<void> {
@@ -506,43 +479,47 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			username,
 		});
 
-		return this.createMessage(
-			call.rid,
-			call.providerName,
+		return this.createMessage(call, user, [
+			this.buildMessageBlock(text),
 			{
-				blocks: [
-					this.buildMessageBlock(text),
+				type: 'actions',
+				appId: 'videoconf-core',
+				blockId: call._id,
+				elements: [
 					{
-						type: 'actions',
 						appId: 'videoconf-core',
 						blockId: call._id,
-						elements: [
-							{
-								appId: 'videoconf-core',
-								blockId: call._id,
-								actionId: 'joinLivechat',
-								type: 'button',
-								text: {
-									type: 'plain_text',
-									text: TAPi18n.__('Join_call'),
-									emoji: true,
-								},
-								url,
-							},
-						],
+						actionId: 'joinLivechat',
+						type: 'button',
+						text: {
+							type: 'plain_text',
+							text: TAPi18n.__('Join_call'),
+							emoji: true,
+						},
+						url,
 					},
 				],
 			},
-			user,
-		);
+		]);
 	}
 
-	private buildMessageBlock(callId: string): MessageSurfaceLayout[number] {
+	private buildVideoConfBlock(callId: string): MessageSurfaceLayout[number] {
 		return {
 			type: 'video_conf',
 			blockId: callId,
 			callId,
 			appId: 'videoconf-core',
+		};
+	}
+
+	private buildMessageBlock(text: string): MessageSurfaceLayout[number] {
+		return {
+			type: 'section',
+			appId: 'videoconf-core',
+			text: {
+				type: 'mrkdwn',
+				text: `${text}`,
+			},
 		};
 	}
 
@@ -576,7 +553,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const url = await this.generateNewUrl(call);
 		VideoConferenceModel.setUrlById(callId, url);
 
-		const messageId = await this.createDirectCallMessage(call, user);
+		const messageId = await this.createMessage(call, user);
+
 		VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		// After 40 seconds if the status is still "calling", we cancel the call automatically.
@@ -638,7 +616,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		call.url = url;
 
-		const messageId = await this.createGroupCallMessage(call, user, useAppUser);
+		const messageId = await this.createMessage(call, useAppUser ? undefined : user);
 		VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		if (call.ringing) {
@@ -670,6 +648,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const joinUrl = await this.getUrl(call);
 		const messageId = await this.createLivechatMessage(call, user, joinUrl);
+
 		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		return {
@@ -842,7 +821,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setStatusById(call._id, VideoConferenceStatus.STARTED);
 
 		if (call.messages.started) {
-			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(call._id)]);
+			await Messages.setBlocksById(call.messages.started, [this.buildVideoConfBlock(call._id)]);
 		}
 	}
 }
