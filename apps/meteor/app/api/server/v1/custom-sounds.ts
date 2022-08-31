@@ -2,6 +2,7 @@ import { CustomSounds } from '@rocket.chat/models';
 import { isUploadCustomSoundProps } from '@rocket.chat/rest-typings/src/v1/customSounds';
 
 import { API } from '../api';
+import { getUploadFormData } from '../lib/getUploadFormData';
 
 API.v1.addRoute(
 	'custom-sounds.list',
@@ -32,13 +33,21 @@ API.v1.addRoute(
 	'custom-sounds.uploadCustomSound',
 	{
 		authRequired: true,
-		validateParams: isUploadCustomSoundProps,
+		CHECKpermisssions: ['manage-sounds']
 	},
 	{
 		async post() {
-			const { binaryContent, contentType, soundData } = this.bodyParams;
 
-			const result = Meteor.call('uploadCustomSound', binaryContent, contentType, soundData);
+			const [sound, fields] = await getUploadFormData(
+				this,
+				{ 
+					field: 'sound',
+					validade: isUploadCustomSoundProps,
+				},
+			);
+
+			// const binaryContent = ...File;
+			const result = Meteor.call('uploadCustomSound', binaryContent, contentType, fields);
 
 			return API.v1.success(result);
 		},

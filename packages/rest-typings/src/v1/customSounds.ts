@@ -44,18 +44,17 @@ type UploadCustomSound = {
 const UploadCustomSoundSchema = {
 	type: 'object',
 	properties: {
-		binaryContent: {
+		
+		name: {
 			type: 'string',
 		},
-		contentType: {
-			type: 'string',
-		},
-		soundData: {
+		extension: {
 			type: 'object',
+			
 		},
-		required: ['binaryContent', 'contentType', 'soundData'],
-		additionalProperties: false,
 	},
+	required: ['name', 'extension'],
+	additionalProperties: false,
 };
 
 export const isUploadCustomSoundProps = ajv.compile<UploadCustomSound>(UploadCustomSoundSchema);
