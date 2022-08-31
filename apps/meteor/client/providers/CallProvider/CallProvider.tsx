@@ -13,6 +13,7 @@ import {
 	UserState,
 	ICallDetails,
 	ILivechatVisitor,
+	Serialized,
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -164,13 +165,13 @@ export const CallProvider: FC = ({ children }) => {
 	}, []);
 
 	const findOrCreateVisitor = useCallback(
-		async (caller: ICallerInfo): Promise<ILivechatVisitor> => {
+		async (caller: ICallerInfo): Promise<Serialized<ILivechatVisitor>> => {
 			const phone = parseOutboundPhoneNumber(caller.callerId);
 
 			const { contact } = await getContactBy({ phone });
 
 			if (contact) {
-				return contact as unknown as ILivechatVisitor;
+				return contact;
 			}
 
 			const { visitor } = await visitorEndpoint({
@@ -181,7 +182,7 @@ export const CallProvider: FC = ({ children }) => {
 				},
 			});
 
-			return visitor as unknown as ILivechatVisitor;
+			return visitor;
 		},
 		[getContactBy, visitorEndpoint],
 	);
