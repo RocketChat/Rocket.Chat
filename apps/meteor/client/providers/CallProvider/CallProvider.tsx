@@ -12,6 +12,7 @@ import {
 	isVoipEventCallAbandoned,
 	UserState,
 	ICallDetails,
+	ILivechatVisitor,
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -77,6 +78,7 @@ export const CallProvider: FC = ({ children }) => {
 	const visitorEndpoint = useEndpoint('POST', '/v1/livechat/visitor');
 	const voipEndpoint = useEndpoint('GET', '/v1/voip/room');
 	const voipCloseRoomEndpoint = useEndpoint('POST', '/v1/voip/room.close');
+	const getContactBy = useEndpoint('GET', '/v1/omnichannel/contact.search');
 	const setModal = useSetModal();
 	const t = useTranslation();
 
@@ -161,20 +163,36 @@ export const CallProvider: FC = ({ children }) => {
 		roomCoordinator.openRouteLink('v', { rid });
 	}, []);
 
+	const findOrCreateVisitor = useCallback(
+		async (caller: ICallerInfo): Promise<ILivechatVisitor> => {
+			const phone = parseOutboundPhoneNumber(caller.callerId);
+
+			const { contact } = await getContactBy({ phone });
+
+			if (contact) {
+				return contact as unknown as ILivechatVisitor;
+			}
+
+			const { visitor } = await visitorEndpoint({
+				visitor: {
+					token: Random.id(),
+					phone,
+					name: caller.callerName || phone,
+				},
+			});
+
+			return visitor as unknown as ILivechatVisitor;
+		},
+		[getContactBy, visitorEndpoint],
+	);
+
 	const createRoom = useCallback(
 		async (caller: ICallerInfo, direction: IVoipRoom['direction'] = 'inbound'): Promise<IVoipRoom['_id']> => {
 			if (!user) {
 				return '';
 			}
 			try {
-				const phone = parseOutboundPhoneNumber(caller.callerId);
-				const { visitor } = await visitorEndpoint({
-					visitor: {
-						token: Random.id(),
-						phone,
-						name: caller.callerName || phone,
-					},
-				});
+				const visitor = await findOrCreateVisitor(caller);
 				const voipRoom = await voipEndpoint({ token: visitor.token, agentId: user._id, direction });
 				openRoom(voipRoom.room._id);
 				voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
@@ -188,7 +206,7 @@ export const CallProvider: FC = ({ children }) => {
 				return '';
 			}
 		},
-		[openRoom, result.voipClient, user, visitorEndpoint, voipEndpoint],
+		[openRoom, result.voipClient, user, voipEndpoint, findOrCreateVisitor],
 	);
 
 	useEffect(() => {
