@@ -1956,10 +1956,10 @@ describe('Meteor.methods', function () {
 		});
 	});
 
-	describe('/apps/is-enabled', () => {
+	describe('Apps is-enabled', () => {
 		it('should fail if not logged in', (done) => {
 			request
-				.get(api('/apps/is-enabled'))
+				.get('/api/apps/is-enabled')
 				.set({})
 				.expect('Content-Type', 'application/json')
 				.expect(401)
@@ -1971,7 +1971,7 @@ describe('Meteor.methods', function () {
 		});
 		it('should return if the app is enabled', (done) => {
 			request
-				.get(api('/apps/is-enabled'))
+				.get('/api/apps/is-enabled')
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
