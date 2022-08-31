@@ -1,4 +1,4 @@
-import { LoginContext } from '@rocket.chat/ui-contexts';
+import { LoginContext, LoginService } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import React, { useMemo, FC } from 'react';
@@ -7,27 +7,28 @@ import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionF
 
 const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
 
-const colorMap = {
-	'facebook': '#325c99',
-	'twitter': '#02acec',
-	'google': '#dd4b39',
-	'github': '#4c4c4c',
-	'gitlab': '#373d47',
-	'trello': '#026aa7',
-	'meteor-developer': '#de4f4f',
-	'wordpress': '#1e8cbe',
-	'linkedin': '#1b86bc',
-} as const;
+const config: Record<string, {}> = {
+	'facebook': { buttonColor: '#325c99' },
+	'twitter': { buttonColor: '#02acec' },
+	'google': { buttonColor: '#dd4b39' },
+	'github': { buttonColor: '#4c4c4c', title: 'GitHub' },
+	'github_enterprise': { buttonColor: '#4c4c4c', title: 'GitHub Enterprise' },
+	'gitlab': { buttonColor: '#373d47', title: 'GitLab' },
+	'trello': { buttonColor: '#026aa7' },
+	'meteor-developer': { buttonColor: '#de4f4f', title: 'Meteor' },
+	'wordpress': { buttonColor: '#1e8cbe', title: 'WordPress' },
+	'linkedin': { buttonColor: '#1b86bc' },
+};
 
 const LoginProvider: FC = ({ children }) => {
 	const contextValue = useMemo(
 		() => ({
-			loginWithService: <T extends { service: string; clientConfig?: unknown }>(service: T): (() => Promise<true>) => {
+			loginWithService: <T extends LoginService>({ service, clientConfig }: T): (() => Promise<true>) => {
 				const loginMethods = {
 					'meteor-developer': 'MeteorDeveloperAccount',
 				};
 
-				const loginWithService = `loginWith${(loginMethods as any)[service.service] || capitalize(String(service.service || ''))}`;
+				const loginWithService = `loginWith${(loginMethods as any)[service] || capitalize(String(service || ''))}`;
 
 				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService] as any;
 
@@ -37,7 +38,7 @@ const LoginProvider: FC = ({ children }) => {
 
 				return () =>
 					new Promise((resolve, reject) => {
-						method(service.clientConfig, (error: any): void => {
+						method(clientConfig, (error: any): void => {
 							if (!error) {
 								resolve(true);
 								return;
@@ -59,44 +60,11 @@ const LoginProvider: FC = ({ children }) => {
 						},
 					)
 					.fetch()
-					.map((service) => {
-						switch (service.service) {
-							case 'meteor-developer':
-								return {
-									service,
-									displayName: 'Meteor',
-									icon: 'meteor',
-								};
-
-							case 'github':
-								return {
-									service,
-									displayName: 'GitHub',
-									icon: 'github-circled',
-								};
-
-							case 'gitlab':
-								return {
-									service,
-									displayName: 'GitLab',
-									icon: service.service,
-								};
-
-							case 'wordpress':
-								return {
-									service,
-									displayName: 'WordPress',
-									icon: service.service,
-								};
-
-							default:
-								return {
-									service,
-									displayName: capitalize(String(service.service || '')),
-									icon: service.service,
-								};
-						}
-					}),
+					.map(({ appId: _, ...service }) => ({
+						title: capitalize(String(service.service || '')),
+						...service,
+						...(config[service.service] ?? {}),
+					})),
 			),
 		}),
 		[],

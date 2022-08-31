@@ -4,7 +4,7 @@ export { AvatarUrlContext, AvatarUrlContextValue } from './AvatarUrlContext';
 export { ConnectionStatusContext, ConnectionStatusContextValue } from './ConnectionStatusContext';
 export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContext';
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
-export { LoginContext, LoginContextValue } from './LoginContext';
+export { LoginContext, LoginContextValue, LoginService } from './LoginContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
 export { RouterContext, RouterContextValue } from './RouterContext';
 export { ServerContext, ServerContextValue } from './ServerContext';

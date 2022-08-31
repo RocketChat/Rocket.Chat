@@ -1,9 +1,11 @@
 import { createContext } from 'react';
 
 export type LoginService = {
+	clientConfig: unknown;
+
+	title: string;
 	service: string;
-	icon: string;
-	displayName: string;
+
 	buttonLabelText?: string;
 	buttonLabelColor?: string;
 	buttonColor?: string;
@@ -12,12 +14,10 @@ export type LoginService = {
 export type LoginContextValue = {
 	// loginWith(service: string): ()
 	queryAllServices(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => LoginService[]];
-	queryService(service: string): LoginService | undefined;
-	loginWithService<T extends { service: string; clientConfig?: unknown }>(service: T): () => Promise<true>;
+	loginWithService<T extends LoginService>(service: T): () => Promise<true>;
 };
 
 export const LoginContext = createContext<LoginContextValue>({
 	queryAllServices: () => [() => (): void => undefined, (): LoginService[] => []],
-	queryService: () => undefined,
 	loginWithService: () => () => Promise.reject('loginWithService not implemented'),
 });

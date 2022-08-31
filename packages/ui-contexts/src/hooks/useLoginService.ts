@@ -1,8 +1,8 @@
 import { useContext, useMemo } from 'react';
 
-import { LoginContext } from '../LoginContext';
+import { LoginContext, LoginService } from '../LoginContext';
 
-export const useLoginService = <T extends { service: string; clientConfig?: unknown }>(service: T): (() => Promise<true>) => {
+export const useLoginService = <T extends LoginService>(service: T): (() => Promise<true>) => {
 	const { loginWithService } = useContext(LoginContext);
 
 	return useMemo(() => {
