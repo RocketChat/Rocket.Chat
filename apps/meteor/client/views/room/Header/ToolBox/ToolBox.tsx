@@ -115,7 +115,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 				}
 				return <Header.ToolBox.Action {...props} />;
 			})}
-			{actions.length > 6 && (
+			{filteredActions.length > 6 && (
 				<Menu
 					data-qa-id='ToolBox-Menu'
 					tiny={!isMobile}

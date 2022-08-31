@@ -22,13 +22,12 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 					id,
 					icon,
 					color,
-					'title': t(title),
+					title: t(title),
 					className,
 					index,
-					'primary': false,
-					'data-quick-actions': index,
+					primary: false,
 					action,
-					'key': id,
+					key: id,
 				};
 
 				return <Header.ToolBox.Action {...props} />;

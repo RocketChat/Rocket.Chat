@@ -283,10 +283,8 @@ export const useQuickActions = (
 
 	const visibleActions = actions.filter(({ id }) => hasPermissionButtons(id));
 
-	const actionDefault = useMutableCallback((e) => {
-		const index = e.currentTarget.getAttribute('data-quick-actions');
-		const { id } = visibleActions[index];
-		openModal(id);
+	const actionDefault = useMutableCallback((actionId) => {
+		openModal(actionId);
 	});
 
 	const getAction = useMutableCallback((id) => {
