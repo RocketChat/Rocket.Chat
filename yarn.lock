@@ -3396,6 +3396,7 @@ __metadata:
     pino: ^7.11.0
     pino-pretty: ^7.6.1
     sharp: ^0.30.7
+    ts-node: ^10.9.1
     typescript: ~4.5.5
     underscore: ^1.13.4
     uuid: ^7.0.3
@@ -4149,7 +4150,7 @@ __metadata:
     tar-stream: ^1.6.2
     template-file: ^6.0.1
     tinykeys: ^1.4.0
-    ts-node: ^10.8.1
+    ts-node: ^10.9.1
     turndown: ^7.1.1
     twilio: ^3.76.1
     twit: ^2.2.11
@@ -4252,6 +4253,7 @@ __metadata:
     "@types/eslint": ^8
     "@types/node": ^14.18.21
     eslint: ^8.21.0
+    ts-node: ^10.9.1
     typescript: ~4.5.5
   languageName: unknown
   linkType: soft
@@ -27584,12 +27586,13 @@ __metadata:
     moleculer: ^0.14.21
     mongodb: ^4.3.1
     nats: ^2.6.1
+    npm-run-all: ^4.1.5
     pino: ^7.11.0
     pino-pretty: ^7.6.1
     pm2: ^5.2.0
     sodium-native: ^3.3.0
     sodium-plus: ^0.9.0
-    ts-node: ^10.8.1
+    ts-node: ^10.9.1
     typescript: ~4.5.5
     underscore.string: ^3.3.6
     uuid: ^8.3.2
@@ -30555,9 +30558,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.8.1":
-  version: 10.8.1
-  resolution: "ts-node@npm:10.8.1"
+"ts-node@npm:^10.9.1":
+  version: 10.9.1
+  resolution: "ts-node@npm:10.9.1"
   dependencies:
     "@cspotcode/source-map-support": ^0.8.0
     "@tsconfig/node10": ^1.0.7
@@ -30589,7 +30592,7 @@ __metadata:
     ts-node-script: dist/bin-script.js
     ts-node-transpile-only: dist/bin-transpile.js
     ts-script: dist/bin-script-deprecated.js
-  checksum: 7d1aa7aa3ae1c0459c4922ed0dbfbade442cfe0c25aebaf620cdf1774f112c8d7a9b14934cb6719274917f35b2c503ba87bcaf5e16a0d39ba0f68ce3e7728363
+  checksum: 090adff1302ab20bd3486e6b4799e90f97726ed39e02b39e566f8ab674fd5bd5f727f43615debbfc580d33c6d9d1c6b1b3ce7d8e3cca3e20530a145ffa232c35
   languageName: node
   linkType: hard
 
