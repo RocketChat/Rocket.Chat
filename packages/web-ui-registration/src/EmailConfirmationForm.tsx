@@ -5,10 +5,9 @@ import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
-import { useSendForgotPassword } from './hooks/useSendForgotPassword';
+import { useLoginSendEmailConfirmation } from './hooks/useLoginSendEmailConfirmation';
 
-export const LoginResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
+export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string; onBackToLogin: () => void }): ReactElement => {
 	const t = useTranslation();
 
 	const [sent, setSent] = useState<boolean>(false);
@@ -18,29 +17,35 @@ export const LoginResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: Dispa
 		formState: { errors },
 	} = useForm<{
 		email: string;
-	}>();
+	}>({
+		defaultValues: {
+			email,
+		},
+	});
 
-	const resetPassword = useSendForgotPassword();
+	const sendEmail = useLoginSendEmailConfirmation();
 
 	return (
 		<Form
 			onSubmit={handleSubmit((data) => {
-				resetPassword({ email: data.email });
+				sendEmail({ email: data.email });
 				setSent(true);
 			})}
 		>
 			<Form.Header>
-				<Form.Title>{t('Reset_password')}</Form.Title>
+				<Form.Title>{t('Confirmation')}</Form.Title>
+				<Form.Subtitle>{t('registration.page.emailVerification.subTitle')}</Form.Subtitle>
 			</Form.Header>
 			<Form.Container>
 				<FieldGroup>
 					<Field>
-						<Field.Label htmlFor='email'>{t('Email')}</Field.Label>
+						<Field.Label htmlFor='email'>{t('Email')}*</Field.Label>
 						<Field.Row>
 							<TextInput
 								{...register('email', {
 									required: true,
 								})}
+								disabled={Boolean(email)}
 								error={errors.email && t('onboarding.component.form.requiredField')}
 								aria-invalid={errors?.email?.type === 'required'}
 								placeholder={t('Email_Placeholder')}
@@ -52,27 +57,27 @@ export const LoginResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: Dispa
 				</FieldGroup>
 				{sent && (
 					<FieldGroup>
-						<Callout type='warning'>{t('If_this_email_is_registered')}</Callout>
+						<Callout type='success'>{t('registration.page.emailVerification.sent')}</Callout>
 					</FieldGroup>
 				)}
 			</Form.Container>
 			<Form.Footer>
 				<ButtonGroup>
 					<Button type='submit' primary>
-						{t('Submit')}
+						{t('Send_confirmation_email')}
 					</Button>
 				</ButtonGroup>
 
 				<ActionLink
 					onClick={(): void => {
-						setLoginRoute('login');
+						onBackToLogin();
 					}}
 				>
-					Back to Login
+					Back to login
 				</ActionLink>
 			</Form.Footer>
 		</Form>
 	);
 };
 
-export default LoginResetPasswordForm;
+export default EmailConfirmationForm;

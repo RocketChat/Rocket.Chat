@@ -11,7 +11,7 @@ Meteor.startup(() => {
 		if (!userId) {
 			return;
 		}
-
+		Session.set('force_logout', false);
 		Notifications.onUser('force_logout', () => {
 			Session.set('force_logout', true);
 		});

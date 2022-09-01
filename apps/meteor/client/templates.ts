@@ -144,14 +144,4 @@ createTemplateForComponent('ComposerNotAvailablePhoneCalls', () => import('./com
 	renderContainerView: () => HTML.DIV({ style: 'display: flex; height: 100%; width: 100%' }),
 });
 
-createTemplateForComponent('loggedOutBanner', () => import('../ee/client/components/deviceManagement/LoggedOutBanner'), {
-	renderContainerView: () => HTML.DIV({ style: 'max-width: 520px; margin: 0 auto;' }),
-});
-
 createTemplateForComponent('ComposerSkeleton', () => import('./views/room/Room/ComposerSkeleton'));
-
-createTemplateForComponent('loginLayoutHeader', () => import('./views/login/LoginLayout/LoginLayoutHeader'));
-
-createTemplateForComponent('loginLayoutFooter', () => import('./views/login/LoginLayout/Footer'));
-
-createTemplateForComponent('loginLayout', () => import('./views/login/LoginLayout/LoginPageRouter'));

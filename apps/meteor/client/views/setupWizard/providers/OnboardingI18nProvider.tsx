@@ -6,16 +6,16 @@ import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 import PageLoading from '../../root/PageLoading';
 
-const useOnboardingI18n = (): typeof i18next => {
+const useI18n = (fallbackLng = 'en', namespace: string, defaultNamespace?: string): typeof i18next => {
 	const basePath = useAbsoluteUrl()('/i18n');
 
 	const i18n = useState(() => {
 		const i18n = i18next.createInstance().use(i18nextHttpBackend).use(initReactI18next);
 
 		i18n.init({
-			fallbackLng: 'en',
-			ns: ['onboarding'],
-			defaultNS: 'onboarding',
+			fallbackLng,
+			ns: [namespace],
+			defaultNS: defaultNamespace || namespace,
 			debug: false,
 			backend: {
 				loadPath: `${basePath}/{{lng}}.json`,
@@ -49,7 +49,7 @@ const useOnboardingI18n = (): typeof i18next => {
 };
 
 const OnboardingI18nProvider = ({ children }: { children: ReactElement }): ReactElement => {
-	const i18n = useOnboardingI18n();
+	const i18n = useI18n('en', 'onboarding');
 
 	return (
 		<Suspense fallback={<PageLoading />}>

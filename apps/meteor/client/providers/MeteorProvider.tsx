@@ -27,10 +27,10 @@ const MeteorProvider: FC = ({ children }) => (
 			<RouterProvider>
 				<TranslationProvider>
 					<SessionProvider>
-						<LoginProvider>
-							<TooltipProvider>
-								<ToastMessagesProvider>
-									<SettingsProvider>
+						<TooltipProvider>
+							<ToastMessagesProvider>
+								<SettingsProvider>
+									<LoginProvider>
 										<LayoutProvider>
 											<AvatarUrlProvider>
 												<CustomSoundProvider>
@@ -52,10 +52,10 @@ const MeteorProvider: FC = ({ children }) => (
 												</CustomSoundProvider>
 											</AvatarUrlProvider>
 										</LayoutProvider>
-									</SettingsProvider>
-								</ToastMessagesProvider>
-							</TooltipProvider>
-						</LoginProvider>
+									</LoginProvider>
+								</SettingsProvider>
+							</ToastMessagesProvider>
+						</TooltipProvider>
 					</SessionProvider>
 				</TranslationProvider>
 			</RouterProvider>

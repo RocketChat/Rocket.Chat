@@ -153,7 +153,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 										{...register('password', {
 											required: true,
 										})}
-										placeholder={'******'}
+										placeholder='******'
 										error={errors.password?.message}
 										aria-invalid={errors.password ? 'true' : undefined}
 										id='password'

@@ -1,15 +1,14 @@
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import LoginEmailConfirmationForm from './LoginEmailConfirmation';
-import { useLoginMethod } from './hooks/useLoginMethod';
+import EmailConfirmationForm from './EmailConfirmationForm';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
-import { LoginServices } from './LoginServices';
+import Services from './Services';
 
 type LoginErrors =
 	| 'error-user-is-not-activated'
@@ -40,13 +39,13 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	const isResetPasswordAllowed = useSetting('Accounts_PasswordReset');
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
-	const login = useLoginMethod();
+	const login = useLoginWithPassword();
 
 	if (errors.email?.type === 'invalid-email') {
 		return (
-			<LoginEmailConfirmationForm
+			<EmailConfirmationForm
 				onBackToLogin={() => clearErrors('email')}
 				email={getValues('username')?.includes('@') ? getValues('username') : undefined}
 			/>
@@ -75,36 +74,31 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 			})}
 		>
 			<Form.Header>
-				<Form.Title>{t('Login')}</Form.Title>
+				<Form.Title>{t('registration.component.login')}</Form.Title>
 			</Form.Header>
 			<Form.Container>
-				<LoginServices />
+				<Services />
 				<FieldGroup>
 					<Field>
-						<Field.Label htmlFor='username'>{t('Email_or_username')}</Field.Label>
+						<Field.Label htmlFor='username'>{t('registration.component.form.emailOrUsername')}</Field.Label>
 						<Field.Row>
 							<TextInput
 								{...register('username', {
 									required: true,
 								})}
-								placeholder={t('Email_Placeholder')}
+								placeholder={t('registration.component.form.emailOrUsernamePlaceholder')}
 								error={errors.username?.message}
 								aria-invalid={errors.username ? 'true' : 'false'}
 								id='username'
 							/>
 						</Field.Row>
 						{errors.username && errors.username.type === 'required' && (
-							<Field.Error>
-								{t('The_field_is_required', {
-									postProcess: 'sprintf',
-									sprintf: [t('Username')],
-								})}
-							</Field.Error>
+							<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
 						)}
 					</Field>
 
 					<Field>
-						<Field.Label htmlFor='password'>{t('Password')}</Field.Label>
+						<Field.Label htmlFor='password'>{t('registration.component.form.password')}</Field.Label>
 						<Field.Row>
 							<PasswordInput
 								{...register('password', {
@@ -117,12 +111,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 							/>
 						</Field.Row>
 						{errors.password && errors.password.type === 'required' && (
-							<Field.Error>
-								{t('The_field_is_required', {
-									postProcess: 'sprintf',
-									sprintf: [t('Password')],
-								})}
-							</Field.Error>
+							<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
 						)}
 						{isResetPasswordAllowed && (
 							<Field.Row justifyContent='end'>
@@ -132,24 +121,30 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 										setLoginRoute('reset-password');
 									}}
 								>
-									Forgot your password?
+									<Trans i18nKey='registration.page.login.forgot'>Forgot your password?</Trans>
 								</Field.Link>
 							</Field.Row>
 						)}
 					</Field>
 				</FieldGroup>
 				<FieldGroup>
-					{errorOnSubmit === 'error-user-is-not-activated' && <Callout type='warning'>{t('Wait_activation_warning')}</Callout>}
+					{errorOnSubmit === 'error-user-is-not-activated' && (
+						<Callout type='warning'>{t('registration.page.registration.waitActivationWarning')}</Callout>
+					)}
 
 					{errorOnSubmit === 'error-app-user-is-not-allowed-to-login' && (
-						<Callout type='danger'>{t('App_user_not_allowed_to_login')}</Callout>
+						<Callout type='danger'>{t('registration.page.login.errors.AppUserNotAllowedToLogin')}</Callout>
 					)}
-					{errorOnSubmit === 'user-not-found' && <Callout type='danger'>{t('User_not_found_or_incorrect_password')}</Callout>}
-					{errorOnSubmit === 'error-login-blocked-for-ip' && <Callout type='danger'>{t('Error_login_blocked_for_ip')}</Callout>}
-					{errorOnSubmit === 'error-login-blocked-for-user' && <Callout type='danger'>{t('Error_login_blocked_for_user')}</Callout>}
+					{errorOnSubmit === 'user-not-found' && <Callout type='danger'>{t('registration.page.login.errors.wrongCredentials')}</Callout>}
+					{errorOnSubmit === 'error-login-blocked-for-ip' && (
+						<Callout type='danger'>{t('registration.page.login.errors.loginBlockedForIp')}</Callout>
+					)}
+					{errorOnSubmit === 'error-login-blocked-for-user' && (
+						<Callout type='danger'>{t('registration.page.login.errors.loginBlockedForUser')}</Callout>
+					)}
 
 					{errorOnSubmit === 'error-license-user-limit-reached' && (
-						<Callout type='warning'>{t('error-license-user-limit-reached')}</Callout>
+						<Callout type='warning'>{t('registration.page.login.errors.licenseUserLimitReached')}</Callout>
 					)}
 					{/* error-invalid-email */}
 				</FieldGroup>

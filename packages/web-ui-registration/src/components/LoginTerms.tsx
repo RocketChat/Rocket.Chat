@@ -1,10 +1,10 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
-export const LoginTerms = (): ReactElement => {
+export const LoginTerms = (): ReactElement | null => {
 	const loginTerms = useSetting('Layout_Login_Terms') as string;
 
-	return <div dangerouslySetInnerHTML={{ __html: loginTerms }} />;
+	return loginTerms ? <div dangerouslySetInnerHTML={{ __html: loginTerms }} /> : null;
 };
 
 export default LoginTerms;

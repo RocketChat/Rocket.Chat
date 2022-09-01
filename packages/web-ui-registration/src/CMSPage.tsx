@@ -1,9 +1,11 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { VerticalWizardLayout, VerticalWizardLayoutFooter, VerticalWizardLayoutForm, VerticalWizardLayoutTitle } from '@rocket.chat/layout';
 import { useRoute, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import PoweredBy from '../login/LoginLayout/LoginPoweredBy';
+import { LoginPoweredBy } from './components/LoginPoweredBy';
+import { useAssetPath } from './hooks/useAssetPath';
 
 type CMSPageProps = {
 	page: 'Layout_Terms_of_Service' | 'Layout_Privacy_Policy' | 'Layout_Legal_Notice';
@@ -18,8 +20,14 @@ const CMSPage = ({ page }: CMSPageProps): ReactElement => {
 		homeRoute.push();
 	};
 
+	const customLogo = useAssetPath('Assets_logo');
+	const customBackground = useAssetPath('Assets_background');
+
 	return (
-		<VerticalWizardLayout>
+		<VerticalWizardLayout
+			background={customBackground}
+			logo={customLogo ? <Box is='img' maxHeight={'x40'} src={customLogo} alt='Logo' /> : undefined}
+		>
 			<VerticalWizardLayoutTitle>{t(page)}</VerticalWizardLayoutTitle>
 			<VerticalWizardLayoutForm>
 				<Box p='x32'>
@@ -28,7 +36,7 @@ const CMSPage = ({ page }: CMSPageProps): ReactElement => {
 				</Box>
 			</VerticalWizardLayoutForm>
 			<VerticalWizardLayoutFooter>
-				<PoweredBy />
+				<LoginPoweredBy />
 			</VerticalWizardLayoutFooter>
 		</VerticalWizardLayout>
 	);

@@ -4,19 +4,19 @@ import i18nextHttpBackend from 'i18next-http-backend';
 import React, { Suspense, memo, ReactElement, useEffect, useState } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
-import PageLoading from '../../../root/PageLoading';
+import PageLoading from '../PageLoading';
 
-const useOnboardingI18n = (): typeof i18next => {
+const useI18n = (fallbackLng = 'en', namespace: string, defaultNamespace?: string): typeof i18next => {
 	const basePath = useAbsoluteUrl()('/i18n');
 
 	const i18n = useState(() => {
 		const i18n = i18next.createInstance().use(i18nextHttpBackend).use(initReactI18next);
 
 		i18n.init({
-			fallbackLng: 'en',
-			ns: ['onboarding'],
-			defaultNS: 'onboarding',
-			debug: false,
+			fallbackLng,
+			ns: [namespace],
+			defaultNS: defaultNamespace || namespace,
+			debug: true,
 			backend: {
 				loadPath: `${basePath}/{{lng}}.json`,
 				parse: (data: string, _languages?: string | string[], namespaces: string | string[] = []): { [key: string]: any } => {
@@ -27,10 +27,11 @@ const useOnboardingI18n = (): typeof i18next => {
 						const prefix = (Array.isArray(namespaces) ? namespaces : [namespaces]).find((namespace) => key.startsWith(`${namespace}.`));
 
 						if (prefix) {
-							result[key.slice(prefix.length + 1)] = source[key];
+							result[key] = source[key];
 						}
 					}
 
+					console.log('result', result);
 					return result;
 				},
 			},
@@ -49,7 +50,7 @@ const useOnboardingI18n = (): typeof i18next => {
 };
 
 const RegistrationI18nProvider = ({ children }: { children: ReactElement }): ReactElement => {
-	const i18n = useOnboardingI18n();
+	const i18n = useI18n('en', 'registration');
 
 	return (
 		<Suspense fallback={<PageLoading />}>

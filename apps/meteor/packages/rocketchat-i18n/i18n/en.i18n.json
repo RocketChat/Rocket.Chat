@@ -5302,11 +5302,34 @@
 	"Your_workspace_is_ready": "Your workspace is ready to use 🎉",
 	"Zapier": "Zapier",
 
-	"registration.component.welcome": "Welcome to {{siteName}}",
-	"registration.page.login.register": "New here? {{register}}",
+	"registration.page.login.errors.wrongCredentials": "User not found or incorrect password",
+	"registration.page.login.errors.loginBlockedForIp": "Login has been temporarily blocked for this IP",
+	"registration.page.login.errors.loginBlockedForUser": "Login has been temporarily blocked for this User",
+	"registration.page.login.errors.licenseUserLimitReached": "The maximum number of users has been reached.",
+	"registration.page.login.errors.AppUserNotAllowedToLogin": "App users are not allowed to log in directly.",
+
+	"registration.page.registration.waitActivationWarning": "Before you can login, your account must be manually activated by an administrator.",
+
+	"registration.page.login.register": "New here? <1>Register</1>",
+	"registration.page.login.forgot": "Forgot your password?",
+
 	"registration.page.register.back": "Back to Login",
+
 	"registration.page.emailVerification.subTitle": "This server requires verified email addresses. Please check your email inbox for a verification link.",
 	"registration.page.emailVerification.sent": "Verification email sent, please check your inbox.",
+	"registration.page.resetPassword.sent": "If this email is registered, we'll send instructions on how to reset your password. If you do not receive an email shortly, please come back and try again.",
+	"registration.component.welcome": "Welcome to {{siteName}}",
+	"registration.component.login": "Login",
+	"registration.component.switchLanguage": "Switch to {{list}}",
+	"registration.component.resetPassword": "Reset password",
+	"registration.component.form.emailOrUsername": "Email or username",
+	"registration.component.form.emailOrUsernamePlaceholder": "Jon Doe",
+	"registration.component.form.email": "Email",
+	"registration.component.form.emailPlaceholder": "Please enter your email address",
+	"registration.component.form.password": "Password",
+	"registration.component.form.divider": "or",
+	"registration.component.form.submit": "Submit",
+	"registration.component.form.requiredField": "This field is required",
 
 	"onboarding.component.form.steps": "Step {{currentStep}} of {{stepCount}}",
 	"onboarding.component.form.action.back": "Back",

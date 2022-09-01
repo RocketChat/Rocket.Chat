@@ -3,6 +3,10 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/layout": "*",
+		"@rocket.chat/ui-contexts": "workspace:^",
+		"@tanstack/react-query": "^4.2.3",
+		"@testing-library/react": "^13.3.0",
 		"@types/jest": "^27.4.1",
 		"eslint": "^8.12.0",
 		"jest": "^27.5.1",
@@ -11,21 +15,23 @@
 		"typescript": "~4.5.5"
 	},
 	"peerDependencies": {
-		"react": "*"
+		"@rocket.chat/layout": "*",
+		"@rocket.chat/ui-contexts": "*",
+		"@tanstack/react-query": "*",
+		"react": "*",
+		"react-hook-form": "*",
+		"react-i18next": "*"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"jest": "jest",
-		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"build": "tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	],
-	"dependencies": {
-		"@rocket.chat/layout": "^0.31.16"
-	}
+	]
 }

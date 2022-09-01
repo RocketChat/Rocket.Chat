@@ -1,13 +1,15 @@
-import { LoginContext, LoginService } from '@rocket.chat/ui-contexts';
+import { IUser } from '@rocket.chat/core-typings';
+import { LoginContext, LoginService, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import React, { useMemo, FC } from 'react';
+import React, { useMemo, FC, useEffect } from 'react';
 
+import { callbacks } from '../../lib/callbacks';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 
 const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
 
-const config: Record<string, {}> = {
+const config: Record<string, Partial<LoginService>> = {
 	'facebook': { buttonColor: '#325c99' },
 	'twitter': { buttonColor: '#02acec' },
 	'google': { buttonColor: '#dd4b39' },
@@ -20,9 +22,59 @@ const config: Record<string, {}> = {
 	'linkedin': { buttonColor: '#1b86bc' },
 };
 
+const getUser = (): IUser | null => Meteor.user() as IUser | null;
+
+const logout = (): Promise<void> =>
+	new Promise((resolve) => {
+		const user = getUser();
+
+		if (!user) {
+			return resolve();
+		}
+
+		Meteor.logout(() => {
+			callbacks.run('afterLogoutCleanUp', user);
+			Meteor.call('logoutCleanUp', user, resolve);
+		});
+	});
+
+type LoginMethods = keyof typeof Meteor;
+
 const LoginProvider: FC = ({ children }) => {
+	const isLdapEnabled = Boolean(useSetting('LDAP_Enable'));
+	const isCrowdEnabled = Boolean(useSetting('CROWD_Enable'));
+
+	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
+
+	useEffect(() => {
+		if (isLdapEnabled && isCrowdEnabled) {
+			if (process.env.NODE_ENV === 'development') {
+				throw new Error('You can not use both LDAP and Crowd at the same time');
+			}
+			console.log('Both LDAP and Crowd are enabled. Please disable one of them.');
+		}
+		if (!Meteor[loginMethod]) {
+			if (process.env.NODE_ENV === 'development') {
+				throw new Error(`Meteor.${loginMethod} is not defined`);
+			}
+			console.log(`Meteor.${loginMethod} is not defined`);
+		}
+	}, [isLdapEnabled, isCrowdEnabled, loginMethod]);
+
 	const contextValue = useMemo(
 		() => ({
+			loginWithPassword: (user: string | object, password: string): Promise<void> =>
+				new Promise((resolve, reject) => {
+					Meteor[loginMethod](user, password, (error: Error | Meteor.Error | Meteor.TypedError | undefined) => {
+						if (error) {
+							reject(error);
+							return;
+						}
+
+						resolve();
+					});
+				}),
+			logout,
 			loginWithService: <T extends LoginService>({ service, clientConfig }: T): (() => Promise<true>) => {
 				const loginMethods = {
 					'meteor-developer': 'MeteorDeveloperAccount',
@@ -67,7 +119,7 @@ const LoginProvider: FC = ({ children }) => {
 					})),
 			),
 		}),
-		[],
+		[loginMethod],
 	);
 
 	return <LoginContext.Provider children={children} value={contextValue} />;

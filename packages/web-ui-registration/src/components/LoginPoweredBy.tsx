@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-export const PoweredBy = (): ReactElement => (
+export const LoginPoweredBy = (): ReactElement => (
 	<div className='powered-by'>
 		Powered by{' '}
 		<a className='color-tertiary-font-color' href='https://rocket.chat'>
@@ -10,4 +10,4 @@ export const PoweredBy = (): ReactElement => (
 	</div>
 );
 
-export default PoweredBy;
+export default LoginPoweredBy;

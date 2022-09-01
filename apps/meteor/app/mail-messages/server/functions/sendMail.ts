@@ -9,7 +9,7 @@ import { placeholders } from '../../../utils/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import * as Mailer from '../../../mailer';
 
-export const sendMail = function (from: string, subject: string, body: string, dryrun: boolean, query: string): void {
+export const sendMail = function (from: string, subject: string, body: string, dryrun?: boolean, query?: string): void {
 	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');
 
 	if (body.indexOf('[unsubscribe]') === -1) {

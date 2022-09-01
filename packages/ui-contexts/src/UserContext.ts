@@ -30,8 +30,6 @@ export type FindOptions = {
 export type UserContextValue = {
 	userId: string | null;
 	user: IUser | null;
-	loginWithPassword: (user: string | object, password: string) => Promise<void>;
-	logout: () => Promise<void>;
 	queryPreference: <T>(
 		key: string | ObjectId,
 		defaultValue?: T,
@@ -55,8 +53,6 @@ export type UserContextValue = {
 export const UserContext = createContext<UserContextValue>({
 	userId: null,
 	user: null,
-	loginWithPassword: async () => undefined,
-	logout: () => Promise.resolve(),
 	queryPreference: () => [() => (): void => undefined, (): undefined => undefined],
 	querySubscription: () => [() => (): void => undefined, (): undefined => undefined],
 	queryRoom: () => [() => (): void => undefined, (): undefined => undefined],

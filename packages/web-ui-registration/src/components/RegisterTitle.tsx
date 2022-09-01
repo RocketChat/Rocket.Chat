@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Trans } from 'react-i18next';
 
 export const RegisterTitle = (): ReactElement => {

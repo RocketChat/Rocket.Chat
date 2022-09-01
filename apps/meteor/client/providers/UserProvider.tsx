@@ -5,39 +5,12 @@ import React, { useMemo, FC } from 'react';
 
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { getUserPreference } from '../../app/utils/client';
-import { callbacks } from '../../lib/callbacks';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 
 const getUserId = (): string | null => Meteor.userId();
 
 const getUser = (): IUser | null => Meteor.user() as IUser | null;
-
-const loginWithPassword = (user: string | object, password: string): Promise<void> =>
-	new Promise((resolve, reject) => {
-		Meteor.loginWithPassword(user, password, (error: Error | Meteor.Error | Meteor.TypedError | undefined) => {
-			if (error) {
-				reject(error);
-				return;
-			}
-
-			resolve();
-		});
-	});
-
-const logout = (): Promise<void> =>
-	new Promise((resolve) => {
-		const user = getUser();
-
-		if (!user) {
-			return resolve();
-		}
-
-		Meteor.logout(() => {
-			callbacks.run('afterLogoutCleanUp', user);
-			Meteor.call('logoutCleanUp', user, resolve);
-		});
-	});
 
 const UserProvider: FC = ({ children }) => {
 	const userId = useReactiveValue(getUserId);
@@ -46,8 +19,6 @@ const UserProvider: FC = ({ children }) => {
 		() => ({
 			userId,
 			user,
-			loginWithPassword,
-			logout,
 			queryPreference: createReactiveSubscriptionFactory(
 				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
 			),
