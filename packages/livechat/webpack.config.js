@@ -177,6 +177,7 @@ module.exports = (env, argv) => [
 			clientLogLevel: 'trace',
 			overlay: true,
 			stats: 'normal',
+			writeToDisk: true,
 			watchOptions: {
 				ignored: [path.resolve(__dirname, './dist'), path.resolve(__dirname, './node_modules')],
 			},

@@ -112,5 +112,8 @@
 		"updateFiles": [
 			"package.json"
 		]
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

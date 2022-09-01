@@ -81,7 +81,7 @@ const updateWidgetStyle = (isOpened) => {
 	}
 
 	if (isOpened) {
-		widget.style.left = smallScreen ? '0' : 'auto';
+		widget.style.left = smallScreen && widget.dataset.state !== 'triggered' ? '0' : 'auto';
 
 		/**
 		 * If we use widget.style.height = smallScreen ? '100vh' : ...
@@ -91,8 +91,8 @@ const updateWidgetStyle = (isOpened) => {
 		 * for widget.style.width
 		 */
 
-		widget.style.height = smallScreen ? '100%' : `${ WIDGET_MARGIN + widget_height + WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT }px`;
-		widget.style.width = smallScreen ? '100%' : `${ WIDGET_MARGIN + WIDGET_OPEN_WIDTH + WIDGET_MARGIN }px`;
+		widget.style.height = smallScreen && widget.dataset.state !== 'triggered' ? '100%' : `${ WIDGET_MARGIN + widget_height + WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT }px`;
+		widget.style.width = smallScreen && widget.dataset.state !== 'triggered' ? '100%' : `${ WIDGET_MARGIN + WIDGET_OPEN_WIDTH + WIDGET_MARGIN }px`;
 	} else {
 		widget.style.left = 'auto';
 		widget.style.width = `${ WIDGET_MARGIN + WIDGET_MINIMIZED_WIDTH + WIDGET_MARGIN }px`;
@@ -151,8 +151,8 @@ const openWidget = () => {
 	}
 
 	widget_height = WIDGET_OPEN_HEIGHT;
-	updateWidgetStyle(true);
 	widget.dataset.state = 'opened';
+	updateWidgetStyle(true);
 	iframe.focus();
 	emitCallback('chat-maximized');
 };
