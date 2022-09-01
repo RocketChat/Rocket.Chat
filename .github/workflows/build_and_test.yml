@@ -435,12 +435,6 @@ jobs:
           flags: unit-tests
           verbose: true
 
-      - name: Store coverage
-        uses: actions/upload-artifact@v2
-        with:
-          name: unit-tests-coverage
-          path: ./apps/meteor/coverage*
-
       - name: Restore build
         uses: actions/download-artifact@v2
         with:
