@@ -12,7 +12,7 @@ const MessageReactionsList = ({ message }: { message: IMessage }): ReactElement 
 	const openEmojiPicker = useOpenEmojiPicker(message);
 
 	return (
-		<MessageReactions>
+		<MessageReactions flexWrap='wrap'>
 			{message.reactions &&
 				Object.entries(message.reactions).map(([name, reactions]) => (
 					<MessageReaction
