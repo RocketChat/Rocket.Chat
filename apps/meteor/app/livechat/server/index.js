@@ -2,7 +2,6 @@ import './livechat';
 import './config';
 import './startup';
 import './visitorStatus';
-import './agentStatus';
 import '../lib/messageTypes';
 import './hooks/beforeCloseRoom';
 import './hooks/beforeDelegateAgent';
