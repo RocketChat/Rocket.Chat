@@ -4255,9 +4255,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/presence@workspace:^, @rocket.chat/presence@workspace:apps/presence":
+"@rocket.chat/presence@workspace:^, @rocket.chat/presence@workspace:packages/presence":
   version: 0.0.0-use.local
-  resolution: "@rocket.chat/presence@workspace:apps/presence"
+  resolution: "@rocket.chat/presence@workspace:packages/presence"
   dependencies:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/core-typings": "workspace:^"
@@ -6944,9 +6944,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^14.18.12":
-  version: 14.18.25
-  resolution: "@types/node@npm:14.18.25"
-  checksum: 8d4e3fcf0e2c90d5a2da61f336b754455fa025a4705f55f8d1be1d19fcd32e7e3af9e04f08d497032cebc59f84ea8c0bb4431390100b1d799d4d0d2c5d501cca
+  version: 14.18.26
+  resolution: "@types/node@npm:14.18.26"
+  checksum: c6ac3f9d4f6f77c0fa5ac17757779ad4d9835abfe3af5708b7552597cb5c7c1103e83499ccaf767a1cfa70040990bcf3f58761c547051dc8d5077f3c419091b1
   languageName: node
   linkType: hard
 

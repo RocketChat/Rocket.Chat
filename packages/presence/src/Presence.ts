@@ -2,10 +2,10 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Users, UsersSessions } from '@rocket.chat/models';
 
-import type { IPresence } from '../../meteor/server/sdk/types/IPresence';
-import type { IBrokerNode } from '../../meteor/server/sdk/types/IBroker';
-import { ServiceClass } from '../../meteor/server/sdk/types/ServiceClass';
 import { processPresenceAndStatus } from './lib/processConnectionStatus';
+import type { IPresence } from '../../../apps/meteor/server/sdk/types/IPresence';
+import type { IBrokerNode } from '../../../apps/meteor/server/sdk/types/IBroker';
+import { ServiceClass } from '../../../apps/meteor/server/sdk/types/ServiceClass';
 
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
