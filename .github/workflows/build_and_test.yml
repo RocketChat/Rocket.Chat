@@ -43,7 +43,7 @@ jobs:
         run: |
           LATEST_RELEASE="$(
             git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname "https://github.com/$GITHUB_REPOSITORY" '*' |
-              awk -F/ '$NF !~ /rc/ { print $NF; exit }'
+              awk -F/ '$NF !~ /rc|beta/ { print $NF; exit }'
           )"
           echo "LATEST_RELEASE: ${LATEST_RELEASE}"
           echo "::set-output name=latest-release::${LATEST_RELEASE}"
