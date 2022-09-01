@@ -37,10 +37,10 @@ import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents, validateEmail } from './Helper';
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
-import notifications from '../../../notifications/server/lib/Notifications';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
 import { VideoConf } from '../../../../server/sdk';
+import { api } from '../../../../server/sdk/api';
 
 const logger = new Logger('Livechat');
 
@@ -392,11 +392,12 @@ export const Livechat = {
 
 		const customFields = {};
 
-		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
+		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+			Livechat.logger.debug(`Saving custom fields for visitor ${_id}`);
 			const fields = LivechatCustomField.findByScope('visitor');
 			for await (const field of fields) {
 				if (!livechatData.hasOwnProperty(field._id)) {
-					return;
+					continue;
 				}
 				const value = s.trim(livechatData[field._id]);
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
@@ -408,6 +409,7 @@ export const Livechat = {
 				customFields[field._id] = value;
 			}
 			updateData.livechatData = customFields;
+			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields for visitor ${_id}`);
 		}
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
@@ -584,7 +586,8 @@ export const Livechat = {
 		const { livechatData = {} } = roomData;
 		const customFields = {};
 
-		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
+		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+			Livechat.logger.debug(`Updating custom fields on room ${roomData._id}`);
 			const fields = LivechatCustomField.findByScope('room');
 			for await (const field of fields) {
 				if (!livechatData.hasOwnProperty(field._id)) {
@@ -600,9 +603,11 @@ export const Livechat = {
 				customFields[field._id] = value;
 			}
 			roomData.livechatData = customFields;
+			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields on room ${roomData._id}`);
 		}
 
 		if (!LivechatRooms.saveRoomById(roomData)) {
+			Livechat.logger.debug(`Failed to save room information on room ${roomData._id}`);
 			return false;
 		}
 
@@ -611,7 +616,7 @@ export const Livechat = {
 		});
 		callbacks.runAsync('livechat.saveRoom', roomData);
 
-		if (!_.isEmpty(guestData.name)) {
+		if (guestData?.name?.trim().length) {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
 			return (
@@ -710,14 +715,29 @@ export const Livechat = {
 			},
 		};
 
-		return Messages.createTransferHistoryWithRoomIdMessageAndUser(room._id, '', { _id, username }, transfer);
+		const type = 'livechat_transfer_history';
+		const transferMessage = {
+			t: type,
+			rid: room._id,
+			ts: new Date(),
+			msg: '',
+			u: {
+				_id,
+				username,
+			},
+			groupable: false,
+		};
+
+		Object.assign(transferMessage, transfer);
+
+		sendMessage(transferredBy, transferMessage, room);
 	},
 
 	async transfer(room, guest, transferData) {
 		Livechat.logger.debug(`Transfering room ${room._id} [Transfered by: ${transferData?.transferredBy?._id}]`);
 		if (room.onHold) {
 			Livechat.logger.debug('Cannot transfer. Room is on hold');
-			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:transfer' });
+			throw new Error('error-room-onHold');
 		}
 
 		if (transferData.departmentId) {
@@ -1358,7 +1378,7 @@ export const Livechat = {
 		}
 
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			notifications.streamLivechatRoom.emit(room._id, {
+			api.broadcast('omnichannel.room', room._id, {
 				type: 'agentStatus',
 				status,
 			});
@@ -1374,7 +1394,7 @@ export const Livechat = {
 	},
 
 	notifyRoomVisitorChange(roomId, visitor) {
-		notifications.streamLivechatRoom.emit(roomId, {
+		api.broadcast('omnichannel.room', roomId, {
 			type: 'visitorData',
 			visitor,
 		});

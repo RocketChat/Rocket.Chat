@@ -1,9 +1,10 @@
-import { Skeleton, Box, InputBox } from '@rocket.chat/fuselage';
+import { Skeleton, Box } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
 import Header from '../../../components/Header';
 import VerticalBarSkeleton from '../../../components/VerticalBar/VerticalBarSkeleton';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
+import ComposerSkeleton from './ComposerSkeleton';
 
 const RoomSkeleton: FC = () => (
 	<RoomTemplate>
@@ -43,9 +44,7 @@ const RoomSkeleton: FC = () => (
 					</Box>
 				</Box>
 			</Box>
-			<Box pi='x24' pb='x16' display='flex'>
-				<InputBox.Skeleton />
-			</Box>
+			<ComposerSkeleton />
 		</RoomTemplate.Body>
 		<RoomTemplate.Aside>
 			<VerticalBarSkeleton />

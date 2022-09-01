@@ -5,7 +5,7 @@ import { findAgentDepartments } from '../../../server/api/lib/agents';
 
 API.v1.addRoute(
 	'livechat/agents/:agentId/departments',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		get() {
 			check(this.urlParams, {

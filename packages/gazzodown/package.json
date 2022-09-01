@@ -13,15 +13,15 @@
 		"@rocket.chat/styled": "next",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@storybook/addon-actions": "^6.5.9",
-		"@storybook/addon-docs": "^6.5.9",
-		"@storybook/addon-essentials": "^6.5.9",
-		"@storybook/addon-interactions": "^6.5.9",
-		"@storybook/addon-links": "^6.5.9",
-		"@storybook/builder-webpack4": "^6.5.9",
-		"@storybook/manager-webpack4": "^6.5.9",
-		"@storybook/react": "^6.5.9",
-		"@storybook/testing-library": "^0.0.13",
+		"@storybook/addon-actions": "~6.5.10",
+		"@storybook/addon-docs": "~6.5.10",
+		"@storybook/addon-essentials": "~6.5.10",
+		"@storybook/addon-interactions": "~6.5.10",
+		"@storybook/addon-links": "~6.5.10",
+		"@storybook/builder-webpack4": "~6.5.10",
+		"@storybook/manager-webpack4": "~6.5.10",
+		"@storybook/react": "~6.5.10",
+		"@storybook/testing-library": "~0.0.13",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "~12.1.5",
 		"@types/babel__core": "^7",
@@ -73,6 +73,7 @@
 		"react": "~17.0.2"
 	},
 	"dependencies": {
-		"highlight.js": "^11.5.1"
+		"highlight.js": "^11.5.1",
+		"react-error-boundary": "^3.1.4"
 	}
 }

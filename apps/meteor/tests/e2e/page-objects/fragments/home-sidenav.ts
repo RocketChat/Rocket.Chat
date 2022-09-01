@@ -14,7 +14,7 @@ export class HomeSidenav {
 	}
 
 	get inputChannelName(): Locator {
-		return this.page.locator('#modal-root [placeholder="Channel Name"]');
+		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-name-input"]');
 	}
 
 	get btnCreateChannel(): Locator {
@@ -36,9 +36,19 @@ export class HomeSidenav {
 		await this.page.locator('//li[@class="rcx-option"]//div[contains(text(), "My Account")]').click();
 	}
 
+	async switchStatus(status: 'offline' | 'online'): Promise<void> {
+		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
+		await this.page.locator(`//li[@class="rcx-option"]//div[contains(text(), "${status}")]`).click();
+	}
+
 	async openChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
 		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
+		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
+	}
+
+	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
+	async openQueuedOmnichannelChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
 	}
 

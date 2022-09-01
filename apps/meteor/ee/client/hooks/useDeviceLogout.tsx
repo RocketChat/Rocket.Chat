@@ -35,7 +35,7 @@ export const useDeviceLogout = (
 					isContextualBarOpen && handleCloseContextualBar();
 					dispatchToastMessage({ type: 'success', message: t('Device_Logged_Out') });
 				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: String(error) });
+					dispatchToastMessage({ type: 'error', message: error });
 				} finally {
 					closeModal();
 				}
