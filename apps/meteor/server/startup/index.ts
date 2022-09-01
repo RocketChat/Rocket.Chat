@@ -7,6 +7,7 @@ import './initialData';
 import './instance';
 import './serverRunning';
 import './coreApps';
+import './presenceTroubleshoot';
 import '../hooks';
 import '../lib/rooms/roomTypes';
 import { isRunningMs } from '../lib/isRunningMs';
