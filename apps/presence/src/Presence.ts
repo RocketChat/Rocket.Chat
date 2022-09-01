@@ -53,7 +53,14 @@ export class Presence extends ServiceClass implements IPresence {
 		// });
 	}
 
-	async newConnection(uid: string, session: string, nodeId: string): Promise<{ uid: string; connectionId: string } | undefined> {
+	async newConnection(
+		uid: string | undefined,
+		session: string | undefined,
+		nodeId: string,
+	): Promise<{ uid: string; connectionId: string } | undefined> {
+		if (!uid || !session) {
+			return;
+		}
 		// if (metadata) {
 		// 	update.$set = {
 		// 		metadata: metadata
@@ -74,7 +81,10 @@ export class Presence extends ServiceClass implements IPresence {
 		};
 	}
 
-	async removeConnection(uid: string, session: string): Promise<{ uid: string; session: string }> {
+	async removeConnection(uid: string | undefined, session: string | undefined): Promise<{ uid: string; session: string } | undefined> {
+		if (!uid || !session) {
+			return;
+		}
 		await UsersSessions.removeConnectionByConnectionId(session);
 
 		await this.updateUserPresence(uid);
