@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMediaQueries } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoute } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, KeyboardEvent, MouseEvent } from 'react';
+import React, { memo, KeyboardEvent, MouseEvent, ReactElement } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
 import AppMenu from './AppMenu';
@@ -11,9 +11,22 @@ import AppStatus from './AppStatus';
 import BundleChips from './BundleChips';
 import { App } from './types';
 
-const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
-	const { name, id, description, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed, isMarketplace, bundledIn } =
-		props;
+type AppRowProps = { isMarketplace: boolean; isAdminSection: boolean; currentRouteName: string } & App;
+
+const AppRow = (props: AppRowProps): ReactElement => {
+	const {
+		name,
+		id,
+		description,
+		iconFileData,
+		marketplaceVersion,
+		iconFileContent,
+		installed,
+		isSubscribed,
+		bundledIn,
+		isAdminSection,
+		currentRouteName,
+	} = props;
 
 	const [isAppNameTruncated, isBundleTextVisible, isDescriptionVisible] = useMediaQueries(
 		'(max-width: 510px)',
@@ -21,20 +34,10 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 		'(min-width: 1200px)',
 	);
 
-	const appsRoute = useRoute('admin-apps');
-	const marketplaceRoute = useRoute('admin-marketplace');
+	const router = useRoute(currentRouteName);
 
 	const handleClick = (): void => {
-		if (isMarketplace) {
-			marketplaceRoute.push({
-				context: 'details',
-				version: marketplaceVersion,
-				id,
-			});
-			return;
-		}
-
-		appsRoute.push({
+		router.push({
 			context: 'details',
 			version: marketplaceVersion,
 			id,
@@ -101,8 +104,15 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
-				<AppStatus app={props} isSubscribed={isSubscribed} isAppDetailsPage={false} installed={installed} mis='x4' />
-				<Box minWidth='x32'>{(installed || isSubscribed) && <AppMenu app={props} mis='x4' />}</Box>
+				<AppStatus
+					app={props}
+					isSubscribed={isSubscribed}
+					isAppDetailsPage={false}
+					installed={installed}
+					isAdminSection={isAdminSection}
+					mis='x4'
+				/>
+				<Box minWidth='x32'>{(installed || isSubscribed) && isAdminSection && <AppMenu app={props} mis='x4' />}</Box>
 			</Box>
 		</Box>
 	);

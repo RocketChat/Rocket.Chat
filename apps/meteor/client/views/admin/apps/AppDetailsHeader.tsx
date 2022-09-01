@@ -9,7 +9,9 @@ import AppStatus from './AppStatus';
 import BundleChips from './BundleChips';
 import { App } from './types';
 
-const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
+type AppDetailsHeaderProps = { app: App; isAdminSection: boolean };
+
+const AppDetailsHeader = ({ app, isAdminSection }: AppDetailsHeaderProps): ReactElement => {
 	const t = useTranslation();
 	const { iconFileData, name, author, version, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn, description } = app;
 	const lastUpdated = modifiedAt && moment(modifiedAt).fromNow();
@@ -27,9 +29,16 @@ const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
 				<Box mbe='x16'>{description}</Box>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
 					<Box display='flex' flexDirection='row' alignItems='center'>
-						<AppStatus app={app} installed={installed} isAppDetailsPage={true} mie='x8' isSubscribed={isSubscribed} />
+						<AppStatus
+							app={app}
+							installed={installed}
+							isAppDetailsPage={true}
+							mie='x8'
+							isSubscribed={isSubscribed}
+							isAdminSection={isAdminSection}
+						/>
 					</Box>
-					{(installed || isSubscribed) && <AppMenu app={app} />}
+					{(installed || isSubscribed) && isAdminSection && <AppMenu app={app} />}
 				</Box>
 				<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
 					<Box fontScale='p2m' mie='x16'>

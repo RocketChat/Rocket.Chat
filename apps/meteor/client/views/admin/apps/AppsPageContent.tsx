@@ -18,14 +18,16 @@ import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
 import { useRadioToggle } from './hooks/useRadioToggle';
 
-const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactElement => {
+type AppsPageContentProps = { isMarketplace: boolean; isAdminSection: boolean; currentRouteName: string };
+
+const AppsPageContent = ({ isMarketplace, isAdminSection, currentRouteName }: AppsPageContentProps): ReactElement => {
 	const t = useTranslation();
 	const { marketplaceApps, installedApps } = useAppsResult();
 	const [text, setText] = useDebouncedState('', 500);
 	const reload = useAppsReload();
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const marketplaceRoute = useRoute('admin-marketplace');
+	const router = useRoute(currentRouteName);
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
 		label: t('Filter_By_Price'),
@@ -86,6 +88,10 @@ const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactEl
 
 	const loadingRows = Array.from({ length: 3 }, (_, i) => <Skeleton key={i} height='x56' mbe='x8' width='100%' variant='rect' />);
 
+	const handleEmptyStateCTAClick = (): void => {
+		router.push({ context: '' });
+	};
+
 	return (
 		<>
 			<AppsFilters
@@ -117,9 +123,20 @@ const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactEl
 				</>
 			)}
 
-			<FeaturedAppsSections appsResult={appsResult} isMarketplace={isMarketplace} isFiltered={isFiltered} />
+			<FeaturedAppsSections
+				appsResult={appsResult}
+				isMarketplace={isMarketplace}
+				isFiltered={isFiltered}
+				isAdminSection={isAdminSection}
+				currentRouteName={currentRouteName}
+			/>
 
-			<AllAppsSection appsResult={appsResult} isMarketplace={isMarketplace} />
+			<AllAppsSection
+				appsResult={appsResult}
+				isMarketplace={isMarketplace}
+				isAdminSection={isAdminSection}
+				currentRouteName={currentRouteName}
+			/>
 
 			{appsResult.phase === AsyncStatePhase.RESOLVED && Boolean(appsResult.value.count) && (
 				<>
@@ -143,11 +160,11 @@ const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactEl
 				<NoInstalledAppMatchesEmptyState
 					shouldShowSearchText={appsResult.value.shouldShowSearchText}
 					text={text}
-					onButtonClick={(): void => marketplaceRoute.push({ context: '' })}
+					onButtonClick={handleEmptyStateCTAClick}
 				/>
 			)}
 
-			{noInstalledAppsFound && <NoInstalledAppsFoundEmptyState onButtonClick={(): void => marketplaceRoute.push({ context: '' })} />}
+			{noInstalledAppsFound && <NoInstalledAppsFoundEmptyState onButtonClick={handleEmptyStateCTAClick} />}
 
 			{appsResult.phase === AsyncStatePhase.REJECTED && <ConnectionErrorEmptyState onButtonClick={reload} />}
 		</>

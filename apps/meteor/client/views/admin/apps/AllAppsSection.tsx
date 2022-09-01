@@ -9,14 +9,25 @@ import AppsList from './AppsList';
 export type AllAppsSectionProps = {
 	appsResult: AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult>;
 	isMarketplace: boolean;
+	isAdminSection: boolean;
+	currentRouteName: string;
 };
 
-const AllAppsSection = ({ appsResult, isMarketplace }: AllAppsSectionProps): ReactElement | null => {
+const AllAppsSection = ({ appsResult, isMarketplace, isAdminSection, currentRouteName }: AllAppsSectionProps): ReactElement | null => {
 	const t = useTranslation();
 
 	const isAllAppsListReady = appsResult.phase === AsyncStatePhase.RESOLVED && Boolean(appsResult.value.count);
 
-	if (isAllAppsListReady) return <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />;
+	if (isAllAppsListReady)
+		return (
+			<AppsList
+				apps={appsResult.value.items}
+				title={t('All_Apps')}
+				isMarketplace={isMarketplace}
+				isAdminSection={isAdminSection}
+				currentRouteName={currentRouteName}
+			/>
+		);
 
 	return null;
 };

@@ -11,6 +11,7 @@ import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
+import MarketplacePage from '../views/marketplace/MarketplacePage';
 import BlazeTemplate from '../views/root/BlazeTemplate';
 import MainLayout from '../views/root/MainLayout';
 
@@ -130,6 +131,28 @@ FlowRouter.route('/directory/:tab?', {
 		appLayout.render(
 			<MainLayout>
 				<DirectoryPage />
+			</MainLayout>,
+		);
+	},
+});
+
+FlowRouter.route('/marketplace/:context?/:id?/:version?/:tab?', {
+	name: 'marketplace',
+	action: () => {
+		appLayout.render(
+			<MainLayout>
+				<MarketplacePage />
+			</MainLayout>,
+		);
+	},
+});
+
+FlowRouter.route('/apps/:context?/:id?/:version?/:tab?', {
+	name: 'installed',
+	action: () => {
+		appLayout.render(
+			<MainLayout>
+				<MarketplacePage />
 			</MainLayout>,
 		);
 	},

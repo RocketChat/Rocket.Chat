@@ -2,7 +2,7 @@ import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { Button, ButtonGroup, Box, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, useRef, FC } from 'react';
+import React, { useState, useCallback, useRef, ReactElement } from 'react';
 
 import { ISettings } from '../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../app/apps/client/orchestrator';
@@ -17,7 +17,9 @@ import SettingsDisplay from './SettingsDisplay';
 import { handleAPIError } from './helpers';
 import { useAppInfo } from './hooks/useAppInfo';
 
-const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
+type AppDetailsPageProps = { id: string; isAdminSection: boolean };
+
+const AppDetailsPage = function AppDetailsPage({ id, isAdminSection }: AppDetailsPageProps): ReactElement {
 	const t = useTranslation();
 
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -31,12 +33,10 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const marketplaceRoute = useRoute('admin-marketplace');
 	const tab = useRouteParameter('tab');
 
-	const [currentRouteName] = useCurrentRoute();
-	if (!currentRouteName) {
+	if (!routeName) {
 		throw new Error('No current route name');
 	}
-
-	const router = useRoute(currentRouteName);
+	const router = useRoute(routeName);
 	const handleReturn = useMutableCallback((): void => router.push({}));
 
 	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, marketplace } = appData || {};
@@ -84,7 +84,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 					{!appData && <LoadingDetails />}
 					{appData && (
 						<>
-							<AppDetailsHeader app={appData} />
+							<AppDetailsHeader app={appData} isAdminSection={isAdminSection} />
 
 							<Tabs mis='-x24' mb='x36'>
 								<Tabs.Item onClick={(): void => handleTabClick('details')} selected={!tab || tab === 'details'}>

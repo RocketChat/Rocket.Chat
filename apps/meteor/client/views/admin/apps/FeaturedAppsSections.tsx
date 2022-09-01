@@ -12,9 +12,17 @@ type FeaturedSectionsProps = {
 	appsResult: AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult>;
 	isMarketplace: boolean;
 	isFiltered: boolean;
+	isAdminSection: boolean;
+	currentRouteName: string;
 };
 
-const FeaturedAppsSections = ({ appsResult, isMarketplace, isFiltered }: FeaturedSectionsProps): ReactElement | null => {
+const FeaturedAppsSections = ({
+	appsResult,
+	isMarketplace,
+	isFiltered,
+	isAdminSection,
+	currentRouteName,
+}: FeaturedSectionsProps): ReactElement | null => {
 	const t = useTranslation();
 	const featuredApps = useEndpointData('/apps/featured-apps');
 
@@ -34,6 +42,8 @@ const FeaturedAppsSections = ({ appsResult, isMarketplace, isFiltered }: Feature
 						apps={normalizeFeaturedApps(section.apps, appsResult.value.items)}
 						title={t.has(section.i18nLabel) ? t(section.i18nLabel) : section.i18nLabel}
 						isMarketplace={isMarketplace}
+						isAdminSection={isAdminSection}
+						currentRouteName={currentRouteName}
 						mbe='x36'
 					/>
 				))}

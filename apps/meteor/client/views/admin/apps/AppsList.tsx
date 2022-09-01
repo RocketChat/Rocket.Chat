@@ -9,16 +9,18 @@ type AppsListProps = {
 	title: string;
 	isMarketplace: boolean;
 	mbe?: string | number;
+	isAdminSection: boolean;
+	currentRouteName: string;
 };
 
-const AppsList = ({ apps, title, isMarketplace, mbe }: AppsListProps): ReactElement => (
+const AppsList = ({ apps, title, isMarketplace, mbe, isAdminSection, currentRouteName }: AppsListProps): ReactElement => (
 	<>
 		<Box is='h3' fontScale='h3' color='default' mbe='x20'>
 			{title}
 		</Box>
 		<Box mbe={mbe}>
 			{apps.map((app) => (
-				<AppRow key={app.id} isMarketplace={isMarketplace} {...app} />
+				<AppRow key={app.id} isMarketplace={isMarketplace} isAdminSection={isAdminSection} currentRouteName={currentRouteName} {...app} />
 			))}
 		</Box>
 	</>

@@ -33,7 +33,7 @@ const actions = {
 	},
 };
 
-const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, installed, ...props }) => {
+const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, installed, isAdminSection, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState());
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
@@ -127,28 +127,30 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 					borderRadius='x2'
 					invisible={!showStatus && !loading}
 				>
-					<Button
-						secondary={button.label !== 'Update'}
-						primary={button.label === 'Update'}
-						fontSize='x12'
-						fontWeight={700}
-						disabled={loading}
-						onClick={handleClick}
-						pi='x8'
-						pb='x6'
-						lineHeight='x12'
-					>
-						{loading ? (
-							<Throbber inheritColor />
-						) : (
-							<>
-								{button.icon && <Icon name={button.icon} mie='x8' />}
-								{t(button.label.replace(' ', '_'))}
-							</>
-						)}
-					</Button>
+					{isAdminSection && (
+						<Button
+							secondary={button.label !== 'Update'}
+							primary={button.label === 'Update'}
+							fontSize='x12'
+							fontWeight={700}
+							disabled={loading}
+							onClick={handleClick}
+							pi='x8'
+							pb='x6'
+							lineHeight='x12'
+						>
+							{loading ? (
+								<Throbber inheritColor />
+							) : (
+								<>
+									{button.icon && <Icon name={button.icon} mie='x8' />}
+									{t(button.label.replace(' ', '_'))}
+								</>
+							)}
+						</Button>
+					)}
 					{shouldShowPriceDisplay && (
-						<Box pi='x14' color='primary-500'>
+						<Box pi='x14' color='primary-500' minHeight='x32' display='flex' alignItems='center'>
 							{!installed && (
 								<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
 							)}

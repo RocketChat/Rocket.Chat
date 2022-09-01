@@ -8,16 +8,19 @@ import AppsPageContent from './AppsPageContent';
 
 type AppsPageProps = {
 	isMarketplace: boolean;
+	canManageApps: boolean;
+	isAdminSection: boolean;
+	currentRouteName: string;
 };
 
-const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
+const AppsPage = ({ isMarketplace, canManageApps, isAdminSection, currentRouteName }: AppsPageProps): ReactElement => {
 	const t = useTranslation();
 
 	const isDevelopmentMode = useSetting('Apps_Framework_Development_Mode');
-	const marketplaceRoute = useRoute('admin-marketplace');
-	const appsRoute = useRoute('admin-apps');
-	const cloudRoute = useRoute('cloud');
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
+
+	const router = useRoute(currentRouteName);
+	const cloudRoute = useRoute('cloud');
 
 	const [isLoggedInCloud, setIsLoggedInCloud] = useState();
 
@@ -33,14 +36,22 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 	};
 
 	const handleUploadButtonClick = (): void => {
-		appsRoute.push({ context: 'install' });
+		router.push({ context: 'install' });
+	};
+
+	const handleMarketplaceTabClick = (): void => {
+		router.push({ context: '' });
+	};
+
+	const handleInstalledTabClick = (): void => {
+		router.push({ context: 'installed' });
 	};
 
 	return (
 		<Page backgroundColor={colors.n100}>
 			<Page.Header title={t('Apps')} bg={colors.n100}>
 				<ButtonGroup>
-					{isMarketplace && !isLoggedInCloud && (
+					{isMarketplace && !isLoggedInCloud && canManageApps && isAdminSection && (
 						<Button disabled={isLoggedInCloud === undefined} onClick={handleLoginButtonClick}>
 							{isLoggedInCloud === undefined ? (
 								<Skeleton width='x80' />
@@ -51,7 +62,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 							)}
 						</Button>
 					)}
-					{Boolean(isDevelopmentMode) && (
+					{Boolean(isDevelopmentMode) && canManageApps && isAdminSection && (
 						<Button primary onClick={handleUploadButtonClick}>
 							<Icon size='x20' name='upload' /> {t('Upload_app')}
 						</Button>
@@ -60,7 +71,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 			</Page.Header>
 			<Tabs bg={colors.n100} borderBlockEnd='4px solid #CBCED1' marginInline='x24'>
 				<Tabs.Item
-					onClick={(): void => marketplaceRoute.push({ context: '' })}
+					onClick={handleMarketplaceTabClick}
 					selected={isMarketplace}
 					mbe='neg-x4'
 					mis='neg-x12'
@@ -69,18 +80,12 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 				>
 					{t('Marketplace')}
 				</Tabs.Item>
-				<Tabs.Item
-					onClick={(): void => marketplaceRoute.push({ context: 'installed' })}
-					selected={!isMarketplace}
-					mbe='neg-x4'
-					borderWidth='0'
-					borderBlockWidth='x4'
-				>
+				<Tabs.Item onClick={handleInstalledTabClick} selected={!isMarketplace} mbe='neg-x4' borderWidth='0' borderBlockWidth='x4'>
 					{t('Installed')}
 				</Tabs.Item>
 			</Tabs>
 			<Page.Content bg={colors.n100} overflowY='auto'>
-				<AppsPageContent isMarketplace={isMarketplace} />
+				<AppsPageContent isMarketplace={isMarketplace} isAdminSection={isAdminSection} currentRouteName={currentRouteName} />
 			</Page.Content>
 		</Page>
 	);
