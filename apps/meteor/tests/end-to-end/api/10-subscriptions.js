@@ -2,6 +2,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { createRoom } from '../../data/rooms.helper';
+import { sendSimpleMessage } from '../../data/chat.helper.js';
 
 describe('[Subscriptions]', function () {
 	this.retries(0);
@@ -210,36 +211,16 @@ describe('[Subscriptions]', function () {
 		});
 
 		it('should mark public channels messages and threads as read', (done) => {
-			let createdThreadMessage;
-
-			request
-				.post(api('chat.sendMessage'))
-				.set(credentials)
-				.send({
-					message: {
-						rid: testChannel._id,
-						msg: 'Message to create thread',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('message').and.to.be.an('object');
-
-					createdThreadMessage = res.body.message;
-
-					request
-						.post(api('chat.sendMessage'))
-						.set(credentials)
-						.send({
-							message: {
-								rid: testChannel._id,
-								msg: 'Thread message',
-								tmid: createdThreadMessage._id,
-							},
-						});
+			sendSimpleMessage({
+				roomId: testChannel._id,
+				text: 'Message to create thread',
+			}).end((err, message) => {
+				sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'Thread Message',
+					tmid: message.body.message._id,
 				});
+			});
 
 			request
 				.post(api('subscriptions.read'))
@@ -253,9 +234,9 @@ describe('[Subscriptions]', function () {
 				});
 
 			request
-				.post(api('subscriptions.getOne'))
+				.get(api('subscriptions.getOne'))
 				.set(credentials)
-				.send({
+				.query({
 					roomId: testChannel._id,
 				})
 				.expect(200)
