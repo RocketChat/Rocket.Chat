@@ -424,7 +424,10 @@ jobs:
         run: yarn
 
       - name: Unit Test
-        run: yarn testunit:coverage --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+        run: |
+          yarn build
+          cd ./apps/meteor
+          yarn testunit:coverage --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - uses: codecov/codecov-action@v3
         with:
