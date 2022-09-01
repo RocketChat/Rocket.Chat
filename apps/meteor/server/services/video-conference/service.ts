@@ -146,7 +146,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (call.messages.started) {
-			await Messages.setBlocksById(call.messages.started, [this.buildVideoConfBlock(call._id)]);
+			this.updateVideoConfMessage(call.messages.started);
 		}
 
 		await VideoConferenceModel.setDataById(callId, {
@@ -368,6 +368,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return true;
 	}
 
+	private async updateVideoConfMessage(messageId: IMessage['_id']): Promise<void> {
+		const message = await Messages.findOneById(messageId);
+		if (message) {
+			api.broadcast('message.update', { message });
+		}
+	}
+
 	private async endCall(callId: VideoConference['_id']): Promise<void> {
 		const call = await this.getUnfiltered(callId);
 		if (!call) {
@@ -375,6 +382,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.ENDED });
+		if (call.messages?.started) {
+			this.updateVideoConfMessage(call.messages.started);
+		}
 
 		if (call.type === 'direct') {
 			return this.endDirectCall(call);
@@ -824,7 +834,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setStatusById(call._id, VideoConferenceStatus.STARTED);
 
 		if (call.messages.started) {
-			await Messages.setBlocksById(call.messages.started, [this.buildVideoConfBlock(call._id)]);
+			this.updateVideoConfMessage(call.messages.started);
 		}
 	}
 }
