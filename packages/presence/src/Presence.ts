@@ -23,6 +23,14 @@ export class Presence extends ServiceClass implements IPresence {
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 		}, 100);
 
+		// process.on('exit', Meteor.bindEnvironment(function() {
+		// 	if (Package['konecty:multiple-instances-status']) {
+		// 		UserPresence.removeConnectionsByInstanceId(InstanceStatus.id());
+		// 	} else {
+		// 		UserPresence.removeAllConnections();
+		// 	}
+		// }));
+
 		// TODO should presence be reactive to database records or just websocket events?
 		// if (isPresenceMonitorEnabled()) {
 		// 	this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {
@@ -101,14 +109,9 @@ export class Presence extends ServiceClass implements IPresence {
 			});
 		}
 
-		// TODO  is this working?
-		if (!this.context) {
-			return [];
-		}
+		const nodes: any = await this.api.broker.nodeList();
 
-		const nodes = await this.context.broker.nodeList();
-
-		const ids = nodes.filter((node) => node.available).map(({ id }) => id);
+		const ids = nodes.filter((node: any) => node.available).map(({ id }: { id: string }) => id);
 
 		const affectedUsers = await UsersSessions.find(
 			{

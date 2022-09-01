@@ -20,12 +20,9 @@ Meteor.startup(function () {
 		});
 	});
 
-	process.on(
-		'exit',
-		Meteor.bindEnvironment(function () {
-			Presence.removeLostConnections(nodeId);
-		}),
-	);
+	process.on('exit', function () {
+		Presence.removeLostConnections(nodeId);
+	});
 
 	Accounts.onLogin(function (login: any): void {
 		Presence.newConnection(login.user._id, login.connection.id, nodeId);
