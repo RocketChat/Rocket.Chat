@@ -16,7 +16,12 @@ import AttachmentContent from './Attachment/AttachmentContent';
 import AttachmentDetails from './Attachment/AttachmentDetails';
 import AttachmentInner from './Attachment/AttachmentInner';
 
-const hover = css`
+const quoteStyles = css`
+	.rcx-attachment__details {
+		.rcx-message-body {
+			color: ${colors.n700} !important;
+		}
+	}
 	&:hover,
 	&:focus {
 		.rcx-attachment__details {
@@ -49,7 +54,7 @@ export const QuoteAttachment = ({ attachment, message }: QuoteAttachmentProps): 
 
 	return (
 		<>
-			<AttachmentContent className={hover} width='full'>
+			<AttachmentContent className={quoteStyles} width='full'>
 				<AttachmentDetails
 					is='blockquote'
 					borderRadius='x2'
