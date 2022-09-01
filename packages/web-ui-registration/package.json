@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"@rocket.chat/layout": "*",
+		"@rocket.chat/layout": "next",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@tanstack/react-query": "^4.2.3",
 		"@testing-library/react": "^13.3.0",
