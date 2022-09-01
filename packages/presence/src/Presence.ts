@@ -23,7 +23,7 @@ export class Presence extends ServiceClass implements IPresence {
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 		}, 100);
 
-		// TODO show presence be reactive to database records or just websocket events?
+		// TODO should presence be reactive to database records or just websocket events?
 		// if (isPresenceMonitorEnabled()) {
 		// 	this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {
 		// 		if (clientAction === 'removed') {
@@ -57,12 +57,6 @@ export class Presence extends ServiceClass implements IPresence {
 		if (!uid || !session) {
 			return;
 		}
-		// if (metadata) {
-		// 	update.$set = {
-		// 		metadata: metadata
-		// 	};
-		// 	connection.metadata = metadata;
-		// }
 
 		await UsersSessions.addConnectionById(uid, {
 			id: session,
