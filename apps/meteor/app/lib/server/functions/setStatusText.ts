@@ -28,7 +28,7 @@ async function _setStatusTextPromise(userId: string, statusText: string): Promis
 
 	await Users.updateStatusText(user._id, statusText);
 
-	const { _id, username, status } = user;
+	const { _id, username, status, name, roles } = user;
 	api.broadcast('presence.status', {
 		user: { _id, username, status, statusText, name, roles },
 	});
