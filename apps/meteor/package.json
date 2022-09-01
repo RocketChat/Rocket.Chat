@@ -35,10 +35,11 @@
 		"test:e2e": "playwright test",
 		"test:e2e:nyc": "nyc report --reporter=text-summary --reporter=lcov",
 		"testapi": "mocha --config ./.mocharc.api.js",
-		"testunit": "nyc -r lcov npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server",
-		".testunit:server": "mocha --config ./.mocharc.js",
-		".testunit:client": "mocha --config ./.mocharc.client.js",
-		".testunit:definition": "mocha --config ./.mocharc.definition.js",
+		"testunit": "npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server && npm run cover:report",
+		".testunit:server": "nyc --silent mocha --config ./.mocharc.js",
+		".testunit:client": "nyc --silent mocha --config ./.mocharc.client.js",
+		".testunit:definition": "nyc --silent mocha --config ./.mocharc.definition.js",
+		"cover:report": "nyc report --reporter=lcov --reporter=text",
 		"testunit-watch": "mocha --watch --config ./.mocharc.js",
 		"test": "npm run testapi && npm run testui",
 		"translation-diff": "node .scripts/translationDiff.js",
@@ -411,8 +412,7 @@
 			"**/.mocharc.client.js",
 			"**/.mocharc.definition.js",
 			"**/tests/*",
-			"imports",
-			"**/dist/"
+			"imports"
 		],
 		"all": true
 	},
