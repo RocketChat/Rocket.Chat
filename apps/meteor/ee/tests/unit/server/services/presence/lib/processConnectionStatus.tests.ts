@@ -5,7 +5,7 @@ import {
 	processConnectionStatus,
 	processStatus,
 	processPresenceAndStatus,
-} from '../../../../../../../../presence/src/lib/processConnectionStatus';
+} from '../../../../../../../../../packages/presence/src/lib/processConnectionStatus';
 
 describe('Presence micro service', () => {
 	it('should return connection as online when there is a connection online', () => {
