@@ -18,6 +18,8 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
+		"@types/eslint": "^8",
+		"eslint": "^8.21.0",
 		"typescript": "~4.3.5"
 	},
 	"main": "./dist/service.js",

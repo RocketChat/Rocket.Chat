@@ -4243,12 +4243,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/presence-service@workspace:ee/apps/presence":
+"@rocket.chat/presence-service@workspace:ee/apps/presence-service":
   version: 0.0.0-use.local
-  resolution: "@rocket.chat/presence-service@workspace:ee/apps/presence"
+  resolution: "@rocket.chat/presence-service@workspace:ee/apps/presence-service"
   dependencies:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/presence": "workspace:^"
+    "@types/eslint": ^8
+    eslint: ^8.21.0
     typescript: ~4.3.5
   languageName: unknown
   linkType: soft

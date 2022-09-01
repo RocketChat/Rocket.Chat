@@ -25,5 +25,6 @@
 		"declarationMap": false
 	},
 	"include": ["../meteor/definition"],
+	"exclude": ["./dist"],
 	"files": ["./src/Presence.ts"]
 }
