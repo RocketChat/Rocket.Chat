@@ -4250,8 +4250,9 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/presence": "workspace:^"
     "@types/eslint": ^8
+    "@types/node": ^14.18.21
     eslint: ^8.21.0
-    typescript: ~4.3.5
+    typescript: ~4.5.5
   languageName: unknown
   linkType: soft
 
@@ -4265,13 +4266,9 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@types/jest": ^27.4.1
-    "@types/node": ^14.18.12
+    "@types/node": ^14.18.21
     eslint: ^8.21.0
-    fibers: 5.0.1
-    jest: ^27.5.1
     mongodb: ^4.3.1
-    ts-jest: ^27.1.4
     typescript: ~4.5.5
   languageName: unknown
   linkType: soft
@@ -6940,13 +6937,6 @@ __metadata:
   version: 14.18.21
   resolution: "@types/node@npm:14.18.21"
   checksum: 4ed35b76609647a4e36a194702e31cdda9ed42174ddaf7937bc5498984e98a99e8a42ea895ea17dd9c5ec18080112c29ab670c34f90eb9f7a4703b85b31e34fa
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^14.18.12":
-  version: 14.18.26
-  resolution: "@types/node@npm:14.18.26"
-  checksum: c6ac3f9d4f6f77c0fa5ac17757779ad4d9835abfe3af5708b7552597cb5c7c1103e83499ccaf767a1cfa70040990bcf3f58761c547051dc8d5077f3c419091b1
   languageName: node
   linkType: hard
 
@@ -15033,7 +15023,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fibers@npm:5.0.1, fibers@npm:^5.0.1":
+"fibers@npm:^5.0.1":
   version: 5.0.1
   resolution: "fibers@npm:5.0.1"
   dependencies:

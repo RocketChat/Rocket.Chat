@@ -7,29 +7,25 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@types/jest": "^27.4.1",
-		"@types/node": "^14.18.12",
+		"@types/node": "^14.18.21",
 		"eslint": "^8.21.0",
-		"jest": "^27.5.1",
-		"ts-jest": "^27.1.4",
 		"typescript": "~4.5.5"
 	},
 	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint src",
+		"lint:fix": "eslint src --fix",
 		"jest": "jest",
 		"build": "tsc -p tsconfig.json",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
-	"main": "./dist/presence/src/Presence.js",
-	"typings": "./dist/presence/src/Presence.d.ts",
+	"main": "./dist/packages/presence/src/Presence.js",
+	"typings": "./dist/packages/presence/src/Presence.d.ts",
 	"files": [
 		"/dist"
 	],
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
-		"fibers": "5.0.1",
 		"mongodb": "^4.3.1"
 	}
 }
