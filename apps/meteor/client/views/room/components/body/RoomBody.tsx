@@ -1,11 +1,11 @@
-/* eslint-disable react/no-multi-comp */
-import { useRole, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useMethod, useRole, useToastMessageDispatch, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import React, { memo, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Subscriptions } from '../../../../../app/models/client';
+import { Subscriptions, RoomRoles, ChatMessage } from '../../../../../app/models/client';
 import { RoomTemplateInstance } from '../../../../../app/ui/client/views/app/lib/RoomTemplateInstance';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
@@ -44,6 +44,56 @@ const RoomBody = (): ReactElement => {
 	}, [room, user?.username]);
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [unreadCount, setUnreadCount] = useState(0);
+
+	const queryClient = useQueryClient();
+	const getRoomRoles = useMethod('getRoomRoles');
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	useEffect(() => {
+		queryClient
+			.fetchQuery({
+				queryKey: ['room', room._id, 'roles'],
+				queryFn: () => getRoomRoles(room._id),
+				staleTime: 15_000,
+			})
+			.then((results) => {
+				Array.from(results).forEach(({ _id, ...data }) => {
+					const {
+						rid,
+						u: { _id: uid },
+					} = data;
+					RoomRoles.upsert({ rid, 'u._id': uid }, data);
+				});
+			})
+			.catch((error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			});
+
+		const rolesObserve = RoomRoles.find({ rid: room._id }).observe({
+			added: (role) => {
+				if (!role.u || !role.u._id) {
+					return;
+				}
+				ChatMessage.update({ 'rid': room._id, 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
+			}, // Update message to re-render DOM
+			changed: (role) => {
+				if (!role.u || !role.u._id) {
+					return;
+				}
+				ChatMessage.update({ 'rid': room._id, 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true });
+			}, // Update message to re-render DOM
+			removed: (role) => {
+				if (!role.u || !role.u._id) {
+					return;
+				}
+				ChatMessage.update({ 'rid': room._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
+			},
+		});
+
+		return (): void => {
+			rolesObserve.stop();
+		};
+	}, [dispatchToastMessage, getRoomRoles, queryClient, room._id]);
 
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(room);
 

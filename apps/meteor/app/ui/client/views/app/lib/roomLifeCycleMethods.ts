@@ -1,33 +1,34 @@
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import type { IEditedMessage, IMessage } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Template } from 'meteor/templating';
 
-import { ChatMessage, RoomRoles, Subscriptions, Rooms } from '../../../../../models/client';
+import { ChatMessage } from '../../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../../ui-utils/client';
 import { callbacks } from '../../../../../../lib/callbacks';
 import { ChatMessages, chatMessages } from '../../../lib/ChatMessages';
 import { RoomManager as NewRoomManager } from '../../../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
-import { queryClient } from '../../../../../../client/lib/queryClient';
-import { call } from '../../../../../../client/lib/utils/call';
 import { isAtBottom } from './scrolling';
-import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 import type { RoomTemplateInstance } from './RoomTemplateInstance';
+import { difference, maxDate, minDate, unique } from '../../../../../../lib/utils/comparisons';
+import { isTruthy } from '../../../../../../lib/isTruthy';
+import { withDebouncing, withThrottling } from '../../../../../../lib/utils/highOrderFunctions';
 
 export function onRoomCreated(this: RoomTemplateInstance) {
-	this.atBottom = !FlowRouter.getQueryParam('msg');
-
 	this.selectedMessages = [];
 	this.selectedRange = [];
 	this.selectablePointer = undefined;
+	this.atBottom = !FlowRouter.getQueryParam('msg');
 
 	this.resetSelection = (enabled: boolean) => {
 		this.data.setSelectable(enabled);
-		$('.messages-box .message.selected').removeClass('selected');
+		this.find('.messages-box')
+			?.querySelectorAll('.message.selected')
+			.forEach((message) => message.classList.remove('selected'));
 		this.selectedMessages = [];
 		this.selectedRange = [];
 		this.selectablePointer = undefined;
@@ -44,85 +45,61 @@ export function onRoomCreated(this: RoomTemplateInstance) {
 				throw new Error('Invalid message selection');
 			}
 
-			const minTs = _.min([message1.ts, message2.ts]) as Date;
-			const maxTs = _.max([message1.ts, message2.ts]) as Date;
+			const minTs = minDate(message1.ts, message2.ts);
+			const maxTs = maxDate(message1.ts, message2.ts);
 
-			this.selectedRange = _.pluck(ChatMessage.find({ rid: message1.rid, ts: { $gte: minTs, $lte: maxTs } }).fetch(), '_id');
+			this.selectedRange = ChatMessage.find({ rid: message1.rid, ts: { $gte: minTs, $lte: maxTs } }).map((message) => message._id);
 		}
 	};
 
 	this.getSelectedMessages = () => {
-		let previewMessages;
 		const messages = this.selectedMessages;
 		let addMessages = false;
 		for (const message of Array.from(this.selectedRange)) {
-			if (messages.indexOf(message) === -1) {
+			if (messages.includes(message)) {
 				addMessages = true;
 				break;
 			}
 		}
 
 		if (addMessages) {
-			previewMessages = _.compact(_.uniq(this.selectedMessages.concat(this.selectedRange)));
-		} else {
-			previewMessages = _.compact(_.difference(this.selectedMessages, this.selectedRange));
+			return unique([...this.selectedMessages, ...this.selectedRange]).filter(isTruthy);
 		}
 
-		return previewMessages;
+		return difference(this.selectedMessages, this.selectedRange).filter(isTruthy);
 	};
-
-	queryClient
-		.fetchQuery({
-			queryKey: ['room', this.data._id, 'roles'],
-			queryFn: () => call('getRoomRoles', this.data._id),
-			staleTime: 15_000,
-		})
-		.then((results) => {
-			Array.from(results).forEach(({ _id, ...data }) => {
-				const {
-					rid,
-					u: { _id: uid },
-				} = data;
-				RoomRoles.upsert({ rid, 'u._id': uid }, data);
-			});
-		})
-		.catch((error) => {
-			dispatchToastMessage({ type: 'error', message: error });
-		});
-
-	this.rolesObserve = RoomRoles.find({ rid: this.data._id }).observe({
-		added: (role) => {
-			if (!role.u || !role.u._id) {
-				return;
-			}
-			ChatMessage.update({ 'rid': this.data._id, 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
-		}, // Update message to re-render DOM
-		changed: (role) => {
-			if (!role.u || !role.u._id) {
-				return;
-			}
-			ChatMessage.update({ 'rid': this.data._id, 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true });
-		}, // Update message to re-render DOM
-		removed: (role) => {
-			if (!role.u || !role.u._id) {
-				return;
-			}
-			ChatMessage.update({ 'rid': this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
-		},
-	});
 
 	this.sendToBottomIfNecessary = () => {
 		if (this.atBottom === true) {
 			this.sendToBottom();
 		}
 	};
+
+	this.isAtBottom = (scrollThreshold = 0) => {
+		const wrapper = this.find('.wrapper');
+		const newMessage = this.find('.new-message');
+
+		if (isAtBottom(wrapper, scrollThreshold)) {
+			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
+			return true;
+		}
+		return false;
+	};
+
+	this.sendToBottom = () => {
+		const wrapper = this.find('.wrapper');
+		const newMessage = this.find('.new-message');
+
+		wrapper.scrollTo(30, wrapper.scrollHeight);
+		newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
+	};
+
+	this.checkIfScrollIsAtBottom = () => {
+		this.atBottom = this.isAtBottom(100);
+	};
 }
 
 export function onRoomDestroyed(this: RoomTemplateInstance) {
-	if (this.rolesObserve) {
-		this.rolesObserve.stop();
-	}
-
 	// @ts-ignore
 	readMessage.off(this.data._id);
 
@@ -153,12 +130,11 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 		}
 		wrapper.removeEventListener('MessageGroup', afterMessageGroup);
 
-		wrapper.addEventListener(
-			'scroll',
-			_.throttle(() => {
-				store?.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
-			}, 30),
-		);
+		const handleWrapperScroll = withThrottling({ wait: 30 })(() => {
+			store?.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
+		});
+
+		wrapper.addEventListener('scroll', handleWrapperScroll);
 	};
 
 	wrapper.addEventListener('MessageGroup', afterMessageGroup);
@@ -167,38 +143,18 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 	chatMessages[rid].initializeInput(this.find('.js-input-message') as HTMLTextAreaElement, { rid });
 
 	const wrapperUl = this.find('.wrapper > ul');
-	const newMessage = this.find('.new-message');
-
-	const messageBox = $('.messages-box');
-
-	this.isAtBottom = function (scrollThreshold = 0) {
-		if (isAtBottom(wrapper, scrollThreshold)) {
-			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
-			return true;
-		}
-		return false;
-	};
-
-	this.sendToBottom = function () {
-		wrapper.scrollTo(30, wrapper.scrollHeight);
-		newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
-	};
-
-	this.checkIfScrollIsAtBottom = () => {
-		this.atBottom = this.isAtBottom(100);
-	};
 
 	this.observer = new ResizeObserver(() => this.sendToBottomIfNecessary());
 
 	this.observer.observe(wrapperUl);
 
-	const wheelHandler = _.throttle(() => {
+	const handleWheel = withThrottling({ wait: 100 })(() => {
 		this.checkIfScrollIsAtBottom();
-	}, 100);
+	});
 
-	wrapper.addEventListener('mousewheel', wheelHandler);
+	wrapper.addEventListener('mousewheel', handleWheel);
 
-	wrapper.addEventListener('wheel', wheelHandler);
+	wrapper.addEventListener('wheel', handleWheel);
 
 	wrapper.addEventListener('touchstart', () => {
 		this.atBottom = false;
@@ -211,23 +167,22 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 	});
 
 	Tracker.afterFlush(() => {
-		wrapper.addEventListener('scroll', wheelHandler);
+		wrapper.addEventListener('scroll', handleWheel);
 	});
 
-	this.lastScrollTop = $('.messages-box .wrapper').scrollTop() ?? 0;
+	this.lastScrollTop = $(wrapper).scrollTop() ?? 0;
 
-	const rtl = $('html').hasClass('rtl');
-
-	const getElementFromPoint = function (topOffset = 0) {
-		const messageBoxOffset = messageBox.offset();
-		const messageBoxWidth = messageBox.width();
+	const getElementFromPoint = (topOffset = 0) => {
+		const messageBox = this.find('.messages-box');
+		const messageBoxOffset = $(messageBox).offset();
+		const messageBoxWidth = $(messageBox).width();
 
 		if (messageBoxOffset === undefined || messageBoxWidth === undefined) {
 			return undefined;
 		}
 
 		let element;
-		if (rtl) {
+		if (document.dir === 'rtl') {
 			element = document.elementFromPoint(messageBoxOffset.left + messageBoxWidth - 1, messageBoxOffset.top + topOffset + 1);
 		} else {
 			element = document.elementFromPoint(messageBoxOffset.left + 1, messageBoxOffset.top + topOffset + 1);
@@ -238,7 +193,7 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 		}
 	};
 
-	const updateUnreadCount = _.throttle(() => {
+	const updateUnreadCount = withThrottling({ wait: 300 })(() => {
 		Tracker.afterFlush(() => {
 			const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 
@@ -253,28 +208,27 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 
 			this.data.setLastMessage(lastMessage.ts);
 		});
-	}, 300);
-
-	const read = _.debounce(function () {
-		if (rid !== Session.get('openedRoom')) {
-			return;
-		}
-		readMessage.read(rid);
-	}, 500);
+	});
 
 	this.autorun(() => {
+		const { room } = Template.currentData() as RoomTemplateInstance['data'];
+
 		Tracker.afterFlush(() => {
 			if (rid !== Session.get('openedRoom')) {
 				return;
 			}
 
-			let room = Rooms.findOne({ _id: rid }, { fields: { t: 1 } });
-
-			if (room?.t === 'l') {
-				room = Tracker.nonreactive(() => Rooms.findOne({ _id: rid }));
+			if (room && isOmnichannelRoom(room)) {
 				roomCoordinator.getRoomDirectives(room.t)?.openCustomProfileTab(this, room, room.v.username);
 			}
 		});
+	});
+
+	const debouncedReadMessageRead = withDebouncing({ wait: 500 })(() => {
+		if (rid !== Session.get('openedRoom')) {
+			return;
+		}
+		readMessage.read(rid);
 	});
 
 	this.autorun(() => {
@@ -286,15 +240,14 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 			return;
 		}
 
-		const subscription = Subscriptions.findOne({ rid }, { fields: { alert: 1, unread: 1 } });
-		read();
+		const { subscription } = Template.currentData() as RoomTemplateInstance['data'];
+		debouncedReadMessageRead();
 		return subscription && (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
 	});
 
 	this.autorun(() => {
-		const { lastMessage, setUnreadCount } = Template.currentData() as RoomTemplateInstance['data'];
+		const { lastMessage, setUnreadCount, subscription } = Template.currentData() as RoomTemplateInstance['data'];
 
-		const subscription = Subscriptions.findOne({ rid }, { fields: { ls: 1 } });
 		if (!subscription) {
 			setUnreadCount(0);
 			return;
@@ -316,9 +269,9 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 
 	this.autorun(() => {
 		const { count } = Template.currentData() as RoomTemplateInstance['data'];
-		Rooms.findOne(rid);
+
 		if (count === 0) {
-			return read();
+			return debouncedReadMessageRead();
 		}
 		readMessage.refreshUnreadMark(rid);
 	});
@@ -326,8 +279,6 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 	readMessage.on(this.data._id, () => this.data.setUnreadCount(0));
 
 	wrapper.addEventListener('scroll', updateUnreadCount);
-	// save the render's date to display new messages alerts
-	$.data(this.firstNode, 'renderedAt', new Date());
 
 	callbacks.add(
 		'streamNewMessage',
@@ -341,6 +292,7 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 			}
 
 			if (!this.isAtBottom()) {
+				const newMessage = this.find('.new-message');
 				newMessage.classList.remove('not');
 			}
 		},
@@ -353,7 +305,8 @@ export function onRoomRendered(this: RoomTemplateInstance) {
 			return;
 		}
 
-		const room = Rooms.findOne({ _id: this.data._id });
+		const { room } = Template.currentData() as RoomTemplateInstance['data'];
+
 		if (!room) {
 			return FlowRouter.go('home');
 		}

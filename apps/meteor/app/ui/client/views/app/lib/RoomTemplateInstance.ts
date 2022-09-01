@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { Blaze } from 'meteor/blaze';
 import type { Dispatch, SetStateAction } from 'react';
 
@@ -22,18 +22,19 @@ export type RoomTemplateInstance = CommonRoomTemplateInstance &
 		unreadCount: number;
 		setUnreadCount: Dispatch<SetStateAction<number>>;
 	}> & {
-		resetSelection: (enabled: boolean) => void;
-		selectedMessages: unknown[];
-		getSelectedMessages: () => unknown[];
-		selectMessages: (messages: string) => void;
-		selectedRange: unknown[];
+		selectedMessages: IMessage['_id'][];
+		selectedRange: IMessage['_id'][];
 		selectablePointer: string | undefined;
 		atBottom: boolean | undefined;
-		sendToBottomIfNecessary: () => void;
-		checkIfScrollIsAtBottom: () => void;
+
 		observer: ResizeObserver | undefined;
 		lastScrollTop: number;
+
+		resetSelection: (enabled: boolean) => void;
+		selectMessages: (messages: string) => void;
+		getSelectedMessages: () => IMessage['_id'][];
+		sendToBottomIfNecessary: () => void;
 		isAtBottom: (threshold?: number) => boolean;
 		sendToBottom: () => void;
-		rolesObserve: Meteor.LiveQueryHandle | undefined;
+		checkIfScrollIsAtBottom: () => void;
 	};
