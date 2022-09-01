@@ -10,6 +10,8 @@ import { processPresenceAndStatus } from './lib/processConnectionStatus';
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
 
+	private broadcastEnabled = true;
+
 	async onNodeDisconnected({ node }: { node: IBrokerNode }): Promise<void> {
 		// TODO need to make sure this is working
 		console.log('onNodeDisconnected', node);
@@ -51,6 +53,10 @@ export class Presence extends ServiceClass implements IPresence {
 		// 		this.removeLostConnections(id);
 		// 	}
 		// });
+	}
+
+	toggleBroadcast(enabled: boolean): void {
+		this.broadcastEnabled = enabled;
 	}
 
 	async newConnection(
@@ -165,9 +171,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 		if (result.modifiedCount > 0) {
 			const user = await Users.findOneById<Pick<IUser, 'username'>>(uid, { projection: { username: 1 } });
-			this.api.broadcast('presence.status', {
-				user: { _id: uid, username: user?.username, status, statusText },
-			});
+			this.broadcast({ _id: uid, username: user?.username, status, statusText });
 		}
 
 		return !!result.modifiedCount;
@@ -205,9 +209,16 @@ export class Presence extends ServiceClass implements IPresence {
 		});
 
 		if (result.modifiedCount > 0) {
-			this.api.broadcast('presence.status', {
-				user: { _id: uid, username: user.username, status, statusText: user.statusText },
-			});
+			this.broadcast({ _id: uid, username: user.username, status, statusText: user.statusText });
 		}
+	}
+
+	private broadcast(user: { _id: string; username: string | undefined; status: UserStatus; statusText?: string }): void {
+		if (!this.broadcastEnabled) {
+			return;
+		}
+		this.api.broadcast('presence.status', {
+			user,
+		});
 	}
 }

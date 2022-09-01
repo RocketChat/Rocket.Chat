@@ -1,7 +1,8 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 
-// import { settings } from '../../../app/settings/server';
+import { settings } from '../../../app/settings/server';
 import { api } from '../../../server/sdk/api';
+import { Presence } from '../../../server/sdk';
 
 export const STATUS_MAP = {
 	[UserStatus.OFFLINE]: 0,
@@ -20,17 +21,5 @@ export const setUserStatus = (user, status /* , statusConnection*/) => {
 	});
 };
 
-// TODO how to disable presence broadcast only?
-// let TroubleshootDisablePresenceBroadcast;
-// settings.watch('Troubleshoot_Disable_Presence_Broadcast', (value) => {
-// 	if (TroubleshootDisablePresenceBroadcast === value) {
-// 		return;
-// 	}
-// 	TroubleshootDisablePresenceBroadcast = value;
-
-// 	if (value) {
-// 		return UserPresenceEvents.removeListener('setUserStatus', setUserStatus);
-// 	}
-
-// 	UserPresenceEvents.on('setUserStatus', setUserStatus);
-// });
+// maybe this setting should disable the listener to 'presence.status' event on listerners.module.ts
+settings.watch('Troubleshoot_Disable_Presence_Broadcast', (value) => Presence.toggleBroadcast(!value));
