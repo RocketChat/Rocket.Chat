@@ -83,6 +83,13 @@ const audio: FileAttachmentProps = {
 const message = {
 	_id: '12312321',
 	rid: 'GENERAL',
+	ts: new Date('2016-12-09T16:53:06.761Z'),
+	u: {
+		_id: 'rocket.cat',
+		name: 'rocket.cat',
+		username: 'rocket.cat',
+	},
+	_updatedAt: new Date(),
 	msg: 'Sample message',
 	alias: 'Gruggy',
 	emoji: ':smirk:',
@@ -90,16 +97,20 @@ const message = {
 	attachments: [field, image],
 };
 
-export const Default: ComponentStory<typeof Attachments> = () => <Attachments attachments={message.attachments} />;
+export const Default: ComponentStory<typeof Attachments> = () => <Attachments message={message} attachments={message.attachments} />;
 
-export const Fields: ComponentStory<typeof Attachments> = () => <Attachments attachments={[field]} />;
+export const Fields: ComponentStory<typeof Attachments> = () => <Attachments message={message} attachments={[field]} />;
 
 export const FailingImage: ComponentStory<typeof Attachments> = () => (
-	<Attachments attachments={[{ ...image, image_url: 'invalid.url' } as FileAttachmentProps]} />
+	<Attachments message={message} attachments={[{ ...image, image_url: 'invalid.url' } as FileAttachmentProps]} />
 );
 
-export const Image: ComponentStory<typeof Attachments> = () => <Attachments attachments={[image]} />;
+export const Image: ComponentStory<typeof Attachments> = () => <Attachments message={message} attachments={[image]} />;
 
-export const Video: ComponentStory<typeof Attachments> = () => <Attachments attachments={[video]} file={{} as FileProp} />;
+export const Video: ComponentStory<typeof Attachments> = () => (
+	<Attachments message={message} attachments={[video]} file={{} as FileProp} />
+);
 
-export const Audio: ComponentStory<typeof Attachments> = () => <Attachments attachments={[audio]} file={{} as FileProp} />;
+export const Audio: ComponentStory<typeof Attachments> = () => (
+	<Attachments message={message} attachments={[audio]} file={{} as FileProp} />
+);
