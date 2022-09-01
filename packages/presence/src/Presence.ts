@@ -13,9 +13,6 @@ export class Presence extends ServiceClass implements IPresence {
 	private broadcastEnabled = true;
 
 	async onNodeDisconnected({ node }: { node: IBrokerNode }): Promise<void> {
-		// TODO need to make sure this is working
-		console.log('onNodeDisconnected', node);
-
 		const affectedUsers = await this.removeLostConnections(node.id);
 		return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 	}
@@ -46,13 +43,6 @@ export class Presence extends ServiceClass implements IPresence {
 		// 		UserPresenceMonitor.processUserSession(userSession, minimongoChangeMap[clientAction]);
 		// 	});
 		// }
-
-		// TODO this will be replaced by 'onNodeDisconnected' event
-		// this.onEvent('watch.instanceStatus', async ({ clientAction, id }): Promise<void> => {
-		// 	if (clientAction === 'removed') {
-		// 		this.removeLostConnections(id);
-		// 	}
-		// });
 	}
 
 	toggleBroadcast(enabled: boolean): void {

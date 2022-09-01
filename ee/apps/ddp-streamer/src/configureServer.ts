@@ -5,7 +5,6 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { DDP_EVENTS, WS_ERRORS } from './constants';
 import { Account, Presence, MeteorService } from '../../../../apps/meteor/server/sdk';
 import { Server } from './Server';
-import { api } from '../../../../apps/meteor/server/sdk/api';
 import { MeteorError } from '../../../../apps/meteor/server/sdk/errors';
 import { Autoupdate } from './lib/Autoupdate';
 
@@ -151,37 +150,4 @@ server.methods({
 			});
 		}
 	},
-});
-
-server.on(DDP_EVENTS.LOGGED, (info) => {
-	const { userId, connection } = info;
-
-	Presence.newConnection(userId, connection.id, server.id);
-	api.broadcast('accounts.login', { userId, connection });
-});
-
-server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
-	const { userId, connection } = info;
-
-	api.broadcast('accounts.logout', { userId, connection });
-
-	if (!userId) {
-		return;
-	}
-	Presence.removeConnection(userId, connection.id, server.id);
-});
-
-server.on(DDP_EVENTS.DISCONNECTED, (info) => {
-	const { userId, connection } = info;
-
-	api.broadcast('socket.disconnected', connection);
-
-	if (!userId) {
-		return;
-	}
-	Presence.removeConnection(userId, connection.id, server.id);
-});
-
-server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
-	api.broadcast('socket.connected', connection);
 });
