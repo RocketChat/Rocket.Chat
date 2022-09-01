@@ -91,9 +91,9 @@ export const warnStatusChange = (appName: string, status: AppStatus): void => {
 };
 
 type appButtonPropsResponse = {
-	action: 'update' | 'install' | 'purchase';
+	action: 'update' | 'install' | 'purchase' | 'request';
 	icon?: 'reload';
-	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy';
+	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy' | 'Request';
 };
 
 export const appButtonProps = ({
@@ -106,7 +106,15 @@ export const appButtonProps = ({
 	subscriptionInfo,
 	pricingPlans,
 	isEnterpriseOnly,
-}: App): appButtonPropsResponse | undefined => {
+	isAdminSection,
+}: App & { isAdminSection: boolean }): appButtonPropsResponse | undefined => {
+	if (!isAdminSection) {
+		return {
+			action: 'request',
+			label: 'Request',
+		};
+	}
+
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 	if (canUpdate) {
 		return {

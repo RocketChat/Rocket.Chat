@@ -43,7 +43,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 
 	const { price, purchaseType, pricingPlans } = app;
 
-	const button = appButtonProps(app || {});
+	const button = appButtonProps({ ...app, isAdminSection } || {});
 	const status = !button && appStatusSpanProps(app);
 
 	const action = button?.action || '';
@@ -127,28 +127,27 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 					borderRadius='x2'
 					invisible={!showStatus && !loading}
 				>
-					{isAdminSection && (
-						<Button
-							secondary={button.label !== 'Update'}
-							primary={button.label === 'Update'}
-							fontSize='x12'
-							fontWeight={700}
-							disabled={loading}
-							onClick={handleClick}
-							pi='x8'
-							pb='x6'
-							lineHeight='x12'
-						>
-							{loading ? (
-								<Throbber inheritColor />
-							) : (
-								<>
-									{button.icon && <Icon name={button.icon} mie='x8' />}
-									{t(button.label.replace(' ', '_'))}
-								</>
-							)}
-						</Button>
-					)}
+					<Button
+						secondary={button.label !== 'Update'}
+						primary={button.label === 'Update' || isAppDetailsPage}
+						fontSize='x12'
+						fontWeight={700}
+						disabled={loading}
+						onClick={handleClick}
+						pi='x8'
+						pb='x6'
+						lineHeight='x12'
+						invisible={!isAppDetailsPage && !isAdminSection}
+					>
+						{loading ? (
+							<Throbber inheritColor />
+						) : (
+							<>
+								{button.icon && <Icon name={button.icon} mie='x8' />}
+								{t(button.label.replace(' ', '_'))}
+							</>
+						)}
+					</Button>
 					{shouldShowPriceDisplay && (
 						<Box pi='x14' color='primary-500' minHeight='x32' display='flex' alignItems='center'>
 							{!installed && (
