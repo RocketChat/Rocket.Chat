@@ -1,6 +1,6 @@
 import type { IMessage, IMessageEdited, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import { UpdateFilter } from 'mongodb';
+import type { UpdateFilter } from 'mongodb';
 
 import { Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
