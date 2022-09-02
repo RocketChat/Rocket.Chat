@@ -44,6 +44,67 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
+	describe('livechat/room', () => {
+		it('should fail when token is not passed as query parameter', async () => {
+			await request.get(api('livechat/room')).expect(400);
+		});
+		it('should fail when token is not a valid guest token', async () => {
+			await request.get(api('livechat/room')).query({ token: 'invalid-token' }).expect(400);
+		});
+		it('should fail if rid is passed but doesnt point to a valid room', async () => {
+			const visitor = await createVisitor();
+			await request.get(api('livechat/room')).query({ token: visitor.token, rid: 'invalid-rid' }).expect(400);
+		});
+		it('should create a room for visitor', async () => {
+			const visitor = await createVisitor();
+			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('room');
+			expect(body.room).to.have.property('v');
+			expect(body.room.v).to.have.property('token', visitor.token);
+			expect(body.room.source.type).to.be.equal('api');
+		});
+		it('should return an existing open room when visitor has one available', async () => {
+			const visitor = await createVisitor();
+			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('room');
+			expect(body.room).to.have.property('v');
+			expect(body.room.v).to.have.property('token', visitor.token);
+
+			const { body: body2 } = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			expect(body2).to.have.property('success', true);
+			expect(body2).to.have.property('room');
+			expect(body2.room).to.have.property('_id', body.room._id);
+			expect(body2.newRoom).to.be.false;
+		});
+		it('should return a room for the visitor when rid points to a valid open room', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token, rid: room._id });
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('room');
+			expect(body.room.v).to.have.property('token', visitor.token);
+			expect(body.newRoom).to.be.false;
+		});
+		it('should properly read widget cookies', async () => {
+			const visitor = await createVisitor();
+			const { body } = await request
+				.get(api('livechat/room'))
+				.set('Cookie', [`rc_room_type=l`, `rc_is_widget=t`])
+				.query({ token: visitor.token });
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('room');
+			expect(body.room.v).to.have.property('token', visitor.token);
+			expect(body.room.source.type).to.be.equal('widget');
+		});
+	});
+
 	describe('livechat/rooms', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-rooms', []).then(() => {
@@ -182,6 +243,26 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body).to.have.property('count');
 				})
 				.end(done);
+		});
+	});
+
+	describe('livechat/room.join', () => {
+		it('should fail if user doesnt have view-l-room permission', async () => {
+			await updatePermission('view-l-room', []);
+			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: '123' }).send().expect(403);
+		});
+		it('should fail if no roomId is present on query params', async () => {
+			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
+			await request.get(api('livechat/room.join')).set(credentials).expect(400);
+		});
+		it('should fail if room is present but invalid', async () => {
+			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: 'invalid' }).send().expect(400);
+		});
+		it('should allow user to join room', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+
+			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: room._id }).send().expect(200);
 		});
 	});
 
