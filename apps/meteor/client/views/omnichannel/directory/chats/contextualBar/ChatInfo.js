@@ -182,7 +182,7 @@ function ChatInfo({ id, route }) {
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					<Button data-qa='editRoomInfo' onClick={onEditClick}>
+					<Button onClick={onEditClick}>
 						<Icon name='pencil' size='x20' /> {t('Edit')}
 					</Button>
 				</ButtonGroup>

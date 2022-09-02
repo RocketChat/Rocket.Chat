@@ -10,11 +10,13 @@ import { FormSkeleton } from './Skeleton';
 
 const Tags = ({
 	tags = [],
+	name,
 	handler,
 	error,
 	tagRequired,
 }: {
 	tags?: string[];
+	name: HTMLInputElement['name'];
 	handler: (value: string[]) => void;
 	error?: string;
 	tagRequired?: boolean;
@@ -72,6 +74,7 @@ const Tags = ({
 			{EETagsComponent && tagsResult?.tags && tagsResult?.tags.length ? (
 				<Field.Row>
 					<EETagsComponent
+						name={name}
 						value={paginatedTagValue}
 						handler={(tags: { label: string; value: string }[]): void => {
 							handler(tags.map((tag) => tag.label));
@@ -83,6 +86,7 @@ const Tags = ({
 				<>
 					<Field.Row>
 						<TextInput
+							name={name}
 							error={error}
 							value={tagValue}
 							onChange={({ currentTarget }: ChangeEvent<HTMLInputElement>): void => handleTagValue(currentTarget.value)}

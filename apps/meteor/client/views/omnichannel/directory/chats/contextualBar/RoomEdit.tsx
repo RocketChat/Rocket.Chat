@@ -1,6 +1,7 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Field, TextInput, ButtonGroup, Button, Select } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 
 import CustomFieldsForm from '../../../../../components/Omnichannel/CustomFieldsForm';
@@ -18,7 +19,14 @@ const DEFAULT_VALUES = {
 	priorityId: '',
 };
 
-const getInitialValuesRoom = (room) => {
+type RoomEditSaveInfo = {
+	topic: IOmnichannelRoom['topic'];
+	tags: IOmnichannelRoom['tags'];
+	livechatData: IOmnichannelRoom['livechatData'];
+	priorityId: IOmnichannelRoom['priorityId'];
+};
+
+const getInitialValuesRoom = (room: IOmnichannelRoom): RoomEditSaveInfo => {
 	if (!room) {
 		return DEFAULT_VALUES;
 	}
@@ -31,7 +39,19 @@ const getInitialValuesRoom = (room) => {
 	};
 };
 
-const RoomEdit = ({ room, visitor, reload, reloadInfo, close }) => {
+const RoomEdit = ({
+	room,
+	visitor,
+	reload,
+	reloadInfo,
+	close,
+}: {
+	room: IOmnichannelRoom;
+	visitor: { _id: string };
+	reload: () => void;
+	reloadInfo: () => void;
+	close: () => void;
+}): ReactElement => {
 	const t = useTranslation();
 
 	const isEnterprise = useIsEnterprise();
@@ -67,8 +87,8 @@ const RoomEdit = ({ room, visitor, reload, reloadInfo, close }) => {
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 
-			reload && reload();
-			reloadInfo && reloadInfo();
+			reload?.();
+			reloadInfo?.();
 
 			close();
 		} catch (error) {
@@ -94,7 +114,7 @@ const RoomEdit = ({ room, visitor, reload, reloadInfo, close }) => {
 					<Controller
 						control={control}
 						name='tags'
-						render={({ field: { name, value, onChange } }) => <Tags name={name} tags={value} handler={onChange} />}
+						render={({ field: { name, value, onChange } }): ReactElement => <Tags name={name} tags={value} handler={onChange} />}
 					/>
 				</Field>
 				{isEnterprise && (
@@ -104,7 +124,7 @@ const RoomEdit = ({ room, visitor, reload, reloadInfo, close }) => {
 							<Controller
 								control={control}
 								name='priorityId'
-								render={({ field: { name, value, onChange } }) => (
+								render={({ field: { name, value, onChange } }): ReactElement => (
 									<Select
 										name={name}
 										value={value}
