@@ -1,4 +1,5 @@
-import { useState, Dispatch } from 'react';
+import type { Dispatch } from 'react';
+import { useState } from 'react';
 
 type LoginRoutes = 'login' | 'reset-password' | 'register' | 'wait-activation' | 'wait-email-activation' | 'email-verification';
 
