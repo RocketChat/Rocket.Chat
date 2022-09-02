@@ -91,26 +91,3 @@ describe('Email inbox', () => {
 		});
 	});
 });
-
-describe('Mailer', () => {	
-	describe('POST mailer', () => {
-		it('should send an email if the payload is correct', (done) => {
-			request
-				.post(api('mailer'))
-				.set(credentials)
-				.send({
-					from: 'test-email@example.com',
-					subject: 'Test email subject',
-					body: 'Test email body',
-					// dryrun: true,
-					// query: '',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(() => done());
-		});
-	});
-});

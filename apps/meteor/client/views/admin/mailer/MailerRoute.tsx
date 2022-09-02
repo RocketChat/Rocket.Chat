@@ -15,7 +15,7 @@ export type sendMailObject = {
 type useSendMailType = () => ({ fromEmail, subject, emailBody, dryRun, query }: sendMailObject) => void;
 
 const useSendMail: useSendMailType = () => {
-	const meteorSendMail = useEndpoint('POST', '/v1/email-inbox.sendMail');
+	const meteorSendMail = useEndpoint('POST', '/v1/mailer');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
