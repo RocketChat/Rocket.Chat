@@ -15,8 +15,17 @@
 	],
 	"author": "Rocket.Chat",
 	"dependencies": {
+		"@rocket.chat/emitter": "next",
 		"@rocket.chat/presence": "workspace:^",
-		"@types/node": "^14.18.21"
+		"@rocket.chat/string-helpers": "next",
+		"@types/node": "^14.18.21",
+		"ejson": "^2.2.2",
+		"eventemitter3": "^4.0.7",
+		"fibers": "^5.0.1",
+		"moleculer": "^0.14.21",
+		"mongodb": "^4.3.1",
+		"nats": "^2.4.0",
+		"pino": "^8.4.2"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
