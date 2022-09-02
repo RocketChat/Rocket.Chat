@@ -3,16 +3,40 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { EmojiCustom } from '@rocket.chat/models';
 
-import { Messages, Rooms } from '../../models/server';
+import { Messages, Rooms, Users } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage, msgStream } from '../../lib/server';
 import { canAccessRoom, hasPermission } from '../../authorization/server';
 import { api } from '../../../server/sdk/api';
 import { AppEvents, Apps } from '../../apps/server/orchestrator';
+import { settings } from '../../settings/server';
+
+const getNameByUsername = (username, message, reaction) => {
+	const names = new Map();
+	Users.findUsersByUsernames(message.reactions[reaction].usernames, {
+		fields: {
+			username: 1,
+			name: 1,
+		},
+	}).forEach((data) => {
+		names.set(data.username, data.name);
+	});
+	return names.get(username) || username;
+};
 
 const removeUserReaction = (message, reaction, username) => {
-	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
+	const index = message.reactions[reaction].usernames.indexOf(username);
+	message.reactions[reaction].usernames.splice(index, 1);
+	if (settings.get('UI_Use_Real_Name') && message.reactions[reaction].names) {
+		if (!message.reactions[reaction].names) {
+			message.reactions[reaction].names = message.reactions[reaction].usernames.map((username) =>
+				getNameByUsername(username, message, reaction),
+			);
+		} else {
+			message.reactions[reaction].names.splice(index, 1);
+		}
+	}
 	if (message.reactions[reaction].usernames.length === 0) {
 		delete message.reactions[reaction];
 	}
@@ -21,7 +45,6 @@ const removeUserReaction = (message, reaction, username) => {
 
 async function setReaction(room, user, message, reaction, shouldReact) {
 	reaction = `:${reaction.replace(/:/g, '')}:`;
-
 	if (!emoji.list[reaction] && (await EmojiCustom.findByNameOrAlias(reaction).count()) === 0) {
 		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', {
 			method: 'setReaction',
@@ -84,6 +107,13 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 			};
 		}
 		message.reactions[reaction].usernames.push(user.username);
+		if (settings.get('UI_Use_Real_Name') && !message.reactions[reaction].names) {
+			message.reactions[reaction].names = message.reactions[reaction].usernames.map((username) =>
+				getNameByUsername(username, message, reaction),
+			);
+		} else if (message.reactions[reaction].names) {
+			message.reactions[reaction].names.push(user.name);
+		}
 		Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
 			Rooms.setReactionsInLastMessage(room._id, message);
