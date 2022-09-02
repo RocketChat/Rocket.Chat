@@ -3010,6 +3010,7 @@
   "manage-email-inbox_description": "Permission to manage email inboxes",
   "manage-emoji": "Manage Emoji",
   "manage-emoji_description": "Permission to manage the server emojis",
+  "messages_pruned": "messages pruned",
   "manage-incoming-integrations": "Manage Incoming Integrations",
   "manage-incoming-integrations_description": "Permission to manage the server incoming integrations",
   "manage-integrations": "Manage Integrations",
