@@ -21,9 +21,9 @@ Meteor.methods({
 			return;
 		}
 
-		const originalMsg = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
+		const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
 
-		if (originalMsg === message.msg) {
+		if (msgText === message.msg) {
 			return;
 		}
 
