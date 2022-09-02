@@ -86,8 +86,6 @@ const userContextValue: ContextType<typeof UserContext> = {
 	],
 	querySubscriptions: () => [() => () => undefined, () => subscriptions],
 	querySubscription: () => [() => () => undefined, () => undefined],
-	loginWithPassword: () => Promise.resolve(undefined),
-	logout: () => Promise.resolve(undefined),
 	queryRoom: () => [() => () => undefined, () => undefined],
 };
 

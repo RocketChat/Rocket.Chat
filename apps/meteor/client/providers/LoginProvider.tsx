@@ -63,6 +63,15 @@ const LoginProvider: FC = ({ children }) => {
 
 	const contextValue = useMemo(
 		() => ({
+			loginWithToken: (token: string): Promise<void> =>
+				new Promise((resolve, reject) =>
+					Meteor.loginWithToken(token, (err) => {
+						if (err) {
+							return reject(err);
+						}
+						resolve(undefined);
+					}),
+				),
 			loginWithPassword: (user: string | object, password: string): Promise<void> =>
 				new Promise((resolve, reject) => {
 					Meteor[loginMethod](user, password, (error: Error | Meteor.Error | Meteor.TypedError | undefined) => {
