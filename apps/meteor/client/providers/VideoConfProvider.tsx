@@ -15,16 +15,20 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 	useEffect(
 		() =>
 			VideoConfManager.on('call/join', (props) => {
-				const open = (): void => {
-					const popup = window.open(props.url);
+				if (window.RocketChatDesktop?.openInternalVideoChatWindow) {
+					window.RocketChatDesktop?.openInternalVideoChatWindow(props.url, undefined);
+				} else {
+					const open = (): void => {
+						const popup = window.open(props.url);
 
-					if (popup !== null) {
-						return;
-					}
+						if (popup !== null) {
+							return;
+						}
 
-					setModal(<VideoConfBlockModal onClose={(): void => setModal(null)} onConfirm={open} />);
-				};
-				open();
+						setModal(<VideoConfBlockModal onClose={(): void => setModal(null)} onConfirm={open} />);
+					};
+					open();
+				}
 			}),
 		[setModal],
 	);
