@@ -16,7 +16,7 @@ const Tags = ({
 	tagRequired,
 }: {
 	tags?: string[];
-	name: HTMLInputElement['name'];
+	name?: HTMLInputElement['name'];
 	handler: (value: string[]) => void;
 	error?: string;
 	tagRequired?: boolean;
