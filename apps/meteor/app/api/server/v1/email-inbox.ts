@@ -37,7 +37,7 @@ API.v1.addRoute(
 				email: String,
 				description: String,
 				senderInfo: String,
-				department: String,
+				department: Match.Maybe(String),
 				smtp: Match.ObjectIncluding({
 					server: String,
 					port: Number,
@@ -86,6 +86,10 @@ API.v1.addRoute(
 			}
 			// TODO: Chapter day backend - check if user has permission to view this email inbox instead of null values
 			const emailInboxes = await findOneEmailInbox({ userId: this.userId, _id });
+
+			if (!emailInboxes) {
+				return API.v1.notFound();
+			}
 
 			return API.v1.success(emailInboxes);
 		},
