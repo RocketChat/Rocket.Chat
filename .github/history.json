@@ -93226,6 +93226,370 @@
           ]
         }
       ]
+    },
+    "5.1.0-rc.3": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26718",
+          "title": "Release 5.0.5",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26713",
+          "title": "[FIX] Business Units endpoints not filtering by Unit type",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.5",
+          "contributors": [
+            "KevLehman",
+            "Harmeet221",
+            "web-flow",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "26703",
+          "title": "[FIX][ENTERPRISE] Omnichannel real time data on micro services",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.5",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26692",
+          "title": "[FIX] Omnichannel inquiries being updated even if not needed",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.5",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "26620",
+          "title": "Release 5.0.4",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "sampaiodiego",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "26617",
+          "title": "Regression: Fix services Docker build",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.0.4",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26608",
+          "title": "Chore: Fix services image publish do DockerHub",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.0.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26579",
+          "title": "[FIX][ENTERPRISE] User not marked as offline on log out when using micro services",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.0.4",
+          "contributors": [
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26551",
+          "title": "Release 5.0.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "filipemarins",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "26535",
+          "title": "[FIX] LDAP fails to sync teams when the user DN has escaped characters.",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "5.0.3",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26530",
+          "title": "[FIX] Endpoints not working when using \"Use Real Name\" setting",
+          "userLogin": "sampaiodiego",
+          "description": "The list of endpoints affected is:\r\n\r\n- `/api/v1/channels.list`\r\n- `/api/v1/channels.list.joined`\r\n- `/api/v1/groups.list`\r\n- `/api/v1/groups.listAll`\r\n- `/api/v1/im.list`\r\n- `/api/v1/im.list.everyone`",
+          "milestone": "5.0.3",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "26425",
+          "title": "[FIX] Chats holds to load history for some time",
+          "userLogin": "filipemarins",
+          "milestone": "5.0.3",
+          "contributors": [
+            "filipemarins",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "26357",
+          "title": "Chore: validateParams to accept different validators per request method",
+          "userLogin": "KevLehman",
+          "milestone": "5.0.3",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "murtaza98",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "26507",
+          "title": "Release 5.0.2",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "MartinSchoeler",
+            "murtaza98",
+            "albuquerquefabio"
+          ]
+        },
+        {
+          "pr": "26438",
+          "title": "[FIX] Empty results on `im.list` endpoint",
+          "userLogin": "albuquerquefabio",
+          "milestone": "5.0.2",
+          "contributors": [
+            "albuquerquefabio",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26396",
+          "title": "[FIX] Undefined MediaDevices error on HTTP",
+          "userLogin": "MartinSchoeler",
+          "milestone": "5.0.2",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "26450",
+          "title": "Release 5.0.1",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "dougfabris",
+            "sampaiodiego",
+            "rique223"
+          ]
+        },
+        {
+          "pr": "26323",
+          "title": "[FIX] Not possible to deactivate users",
+          "userLogin": "dougfabris",
+          "milestone": "5.0.1",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "26336",
+          "title": "[IMPROVE] Use single change stream to watch DB changes",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.0.1",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26368",
+          "title": "Regression: Fix app privacy links opening in desktop client instead of browser",
+          "userLogin": "rique223",
+          "description": "Demo gif:\r\n![privacy-links](https://user-images.githubusercontent.com/43561537/181083695-bc37b5c2-8aa5-4714-9098-9ad02d2fc2bb.gif)",
+          "milestone": "5.0.1",
+          "contributors": [
+            "rique223"
+          ]
+        },
+        {
+          "pr": "26192",
+          "title": "Chore: Convert UserCardWithData to ts",
+          "userLogin": "dougfabris",
+          "milestone": "5.0.1",
+          "contributors": [
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26343",
+          "title": "Chore: Remove square prop from IconButton",
+          "userLogin": "dougfabris",
+          "milestone": "5.0.1",
+          "contributors": [
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26732",
+          "title": "i18n: pt-BR translation typo",
+          "userLogin": "jeanfbrito",
+          "contributors": [
+            "jeanfbrito"
+          ]
+        },
+        {
+          "pr": "26779",
+          "title": "Regression: Instances Modal breaking",
+          "userLogin": "gabriellsh",
+          "description": "Revert back to meteor method for now.",
+          "milestone": "5.1.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26729",
+          "title": "[IMPROVE] Remove device-management banner and modal",
+          "userLogin": "yash-rajpal",
+          "milestone": "5.1.0",
+          "contributors": [
+            "yash-rajpal",
+            "filipemarins",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26756",
+          "title": "Regression: Visitor being overwritten on call end",
+          "userLogin": "aleksandernsilva",
+          "description": "This PR adds a check to the `createRoom` method, responsible for creating VoIP rooms. It checks whether the visitor already exists before creating a new one, if one is found it uses it instead of overwriting existing visitors.",
+          "milestone": "5.1.0",
+          "contributors": [
+            "aleksandernsilva",
+            "KevLehman",
+            "web-flow",
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "26765",
+          "title": "Chore: Update Apps-Engine",
+          "userLogin": "d-gubert",
+          "milestone": "5.1.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "26769",
+          "title": "Chore: Bump fuselage packages",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "26770",
+          "title": "Chore: Fix docker latest tag push",
+          "userLogin": "debdutdeb",
+          "contributors": [
+            "debdutdeb"
+          ]
+        },
+        {
+          "pr": "26747",
+          "title": "Regression: Custom fields not being saved for room",
+          "userLogin": "KevLehman",
+          "milestone": "5.1.0",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26744",
+          "title": "Regression: Fix Current Chats Page Issues",
+          "userLogin": "MartinSchoeler",
+          "milestone": "5.1.0",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "26720",
+          "title": "Regression: Empty custom-fields filter on Current Chats causing issues",
+          "userLogin": "murtaza98",
+          "milestone": "5.1.0",
+          "contributors": [
+            "murtaza98",
+            "KevLehman",
+            "casalsgh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26764",
+          "title": "Regression: Sidebar Search list local data cache and keyboard navigation",
+          "userLogin": "gabriellsh",
+          "milestone": "5.1.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "26759",
+          "title": "Regression: Select settings options not visible on Apps Setting panel",
+          "userLogin": "murtaza98",
+          "milestone": "5.1.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "26701",
+          "title": "Regression: AutoTranslate is disabled error",
+          "userLogin": "gabriellsh",
+          "milestone": "5.1.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
     }
   }
 }
