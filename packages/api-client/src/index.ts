@@ -41,7 +41,7 @@ const checkIfIsFormData = (data: any = {}): boolean => {
 		return true;
 	}
 	return Object.values(data).some((value) => {
-		if (typeof value === 'object' && !(value instanceof File)) {
+		if (value && typeof value === 'object' && !(value instanceof File)) {
 			return checkIfIsFormData(value);
 		}
 		return value instanceof File;
@@ -190,8 +190,8 @@ export class RestClient implements RestClientInterface {
 
 	async delete<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathFor<'DELETE'>>(
 		endpoint: TPath,
-		params?: ParamsFor<'DELETE', TPathPattern>,
-		{ headers, ...options }: Omit<RequestInit, 'method'> = {},
+		_params?: ParamsFor<'DELETE', TPathPattern>,
+		options: Omit<RequestInit, 'method'> = {},
 	): Promise<Serialized<OperationResult<'DELETE', TPathPattern>>> {
 		const response = await this.send(endpoint, 'DELETE', options ?? {});
 		return response.json();

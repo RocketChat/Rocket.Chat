@@ -70,30 +70,38 @@ describe('[Users]', function () {
 
 	before((done) => getCredentials(done));
 
-	it('enabling E2E in server and generating keys to user...', (done) => {
-		updateSetting('E2E_Enable', true).then(() => {
-			request
-				.post(api('e2e.setUserPublicAndPrivateKeys'))
-				.set(credentials)
-				.send({
-					private_key: 'test',
-					public_key: 'test',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
+	it('enabling E2E in server and generating keys to user...', async () => {
+		await updateSetting('E2E_Enable', true);
+		await request
+			.post(api('e2e.setUserPublicAndPrivateKeys'))
+			.set(credentials)
+			.send({
+				private_key: 'test',
+				public_key: 'test',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			});
+		await request
+			.get(api('e2e.fetchMyKeys'))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('public_key', 'test');
+				expect(res.body).to.have.property('private_key', 'test');
+			});
 	});
 
 	describe('[/users.create]', () => {
 		before((done) => clearCustomFields(done));
 		after((done) => clearCustomFields(done));
 
-		it('should create a new user', (done) => {
-			request
+		it('should create a new user', async () => {
+			await request
 				.post(api('users.create'))
 				.set(credentials)
 				.send({
@@ -120,8 +128,16 @@ describe('[Users]', function () {
 
 					targetUser._id = res.body.user._id;
 					targetUser.username = res.body.user.username;
+				});
+
+			await request
+				.post(api('login'))
+				.send({
+					user: apiUsername,
+					password,
 				})
-				.end(done);
+				.expect('Content-Type', 'application/json')
+				.expect(200);
 		});
 
 		it('should create a new user with custom fields', (done) => {
@@ -2055,22 +2071,9 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.delete]', () => {
-		const updatePermission = (permission, roles) =>
-			new Promise((resolve) => {
-				request
-					.post(api('permissions.update'))
-					.set(credentials)
-					.send({ permissions: [{ _id: permission, roles }] })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(resolve);
-			});
-		const testUsername = `testuserdelete${+new Date()}`;
 		let targetUser;
 		beforeEach((done) => {
+			const testUsername = `testuserdelete${+new Date()}`;
 			request
 				.post(api('users.register'))
 				.set(credentials)
@@ -3282,6 +3285,19 @@ describe('[Users]', function () {
 				});
 
 			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
+		});
+		it('should return an error when the payload is missing all supported fields', (done) => {
+			request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('Match error: Failed Match.OneOf, Match.Maybe or Match.Optional validation');
+				})
+				.end(done);
 		});
 	});
 

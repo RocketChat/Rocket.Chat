@@ -9,7 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
-import { Users as UsersRaw, LivechatVisitors } from '@rocket.chat/models';
+import { Users as UsersRaw, LivechatVisitors, LivechatCustomField, Settings } from '@rocket.chat/models';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -22,11 +22,9 @@ import {
 	LivechatRooms,
 	Messages,
 	Subscriptions,
-	Settings,
 	Rooms,
 	LivechatDepartmentAgents,
 	LivechatDepartment,
-	LivechatCustomField,
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
@@ -371,7 +369,7 @@ export const Livechat = {
 			});
 		}
 
-		const user = await LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+		const user = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 		if (user) {
 			return LivechatVisitors.updateById(user._id, updateUser);
 		}
@@ -393,12 +391,13 @@ export const Livechat = {
 		}
 
 		const customFields = {};
-		const fields = LivechatCustomField.find({ scope: 'visitor' });
 
-		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
-			fields.forEach((field) => {
+		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+			Livechat.logger.debug(`Saving custom fields for visitor ${_id}`);
+			const fields = LivechatCustomField.findByScope('visitor');
+			for await (const field of fields) {
 				if (!livechatData.hasOwnProperty(field._id)) {
-					return;
+					continue;
 				}
 				const value = s.trim(livechatData[field._id]);
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
@@ -408,8 +407,9 @@ export const Livechat = {
 					}
 				}
 				customFields[field._id] = value;
-			});
+			}
 			updateData.livechatData = customFields;
+			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields for visitor ${_id}`);
 		}
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
@@ -513,7 +513,7 @@ export const Livechat = {
 		check(overwrite, Boolean);
 		Livechat.logger.debug(`Setting custom fields data for visitor with token ${token}`);
 
-		const customField = LivechatCustomField.findOneById(key);
+		const customField = await LivechatCustomField.findOneById(key);
 		if (!customField) {
 			throw new Meteor.Error('invalid-custom-field');
 		}
@@ -538,39 +538,41 @@ export const Livechat = {
 	getInitSettings() {
 		const rcSettings = {};
 
-		Settings.findNotHiddenPublic([
-			'Livechat_title',
-			'Livechat_title_color',
-			'Livechat_enable_message_character_limit',
-			'Livechat_message_character_limit',
-			'Message_MaxAllowedSize',
-			'Livechat_enabled',
-			'Livechat_registration_form',
-			'Livechat_allow_switching_departments',
-			'Livechat_offline_title',
-			'Livechat_offline_title_color',
-			'Livechat_offline_message',
-			'Livechat_offline_success_message',
-			'Livechat_offline_form_unavailable',
-			'Livechat_display_offline_form',
-			'Omnichannel_call_provider',
-			'Language',
-			'Livechat_enable_transcript',
-			'Livechat_transcript_message',
-			'Livechat_fileupload_enabled',
-			'FileUpload_Enabled',
-			'Livechat_conversation_finished_message',
-			'Livechat_conversation_finished_text',
-			'Livechat_name_field_registration_form',
-			'Livechat_email_field_registration_form',
-			'Livechat_registration_form_message',
-			'Livechat_force_accept_data_processing_consent',
-			'Livechat_data_processing_consent_text',
-			'Livechat_show_agent_info',
-			'Livechat_clear_local_storage_when_chat_ended',
-		]).forEach((setting) => {
-			rcSettings[setting._id] = setting.value;
-		});
+		Promise.await(
+			Settings.findNotHiddenPublic([
+				'Livechat_title',
+				'Livechat_title_color',
+				'Livechat_enable_message_character_limit',
+				'Livechat_message_character_limit',
+				'Message_MaxAllowedSize',
+				'Livechat_enabled',
+				'Livechat_registration_form',
+				'Livechat_allow_switching_departments',
+				'Livechat_offline_title',
+				'Livechat_offline_title_color',
+				'Livechat_offline_message',
+				'Livechat_offline_success_message',
+				'Livechat_offline_form_unavailable',
+				'Livechat_display_offline_form',
+				'Omnichannel_call_provider',
+				'Language',
+				'Livechat_enable_transcript',
+				'Livechat_transcript_message',
+				'Livechat_fileupload_enabled',
+				'FileUpload_Enabled',
+				'Livechat_conversation_finished_message',
+				'Livechat_conversation_finished_text',
+				'Livechat_name_field_registration_form',
+				'Livechat_email_field_registration_form',
+				'Livechat_registration_form_message',
+				'Livechat_force_accept_data_processing_consent',
+				'Livechat_data_processing_consent_text',
+				'Livechat_show_agent_info',
+				'Livechat_clear_local_storage_when_chat_ended',
+			]).forEach((setting) => {
+				rcSettings[setting._id] = setting.value;
+			}),
+		);
 
 		rcSettings.Livechat_history_monitor_type = settings.get('Livechat_history_monitor_type');
 
@@ -579,14 +581,15 @@ export const Livechat = {
 		return rcSettings;
 	},
 
-	saveRoomInfo(roomData, guestData, userId) {
+	async saveRoomInfo(roomData, guestData, userId) {
 		Livechat.logger.debug(`Saving room information on room ${roomData._id}`);
 		const { livechatData = {} } = roomData;
 		const customFields = {};
 
-		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
-			const fields = LivechatCustomField.find({ scope: 'room' });
-			fields.forEach((field) => {
+		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+			Livechat.logger.debug(`Updating custom fields on room ${roomData._id}`);
+			const fields = LivechatCustomField.findByScope('room');
+			for await (const field of fields) {
 				if (!livechatData.hasOwnProperty(field._id)) {
 					return;
 				}
@@ -598,11 +601,13 @@ export const Livechat = {
 					}
 				}
 				customFields[field._id] = value;
-			});
+			}
 			roomData.livechatData = customFields;
+			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields on room ${roomData._id}`);
 		}
 
 		if (!LivechatRooms.saveRoomById(roomData)) {
+			Livechat.logger.debug(`Failed to save room information on room ${roomData._id}`);
 			return false;
 		}
 
@@ -611,7 +616,7 @@ export const Livechat = {
 		});
 		callbacks.runAsync('livechat.saveRoom', roomData);
 
-		if (!_.isEmpty(guestData.name)) {
+		if (guestData?.name?.trim().length) {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
 			return (
@@ -710,14 +715,29 @@ export const Livechat = {
 			},
 		};
 
-		return Messages.createTransferHistoryWithRoomIdMessageAndUser(room._id, '', { _id, username }, transfer);
+		const type = 'livechat_transfer_history';
+		const transferMessage = {
+			t: type,
+			rid: room._id,
+			ts: new Date(),
+			msg: '',
+			u: {
+				_id,
+				username,
+			},
+			groupable: false,
+		};
+
+		Object.assign(transferMessage, transfer);
+
+		sendMessage(transferredBy, transferMessage, room);
 	},
 
 	async transfer(room, guest, transferData) {
 		Livechat.logger.debug(`Transfering room ${room._id} [Transfered by: ${transferData?.transferredBy?._id}]`);
 		if (room.onHold) {
 			Livechat.logger.debug('Cannot transfer. Room is on hold');
-			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:transfer' });
+			throw new Error('error-room-onHold');
 		}
 
 		if (transferData.departmentId) {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { expect, spy } from 'chai';
 
 import { Settings } from '../../../../../../app/settings/server/functions/settings.mocks';
@@ -12,12 +11,12 @@ describe('Settings', () => {
 		process.env = {};
 	});
 
-	it('should not insert the same setting twice', () => {
+	it('should not insert the same setting twice', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
-		settings.initilized();
+		settings.initialized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
-		settingsRegistry.addGroup('group', function () {
+		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('my_setting', true, {
 					type: 'boolean',
@@ -45,7 +44,7 @@ describe('Settings', () => {
 			autocomplete: true,
 		});
 
-		settingsRegistry.addGroup('group', function () {
+		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('my_setting', true, {
 					type: 'boolean',
@@ -59,7 +58,7 @@ describe('Settings', () => {
 
 		expect(Settings.findOne({ _id: 'my_setting' }).value).to.be.equal(true);
 
-		settingsRegistry.addGroup('group', function () {
+		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('my_setting2', false, {
 					type: 'boolean',
@@ -75,15 +74,15 @@ describe('Settings', () => {
 		expect(Settings.findOne({ _id: 'my_setting2' }).value).to.be.equal(false);
 	});
 
-	it('should respect override via environment as int', () => {
+	it('should respect override via environment as int', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
-		settings.initilized();
+		settings.initialized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
 		process.env.OVERWRITE_SETTING_my_setting = '1';
 
-		settingsRegistry.addGroup('group', function () {
+		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('my_setting', 0, {
 					type: 'int',
@@ -115,7 +114,7 @@ describe('Settings', () => {
 
 		process.env.OVERWRITE_SETTING_my_setting = '2';
 
-		settingsRegistry.addGroup('group', function () {
+		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('my_setting', 0, {
 					type: 'int',
@@ -133,14 +132,14 @@ describe('Settings', () => {
 		});
 	});
 
-	it('should respect override via environment as boolean', () => {
+	it('should respect override via environment as boolean', async () => {
 		process.env.OVERWRITE_SETTING_my_setting_bool = 'true';
 
 		const settings = new CachedSettings();
 		Settings.settings = settings;
-		settings.initilized();
+		settings.initialized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
-		settingsRegistry.addGroup('group', function () {
+		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('my_setting_bool', false, {
 					type: 'boolean',
@@ -172,7 +171,7 @@ describe('Settings', () => {
 
 		process.env.OVERWRITE_SETTING_my_setting_bool = 'false';
 
-		settingsRegistry.addGroup('group', function () {
+		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('my_setting_bool', true, {
 					type: 'boolean',
@@ -190,14 +189,14 @@ describe('Settings', () => {
 		});
 	});
 
-	it('should respect override via environment as string', () => {
+	it('should respect override via environment as string', async () => {
 		process.env.OVERWRITE_SETTING_my_setting_str = 'hey';
 
 		const settings = new CachedSettings();
 		Settings.settings = settings;
-		settings.initilized();
+		settings.initialized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
-		settingsRegistry.addGroup('group', function () {
+		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('my_setting_str', '', {
 					type: 'string',
@@ -229,7 +228,7 @@ describe('Settings', () => {
 
 		process.env.OVERWRITE_SETTING_my_setting_str = 'hey ho';
 
-		settingsRegistry.addGroup('group', function () {
+		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('my_setting_str', 'hey', {
 					type: 'string',
@@ -248,14 +247,14 @@ describe('Settings', () => {
 		});
 	});
 
-	it('should respect initial value via environment', () => {
+	it('should respect initial value via environment', async () => {
 		process.env.my_setting = '1';
 		const settings = new CachedSettings();
 		Settings.settings = settings;
-		settings.initilized();
+		settings.initialized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
-		settingsRegistry.addGroup('group', function () {
+		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('my_setting', 0, {
 					type: 'int',
@@ -285,7 +284,7 @@ describe('Settings', () => {
 		expect(Settings.upsertCalls).to.be.equal(0);
 		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
 
-		settingsRegistry.addGroup('group', function () {
+		await settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('my_setting', 0, {
 					type: 'int',
@@ -299,33 +298,35 @@ describe('Settings', () => {
 		expect(Settings.findOne({ _id: 'my_setting' })).to.include({ ...expectedSetting });
 	});
 
-	it('should call `settings.get` callback on setting added', (done) => {
-		const settings = new CachedSettings();
-		Settings.settings = settings;
-		settings.initilized();
-		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+	it('should call `settings.get` callback on setting added', async () => {
+		return new Promise(async (resolve) => {
+			const settings = new CachedSettings();
+			Settings.settings = settings;
+			settings.initialized();
+			const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
-		const spiedCallback1 = spy();
-		const spiedCallback2 = spy();
+			const spiedCallback1 = spy();
+			const spiedCallback2 = spy();
 
-		settingsRegistry.addGroup('group', function () {
-			this.section('section', function () {
-				this.add('setting_callback', 'value1', {
-					type: 'string',
+			await settingsRegistry.addGroup('group', function () {
+				this.section('section', function () {
+					this.add('setting_callback', 'value1', {
+						type: 'string',
+					});
 				});
 			});
+
+			settings.watch('setting_callback', spiedCallback1, { debounce: 10 });
+			settings.watchByRegex(/setting_callback/, spiedCallback2, { debounce: 10 });
+
+			setTimeout(() => {
+				expect(spiedCallback1).to.have.been.called.exactly(1);
+				expect(spiedCallback2).to.have.been.called.exactly(1);
+				expect(spiedCallback1).to.have.been.called.always.with('value1');
+				expect(spiedCallback2).to.have.been.called.always.with('setting_callback', 'value1');
+				resolve();
+			}, settings.getConfig({ debounce: 10 }).debounce);
 		});
-
-		settings.watch('setting_callback', spiedCallback1, { debounce: 10 });
-		settings.watchByRegex(/setting_callback/, spiedCallback2, { debounce: 10 });
-
-		setTimeout(() => {
-			expect(spiedCallback1).to.have.been.called.exactly(1);
-			expect(spiedCallback2).to.have.been.called.exactly(1);
-			expect(spiedCallback1).to.have.been.called.always.with('value1');
-			expect(spiedCallback2).to.have.been.called.always.with('setting_callback', 'value1');
-			done();
-		}, settings.getConfig({ debounce: 10 }).debounce);
 	});
 
 	it('should call `settings.watch` callback on setting changed registering before initialized', (done) => {
@@ -338,7 +339,7 @@ describe('Settings', () => {
 		settings.watch('setting_callback', spiedCallback1, { debounce: 1 });
 		settings.watchByRegex(/setting_callback/gi, spiedCallback2, { debounce: 1 });
 
-		settings.initilized();
+		settings.initialized();
 		settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('setting_callback', 'value2', {

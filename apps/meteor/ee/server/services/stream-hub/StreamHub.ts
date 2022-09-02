@@ -1,4 +1,5 @@
-import { ServiceClass, IServiceClass } from '../../../../server/sdk/types/ServiceClass';
+import type { IServiceClass } from '../../../../server/sdk/types/ServiceClass';
+import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { getConnection } from '../mongo';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
 import { api } from '../../../../server/sdk/api';

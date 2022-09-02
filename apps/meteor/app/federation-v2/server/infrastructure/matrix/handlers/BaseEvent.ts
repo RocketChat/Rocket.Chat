@@ -1,16 +1,11 @@
-import { IMatrixEvent } from '../definitions/IMatrixEvent';
-import { MatrixEventType } from '../definitions/MatrixEventType';
+import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
 
-export abstract class MatrixBaseEventHandler<T extends MatrixEventType> {
-	protected type: T;
+export abstract class MatrixBaseEventHandler {
+	public abstract eventType: string;
 
-	public abstract handle(externalEvent: IMatrixEvent<T>): Promise<void>;
+	public abstract handle(externalEvent: AbstractMatrixEvent): Promise<void>;
 
-	protected constructor(type: T) {
-		this.type = type;
-	}
-
-	public equals(type: MatrixEventType): boolean {
-		return this.type === type;
+	public equals(event: AbstractMatrixEvent): boolean {
+		return this.eventType === event.type;
 	}
 }

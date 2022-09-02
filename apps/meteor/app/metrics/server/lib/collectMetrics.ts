@@ -26,9 +26,7 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.info.set(
 		{
 			version: Info.version,
-			// eslint-disable-next-line @typescript-eslint/camelcase
 			unique_id: settings.get<string>('uniqueID'),
-			// eslint-disable-next-line @typescript-eslint/camelcase
 			site_url: settings.get<string>('Site_Url'),
 		},
 		1,
@@ -81,6 +79,10 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.totalPrivateGroupMessages.set(statistics.totalPrivateGroupMessages);
 	metrics.totalDirectMessages.set(statistics.totalDirectMessages);
 	metrics.totalLivechatMessages.set(statistics.totalLivechatMessages);
+
+	// Livechat stats
+	metrics.totalLivechatVisitors.set(statistics.totalLivechatVisitors);
+	metrics.totalLivechatAgents.set(statistics.totalLivechatAgents);
 
 	metrics.pushQueue.set(statistics.pushQueue || 0);
 };
@@ -169,7 +171,7 @@ const updatePrometheusConfig = async (): Promise<void> => {
 		resetTimer = Meteor.setInterval(() => {
 			client.register.getMetricsAsArray().then((metrics) => {
 				metrics.forEach((metric) => {
-					// @ts-expect-error
+					// @ts-expect-error Property 'hashMap' does not exist on type 'metric'.
 					metric.hashMap = {};
 				});
 			});

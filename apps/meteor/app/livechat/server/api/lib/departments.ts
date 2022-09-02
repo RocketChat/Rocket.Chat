@@ -43,10 +43,6 @@ export async function findDepartments({
 	excludeDepartmentId,
 	pagination: { offset, count, sort },
 }: FindDepartmentParams): Promise<PaginatedResult<{ departments: ILivechatDepartmentRecord[] }>> {
-	if (!(await hasPermissionAsync(userId, 'view-livechat-departments')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
-
 	let query = {
 		$or: [{ type: { $eq: 'd' } }, { type: { $exists: false } }],
 		...(enabled && { enabled: Boolean(enabled) }),
@@ -83,10 +79,7 @@ export async function findDepartmentById({
 	department: ILivechatDepartmentRecord | null;
 	agents?: ILivechatDepartmentAgents[];
 }> {
-	const canViewLivechatDepartments = await hasPermissionAsync(userId, 'view-livechat-departments');
-	if (!canViewLivechatDepartments && !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
+	const canViewLivechatDepartments = includeAgents && (await hasPermissionAsync(userId, 'view-livechat-departments'));
 
 	let query = { _id: departmentId };
 
@@ -132,14 +125,9 @@ export async function findDepartmentsToAutocomplete({
 }
 
 export async function findDepartmentAgents({
-	userId,
 	departmentId,
 	pagination: { offset, count, sort },
 }: FindDepartmentAgentsParams): Promise<PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>> {
-	if (!(await hasPermissionAsync(userId, 'view-livechat-departments')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
-
 	const { cursor, totalCount } = LivechatDepartmentAgents.findAgentsByDepartmentId<ILivechatDepartmentAgents>(departmentId, {
 		sort: sort || { username: 1 },
 		skip: offset,

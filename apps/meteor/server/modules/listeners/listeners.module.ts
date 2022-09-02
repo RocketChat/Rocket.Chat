@@ -1,8 +1,8 @@
 import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
-import { IServiceClass } from '../../sdk/types/ServiceClass';
-import { NotificationsModule } from '../notifications/notifications.module';
+import type { IServiceClass } from '../../sdk/types/ServiceClass';
+import type { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings } from '../../sdk/index';
 import { settings } from '../../../app/settings/server/cached';
 
@@ -50,7 +50,7 @@ export class ListenersModule {
 			notifications.notifyUserInThisInstance(uid, 'message', {
 				groupable: false,
 				...message,
-				_id: String(Date.now()),
+				_id: message._id || String(Date.now()),
 				rid,
 				ts: new Date(),
 			});

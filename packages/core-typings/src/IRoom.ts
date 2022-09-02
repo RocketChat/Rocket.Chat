@@ -24,6 +24,9 @@ export interface IRoom extends IRocketChatRecord {
 	broadcast?: true;
 	featured?: true;
 	announcement?: string;
+	announcementDetails?: {
+		style?: string;
+	};
 	encrypted?: boolean;
 	topic?: string;
 
@@ -135,7 +138,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
 		inbox: string;
-		thread: string;
+		thread: string[];
 		replyTo: string;
 		subject: string;
 	};
@@ -272,9 +275,11 @@ export type RoomAdminFieldsType =
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {
+		enabled?: boolean;
 		maxAge: number;
 		filesOnly: boolean;
 		excludePinned: boolean;
 		ignoreThreads: boolean;
+		overrideGlobal?: boolean;
 	};
 }

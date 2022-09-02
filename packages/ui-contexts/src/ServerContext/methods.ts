@@ -1,7 +1,24 @@
-import type { IRoom, ISetting, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult } from 'mongodb';
+import type {
+	AtLeast,
+	ICreatedRoom,
+	IMessage,
+	IRoom,
+	ISetting,
+	ISubscription,
+	ISupportedLanguage,
+	IUser,
+	RoomType,
+} from '@rocket.chat/core-typings';
 
-import type { AddWebdavAccountMethod } from './methods/addWebdavAccount';
+import type { TranslationKey } from '../TranslationContext';
+import type {
+	AddWebdavAccount,
+	GetWebdavFileList,
+	UploadFileToWebdav,
+	RemoveWebdavAccount,
+	GetWebdavFilePreview,
+	GetFileFromWebdav,
+} from './methods/webdav';
 import type { FollowMessageMethod } from './methods/followMessage';
 import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import type { JoinRoomMethod } from './methods/joinRoom';
@@ -10,11 +27,12 @@ import type { RoomNameExistsMethod } from './methods/roomNameExists';
 import type { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
 import type { SaveSettingsMethod } from './methods/saveSettings';
 import type { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
-import type { UnfollowMessageMethod } from './methods/unfollowMessage';
+import type { UnfollowMessageMethod } from './methods/message/unfollowMessage';
+import type { ReportMessageMethod } from './methods/message/reportMessage';
 
 // TODO: frontend chapter day - define methods
 
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
 	'2fa:checkCodesRemaining': (...args: any[]) => any;
 	'2fa:disable': (...args: any[]) => any;
@@ -24,7 +42,7 @@ export interface ServerMethods {
 	'addOAuthApp': (...args: any[]) => any;
 	'addOAuthService': (...args: any[]) => any;
 	'addUsersToRoom': (...args: any[]) => any;
-	'addWebdavAccount': AddWebdavAccountMethod;
+	'addWebdavAccount': AddWebdavAccount;
 	'apps/go-enable': (...args: any[]) => any;
 	'apps/is-enabled': (...args: any[]) => any;
 	'authorization:addPermissionToRole': (...args: any[]) => any;
@@ -56,21 +74,72 @@ export interface ServerMethods {
 	'cloud:logout': (...args: any[]) => any;
 	'cloud:registerWorkspace': (...args: any[]) => any;
 	'cloud:syncWorkspace': (...args: any[]) => any;
+	'createDirectMessage': (...usernames: Exclude<IUser['username'], undefined>[]) => ICreatedRoom;
 	'deleteCustomSound': (...args: any[]) => any;
 	'deleteCustomUserStatus': (...args: any[]) => any;
 	'deleteFileMessage': (...args: any[]) => any;
+	'deleteMessage': ({ _id }: Pick<IMessage, '_id'>) => void;
 	'deleteOAuthApp': (...args: any[]) => any;
 	'deleteUserOwnAccount': (...args: any[]) => any;
 	'e2e.resetOwnE2EKey': (...args: any[]) => any;
 	'eraseRoom': (...args: any[]) => any;
 	'followMessage': FollowMessageMethod;
 	'getAvatarSuggestion': (...args: any[]) => any;
+	'getFileFromWebdav': GetFileFromWebdav;
+	'getMessages': (messages: IMessage['_id'][]) => IMessage[];
+	'getRoomByTypeAndName': (
+		type: RoomType,
+		name: string,
+	) => Pick<
+		IRoom,
+		| '_id'
+		| 'name'
+		| 'fname'
+		| 't'
+		| 'cl'
+		| 'u'
+		| 'lm'
+		| 'teamId'
+		| 'teamMain'
+		| 'topic'
+		| 'announcement'
+		| 'announcementDetails'
+		| 'muted'
+		| 'unmuted'
+		| '_updatedAt'
+		| 'archived'
+		| 'description'
+		| 'default'
+		| 'lastMessage'
+		| 'prid'
+		| 'avatarETag'
+		| 'usersCount'
+		| 'msgs'
+		| 'open'
+		| 'ro'
+		| 'reactWhenReadOnly'
+		| 'sysMes'
+		| 'streamingOptions'
+		| 'broadcast'
+		| 'encrypted'
+		| 'e2eKeyId'
+		| 'servedBy'
+		| 'ts'
+		| 'federated'
+		| 'usernames'
+		| 'uids'
+	>;
+	'getRoomRoles': (rid: IRoom['_id']) => ISubscription[];
 	'getSetupWizardParameters': () => {
 		settings: ISetting[];
 		serverAlreadyRegistered: boolean;
 		hasAdmin: boolean;
 	};
+	'getSingleMessage': (mid: IMessage['_id']) => IMessage;
+	'getThreadMessages': (params: { tmid: IMessage['_id'] }) => IMessage[];
 	'getUsersOfRoom': (...args: any[]) => any;
+	'getWebdavFileList': GetWebdavFileList;
+	'getWebdavFilePreview': GetWebdavFilePreview;
 	'hideRoom': (...args: any[]) => any;
 	'ignoreUser': (...args: any[]) => any;
 	'insertOrUpdateSound': (args: { previousName?: string; name?: string; _id?: string; extension: string }) => string;
@@ -78,8 +147,36 @@ export interface ServerMethods {
 	'instances/get': (...args: any[]) => any;
 	'joinRoom': JoinRoomMethod;
 	'leaveRoom': (...args: any[]) => any;
+	'loadHistory': (
+		rid: IRoom['_id'],
+		ts?: Date,
+		limit?: number,
+		ls?: number,
+		showThreadMessages?: boolean,
+	) => {
+		messages: IMessage[];
+		firstUnread: IMessage;
+		unreadNotLoaded: number;
+	};
+	'loadMissedMessages': (rid: IRoom['_id'], ts: Date) => IMessage[];
+	'loadNextMessages': (
+		rid: IRoom['_id'],
+		end?: Date,
+		limit?: number,
+	) => {
+		messages: IMessage[];
+	};
+	'loadSurroundingMessages': (
+		message: Pick<IMessage, '_id' | 'rid'> & { ts?: Date },
+		limit?: number,
+	) => {
+		messages: IMessage[];
+		moreBefore: boolean;
+		moreAfter: boolean;
+	};
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
+	'openRoom': (rid: IRoom['_id']) => ISubscription;
 	'personalAccessTokens:generateToken': (...args: any[]) => any;
 	'personalAccessTokens:regenerateToken': (...args: any[]) => any;
 	'personalAccessTokens:removeToken': (...args: any[]) => any;
@@ -88,9 +185,10 @@ export interface ServerMethods {
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
-	'removeWebdavAccount': (accountId: string) => DeleteResult;
+	'removeWebdavAccount': RemoveWebdavAccount;
 	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
+	'reportMessage': ReportMessageMethod;
 	'requestDataDownload': (...args: any[]) => any;
 	'resetPassword': (...args: any[]) => any;
 	'roomNameExists': RoomNameExistsMethod;
@@ -101,9 +199,11 @@ export interface ServerMethods {
 	'saveUserProfile': (...args: any[]) => any;
 	'sendConfirmationEmail': (...args: any[]) => any;
 	'sendInvitationEmail': (...args: any[]) => any;
+	'sendMessage': (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => any;
 	'setAdminStatus': (...args: any[]) => any;
 	'setAsset': (...args: any[]) => any;
 	'setAvatarFromService': (...args: any[]) => any;
+	'setReaction': (reaction: string, mid: IMessage['_id']) => void;
 	'setUsername': (...args: any[]) => any;
 	'setUserPassword': (...args: any[]) => any;
 	'setUserStatus': (statusType: IUser['status'], statusText: IUser['statusText']) => void;
@@ -114,9 +214,11 @@ export interface ServerMethods {
 	'unreadMessages': (...args: any[]) => any;
 	'unsetAsset': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
+	'updateMessage': (message: IMessage) => void;
 	'updateOAuthApp': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;
+	'uploadFileToWebdav': UploadFileToWebdav;
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
@@ -144,6 +246,10 @@ export interface ServerMethods {
 			outside: boolean;
 			avatarETag?: string;
 		}[];
+	};
+	'getPasswordPolicy': (params?: { token: string }) => {
+		enabled: boolean;
+		policy: [name: TranslationKey, options?: Record<string, unknown>][];
 	};
 }
 
