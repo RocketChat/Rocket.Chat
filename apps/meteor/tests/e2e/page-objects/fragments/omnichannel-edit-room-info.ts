@@ -7,11 +7,15 @@ export class OmnichannelEditRoomInfo {
 		this.page = page;
 	}
 
-	get topic(): Locator {
+	get title(): Locator {
+		return this.page.locator('text="Edit Room"');
+	}
+
+	get inputTopic(): Locator {
 		return this.page.locator('input[name="topic"]');
 	}
 
-	get saveButton(): Locator {
+	get btnSave(): Locator {
 		return this.page.locator('button[data-qa="saveRoomEditInfo"]');
 	}
 }

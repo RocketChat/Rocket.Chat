@@ -5,3 +5,4 @@ export * from './home-sidenav';
 export * from './omnichannel-sidenav';
 export * from './omnichannel-room-info';
 export * from './omnichannel-edit-room-info';
+export * from './omnichannel-contextual-bar';
