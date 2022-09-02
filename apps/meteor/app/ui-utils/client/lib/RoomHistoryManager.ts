@@ -226,8 +226,8 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		await this.queue();
-		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance() as RoomTemplateInstance;
-		instance.atBottom = false;
+		const { atBottomRef } = Blaze.getData($('.messages-box .wrapper')[0]) as RoomTemplateInstance['data'];
+		atBottomRef.current = false;
 
 		room.isLoading.set(true);
 
@@ -295,7 +295,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const w = (await waitUntilWrapperExists()) as HTMLElement;
 
-		const instance = Blaze.getView(w).templateInstance() as RoomTemplateInstance;
+		const { atBottomRef } = Blaze.getData(w) as RoomTemplateInstance['data'];
 
 		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
 
@@ -368,7 +368,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 			room.isLoading.set(false);
 			const messages = wrapper[0];
-			instance.atBottom = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
+			atBottomRef.current = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
 
 			setTimeout(() => {
 				msgElement.removeClass('highlight');

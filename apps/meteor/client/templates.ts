@@ -35,6 +35,18 @@ createTemplateForComponent(
 	},
 );
 
+createTemplateForComponent('LoadingMessagesIndicator', () => import('./views/room/components/body/LoadingMessagesIndicator'), {
+	attachment: 'at-parent',
+});
+
+createTemplateForComponent('JumpToRecentMessagesBar', () => import('./views/room/components/body/JumpToRecentMessagesBar'), {
+	attachment: 'at-parent',
+});
+
+createTemplateForComponent('NewMessagesButton', () => import('./views/room/components/body/NewMessagesButton'), {
+	attachment: 'at-parent',
+});
+
 createTemplateForComponent('LeaderBar', () => import('./views/room/components/body/LeaderBar'), {
 	attachment: 'at-parent',
 });

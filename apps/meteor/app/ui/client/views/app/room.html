@@ -10,13 +10,8 @@
 		{{/each}}
 	</div>
 	<div class="messages-box {{#if selectable}}selectable{{/if}} {{messageViewMode}} {{hasLeader}}">
-		<button class="new-message background-primary-action-color color-content-background-color not">
-			<i class="icon-down-big"></i>
-			{{_ "New_messages"}}
-		</button>
-		<div class="jump-recent background-component-color {{#unless hasMoreNext}}not{{/unless}}">
-			<button>{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></button>
-		</div>
+		{{> NewMessagesButton visible=($not noNewMessage) onClick=handleNewMessageButtonClick}}
+		{{> JumpToRecentMessagesBar visible=hasMoreNext onClick=handleJumpToRecentButtonClick}}
 		{{#unless canPreview}}
 			<div class="content room-not-found error-color">
 				<div>
@@ -25,7 +20,7 @@
 			</div>
 		{{/unless}}
 		{{#if roomLeader}}
-			{{> LeaderBar roomLeader hideLeaderHeader=hideLeaderHeader onAvatarClick=handleOpenUserCardButtonClick}}
+			{{> LeaderBar name=roomLeader.name username=roomLeader.username status=roomLeader.status statusDisplay=roomLeader.statusDisplay hideLeaderHeader=hideLeaderHeader onAvatarClick=(handleOpenUserCardButtonClick roomLeader.username)}}
 		{{/if}}
 		<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}} {{hideUsername}} {{hideAvatar}}">
 			<ul class="messages-list" aria-live="polite">
@@ -33,19 +28,19 @@
 					{{#if hasMore}}
 						<li class="load-more">
 							{{#if isLoading}}
-								{{> loading}}
+								{{> LoadingMessagesIndicator}}
 							{{/if}}
 						</li>
 					{{else}}
 						<li class="start color-info-font-color">
-							{{#if hasPurge}}
-								{{> RetentionPolicyWarning filesOnly=filesOnly excludePinned=excludePinned purgeTimeout=purgeTimeout}}
+							{{#if retentionPolicy}}
+								{{> RetentionPolicyWarning filesOnly=retentionPolicy.filesOnly excludePinned=retentionPolicy.excludePinned maxAge=retentionPolicy.maxAge}}
 							{{/if}}
 							{{> RoomForeword }}
 						</li>
 					{{/if}}
 				{{/if}}
-				{{#if $eq (preference 'useLegacyMessageTemplate') true}}
+				{{#if useLegacyMessageTemplate}}
 					{{#each msg in messagesHistory}}
 						{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=messageContext.room actions=messageContext.actions subscription=messageContext.subscription settings=messageContext.settings u=messageContext.u}}
 					{{/each}}
@@ -56,7 +51,7 @@
 				{{#if hasMoreNext}}
 					<li class="load-more">
 						{{#if isLoading}}
-							{{> loading}}
+							{{> LoadingMessagesIndicator}}
 						{{/if}}
 					</li>
 				{{/if}}
