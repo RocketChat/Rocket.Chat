@@ -90,7 +90,7 @@ Meteor.startup(function () {
 					},
 				);
 			}
-			RoomHistoryManager.getSurroundingMessages(message, 50);
+			RoomHistoryManager.getSurroundingMessages(message);
 		},
 		condition({ message, subscription, user }) {
 			if (subscription == null || !settings.get('Message_AllowStarring')) {

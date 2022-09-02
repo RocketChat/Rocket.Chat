@@ -20,8 +20,6 @@ createTemplateForComponent('DiscussionMetric', () => import('./components/messag
 		}),
 });
 
-createTemplateForComponent('MessageList', () => import('./views/room/MessageList/MessageList'));
-
 createTemplateForComponent('BroadCastMetric', () => import('./components/message/Metrics/Broadcast'));
 
 createTemplateForComponent(
@@ -35,35 +33,11 @@ createTemplateForComponent(
 	},
 );
 
-createTemplateForComponent('LoadingMessagesIndicator', () => import('./views/room/components/body/LoadingMessagesIndicator'), {
-	attachment: 'at-parent',
-});
-
-createTemplateForComponent('JumpToRecentMessagesBar', () => import('./views/room/components/body/JumpToRecentMessagesBar'), {
-	attachment: 'at-parent',
-});
-
-createTemplateForComponent('NewMessagesButton', () => import('./views/room/components/body/NewMessagesButton'), {
-	attachment: 'at-parent',
-});
-
-createTemplateForComponent('LeaderBar', () => import('./views/room/components/body/LeaderBar'), {
-	attachment: 'at-parent',
-});
-
 createTemplateForComponent('UnreadMessagesIndicator', () => import('./views/room/components/body/UnreadMessagesIndicator'), {
 	attachment: 'at-parent',
 });
 
 createTemplateForComponent('UploadProgressIndicator', () => import('./views/room/components/body/UploadProgressIndicator'), {
-	attachment: 'at-parent',
-});
-
-createTemplateForComponent('RetentionPolicyWarning', () => import('./views/room/components/body/RetentionPolicyWarning'), {
-	attachment: 'at-parent',
-});
-
-createTemplateForComponent('RoomForeword', () => import('./views/room/components/body/RoomForeword'), {
 	attachment: 'at-parent',
 });
 
@@ -101,10 +75,6 @@ createTemplateForComponent('accountFlex', () => import('./views/account/AccountS
 });
 
 createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));
-
-createTemplateForComponent('ComposerNotAvailablePhoneCalls', () => import('./components/voip/composer/NotAvailableOnCall'), {
-	renderContainerView: () => HTML.DIV({ style: 'display: flex; height: 100%; width: 100%' }),
-});
 
 createTemplateForComponent('loggedOutBanner', () => import('../ee/client/components/deviceManagement/LoggedOutBanner'), {
 	renderContainerView: () => HTML.DIV({ style: 'max-width: 520px; margin: 0 auto;' }),

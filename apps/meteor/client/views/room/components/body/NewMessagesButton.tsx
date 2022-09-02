@@ -1,9 +1,11 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, UIEvent } from 'react';
+
+import { isTruthy } from '../../../../../lib/isTruthy';
 
 type NewMessagesButtonProps = {
 	visible: boolean;
-	onClick: () => void;
+	onClick: (event: UIEvent) => void;
 };
 
 const NewMessagesButton = ({ visible, onClick }: NewMessagesButtonProps): ReactElement => {
@@ -11,7 +13,10 @@ const NewMessagesButton = ({ visible, onClick }: NewMessagesButtonProps): ReactE
 
 	return (
 		<button
-			className={`new-message background-primary-action-color color-content-background-color ${visible ? '' : 'not'}`}
+			type='button'
+			className={[`new-message`, `background-primary-action-color`, `color-content-background-color`, !visible && 'not']
+				.filter(isTruthy)
+				.join(' ')}
 			onClick={onClick}
 		>
 			<i className='icon-down-big' />

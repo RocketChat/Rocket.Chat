@@ -1,32 +1,26 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 
-type UploadProgressIndicatorProps =
-	| {
-			name: string;
-			percentage: number;
-			error?: never;
-			onClose?: () => void;
-	  }
-	| {
-			name: string;
-			percentage?: never;
-			error: string;
-			onClose?: () => void;
-	  };
+import { Uploading } from '../../../../../app/ui/client/lib/fileUpload';
+import ErroredUploadProgressIndicator from './ErroredUploadProgressIndicator';
 
-const UploadProgressIndicator = ({ name, percentage, error, onClose }: UploadProgressIndicatorProps): ReactElement => {
+type UploadProgressIndicatorProps = {
+	id: Uploading['id'];
+	name: string;
+	percentage: number;
+	error?: string;
+	onClose?: (id: Uploading['id']) => void;
+};
+
+const UploadProgressIndicator = ({ id, name, percentage, error, onClose }: UploadProgressIndicatorProps): ReactElement => {
 	const t = useTranslation();
 
+	const handleCloseClick = useCallback(() => {
+		onClose?.(id);
+	}, [id, onClose]);
+
 	if (error) {
-		return (
-			<div className='upload-progress color-primary-action-color background-component-color error-background error-border'>
-				<div className='upload-progress-text'>{error}</div>
-				<button className='upload-progress-close' onClick={onClose}>
-					{t('close')}
-				</button>
-			</div>
-		);
+		return <ErroredUploadProgressIndicator id={id} error={error} onClose={onClose} />;
 	}
 
 	return (
@@ -35,7 +29,7 @@ const UploadProgressIndicator = ({ name, percentage, error, onClose }: UploadPro
 			<div className='upload-progress-text'>
 				[{percentage}%] {name}
 			</div>
-			<button className='upload-progress-close' onClick={onClose}>
+			<button type='button' className='upload-progress-close' onClick={handleCloseClick}>
 				{t('Cancel')}
 			</button>
 		</div>

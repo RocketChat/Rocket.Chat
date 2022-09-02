@@ -1,7 +1,8 @@
 import { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
-const hasRetentionPolicy = (room: IRoom): room is IRoomWithRetentionPolicy => 'retention' in room;
+const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
+	'retention' in room && room.retention !== undefined;
 
 type RetentionPolicySettings = {
 	enabled: boolean;

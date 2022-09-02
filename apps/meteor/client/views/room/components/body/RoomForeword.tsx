@@ -1,24 +1,16 @@
-import { IRoom, isVoipRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { IRoom, isVoipRoom, isDirectMessageRoom, IUser } from '@rocket.chat/core-typings';
 import { Avatar, Margins, Flex, Box, Tag } from '@rocket.chat/fuselage';
-import { useUser, useUserRoom, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { Users } from '../../../../../app/models/client';
-import { getUserAvatarURL } from '../../../../../app/utils/client';
+import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { VoipRoomForeword } from '../../../../components/voip/room/VoipRoomForeword';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 
-type RoomForewordProps = { _id: IRoom['_id']; rid?: IRoom['_id'] } | { rid: IRoom['_id']; _id?: IRoom['_id'] };
+type RoomForewordProps = { user: IUser | null; room: IRoom | undefined };
 
-const RoomForeword = ({ _id, rid }: RoomForewordProps): ReactElement | null => {
-	const roomId = _id || rid;
-	if (!roomId) {
-		throw new Error('Room id required - RoomForeword');
-	}
-
+const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null => {
 	const t = useTranslation();
-
-	const user = useUser();
-	const room = useUserRoom(roomId);
 
 	if (!room) {
 		return null;
@@ -46,13 +38,9 @@ const RoomForeword = ({ _id, rid }: RoomForewordProps): ReactElement | null => {
 			<Flex.Item grow={1}>
 				<Margins block='x24'>
 					<Avatar.Stack>
-						{usernames.map((username, index) => {
-							const user = Users.findOne({ username }, { fields: { avatarETag: 1 } });
-
-							const avatarUrl = getUserAvatarURL(username, user?.avatarETag);
-
-							return <Avatar key={index} size='x48' title={username} url={avatarUrl} data-username={username} />;
-						})}
+						{usernames.map((username, index) => (
+							<UserAvatar key={index} size='x48' username={username} />
+						))}
 					</Avatar.Stack>
 				</Margins>
 			</Flex.Item>
@@ -62,7 +50,7 @@ const RoomForeword = ({ _id, rid }: RoomForewordProps): ReactElement | null => {
 			<Box is='div' mb='x8' flexGrow={1} display='flex' justifyContent='center'>
 				{usernames.map((username, index) => (
 					<Margins inline='x4' key={index}>
-						<Box is='a' href={`/direct/${username}`}>
+						<Box is='a' href={roomCoordinator.getRouteLink('d', { name: username }) || undefined}>
 							<Tag variant='primary' className='mention-link' data-username={username} medium>
 								{username}
 							</Tag>

@@ -21,13 +21,13 @@ const UnreadMessagesIndicator = ({
 
 	return (
 		<div className='unread-bar color-primary-action-color background-component-color'>
-			<button className='jump-to' onClick={onJumpButtonClick}>
+			<button type='button' className='jump-to' onClick={onJumpButtonClick}>
 				<span className='jump-to-large'>{t('Jump_to_first_unread')}</span>
 				<span className='jump-to-small'>{t('Jump')}</span>
 			</button>
 			<span className='unread-count-since'>{t('S_new_messages_since_s', count, since ? formatTimeAgo(since) : undefined)}</span>
 			<span className='unread-count'>{t('N_new_messages', count)}</span>
-			<button className='mark-read' onClick={onMarkAsReadButtonClick}>
+			<button type='button' className='mark-read' onClick={onMarkAsReadButtonClick}>
 				{t('Mark_as_read')}
 			</button>
 		</div>
