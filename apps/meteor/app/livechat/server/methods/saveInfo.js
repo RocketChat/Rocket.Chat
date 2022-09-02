@@ -7,6 +7,7 @@ import { LivechatRooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 
+// TODO: Deprecate this method in favor of "livechat/room.saveInfo" endpoint in v6.0.0
 Meteor.methods({
 	async 'livechat:saveInfo'(guestData, roomData) {
 		const userId = Meteor.userId();

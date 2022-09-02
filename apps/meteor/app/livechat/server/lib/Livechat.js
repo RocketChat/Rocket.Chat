@@ -376,7 +376,8 @@ export const Livechat = {
 		return false;
 	},
 
-	async saveGuest({ _id, name, email, phone, livechatData = {} }, userId) {
+	async saveGuest(guestData, userId) {
+		const { _id, name, email, phone, livechatData = {} } = guestData;
 		Livechat.logger.debug(`Saving data for visitor ${_id}`);
 		const updateData = {};
 
