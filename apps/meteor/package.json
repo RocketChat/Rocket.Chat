@@ -323,7 +323,7 @@
 		"moment": "^2.29.4",
 		"moment-timezone": "^0.5.34",
 		"mongodb": "^4.3.1",
-		"mongodb-memory-server": "^7.6.3",
+		"mongodb-memory-server": "^8.9.1",
 		"nats": "^2.6.1",
 		"node-dogstatsd": "^0.0.7",
 		"node-gcm": "1.0.5",
