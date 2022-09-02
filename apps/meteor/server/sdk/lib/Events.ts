@@ -1,4 +1,4 @@
-import { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type {
 	IEmailInbox,
 	IEmoji,
@@ -25,7 +25,7 @@ import type {
 	VoipEventDataSignature,
 } from '@rocket.chat/core-typings';
 
-import { AutoUpdateRecord } from '../types/IMeteor';
+import type { AutoUpdateRecord } from '../types/IMeteor';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 

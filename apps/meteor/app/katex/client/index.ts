@@ -3,7 +3,7 @@ import KatexPackage from 'katex';
 import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
 import 'katex/dist/katex.min.css';
 import './style.css';
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 class Boundary {
 	start: number;

@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Settings } from '@rocket.chat/models';
 
-import { Messages, Rooms, Settings } from '../../../../models';
+import { Messages, Rooms } from '../../../../models';
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { settings } from '../lib/livechat';
-import { hasPermission, canSendMessage } from '../../../../authorization';
+import { canSendMessage } from '../../../../authorization';
 import { Livechat } from '../../lib/Livechat';
 import { Logger } from '../../../../logger';
 
@@ -14,17 +15,13 @@ const logger = new Logger('LivechatVideoCallApi');
 
 API.v1.addRoute(
 	'livechat/webrtc.call',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			try {
 				check(this.queryParams, {
 					rid: Match.Maybe(String),
 				});
-
-				if (!hasPermission(this.userId, 'view-l-room')) {
-					return API.v1.unauthorized();
-				}
 
 				const room = canSendMessage(this.queryParams.rid, {
 					uid: this.userId,
@@ -40,7 +37,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('webRTC calling not enabled');
 				}
 
-				const config = Promise.await(settings());
+				const config = await settings();
 				if (!config.theme || !config.theme.actionLinks || !config.theme.actionLinks.webrtc) {
 					throw new Meteor.Error('invalid-livechat-config');
 				}
@@ -48,19 +45,17 @@ API.v1.addRoute(
 				let { callStatus } = room;
 
 				if (!callStatus || callStatus === 'ended' || callStatus === 'declined') {
-					Settings.incrementValueById('WebRTC_Calls_Count');
+					await Settings.incrementValueById('WebRTC_Calls_Count');
 					callStatus = 'ringing';
-					Promise.await(Rooms.setCallStatusAndCallStartTime(room._id, callStatus));
-					Promise.await(
-						Messages.createWithTypeRoomIdMessageAndUser(
-							'livechat_webrtc_video_call',
-							room._id,
-							TAPi18n.__('Join_my_room_to_start_the_video_call'),
-							this.user,
-							{
-								actionLinks: config.theme.actionLinks.webrtc,
-							},
-						),
+					await Rooms.setCallStatusAndCallStartTime(room._id, callStatus);
+					await Messages.createWithTypeRoomIdMessageAndUser(
+						'livechat_webrtc_video_call',
+						room._id,
+						TAPi18n.__('Join_my_room_to_start_the_video_call'),
+						this.user,
+						{
+							actionLinks: config.theme.actionLinks.webrtc,
+						},
 					);
 				}
 				const videoCall = {
@@ -79,7 +74,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/webrtc.call/:callId',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		put() {
 			try {
@@ -94,10 +89,6 @@ API.v1.addRoute(
 
 				const { callId } = this.urlParams;
 				const { rid, status } = this.bodyParams;
-
-				if (!hasPermission(this.userId, 'view-l-room')) {
-					return API.v1.unauthorized();
-				}
 
 				const room = canSendMessage(rid, {
 					uid: this.userId,

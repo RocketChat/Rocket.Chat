@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import stripHtml from 'string-strip-html';
 import { Random } from 'meteor/random';
-import { ParsedMail, Attachment } from 'mailparser';
+import type { ParsedMail, Attachment } from 'mailparser';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { ILivechatVisitor, OmnichannelSourceType } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { Livechat } from '../../../app/livechat/server/lib/Livechat';
@@ -127,14 +127,16 @@ async function uploadAttachment(attachment: Attachment, rid: string, visitorToke
 }
 
 export async function onEmailReceived(email: ParsedMail, inbox: string, department = ''): Promise<void> {
-	logger.debug(`New email conversation received on inbox ${inbox}. Will be assigned to department ${department}`);
+	logger.debug(`New email conversation received on inbox ${inbox}. Will be assigned to department ${department}`, email);
 	if (!email.from?.value?.[0]?.address) {
 		return;
 	}
 
 	const references = typeof email.references === 'string' ? [email.references] : email.references;
+	const initialRef = [email.messageId, email.inReplyTo].filter(Boolean) as string[];
+	const thread = (references?.length ? references : []).flatMap((t: string) => t.split(',')).concat(initialRef);
 
-	const thread = references?.[0] ?? email.messageId;
+	logger.debug(`Received new email conversation with thread ${thread} on inbox ${inbox} from ${email.from.value[0].address}`);
 
 	logger.debug(`Fetching guest for visitor ${email.from.value[0].address}`);
 	const guest = await getGuestByEmail(email.from.value[0].address, email.from.value[0].name, department);
@@ -146,7 +148,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	logger.debug(`Guest ${guest._id} obtained. Attempting to find or create a room on department ${department}`);
 
-	let room = LivechatRooms.findOneByVisitorTokenAndEmailThreadAndDepartment(guest.token, thread, department, {});
+	let room: IOmnichannelRoom = LivechatRooms.findOneByVisitorTokenAndEmailThreadAndDepartment(guest.token, thread, department, {});
 
 	logger.debug({
 		msg: 'Room found for guest',
@@ -170,12 +172,14 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	const msgId = Random.id();
 
 	logger.debug(`Sending email message to room ${rid} for visitor ${guest._id}. Conversation assigned to department ${department}`);
+
 	Livechat.sendMessage({
 		guest,
 		message: {
 			_id: msgId,
 			groupable: false,
 			msg,
+			token: guest.token,
 			attachments: [
 				{
 					actions: [
@@ -210,7 +214,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 			],
 			rid,
 			email: {
-				references,
+				thread,
 				messageId: email.messageId,
 			},
 		},
@@ -257,6 +261,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 					},
 				},
 			);
+			LivechatRooms.updateEmailThreadByRoomId(room._id, thread);
 		})
 		.catch((err) => {
 			Livechat.logger.error({

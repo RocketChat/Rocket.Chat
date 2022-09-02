@@ -12,7 +12,6 @@ import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 const currentLanguage = new ReactiveVar<string | null>(null);
 
 Meteor.startup(() => {
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
 	currentLanguage.set(Meteor._localStorage.getItem('userLanguage'));
 

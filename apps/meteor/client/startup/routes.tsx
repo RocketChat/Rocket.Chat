@@ -11,7 +11,6 @@ import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
-import { handleError } from '../lib/utils/handleError';
 import BlazeTemplate from '../views/root/BlazeTemplate';
 import MainLayout from '../views/root/MainLayout';
 
@@ -100,21 +99,16 @@ FlowRouter.route('/home', {
 		if (queryParams?.saml_idp_credentialToken !== undefined) {
 			const token = queryParams.saml_idp_credentialToken;
 			FlowRouter.setQueryParams({
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				saml_idp_credentialToken: null,
 			});
-			(Meteor as any).loginWithSamlToken(token, (error?: any) => {
+			(Meteor as any).loginWithSamlToken(token, (error?: unknown) => {
 				if (error) {
-					if (error.reason) {
-						dispatchToastMessage({ type: 'error', message: error.reason });
-					} else {
-						handleError(error);
-					}
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 
 				appLayout.render(
 					<MainLayout>
-						<BlazeTemplate template='home' />
+						<BlazeTemplate template={'HomePage'} />
 					</MainLayout>,
 				);
 			});
@@ -124,7 +118,7 @@ FlowRouter.route('/home', {
 
 		appLayout.render(
 			<MainLayout>
-				<BlazeTemplate template='home' />
+				<BlazeTemplate template={'HomePage'} />
 			</MainLayout>,
 		);
 	},

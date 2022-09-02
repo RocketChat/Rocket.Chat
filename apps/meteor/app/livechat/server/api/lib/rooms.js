@@ -35,7 +35,7 @@ export async function findRooms({
 	const departmentsIds = [...new Set(rooms.map((room) => room.departmentId).filter(Boolean))];
 	if (departmentsIds.length) {
 		const departments = await LivechatDepartment.findInIds(departmentsIds, {
-			fields: { name: 1 },
+			projection: { name: 1 },
 		}).toArray();
 
 		rooms.forEach((room) => {

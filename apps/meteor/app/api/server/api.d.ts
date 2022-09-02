@@ -11,7 +11,7 @@ import type { IUser, IMethodConnection, IRoom } from '@rocket.chat/core-typings'
 import type { ValidateFunction } from 'ajv';
 import type { Request, Response } from 'express';
 
-import { ITwoFactorOptions } from '../../2fa/server/code';
+import type { ITwoFactorOptions } from '../../2fa/server/code';
 
 type SuccessResult<T> = {
 	statusCode: 200;
@@ -28,8 +28,8 @@ type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails 
 				stack: TStack;
 				errorType: TErrorType;
 				details: TErrorDetails;
-		  } & (undefined extends TErrorType ? {} : { errorType: TErrorType }) &
-				(undefined extends TErrorDetails ? {} : { details: TErrorDetails extends string ? unknown : TErrorDetails });
+		  } & (undefined extends TErrorType ? object : { errorType: TErrorType }) &
+				(undefined extends TErrorDetails ? object : { details: TErrorDetails extends string ? unknown : TErrorDetails });
 };
 
 type UnauthorizedResult<T> = {
@@ -48,17 +48,23 @@ type NotFoundResult = {
 	};
 };
 
+export type TOperation = 'hasAll' | 'hasAny';
 export type NonEnterpriseTwoFactorOptions = {
 	authRequired: true;
 	forceTwoFactorAuthenticationForNonEnterprise: true;
 	twoFactorRequired: true;
-	permissionsRequired?: string[];
+	permissionsRequired?: string[] | { [key in Method]: string[] } | { [key in Method]: { operation: TOperation; permissions: string[] } };
 	twoFactorOptions: ITwoFactorOptions;
 };
 
 type Options = (
 	| {
-			permissionsRequired?: string[];
+			permissionsRequired?:
+				| string[]
+				| ({ [key in Method]?: string[] } & { '*'?: string[] })
+				| ({ [key in Method]?: { operation: TOperation; permissions: string[] } } & {
+						'*'?: { operation: TOperation; permissions: string[] };
+				  });
 			authRequired?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
 	  }
@@ -80,7 +86,7 @@ type PartialThis = {
 type UserInfo = IUser & {
 	email?: string;
 	settings: {
-		profile: {};
+		profile: object;
 		preferences: unknown;
 	};
 	avatarUrl: string;
@@ -167,7 +173,7 @@ type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpoi
 			action: Action<TMethod, TPathPattern, TEndpointOptions>;
 	  } & { twoFactorRequired: boolean });
 
-type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}> = {
+type Operations<TPathPattern extends PathPattern, TOptions extends Options = object> = {
 	[M in MethodOf<TPathPattern> as Lowercase<M>]: Operation<Uppercase<M>, TPathPattern, TOptions>;
 };
 
@@ -252,6 +258,7 @@ export declare const API: {
 	v1: APIClass<'/v1'>;
 	default: APIClass;
 	helperMethods: Map<string, (...args: any[]) => unknown>;
+	ApiClass: APIClass;
 };
 
 export declare const defaultRateLimiterOptions: {
