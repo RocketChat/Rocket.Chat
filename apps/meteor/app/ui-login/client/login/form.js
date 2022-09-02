@@ -9,7 +9,6 @@ import _ from 'underscore';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils';
-import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Template.loginForms.helpers({
 	userName() {
@@ -77,116 +76,116 @@ Template.loginForms.helpers({
 });
 
 Template.loginForms.events({
-	'submit #login-card'(event, instance) {
-		// event.preventDefault();
-		// $(event.target).find('button.login').focus();
-		// instance.loading.set(true);
-		// const formData = instance.validate();
-		// const state = instance.state.get();
-		// if (formData) {
-		// 	if (state === 'email-verification') {
-		// 		Meteor.call('sendConfirmationEmail', formData.email?.trim(), () => {
-		// 			instance.loading.set(false);
-		// 			callbacks.run('userConfirmationEmailRequested');
-		// 			dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
-		// 			return instance.state.set('login');
-		// 		});
-		// 		return;
-		// 	}
-		// 	if (state === 'forgot-password') {
-		// 		Meteor.call('sendForgotPasswordEmail', formData.email?.trim(), (error) => {
-		// 			if (error) {
-		// 				dispatchToastMessage({ type: 'error', message: error });
-		// 				return instance.state.set('login');
-		// 			}
-		// 			instance.loading.set(false);
-		// 			callbacks.run('userForgotPasswordEmailRequested');
-		// 			dispatchToastMessage({ type: 'success', message: t('If_this_email_is_registered') });
-		// 			return instance.state.set('login');
-		// 		});
-		// 		return;
-		// 	}
-		// 	if (state === 'register') {
-		// 		formData.secretURL = FlowRouter.getParam('hash');
-		// 		return Meteor.call('registerUser', formData, function (error) {
-		// 			instance.loading.set(false);
-		// 			if (error != null) {
-		// 				if (error.reason === 'Email already exists.') {
-		// 					dispatchToastMessage({ type: 'error', message: t('Email_already_exists') });
-		// 				} else {
-		// 					dispatchToastMessage({ type: 'error', message: error });
-		// 				}
-		// 				return;
-		// 			}
-		// 			callbacks.run('userRegistered');
-		// 			return Meteor.loginWithPassword(formData.email?.trim(), formData.pass, function (error) {
-		// 				if (error && error.error === 'error-invalid-email') {
-		// 					return instance.state.set('wait-email-activation');
-		// 				}
-		// 				if (error && error.error === 'error-user-is-not-activated') {
-		// 					return instance.state.set('wait-activation');
-		// 				}
-		// 				Session.set('forceLogin', false);
-		// 				if (formData.secretURL) {
-		// 					FlowRouter.go('home');
-		// 				}
-		// 			});
-		// 		});
-		// 	}
-		// 	let loginMethod = 'loginWithPassword';
-		// 	if (settings.get('LDAP_Enable')) {
-		// 		loginMethod = 'loginWithLDAP';
-		// 	}
-		// 	if (settings.get('CROWD_Enable')) {
-		// 		loginMethod = 'loginWithCrowd';
-		// 	}
-		// 	return Meteor[loginMethod](formData.emailOrUsername?.trim(), formData.pass, function (error) {
-		// 		instance.loading.set(false);
-		// 		if (error != null) {
-		// 			switch (error.error) {
-		// 				case 'error-user-is-not-activated':
-		// 					return dispatchToastMessage({ type: 'error', message: t('Wait_activation_warning') });
-		// 				case 'error-invalid-email':
-		// 					instance.typedEmail = formData.emailOrUsername;
-		// 					return instance.state.set('email-verification');
-		// 				case 'error-app-user-is-not-allowed-to-login':
-		// 					dispatchToastMessage({ type: 'error', message: t('App_user_not_allowed_to_login') });
-		// 					break;
-		// 				case 'error-login-blocked-for-ip':
-		// 					dispatchToastMessage({ type: 'error', message: t('Error_login_blocked_for_ip') });
-		// 					break;
-		// 				case 'error-login-blocked-for-user':
-		// 					dispatchToastMessage({ type: 'error', message: t('Error_login_blocked_for_user') });
-		// 					break;
-		// 				case 'error-license-user-limit-reached':
-		// 					dispatchToastMessage({
-		// 						type: 'error',
-		// 						message: t('error-license-user-limit-reached'),
-		// 					});
-		// 					break;
-		// 				default:
-		// 					return dispatchToastMessage({
-		// 						type: 'error',
-		// 						message: t('User_not_found_or_incorrect_password'),
-		// 					});
-		// 			}
-		// 		}
-		// 		Session.set('forceLogin', false);
-		// 	});
-		// }
-	},
-	'click .register'() {
-		Template.instance().state.set('register');
-		return callbacks.run('loginPageStateChange', Template.instance().state.get());
-	},
-	'click .back-to-login'() {
-		Template.instance().state.set('login');
-		return callbacks.run('loginPageStateChange', Template.instance().state.get());
-	},
-	'click .forgot-password'() {
-		Template.instance().state.set('forgot-password');
-		return callbacks.run('loginPageStateChange', Template.instance().state.get());
-	},
+	// // 'submit #login-card'(event, instance) {
+	// 	// event.preventDefault();
+	// 	// $(event.target).find('button.login').focus();
+	// 	// instance.loading.set(true);
+	// 	// const formData = instance.validate();
+	// 	// const state = instance.state.get();
+	// 	// if (formData) {
+	// 	// 	if (state === 'email-verification') {
+	// 	// 		Meteor.call('sendConfirmationEmail', formData.email?.trim(), () => {
+	// 	// 			instance.loading.set(false);
+	// 	// 			callbacks.run('userConfirmationEmailRequested');
+	// 	// 			dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
+	// 	// 			return instance.state.set('login');
+	// 	// 		});
+	// 	// 		return;
+	// 	// 	}
+	// 	// 	if (state === 'forgot-password') {
+	// 	// 		Meteor.call('sendForgotPasswordEmail', formData.email?.trim(), (error) => {
+	// 	// 			if (error) {
+	// 	// 				dispatchToastMessage({ type: 'error', message: error });
+	// 	// 				return instance.state.set('login');
+	// 	// 			}
+	// 	// 			instance.loading.set(false);
+	// 	// 			callbacks.run('userForgotPasswordEmailRequested');
+	// 	// 			dispatchToastMessage({ type: 'success', message: t('If_this_email_is_registered') });
+	// 	// 			return instance.state.set('login');
+	// 	// 		});
+	// 	// 		return;
+	// 	// 	}
+	// 	// 	if (state === 'register') {
+	// 	// 		formData.secretURL = FlowRouter.getParam('hash');
+	// 	// 		return Meteor.call('registerUser', formData, function (error) {
+	// 	// 			instance.loading.set(false);
+	// 	// 			if (error != null) {
+	// 	// 				if (error.reason === 'Email already exists.') {
+	// 	// 					dispatchToastMessage({ type: 'error', message: t('Email_already_exists') });
+	// 	// 				} else {
+	// 	// 					dispatchToastMessage({ type: 'error', message: error });
+	// 	// 				}
+	// 	// 				return;
+	// 	// 			}
+	// 	// 			callbacks.run('userRegistered');
+	// 	// 			return Meteor.loginWithPassword(formData.email?.trim(), formData.pass, function (error) {
+	// 	// 				if (error && error.error === 'error-invalid-email') {
+	// 	// 					return instance.state.set('wait-email-activation');
+	// 	// 				}
+	// 	// 				if (error && error.error === 'error-user-is-not-activated') {
+	// 	// 					return instance.state.set('wait-activation');
+	// 	// 				}
+	// 	// 				Session.set('forceLogin', false);
+	// 	// 				if (formData.secretURL) {
+	// 	// 					FlowRouter.go('home');
+	// 	// 				}
+	// 	// 			});
+	// 	// 		});
+	// 	// 	}
+	// 	// 	let loginMethod = 'loginWithPassword';
+	// 	// 	if (settings.get('LDAP_Enable')) {
+	// 	// 		loginMethod = 'loginWithLDAP';
+	// 	// 	}
+	// 	// 	if (settings.get('CROWD_Enable')) {
+	// 	// 		loginMethod = 'loginWithCrowd';
+	// 	// 	}
+	// 	// 	return Meteor[loginMethod](formData.emailOrUsername?.trim(), formData.pass, function (error) {
+	// 	// 		instance.loading.set(false);
+	// 	// 		if (error != null) {
+	// 	// 			switch (error.error) {
+	// 	// 				case 'error-user-is-not-activated':
+	// 	// 					return dispatchToastMessage({ type: 'error', message: t('Wait_activation_warning') });
+	// 	// 				case 'error-invalid-email':
+	// 	// 					instance.typedEmail = formData.emailOrUsername;
+	// 	// 					return instance.state.set('email-verification');
+	// 	// 				case 'error-app-user-is-not-allowed-to-login':
+	// 	// 					dispatchToastMessage({ type: 'error', message: t('App_user_not_allowed_to_login') });
+	// 	// 					break;
+	// 	// 				case 'error-login-blocked-for-ip':
+	// 	// 					dispatchToastMessage({ type: 'error', message: t('Error_login_blocked_for_ip') });
+	// 	// 					break;
+	// 	// 				case 'error-login-blocked-for-user':
+	// 	// 					dispatchToastMessage({ type: 'error', message: t('Error_login_blocked_for_user') });
+	// 	// 					break;
+	// 	// 				case 'error-license-user-limit-reached':
+	// 	// 					dispatchToastMessage({
+	// 	// 						type: 'error',
+	// 	// 						message: t('error-license-user-limit-reached'),
+	// 	// 					});
+	// 	// 					break;
+	// 	// 				default:
+	// 	// 					return dispatchToastMessage({
+	// 	// 						type: 'error',
+	// 	// 						message: t('User_not_found_or_incorrect_password'),
+	// 	// 					});
+	// 	// 			}
+	// 	// 		}
+	// 	// 		Session.set('forceLogin', false);
+	// 	// 	});
+	// 	// }
+	// },
+	// 'click .register'() {
+	// 	Template.instance().state.set('register');
+	// 	return callbacks.run('loginPageStateChange', Template.instance().state.get());
+	// },
+	// 'click .back-to-login'() {
+	// 	Template.instance().state.set('login');
+	// 	return callbacks.run('loginPageStateChange', Template.instance().state.get());
+	// },
+	// 'click .forgot-password'() {
+	// 	Template.instance().state.set('forgot-password');
+	// 	return callbacks.run('loginPageStateChange', Template.instance().state.get());
+	// },
 });
 
 Template.loginForms.onCreated(function () {
