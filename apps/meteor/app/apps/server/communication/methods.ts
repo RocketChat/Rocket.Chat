@@ -5,6 +5,7 @@ import { Settings } from '@rocket.chat/models';
 import { hasPermission } from '../../../authorization/server';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import type { AppServerOrchestrator } from '../orchestrator';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 const waitToLoad = function (orch: AppServerOrchestrator): unknown {
 	return new Promise<void>((resolve) => {
@@ -51,6 +52,8 @@ export class AppMethods {
 
 		Meteor.methods({
 			'apps/is-enabled'() {
+				methodDeprecationLogger.warn('apps/is-enabled will be deprecated in future versions of Rocket.Chat');
+
 				return instance.isEnabled();
 			},
 
