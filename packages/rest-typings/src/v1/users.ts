@@ -11,6 +11,8 @@ import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
+import type { UsersSaveUserProfileParamsPOST } from './users/UsersSaveUserProfileParamsPOST';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -139,22 +141,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.saveUserProfile': {
-		POST: (params: {
-			settings: {
-				email: string;
-				realname: string;
-				username: string;
-				nickname: string;
-				statusText: string;
-				statusType: string;
-				bio: string;
-				newPassword: string;
-				typedPassword: string;
-			};
-			customFields: {
-				[key: string]: unknown;
-			};
-		}) => void;
+		POST: (params: UsersSaveUserProfileParamsPOST) => void;
 	};
 
 	'/v1/users.resetAvatar': {
@@ -337,20 +324,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.updateOwnBasicInfo': {
-		POST: (params: {
-			userData: {
-				email: string;
-				realname: string;
-				username: string;
-				nickname: string;
-				statusText: string;
-				newPassword: string;
-				typedPassword: string;
-			};
-			customFields: {
-				[key: string]: unknown;
-			};
-		}) => void;
+		POST: (params: UsersUpdateOwnBasicInfoParamsPOST) => void;
 	};
 };
 

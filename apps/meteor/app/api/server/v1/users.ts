@@ -93,7 +93,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.updateOwnBasicInfo',
-	{ authRequired: true, validateParams: isUsersUpdateOwnBasicInfoParamsPOST },
+	{
+		authRequired: true,
+		validateParams: isUsersUpdateOwnBasicInfoParamsPOST,
+	},
 	{
 		post() {
 			const userData = {
@@ -118,9 +121,7 @@ API.v1.addRoute(
 
 			Meteor.call('saveUserProfile', userData, customFields, twoFactorOptions);
 
-			return API.v1.success({
-				user: Users.findOneById(this.userId, { fields: API.v1.defaultFieldsToExclude }),
-			});
+			return API.v1.success();
 		},
 	},
 );
@@ -155,9 +156,7 @@ API.v1.addRoute(
 
 			Meteor.call('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
 
-			return API.v1.success({
-				user: Users.findOneById(this.userId, { fields: API.v1.defaultFieldsToExclude }),
-			});
+			return API.v1.success();
 		},
 	},
 );
