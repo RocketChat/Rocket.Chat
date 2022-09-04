@@ -4,6 +4,7 @@ import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
 import { DDP } from 'meteor/ddp';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Logger } from '../lib/logger/Logger';
 import { hasPermission } from '../../app/authorization/server';
@@ -66,6 +67,10 @@ function startMatrixBroadcast() {
 	matrixBroadCastActions = {
 		added: Meteor.bindEnvironment((record) => {
 			cache.set(record._id, record);
+
+			if (cache.size > 1) {
+				logger.warn(TAPi18n.__('Multiple_monolith_instances_alert'));
+			}
 
 			const subPath = getURL('', { cdn: false, full: false });
 			let instance = `${record.extraInformation.host}:${record.extraInformation.port}${subPath}`;

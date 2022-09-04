@@ -51,6 +51,9 @@ export const validators = [
 				{
 					...(departmentIds && departmentIds.length > 0 && { department: { $in: departmentIds } }),
 				},
+				{
+					department: { $exists: false }, // No department == public queue
+				},
 			],
 		};
 

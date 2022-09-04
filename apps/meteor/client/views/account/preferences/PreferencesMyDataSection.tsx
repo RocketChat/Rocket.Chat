@@ -68,7 +68,7 @@ const PreferencesMyDataSection = ({ ...props }): ReactElement => {
 
 				setModal(<MyDataModal title={t('UserDataDownload_Requested')} onCancel={closeModal} />);
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
 		[closeModal, dispatchToastMessage, requestDataDownload, setModal, t],

@@ -1,7 +1,20 @@
 import { expect } from 'chai';
-import './server.mocks.js';
+import proxyquire from 'proxyquire';
 
-import PasswordPolicyClass from '../../../../app/lib/server/lib/PasswordPolicyClass';
+const { default: PasswordPolicyClass } = proxyquire.noCallThru().load('../../../../app/lib/server/lib/PasswordPolicyClass', {
+	'meteor/meteor': {
+		Meteor: {
+			absoluteUrl() {
+				return 'http://localhost:3000/';
+			},
+		},
+	},
+	'meteor/random': {
+		Random: {
+			id: () => 1,
+		},
+	},
+});
 
 describe('PasswordPolicyClass', () => {
 	describe('Default options', () => {
