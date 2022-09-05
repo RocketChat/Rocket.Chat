@@ -101,7 +101,7 @@ export class Admin {
 	}
 
 	get btnDeleteAssetsLogo(): Locator {
-		return this.page.locator('[data-qa-setting-delete-id="Assets_logo"]');
+		return this.page.locator('[data-qa-type="delete-asset"][data-qa-id="Assets_logo"]');
 	}
 
 	get inputAssetsLogo(): Locator {
