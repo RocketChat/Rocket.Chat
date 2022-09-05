@@ -493,8 +493,11 @@ jobs:
           docker compose -f docker-compose-ci.yml logs --tail=50
 
           cd ./apps/meteor
+          rm -rf .nyc_output
+          rm -rf coverage
+
           for i in $(seq 1 5); do
-            IS_EE=true npm run testapi && s=0 && break || s=$?;
+            IS_EE=true npm run cover:integration && s=0 && break || s=$?;
 
             docker compose -f ../../docker-compose-ci.yml logs --tail=100
 

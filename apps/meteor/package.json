@@ -40,6 +40,7 @@
 		".testunit:client": "mocha --config ./.mocharc.client.js",
 		".testunit:definition": "mocha --config ./.mocharc.definition.js",
 		"testunit-watch": "mocha --watch --config ./.mocharc.js",
+		"cover:integration": "nyc --silent --no-clean npm run testapi",
 		"test": "npm run testapi && npm run testui",
 		"translation-diff": "node .scripts/translationDiff.js",
 		"translation-check": "node .scripts/check-i18n.js",
