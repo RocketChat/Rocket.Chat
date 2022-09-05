@@ -1179,6 +1179,11 @@ export const Livechat = {
 		const visitor = await LivechatVisitors.getVisitorByToken(token, {
 			projection: { _id: 1, token: 1, language: 1, username: 1, name: 1 },
 		});
+
+		if (!visitor) {
+			throw new Meteor.Error('error-invalid-token', 'Invalid token');
+		}
+
 		const userLanguage = (visitor && visitor.language) || settings.get('Language') || 'en';
 		const timezone = getTimezone(user);
 		Livechat.logger.debug(`Transcript will be sent using ${timezone} as timezone`);
