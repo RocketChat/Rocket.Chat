@@ -10,7 +10,6 @@ import MessageComposerDisabled from './MessageComposerDisabled';
 import MessageComposerDisplay from './MessageComposerDisplay';
 import MessageComposerDisabledAction from './MessageComposerDisabledAction';
 
-
 export {
 	MessageComposer,
 	MessageComposerAction,
