@@ -244,6 +244,32 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.end(done);
 		});
+		it('should not cause issues when the customFields is empty', (done) => {
+			request
+				.get(api(`livechat/rooms?customFields={}&roomName=test`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.rooms).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
+		it('should throw an error if customFields param is not a object', (done) => {
+			request
+				.get(api(`livechat/rooms?customFields=string`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
 	});
 
 	describe('livechat/room.join', () => {
