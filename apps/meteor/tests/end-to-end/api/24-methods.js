@@ -1976,7 +1976,8 @@ describe('Meteor.methods', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('result', true | false | 1 | 0);
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('result', true | false);
 				})
 				.end(done);
 		});
