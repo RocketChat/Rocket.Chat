@@ -1,5 +1,4 @@
 import { test, expect } from './utils/test';
-import { Admin } from './page-objects';
 import { IS_EE } from './config/constants';
 
 test.skip(!IS_EE, 'Engagemente Dashboard > Enterprise Only');
@@ -7,16 +6,10 @@ test.skip(!IS_EE, 'Engagemente Dashboard > Enterprise Only');
 test.use({ storageState: 'admin-session.json' });
 
 test.describe('engagement-dashboard', () => {
-	let poAdmin: Admin;
-
 	test.describe.parallel('expect to trigger fallback error component', () => {
 		test.beforeEach(async ({ page }) => {
-			poAdmin = new Admin(page);
-			await page.goto('/admin');
-
+			await page.goto('/admin/engagement-dashboard');
 			await page.route('**/api/v1/engagement-dashboard/**', (route) => route.abort());
-			await poAdmin.sidenav.linkEngagementDashboard.click();
-			await expect(page.locator('[data-qa="EngagementDashboardPage"]')).toBeVisible();
 		});
 
 		test('expect to show 4 fallback errors components inside widget at Users Tab', async ({ page }) => {
