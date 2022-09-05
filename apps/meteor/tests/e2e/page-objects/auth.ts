@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-export class Auth {
+export class Registration {
 	private readonly page: Page;
 
 	constructor(page: Page) {
@@ -16,7 +16,7 @@ export class Auth {
 	}
 
 	get btnSubmit(): Locator {
-		return this.page.locator('.login');
+		return this.page.locator('role=button[name="Submit"]');
 	}
 
 	get btnRegister(): Locator {
@@ -28,11 +28,11 @@ export class Auth {
 	}
 
 	get btnForgotPassword(): Locator {
-		return this.page.locator('.forgot-password');
+		return this.page.locator('role=link[name="Forgot your password?"]');
 	}
 
-	get inputEmailOrUsername(): Locator {
-		return this.page.locator('[name=emailOrUsername]');
+	get username(): Locator {
+		return this.page.locator('[name=username]');
 	}
 
 	get inputName(): Locator {
@@ -44,19 +44,15 @@ export class Auth {
 	}
 
 	get inputEmail(): Locator {
-		return this.page.locator('[name=email]');
-	}
-
-	get textErrorEmail(): Locator {
-		return this.page.locator('[name=email]~.input-error');
+		return this.page.locator('role=textbox[name=Email]');
 	}
 
 	get inputPassword(): Locator {
-		return this.page.locator('[name=pass]');
+		return this.page.locator('[name=password]');
 	}
 
 	get textErrorPassword(): Locator {
-		return this.page.locator('[name=pass]~.input-error');
+		return this.page.locator('[name=password]~.input-error');
 	}
 
 	get inputPasswordConfirm(): Locator {
@@ -65,5 +61,9 @@ export class Auth {
 
 	get textErrorPasswordConfirm(): Locator {
 		return this.page.locator('[name=confirm-pass]~.input-error');
+	}
+
+	get forgotPasswordEmailCallout(): Locator {
+		return this.page.locator('role=alert');
 	}
 }

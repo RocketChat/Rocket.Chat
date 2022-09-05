@@ -1,43 +1,62 @@
-import { test, expect } from './utils/test';
-import { Auth } from './page-objects';
+import type { Locator } from '@playwright/test';
 
-test.describe.parallel('forgot-password', () => {
-	let poAuth: Auth;
+import { test, expect } from './utils/test';
+import { Registration } from './page-objects';
+
+expect.extend({
+	async toBeInvalid(received: Locator) {
+		const pass = await received.evaluate((node) => node.getAttribute('aria-invalid') === 'true');
+
+		return {
+			message: () => `expected ${received} to be invalid`,
+			pass,
+		};
+	},
+	async hasAttribute(received: Locator, attribute: string) {
+		const pass = await received.evaluate((node, attribute) => node.hasAttribute(attribute), attribute);
+
+		return {
+			message: () => `expected ${received} to have attribute \`${attribute}\``,
+			pass,
+		};
+	},
+});
+
+test.describe.parallel('Forgot Password', () => {
+	let poRegistration: Registration;
 
 	test.beforeEach(async ({ page }) => {
-		poAuth = new Auth(page);
+		poRegistration = new Registration(page);
 
 		await page.goto('/home');
+		await poRegistration.btnForgotPassword.click();
 	});
 
-	test('expect trigger a validation error if no email is provided', async () => {
-		await poAuth.btnForgotPassword.click();
-		await poAuth.btnSubmit.click();
+	test('Email validation', async () => {
+		await test.step('expect trigger a validation error if no email is provided', async () => {
+			await poRegistration.btnSubmit.click();
+			await expect(poRegistration.inputEmail).toBeInvalid();
+		});
 
-		await expect(poAuth.textErrorEmail).toBeVisible();
-	});
+		await test.step('expect trigger a validation if a invalid email is provided (1)', async () => {
+			await poRegistration.inputEmail.fill('mail@mail');
+			await poRegistration.btnSubmit.click();
 
-	test('expect trigger a validation if a invalid email is provided (1)', async () => {
-		await poAuth.btnForgotPassword.click();
-		await poAuth.inputEmail.type('mail@mail');
-		await poAuth.btnSubmit.click();
+			await expect(poRegistration.inputEmail).toBeInvalid();
+		});
 
-		await expect(poAuth.textErrorEmail).toBeVisible();
-	});
+		await test.step('expect trigger a validation if a invalid email is provided (2)', async () => {
+			await poRegistration.inputEmail.fill('mail');
+			await poRegistration.btnSubmit.click();
 
-	test('expect trigger a validation if a invalid email is provided (2)', async () => {
-		await poAuth.btnForgotPassword.click();
-		await poAuth.inputEmail.type('mail');
-		await poAuth.btnSubmit.click();
+			await expect(poRegistration.inputEmail).toBeInvalid();
+		});
 
-		await expect(poAuth.textErrorEmail).toBeVisible();
-	});
+		await test.step('expect to show a success toast if a valid email is provided', async () => {
+			await poRegistration.inputEmail.fill('mail@mail.com');
+			await poRegistration.btnSubmit.click();
 
-	test('expect to show a success toast if a valid email is provided', async () => {
-		await poAuth.btnForgotPassword.click();
-		await poAuth.inputEmail.type('mail@mail.com');
-		await poAuth.btnSubmit.click();
-
-		await expect(poAuth.toastSuccess).toBeVisible();
+			await expect(poRegistration.forgotPasswordEmailCallout).toBeVisible();
+		});
 	});
 });

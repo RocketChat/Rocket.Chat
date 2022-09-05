@@ -40,19 +40,26 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 							<TextInput
 								{...register('email', {
 									required: true,
+									pattern: {
+										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+										message: t('error-invalid-email-address'),
+									},
 								})}
-								error={errors.email && t('registration.component.form.requiredField')}
-								aria-invalid={errors?.email?.type === 'required'}
+								error={errors.email && (errors.email?.message || 'registration.component.form.requiredField')}
+								aria-invalid={Boolean(errors.email)}
 								placeholder={t('Email_Placeholder')}
+								name='email'
 								id='email'
 							/>
 						</Field.Row>
-						{errors.email && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
+						{errors.email && <Field.Error>{errors.email.message || 'registration.component.form.requiredField'}</Field.Error>}
 					</Field>
 				</FieldGroup>
 				{sent && (
 					<FieldGroup>
-						<Callout type='warning'>{t('registration.page.resetPassword.sent')}</Callout>
+						<Callout role='alert' type='warning'>
+							{t('registration.page.resetPassword.sent')}
+						</Callout>
 					</FieldGroup>
 				)}
 			</Form.Container>

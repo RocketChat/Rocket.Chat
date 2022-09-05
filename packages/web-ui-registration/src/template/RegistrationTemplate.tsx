@@ -16,7 +16,7 @@ import { useAssetPath } from '../hooks/useAssetPath';
 
 const RegistrationTemplate = ({ children }: { children: ReactNode }): ReactElement => {
 	const customLogo = useAssetPath('Assets_logo');
-	const customBackground = undefined; // && useAssetPath('Assets_background');
+	const customBackground = useAssetPath('Assets_background');
 
 	return (
 		<HorizontalWizardLayout
