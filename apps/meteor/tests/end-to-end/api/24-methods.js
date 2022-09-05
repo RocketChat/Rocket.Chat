@@ -1977,7 +1977,7 @@ describe('Meteor.methods', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('result', true | false);
+					expect(res.body).to.have.property('result');
 				})
 				.end(done);
 		});
