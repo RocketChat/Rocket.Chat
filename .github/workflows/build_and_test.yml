@@ -517,6 +517,12 @@ jobs:
           done;
           exit $s
 
+      - uses: codecov/codecov-action@v3
+        with:
+          directory: ./apps/meteor
+          flags: integration-tests
+          verbose: true
+
       - name: Cache Playwright binaries
         uses: actions/cache@v3
         id: cache-playwright
@@ -549,6 +555,8 @@ jobs:
           done
 
           cd ./apps/meteor
+          rm -rf .nyc_output
+          rm -rf coverage
 
           E2E_COVERAGE=true IS_EE=true yarn test:e2e
 
