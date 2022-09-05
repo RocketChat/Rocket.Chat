@@ -1,4 +1,6 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import type { FindCursor, UpdateResult } from 'mongodb';
 
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
 import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
@@ -9,10 +11,32 @@ declare module '@rocket.chat/model-typings' {
 		associateRoomsWithDepartmentToUnit: (departments: string[], unit: string) => Promise<void>;
 		removeUnitAssociationFromRooms: (unit: string) => Promise<void>;
 		updateDepartmentAncestorsById: (unitId: string, ancestors: string[]) => Promise<void>;
+		unsetPredictedVisitorAbandonmentByRoomId(rid: string): Promise<UpdateResult>;
+		findAbandonedOpenRooms(date: Date): Promise<FindCursor<IOmnichannelRoom>>;
 	}
 }
 
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
+	async findAbandonedOpenRooms(date: Date): Promise<FindCursor<IOmnichannelRoom>> {
+		return this.find({
+			'omnichannel.predictedVisitorAbandonmentAt': { $lte: date },
+			'waitingResponse': { $exists: false },
+			'closedAt': { $exists: false },
+			'open': true,
+		});
+	}
+
+	async unsetPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: roomId,
+			},
+			{
+				$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
+			},
+		);
+	}
+
 	async associateRoomsWithDepartmentToUnit(departments: string[], unitId: string): Promise<void> {
 		const query = {
 			$and: [

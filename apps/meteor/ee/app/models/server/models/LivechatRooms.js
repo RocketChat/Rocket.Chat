@@ -16,6 +16,7 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRooms, {
 	remove: applyRestrictions('remove'),
 });
 
+// TODO: Engineering day - Move all these methods to the LivechatRooms model - apps/meteor/ee/server/models/raw/LivechatRooms.ts
 LivechatRooms.prototype.setPredictedVisitorAbandonment = function (roomId, willBeAbandonedAt) {
 	const query = {
 		_id: roomId,
@@ -27,15 +28,6 @@ LivechatRooms.prototype.setPredictedVisitorAbandonment = function (roomId, willB
 	};
 
 	return this.update(query, update);
-};
-
-LivechatRooms.prototype.findAbandonedOpenRooms = function (date) {
-	return this.find({
-		'omnichannel.predictedVisitorAbandonmentAt': { $lte: date },
-		'waitingResponse': { $exists: false },
-		'closedAt': { $exists: false },
-		'open': true,
-	});
 };
 
 LivechatRooms.prototype.setOnHold = function (roomId) {
@@ -58,17 +50,6 @@ LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function () {
 		},
 		{
 			multi: true,
-		},
-	);
-};
-
-LivechatRooms.prototype.unsetPredictedVisitorAbandonmentByRoomId = function (roomId) {
-	return this.update(
-		{
-			_id: roomId,
-		},
-		{
-			$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
 		},
 	);
 };
