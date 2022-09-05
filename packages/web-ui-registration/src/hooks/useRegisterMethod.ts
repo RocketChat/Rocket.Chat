@@ -1,8 +1,13 @@
-import { useEndpoint, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouteParameter, useLoginWithPassword } from '@rocket.chat/ui-contexts';
 
 export const useRegisterMethod = () => {
 	const register = useEndpoint('POST', '/v1/users.register');
 	const secret = useRouteParameter('hash');
 
-	return ({ ...props }: Parameters<typeof register>[0]): ReturnType<typeof register> => register({ ...props, secret });
+	const login = useLoginWithPassword();
+	return async ({ ...props }: Parameters<typeof register>[0]): Promise<ReturnType<typeof register>> => {
+		const result = await register({ ...props, secret });
+		await login(props.username, props.pass);
+		return result;
+	};
 };

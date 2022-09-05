@@ -19,8 +19,20 @@ export class Registration {
 		return this.page.locator('role=button[name="Submit"]');
 	}
 
+	get btnLogin(): Locator {
+		return this.page.locator('role=button[name="Login"]');
+	}
+
+	get goToRegister(): Locator {
+		return this.page.locator('role=link[name="Register"]');
+	}
+
+	get backToLogin(): Locator {
+		return this.page.locator('role=link[name="Back to Login"]');
+	}
+
 	get btnRegister(): Locator {
-		return this.page.locator('button.register');
+		return this.page.locator('role=button[name="Register"]');
 	}
 
 	get btnRegisterConfirmUsername(): Locator {
@@ -39,29 +51,29 @@ export class Registration {
 		return this.page.locator('[name=name]');
 	}
 
-	get textErrorName(): Locator {
-		return this.page.locator('[name=name]~.input-error');
-	}
+	// get textErrorName(): Locator {
+	// 	return this.page.locator('[name=name]~.input-error');
+	// }
 
 	get inputEmail(): Locator {
-		return this.page.locator('role=textbox[name=Email]');
+		return this.page.locator('role=textbox[name=/Email/]');
 	}
 
 	get inputPassword(): Locator {
 		return this.page.locator('[name=password]');
 	}
 
-	get textErrorPassword(): Locator {
-		return this.page.locator('[name=password]~.input-error');
-	}
+	// get textErrorPassword(): Locator {
+	// 	return this.page.locator('[name=password]~.input-error');
+	// }
 
 	get inputPasswordConfirm(): Locator {
-		return this.page.locator('[name=confirm-pass]');
+		return this.page.locator('[name=passwordConfirmation]');
 	}
 
-	get textErrorPasswordConfirm(): Locator {
-		return this.page.locator('[name=confirm-pass]~.input-error');
-	}
+	// get textErrorPasswordConfirm(): Locator {
+	// 	return this.page.locator('[name=confirm-pass]~.input-error');
+	// }
 
 	get forgotPasswordEmailCallout(): Locator {
 		return this.page.locator('role=alert');

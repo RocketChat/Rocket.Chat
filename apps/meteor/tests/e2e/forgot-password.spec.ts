@@ -1,26 +1,5 @@
-import type { Locator } from '@playwright/test';
-
 import { test, expect } from './utils/test';
 import { Registration } from './page-objects';
-
-expect.extend({
-	async toBeInvalid(received: Locator) {
-		const pass = await received.evaluate((node) => node.getAttribute('aria-invalid') === 'true');
-
-		return {
-			message: () => `expected ${received} to be invalid`,
-			pass,
-		};
-	},
-	async hasAttribute(received: Locator, attribute: string) {
-		const pass = await received.evaluate((node, attribute) => node.hasAttribute(attribute), attribute);
-
-		return {
-			message: () => `expected ${received} to have attribute \`${attribute}\``,
-			pass,
-		};
-	},
-});
 
 test.describe.parallel('Forgot Password', () => {
 	let poRegistration: Registration;

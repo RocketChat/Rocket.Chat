@@ -62,7 +62,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 						setError('email', { type: 'invalid-email', message: t('Invalid_email') });
 					}
 
-					if ('error' in error) {
+					if ('error' in error && error.error !== 403) {
 						setErrorOnSubmit(error.error);
 						return;
 					}
@@ -88,7 +88,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								})}
 								placeholder={t('registration.component.form.emailOrUsernamePlaceholder')}
 								error={errors.username?.message}
-								aria-invalid={errors.username ? 'true' : 'false'}
+								aria-invalid={errors.username || errorOnSubmit === 'user-not-found' ? 'true' : 'false'}
 								id='username'
 							/>
 						</Field.Row>
@@ -106,7 +106,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								})}
 								placeholder={'*****'}
 								error={errors.password?.message}
-								aria-invalid={errors.password ? 'true' : 'false'}
+								aria-invalid={errors.password || errorOnSubmit === 'user-not-found' ? 'true' : 'false'}
 								id='password'
 							/>
 						</Field.Row>
@@ -117,7 +117,6 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 							<Field.Row justifyContent='end'>
 								<Field.Link
 									href='#'
-
 									onClick={(e): void => {
 										e.preventDefault();
 										setLoginRoute('reset-password');

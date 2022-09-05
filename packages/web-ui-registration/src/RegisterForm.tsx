@@ -112,6 +112,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 												sprintf: [t('Email')],
 											})
 										}
+										name='email'
 										aria-invalid={errors.email ? 'true' : undefined}
 										id='email'
 									/>
