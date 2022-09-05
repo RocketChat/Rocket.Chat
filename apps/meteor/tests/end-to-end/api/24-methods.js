@@ -126,6 +126,41 @@ describe('Meteor.methods', function () {
 
 		let channelName = false;
 
+		let discussion = false;
+		let discussionMessage = false;
+
+		let testUser;
+		const testUserCredentials = {};
+
+		before('Create test users', (done) => {
+			const username = `user.test.${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+			request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password: username, roles: ['user'] })
+				.end((err, res) => {
+					testUser = res.body.user;
+					done();
+				});
+		});
+
+		before('login testUser', (done) => {
+			request
+				.post(api('login'))
+				.send({
+					user: testUser.username,
+					password: testUser.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
+					testUserCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+
 		before('create room', (done) => {
 			channelName = `methods-test-channel-${Date.now()}`;
 			request
@@ -147,6 +182,28 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		before('create discussion', (done) => {
+			const discussionName = `methods-test-discussion-${Date.now()}`;
+
+			request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: rid,
+					t_name: discussionName,
+					reply: 'reply from discussion tests',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(rid);
+					expect(res.body.discussion).to.have.property('fname', discussionName);
+					discussion = res.body.discussion;
+				})
+				.end(done);
+		});
+
 		before('send sample message', (done) => {
 			request
 				.post(api('chat.sendMessage'))
@@ -162,6 +219,25 @@ describe('Meteor.methods', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					firstMessage = res.body.message;
+				})
+				.end(done);
+		});
+
+		before('send sample message to discussion', (done) => {
+			request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample discussion message',
+						rid: discussion._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					discussionMessage = res.body.message;
 				})
 				.end(done);
 		});
@@ -277,6 +353,28 @@ describe('Meteor.methods', function () {
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('result').that.is.an('array');
 					expect(data.result.length).to.equal(2);
+				})
+				.end(done);
+		});
+
+		it("should fail if user can't access parent room", (done) => {
+			request
+				.post(methodCall('getMessages'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getMessages',
+						params: [[discussionMessage._id]],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('error', 'error-not-allowed');
 				})
 				.end(done);
 		});
