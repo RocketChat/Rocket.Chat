@@ -79,7 +79,6 @@ API.v1.addRoute(
 			if (!_id) {
 				throw new Error('error-invalid-param');
 			}
-			// TODO: Chapter day backend - check if user has permission to view this email inbox instead of null values
 			const emailInboxes = await findOneEmailInbox({ _id });
 
 			return API.v1.success(emailInboxes);
@@ -94,12 +93,7 @@ API.v1.addRoute(
 				throw new Error('error-invalid-param');
 			}
 
-			console.log('------------------');
-			console.log('delete email inbox');
-			console.log('id', _id);
-			console.log('------------------');
 			const emailInboxes = await EmailInbox.findOneById(_id);
-			console.log('emailInboxes', emailInboxes);
 			if (!emailInboxes) {
 				return API.v1.notFound();
 			}
