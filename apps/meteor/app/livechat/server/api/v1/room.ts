@@ -1,4 +1,3 @@
-/* eslint-disable no-unreachable */
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 import { isLiveChatRoomSaveInfoProps } from '@rocket.chat/rest-typings';

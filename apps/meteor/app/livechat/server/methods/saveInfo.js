@@ -6,10 +6,16 @@ import { hasPermission } from '../../../authorization';
 import { LivechatRooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-// TODO: Deprecate this method in favor of "livechat/room.saveInfo" endpoint in v6.0.0
+/**
+ * @deprecated since version 6.0.0
+ */
 Meteor.methods({
 	async 'livechat:saveInfo'(guestData, roomData) {
+		methodDeprecationLogger.warn(
+			'livechat:saveInfo method will be deprecated in future versions of Rocket.Chat. Use "livechat/room.saveInfo" endpoint instead.',
+		);
 		const userId = Meteor.userId();
 
 		if (!userId || !hasPermission(userId, 'view-l-room')) {
