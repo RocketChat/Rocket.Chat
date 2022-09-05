@@ -1,14 +1,6 @@
 import { IOAuthApps, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, TextInput, Field, Icon, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
-import {
-	useSetModal,
-	useToastMessageDispatch,
-	useRoute,
-	useAbsoluteUrl,
-	useTranslation,
-	useEndpoint,
-	useMethod,
-} from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, useAbsoluteUrl, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, ReactElement, ComponentProps } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
@@ -54,7 +46,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 	const tokenUrl = useMemo(() => absoluteUrl('oauth/token'), [absoluteUrl]);
 
 	const saveApp = useEndpoint('POST', '/v1/oauth-apps.updateOAuthApp');
-	const deleteApp = useMethod('deleteOAuthApp');
+	const deleteApp = useEndpoint('POST', '/v1/oauth-apps.deleteOAuthApp');
 
 	const onSubmit: SubmitHandler<EditOAuthAddAppPayload> = async (newData: EditOAuthAddAppPayload) => {
 		try {
