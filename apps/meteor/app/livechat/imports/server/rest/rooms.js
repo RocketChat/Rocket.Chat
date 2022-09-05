@@ -32,6 +32,7 @@ API.v1.addRoute(
 			check(open, Match.Maybe(String));
 			check(onhold, Match.Maybe(String));
 			check(tags, Match.Maybe([String]));
+			check(customFields, Match.Maybe(String));
 
 			createdAt = validateDateParams('createdAt', createdAt);
 			closedAt = validateDateParams('closedAt', closedAt);
@@ -43,7 +44,14 @@ API.v1.addRoute(
 			}
 
 			if (customFields) {
-				customFields = JSON.parse(customFields);
+				try {
+					const parsedCustomFields = JSON.parse(customFields);
+					check(parsedCustomFields, Object);
+					// Model's already checking for the keys, so we don't need to do it here.
+					customFields = parsedCustomFields;
+				} catch (e) {
+					throw new Error('The "customFields" query parameter must be a valid JSON.');
+				}
 			}
 
 			return API.v1.success(

@@ -244,6 +244,52 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.end(done);
 		});
+		it('should not cause issues when the customFields is empty', (done) => {
+			request
+				.get(api(`livechat/rooms?customFields={}&roomName=test`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.rooms).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
+		it('should throw an error if customFields param is not a object', (done) => {
+			request
+				.get(api(`livechat/rooms?customFields=string`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+	});
+
+	describe('livechat/room.join', () => {
+		it('should fail if user doesnt have view-l-room permission', async () => {
+			await updatePermission('view-l-room', []);
+			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: '123' }).send().expect(403);
+		});
+		it('should fail if no roomId is present on query params', async () => {
+			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
+			await request.get(api('livechat/room.join')).set(credentials).expect(400);
+		});
+		it('should fail if room is present but invalid', async () => {
+			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: 'invalid' }).send().expect(400);
+		});
+		it('should allow user to join room', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+
+			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: room._id }).send().expect(200);
+		});
 	});
 
 	describe('livechat/room.join', () => {
