@@ -1,6 +1,14 @@
 import { IOAuthApps, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, TextInput, Field, Icon, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useRoute, useAbsoluteUrl, useTranslation, useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
+import {
+	useSetModal,
+	useToastMessageDispatch,
+	useRoute,
+	useAbsoluteUrl,
+	useTranslation,
+	useEndpoint,
+	useMethod,
+} from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, ReactElement, ComponentProps } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
