@@ -134,7 +134,7 @@ API.v1.addRoute(
 	{
 		post() {
 			// eslint-disable-next-line @typescript-eslint/naming-convention
-			const { public_key, private_key } = Meteor.call('e2e.fetchMyKeys');
+			const { public_key, private_key } = this.bodyParams;
 
 			Meteor.call('e2e.setUserPublicAndPrivateKeys', {
 				public_key,
