@@ -6,21 +6,17 @@ import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/transcript', {
 	async post() {
-		try {
-			check(this.bodyParams, {
-				token: String,
-				rid: String,
-				email: String,
-			});
+		check(this.bodyParams, {
+			token: String,
+			rid: String,
+			email: String,
+		});
 
-			const { token, rid, email } = this.bodyParams;
-			if (!(await Livechat.sendTranscript({ token, rid, email }))) {
-				return API.v1.failure({ message: TAPi18n.__('Error_sending_livechat_transcript') });
-			}
-
-			return API.v1.success({ message: TAPi18n.__('Livechat_transcript_sent') });
-		} catch (e) {
-			return API.v1.failure(e);
+		const { token, rid, email } = this.bodyParams;
+		if (!(await Livechat.sendTranscript({ token, rid, email }))) {
+			return API.v1.failure({ message: TAPi18n.__('Error_sending_livechat_transcript') });
 		}
+
+		return API.v1.success({ message: TAPi18n.__('Livechat_transcript_sent') });
 	},
 });
