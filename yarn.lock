@@ -3389,6 +3389,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/emitter@npm:next":
+  version: 0.31.19-dev.7
+  resolution: "@rocket.chat/emitter@npm:0.31.19-dev.7"
+  checksum: 328b0c061a831efe66a66f36189a9039ff5bfb9dd95d2a6d63cdc89798b8abd8f9de786b041b261c913c84190c410e39a2304cd909bc45f619e67ba82407c522
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/eslint-config@npm:^0.4.0":
   version: 0.4.0
   resolution: "@rocket.chat/eslint-config@npm:0.4.0"
@@ -4295,6 +4302,15 @@ __metadata:
   dependencies:
     tslib: ^2.3.1
   checksum: 82af239036075034112329521cd12813c340aa21055b95da5547b452e60d334cf3ee68a18cdc837a860bd2ffa55ed835cb8c3bdee0ba3daa7233a494e2152015
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/string-helpers@npm:next":
+  version: 0.31.19-dev.7
+  resolution: "@rocket.chat/string-helpers@npm:0.31.19-dev.7"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: 218e53fd466cd695e6661425def08a094fed80acd7477a1a3a6da8d55dba320a95f2499634f71aa6ea70a0662c183832ce29d804e1dd59e6aef42c73c53d80ad
   languageName: node
   linkType: hard
 

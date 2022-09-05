@@ -17,11 +17,31 @@ export class Presence extends ServiceClass implements IPresence {
 		return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 	}
 
+	async created(): Promise<void> {
+		// TODO should presence be reactive to database records or just websocket events?
+		// this.onEvent('watch.userSessions', async ({ userSession }): Promise<void> => {
+		// 	console.log('watch.userSessions ->', userSession);
+		// 	if (!userSession._id) {
+		// 		return;
+		// 	}
+		// 	await this.updateUserPresence(userSession._id);
+		// });
+
+		this.onEvent('watch.instanceStatus', async ({ clientAction, id }): Promise<void> => {
+			if (clientAction !== 'removed') {
+				return;
+			}
+
+			const affectedUsers = await this.removeLostConnections(id);
+			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
+		});
+	}
+
 	async started(): Promise<void> {
 		setTimeout(async () => {
 			const affectedUsers = await this.removeLostConnections();
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
-		}, 100);
+		}, 10000);
 
 		// process.on('exit', Meteor.bindEnvironment(function() {
 		// 	if (Package['konecty:multiple-instances-status']) {
@@ -30,27 +50,6 @@ export class Presence extends ServiceClass implements IPresence {
 		// 		UserPresence.removeAllConnections();
 		// 	}
 		// }));
-
-		// TODO should presence be reactive to database records or just websocket events?
-		// if (isPresenceMonitorEnabled()) {
-		// 	this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {
-		// 		if (clientAction === 'removed') {
-		// 			UserPresenceMonitor.processUserSession(
-		// 				{
-		// 					_id: userSession._id,
-		// 					connections: [
-		// 						{
-		// 							fake: true,
-		// 						},
-		// 					],
-		// 				},
-		// 				'removed',
-		// 			);
-		// 		}
-
-		// 		UserPresenceMonitor.processUserSession(userSession, minimongoChangeMap[clientAction]);
-		// 	});
-		// }
 	}
 
 	toggleBroadcast(enabled: boolean): void {
@@ -98,50 +97,28 @@ export class Presence extends ServiceClass implements IPresence {
 			const affectedUsers = await UsersSessions.findByInstanceId(nodeID).toArray();
 
 			const { modifiedCount } = await UsersSessions.removeConnectionsFromInstanceId(nodeID);
-
 			if (modifiedCount === 0) {
 				return [];
 			}
 
-			return affectedUsers.map(({ _id }) => {
-				this.updateUserPresence(_id);
-				return _id;
-			});
+			return affectedUsers.map(({ _id }) => _id);
 		}
 
 		const nodes: any = await this.api.broker.nodeList();
 
 		const ids = nodes.filter((node: any) => node.available).map(({ id }: { id: string }) => id);
 
-		const affectedUsers = await UsersSessions.find(
-			{
-				'connections.instanceId': {
-					$exists: true,
-					$nin: ids,
-				},
-			},
-			{ projection: { _id: 1 } },
-		).toArray();
+		if (ids.length === 0) {
+			return [];
+		}
 
-		const update = {
-			$pull: {
-				connections: {
-					instanceId: {
-						$nin: ids,
-					},
-				},
-			},
-		};
-		const { modifiedCount } = await UsersSessions.updateMany({}, update);
-
+		const { modifiedCount } = await UsersSessions.removeConnectionsFromOtherInstanceIds(ids);
 		if (modifiedCount === 0) {
 			return [];
 		}
 
-		return affectedUsers.map(({ _id }) => {
-			this.updateUserPresence(_id);
-			return _id;
-		});
+		const affectedUsers = await UsersSessions.findByOtherInstanceIds(ids, { projection: { _id: 1 } }).toArray();
+		return affectedUsers.map(({ _id }) => _id);
 	}
 
 	async setStatus(uid: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {

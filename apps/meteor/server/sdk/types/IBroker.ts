@@ -3,9 +3,9 @@ import type { EventSignatures } from '../lib/Events';
 
 export interface IBrokerNode {
 	id: string;
-	instanceID: string;
+	instanceID?: string;
 	available: boolean;
-	local: boolean;
+	local?: boolean;
 	// lastHeartbeatTime: 16,
 	// config: {},
 	// client: { type: 'nodejs', version: '0.14.10', langVersion: 'v12.18.3' },

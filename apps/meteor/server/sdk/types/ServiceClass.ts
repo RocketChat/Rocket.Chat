@@ -39,9 +39,9 @@ export interface IServiceClass {
 
 	isInternal(): boolean;
 
-	created?(): Promise<void>;
-	started?(): Promise<void>;
-	stopped?(): Promise<void>;
+	created(): Promise<void>;
+	started(): Promise<void>;
+	stopped(): Promise<void>;
 }
 
 export abstract class ServiceClass implements IServiceClass {
@@ -83,6 +83,18 @@ export abstract class ServiceClass implements IServiceClass {
 
 	public emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void {
 		this.events.emit(event, ...args);
+	}
+
+	async created(): Promise<void> {
+		// noop
+	}
+
+	async started(): Promise<void> {
+		// noop
+	}
+
+	async stopped(): Promise<void> {
+		// noop
 	}
 }
 

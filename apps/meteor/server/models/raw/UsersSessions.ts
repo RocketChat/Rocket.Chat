@@ -1,6 +1,6 @@
 import type { IUserSession, IUserSessionConnection, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IUsersSessionsModel } from '@rocket.chat/model-typings';
-import type { FindCursor, Collection, Db } from 'mongodb';
+import type { FindCursor, Collection, Db, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -60,6 +60,21 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 		);
 	}
 
+	removeConnectionsFromOtherInstanceIds(instanceIds: string[]): ReturnType<BaseRaw<IUserSession>['updateMany']> {
+		return this.updateMany(
+			{},
+			{
+				$pull: {
+					connections: {
+						instanceId: {
+							$nin: instanceIds,
+						},
+					},
+				},
+			},
+		);
+	}
+
 	async removeConnectionByConnectionId(connectionId: string): ReturnType<BaseRaw<IUserSession>['updateMany']> {
 		return this.updateMany(
 			{
@@ -100,5 +115,17 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 		};
 
 		return this.updateOne({ _id: userId }, update, { upsert: true });
+	}
+
+	findByOtherInstanceIds(instanceIds: string[], options?: FindOptions<IUserSession>): FindCursor<IUserSession> {
+		return this.find(
+			{
+				'connections.instanceId': {
+					$exists: true,
+					$nin: instanceIds,
+				},
+			},
+			options,
+		);
 	}
 }
