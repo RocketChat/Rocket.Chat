@@ -14,5 +14,5 @@ export interface IUsersSessionsModel extends IBaseModel<IUserSession> {
 		{ id, instanceId, status }: Pick<IUserSessionConnection, 'id' | 'instanceId' | 'status'>,
 	): ReturnType<IBaseModel<IUserSession>['updateOne']>;
 	findByOtherInstanceIds(instanceIds: string[], options?: FindOptions<IUserSession>): FindCursor<IUserSession>;
-	removeConnectionsFromOtherInstanceIds(instanceIds: string[]): ReturnType<IBaseModel<IUserSession>['updateMany']>
+	removeConnectionsFromOtherInstanceIds(instanceIds: string[]): ReturnType<IBaseModel<IUserSession>['updateMany']>;
 }
