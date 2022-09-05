@@ -140,6 +140,7 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 		{
 			staleTime: 60_000,
 			keepPreviousData: true,
+			placeholderData: localRooms,
 		},
 	);
 };
