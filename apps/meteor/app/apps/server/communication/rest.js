@@ -868,7 +868,7 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				get() {
-					return { result: orchestrator.isEnabled() };
+					return API.v1.success({ result: orchestrator.isEnabled() });
 				},
 			},
 		);
