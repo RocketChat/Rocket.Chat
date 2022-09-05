@@ -52,9 +52,9 @@ API.v1.addRoute(
 		async post() {
 			const { applicationId, application } = this.bodyParams;
 
-			const result = Meteor.call('updateOAuthApp', applicationId, application);
+			Meteor.call('updateOAuthApp', applicationId, application);
 
-			return API.v1.success(result);
+			return API.v1.success();
 		},
 	},
 );

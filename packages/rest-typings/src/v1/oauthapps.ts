@@ -16,6 +16,6 @@ export type OAuthAppsEndpoint = {
 	};
 
 	'/v1/oauth-apps.updateOAuthApp': {
-		GET: (params: UpdateOAuthAppParams) => IOAuthApps | null;
+		GET: (params: UpdateOAuthAppParams) => void;
 	};
 };

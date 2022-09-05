@@ -4,8 +4,10 @@ export type UpdateOAuthAppParams = {
 	applicationId: string;
 	application: {
 		name: string;
-		redirectUri: string;
 		active: boolean;
+		clientId?: string | undefined;
+		clientSecret?: string | undefined;
+		redirectUri: string;
 	};
 };
 
@@ -21,14 +23,22 @@ const UpdateOAuthAppParamsSchema = {
 				name: {
 					type: 'string',
 				},
-				redirectUri: {
-					type: 'string',
-				},
 				active: {
 					type: 'boolean',
 				},
+				clientId: {
+					type: 'string',
+					nullable: true,
+				},
+				clientSecret: {
+					type: 'string',
+					nullable: true,
+				},
+				redirectUri: {
+					type: 'string',
+				},
 			},
-			required: ['name', 'redirectUri', 'active'],
+			required: ['name', 'active', 'redirectUri'],
 			additionalProperties: false,
 		},
 	},
