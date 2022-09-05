@@ -8,15 +8,14 @@ type AppsListProps = {
 	apps: App[];
 	title: string;
 	isMarketplace: boolean;
-	mbe?: string | number;
 };
 
-const AppsList = ({ apps, title, isMarketplace, mbe }: AppsListProps): ReactElement => (
+const AppsList = ({ apps, title, isMarketplace }: AppsListProps): ReactElement => (
 	<>
 		<Box is='h3' fontScale='h3' color='default' mbe='x20'>
 			{title}
 		</Box>
-		<Box mbe={mbe}>
+		<Box mbe='x36'>
 			{apps.map((app) => (
 				<AppRow key={app.id} isMarketplace={isMarketplace} {...app} />
 			))}

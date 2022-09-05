@@ -34,7 +34,6 @@ const FeaturedAppsSections = ({ appsResult, isMarketplace, isFiltered }: Feature
 						apps={normalizeFeaturedApps(section.apps, appsResult.value.items)}
 						title={t.has(section.i18nLabel) ? t(section.i18nLabel) : section.i18nLabel}
 						isMarketplace={isMarketplace}
-						mbe='x36'
 					/>
 				))}
 			</>
