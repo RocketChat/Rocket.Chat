@@ -111,7 +111,7 @@ const useQuery: useQueryType = (
 	}, [guest, column, direction, itemsPerPage, current, from, to, status, servedBy, department, tags, customFields]);
 
 const CurrentChatsRoute = (): ReactElement => {
-	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open'>('fname');
+	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open'>('ts');
 	const [customFields, setCustomFields] = useState<{ [key: string]: string }>();
 	const [params, setParams] = useState({
 		guest: '',
