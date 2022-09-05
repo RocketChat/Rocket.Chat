@@ -18,7 +18,7 @@ type ENTERPRISE_STATISTICS = {
 export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 	const statsPms: Array<Promise<any>> = [];
 
-	const statistics: ENTERPRISE_STATISTICS = {} as any;
+	let statistics: ENTERPRISE_STATISTICS = {} as any;
 
 	const modules = getModules();
 	statistics.modules = modules;
@@ -33,41 +33,58 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 	);
 
 	if (hasLicense('livechat-enterprise')) {
-		// Number of livechat tags
-		statsPms.push(
-			LivechatTag.col.count().then((count) => {
-				statistics.livechatTags = count;
-				return true;
-			}),
-		);
-
-		// Number of canned responses
-		statsPms.push(
-			CannedResponse.col.count().then((count) => {
-				statistics.cannedResponses = count;
-				return true;
-			}),
-		);
-
-		// Number of Priorities
-		statsPms.push(
-			LivechatPriority.col.count().then((count) => {
-				statistics.priorities = count;
-				return true;
-			}),
-		);
-
-		// Number of business units
-		statsPms.push(
-			LivechatUnit.find({ type: 'u' })
-				.count()
-				.then((count) => {
-					statistics.businessUnits = count;
-					return true;
-				}),
-		);
+		const eeModelsStats = await getStatsFromEEModels();
+		statistics = {
+			...statistics,
+			...eeModelsStats,
+		};
 	}
 
 	await Promise.all(statsPms).catch(log);
+	return statistics;
+}
+
+// These models are only available on EE license so don't import them inside CE license as it will break the build
+async function getStatsFromEEModels(): Promise<ENTERPRISE_STATISTICS> {
+	const statsPms: Array<Promise<any>> = [];
+
+	const statistics: ENTERPRISE_STATISTICS = {} as any;
+
+	// Number of livechat tags
+	statsPms.push(
+		LivechatTag.col.count().then((count) => {
+			statistics.livechatTags = count;
+			return true;
+		}),
+	);
+
+	// Number of canned responses
+	statsPms.push(
+		CannedResponse.col.count().then((count) => {
+			statistics.cannedResponses = count;
+			return true;
+		}),
+	);
+
+	// Number of Priorities
+	statsPms.push(
+		LivechatPriority.col.count().then((count) => {
+			statistics.priorities = count;
+			return true;
+		}),
+	);
+
+	// Number of business units
+	statsPms.push(
+		LivechatUnit.find({ type: 'u' })
+			.count()
+			.then((count) => {
+				statistics.businessUnits = count;
+				return true;
+			}),
+	);
+
+	await Promise.all(statsPms).catch(log);
+
 	return statistics;
 }
