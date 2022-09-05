@@ -15,6 +15,8 @@ import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
 import { canAccessRoom } from '../../../../authorization/server';
 import { addUserToRoom } from '../../../../lib/server/functions';
+import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
+import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 
 API.v1.addRoute('livechat/room', {
 	async get() {
@@ -105,6 +107,7 @@ API.v1.addRoute('livechat/room.close', {
 
 API.v1.addRoute('livechat/room.transfer', {
 	async post() {
+		apiDeprecationLogger.warn('livechat/room.transfer has been deprecated. Use livechat/room.forward instead.');
 		check(this.bodyParams, {
 			rid: String,
 			token: String,
@@ -134,7 +137,13 @@ API.v1.addRoute('livechat/room.transfer', {
 		}
 
 		room = findRoom(token, rid);
-		return API.v1.success({ room });
+		return API.v1.success(
+			deprecationWarning({
+				endpoint: 'livechat/room.transfer',
+				versionWillBeRemoved: '6.0',
+				response: { room },
+			}),
+		);
 	},
 });
 

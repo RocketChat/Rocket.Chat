@@ -42,10 +42,7 @@ export const findEmailInboxes = async ({
 	};
 };
 
-export const findOneEmailInbox = async ({ userId, _id }: { userId: string; _id: string }): Promise<IEmailInbox | null> => {
-	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
-		throw new Error('error-not-allowed');
-	}
+export const findOneEmailInbox = async ({ _id }: { _id: string }): Promise<IEmailInbox | null> => {
 	return EmailInbox.findOneById(_id);
 };
 export const insertOneEmailInbox = async (
@@ -62,12 +59,12 @@ export const insertOneEmailInbox = async (
 };
 
 export const updateEmailInbox = async (
-	userId: string,
+	_userId: string,
 	emailInboxParams: Pick<IEmailInbox, '_id' | 'active' | 'name' | 'email' | 'description' | 'senderInfo' | 'department' | 'smtp' | 'imap'>,
 ): Promise<InsertOneResult<WithId<IEmailInbox>> | UpdateResult> => {
 	const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailInboxParams;
 
-	const emailInbox = await findOneEmailInbox({ userId, _id });
+	const emailInbox = await findOneEmailInbox({ _id });
 
 	if (!emailInbox) {
 		throw new Error('error-invalid-email-inbox');

@@ -3,13 +3,12 @@ import { EmailInbox } from '@rocket.chat/models';
 
 import { API } from '../api';
 import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailInbox } from '../lib/emailInbox';
-import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import Users from '../../../models/server/models/Users';
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
 
 API.v1.addRoute(
 	'email-inbox.list',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -23,13 +22,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'email-inbox',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async post() {
-			if (!hasPermission(this.userId, 'manage-email-inbox')) {
-				throw new Error('error-not-allowed');
-			}
-
 			check(this.bodyParams, {
 				_id: Match.Maybe(String),
 				active: Boolean,
@@ -73,7 +68,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'email-inbox/:_id',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async get() {
 			check(this.urlParams, {
@@ -85,14 +80,11 @@ API.v1.addRoute(
 				throw new Error('error-invalid-param');
 			}
 			// TODO: Chapter day backend - check if user has permission to view this email inbox instead of null values
-			const emailInboxes = await findOneEmailInbox({ userId: this.userId, _id });
+			const emailInboxes = await findOneEmailInbox({ _id });
 
 			return API.v1.success(emailInboxes);
 		},
 		async delete() {
-			if (!hasPermission(this.userId, 'manage-email-inbox')) {
-				throw new Error('error-not-allowed');
-			}
 			check(this.urlParams, {
 				_id: String,
 			});
@@ -102,8 +94,12 @@ API.v1.addRoute(
 				throw new Error('error-invalid-param');
 			}
 
+			console.log('------------------');
+			console.log('delete email inbox');
+			console.log('id', _id);
+			console.log('------------------');
 			const emailInboxes = await EmailInbox.findOneById(_id);
-
+			console.log('emailInboxes', emailInboxes);
 			if (!emailInboxes) {
 				return API.v1.notFound();
 			}
@@ -115,12 +111,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'email-inbox.search',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'manage-email-inbox')) {
-				throw new Error('error-not-allowed');
-			}
 			check(this.queryParams, {
 				email: String,
 			});
@@ -138,12 +131,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'email-inbox.send-test/:_id',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async post() {
-			if (!hasPermission(this.userId, 'manage-email-inbox')) {
-				throw new Error('error-not-allowed');
-			}
 			check(this.urlParams, {
 				_id: String,
 			});
@@ -152,7 +142,7 @@ API.v1.addRoute(
 			if (!_id) {
 				throw new Error('error-invalid-param');
 			}
-			const emailInbox = await findOneEmailInbox({ userId: this.userId, _id });
+			const emailInbox = await findOneEmailInbox({ _id });
 
 			if (!emailInbox) {
 				return API.v1.notFound();
