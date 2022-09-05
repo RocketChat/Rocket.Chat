@@ -5,7 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import React, { memo, ReactElement, useCallback, useEffect, useRef } from 'react';
 
-import { chatMessages } from '../../../../../app/ui';
+import { ChatMessages } from '../../../../../app/ui';
 import { RoomManager } from '../../../../../app/ui-utils/client';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
@@ -14,10 +14,11 @@ import ComposerSkeleton from '../../Room/ComposerSkeleton';
 type ComposerContainerProps = {
 	rid: IRoom['_id'];
 	subscription?: ISubscription;
-	sendToBottomIfNecessary?: () => void;
+	chatMessagesInstance: ChatMessages;
+	onResize?: () => void;
 };
 
-const ComposerContainer = ({ rid, subscription, sendToBottomIfNecessary }: ComposerContainerProps): ReactElement => {
+const ComposerContainer = ({ rid, subscription, chatMessagesInstance, onResize }: ComposerContainerProps): ReactElement => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const showFormattingTips = useSetting('Message_ShowFormattingTips') as boolean;
 
@@ -28,6 +29,7 @@ const ComposerContainer = ({ rid, subscription, sendToBottomIfNecessary }: Compo
 			subscription,
 			isEmbedded: isLayoutEmbedded,
 			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
+			onResize,
 		}),
 	);
 
@@ -37,8 +39,9 @@ const ComposerContainer = ({ rid, subscription, sendToBottomIfNecessary }: Compo
 			subscription,
 			isEmbedded: isLayoutEmbedded,
 			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
+			onResize,
 		});
-	}, [isLayoutEmbedded, rid, showFormattingTips, subscription]);
+	}, [isLayoutEmbedded, onResize, rid, showFormattingTips, subscription]);
 
 	const footerRef = useCallback(
 		(footer: HTMLElement | null) => {
@@ -48,9 +51,8 @@ const ComposerContainer = ({ rid, subscription, sendToBottomIfNecessary }: Compo
 					() => ({
 						...messageBoxViewDataRef.current.get(),
 						onInputChanged: (input: HTMLTextAreaElement): void => {
-							chatMessages[rid]?.initializeInput(input, { rid });
+							chatMessagesInstance.initializeInput(input, { rid });
 						},
-						onResize: () => sendToBottomIfNecessary?.(),
 						onKeyUp: (
 							event: KeyboardEvent,
 							{
@@ -60,8 +62,8 @@ const ComposerContainer = ({ rid, subscription, sendToBottomIfNecessary }: Compo
 								rid: string;
 								tmid?: string | undefined;
 							},
-						) => chatMessages[rid]?.keyup(event, { rid, tmid }),
-						onKeyDown: (event: KeyboardEvent) => chatMessages[rid]?.keydown(event),
+						) => chatMessagesInstance.keyup(event, { rid, tmid }),
+						onKeyDown: (event: KeyboardEvent) => chatMessagesInstance.keydown(event),
 						onSend: (
 							event: Event,
 							params: {
@@ -71,7 +73,7 @@ const ComposerContainer = ({ rid, subscription, sendToBottomIfNecessary }: Compo
 								tshow?: boolean;
 							},
 							done?: () => void,
-						) => chatMessages[rid]?.send(event, params, done),
+						) => chatMessagesInstance.send(event, params, done),
 					}),
 					footer,
 				);
@@ -83,7 +85,7 @@ const ComposerContainer = ({ rid, subscription, sendToBottomIfNecessary }: Compo
 				messageBoxViewRef.current = undefined;
 			}
 		},
-		[rid, sendToBottomIfNecessary],
+		[rid, chatMessagesInstance],
 	);
 
 	const subscriptionReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));

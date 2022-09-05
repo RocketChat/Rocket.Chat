@@ -7,14 +7,10 @@ import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { VoipRoomForeword } from '../../../../components/voip/room/VoipRoomForeword';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 
-type RoomForewordProps = { user: IUser | null; room: IRoom | undefined };
+type RoomForewordProps = { user: IUser | null; room: IRoom };
 
 const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null => {
 	const t = useTranslation();
-
-	if (!room) {
-		return null;
-	}
 
 	if (isVoipRoom(room)) {
 		return <VoipRoomForeword room={room} />;

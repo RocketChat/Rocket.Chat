@@ -54,11 +54,13 @@ const RoomBody = (): ReactElement => {
 	const user = useUser();
 	const tabBar = useTabBarAPI();
 	const admin = useRole('admin');
-	const subscription = useReactiveValue(useCallback(() => Subscriptions.findOne({ rid: room._id }), [room._id]));
+	const subscription = useReactiveValue(
+		useCallback(() => Subscriptions.findOne({ rid: room._id }) as ISubscription | undefined, [room._id]),
+	);
 
 	const [lastMessage, setLastMessage] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
-	const [noNewMessage, setNoNewMessage] = useState(true);
+	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab');
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
@@ -83,7 +85,7 @@ const RoomBody = (): ReactElement => {
 		}
 
 		if (isAtBottom(wrapper, scrollThreshold)) {
-			setNoNewMessage(true);
+			setHasNewMessages(false);
 			return true;
 		}
 		return false;
@@ -93,7 +95,7 @@ const RoomBody = (): ReactElement => {
 		const wrapper = wrapperRef.current;
 
 		wrapper?.scrollTo(30, wrapper.scrollHeight);
-		setNoNewMessage(true);
+		setHasNewMessages(false);
 	}, []);
 
 	const sendToBottomIfNecessary = useCallback(() => {
@@ -137,6 +139,8 @@ const RoomBody = (): ReactElement => {
 
 	const canPreviewChannelRoom = usePermission('preview-c-room');
 
+	const subscribed = !!subscription;
+
 	const canPreview = useMemo(() => {
 		if (room && room.t !== 'c') {
 			return true;
@@ -150,8 +154,8 @@ const RoomBody = (): ReactElement => {
 			return true;
 		}
 
-		return !!subscription;
-	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscription]);
+		return subscribed;
+	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
 	const roomRoles = useReactiveValue<ISubscription | undefined>(
 		useCallback(
@@ -173,15 +177,15 @@ const RoomBody = (): ReactElement => {
 				return;
 			}
 
-			const leaderUser = Users.findOne({ _id: roomRoles.u._id }, { fields: { status: 1, statusText: 1 } }) || {};
+			const leaderUser = Users.findOne({ _id: roomRoles.u._id }, { fields: { status: 1, statusText: 1 } }) as IUser | undefined;
 
 			return {
 				...roomRoles.u,
 				name: useRealName ? roomRoles.u.name || roomRoles.u.username : roomRoles.u.username,
-				status: leaderUser.status || 'offline',
-				statusDisplay: leaderUser.statusText || t(leaderUser.status || 'offline'),
-			};
-		}, [roomRoles, t, useRealName]),
+				status: leaderUser?.status,
+				statusText: leaderUser?.statusText,
+			} as const;
+		}, [roomRoles, useRealName]),
 	);
 
 	const handleOpenUserCardButtonClick = useCallback(
@@ -233,7 +237,7 @@ const RoomBody = (): ReactElement => {
 				}
 
 				if (!_isAtBottom()) {
-					setNoNewMessage(false);
+					setHasNewMessages(true);
 				}
 			},
 			callbacks.priority.MEDIUM,
@@ -292,13 +296,13 @@ const RoomBody = (): ReactElement => {
 		}
 
 		debouncedReadMessageRead();
-		if (subscription && (subscription.alert || subscription.unread)) {
+		if (subscribed && (subscription?.alert || subscription?.unread)) {
 			readMessage.refreshUnreadMark(room._id);
 		}
-	}, [debouncedReadMessageRead, openedRoom, room._id, routeName, subscription]);
+	}, [debouncedReadMessageRead, openedRoom, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
 
 	useEffect(() => {
-		if (!subscription) {
+		if (!subscribed) {
 			setUnreadCount(0);
 			return;
 		}
@@ -309,7 +313,7 @@ const RoomBody = (): ReactElement => {
 		}).count();
 
 		setUnreadCount(count);
-	}, [lastMessage, room._id, setUnreadCount, subscription]);
+	}, [lastMessage, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	useEffect(() => {
 		if (!unread?.count) {
@@ -523,6 +527,10 @@ const RoomBody = (): ReactElement => {
 		};
 	}, [checkIfScrollIsAtBottom]);
 
+	const handleComposerResize = useCallback((): void => {
+		sendToBottomIfNecessary();
+	}, [sendToBottomIfNecessary]);
+
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -560,7 +568,7 @@ const RoomBody = (): ReactElement => {
 								ref={messagesBoxRef}
 								className={['messages-box', messageViewMode, roomLeader && 'has-leader'].filter(isTruthy).join(' ')}
 							>
-								<NewMessagesButton visible={!noNewMessage} onClick={handleNewMessageButtonClick} />
+								<NewMessagesButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} />
 								<JumpToRecentMessagesBar visible={hasMoreNext} onClick={handleJumpToRecentButtonClick} />
 								{!canPreview ? (
 									<div className='content room-not-found error-color'>
@@ -572,8 +580,8 @@ const RoomBody = (): ReactElement => {
 										name={roomLeader.name}
 										username={roomLeader.username}
 										status={roomLeader.status}
-										statusDisplay={roomLeader.statusDisplay}
-										hideLeaderHeader={hideLeaderHeader}
+										statusText={roomLeader.statusText}
+										visible={!hideLeaderHeader}
 										onAvatarClick={handleOpenUserCardButtonClick}
 									/>
 								) : null}
@@ -606,7 +614,12 @@ const RoomBody = (): ReactElement => {
 									</ul>
 								</div>
 							</div>
-							<ComposerContainer rid={room._id} subscription={subscription} sendToBottomIfNecessary={sendToBottomIfNecessary} />
+							<ComposerContainer
+								rid={room._id}
+								subscription={subscription}
+								chatMessagesInstance={chatMessagesInstance}
+								onResize={handleComposerResize}
+							/>
 						</div>
 					</div>
 				</section>

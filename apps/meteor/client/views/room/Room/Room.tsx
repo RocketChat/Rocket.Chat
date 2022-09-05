@@ -1,5 +1,5 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { createElement, ReactElement, Suspense } from 'react';
+import React, { createElement, memo, ReactElement, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import VerticalBarSkeleton from '../../../components/VerticalBar/VerticalBarSkeleton';
@@ -63,4 +63,4 @@ const Room = (): ReactElement => {
 	);
 };
 
-export default Room;
+export default memo(Room);
