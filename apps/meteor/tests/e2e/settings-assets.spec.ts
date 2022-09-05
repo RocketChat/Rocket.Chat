@@ -8,9 +8,8 @@ test.describe.serial('settings-assets', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poAdmin = new Admin(page);
-		await page.goto('/admin');
+		await page.goto('/admin/settings');
 
-		await poAdmin.sidenav.linkSettings.click();
 		await poAdmin.btnAssetsSettings.click();
 
 		await expect(page.locator('[data-qa-type="PageHeader-title"]')).toHaveText('Assets');
