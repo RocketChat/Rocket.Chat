@@ -210,7 +210,7 @@ describe('LIVECHAT - Utils', function () {
 			const { body } = await request
 				.post(api('livechat/visitor.callStatus'))
 				.set(credentials)
-				.send({ token: 'test', rid: 'test', callStatus: 'test', callId: 'test' });
+				.send({ token: new Date().getTime(), rid: 'test', callStatus: 'test', callId: 'test' });
 			expect(body).to.have.property('success', false);
 		});
 		it('should try update a call status on room', async () => {
