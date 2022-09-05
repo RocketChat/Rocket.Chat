@@ -1057,7 +1057,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (tags) {
 			query.tags = { $in: tags };
 		}
-		if (customFields) {
+		if (customFields && Object.keys(customFields).length) {
 			query.$and = Object.keys(customFields).map((key) => ({
 				[`livechatData.${key}`]: new RegExp(customFields[key], 'i'),
 			}));
