@@ -17,7 +17,6 @@ import type {
 	ISocketConnection,
 	ISubscription,
 	IUser,
-	IUserSession,
 	IUserStatus,
 	IInvite,
 	IWebdavAccount,
@@ -93,7 +92,6 @@ export type EventSignatures = {
 	'watch.roles'(data: { clientAction: ClientAction; role: Partial<IRole> }): void;
 	'watch.rooms'(data: { clientAction: ClientAction; room: Pick<IRoom, '_id'> & Partial<IRoom> }): void;
 	'watch.subscriptions'(data: { clientAction: ClientAction; subscription: Partial<ISubscription> }): void;
-	'watch.userSessions'(data: { clientAction: ClientAction; userSession: Partial<IUserSession> }): void;
 	'watch.inquiries'(data: { clientAction: ClientAction; inquiry: IInquiry; diff?: undefined | Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: ClientAction; setting: ISetting }): void;
 	'watch.users'(data: {

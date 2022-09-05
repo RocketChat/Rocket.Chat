@@ -1,5 +1,4 @@
 import './migrations';
-import './watchDb';
 import './appcache';
 import './callbacks';
 import './cron';
@@ -14,5 +13,6 @@ import { isRunningMs } from '../lib/isRunningMs';
 
 // only starts network broker if running in micro services mode
 if (!isRunningMs()) {
+	require('./watchDb');
 	require('./presence');
 }
