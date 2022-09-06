@@ -471,8 +471,8 @@ API.v1.addRoute(
 
 			const room = findChannelByIdOrName({
 				params: {
-					roomId: channelId,
-					roomName: channelName,
+					...(channelId && { roomId: channelId }),
+					...(channelName && { roomName: channelName }),
 				},
 				userId: this.userId,
 			});
