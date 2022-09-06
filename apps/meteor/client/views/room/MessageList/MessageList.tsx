@@ -48,6 +48,10 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 								const isSystemMessage = MessageTypes.isSystemMessage(message);
 								const shouldShowMessage = !isThreadMessage(message) && !isSystemMessage;
 
+								const unread = Boolean(subscription?.tunread?.includes(message._id));
+								const mention = Boolean(subscription?.tunreadUser?.includes(message._id));
+								const all = Boolean(subscription?.tunreadGroup?.includes(message._id));
+
 								return (
 									<Fragment key={message._id}>
 										{shouldShowDivider && (
@@ -68,7 +72,9 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 												data-qa-type='message'
 												sequential={shouldShowAsSequential}
 												message={message}
-												subscription={subscription}
+												unread={unread}
+												mention={mention}
+												all={all}
 											/>
 										)}
 
