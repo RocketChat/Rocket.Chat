@@ -31,7 +31,6 @@ const useI18n = (fallbackLng = 'en', namespace: string, defaultNamespace?: strin
 						}
 					}
 
-					console.log('result', result);
 					return result;
 				},
 			},

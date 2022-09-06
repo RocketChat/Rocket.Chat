@@ -45,14 +45,14 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 										message: t('error-invalid-email-address'),
 									},
 								})}
-								error={errors.email && (errors.email?.message || 'registration.component.form.requiredField')}
+								error={errors.email && (errors.email?.message || t('registration.component.form.requiredField'))}
 								aria-invalid={Boolean(errors.email)}
-								placeholder={t('Email_Placeholder')}
+								placeholder={t('registration.component.form.emailPlaceholder')}
 								name='email'
 								id='email'
 							/>
 						</Field.Row>
-						{errors.email && <Field.Error>{errors.email.message || 'registration.component.form.requiredField'}</Field.Error>}
+						{errors.email && <Field.Error>{errors.email.message || t('registration.component.form.requiredField')}</Field.Error>}
 					</Field>
 				</FieldGroup>
 				{sent && (

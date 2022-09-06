@@ -155,7 +155,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 											required: true,
 										})}
 										placeholder='******'
-										error={errors.password?.message}
+										error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
 										aria-invalid={errors.password ? 'true' : undefined}
 										id='password'
 									/>
@@ -172,7 +172,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 												validate: (val: string) => watch('password') === val,
 											})}
 											error={errors.passwordConfirmation?.type === 'validate' ? t('Invalid_confirm_pass') : undefined}
-											placeholder={'******'}
+											placeholder='******'
 											aria-invalid={errors.passwordConfirmation ? 'true' : false}
 											id='passwordConfirmation'
 										/>

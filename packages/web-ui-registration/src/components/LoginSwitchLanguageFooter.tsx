@@ -1,4 +1,4 @@
-import { useSetting, useLoadLanguage, useLanguage } from '@rocket.chat/ui-contexts';
+import { useSetting, useLoadLanguage, useLanguage, useLanguages } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Fragment, useMemo } from 'react';
 import { Trans } from 'react-i18next';
@@ -14,18 +14,21 @@ export const normalizeLanguage = (language: string): string => {
 	return language;
 };
 
-const browserLanguage = normalizeLanguage(('pt-BR' || window.navigator.language) ?? 'en');
+const browserLanguage = normalizeLanguage(window.navigator.language ?? 'en');
 
 const LoginSwitchLanguageFooter = (): ReactElement | null => {
 	const currentLanguage = useLanguage();
 
+	const languages = useLanguages();
 	const loadLanguage = useLoadLanguage();
 
 	const serverLanguage = normalizeLanguage((useSetting('Language') as string | undefined) || 'en');
 
 	const suggestions = useMemo(() => {
 		const potentialSuggestions = new Set([serverLanguage, browserLanguage, 'en'].map(normalizeLanguage));
-		return Array.from(potentialSuggestions).filter((language) => language && language !== currentLanguage);
+		return Array.from(potentialSuggestions).filter(
+			(language) => language && language !== currentLanguage && Boolean(languages.find(({ key }) => key === language)),
+		);
 	}, [serverLanguage, browserLanguage, currentLanguage]);
 
 	const handleSwitchLanguageClick = (language: string) => (): void => {
@@ -38,23 +41,21 @@ const LoginSwitchLanguageFooter = (): ReactElement | null => {
 
 	return (
 		<p className='switch-language' role='group'>
-			<Trans
-				i18nKey='registration.component.switchLanguage'
-				list={
-					<>
-						{suggestions.map((language, index) => {
-							return (
-								<Fragment key={language}>
-									{index > 0 && <span aria-hidden='true'> | </span>}
-									<button onClick={handleSwitchLanguageClick(language)} className='js-switch-language'>
-										{language}
-									</button>
-								</Fragment>
-							);
-						})}
-					</>
-				}
-			/>
+			<Trans i18nKey='registration.component.switchLanguage'>
+				Switch to
+				<>
+					{suggestions.map((language, index) => {
+						return (
+							<Fragment key={language}>
+								{index > 0 ? <span aria-hidden='true'> | </span> : <></>}
+								<button onClick={handleSwitchLanguageClick(language)} className='js-switch-language'>
+									{language}
+								</button>
+							</Fragment>
+						);
+					})}
+				</>
+			</Trans>
 		</p>
 	);
 };

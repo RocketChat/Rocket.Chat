@@ -153,7 +153,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 			<Form.Footer>
 				<ButtonGroup stretch>
 					<Button type='submit' primary>
-						{t('Login')}
+						{t('registration.component.login')}
 					</Button>
 				</ButtonGroup>
 				<p>

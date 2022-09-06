@@ -52,7 +52,6 @@ const getLanguage = () => TAPi18n.getLanguage();
 
 const loadLanguage = (language) => {
 	TAPi18n.setLanguage(language);
-	console.log(language);
 };
 
 function TranslationProvider({ children }) {

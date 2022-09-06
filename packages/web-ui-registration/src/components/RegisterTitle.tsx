@@ -7,8 +7,9 @@ export const RegisterTitle = (): ReactElement => {
 	const siteName = String(useSetting('Site_Name'));
 	return (
 		<Trans i18nKey='registration.component.welcome'>
-			Welcome to{' '}
+			Welcome to
 			<Box is='span' color='primary-500'>
+				{' '}
 				{siteName}
 			</Box>
 		</Trans>
