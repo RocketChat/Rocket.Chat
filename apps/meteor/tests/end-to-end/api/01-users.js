@@ -70,22 +70,30 @@ describe('[Users]', function () {
 
 	before((done) => getCredentials(done));
 
-	it('enabling E2E in server and generating keys to user...', (done) => {
-		updateSetting('E2E_Enable', true).then(() => {
-			request
-				.post(api('e2e.setUserPublicAndPrivateKeys'))
-				.set(credentials)
-				.send({
-					private_key: 'test',
-					public_key: 'test',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
+	it('enabling E2E in server and generating keys to user...', async () => {
+		await updateSetting('E2E_Enable', true);
+		await request
+			.post(api('e2e.setUserPublicAndPrivateKeys'))
+			.set(credentials)
+			.send({
+				private_key: 'test',
+				public_key: 'test',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			});
+		await request
+			.get(api('e2e.fetchMyKeys'))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('public_key', 'test');
+				expect(res.body).to.have.property('private_key', 'test');
+			});
 	});
 
 	describe('[/users.create]', () => {

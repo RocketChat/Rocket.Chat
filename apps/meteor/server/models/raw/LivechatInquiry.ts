@@ -5,6 +5,7 @@ import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 
+// @ts-ignore Circular reference on field 'attachments'
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
 		super(db, 'livechat_inquiry', trash);
@@ -86,6 +87,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	async unlockAll(): Promise<UpdateResult | Document> {
-		return this.updateMany({}, { $unset: { locked: 1, lockedAt: 1 } });
+		return this.updateMany(
+			{ $or: [{ lockedAt: { $exists: true } }, { locked: { $exists: true } }] },
+			{ $unset: { locked: 1, lockedAt: 1 } },
+		);
 	}
 }
