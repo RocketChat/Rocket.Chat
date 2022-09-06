@@ -675,6 +675,11 @@ export class Subscriptions extends Base {
 		};
 
 		const update = {
+			$unset: {
+				tunread: 1,
+				tunreadUser: 1,
+				tunreadGroup: 1,
+			},
 			$set: {
 				open: true,
 				alert: false,

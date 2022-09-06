@@ -1,7 +1,18 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, DeleteResult, Document, AggregateOptions } from 'mongodb';
+import type {
+	Collection,
+	FindCursor,
+	Db,
+	Filter,
+	FindOptions,
+	UpdateResult,
+	DeleteResult,
+	Document,
+	AggregateOptions,
+	UpdateFilter,
+} from 'mongodb';
 import { Rooms, Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
 
@@ -112,7 +123,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'u._id': uid,
 		};
 
-		const update = {
+		const update: UpdateFilter<ISubscription> = {
+			$unset: {
+				tunread: 1,
+				tunreadUser: 1,
+				tunreadGroup: 1,
+			},
 			$set: {
 				open: true,
 				alert,
