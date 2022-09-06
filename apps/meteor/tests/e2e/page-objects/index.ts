@@ -1,5 +1,4 @@
 export * from './account-profile';
-export * from './across-page';
 export * from './admin';
 export * from './auth';
 export * from './home-channel';
