@@ -1,7 +1,7 @@
 import type { Job } from '@rocket.chat/agenda';
 
 export interface IOmniEEService {
-	schedulingSubService: IOmniEESchedulingSubService;
+	getSchedulingSubService(): IOmniEESchedulingSubService;
 }
 
 export interface IOmniEESchedulingSubService {

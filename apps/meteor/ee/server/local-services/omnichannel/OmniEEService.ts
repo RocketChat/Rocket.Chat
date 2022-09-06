@@ -35,6 +35,10 @@ export class OmniEEService extends ServiceClassInternal implements IOmniEEServic
 		this.schedulingSubService = new OmniEESchedulingSubService();
 		this.logger.debug('OmniEEService started');
 	}
+
+	getSchedulingSubService(): IOmniEESchedulingSubService {
+		return this.schedulingSubService;
+	}
 }
 
 class OmniEESchedulingSubService implements IOmniEESchedulingSubService {
@@ -43,7 +47,7 @@ class OmniEESchedulingSubService implements IOmniEESchedulingSubService {
 	private systemUser: IUser;
 
 	constructor() {
-		this.logger.debug('OmniEEService started');
+		this.logger.debug('OmniEESchedulingSubService started');
 	}
 
 	async monitorOnHoldRoomForAutoClose(roomId: string, timeout: number, comment: string): Promise<void> {

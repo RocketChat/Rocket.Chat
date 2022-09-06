@@ -27,7 +27,7 @@ const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> =
 	}
 
 	cbLogger.debug(`Callback success. Room ${room._id} will be scheduled to be auto transfered after ${autoTransferTimeout} seconds`);
-	await OmniEEService.schedulingSubService.monitorUnansweredRoomForAutoTransfer(rid, autoTransferTimeout);
+	await (await OmniEEService.getSchedulingSubService()).monitorUnansweredRoomForAutoTransfer(rid, autoTransferTimeout);
 
 	return inquiry;
 };
@@ -52,7 +52,7 @@ const handleAfterSaveMessage = (message: any = {}, room: any = {}): IMessage => 
 		return message;
 	}
 
-	Promise.await(OmniEEService.schedulingSubService.cancelMonitorUnansweredRoomForAutoTransfer(rid));
+	Promise.await(Promise.await(OmniEEService.getSchedulingSubService()).cancelMonitorUnansweredRoomForAutoTransfer(rid));
 	return message;
 };
 
@@ -71,7 +71,7 @@ const handleAfterCloseRoom = (room: any = {}): IRoom => {
 		return room;
 	}
 
-	Promise.await(OmniEEService.schedulingSubService.cancelMonitorUnansweredRoomForAutoTransfer(rid));
+	Promise.await(Promise.await(OmniEEService.getSchedulingSubService()).cancelMonitorUnansweredRoomForAutoTransfer(rid));
 	return room;
 };
 

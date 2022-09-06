@@ -57,11 +57,11 @@ export class OmniJobSchedulerService extends ServiceClassInternal implements IOm
 		this.logger.debug(`Creating job definitions for ${SCHEDULER_NAME}`);
 		this.scheduler.define(
 			OMNI_JOB_NAME.AUTO_CLOSE_ON_HOLD_CHAT,
-			OmniEEService.schedulingSubService.autoCloseOnHoldChat.bind(OmniEEService),
+			(await OmniEEService.getSchedulingSubService()).autoCloseOnHoldChat.bind(OmniEEService),
 		);
 		this.scheduler.define(
 			OMNI_JOB_NAME.AUTO_TRANSFER_UNANSWERED_CHAT,
-			OmniEEService.schedulingSubService.autoTransferUnansweredChat.bind(OmniEEService),
+			(await OmniEEService.getSchedulingSubService()).autoTransferUnansweredChat.bind(OmniEEService),
 		);
 		this.logger.debug(`Job definitions created for ${SCHEDULER_NAME}. Now creating indexes for ${SCHEDULER_NAME}`);
 		await this.db.collection(SCHEDULER_NAME).createIndex(

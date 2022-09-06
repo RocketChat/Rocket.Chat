@@ -13,5 +13,5 @@ const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 api.registerService(new EnterpriseSettings());
 api.registerService(new LDAPEEService());
 api.registerService(new LicenseService());
-api.registerService(new OmniJobSchedulerService(db));
 api.registerService(new OmniEEService());
+api.registerService(new OmniJobSchedulerService(db));
