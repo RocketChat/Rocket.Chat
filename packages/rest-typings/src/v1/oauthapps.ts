@@ -16,10 +16,10 @@ export type OAuthAppsEndpoint = {
 	};
 
 	'/v1/oauth-apps.updateOAuthApps': {
-		GET: (params: UpdateOAuthAppParams) => void;
+		GET: (params: UpdateOAuthAppParams) => IOAuthApps | null;
 	};
 
 	'/v1/oauth-apps.deleteOAuthApp': {
-		GET: (params: DeleteOAuthAppParams) => void;
+		GET: (params: DeleteOAuthAppParams) => boolean;
 	};
 };

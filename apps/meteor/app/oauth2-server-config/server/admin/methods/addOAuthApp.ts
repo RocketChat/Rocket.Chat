@@ -3,13 +3,14 @@ import { Random } from 'meteor/random';
 import _ from 'underscore';
 import { OAuthApps } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../../authorization';
+import { hasPermission } from '../../../../authorization/server';
 import { Users } from '../../../../models/server';
 import { parseUriList } from '../functions/parseUriList';
 
 Meteor.methods({
 	async addOAuthApp(application) {
-		if (!hasPermission(this.userId, 'manage-oauth-apps')) {
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		if (!hasPermission(this.userId!, 'manage-oauth-apps')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addOAuthApp' });
 		}
 		if (!_.isString(application.name) || application.name.trim() === '') {

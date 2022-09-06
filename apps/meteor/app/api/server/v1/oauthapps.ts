@@ -52,9 +52,9 @@ API.v1.addRoute(
 		async post() {
 			const { applicationId, application } = this.bodyParams;
 
-			Meteor.call('updateOAuthApp', application, applicationId);
+			const result = Meteor.call('updateOAuthApp', applicationId, application);
 
-			return API.v1.success();
+			return API.v1.success(result);
 		},
 	},
 );
@@ -63,15 +63,15 @@ API.v1.addRoute(
 	'oauth-apps.deleteOAuthApp',
 	{
 		authRequired: true,
-		validateParams: DeleteOAuthAppParams,
+		validateParams: isDeleteOAuthAppParams,
 	},
 	{
 		async post() {
-			const { id } = this.bodyParams;
+			const { applicationId } = this.bodyParams;
 
-			Meteor.call('deleteOAuthApp', id);
+			const result = Meteor.call('deleteOAuthApp', applicationId);
 
-			return API.v1.success();
+			return API.v1.success(result);
 		},
 	},
 );

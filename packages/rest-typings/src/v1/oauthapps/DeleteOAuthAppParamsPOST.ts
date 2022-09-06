@@ -1,22 +1,18 @@
 import { ajv } from '../Ajv';
 
 export type DeleteOAuthAppParams = {
-	id: string;
-	appId: string;
+	applicationId: string;
 };
 
 const DeleteOAuthAppParamsSchema = {
 	type: 'object',
 	properties: {
-		id: {
-			type: 'string',
-		},
-		appId: {
+		applicationId: {
 			type: 'string',
 		},
 	},
 	additionalProperties: false,
-	required: ['id', 'appId'],
+	required: ['applicationId'],
 };
 
 export const isDeleteOAuthAppParams = ajv.compile<DeleteOAuthAppParams>(DeleteOAuthAppParamsSchema);

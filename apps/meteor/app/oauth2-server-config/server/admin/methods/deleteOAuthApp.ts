@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { OAuthApps } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../../authorization';
+import { hasPermission } from '../../../../authorization/server';
 
 Meteor.methods({
 	async deleteOAuthApp(applicationId) {
-		if (!hasPermission(this.userId, 'manage-oauth-apps')) {
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		if (!hasPermission(this.userId!, 'manage-oauth-apps')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'deleteOAuthApp' });
 		}
 		const application = await OAuthApps.findOneById(applicationId);
