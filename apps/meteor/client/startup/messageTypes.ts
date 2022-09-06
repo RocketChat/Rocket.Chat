@@ -9,10 +9,9 @@ Meteor.startup(() => {
 	MessageTypes.registerType({
 		id: 'room_changed_privacy',
 		system: true,
-		message: 'room_changed_privacy',
+		message: 'room_changed_type',
 		data(message: IMessage) {
 			return {
-				user_by: message.u?.username,
 				room_type: t(message.msg),
 			};
 		},
@@ -21,10 +20,9 @@ Meteor.startup(() => {
 	MessageTypes.registerType({
 		id: 'room_changed_topic',
 		system: true,
-		message: 'room_changed_topic',
+		message: 'room_changed_topic_to',
 		data(message: IMessage) {
 			return {
-				user_by: message.u?.username,
 				room_topic: escapeHTML(message.msg || `(${t('None').toLowerCase()})`),
 			};
 		},
@@ -33,12 +31,7 @@ Meteor.startup(() => {
 	MessageTypes.registerType({
 		id: 'room_changed_avatar',
 		system: true,
-		message: 'room_changed_avatar',
-		data(message: IMessage) {
-			return {
-				user_by: message.u?.username,
-			};
-		},
+		message: 'room_avatar_changed',
 	});
 
 	MessageTypes.registerType({
