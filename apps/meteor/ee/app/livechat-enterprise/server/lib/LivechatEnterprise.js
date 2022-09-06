@@ -207,7 +207,7 @@ export const LivechatEnterprise = {
 			return;
 		}
 
-		await OmniEEService.cancelMonitorOnHoldRoomForAutoClose(roomId);
+		await OmniEEService.schedulingSubService.cancelMonitorOnHoldRoomForAutoClose(roomId);
 		LivechatRooms.unsetAllOnHoldFieldsByRoomId(roomId);
 		Subscriptions.unsetOnHold(roomId);
 	},

@@ -1,11 +1,11 @@
 import { api } from '../api';
 
 type Prom<T> = {
-	[K in keyof T as T[K] extends (...params: any) => any ? K : never]: T[K] extends (...params: any) => Promise<any>
+	[K in keyof T]: T[K] extends (...params: any) => Promise<any>
 		? T[K]
 		: T[K] extends (...params: infer P) => infer R
 		? (...params: P) => Promise<R>
-		: never;
+		: T[K];
 };
 
 type PromOrError<T> = {

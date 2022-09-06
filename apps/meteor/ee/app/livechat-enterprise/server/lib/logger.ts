@@ -8,3 +8,4 @@ export const helperLogger = logger.section('Helper');
 export const cbLogger = logger.section('Callbacks');
 export const bhLogger = logger.section('Business-Hours');
 export const schedulerLogger = logger.section('Omni-Scheduler');
+export const omniEEServiceLogger = logger.section('OmniEE-Service');

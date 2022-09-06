@@ -1,6 +1,10 @@
 import type { Job } from '@rocket.chat/agenda';
 
 export interface IOmniEEService {
+	schedulingSubService: IOmniEESchedulingSubService;
+}
+
+export interface IOmniEESchedulingSubService {
 	monitorOnHoldRoomForAutoClose(roomId: string, timeout: number, comment: string): Promise<void>;
 	cancelMonitorOnHoldRoomForAutoClose(roomId: string): Promise<void>;
 	autoCloseOnHoldChat(job: Job): Promise<void>;

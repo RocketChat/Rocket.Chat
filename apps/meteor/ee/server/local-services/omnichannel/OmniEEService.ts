@@ -9,9 +9,9 @@ import { forwardRoomToAgent } from '../../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../app/settings/server';
 import { ServiceClassInternal } from '../../../../server/sdk/types/ServiceClass';
-import { schedulerLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { omniEEServiceLogger, schedulerLogger } from '../../../app/livechat-enterprise/server/lib/logger';
 import { OmniJobSchedulerService } from '../../sdk';
-import type { IOmniEEService } from '../../sdk/types/IOmniEEService';
+import type { IOmniEESchedulingSubService, IOmniEEService } from '../../sdk/types/IOmniEEService';
 import { OMNI_JOB_NAME } from './OmniJobSchedulerService';
 
 type OmniOnHoldJobData = {
@@ -26,12 +26,23 @@ type OmniAutoTransferUnansweredChatJobData = {
 export class OmniEEService extends ServiceClassInternal implements IOmniEEService {
 	protected name = 'omni-ee-service';
 
+	public schedulingSubService: IOmniEESchedulingSubService;
+
+	private logger = omniEEServiceLogger;
+
+	constructor() {
+		super();
+		this.schedulingSubService = new OmniEESchedulingSubService();
+		this.logger.debug('OmniEEService started');
+	}
+}
+
+class OmniEESchedulingSubService implements IOmniEESchedulingSubService {
 	private logger = schedulerLogger;
 
 	private systemUser: IUser;
 
 	constructor() {
-		super();
 		this.logger.debug('OmniEEService started');
 	}
 

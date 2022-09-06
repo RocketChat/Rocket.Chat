@@ -55,22 +55,14 @@ export class OmniJobSchedulerService extends ServiceClassInternal implements IOm
 
 	async init(): Promise<void> {
 		this.logger.debug(`Creating job definitions for ${SCHEDULER_NAME}`);
-		this.scheduler.define(OMNI_JOB_NAME.AUTO_CLOSE_ON_HOLD_CHAT, OmniEEService.autoCloseOnHoldChat.bind(OmniEEService));
-		this.scheduler.define(OMNI_JOB_NAME.AUTO_TRANSFER_UNANSWERED_CHAT, OmniEEService.autoTransferUnansweredChat.bind(OmniEEService));
-		this.logger.debug(`Job definitions created for ${SCHEDULER_NAME}. Now creating indexes for ${SCHEDULER_NAME}`);
-		await this.db.collection(SCHEDULER_NAME).createIndex(
-			{
-				'data.roomId': 1,
-			},
-			{ sparse: true },
+		this.scheduler.define(
+			OMNI_JOB_NAME.AUTO_CLOSE_ON_HOLD_CHAT,
+			OmniEEService.schedulingSubService.autoCloseOnHoldChat.bind(OmniEEService),
 		);
-		this.logger.debug(`Indexes created for ${SCHEDULER_NAME}`);
-	}
-
-	async created(): Promise<void> {
-		this.logger.debug(`Creating job definitions for ${SCHEDULER_NAME}`);
-		this.scheduler.define(OMNI_JOB_NAME.AUTO_CLOSE_ON_HOLD_CHAT, OmniEEService.autoCloseOnHoldChat.bind(OmniEEService));
-		this.scheduler.define(OMNI_JOB_NAME.AUTO_TRANSFER_UNANSWERED_CHAT, OmniEEService.autoTransferUnansweredChat.bind(OmniEEService));
+		this.scheduler.define(
+			OMNI_JOB_NAME.AUTO_TRANSFER_UNANSWERED_CHAT,
+			OmniEEService.schedulingSubService.autoTransferUnansweredChat.bind(OmniEEService),
+		);
 		this.logger.debug(`Job definitions created for ${SCHEDULER_NAME}. Now creating indexes for ${SCHEDULER_NAME}`);
 		await this.db.collection(SCHEDULER_NAME).createIndex(
 			{
