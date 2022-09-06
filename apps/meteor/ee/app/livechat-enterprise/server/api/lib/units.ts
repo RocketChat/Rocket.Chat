@@ -6,7 +6,6 @@ import type { FindOptions } from 'mongodb';
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 
 export async function findUnits({
-	userId,
 	text,
 	pagination: { offset, count, sort },
 }: {
@@ -23,9 +22,6 @@ export async function findUnits({
 	offset: number;
 	total: number;
 }> {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-units'))) {
-		throw new Error('error-not-authorized');
-	}
 	const filter = text && new RegExp(escapeRegExp(text), 'i');
 
 	const query = { ...(text && { $or: [{ name: filter }] }) };
@@ -46,10 +42,7 @@ export async function findUnits({
 	};
 }
 
-export async function findUnitMonitors({ userId, unitId }: { userId: string; unitId: string }): Promise<ILivechatMonitor[]> {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-monitors'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findUnitMonitors({ unitId }: { userId: string; unitId: string }): Promise<ILivechatMonitor[]> {
 	return LivechatUnitMonitors.find({ unitId }).toArray() as Promise<ILivechatMonitor[]>;
 }
 

@@ -59,7 +59,7 @@ API.v1.addRoute(
 				_id = emailInbox.insertedId.toString();
 			} else {
 				_id = emailInboxParams._id;
-				await updateEmailInbox(this.userId, { ...emailInboxParams, _id });
+				await updateEmailInbox({ ...emailInboxParams, _id });
 			}
 			return API.v1.success({ _id });
 		},

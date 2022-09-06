@@ -2,11 +2,9 @@ import type { IEmailInbox } from '@rocket.chat/core-typings';
 import type { Filter, InsertOneResult, Sort, UpdateResult, WithId } from 'mongodb';
 import { EmailInbox } from '@rocket.chat/models';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../models/server';
 
 export const findEmailInboxes = async ({
-	userId,
 	query = {},
 	pagination: { offset, count, sort },
 }: {
@@ -23,9 +21,6 @@ export const findEmailInboxes = async ({
 	count: number;
 	offset: number;
 }> => {
-	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
-		throw new Error('error-not-allowed');
-	}
 	const { cursor, totalCount } = EmailInbox.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
@@ -59,7 +54,6 @@ export const insertOneEmailInbox = async (
 };
 
 export const updateEmailInbox = async (
-	_userId: string,
 	emailInboxParams: Pick<IEmailInbox, '_id' | 'active' | 'name' | 'email' | 'description' | 'senderInfo' | 'department' | 'smtp' | 'imap'>,
 ): Promise<InsertOneResult<WithId<IEmailInbox>> | UpdateResult> => {
 	const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailInboxParams;
@@ -86,11 +80,4 @@ export const updateEmailInbox = async (
 	};
 
 	return EmailInbox.updateOne({ _id }, updateEmailInbox);
-};
-
-export const findOneEmailInboxByEmail = async ({ userId, email }: { userId: string; email: string }): Promise<IEmailInbox | null> => {
-	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
-		throw new Error('error-not-allowed');
-	}
-	return EmailInbox.findOne({ email });
 };

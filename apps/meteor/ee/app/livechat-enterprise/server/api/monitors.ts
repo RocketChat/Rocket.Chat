@@ -7,7 +7,7 @@ API.v1.addRoute(
 	'livechat/monitors',
 	{
 		authRequired: true,
-		permissionsRequired: { GET: { permissions: ['view-livechat-manager', 'manage-livechat-units'], operation: 'hasAny' } },
+		permissionsRequired: ['manage-livechat-monitors'],
 	},
 	{
 		async get() {
@@ -17,7 +17,6 @@ API.v1.addRoute(
 
 			return API.v1.success(
 				await findMonitors({
-					userId: this.userId,
 					text,
 					pagination: {
 						offset,
@@ -34,7 +33,7 @@ API.v1.addRoute(
 	'livechat/monitors/:username',
 	{
 		authRequired: true,
-		permissionsRequired: { GET: { permissions: ['view-livechat-manager', 'manage-livechat-units'], operation: 'hasAny' } },
+		permissionsRequired: ['manage-livechat-monitors'],
 	},
 	{
 		async get() {
@@ -42,7 +41,6 @@ API.v1.addRoute(
 
 			return API.v1.success(
 				(await findMonitorByUsername({
-					userId: this.userId,
 					username,
 				})) as unknown as ILivechatMonitor,
 			);

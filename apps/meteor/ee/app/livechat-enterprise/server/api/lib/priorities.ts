@@ -29,15 +29,7 @@ type FindPrioritiesByIdParams = {
 
 type FindPrioritiesByIdResult = ILivechatPriority | null;
 
-export async function findPriorities({
-	userId,
-	text,
-	pagination: { offset, count, sort },
-}: FindPrioritiesParams): Promise<FindPrioritiesResult> {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
-
+export async function findPriorities({ text, pagination: { offset, count, sort } }: FindPrioritiesParams): Promise<FindPrioritiesResult> {
 	const query = {
 		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
 	};

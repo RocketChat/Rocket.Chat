@@ -5,7 +5,7 @@ import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../lib/De
 
 API.v1.addRoute(
 	'livechat/units/:unitId/monitors',
-	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
+	{ authRequired: true, permissionsRequired: ['manage-livechat-monitors'] },
 	{
 		async get() {
 			const { unitId } = this.urlParams;

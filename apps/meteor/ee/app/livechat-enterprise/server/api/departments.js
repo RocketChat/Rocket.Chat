@@ -172,7 +172,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/average-waiting-time',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
