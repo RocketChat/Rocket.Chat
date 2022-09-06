@@ -24,7 +24,7 @@ API.v1.addRoute(
 				throw new Error('LDAP_disabled');
 			}
 
-			await LDAPEE.sync();
+			await Promise.all([LDAPEE.sync(), LDAPEE.syncAvatars()]);
 
 			return API.v1.success({
 				message: 'Sync_in_progress' as const,
