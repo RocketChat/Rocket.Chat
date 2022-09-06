@@ -1,5 +1,6 @@
 import URL from 'url';
 import QueryString from 'querystring';
+import { parse } from "@rocket.chat/message-parser";
 
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -21,7 +22,6 @@ import {
 	importRawKey,
 	deriveKey,
 	generateMnemonicPhrase,
-	parseUrlsInMessage,
 } from './helper';
 import * as banners from '../../../client/lib/banners';
 import { Rooms, Subscriptions, Messages, ChatMessage } from '../../models/client';
@@ -34,6 +34,8 @@ import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import { call } from '../../../client/lib/utils/call';
 import { APIClient, getUserAvatarURL } from '../../utils/client';
+import { parseUrlsFromMessage } from '../../../lib/parseUrlsFromMessage';
+import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 
 let failedToDecodeKey = false;
 
@@ -375,9 +377,12 @@ class E2E extends Emitter {
 			return message;
 		}
 
+		const parsedMessage = parse(data.text);
+
 		const decryptedMessage = {
 			...message,
 			msg: data.text,
+			md: parsedMessage,
 			e2e: 'done',
 		};
 
@@ -414,7 +419,7 @@ class E2E extends Emitter {
 
 	async getQuoteMessages(message) {
 		const { msg } = message;
-		const urls = parseUrlsInMessage(msg);
+		const urls = parseUrlsFromMessage(message);
 
 		urls.map(async (url) => {
 			if (!url.includes(Meteor.absoluteUrl())) {
@@ -444,15 +449,17 @@ class E2E extends Emitter {
 
 			message.attachments = message.attachments || [];
 
-			const quoteAttachment = {
-				text: decryptedQuoteMessage.msg,
-				translations: decryptedQuoteMessage.translations,
-				message_link: url,
-				author_name: decryptedQuoteMessage.alias || decryptedQuoteMessage.u.username,
-				author_icon: getUserAvatarURL(decryptedQuoteMessage.u.username),
-				attachments: decryptedQuoteMessage.attachments,
-				ts: decryptedQuoteMessage.ts,
-			};
+			// const quoteAttachment = {
+			// 	text: decryptedQuoteMessage.msg,
+			// 	translations: decryptedQuoteMessage.translations,
+			// 	message_link: url,
+			// 	author_name: decryptedQuoteMessage.alias || decryptedQuoteMessage.u.username,
+			// 	author_icon: getUserAvatarURL(decryptedQuoteMessage.u.username),
+			// 	attachments: decryptedQuoteMessage.attachments,
+			// 	ts: decryptedQuoteMessage.ts,
+			// };
+
+			const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url);
 
 			message.attachments.push(quoteAttachment);
 

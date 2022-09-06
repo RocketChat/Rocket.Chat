@@ -9,8 +9,8 @@ import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';
+import { createQuoteAttachment } from '/lib/createQuoteAttachment';
 
 const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttachment => {
 	if (attachments && isQuoteAttachment(attachments)) {
@@ -84,16 +84,7 @@ callbacks.add(
 				msg.attachments.splice(index, 1);
 			}
 
-			msg.attachments.push({
-				text: jumpToMessage.msg,
-				translations: jumpToMessage.translations,
-				author_name: jumpToMessage.alias || jumpToMessage.u.username,
-				author_icon: getUserAvatarURL(jumpToMessage.u.username),
-				message_link: item.url,
-				// @ts-expect-error Type 'MessageAttachment[]' is not assignable to type 'MessageQuoteAttachment[]'.
-				attachments: jumpToMessage.attachments || [],
-				ts: jumpToMessage.ts,
-			});
+			msg.attachments.push(createQuoteAttachment(jumpToMessage, item.url));
 			item.ignoreParse = true;
 		});
 

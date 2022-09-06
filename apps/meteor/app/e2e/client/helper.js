@@ -151,11 +151,3 @@ export class Deferred {
 		return p;
 	}
 }
-
-export function parseUrlsInMessage(msg) {
-	const urls =
-		msg?.match(
-			/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g,
-		) || [];
-	return urls;
-}
