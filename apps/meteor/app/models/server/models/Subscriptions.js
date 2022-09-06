@@ -1345,23 +1345,6 @@ export class Subscriptions extends Base {
 		);
 	}
 
-	removeAllUnreadThreadsByRoomIdAndUserId(rid, userId) {
-		const query = {
-			rid,
-			'u._id': userId,
-		};
-
-		const update = {
-			$unset: {
-				tunread: 1,
-				tunreadUser: 1,
-				tunreadGroup: 1,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	removeUnreadThreadsByRoomId(rid, tunread) {
 		const query = {
 			rid,
