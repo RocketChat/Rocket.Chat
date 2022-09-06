@@ -132,7 +132,6 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 				const trash = await Subscriptions.trashFindOneById<Pick<ISubscription, 'u' | 'rid'>>(id, {
 					projection: { u: 1, rid: 1 },
 				});
-				console.log('removed ->', trash);
 				const subscription = trash || { _id: id };
 				broadcast('watch.subscriptions', { clientAction, subscription });
 				break;
