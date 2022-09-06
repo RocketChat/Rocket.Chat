@@ -4,6 +4,7 @@ import React, { ReactElement } from 'react';
 
 import Page from '../../components/Page/Page';
 import PageScrollableContent from '../../components/Page/PageScrollableContent';
+import CustomHomePageContent from './CustomHomePageContent';
 import HomePageHeader from './HomePageHeader';
 import HomepageGridItem from './HomepageGridItem';
 import AddUsersCard from './cards/AddUsersCard';
@@ -25,10 +26,10 @@ const DefaultHomePage = (): ReactElement => {
 		<Page data-qa='page-home' data-qa-type='default' backgroundColor='neutral-100'>
 			<HomePageHeader />
 			<PageScrollableContent>
-				<Box is='h1' fontScale='h1' marginBlock='x42' minHeight='x40' data-qa-id='homepage-welcome-text'>
+				<Box is='h1' fontScale='h1' data-qa-id='homepage-welcome-text'>
 					{t('Welcome_to', { Site_Name: workspaceName || 'Rocket.Chat' })}
 				</Box>
-				<Box is='h3' fontScale='h3' marginBlock='x16'>
+				<Box is='h3' fontScale='h3' mb='x16'>
 					{t('Some_ideas_to_get_you_started')}
 				</Box>
 				<Grid>
@@ -55,6 +56,9 @@ const DefaultHomePage = (): ReactElement => {
 						<DocumentationCard />
 					</HomepageGridItem>
 				</Grid>
+				<Box mbs='x16'>
+					<CustomHomePageContent />
+				</Box>
 			</PageScrollableContent>
 		</Page>
 	);

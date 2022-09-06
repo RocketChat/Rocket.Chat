@@ -3,6 +3,8 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors, Users } from '@rocket.chat/models';
+import { isLiveChatRoomForwardProps } from '@rocket.chat/rest-typings';
 
 import { settings as rcSettings } from '../../../../settings/server';
 import { Messages, LivechatRooms } from '../../../../models/server';
@@ -195,85 +197,102 @@ API.v1.addRoute('livechat/room.survey', {
 
 API.v1.addRoute(
 	'livechat/room.forward',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room', 'transfer-livechat-guest'], validateParams: isLiveChatRoomForwardProps },
 	{
-		post() {
-			API.v1.success(Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)));
+		async post() {
+			const transferData = this.bodyParams;
+
+			const room = await LivechatRooms.findOneById(this.bodyParams.roomId);
+			if (!room || room.t !== 'l') {
+				throw new Error('error-invalid-room', 'Invalid room');
+			}
+
+			if (!room.open) {
+				throw new Error('This_conversation_is_already_closed');
+			}
+
+			const guest = await LivechatVisitors.findOneById(room.v && room.v._id);
+			transferData.transferredBy = normalizeTransferredByData(Meteor.user() || {}, room);
+			if (transferData.userId) {
+				const userToTransfer = await Users.findOneById(transferData.userId);
+				transferData.transferredTo = {
+					_id: userToTransfer._id,
+					username: userToTransfer.username,
+					name: userToTransfer.name,
+				};
+			}
+
+			const chatForwardedResult = await Livechat.transfer(room, guest, transferData);
+
+			return chatForwardedResult ? API.v1.success() : API.v1.failure();
 		},
 	},
 );
 
 API.v1.addRoute(
 	'livechat/room.visitor',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		put() {
-			try {
-				check(this.bodyParams, {
-					rid: String,
-					oldVisitorId: String,
-					newVisitorId: String,
-				});
+			// This endpoint is deprecated and will be removed in future versions.
+			check(this.bodyParams, {
+				rid: String,
+				oldVisitorId: String,
+				newVisitorId: String,
+			});
 
-				const { rid, newVisitorId, oldVisitorId } = this.bodyParams;
+			const { rid, newVisitorId, oldVisitorId } = this.bodyParams;
 
-				const { visitor } = Promise.await(findVisitorInfo({ userId: this.userId, visitorId: newVisitorId }));
-				if (!visitor) {
-					throw new Meteor.Error('invalid-visitor');
-				}
-
-				let room = LivechatRooms.findOneById(rid, { _id: 1 }); // TODO: check _id
-				if (!room) {
-					throw new Meteor.Error('invalid-room');
-				}
-
-				const { v: { _id: roomVisitorId } = {} } = room; // TODO: v it will be undefined
-				if (roomVisitorId !== oldVisitorId) {
-					throw new Meteor.Error('invalid-room-visitor');
-				}
-
-				room = Livechat.changeRoomVisitor(this.userId, rid, visitor);
-
-				return API.v1.success({ room });
-			} catch (e) {
-				return API.v1.failure(e);
+			const { visitor } = Promise.await(findVisitorInfo({ userId: this.userId, visitorId: newVisitorId }));
+			if (!visitor) {
+				throw new Meteor.Error('invalid-visitor');
 			}
+
+			let room = LivechatRooms.findOneById(rid, { _id: 1, v: 1 }); // TODO: check _id
+			if (!room) {
+				throw new Meteor.Error('invalid-room');
+			}
+
+			const { v: { _id: roomVisitorId } = {} } = room; // TODO: v it will be undefined
+			if (roomVisitorId !== oldVisitorId) {
+				throw new Meteor.Error('invalid-room-visitor');
+			}
+
+			room = Livechat.changeRoomVisitor(this.userId, rid, visitor);
+
+			return API.v1.success({ room });
 		},
 	},
 );
 
 API.v1.addRoute(
 	'livechat/room.join',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		get() {
-			try {
-				check(this.queryParams, { roomId: String });
+			check(this.queryParams, { roomId: String });
 
-				const { roomId } = this.queryParams;
+			const { roomId } = this.queryParams;
 
-				const { user } = this;
+			const { user } = this;
 
-				if (!user) {
-					throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });
-				}
-
-				const room = LivechatRooms.findOneById(roomId);
-
-				if (!room) {
-					throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
-				}
-
-				if (!canAccessRoom(room, user)) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
-				}
-
-				addUserToRoom(roomId, user);
-
-				return API.v1.success();
-			} catch (e) {
-				return API.v1.failure(e);
+			if (!user) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });
 			}
+
+			const room = LivechatRooms.findOneById(roomId);
+
+			if (!room) {
+				throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
+			}
+
+			if (!canAccessRoom(room, user)) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
+			}
+
+			addUserToRoom(roomId, user);
+
+			return API.v1.success();
 		},
 	},
 );

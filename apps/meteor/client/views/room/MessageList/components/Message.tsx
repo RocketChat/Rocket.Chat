@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import type { ISubscription, IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Message as MessageTemplate, MessageLeftContainer, MessageContainer, MessageBody, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo } from 'react';
@@ -14,14 +14,16 @@ import MessageHeader from './MessageHeader';
 import { MessageIndicators } from './MessageIndicators';
 import Toolbox from './Toolbox';
 
-const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
-	message,
-	sequential,
-	subscription,
-	...props
-}) => {
+const Message: FC<{
+	message: IMessage;
+	sequential: boolean;
+	id: IMessage['_id'];
+	unread: boolean;
+	mention: boolean;
+	all: boolean;
+}> = ({ message, sequential, all, mention, unread, ...props }) => {
 	const isMessageHighlight = useIsMessageHighlight(message._id);
-	const [isMessageIgnored, toggleMessageIgnored] = useToggle(message.ignored);
+	const [isMessageIgnored, toggleMessageIgnored] = useToggle((message as { ignored?: boolean }).ignored ?? false);
 	const {
 		actions: { openUserCard },
 	} = useMessageActions();
@@ -59,7 +61,9 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
 
-				{!isMessageIgnored && <MessageContent id={message._id} message={message} subscription={subscription} sequential={sequential} />}
+				{!isMessageIgnored && (
+					<MessageContent id={message._id} message={message} unread={unread} mention={mention} all={all} sequential={sequential} />
+				)}
 				{isMessageIgnored && (
 					<MessageBody data-qa-type='message-body'>
 						<MessageContentIgnored onShowMessageIgnored={toggleMessageIgnored} />

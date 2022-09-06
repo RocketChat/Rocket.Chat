@@ -19,11 +19,11 @@ test.describe.serial('settings-account-profile', () => {
 	});
 
 	// FIXME: solve test intermitencies
-	test.skip('expect update profile with new name/username', async () => {
+	test.skip('expect update profile with new name/username', async ({ page }) => {
 		const newName = faker.name.findName();
 		const newUsername = faker.internet.userName(newName);
 
-		await poHomeChannel.sidenav.goToMyAccount();
+		await page.goto('/account/profile');
 		await poAccountProfile.inputName.fill(newName);
 		await poAccountProfile.inputUsername.fill(newUsername);
 		await poAccountProfile.btnSubmit.click();
@@ -39,39 +39,61 @@ test.describe.serial('settings-account-profile', () => {
 		await expect(poHomeChannel.tabs.userInfoUsername).toHaveText(newUsername);
 	});
 
-	test.describe('Personal Access Tokens', () => {
-		test.beforeEach(async () => {
-			await poHomeChannel.sidenav.goToMyAccount();
-			await poAccountProfile.sidenav.linkTokens.click();
-		});
+	test('Personal Access Tokens', async ({ page }) => {
+		await page.goto('/account/tokens');
 
-		test('expect show empty personal access tokens table', async () => {
+		await test.step('expect show empty personal access tokens table', async () => {
 			await expect(poAccountProfile.tokensTableEmpty).toBeVisible();
 			await expect(poAccountProfile.inputToken).toBeVisible();
 		});
 
-		test('expect show new personal token', async () => {
+		await test.step('expect show new personal token', async () => {
 			await poAccountProfile.inputToken.type(token);
 			await poAccountProfile.btnTokensAdd.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
+			await page.locator('button:has-text("Ok")').click();
 		});
 
-		test('expect not allow add new personal token with same name', async ({ page }) => {
+		await test.step('expect not allow add new personal token with same name', async () => {
 			await poAccountProfile.inputToken.type(token);
 			await poAccountProfile.btnTokensAdd.click();
 			await expect(page.locator('.rcx-toastbar.rcx-toastbar--error')).toBeVisible();
 		});
 
-		test('expect regenerate personal token', async () => {
+		await test.step('expect regenerate personal token', async () => {
 			await poAccountProfile.tokenInTable(token).locator('button >> nth=0').click();
 			await poAccountProfile.btnRegenerateTokenModal.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
+			await page.locator('button:has-text("Ok")').click();
 		});
 
-		test('expect delete personal token', async ({ page }) => {
+		await test.step('expect delete personal token', async () => {
 			await poAccountProfile.tokenInTable(token).locator('button >> nth=1').click();
 			await poAccountProfile.btnRemoveTokenModal.click();
 			await expect(page.locator('.rcx-toastbar.rcx-toastbar--success')).toBeVisible();
+		});
+	});
+
+	test('change avatar', async ({ page }) => {
+		await page.goto('/account/profile');
+
+		await test.step('expect change avatar image by upload', async () => {
+			await poAccountProfile.inputImageFile.setInputFiles('./tests/e2e/fixtures/files/test-image.jpeg');
+
+			await poAccountProfile.btnSubmit.click();
+			await expect(page.locator('.rcx-toastbar.rcx-toastbar--success').first()).toBeVisible();
+		});
+
+		await test.step('expect to close toastbar', async () => {
+			await page.locator('.rcx-toastbar.rcx-toastbar--success').first().click();
+		});
+
+		await test.step('expect set image from url', async () => {
+			await poAccountProfile.inputAvatarLink.fill('https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50');
+			await poAccountProfile.btnSetAvatarLink.click();
+
+			await poAccountProfile.btnSubmit.click();
+			await expect(page.locator('.rcx-toastbar.rcx-toastbar--success').first()).toBeVisible();
 		});
 	});
 });

@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import * as Federation from '../../../../app/federation-v2/client/Federation';
 import { Subscriptions, Users, ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
@@ -13,6 +12,7 @@ import { getUserAvatarURL } from '../../../../app/utils/lib/getUserAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
+import * as Federation from '../../federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
