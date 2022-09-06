@@ -21,4 +21,8 @@ export class HomeChannel {
 	get toastSuccess(): Locator {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
+
+	get btnVerticalBarClose(): Locator {
+		return this.page.locator('[data-qa="VerticalBarActionClose"]');
+	}
 }
