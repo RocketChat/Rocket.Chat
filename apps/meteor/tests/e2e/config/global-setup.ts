@@ -27,6 +27,12 @@ export default async function (): Promise<void> {
 
 	await page.goto(constants.BASE_URL);
 
+	await page.locator('[name=username]').type(constants.ADMIN_CREDENTIALS.email);
+	await page.locator('[name=password]').type(constants.ADMIN_CREDENTIALS.password);
+	await page.locator('role=button >> text="Login"').click();
+
+	await page.waitForTimeout(1000);
+
 	if (page.url().includes('setup-wizard')) {
 		await page.locator('[name="organizationName"]').type('any_name');
 		await page.locator('[name="organizationType"]').click();
@@ -43,11 +49,6 @@ export default async function (): Promise<void> {
 	}
 
 	await browser.close();
-
-	await loginProcedure({
-		username: constants.ADMIN_CREDENTIALS.email,
-		password: constants.ADMIN_CREDENTIALS.password,
-	});
 
 	const { usersFixtures } = await injectInitialData();
 
