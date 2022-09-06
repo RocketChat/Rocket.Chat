@@ -6,7 +6,7 @@ import type { Db } from 'mongodb';
 import { ServiceClassInternal } from '../../../../server/sdk/types/ServiceClass';
 import { schedulerLogger } from '../../../app/livechat-enterprise/server/lib/logger';
 import { OmniEEService } from '../../sdk';
-import type { IOmniJobSchedularService } from '../../sdk/types/IOmniJobSchedularService';
+import type { IOmniJobSchedulerService } from '../../sdk/types/IOmniJobSchedularService';
 
 const SCHEDULER_NAME = 'omnichannel_scheduler';
 
@@ -15,8 +15,8 @@ export enum OMNI_JOB_NAME {
 	AUTO_TRANSFER_UNANSWERED_CHAT = 'auto-transfer-unanswered-chat',
 }
 
-export class OmniJobSchedularService extends ServiceClassInternal implements IOmniJobSchedularService {
-	protected name = 'omni-job-schedular';
+export class OmniJobSchedulerService extends ServiceClassInternal implements IOmniJobSchedulerService {
+	protected name = 'omni-job-scheduler';
 
 	scheduler: Agenda;
 
@@ -83,7 +83,7 @@ export class OmniJobSchedularService extends ServiceClassInternal implements IOm
 		this.logger.debug(`Indexes created for ${SCHEDULER_NAME}`);
 	}
 
-	scheduleJobAt<T>(name: OMNI_JOB_NAME, time: Date, data: T): Promise<Job> {
+	scheduleJobAt<T extends Record<string, any>>(name: OMNI_JOB_NAME, time: Date, data: T): Promise<Job> {
 		return this.scheduler.schedule(time, name, data);
 	}
 
