@@ -55,13 +55,14 @@ export class OmniJobSchedulerService extends ServiceClassInternal implements IOm
 
 	async init(): Promise<void> {
 		this.logger.debug(`Creating job definitions for ${SCHEDULER_NAME}`);
+		const OmniEESchedulingSubService = await OmniEEService.getSchedulingSubService();
 		this.scheduler.define(
 			OMNI_JOB_NAME.AUTO_CLOSE_ON_HOLD_CHAT,
-			(await OmniEEService.getSchedulingSubService()).autoCloseOnHoldChat.bind(OmniEEService),
+			OmniEESchedulingSubService.autoCloseOnHoldChat.bind(OmniEESchedulingSubService),
 		);
 		this.scheduler.define(
 			OMNI_JOB_NAME.AUTO_TRANSFER_UNANSWERED_CHAT,
-			(await OmniEEService.getSchedulingSubService()).autoTransferUnansweredChat.bind(OmniEEService),
+			OmniEESchedulingSubService.autoTransferUnansweredChat.bind(OmniEESchedulingSubService),
 		);
 		this.logger.debug(`Job definitions created for ${SCHEDULER_NAME}. Now creating indexes for ${SCHEDULER_NAME}`);
 		await this.db.collection(SCHEDULER_NAME).createIndex(
