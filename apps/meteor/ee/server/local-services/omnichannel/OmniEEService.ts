@@ -40,20 +40,16 @@ export class OmniEEService extends ServiceClassInternal implements IOmniEEServic
 		await this.cancelMonitorOnHoldRoomForAutoClose(roomId);
 
 		const when = moment(new Date()).add(timeout, 's').toDate();
-		const job = await OmniJobSchedulerService.scheduleJobAt<OmniOnHoldJobData>(OMNI_JOB_NAME.AUTO_CLOSE_ON_HOLD_CHAT, when, {
+		await OmniJobSchedulerService.scheduleJobAt<OmniOnHoldJobData>(OMNI_JOB_NAME.AUTO_CLOSE_ON_HOLD_CHAT, when, {
 			roomId,
 			comment,
 		});
-
-		this.logger.debug(`Scheduled job: ${OMNI_JOB_NAME.AUTO_CLOSE_ON_HOLD_CHAT} for room ${roomId} at ${job.attrs.nextRunAt}`);
 	}
 
 	async cancelMonitorOnHoldRoomForAutoClose(roomId: string): Promise<void> {
 		this.logger.debug(`cancelMonitorOnHoldRoomForAutoClose: ${roomId}`);
 
-		const totalCancelledJobs = await OmniJobSchedulerService.cancelJobByRoomId(OMNI_JOB_NAME.AUTO_CLOSE_ON_HOLD_CHAT, roomId);
-
-		this.logger.debug(`Unscheduled ${OMNI_JOB_NAME.AUTO_CLOSE_ON_HOLD_CHAT} for room ${roomId} (${totalCancelledJobs} jobs cancelled)`);
+		await OmniJobSchedulerService.cancelJobByRoomId(OMNI_JOB_NAME.AUTO_CLOSE_ON_HOLD_CHAT, roomId);
 	}
 
 	async autoCloseOnHoldChat(job: Job): Promise<void> {
@@ -84,27 +80,21 @@ export class OmniEEService extends ServiceClassInternal implements IOmniEEServic
 
 		const when = moment(new Date()).add(timeout, 's').toDate();
 
-		const [job] = await Promise.all([
+		await Promise.all([
 			OmniJobSchedulerService.scheduleJobAt<OmniAutoTransferUnansweredChatJobData>(OMNI_JOB_NAME.AUTO_TRANSFER_UNANSWERED_CHAT, when, {
 				roomId,
-			} as OmniAutoTransferUnansweredChatJobData),
+			}),
 			LivechatRooms.setAutoTransferOngoingById(roomId),
 		]);
-
-		this.logger.debug(`Scheduled job: ${OMNI_JOB_NAME.AUTO_TRANSFER_UNANSWERED_CHAT} for room ${roomId} at ${job.attrs.nextRunAt}`);
 	}
 
 	async cancelMonitorUnansweredRoomForAutoTransfer(roomId: string): Promise<void> {
 		this.logger.debug(`cancelMonitorUnansweredRoomForAutoTransfer: ${roomId}`);
 
-		const [, totalCancelledJobs] = await Promise.all([
+		await Promise.all([
 			LivechatRooms.unsetAutoTransferOngoingById(roomId),
 			OmniJobSchedulerService.cancelJobByRoomId(OMNI_JOB_NAME.AUTO_TRANSFER_UNANSWERED_CHAT, roomId),
 		]);
-
-		this.logger.debug(
-			`Unscheduled ${OMNI_JOB_NAME.AUTO_TRANSFER_UNANSWERED_CHAT} for room ${roomId} (${totalCancelledJobs} jobs cancelled)`,
-		);
 	}
 
 	async autoTransferUnansweredChat(job: Job): Promise<void> {

@@ -1,6 +1,6 @@
 import type { Job } from '@rocket.chat/agenda';
 import { Agenda } from '@rocket.chat/agenda';
-import { MongoInternals } from 'meteor/mongo';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { Db } from 'mongodb';
 
 import { ServiceClassInternal } from '../../../../server/sdk/types/ServiceClass';
@@ -24,10 +24,8 @@ export class OmniJobSchedulerService extends ServiceClassInternal implements IOm
 
 	db: Db;
 
-	constructor() {
+	constructor(db: Db) {
 		super();
-
-		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 		this.scheduler = new Agenda({
 			mongo: db as any,
@@ -83,11 +81,15 @@ export class OmniJobSchedulerService extends ServiceClassInternal implements IOm
 		this.logger.debug(`Indexes created for ${SCHEDULER_NAME}`);
 	}
 
-	scheduleJobAt<T extends Record<string, any>>(name: OMNI_JOB_NAME, time: Date, data: T): Promise<Job> {
-		return this.scheduler.schedule(time, name, data);
+	async scheduleJobAt<T extends { roomId: IRoom['_id'] }>(name: OMNI_JOB_NAME, time: Date, data: T): Promise<Job> {
+		const job = await this.scheduler.schedule(time, name, data);
+		this.logger.debug(`Scheduled job: ${name} with data ${JSON.stringify(data)} at ${job.attrs.nextRunAt}`);
+		return job;
 	}
 
-	cancelJobByRoomId(name: OMNI_JOB_NAME, roomId: string): Promise<number> {
-		return this.scheduler.cancel({ roomId, name });
+	async cancelJobByRoomId(name: OMNI_JOB_NAME, roomId: string): Promise<number> {
+		const totalCancelledJobs = await this.scheduler.cancel({ roomId, name });
+		this.logger.debug(`Cancelled ${totalCancelledJobs} jobs for ${name} with roomId ${roomId}`);
+		return totalCancelledJobs;
 	}
 }
