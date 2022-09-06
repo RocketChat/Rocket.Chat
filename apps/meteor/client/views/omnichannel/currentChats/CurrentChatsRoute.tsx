@@ -39,7 +39,7 @@ type useQueryType = (
 		itemsPerPage: 25 | 50 | 100;
 		current: number;
 	},
-	customFields: { [key: string]: string },
+	customFields: { [key: string]: string } | undefined,
 	[column, direction]: [string, 'asc' | 'desc'],
 ) => LivechatRoomsProps | undefined;
 
@@ -101,7 +101,7 @@ const useQuery: useQueryType = (
 		}
 
 		if (customFields && Object.keys(customFields).length > 0) {
-			const customFieldsQuery = Object.fromEntries(Object.entries(customFields).filter((item) => item[1] !== ''));
+			const customFieldsQuery = Object.fromEntries(Object.entries(customFields).filter((item) => item[1] !== undefined && item[1] !== ''));
 			if (Object.keys(customFieldsQuery).length > 0) {
 				query.customFields = JSON.stringify(customFieldsQuery);
 			}
@@ -111,8 +111,8 @@ const useQuery: useQueryType = (
 	}, [guest, column, direction, itemsPerPage, current, from, to, status, servedBy, department, tags, customFields]);
 
 const CurrentChatsRoute = (): ReactElement => {
-	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open'>('fname');
-	const [customFields, setCustomFields] = useState<{ [key: string]: string }>({});
+	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open'>('ts', 'desc');
+	const [customFields, setCustomFields] = useState<{ [key: string]: string }>();
 	const [params, setParams] = useState({
 		guest: '',
 		fname: '',
@@ -127,12 +127,6 @@ const CurrentChatsRoute = (): ReactElement => {
 	});
 	const t = useTranslation();
 	const id = useRouteParameter('id');
-
-	const onHeaderClick = useMutableCallback((id) => {
-		if (sortBy === id) {
-			setSort(id, sortDirection === 'asc' ? 'desc' : 'asc');
-		}
-	});
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedCustomFields = useDebouncedValue(customFields, 500);
@@ -224,7 +218,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								key='fname'
 								direction={sortDirection}
 								active={sortBy === 'fname'}
-								onClick={onHeaderClick}
+								onClick={setSort}
 								sort='fname'
 								data-qa='current-chats-header-name'
 							>
@@ -234,7 +228,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								key='departmentId'
 								direction={sortDirection}
 								active={sortBy === 'departmentId'}
-								onClick={onHeaderClick}
+								onClick={setSort}
 								sort='departmentId'
 								data-qa='current-chats-header-department'
 							>
@@ -244,7 +238,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								key='servedBy'
 								direction={sortDirection}
 								active={sortBy === 'servedBy'}
-								onClick={onHeaderClick}
+								onClick={setSort}
 								sort='servedBy'
 								data-qa='current-chats-header-servedBy'
 							>
@@ -254,7 +248,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								key='ts'
 								direction={sortDirection}
 								active={sortBy === 'ts'}
-								onClick={onHeaderClick}
+								onClick={setSort}
 								sort='ts'
 								data-qa='current-chats-header-startedAt'
 							>
@@ -264,7 +258,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								key='lm'
 								direction={sortDirection}
 								active={sortBy === 'lm'}
-								onClick={onHeaderClick}
+								onClick={setSort}
 								sort='lm'
 								data-qa='current-chats-header-lastMessage'
 							>
@@ -274,7 +268,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								key='open'
 								direction={sortDirection}
 								active={sortBy === 'open'}
-								onClick={onHeaderClick}
+								onClick={setSort}
 								sort='open'
 								w='x100'
 								data-qa='current-chats-header-status'

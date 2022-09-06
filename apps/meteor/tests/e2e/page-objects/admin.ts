@@ -1,18 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { AdminSidenav } from './fragments';
 import { AdminFlextab } from './fragments/admin-flextab';
 
 export class Admin {
 	private readonly page: Page;
 
-	readonly sidenav: AdminSidenav;
-
 	readonly tabs: AdminFlextab;
 
 	constructor(page: Page) {
 		this.page = page;
-		this.sidenav = new AdminSidenav(page);
 		this.tabs = new AdminFlextab(page);
 	}
 
