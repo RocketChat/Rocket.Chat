@@ -49,7 +49,7 @@ type MemoizedSettingProps = {
 	callout?: ReactNode;
 	value?: SettingValue;
 	editor?: SettingEditor;
-	onChangeValue?: (value: unknown) => void;
+	onChangeValue?: (value: SettingValue) => void;
 	onChangeEditor?: (value: unknown) => void;
 	onResetButtonClick?: () => void;
 	className?: string;
