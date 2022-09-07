@@ -16,11 +16,13 @@ import type {
 	ILivechatAgentActivity,
 	ILivechatCustomField,
 	IOmnichannelSystemMessage,
+	Serialized,
 } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import type { Deprecated } from '../helpers/Deprecated';
 
 type booleanString = 'true' | 'false';
 
@@ -1550,6 +1552,395 @@ const POSTLivechatOfflineMessageParamsSchema = {
 
 export const isPOSTLivechatOfflineMessageParams = ajv.compile<POSTLivechatOfflineMessageParams>(POSTLivechatOfflineMessageParamsSchema);
 
+type POSTLivechatPageVisitedParams = {
+	token: string;
+	rid?: string;
+	pageInfo: {
+		title: string;
+		change: string;
+		location: {
+			href: string;
+		};
+	};
+};
+
+const POSTLivechatPageVisitedParamsSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		rid: {
+			type: 'string',
+			nullable: true,
+		},
+		pageInfo: {
+			type: 'object',
+			properties: {
+				title: {
+					type: 'string',
+				},
+				change: {
+					type: 'string',
+				},
+				location: {
+					type: 'object',
+					properties: {
+						href: {
+							type: 'string',
+						},
+					},
+					required: ['href'],
+					additionalProperties: false,
+				},
+			},
+			required: ['title', 'change', 'location'],
+			additionalProperties: false,
+		},
+	},
+	required: ['token', 'pageInfo'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatPageVisitedParams = ajv.compile<POSTLivechatPageVisitedParams>(POSTLivechatPageVisitedParamsSchema);
+
+type POSTLivechatMessageParams = {
+	token: string;
+	rid: string;
+	msg: string;
+	_id?: string;
+	agent?: {
+		agentId: string;
+		username: string;
+	};
+};
+
+const POSTLivechatMessageParamsSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		rid: {
+			type: 'string',
+		},
+		msg: {
+			type: 'string',
+		},
+		_id: {
+			type: 'string',
+			nullable: true,
+		},
+		agent: {
+			type: 'object',
+			properties: {
+				agentId: {
+					type: 'string',
+				},
+				username: {
+					type: 'string',
+				},
+			},
+			required: ['agentId', 'username'],
+			additionalProperties: false,
+		},
+	},
+	required: ['token', 'rid', 'msg'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatMessageParams = ajv.compile<POSTLivechatMessageParams>(POSTLivechatMessageParamsSchema);
+
+type GETLivechatMessageIdParams = {
+	token: string;
+	rid: string;
+};
+
+const GETLivechatMessageIdParamsSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		rid: {
+			type: 'string',
+		},
+	},
+	required: ['token', 'rid'],
+	additionalProperties: false,
+};
+
+export const isGETLivechatMessageIdParams = ajv.compile<GETLivechatMessageIdParams>(GETLivechatMessageIdParamsSchema);
+
+type PUTLivechatMessageIdParams = {
+	token: string;
+	rid: string;
+	msg: string;
+};
+
+const PUTLivechatMessageIdParamsSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		rid: {
+			type: 'string',
+		},
+		msg: {
+			type: 'string',
+		},
+	},
+	required: ['token', 'rid', 'msg'],
+	additionalProperties: false,
+};
+
+export const isPUTLivechatMessageIdParams = ajv.compile<PUTLivechatMessageIdParams>(PUTLivechatMessageIdParamsSchema);
+
+type DELETELivechatMessageIdParams = {
+	token: string;
+	rid: string;
+};
+
+const DELETELivechatMessageIdParamsSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		rid: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['token', 'rid'],
+	additionalProperties: false,
+};
+
+export const isDELETELivechatMessageIdParams = ajv.compile<DELETELivechatMessageIdParams>(DELETELivechatMessageIdParamsSchema);
+
+type GETLivechatMessagesHistoryRidParams = PaginatedRequest<{
+	searchText?: string;
+	token: string;
+	ls?: string;
+	end?: string;
+	limit?: string;
+}>;
+
+const GETLivechatMessagesHistoryRidParamsSchema = {
+	type: 'object',
+	properties: {
+		searchText: {
+			type: 'string',
+			nullable: true,
+		},
+		token: {
+			type: 'string',
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isGETLivechatMessagesHistoryRidParams = ajv.compile<GETLivechatMessagesHistoryRidParams>(
+	GETLivechatMessagesHistoryRidParamsSchema,
+);
+
+type GETLivechatMessagesParams = {
+	visitor: {
+		token: string;
+	};
+	// Must be of at least 1 item
+	messages: {
+		msg: string;
+	}[];
+};
+
+const GETLivechatMessagesParamsSchema = {
+	type: 'object',
+	properties: {
+		visitor: {
+			type: 'object',
+			properties: {
+				token: {
+					type: 'string',
+				},
+			},
+			required: ['token'],
+			additionalProperties: false,
+		},
+		messages: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					msg: {
+						type: 'string',
+					},
+				},
+				required: ['msg'],
+				additionalProperties: false,
+			},
+			minItems: 1,
+		},
+	},
+	required: ['visitor', 'messages'],
+	additionalProperties: false,
+};
+
+export const isGETLivechatMessagesParams = ajv.compile<GETLivechatMessagesParams>(GETLivechatMessagesParamsSchema);
+
+type GETLivechatRoomParams = {
+	token: string;
+	rid?: string;
+	agentId?: string;
+};
+
+const GETLivechatRoomParamsSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		rid: {
+			type: 'string',
+			nullable: true,
+		},
+		agentId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['token'],
+	additionalProperties: true,
+};
+
+export const isGETLivechatRoomParams = ajv.compile<GETLivechatRoomParams>(GETLivechatRoomParamsSchema);
+
+type POSTLivechatRoomCloseParams = {
+	token: string;
+	rid: string;
+};
+
+const POSTLivechatRoomCloseParamsSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		rid: {
+			type: 'string',
+		},
+	},
+	required: ['token', 'rid'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRoomCloseParams = ajv.compile<POSTLivechatRoomCloseParams>(POSTLivechatRoomCloseParamsSchema);
+
+type POSTLivechatRoomTransferParams = {
+	token: string;
+	rid: string;
+	department: string;
+};
+
+const POSTLivechatRoomTransferParamsSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		rid: {
+			type: 'string',
+		},
+		department: {
+			type: 'string',
+		},
+	},
+	required: ['token', 'rid', 'department'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRoomTransferParams = ajv.compile<POSTLivechatRoomTransferParams>(POSTLivechatRoomTransferParamsSchema);
+
+type POSTLivechatRoomSurveyParams = {
+	token: string;
+	rid: string;
+	data: {
+		name: string;
+		value: string;
+	}[];
+};
+
+const POSTLivechatRoomSurveyParamsSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		rid: {
+			type: 'string',
+		},
+		data: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					name: {
+						type: 'string',
+					},
+					value: {
+						type: 'string',
+					},
+				},
+				required: ['name', 'value'],
+				additionalProperties: false,
+			},
+			minItems: 1,
+		},
+	},
+	required: ['token', 'rid', 'data'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRoomSurveyParams = ajv.compile<POSTLivechatRoomSurveyParams>(POSTLivechatRoomSurveyParamsSchema);
+
+type PUTLivechatRoomVisitorParams = {
+	rid: string;
+	oldVisitorId: string;
+	newVisitorId: string;
+};
+
+const PUTLivechatRoomVisitorParamsSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+		oldVisitorId: {
+			type: 'string',
+		},
+		newVisitorId: {
+			type: 'string',
+		},
+	},
+	required: ['rid', 'oldVisitorId', 'newVisitorId'],
+	additionalProperties: false,
+};
+
+export const isPUTLivechatRoomVisitorParams = ajv.compile<PUTLivechatRoomVisitorParams>(PUTLivechatRoomVisitorParamsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -1565,19 +1956,14 @@ export type OmnichannelEndpoints = {
 			};
 		};
 	};
-	'/v1/livechat/room': {
-		GET: (params: { token: string; rid: IRoom['_id'] }) => {
-			room: IOmnichannelRoom;
-		};
-	};
 	'/v1/livechat/room.onHold': {
 		POST: (params: LivechatRoomOnHold) => void;
 	};
 	'/v1/livechat/room.join': {
-		GET: (params: LiveChatRoomJoin) => { success: boolean };
+		GET: (params: LiveChatRoomJoin) => void;
 	};
 	'/v1/livechat/room.forward': {
-		POST: (params: LiveChatRoomForward) => { success: boolean };
+		POST: (params: LiveChatRoomForward) => void;
 	};
 	'/v1/livechat/monitors': {
 		GET: (params: LivechatMonitorsListProps) => PaginatedResult<{
@@ -1808,6 +2194,38 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/offline.message': {
 		POST: (params: POSTLivechatOfflineMessageParams) => { message: string };
+	};
+	'/v1/livechat/page.visited': {
+		POST: (params: POSTLivechatPageVisitedParams) => { page: { msg: string; navigation: string } } | void;
+	};
+	'/v1/livechat/message': {
+		POST: (params: POSTLivechatMessageParams) => { message: IMessage };
+	};
+	'/v1/livechat/message/:_id': {
+		GET: (parms: GETLivechatMessageIdParams) => { message: IMessage };
+		PUT: (params: PUTLivechatMessageIdParams) => { message: IMessage };
+		DELETE: (params: DELETELivechatMessageIdParams) => { message: Pick<Serialized<IMessage>, 'ts' | '_id'> };
+	};
+	'/v1/livechat/messages.history/:rid': {
+		GET: (params: GETLivechatMessagesHistoryRidParams) => { messages: IMessage[] };
+	};
+	'/v1/livechat/messages': {
+		POST: (params: GETLivechatMessagesParams) => { messages: { username: string; msg: string; ts: Date }[] };
+	};
+	'/v1/livechat/room': {
+		GET: (params: GETLivechatRoomParams) => { room: IOmnichannelRoom; newRoom: boolean } | IOmnichannelRoom;
+	};
+	'/v1/livechat/room.close': {
+		POST: (params: POSTLivechatRoomCloseParams) => { rid: string; comment: string };
+	};
+	'/v1/livechat/room.transfer': {
+		POST: (params: POSTLivechatRoomTransferParams) => Deprecated<{ room: IOmnichannelRoom }>;
+	};
+	'/v1/livechat/room.survey': {
+		POST: (params: POSTLivechatRoomSurveyParams) => { rid: string; data: unknown };
+	};
+	'/v1/livechat/room.visitor': {
+		PUT: (params: PUTLivechatRoomVisitorParams) => Deprecated<{ room: IOmnichannelRoom }>;
 	};
 } & {
 	// EE
