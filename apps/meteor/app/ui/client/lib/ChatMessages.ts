@@ -54,7 +54,7 @@ export class ChatMessages {
 	$input: JQuery<HTMLTextAreaElement> | undefined;
 
 	constructor(
-		public collection: Mongo.Collection<IMessage> & {
+		public collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
 			direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 			queries: unknown[];
 		} = ChatMessage,
@@ -336,10 +336,9 @@ export class ChatMessages {
 			if (!message) {
 				throw new Error('Message not found');
 			}
-			const isDescription = message.attachments?.[0]?.description;
 
 			try {
-				if (isDescription) {
+				if (message.attachments && message.attachments?.length > 0) {
 					// @ts-ignore
 					await this.processMessageEditing({ _id: this.editing.id, rid, msg: '' });
 					return done();
