@@ -15,6 +15,7 @@ import type {
 	ILivechatPriority,
 	ILivechatAgentActivity,
 	ILivechatCustomField,
+	IOmnichannelSystemMessage,
 } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
@@ -1489,6 +1490,66 @@ const PUTWebRTCCallIdSchema = {
 
 export const isPUTWebRTCCallId = ajv.compile<PUTWebRTCCallId>(PUTWebRTCCallIdSchema);
 
+type POSTLivechatTranscriptParams = {
+	rid: string;
+	token: string;
+	email: string;
+};
+
+const POSTLivechatTranscriptParamsSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+		token: {
+			type: 'string',
+		},
+		email: {
+			type: 'string',
+		},
+	},
+	required: ['rid', 'token', 'email'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatTranscriptParams = ajv.compile<POSTLivechatTranscriptParams>(POSTLivechatTranscriptParamsSchema);
+
+type POSTLivechatOfflineMessageParams = {
+	name: string;
+	email: string;
+	message: string;
+	department?: string;
+	host?: string;
+};
+
+const POSTLivechatOfflineMessageParamsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		email: {
+			type: 'string',
+		},
+		message: {
+			type: 'string',
+		},
+		department: {
+			type: 'string',
+			nullable: true,
+		},
+		host: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['name', 'email', 'message'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatOfflineMessageParams = ajv.compile<POSTLivechatOfflineMessageParams>(POSTLivechatOfflineMessageParamsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -1738,6 +1799,15 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/custom.fields': {
 		POST: (params: POSTLivechatCustomFieldsParams) => { fields: { Key: string; value: string; overwrite: boolean }[] };
+	};
+	'/v1/livechat/transfer.history/:rid': {
+		GET: () => PaginatedResult<{ history: Pick<IOmnichannelSystemMessage, 'transferData'>[] }>;
+	};
+	'/v1/livechat/transcript': {
+		POST: (params: POSTLivechatTranscriptParams) => { message: string };
+	};
+	'/v1/livechat/offline.message': {
+		POST: (params: POSTLivechatOfflineMessageParams) => { message: string };
 	};
 } & {
 	// EE
