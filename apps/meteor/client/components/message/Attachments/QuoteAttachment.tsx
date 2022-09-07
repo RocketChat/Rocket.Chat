@@ -1,4 +1,4 @@
-import { MessageQuoteAttachment, IMessage } from '@rocket.chat/core-typings';
+import { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
@@ -7,8 +7,8 @@ import React, { ReactElement } from 'react';
 import Attachments from '.';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import MessageMarkup from '../../../views/room/MessageList/components/MessageMarkup';
-import { useParsedMessage } from '../../../views/room/MessageList/hooks/useParsedMessage';
-import MarkdownText from '../../MarkdownText';
+import { useMessageListContext } from '../../../views/room/MessageList/contexts/MessageListContext';
+import { useParsedText } from '../../../views/room/MessageList/hooks/useParsedText';
 import AttachmentAuthor from './Attachment/AttachmentAuthor';
 import AttachmentAuthorAvatar from './Attachment/AttachmentAuthorAvatar';
 import AttachmentAuthorName from './Attachment/AttachmentAuthorName';
@@ -34,23 +34,13 @@ const quoteStyles = css`
 
 type QuoteAttachmentProps = {
 	attachment: MessageQuoteAttachment;
-	message: IMessage;
 };
 
-export const QuoteAttachment = ({ attachment, message }: QuoteAttachmentProps): ReactElement => {
+export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
 	const format = useTimeAgo();
+	const { katex, showColors } = useMessageListContext();
 
-	const msg: IMessage = {
-		_id: message._id,
-		ts: message.ts,
-		u: message.u,
-		_updatedAt: message._updatedAt,
-		rid: message.rid,
-		md: undefined,
-		msg: attachment.text,
-	};
-
-	const tokens = useParsedMessage(msg);
+	const tokens = useParsedText({ text: attachment.text, katex, showColors });
 
 	return (
 		<>
@@ -79,10 +69,10 @@ export const QuoteAttachment = ({ attachment, message }: QuoteAttachmentProps): 
 							</Box>
 						)}
 					</AttachmentAuthor>
-					{tokens ? <MessageMarkup tokens={tokens} /> : <MarkdownText parseEmoji variant='document' content={attachment.text} />}
+					{tokens.length ? <MessageMarkup tokens={tokens} /> : ''}
 					{attachment.attachments && (
 						<AttachmentInner>
-							<Attachments attachments={attachment.attachments} message={message} />
+							<Attachments attachments={attachment.attachments} />
 						</AttachmentInner>
 					)}
 				</AttachmentDetails>

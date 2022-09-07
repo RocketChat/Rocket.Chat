@@ -60,12 +60,14 @@ const MessageContent: FC<{
 					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</MessageBody>
 			)}
+
 			{message.blocks && (
 				<MessageBlock fixedWidth>
 					<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
 				</MessageBlock>
 			)}
-			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} message={message} />}
+
+			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
 
