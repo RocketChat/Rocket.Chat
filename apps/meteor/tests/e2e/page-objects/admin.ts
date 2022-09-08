@@ -97,11 +97,11 @@ export class Admin {
 	}
 
 	get btnAssetsSettings(): Locator {
-		return this.page.locator('[data-qa-id="Assets"] [data-qa-type="settings-card-button"]');
+		return this.page.locator('[data-qa-id="Assets"] >> role=button[name="Open"]');
 	}
 
 	get btnDeleteAssetsLogo(): Locator {
-		return this.page.locator('[data-qa-type="delete-asset"][data-qa-id="Assets_logo"]');
+		return this.page.locator('[data-qa-id="Assets_Settings_Input"] >> role=button[name="Delete"]');
 	}
 
 	get inputAssetsLogo(): Locator {

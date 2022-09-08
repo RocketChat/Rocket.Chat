@@ -42,9 +42,7 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCard): React
 				</Box>
 			</Card.Body>
 			<Card.Footer>
-				<Button onClick={handleOpenGroup} data-qa-type='settings-card-button'>
-					{t('Open')}
-				</Button>
+				<Button onClick={handleOpenGroup}>{t('Open')}</Button>
 			</Card.Footer>
 		</Card>
 	);

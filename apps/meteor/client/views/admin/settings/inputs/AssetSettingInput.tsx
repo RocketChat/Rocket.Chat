@@ -60,7 +60,7 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 			<Field.Label htmlFor={_id} title={_id}>
 				{label}
 			</Field.Label>
-			<Field.Row>
+			<Field.Row data-qa-id='Assets_Settings_Input'>
 				<div className='settings-file-preview'>
 					{value?.url ? (
 						<div className='preview' style={{ backgroundImage: `url(${value.url}?_dc=${Random.id()})` }} data-qa-type='assets-preview' />
@@ -72,7 +72,7 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 					<div className='action'>
 						{value?.url ? (
 							<Button onClick={handleDeleteButtonClick}>
-								<Icon name='trash' data-qa-type='delete-asset' data-qa-id={_id} />
+								<Icon name='trash' />
 								{t('Delete')}
 							</Button>
 						) : (
