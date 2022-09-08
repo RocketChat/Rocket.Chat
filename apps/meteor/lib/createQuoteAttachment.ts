@@ -1,4 +1,4 @@
-import { ITranslatedMessage } from "@rocket.chat/core-typings";
+import type { ITranslatedMessage } from '@rocket.chat/core-typings';
 
 import { getUserAvatarURL } from '../app/utils/lib/getUserAvatarURL';
 
@@ -12,4 +12,4 @@ export function createQuoteAttachment(message: ITranslatedMessage, messageLink: 
 		attachments: message.attachments || [],
 		ts: message.ts,
 	};
-};
+}

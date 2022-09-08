@@ -6,11 +6,11 @@ import _ from 'underscore';
 import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 
+import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';
-import { createQuoteAttachment } from '/lib/createQuoteAttachment';
 
 const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttachment => {
 	if (attachments && isQuoteAttachment(attachments)) {

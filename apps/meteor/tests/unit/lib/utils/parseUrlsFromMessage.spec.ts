@@ -19,13 +19,13 @@ const baseMessage = {
 };
 
 describe('parseUrlsFromMessage()', () => {
-	console.log("TESTSTST")
+	console.log('TESTSTST');
 	it('should return an empty array', () => {
 		expect(
 			parseUrlsFromMessage({
 				...baseMessage,
 				msg: 'No links in this message.',
-			})
+			}),
 		).to.eql([]);
 	});
 
@@ -34,7 +34,7 @@ describe('parseUrlsFromMessage()', () => {
 			parseUrlsFromMessage({
 				...baseMessage,
 				msg: 'Link one - https://a.com and Link two - https://b.com',
-			})
+			}),
 		).to.eql(['https://a.com', 'https://b.com']);
 	});
 
@@ -43,7 +43,7 @@ describe('parseUrlsFromMessage()', () => {
 			parseUrlsFromMessage({
 				...baseMessage,
 				msg: 'Message with Line breaks. [Link one](https://a.com) [Link two](https://b.com)',
-			})
+			}),
 		).to.eql(['https://a.com', 'https://b.com']);
 	});
 });

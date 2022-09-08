@@ -1,21 +1,21 @@
-import { IMessage } from "@rocket.chat/core-typings";
-import { parse } from "@rocket.chat/message-parser";
+import type { IMessage } from '@rocket.chat/core-typings';
+import { parse } from '@rocket.chat/message-parser';
 
 export function parseUrlsFromMessage(message: IMessage): string[] {
 	const urls: string[] = [];
 
-	if(!message.msg) {
+	if (!message.msg) {
 		return urls;
 	}
 
 	const parsedMessage = message?.md ?? parse(message.msg);
 
 	parsedMessage.map((block) => {
-		if(block.type !== 'PARAGRAPH') {
+		if (block.type !== 'PARAGRAPH') {
 			return;
 		}
 
-		block.value.map(inline => {
+		return block.value.map((inline) => {
 			if (inline.type === 'LINK') {
 				urls.push(inline.value.src.value);
 			}
@@ -23,4 +23,4 @@ export function parseUrlsFromMessage(message: IMessage): string[] {
 	});
 
 	return urls;
-};
+}

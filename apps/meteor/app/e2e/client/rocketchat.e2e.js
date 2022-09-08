@@ -1,7 +1,7 @@
 import URL from 'url';
 import QueryString from 'querystring';
-import { parse } from "@rocket.chat/message-parser";
 
+import { parse } from '@rocket.chat/message-parser';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
@@ -33,7 +33,7 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import { call } from '../../../client/lib/utils/call';
-import { APIClient, getUserAvatarURL } from '../../utils/client';
+import { APIClient } from '../../utils/client';
 import { parseUrlsFromMessage } from '../../../lib/parseUrlsFromMessage';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 
@@ -418,7 +418,6 @@ class E2E extends Emitter {
 	}
 
 	async getQuoteMessages(message) {
-		const { msg } = message;
 		const urls = parseUrlsFromMessage(message);
 
 		urls.map(async (url) => {
@@ -448,16 +447,6 @@ class E2E extends Emitter {
 			const decryptedQuoteMessage = await this.decryptMessage(quotedMessage);
 
 			message.attachments = message.attachments || [];
-
-			// const quoteAttachment = {
-			// 	text: decryptedQuoteMessage.msg,
-			// 	translations: decryptedQuoteMessage.translations,
-			// 	message_link: url,
-			// 	author_name: decryptedQuoteMessage.alias || decryptedQuoteMessage.u.username,
-			// 	author_icon: getUserAvatarURL(decryptedQuoteMessage.u.username),
-			// 	attachments: decryptedQuoteMessage.attachments,
-			// 	ts: decryptedQuoteMessage.ts,
-			// };
 
 			const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url);
 
