@@ -210,7 +210,7 @@ API.v1.addRoute(
 
 			let limit = 20;
 			if (this.queryParams.limit) {
-				limit = parseInt(this.queryParams.limit);
+				limit = parseInt(`${this.queryParams.limit}`, 10);
 			}
 
 			const messages = await Promise.all(
