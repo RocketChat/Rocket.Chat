@@ -104,20 +104,23 @@ const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactEl
 
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				!noMarketplaceOrInstalledAppMatches &&
-				!noInstalledAppMatches &&
-				!noMarketplaceOrInstalledAppMatches && (
+				(!noInstalledAppMatches || !noInstalledAppsFound) && (
 					<>
 						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.items} />}
-						<AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />
-						<Divider />
-						<Pagination
-							current={current}
-							itemsPerPage={itemsPerPage}
-							count={appsResult.value.total}
-							onSetItemsPerPage={onSetItemsPerPage}
-							onSetCurrent={onSetCurrent}
-							{...paginationProps}
-						/>
+						{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
+						{Boolean(appsResult.value.count) && (
+							<>
+								<Divider />
+								<Pagination
+									current={current}
+									itemsPerPage={itemsPerPage}
+									count={appsResult.value.total}
+									onSetItemsPerPage={onSetItemsPerPage}
+									onSetCurrent={onSetCurrent}
+									{...paginationProps}
+								/>
+							</>
+						)}
 					</>
 				)}
 			{noMarketplaceOrInstalledAppMatches && (
