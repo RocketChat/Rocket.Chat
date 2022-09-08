@@ -780,6 +780,7 @@ const LivechatCustomFieldsSchema = {
 	properties: {
 		text: {
 			type: 'string',
+			nullable: true,
 		},
 		count: {
 			type: 'number',
@@ -798,7 +799,6 @@ const LivechatCustomFieldsSchema = {
 			nullable: true,
 		},
 	},
-	required: ['text'],
 	additionalProperties: false,
 };
 
