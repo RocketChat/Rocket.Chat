@@ -40,7 +40,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 	const format = useTimeAgo();
 	const { katex, showColors } = useMessageListContext();
 
-	const tokens = useParsedText({ text: attachment.text, katex, showColors });
+	const tokens = useParsedText(attachment.text, { katexEnabled: Boolean(katex), ...katex, showColors });
 
 	return (
 		<>
