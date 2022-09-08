@@ -22,7 +22,7 @@ const removePossibleNullValues = ({
 	editedBy,
 	editedAt,
 	emoji,
-	avatar,
+	avatar, 
 	alias,
 	customFields,
 	groupable,
