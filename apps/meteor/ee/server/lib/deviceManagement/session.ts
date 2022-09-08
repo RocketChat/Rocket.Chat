@@ -84,7 +84,7 @@ export const listenSessionLogin = async (): Promise<void> => {
 			}
 
 			try {
-				const isLoginEmailEnabled = settings.get('Device_Management_Enable_Login_Emails');
+				const isLoginEmailEnabled = settings.get('Enable_Login_Emails');
 				isLoginEmailEnabled &&
 					Mailer.send({
 						to: `${name} <${email}>`,

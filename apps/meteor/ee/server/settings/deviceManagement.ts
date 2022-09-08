@@ -8,7 +8,7 @@ export function addSettings(): void {
 				modules: ['device-management'],
 			},
 			function () {
-				this.add('Device_Management_Enable_Login_Emails', true, {
+				this.add('Enable_Login_Emails', true, {
 					type: 'boolean',
 					public: true,
 					invalidValue: true,
