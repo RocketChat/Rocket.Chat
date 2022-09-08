@@ -7,7 +7,6 @@ import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
-	isGETLivechatRoomParams,
 	isPOSTLivechatRoomCloseParams,
 	isPOSTLivechatRoomTransferParams,
 	isPOSTLivechatRoomSurveyParams,
@@ -27,56 +26,57 @@ import { addUserToRoom } from '../../../../lib/server/functions';
 import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 
-API.v1.addRoute(
-	'livechat/room',
-	{ validateParams: isGETLivechatRoomParams },
-	{
-		async get() {
-			const extraCheckParams = onCheckRoomParams({});
+API.v1.addRoute('livechat/room', {
+	async get() {
+		// I'll temporary use check for validation, as validateParams doesnt support what's being done here
+		const extraCheckParams = onCheckRoomParams({
+			token: String,
+			rid: Match.Maybe(String),
+			agentId: Match.Maybe(String),
+		});
 
-			check(this.queryParams, extraCheckParams);
+		check(this.queryParams, extraCheckParams);
 
-			const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
+		const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
 
-			const guest = await findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
+		const guest = await findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
+		}
+
+		let room: IOmnichannelRoom;
+		if (!roomId) {
+			room = LivechatRooms.findOneOpenByVisitorToken(token, {});
+			if (room) {
+				return API.v1.success({ room, newRoom: false });
 			}
 
-			let room: IOmnichannelRoom;
-			if (!roomId) {
-				room = LivechatRooms.findOneOpenByVisitorToken(token, {});
-				if (room) {
-					return API.v1.success({ room, newRoom: false });
-				}
-
-				let agent;
-				const agentObj = agentId && findAgent(agentId);
-				if (agentObj) {
-					const { username } = agentObj;
-					agent = { agentId, username };
-				}
-
-				const rid = Random.id();
-				const roomInfo = {
-					source: {
-						type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
-					},
-				};
-
-				const newRoom = await getRoom({ guest, rid, agent, roomInfo, extraParams });
-				return API.v1.success(newRoom);
+			let agent;
+			const agentObj = agentId && findAgent(agentId);
+			if (agentObj) {
+				const { username } = agentObj;
+				agent = { agentId, username };
 			}
 
-			room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
+			const rid = Random.id();
+			const roomInfo = {
+				source: {
+					type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+				},
+			};
 
-			return API.v1.success({ room, newRoom: false });
-		},
+			const newRoom = await getRoom({ guest, rid, agent, roomInfo, extraParams });
+			return API.v1.success(newRoom);
+		}
+
+		room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		return API.v1.success({ room, newRoom: false });
 	},
-);
+});
 
 API.v1.addRoute(
 	'livechat/room.close',
@@ -214,7 +214,7 @@ API.v1.addRoute(
 				throw new Error('This_conversation_is_already_closed');
 			}
 
-			const guest = await LivechatVisitors.findOneById(room.v && room.v._id);
+			const guest = await LivechatVisitors.findOneById(room.v?._id);
 			transferData.transferredBy = normalizeTransferredByData(Meteor.user() || {}, room);
 			if (transferData.userId) {
 				const userToTransfer = await Users.findOneById(transferData.userId);
