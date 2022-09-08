@@ -1368,10 +1368,13 @@ describe('[Users]', function () {
 				.set(userCredentials)
 				.send({
 					data: {
-						name: editedName,
+						email: editedEmail,
+						realname: editedName,
 						username: editedUsername,
-						currentPassword: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
+						nickname: 'test-nickname',
+						statusText: 'test-status',
 						newPassword,
+						typedPassword: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
 					},
 				})
 				.expect('Content-Type', 'application/json')
