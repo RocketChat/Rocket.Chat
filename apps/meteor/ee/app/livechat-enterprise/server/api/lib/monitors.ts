@@ -1,13 +1,13 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { ILivechatMonitor, IUser } from '@rocket.chat/core-typings';
 
 export async function findMonitors({
 	text,
 	pagination: { offset, count, sort },
 }: {
-	text: string;
+	text?: string;
 	pagination: {
 		offset: number;
 		count: number;
@@ -15,7 +15,7 @@ export async function findMonitors({
 			[key: string]: 1 | -1;
 		};
 	};
-}): Promise<PaginatedResult<{ monitors: IUser[] }>> {
+}): Promise<PaginatedResult<{ monitors: ILivechatMonitor[] }>> {
 	const query = {};
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
