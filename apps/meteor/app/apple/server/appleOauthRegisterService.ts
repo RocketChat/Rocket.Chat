@@ -34,6 +34,22 @@ settings.watchMultiple(
 			});
 		}
 
+		// if everything is empty but Apple login is enabled, don't show the login button
+		if (!clientId && !serverSecret && !iss && !kid) {
+			ServiceConfiguration.configurations.upsert(
+				{
+					service: 'apple',
+				},
+				{
+					$set: {
+						showButton: false,
+						enabled: settings.get('Accounts_OAuth_Apple'),
+					},
+				},
+			);
+			return;
+		}
+
 		const HEADER = {
 			kid,
 			alg: 'ES256',
@@ -67,7 +83,6 @@ settings.watchMultiple(
 					enabled: settings.get('Accounts_OAuth_Apple'),
 					loginStyle: 'popup',
 					clientId,
-					buttonLabelText: 'Sign in with Apple',
 					buttonColor: '#000',
 					buttonLabelColor: '#FFF',
 				},
