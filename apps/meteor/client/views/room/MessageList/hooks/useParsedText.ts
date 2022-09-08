@@ -2,30 +2,37 @@ import { Root, parse } from '@rocket.chat/message-parser';
 import { useMemo } from 'react';
 
 type ParsedTextProps = {
-	text: string;
-	katex?: {
-		dollarSyntaxEnabled?: boolean;
-		parenthesisSyntaxEnabled?: boolean;
-	};
+	katexEnabled?: boolean;
+	dollarSyntaxEnabled?: boolean;
+	parenthesisSyntaxEnabled?: boolean;
 	showColors?: boolean;
 };
 
-export const useParsedText = ({ text, katex = undefined, showColors = false }: ParsedTextProps): Root =>
+const isRoot = (text: string | Root): text is Root => Array.isArray(text);
+
+export const useParsedText = (
+	textOrRoot: string | Root,
+	{ dollarSyntaxEnabled, parenthesisSyntaxEnabled, katexEnabled, showColors = false }: ParsedTextProps,
+): Root =>
 	useMemo(() => {
+		if (!textOrRoot) {
+			return [];
+		}
+
+		if (isRoot(textOrRoot)) {
+			return textOrRoot;
+		}
+
 		const parseOptions = {
 			colors: showColors,
 			emoticons: true,
-			...(katex && {
+			...(katexEnabled && {
 				katex: {
-					dollarSyntax: katex.dollarSyntaxEnabled,
-					parenthesisSyntax: katex.parenthesisSyntaxEnabled,
+					dollarSyntax: dollarSyntaxEnabled,
+					parenthesisSyntax: parenthesisSyntaxEnabled,
 				},
 			}),
 		};
 
-		if (!text) {
-			return [];
-		}
-
-		return parse(text, parseOptions);
-	}, [showColors, katex, text]);
+		return parse(textOrRoot, parseOptions);
+	}, [showColors, dollarSyntaxEnabled, parenthesisSyntaxEnabled, katexEnabled, textOrRoot]);

@@ -1,8 +1,8 @@
 import { IMessage, isTranslatedMessage, ITranslatedMessage } from '@rocket.chat/core-typings';
-import { Root, parse } from '@rocket.chat/message-parser';
-import { useMemo } from 'react';
+import type { Root } from '@rocket.chat/message-parser';
 
 import { useMessageListContext, useShowTranslated } from '../contexts/MessageListContext';
+import { useParsedText } from './useParsedText';
 
 export const useParsedMessage = (message: IMessage & Partial<ITranslatedMessage>): Root => {
 	const { autoTranslateLanguage, katex, showColors } = useMessageListContext();
@@ -11,29 +11,7 @@ export const useParsedMessage = (message: IMessage & Partial<ITranslatedMessage>
 
 	const { md, msg } = message;
 
-	return useMemo(() => {
-		const parseOptions = {
-			colors: showColors,
-			emoticons: true,
-			...(katex && {
-				katex: {
-					dollarSyntax: katex.dollarSyntaxEnabled,
-					parenthesisSyntax: katex.parenthesisSyntaxEnabled,
-				},
-			}),
-		};
+	const text = (translated && autoTranslateLanguage && translations && translations[autoTranslateLanguage]) || msg;
 
-		if (translated && autoTranslateLanguage && translations) {
-			return parse(translations[autoTranslateLanguage], parseOptions);
-		}
-		if (md) {
-			return md;
-		}
-
-		if (!msg) {
-			return [];
-		}
-
-		return parse(msg, parseOptions);
-	}, [showColors, katex, autoTranslateLanguage, md, msg, translated, translations]);
+	return useParsedText(md || text, { katexEnabled: Boolean(katex), ...katex, showColors });
 };
