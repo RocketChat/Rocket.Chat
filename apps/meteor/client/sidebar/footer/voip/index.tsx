@@ -62,7 +62,9 @@ export const VoipFooter = (): ReactElement | null => {
 	};
 
 	const tooltips = {
-		mute: t('Mute'),
+		mute: t('Turn_off_microphone'),
+		unmute: t('Turn_on_microphone'),
+		resumeCall: t('Resume'),
 		holdCall: t('Hold_Call'),
 		holdCallEEOnly: t('Hold_Call_EE_only'),
 		acceptCall: t('Accept_Call'),
