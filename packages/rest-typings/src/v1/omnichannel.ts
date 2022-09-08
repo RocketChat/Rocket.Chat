@@ -2179,6 +2179,30 @@ export type OmnichannelEndpoints = {
 		DELETE: () => void;
 	};
 
+	// For some reason, when using useEndpointData with POST, it's not able to detect the actual type of a path with path params
+	// So, we need to define the type of the path params here
+	'/v1/livechat/users/manager': {
+		GET: (params: LivechatUsersManagerGETProps) => PaginatedResult<{
+			users: ILivechatAgent[];
+		}>;
+		POST: (params: POSTLivechatUsersTypeProps) => { success: boolean };
+	};
+
+	'/v1/livechat/users/user': {
+		GET: (params: LivechatUsersManagerGETProps) => PaginatedResult<{
+			users: ILivechatAgent[];
+		}>;
+		POST: (params: POSTLivechatUsersTypeProps) => { success: boolean };
+	};
+	'/v1/livechat/users/manager/:_id': {
+		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
+		DELETE: () => void;
+	};
+	'/v1/livechat/users/user/:_id': {
+		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
+		DELETE: () => void;
+	};
+
 	'/v1/livechat/users/agent': {
 		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
 			users: ILivechatAgent[];
