@@ -25,7 +25,7 @@ export const OmnichannelCallToggleReady = ({ ...props }): ReactElement => {
 
 	const getTitle = (): string => {
 		if (networkStatus === 'offline') {
-			return t('Signaling_connection_disconnected');
+			return t('Waiting_for_server_connection');
 		}
 
 		if (inCall) {
@@ -33,10 +33,10 @@ export const OmnichannelCallToggleReady = ({ ...props }): ReactElement => {
 		}
 
 		if (registered) {
-			return t('Enabled');
+			return t('Turn_off_answer_calls');
 		}
 
-		return t('Disabled');
+		return t('Turn_on_answer_calls');
 	};
 
 	const getIcon = (): 'phone-issue' | 'phone' | 'phone-disabled' => {
