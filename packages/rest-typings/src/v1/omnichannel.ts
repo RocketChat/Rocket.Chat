@@ -720,6 +720,9 @@ type CannedResponsesProps = PaginatedRequest<{
 	scope?: string;
 	departmentId?: string;
 	text?: string;
+	shortcut?: string;
+	tags?: string[];
+	createdBy?: string;
 }>;
 
 const CannedResponsesPropsSchema = {
@@ -730,6 +733,21 @@ const CannedResponsesPropsSchema = {
 			nullable: true,
 		},
 		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+		shortcut: {
+			type: 'string',
+			nullable: true,
+		},
+		tags: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
+		},
+		createdBy: {
 			type: 'string',
 			nullable: true,
 		},
@@ -746,10 +764,6 @@ const CannedResponsesPropsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -1735,7 +1749,7 @@ type GETLivechatMessagesHistoryRidParams = PaginatedRequest<{
 	token: string;
 	ls?: string;
 	end?: string;
-	limit?: string;
+	limit?: number;
 }>;
 
 const GETLivechatMessagesHistoryRidParamsSchema = {
@@ -1747,6 +1761,30 @@ const GETLivechatMessagesHistoryRidParamsSchema = {
 		},
 		token: {
 			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		ls: {
+			type: 'string',
+			nullable: true,
+		},
+		end: {
+			type: 'string',
+			nullable: true,
+		},
+		limit: {
+			type: 'number',
+			nullable: true,
 		},
 	},
 	required: ['token'],
@@ -1941,6 +1979,83 @@ const PUTLivechatRoomVisitorParamsSchema = {
 
 export const isPUTLivechatRoomVisitorParams = ajv.compile<PUTLivechatRoomVisitorParams>(PUTLivechatRoomVisitorParamsSchema);
 
+type POSTCannedResponsesProps = {
+	_id?: string;
+	shortcut: string;
+	text: string;
+	scope: string;
+	departmentId?: string;
+	tags?: string[];
+};
+
+const POSTCannedResponsesPropsSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+			nullable: true,
+		},
+		shortcut: {
+			type: 'string',
+		},
+		text: {
+			type: 'string',
+		},
+		scope: {
+			type: 'string',
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+		tags: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
+		},
+	},
+	required: ['shortcut', 'text', 'scope'],
+	additionalProperties: false,
+};
+
+export const isPOSTCannedResponsesProps = ajv.compile<POSTCannedResponsesProps>(POSTCannedResponsesPropsSchema);
+
+type DELETECannedResponsesProps = {
+	_id: string;
+};
+
+const DELETECannedResponsesPropsSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+		},
+	},
+	required: ['_id'],
+	additionalProperties: false,
+};
+
+export const isDELETECannedResponsesProps = ajv.compile<DELETECannedResponsesProps>(DELETECannedResponsesPropsSchema);
+
+type POSTLivechatUsersTypeProps = {
+	username: string;
+};
+
+const POSTLivechatUsersTypePropsSchema = {
+	type: 'object',
+	properties: {
+		username: {
+			type: 'string',
+		},
+	},
+	required: ['username'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatUsersTypeProps = ajv.compile<POSTLivechatUsersTypeProps>(POSTLivechatUsersTypePropsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -2052,19 +2167,15 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 
-	'/v1/livechat/users/manager': {
+	'/v1/livechat/users/:type': {
 		GET: (params: LivechatUsersManagerGETProps) => PaginatedResult<{
 			users: ILivechatAgent[];
 		}>;
-		POST: (params: { username: string }) => { success: boolean };
+		POST: (params: POSTLivechatUsersTypeProps) => { success: boolean };
 	};
 
-	'/v1/livechat/users/manager/:_id': {
-		GET: (
-			params: PaginatedRequest<{
-				text: string;
-			}>,
-		) => { user: ILivechatAgent };
+	'/v1/livechat/users/:type/:_id': {
+		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
 		DELETE: () => void;
 	};
 
@@ -2135,6 +2246,16 @@ export type OmnichannelEndpoints = {
 		GET: (params: CannedResponsesProps) => PaginatedResult<{
 			cannedResponses: IOmnichannelCannedResponse[];
 		}>;
+		POST: (params: POSTCannedResponsesProps) => void;
+		DELETE: (params: DELETECannedResponsesProps) => void;
+	};
+
+	'/v1/canned-responses/:_id': {
+		GET: () => { cannedResponse: IOmnichannelCannedResponse };
+	};
+
+	'/v1/canned-responses.get': {
+		GET: () => { responses: IOmnichannelCannedResponse[] };
 	};
 
 	'/v1/livechat/webrtc.call': {

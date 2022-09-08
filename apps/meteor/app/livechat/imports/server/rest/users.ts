@@ -1,5 +1,6 @@
 import { check } from 'meteor/check';
 import _ from 'underscore';
+import { isLivechatUsersManagerGETProps, isPOSTLivechatUsersTypeProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
 import { Users } from '../../../../models/server';
@@ -17,6 +18,10 @@ API.v1.addRoute(
 				operation: 'hasAll',
 			},
 			POST: { permissions: ['view-livechat-manager'], operation: 'hasAll' },
+		},
+		validateParams: {
+			GET: isLivechatUsersManagerGETProps,
+			POST: isPOSTLivechatUsersTypeProps,
 		},
 	},
 	{
@@ -63,14 +68,6 @@ API.v1.addRoute(
 			throw new Error('Invalid type');
 		},
 		async post() {
-			check(this.urlParams, {
-				type: String,
-			});
-
-			check(this.bodyParams, {
-				username: String,
-			});
-
 			if (this.urlParams.type === 'agent') {
 				const user = Livechat.addAgent(this.bodyParams.username);
 				if (user) {
@@ -95,11 +92,6 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			check(this.urlParams, {
-				type: String,
-				_id: String,
-			});
-
 			const user = Users.findOneById(this.urlParams._id);
 
 			if (!user) {
@@ -127,11 +119,6 @@ API.v1.addRoute(
 			});
 		},
 		async delete() {
-			check(this.urlParams, {
-				type: String,
-				_id: String,
-			});
-
 			const user = Users.findOneById(this.urlParams._id);
 
 			if (!user) {

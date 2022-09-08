@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
+import { isPOSTCannedResponsesProps, isDELETECannedResponsesProps, isCannedResponsesProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../app/api/server';
 import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
 
 API.v1.addRoute(
 	'canned-responses.get',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-canned-responses'] },
 	{
 		async get() {
 			return API.v1.success({
@@ -18,15 +18,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'canned-responses',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: { GET: ['view-canned-responses'], POST: ['save-canned-responses'], DELETE: ['remove-canned-responses'] },
+		validateParams: { POST: isPOSTCannedResponsesProps, DELETE: isDELETECannedResponsesProps, GET: isCannedResponsesProps },
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
 			const { shortcut, text, scope, tags, departmentId, createdBy } = this.requestParams();
-			check(shortcut, Match.Maybe(String));
-			check(text, Match.Maybe(String));
-			check(tags, Match.Maybe([String]));
 			const { cannedResponses, total } = await findAllCannedResponsesFilter({
 				shortcut,
 				text,
@@ -50,14 +51,6 @@ API.v1.addRoute(
 			});
 		},
 		async post() {
-			check(this.bodyParams, {
-				_id: Match.Maybe(String),
-				shortcut: String,
-				text: String,
-				scope: String,
-				tags: Match.Maybe([String]),
-				departmentId: Match.Maybe(String),
-			});
 			const { _id, shortcut, text, scope, departmentId, tags } = this.bodyParams;
 			Meteor.runAsUser(this.userId, () => {
 				Meteor.call('saveCannedResponse', _id, {
@@ -72,7 +65,6 @@ API.v1.addRoute(
 		},
 		async delete() {
 			const { _id } = this.requestParams();
-			check(_id, String);
 			Meteor.runAsUser(this.userId, () => {
 				Meteor.call('removeCannedResponse', _id);
 			});
@@ -83,16 +75,18 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'canned-responses/:_id',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-canned-responses'] },
 	{
 		async get() {
 			const { _id } = this.urlParams;
-			check(_id, String);
-
 			const cannedResponse = await findOneCannedResponse({
 				userId: this.userId,
 				_id,
 			});
+
+			if (!cannedResponse) {
+				return API.v1.notFound();
+			}
 
 			return API.v1.success({ cannedResponse });
 		},
