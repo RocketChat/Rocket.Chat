@@ -21,7 +21,13 @@ describe('LIVECHAT - custom fields', function () {
 	describe('livechat/custom-fields', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-l-room', []).then(() => {
-				request.get(api('livechat/custom-fields')).set(credentials).expect('Content-Type', 'application/json').expect(403).end(done);
+				request
+					.get(api('livechat/custom-fields'))
+					.set(credentials)
+					.query({ text: 'x' })
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.end(done);
 			});
 		});
 		it('should return an array of custom fields', (done) => {
