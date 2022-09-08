@@ -123,20 +123,19 @@ const AccountProfilePage = (): ReactElement => {
 	const onSave = useCallback(async () => {
 		const save = async (typedPassword?: string): Promise<void> => {
 			try {
-				await saveFn(
-					{
-						...(allowRealNameChange ? { realname } : {}),
-						...(allowEmailChange && user ? getUserEmailAddress(user) !== email && { email } : {}),
-						...(allowPasswordChange ? { newPassword: password } : {}),
-						...(canChangeUsername ? { username } : {}),
-						...(allowUserStatusMessageChange ? { statusText } : {}),
-						...(typedPassword && { typedPassword: SHA256(typedPassword) }),
-						statusType,
-						nickname,
-						bio: bio || '',
-					},
-					customFields,
-				);
+				const settings = {
+					...(allowRealNameChange ? { realname } : {}),
+					...(allowEmailChange && user ? getUserEmailAddress(user) !== email && { email } : {}),
+					...(allowPasswordChange ? { newPassword: password } : {}),
+					...(canChangeUsername ? { username } : {}),
+					...(allowUserStatusMessageChange ? { statusText } : {}),
+					...(typedPassword && { typedPassword: SHA256(typedPassword) }),
+					statusType,
+					nickname,
+					bio: bio || '',
+				};
+
+				await saveFn({ userData: settings, customFields });
 				handlePassword('');
 				handleConfirmationPassword('');
 				const avatarResult = await updateAvatar();
