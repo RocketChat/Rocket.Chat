@@ -73,6 +73,7 @@ server.methods({
 
 			this.userId = result.uid;
 			this.userToken = result.hashedToken;
+			this.connection.loginToken = result.hashedToken;
 
 			this.emit(DDP_EVENTS.LOGGED);
 
