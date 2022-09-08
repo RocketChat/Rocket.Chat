@@ -104,6 +104,7 @@
   "Accounts_LoginExpiration": "Login Expiration in Days",
   "Accounts_ManuallyApproveNewUsers": "Manually Approve New Users",
   "Accounts_OAuth_Apple": "Sign in with Apple",
+  "Accounts_OAuth_Apple_Description": "If you want Apple login enabled only on mobile, you can leave all fields empty.",
   "Accounts_OAuth_Custom_Access_Token_Param": "Param Name for access token",
   "Accounts_OAuth_Custom_Authorize_Path": "Authorize Path",
   "Accounts_OAuth_Custom_Avatar_Field": "Avatar field",
