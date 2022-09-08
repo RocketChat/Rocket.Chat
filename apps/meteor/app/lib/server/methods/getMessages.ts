@@ -21,17 +21,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
 		}
 
-		const prids = msgs.reduce<string[]>((prids, m) => {
-			const room: IRoom = Rooms.findById(m.rid);
+		const rooms = Rooms.findByIds(rids, { fields: { prid: 1 } }).fetch();
+		const prids = rooms.map((r: IRoom) => r.prid).filter(Boolean);
 
-			if (room?.prid) {
-				prids.push(room.prid);
-			}
-
-			return prids;
-		}, []);
-
-		if (!prids.every((_id) => canAccessRoomId(_id, uid))) {
+		if (!prids.every((_id: string) => canAccessRoomId(_id, uid))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
 		}
 
