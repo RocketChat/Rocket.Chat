@@ -84,13 +84,15 @@ export const listenSessionLogin = async (): Promise<void> => {
 			}
 
 			try {
-				Mailer.send({
-					to: `${name} <${email}>`,
-					from: Accounts.emailTemplates.from,
-					subject: settings.get('Device_Management_Email_Subject'),
-					html: mailTemplates,
-					data: mailData,
-				});
+				const isLoginEmailEnabled = settings.get('Device_Management_Enable_Login_Emails');
+				isLoginEmailEnabled &&
+					Mailer.send({
+						to: `${name} <${email}>`,
+						from: Accounts.emailTemplates.from,
+						subject: settings.get('Device_Management_Email_Subject'),
+						html: mailTemplates,
+						data: mailData,
+					});
 			} catch ({ message }) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 					method: 'listenSessionLogin',
