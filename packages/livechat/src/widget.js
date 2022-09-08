@@ -70,6 +70,8 @@ function callHook(action, params) {
 }
 
 const updateWidgetStyle = (isOpened) => {
+	const isFullscreen = smallScreen && widget.dataset.state !== 'triggered';
+
 	if (smallScreen && isOpened) {
 		scrollPosition = document.documentElement.scrollTop;
 		document.body.classList.add('rc-livechat-mobile-full-screen');
@@ -80,8 +82,9 @@ const updateWidgetStyle = (isOpened) => {
 		}
 	}
 
+
 	if (isOpened) {
-		widget.style.left = smallScreen ? '0' : 'auto';
+		widget.style.left = isFullscreen ? '0' : 'auto';
 
 		/**
 		 * If we use widget.style.height = smallScreen ? '100vh' : ...
@@ -91,8 +94,8 @@ const updateWidgetStyle = (isOpened) => {
 		 * for widget.style.width
 		 */
 
-		widget.style.height = smallScreen ? '100%' : `${ WIDGET_MARGIN + widget_height + WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT }px`;
-		widget.style.width = smallScreen ? '100%' : `${ WIDGET_MARGIN + WIDGET_OPEN_WIDTH + WIDGET_MARGIN }px`;
+		widget.style.height = isFullscreen ? '100%' : `${ WIDGET_MARGIN + widget_height + WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT }px`;
+		widget.style.width = isFullscreen ? '100%' : `${ WIDGET_MARGIN + WIDGET_OPEN_WIDTH + WIDGET_MARGIN }px`;
 	} else {
 		widget.style.left = 'auto';
 		widget.style.width = `${ WIDGET_MARGIN + WIDGET_MINIMIZED_WIDTH + WIDGET_MARGIN }px`;
@@ -151,16 +154,16 @@ const openWidget = () => {
 	}
 
 	widget_height = WIDGET_OPEN_HEIGHT;
-	updateWidgetStyle(true);
 	widget.dataset.state = 'opened';
+	updateWidgetStyle(true);
 	iframe.focus();
 	emitCallback('chat-maximized');
 };
 
 const resizeWidget = (height) => {
 	widget_height = height;
-	updateWidgetStyle(true);
 	widget.dataset.state = 'triggered';
+	updateWidgetStyle(true);
 };
 
 function closeWidget() {
@@ -168,8 +171,8 @@ function closeWidget() {
 		return;
 	}
 
-	updateWidgetStyle(false);
 	widget.dataset.state = 'closed';
+	updateWidgetStyle(false);
 	emitCallback('chat-minimized');
 }
 
