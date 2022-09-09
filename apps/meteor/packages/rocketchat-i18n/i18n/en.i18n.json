@@ -1533,6 +1533,7 @@
   "Device_Changes_Not_Available_Insecure_Context": "Device changes are only available on secure contexts (e.g. https://)",
   "Device_Management": "Device management",
   "Device_Management_Client": "Client",
+  "Device_Management_Description": "Configure security and access control policies.",
   "Device_Management_Device": "Device",
   "Device_Management_Device_Unknown": "Unknown",
   "Device_Management_Email_Subject": "[Site_Name] - Login Detected",
