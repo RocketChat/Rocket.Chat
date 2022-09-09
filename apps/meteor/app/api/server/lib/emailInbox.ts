@@ -8,7 +8,6 @@ export const findEmailInboxes = async ({
 	query = {},
 	pagination: { offset, count, sort },
 }: {
-	userId: string;
 	query?: Filter<IEmailInbox>;
 	pagination: {
 		offset: number;

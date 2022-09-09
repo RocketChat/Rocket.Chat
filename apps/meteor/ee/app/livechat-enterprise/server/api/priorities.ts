@@ -12,7 +12,6 @@ API.v1.addRoute(
 
 			return API.v1.success(
 				await findPriorities({
-					userId: this.userId,
 					text,
 					pagination: {
 						offset,
@@ -33,7 +32,6 @@ API.v1.addRoute(
 			const { priorityId } = this.urlParams;
 
 			const priority = await findPriorityById({
-				userId: this.userId,
 				priorityId,
 			});
 

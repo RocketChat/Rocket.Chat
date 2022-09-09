@@ -3,10 +3,7 @@ import { LivechatPriority } from '@rocket.chat/models';
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import type { FindOptions } from 'mongodb';
 
-import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-
 type FindPrioritiesParams = {
-	userId: string;
 	text?: string;
 	pagination: {
 		offset: number;
@@ -23,7 +20,6 @@ type FindPrioritiesResult = {
 };
 
 type FindPrioritiesByIdParams = {
-	userId: string;
 	priorityId: string;
 };
 
@@ -50,9 +46,6 @@ export async function findPriorities({ text, pagination: { offset, count, sort }
 	};
 }
 
-export async function findPriorityById({ userId, priorityId }: FindPrioritiesByIdParams): Promise<FindPrioritiesByIdResult> {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findPriorityById({ priorityId }: FindPrioritiesByIdParams): Promise<FindPrioritiesByIdResult> {
 	return LivechatPriority.findOneById(priorityId);
 }

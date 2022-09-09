@@ -3,13 +3,10 @@ import type { IOmnichannelBusinessUnit, ILivechatMonitor } from '@rocket.chat/co
 import { LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
-import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-
 export async function findUnits({
 	text,
 	pagination: { offset, count, sort },
 }: {
-	userId: string;
 	text?: string;
 	pagination: {
 		offset: number;
@@ -42,13 +39,10 @@ export async function findUnits({
 	};
 }
 
-export async function findUnitMonitors({ unitId }: { userId: string; unitId: string }): Promise<ILivechatMonitor[]> {
+export async function findUnitMonitors({ unitId }: { unitId: string }): Promise<ILivechatMonitor[]> {
 	return LivechatUnitMonitors.find({ unitId }).toArray() as Promise<ILivechatMonitor[]>;
 }
 
-export async function findUnitById({ userId, unitId }: { userId: string; unitId: string }): Promise<IOmnichannelBusinessUnit | null> {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-units'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findUnitById({ unitId }: { unitId: string }): Promise<IOmnichannelBusinessUnit | null> {
 	return LivechatUnit.findOneById<IOmnichannelBusinessUnit>(unitId);
 }
