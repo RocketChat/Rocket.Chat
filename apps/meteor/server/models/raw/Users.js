@@ -760,7 +760,9 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(query, update);
+		// We don't want to update the _updatedAt field on this operation,
+		// so we can check if the status update triggered a change
+		return this.col.updateOne(query, update);
 	}
 
 	openAgentsBusinessHoursByBusinessHourId(businessHourIds) {
