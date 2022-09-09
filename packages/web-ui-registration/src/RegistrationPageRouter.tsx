@@ -2,21 +2,31 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
 import { LoginForm } from './LoginForm';
-import RegisterForm from './RegisterForm';
 import ResetPasswordForm from './ResetPasswordForm';
 import { useLoginRouter } from './hooks/useLoginRouter';
-import RegistrationTemplate from './template/RegistrationTemplate';
+import HorizontalTemplate from './template/HorizontalTemplate';
+import SecretRegisterInvalidForm from './SecretRegisterInvalidForm';
+import RegisterSecretPageRouter from './RegisterSecretPageRouter';
+import LoginRegisterForm from './RegisterForm';
 
-export const RegistrationPageRouter = (): ReactElement => {
-	const [route, setLoginRoute] = useLoginRouter('login');
+export const RegistrationPageRouter = ({
+	defaultRoute = 'login',
+}: {
+	defaultRoute?: 'login' | 'register' | 'reset-password' | 'secret-register';
+}): ReactElement => {
+	const [route, setLoginRoute] = useLoginRouter(defaultRoute);
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');
 
+	if (route === 'register-invalid') {
+		return <SecretRegisterInvalidForm />;
+	}
+
 	return (
-		<RegistrationTemplate>
+		<HorizontalTemplate>
 			{route === 'login' && showFormLogin && <LoginForm setLoginRoute={setLoginRoute} />}
 			{route === 'reset-password' && <ResetPasswordForm setLoginRoute={setLoginRoute} />}
-			{route === 'register' && <RegisterForm setLoginRoute={setLoginRoute} />}
-		</RegistrationTemplate>
+			{(route === 'secret-register' || route === 'register') && <RegisterSecretPageRouter origin={route} setLoginRoute={setLoginRoute} />}
+		</HorizontalTemplate>
 	);
 };
 

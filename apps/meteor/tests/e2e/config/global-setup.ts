@@ -48,6 +48,8 @@ export default async function (): Promise<void> {
 		await page.locator('.rcx-button--primary.rcx-button >> text="Confirm"').click();
 	}
 
+	await page.context().storageState({ path: `admin-session.json` });
+
 	await browser.close();
 
 	const { usersFixtures } = await injectInitialData();

@@ -38,4 +38,6 @@ test.describe.parallel('Forgot Password', () => {
 			await expect(poRegistration.forgotPasswordEmailCallout).toBeVisible();
 		});
 	});
+
+	test('Reset Password disabled', async () => {});
 });

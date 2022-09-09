@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import { Form } from '@rocket.chat/layout';
 import { useForm } from 'react-hook-form';
 
-import RegistrationTemplate from '../template/RegistrationTemplate';
+import HorizontalTemplate from '../template/HorizontalTemplate';
 import { usePasswordPolicy } from '../hooks/usePasswordPolicy';
 
 const getChangePasswordReason = ({
@@ -58,7 +58,7 @@ const ResetPasswordPage = (): ReactElement => {
 	});
 
 	return (
-		<RegistrationTemplate>
+		<HorizontalTemplate>
 			<Form onSubmit={submit}>
 				<Form.Header>
 					<Modal.Title textAlign='start'>{t('Password')}</Modal.Title>
@@ -100,7 +100,7 @@ const ResetPasswordPage = (): ReactElement => {
 					</Modal.FooterControllers>
 				</Form.Footer>
 			</Form>
-		</RegistrationTemplate>
+		</HorizontalTemplate>
 	);
 };
 

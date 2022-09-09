@@ -7,14 +7,6 @@ export class Registration {
 		this.page = page;
 	}
 
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
-	}
-
-	get toastError(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--error');
-	}
-
 	get btnSubmit(): Locator {
 		return this.page.locator('role=button[name="Submit"]');
 	}
@@ -51,10 +43,6 @@ export class Registration {
 		return this.page.locator('[name=name]');
 	}
 
-	// get textErrorName(): Locator {
-	// 	return this.page.locator('[name=name]~.input-error');
-	// }
-
 	get inputEmail(): Locator {
 		return this.page.locator('role=textbox[name=/Email/]');
 	}
@@ -63,9 +51,9 @@ export class Registration {
 		return this.page.locator('[name=password]');
 	}
 
-	// get textErrorPassword(): Locator {
-	// 	return this.page.locator('[name=password]~.input-error');
-	// }
+	get inputReason(): Locator {
+		return this.page.locator('role=textbox[name=/Reason/]');
+	}
 
 	get inputPasswordConfirm(): Locator {
 		return this.page.locator('[name=passwordConfirmation]');
@@ -76,6 +64,10 @@ export class Registration {
 	// }
 
 	get forgotPasswordEmailCallout(): Locator {
-		return this.page.locator('role=alert');
+		return this.page.locator('role=status');
+	}
+
+	get registrationDisabledCallout(): Locator {
+		return this.page.locator('role=status >> text=/New user registration is currently disabled/');
 	}
 }

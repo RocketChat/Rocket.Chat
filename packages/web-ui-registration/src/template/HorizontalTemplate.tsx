@@ -14,7 +14,7 @@ import LoginTerms from '../components/LoginTerms';
 import { RegisterTitle } from '../components/RegisterTitle';
 import { useAssetPath } from '../hooks/useAssetPath';
 
-const RegistrationTemplate = ({ children }: { children: ReactNode }): ReactElement => {
+const HorizontalTemplate = ({ children }: { children: ReactNode }): ReactElement => {
 	const customLogo = useAssetPath('Assets_logo');
 	const customBackground = useAssetPath('Assets_background');
 
@@ -40,4 +40,4 @@ const RegistrationTemplate = ({ children }: { children: ReactNode }): ReactEleme
 	);
 };
 
-export default RegistrationTemplate;
+export default HorizontalTemplate;
