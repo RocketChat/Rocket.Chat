@@ -5,7 +5,7 @@ import { API } from '../../../../api/server';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/page.visited', {
-	post() {
+	async post() {
 		check(this.bodyParams, {
 			token: String,
 			rid: Match.Maybe(String),
