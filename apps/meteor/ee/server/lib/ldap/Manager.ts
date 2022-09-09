@@ -224,11 +224,18 @@ export class LDAPEEManager extends LDAPManager {
 			const userFields = ensureArray<string>(fieldMap[ldapField]);
 
 			for await (const userField of userFields) {
-				const [roleId] = userField.split(/\.(.+)/);
-				allowedRoles.push(roleId);
+				const [roleName] = userField.split(/\.(.+)/);
+
+				const role = roles.find((role) => role.name === roleName);
+
+				if (role) {
+					allowedRoles.push(role._id);
+				}
 
 				if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
-					roleList.push(roleId);
+					if (role) {
+						roleList.push(role._id);
+					}
 					continue;
 				}
 			}
