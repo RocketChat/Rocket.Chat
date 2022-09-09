@@ -25,7 +25,7 @@ const baseMessage = {
 MessageTypes.registerType({
 	id: 'au',
 	system: true,
-	message: 'User_added_by',
+	message: 'User_added_to',
 });
 
 describe('isUserMessage', () => {
