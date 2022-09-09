@@ -14,69 +14,65 @@ import { settings } from '../../../../settings/server';
 
 API.v1.addRoute('livechat/message', {
 	async post() {
-		try {
-			check(this.bodyParams, {
-				_id: Match.Maybe(String),
-				token: String,
-				rid: String,
-				msg: String,
-				agent: Match.Maybe({
-					agentId: String,
-					username: String,
-				}),
-			});
+		check(this.bodyParams, {
+			_id: Match.Maybe(String),
+			token: String,
+			rid: String,
+			msg: String,
+			agent: Match.Maybe({
+				agentId: String,
+				username: String,
+			}),
+		});
 
-			const { token, rid, agent, msg } = this.bodyParams;
+		const { token, rid, agent, msg } = this.bodyParams;
 
-			const guest = await findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			if (!room.open) {
-				throw new Meteor.Error('room-closed');
-			}
-
-			if (
-				settings.get('Livechat_enable_message_character_limit') &&
-				msg.length > parseInt(settings.get('Livechat_message_character_limit'))
-			) {
-				throw new Meteor.Error('message-length-exceeds-character-limit');
-			}
-
-			const _id = this.bodyParams._id || Random.id();
-
-			const sendMessage = {
-				guest,
-				message: {
-					_id,
-					rid,
-					msg,
-					token,
-				},
-				agent,
-				roomInfo: {
-					source: {
-						type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
-					},
-				},
-			};
-
-			const result = await Livechat.sendMessage(sendMessage);
-			if (result) {
-				const message = Messages.findOneById(_id);
-				return API.v1.success({ message });
-			}
-
-			return API.v1.failure();
-		} catch (e) {
-			return API.v1.failure(e);
+		const guest = await findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
 		}
+
+		const room = findRoom(token, rid);
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		if (!room.open) {
+			throw new Meteor.Error('room-closed');
+		}
+
+		if (
+			settings.get('Livechat_enable_message_character_limit') &&
+			msg.length > parseInt(settings.get('Livechat_message_character_limit'))
+		) {
+			throw new Meteor.Error('message-length-exceeds-character-limit');
+		}
+
+		const _id = this.bodyParams._id || Random.id();
+
+		const sendMessage = {
+			guest,
+			message: {
+				_id,
+				rid,
+				msg,
+				token,
+			},
+			agent,
+			roomInfo: {
+				source: {
+					type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+				},
+			},
+		};
+
+		const result = await Livechat.sendMessage(sendMessage);
+		if (result) {
+			const message = Messages.findOneById(_id);
+			return API.v1.success({ message });
+		}
+
+		return API.v1.failure();
 	},
 });
 
