@@ -12,12 +12,11 @@ import './views/app/photoswipeContent.ts'; // without the *.ts extension, *.html
 import './components/icon';
 import './components/table.html';
 import './components/table';
-import './components/tabs';
 import './components/popupList.html';
 import './components/popupList';
 import './components/selectDropdown.html';
 
-import './components/tooltip';
+// import './components/tooltip';
 
 export { ChatMessages, chatMessages } from './lib/ChatMessages';
 export { fileUpload } from './lib/fileUpload';
