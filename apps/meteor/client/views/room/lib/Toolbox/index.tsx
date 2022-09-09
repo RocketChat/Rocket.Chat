@@ -1,8 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Option, Icon } from '@rocket.chat/fuselage';
 import { TranslationKey } from '@rocket.chat/ui-contexts';
-import { FC, LazyExoticComponent, ReactNode, MouseEvent, ComponentProps } from 'react';
+import { ReactNode, MouseEvent, ComponentProps, ComponentType } from 'react';
 
+import { ToolboxContextValue } from './ToolboxContext';
 import { generator, Events as GeneratorEvents } from './generator';
 
 type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null;
@@ -34,7 +35,14 @@ export type ToolboxActionConfig = {
 	'groups': Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team' | 'voip'>;
 	'hotkey'?: string;
 	'action'?: (e?: MouseEvent<HTMLElement>) => void;
-	'template'?: string | FC | LazyExoticComponent<FC<{ rid: string; tabBar: any }>>;
+	'template'?:
+		| string
+		| ComponentType<{
+				tabBar: ToolboxContextValue;
+				_id: IRoom['_id'];
+				rid: IRoom['_id'];
+				teamId: IRoom['teamId'];
+		  }>;
 };
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;

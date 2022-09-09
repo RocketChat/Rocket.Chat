@@ -18,7 +18,8 @@ export interface IVisitor {
 	_id: string;
 	username: string;
 	token: string;
-	status: string;
+	status: 'online' | 'busy' | 'away' | 'offline';
+	phone?: string | null;
 }
 
 export interface ILivechatInquiryRecord extends IRocketChatRecord {
