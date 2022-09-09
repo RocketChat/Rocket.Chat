@@ -1,10 +1,9 @@
 import { faker } from '@faker-js/faker';
-import { qase } from 'playwright-qase-reporter/dist/playwright';
 
 import { test, expect } from './utils/test';
 import { Registration } from './page-objects';
 
-test.describe.serial(qase(1111111, 'register'), () => {
+test.describe.serial('register', () => {
 	let poRegistration: Registration;
 
 	test.describe('Registration default flow', async () => {
@@ -38,7 +37,7 @@ test.describe.serial(qase(1111111, 'register'), () => {
 			await test.step('expect successfully register a new user', async () => {
 				await poRegistration.inputPasswordConfirm.fill('any_password');
 				await poRegistration.btnRegister.click();
-				await expect(poRegistration.backToLogin).toBeHidden();
+				await expect(poRegistration.main).toBeHidden();
 			});
 		});
 
@@ -71,7 +70,7 @@ test.describe.serial(qase(1111111, 'register'), () => {
 					await poRegistration.inputPassword.fill('any_password');
 
 					await poRegistration.btnRegister.click();
-					await expect(poRegistration.backToLogin).toBeHidden();
+					await expect(poRegistration.main).toBeHidden();
 				});
 			});
 		});
@@ -165,7 +164,7 @@ test.describe.serial(qase(1111111, 'register'), () => {
 			await poRegistration.inputPassword.fill('any_password');
 			await poRegistration.inputPasswordConfirm.fill('any_password');
 			await poRegistration.btnRegister.click();
-			await page.pause();
+			await page.waitForSelector('role=main');
 			await expect(poRegistration.main).toBeVisible();
 		});
 	});
@@ -179,6 +178,7 @@ test.describe.serial(qase(1111111, 'register'), () => {
 
 		test('It should show an invalid page informing that the url is not valid', async ({ page }) => {
 			await page.goto('/register/secret');
+			await page.waitForSelector('role=heading[level=2]');
 			await expect(page.locator('role=heading[level=2][name="The URL provided is invalid."]')).toBeVisible();
 		});
 	});
