@@ -5,29 +5,36 @@ import { LoginForm } from './LoginForm';
 import ResetPasswordForm from './ResetPasswordForm';
 import { useLoginRouter } from './hooks/useLoginRouter';
 import HorizontalTemplate from './template/HorizontalTemplate';
-import SecretRegisterInvalidForm from './SecretRegisterInvalidForm';
 import RegisterSecretPageRouter from './RegisterSecretPageRouter';
-import LoginRegisterForm from './RegisterForm';
 
 export const RegistrationPageRouter = ({
 	defaultRoute = 'login',
 }: {
 	defaultRoute?: 'login' | 'register' | 'reset-password' | 'secret-register';
-}): ReactElement => {
+}): ReactElement | null => {
 	const [route, setLoginRoute] = useLoginRouter(defaultRoute);
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');
 
-	if (route === 'register-invalid') {
-		return <SecretRegisterInvalidForm />;
+	if (route === 'login' && showFormLogin) {
+		return (
+			<HorizontalTemplate>
+				<LoginForm setLoginRoute={setLoginRoute} />
+			</HorizontalTemplate>
+		);
 	}
 
-	return (
-		<HorizontalTemplate>
-			{route === 'login' && showFormLogin && <LoginForm setLoginRoute={setLoginRoute} />}
-			{route === 'reset-password' && <ResetPasswordForm setLoginRoute={setLoginRoute} />}
-			{(route === 'secret-register' || route === 'register') && <RegisterSecretPageRouter origin={route} setLoginRoute={setLoginRoute} />}
-		</HorizontalTemplate>
-	);
+	if (route === 'reset-password') {
+		return (
+			<HorizontalTemplate>
+				<ResetPasswordForm setLoginRoute={setLoginRoute} />
+			</HorizontalTemplate>
+		);
+	}
+
+	if (route === 'secret-register' || route === 'register') {
+		return <RegisterSecretPageRouter origin={route} setLoginRoute={setLoginRoute} />;
+	}
+	return null;
 };
 
 export default RegistrationPageRouter;

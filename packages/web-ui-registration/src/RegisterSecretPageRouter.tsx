@@ -1,12 +1,13 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useEffect } from 'react';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import LoginRegisterForm from './RegisterForm';
 import RegisterFormDisabled from './RegisterFormDisabled';
 import SecretRegisterForm from './SecretRegisterForm';
+import SecretRegisterInvalidForm from './SecretRegisterInvalidForm';
 import FormSkeleton from './template/FormSkeleton';
+import HorizontalTemplate from './template/HorizontalTemplate';
 
 export const RegisterSecretPageRouter = ({
 	setLoginRoute,
@@ -16,26 +17,39 @@ export const RegisterSecretPageRouter = ({
 	origin: 'register' | 'secret-register';
 }): ReactElement => {
 	const registrationMode = useSetting('Accounts_RegistrationForm');
-	const isRegistrationDisabled = registrationMode === 'Disabled';
+	const isPublicRegistration = registrationMode === 'Public';
 	const isRegistrationAllowedForSecret = registrationMode === 'Secret URL';
+	const isRegistrationDisabled = registrationMode === 'Disabled' || (origin === 'register' && isRegistrationAllowedForSecret);
 
-	useEffect(() => {
-		origin === 'secret-register' && !isRegistrationAllowedForSecret && setLoginRoute('register-invalid');
-	}, [origin, isRegistrationAllowedForSecret, setLoginRoute]);
+	if (origin === 'secret-register' && !isRegistrationAllowedForSecret) {
+		return <SecretRegisterInvalidForm />;
+	}
 
-	if (registrationMode === undefined || (origin === 'secret-register' && !isRegistrationAllowedForSecret)) {
-		return <FormSkeleton />;
+	if (isPublicRegistration) {
+		return (
+			<HorizontalTemplate>
+				<LoginRegisterForm setLoginRoute={setLoginRoute} />
+			</HorizontalTemplate>
+		);
 	}
 
 	if (isRegistrationDisabled) {
-		return <RegisterFormDisabled setLoginRoute={setLoginRoute} />;
+		return (
+			<HorizontalTemplate>
+				<RegisterFormDisabled setLoginRoute={setLoginRoute} />
+			</HorizontalTemplate>
+		);
 	}
 
 	if (isRegistrationAllowedForSecret) {
 		return <SecretRegisterForm setLoginRoute={setLoginRoute} />;
 	}
 
-	return <LoginRegisterForm setLoginRoute={setLoginRoute} />;
+	return (
+		<HorizontalTemplate>
+			<FormSkeleton />
+		</HorizontalTemplate>
+	);
 };
 
 export default RegisterSecretPageRouter;

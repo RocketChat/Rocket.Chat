@@ -1,3 +1,4 @@
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
@@ -35,6 +36,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		mode: 'onChange',
 	});
 
+	const formLabelId = useUniqueId();
+
 	const [errorOnSubmit, setErrorOnSubmit] = useState<LoginErrors | undefined>(undefined);
 
 	const isResetPasswordAllowed = useSetting('Accounts_PasswordReset');
@@ -54,6 +57,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	return (
 		<Form
+			aria-labelledby={formLabelId}
 			onSubmit={handleSubmit(async (data) => {
 				try {
 					await login(data.username, data.password);
@@ -74,7 +78,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 			})}
 		>
 			<Form.Header>
-				<Form.Title>{t('registration.component.login')}</Form.Title>
+				<Form.Title id={formLabelId}>{t('registration.component.login')}</Form.Title>
 			</Form.Header>
 			<Form.Container>
 				<Services />

@@ -19,6 +19,10 @@ export class Registration {
 		return this.page.locator('role=link[name="Register"]');
 	}
 
+	get main(): Locator {
+		return this.page.locator('role=main[name="Home"]');
+	}
+
 	get backToLogin(): Locator {
 		return this.page.locator('role=link[name="Back to Login"]');
 	}
@@ -36,7 +40,7 @@ export class Registration {
 	}
 
 	get username(): Locator {
-		return this.page.locator('[name=username]');
+		return this.page.locator('role=textbox[name=/Username/]');
 	}
 
 	get inputName(): Locator {

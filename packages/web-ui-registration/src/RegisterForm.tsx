@@ -1,3 +1,4 @@
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
@@ -8,7 +9,7 @@ import { Trans } from 'react-i18next';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
 
-export const LoginRegisterForm = ({ setLoginRoute, hash }: { hash?: string; setLoginRoute: DispatchLoginRouter }): ReactElement => {
+export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const t = useTranslation();
 
 	const requireNameForRegister = Boolean(useSetting('Accounts_RequireNameForSignUp'));
@@ -29,17 +30,15 @@ export const LoginRegisterForm = ({ setLoginRoute, hash }: { hash?: string; setL
 		password: string;
 		email: string;
 		reason: string;
-		hash?: string;
-	}>({
-		defaultValues: {
-			hash,
-		},
-	});
+	}>();
 
 	const registerUser = useRegisterMethod();
 
+	const formLabelId = useUniqueId();
+
 	return (
 		<Form
+			aria-labelledby={formLabelId}
 			onSubmit={handleSubmit(async ({ password, passwordConfirmation: _, ...formData }) => {
 				try {
 					await registerUser({ pass: password, ...formData });
@@ -62,7 +61,7 @@ export const LoginRegisterForm = ({ setLoginRoute, hash }: { hash?: string; setL
 			})}
 		>
 			<Form.Header>
-				<Form.Title>{t('Register')}</Form.Title>
+				<Form.Title id={formLabelId}>{t('Register')}</Form.Title>
 			</Form.Header>
 			<Form.Container>
 				<FieldGroup>

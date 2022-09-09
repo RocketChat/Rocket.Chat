@@ -500,8 +500,12 @@ API.v1.addRoute(
 				return API.v1.failure('Username is already in use');
 			}
 
+			const { secret: secretURL, ...params } = this.bodyParams;
 			// Register the user
-			const userId = Meteor.call('registerUser', this.bodyParams);
+			const userId = Meteor.call('registerUser', {
+				...params,
+				secretURL,
+			});
 
 			// Now set their username
 			Meteor.runAsUser(userId, () => Meteor.call('setUsername', this.bodyParams.username));
