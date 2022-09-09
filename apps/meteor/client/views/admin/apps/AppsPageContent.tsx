@@ -1,13 +1,14 @@
-import { Pagination, Divider, Skeleton, Box } from '@rocket.chat/fuselage';
+import { Pagination, Divider } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo, useState } from 'react';
 
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { AsyncStatePhase } from '../../../lib/asyncState';
-import AllAppsSection from './AllAppsSection';
 import { useAppsReload, useAppsResult } from './AppsContext';
 import AppsFilters from './AppsFilters';
+import AppsList from './AppsList';
+import AppsPageContentSkeleton from './AppsPageContentSkeleton';
 import ConnectionErrorEmptyState from './ConnectionErrorEmptyState';
 import FeaturedAppsSections from './FeaturedAppsSections';
 import NoInstalledAppMatchesEmptyState from './NoInstalledAppMatchesEmptyState';
@@ -86,8 +87,6 @@ const AppsPageContent = ({ isMarketplace, isAdminSection, currentRouteName }: Ap
 		sortFilterStructure.items.find((item) => item.checked)?.id !== 'mru' ||
 		selectedCategories.length > 0;
 
-	const loadingRows = Array.from({ length: 3 }, (_, i) => <Skeleton key={i} height='x56' mbe='x8' width='100%' variant='rect' />);
-
 	const handleEmptyStateCTAClick = (): void => {
 		router.push({ context: '' });
 	};
@@ -107,50 +106,43 @@ const AppsPageContent = ({ isMarketplace, isAdminSection, currentRouteName }: Ap
 				statusFilterStructure={statusFilterStructure}
 				statusFilterOnSelected={statusFilterOnSelected}
 			/>
+			{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}
 
-			{appsResult.phase === AsyncStatePhase.LOADING && (
-				<>
-					<Box mbe='x36'>
-						<Skeleton height='x28' width='x150' mbe='x20' variant='rect' />
-						{loadingRows}
-					</Box>
-					<Box mbe='x36'>
-						<Skeleton height='x28' width='x150' mbe='x20' variant='rect' />
-						{loadingRows}
-					</Box>
-					<Skeleton height='x28' width='x150' mbe='x20' variant='rect' />
-					{loadingRows}
-				</>
-			)}
-
-			<FeaturedAppsSections
-				appsResult={appsResult}
-				isMarketplace={isMarketplace}
-				isFiltered={isFiltered}
-				isAdminSection={isAdminSection}
-				currentRouteName={currentRouteName}
-			/>
-
-			<AllAppsSection
-				appsResult={appsResult}
-				isMarketplace={isMarketplace}
-				isAdminSection={isAdminSection}
-				currentRouteName={currentRouteName}
-			/>
-
-			{appsResult.phase === AsyncStatePhase.RESOLVED && Boolean(appsResult.value.count) && (
-				<>
-					<Divider />
-					<Pagination
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={appsResult.value.total}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
-				</>
-			)}
+			{appsResult.phase === AsyncStatePhase.RESOLVED &&
+				!noMarketplaceOrInstalledAppMatches &&
+				(!noInstalledAppMatches || !noInstalledAppsFound) && (
+					<>
+						{isMarketplace && !isFiltered && (
+							<FeaturedAppsSections
+								appsResult={appsResult.value.items}
+								isAdminSection={isAdminSection}
+								currentRouteName={currentRouteName}
+							/>
+						)}
+						{!noInstalledAppsFound && (
+							<AppsList
+								apps={appsResult.value.items}
+								title={t('All_Apps')}
+								isMarketplace={isMarketplace}
+								isAdminSection={isAdminSection}
+								currentRouteName={currentRouteName}
+							/>
+						)}
+						{Boolean(appsResult.value.count) && (
+							<>
+								<Divider />
+								<Pagination
+									current={current}
+									itemsPerPage={itemsPerPage}
+									count={appsResult.value.total}
+									onSetItemsPerPage={onSetItemsPerPage}
+									onSetCurrent={onSetCurrent}
+									{...paginationProps}
+								/>
+							</>
+						)}
+					</>
+				)}
 
 			{noMarketplaceOrInstalledAppMatches && (
 				<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={appsResult.value.shouldShowSearchText} text={text} />

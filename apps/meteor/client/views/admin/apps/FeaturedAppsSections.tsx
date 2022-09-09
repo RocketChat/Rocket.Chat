@@ -1,50 +1,33 @@
 import { App } from '@rocket.chat/core-typings';
-import { PaginatedResult } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { AsyncState, AsyncStatePhase } from '../../../lib/asyncState';
 import AppsList from './AppsList';
 import normalizeFeaturedApps from './helpers/normalizeFeaturedApps';
+import { useFeaturedApps } from './hooks/useFeaturedApps';
 
 type FeaturedSectionsProps = {
-	appsResult: AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult>;
-	isMarketplace: boolean;
-	isFiltered: boolean;
+	appsResult: App[];
 	isAdminSection: boolean;
 	currentRouteName: string;
 };
 
-const FeaturedAppsSections = ({
-	appsResult,
-	isMarketplace,
-	isFiltered,
-	isAdminSection,
-	currentRouteName,
-}: FeaturedSectionsProps): ReactElement | null => {
+const FeaturedAppsSections = ({ appsResult, isAdminSection, currentRouteName }: FeaturedSectionsProps): ReactElement | null => {
 	const t = useTranslation();
-	const featuredApps = useEndpointData('/apps/featured-apps');
 
-	const shouldShowFeaturedSections =
-		featuredApps.phase === AsyncStatePhase.RESOLVED &&
-		appsResult.phase === AsyncStatePhase.RESOLVED &&
-		Boolean(appsResult.value.count) &&
-		Boolean(featuredApps.value.sections) &&
-		!isFiltered;
+	const featuredApps = useFeaturedApps();
 
-	if (shouldShowFeaturedSections && isMarketplace) {
+	if (featuredApps.isSuccess) {
 		return (
 			<>
-				{featuredApps.value.sections.map((section) => (
+				{featuredApps.data.sections.map((section) => (
 					<AppsList
 						key={section.slug}
-						apps={normalizeFeaturedApps(section.apps, appsResult.value.items)}
+						apps={normalizeFeaturedApps(section.apps, appsResult)}
 						title={t.has(section.i18nLabel) ? t(section.i18nLabel) : section.i18nLabel}
-						isMarketplace={isMarketplace}
+						isMarketplace={true}
 						isAdminSection={isAdminSection}
 						currentRouteName={currentRouteName}
-						mbe='x36'
 					/>
 				))}
 			</>
