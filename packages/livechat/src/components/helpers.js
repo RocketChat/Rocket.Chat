@@ -176,6 +176,7 @@ export const parseOfflineMessage = (fields = {}) => {
 	const host = window.location.origin;
 	return Object.assign(fields, { host });
 };
+
 export const normalizeDOMRect = ({ left, top, right, bottom }) => ({ left, top, right, bottom });
 
 export const visibility = (() => {
