@@ -22,13 +22,13 @@ test.describe.serial('omnichannel-agents', () => {
 
 		await poOmnichannelCustomFields.btnSave.click();
 
-		await expect(poOmnichannelCustomFields.firstRowInTable(newField)).toBeVisible();
+		await expect(poOmnichannelCustomFields.textInTable(newField)).toBeVisible();
 	});
 
 	test('expect update "newField"', async ({ page }) => {
 		const newLabel = 'new_any_label';
 		await poOmnichannelCustomFields.inputSearch.fill(newField);
-		await poOmnichannelCustomFields.firstRowInTable(newField).click();
+		await poOmnichannelCustomFields.textInTable(newField).click();
 
 		await poOmnichannelCustomFields.inputLabel.fill('new_any_label');
 		await poOmnichannelCustomFields.btnEditSave.click();
@@ -42,6 +42,6 @@ test.describe.serial('omnichannel-agents', () => {
 		await poOmnichannelCustomFields.btnModalRemove.click();
 
 		await poOmnichannelCustomFields.inputSearch.fill(newField);
-		expect(poOmnichannelCustomFields.firstRowInTable(newField)).toBeHidden();
+		expect(poOmnichannelCustomFields.textInTable(newField)).toBeHidden();
 	});
 });
