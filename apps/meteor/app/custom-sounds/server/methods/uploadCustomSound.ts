@@ -4,9 +4,12 @@ import { hasPermission } from '../../../authorization/server';
 import { api } from '../../../../server/sdk/api';
 import { RocketChatFile } from '../../../file/server';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	uploadCustomSound(binaryContent, contentType, soundData) {
+		methodDeprecationLogger.warn('uploadCustomSound will be deprecated in future versions of Rocket.Chat');
+
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		if (!hasPermission(this.userId!, 'manage-sounds')) {
 			throw new Meteor.Error('not_authorized');

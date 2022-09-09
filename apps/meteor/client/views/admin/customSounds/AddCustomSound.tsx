@@ -1,8 +1,9 @@
 import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEndpoint, useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, ReactElement, FormEvent } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
+import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { validate, createSoundData, soundDataType } from './lib';
 
@@ -16,10 +17,12 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	// const successText = t('Sound_uploaded_successfully');
+
 	const [name, setName] = useState('');
 	const [sound, setSound] = useState<{ name: string }>();
 
-	const uploadCustomSound = useEndpoint('POST', '/v1/custom-sounds.uploadCustomSound');
+	const uploadCustomSound = useEndpointUpload('/v1/custom-sounds.uploadCustomSound', 'Custom_sound_uploaded_successfully');
 
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
@@ -51,15 +54,20 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 				reader.readAsBinaryString(soundFile);
 				reader.onloadend = (): void => {
 					try {
-						uploadCustomSound({
-							binaryContent: reader.result as string,
-							contentType: soundFile.type,
-							soundData: {
-								...soundData,
-								_id: soundId,
-								random: Math.round(Math.random() * 1000),
-							},
-						});
+						if (sound instanceof FormData && reader.result) {
+							sound.set('sound', new Blob([reader.result]));
+
+							uploadCustomSound({
+								sound,
+								contentType: soundFile.type,
+								soundData: {
+									...soundData,
+									_id: soundId,
+									random: Math.round(Math.random() * 1000),
+								},
+							});
+						}
+
 						dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 					} catch (error) {
 						(typeof error === 'string' || error instanceof Error) && dispatchToastMessage({ type: 'error', message: error });

@@ -33,23 +33,31 @@ API.v1.addRoute(
 	'custom-sounds.uploadCustomSound',
 	{
 		authRequired: true,
-		CHECKpermisssions: ['manage-sounds']
+		permissionsRequired: ['manage-sounds'],
+		validateParams: isUploadCustomSoundProps,
 	},
 	{
 		async post() {
+			const { contentType, soundData } = this.bodyParams;
 
 			const [sound, fields] = await getUploadFormData(
-				this,
-				{ 
+				{
+					request: this.request,
+				},
+				{
 					field: 'sound',
-					validade: isUploadCustomSoundProps,
+					// validation: 'required',
 				},
 			);
 
-			// const binaryContent = ...File;
-			const result = Meteor.call('uploadCustomSound', binaryContent, contentType, fields);
+			if (!sound) {
+				return API.v1.failure("The 'sound' param is required");
+			}
 
-			return API.v1.success(result);
+			// const binaryContent = ...File;
+			Meteor.call('uploadCustomSound', sound, contentType, soundData, fields);
+
+			return API.v1.success();
 		},
 	},
 );

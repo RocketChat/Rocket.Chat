@@ -44,13 +44,11 @@ type UploadCustomSound = {
 const UploadCustomSoundSchema = {
 	type: 'object',
 	properties: {
-		
 		name: {
 			type: 'string',
 		},
 		extension: {
 			type: 'object',
-			
 		},
 	},
 	required: ['name', 'extension'],
