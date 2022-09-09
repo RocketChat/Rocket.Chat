@@ -9,16 +9,12 @@ import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 API.v1.addRoute(
 	'livechat/room.onHold',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['on-hold-livechat-room'] },
 	{
 		post() {
 			const { roomId } = this.bodyParams;
 			if (!roomId || roomId.trim() === '') {
 				return API.v1.failure('Invalid room Id');
-			}
-
-			if (!this.userId || !hasPermission(this.userId, 'on-hold-livechat-room')) {
-				return API.v1.failure('Not authorized');
 			}
 
 			const room: IOmnichannelRoom = LivechatRooms.findOneById(roomId);
