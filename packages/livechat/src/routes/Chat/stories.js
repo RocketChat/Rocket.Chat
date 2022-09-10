@@ -6,7 +6,6 @@ import soundSrc from '../../../.storybook/assets/beep.mp3';
 import { screenCentered, screenProps, avatarResolver } from '../../helpers.stories';
 import Chat from './component';
 
-
 const agent = {
 	name: 'Guilherme Gazzo',
 	status: 'online',
@@ -18,7 +17,11 @@ const agent = {
 const now = new Date(Date.parse('2021-01-01T00:00:00.000Z'));
 
 const messages = [
-	{ _id: 1, u: { _id: 1, username: 'tasso.evangelista' }, msg: 'Lorem ipsum dolor sit amet, ea usu quod eirmod lucilius, mea veri viris concludaturque id, vel eripuit fabulas ea' },
+	{
+		_id: 1,
+		u: { _id: 1, username: 'tasso.evangelista' },
+		msg: 'Lorem ipsum dolor sit amet, ea usu quod eirmod lucilius, mea veri viris concludaturque id, vel eripuit fabulas ea',
+	},
 	{ _id: 2, u: { _id: 2, username: 'guilherme.gazzo' }, msg: 'Putent appareat te sea, dico recusabo pri te' },
 	{ _id: 3, u: { _id: 2, username: 'guilherme.gazzo' }, msg: 'Iudico utinam volutpat eos eu, sadipscing repudiandae pro te' },
 	{ _id: 4, u: { _id: 2, username: 'guilherme.gazzo' }, msg: 'Movet doming ad ius, mel id adversarium disputationi' },
@@ -34,10 +37,11 @@ const triggers = [
 	{ _id: 2, u: { _id: 2, username: 'guilherme.gazzo' }, msg: 'Iudico utinam volutpat eos eu, sadipscing repudiandae pro te' },
 ];
 
-const normalizeMessages = (messages = []) => messages.map((message, i) => ({
-	...message,
-	ts: new Date(now.getTime() - (15 - i) * 60000 - (i < 5 ? 24 * 60 * 60 * 1000 : 0)).toISOString(),
-}));
+const normalizeMessages = (messages = []) =>
+	messages.map((message, i) => ({
+		...message,
+		ts: new Date(now.getTime() - (15 - i) * 60000 - (i < 5 ? 24 * 60 * 60 * 1000 : 0)).toISOString(),
+	}));
 
 storiesOf('Routes/Chat', module)
 	.addDecorator(screenCentered)
