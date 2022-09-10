@@ -327,8 +327,8 @@ class ChatContainer extends Component {
 			const nextLastMessage = messages[messages.length - 1];
 			const lastMessage = prevMessages[prevMessages.length - 1];
 			if (
-				(nextLastMessage && lastMessage && nextLastMessage._id !== lastMessage._id)
-				|| (messages.length === 1 && prevMessages.length === 0)
+				(nextLastMessage && lastMessage && nextLastMessage._id !== lastMessage._id) ||
+				(messages.length === 1 && prevMessages.length === 0)
 			) {
 				const newAlerts = prevAlerts.filter((item) => item.id !== constants.unreadMessagesAlertId);
 				dispatch({ alerts: newAlerts, unread: null, lastReadMessageId: nextLastMessage._id });
@@ -420,19 +420,19 @@ export const ChatConnector = ({ ref, t, ...props }) => (
 				agent={
 					agent
 						? {
-							_id: agent._id,
-							name: agent.name,
-							status: agent.status,
-							email: agent.emails && agent.emails[0] && agent.emails[0].address,
-							username: agent.username,
-							phone: (agent.phone && agent.phone[0] && agent.phone[0].phoneNumber) || (agent.customFields && agent.customFields.phone),
-							avatar: agent.username
-								? {
-									description: agent.username,
-									src: getAvatarUrl(agent.username),
-								}
-								: undefined,
-						}
+								_id: agent._id,
+								name: agent.name,
+								status: agent.status,
+								email: agent.emails && agent.emails[0] && agent.emails[0].address,
+								username: agent.username,
+								phone: (agent.phone && agent.phone[0] && agent.phone[0].phoneNumber) || (agent.customFields && agent.customFields.phone),
+								avatar: agent.username
+									? {
+											description: agent.username,
+											src: getAvatarUrl(agent.username),
+									  }
+									: undefined,
+						  }
 						: undefined
 				}
 				room={room}
@@ -458,10 +458,10 @@ export const ChatConnector = ({ ref, t, ...props }) => (
 				queueInfo={
 					queueInfo
 						? {
-							spot: queueInfo.spot,
-							estimatedWaitTimeSeconds: queueInfo.estimatedWaitTimeSeconds,
-							message: queueInfo.message,
-						}
+								spot: queueInfo.spot,
+								estimatedWaitTimeSeconds: queueInfo.estimatedWaitTimeSeconds,
+								message: queueInfo.message,
+						  }
 						: undefined
 				}
 				registrationFormEnabled={registrationForm}

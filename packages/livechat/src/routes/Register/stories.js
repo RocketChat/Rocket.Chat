@@ -11,7 +11,8 @@ const customFields = [
 		label: 'Website',
 		type: 'input',
 		required: true,
-	}, {
+	},
+	{
 		_id: 'area',
 		label: 'Area',
 		type: 'select',

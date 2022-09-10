@@ -3,7 +3,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
@@ -14,6 +13,8 @@ import { dispatchToastMessage } from '../lib/toast';
 import BlazeTemplate from '../views/root/BlazeTemplate';
 import MainLayout from '../views/root/MainLayout';
 
+const PageLoading = lazy(() => import('../views/root/PageLoading'));
+const HomePage = lazy(() => import('../views/home/HomePage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const CMSPage = lazy(() => import('../views/root/CMSPage'));
@@ -33,7 +34,7 @@ FlowRouter.route('/', {
 	action() {
 		appLayout.render(
 			<MainLayout>
-				<BlazeTemplate template='loading' />
+				<PageLoading />
 			</MainLayout>,
 		);
 
@@ -108,7 +109,7 @@ FlowRouter.route('/home', {
 
 				appLayout.render(
 					<MainLayout>
-						<BlazeTemplate template={'HomePage'} />
+						<HomePage />
 					</MainLayout>,
 				);
 			});
@@ -118,7 +119,7 @@ FlowRouter.route('/home', {
 
 		appLayout.render(
 			<MainLayout>
-				<BlazeTemplate template={'HomePage'} />
+				<HomePage />
 			</MainLayout>,
 		);
 	},
@@ -175,18 +176,6 @@ FlowRouter.route('/legal-notice', {
 	name: 'legal-notice',
 	action: () => {
 		appLayout.render(<CMSPage page='Layout_Legal_Notice' />);
-	},
-});
-
-FlowRouter.route('/room-not-found/:type/:name', {
-	name: 'room-not-found',
-	action: ({ type, name } = {}) => {
-		Session.set('roomNotFound', { type, name });
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='roomNotFound' />
-			</MainLayout>,
-		);
 	},
 });
 
