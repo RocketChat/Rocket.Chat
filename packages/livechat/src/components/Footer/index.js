@@ -11,13 +11,11 @@ export const Footer = ({ children, className, ...props }) => (
 	</footer>
 );
 
-
 export const FooterContent = ({ children, className, ...props }) => (
 	<div className={createClassName(styles, 'footer__content', {}, [className])} {...props}>
 		{children}
 	</div>
 );
-
 
 export const PoweredBy = withTranslation()(({ className, t, ...props }) => (
 	<h3 className={createClassName(styles, 'powered-by', {}, [className])} {...props}>
@@ -29,7 +27,6 @@ export const PoweredBy = withTranslation()(({ className, t, ...props }) => (
 	</h3>
 ));
 
-
 const handleMouseUp = ({ target }) => target.blur();
 
 const OptionsTrigger = withTranslation()(({ pop, t }) => (
@@ -38,19 +35,14 @@ const OptionsTrigger = withTranslation()(({ pop, t }) => (
 	</button>
 ));
 
-
 export const FooterOptions = ({ children }) => (
 	<PopoverMenu trigger={OptionsTrigger} overlayed>
 		{children}
 	</PopoverMenu>
 );
 
-
 export const CharCounter = ({ className, style = {}, textLength, limitTextLength }) => (
-	<span
-		className={createClassName(styles, 'footer__remainder', { highlight: textLength === limitTextLength }, [className])}
-		style={style}
-	>
+	<span className={createClassName(styles, 'footer__remainder', { highlight: textLength === limitTextLength }, [className])} style={style}>
 		{textLength} / {limitTextLength}
 	</span>
 );

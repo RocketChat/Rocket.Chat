@@ -5,13 +5,15 @@ import { storiesOf } from '@storybook/react';
 import { loremIpsum, centered } from '../../helpers.stories';
 import Modal from './component';
 
-
 const LoremIpsum = ({ padding = '5rem', count = 5, units = 'paragraphs', ...options }) => (
 	<div style={{ padding }}>
-		{loremIpsum({ count, units, ...options }).split('\n').map((paragraph) => <p>{paragraph}</p>)}
+		{loremIpsum({ count, units, ...options })
+			.split('\n')
+			.map((paragraph) => (
+				<p>{paragraph}</p>
+			))}
 	</div>
 );
-
 
 storiesOf('Components/Modal', module)
 	.addDecorator(centered)
@@ -48,12 +50,7 @@ storiesOf('Components/Modal', module)
 	.add('disallow dismiss by overlay', () => (
 		<div>
 			<LoremIpsum />
-			<Modal
-				open={boolean('open', true)}
-				animated={boolean('animated', false)}
-				dismissByOverlay={false}
-				onDismiss={action('dismiss')}
-			>
+			<Modal open={boolean('open', true)} animated={boolean('animated', false)} dismissByOverlay={false} onDismiss={action('dismiss')}>
 				{text('content', loremIpsum({ count: 1, units: 'paragraphs' }))}
 			</Modal>
 		</div>
@@ -73,10 +70,6 @@ storiesOf('Components/Modal', module)
 	.add('alert', () => (
 		<div>
 			<LoremIpsum />
-			<Modal.Alert
-				text={text('text', 'You look great today.')}
-				buttonText={text('buttonText', 'OK')}
-				onConfirm={action('confirm')}
-			/>
+			<Modal.Alert text={text('text', 'You look great today.')} buttonText={text('buttonText', 'OK')} onConfirm={action('confirm')} />
 		</div>
 	));
