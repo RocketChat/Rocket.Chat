@@ -1,10 +1,9 @@
 import { Button, ButtonGroup, Icon, Skeleton, Tabs } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoute, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, ReactElement } from 'react';
 
 import Page from '../../../components/Page';
-import AppsList from './AppsList';
+import AppsPageContent from './AppsPageContent';
 
 type AppsPageProps = {
 	isMarketplace: boolean;
@@ -37,8 +36,8 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 	};
 
 	return (
-		<Page>
-			<Page.Header title={t('Apps')} bg={colors.n100}>
+		<Page background='tint'>
+			<Page.Header title={t('Apps')}>
 				<ButtonGroup>
 					{isMarketplace && !isLoggedInCloud && (
 						<Button disabled={isLoggedInCloud === undefined} onClick={handleLoginButtonClick}>
@@ -58,7 +57,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 					)}
 				</ButtonGroup>
 			</Page.Header>
-			<Tabs bg={colors.n100}>
+			<Tabs>
 				<Tabs.Item onClick={(): void => marketplaceRoute.push({ context: '' })} selected={isMarketplace}>
 					{t('Marketplace')}
 				</Tabs.Item>
@@ -66,8 +65,8 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 					{t('Installed')}
 				</Tabs.Item>
 			</Tabs>
-			<Page.Content bg={colors.n100}>
-				<AppsList isMarketplace={isMarketplace} />
+			<Page.Content overflowY='auto'>
+				<AppsPageContent isMarketplace={isMarketplace} />
 			</Page.Content>
 		</Page>
 	);

@@ -36,7 +36,7 @@ Meteor.startup(function () {
 						replies = parentMessage.replies || [];
 					}
 				}
-				return replies.includes(user._id);
+				return user?._id ? replies.includes(user._id) : false;
 			},
 			order: 2,
 			group: 'menu',
