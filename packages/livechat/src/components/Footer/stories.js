@@ -10,7 +10,6 @@ import { Composer } from '../Composer';
 import Menu from '../Menu';
 import { PopoverContainer } from '../Popover';
 
-
 const bottomWithPopoverContainer = (storyFn) => (
 	<div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
 		<PopoverContainer>
@@ -37,9 +36,15 @@ storiesOf('Components/Footer', module)
 			<FooterContent>
 				<FooterOptions>
 					<Menu.Group>
-						<Menu.Item onClick={action('change-department')} icon={ChangeIcon}>Change department</Menu.Item>
-						<Menu.Item onClick={action('remove-user-data')} icon={RemoveIcon}>Forget/Remove my personal data</Menu.Item>
-						<Menu.Item danger onClick={action('finish-chat')} icon={FinishIcon}>Finish this chat</Menu.Item>
+						<Menu.Item onClick={action('change-department')} icon={ChangeIcon}>
+							Change department
+						</Menu.Item>
+						<Menu.Item onClick={action('remove-user-data')} icon={RemoveIcon}>
+							Forget/Remove my personal data
+						</Menu.Item>
+						<Menu.Item danger onClick={action('finish-chat')} icon={FinishIcon}>
+							Finish this chat
+						</Menu.Item>
 					</Menu.Group>
 				</FooterOptions>
 				<PoweredBy />

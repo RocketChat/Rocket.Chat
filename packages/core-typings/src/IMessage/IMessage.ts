@@ -57,12 +57,11 @@ type OmnichannelTypesValues =
 	| 'omnichannel_on_hold_chat_resumed';
 
 type OtrMessageTypeValues = 'otr' | 'otr-ack';
+
 type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
 export type MessageTypesValues =
 	| 'e2e'
-	| 'otr'
-	| 'otr-ack'
 	| 'uj'
 	| 'ul'
 	| 'ru'

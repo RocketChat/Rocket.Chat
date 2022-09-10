@@ -99,57 +99,49 @@ API.v1.addRoute(
 
 			return API.v1.success({ department, agents });
 		},
-		put() {
+		async put() {
 			const permissionToSave = hasPermission(this.userId, 'manage-livechat-departments');
 			const permissionToAddAgents = hasPermission(this.userId, 'add-livechat-department-agents');
 
-			try {
-				check(this.urlParams, {
-					_id: String,
-				});
+			check(this.urlParams, {
+				_id: String,
+			});
 
-				check(this.bodyParams, {
-					department: Object,
-					agents: Match.Maybe(Array),
-				});
+			check(this.bodyParams, {
+				department: Object,
+				agents: Match.Maybe(Array),
+			});
 
-				const { _id } = this.urlParams;
-				const { department, agents } = this.bodyParams;
+			const { _id } = this.urlParams;
+			const { department, agents } = this.bodyParams;
 
-				let success;
-				if (permissionToSave) {
-					success = Livechat.saveDepartment(_id, department);
-				}
-
-				if (success && agents && permissionToAddAgents) {
-					success = Livechat.saveDepartmentAgents(_id, { upsert: agents });
-				}
-
-				if (success) {
-					return API.v1.success({
-						department: LivechatDepartment.findOneById(_id),
-						agents: LivechatDepartmentAgents.find({ departmentId: _id }).fetch(),
-					});
-				}
-
-				return API.v1.failure();
-			} catch (e) {
-				return API.v1.failure(e);
+			let success;
+			if (permissionToSave) {
+				success = Livechat.saveDepartment(_id, department);
 			}
+
+			if (success && agents && permissionToAddAgents) {
+				success = Livechat.saveDepartmentAgents(_id, { upsert: agents });
+			}
+
+			if (success) {
+				return API.v1.success({
+					department: LivechatDepartment.findOneById(_id),
+					agents: LivechatDepartmentAgents.find({ departmentId: _id }).fetch(),
+				});
+			}
+
+			return API.v1.failure();
 		},
 		delete() {
-			try {
-				check(this.urlParams, {
-					_id: String,
-				});
+			check(this.urlParams, {
+				_id: String,
+			});
 
-				if (Livechat.removeDepartment(this.urlParams._id)) {
-					return API.v1.success();
-				}
-				return API.v1.failure();
-			} catch (e) {
-				return API.v1.failure(e);
+			if (Livechat.removeDepartment(this.urlParams._id)) {
+				return API.v1.success();
 			}
+			return API.v1.failure();
 		},
 	},
 );
@@ -205,7 +197,7 @@ API.v1.addRoute(
 
 			return API.v1.success(agents);
 		},
-		post() {
+		async post() {
 			check(this.urlParams, {
 				departmentId: String,
 			});

@@ -39,8 +39,8 @@ const createMessageTouchEvents = () => {
 			}
 		},
 
-		'touchstart .message'(e: JQuery.TouchStartEvent, t: CommonRoomTemplateInstance) {
-			const touches = e.originalEvent?.touches;
+		'touchstart .message'(event: JQuery.TouchStartEvent, template: CommonRoomTemplateInstance) {
+			const touches = event.originalEvent?.touches;
 			if (touches?.length) {
 				lastTouchX = touches[0].pageX;
 				lastTouchY = touches[0].pageY;
@@ -50,21 +50,22 @@ const createMessageTouchEvents = () => {
 				return;
 			}
 
-			if ($(e.currentTarget).hasClass('system')) {
+			if ($(event.currentTarget).hasClass('system')) {
 				return;
 			}
 
-			if (e.target && e.target.nodeName === 'AUDIO') {
+			if (event.target && event.target.nodeName === 'AUDIO') {
 				return;
 			}
 
-			if (e.target && e.target.nodeName === 'A' && isURL(e.target.getAttribute('href'))) {
-				e.preventDefault();
-				e.stopPropagation();
+			if (event.target && event.target.nodeName === 'A' && isURL(event.target.getAttribute('href'))) {
+				event.preventDefault();
+				event.stopPropagation();
 			}
 
 			const doLongTouch = () => {
-				mountPopover(e, t, this);
+				const data = Blaze.getData(event.currentTarget);
+				mountPopover(event, template, data);
 			};
 
 			clearTimeout(touchtime);
@@ -102,33 +103,41 @@ const createMessageTouchEvents = () => {
 	};
 };
 
-function handleMessageActionButtonClick(this: unknown, event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+function handleMessageActionButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+	const { tabBar } = template.data;
 	const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
-	// @ ts-ignore
-	button?.action.call(this, event, { tabbar: template.tabBar });
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
+	button?.action.call(dataContext, event, { tabbar: tabBar });
 }
 
-function handleFollowThreadButtonClick(this: unknown, e: JQuery.ClickEvent) {
-	e.preventDefault();
-	e.stopPropagation();
-	const { msg } = messageArgs(this);
+function handleFollowThreadButtonClick(event: JQuery.ClickEvent) {
+	event.preventDefault();
+	event.stopPropagation();
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
+	const { msg } = messageArgs(dataContext);
 	callWithErrorHandling('followMessage', { mid: msg._id });
 }
 
-function handleUnfollowThreadButtonClick(this: unknown, e: JQuery.ClickEvent) {
-	e.preventDefault();
-	e.stopPropagation();
-	const { msg } = messageArgs(this);
+function handleUnfollowThreadButtonClick(event: JQuery.ClickEvent) {
+	event.preventDefault();
+	event.stopPropagation();
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
+	const { msg } = messageArgs(dataContext);
 	callWithErrorHandling('unfollowMessage', { mid: msg._id });
 }
 
-function handleOpenThreadButtonClick(this: unknown, event: JQuery.ClickEvent) {
+function handleOpenThreadButtonClick(event: JQuery.ClickEvent) {
 	event.preventDefault();
 	event.stopPropagation();
 
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
 	const {
 		msg: { rid, _id, tmid },
-	} = messageArgs(this);
+	} = messageArgs(dataContext);
 	const room = Rooms.findOne({ _id: rid });
 
 	FlowRouter.go(
@@ -147,8 +156,10 @@ function handleOpenThreadButtonClick(this: unknown, event: JQuery.ClickEvent) {
 	);
 }
 
-function handleDownloadImageButtonClick(this: unknown, event: JQuery.ClickEvent) {
-	const { msg } = messageArgs(this);
+function handleDownloadImageButtonClick(event: JQuery.ClickEvent) {
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
+	const { msg } = messageArgs(dataContext);
 	ChatMessage.update({ '_id': msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
 	ChatMessage.update(
 		{ '_id': msg._id, 'attachments.image_url': $(event.currentTarget).data('url') },
@@ -156,8 +167,11 @@ function handleDownloadImageButtonClick(this: unknown, event: JQuery.ClickEvent)
 	);
 }
 
-function handleOpenUserCardButtonClick(this: unknown, e: JQuery.ClickEvent, instance: CommonRoomTemplateInstance) {
-	const { msg } = messageArgs(this);
+function handleOpenUserCardButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+	const { rid, tabBar } = template.data;
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
+	const { msg } = messageArgs(dataContext);
 	if (!Meteor.userId()) {
 		return;
 	}
@@ -167,18 +181,18 @@ function handleOpenUserCardButtonClick(this: unknown, e: JQuery.ClickEvent, inst
 	if (username) {
 		openUserCard({
 			username,
-			rid: instance.data.rid,
-			target: e.currentTarget,
+			rid,
+			target: event.currentTarget,
 			open: (e: MouseEvent) => {
 				e.preventDefault();
-				instance.data.tabBar.openUserInfo(username);
+				tabBar.openUserInfo(username);
 			},
 		});
 	}
 }
 
-function handleRespondWithMessageActionButtonClick(event: JQuery.ClickEvent, instance: CommonRoomTemplateInstance) {
-	const { rid } = instance.data;
+function handleRespondWithMessageActionButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+	const { rid } = template.data;
 	const msg = event.currentTarget.value;
 	if (!msg) {
 		return;
@@ -191,25 +205,25 @@ function handleRespondWithMessageActionButtonClick(event: JQuery.ClickEvent, ins
 	}
 }
 
-function handleRespondWithQuotedMessageActionButtonClick(event: JQuery.ClickEvent, instance: CommonRoomTemplateInstance) {
-	const { rid } = instance.data;
+function handleRespondWithQuotedMessageActionButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+	const { rid } = template.data;
 	const { id: msgId } = event.currentTarget;
-	const { $input } = chatMessages[rid];
+	const { input } = chatMessages[rid];
 
-	if (!msgId) {
+	if (!msgId || !input) {
 		return;
 	}
 
 	const message = Messages.findOne({ _id: msgId });
 
-	let messages = $input?.data('reply') || [];
+	let messages = $(input)?.data('reply') || [];
 	messages = addMessageToList(messages, message);
 
-	$input?.focus().data('mention-user', false).data('reply', messages).trigger('dataChange');
+	$(input)?.trigger('focus').data('mention-user', false).data('reply', messages).trigger('dataChange');
 }
 
-async function handleSendMessageActionButtonClick(event: JQuery.ClickEvent, instance: CommonRoomTemplateInstance) {
-	const { rid } = instance.data;
+async function handleSendMessageActionButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+	const { rid } = template.data;
 	const msg = event.currentTarget.value;
 	let msgObject = { _id: Random.id(), rid, msg } as IMessage;
 	if (!msg) {
@@ -226,8 +240,11 @@ async function handleSendMessageActionButtonClick(event: JQuery.ClickEvent, inst
 	await callWithErrorHandling('sendMessage', msgObject);
 }
 
-function handleMessageActionMenuClick(this: unknown, e: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
-	const messageContext = messageArgs(this);
+function handleMessageActionMenuClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+	const { rid, tabBar } = template.data;
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
+	const messageContext = messageArgs(dataContext);
 	const { msg: message, u: user, context: ctx } = messageContext;
 	const room = Rooms.findOne({ _id: message.rid });
 	const federationContext = isRoomFederated(room) ? 'federated' : '';
@@ -239,7 +256,7 @@ function handleMessageActionMenuClick(this: unknown, e: JQuery.ClickEvent, templ
 		type: 'message-action',
 		id: item.id,
 		modifier: item.color,
-		action: () => item.action(e, { tabbar: template.tabBar, message, room }),
+		action: () => item.action(event, { tabbar: tabBar, message, room }),
 	}));
 
 	const itemsBelowDivider = ['delete-message', 'report-message'];
@@ -262,20 +279,20 @@ function handleMessageActionMenuClick(this: unknown, e: JQuery.ClickEvent, templ
 			},
 		],
 		instance: template,
-		rid: template.data.rid,
-		data: this,
+		rid,
+		data: dataContext,
 		type: 'message-action-menu-options',
-		currentTarget: e.currentTarget,
-		activeElement: $(e.currentTarget).parents('.message')[0],
+		currentTarget: event.currentTarget,
+		activeElement: messageElement,
 		onRendered: () => new Clipboard('.rc-popover__item'),
 	};
 
 	popover.open(config);
 }
 
-function handleMentionLinkClick(e: JQuery.ClickEvent, instance: CommonRoomTemplateInstance) {
-	e.stopPropagation();
-	e.preventDefault();
+function handleMentionLinkClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+	event.stopPropagation();
+	event.preventDefault();
 
 	if (!Meteor.userId()) {
 		return;
@@ -285,7 +302,7 @@ function handleMentionLinkClick(e: JQuery.ClickEvent, instance: CommonRoomTempla
 		currentTarget: {
 			dataset: { channel, group, username },
 		},
-	} = e;
+	} = event;
 
 	if (channel) {
 		if (isLayoutEmbedded()) {
@@ -303,13 +320,14 @@ function handleMentionLinkClick(e: JQuery.ClickEvent, instance: CommonRoomTempla
 	}
 
 	if (username) {
+		const { rid, tabBar } = template.data;
 		openUserCard({
 			username,
-			rid: instance.data.rid,
-			target: e.currentTarget,
+			rid,
+			target: event.currentTarget,
 			open: (e: MouseEvent) => {
 				e.preventDefault();
-				instance.data.tabBar.openUserInfo(username);
+				tabBar.openUserInfo(username);
 			},
 		});
 	}

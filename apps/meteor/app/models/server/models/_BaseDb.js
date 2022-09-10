@@ -1,9 +1,9 @@
 import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
-import _ from 'underscore';
 
 import { setUpdatedAt } from '../lib/setUpdatedAt';
 import { trash } from '../../../../server/database/trash';
+import { omit } from '../../../../lib/utils/omit';
 
 const baseName = 'rocketchat_';
 
@@ -168,7 +168,7 @@ export class BaseDb {
 			record._deletedAt = new Date();
 			record.__collection__ = this.name;
 
-			trash.upsert({ _id: record._id }, _.omit(record, '_id'));
+			trash.upsert({ _id: record._id }, omit(record, '_id'));
 		}
 
 		query = { _id: { $in: ids } };

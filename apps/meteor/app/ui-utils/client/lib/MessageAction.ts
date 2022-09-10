@@ -36,7 +36,7 @@ export type MessageActionContext = 'message' | 'threads' | 'message-mobile' | 'p
 
 type MessageActionConditionProps = {
 	message: IMessage;
-	user: IUser;
+	user: IUser | undefined;
 	room: IRoom;
 	subscription?: ISubscription;
 	context?: MessageActionContext;
