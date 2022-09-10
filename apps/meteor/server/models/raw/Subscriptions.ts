@@ -1,7 +1,8 @@
-import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult } from 'mongodb';
-import { Users } from '@rocket.chat/models';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, DeleteResult, Document, AggregateOptions } from 'mongodb';
+import { Rooms, Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
 
 import { BaseRaw } from './BaseRaw';
@@ -232,5 +233,195 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		return this.find(query, options || {});
+	}
+
+	async removeByRoomId(roomId: string): Promise<DeleteResult> {
+		const query = {
+			rid: roomId,
+		};
+
+		const result = await this.deleteMany(query);
+
+		if (Match.test(result, Number) && result > 0) {
+			await Rooms.incUsersCountByIds([roomId], -result);
+		}
+
+		await Users.removeRoomByRoomId(roomId);
+
+		return result;
+	}
+
+	async findConnectedUsersExcept(
+		userId: string,
+		searchTerm: string,
+		exceptions: string[],
+		searchFields: string[],
+		limit: number,
+		roomType?: ISubscription['t'],
+		{ startsWith = false, endsWith = false }: { startsWith?: string | false; endsWith?: string | false } = {},
+		options: AggregateOptions = {},
+	): Promise<SpotlightUser[]> {
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+		const orStatement = searchFields.reduce(function (acc, el) {
+			acc.push({ [el.trim()]: termRegex });
+			return acc;
+		}, [] as { [x: string]: RegExp }[]);
+
+		return this.col
+			.aggregate<SpotlightUser>(
+				[
+					// Match all subscriptions of the requester
+					{
+						$match: {
+							'u._id': userId,
+							...(roomType ? { t: roomType } : {}),
+						},
+					},
+					// Group by room id and drop all other subcription data
+					{
+						$group: {
+							_id: '$rid',
+						},
+					},
+					// find all subscriptions to the same rooms by other users
+					{
+						$lookup: {
+							from: 'rocketchat_subscription',
+							as: 'subscription',
+							let: {
+								rid: '$_id',
+							},
+							pipeline: [{ $match: { '$expr': { $eq: ['$rid', '$$rid'] }, 'u._id': { $ne: userId } } }],
+						},
+					},
+					// Unwind the subscription so we have a separate document for each
+					{
+						$unwind: {
+							path: '$subscription',
+						},
+					},
+					// Group the data by user id, keeping track of how many documents each user had
+					{
+						$group: {
+							_id: '$subscription.u._id',
+							score: {
+								$sum: 1,
+							},
+						},
+					},
+					// Load the data for the subscription's user, ignoring those who don't match the search terms
+					{
+						$lookup: {
+							from: 'users',
+							as: 'user',
+							let: { id: '$_id' },
+							pipeline: [
+								{
+									$match: {
+										$expr: { $eq: ['$_id', '$$id'] },
+										active: true,
+										username: {
+											$exists: true,
+											...(exceptions.length > 0 && { $nin: exceptions }),
+										},
+										...(searchTerm && orStatement.length > 0 && { $or: orStatement }),
+									},
+								},
+							],
+						},
+					},
+					// Discard documents that didn't load any user data in the previous step:
+					{
+						$unwind: {
+							path: '$user',
+						},
+					},
+					// Use group to organize the data at the same time that we pick what to project to the end result
+					{
+						$group: {
+							_id: '$_id',
+							score: {
+								$sum: '$score',
+							},
+							name: { $first: '$user.name' },
+							username: { $first: '$user.username' },
+							nickname: { $first: '$user.nickname' },
+							status: { $first: '$user.status' },
+							statusText: { $first: '$user.statusText' },
+							avatarETag: { $first: '$user.avatarETag' },
+						},
+					},
+					// Sort by score
+					{
+						$sort: {
+							score: -1,
+						},
+					},
+					// Limit the number of results
+					{
+						$limit: limit,
+					},
+				],
+				options,
+			)
+			.toArray();
+	}
+
+	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document> {
+		if (inc == null) {
+			inc = 1;
+		}
+		const query = {
+			'rid': roomId,
+			'u._id': {
+				$nin: userIds,
+			},
+		};
+
+		const update = {
+			$set: {
+				alert: true,
+				open: true,
+			},
+			$inc: {
+				unread: inc,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document> {
+		const query = {
+			'rid': roomId,
+			'u._id': {
+				$ne: userId,
+			},
+			'alert': { $ne: true },
+		};
+
+		const update = {
+			$set: {
+				alert: true,
+			},
+		};
+		return this.updateMany(query, update);
+	}
+
+	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document> {
+		const query = {
+			'rid': roomId,
+			'u._id': {
+				$ne: userId,
+			},
+			'open': { $ne: true },
+		};
+
+		const update = {
+			$set: {
+				open: true,
+			},
+		};
+		return this.updateMany(query, update);
 	}
 }

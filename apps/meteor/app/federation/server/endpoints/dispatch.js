@@ -273,7 +273,7 @@ const eventHandlers = {
 					processThreads(denormalizedMessage, room);
 
 					// Notify users
-					notifyUsersOnMessage(denormalizedMessage, room);
+					await notifyUsersOnMessage(denormalizedMessage, room);
 					sendAllNotifications(denormalizedMessage, room);
 				} catch (err) {
 					serverLogger.debug(`Error on creating message: ${message._id}`);

@@ -57,10 +57,12 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 
 	// Number of business units
 	statsPms.push(
-		LivechatUnit.col.count().then((count) => {
-			statistics.businessUnits = count;
-			return true;
-		}),
+		LivechatUnit.find({ type: 'u' })
+			.count()
+			.then((count) => {
+				statistics.businessUnits = count;
+				return true;
+			}),
 	);
 
 	await Promise.all(statsPms).catch(log);

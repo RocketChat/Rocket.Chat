@@ -61,7 +61,7 @@ Meteor.startup(async function () {
 			}
 
 			// Check if we already have a DM started with the message user (not ourselves) or we can start one
-			if (user._id !== message.u._id && !hasPermission('create-d')) {
+			if (!!user && user._id !== message.u._id && !hasPermission('create-d')) {
 				const dmRoom = Rooms.findOne({ _id: [user._id, message.u._id].sort().join('') });
 				if (!dmRoom || !Subscriptions.findOne({ 'rid': dmRoom._id, 'u._id': user._id })) {
 					return false;
@@ -82,6 +82,10 @@ Meteor.startup(async function () {
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const { input } = getChatMessagesFrom(message);
+			if (!input) {
+				return;
+			}
+
 			const $input = $(input);
 
 			let messages = $input.data('reply') || [];
@@ -149,7 +153,11 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			getChatMessagesFrom(message).edit(document.getElementById(message.tmid ? `thread-${message._id}` : message._id));
+			const element = document.getElementById(message.tmid ? `thread-${message._id}` : message._id);
+			if (!element) {
+				throw new Error('Message not found');
+			}
+			getChatMessagesFrom(message).edit(element);
 		},
 		condition({ message, subscription, settings }) {
 			if (subscription == null) {
@@ -267,7 +275,7 @@ Meteor.startup(async function () {
 			imperativeModal.open({
 				component: CreateDiscussion,
 				props: {
-					defaultParentRoom: room.prid || room._id,
+					defaultParentRoom: room?.prid || room?._id,
 					onClose: imperativeModal.close,
 					parentMessageId: message._id,
 					nameSuggestion: message?.msg?.substr(0, 140),
@@ -292,6 +300,10 @@ Meteor.startup(async function () {
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
+				return false;
+			}
+
+			if (!user) {
 				return false;
 			}
 

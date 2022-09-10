@@ -1,13 +1,13 @@
-import type { IMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../models/server';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 Meteor.methods({
-	updateOTRAck(_id: IMessage['_id'], ack: IMessage['otrAck']): void {
+	updateOTRAck({ message, ack }) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateOTRAck' });
 		}
-		Messages.updateOTRAck(_id, ack);
+		const otrStreamer = notifications.streamRoomMessage;
+		otrStreamer.emit(message.rid, { ...message, otr: { ack } });
 	},
 });

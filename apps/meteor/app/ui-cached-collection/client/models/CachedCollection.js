@@ -12,6 +12,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { call } from '../../../../client/lib/utils/call';
+import { omit } from '../../../../lib/utils/omit';
 
 const wrap =
 	(fn) =>
@@ -228,7 +229,7 @@ export class CachedCollection extends Emitter {
 		this.log(`${data.length} records loaded from server`);
 		data.forEach((record) => {
 			callbacks.run(`cachedCollection-loadFromServer-${this.name}`, record, 'changed');
-			this.collection.direct.upsert({ _id: record._id }, _.omit(record, '_id'));
+			this.collection.direct.upsert({ _id: record._id }, omit(record, '_id'));
 
 			this.onSyncData('changed', record);
 
