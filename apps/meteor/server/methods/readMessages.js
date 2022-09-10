@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { markRoomAsRead } from '../lib/markRoomAsRead';
 import { canAccessRoom } from '../../app/authorization/server';
 import { Rooms } from '../../app/models/server';
+import { readMessages } from '../lib/readMessages';
 
 Meteor.methods({
 	readMessages(rid) {
@@ -22,6 +22,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'readMessages' });
 		}
 
-		Promise.await(markRoomAsRead(rid, userId));
+		Promise.await(readMessages(rid, userId));
 	},
 });

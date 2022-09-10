@@ -112,12 +112,36 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.findOne(query, { projection: { roles: 1 } });
 	}
 
-	setAsReadByRoomIdAndUserId(
+	setMessagesAsReadByRoomIdAndUserId(
 		rid: string,
 		uid: string,
 		alert = false,
 		options: FindOptions<ISubscription> = {},
-	): ReturnType<BaseRaw<ISubscription>['update']> {
+	): ReturnType<BaseRaw<ISubscription>['updateOne']> {
+		const query: Filter<ISubscription> = {
+			rid,
+			'u._id': uid,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				open: true,
+				alert,
+				unread: 0,
+				userMentions: 0,
+				groupMentions: 0,
+				ls: new Date(),
+			},
+		};
+
+		return this.updateOne(query, update, options);
+	}
+
+	setAsReadByRoomIdAndUserId(
+		rid: string,
+		uid: string,
+		options: FindOptions<ISubscription> = {},
+	): ReturnType<BaseRaw<ISubscription>['updateOne']> {
 		const query: Filter<ISubscription> = {
 			rid,
 			'u._id': uid,
@@ -131,7 +155,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 			$set: {
 				open: true,
-				alert,
+				alert: false,
 				unread: 0,
 				userMentions: 0,
 				groupMentions: 0,

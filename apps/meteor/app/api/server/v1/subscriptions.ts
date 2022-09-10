@@ -63,12 +63,12 @@ API.v1.addRoute(
 );
 
 /**
-	This API is suppose to mark any room as read.
+  This API is suppose to mark any room as read.
 
-	Method: POST
-	Route: api/v1/subscriptions.read
-	Params:
-		- rid: The rid of the room to be marked as read.
+  Method: POST
+  Route: api/v1/subscriptions.read
+  Params:
+    - rid: The rid of the room to be marked as read.
  */
 API.v1.addRoute(
 	'subscriptions.read',
@@ -78,7 +78,7 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			Meteor.call('readMessages', this.bodyParams.rid);
+			Meteor.call('markRoomAsRead', this.bodyParams.rid);
 
 			return API.v1.success();
 		},
