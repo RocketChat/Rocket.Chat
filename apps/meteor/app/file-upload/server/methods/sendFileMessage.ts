@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import type { MessageAttachment, FileAttachmentProps, IUser, IUpload } from '@rocket.chat/core-typings';
+import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms, Uploads } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -9,14 +9,14 @@ import { canAccessRoom } from '../../../authorization/server/functions/canAccess
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { omit } from '../../../../lib/utils/omit';
 
-const validateFileRequiredFields = (file: Partial<IUpload>): void => {
+function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtLeast<IUpload, '_id' | 'name' | 'type' | 'size'> {
 	const requiredFields = ['_id', 'name', 'type', 'size'];
 	requiredFields.forEach((field) => {
 		if (!Object.keys(file).includes(field)) {
 			throw new Meteor.Error('error-invalid-file', 'Invalid file');
 		}
 	});
-};
+}
 
 export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,
@@ -25,9 +25,9 @@ export const parseFileIntoMessageAttachments = async (
 ): Promise<Record<string, any>> => {
 	validateFileRequiredFields(file);
 
-	await Uploads.updateFileComplete(file._id as string, user._id, omit(file, '_id'));
+	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
 
-	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name as string)}`);
+	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
 
 	const attachments: MessageAttachment[] = [];
 
@@ -43,7 +43,7 @@ export const parseFileIntoMessageAttachments = async (
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',
-			description: file.description,
+			description: file?.description,
 			title_link: fileUrl,
 			title_link_download: true,
 			image_url: fileUrl,
@@ -61,7 +61,7 @@ export const parseFileIntoMessageAttachments = async (
 			if (thumbResult) {
 				const { data: thumbBuffer, width, height } = thumbResult;
 				const thumbnail = FileUpload.uploadImageThumbnail(file, thumbBuffer, roomId, user._id);
-				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name as string)}`);
+				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name)}`);
 				attachment.image_url = thumbUrl;
 				attachment.image_type = thumbnail.type;
 				attachment.image_dimensions = {
