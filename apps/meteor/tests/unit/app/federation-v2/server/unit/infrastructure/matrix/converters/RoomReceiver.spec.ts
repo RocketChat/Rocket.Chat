@@ -219,22 +219,24 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		};
 
 		it('should return an instance of FederationRoomReceiveExternalMessageDto', () => {
-			expect(MatrixRoomReceiverConverter.toSendRoomMessageDto({} as any)).to.be.instanceOf(FederationRoomReceiveExternalMessageDto);
+			expect(MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any, 'domain')).to.be.instanceOf(
+				FederationRoomReceiveExternalMessageDto,
+			);
 		});
 
 		it('should return the basic room properties correctly (normalizedRoomId without any "!" and only the part before the ":") if any', () => {
-			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto({ room_id: event.room_id } as any);
+			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any, 'domain');
 			expect(result.externalRoomId).to.be.equal('!roomId:matrix.org');
 			expect(result.normalizedRoomId).to.be.equal('roomId');
 		});
 
 		it('should convert the sender id to the a rc-format like (without any @ in it)', () => {
-			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto({ sender: event.sender } as any);
+			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any, 'domain');
 			expect(result.normalizedSenderId).to.be.equal('marcos.defendi:matrix.org');
 		});
 
 		it('should convert the event properly', () => {
-			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any);
+			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any, 'domain');
 			expect(result).to.be.eql({
 				externalRoomId: '!roomId:matrix.org',
 				normalizedRoomId: 'roomId',

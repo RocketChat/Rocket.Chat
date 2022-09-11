@@ -1,5 +1,4 @@
 import type { MentionPill as MentionPillType } from '@rocket.chat/forked-matrix-bot-sdk';
-import type { IMessage } from '@rocket.chat/core-typings';
 
 import { FederatedUser } from '../../../domain/FederatedUser';
 
@@ -42,7 +41,8 @@ const replaceExternalWithInternalMentions = (message: string, homeServerDomain: 
 			return '@all';
 		})
 		.split('\n')
-		.join(' ');
+		.join(' ')
+		.replace(/\s+/g, ' ');
 };
 
 const replaceMentionsInMatrixFormatForEachUserInternalMention = async (message: string): Promise<string> => {
@@ -72,9 +72,11 @@ const replaceInternalWithExternalMentions = async (message: string, externalRoom
 		await replaceMentionsInMatrixFormatForEachUserInternalMention(
 			await replaceMentionsInMatrixFormatForEachInternalMentions(message, externalRoomId),
 		)
-	).trim();
+	)
+		.replace(/\s+/g, ' ')
+		.trim();
 
-export const toExternalMessageFormat = async (message: IMessage, externalRoomId: string): Promise<string> =>
-	replaceInternalWithExternalMentions(message.msg, externalRoomId);
+export const toExternalMessageFormat = async (message: string, externalRoomId: string): Promise<string> =>
+	replaceInternalWithExternalMentions(message, externalRoomId);
 export const toInternalMessageFormat = (message: string, homeServerDomain: string): string =>
 	replaceExternalWithInternalMentions(message, homeServerDomain);

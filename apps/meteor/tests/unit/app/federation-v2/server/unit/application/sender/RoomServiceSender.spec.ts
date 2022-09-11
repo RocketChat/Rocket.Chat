@@ -405,7 +405,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			await service.sendExternalMessage({ message: { msg: 'text' } } as any);
 
-			expect(bridge.sendMessage.calledWith(room.getExternalId(), user.getExternalId(), 'text')).to.be.true;
+			expect(bridge.sendMessage.calledWith(room.getExternalId(), user.getExternalId(), { msg: 'text' })).to.be.true;
 		});
 	});
 });
