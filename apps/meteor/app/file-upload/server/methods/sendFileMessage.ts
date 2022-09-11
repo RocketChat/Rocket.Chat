@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import type { MessageAttachment, FileAttachmentProps, IUser } from '@rocket.chat/core-typings';
+import type { MessageAttachment, FileAttachmentProps, IUser, IUpload } from '@rocket.chat/core-typings';
 import { Rooms, Uploads } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -9,14 +9,25 @@ import { canAccessRoom } from '../../../authorization/server/functions/canAccess
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { omit } from '../../../../lib/utils/omit';
 
+const validateFileRequiredFields = (file: Partial<IUpload>): void => {
+	const requiredFields = ['_id', 'name', 'type', 'size'];
+	requiredFields.forEach((field) => {
+		if (!Object.keys(file).includes(field)) {
+			throw new Meteor.Error('error-invalid-file', 'Invalid file');
+		}
+	});
+};
+
 export const parseFileIntoMessageAttachments = async (
-	file: Record<string, any>,
+	file: Partial<IUpload>,
 	roomId: string,
 	user: IUser,
 ): Promise<Record<string, any>> => {
-	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
+	validateFileRequiredFields(file);
 
-	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
+	await Uploads.updateFileComplete(file._id as string, user._id, omit(file, '_id'));
+
+	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name as string)}`);
 
 	const attachments: MessageAttachment[] = [];
 
@@ -28,7 +39,7 @@ export const parseFileIntoMessageAttachments = async (
 		},
 	];
 
-	if (/^image\/.+/.test(file.type)) {
+	if (/^image\/.+/.test(file.type as string)) {
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',
@@ -36,7 +47,7 @@ export const parseFileIntoMessageAttachments = async (
 			title_link: fileUrl,
 			title_link_download: true,
 			image_url: fileUrl,
-			image_type: file.type,
+			image_type: file.type as string,
 			image_size: file.size,
 		};
 
@@ -50,7 +61,7 @@ export const parseFileIntoMessageAttachments = async (
 			if (thumbResult) {
 				const { data: thumbBuffer, width, height } = thumbResult;
 				const thumbnail = FileUpload.uploadImageThumbnail(file, thumbBuffer, roomId, user._id);
-				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name)}`);
+				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name as string)}`);
 				attachment.image_url = thumbUrl;
 				attachment.image_type = thumbnail.type;
 				attachment.image_dimensions = {
@@ -67,7 +78,7 @@ export const parseFileIntoMessageAttachments = async (
 			SystemLogger.error(e);
 		}
 		attachments.push(attachment);
-	} else if (/^audio\/.+/.test(file.type)) {
+	} else if (/^audio\/.+/.test(file.type as string)) {
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',
@@ -75,11 +86,11 @@ export const parseFileIntoMessageAttachments = async (
 			title_link: fileUrl,
 			title_link_download: true,
 			audio_url: fileUrl,
-			audio_type: file.type,
+			audio_type: file.type as string,
 			audio_size: file.size,
 		};
 		attachments.push(attachment);
-	} else if (/^video\/.+/.test(file.type)) {
+	} else if (/^video\/.+/.test(file.type as string)) {
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',
@@ -87,8 +98,8 @@ export const parseFileIntoMessageAttachments = async (
 			title_link: fileUrl,
 			title_link_download: true,
 			video_url: fileUrl,
-			video_type: file.type,
-			video_size: file.size,
+			video_type: file.type as string,
+			video_size: file.size as number,
 		};
 		attachments.push(attachment);
 	} else {
