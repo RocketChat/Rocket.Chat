@@ -98,7 +98,7 @@ export class FederationFactory {
 		return [
 			new MatrixRoomCreatedHandler(roomServiceReceiver),
 			new MatrixRoomMembershipChangedHandler(roomServiceReceiver, rocketSettingsAdapter),
-			new MatrixRoomMessageSentHandler(roomServiceReceiver),
+			new MatrixRoomMessageSentHandler(roomServiceReceiver, rocketSettingsAdapter),
 			new MatrixRoomJoinRulesChangedHandler(roomServiceReceiver),
 			new MatrixRoomNameChangedHandler(roomServiceReceiver),
 			new MatrixRoomTopicChangedHandler(roomServiceReceiver),

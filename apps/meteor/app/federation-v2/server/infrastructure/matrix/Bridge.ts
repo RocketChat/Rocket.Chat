@@ -1,7 +1,9 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
 import type { IExternalUserProfileInformation, IFederationBridge } from '../../domain/IFederationBridge';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
+import { toExternalMessageFormat } from './converters/MessageTextParser';
 import type { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
@@ -142,9 +144,11 @@ export class MatrixBridge implements IFederationBridge {
 		return matrixRoom.room_id;
 	}
 
-	public async sendMessage(externalRoomId: string, externaSenderId: string, text: string): Promise<void> {
+	public async sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<void> {
 		try {
-			await this.bridgeInstance.getIntent(externaSenderId).sendText(externalRoomId, text);
+			await this.bridgeInstance
+				.getIntent(externalSenderId)
+				.matrixClient.sendHtmlText(externalRoomId, await toExternalMessageFormat(message, externalRoomId));
 		} catch (e) {
 			throw new Error('User is not part of the room.');
 		}

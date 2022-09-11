@@ -39,12 +39,14 @@ export class MatrixRoomMembershipChangedHandler extends MatrixBaseEventHandler {
 export class MatrixRoomMessageSentHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_MESSAGE_SENT;
 
-	constructor(private roomService: FederationRoomServiceListener) {
+	constructor(private roomService: FederationRoomServiceListener, private rocketSettingsAdapter: RocketChatSettingsAdapter) {
 		super();
 	}
 
 	public async handle(externalEvent: MatrixEventRoomMessageSent): Promise<void> {
-		await this.roomService.onExternalMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent));
+		this.roomService.onExternalMessageReceived(
+			MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+		);
 	}
 }
 

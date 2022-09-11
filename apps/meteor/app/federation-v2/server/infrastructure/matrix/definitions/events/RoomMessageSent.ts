@@ -9,6 +9,8 @@ export enum MatrixSendMessageType {
 export interface IMatrixEventContentRoomMessageSent extends IBaseEventContent {
 	body: string;
 	msgtype: MatrixSendMessageType;
+	format?: string;
+	formatted_body?: string;
 }
 
 export class MatrixEventRoomMessageSent extends AbstractMatrixEvent {

@@ -151,7 +151,7 @@ export class FederationRoomServiceSender extends FederationService {
 			throw new Error(`Could not find room id for ${internalRoomId}`);
 		}
 
-		await this.bridge.sendMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message.msg);
+		await this.bridge.sendMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message);
 
 		return message; // this need to be here due to a limitation in the internal API that was expecting the return of the sendMessage function.
 	}

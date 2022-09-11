@@ -1,3 +1,5 @@
+import type { IMessage } from '@rocket.chat/core-typings';
+
 export interface IExternalUserProfileInformation {
 	displayName: string;
 }
@@ -15,7 +17,7 @@ export interface IFederationBridge {
 	joinRoom(externalRoomId: string, externalUserId: string): Promise<void>;
 	createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[], extraData?: Record<string, any>): Promise<string>;
 	inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void>;
-	sendMessage(externalRoomId: string, externaSenderId: string, text: string): Promise<void>;
+	sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<void>;
 	createUser(username: string, name: string, domain: string): Promise<string>;
 	isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean;
 	extractHomeserverOrigin(externalUserId: string): string;

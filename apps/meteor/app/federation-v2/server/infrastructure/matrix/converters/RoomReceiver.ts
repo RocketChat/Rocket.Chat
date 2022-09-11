@@ -19,6 +19,7 @@ import type { MatrixEventRoomJoinRulesChanged } from '../definitions/events/Room
 import type { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameChanged';
 import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
 import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
+import { toInternalMessageFormat } from './MessageTextParser';
 
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
 	return matrixIdentifier.replace('@', '').replace('!', '');
@@ -129,13 +130,16 @@ export class MatrixRoomReceiverConverter {
 		});
 	}
 
-	public static toSendRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomReceiveExternalMessageDto {
+	public static toSendRoomMessageDto(
+		externalEvent: MatrixEventRoomMessageSent,
+		homeServerDomain: string,
+	): FederationRoomReceiveExternalMessageDto {
 		return new FederationRoomReceiveExternalMessageDto({
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			messageText: externalEvent.content?.body,
+			messageText: toInternalMessageFormat(externalEvent.content.formatted_body || externalEvent.content.body, homeServerDomain),
 		});
 	}
 
