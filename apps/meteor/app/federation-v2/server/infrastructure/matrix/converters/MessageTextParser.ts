@@ -8,15 +8,15 @@ const HREF_REGEX = /href=/; // href="https://matrix.to/#/@user:server.com"
 const A_LINKS_REGEX = /<a [^>]+>([^<]+)<\/a>/gm; // <a href="https://matrix.to/#/@user:server.com">user</a>
 const SPACES_REGEX = /\ /g;
 const MATRIX_MENTION_LINK_REGEX = /\[(https?:\/\/(.+?.)?matrix.to(\/[A-Za-z0-9-._~:/?#[@!$&'()*+,;=]*)?)\]/gm; // [https://matrix.to/#/@marcos.defendi:b.rc.allskar.com]
-const INTERNAL_MENTIONS_REGEX = new RegExp(`(^|\\s|> ?)@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)`, 'gm'); // @username, @username:server.com
+const INTERNAL_MENTIONS_REGEX = new RegExp(`@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)`, 'gm'); // @username, @username:server.com
 const INTERNAL_GENERAL_REGEX = /(@all)|(@here)/gm;
 
 // return links in the following format: [mentionLink]
 const extractAllMentionsLinksFromMessage = (message: string): string[] => {
 	const mentionLinks: string[] = [];
 	message.replace(A_HREF_LINKS_REGEX, (match): any => {
-		const mentionLink = match.replace(HREF_REGEX, '').replace('"', '[').replace('"', ']');
-		mentionLinks.push(mentionLink);
+		const mentionLink = match.replace(HREF_REGEX, '').replace(/\"/g, '');
+		mentionLinks.push(`[${mentionLink}]`);
 	});
 
 	return mentionLinks;
@@ -49,9 +49,7 @@ const replaceMentionsInMatrixFormatForEachUserInternalMention = async (message: 
 	const { MentionPill } = await import('@rocket.chat/forked-matrix-bot-sdk');
 	const promises: Promise<MentionPillType>[] = [];
 
-	message.replace(INTERNAL_MENTIONS_REGEX, (match): any => {
-		promises.push(MentionPill.forUser(match.trimStart()));
-	});
+	message.replace(INTERNAL_MENTIONS_REGEX, (match): any => promises.push(MentionPill.forUser(match.trimStart())));
 
 	const externalUserMentions = await Promise.all(promises);
 
@@ -62,9 +60,7 @@ const replaceMentionsInMatrixFormatForEachInternalMentions = async (message: str
 	const { MentionPill } = await import('@rocket.chat/forked-matrix-bot-sdk');
 	const promises: Promise<MentionPillType>[] = [];
 
-	message.replace(INTERNAL_GENERAL_REGEX, (): any => {
-		promises.push(MentionPill.forRoom(externalRoomId));
-	});
+	message.replace(INTERNAL_GENERAL_REGEX, (): any => promises.push(MentionPill.forRoom(externalRoomId)));
 
 	const externalMentions = await Promise.all(promises);
 
