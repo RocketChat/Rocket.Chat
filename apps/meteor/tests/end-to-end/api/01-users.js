@@ -3147,7 +3147,7 @@ describe('[Users]', function () {
 				joinChannel(user2Credentials, roomId).then(() => {
 					request
 						.get(api('users.autocomplete?selector={}'))
-						.set(credentials)
+						.set(userCredentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
