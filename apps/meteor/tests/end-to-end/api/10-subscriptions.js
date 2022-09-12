@@ -2,7 +2,6 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { createRoom } from '../../data/rooms.helper';
-import { sendSimpleMessage } from '../../data/chat.helper.js';
 import { createUser, deleteUser, login } from '../../data/users.helper.js';
 import { adminUsername } from '../../data/user.js';
 
@@ -238,7 +237,6 @@ describe('[Subscriptions]', function () {
 				deleteUser(user).then(done);
 			});
 
-
 			it('should mark threads as read', async () => {
 				await request
 					.post(api('chat.sendMessage'))
@@ -272,7 +270,7 @@ describe('[Subscriptions]', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.subscription).to.not.have.property('tunread');
-					})
+					});
 			});
 
 			it('should not mark threads as read', async () => {
@@ -310,7 +308,7 @@ describe('[Subscriptions]', function () {
 						expect(res.body.subscription).to.have.property('tunread');
 						expect(res.body.subscription.tunread).to.be.an('array');
 						expect(res.body.subscription.tunread).to.deep.equal([threadId]);
-					})
+					});
 			});
 		});
 	});
