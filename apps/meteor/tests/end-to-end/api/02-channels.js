@@ -1922,7 +1922,7 @@ describe('[Channels]', function () {
 			});
 		});
 
-		it('should successfully convert a channel to a team', (done) => {
+		it(`should successfully convert a channel to a team when the channel's id is sent as parameter`, (done) => {
 			updatePermission('create-team', ['admin']).then(() => {
 				updatePermission('edit-room', ['admin']).then(() => {
 					request
@@ -1934,6 +1934,61 @@ describe('[Channels]', function () {
 							expect(res.body).to.have.a.property('success', true);
 						})
 						.end(done);
+				});
+			});
+		});
+
+		it(`should successfully convert a channel to a team when the channel's name is sent as parameter`, (done) => {
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request
+						.post(api('teams.convertToChannel'))
+						.set(credentials)
+						.send({ teamName: this.newChannel.name })
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+						})
+						.then(() => {
+							request
+								.post(api('channels.convertToTeam'))
+								.set(credentials)
+								.send({ channelName: this.newChannel.name })
+								.expect(200)
+								.expect((res) => {
+									expect(res.body).to.have.a.property('success', true);
+								})
+								.end(done);
+						});
+				});
+			});
+		});
+
+		it(`should successfully convert a channel to a team when the channel's name and id are sent as parameter`, (done) => {
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request
+						.post(api('teams.convertToChannel'))
+						.set(credentials)
+						.send({ teamName: this.newChannel.name })
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+						})
+						.then(() => {
+							request
+								.post(api('channels.convertToTeam'))
+								.set(credentials)
+								.send({
+									channelName: this.newChannel.name,
+									channelId: this.newChannel._id,
+								})
+								.expect(200)
+								.expect((res) => {
+									expect(res.body).to.have.a.property('success', true);
+								})
+								.end(done);
+						});
 				});
 			});
 		});
