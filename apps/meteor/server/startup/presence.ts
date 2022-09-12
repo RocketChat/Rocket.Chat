@@ -32,15 +32,4 @@ Meteor.startup(function () {
 	Accounts.onLogout(function (login: any): void {
 		Presence.removeConnection(login.user._id, login.connection.id, nodeId);
 	});
-
-	// Meteor.publish(null, function () {
-	// 	if (this.userId == null && this.connection && this.connection.id) {
-	// 		// const connectionHandle = UserPresence.getConnectionHandle(this.connection.id);
-	// 		// if (connectionHandle?.UserPresenceUserId != null) {
-	// 		// 	UserPresence.removeConnection(this.connection.id);
-	// 		// }
-	// 	}
-	// 	console.log('Meteor.publish ->', this.userId, this.connection.id, nodeId);
-	// 	this.ready();
-	// });
 });

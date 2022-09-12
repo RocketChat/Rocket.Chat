@@ -9,9 +9,7 @@ import { Logger } from '../lib/logger/Logger';
 import { hasPermission } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 import { isDocker, getURL } from '../../app/utils/server';
-// import { Users } from '../../app/models/server';
 import { StreamerCentral } from '../modules/streamer/streamer.module';
-// import { isPresenceMonitorEnabled } from '../lib/isPresenceMonitorEnabled';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
