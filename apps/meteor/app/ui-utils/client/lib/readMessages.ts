@@ -6,6 +6,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
 import { ChatSubscription, ChatMessage } from '../../../models/client';
+import { APIClient } from '/app/utils/client';
 
 export class ReadMessage extends Emitter {
 	protected enabled: boolean;
@@ -86,10 +87,12 @@ export class ReadMessage extends Emitter {
 			return;
 		}
 
-		return Meteor.call('readMessages', rid, () => {
-			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
-			return this.emit(rid);
-		});
+		return APIClient.post('/v1/subscriptions.read', { rid, readThreads: false })
+			.then(() => {
+				RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
+				return this.emit(rid);
+			})
+			.catch(console.error);
 	}
 
 	public refreshUnreadMark(rid: IRoom['_id']) {

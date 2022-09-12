@@ -5,7 +5,7 @@ import { Match } from 'meteor/check';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t } from '../../utils/client';
+import { APIClient, t } from '../../utils/client';
 import { chatMessages } from '../../ui';
 import { popover, RoomManager } from '../../ui-utils';
 import { settings } from '../../settings';
@@ -44,7 +44,13 @@ Template.body.onRendered(function () {
 
 				subscriptions.forEach((subscription) => {
 					if (subscription.alert || subscription.unread > 0) {
-						Meteor.call('markRoomAsRead', subscription.rid);
+						APIClient.post('/v1/subscriptions.read', { rid: subscription.rid, readThreads: true })
+							.then((res) => {
+								if (!res.success) {
+									console.error(res);
+								}
+							})
+							.catch(console.error);
 					}
 				});
 

@@ -8,6 +8,8 @@ import {
 import { Subscriptions } from '@rocket.chat/models';
 
 import { API } from '../api';
+import { readMessages } from '/server/lib/readMessages';
+import { check, Match } from 'meteor/check';
 
 API.v1.addRoute(
 	'subscriptions.get',
@@ -77,9 +79,15 @@ API.v1.addRoute(
 		validateParams: isSubscriptionsReadProps,
 	},
 	{
-		post() {
-			Meteor.call('markRoomAsRead', this.bodyParams.rid);
-
+		async post() {
+			const { rid, readThreads } = this.bodyParams;
+			check(rid, String);
+			check(readThreads, Match.Maybe(Boolean));
+			try {
+				await readMessages(rid, this.userId, readThreads ?? true);
+			} catch (err: unknown) {
+				return API.v1.failure(err instanceof Error ? err.message : String(err));
+			}
 			return API.v1.success();
 		},
 	},
