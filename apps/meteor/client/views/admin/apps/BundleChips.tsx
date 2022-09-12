@@ -35,7 +35,7 @@ const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 						onMouseEnter={(): void => setIsHovered(true)}
 						onMouseLeave={(): void => setIsHovered(false)}
 					>
-						<Box fontScale='c2' color='info' style={{ whiteSpace: 'nowrap' }}>
+						<Box fontScale='c2' color='surface' style={{ whiteSpace: 'nowrap' }}>
 							{t('bundle_chip_title', {
 								bundleName: bundle.bundleName,
 							})}
