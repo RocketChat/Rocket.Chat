@@ -104,7 +104,7 @@ export type App = {
 	};
 	tosLink: string;
 	privacyLink: string;
-	marketplace: unknown;
+	marketplace?: unknown;
 	modifiedAt: string;
 	permissions: AppPermission[];
 	languages: string[];
