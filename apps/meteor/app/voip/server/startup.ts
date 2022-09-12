@@ -5,7 +5,15 @@ import { Voip } from '../../../server/sdk';
 
 Meteor.startup(function () {
 	settings.watch('VoIP_Enabled', (value: boolean) => {
-		return value ? Voip.init() : Voip.stop();
+		try {
+			if (value) {
+				Voip.init();
+			} else {
+				Voip.stop();
+			}
+		} catch (e) {
+			// do nothing
+		}
 	});
 
 	settings.changeMultiple(
@@ -14,7 +22,11 @@ Meteor.startup(function () {
 			// Here, if 4 settings are changed at once, we're getting 4 diff callbacks. The good part is that all callbacks are fired almost instantly
 			// So to avoid stopping/starting voip too often, we debounce the call and restart 1 second after the last setting has reached us.
 			if (settings.get('VoIP_Enabled')) {
-				Voip.refresh();
+				try {
+					Voip.refresh();
+				} catch (e) {
+					// do nothing
+				}
 			}
 		},
 	);
