@@ -95,4 +95,8 @@ export class Admin {
 	get btnResetRobotsFileContent(): Locator {
 		return this.page.locator('[data-qa-reset-setting-id="Robot_Instructions_File_Content"]');
 	}
+
+	get btnImportNewFile(): Locator {
+		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import New File"');
+	}
 }
