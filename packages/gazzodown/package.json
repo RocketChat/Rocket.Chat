@@ -7,7 +7,7 @@
 		"@mdx-js/react": "^1.6.22",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "0.31.18",
-		"@rocket.chat/fuselage": "0.31.18",
+		"@rocket.chat/fuselage": "next",
 		"@rocket.chat/fuselage-tokens": "0.31.18",
 		"@rocket.chat/message-parser": "0.31.18",
 		"@rocket.chat/styled": "0.31.18",

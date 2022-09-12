@@ -6,7 +6,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
 import { ChatSubscription, ChatMessage } from '../../../models/client';
-import { APIClient } from '/app/utils/client';
+import { APIClient } from '../../../utils/client';
 
 export class ReadMessage extends Emitter {
 	protected enabled: boolean;
