@@ -1,7 +1,9 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
+import { dispatchToastMessage } from '../../../client/lib/toast';
 import { VideoRecorder } from '../../ui';
+import { t } from '../../utils/client';
 
 export const VRecDialog = new (class {
 	opened = false;
@@ -15,6 +17,11 @@ export const VRecDialog = new (class {
 	open(source, { rid, tmid }) {
 		if (!this.dialogView) {
 			this.init();
+		}
+
+		if (!window.MediaRecorder.isTypeSupported('video/webm; codecs=vp8,opus')) {
+			dispatchToastMessage({ type: 'error', message: t('Browser_does_not_support_recording_video') });
+			return;
 		}
 
 		this.dialogView.templateInstance().update({

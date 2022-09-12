@@ -41,7 +41,7 @@ export const VideoRecorder = new (class VideoRecorder {
 			return;
 		}
 
-		this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: 'video/webm;codecs=vp8' });
+		this.mediaRecorder = new window.MediaRecorder(this.stream, { mimeType: 'video/webm; codecs=vp8,opus' });
 		this.mediaRecorder.ondataavailable = (blobev) => {
 			this.chunks.push(blobev.data);
 			if (!this.recordingAvailable.get()) {
