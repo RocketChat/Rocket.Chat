@@ -5,9 +5,7 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-	decorators: [
-		(storyFn) => <div children={storyFn()} style={{ width: '100vw', maxWidth: 500 }} />,
-	],
+	decorators: [(storyFn) => <div children={storyFn()} style={{ width: '100vw', maxWidth: 500 }} />],
 };
 
 export const Default = () =>

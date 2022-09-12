@@ -3,9 +3,12 @@ import { LivechatVisitors } from '@rocket.chat/models';
 
 import { Messages, LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	async 'livechat:registerGuest'({ token, name, email, department, customFields } = {}) {
+		methodDeprecationLogger.warn('livechat:registerGuest will be deprecated in future versions of Rocket.Chat');
+
 		const userId = await Livechat.registerGuest.call(this, {
 			token,
 			name,
