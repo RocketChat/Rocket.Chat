@@ -504,7 +504,7 @@ API.v1.addRoute(
 			// Register the user
 			const userId = Meteor.call('registerUser', {
 				...params,
-				secretURL,
+				...(secretURL && { secretURL }),
 			});
 
 			// Now set their username
