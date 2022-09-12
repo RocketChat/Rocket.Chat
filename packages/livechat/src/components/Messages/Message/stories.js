@@ -213,10 +213,12 @@ export const WithQuotation = (args) => (
 );
 WithQuotation.storyName = 'with quotation';
 WithQuotation.args = {
-	attachments: [{
-		message_link: 'http://localhost:3000/live/SqouQyJ7wDsK8KPnc?msg=EWrxmazqYbEf3rFzd',
-		text: defaultMessageExtra,
-	}],
+	attachments: [
+		{
+			message_link: 'http://localhost:3000/live/SqouQyJ7wDsK8KPnc?msg=EWrxmazqYbEf3rFzd',
+			text: defaultMessageExtra,
+		},
+	],
 };
 
 export const WithAudioAttachment = (args) => (
@@ -235,9 +237,11 @@ export const WithAudioAttachment = (args) => (
 );
 WithAudioAttachment.storyName = 'with audio attachment';
 WithAudioAttachment.args = {
-	attachments: [{
-		audio_url: sampleAudio,
-	}],
+	attachments: [
+		{
+			audio_url: sampleAudio,
+		},
+	],
 };
 
 export const WithVideoAttachment = (args) => (
@@ -256,9 +260,11 @@ export const WithVideoAttachment = (args) => (
 );
 WithVideoAttachment.storyName = 'with video attachment';
 WithVideoAttachment.args = {
-	attachments: [{
-		video_url: sampleVideo,
-	}],
+	attachments: [
+		{
+			video_url: sampleVideo,
+		},
+	],
 };
 
 export const WithImageAttachment = (args) => (
@@ -277,9 +283,11 @@ export const WithImageAttachment = (args) => (
 );
 WithImageAttachment.storyName = 'with image attachment';
 WithImageAttachment.args = {
-	attachments: [{
-		image_url: sampleImage,
-	}],
+	attachments: [
+		{
+			image_url: sampleImage,
+		},
+	],
 };
 
 export const WithFilesAttachments = (args) => (
@@ -298,11 +306,10 @@ export const WithFilesAttachments = (args) => (
 );
 WithFilesAttachments.storyName = 'with files attachments';
 WithFilesAttachments.args = {
-	attachments: ['pdf', 'doc', 'ppt', 'xls', 'zip', 'abc']
-		.map((extension) => ({
-			title_link: `http://example.com/demo.${ extension }`,
-			title: `Untitled ${ extension } file`,
-		})),
+	attachments: ['pdf', 'doc', 'ppt', 'xls', 'zip', 'abc'].map((extension) => ({
+		title_link: `http://example.com/demo.${extension}`,
+		title: `Untitled ${extension} file`,
+	})),
 };
 
 export const WithMultipleAttachments = (args) => (

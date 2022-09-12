@@ -11,19 +11,12 @@ import ScreenHeader from './Header';
 import styles from './styles.scss';
 
 export const ScreenContent = ({ children, nopadding, triggered = false }) => (
-	<main className={createClassName(styles, 'screen__main', { nopadding, triggered })}>
-		{children}
-	</main>
+	<main className={createClassName(styles, 'screen__main', { nopadding, triggered })}>{children}</main>
 );
-
 
 export const ScreenFooter = ({ children, options, limit }) => (
 	<Footer>
-		{children && (
-			<FooterContent>
-				{children}
-			</FooterContent>
-		)}
+		{children && <FooterContent>{children}</FooterContent>}
 		<FooterContent>
 			{options}
 			{limit}
@@ -32,14 +25,7 @@ export const ScreenFooter = ({ children, options, limit }) => (
 	</Footer>
 );
 
-const ChatButton = ({
-	text,
-	minimized,
-	badge,
-	onClick,
-	triggered = false,
-	agent,
-}) => (
+const ChatButton = ({ text, minimized, badge, onClick, triggered = false, agent }) => (
 	<Button
 		icon={minimized || triggered ? <ChatIcon /> : <CloseIcon />}
 		badge={badge}
@@ -75,13 +61,15 @@ const CssVar = ({ theme }) => {
 		};
 	}, [theme]);
 
-	return <style>{`
-		.${ styles.screen } {
-			${ theme.color ? `--color: ${ theme.color };` : '' }
-			${ theme.fontColor ? `--font-color: ${ theme.fontColor };` : '' }
-			${ theme.iconColor ? `--icon-color: ${ theme.iconColor };` : '' }
+	return (
+		<style>{`
+		.${styles.screen} {
+			${theme.color ? `--color: ${theme.color};` : ''}
+			${theme.fontColor ? `--font-color: ${theme.fontColor};` : ''}
+			${theme.iconColor ? `--icon-color: ${theme.iconColor};` : ''}
 		}
-	`}</style>;
+	`}</style>
+	);
 };
 
 export const Screen = ({
@@ -111,25 +99,31 @@ export const Screen = ({
 }) => (
 	<div className={createClassName(styles, 'screen', { minimized, expanded, windowed, triggered })}>
 		<CssVar theme={theme} />
-		{triggered && <Button onClick={onMinimize} className={createClassName(styles, 'screen__chat-close-button')} icon={<CloseIcon />}>Close</Button>}
+		{triggered && (
+			<Button onClick={onMinimize} className={createClassName(styles, 'screen__chat-close-button')} icon={<CloseIcon />}>
+				Close
+			</Button>
+		)}
 		<div className={createClassName(styles, 'screen__inner', { fitTextSize: triggered }, [className])}>
 			<PopoverContainer>
-				{!triggered && <ScreenHeader
-					alerts={alerts}
-					agent={agent}
-					title={title}
-					notificationsEnabled={notificationsEnabled}
-					minimized={minimized}
-					expanded={expanded}
-					windowed={windowed}
-					onDismissAlert={onDismissAlert}
-					onEnableNotifications={onEnableNotifications}
-					onDisableNotifications={onDisableNotifications}
-					onMinimize={onMinimize}
-					onRestore={onRestore}
-					onOpenWindow={onOpenWindow}
-					queueInfo={queueInfo}
-				/>}
+				{!triggered && (
+					<ScreenHeader
+						alerts={alerts}
+						agent={agent}
+						title={title}
+						notificationsEnabled={notificationsEnabled}
+						minimized={minimized}
+						expanded={expanded}
+						windowed={windowed}
+						onDismissAlert={onDismissAlert}
+						onEnableNotifications={onEnableNotifications}
+						onDisableNotifications={onDisableNotifications}
+						onMinimize={onMinimize}
+						onRestore={onRestore}
+						onOpenWindow={onOpenWindow}
+						queueInfo={queueInfo}
+					/>
+				)}
 
 				{modal}
 				{children}
@@ -149,9 +143,7 @@ export const Screen = ({
 	</div>
 );
 
-
 Screen.Content = ScreenContent;
 Screen.Footer = ScreenFooter;
-
 
 export default Screen;

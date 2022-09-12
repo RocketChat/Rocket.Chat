@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import _ from 'underscore';
 import type { MessageAttachment, FileAttachmentProps, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Uploads } from '@rocket.chat/models';
 
@@ -8,6 +7,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { omit } from '../../../../lib/utils/omit';
 
 Meteor.methods({
 	async sendFileMessage(roomId, _store, file, msgData = {}) {
@@ -36,7 +36,7 @@ Meteor.methods({
 			tmid: Match.Optional(String),
 		});
 
-		await Uploads.updateFileComplete(file._id, user._id, _.omit(file, '_id'));
+		await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
 
 		const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
 

@@ -15,6 +15,7 @@ import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../
 import { outgoingLogger } from '../logger';
 import { outgoingEvents } from '../../lib/outgoingEvents';
 import { fetch } from '../../../../server/lib/http/fetch';
+import { omit } from '../../../../lib/utils/omit';
 
 export class RocketChatIntegrationHandler {
 	constructor() {
@@ -103,7 +104,7 @@ export class RocketChatIntegrationHandler {
 			history.data = { ...data };
 
 			if (data.user) {
-				history.data.user = _.omit(data.user, ['services']);
+				history.data.user = omit(data.user, 'services');
 			}
 
 			if (data.room) {
