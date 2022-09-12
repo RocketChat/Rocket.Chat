@@ -66,6 +66,7 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 slashCommands.add({
 	command: 'sendEmailAttachment',
 	callback: (command: any, params: string) => {
+		logger.debug('sendEmailAttachment command: ', command, params);
 		if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
 			return;
 		}
@@ -151,26 +152,37 @@ slashCommands.add({
 });
 
 callbacks.add(
-	'beforeSaveMessage',
+	'afterSaveMessage',
 	function (message: IMessage, room: any) {
 		if (!room?.email?.inbox) {
 			return message;
 		}
 
-		if (message.file) {
-			message.attachments = message.attachments || [];
-			message.attachments.push({
-				actions: [
-					{
-						type: 'button',
-						text: t('Send_via_Email_as_attachment'),
-						msg: `/sendEmailAttachment ${message._id}`,
-						msg_in_chat_window: true,
-						msg_processing_type: 'sendMessage',
-					},
-				],
-			});
-
+		if (message.files?.length && message.u.username !== 'rocket.cat') {
+			const AttachMsg: any = Object.assign(
+				{},
+				{
+					...message,
+					msg: '',
+					attachments: [
+						{
+							actions: [
+								{
+									type: 'button',
+									text: t('Send_via_Email_as_attachment'),
+									msg: `/sendEmailAttachment ${message._id}`,
+									msg_in_chat_window: true,
+									msg_processing_type: 'sendMessage',
+								},
+							],
+						},
+					],
+				},
+			);
+			delete AttachMsg._id;
+			delete AttachMsg.file;
+			delete AttachMsg.files;
+			logger.error(sendMessage(user, AttachMsg, room, true));
 			return message;
 		}
 

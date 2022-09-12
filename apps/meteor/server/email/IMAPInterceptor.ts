@@ -4,6 +4,7 @@ import IMAP from 'imap';
 import type Connection from 'imap';
 import type { ParsedMail } from 'mailparser';
 import { simpleParser } from 'mailparser';
+import { EmailInbox } from '@rocket.chat/models';
 
 import { logger } from '../features/EmailInbox/logger';
 
@@ -24,7 +25,7 @@ export class IMAPInterceptor extends EventEmitter {
 
 	private config: IMAP.Config;
 
-	private initialBackoffDurationMS = 30000;
+	private backoffDurationMS = 3000;
 
 	private backoff: NodeJS.Timeout;
 
@@ -49,15 +50,26 @@ export class IMAPInterceptor extends EventEmitter {
 			...(imapConfig.tls && { tlsOptions: { servername: imapConfig.host } }),
 			...imapConfig,
 		});
+		this.retries = 0;
+		this.start();
+	}
 
+	openInbox(cb: (error: Error, mailbox: Connection.Box) => void): void {
+		this.imap.openBox('INBOX', false, cb);
+	}
+
+	start(): void {
 		// On successfully connected.
 		this.imap.on('ready', () => {
-			if (this.imap.state !== 'disconnected') {
+			if (this.isActive()) {
+				logger.info(`IMAP connected to ${this.config.user}`);
 				clearTimeout(this.backoff);
 				this.retries = 0;
+				this.backoffDurationMS = 3000;
 				this.openInbox((err) => {
 					if (err) {
-						logger.error(`Error occurred during imap on inbox ${this.config.user}: `, err);
+						logger.warn(`Error occurred opening inbox ${this.config.user}`);
+						logger.debug(err);
 						throw err;
 					}
 					// fetch new emails & wait [IDLE]
@@ -69,27 +81,21 @@ export class IMAPInterceptor extends EventEmitter {
 					});
 				});
 			} else {
-				logger.error(`IMAP did not connect on inbox ${this.config.user}`);
-				this.imap.end();
+				logger.warn(`IMAP did not connect on inbox ${this.config.user} (${this.retries} retries)`);
 				this.reconnect();
 			}
 		});
 
 		this.imap.on('error', (err: Error) => {
-			logger.error(`Error occurred on inbox ${this.config.user}: `, err);
-			this.stop(() => this.reconnect());
+			logger.info(`Error occurred on inbox ${this.config.user}: `, err.message);
+			logger.debug(err);
+			this.reconnect();
 		});
 
 		this.imap.on('close', () => {
 			this.reconnect();
 		});
-	}
-
-	openInbox(cb: (error: Error, mailbox: Connection.Box) => void): void {
-		this.imap.openBox('INBOX', false, cb);
-	}
-
-	start(): void {
+		this.retries += 1;
 		this.imap.connect();
 	}
 
@@ -102,27 +108,43 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	stop(callback = new Function()): void {
-		logger.info('IMAP stop called');
-		this.imap.end();
+		logger.debug('IMAP stop called');
+		this.imap.removeAllListeners();
 		this.imap.once('end', () => {
-			logger.info('IMAP stopped');
+			logger.debug('IMAP stopped');
 			callback?.();
 		});
+		this.imap.end();
 	}
 
 	reconnect(): void {
+		if (!this.isActive() && !this.canRetry()) {
+			logger.info(`Max retries reached for ${this.config.user}`);
+			this.stop();
+			this.selfDisable();
+			return;
+		}
+		if (this.backoff) {
+			clearTimeout(this.backoff);
+			this.backoffDurationMS = 3000;
+			// return;
+		}
 		const loop = (): void => {
-			this.start();
-			if (this.retries < this.options.maxRetries) {
-				this.retries += 1;
-				this.initialBackoffDurationMS *= 2;
-				this.backoff = setTimeout(loop, this.initialBackoffDurationMS);
+			logger.debug(`Reconnecting to ${this.config.user}: ${this.retries}`);
+			if (this.canRetry()) {
+				this.backoffDurationMS *= 2;
+				this.backoff = setTimeout(loop, this.backoffDurationMS);
 			} else {
-				logger.error(`IMAP reconnection failed on inbox ${this.config.user}`);
+				logger.info(`IMAP reconnection failed on inbox ${this.config.user}`);
 				clearTimeout(this.backoff);
+				this.stop();
+				this.selfDisable();
+				return;
 			}
+			this.stop();
+			this.start();
 		};
-		this.backoff = setTimeout(loop, this.initialBackoffDurationMS);
+		this.backoff = setTimeout(loop, this.backoffDurationMS);
 	}
 
 	// Fetch all UNSEEN messages and pass them for further processing
@@ -130,7 +152,7 @@ export class IMAPInterceptor extends EventEmitter {
 		this.imap.search(this.options.filter, (err, newEmails) => {
 			logger.debug(`IMAP search on inbox ${this.config.user} returned ${newEmails.length} new emails: `, newEmails);
 			if (err) {
-				logger.error(err);
+				logger.debug(err);
 				throw err;
 			}
 			// newEmails => array containing serials of unseen messages
@@ -142,8 +164,6 @@ export class IMAPInterceptor extends EventEmitter {
 				});
 
 				fetch.on('message', (msg, seqno) => {
-					logger.debug('E-mail received', seqno, msg);
-
 					msg.on('body', (stream, type) => {
 						if (type.which !== '') {
 							return;
@@ -164,7 +184,7 @@ export class IMAPInterceptor extends EventEmitter {
 						if (this.options.deleteAfterRead) {
 							this.imap.seq.addFlags(seqno, 'Deleted', (err) => {
 								if (err) {
-									logger.error(`Mark deleted error: ${err}`);
+									logger.warn(`Mark deleted error: ${err}`);
 								}
 							});
 						}
@@ -172,9 +192,17 @@ export class IMAPInterceptor extends EventEmitter {
 				});
 
 				fetch.once('error', (err) => {
-					logger.error(`Fetch error: ${err}`);
+					logger.warn(`Fetch error: ${err}`);
 				});
 			}
 		});
+	}
+
+	canRetry(): boolean {
+		return this.retries < this.options.maxRetries || this.options.maxRetries === -1;
+	}
+
+	selfDisable(): void {
+		EmailInbox.findOneAndUpdate({ email: this.config.user }, { $set: { active: false } });
 	}
 }
