@@ -108,6 +108,9 @@
 		"last 2 versions",
 		"not ie < 11"
 	],
+	"volta": {
+		"extends": "../../package.json"
+	},
 	"houston": {
 		"updateFiles": [
 			"package.json"
