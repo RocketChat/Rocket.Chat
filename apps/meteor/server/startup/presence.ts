@@ -23,6 +23,9 @@ Meteor.startup(function () {
 	});
 
 	Accounts.onLogin(function (login: any): void {
+		if (login.type !== 'resume') {
+			return;
+		}
 		Presence.newConnection(login.user._id, login.connection.id, nodeId);
 	});
 
