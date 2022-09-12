@@ -5048,7 +5048,7 @@ __metadata:
     url-polyfill: ^1.1.12
     use-subscription: ~1.6.0
     uuid: ^8.3.2
-    vm2: ^3.9.10
+    vm2: ^3.9.11
     webdav: ^4.9.0
     webpack: ^4.46.0
     xml-crypto: ^2.1.3
@@ -34095,7 +34095,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vm2@npm:^3.9.10":
+"vm2@npm:^3.9.11":
   version: 3.9.11
   resolution: "vm2@npm:3.9.11"
   dependencies:
