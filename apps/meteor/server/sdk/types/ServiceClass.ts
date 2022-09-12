@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 import { asyncLocalStorage } from '..';
 import type { IBroker, IBrokerNode } from './IBroker';
 import type { EventSignatures } from '../lib/Events';
+import type { Api } from '../lib/Api';
 
 export interface IServiceContext {
 	id: string; // Context ID
@@ -31,8 +32,7 @@ export interface IServiceClass {
 	onNodeDisconnected?({ node, unexpected }: { node: IBrokerNode; unexpected: boolean }): Promise<void>;
 	getEvents(): Array<keyof EventSignatures>;
 
-	// TODO api should be correctly typed
-	setApi(api: any): void;
+	setApi(api: Api): void;
 
 	onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void;
 	emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void;
@@ -51,13 +51,13 @@ export abstract class ServiceClass implements IServiceClass {
 
 	protected internal = false;
 
-	protected api: any;
+	protected api: Api;
 
 	constructor() {
 		this.emit = this.emit.bind(this);
 	}
 
-	setApi(api: any): void {
+	setApi(api: Api): void {
 		this.api = api;
 	}
 

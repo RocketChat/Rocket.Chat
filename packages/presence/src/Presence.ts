@@ -104,10 +104,9 @@ export class Presence extends ServiceClass implements IPresence {
 			return affectedUsers.map(({ _id }) => _id);
 		}
 
-		const nodes: any = await this.api.broker.nodeList();
+		const nodes = await this.api.nodeList();
 
-		const ids = nodes.filter((node: any) => node.available).map(({ id }: { id: string }) => id);
-
+		const ids = nodes.filter((node) => node.available).map(({ id }) => id);
 		if (ids.length === 0) {
 			return [];
 		}

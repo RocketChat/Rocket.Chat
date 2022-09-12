@@ -1,5 +1,5 @@
 // import { BaseBroker } from './BaseBroker';
-import type { IBroker } from '../types/IBroker';
+import type { IBroker, IBrokerNode } from '../types/IBroker';
 import type { IServiceClass } from '../types/ServiceClass';
 import type { EventSignatures } from './Events';
 
@@ -59,5 +59,9 @@ export class Api {
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		return this.broker.broadcastLocal(event, ...args);
+	}
+
+	nodeList(): Promise<IBrokerNode[]> {
+		return this.broker.nodeList();
 	}
 }

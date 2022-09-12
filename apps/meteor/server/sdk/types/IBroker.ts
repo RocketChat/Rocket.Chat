@@ -12,7 +12,7 @@ export interface IBrokerNode {
 	// metadata: {},
 	// ipList: [ '192.168.0.100', '192.168.1.25' ],
 	// port: 59989,
-	// hostname: 'RocketChats-MacBook-Pro-Rodrigo-Nascimento.local',
+	// hostname: 'service.local-1',
 	// udpAddress: null,
 	// cpu: 25,
 	// cpuSeq: 1,
