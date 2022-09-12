@@ -157,67 +157,67 @@ const getMessageData = function (msg, hideUsers, userData, usersMap) {
 
 		switch (msg.t) {
 			case 'uj':
-				messageObject.msg = TAPi18n.__('User_joined_channel');
+				messageObject.msg = TAPi18n.__('User_joined_the_channel');
 				break;
 			case 'ul':
-				messageObject.msg = TAPi18n.__('User_left');
+				messageObject.msg = TAPi18n.__('User_left_this_channel');
 				break;
 			case 'ult':
-				messageObject.msg = TAPi18n.__('User_left_team');
+				messageObject.msg = TAPi18n.__('User_left_this_team');
 				break;
 			case 'user-added-room-to-team':
-				messageObject.msg = TAPi18n.__('added__roomName__to_team', {
+				messageObject.msg = TAPi18n.__('added__roomName__to_this_team', {
 					roomName: msg.msg,
 				});
 				break;
 			case 'user-converted-to-team':
-				messageObject.msg = TAPi18n.__('Converted__roomName__to_team', {
+				messageObject.msg = TAPi18n.__('Converted__roomName__to_a_team', {
 					roomName: msg.msg,
 				});
 				break;
 			case 'user-converted-to-channel':
-				messageObject.msg = TAPi18n.__('Converted__roomName__to_channel', {
+				messageObject.msg = TAPi18n.__('Converted__roomName__to_a_channel', {
 					roomName: msg.msg,
 				});
 				break;
 			case 'user-deleted-room-from-team':
-				messageObject.msg = TAPi18n.__('Deleted__roomName__', {
+				messageObject.msg = TAPi18n.__('Deleted__roomName__room', {
 					roomName: msg.msg,
 				});
 				break;
 			case 'user-removed-room-from-team':
-				messageObject.msg = TAPi18n.__('Removed__roomName__from_this_team', {
+				messageObject.msg = TAPi18n.__('Removed__roomName__from_the_team', {
 					roomName: msg.msg,
 				});
 				break;
 			case 'ujt':
-				messageObject.msg = TAPi18n.__('User_joined_team');
+				messageObject.msg = TAPi18n.__('User_joined_the_team');
 				break;
 			case 'au':
-				messageObject.msg = TAPi18n.__('User_added_by', {
+				messageObject.msg = TAPi18n.__('User_added_to', {
 					user_added: hideUserName(msg.msg, userData, usersMap),
 					user_by: username,
 				});
 				break;
 			case 'added-user-to-team':
-				messageObject.msg = TAPi18n.__('Added__username__to_team', {
+				messageObject.msg = TAPi18n.__('Added__username__to_this_team', {
 					user_added: msg.msg,
 				});
 				break;
 			case 'r':
-				messageObject.msg = TAPi18n.__('Room_name_changed', {
+				messageObject.msg = TAPi18n.__('Room_name_changed_to', {
 					room_name: msg.msg,
 					user_by: username,
 				});
 				break;
 			case 'ru':
-				messageObject.msg = TAPi18n.__('User_removed_by', {
+				messageObject.msg = TAPi18n.__('User_has_been_removed', {
 					user_removed: hideUserName(msg.msg, userData, usersMap),
 					user_by: username,
 				});
 				break;
 			case 'removed-user-from-team':
-				messageObject.msg = TAPi18n.__('Removed__username__from_team', {
+				messageObject.msg = TAPi18n.__('Removed__username__from_the_team', {
 					user_removed: hideUserName(msg.msg, userData, usersMap),
 				});
 				break;

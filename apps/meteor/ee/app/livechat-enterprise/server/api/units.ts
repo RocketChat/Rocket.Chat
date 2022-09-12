@@ -15,7 +15,6 @@ API.v1.addRoute(
 			}
 			return API.v1.success({
 				monitors: await findUnitMonitors({
-					userId: this.userId,
 					unitId,
 				}),
 			});
@@ -34,7 +33,6 @@ API.v1.addRoute(
 
 			return API.v1.success(
 				await findUnits({
-					userId: this.userId,
 					text,
 					pagination: {
 						offset,
@@ -58,7 +56,6 @@ API.v1.addRoute(
 		async get() {
 			const { id } = this.urlParams;
 			const unit = await findUnitById({
-				userId: this.userId,
 				unitId: id,
 			});
 
