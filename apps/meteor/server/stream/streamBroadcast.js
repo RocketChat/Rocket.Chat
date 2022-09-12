@@ -56,13 +56,8 @@ function authorizeConnection(instance) {
 }
 
 const cache = new Map();
-// const originalSetDefaultStatus = UserPresence.setDefaultStatus;
 export let matrixBroadCastActions;
 function startMatrixBroadcast() {
-	// if (!isPresenceMonitorEnabled()) {
-	// 	UserPresence.setDefaultStatus = originalSetDefaultStatus;
-	// }
-
 	matrixBroadCastActions = {
 		added: Meteor.bindEnvironment((record) => {
 			cache.set(record._id, record);
@@ -154,12 +149,6 @@ function startStreamCastBroadcast(value) {
 	const instance = 'StreamCast';
 
 	connLogger.info({ msg: 'connecting in', instance, value });
-
-	// if (!isPresenceMonitorEnabled()) {
-	// 	UserPresence.setDefaultStatus = (id, status) => {
-	// 		Users.updateDefaultStatus(id, status);
-	// 	};
-	// }
 
 	const connection = DDP.connect(value, {
 		_dontPrintErrors: settings.get('Log_Level') !== '2',
