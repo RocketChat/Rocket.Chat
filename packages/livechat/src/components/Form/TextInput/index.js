@@ -1,24 +1,9 @@
 import { createClassName, memo } from '../../helpers';
 import styles from './styles.scss';
 
-
-export const TextInput = memo(({
-	name,
-	value,
-	placeholder,
-	disabled,
-	small,
-	multiline = false,
-	rows = 1,
-	error,
-	onChange,
-	onInput,
-	className,
-	style = {},
-	...props
-}) => (
-	multiline
-		? (
+export const TextInput = memo(
+	({ name, value, placeholder, disabled, small, multiline = false, rows = 1, error, onChange, onInput, className, style = {}, ...props }) =>
+		multiline ? (
 			<textarea
 				rows={rows}
 				name={name}
@@ -31,8 +16,7 @@ export const TextInput = memo(({
 				style={style}
 				{...props}
 			/>
-		)
-		: (
+		) : (
 			<input
 				type='text'
 				name={name}
@@ -45,5 +29,5 @@ export const TextInput = memo(({
 				style={style}
 				{...props}
 			/>
-		)
-));
+		),
+);

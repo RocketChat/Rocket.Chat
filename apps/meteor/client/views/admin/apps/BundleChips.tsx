@@ -35,11 +35,14 @@ const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 						onMouseEnter={(): void => setIsHovered(true)}
 						onMouseLeave={(): void => setIsHovered(false)}
 					>
-						<Box fontWeight='c2' fontSize='c2' color='surface' style={{ whiteSpace: 'nowrap' }}>
-							{t('bundle_chip_title', {
-								bundleName: bundle.bundleName,
-							})}
-						</Box>
+						<Icon name='bag' size='x20' />
+						{!isIconOnly && (
+							<Box fontScale='c2' color='info' style={{ whiteSpace: 'nowrap' }}>
+								{t('bundle_chip_title', {
+									bundleName: bundle.bundleName,
+								})}
+							</Box>
+						)}
 					</Box>
 					<PositionAnimated
 						anchor={bundleRef as RefObject<Element>}
