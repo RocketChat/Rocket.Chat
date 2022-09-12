@@ -18,22 +18,12 @@ const ChatConnector = ({ ref, ...props }) => (
 					emailFieldRegistrationForm,
 					limitTextLength,
 				} = {},
-				messages: {
-					conversationFinishedMessage,
-				} = {},
-				theme: {
-					color,
-					title,
-				} = {},
+				messages: { conversationFinishedMessage } = {},
+				theme: { color, title } = {},
 				departments = {},
 			},
 			iframe: {
-				theme: {
-					color: customColor,
-					fontColor: customFontColor,
-					iconColor: customIconColor,
-					title: customTitle,
-				} = {},
+				theme: { color: customColor, fontColor: customFontColor, iconColor: customIconColor, title: customTitle } = {},
 				guest,
 			} = {},
 			token,
@@ -66,18 +56,24 @@ const ChatConnector = ({ ref, ...props }) => (
 				sound={sound}
 				token={token}
 				user={user}
-				agent={agent ? {
-					_id: agent._id,
-					name: agent.name,
-					status: agent.status,
-					email: agent.emails && agent.emails[0] && agent.emails[0].address,
-					username: agent.username,
-					phone: (agent.phone && agent.phone[0] && agent.phone[0].phoneNumber) || (agent.customFields && agent.customFields.phone),
-					avatar: agent.username ? {
-						description: agent.username,
-						src: getAvatarUrl(agent.username),
-					} : undefined,
-				} : undefined}
+				agent={
+					agent
+						? {
+								_id: agent._id,
+								name: agent.name,
+								status: agent.status,
+								email: agent.emails && agent.emails[0] && agent.emails[0].address,
+								username: agent.username,
+								phone: (agent.phone && agent.phone[0] && agent.phone[0].phoneNumber) || (agent.customFields && agent.customFields.phone),
+								avatar: agent.username
+									? {
+											description: agent.username,
+											src: getAvatarUrl(agent.username),
+									  }
+									: undefined,
+						  }
+						: undefined
+				}
 				room={room}
 				messages={messages && messages.filter((message) => canRenderMessage(message))}
 				noMoreMessages={noMoreMessages}
@@ -98,11 +94,15 @@ const ChatConnector = ({ ref, ...props }) => (
 				lastReadMessageId={lastReadMessageId}
 				guest={guest}
 				triggerAgent={triggerAgent}
-				queueInfo={queueInfo ? {
-					spot: queueInfo.spot,
-					estimatedWaitTimeSeconds: queueInfo.estimatedWaitTimeSeconds,
-					message: queueInfo.message,
-				} : undefined}
+				queueInfo={
+					queueInfo
+						? {
+								spot: queueInfo.spot,
+								estimatedWaitTimeSeconds: queueInfo.estimatedWaitTimeSeconds,
+								message: queueInfo.message,
+						  }
+						: undefined
+				}
 				registrationFormEnabled={registrationForm}
 				nameFieldRegistrationForm={nameFieldRegistrationForm}
 				emailFieldRegistrationForm={emailFieldRegistrationForm}

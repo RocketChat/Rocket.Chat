@@ -4,7 +4,7 @@ import { memo } from 'preact/compat';
 import { createClassName } from '../../../helpers';
 import styles from './styles.scss';
 
-const ImageElement = ({ imageUrl, altText, context }) =>
+const ImageElement = ({ imageUrl, altText, context }) => (
 	<div
 		aria-label={altText}
 		className={createClassName(styles, 'uikit-image', {
@@ -13,9 +13,10 @@ const ImageElement = ({ imageUrl, altText, context }) =>
 		})}
 		role='img'
 		style={{
-			backgroundImage: `url(${ imageUrl })`,
+			backgroundImage: `url(${imageUrl})`,
 		}}
 		title={altText}
-	/>;
+	/>
+);
 
 export default memo(ImageElement);
