@@ -77306,6 +77306,53 @@
           ]
         }
       ]
+    },
+    "3.11.6": {
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23200",
+          "title": "Chore: Change Ubuntu version to 20.04 on all GitHub Actions",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22927",
+          "title": "[FIX] User presence being processes even if presence monitor was disabled",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22257",
+          "title": "[FIX] Support DISABLE_PRESENCE_MONITOR env var in new DB watchers",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.5",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.8.5": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
     }
   }
 }
