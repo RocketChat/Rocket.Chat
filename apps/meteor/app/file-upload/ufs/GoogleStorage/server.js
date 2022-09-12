@@ -20,8 +20,6 @@ export class GoogleStorageStore extends UploadFS.Store {
 			bucket,
 		} = options;
 
-		console.log('GOOGLE CLOUD SETTINGS =====================> ', { credentials, projectId, bucket });
-
 		const gcs = new Storage({ credentials, projectId, bucket });
 
 		this.bucket = gcs.bucket(options.bucket);
