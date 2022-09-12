@@ -238,8 +238,6 @@ describe('[Subscriptions]', function () {
 				deleteUser(user).then(done);
 			});
 
-			beforeEach(async () => {
-			});
 
 			it('should mark threads as read', async () => {
 				await request
