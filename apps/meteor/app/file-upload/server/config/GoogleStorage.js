@@ -69,6 +69,7 @@ const GoogleCloudStorageUserDataFiles = new FileUploadClass({
 
 const configure = _.debounce(function () {
 	const bucket = settings.get('FileUpload_GoogleStorage_Bucket');
+	const projectId = settings.get('FileUpload_GoogleStorage_ProjectID');
 	const accessId = settings.get('FileUpload_GoogleStorage_AccessId');
 	const secret = settings.get('FileUpload_GoogleStorage_Secret');
 	const URLExpiryTimeSpan = settings.get('FileUpload_S3_URLExpiryTimeSpan');
@@ -76,6 +77,8 @@ const configure = _.debounce(function () {
 	if (!bucket || !accessId || !secret) {
 		return;
 	}
+
+	process.env.GCLOUD_PROJECT = projectId;
 
 	const config = {
 		connection: {
@@ -85,6 +88,7 @@ const configure = _.debounce(function () {
 			},
 		},
 		bucket,
+		projectId,
 		URLExpiryTimeSpan,
 	};
 
