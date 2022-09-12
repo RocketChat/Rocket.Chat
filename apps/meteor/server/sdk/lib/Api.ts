@@ -1,10 +1,10 @@
-// import { BaseBroker } from './BaseBroker';
+import type { IApiService } from '../types/IApiService';
 import type { IBroker, IBrokerNode } from '../types/IBroker';
 import type { IServiceClass } from '../types/ServiceClass';
 import type { EventSignatures } from './Events';
 
-export class Api {
-	private services = new Set<IServiceClass>();
+export class Api implements IApiService {
+	private services: Set<IServiceClass> = new Set<IServiceClass>();
 
 	private broker: IBroker;
 
