@@ -102,8 +102,7 @@ class MessageParser extends UiKitParserMessage {
 		return <StaticSelectElement key={index} {...element} parser={this} context={context} />;
 	};
 
-	multiStaticSelect = () =>
-		null;
+	multiStaticSelect = () => null;
 }
 
 export const parser = new MessageParser();

@@ -31,13 +31,5 @@ export class Sound extends Component {
 		this.handlePlayProp();
 	}
 
-	render = ({ src, onStart, onStop }) => (
-		<audio
-			ref={this.handleRef}
-			src={src}
-			onPlay={onStart}
-			onEnded={onStop}
-			type='audio/mpeg'
-		/>
-	);
+	render = ({ src, onStart, onStop }) => <audio ref={this.handleRef} src={src} onPlay={onStart} onEnded={onStop} type='audio/mpeg' />;
 }
