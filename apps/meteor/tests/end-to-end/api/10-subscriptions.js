@@ -227,6 +227,7 @@ describe('[Subscriptions]', function () {
 				.set(credentials)
 				.send({
 					rid: testChannel._id,
+					readThreads: true,
 				})
 				.expect(200)
 				.expect((res) => {
