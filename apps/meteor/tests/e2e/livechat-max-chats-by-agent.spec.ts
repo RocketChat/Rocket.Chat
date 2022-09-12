@@ -6,18 +6,18 @@ import { test, expect } from './utils/test';
 import { OmnichannelLiveChat, OmnichannelAgents, HomeChannel } from './page-objects';
 import { IS_EE, URL_MONGODB } from './config/constants';
 
-async function createAuxContext(browser: Browser): Promise<{ page: Page; poLiveChat: OmnichannelLiveChat }> {
+const createAuxContext = async (browser: Browser): Promise<{ page: Page; poLiveChat: OmnichannelLiveChat }> => {
 	const page = await browser.newPage();
 	const poLiveChat = new OmnichannelLiveChat(page);
 
 	return { page, poLiveChat };
-}
+};
 
 test.skip(!IS_EE, 'Enterprise only');
 
 test.use({ storageState: 'admin-session.json' });
 
-test.describe.only('Livechat Management', () => {
+test.describe('Livechat Management', () => {
 	let poAgents: OmnichannelAgents;
 	let poHomeChannel: HomeChannel;
 
@@ -43,7 +43,7 @@ test.describe.only('Livechat Management', () => {
 	});
 
 	test.describe.serial('Verify the max number of simultaneous chats addressed by an agent', () => {
-		test('shoud setup the await-queue and the agent', async ({ page, api }) => {
+		test.only('shoud setup the await-queue and the agent', async ({ page, api }) => {
 			await test.step('remove "user1" if its already a agent', async () => {
 				await page.goto('/omnichannel/agents');
 				await poAgents.inputSearch.fill('user1');
