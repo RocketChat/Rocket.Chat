@@ -39,5 +39,5 @@ test.describe.parallel('Forgot Password', () => {
 		});
 	});
 
-	test('Reset Password disabled', async () => {});
+	// test('Reset Password disabled', async () => {});
 });
