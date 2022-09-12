@@ -123,7 +123,6 @@ export class IMAPInterceptor extends EventEmitter {
 		if (this.backoff) {
 			clearTimeout(this.backoff);
 			this.backoffDurationMS = 3000;
-			// return;
 		}
 		const loop = (): void => {
 			logger.debug(`Reconnecting to ${this.config.user}: ${this.retries}`);
