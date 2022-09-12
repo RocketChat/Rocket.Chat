@@ -28,7 +28,7 @@ function createTestUser() {
 		request
 			.post(api('users.create'))
 			.set(credentials)
-			.send({ email, name: username, username, password })
+			.send({ email, name: username, username, password, joinDefaultChannels: false })
 			.end((err, res) => resolve(res.body.user));
 	});
 }
@@ -60,18 +60,6 @@ function deleteTestUser(user) {
 			.set(credentials)
 			.send({
 				userId: user._id,
-			})
-			.end(resolve);
-	});
-}
-
-function leaveChannel(userCredentials, roomId) {
-	return new Promise((resolve) => {
-		request
-			.post(api('channels.leave'))
-			.set(userCredentials)
-			.send({
-				roomId,
 			})
 			.end(resolve);
 	});
@@ -3138,9 +3126,6 @@ describe('[Users]', function () {
 				user2Credentials = await loginTestUser(user2);
 
 				await updatePermission('view-outside-room', []);
-
-				await leaveChannel(userCredentials, 'GENERAL');
-				await leaveChannel(user2Credentials, 'GENERAL');
 
 				roomId = await createChannel(userCredentials, `channel.autocomplete.${Date.now()}`);
 			});
