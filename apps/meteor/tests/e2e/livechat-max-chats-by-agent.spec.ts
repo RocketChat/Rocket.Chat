@@ -1,9 +1,10 @@
 import type { Page, Browser } from '@playwright/test';
 import faker from '@faker-js/faker';
+import { MongoClient } from 'mongodb';
 
-import { test } from './utils/test';
+import { test, expect } from './utils/test';
 import { OmnichannelLiveChat, OmnichannelAgents, HomeChannel } from './page-objects';
-import { IS_EE } from './config/constants';
+import { IS_EE, URL_MONGODB } from './config/constants';
 
 async function createAuxContext(browser: Browser): Promise<{ page: Page; poLiveChat: OmnichannelLiveChat }> {
 	const page = await browser.newPage();
@@ -20,8 +21,20 @@ test.describe.only('Livechat Management', () => {
 	let poAgents: OmnichannelAgents;
 	let poHomeChannel: HomeChannel;
 
-	test.beforeAll(() => {
-		// drop pending chats
+	test.beforeAll(async () => {
+		const connection = await MongoClient.connect(URL_MONGODB);
+
+		await connection
+			.db()
+			.collection('rocketchat_livechat_inquiry')
+			.updateMany({ status: { $in: ['ready', 'queued'] } }, { $set: { status: 'taken' } });
+
+		await connection
+			.db()
+			.collection('rocketchat_room')
+			.updateMany({ open: true }, { $unset: { open: '' }, $set: { closedAt: new Date(), closedBy: { _id: 'user1', username: 'user1' } } });
+
+		await connection.close();
 	});
 
 	test.beforeEach(({ page }) => {
@@ -30,7 +43,7 @@ test.describe.only('Livechat Management', () => {
 	});
 
 	test.describe.serial('Verify the max number of simultaneous chats addressed by an agent', () => {
-		test('shoud setup the await-queue and the agent', async ({ page }) => {
+		test('shoud setup the await-queue and the agent', async ({ page, api }) => {
 			await test.step('remove "user1" if its already a agent', async () => {
 				await page.goto('/omnichannel/agents');
 				await poAgents.inputSearch.fill('user1');
@@ -56,16 +69,11 @@ test.describe.only('Livechat Management', () => {
 			});
 
 			await test.step('enable await-queue', async () => {
-				await page.goto('/admin/settings/Omnichannel');
-				await page.locator('text=Queue Management').click();
+				const statusCode1 = (await api.post('/settings/Livechat_waiting_queue', { value: true })).status();
+				const statusCode2 = (await api.post('/settings/Livechat_waiting_queue_message', { value: 'Please await' })).status();
 
-				// Only if checkbox is not checked
-				if (!(await page.locator('[data-qa-setting-id="Livechat_waiting_queue"] input').inputValue())) {
-					await page.locator('[data-qa-setting-id="Livechat_waiting_queue"]').click();
-				}
-
-				await page.locator('[data-qa-setting-id="Livechat_waiting_queue_message"]').type(`Please await :) ${Date.now()}`);
-				await page.locator('text=Save changes').click();
+				expect(statusCode1).toBe(200);
+				expect(statusCode2).toBe(200);
 			});
 		});
 
@@ -90,11 +98,15 @@ test.describe.only('Livechat Management', () => {
 				});
 
 				await test.step('visitors send message in /livechat', async () => {
-					await poAuxContext1.poLiveChat.btnOpenLiveChat('L').click();
-					await poAuxContext1.poLiveChat.sendMessage(visitor1);
+					await poAuxContext1.poLiveChat.btnOpenLiveChat('R').click();
+					await poAuxContext1.poLiveChat.openChat(visitor1, false);
+					await poAuxContext1.poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
+					await poAuxContext1.poLiveChat.btnSendMessageToOnlineAgent.click();
 
-					await poAuxContext2.poLiveChat.btnOpenLiveChat('L').click();
-					await poAuxContext2.poLiveChat.sendMessage(visitor2);
+					await poAuxContext2.poLiveChat.btnOpenLiveChat('R').click();
+					await poAuxContext2.poLiveChat.openChat(visitor2, false);
+					await poAuxContext2.poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
+					await poAuxContext2.poLiveChat.btnSendMessageToOnlineAgent.click();
 				});
 
 				await test.step('"user1" reply in "visitor1" chat', async () => {
@@ -103,7 +115,13 @@ test.describe.only('Livechat Management', () => {
 				});
 
 				await test.step('"visitor2" must be on a queue', async () => {
-					//
+					await poAuxContext2.page.pause();
+					await expect(poAuxContext2.page.locator('text="Your spot is #1"')).toBeVisible();
+				});
+
+				await test.step('close auxContenxt1 and auxContenxt2', async () => {
+					await poAuxContext1.page.close();
+					await poAuxContext2.page.close();
 				});
 			});
 		});

@@ -47,7 +47,7 @@ test.describe('omnichannel-takeChat', () => {
 		poLiveChat = new OmnichannelLiveChat(page);
 		await page.goto('/livechat');
 		await poLiveChat.btnOpenLiveChat('R').click();
-		await poLiveChat.sendMessage(newVisitor, false);
+		await poLiveChat.openChat(newVisitor, false);
 		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 		await poLiveChat.btnSendMessageToOnlineAgent.click();
 	});

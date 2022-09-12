@@ -39,7 +39,7 @@ export class OmnichannelLiveChat {
 		return this.page.locator('footer div div div:nth-child(3) button');
 	}
 
-	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true): Promise<void> {
+	public async openChat(liveChatUser: { name: string; email: string }, isOffline = true): Promise<void> {
 		const buttonLabel = isOffline ? 'Send' : 'Start chat';
 		await this.inputName.type(liveChatUser.name);
 		await this.inputEmail.type(liveChatUser.email);

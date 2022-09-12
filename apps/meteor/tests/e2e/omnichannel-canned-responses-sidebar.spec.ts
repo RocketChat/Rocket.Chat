@@ -46,7 +46,7 @@ test.describe('Omnichannel Canned Responses Sidebar', () => {
 		await test.step('Expect send a message as a visitor', async () => {
 			await page.goto('/livechat');
 			await poLiveChat.btnOpenLiveChat('R').click();
-			await poLiveChat.sendMessage(newUser, false);
+			await poLiveChat.openChat(newUser, false);
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 		});
