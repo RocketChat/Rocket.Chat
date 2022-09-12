@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[15],{1451:function(e){e.exports=JSON.parse('{"translation":{"cancel":"Diddymu","conversation_finished":"Mae\'r sgwrs wedi gorffen","department_switched":"Adran wedi newid","no":"Na","options":"Dewisiadau","send":"Anfon","user_joined":"Ymunodd y defnyddiwr","user_left":"Defnyddiwr ar ôl","we_are_not_online_right_now_please_leave_a_message":"Nid ydym ar-lein ar hyn o bryd. Os gwelwch yn dda, gadewch neges.","yes":"Ydw"}}')}}]);
+//# sourceMappingURL=15.chunk.913d6.js.map

@@ -1,0 +1,78 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "webapp"
+    },
+    {
+      "package": "ecmascript"
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/server/index.js",
+      "length": 27,
+      "offset": 0,
+      "path": "server/index.js",
+      "hash": "45ffac40b9223e5b8071aafa9fa432f40694439e",
+      "fileOptions": {
+        "mainModule": true,
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/client/index.js",
+      "length": 101,
+      "offset": 0,
+      "path": "client/index.js",
+      "hash": "02ddd03fb1f90f6ff4027761d1afa77878e16628",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/client/timesync-client.js",
+      "length": 5049,
+      "offset": 0,
+      "path": "client/timesync-client.js",
+      "hash": "e560d1e2c7ef5afd7de4ac33185298b22f828dab",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/server/timesync-server.js",
+      "length": 822,
+      "offset": 0,
+      "path": "server/timesync-server.js",
+      "hash": "add9d971d36188d77ab47c3a519d17364b2c2130",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/tests/client.js",
+      "length": 3118,
+      "offset": 0,
+      "path": "tests/client.js",
+      "hash": "2f33f4a214acd3150268057f878ccb39f5bc9d36",
+      "fileOptions": {
+        "lazy": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"head":"","body":"","js":"\nTemplate.__checkName(\"liveStreamBroadcast\");\nTemplate[\"liveStreamBroadcast\"] = new Template(\"Template.liveStreamBroadcast\", (function() {\n  var view = this;\n  return HTML.Raw('<button type=\"button\" class=\"rc-button rc-button--stack rc-button--primary js-broadcast\"> Broadcast my Camera </button>');\n}));\n","bodyAttrs":{}}

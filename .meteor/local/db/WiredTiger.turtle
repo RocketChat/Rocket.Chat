@@ -1,0 +1,6 @@
+WiredTiger version string
+WiredTiger 10.0.0: (March 18, 2020)
+WiredTiger version
+major=10,minor=0,patch=0
+file:WiredTiger.wt
+access_pattern_hint=none,allocation_size=4KB,app_metadata=,assert=(commit_timestamp=none,durable_timestamp=none,read_timestamp=none,write_timestamp=off),block_allocation=best,block_compressor=,cache_resident=false,checksum=uncompressed,collator=,columns=,dictionary=0,encryption=(keyid=,name=),format=btree,huffman_key=,huffman_value=,id=0,ignore_in_memory_cache_size=false,internal_item_max=0,internal_key_max=0,internal_key_truncate=true,internal_page_max=4KB,key_format=S,key_gap=10,leaf_item_max=0,leaf_key_max=0,leaf_page_max=32KB,leaf_value_max=0,log=(enabled=true),memory_page_image_max=0,memory_page_max=5MB,os_cache_dirty_max=0,os_cache_max=0,prefix_compression=false,prefix_compression_min=4,readonly=false,split_deepen_min_child=0,split_deepen_per_child=0,split_pct=90,value_format=S,verbose=[],version=(major=1,minor=1),write_timestamp_usage=none,checkpoint=(WiredTigerCheckpoint.8=(addr="019581e436fd2b389681e4ac9d8fff9781e474628da5808080e301cfc0e29fc0",order=8,time=1661963835,size=53248,newest_start_durable_ts=0,oldest_start_ts=0,newest_txn=172,newest_stop_durable_ts=0,newest_stop_ts=-1,newest_stop_txn=-11,prepare=0,write_gen=30,run_write_gen=0)),checkpoint_backup_info=,checkpoint_lsn=(1,69376)

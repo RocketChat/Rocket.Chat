@@ -1,0 +1,1 @@
+{"head":"","body":"","js":"\nTemplate.__checkName(\"livechatNotSubscribed\");\nTemplate[\"livechatNotSubscribed\"] = new Template(\"Template.livechatNotSubscribed\", (function() {\n  var view = this;\n  return HTML.P(Blaze.View(\"lookup:_\", function() {\n    return Spacebars.mustache(view.lookup(\"_\"), \"This_conversation_is_already_closed\");\n  }));\n}));\n","bodyAttrs":{}}

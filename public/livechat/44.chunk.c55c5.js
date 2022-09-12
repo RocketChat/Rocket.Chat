@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[44],{1480:function(e){e.exports=JSON.parse('{"translation":{"are_you_sure_you_want_to_switch_the_department":"Er du sikker på at du vil bytte avdeling?","cancel":"Avbryt","conversation_finished":"Samtalen er avsluttet","department_switched":"Avdeling skiftet","no":"Nei","options":"Egenskaper","user_joined":"Bruker ble med","user_left":"Bruker igjen","we_are_not_online_right_now_please_leave_a_message":"Vi er ikke online akkurat nå. Legg igjen en beskjed.","yes":"Ja"}}')}}]);
+//# sourceMappingURL=44.chunk.c55c5.js.map

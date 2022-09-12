@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[41],{1477:function(e){e.exports=JSON.parse('{"translation":{"cancel":"Цуцлах","conversation_finished":"Харилцаа дууссан","department_switched":"Хэлтэс солигдсон","no":"Үгүй","options":"Сонголтууд","send":"Илгээх","user_joined":"Хэрэглэгчид нэгдсэн байна","user_left":"Хэрэглэгчид үлдсэн","we_are_not_online_right_now_please_leave_a_message":"Бид онлайнаар холбогдоогүй байна. Зурвасаа үлдээгээрэй.","yes":"Тиймээ"}}')}}]);
+//# sourceMappingURL=41.chunk.93781.js.map

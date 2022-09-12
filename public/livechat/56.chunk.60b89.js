@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[56],{1492:function(e){e.exports=JSON.parse('{"translation":{"cancel":"ยกเลิก","conversation_finished":"สนทนาเสร็จแล้ว","department_switched":"แผนกเปลี่ยนแล้ว","no":"ไม่","options":"ตัวเลือก","send":"ส่ง","user_joined":"ผู้ใช้เข้าร่วม","user_left":"เหลือผู้ใช้แล้ว","we_are_not_online_right_now_please_leave_a_message":"เรายังไม่ออนไลน์ในขณะนี้ กรุณาฝากข้อความไว้","yes":"ใช่"}}')}}]);
+//# sourceMappingURL=56.chunk.60b89.js.map

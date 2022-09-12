@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[52],{1488:function(e){e.exports=JSON.parse('{"translation":{"cancel":"Anuloj","conversation_finished":"biseda përfunduar","department_switched":"Departamenti kaloi","no":"jo","options":"Opsione","send":"dërgoj","user_joined":"User bashkua","user_left":"majtë User","we_are_not_online_right_now_please_leave_a_message":"Ne nuk jemi në linjë tani. Lëreni një mesazh.","yes":"po"}}')}}]);
+//# sourceMappingURL=52.chunk.852a2.js.map

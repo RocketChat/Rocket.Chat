@@ -1,0 +1,32 @@
+{
+  "isopack-2": {
+    "name": "rocketchat:version",
+    "summary": "",
+    "version": "1.0.0",
+    "isTest": false,
+    "builds": [
+      {
+        "kind": "main",
+        "arch": "os",
+        "path": "os.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser",
+        "path": "web.browser.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser.legacy",
+        "path": "web.browser.legacy.json"
+      }
+    ],
+    "plugins": [
+      {
+        "name": "compileVersion",
+        "arch": "os",
+        "path": "plugin.compileVersion.os/program.json"
+      }
+    ]
+  }
+}

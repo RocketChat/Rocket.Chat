@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[58],{1494:function(n){n.exports=JSON.parse('{"translation":{"conversation_finished":"سۆھبەتلىشىش ئاخىرلاشتى","send":"يوللاش","user_joined":"ئەزا ئاللىبۇرۇن قېتىلدى","user_left":"ئەزا ئاللىبۇرۇن ئايرىلدى"}}')}}]);
+//# sourceMappingURL=58.chunk.c64c2.js.map

@@ -1,0 +1,18 @@
+var _ = Package.underscore._,
+    package_name = "project",
+    namespace = "project";
+
+if (package_name != "project") {
+    namespace = TAPi18n.packages[package_name].namespace;
+}
+TAPi18n.languages_names["bas-CM"] = ["Basa (Cameroon)","Bassa (Cameroon)"];
+if(_.isUndefined(TAPi18n.translations["bas-CM"])) {
+  TAPi18n.translations["bas-CM"] = {};
+}
+
+if(_.isUndefined(TAPi18n.translations["bas-CM"][namespace])) {
+  TAPi18n.translations["bas-CM"][namespace] = {};
+}
+
+_.extend(TAPi18n.translations["bas-CM"][namespace], {});
+TAPi18n._registerServerTranslator("bas-CM", namespace);

@@ -1,0 +1,274 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss/package.js": "43f75ab461347a9ac0d9dae0ba8a184a7c0d349d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss/build.js": "25cc249874396accaabba0c30ade99b1de717a50"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss/build.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss",
+          "include": [
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "build.js",
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss/package.js": "43f75ab461347a9ac0d9dae0ba8a184a7c0d349d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss/build.js": "25cc249874396accaabba0c30ade99b1de717a50"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss/build.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "build.js",
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss/package.js": "43f75ab461347a9ac0d9dae0ba8a184a7c0d349d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss/build.js": "25cc249874396accaabba0c30ade99b1de717a50"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss/build.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "build.js",
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss/package.js": "43f75ab461347a9ac0d9dae0ba8a184a7c0d349d",
+      "/Users/carlosrodrigues/.meteor/packages/modules/.0.18.0.1721lxa.qyci++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/@meteorjs/reify/lib/runtime/index.js": "62de81dd5e6fb20f452a444160d04b4a997c5ad4",
+      "/Users/carlosrodrigues/.meteor/packages/promise/.0.12.0.1e84r50.v4u8++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/meteor-promise/package.json": "926acd0d893a94e6af4068e6fef1419516158015",
+      "/Users/carlosrodrigues/.meteor/packages/promise/.0.12.0.1e84r50.v4u8++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/meteor-promise/promise_server.js": "c87ba99452ab9a7a7ade761906e9816c614eee1e",
+      "/Users/carlosrodrigues/.meteor/packages/ecmascript-runtime-server/.0.11.0.1x59ke0.3i0w++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/core-js/modules/es.symbol.async-iterator.js": "dbd46259fa71c21e3df57736f926c59ee30f5357",
+      "/Users/carlosrodrigues/.meteor/packages/react-fast-refresh/.0.2.2.i55q8p.85qbr++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/semver/functions/gte.js": "b9c50a385c8e3877108a001fb8548b122a155193",
+      "/Users/carlosrodrigues/.meteor/packages/react-fast-refresh/.0.2.2.i55q8p.85qbr++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/react-refresh/babel.js": "7f85e714eeecb4adf4a93e297bcd5c8157013955",
+      "/Users/carlosrodrigues/.meteor/packages/fetch/.0.1.1.k0mrbs.qk51m++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/node-fetch/package.json": "87c9083f8ec565a1dccc3dbca0379df83f6a19e5",
+      "/Users/carlosrodrigues/.meteor/packages/fetch/.0.1.1.k0mrbs.qk51m++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/node-fetch/lib/index.js": "302358915e11df8e0d7ee74eef6709219282fcc7",
+      "/Users/carlosrodrigues/.meteor/packages/inter-process-messaging/.0.1.1.1nqn861.ks5hl++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/uuid/package.json": "7688e9fd7690dc5e0b4c3d22ef1ce68ffa59f76b",
+      "/Users/carlosrodrigues/.meteor/packages/inter-process-messaging/.0.1.1.1nqn861.ks5hl++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/uuid/index.js": "8e8abb1384d04d1ec5745c9824eee400f77536c0",
+      "/Users/carlosrodrigues/.meteor/packages/inter-process-messaging/.0.1.1.1nqn861.ks5hl++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/arson/package.json": "c7e19cba20150a87777a1dd98eb5f24db61d1b59",
+      "/Users/carlosrodrigues/.meteor/packages/inter-process-messaging/.0.1.1.1nqn861.ks5hl++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/arson/index.js": "33ff7a96f7d012c4d49ab30efde7d516182bdc7d",
+      "/Users/carlosrodrigues/.meteor/packages/minifier-css/.1.6.0.1op1qtr.eqsd++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/postcss/package.json": "efc05c840257b1a9c53dd8cca1464ebf53a512f0",
+      "/Users/carlosrodrigues/.meteor/packages/minifier-css/.1.6.0.1op1qtr.eqsd++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/postcss/lib/postcss.js": "5e7d79e51b899c9cd3d3d201e1338ee70666b31f",
+      "/Users/carlosrodrigues/.meteor/packages/minifier-css/.1.6.0.1op1qtr.eqsd++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/cssnano/package.json": "8a4beba7c2b90db0ee4c8e1ed8fd2e01ab82402f",
+      "/Users/carlosrodrigues/.meteor/packages/minifier-css/.1.6.0.1op1qtr.eqsd++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/cssnano/dist/index.js": "6cd780575468d563cf9ffc094dccd4d6fd11abe8",
+      "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss/build.js": "25cc249874396accaabba0c30ade99b1de717a50",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/global.js": "3dd95fbd9353c99881ca34e04acd370f6cfc5586",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/server_environment.js": "07305a504af10e5d047b25c2788ca1afdd60afa2",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/define-package.js": "1c1507146102088a5a9a0d8487f8e22101db1fe0",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/helpers.js": "b230376605b27b8e8cb51704679ae74ccdfdca3f",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/setimmediate.js": "8e17c7d4ae3622c215d875e970ad5d8eb67217d2",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/timers.js": "4bec78fea553dd47fe3055ed3e0833df0b81f21b",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/errors.js": "a57cf3c90aec7021c44f8960d73a8dbb25c4b4d7",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/fiber_helpers.js": "37ed20775e34460df8bdc99b4c925578a7a18a37",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/startup_server.js": "4c79ed13c490a408a22c6acaec603fd1ace9115b",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/debug.js": "d6fd88555bad97946b57195b244d47b25aba2061",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/string_utils.js": "a7490b2a8276e63e4b0b0c4b91910a2a630e93bc",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/test_environment.js": "042e601d0b34f0e52ffd5c46144c4f580519ff8e",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/dynamics_nodejs.js": "c8b87347cf88e99e847ac96c769c1f7aeed41aca",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/url_server.js": "dd10d2490236d09d423cc83f0ea0f05b32586f34",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/url_common.js": "407fd4d710c5187dcf64633844f9995acb849def",
+      "/Users/carlosrodrigues/.meteor/packages/meteor/1.10.0/os/flush-buffers-on-exit-in-windows.js": "baeed30bb3e233bc2e60bc18371890152c9da108",
+      "/Users/carlosrodrigues/.meteor/packages/modules-runtime/0.12.0/os/.npm/package/node_modules/install/install.js": "29694e43b96fc9f543cb0096361e75f83d557636",
+      "/Users/carlosrodrigues/.meteor/packages/modules-runtime/0.12.0/os/server.js": "c0b60fa131c05522fd124e04b007dec87a0f3604",
+      "/Users/carlosrodrigues/.meteor/packages/modules-runtime/0.12.0/os/profile.js": "74ddcd2a798d7cc4f7cbe1ae8c9f9007936bb19e",
+      "/Users/carlosrodrigues/.meteor/packages/modules/0.18.0/os/server.js": "11d99298182f74afb5bb188ea219b95ef9b366a1",
+      "/Users/carlosrodrigues/.meteor/packages/modules/0.18.0/os/client.js": "1d77022dbb1b4b1627b8381e1c5ae444ddd8ab3d",
+      "/Users/carlosrodrigues/.meteor/packages/modules/0.18.0/os/css.js": "8f75bdb812965b89c93ac283ee0a21726cb5b1f7",
+      "/Users/carlosrodrigues/.meteor/packages/modules/0.18.0/os/install-packages.js": "1cba8f3703d0ceab95eec1da36d87d2a0d36d33e",
+      "/Users/carlosrodrigues/.meteor/packages/modules/0.18.0/os/legacy.js": "50b486bf5a93845206c61b19c78e3a6a6914aff5",
+      "/Users/carlosrodrigues/.meteor/packages/modules/0.18.0/os/process.js": "987a9859cda893eb3125615b22885e393a5092b9",
+      "/Users/carlosrodrigues/.meteor/packages/modules/0.18.0/os/reify.js": "41e8754efe545cd54fdc2834e21d5858f120cdb9",
+      "/Users/carlosrodrigues/.meteor/packages/modules/0.18.0/os/stubs.js": "946940234562d79a75ebb8f10757605e7996f386",
+      "/Users/carlosrodrigues/.meteor/packages/modern-browsers/0.1.7/os/modern.js": "9bb71dd15a0ebec25c546b7cd77048c33abfcb24",
+      "/Users/carlosrodrigues/.meteor/packages/modern-browsers/0.1.7/os/modern-tests.js": "c5e0c9d6986853902a7a2de2b75be6b885be3d54",
+      "/Users/carlosrodrigues/.meteor/packages/promise/0.12.0/os/modern.js": "ae15b2311a67d2cab0e78ac9df88f38a72bb2106",
+      "/Users/carlosrodrigues/.meteor/packages/promise/0.12.0/os/server.js": "2ccfb781621f77f3dce5aabcd50cfe9a896bf319",
+      "/Users/carlosrodrigues/.meteor/packages/promise/0.12.0/os/client.js": "8f81a7f5f2c22f20f5742a5bad386c8ccf66bbf5",
+      "/Users/carlosrodrigues/.meteor/packages/promise/0.12.0/os/extensions.js": "8b892725eddde797c1234eb48d9d26983d9af7d6",
+      "/Users/carlosrodrigues/.meteor/packages/promise/0.12.0/os/legacy.js": "22c9978055f32cec6e276a31412abb3a01923f71",
+      "/Users/carlosrodrigues/.meteor/packages/promise/0.12.0/os/promise-tests.js": "939d3285688ad8e937b6b1e27dfc34c372e4c664",
+      "/Users/carlosrodrigues/.meteor/packages/ecmascript-runtime-client/0.12.1/os/versions.js": "37752a2ce12accd0c3bfd0afc465b31bd04239f1",
+      "/Users/carlosrodrigues/.meteor/packages/ecmascript-runtime-client/0.12.1/os/legacy.js": "fe5b37c4311f20398ef3438d7b41e20f25e61d30",
+      "/Users/carlosrodrigues/.meteor/packages/ecmascript-runtime-client/0.12.1/os/modern.js": "4a267ceca3382709911d323e03fdd74a29dc04f8",
+      "/Users/carlosrodrigues/.meteor/packages/ecmascript-runtime-server/0.11.0/os/runtime.js": "49908bea780b1f52bb72ff4a121272a87d0c5687",
+      "/Users/carlosrodrigues/.meteor/packages/babel-compiler/7.8.0/os/babel.js": "72464a182131cb2276a93a1d1103e7b62d623e3b",
+      "/Users/carlosrodrigues/.meteor/packages/babel-compiler/7.8.0/os/babel-compiler.js": "2b515128900ea37dfd982a17f931623b467cd827",
+      "/Users/carlosrodrigues/.meteor/packages/babel-compiler/7.8.0/os/versions.js": "5b7f29405e55a51ddb65c6f2fa2ed318b5e28f0a",
+      "/Users/carlosrodrigues/.meteor/packages/react-fast-refresh/0.2.2/os/server.js": "7064e8cc4b642227e1348ac9554949563c32ea79",
+      "/Users/carlosrodrigues/.meteor/packages/react-fast-refresh/0.2.2/os/client-runtime.js": "d769a47c5bcdabec989f2a949fca33b2e6ff0fcb",
+      "/Users/carlosrodrigues/.meteor/packages/react-fast-refresh/0.2.2/os/client.js": "51181e510c2c343d997fb6cefae669a8ce198e07",
+      "/Users/carlosrodrigues/.meteor/packages/ecmascript/0.16.1/os/ecmascript.js": "f0ee82302ecf5f797f1ab2d5f2407262b9507202",
+      "/Users/carlosrodrigues/.meteor/packages/babel-runtime/1.5.0/os/babel-runtime.js": "cb23d057c22b7b4826675696daa2b5f409ef5f9f",
+      "/Users/carlosrodrigues/.meteor/packages/fetch/0.1.1/os/server.js": "11f4fd6ff51fb5087e37165ae3f492fe245a4850",
+      "/Users/carlosrodrigues/.meteor/packages/fetch/0.1.1/os/legacy.js": "5e7d2c7ad466af6fcb722e391e7928e4022fe020",
+      "/Users/carlosrodrigues/.meteor/packages/fetch/0.1.1/os/modern.js": "516df5e63dbf9a078aef0b2ef58777631cea24bb",
+      "/Users/carlosrodrigues/.meteor/packages/fetch/0.1.1/os/tests/main.js": "7981945d383d408eceae6309be77aa324c93e7f6",
+      "/Users/carlosrodrigues/.meteor/packages/inter-process-messaging/0.1.1/os/inter-process-messaging.js": "9f97de41a045992cad62b6e0ec4ebf920841a6d1",
+      "/Users/carlosrodrigues/.meteor/packages/inter-process-messaging/0.1.1/os/tests.js": "2d7cf9fef01ceaea69b316c564280f0cf32553d6",
+      "/Users/carlosrodrigues/.meteor/packages/inter-process-messaging/0.1.1/os/types.js": "851883187c3b5ed9a9ca2057aafadb3cf0b04c45",
+      "/Users/carlosrodrigues/.meteor/packages/dynamic-import/0.7.2/os/server.js": "bf57af47da109a98fc4bfaac7a9db67a65392aad",
+      "/Users/carlosrodrigues/.meteor/packages/dynamic-import/0.7.2/os/cache.js": "0368469afa83c8c92e0643cfaf0d52b1cd733cec",
+      "/Users/carlosrodrigues/.meteor/packages/dynamic-import/0.7.2/os/client.js": "6835a635498462839241258051187102584412a6",
+      "/Users/carlosrodrigues/.meteor/packages/dynamic-import/0.7.2/os/common.js": "3d4472440446fd92e4fcba378afdc250462e7fa2",
+      "/Users/carlosrodrigues/.meteor/packages/dynamic-import/0.7.2/os/dynamic-versions.js": "413a6948ce3fbf126a457dd2553ac4d64757422c",
+      "/Users/carlosrodrigues/.meteor/packages/dynamic-import/0.7.2/os/security.js": "4343117e931e1f72a9f02749c9135e075a557157",
+      "/Users/carlosrodrigues/.meteor/packages/minifier-css/1.6.0/os/minifier.js": "c5ef20e99f061df38fae44c441b6f76dd8c5bed1"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "ecmascript": {
+      "kind": "versioned",
+      "version": "0.16.1"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "1.10.0"
+    },
+    "babel-compiler": {
+      "kind": "versioned",
+      "version": "7.8.0"
+    },
+    "ecmascript-runtime": {
+      "kind": "versioned",
+      "version": "0.8.0"
+    },
+    "modern-browsers": {
+      "kind": "versioned",
+      "version": "0.1.7"
+    },
+    "modules": {
+      "kind": "versioned",
+      "version": "0.18.0"
+    },
+    "modules-runtime": {
+      "kind": "versioned",
+      "version": "0.12.0"
+    },
+    "ecmascript-runtime-client": {
+      "kind": "versioned",
+      "version": "0.12.1"
+    },
+    "promise": {
+      "kind": "versioned",
+      "version": "0.12.0"
+    },
+    "ecmascript-runtime-server": {
+      "kind": "versioned",
+      "version": "0.11.0"
+    },
+    "react-fast-refresh": {
+      "kind": "versioned",
+      "version": "0.2.2"
+    },
+    "minifier-css": {
+      "kind": "versioned",
+      "version": "1.6.0"
+    },
+    "babel-runtime": {
+      "kind": "versioned",
+      "version": "1.5.0"
+    },
+    "dynamic-import": {
+      "kind": "versioned",
+      "version": "0.7.2"
+    },
+    "fetch": {
+      "kind": "versioned",
+      "version": "0.1.1"
+    },
+    "inter-process-messaging": {
+      "kind": "versioned",
+      "version": "0.1.1"
+    },
+    "rocketchat:postcss": {
+      "kind": "local",
+      "sourceRoot": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-postcss"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

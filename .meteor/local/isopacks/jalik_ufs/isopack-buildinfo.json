@@ -1,0 +1,278 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/package.js": "a0b4791976a3a0e45826bd46a4c42e22c15f5437",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/.npm/package/npm-shrinkwrap.json": "926a2a8df969afe5eda83ffeb2ae0fe75b48773b",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs.js": "24beda78ee4d6719589774c0aa3b43a21648fba0",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-config.js": "8b9e59e05154e7f59282b2c08edc7e4d6e11df1d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-filter.js": "91c6a55cf707b3a07fc61374d943243555105d62",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-methods.js": "908504390622512263dfd0eb8f47126af3f66a82",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-mime.js": "b27c5417986198ef8d7633994dc652875b51d1c7",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-server.js": "f1238c24e260057ef6c165e1b9a546b5b302ba32",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-store-permissions.js": "7e59f2033e8f4cf0952f0640fc5ee9c2e7c22c62",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-store.js": "ea9ec38e7ec62f9a0202bbd8fbd294d671b3466d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-tokens.js": "22619b0559aaa3a544e90a5f8b107e99521807db",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-uploader.js": "263573526b4d643e7c03ddc6d7a0b58ac9061add"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-config.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-filter.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-methods.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-mime.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-server.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-store-permissions.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-store.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-tokens.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-uploader.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js",
+            "ufs-config.js",
+            "ufs-filter.js",
+            "ufs-methods.js",
+            "ufs-mime.js",
+            "ufs-server.js",
+            "ufs-store-permissions.js",
+            "ufs-store.js",
+            "ufs-tokens.js",
+            "ufs-uploader.js",
+            "ufs.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/package.js": "a0b4791976a3a0e45826bd46a4c42e22c15f5437",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/.npm/package/npm-shrinkwrap.json": "926a2a8df969afe5eda83ffeb2ae0fe75b48773b",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs.js": "24beda78ee4d6719589774c0aa3b43a21648fba0",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-config.js": "8b9e59e05154e7f59282b2c08edc7e4d6e11df1d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-filter.js": "91c6a55cf707b3a07fc61374d943243555105d62",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-methods.js": "908504390622512263dfd0eb8f47126af3f66a82",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-mime.js": "b27c5417986198ef8d7633994dc652875b51d1c7",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-server.js": "f1238c24e260057ef6c165e1b9a546b5b302ba32",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-store-permissions.js": "7e59f2033e8f4cf0952f0640fc5ee9c2e7c22c62",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-store.js": "ea9ec38e7ec62f9a0202bbd8fbd294d671b3466d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-tokens.js": "22619b0559aaa3a544e90a5f8b107e99521807db",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-uploader.js": "263573526b4d643e7c03ddc6d7a0b58ac9061add"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-config.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-filter.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-methods.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-mime.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-server.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-store-permissions.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-store.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-tokens.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-uploader.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js",
+            "ufs-config.js",
+            "ufs-filter.js",
+            "ufs-methods.js",
+            "ufs-mime.js",
+            "ufs-server.js",
+            "ufs-store-permissions.js",
+            "ufs-store.js",
+            "ufs-tokens.js",
+            "ufs-uploader.js",
+            "ufs.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/package.js": "a0b4791976a3a0e45826bd46a4c42e22c15f5437",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/.npm/package/npm-shrinkwrap.json": "926a2a8df969afe5eda83ffeb2ae0fe75b48773b",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs.js": "24beda78ee4d6719589774c0aa3b43a21648fba0",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-config.js": "8b9e59e05154e7f59282b2c08edc7e4d6e11df1d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-filter.js": "91c6a55cf707b3a07fc61374d943243555105d62",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-methods.js": "908504390622512263dfd0eb8f47126af3f66a82",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-mime.js": "b27c5417986198ef8d7633994dc652875b51d1c7",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-server.js": "f1238c24e260057ef6c165e1b9a546b5b302ba32",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-store-permissions.js": "7e59f2033e8f4cf0952f0640fc5ee9c2e7c22c62",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-store.js": "ea9ec38e7ec62f9a0202bbd8fbd294d671b3466d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-tokens.js": "22619b0559aaa3a544e90a5f8b107e99521807db",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-uploader.js": "263573526b4d643e7c03ddc6d7a0b58ac9061add"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-config.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-filter.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-methods.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-mime.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-server.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-store-permissions.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-store.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-tokens.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/ufs-uploader.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js",
+            "ufs-config.js",
+            "ufs-filter.js",
+            "ufs-methods.js",
+            "ufs-mime.js",
+            "ufs-server.js",
+            "ufs-store-permissions.js",
+            "ufs-store.js",
+            "ufs-tokens.js",
+            "ufs-uploader.js",
+            "ufs.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs/package.js": "a0b4791976a3a0e45826bd46a4c42e22c15f5437"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "jalik:ufs": {
+      "kind": "local",
+      "sourceRoot": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-jalik-ufs"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "1.10.0"
+    },
+    "check": {
+      "kind": "versioned",
+      "version": "1.3.1"
+    },
+    "ecmascript": {
+      "kind": "versioned",
+      "version": "0.16.1"
+    },
+    "underscore": {
+      "kind": "versioned",
+      "version": "1.0.10"
+    },
+    "matb33:collection-hooks": {
+      "kind": "versioned",
+      "version": "1.1.0"
+    },
+    "mongo": {
+      "kind": "versioned",
+      "version": "1.13.0"
+    },
+    "webapp": {
+      "kind": "versioned",
+      "version": "1.13.0"
+    },
+    "modules": {
+      "kind": "versioned",
+      "version": "0.18.0"
+    },
+    "ecmascript-runtime": {
+      "kind": "versioned",
+      "version": "0.8.0"
+    },
+    "babel-runtime": {
+      "kind": "versioned",
+      "version": "1.5.0"
+    },
+    "promise": {
+      "kind": "versioned",
+      "version": "0.12.0"
+    },
+    "dynamic-import": {
+      "kind": "versioned",
+      "version": "0.7.2"
+    },
+    "ecmascript-runtime-client": {
+      "kind": "versioned",
+      "version": "0.12.1"
+    },
+    "ecmascript-runtime-server": {
+      "kind": "versioned",
+      "version": "0.11.0"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

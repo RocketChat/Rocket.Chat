@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[9],{1445:function(e){e.exports=JSON.parse('{"translation":{"cancel":"Ləğv et","conversation_finished":"Söhbət başa çatdı","department_switched":"Şöbə keçdi","no":"Yox","options":"Seçimlər","send":"Göndər","user_joined":"İstifadəçi qatıldı","user_left":"İstifadəçi buraxdı","we_are_not_online_right_now_please_leave_a_message":"İndi online deyil. Xahiş edirik bir mesaj buraxın.","yes":"Bəli"}}')}}]);
+//# sourceMappingURL=9.chunk.17aa6.js.map

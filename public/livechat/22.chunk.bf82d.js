@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[22],{1458:function(e){e.exports=JSON.parse('{"translation":{"cancel":"Nuligi","conversation_finished":"Konversacio finis","department_switched":"Fako ŝaltis","no":"Ne","options":"Opcioj","send":"Sendu","user_joined":"Uzanto aliĝis","user_left":"Uzanto maldekstre","we_are_not_online_right_now_please_leave_a_message":"Ni ne estas interrete nun. Bonvolu lasi mesaĝon.","yes":"Jes"}}')}}]);
+//# sourceMappingURL=22.chunk.bf82d.js.map

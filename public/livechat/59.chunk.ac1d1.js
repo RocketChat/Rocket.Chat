@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[59],{1495:function(e){e.exports=JSON.parse('{"translation":{"cancel":"Скасувати","conversation_finished":"Розмову закінчено","department_switched":"Відділ змінено","no":"Ні","options":"Параметри","send":"Надіслати","user_joined":"Користувач приєднався","user_left":"Користувач вийшов","we_are_not_online_right_now_please_leave_a_message":"Ми зараз не в мережі. Будь ласка, залиште повідомлення.","yes":"Так"}}')}}]);
+//# sourceMappingURL=59.chunk.ac1d1.js.map

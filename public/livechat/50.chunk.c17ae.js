@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[50],{1486:function(e){e.exports=JSON.parse('{"translation":{"cancel":"Zrušiť","conversation_finished":"Konverzácia bola ukončená","department_switched":"Oddelenie bolo prepnuté","no":"Žiadny","options":"Možnosti","send":"Odoslať","user_joined":"Používateľ sa pripojil","user_left":"Používateľ odišiel","we_are_not_online_right_now_please_leave_a_message":"Momentálne nie sme online. Prosíme, zanechajte správu.","yes":"Áno"}}')}}]);
+//# sourceMappingURL=50.chunk.c17ae.js.map

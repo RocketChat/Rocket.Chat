@@ -1,0 +1,32 @@
+{
+  "isopack-2": {
+    "name": "rocketchat:postcss",
+    "summary": "CSS post-processing with PostCSS",
+    "version": "1.0.0",
+    "isTest": false,
+    "builds": [
+      {
+        "kind": "main",
+        "arch": "os",
+        "path": "os.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser",
+        "path": "web.browser.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser.legacy",
+        "path": "web.browser.legacy.json"
+      }
+    ],
+    "plugins": [
+      {
+        "name": "postcss",
+        "arch": "os",
+        "path": "plugin.postcss.os/program.json"
+      }
+    ]
+  }
+}

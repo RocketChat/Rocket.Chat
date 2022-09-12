@@ -1,0 +1,1 @@
+{"head":"","body":"","js":"\nTemplate.__checkName(\"tooltip\");\nTemplate[\"tooltip\"] = new Template(\"Template.tooltip\", (function() {\n  var view = this;\n  return HTML.Raw('<div class=\"tooltip\">\\n\\t\\t<div class=\"content\">\\n\\t\\t</div>\\n\\t\\t<div class=\"tooltip-arrow\"></div>\\n\\t</div>');\n}));\n","bodyAttrs":{}}

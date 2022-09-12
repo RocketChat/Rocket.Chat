@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[60],{1496:function(n){n.exports=JSON.parse('{"translation":{"cancel":"hủy bỏ","conversation_finished":"Trò chuyện kết thúc","department_switched":"Sở chuyển","no":"Không","options":"Tùy chọn","send":"Gửi","user_joined":"Người dùng tham gia","user_left":"Người dùng còn lại","we_are_not_online_right_now_please_leave_a_message":"Chúng tôi không trực tuyến ngay bây giờ. Xin vui lòng, để lại tin nhắn.","yes":"Vâng"}}')}}]);
+//# sourceMappingURL=60.chunk.6e219.js.map

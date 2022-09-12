@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[36],{1472:function(e){e.exports=JSON.parse('{"translation":{"are_you_sure_you_want_to_switch_the_department":"부서를 변경하시겠습니까?","cancel":"취소","conversation_finished":"대화 종료됨","department_switched":"부서가 변경되었습니다","no":"아니오","options":"옵션","send":"전송","user_joined":"사용자가 참여하였습니다","user_left":"사용자가 떠났습니다","we_are_not_online_right_now_please_leave_a_message":"온라인 상태가 아닙니다. 메시지를 남겨주세요.","yes":"예"}}')}}]);
+//# sourceMappingURL=36.chunk.e055b.js.map

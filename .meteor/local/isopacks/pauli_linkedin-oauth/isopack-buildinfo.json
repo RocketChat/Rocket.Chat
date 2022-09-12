@@ -1,0 +1,203 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/package.js": "18cb77842ef5a1ed67498dbd51c8d7944439ee71",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/linkedin-server.js": "1827fa7c181dea7324964ce72627774959a8a736",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/linkedin-client.js": "22af8c6f75ca72dbe8cb7510802417c623754031"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/linkedin-server.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/linkedin-client.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "linkedin-client.js",
+            "linkedin-server.js",
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/package.js": "18cb77842ef5a1ed67498dbd51c8d7944439ee71",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/linkedin-client.js": "22af8c6f75ca72dbe8cb7510802417c623754031",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/linkedin-server.js": "1827fa7c181dea7324964ce72627774959a8a736"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/linkedin-client.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/linkedin-server.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "linkedin-client.js",
+            "linkedin-server.js",
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/package.js": "18cb77842ef5a1ed67498dbd51c8d7944439ee71",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/linkedin-client.js": "22af8c6f75ca72dbe8cb7510802417c623754031",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/linkedin-server.js": "1827fa7c181dea7324964ce72627774959a8a736"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/linkedin-client.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/linkedin-server.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "linkedin-client.js",
+            "linkedin-server.js",
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth/package.js": "18cb77842ef5a1ed67498dbd51c8d7944439ee71"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "pauli:linkedin-oauth": {
+      "kind": "local",
+      "sourceRoot": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/linkedin-oauth"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "1.10.0"
+    },
+    "ecmascript": {
+      "kind": "versioned",
+      "version": "0.16.1"
+    },
+    "oauth2": {
+      "kind": "versioned",
+      "version": "1.3.1"
+    },
+    "oauth": {
+      "kind": "versioned",
+      "version": "2.1.1"
+    },
+    "http": {
+      "kind": "versioned",
+      "version": "2.0.0"
+    },
+    "service-configuration": {
+      "kind": "versioned",
+      "version": "1.3.0"
+    },
+    "modules": {
+      "kind": "versioned",
+      "version": "0.18.0"
+    },
+    "ecmascript-runtime": {
+      "kind": "versioned",
+      "version": "0.8.0"
+    },
+    "babel-runtime": {
+      "kind": "versioned",
+      "version": "1.5.0"
+    },
+    "promise": {
+      "kind": "versioned",
+      "version": "0.12.0"
+    },
+    "dynamic-import": {
+      "kind": "versioned",
+      "version": "0.7.2"
+    },
+    "ecmascript-runtime-client": {
+      "kind": "versioned",
+      "version": "0.12.1"
+    },
+    "ecmascript-runtime-server": {
+      "kind": "versioned",
+      "version": "0.11.0"
+    },
+    "random": {
+      "kind": "versioned",
+      "version": "1.2.0"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

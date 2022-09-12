@@ -1,0 +1,542 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "rocketchat:tap-i18n"
+    }
+  ],
+  "resources": [
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/af.i18n.json",
+      "length": 171173,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/af.i18n.json",
+      "hash": "cc0f93895fa2177ca4105b4fc81661f9861620d9"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ar.i18n.json",
+      "length": 435840,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ar.i18n.json",
+      "hash": "c2259eb6cc40f3d56239f4fbb569e8ef9d373537"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/az.i18n.json",
+      "length": 180472,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/az.i18n.json",
+      "hash": "0d989398294bba564ec7f9adef3673fa87ede542"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/be-BY.i18n.json",
+      "length": 249866,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/be-BY.i18n.json",
+      "hash": "778fb090205656f59bb33e095b9595d893129cb2"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/bg.i18n.json",
+      "length": 254923,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/bg.i18n.json",
+      "hash": "022673ea030576d0d741ec651bb0e48cc3b3afd0"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/bn-BD.i18n.json",
+      "length": 4196,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/bn-BD.i18n.json",
+      "hash": "d5001a22918c24585d5ccdc9995e03c538f2abd4"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/bn-IN.i18n.json",
+      "length": 5720,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/bn-IN.i18n.json",
+      "hash": "126a622af22588bb794f2f4b33b9c972ef1b5701"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/bs.i18n.json",
+      "length": 170351,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/bs.i18n.json",
+      "hash": "c2ebba18a8b664981f21fef5063e77e29d137122"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ca.i18n.json",
+      "length": 336874,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ca.i18n.json",
+      "hash": "4acfc6e346a15d2e0ed24564e5989f1a5d8cbcb5"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/cs.i18n.json",
+      "length": 268578,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/cs.i18n.json",
+      "hash": "8e16bc2f9d7928cc798b9f1c2be7f930fd8526e4"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/cy.i18n.json",
+      "length": 172622,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/cy.i18n.json",
+      "hash": "fb512c835ca95d5f74dd3afb3b594f0d41a3d7d9"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/da.i18n.json",
+      "length": 264278,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/da.i18n.json",
+      "hash": "ef4da88b9fa65607a9161a79f28a86b696f12485"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/de-AT.i18n.json",
+      "length": 184215,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/de-AT.i18n.json",
+      "hash": "20c5ce772b9289a9c8c31940ad491b1fba4f8312"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/de-IN.i18n.json",
+      "length": 211565,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/de-IN.i18n.json",
+      "hash": "bbc80c54b584713dc05088bc15efd23e710f2c57"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/de.i18n.json",
+      "length": 355126,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/de.i18n.json",
+      "hash": "4313b5ad451b9021d0d6c38a21f321ee57760c24"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/el.i18n.json",
+      "length": 266244,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/el.i18n.json",
+      "hash": "a251a7018267e6dd2ae429f82df4564a519a4d6e"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/en.i18n.json",
+      "length": 315574,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/en.i18n.json",
+      "hash": "48a19053f5d65b05fb7bf2ff21014b174a62df21"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/eo.i18n.json",
+      "length": 167191,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/eo.i18n.json",
+      "hash": "b3b7a9140d4a05e46f5d606e3cb9d75c3b1852d5"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/es.i18n.json",
+      "length": 354842,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/es.i18n.json",
+      "hash": "725b7c4bfd9e82c6af259b12d7727a1ae9bebeb7"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/et.i18n.json",
+      "length": 4860,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/et.i18n.json",
+      "hash": "da2ce9f9b2c688a40193ed0287deebe13ccc680b"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/eu.i18n.json",
+      "length": 5881,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/eu.i18n.json",
+      "hash": "6ea561b9b6159915e5f9f680078c91fda255eceb"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/fa.i18n.json",
+      "length": 247274,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/fa.i18n.json",
+      "hash": "adae2ad3a9318fc3c51aaa8ede4fa3a180759b02"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/fi.i18n.json",
+      "length": 173979,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/fi.i18n.json",
+      "hash": "a94b738b2b689946c782c5367bf361b00bcabafc"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/fr.i18n.json",
+      "length": 363140,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/fr.i18n.json",
+      "hash": "49ffc7db28589be70b21110e8c4ecf55fb46994e"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/gl.i18n.json",
+      "length": 17999,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/gl.i18n.json",
+      "hash": "43b2fd70584e06f7b0c17d5650a3a0202c3b1e00"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/he.i18n.json",
+      "length": 96299,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/he.i18n.json",
+      "hash": "7a2f7861483c461f102be715ab979f3f37777fb0"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/hi-IN.i18n.json",
+      "length": 20296,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/hi-IN.i18n.json",
+      "hash": "2f25a03ae057c8a720e2c3956a5672a60366213d"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/hr.i18n.json",
+      "length": 180324,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/hr.i18n.json",
+      "hash": "c5ad3b06388bc8e3b2dc2a63d2ded8868342c42e"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/hu.i18n.json",
+      "length": 249010,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/hu.i18n.json",
+      "hash": "be526b72da760f14d882f46b49fa379400bf20a5"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/id.i18n.json",
+      "length": 170427,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/id.i18n.json",
+      "hash": "914eedade0e5e2c80e27adad8cbdf041953b056d"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/it.i18n.json",
+      "length": 180902,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/it.i18n.json",
+      "hash": "31206b4417b796baa3b29dcee86d28d44f05687b"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ja.i18n.json",
+      "length": 390288,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ja.i18n.json",
+      "hash": "376ff81d517976dd2840f94a8de0b4a48640a381"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ka-GE.i18n.json",
+      "length": 453194,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ka-GE.i18n.json",
+      "hash": "953274e151913287411716f6d103d045f04930b4"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/km.i18n.json",
+      "length": 359459,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/km.i18n.json",
+      "hash": "c8bca4bad9af809534a00da6dc903326cd30f4bf"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ko.i18n.json",
+      "length": 285836,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ko.i18n.json",
+      "hash": "55dca41f5a3a2562e52cc5c80034c8d85e51cb68"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ku.i18n.json",
+      "length": 172249,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ku.i18n.json",
+      "hash": "15caaca8e43a7f70850234dc4a88d39dc345380a"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/lo.i18n.json",
+      "length": 287213,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/lo.i18n.json",
+      "hash": "068dfff1a56fcdce107fb814a9e46d7bf056edcc"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/lt.i18n.json",
+      "length": 183334,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/lt.i18n.json",
+      "hash": "5f07980cfb56d9e65bc816d935310ee3df2eb743"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/lv.i18n.json",
+      "length": 176447,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/lv.i18n.json",
+      "hash": "447cb7fc766e0d6c404b09f34fcdb96e58925c1f"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/mn.i18n.json",
+      "length": 234025,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/mn.i18n.json",
+      "hash": "4c49602c3938cfc01d13baa8428345d33ed22904"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ms-MY.i18n.json",
+      "length": 171279,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ms-MY.i18n.json",
+      "hash": "64e4fa1b42adb5e71f53c58198d17eba973c347e"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/nl.i18n.json",
+      "length": 341577,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/nl.i18n.json",
+      "hash": "9c9a415ad40a61b1ecd81d60b5df29d1acd98fa2"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/no.i18n.json",
+      "length": 175348,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/no.i18n.json",
+      "hash": "5af2f9997e7eab1f8b525be797f8a8d6d77e255b"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/pl.i18n.json",
+      "length": 348200,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/pl.i18n.json",
+      "hash": "ca1e8f8f60ff611d5b97b09e792e48b1e474a903"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/pt-BR.i18n.json",
+      "length": 346746,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/pt-BR.i18n.json",
+      "hash": "2a142216fb0fb98f3144406e8adba6830bc4a585"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/pt.i18n.json",
+      "length": 210006,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/pt.i18n.json",
+      "hash": "e53bf0c4c4f29eb2fc84c5b03c2779481f3ded5a"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ro.i18n.json",
+      "length": 180563,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ro.i18n.json",
+      "hash": "0692c0c0f7391b34881d4a54ae9534242d4f2342"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ru.i18n.json",
+      "length": 493538,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ru.i18n.json",
+      "hash": "5c81747f4715253a4c297e9186b7900bda48e539"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/si.i18n.json",
+      "length": 1211,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/si.i18n.json",
+      "hash": "9711f25e9f2dc4cf59444e234cfa7ce37aef26b6"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/sk-SK.i18n.json",
+      "length": 180973,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/sk-SK.i18n.json",
+      "hash": "89d7bf71513f7f3a7e7141aad2a3ea4c80011d3f"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/sl-SI.i18n.json",
+      "length": 172998,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/sl-SI.i18n.json",
+      "hash": "a794326d91519f8bf7d3c4e1fce885ca2a6c4206"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/sq.i18n.json",
+      "length": 179764,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/sq.i18n.json",
+      "hash": "3a4fbecf5efb223a48866d34b851d7970c98013c"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/sr.i18n.json",
+      "length": 209202,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/sr.i18n.json",
+      "hash": "17e56b3a7661d672f786e285968046ce11826272"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/sv.i18n.json",
+      "length": 176322,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/sv.i18n.json",
+      "hash": "17fbc45eac21b3122d8945dce957ae9c8f512ee9"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ta-IN.i18n.json",
+      "length": 329419,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ta-IN.i18n.json",
+      "hash": "60e26f17a34e8cff6fe41aff9c8e2a8342065f62"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/th-TH.i18n.json",
+      "length": 285917,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/th-TH.i18n.json",
+      "hash": "eea1cbe106f40949a5339b517208e239b0febc9d"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/tr.i18n.json",
+      "length": 210605,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/tr.i18n.json",
+      "hash": "3d5919eb496c44104263f1e13313f5e85d2de057"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ug.i18n.json",
+      "length": 106858,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ug.i18n.json",
+      "hash": "29b484c0bc488d76b0c5295a1bc53d2fe90a3999"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/uk.i18n.json",
+      "length": 317373,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/uk.i18n.json",
+      "hash": "19b3452b344ef16411556b062ec227a82ef7431b"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/vi-VN.i18n.json",
+      "length": 205979,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/vi-VN.i18n.json",
+      "hash": "24dbb40ce43a3fd745de4b84275ca7f04b1f2637"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/zh-HK.i18n.json",
+      "length": 158094,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/zh-HK.i18n.json",
+      "hash": "1158ff7ff4a83a5a37d79636f73b9b23ae3cb3ab"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/zh-TW.i18n.json",
+      "length": 285693,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/zh-TW.i18n.json",
+      "hash": "5216452af5569a0c45ed1a1589cd6786b1851aa5"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/zh.i18n.json",
+      "length": 251029,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/zh.i18n.json",
+      "hash": "cee0985157ec2ba2f6d65d61a1c7dcdce49f4419"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/bas-CM.i18n.json",
+      "length": 580,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/bas-CM.i18n.json",
+      "hash": "dce2cf96215a1ef72896539b05c91ce8b2d92c19"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/kg.i18n.json",
+      "length": 525,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/kg.i18n.json",
+      "hash": "fe9ea34b43313a648244f9143153b20950ae58db"
+    },
+    {
+      "type": "js",
+      "file": "os/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ln.i18n.json",
+      "length": 525,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_i18n/packages/rocketchat_i18ni18n/ln.i18n.json",
+      "hash": "9bd7eed0877c5212f2484d8e8357468b65e6ae91"
+    }
+  ]
+}

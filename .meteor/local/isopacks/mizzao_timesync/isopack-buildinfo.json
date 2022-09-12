@@ -1,0 +1,478 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/package.js": "e01478126b5a01bfad9929fca4efda1b13d9cb5e",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server/index.js": "45ffac40b9223e5b8071aafa9fa432f40694439e",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client/index.js": "02ddd03fb1f90f6ff4027761d1afa77878e16628",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client/timesync-client.js": "e560d1e2c7ef5afd7de4ac33185298b22f828dab",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server/timesync-server.js": "add9d971d36188d77ab47c3a519d17364b2c2130",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/tests/client.js": "2f33f4a214acd3150268057f878ccb39f5bc9d36"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server/index.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client/index.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client/timesync-client.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server/timesync-server.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/tests/client.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "client/",
+            "server/",
+            "tests/"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "index.js",
+            "timesync-client.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "index.js",
+            "timesync-server.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/tests",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "client.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/tests",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/package.js": "e01478126b5a01bfad9929fca4efda1b13d9cb5e",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client/index.js": "02ddd03fb1f90f6ff4027761d1afa77878e16628",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client/timesync-client.js": "e560d1e2c7ef5afd7de4ac33185298b22f828dab",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server/index.js": "45ffac40b9223e5b8071aafa9fa432f40694439e",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server/timesync-server.js": "add9d971d36188d77ab47c3a519d17364b2c2130",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/tests/client.js": "2f33f4a214acd3150268057f878ccb39f5bc9d36"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client/index.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client/timesync-client.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server/index.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server/timesync-server.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/tests/client.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "client/",
+            "server/",
+            "tests/"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "index.js",
+            "timesync-client.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "index.js",
+            "timesync-server.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/tests",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "client.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/tests",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/package.js": "e01478126b5a01bfad9929fca4efda1b13d9cb5e",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client/index.js": "02ddd03fb1f90f6ff4027761d1afa77878e16628",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client/timesync-client.js": "e560d1e2c7ef5afd7de4ac33185298b22f828dab",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server/index.js": "45ffac40b9223e5b8071aafa9fa432f40694439e",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server/timesync-server.js": "add9d971d36188d77ab47c3a519d17364b2c2130",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/tests/client.js": "2f33f4a214acd3150268057f878ccb39f5bc9d36"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client/index.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client/timesync-client.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server/index.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server/timesync-server.js",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/tests/client.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "client/",
+            "server/",
+            "tests/"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "index.js",
+            "timesync-client.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/client",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "index.js",
+            "timesync-server.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/server",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/tests",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "client.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/tests",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync/package.js": "e01478126b5a01bfad9929fca4efda1b13d9cb5e"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "mizzao:timesync": {
+      "kind": "local",
+      "sourceRoot": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/meteor-timesync"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "1.10.0"
+    },
+    "webapp": {
+      "kind": "versioned",
+      "version": "1.13.0"
+    },
+    "ecmascript": {
+      "kind": "versioned",
+      "version": "0.16.1"
+    },
+    "modules": {
+      "kind": "versioned",
+      "version": "0.18.0"
+    },
+    "ecmascript-runtime": {
+      "kind": "versioned",
+      "version": "0.8.0"
+    },
+    "babel-runtime": {
+      "kind": "versioned",
+      "version": "1.5.0"
+    },
+    "promise": {
+      "kind": "versioned",
+      "version": "0.12.0"
+    },
+    "dynamic-import": {
+      "kind": "versioned",
+      "version": "0.7.2"
+    },
+    "ecmascript-runtime-client": {
+      "kind": "versioned",
+      "version": "0.12.1"
+    },
+    "ecmascript-runtime-server": {
+      "kind": "versioned",
+      "version": "0.11.0"
+    },
+    "check": {
+      "kind": "versioned",
+      "version": "1.3.1"
+    },
+    "tracker": {
+      "kind": "versioned",
+      "version": "1.2.0"
+    },
+    "http": {
+      "kind": "versioned",
+      "version": "2.0.0"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

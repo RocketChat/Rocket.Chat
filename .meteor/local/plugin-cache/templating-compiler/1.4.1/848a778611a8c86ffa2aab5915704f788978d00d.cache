@@ -1,0 +1,1 @@
+{"head":"","body":"","js":"\nTemplate.body.addContent((function() {\n  var view = this;\n  return \"\";\n}));\nMeteor.startup(Template.body.renderToDocument);\n","bodyAttrs":{"class":"color-primary-font-color"}}

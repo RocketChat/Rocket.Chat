@@ -1,0 +1,650 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/package.js": "e73b428a2a7413f381424551d3ae72d7c59e0843",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/af.i18n.json": "e608c16a051e0ab6a6e202bfb96653a74fbfff92",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ar.i18n.json": "4141be1f723c2f8e726b214838bbd115883cb097",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/az.i18n.json": "a25209e7c0014f098c877ae5a91acab23c21f022",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/be-BY.i18n.json": "8592f5c28474db3cbbe67112d766013a08aae020",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bg.i18n.json": "6b8ec5813ef1b018e2bb3ab2f6f6bdcf363a2585",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bn-BD.i18n.json": "b45b8b288072cd1ddea0bd3d3d44b4bad2b160bb",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bn-IN.i18n.json": "bf6e878577f6fb30ecf27c8d2f6a9101f4b73e8d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bs.i18n.json": "2eafabe9d489bad154ccf509c7acae01a0b24d00",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ca.i18n.json": "7a25bd935b14ad14836c203c2c02e1538ffb688a",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/cs.i18n.json": "b17c18ea17b25e800723c374871f52d221ede642",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/cy.i18n.json": "08af1e4cd68d2b89c31f37898551779caeda79a0",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/da.i18n.json": "2dff52e735294c4686a68bd98d31e23c8d17a295",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/de-AT.i18n.json": "018b5384a25cb721795db92f019e013180830902",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/de-IN.i18n.json": "8a5008f77d97712029d4f3b7cf7599162aaa14a3",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/de.i18n.json": "13cf9fd7601e28f5e43b0225d6912403115f94a3",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/el.i18n.json": "7ff17700621a201e71f1ca366e42bdba77895095",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/en.i18n.json": "5cf283ef947226daa7eb5ea922d1eb1461bd8052",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/eo.i18n.json": "55c059e24032214cb4e669f6e366f9cf5723c889",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/es.i18n.json": "6a1b75bbb297138316cb3ffa58818844a3353164",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/et.i18n.json": "3d441703a73daa247ba5549878cf4887238e5e41",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/eu.i18n.json": "d489e8536abd10d180b9d1321b845a79fda18528",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/fa.i18n.json": "437eebaddd4647a941fe5ccded1df78df4dc21d2",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/fi.i18n.json": "d78fedf4c572c979881b7cf8f6f618896abb74ac",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/fr.i18n.json": "43cd75107a362d95a653aaee898dff7279522977",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/gl.i18n.json": "3948730175e112ea584bce4e126fbdf29d6135ff",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/he.i18n.json": "16cc33d4bf2e782f68e5b8559865d55f0e50b156",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/hi-IN.i18n.json": "4754d83631b916bcd2a6dc4d5525a9f6ed46ad36",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/hr.i18n.json": "5719eb7ba733c746e1dbfe29a4491032d5ae9b84",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/hu.i18n.json": "d755a76ceaaf59a77a3c0033576e7d28942327c3",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/id.i18n.json": "9ea3e7219498326cb6740f79fbce99cc90547d8b",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/it.i18n.json": "b28723bc65f423fb44ae7f4247488d38da19dfa0",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ja.i18n.json": "e48dd89322adb254cd61e6323dc8e7413d685e52",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ka-GE.i18n.json": "c5b1d8dc8a88b043837446afe0c691a1392d09b1",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/km.i18n.json": "b30bba80275433c932a4957d922d387da1db090d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ko.i18n.json": "7a6aab73fafcb0dfa63c9ff8c718ce61fa542e7f",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ku.i18n.json": "e2e40e45c46adea31657475e34c4d6be0da639e5",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/lo.i18n.json": "43ced6d7f9e469fbc59d0933ce4afa289e98e4bd",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/lt.i18n.json": "7da156d1ecbfbdb3e3ae7b10bc4f5f0ce04433f0",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/lv.i18n.json": "cf62cc411442f6d674693781565f2913296b6521",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/mn.i18n.json": "b2931ccab9b9e26897ac91a59e4e96fb1fae4d72",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ms-MY.i18n.json": "533b6344402a5a74ec0fbd93bf37d8ced2c92945",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/nl.i18n.json": "fc6088a15bbc1e1fa95c7e68df42b3224b524060",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/no.i18n.json": "51044a32d52dac1218e16e5b83197c022028e8eb",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/pl.i18n.json": "0756159d60ffa95863c6586b15bc0122461bec7e",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/pt-BR.i18n.json": "e5c041d45c430dbf7fff67360c5de85d6123d248",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/pt.i18n.json": "4e9a2b2c97dd92767189c519fc0c9a6a4f922caa",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ro.i18n.json": "bf9ce57487fc682e526941ec0ff9caa0ca8d55be",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ru.i18n.json": "c4bfa87e7399f239613f17da4a6468b172237c40",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/si.i18n.json": "13ce48e520d3a93c7589f03332af158326b54a71",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sk-SK.i18n.json": "d296fca7632db3cc1a5450a95624c6c0b9167834",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sl-SI.i18n.json": "9ccb774361f83da40186bf6e9cfed6f7075af2ff",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sq.i18n.json": "1769a782bf4f0e22dbb1e2d6fdc8b50cc9e95455",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sr.i18n.json": "dcb1a9ca68e5681546651fc01c30f8a752f3aae5",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sv.i18n.json": "cf79aeecbaa4070b8cbfce4c9843495be4956f11",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ta-IN.i18n.json": "e840547c2ab0d1fa2f1a808cbfeeb6881a0523ac",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/th-TH.i18n.json": "cdaec548bdd6d6cbf829cd87165902ab47a98d98",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/tr.i18n.json": "e5e6e2e6d024dca00b015bdd51d797df3a8229b3",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ug.i18n.json": "0ca64e019dbc4f19cbbfc3b2c550084fa7279068",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/uk.i18n.json": "3dd3df43989bf41c44aa0576148c6acb4c5600d6",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/vi-VN.i18n.json": "9098a8a36a7219d39fd70b14f01562766e22a0b8",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/zh-HK.i18n.json": "c4117392deacc94c6d66337f37f5c32da84ec576",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/zh-TW.i18n.json": "8d527c1b381d6b346b86e898cbdb5f6b9e0ec33a",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/zh.i18n.json": "6dc119280706d1650eeef44089f4ddec4e668e3d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bas-CM.i18n.json": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/kg.i18n.json": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ln.i18n.json": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209"
+      },
+      "potentiallyUnusedFiles": [],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n",
+          "include": [
+            "\\.i18n$",
+            "\\.project\\-tap\\.i18n$",
+            "\\.package\\-tap\\.i18n$",
+            "\\.i18n\\.json$",
+            "\\.i18n\\.yml$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "i18n/"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n",
+          "include": [
+            "\\.i18n$",
+            "\\.project\\-tap\\.i18n$",
+            "\\.package\\-tap\\.i18n$",
+            "\\.i18n\\.json$",
+            "\\.i18n\\.yml$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "af.i18n.json",
+            "ar.i18n.json",
+            "az.i18n.json",
+            "bas-CM.i18n.json",
+            "be-BY.i18n.json",
+            "bg.i18n.json",
+            "bn-BD.i18n.json",
+            "bn-IN.i18n.json",
+            "bs.i18n.json",
+            "ca.i18n.json",
+            "cs.i18n.json",
+            "cy.i18n.json",
+            "da.i18n.json",
+            "de-AT.i18n.json",
+            "de-IN.i18n.json",
+            "de.i18n.json",
+            "el.i18n.json",
+            "en.i18n.json",
+            "eo.i18n.json",
+            "es.i18n.json",
+            "et.i18n.json",
+            "eu.i18n.json",
+            "fa.i18n.json",
+            "fi.i18n.json",
+            "fr.i18n.json",
+            "gl.i18n.json",
+            "he.i18n.json",
+            "hi-IN.i18n.json",
+            "hr.i18n.json",
+            "hu.i18n.json",
+            "id.i18n.json",
+            "it.i18n.json",
+            "ja.i18n.json",
+            "ka-GE.i18n.json",
+            "kg.i18n.json",
+            "km.i18n.json",
+            "ko.i18n.json",
+            "ku.i18n.json",
+            "ln.i18n.json",
+            "lo.i18n.json",
+            "lt.i18n.json",
+            "lv.i18n.json",
+            "mn.i18n.json",
+            "ms-MY.i18n.json",
+            "nl.i18n.json",
+            "no.i18n.json",
+            "pl.i18n.json",
+            "pt-BR.i18n.json",
+            "pt.i18n.json",
+            "ro.i18n.json",
+            "ru.i18n.json",
+            "si.i18n.json",
+            "sk-SK.i18n.json",
+            "sl-SI.i18n.json",
+            "sq.i18n.json",
+            "sr.i18n.json",
+            "sv.i18n.json",
+            "ta-IN.i18n.json",
+            "th-TH.i18n.json",
+            "tr.i18n.json",
+            "ug.i18n.json",
+            "uk.i18n.json",
+            "vi-VN.i18n.json",
+            "zh-HK.i18n.json",
+            "zh-TW.i18n.json",
+            "zh.i18n.json"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/package.js": "e73b428a2a7413f381424551d3ae72d7c59e0843",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/af.i18n.json": "e608c16a051e0ab6a6e202bfb96653a74fbfff92",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ar.i18n.json": "4141be1f723c2f8e726b214838bbd115883cb097",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/az.i18n.json": "a25209e7c0014f098c877ae5a91acab23c21f022",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/be-BY.i18n.json": "8592f5c28474db3cbbe67112d766013a08aae020",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bg.i18n.json": "6b8ec5813ef1b018e2bb3ab2f6f6bdcf363a2585",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bn-BD.i18n.json": "b45b8b288072cd1ddea0bd3d3d44b4bad2b160bb",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bn-IN.i18n.json": "bf6e878577f6fb30ecf27c8d2f6a9101f4b73e8d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bs.i18n.json": "2eafabe9d489bad154ccf509c7acae01a0b24d00",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ca.i18n.json": "7a25bd935b14ad14836c203c2c02e1538ffb688a",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/cs.i18n.json": "b17c18ea17b25e800723c374871f52d221ede642",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/cy.i18n.json": "08af1e4cd68d2b89c31f37898551779caeda79a0",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/da.i18n.json": "2dff52e735294c4686a68bd98d31e23c8d17a295",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/de-AT.i18n.json": "018b5384a25cb721795db92f019e013180830902",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/de-IN.i18n.json": "8a5008f77d97712029d4f3b7cf7599162aaa14a3",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/de.i18n.json": "13cf9fd7601e28f5e43b0225d6912403115f94a3",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/el.i18n.json": "7ff17700621a201e71f1ca366e42bdba77895095",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/en.i18n.json": "5cf283ef947226daa7eb5ea922d1eb1461bd8052",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/eo.i18n.json": "55c059e24032214cb4e669f6e366f9cf5723c889",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/es.i18n.json": "6a1b75bbb297138316cb3ffa58818844a3353164",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/et.i18n.json": "3d441703a73daa247ba5549878cf4887238e5e41",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/eu.i18n.json": "d489e8536abd10d180b9d1321b845a79fda18528",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/fa.i18n.json": "437eebaddd4647a941fe5ccded1df78df4dc21d2",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/fi.i18n.json": "d78fedf4c572c979881b7cf8f6f618896abb74ac",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/fr.i18n.json": "43cd75107a362d95a653aaee898dff7279522977",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/gl.i18n.json": "3948730175e112ea584bce4e126fbdf29d6135ff",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/he.i18n.json": "16cc33d4bf2e782f68e5b8559865d55f0e50b156",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/hi-IN.i18n.json": "4754d83631b916bcd2a6dc4d5525a9f6ed46ad36",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/hr.i18n.json": "5719eb7ba733c746e1dbfe29a4491032d5ae9b84",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/hu.i18n.json": "d755a76ceaaf59a77a3c0033576e7d28942327c3",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/id.i18n.json": "9ea3e7219498326cb6740f79fbce99cc90547d8b",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/it.i18n.json": "b28723bc65f423fb44ae7f4247488d38da19dfa0",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ja.i18n.json": "e48dd89322adb254cd61e6323dc8e7413d685e52",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ka-GE.i18n.json": "c5b1d8dc8a88b043837446afe0c691a1392d09b1",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/km.i18n.json": "b30bba80275433c932a4957d922d387da1db090d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ko.i18n.json": "7a6aab73fafcb0dfa63c9ff8c718ce61fa542e7f",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ku.i18n.json": "e2e40e45c46adea31657475e34c4d6be0da639e5",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/lo.i18n.json": "43ced6d7f9e469fbc59d0933ce4afa289e98e4bd",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/lt.i18n.json": "7da156d1ecbfbdb3e3ae7b10bc4f5f0ce04433f0",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/lv.i18n.json": "cf62cc411442f6d674693781565f2913296b6521",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/mn.i18n.json": "b2931ccab9b9e26897ac91a59e4e96fb1fae4d72",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ms-MY.i18n.json": "533b6344402a5a74ec0fbd93bf37d8ced2c92945",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/nl.i18n.json": "fc6088a15bbc1e1fa95c7e68df42b3224b524060",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/no.i18n.json": "51044a32d52dac1218e16e5b83197c022028e8eb",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/pl.i18n.json": "0756159d60ffa95863c6586b15bc0122461bec7e",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/pt-BR.i18n.json": "e5c041d45c430dbf7fff67360c5de85d6123d248",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/pt.i18n.json": "4e9a2b2c97dd92767189c519fc0c9a6a4f922caa",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ro.i18n.json": "bf9ce57487fc682e526941ec0ff9caa0ca8d55be",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ru.i18n.json": "c4bfa87e7399f239613f17da4a6468b172237c40",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/si.i18n.json": "13ce48e520d3a93c7589f03332af158326b54a71",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sk-SK.i18n.json": "d296fca7632db3cc1a5450a95624c6c0b9167834",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sl-SI.i18n.json": "9ccb774361f83da40186bf6e9cfed6f7075af2ff",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sq.i18n.json": "1769a782bf4f0e22dbb1e2d6fdc8b50cc9e95455",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sr.i18n.json": "dcb1a9ca68e5681546651fc01c30f8a752f3aae5",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sv.i18n.json": "cf79aeecbaa4070b8cbfce4c9843495be4956f11",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ta-IN.i18n.json": "e840547c2ab0d1fa2f1a808cbfeeb6881a0523ac",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/th-TH.i18n.json": "cdaec548bdd6d6cbf829cd87165902ab47a98d98",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/tr.i18n.json": "e5e6e2e6d024dca00b015bdd51d797df3a8229b3",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ug.i18n.json": "0ca64e019dbc4f19cbbfc3b2c550084fa7279068",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/uk.i18n.json": "3dd3df43989bf41c44aa0576148c6acb4c5600d6",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/vi-VN.i18n.json": "9098a8a36a7219d39fd70b14f01562766e22a0b8",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/zh-HK.i18n.json": "c4117392deacc94c6d66337f37f5c32da84ec576",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/zh-TW.i18n.json": "8d527c1b381d6b346b86e898cbdb5f6b9e0ec33a",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/zh.i18n.json": "6dc119280706d1650eeef44089f4ddec4e668e3d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bas-CM.i18n.json": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/kg.i18n.json": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ln.i18n.json": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209"
+      },
+      "potentiallyUnusedFiles": [],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n",
+          "include": [
+            "\\.css$",
+            "\\.html$",
+            "\\.i18n$",
+            "\\.project\\-tap\\.i18n$",
+            "\\.package\\-tap\\.i18n$",
+            "\\.i18n\\.json$",
+            "\\.i18n\\.yml$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "i18n/"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n",
+          "include": [
+            "\\.css$",
+            "\\.html$",
+            "\\.i18n$",
+            "\\.project\\-tap\\.i18n$",
+            "\\.package\\-tap\\.i18n$",
+            "\\.i18n\\.json$",
+            "\\.i18n\\.yml$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "af.i18n.json",
+            "ar.i18n.json",
+            "az.i18n.json",
+            "bas-CM.i18n.json",
+            "be-BY.i18n.json",
+            "bg.i18n.json",
+            "bn-BD.i18n.json",
+            "bn-IN.i18n.json",
+            "bs.i18n.json",
+            "ca.i18n.json",
+            "cs.i18n.json",
+            "cy.i18n.json",
+            "da.i18n.json",
+            "de-AT.i18n.json",
+            "de-IN.i18n.json",
+            "de.i18n.json",
+            "el.i18n.json",
+            "en.i18n.json",
+            "eo.i18n.json",
+            "es.i18n.json",
+            "et.i18n.json",
+            "eu.i18n.json",
+            "fa.i18n.json",
+            "fi.i18n.json",
+            "fr.i18n.json",
+            "gl.i18n.json",
+            "he.i18n.json",
+            "hi-IN.i18n.json",
+            "hr.i18n.json",
+            "hu.i18n.json",
+            "id.i18n.json",
+            "it.i18n.json",
+            "ja.i18n.json",
+            "ka-GE.i18n.json",
+            "kg.i18n.json",
+            "km.i18n.json",
+            "ko.i18n.json",
+            "ku.i18n.json",
+            "ln.i18n.json",
+            "lo.i18n.json",
+            "lt.i18n.json",
+            "lv.i18n.json",
+            "mn.i18n.json",
+            "ms-MY.i18n.json",
+            "nl.i18n.json",
+            "no.i18n.json",
+            "pl.i18n.json",
+            "pt-BR.i18n.json",
+            "pt.i18n.json",
+            "ro.i18n.json",
+            "ru.i18n.json",
+            "si.i18n.json",
+            "sk-SK.i18n.json",
+            "sl-SI.i18n.json",
+            "sq.i18n.json",
+            "sr.i18n.json",
+            "sv.i18n.json",
+            "ta-IN.i18n.json",
+            "th-TH.i18n.json",
+            "tr.i18n.json",
+            "ug.i18n.json",
+            "uk.i18n.json",
+            "vi-VN.i18n.json",
+            "zh-HK.i18n.json",
+            "zh-TW.i18n.json",
+            "zh.i18n.json"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/package.js": "e73b428a2a7413f381424551d3ae72d7c59e0843",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/af.i18n.json": "e608c16a051e0ab6a6e202bfb96653a74fbfff92",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ar.i18n.json": "4141be1f723c2f8e726b214838bbd115883cb097",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/az.i18n.json": "a25209e7c0014f098c877ae5a91acab23c21f022",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/be-BY.i18n.json": "8592f5c28474db3cbbe67112d766013a08aae020",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bg.i18n.json": "6b8ec5813ef1b018e2bb3ab2f6f6bdcf363a2585",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bn-BD.i18n.json": "b45b8b288072cd1ddea0bd3d3d44b4bad2b160bb",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bn-IN.i18n.json": "bf6e878577f6fb30ecf27c8d2f6a9101f4b73e8d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bs.i18n.json": "2eafabe9d489bad154ccf509c7acae01a0b24d00",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ca.i18n.json": "7a25bd935b14ad14836c203c2c02e1538ffb688a",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/cs.i18n.json": "b17c18ea17b25e800723c374871f52d221ede642",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/cy.i18n.json": "08af1e4cd68d2b89c31f37898551779caeda79a0",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/da.i18n.json": "2dff52e735294c4686a68bd98d31e23c8d17a295",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/de-AT.i18n.json": "018b5384a25cb721795db92f019e013180830902",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/de-IN.i18n.json": "8a5008f77d97712029d4f3b7cf7599162aaa14a3",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/de.i18n.json": "13cf9fd7601e28f5e43b0225d6912403115f94a3",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/el.i18n.json": "7ff17700621a201e71f1ca366e42bdba77895095",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/en.i18n.json": "5cf283ef947226daa7eb5ea922d1eb1461bd8052",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/eo.i18n.json": "55c059e24032214cb4e669f6e366f9cf5723c889",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/es.i18n.json": "6a1b75bbb297138316cb3ffa58818844a3353164",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/et.i18n.json": "3d441703a73daa247ba5549878cf4887238e5e41",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/eu.i18n.json": "d489e8536abd10d180b9d1321b845a79fda18528",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/fa.i18n.json": "437eebaddd4647a941fe5ccded1df78df4dc21d2",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/fi.i18n.json": "d78fedf4c572c979881b7cf8f6f618896abb74ac",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/fr.i18n.json": "43cd75107a362d95a653aaee898dff7279522977",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/gl.i18n.json": "3948730175e112ea584bce4e126fbdf29d6135ff",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/he.i18n.json": "16cc33d4bf2e782f68e5b8559865d55f0e50b156",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/hi-IN.i18n.json": "4754d83631b916bcd2a6dc4d5525a9f6ed46ad36",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/hr.i18n.json": "5719eb7ba733c746e1dbfe29a4491032d5ae9b84",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/hu.i18n.json": "d755a76ceaaf59a77a3c0033576e7d28942327c3",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/id.i18n.json": "9ea3e7219498326cb6740f79fbce99cc90547d8b",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/it.i18n.json": "b28723bc65f423fb44ae7f4247488d38da19dfa0",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ja.i18n.json": "e48dd89322adb254cd61e6323dc8e7413d685e52",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ka-GE.i18n.json": "c5b1d8dc8a88b043837446afe0c691a1392d09b1",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/km.i18n.json": "b30bba80275433c932a4957d922d387da1db090d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ko.i18n.json": "7a6aab73fafcb0dfa63c9ff8c718ce61fa542e7f",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ku.i18n.json": "e2e40e45c46adea31657475e34c4d6be0da639e5",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/lo.i18n.json": "43ced6d7f9e469fbc59d0933ce4afa289e98e4bd",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/lt.i18n.json": "7da156d1ecbfbdb3e3ae7b10bc4f5f0ce04433f0",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/lv.i18n.json": "cf62cc411442f6d674693781565f2913296b6521",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/mn.i18n.json": "b2931ccab9b9e26897ac91a59e4e96fb1fae4d72",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ms-MY.i18n.json": "533b6344402a5a74ec0fbd93bf37d8ced2c92945",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/nl.i18n.json": "fc6088a15bbc1e1fa95c7e68df42b3224b524060",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/no.i18n.json": "51044a32d52dac1218e16e5b83197c022028e8eb",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/pl.i18n.json": "0756159d60ffa95863c6586b15bc0122461bec7e",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/pt-BR.i18n.json": "e5c041d45c430dbf7fff67360c5de85d6123d248",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/pt.i18n.json": "4e9a2b2c97dd92767189c519fc0c9a6a4f922caa",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ro.i18n.json": "bf9ce57487fc682e526941ec0ff9caa0ca8d55be",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ru.i18n.json": "c4bfa87e7399f239613f17da4a6468b172237c40",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/si.i18n.json": "13ce48e520d3a93c7589f03332af158326b54a71",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sk-SK.i18n.json": "d296fca7632db3cc1a5450a95624c6c0b9167834",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sl-SI.i18n.json": "9ccb774361f83da40186bf6e9cfed6f7075af2ff",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sq.i18n.json": "1769a782bf4f0e22dbb1e2d6fdc8b50cc9e95455",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sr.i18n.json": "dcb1a9ca68e5681546651fc01c30f8a752f3aae5",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/sv.i18n.json": "cf79aeecbaa4070b8cbfce4c9843495be4956f11",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ta-IN.i18n.json": "e840547c2ab0d1fa2f1a808cbfeeb6881a0523ac",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/th-TH.i18n.json": "cdaec548bdd6d6cbf829cd87165902ab47a98d98",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/tr.i18n.json": "e5e6e2e6d024dca00b015bdd51d797df3a8229b3",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ug.i18n.json": "0ca64e019dbc4f19cbbfc3b2c550084fa7279068",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/uk.i18n.json": "3dd3df43989bf41c44aa0576148c6acb4c5600d6",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/vi-VN.i18n.json": "9098a8a36a7219d39fd70b14f01562766e22a0b8",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/zh-HK.i18n.json": "c4117392deacc94c6d66337f37f5c32da84ec576",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/zh-TW.i18n.json": "8d527c1b381d6b346b86e898cbdb5f6b9e0ec33a",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/zh.i18n.json": "6dc119280706d1650eeef44089f4ddec4e668e3d",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/bas-CM.i18n.json": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/kg.i18n.json": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209",
+        "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n/ln.i18n.json": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209"
+      },
+      "potentiallyUnusedFiles": [],
+      "directories": [
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n",
+          "include": [
+            "\\.css$",
+            "\\.html$",
+            "\\.i18n$",
+            "\\.project\\-tap\\.i18n$",
+            "\\.package\\-tap\\.i18n$",
+            "\\.i18n\\.json$",
+            "\\.i18n\\.yml$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "i18n/"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n",
+          "include": [
+            "\\.css$",
+            "\\.html$",
+            "\\.i18n$",
+            "\\.project\\-tap\\.i18n$",
+            "\\.package\\-tap\\.i18n$",
+            "\\.i18n\\.json$",
+            "\\.i18n\\.yml$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "af.i18n.json",
+            "ar.i18n.json",
+            "az.i18n.json",
+            "bas-CM.i18n.json",
+            "be-BY.i18n.json",
+            "bg.i18n.json",
+            "bn-BD.i18n.json",
+            "bn-IN.i18n.json",
+            "bs.i18n.json",
+            "ca.i18n.json",
+            "cs.i18n.json",
+            "cy.i18n.json",
+            "da.i18n.json",
+            "de-AT.i18n.json",
+            "de-IN.i18n.json",
+            "de.i18n.json",
+            "el.i18n.json",
+            "en.i18n.json",
+            "eo.i18n.json",
+            "es.i18n.json",
+            "et.i18n.json",
+            "eu.i18n.json",
+            "fa.i18n.json",
+            "fi.i18n.json",
+            "fr.i18n.json",
+            "gl.i18n.json",
+            "he.i18n.json",
+            "hi-IN.i18n.json",
+            "hr.i18n.json",
+            "hu.i18n.json",
+            "id.i18n.json",
+            "it.i18n.json",
+            "ja.i18n.json",
+            "ka-GE.i18n.json",
+            "kg.i18n.json",
+            "km.i18n.json",
+            "ko.i18n.json",
+            "ku.i18n.json",
+            "ln.i18n.json",
+            "lo.i18n.json",
+            "lt.i18n.json",
+            "lv.i18n.json",
+            "mn.i18n.json",
+            "ms-MY.i18n.json",
+            "nl.i18n.json",
+            "no.i18n.json",
+            "pl.i18n.json",
+            "pt-BR.i18n.json",
+            "pt.i18n.json",
+            "ro.i18n.json",
+            "ru.i18n.json",
+            "si.i18n.json",
+            "sk-SK.i18n.json",
+            "sl-SI.i18n.json",
+            "sq.i18n.json",
+            "sr.i18n.json",
+            "sv.i18n.json",
+            "ta-IN.i18n.json",
+            "th-TH.i18n.json",
+            "tr.i18n.json",
+            "ug.i18n.json",
+            "uk.i18n.json",
+            "vi-VN.i18n.json",
+            "zh-HK.i18n.json",
+            "zh-TW.i18n.json",
+            "zh.i18n.json"
+          ]
+        },
+        {
+          "absPath": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/i18n",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n/package.js": "e73b428a2a7413f381424551d3ae72d7c59e0843"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "rocketchat:i18n": {
+      "kind": "local",
+      "sourceRoot": "/Users/carlosrodrigues/Desktop/work/rocketchat/Rocket.Chat/packages/rocketchat-i18n"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "1.10.0"
+    },
+    "rocketchat:tap-i18n": {
+      "kind": "versioned",
+      "version": "3.0.0"
+    },
+    "templating": {
+      "kind": "versioned",
+      "version": "1.4.1"
+    },
+    "templating-runtime": {
+      "kind": "versioned",
+      "version": "1.5.0"
+    },
+    "templating-compiler": {
+      "kind": "versioned",
+      "version": "1.4.1"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

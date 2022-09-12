@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[7],{1443:function(e){e.exports=JSON.parse('{"translation":{"cancel":"kanselleer","conversation_finished":"Gesprek afgehandel","department_switched":"Departement aangeskakel","no":"Geen","options":"opsies","send":"stuur","user_joined":"Gebruiker aangesluit","user_left":"Gebruiker oor","we_are_not_online_right_now_please_leave_a_message":"Ons is nie aanlyn nie. Asseblief, laat \'n boodskap.","yes":"Ja"}}')}}]);
+//# sourceMappingURL=7.chunk.3cdf3.js.map

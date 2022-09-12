@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[8],{1444:function(e){e.exports=JSON.parse('{"translation":{"cancel":"إلغاء","conversation_finished":"تم إنهاء المحادثة","department_switched":"تم تغيير الفرع","no":"لا","options":"خيارات","send":"إرسال","user_joined":"العضو انضم","user_left":"اليسار المستخدم","we_are_not_online_right_now_please_leave_a_message":"نحن لسنا على الانترنت الآن. يرجى ترك رسالة.","yes":"نعم"}}')}}]);
+//# sourceMappingURL=8.chunk.37a35.js.map

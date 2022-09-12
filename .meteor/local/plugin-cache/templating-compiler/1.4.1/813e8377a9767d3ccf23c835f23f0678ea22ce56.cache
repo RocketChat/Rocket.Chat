@@ -1,0 +1,1 @@
+{"head":"","body":"","js":"\nTemplate.__checkName(\"userPresence\");\nTemplate[\"userPresence\"] = new Template(\"Template.userPresence\", (function() {\n  var view = this;\n  return Blaze._InOuterTemplateScope(view, function() {\n    return Spacebars.include(function() {\n      return Spacebars.call(view.templateContentBlock);\n    });\n  });\n}));\n","bodyAttrs":{}}

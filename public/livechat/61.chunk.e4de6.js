@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[61],{1497:function(e){e.exports=JSON.parse('{"translation":{"cancel":"取消","conversation_finished":"對話已結束","department_switched":"部门切换","no":"否","options":"選項","send":"傳送","user_joined":"用户加入","user_left":"用户离开了","we_are_not_online_right_now_please_leave_a_message":"我们现在不在线。请留言。","yes":"对"}}')}}]);
+//# sourceMappingURL=61.chunk.e4de6.js.map

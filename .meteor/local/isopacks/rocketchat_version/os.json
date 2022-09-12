@@ -1,0 +1,30 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "ecmascript"
+    },
+    {
+      "package": "isobuild:compiler-plugin",
+      "constraint": "1.0.0"
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/plugin/compile-version.js",
+      "length": 1985,
+      "offset": 0,
+      "path": "plugin/compile-version.js",
+      "hash": "13706c227f3a841b8dcd9b259785572138155637",
+      "fileOptions": {
+        "lazy": true
+      }
+    }
+  ]
+}

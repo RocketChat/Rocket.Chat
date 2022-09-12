@@ -1,0 +1,18 @@
+var _ = Package.underscore._,
+    package_name = "project",
+    namespace = "project";
+
+if (package_name != "project") {
+    namespace = TAPi18n.packages[package_name].namespace;
+}
+TAPi18n.languages_names["si"] = ["Sinhala","සිංහල"];
+if(_.isUndefined(TAPi18n.translations["si"])) {
+  TAPi18n.translations["si"] = {};
+}
+
+if(_.isUndefined(TAPi18n.translations["si"][namespace])) {
+  TAPi18n.translations["si"][namespace] = {};
+}
+
+_.extend(TAPi18n.translations["si"][namespace], {"500":"අභ්යන්තර සේවාදායකයේ දෝෂයකි","@username":"@පරිශීලකනාමය","#channel":"#නාලිකාව","0_Errors_Only":"0 - දෝෂ පමණි","1_Errors_and_Information":"1 - දෝෂ සහ තොරතුරු","12_Hour":"හෝරා 12 ඔරලෝසුව","24_Hour":"හෝරා 24 ඔරලෝසුව","Accept":"පිළිගන්න","Accounts":"ගිණුම්","You_have_a_new_message":"ඔබට නව පණිවිඩයක් ඇත","Your_question":"ඔබගේ ප්‍රශ්නය","Your_server_link":"ඔබගේ සේවාදායක සබැඳිය"});
+TAPi18n._registerServerTranslator("si", namespace);
