@@ -7,6 +7,7 @@ import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
 import { ChatSubscription, ChatMessage } from '../../../models/client';
 import { APIClient } from '../../../utils/client';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 export class ReadMessage extends Emitter {
 	protected enabled: boolean;
@@ -92,7 +93,9 @@ export class ReadMessage extends Emitter {
 				RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
 				return this.emit(rid);
 			})
-			.catch(console.error);
+			.catch((err: unknown) => {
+				dispatchToastMessage({ type: 'error', message: err });
+			});
 	}
 
 	public refreshUnreadMark(rid: IRoom['_id']) {

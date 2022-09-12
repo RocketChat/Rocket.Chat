@@ -15,6 +15,7 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
 Template.body.onRendered(function () {
 	new Clipboard('.clipboard');
@@ -44,13 +45,9 @@ Template.body.onRendered(function () {
 
 				subscriptions.forEach((subscription) => {
 					if (subscription.alert || subscription.unread > 0) {
-						APIClient.post('/v1/subscriptions.read', { rid: subscription.rid, readThreads: true })
-							.then((res) => {
-								if (!res.success) {
-									console.error(res);
-								}
-							})
-							.catch(console.error);
+						APIClient.post('/v1/subscriptions.read', { rid: subscription.rid, readThreads: true }).catch((err) => {
+							dispatchToastMessage({ type: 'error', message: err });
+						});
 					}
 				});
 
