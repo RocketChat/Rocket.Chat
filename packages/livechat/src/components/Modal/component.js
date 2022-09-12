@@ -6,7 +6,6 @@ import { ButtonGroup } from '../ButtonGroup';
 import { createClassName } from '../helpers';
 import styles from './styles.scss';
 
-
 export class Modal extends Component {
 	static defaultProps = {
 		dismissByOverlay: true,
@@ -47,56 +46,45 @@ export class Modal extends Component {
 		window.removeEventListener('keydown', this.handleKeyDown, false);
 	}
 
-	render = ({ children, animated, open, ...props }) => (
+	render = ({ children, animated, open, ...props }) =>
 		open ? (
-			<div
-				onTouchStart={this.handleTouchStart}
-				onMouseDown={this.handleMouseDown}
-				className={createClassName(styles, 'modal__overlay')}
-			>
-				<div className={createClassName(styles, 'modal', { animated })} {...props}>{children}</div>
+			<div onTouchStart={this.handleTouchStart} onMouseDown={this.handleMouseDown} className={createClassName(styles, 'modal__overlay')}>
+				<div className={createClassName(styles, 'modal', { animated })} {...props}>
+					{children}
+				</div>
 			</div>
-		) : null
-	);
+		) : null;
 }
 
+export const ModalMessage = ({ children }) => <div className={createClassName(styles, 'modal__message')}>{children}</div>;
 
-export const ModalMessage = ({ children }) => (
-	<div className={createClassName(styles, 'modal__message')}>
-		{children}
-	</div>
-);
-
-
-export const ConfirmationModal = withTranslation()(({
-	text,
-	confirmButtonText,
-	cancelButtonText,
-	onConfirm,
-	onCancel,
-	t,
-	...props
-}) => <Modal open animated dismissByOverlay={false} {...props}>
-	<Modal.Message>{text}</Modal.Message>
-	<ButtonGroup>
-		<Button outline secondary onClick={onCancel}>{cancelButtonText || t('no')}</Button>
-		<Button secondaryDanger onClick={onConfirm}>{confirmButtonText || t('yes')}</Button>
-	</ButtonGroup>
-</Modal>);
+export const ConfirmationModal = withTranslation()(({ text, confirmButtonText, cancelButtonText, onConfirm, onCancel, t, ...props }) => (
+	<Modal open animated dismissByOverlay={false} {...props}>
+		<Modal.Message>{text}</Modal.Message>
+		<ButtonGroup>
+			<Button outline secondary onClick={onCancel}>
+				{cancelButtonText || t('no')}
+			</Button>
+			<Button secondaryDanger onClick={onConfirm}>
+				{confirmButtonText || t('yes')}
+			</Button>
+		</ButtonGroup>
+	</Modal>
+));
 
 export const AlertModal = withTranslation()(({ text, buttonText, onConfirm, t, ...props }) => (
 	<Modal open animated dismissByOverlay={false} {...props}>
 		<Modal.Message>{text}</Modal.Message>
 		<ButtonGroup>
-			<Button secondary onClick={onConfirm}>{buttonText || t('ok')}</Button>
+			<Button secondary onClick={onConfirm}>
+				{buttonText || t('ok')}
+			</Button>
 		</ButtonGroup>
 	</Modal>
 ));
 
-
 Modal.Message = ModalMessage;
 Modal.Confirm = ConfirmationModal;
 Modal.Alert = AlertModal;
-
 
 export default Modal;

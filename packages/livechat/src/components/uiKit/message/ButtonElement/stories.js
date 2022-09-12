@@ -11,13 +11,15 @@ export default {
 		layout: 'centered',
 	},
 	decorators: [
-		(storyFn) => <Surface
-			children={storyFn()}
-			dispatchAction={async (payload) => {
-				await new Promise((resolve) => setTimeout(resolve, 1000));
-				action('dispatchAction')(payload);
-			}}
-		/>,
+		(storyFn) => (
+			<Surface
+				children={storyFn()}
+				dispatchAction={async (payload) => {
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+					action('dispatchAction')(payload);
+				}}
+			/>
+		),
 	],
 	argTypes: {
 		text: { control: 'object' },
@@ -38,6 +40,5 @@ export default {
 	},
 };
 
-export const Default = (args) =>
-	<ButtonElement {...args} parser={parser} />;
+export const Default = (args) => <ButtonElement {...args} parser={parser} />;
 Default.storyName = 'default';
