@@ -8,12 +8,10 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-	decorators: [
-		(storyFn) => <PopoverContainer children={storyFn()} />,
-	],
+	decorators: [(storyFn) => <PopoverContainer children={storyFn()} />],
 };
 
-export const WithBlocks = () =>
+export const WithBlocks = () => (
 	<MessageBlocks
 		blocks={[
 			{
@@ -249,9 +247,7 @@ export const WithBlocks = () =>
 							emoji: true,
 						},
 						filter: {
-							include: [
-								'private',
-							],
+							include: ['private'],
 						},
 					},
 				],
@@ -395,5 +391,6 @@ export const WithBlocks = () =>
 				],
 			},
 		]}
-	/>;
+	/>
+);
 WithBlocks.storyName = 'with blocks';

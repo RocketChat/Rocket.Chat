@@ -16,6 +16,7 @@ import { logger, authLogger, connLogger } from './Logger';
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
 import { callbacks } from '../../../lib/callbacks';
 import { setUserAvatar } from '../../../app/lib/server/functions';
+import { omit } from '../../../lib/utils/omit';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {
@@ -268,7 +269,7 @@ export class LDAPManager {
 	): Promise<IUser | undefined> {
 		logger.debug({
 			msg: 'Syncing user data',
-			ldapUser: _.omit(ldapUser, '_raw'),
+			ldapUser: omit(ldapUser, '_raw'),
 			user: { ...(existingUser && { email: existingUser.emails, _id: existingUser._id }) },
 		});
 
