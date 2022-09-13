@@ -5,10 +5,15 @@ import { CannedResponse, LivechatPriority, LivechatTag, LivechatUnit } from '@ro
 import { getModules, getTags, hasLicense } from './license';
 import { Analytics } from '../../../../server/sdk';
 
-type ENTERPRISE_STATISTICS = {
+type ENTERPRISE_STATISTICS = GenericStats & Partial<EEOnlyStats>;
+
+type GenericStats = {
 	modules: string[];
 	tags: string[];
 	seatRequests: number;
+};
+
+type EEOnlyStats = {
 	livechatTags: number;
 	cannedResponses: number;
 	priorities: number;
@@ -16,39 +21,31 @@ type ENTERPRISE_STATISTICS = {
 };
 
 export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
-	const statsPms: Array<Promise<any>> = [];
+	const genericStats: GenericStats = {
+		modules: getModules(),
+		tags: getTags().map(({ name }) => name),
+		seatRequests: await Analytics.getSeatRequestCount(),
+	};
 
-	let statistics: ENTERPRISE_STATISTICS = {} as any;
+	const eeModelsStats = await getEEStatistics();
 
-	const modules = getModules();
-	statistics.modules = modules;
+	const statistics = {
+		...genericStats,
+		...eeModelsStats,
+	};
 
-	const tags = getTags().map(({ name }) => name);
-	statistics.tags = tags;
-
-	statsPms.push(
-		Analytics.getSeatRequestCount().then((count) => {
-			statistics.seatRequests = count;
-		}),
-	);
-
-	if (hasLicense('livechat-enterprise')) {
-		const eeModelsStats = await getStatsFromEEModels();
-		statistics = {
-			...statistics,
-			...eeModelsStats,
-		};
-	}
-
-	await Promise.all(statsPms).catch(log);
 	return statistics;
 }
 
 // These models are only available on EE license so don't import them inside CE license as it will break the build
-async function getStatsFromEEModels(): Promise<ENTERPRISE_STATISTICS> {
+async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
+	if (!hasLicense('livechat-enterprise')) {
+		return;
+	}
+
 	const statsPms: Array<Promise<any>> = [];
 
-	const statistics: ENTERPRISE_STATISTICS = {} as any;
+	const statistics: Partial<EEOnlyStats> = {};
 
 	// Number of livechat tags
 	statsPms.push(
@@ -86,5 +83,5 @@ async function getStatsFromEEModels(): Promise<ENTERPRISE_STATISTICS> {
 
 	await Promise.all(statsPms).catch(log);
 
-	return statistics;
+	return statistics as EEOnlyStats;
 }

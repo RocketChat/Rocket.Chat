@@ -108,7 +108,10 @@ export class LivechatUnit extends LivechatDepartment {
 
 		Promise.await(LivechatRooms.associateRoomsWithDepartmentToUnit(departmentsToSave, _id));
 
-		return _.extend(record, { _id });
+		return {
+			...record,
+			...(_id && { _id }),
+		};
 	}
 
 	// REMOVE
