@@ -323,6 +323,8 @@ jobs:
 
       - name: E2E Test API
         run: |
+          export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
           docker ps
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
@@ -338,7 +340,7 @@ jobs:
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
 
-            docker compose -f ../../docker-compose-ci.yml start rocketchat
+            docker compose -f ../../docker-compose-ci.yml up -d rocketchat
 
             until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
