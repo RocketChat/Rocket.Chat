@@ -8,8 +8,4 @@ import { centered } from '../../../helpers.stories';
 storiesOf('Messages/ImageAttachment', module)
 	.addDecorator(centered)
 	.addDecorator(withKnobs)
-	.add('default', () => (
-		<ImageAttachment
-			url={text('url', sampleImage)}
-		/>
-	));
+	.add('default', () => <ImageAttachment url={text('url', sampleImage)} />);

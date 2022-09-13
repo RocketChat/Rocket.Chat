@@ -3,9 +3,12 @@ import { LivechatVisitors } from '@rocket.chat/models';
 
 import { loadMessageHistory } from '../../../lib';
 import { LivechatRooms } from '../../../models/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	async 'livechat:loadHistory'({ token, rid, end, limit = 20, ls }) {
+		methodDeprecationLogger.warn('livechat:loadHistory will be deprecated in future versions of Rocket.Chat');
+
 		if (!token || typeof token !== 'string') {
 			return;
 		}

@@ -22,6 +22,7 @@ const ActionsBlock = ({ appId, blockId, elements, parser, t }) => {
 			<div className={createClassName(styles, 'uikit-actions-block')}>
 				{renderableElements.map((element, key) => {
 					const renderedElement = parser.renderActions(element, BlockContext.ACTION);
+
 					if (!renderedElement) {
 						return null;
 					}

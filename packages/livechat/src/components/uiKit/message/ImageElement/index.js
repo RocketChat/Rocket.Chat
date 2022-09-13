@@ -13,7 +13,7 @@ const ImageElement = ({ imageUrl, altText, context }) => (
 		})}
 		role='img'
 		style={{
-			backgroundImage: `url(${ imageUrl })`,
+			backgroundImage: `url(${imageUrl})`,
 		}}
 		title={altText}
 	/>
