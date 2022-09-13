@@ -1,18 +1,7 @@
 import { createClassName, memo } from '../../helpers';
 import styles from './styles.scss';
 
-const DateInput = ({
-	name,
-	value,
-	placeholder,
-	disabled,
-	small,
-	error,
-	onChange,
-	onInput,
-	className,
-	style = {},
-}) => (
+const DateInput = ({ name, value, placeholder, disabled, small, error, onChange, onInput, className, style = {} }) => (
 	<input
 		type='date'
 		name={name}

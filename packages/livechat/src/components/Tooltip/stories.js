@@ -13,17 +13,16 @@ storiesOf('Components/Tooltip', module)
 	.addDecorator(centered)
 	.addDecorator(withKnobs)
 	.add('inline', () => (
-		<Tooltip
-			hidden={boolean('hidden', tooltipHidden)}
-			placement={select('placement', placements)}
-		>
+		<Tooltip hidden={boolean('hidden', tooltipHidden)} placement={select('placement', placements)}>
 			{text('text', tooltipText)}
 		</Tooltip>
 	))
 	.add('placements', () => (
 		<div style={{ display: 'flex', flexDirection: 'column' }}>
 			{placements.map((placement) => (
-				<Tooltip hidden={boolean('hidden', tooltipHidden)} placement={placement}>{text('text', tooltipText)}</Tooltip>
+				<Tooltip hidden={boolean('hidden', tooltipHidden)} placement={placement}>
+					{text('text', tooltipText)}
+				</Tooltip>
 			))}
 		</div>
 	))

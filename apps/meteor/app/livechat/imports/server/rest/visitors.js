@@ -8,7 +8,7 @@ import {
 	findChatHistory,
 	searchChats,
 	findVisitorsToAutocomplete,
-	findVisitorsByEmailOrPhoneOrNameOrUsername,
+	findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField,
 } from '../../../server/api/lib/visitors';
 
 API.v1.addRoute(
@@ -144,7 +144,7 @@ API.v1.addRoute(
 			const nameOrUsername = new RegExp(escapeRegExp(term), 'i');
 
 			return API.v1.success(
-				await findVisitorsByEmailOrPhoneOrNameOrUsername({
+				await findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
 					userId: this.userId,
 					emailOrPhone: term,
 					nameOrUsername,

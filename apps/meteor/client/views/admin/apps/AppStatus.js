@@ -124,7 +124,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 					flexDirection='row'
 					alignItems='center'
 					justifyContent='center'
-					borderRadius='x2'
+					borderRadius='x4'
 					invisible={!showStatus && !loading}
 				>
 					<Button

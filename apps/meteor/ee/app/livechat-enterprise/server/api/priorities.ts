@@ -3,7 +3,7 @@ import { findPriorities, findPriorityById } from './lib/priorities';
 
 API.v1.addRoute(
 	'livechat/priorities',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: { GET: { permissions: ['manage-livechat-priorities', 'view-l-room'], operation: 'hasAny' } } },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -12,7 +12,6 @@ API.v1.addRoute(
 
 			return API.v1.success(
 				await findPriorities({
-					userId: this.userId,
 					text,
 					pagination: {
 						offset,
@@ -27,13 +26,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/priorities/:priorityId',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: { GET: { permissions: ['manage-livechat-priorities', 'view-l-room'], operation: 'hasAny' } } },
 	{
 		async get() {
 			const { priorityId } = this.urlParams;
 
 			const priority = await findPriorityById({
-				userId: this.userId,
 				priorityId,
 			});
 
