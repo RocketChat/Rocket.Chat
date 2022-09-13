@@ -5,9 +5,11 @@ import { LivechatVisitors } from '@rocket.chat/models';
 import { settings } from '../../../settings/server';
 import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	async 'livechat:closeByVisitor'({ roomId, token }) {
+		methodDeprecationLogger.warn('livechat:closeByVisitor will be deprecated in future versions of Rocket.Chat');
 		const visitor = await LivechatVisitors.getVisitorByToken(token);
 
 		const language = (visitor && visitor.language) || settings.get('Language') || 'en';
