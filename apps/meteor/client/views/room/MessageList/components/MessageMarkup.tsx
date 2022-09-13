@@ -77,41 +77,42 @@ const MessageMarkup = ({ message, tokens }: MessageMarkupProps): ReactElement =>
 
 	const onChannelMentionClick = useCallback(({ _id: rid }: ChannelMention) => openRoom(rid), [openRoom]);
 
+	// TODO:  this style should go to Fuselage <MessageBody> repository
+	const messageBodyAditionalStyles = css`
+		> blockquote {
+			padding-inline: 8px;
+			border-radius: 2px;
+			border-width: 2px;
+			border-style: solid;
+			background-color: var(--rcx-color-neutral-100, ${colors.n100});
+			border-color: var(--rcx-color-neutral-200, ${colors.n200});
+			border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
+
+			&:hover,
+			&:focus {
+				background-color: var(--rcx-color-neutral-200, ${colors.n200});
+				border-color: var(--rcx-color-neutral-300, ${colors.n300});
+				border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
+			}
+		}
+		> ul.task-list {
+			> li::before {
+				display: none;
+			}
+
+			> li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
+				z-index: 1;
+			}
+
+			list-style: none;
+			margin-inline-start: 0;
+			padding-inline-start: 0;
+		}
+	`;
+
 	return (
 		<MessageBody>
-			<Box
-				className={css`
-					> blockquote {
-						padding-inline: 8px;
-						border-radius: 2px;
-						border-width: 2px;
-						border-style: solid;
-						background-color: var(--rcx-color-neutral-100, ${colors.n100});
-						border-color: var(--rcx-color-neutral-200, ${colors.n200});
-						border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
-
-						&:hover,
-						&:focus {
-							background-color: var(--rcx-color-neutral-200, ${colors.n200});
-							border-color: var(--rcx-color-neutral-300, ${colors.n300});
-							border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
-						}
-					}
-					> ul.task-list {
-						> li::before {
-							display: none;
-						}
-
-						> li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
-							z-index: 1;
-						}
-
-						list-style: none;
-						margin-inline-start: 0;
-						padding-inline-start: 0;
-					}
-				`}
-			>
+			<Box className={messageBodyAditionalStyles}>
 				<MarkupInteractionContext.Provider
 					value={{
 						detectEmoji,
