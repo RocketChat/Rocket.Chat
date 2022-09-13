@@ -45,10 +45,10 @@ const PadButton = ({
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
 		>
-			<Box is='p' fontSize='h2' lineHeight='32px'>
+			<Box is='span' fontSize='h2' lineHeight='32px'>
 				{firstDigit}
 			</Box>
-			<Box is='p' fontSize='c1' lineHeight='16px' color='info'>
+			<Box is='span' fontSize='c1' lineHeight='16px' color='info'>
 				{secondDigit}
 			</Box>
 		</Button>
