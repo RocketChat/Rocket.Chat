@@ -99,4 +99,24 @@ export class Admin {
 	get btnImportNewFile(): Locator {
 		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import New File"');
 	}
+
+	get selectFileType(): Locator {
+		return this.page.locator('.rcx-select');
+	}
+
+	optionTypeFile(label: string): Locator {
+		return this.page.locator(`.rcx-option__content >> text="${label}"`);
+	}
+
+	get inputFile(): Locator {
+		return this.page.locator('input[type=file]');
+	}
+
+	get btnImport(): Locator {
+		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import"');
+	}
+
+	get btnStartImport(): Locator {
+		return this.page.locator('.rcx-button--primary.rcx-button >> text="Start Importing"');
+	}
 }
