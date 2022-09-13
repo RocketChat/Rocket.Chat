@@ -5,9 +5,9 @@ import { Presence } from '../sdk';
 
 // maybe this setting should disable the listener to 'presence.status' event on listerners.module.ts
 Meteor.startup(function () {
-	settings.watch('Troubleshoot_Disable_Presence_Broadcast', (value) => {
+	settings.watch('Troubleshoot_Disable_Presence_Broadcast', async function (value) {
 		try {
-			Presence.toggleBroadcast(!value);
+			await Presence.toggleBroadcast(!value);
 		} catch (e) {
 			// do nothing
 		}
