@@ -1,5 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { ReactElement } from 'react';
 
 import type { PadDigit } from './Pad';
@@ -17,7 +18,7 @@ const padButtonStyle = css`
 	align-items: center;
 
 	&:hover {
-		background-color: #e4e7ea;
+		background-color: ${colors.n400};
 	}
 `;
 
