@@ -3,8 +3,12 @@ import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+
 Meteor.methods({
 	async 'livechat:saveSurveyFeedback'(visitorToken, visitorRoom, formData) {
+		methodDeprecationLogger.warn('livechat:saveSurveyFeedback will be deprecated in future versions of Rocket.Chat');
+
 		check(visitorToken, String);
 		check(visitorRoom, String);
 		check(formData, [Match.ObjectIncluding({ name: String, value: String })]);
