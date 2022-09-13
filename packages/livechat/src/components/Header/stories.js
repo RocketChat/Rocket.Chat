@@ -10,7 +10,6 @@ import NewWindow from '../../icons/newWindow.svg';
 import Alert from '../Alert';
 import { Avatar } from '../Avatar';
 
-
 const avatarSrc = avatarResolver('guilherme.gazzo');
 
 storiesOf('Components/Header', module)
@@ -23,9 +22,7 @@ storiesOf('Components/Header', module)
 			}}
 			onClick={action('clicked')}
 		>
-			<Content>
-				{text('text', 'Need Help?')}
-			</Content>
+			<Content>{text('text', 'Need Help?')}</Content>
 		</Header>
 	))
 	.add('with long text content', () => (
@@ -36,9 +33,7 @@ storiesOf('Components/Header', module)
 			}}
 			onClick={action('clicked')}
 		>
-			<Content>
-				{text('text', 'Need Help? '.repeat(100))}
-			</Content>
+			<Content>{text('text', 'Need Help? '.repeat(100))}</Content>
 		</Header>
 	))
 	.add('with title and subtitle', () => (
@@ -67,9 +62,7 @@ storiesOf('Components/Header', module)
 				<Bell width={20} height={20} />
 			</Picture>
 
-			<Content>
-				{text('text', 'Notification settings')}
-			</Content>
+			<Content>{text('text', 'Notification settings')}</Content>
 		</Header>
 	))
 	.add('with actions', () => (
@@ -80,9 +73,7 @@ storiesOf('Components/Header', module)
 			}}
 			onClick={action('clicked')}
 		>
-			<Content>
-				{text('text', 'Chat finished')}
-			</Content>
+			<Content>{text('text', 'Chat finished')}</Content>
 
 			<Actions>
 				<Action onClick={action('notifications')}>
@@ -102,37 +93,22 @@ storiesOf('Components/Header', module)
 			}}
 			post={
 				<Post>
-					<Alert
-						success={boolean('success', true)}
-						onDismiss={action('clicked')}
-					>
+					<Alert success={boolean('success', true)} onDismiss={action('clicked')}>
 						{text('text', 'Success')}
 					</Alert>
-					<Alert
-						warning={boolean('warning', true)}
-						onDismiss={action('clicked')}
-					>
+					<Alert warning={boolean('warning', true)} onDismiss={action('clicked')}>
 						{text('text', 'Warning')}
 					</Alert>
-					<Alert
-						error={boolean('error', true)}
-						onDismiss={action('clicked')}
-					>
+					<Alert error={boolean('error', true)} onDismiss={action('clicked')}>
 						{text('text', 'Error')}
 					</Alert>
-					<Alert
-						error={boolean('error', true)}
-						color={color('color', '#175CC4')}
-						onDismiss={action('clicked')}
-					>
+					<Alert error={boolean('error', true)} color={color('color', '#175CC4')} onDismiss={action('clicked')}>
 						{text('text', 'Custom color')}
 					</Alert>
 				</Post>
 			}
 		>
-			<Content>
-				{text('text', 'Chat finished')}
-			</Content>
+			<Content>{text('text', 'Chat finished')}</Content>
 
 			<Actions>
 				<Action onClick={action('notifications')}>
@@ -157,9 +133,7 @@ storiesOf('Components/Header', module)
 
 			<Content>
 				<Title>{text('title', '@guilherme.gazzo')}</Title>
-				<SubTitle>
-					{text('subtitle', 'guilherme.gazzo@rocket.chat')}
-				</SubTitle>
+				<SubTitle>{text('subtitle', 'guilherme.gazzo@rocket.chat')}</SubTitle>
 			</Content>
 
 			<Actions>
@@ -189,12 +163,8 @@ storiesOf('Components/Header', module)
 
 			<Content>
 				<Title>{text('title', 'Guilherme Gazzo')}</Title>
-				<SubTitle>
-					{text('subtitle', 'guilherme.gazzo@rocket.chat')}
-				</SubTitle>
-				<CustomField>
-					{text('custom', '+ 55 42423 24242')}
-				</CustomField>
+				<SubTitle>{text('subtitle', 'guilherme.gazzo@rocket.chat')}</SubTitle>
+				<CustomField>{text('custom', '+ 55 42423 24242')}</CustomField>
 			</Content>
 
 			<Actions>
@@ -218,16 +188,10 @@ storiesOf('Components/Header', module)
 			}}
 			post={
 				<Post>
-					<Alert
-						success={boolean('success', true)}
-						onDismiss={action('clicked')}
-					>
+					<Alert success={boolean('success', true)} onDismiss={action('clicked')}>
 						{text('text', 'Success')}
 					</Alert>
-					<Alert
-						warning={boolean('warning', true)}
-						onDismiss={action('clicked')}
-					>
+					<Alert warning={boolean('warning', true)} onDismiss={action('clicked')}>
 						{text('text', 'Warning')}
 					</Alert>
 				</Post>
@@ -240,12 +204,8 @@ storiesOf('Components/Header', module)
 
 			<Content>
 				<Title>{text('title', 'Guilherme Gazzo')}</Title>
-				<SubTitle>
-					{text('subtitle', 'guilherme.gazzo@rocket.chat')}
-				</SubTitle>
-				<CustomField>
-					{text('custom', '+ 55 42423 24242')}
-				</CustomField>
+				<SubTitle>{text('subtitle', 'guilherme.gazzo@rocket.chat')}</SubTitle>
+				<CustomField>{text('custom', '+ 55 42423 24242')}</CustomField>
 			</Content>
 
 			<Actions>
@@ -275,12 +235,8 @@ storiesOf('Components/Header', module)
 
 			<Content>
 				<Title>{text('title', 'Guilherme Gazzo')}</Title>
-				<SubTitle>
-					{text('subtitle', 'guilherme.gazzo@rocket.chat')}
-				</SubTitle>
-				<CustomField>
-					{text('custom', '+ 55 42423 24242')}
-				</CustomField>
+				<SubTitle>{text('subtitle', 'guilherme.gazzo@rocket.chat')}</SubTitle>
+				<CustomField>{text('custom', '+ 55 42423 24242')}</CustomField>
 			</Content>
 
 			<Actions>

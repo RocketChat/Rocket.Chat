@@ -23,7 +23,7 @@ const DefaultHomePage = (): ReactElement => {
 	const workspaceName = useSetting('Site_Name');
 
 	return (
-		<Page data-qa='page-home' data-qa-type='default' backgroundColor='neutral-100'>
+		<Page data-qa='page-home' data-qa-type='default' background='tint'>
 			<HomePageHeader />
 			<PageScrollableContent>
 				<Box is='h1' fontScale='h1' data-qa-id='homepage-welcome-text'>
