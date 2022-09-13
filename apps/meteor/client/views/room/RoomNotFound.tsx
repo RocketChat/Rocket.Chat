@@ -2,9 +2,9 @@ import { States, StatesIcon, StatesTitle, StatesSubtitle, Box, StatesActions, St
 import { useLayout, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import BurgerMenu from '../../../../components/BurgerMenu';
-import TemplateHeader from '../../../../components/Header';
-import { RoomTemplate } from '../../components/RoomTemplate/RoomTemplate';
+import BurgerMenu from '../../components/BurgerMenu';
+import TemplateHeader from '../../components/Header';
+import RoomLayout from './layout/RoomLayout';
 
 const RoomNotFound = (): ReactElement => {
 	const { isMobile } = useLayout();
@@ -16,17 +16,17 @@ const RoomNotFound = (): ReactElement => {
 	};
 
 	return (
-		<RoomTemplate>
-			<RoomTemplate.Header>
-				{isMobile && (
+		<RoomLayout
+			header={
+				isMobile && (
 					<TemplateHeader justifyContent='start'>
 						<TemplateHeader.ToolBox>
 							<BurgerMenu />
 						</TemplateHeader.ToolBox>
 					</TemplateHeader>
-				)}
-			</RoomTemplate.Header>
-			<RoomTemplate.Body>
+				)
+			}
+			body={
 				<Box display='flex' justifyContent='center' height='full'>
 					<States>
 						<StatesIcon name='magnifier' />
@@ -37,8 +37,8 @@ const RoomNotFound = (): ReactElement => {
 						</StatesActions>
 					</States>
 				</Box>
-			</RoomTemplate.Body>
-		</RoomTemplate>
+			}
+		/>
 	);
 };
 
