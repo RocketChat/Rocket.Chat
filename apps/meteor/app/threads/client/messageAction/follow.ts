@@ -42,7 +42,7 @@ Meteor.startup(function () {
 				if (isLivechatRoom) {
 					return false;
 				}
-				return !replies.includes(user._id);
+				return user?._id ? !replies.includes(user._id) : false;
 			},
 			order: 2,
 			group: 'menu',

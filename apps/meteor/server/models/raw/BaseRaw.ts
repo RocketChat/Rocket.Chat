@@ -159,7 +159,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 	find(query?: Filter<T>): FindCursor<ResultFields<T, C>>;
 
-	find<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindCursor<P>;
+	find<P = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindCursor<P>;
 
 	find<P>(query: Filter<T> | undefined = {}, options?: FindOptions<P extends T ? T : P>): FindCursor<WithId<P>> | FindCursor<WithId<T>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);

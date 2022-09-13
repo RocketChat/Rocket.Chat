@@ -1,6 +1,7 @@
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { API } from '../../../../api/server';
 import { Contacts } from '../../lib/Contacts';
@@ -47,23 +48,36 @@ API.v1.addRoute(
 			check(this.queryParams, {
 				email: Match.Maybe(String),
 				phone: Match.Maybe(String),
+				custom: Match.Maybe(String),
 			});
+			const { email, phone, custom } = this.queryParams;
 
-			const { email, phone } = this.queryParams;
+			let customCF: { [k: string]: string } = {};
+			try {
+				customCF = custom && JSON.parse(custom);
+			} catch (e) {
+				throw new Meteor.Error('error-invalid-params-custom');
+			}
 
-			if (!email && !phone) {
+			if (!email && !phone && !Object.keys(customCF).length) {
 				throw new Meteor.Error('error-invalid-params');
 			}
 
-			const query = Object.assign(
-				{},
-				{
-					...(email && { visitorEmails: { address: email } }),
-					...(phone && { phone: { phoneNumber: phone } }),
-				},
-			);
+			const foundCF = await (async () => {
+				if (!custom) {
+					return {};
+				}
 
-			const contact = await LivechatVisitors.findOne(query);
+				const cfIds = Object.keys(customCF);
+
+				const customFields = await LivechatCustomField.findMatchingCustomFieldsByIds(Object.keys(cfIds), 'visitor', true, {
+					projection: { _id: 1 },
+				}).toArray();
+
+				return Object.fromEntries(customFields.map(({ _id }) => [`livechatData.${_id}`, new RegExp(escapeRegExp(customCF[_id]), 'i')]));
+			})();
+
+			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, foundCF);
 			return API.v1.success({ contact });
 		},
 	},
