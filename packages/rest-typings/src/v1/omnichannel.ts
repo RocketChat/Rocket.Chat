@@ -17,8 +17,11 @@ import type {
 	ILivechatCustomField,
 	IOmnichannelSystemMessage,
 	Serialized,
+	ILivechatBusinessHour,
+	ILivechatTrigger,
 } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+import type { WithId } from 'mongodb';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
@@ -2196,6 +2199,48 @@ export const isGETLivechatAgentsAgentIdDepartmentsParams = ajv.compile<GETLivech
 	GETLivechatAgentsAgentIdDepartmentsParamsSchema,
 );
 
+type GETBusinessHourParams = { _id?: string; type?: string };
+
+const GETBusinessHourParamsSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+			nullable: true,
+		},
+		type: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isGETBusinessHourParams = ajv.compile<GETBusinessHourParams>(GETBusinessHourParamsSchema);
+
+type GETLivechatTriggersParams = PaginatedRequest;
+
+const GETLivechatTriggersParamsSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'object',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isGETLivechatTriggersParams = ajv.compile<GETLivechatTriggersParams>(GETLivechatTriggersParamsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -2522,6 +2567,15 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/agents/:agentId/departments': {
 		GET: (params: GETLivechatAgentsAgentIdDepartmentsParams) => { departments: ILivechatDepartmentAgents[] };
+	};
+	'/v1/livechat/business-hour': {
+		GET: (params: GETBusinessHourParams) => { businessHour: ILivechatBusinessHour };
+	};
+	'/v1/livechat/triggers': {
+		GET: (params: GETLivechatTriggersParams) => { triggers: WithId<ILivechatTrigger>[] };
+	};
+	'/v1/livechat/triggers/:_id': {
+		GET: () => { trigger: ILivechatTrigger | null };
 	};
 } & {
 	// EE

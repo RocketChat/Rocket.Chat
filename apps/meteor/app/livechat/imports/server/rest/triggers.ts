@@ -1,11 +1,11 @@
-import { check } from 'meteor/check';
+import { isGETLivechatTriggersParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
 import { findTriggers, findTriggerById } from '../../../server/api/lib/triggers';
 
 API.v1.addRoute(
 	'livechat/triggers',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETLivechatTriggersParams },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -29,10 +29,6 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			const trigger = await findTriggerById({
 				triggerId: this.urlParams._id,
 			});

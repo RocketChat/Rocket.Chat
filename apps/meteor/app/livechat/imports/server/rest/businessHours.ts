@@ -1,9 +1,11 @@
+import { isGETBusinessHourParams } from '@rocket.chat/rest-typings';
+
 import { API } from '../../../../api/server';
 import { findLivechatBusinessHour } from '../../../server/api/lib/businessHours';
 
 API.v1.addRoute(
 	'livechat/business-hour',
-	{ authRequired: true, permissionsRequired: ['view-livechat-business-hours'] },
+	{ authRequired: true, permissionsRequired: ['view-livechat-business-hours'], validateParams: isGETBusinessHourParams },
 	{
 		async get() {
 			const { _id, type } = this.queryParams;
