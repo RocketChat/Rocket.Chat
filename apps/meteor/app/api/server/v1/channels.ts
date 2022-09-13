@@ -32,13 +32,7 @@ function findChannelByIdOrName({
 	checkedArchived = true,
 	userId,
 }: {
-	params:
-		| {
-				roomId: string;
-		  }
-		| {
-				roomName: string;
-		  };
+	params: { roomId?: string; roomName?: string };
 	userId?: string;
 	checkedArchived?: boolean;
 }): IRoom {
