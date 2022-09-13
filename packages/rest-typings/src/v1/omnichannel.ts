@@ -2241,6 +2241,86 @@ const GETLivechatTriggersParamsSchema = {
 
 export const isGETLivechatTriggersParams = ajv.compile<GETLivechatTriggersParams>(GETLivechatTriggersParamsSchema);
 
+type GETLivechatRoomsParams = PaginatedRequest<{
+	fields?: string;
+	createdAt?: string;
+	customFields?: string;
+	closedAt?: string;
+	agents?: string[];
+	roomName?: string;
+	departmentId?: string;
+	open?: string;
+	onhold?: string;
+	tags?: string[];
+}>;
+
+const GETLivechatRoomsParamsSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'object',
+			nullable: true,
+		},
+		fields: {
+			type: 'string',
+			nullable: true,
+		},
+		createdAt: {
+			type: 'string',
+			nullable: true,
+		},
+		customFields: {
+			type: 'string',
+			nullable: true,
+		},
+		closedAt: {
+			type: 'string',
+			nullable: true,
+		},
+		agents: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
+		},
+		roomName: {
+			type: 'string',
+			nullable: true,
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+		open: {
+			type: 'string',
+			nullable: true,
+		},
+		onhold: {
+			type: 'string',
+			nullable: true,
+		},
+		tags: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isGETLivechatRoomsParams = ajv.compile<GETLivechatRoomsParams>(GETLivechatRoomsParamsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -2336,11 +2416,6 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/custom-fields/:_id': {
 		GET: () => { customField: ILivechatCustomField | null };
-	};
-	'/v1/livechat/rooms': {
-		GET: (params: LivechatRoomsProps) => PaginatedResult<{
-			rooms: IOmnichannelRoom[];
-		}>;
 	};
 	'/v1/livechat/:rid/messages': {
 		GET: (params: LivechatRidMessagesProps) => PaginatedResult<{
@@ -2576,6 +2651,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/triggers/:_id': {
 		GET: () => { trigger: ILivechatTrigger | null };
+	};
+	'/v1/livechat/rooms': {
+		GET: (params: GETLivechatRoomsParams) => PaginatedResult<{ rooms: IOmnichannelRoom[] }>;
 	};
 } & {
 	// EE
