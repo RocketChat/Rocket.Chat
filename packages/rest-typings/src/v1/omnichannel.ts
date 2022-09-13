@@ -2179,6 +2179,23 @@ const GETLivechatVisitorsSearchSchema = {
 
 export const isGETLivechatVisitorsSearch = ajv.compile<GETLivechatVisitorsSearch>(GETLivechatVisitorsSearchSchema);
 
+type GETLivechatAgentsAgentIdDepartmentsParams = { enabledDepartmentsOnly?: booleanString };
+
+const GETLivechatAgentsAgentIdDepartmentsParamsSchema = {
+	type: 'object',
+	properties: {
+		enabledDepartmentsOnly: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isGETLivechatAgentsAgentIdDepartmentsParams = ajv.compile<GETLivechatAgentsAgentIdDepartmentsParams>(
+	GETLivechatAgentsAgentIdDepartmentsParamsSchema,
+);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -2502,6 +2519,9 @@ export type OmnichannelEndpoints = {
 				custom_name: string;
 			})[];
 		};
+	};
+	'/v1/livechat/agents/:agentId/departments': {
+		GET: (params: GETLivechatAgentsAgentIdDepartmentsParams) => { departments: ILivechatDepartmentAgents[] };
 	};
 } & {
 	// EE
