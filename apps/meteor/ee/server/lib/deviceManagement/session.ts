@@ -9,7 +9,7 @@ import { settings } from '../../../../app/settings/server';
 import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/server/lib/UAParserCustom';
 import { deviceManagementEvents } from '../../../../server/services/device-management/events';
 import { hasLicense } from '../../../app/license/server/license';
-import { t } from '../../../../app/utils/server';
+import { t, getUserPreference } from '../../../../app/utils/server';
 
 let mailTemplates: string;
 
@@ -84,8 +84,15 @@ export const listenSessionLogin = async (): Promise<void> => {
 			}
 
 			try {
-				const isLoginEmailEnabled = settings.get('Enable_Login_Emails');
-				isLoginEmailEnabled &&
+				const userPref = settings.get('Accounts_Default_User_Preferences_showNewLoginEmailPreference')
+					? getUserPreference(userId, 'receiveNewLoginEmail', true)
+					: true;
+
+				const shouldSendLoginEmail = settings.get('Enable_Login_Emails') ? userPref : false;
+
+				console.log('User Pref = ', userPref, shouldSendLoginEmail);
+
+				shouldSendLoginEmail &&
 					Mailer.send({
 						to: `${name} <${email}>`,
 						from: Accounts.emailTemplates.from,

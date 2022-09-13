@@ -26,6 +26,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 	const userDesktopNotifications = useUserPreference('desktopNotifications');
 	const userMobileNotifications = useUserPreference('pushNotifications');
 	const userEmailNotificationMode = useUserPreference('emailNotificationMode') as keyof typeof emailNotificationOptionsLabelMap;
+	const userReceiveNewLoginEmail = useUserPreference('receiveNewLoginEmail');
 
 	const defaultDesktopNotifications = useSetting(
 		'Accounts_Default_User_Preferences_desktopNotifications',
@@ -34,6 +35,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 		'Accounts_Default_User_Preferences_pushNotifications',
 	) as keyof typeof notificationOptionsLabelMap;
 	const canChangeEmailNotification = useSetting('Accounts_AllowEmailNotifications');
+	const showNewLoginEmailPreference = useSetting('Accounts_Default_User_Preferences_showNewLoginEmailPreference');
 
 	const { values, handlers, commit } = useForm(
 		{
@@ -41,19 +43,27 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 			desktopNotifications: userDesktopNotifications,
 			pushNotifications: userMobileNotifications,
 			emailNotificationMode: userEmailNotificationMode,
+			receiveNewLoginEmail: userReceiveNewLoginEmail,
 		},
 		onChange,
 	);
 
-	const { desktopNotificationRequireInteraction, desktopNotifications, pushNotifications, emailNotificationMode } = values as {
-		desktopNotificationRequireInteraction: boolean;
-		desktopNotifications: string | number | readonly string[];
-		pushNotifications: string | number | readonly string[];
-		emailNotificationMode: string;
-	};
+	const { desktopNotificationRequireInteraction, desktopNotifications, pushNotifications, emailNotificationMode, receiveNewLoginEmail } =
+		values as {
+			desktopNotificationRequireInteraction: boolean;
+			desktopNotifications: string | number | readonly string[];
+			pushNotifications: string | number | readonly string[];
+			emailNotificationMode: string;
+			receiveNewLoginEmail: boolean;
+		};
 
-	const { handleDesktopNotificationRequireInteraction, handleDesktopNotifications, handlePushNotifications, handleEmailNotificationMode } =
-		handlers;
+	const {
+		handleDesktopNotificationRequireInteraction,
+		handleDesktopNotifications,
+		handlePushNotifications,
+		handleEmailNotificationMode,
+		handleReceiveNewLoginEmail,
+	} = handlers;
 
 	useEffect(() => setNotificationsPermission(window.Notification && Notification.permission), []);
 
@@ -153,6 +163,17 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 						{!canChangeEmailNotification && t('Email_Notifications_Change_Disabled')}
 					</Field.Hint>
 				</Field>
+
+				{showNewLoginEmailPreference && (
+					<Field>
+						<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<Field.Label>{t('receive new login email')}</Field.Label>
+							<Field.Row>
+								<ToggleSwitch checked={receiveNewLoginEmail} onChange={handleReceiveNewLoginEmail} />
+							</Field.Row>
+						</Box>
+					</Field>
+				)}
 			</FieldGroup>
 		</Accordion.Item>
 	);

@@ -19,6 +19,7 @@ const Load: FC<LoadProps> = ({ load, ...props }) => {
 			background: var(--rxc-color-neutral-300, ${colors.n300}) !important;
 		}
 	`;
+	console.log('Load');
 	return (
 		<ImageBox className={clickable} {...props} onClick={load}>
 			<Icon name='image' color='neutral-700' size='x64' />
