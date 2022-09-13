@@ -100,7 +100,7 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	isActive(): boolean {
-		return Boolean(this.imap?.state && this.imap.state !== 'disconnected');
+		return !!(this.imap?.state && this.imap.state !== 'disconnected');
 	}
 
 	stop(callback = new Function()): void {
