@@ -22,6 +22,7 @@ import type {
 	IWebdavAccount,
 	ICustomSound,
 	VoipEventDataSignature,
+	UserStatus,
 } from '@rocket.chat/core-typings';
 
 import type { AutoUpdateRecord } from '../types/IMeteor';
@@ -87,7 +88,10 @@ export type EventSignatures = {
 	'user.nameChanged'(user: Partial<IUser>): void;
 	'user.roleUpdate'(update: Record<string, any>): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
-	'presence.status'(data: { user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'> }): void;
+	'presence.status'(data: {
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
+		previousStatus: UserStatus | undefined;
+	}): void;
 	'watch.messages'(data: { clientAction: ClientAction; message: Partial<IMessage> }): void;
 	'watch.roles'(data: { clientAction: ClientAction; role: Partial<IRole> }): void;
 	'watch.rooms'(data: { clientAction: ClientAction; room: Pick<IRoom, '_id'> & Partial<IRoom> }): void;

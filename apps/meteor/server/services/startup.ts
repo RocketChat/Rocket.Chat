@@ -2,6 +2,7 @@ import { MongoInternals } from 'meteor/mongo';
 
 import { AnalyticsService } from './analytics/service';
 import { api } from '../sdk/api';
+import { AppsEngineService } from './apps-engine/service';
 import { AuthorizationLivechat } from '../../app/livechat/server/roomAccessValidator.internalService';
 import { BannerService } from './banner/service';
 import { LDAPService } from './ldap/service';
@@ -22,6 +23,7 @@ import { DeviceManagementService } from './device-management/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
+api.registerService(new AppsEngineService());
 api.registerService(new AnalyticsService());
 api.registerService(new AuthorizationLivechat());
 api.registerService(new BannerService());

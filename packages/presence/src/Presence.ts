@@ -107,6 +107,10 @@ export class Presence extends ServiceClass implements IPresence {
 	async setStatus(uid: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {
 		const userSessions = (await UsersSessions.findOneById(uid)) || { connections: [] };
 
+		const user = await Users.findOneById<Pick<IUser, 'username' | 'roles' | 'status'>>(uid, {
+			projection: { username: 1, roles: 1, status: 1 },
+		});
+
 		const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
 
 		const result = await Users.updateStatusById(uid, {
@@ -117,8 +121,7 @@ export class Presence extends ServiceClass implements IPresence {
 		});
 
 		if (result.modifiedCount > 0) {
-			const user = await Users.findOneById<Pick<IUser, 'username' | 'roles'>>(uid, { projection: { username: 1 } });
-			this.broadcast({ _id: uid, username: user?.username, status, statusText, roles: user?.roles || [] });
+			this.broadcast({ _id: uid, username: user?.username, status, statusText, roles: user?.roles || [] }, user?.status);
 		}
 
 		return !!result.modifiedCount;
@@ -133,12 +136,13 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async updateUserPresence(uid: string): Promise<void> {
-		const user = await Users.findOneById<Pick<IUser, 'username' | 'statusDefault' | 'statusText' | 'roles'>>(uid, {
+		const user = await Users.findOneById<Pick<IUser, 'username' | 'statusDefault' | 'statusText' | 'roles' | 'status'>>(uid, {
 			projection: {
 				username: 1,
 				statusDefault: 1,
 				statusText: 1,
 				roles: 1,
+				status: 1,
 			},
 		});
 		if (!user) {
@@ -157,16 +161,20 @@ export class Presence extends ServiceClass implements IPresence {
 		});
 
 		if (result.modifiedCount > 0) {
-			this.broadcast({ _id: uid, username: user.username, status, statusText: user.statusText, roles: user.roles });
+			this.broadcast({ _id: uid, username: user.username, status, statusText: user.statusText, roles: user.roles }, user.status);
 		}
 	}
 
-	private broadcast(user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'roles'>): void {
+	private broadcast(
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'roles'>,
+		previousStatus: UserStatus | undefined,
+	): void {
 		if (!this.broadcastEnabled) {
 			return;
 		}
 		this.api.broadcast('presence.status', {
 			user,
+			previousStatus,
 		});
 	}
 }

@@ -1034,6 +1034,7 @@ API.v1.addRoute(
 						const { _id, username, statusText, roles, name } = user;
 						api.broadcast('presence.status', {
 							user: { status, _id, username, statusText, roles, name },
+							previousStatus: user.status,
 						});
 					} else {
 						throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
