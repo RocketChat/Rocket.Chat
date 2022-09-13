@@ -3,8 +3,6 @@ import { LivechatTag } from '@rocket.chat/models';
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import type { FindOptions } from 'mongodb';
 
-import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-
 type FindTagsParams = {
 	userId: string;
 	text?: string;
@@ -29,10 +27,7 @@ type FindTagsByIdParams = {
 
 type FindTagsByIdResult = ILivechatTag | null;
 
-export async function findTags({ userId, text, pagination: { offset, count, sort } }: FindTagsParams): Promise<FindTagsResult> {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-tags')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findTags({ text, pagination: { offset, count, sort } }: FindTagsParams): Promise<FindTagsResult> {
 	const query = {
 		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
 	};
@@ -53,9 +48,6 @@ export async function findTags({ userId, text, pagination: { offset, count, sort
 	};
 }
 
-export async function findTagById({ userId, tagId }: FindTagsByIdParams): Promise<FindTagsByIdResult> {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-tags')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findTagById({ tagId }: FindTagsByIdParams): Promise<FindTagsByIdResult> {
 	return LivechatTag.findOneById(tagId);
 }
