@@ -82,14 +82,14 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 				<ThreadMetric
 					openThread={openThread(message._id)}
 					counter={message.tcount}
-					following={Boolean(mineUid && message?.replies.indexOf(mineUid) > -1)}
+					following={Boolean(mineUid && message?.replies?.indexOf(mineUid) > -1)}
 					mid={message._id}
 					rid={message.rid}
 					lm={message.tlm}
 					unread={Boolean(subscription?.tunread?.includes(message._id))}
 					mention={Boolean(subscription?.tunreadUser?.includes(message._id))}
 					all={Boolean(subscription?.tunreadGroup?.includes(message._id))}
-					participants={message?.replies.length}
+					participants={message?.replies?.length}
 				/>
 			)}
 
