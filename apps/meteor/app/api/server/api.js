@@ -428,7 +428,7 @@ export class APIClass extends Restivus {
 								throw new Meteor.Error(
 									'invalid-params',
 									validatorFunc.errors
-										?.map((error) => `[${error.keyword.toUpperCase()}] ${error.instancePath} - ${error.message}`)
+										?.map((error) => `[${error.keyword.toUpperCase()}Error] ${error.instancePath || '/'} - ${error.message}`)
 										.join('\n '),
 								);
 							}
