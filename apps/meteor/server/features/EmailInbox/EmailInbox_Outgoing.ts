@@ -159,7 +159,7 @@ callbacks.add(
 		}
 
 		if (message.files?.length && message.u.username !== 'rocket.cat') {
-			const AttachMsg: any = Object.assign(
+			const AttachMsg: IMessage = Object.assign(
 				{},
 				{
 					...message,
