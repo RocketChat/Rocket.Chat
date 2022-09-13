@@ -21,6 +21,7 @@ import type { Logger } from '../app/logger/server';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import { getRandomId } from './random';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
+import { compareByRanking } from './utils/comparisons';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -358,8 +359,7 @@ class Callbacks {
 				stack: new Error().stack,
 			}),
 		);
-		const rank = (callback: Callback): number => callback.priority ?? this.priority.MEDIUM;
-		callbacks.sort((a, b) => rank(a) - rank(b));
+		callbacks.sort(compareByRanking((callback: Callback): number => callback.priority ?? this.priority.MEDIUM));
 
 		this.setCallbacks(hook, callbacks);
 	}
