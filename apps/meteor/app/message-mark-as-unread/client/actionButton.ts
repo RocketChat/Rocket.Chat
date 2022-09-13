@@ -35,6 +35,11 @@ Meteor.startup(() => {
 			if (isLivechatRoom) {
 				return false;
 			}
+
+			if (!user) {
+				return false;
+			}
+
 			return message.u._id !== user._id;
 		},
 		order: 10,

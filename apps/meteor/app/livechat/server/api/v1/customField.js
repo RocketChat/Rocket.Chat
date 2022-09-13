@@ -8,29 +8,25 @@ import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFiel
 
 API.v1.addRoute('livechat/custom.field', {
 	async post() {
-		try {
-			check(this.bodyParams, {
-				token: String,
-				key: String,
-				value: String,
-				overwrite: Boolean,
-			});
+		check(this.bodyParams, {
+			token: String,
+			key: String,
+			value: String,
+			overwrite: Boolean,
+		});
 
-			const { token, key, value, overwrite } = this.bodyParams;
+		const { token, key, value, overwrite } = this.bodyParams;
 
-			const guest = await findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			if (!(await Livechat.setCustomFields({ token, key, value, overwrite }))) {
-				return API.v1.failure();
-			}
-
-			return API.v1.success({ field: { key, value, overwrite } });
-		} catch (e) {
-			return API.v1.failure(e);
+		const guest = await findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
 		}
+
+		if (!(await Livechat.setCustomFields({ token, key, value, overwrite }))) {
+			return API.v1.failure();
+		}
+
+		return API.v1.success({ field: { key, value, overwrite } });
 	},
 });
 

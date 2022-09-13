@@ -4,8 +4,8 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createDepartment } from '../../../data/livechat/rooms';
-
-// TODO: Add tests with actual e-mail servers involved
+import { createEmailInbox } from '../../../data/livechat/inboxes';
+import { updatePermission } from '../../../data/permissions.helper';
 
 describe('Email inbox', () => {
 	before((done) => getCredentials(done));
@@ -66,28 +66,330 @@ describe('Email inbox', () => {
 		done();
 	});
 	describe('GET email-inbox.list', () => {
-		it('should return a list of email inboxes', (done) => {
-			request
-				.get(api('email-inbox.list'))
+		it('should fail if user doesnt have manage-email-inbox permission', async () => {
+			await updatePermission('manage-email-inbox', []);
+			await request.get(api('email-inbox.list')).set(credentials).expect(403);
+		});
+		it('should return a list of email inboxes', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			const res = await request.get(api('email-inbox.list')).set(credentials).send().expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('emailInboxes');
+			expect(res.body.emailInboxes).to.be.an('array');
+			expect(res.body.emailInboxes).to.have.length.of.at.least(1);
+			expect(res.body.emailInboxes.filter((ibx: IEmailInbox) => ibx.email === 'test-email@example.com')).to.have.length.gte(1);
+			// make sure we delete the test inbox, even if creation failed on this test run
+			testInbox = res.body.emailInboxes.filter((ibx: IEmailInbox) => ibx.email === 'test-email@example.com')[0]._id;
+			expect(res.body).to.have.property('total');
+			expect(res.body.total).to.be.a('number');
+			expect(res.body).to.have.property('count');
+			expect(res.body.count).to.be.a('number');
+			expect(res.body).to.have.property('offset');
+			expect(res.body.offset).to.be.a('number');
+		});
+	});
+
+	describe('POST email-inbox', () => {
+		let inboxId: string;
+		it('should fail if user doesnt have manage-email-inbox permission', async () => {
+			await updatePermission('manage-email-inbox', []);
+			await request.post(api('email-inbox')).set(credentials).send({}).expect(403);
+		});
+		it('should fail if smtp config is not on body params', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			await request.post(api('email-inbox')).set(credentials).send({}).expect(400);
+		});
+		it('should fail if imap config is not on body params', async () => {
+			await request
+				.post(api('email-inbox'))
 				.set(credentials)
-				.send()
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('emailInboxes');
-					expect(res.body.emailInboxes).to.be.an('array');
-					expect(res.body.emailInboxes).to.have.length.of.at.least(1);
-					expect(res.body.emailInboxes.filter((ibx: IEmailInbox) => ibx.email === 'test-email@example.com')).to.have.length.gte(1);
-					// make sure we delete the test inbox, even if creation failed on this test run
-					testInbox = res.body.emailInboxes.filter((ibx: IEmailInbox) => ibx.email === 'test-email@example.com')[0]._id;
-					expect(res.body).to.have.property('total');
-					expect(res.body.total).to.be.a('number');
-					expect(res.body).to.have.property('count');
-					expect(res.body.count).to.be.a('number');
-					expect(res.body).to.have.property('offset');
-					expect(res.body.offset).to.be.a('number');
+				.send({
+					smtp: {
+						server: 'smtp.example.com',
+						port: 587,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+					},
 				})
-				.end(() => done());
+				.expect(400);
+		});
+		it('should fail if name is not on body params', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			await request
+				.post(api('email-inbox'))
+				.set(credentials)
+				.send({
+					smtp: {
+						server: 'smtp.example.com',
+						port: 587,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+					},
+					imap: {
+						server: 'imap.example.com',
+						port: 993,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+						maxRetries: 10,
+					},
+				})
+				.expect(400);
+		});
+		it('should fail if active is not on body params', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			await request
+				.post(api('email-inbox'))
+				.set(credentials)
+				.send({
+					name: 'test',
+					smtp: {
+						server: 'smtp.example.com',
+						port: 587,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+					},
+					imap: {
+						server: 'imap.example.com',
+						port: 993,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+						maxRetries: 10,
+					},
+				})
+				.expect(400);
+		});
+		it('should fail if email is not on body params', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			await request
+				.post(api('email-inbox'))
+				.set(credentials)
+				.send({
+					name: 'test',
+					active: true,
+					smtp: {
+						server: 'smtp.example.com',
+						port: 587,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+					},
+					imap: {
+						server: 'imap.example.com',
+						port: 993,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+						maxRetries: 10,
+					},
+				})
+				.expect(400);
+		});
+		it('should fail if description is not on body params', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			await request
+				.post(api('email-inbox'))
+				.set(credentials)
+				.send({
+					name: 'test',
+					active: true,
+					email: 'test@test.com',
+					smtp: {
+						server: 'smtp.example.com',
+						port: 587,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+					},
+					imap: {
+						server: 'imap.example.com',
+						port: 993,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+						maxRetries: 10,
+					},
+				})
+				.expect(400);
+		});
+		it('should fail if senderInfo is not on body params', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			await request
+				.post(api('email-inbox'))
+				.set(credentials)
+				.send({
+					name: 'test',
+					active: true,
+					email: 'test@test.com',
+					description: 'test',
+					smtp: {
+						server: 'smtp.example.com',
+						port: 587,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+					},
+					imap: {
+						server: 'imap.example.com',
+						port: 993,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+						maxRetries: 10,
+					},
+				})
+				.expect(400);
+		});
+		it('should fail if department is not on body params', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			await request
+				.post(api('email-inbox'))
+				.set(credentials)
+				.send({
+					name: 'test',
+					active: true,
+					email: 'test@test.com',
+					description: 'test',
+					senderInfo: 'test',
+					smtp: {
+						server: 'smtp.example.com',
+						port: 587,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+					},
+					imap: {
+						server: 'imap.example.com',
+						port: 993,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+						maxRetries: 10,
+					},
+				})
+				.expect(400);
+		});
+		it('should save an email inbox', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			const { body } = await request
+				.post(api('email-inbox'))
+				.set(credentials)
+				.send({
+					name: 'test',
+					active: false,
+					email: `test${new Date().getTime()}@test.com`,
+					description: 'test',
+					senderInfo: 'test',
+					department: 'test',
+					smtp: {
+						server: 'smtp.example.com',
+						port: 587,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+					},
+					imap: {
+						server: 'imap.example.com',
+						port: 993,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+						maxRetries: 10,
+					},
+				})
+				.expect(200);
+
+			expect(body).to.have.property('_id');
+			inboxId = body._id;
+		});
+		it('should update an email inbox when _id is passed in the object', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			const { body } = await request
+				.post(api('email-inbox'))
+				.set(credentials)
+				.send({
+					_id: inboxId,
+					name: 'test',
+					active: false,
+					email: `test${new Date().getTime()}@test.com`,
+					description: 'Updated test description',
+					senderInfo: 'test',
+					department: 'test',
+					smtp: {
+						server: 'smtp.example.com',
+						port: 587,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+					},
+					imap: {
+						server: 'imap.example.com',
+						port: 993,
+						username: 'xxxx',
+						password: 'xxxx',
+						secure: true,
+						maxRetries: 10,
+					},
+				})
+				.expect(200);
+
+			expect(body).to.have.property('_id');
+		});
+	});
+	describe('GET email-inbox/:_id', () => {
+		it('should fail if user doesnt have manage-email-inbox permission', async () => {
+			await updatePermission('manage-email-inbox', []);
+			await request.get(api('email-inbox/123')).set(credentials).expect(403);
+		});
+		it('should return nothing when email inbox does not exist', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			const { body } = await request.get(api('email-inbox/123')).set(credentials).expect(200);
+
+			expect(body.body).to.be.null;
+		});
+		it('should return an email inbox', async () => {
+			const inbox = await createEmailInbox();
+			const { body } = await request
+				.get(api(`email-inbox/${inbox._id}`))
+				.set(credentials)
+				.expect(200);
+
+			expect(body).to.have.property('_id');
+			expect(body).to.have.property('name', 'test');
+		});
+	});
+	describe('DELETE email-inbox/:_id', () => {
+		it('should fail if user doesnt have manage-email-inbox permission', async () => {
+			await updatePermission('manage-email-inbox', []);
+			await request.delete(api('email-inbox/123')).set(credentials).expect(403);
+		});
+		it('should return nothing when email inbox does not exist', async () => {
+			await updatePermission('manage-email-inbox', ['admin']);
+			await request.delete(api('email-inbox/123')).set(credentials).expect(404);
+		});
+		it('should delete an email inbox', async () => {
+			const inbox = await createEmailInbox();
+			const { body } = await request
+				.delete(api(`email-inbox/${inbox._id}`))
+				.set(credentials)
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+		});
+	});
+	describe('GET email-inbox.search', () => {
+		it('should fail if user doesnt have manage-email-inbox permission', async () => {
+			await updatePermission('manage-email-inbox', []);
+			await request.get(api('email-inbox.search')).set(credentials).expect(403);
+		});
+		it('should return an email inbox matching email', async () => {
+			await createEmailInbox();
+			await updatePermission('manage-email-inbox', ['admin']);
+			await request.get(api(`email-inbox.search?email=test`)).set(credentials).expect(200);
 		});
 	});
 });

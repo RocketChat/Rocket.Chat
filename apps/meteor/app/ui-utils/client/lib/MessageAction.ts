@@ -36,7 +36,7 @@ type MessageActionContext = 'message' | 'threads' | 'message-mobile' | 'pinned' 
 
 type MessageActionConditionProps = {
 	message: IMessage;
-	user: IUser;
+	user: IUser | undefined;
 	room: IRoom;
 	subscription?: ISubscription;
 	context?: MessageActionContext;

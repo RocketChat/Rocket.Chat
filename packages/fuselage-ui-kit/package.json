@@ -49,7 +49,7 @@
   "devDependencies": {
     "@rocket.chat/apps-engine": "~1.30.0",
     "@rocket.chat/eslint-config": "workspace:^",
-    "@rocket.chat/fuselage": "0.31.18",
+    "@rocket.chat/fuselage": "next",
     "@rocket.chat/fuselage-hooks": "0.31.18",
     "@rocket.chat/fuselage-polyfills": "0.31.18",
     "@rocket.chat/icons": "0.31.18",
