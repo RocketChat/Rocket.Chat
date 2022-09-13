@@ -11,6 +11,9 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 	MessageComposerSkeleton,
+	MessageComposerDisabled,
+	MessageComposerDisplay,
+	MessageComposerDisabledAction,
 } from '.';
 
 export default {
@@ -67,3 +70,21 @@ export const messageComposerWithSubmitActions: ComponentStory<typeof MessageComp
 );
 
 export const messageComposerLoading: ComponentStory<typeof MessageComposer> = () => <MessageComposerSkeleton />;
+
+export const messageComposerBlocked: ComponentStory<typeof MessageComposer> = () => (
+	<MessageComposer>
+		<MessageComposerDisabled>
+			<MessageComposerDisplay text='Feedback text' icon='burger' />
+		</MessageComposerDisabled>
+	</MessageComposer>
+);
+
+export const messageComposerDisabledAction: ComponentStory<typeof MessageComposer> = () => (
+	<MessageComposer>
+		<MessageComposerDisabled>
+			<MessageComposerDisplay text='Feedback text'>
+				<MessageComposerDisabledAction onClick={() => undefined}>Button</MessageComposerDisabledAction>
+			</MessageComposerDisplay>
+		</MessageComposerDisabled>
+	</MessageComposer>
+);

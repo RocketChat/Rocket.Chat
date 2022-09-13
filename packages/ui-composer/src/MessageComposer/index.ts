@@ -6,6 +6,9 @@ import MessageComposerSkeleton from './MessageComposerSkeleton';
 import MessageComposerToolbar from './MessageComposerToolbar';
 import MessageComposerToolbarActions from './MessageComposerToolbarActions';
 import MessageComposerToolbarSubmit from './MessageComposerToolbarSubmit';
+import MessageComposerDisabled from './MessageComposerDisabled';
+import MessageComposerDisplay from './MessageComposerDisplay';
+import MessageComposerDisabledAction from './MessageComposerDisabledAction';
 
 export {
 	MessageComposer,
@@ -16,4 +19,7 @@ export {
 	MessageComposerToolbarActions,
 	MessageComposerToolbarSubmit,
 	MessageComposerSkeleton,
+	MessageComposerDisabled,
+	MessageComposerDisplay,
+	MessageComposerDisabledAction,
 };
