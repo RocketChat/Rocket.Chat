@@ -871,7 +871,7 @@ const LivechatRoomsSchema = {
 
 export const isLivechatRoomsProps = ajv.compile<LivechatRoomsProps>(LivechatRoomsSchema);
 
-type LivechatRidMessagesProps = PaginatedRequest<{ query: string }>;
+type LivechatRidMessagesProps = PaginatedRequest;
 
 const LivechatRidMessagesSchema = {
 	type: 'object',
@@ -888,11 +888,8 @@ const LivechatRidMessagesSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
-			type: 'string',
-		},
 	},
-	required: ['query'],
+	required: [],
 	additionalProperties: false,
 };
 
@@ -2060,6 +2057,128 @@ const POSTLivechatUsersTypePropsSchema = {
 
 export const isPOSTLivechatUsersTypeProps = ajv.compile<POSTLivechatUsersTypeProps>(POSTLivechatUsersTypePropsSchema);
 
+type GETLivechatVisitorsPagesVisitedRoomIdParams = PaginatedRequest;
+
+const GETLivechatVisitorsPagesVisitedRoomIdParamsSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'object',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isGETLivechatVisitorsPagesVisitedRoomIdParams = ajv.compile<GETLivechatVisitorsPagesVisitedRoomIdParams>(
+	GETLivechatVisitorsPagesVisitedRoomIdParamsSchema,
+);
+
+type GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams = PaginatedRequest;
+
+const GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParamsSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'object',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isGETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams =
+	ajv.compile<GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams>(
+		GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParamsSchema,
+	);
+
+type GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams = PaginatedRequest;
+
+const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'object',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isGETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams =
+	ajv.compile<GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams>(
+		GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema,
+	);
+
+type GETLivechatVisitorsAutocompleteParams = { selector: string };
+
+const GETLivechatVisitorsAutocompleteParamsSchema = {
+	type: 'object',
+	properties: {
+		selector: {
+			type: 'string',
+		},
+	},
+	required: ['selector'],
+	additionalProperties: false,
+};
+
+export const isGETLivechatVisitorsAutocompleteParams = ajv.compile<GETLivechatVisitorsAutocompleteParams>(
+	GETLivechatVisitorsAutocompleteParamsSchema,
+);
+
+type GETLivechatVisitorsSearch = PaginatedRequest<{ term?: string }>;
+
+const GETLivechatVisitorsSearchSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'object',
+			nullable: true,
+		},
+		term: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['term'],
+	additionalProperties: false,
+};
+
+export const isGETLivechatVisitorsSearch = ajv.compile<GETLivechatVisitorsSearch>(GETLivechatVisitorsSearchSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -2068,11 +2187,7 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/visitors.info': {
 		GET: (params: LivechatVisitorsInfo) => {
-			visitor: {
-				visitorEmails: Array<{
-					address: string;
-				}>;
-			};
+			visitor: ILivechatVisitor;
 		};
 	};
 	'/v1/livechat/room.onHold': {
@@ -2303,11 +2418,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/visitors.search': {
-		GET: (
-			params: PaginatedRequest<{
-				term: string;
-			}>,
-		) => PaginatedResult<{ visitors: any[] }>;
+		GET: (params: GETLivechatVisitorsSearch) => PaginatedResult<{ visitors: ILivechatVisitor[] }>;
 	};
 	'/v1/omnichannel/contact': {
 		POST: (params: POSTOmnichannelContactProps) => { contact: string };
@@ -2375,6 +2486,22 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/room.visitor': {
 		PUT: (params: PUTLivechatRoomVisitorParams) => Deprecated<{ room: IOmnichannelRoom }>;
+	};
+	'/v1/livechat/visitors.pagesVisited/:roomId': {
+		GET: (params: GETLivechatVisitorsPagesVisitedRoomIdParams) => PaginatedResult<{ pages: IMessage[] }>;
+	};
+	'/v1/livechat/visitors.chatHistory/room/:roomId/visitor/:visitorId': {
+		GET: (params: GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams) => PaginatedResult<{ history: IOmnichannelRoom[] }>;
+	};
+	'/v1/livechat/visitors.searchChats/room/:roomId/visitor/:visitorId': {
+		GET: (params: GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams) => PaginatedResult<{ history: IOmnichannelRoom[] }>;
+	};
+	'/v1/livechat/visitors.autocomplete': {
+		GET: (params: GETLivechatVisitorsAutocompleteParams) => {
+			items: (ILivechatVisitor & {
+				custom_name: string;
+			})[];
+		};
 	};
 } & {
 	// EE

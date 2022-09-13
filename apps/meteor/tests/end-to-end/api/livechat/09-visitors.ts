@@ -380,7 +380,12 @@ describe('LIVECHAT - visitors', function () {
 		it('should return an error when the user doesnt have the right permissions', (done) => {
 			updatePermission('view-l-room', [])
 				.then(() =>
-					request.get(api('livechat/visitors.autocomplete')).set(credentials).expect('Content-Type', 'application/json').expect(403),
+					request
+						.get(api('livechat/visitors.autocomplete'))
+						.set(credentials)
+						.query({ selector: 'xxx' })
+						.expect('Content-Type', 'application/json')
+						.expect(403),
 				)
 				.then(() => done());
 		});
@@ -394,7 +399,7 @@ describe('LIVECHAT - visitors', function () {
 					.expect(400)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal("The 'selector' param is required");
+						expect(res.body.error).to.be.equal("[REQUIREDError] / - must have required property 'selector' [invalid-params]");
 					})
 					.end(done);
 			});
