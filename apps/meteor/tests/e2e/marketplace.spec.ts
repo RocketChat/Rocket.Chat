@@ -8,7 +8,7 @@ test.describe.serial('marketplace', () => {
 	});
 
 	test('expect not found message if there is no app with input name', async ({ page }) => {
-		const textFilter = page.locator('[placeholder="Search Apps"]');
+		const textFilter = page.locator('[data-qa-id="AppsFilterFilterByText"]');
 
 		await textFilter.type('*');
 
@@ -16,7 +16,7 @@ test.describe.serial('marketplace', () => {
 	});
 
 	test('expect to find app if it exists on the list', async ({ page }) => {
-		const textFilter = page.locator('[placeholder="Search Apps"]');
+		const textFilter = page.locator('[data-qa-id="AppsFilterFilterByText"]');
 
 		await textFilter.type('Add Reminder');
 

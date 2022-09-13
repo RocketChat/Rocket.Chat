@@ -53,6 +53,7 @@ const FilterByText = ({
 				addon={<Icon name='magnifier' size='x20' />}
 				onChange={handleInputChange}
 				value={text}
+				data-qa-id='AppsFilterFilterByText'
 			/>
 			{isFilterByTextPropsWithButton(props) ? (
 				<Button onClick={props.onButtonClick} mis='x8' primary>
