@@ -6,7 +6,7 @@ import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { addUserToRoom } from '../functions';
 import { api } from '../../../../server/sdk/api';
-import { Federation } from '../../../federation-v2/server/infrastructure/rocket-chat/Federation';
+import { Federation } from '../../../federation-v2/server/Federation';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {

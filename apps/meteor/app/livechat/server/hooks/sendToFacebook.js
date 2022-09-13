@@ -1,3 +1,5 @@
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import OmniChannel from '../lib/OmniChannel';
@@ -11,12 +13,12 @@ callbacks.add(
 			return message;
 		}
 
-		if (!settings.get('Livechat_Facebook_Enabled') || !settings.get('Livechat_Facebook_API_Key')) {
+		// only send the sms by SMS if it is a livechat room with SMS set to true
+		if (!(isOmnichannelRoom(room) && room.facebook && room.v && room.v.token)) {
 			return message;
 		}
 
-		// only send the sms by SMS if it is a livechat room with SMS set to true
-		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.facebook && room.v && room.v.token)) {
+		if (!settings.get('Livechat_Facebook_Enabled') || !settings.get('Livechat_Facebook_API_Key')) {
 			return message;
 		}
 

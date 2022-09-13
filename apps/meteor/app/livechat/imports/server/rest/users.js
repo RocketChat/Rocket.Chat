@@ -1,17 +1,26 @@
 import { check } from 'meteor/check';
 import _ from 'underscore';
 
-import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api/server';
 import { Users } from '../../../../models/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
+import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 API.v1.addRoute(
 	'livechat/users/:type',
-	{ authRequired: true },
 	{
-		get() {
+		authRequired: true,
+		permissionsRequired: {
+			GET: {
+				permissions: ['manage-livechat-agents'],
+				operation: 'hasAll',
+			},
+			POST: { permissions: ['view-livechat-manager'], operation: 'hasAll' },
+		},
+	},
+	{
+		async get() {
 			check(this.urlParams, {
 				type: String,
 			});
@@ -20,41 +29,40 @@ API.v1.addRoute(
 			const { text } = this.queryParams;
 
 			if (this.urlParams.type === 'agent') {
+				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
+					return API.v1.unauthorized();
+				}
+
 				return API.v1.success(
-					Promise.await(
-						findAgents({
-							userId: this.userId,
-							text,
-							pagination: {
-								offset,
-								count,
-								sort,
-							},
-						}),
-					),
+					await findAgents({
+						text,
+						pagination: {
+							offset,
+							count,
+							sort,
+						},
+					}),
 				);
 			}
 			if (this.urlParams.type === 'manager') {
+				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['view-livechat-manager']))) {
+					return API.v1.unauthorized();
+				}
+
 				return API.v1.success(
-					Promise.await(
-						findManagers({
-							userId: this.userId,
-							text,
-							pagination: {
-								offset,
-								count,
-								sort,
-							},
-						}),
-					),
+					await findManagers({
+						text,
+						pagination: {
+							offset,
+							count,
+							sort,
+						},
+					}),
 				);
 			}
 			throw new Error('Invalid type');
 		},
-		post() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async post() {
 			check(this.urlParams, {
 				type: String,
 			});
@@ -84,13 +92,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/users/:type/:_id',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
-
+		async get() {
 			check(this.urlParams, {
 				type: String,
 				_id: String,
@@ -122,11 +126,7 @@ API.v1.addRoute(
 				user: null,
 			});
 		},
-		delete() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
-
+		async delete() {
 			check(this.urlParams, {
 				type: String,
 				_id: String,

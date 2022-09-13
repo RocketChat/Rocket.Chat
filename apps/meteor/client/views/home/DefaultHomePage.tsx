@@ -23,13 +23,13 @@ const DefaultHomePage = (): ReactElement => {
 	const workspaceName = useSetting('Site_Name');
 
 	return (
-		<Page data-qa='page-home' data-qa-type='default' backgroundColor='neutral-100'>
+		<Page data-qa='page-home' data-qa-type='default' background='tint'>
 			<HomePageHeader />
 			<PageScrollableContent>
-				<Box is='h1' fontScale='h1' minHeight='x40' data-qa-id='homepage-welcome-text'>
+				<Box is='h1' fontScale='h1' data-qa-id='homepage-welcome-text'>
 					{t('Welcome_to', { Site_Name: workspaceName || 'Rocket.Chat' })}
 				</Box>
-				<Box is='h3' fontScale='h3' marginBlock='x16'>
+				<Box is='h3' fontScale='h3' mb='x16'>
 					{t('Some_ideas_to_get_you_started')}
 				</Box>
 				<Grid>

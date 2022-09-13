@@ -1,9 +1,15 @@
 import { faker } from '@faker-js/faker';
-import type { Page } from '@playwright/test';
+import type { Browser, Page } from '@playwright/test';
 
 import { test, expect } from './utils/test';
 import { HomeChannel, OmnichannelLiveChat } from './page-objects';
-import { createAuxContext } from './utils';
+
+const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
+	const page = await browser.newPage({ storageState });
+	const poHomeChannel = new HomeChannel(page);
+	await page.goto('/');
+	return { page, poHomeChannel };
+};
 
 const newUser = {
 	name: faker.name.firstName(),

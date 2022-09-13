@@ -11,13 +11,18 @@ import Triggers from './triggers';
 
 const createOrUpdateGuest = async (guest) => {
 	const { token } = guest;
-	token && await store.setState({ token });
+	token && (await store.setState({ token }));
 	const user = await Livechat.grantVisitor({ visitor: { ...guest } });
 	store.setState({ user });
 };
 
 const updateIframeGuestData = (data) => {
-	const { iframe, iframe: { guest }, user: _id, token } = store.state;
+	const {
+		iframe,
+		iframe: { guest },
+		user: _id,
+		token,
+	} = store.state;
 	store.setState({ iframe: { ...iframe, guest: { ...guest, ...data } } });
 
 	if (!_id) {
@@ -35,7 +40,11 @@ const api = {
 		}
 
 		const { token, room: { _id: rid } = {} } = store.state;
-		const { change, title, location: { href } } = info;
+		const {
+			change,
+			title,
+			location: { href },
+		} = info;
 
 		Livechat.sendVisitorNavigation({ token, rid, pageInfo: { change, title, location: { href } } });
 	},
@@ -45,7 +54,10 @@ const api = {
 	},
 
 	setTheme({ color, fontColor, iconColor, title, offlineTitle } = {}) {
-		const { iframe, iframe: { theme } } = store.state;
+		const {
+			iframe,
+			iframe: { theme },
+		} = store.state;
 		store.setState({
 			iframe: {
 				...iframe,
@@ -62,7 +74,10 @@ const api = {
 	},
 
 	async setDepartment(value) {
-		const { config: { departments = [] }, user: { department: existingDepartment } = {} } = store.state;
+		const {
+			config: { departments = [] },
+			user: { department: existingDepartment } = {},
+		} = store.state;
 
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
@@ -113,7 +128,11 @@ const api = {
 	},
 
 	async setGuestToken(token) {
-		const { token: localToken, iframe, iframe: { guest } } = store.state;
+		const {
+			token: localToken,
+			iframe,
+			iframe: { guest },
+		} = store.state;
 		if (token === localToken) {
 			return;
 		}

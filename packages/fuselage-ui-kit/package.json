@@ -1,0 +1,84 @@
+{
+  "name": "@rocket.chat/fuselage-ui-kit",
+  "version": "0.31.16",
+  "description": "UiKit elements for Rocket.Chat Apps built under Fuselage design system",
+  "homepage": "https://rocketchat.github.io/Rocket.Chat.Fuselage/",
+  "author": {
+    "name": "Rocket.Chat",
+    "url": "https://rocket.chat/"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RocketChat/fuselage.git",
+    "directory": "packages/fuselage-ui-kit"
+  },
+  "bugs": {
+    "url": "https://github.com/RocketChat/fuselage/issues"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "run-s .:build:clean .:build:esm .:build:cjs",
+    ".:build:clean": "rimraf dist",
+    ".:build:esm": "tsc -p tsconfig-esm.json",
+    ".:build:cjs": "tsc -p tsconfig-cjs.json",
+    "eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
+    "eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+    "docs": "cross-env NODE_ENV=production build-storybook -o ../../static/fuselage-ui-kit",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "cross-env NODE_ENV=production build-storybook",
+    "bump-next": "bump-next"
+  },
+  "peerDependencies": {
+    "@rocket.chat/fuselage": "*",
+    "@rocket.chat/fuselage-hooks": "*",
+    "@rocket.chat/fuselage-polyfills": "*",
+    "@rocket.chat/icons": "*",
+    "@rocket.chat/styled": "*",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@rocket.chat/apps-engine": "~1.30.0",
+    "@rocket.chat/eslint-config": "workspace:^",
+    "@rocket.chat/fuselage": "next",
+    "@rocket.chat/fuselage-hooks": "0.31.18",
+    "@rocket.chat/fuselage-polyfills": "0.31.18",
+    "@rocket.chat/icons": "0.31.18",
+    "@rocket.chat/prettier-config": "next",
+    "@rocket.chat/styled": "0.31.18",
+    "@storybook/addon-essentials": "~6.5.10",
+    "@storybook/addons": "~6.5.10",
+    "@storybook/builder-webpack5": "~6.5.10",
+    "@storybook/manager-webpack5": "~6.5.10",
+    "@storybook/react": "~6.5.10",
+    "@storybook/source-loader": "~6.5.10",
+    "@storybook/theming": "~6.5.10",
+    "@types/react": "~17.0.39",
+    "@types/react-dom": "^17.0.11",
+    "babel-loader": "~8.2.3",
+    "cross-env": "^7.0.3",
+    "eslint": "~8.8.0",
+    "lint-staged": "~12.3.3",
+    "normalize.css": "^8.0.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "~2.5.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "rimraf": "^3.0.2",
+    "typescript": "~4.3.5",
+    "webpack": "~5.68.0"
+  },
+  "dependencies": {
+    "@rocket.chat/ui-kit": "0.31.18",
+    "tslib": "^2.3.1"
+  }
+}
