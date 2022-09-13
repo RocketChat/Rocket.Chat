@@ -17,23 +17,29 @@ const ActionsBlock = ({ appId, blockId, elements, parser, t }) => {
 		setCollapsed(false);
 	}, []);
 
-	return <Block appId={appId} blockId={blockId}>
-		<div className={createClassName(styles, 'uikit-actions-block')}>
-			{renderableElements.map((element, key) => {
-				const renderedElement = parser.renderActions(element, BLOCK_CONTEXT.ACTION);
-				if (!renderedElement) {
-					return null;
-				}
+	return (
+		<Block appId={appId} blockId={blockId}>
+			<div className={createClassName(styles, 'uikit-actions-block')}>
+				{renderableElements.map((element, key) => {
+					const renderedElement = parser.renderActions(element, BLOCK_CONTEXT.ACTION);
+					if (!renderedElement) {
+						return null;
+					}
 
-				return <div key={key} className={createClassName(styles, 'uikit-actions-block__item')}>
-					{renderedElement}
-				</div>;
-			})}
-			{isMoreButtonVisible && <Button outline secondary small onClick={handleMoreButtonClick}>
-				{t('hiddenelementscount_more', { hiddenElementsCount })}
-			</Button>}
-		</div>
-	</Block>;
+					return (
+						<div key={key} className={createClassName(styles, 'uikit-actions-block__item')}>
+							{renderedElement}
+						</div>
+					);
+				})}
+				{isMoreButtonVisible && (
+					<Button outline secondary small onClick={handleMoreButtonClick}>
+						{t('hiddenelementscount_more', { hiddenElementsCount })}
+					</Button>
+				)}
+			</div>
+		</Block>
+	);
 };
 
 export default withTranslation()(ActionsBlock);
