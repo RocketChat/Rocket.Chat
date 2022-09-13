@@ -10,3 +10,5 @@
 // read only: true but has permission to post
 
 // omnichannel: onhold
+// omnichannel: custom composers
+// omnichannel: inquiry

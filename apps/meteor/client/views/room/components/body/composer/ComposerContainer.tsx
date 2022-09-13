@@ -1,34 +1,33 @@
-import { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isVoipRoom } from '@rocket.chat/core-typings';
 import React, { memo, ReactElement } from 'react';
 
-import { ChatMessages } from '../../../../../../app/ui';
 import { useRoom } from '../../../contexts/RoomContext';
 import { ComposerAnonymous } from './ComposerAnonymous';
 import { ComposerBlocked } from './ComposerBlocked';
 import { ComposerJoinWithPassword } from './ComposerJoinWithPassword';
-import ComposerMessage from './ComposerMessage';
+import ComposerMessage, { ComposerMessageProps } from './ComposerMessage';
+import { ComposerOmnichannel } from './ComposerOmnichannel/ComposerOmnichannel';
 import { ComposerReadOnly } from './ComposerReadOnly';
 import { useMessageComposerIsAnonymous } from './hooks/useMessageComposerIsAnonymous';
 import { useMessageComposerIsBlocked } from './hooks/useMessageComposerIsBlocked';
 import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOnly';
 
-type ComposerContainerProps = {
-	rid: IRoom['_id'];
-	subscription?: ISubscription;
-	chatMessagesInstance: ChatMessages;
-	onResize?: () => void;
-};
-
-const ComposerContainer = ({ rid, subscription, chatMessagesInstance, onResize }: ComposerContainerProps): ReactElement => {
+const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
 	const room = useRoom();
 
-	const mustJoinWithCode = !subscription && room.joinCodeRequired;
+	const mustJoinWithCode = !props.subscription && room.joinCodeRequired;
 
 	const isAnonymous = useMessageComposerIsAnonymous();
 
-	const isBlockedOrBlocker = useMessageComposerIsBlocked({ subscription });
+	const isBlockedOrBlocker = useMessageComposerIsBlocked({ subscription: props.subscription });
 
-	const isReadOnly = useMessageComposerIsReadOnly(rid, subscription);
+	const isReadOnly = useMessageComposerIsReadOnly(props.rid, props.subscription);
+
+	const isOmnichannel = isOmnichannelRoom(room) || isVoipRoom(room);
+
+	if (isOmnichannel) {
+		return <ComposerOmnichannel {...props} />;
+	}
 
 	if (isAnonymous) {
 		return (
@@ -62,7 +61,7 @@ const ComposerContainer = ({ rid, subscription, chatMessagesInstance, onResize }
 		);
 	}
 
-	return <ComposerMessage rid={rid} subscription={subscription} chatMessagesInstance={chatMessagesInstance} onResize={onResize} />;
+	return <ComposerMessage {...props} />;
 };
 
 export default memo(ComposerContainer);

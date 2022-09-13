@@ -6,6 +6,7 @@ const MessageComposer = forwardRef<
 	HTMLElement,
 	Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 		children: ReactNode;
+		is?: React.ElementType<any>;
 	}
 >(
 	(props, ref): ReactElement => (

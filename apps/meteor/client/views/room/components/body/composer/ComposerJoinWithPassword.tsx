@@ -1,45 +1,48 @@
+import { TextInput } from '@rocket.chat/fuselage';
 import { MessageComposerDisabled, MessageComposerDisabledAction, MessageComposerDisabledDivider } from '@rocket.chat/ui-composer';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import React, { ChangeEvent, ReactElement, useCallback, useState, FormEventHandler } from 'react';
+
+import { useRoom } from '../../../contexts/RoomContext';
 
 export const ComposerJoinWithPassword = (): ReactElement => {
+	const room = useRoom();
+	const [joinCode, setJoinPassword] = useState<string>('');
+
+	const [error, setError] = useState<string>('');
+
 	const t = useTranslation();
 
-	// <div class="rc-message-box__join">
-	//     {{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
+	const joinEndpoint = useEndpoint('POST', '/v1/channels.join');
 
-	//     {{#if isJoinCodeRequired}}
-	//     <input type="password" name="joinCode" placeholder="{{_ 'Password'}}" class="rc-input__element rc-message-box__join-code">
-	//     {{/if}}
+	const join = useCallback<FormEventHandler<HTMLElement>>(
+		async (e) => {
+			e.preventDefault();
+			try {
+				await joinEndpoint({
+					roomId: room._id,
+					joinCode,
+				});
+			} catch (error: any) {
+				setError(error.error);
+			}
+		},
+		[joinEndpoint, room._id, joinCode],
+	);
 
-	//     <button class="rc-button rc-button--primary rc-button--small rc-message-box__join-button js-join-code">{{_ "join"}}</button>
-	// </div>
-
-	// async 'click .js-join-code'(event: JQuery.ClickEvent) {
-	// 	event.stopPropagation();
-	// 	event.preventDefault();
-
-	// 	const joinCodeInput = Template.instance().find('[name=joinCode]') as HTMLInputElement;
-	// 	const joinCode = joinCodeInput?.value;
-
-	// 	await call('joinRoom', this.rid, joinCode);
-
-	// 	if (hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this.rid).loaded === 0) {
-	// 		const openedRoom = RoomManager.getOpenedRoomByRid(this.rid);
-	// 		if (openedRoom) {
-	// 			openedRoom.streamActive = false;
-	// 			openedRoom.ready = false;
-	// 		}
-	// 		RoomHistoryManager.getRoom(this.rid).loaded = undefined;
-	// 		RoomManager.computation.invalidate();
-	// 	}
-	// },
+	const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+		setJoinPassword(e.target.value);
+		setError('');
+	}, []);
 
 	return (
-		<MessageComposerDisabled>
-			{t('you_are_in_preview_mode_of')}
+		<MessageComposerDisabled is='form' aria-label={t('Join_with_password')} onSubmit={join}>
+			{t('you_are_in_preview')}
 			<MessageComposerDisabledDivider />
-			<MessageComposerDisabledAction>{t('Join_with_password')}</MessageComposerDisabledAction>{' '}
+			<TextInput error={error} value={joinCode} onChange={handleChange} placeholder={t('you_are_in_preview_please_insert_the_password')} />
+			<MessageComposerDisabledAction type='submit' disabled={Boolean(!joinCode)}>
+				{t('Join_with_password')}
+			</MessageComposerDisabledAction>
 		</MessageComposerDisabled>
 	);
 };

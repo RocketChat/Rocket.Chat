@@ -21,11 +21,6 @@ Template.livechatReadOnly.helpers({
 		return room && room.open === true;
 	},
 
-	showPreview() {
-		const config = Template.instance().routingConfig.get();
-		return config.previewRoom || Template.currentData().onHold;
-	},
-
 	isPreparing() {
 		return Template.instance().preparing.get();
 	},

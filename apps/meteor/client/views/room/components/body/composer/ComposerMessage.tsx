@@ -11,7 +11,7 @@ import { useEmbeddedLayout } from '../../../../../hooks/useEmbeddedLayout';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import ComposerSkeleton from '../../../Room/ComposerSkeleton';
 
-type ComposerMessageProps = {
+export type ComposerMessageProps = {
 	rid: IRoom['_id'];
 	subscription?: ISubscription;
 	chatMessagesInstance: ChatMessages;
