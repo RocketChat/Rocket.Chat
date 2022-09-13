@@ -613,7 +613,7 @@ const LivechatDepartmentsByUnitIdSchema = {
 
 export const isLivechatDepartmentsByUnitIdProps = ajv.compile<LivechatDepartmentsByUnitIdProps>(LivechatDepartmentsByUnitIdSchema);
 
-type LivechatUsersManagerGETProps = PaginatedRequest<{ text?: string }>;
+type LivechatUsersManagerGETProps = PaginatedRequest<{ text?: string; fields?: string }>;
 
 const LivechatUsersManagerGETSchema = {
 	type: 'object',
@@ -635,6 +635,10 @@ const LivechatUsersManagerGETSchema = {
 			nullable: true,
 		},
 		query: {
+			type: 'string',
+			nullable: true,
+		},
+		fields: {
 			type: 'string',
 			nullable: true,
 		},
