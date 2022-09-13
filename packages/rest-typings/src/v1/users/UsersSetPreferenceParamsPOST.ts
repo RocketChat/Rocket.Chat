@@ -38,6 +38,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
+		receiveNewLoginEmail?: boolean;
 	};
 };
 

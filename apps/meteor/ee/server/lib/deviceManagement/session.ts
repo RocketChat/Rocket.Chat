@@ -84,13 +84,11 @@ export const listenSessionLogin = async (): Promise<void> => {
 			}
 
 			try {
-				const userPref = settings.get('Accounts_Default_User_Preferences_showNewLoginEmailPreference')
+				const userReceiveLoginEmailPreference = settings.get('Accounts_Default_User_Preferences_showNewLoginEmailPreference')
 					? getUserPreference(userId, 'receiveNewLoginEmail', true)
 					: true;
 
-				const shouldSendLoginEmail = settings.get('Enable_Login_Emails') ? userPref : false;
-
-				console.log('User Pref = ', userPref, shouldSendLoginEmail);
+				const shouldSendLoginEmail = settings.get('Enable_Login_Emails') ? userReceiveLoginEmailPreference : false;
 
 				shouldSendLoginEmail &&
 					Mailer.send({
