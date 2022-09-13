@@ -1,8 +1,25 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
 import type { PadDigit } from './Pad';
 import { useLongPress } from './hooks/useLongPress';
+
+const padButtonStyle = css`
+	background-color: transparent;
+	width: 94px;
+	height: 64px;
+	padding: 8px;
+	margin: 8px;
+	border: none;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	&:hover {
+		background-color: #e4e7ea;
+	}
+`;
 
 const PadButton = ({
 	children,
@@ -20,20 +37,17 @@ const PadButton = ({
 
 	return (
 		<Button
-			m='8px'
-			pb='8px'
-			minWidth='28%'
-			display='flex'
-			flexDirection='column'
-			alignItems='center'
+			className={padButtonStyle}
 			onClick={onClick}
 			onMouseDown={onMouseDown}
 			onMouseUp={onMouseUp}
 			onTouchStart={onTouchStart}
 			onTouchEnd={onTouchEnd}
 		>
-			<Box fontSize='h2'>{firstDigit}</Box>
-			<Box fontSize='c1' color='info'>
+			<Box is='p' fontSize='h2' lineHeight='32px'>
+				{firstDigit}
+			</Box>
+			<Box is='p' fontSize='c1' lineHeight='16px' color='info'>
 				{secondDigit}
 			</Box>
 		</Button>
