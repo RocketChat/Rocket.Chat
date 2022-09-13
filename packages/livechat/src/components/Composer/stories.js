@@ -8,12 +8,7 @@ import PlusIcon from '../../icons/plus.svg';
 import SendIcon from '../../icons/send.svg';
 import SmileIcon from '../../icons/smile.svg';
 
-
-const centeredWithWidth = (storyFn, ...args) => centered(() => (
-	<div style={{ width: '365px' }}>
-		{storyFn()}
-	</div>
-), ...args);
+const centeredWithWidth = (storyFn, ...args) => centered(() => <div style={{ width: '365px' }}>{storyFn()}</div>, ...args);
 
 const defaultPlaceholder = 'Insert your text here';
 
@@ -29,9 +24,7 @@ storiesOf('Components/Composer', module)
 			onUpload={action('upload')}
 		/>
 	))
-	.add('connecting', () => (
-		<Composer connecting />
-	))
+	.add('connecting', () => <Composer connecting />)
 	.add('with large placeholder', () => (
 		<Composer
 			value={text('value', '')}
@@ -52,7 +45,7 @@ storiesOf('Components/Composer', module)
 	))
 	.add('with emojis', () => (
 		<Composer
-			value={text('value', ':heart: :smile: :\'(')}
+			value={text('value', ":heart: :smile: :'(")}
 			placeholder={text('placeholder', defaultPlaceholder)}
 			onChange={action('change')}
 			onSubmit={action('submit')}
@@ -61,7 +54,7 @@ storiesOf('Components/Composer', module)
 	))
 	.add('with mentions', () => (
 		<Composer
-			value={text('value', '@all, I\'m @here with @user.')}
+			value={text('value', "@all, I'm @here with @user.")}
 			placeholder={text('placeholder', defaultPlaceholder)}
 			onChange={action('change')}
 			onSubmit={action('submit')}
