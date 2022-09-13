@@ -4,10 +4,14 @@ import { Livechat } from '../api';
 import { ModalManager } from '../components/Modal';
 import store from '../store';
 
-
 const promptTranscript = async () => {
-	console.log(store.state);
-	const { config: { messages: { transcriptMessage } }, user: { token, visitorEmails }, room: { _id } } = store.state;
+	const {
+		config: {
+			messages: { transcriptMessage },
+		},
+		user: { token, visitorEmails },
+		room: { _id },
+	} = store.state;
 	const email = visitorEmails && visitorEmails.length > 0 ? visitorEmails[0].address : '';
 	if (!email) {
 		return;
@@ -18,20 +22,22 @@ const promptTranscript = async () => {
 	return ModalManager.confirm({
 		text: message,
 	}).then((result) => {
-		if ((typeof result.success === 'boolean') && result.success) {
+		if (typeof result.success === 'boolean' && result.success) {
 			return Livechat.requestTranscript(email, { token, rid: _id });
 		}
 	});
 };
 
-const transcriptSentAlert = (message) => ModalManager.alert({
-	text: message,
-	timeout: 1000,
-});
-
+const transcriptSentAlert = (message) =>
+	ModalManager.alert({
+		text: message,
+		timeout: 1000,
+	});
 
 export const handleTranscript = async () => {
-	const { config: { settings: { transcript } = {} } } = store.state;
+	const {
+		config: { settings: { transcript } = {} },
+	} = store.state;
 
 	if (!transcript) {
 		return;

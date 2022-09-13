@@ -1,12 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users } from '@rocket.chat/models';
 
-import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-
-export async function findMonitors({ userId, text, pagination: { offset, count, sort } }) {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-monitors'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findMonitors({ text, pagination: { offset, count, sort } }) {
 	const query = {};
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
@@ -39,10 +34,7 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 	};
 }
 
-export async function findMonitorByUsername({ userId, username }) {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-monitors'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findMonitorByUsername({ username }) {
 	const user = await Users.findOne(
 		{ username },
 		{
