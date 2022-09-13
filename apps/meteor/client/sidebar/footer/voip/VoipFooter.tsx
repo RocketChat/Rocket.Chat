@@ -103,22 +103,22 @@ export const VoipFooter = ({
 					{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
 						<ButtonGroup medium className='sidebar--custom-colors'>
 							<IconButton
-								disabled={paused}
-								title={muted ? tooltips.unmute : tooltips.mute}
-								color={muted ? 'neutral-500' : 'info'}
-								icon={muted ? 'mic-off' : 'mic'}
 								small
+								disabled={paused}
+								icon={muted ? 'mic-off' : 'mic'}
+								color={muted ? 'neutral-500' : 'info'}
+								data-tooltip={muted ? tooltips.unmute : tooltips.mute}
 								onClick={(e): void => {
 									e.stopPropagation();
 									toggleMic(!muted);
 								}}
 							/>
 							<IconButton
-								title={holdTitle}
+								small
+								data-tooltip={holdTitle}
 								disabled={!isEnterprise}
 								icon={paused ? 'pause' : 'pause-unfilled'}
 								color={paused ? 'neutral-500' : 'info'}
-								small
 								onClick={handleHold}
 							/>
 							{options && <Menu color='neutral-500' options={options} />}
@@ -138,12 +138,12 @@ export const VoipFooter = ({
 					<ButtonGroup medium>
 						{(callerState === 'IN_CALL' || callerState === 'ON_HOLD' || callerState === 'OFFER_SENT') && (
 							<Button
-								title={tooltips.endCall}
-								disabled={paused}
 								small
 								square
 								danger
+								disabled={paused}
 								aria-label={t('End_call')}
+								data-tooltip={tooltips.endCall}
 								onClick={(e): unknown => {
 									e.stopPropagation();
 									muted && toggleMic(false);
@@ -155,16 +155,16 @@ export const VoipFooter = ({
 							</Button>
 						)}
 						{callerState === 'OFFER_RECEIVED' && (
-							<Button title={tooltips.endCall} aria-label={t('Reject_call')} small square danger onClick={callActions.reject}>
+							<Button data-tooltip={tooltips.endCall} aria-label={t('Reject_call')} small square danger onClick={callActions.reject}>
 								<Icon name='phone-off' size='x16' />
 							</Button>
 						)}
 						{callerState === 'OFFER_RECEIVED' && (
 							<Button
-								title={tooltips.acceptCall}
 								small
 								square
 								success
+								data-tooltip={tooltips.acceptCall}
 								onClick={async (): Promise<void> => {
 									callActions.pickUp();
 									const rid = await createRoom(caller);

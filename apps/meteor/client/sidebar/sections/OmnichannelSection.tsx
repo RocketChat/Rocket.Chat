@@ -35,11 +35,13 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 		<Sidebar.TopBar.ToolBox className='omnichannel-sidebar' {...props}>
 			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
 			<Sidebar.TopBar.Actions>
-				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} onClick={(): void => handleRoute('queue')} />}
+				{showOmnichannelQueueLink && (
+					<Sidebar.TopBar.Action icon='queue' data-tooltip={t('Queue')} onClick={(): void => handleRoute('queue')} />
+				)}
 				{isCallEnabled && <OmnichannelCallToggle />}
 				<OmnichannelLivechatToggle />
 				{hasPermissionToSeeContactCenter && (
-					<Sidebar.TopBar.Action title={t('Contact_Center')} icon='address-book' onClick={(): void => handleRoute('directory')} />
+					<Sidebar.TopBar.Action data-tooltip={t('Contact_Center')} icon='address-book' onClick={(): void => handleRoute('directory')} />
 				)}
 				{isCallReady && <OmniChannelCallDialPad />}
 			</Sidebar.TopBar.Actions>

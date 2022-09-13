@@ -11,12 +11,6 @@ export const OmnichannelLivechatToggle = (): ReactElement => {
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const props = {
-		title: agentAvailable ? t('Turn_off_answer_chats') : t('Turn_on_answer_chats'),
-		color: agentAvailable ? 'success' : undefined,
-		icon: agentAvailable ? 'message' : 'message-disabled',
-	} as const;
-
 	const handleAvailableStatusChange = useMutableCallback(async () => {
 		try {
 			await changeAgentStatus();
@@ -25,5 +19,12 @@ export const OmnichannelLivechatToggle = (): ReactElement => {
 		}
 	});
 
-	return <Sidebar.TopBar.Action {...props} onClick={handleAvailableStatusChange} />;
+	return (
+		<Sidebar.TopBar.Action
+			data-tooltip={agentAvailable ? t('Turn_off_answer_chats') : t('Turn_on_answer_chats')}
+			color={agentAvailable ? 'success' : undefined}
+			icon={agentAvailable ? 'message' : 'message-disabled'}
+			onClick={handleAvailableStatusChange}
+		/>
+	);
 };
