@@ -6,9 +6,11 @@ import { settings } from '../../app/settings/server';
 import { setUserAvatar } from '../../app/lib';
 import { Users } from '../../app/models/server';
 import { hasPermission } from '../../app/authorization/server';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	setAvatarFromService(dataURI, contentType, service, userId) {
+		methodDeprecationLogger.warn('setAvatarFromService will be deprecated in future versions of Rocket.Chat');
 		check(dataURI, String);
 		check(contentType, Match.Optional(String));
 		check(service, Match.Optional(String));

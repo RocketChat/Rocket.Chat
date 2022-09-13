@@ -78,11 +78,10 @@ export const isUsersSetAvatarProps = ajv.compile<UsersSetAvatar>(UsersSetAvatarS
 type UsersSetAvatarFromService = {
 	userId?: IUser['_id'];
 	username?: IUser['username'];
-	avatarUrl?: string;
 
-	blob?: Blob | {};
-	contentType?: string;
-	service?: string;
+	blob: string;
+	contentType: string;
+	service: string;
 };
 
 const UsersSetAvatarFromServiceSchema = {
@@ -96,24 +95,17 @@ const UsersSetAvatarFromServiceSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		avatarUrl: {
-			type: 'string',
-			nullable: true,
-		},
 		blob: {
-			type: 'object',
-			nullable: true,
+			type: 'string',
 		},
 		contentType: {
 			type: 'string',
-			nullable: true,
 		},
 		service: {
 			type: 'string',
-			nullable: true,
 		},
 	},
-	required: [],
+	required: ['blob', 'contentType', 'service'],
 	additionalProperties: false,
 };
 

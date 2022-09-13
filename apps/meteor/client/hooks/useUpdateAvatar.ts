@@ -50,9 +50,8 @@ export const useUpdateAvatar = (
 			return saveAvatarUrlAction();
 		}
 		if (isServiceObject(avatarObj)) {
-			const { blob, contentType, service } = avatarObj;
 			try {
-				await setAvatarFromService({ blob, contentType, service });
+				await setAvatarFromService(avatarObj);
 				dispatchToastMessage({ type: 'success', message: successText });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

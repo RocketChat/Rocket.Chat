@@ -753,12 +753,9 @@ describe('[Users]', function () {
 
 	describe('[/users.setAvatarFromService]', () => {
 		let user;
-		before(async () => {
-			user = await createUser();
-		});
-
 		let userCredentials;
 		before(async () => {
+			user = await createUser();
 			userCredentials = await login(user.username, password);
 		});
 		before((done) => {
@@ -777,12 +774,10 @@ describe('[Users]', function () {
 				.post(api('users.setAvatarFromService'))
 				.set(userCredentials)
 				.send({
-					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
-					avatarUrl: avatarURL,
-					blob: {},
-					contentType: '',
-					service: 'url',
+					blob: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+					contentType: 'image/png',
+					service: 'gravatar',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -796,12 +791,10 @@ describe('[Users]', function () {
 				.post(api('users.setAvatarFromService'))
 				.set(userCredentials)
 				.send({
-					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
-					avatarUrl: avatarURL,
-					blob: {},
-					contentType: '',
-					service: 'url',
+					blob: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+					contentType: 'image/png',
+					service: 'gravatar',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -815,12 +808,10 @@ describe('[Users]', function () {
 				.post(api('users.setAvatarFromService'))
 				.set(userCredentials)
 				.send({
-					userId: userCredentials['X-User-Id'],
 					username: adminUsername,
-					avatarUrl: avatarURL,
-					blob: {},
-					contentType: '',
-					service: 'url',
+					blob: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+					contentType: 'image/png',
+					service: 'gravatar',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
