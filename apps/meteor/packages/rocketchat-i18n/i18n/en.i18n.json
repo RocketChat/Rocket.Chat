@@ -3943,6 +3943,7 @@
   "Restart_the_server": "Restart The Server",
   "restart-server": "Restart the server",
   "restart-server_description": "Permission to restart the server",
+  "Resume": "Resume",
   "Retail": "Retail",
   "Retention_setting_changed_successfully": "Retention policy setting changed successfully",
   "RetentionPolicy": "Retention Policy",
