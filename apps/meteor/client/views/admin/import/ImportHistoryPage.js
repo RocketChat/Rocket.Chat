@@ -115,7 +115,7 @@ function ImportHistoryPage() {
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
-				<Table fixed>
+				<Table fixed data-qa-id='ImportTable'>
 					<Table.Head>
 						<Table.Row>
 							<Table.Cell is='th' rowSpan={2} width='x140'>
@@ -155,7 +155,7 @@ function ImportHistoryPage() {
 							</Table.Row>
 						)}
 					</Table.Head>
-					<Table.Body data-qa-id='ImportTable'>
+					<Table.Body>
 						{isLoading ? (
 							Array.from({ length: 20 }, (_, i) => <ImportOperationSummary.Skeleton small={small} key={i} />)
 						) : (

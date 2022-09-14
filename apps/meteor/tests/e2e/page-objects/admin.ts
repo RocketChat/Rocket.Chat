@@ -100,12 +100,9 @@ export class Admin {
 		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import New File"');
 	}
 
-	get selectFileType(): Locator {
-		return this.page.locator('.rcx-select');
-	}
-
-	optionTypeFile(label: string): Locator {
-		return this.page.locator(`.rcx-option__content >> text="${label}"`);
+	async getOptionFileType(option: string): Promise<Locator> {
+		await this.page.locator('.rcx-select').click();
+		return this.page.locator(`.rcx-option__content >> text="${option}"`);
 	}
 
 	get inputFile(): Locator {
@@ -121,6 +118,6 @@ export class Admin {
 	}
 
 	get importRow(): Locator {
-		return this.page.locator('[data-qa-id="ImportTable"] tr:first-child td >> text="Completed successfully"');
+		return this.page.locator('[data-qa-id="ImportTable"] tbody tr:first-child td >> text="Completed successfully"');
 	}
 }
