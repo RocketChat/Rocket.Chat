@@ -19,18 +19,7 @@ type VoipFooterPropsType = {
 	paused: boolean;
 	toggleMic: (state: boolean) => void;
 	togglePause: (state: boolean) => void;
-	tooltips: {
-		mute: string;
-		unmute: string;
-		resume: string;
-		hold: string;
-		holdEEOnly: string;
-		accept: string;
-		decline: string;
-		endCall: string;
-	};
 	callsInQueue: string;
-
 	createRoom: (caller: ICallerInfo, callDirection?: IVoipRoom['direction']) => Promise<IVoipRoom['_id']>;
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
@@ -50,7 +39,6 @@ export const VoipFooter = ({
 	paused,
 	toggleMic,
 	togglePause,
-	tooltips,
 	createRoom,
 	openRoom,
 	callsInQueue,
@@ -79,10 +67,10 @@ export const VoipFooter = ({
 
 	const holdTitle = useMemo(() => {
 		if (!isEnterprise) {
-			return tooltips.holdEEOnly;
+			return t('Hold_EE_only');
 		}
-		return paused ? tooltips.resume : tooltips.hold;
-	}, [paused, tooltips, isEnterprise]);
+		return paused ? t('Resume') : t('Hold');
+	}, [isEnterprise, paused, t]);
 
 	return (
 		<SidebarFooter elevated>
@@ -108,7 +96,7 @@ export const VoipFooter = ({
 								disabled={paused}
 								icon={muted ? 'mic-off' : 'mic'}
 								color={muted ? 'neutral-500' : 'info'}
-								data-tooltip={muted ? tooltips.unmute : tooltips.mute}
+								data-tooltip={muted ? t('Turn_on_microphone') : t('Turn_off_microphone')}
 								onClick={(e): void => {
 									e.stopPropagation();
 									toggleMic(!muted);
@@ -144,7 +132,7 @@ export const VoipFooter = ({
 								danger
 								disabled={paused}
 								aria-label={t('End_call')}
-								data-tooltip={tooltips.endCall}
+								data-tooltip={t('End_Call')}
 								onClick={(e): unknown => {
 									e.stopPropagation();
 									muted && toggleMic(false);
@@ -156,7 +144,7 @@ export const VoipFooter = ({
 							</Button>
 						)}
 						{callerState === 'OFFER_RECEIVED' && (
-							<Button data-tooltip={tooltips.decline} aria-label={tooltips.decline} small square danger onClick={callActions.reject}>
+							<Button data-tooltip={t('Decline')} aria-label={t('Decline')} small square danger onClick={callActions.reject}>
 								<Icon name='phone-off' size='x16' />
 							</Button>
 						)}
@@ -165,7 +153,7 @@ export const VoipFooter = ({
 								small
 								square
 								success
-								data-tooltip={tooltips.accept}
+								data-tooltip={t('Accept')}
 								onClick={async (): Promise<void> => {
 									callActions.pickUp();
 									const rid = await createRoom(caller);

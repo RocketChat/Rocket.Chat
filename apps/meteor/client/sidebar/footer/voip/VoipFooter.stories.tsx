@@ -15,17 +15,6 @@ const callActions = {
 	reject: () => ({}),
 };
 
-const tooltips = {
-	mute: 'Turn off microphone',
-	unmute: 'Turn on microphone',
-	hold: 'Hold',
-	resume: 'Resume',
-	holdEEOnly: 'Hold (Enterprise Edition only)',
-	accept: 'Accept',
-	decline: 'Decline',
-	endCall: 'End Call',
-};
-
 const callerDefault = {
 	callerName: '',
 	callerId: '+5551999999999',
@@ -87,7 +76,6 @@ const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
 				paused={paused}
 				toggleMic={toggleMic}
 				togglePause={togglePause}
-				tooltips={tooltips}
 				createRoom={async () => ''}
 				openRoom={() => ''}
 				callsInQueue='2 Calls In Queue'

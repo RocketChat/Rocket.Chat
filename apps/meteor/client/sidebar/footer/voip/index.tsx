@@ -61,17 +61,6 @@ export const VoipFooter = (): ReactElement | null => {
 		return subtitles[state] || '';
 	};
 
-	const tooltips = {
-		mute: t('Turn_off_microphone'),
-		unmute: t('Turn_on_microphone'),
-		resume: t('Resume'),
-		hold: t('Hold'),
-		holdEEOnly: t('Hold_EE_only'),
-		accept: t('Accept'),
-		decline: t('Decline'),
-		endCall: t('End_Call'),
-	};
-
 	const getCallsInQueueText = useMemo((): string => {
 		if (queueCounter === 0) {
 			return t('Calls_in_queue_empty');
@@ -99,7 +88,6 @@ export const VoipFooter = (): ReactElement | null => {
 			paused={paused}
 			toggleMic={toggleMic}
 			togglePause={togglePause}
-			tooltips={tooltips}
 			createRoom={createRoom}
 			openRoom={openRoom}
 			callsInQueue={getCallsInQueueText}
