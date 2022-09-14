@@ -32,6 +32,7 @@ type booleanString = 'true' | 'false';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 type LivechatVisitorsInfo = {
@@ -2075,7 +2076,7 @@ const GETLivechatVisitorsPagesVisitedRoomIdParamsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
 		},
 	},
@@ -2100,7 +2101,7 @@ const GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParamsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
 		},
 	},
@@ -2126,7 +2127,7 @@ const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
 		},
 	},
@@ -2169,7 +2170,7 @@ const GETLivechatVisitorsSearchSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
 		},
 		term: {
@@ -2233,7 +2234,7 @@ const GETLivechatTriggersParamsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
 		},
 	},
@@ -2267,7 +2268,7 @@ const GETLivechatRoomsParamsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
 		},
 		fields: {
@@ -2336,7 +2337,7 @@ const GETLivechatQueueParamsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
 		},
 		agentId: {
@@ -2418,7 +2419,7 @@ const GETLivechatInquiriesListParamsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
 		},
 		department: {
@@ -2467,7 +2468,7 @@ const GETLivechatInquiriesQueuedParamsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
 		},
 		department: {
@@ -2494,7 +2495,7 @@ const GETLivechatInquiriesQueuedForUserParamsSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
 		},
 		department: {

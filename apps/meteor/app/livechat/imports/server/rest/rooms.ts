@@ -3,13 +3,13 @@ import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
 import { hasPermission } from '../../../../authorization/server';
-import { typedJsonParse } from '../../../../../lib/typedJSONParse';
 
 const validateDateParams = (property: string, date?: string) => {
 	let parsedDate: { start?: string; end?: string } | undefined = undefined;
 	if (date) {
-		parsedDate = typedJsonParse<{ start?: string; end?: string }>(date);
+		parsedDate = JSON.parse(date) as { start?: string; end?: string };
 	}
+
 	if (parsedDate?.start && isNaN(Date.parse(parsedDate.start))) {
 		throw new Error(`The "${property}.start" query parameter must be a valid date.`);
 	}
@@ -41,7 +41,7 @@ API.v1.addRoute(
 			let parsedCf: { [key: string]: string } | undefined = undefined;
 			if (customFields) {
 				try {
-					const parsedCustomFields = typedJsonParse<{ [key: string]: string }>(customFields);
+					const parsedCustomFields = JSON.parse(customFields) as { [key: string]: string };
 					if (typeof parsedCustomFields !== 'object' && parsedCustomFields !== null && !Array.isArray(parsedCustomFields)) {
 						throw new Error();
 					}

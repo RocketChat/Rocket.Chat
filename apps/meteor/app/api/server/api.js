@@ -425,12 +425,20 @@ export class APIClass extends Restivus {
 								typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
 
 							if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
-								throw new Meteor.Error(
-									'invalid-params',
-									validatorFunc.errors
-										?.map((error) => `[${error.keyword.toUpperCase()}Error] ${error.instancePath || '/'} - ${error.message}`)
-										.join('\n '),
-								);
+								console.log(this.queryParams, JSON.stringify(validatorFunc.errors, null, 2));
+								const errors = validatorFunc.errors
+									?.map((error) => {
+										switch (error.keyword) {
+											case 'type':
+												return `[TypeError] ${error.instancePath} ${error.message}`;
+											case 'additionalProperties':
+												return `[AdditionalPropertiesError] ${error.message} (Additional prop: ${error.params.additionalProperty})`;
+											default:
+												return error.message;
+										}
+									})
+									.join('\n ');
+								throw new Meteor.Error('invalid-params', errors);
 							}
 						}
 						if (

@@ -227,12 +227,22 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an array of rooms when the query params is all valid', (done) => {
 			request
-				.get(
-					api(`livechat/rooms?agents[]=teste&departamentId=123&open=true&createdAt={"start": "2018-01-26T00:11:22.345Z", "end": "2018-01-26T00:11:22.345Z"}
-			&closedAt={"start": "2018-01-26T00:11:22.345Z", "end": "2018-01-26T00:11:22.345Z"}&tags[]=rocket
-			&customFields={"docId": "031041"}&count=3&offset=1&sort={"_updatedAt": 1}&fields={"msgs": 0}&roomName=test`),
-				)
+				.get(api(`livechat/rooms`))
 				.set(credentials)
+				.query({
+					'agents[]': 'teste',
+					'departmentId': '123',
+					'open': true,
+					'createdAt': '{"start":"2018-01-26T00:11:22.345Z","end":"2018-01-26T00:11:22.345Z"}',
+					'closedAt': '{"start":"2018-01-26T00:11:22.345Z","end":"2018-01-26T00:11:22.345Z"}',
+					'tags[]': 'rocket',
+					'customFields': '{ "docId": "031041" }',
+					'count': 3,
+					'offset': 1,
+					'sort': '{ "_updatedAt": 1 }',
+					'fields': '{ "msgs": 0 }',
+					'roomName': 'test',
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res: Response) => {
@@ -246,8 +256,9 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should not cause issues when the customFields is empty', (done) => {
 			request
-				.get(api(`livechat/rooms?customFields={}&roomName=test`))
+				.get(api(`livechat/rooms`))
 				.set(credentials)
+				.query({ customFields: {}, roomName: 'test' })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res: Response) => {
@@ -261,8 +272,9 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should throw an error if customFields param is not a object', (done) => {
 			request
-				.get(api(`livechat/rooms?customFields=string`))
+				.get(api(`livechat/rooms`))
 				.set(credentials)
+				.query({ customFields: 'string' })
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res: Response) => {
