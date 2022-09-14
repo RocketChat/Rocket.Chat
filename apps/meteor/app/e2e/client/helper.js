@@ -152,6 +152,7 @@ export class Deferred {
 	}
 }
 
+// TODO: Remove regex matching for parsing urls, and use message-parser to get the urls here and everywhere else.
 export function parseUrlsInMessage(msg) {
 	const urls =
 		msg?.match(
