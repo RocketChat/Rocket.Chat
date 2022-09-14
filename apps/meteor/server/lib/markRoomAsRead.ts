@@ -18,5 +18,5 @@ export async function markRoomAsRead(rid: string, uid: string): Promise<void> {
 
 	await NotificationQueue.clearQueueByUserId(uid);
 
-	callbacks.run('afterReadMessages', rid, { uid, lastSeen: sub.ls });
+	callbacks.runAsync('afterReadMessages', rid, { uid, lastSeen: sub.ls });
 }
