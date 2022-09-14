@@ -123,7 +123,6 @@ describe('Meteor.methods', function () {
 
 	describe('[@getReadReceipts]', () => {
 		let rid = false;
-		let ls = false;
 		let firstMessage = false;
 		let firstThreadMessage = false;
 
