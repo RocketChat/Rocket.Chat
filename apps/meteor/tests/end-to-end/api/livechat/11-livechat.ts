@@ -129,4 +129,101 @@ describe('LIVECHAT - Utils', function () {
 			expect(body.page).to.have.property('msg');
 		});
 	});
+	describe('livechat/transcript', () => {
+		it('should fail if token is not in body params', async () => {
+			const { body } = await request.post(api('livechat/transcript')).set(credentials).send({});
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail if rid is not in body params', async () => {
+			const { body } = await request.post(api('livechat/transcript')).set(credentials).send({ token: 'test' });
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail if email is not in body params', async () => {
+			const { body } = await request.post(api('livechat/transcript')).set(credentials).send({ token: 'test', rid: 'test' });
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail if token is not a valid guest token', async () => {
+			const { body } = await request.post(api('livechat/transcript')).set(credentials).send({ token: 'test', rid: 'test', email: '' });
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail if rid is not a valid room id', async () => {
+			const visitor = await createVisitor();
+			const { body } = await request
+				.post(api('livechat/transcript'))
+				.set(credentials)
+				.send({ token: visitor.token, rid: 'test', email: '' });
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail if requesting a transcript of another visitors room', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			const visitor2 = await createVisitor();
+
+			const { body } = await request
+				.post(api('livechat/transcript'))
+				.set(credentials)
+				.send({ token: visitor2.token, rid: room._id, email: '' });
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail if email is not a valid email', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+
+			const { body } = await request
+				.post(api('livechat/transcript'))
+				.set(credentials)
+				.send({ token: visitor.token, rid: room._id, email: 'test' });
+			expect(body).to.have.property('success', false);
+		});
+		it('should send a transcript if all is good', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+
+			const { body } = await request
+				.post(api('livechat/transcript'))
+				.set(credentials)
+				.send({ token: visitor.token, rid: room._id, email: 'visitor@notadomain.com' });
+			expect(body).to.have.property('success', true);
+		});
+	});
+	describe('livechat/visitor.callStatus', () => {
+		it('should fail if token is not in body params', async () => {
+			const { body } = await request.post(api('livechat/visitor.callStatus')).set(credentials).send({});
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail if rid is not in body params', async () => {
+			const { body } = await request.post(api('livechat/visitor.callStatus')).set(credentials).send({ token: 'test' });
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail if callStatus is not in body params', async () => {
+			const { body } = await request.post(api('livechat/visitor.callStatus')).set(credentials).send({ token: 'test', rid: 'test' });
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail if callId is not in body params', async () => {
+			const { body } = await request
+				.post(api('livechat/visitor.callStatus'))
+				.set(credentials)
+				.send({ token: 'test', rid: 'test', callStatus: 'test' });
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail if token is not a valid guest token', async () => {
+			const { body } = await request
+				.post(api('livechat/visitor.callStatus'))
+				.set(credentials)
+				.send({ token: new Date().getTime(), rid: 'test', callStatus: 'test', callId: 'test' });
+			expect(body).to.have.property('success', false);
+		});
+		it('should try update a call status on room', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+
+			const { body } = await request
+				.post(api('livechat/visitor.callStatus'))
+				.set(credentials)
+				.send({ token: visitor.token, rid: room._id, callStatus: 'going', callId: 'test' });
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('callStatus', 'going');
+			expect(body).to.have.property('token', visitor.token);
+		});
+	});
 });

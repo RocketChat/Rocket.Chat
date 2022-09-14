@@ -5,8 +5,8 @@ import type { OTRRoom } from '../client/OTRRoom';
 
 export interface IOnUserStreamData {
 	roomId: IRoom['_id'];
-	publicKey: string;
 	userId: IUser['_id'];
+	publicKey?: string;
 	refresh?: boolean;
 }
 

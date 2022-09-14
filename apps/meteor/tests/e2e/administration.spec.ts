@@ -10,13 +10,11 @@ test.describe.parallel('administration', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poAdmin = new Admin(page);
-
-		await page.goto('/admin');
 	});
 
 	test.describe('Info', () => {
-		test.beforeEach(async () => {
-			await poAdmin.sidenav.linkInfo.click();
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/admin/info');
 		});
 
 		test('expect download info as JSON', async ({ page }) => {
@@ -27,8 +25,8 @@ test.describe.parallel('administration', () => {
 	});
 
 	test.describe('Users', () => {
-		test.beforeEach(async () => {
-			await poAdmin.sidenav.linkUsers.click();
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/admin/users');
 		});
 
 		test('expect find "user1" user', async ({ page }) => {
@@ -50,8 +48,8 @@ test.describe.parallel('administration', () => {
 	});
 
 	test.describe('Rooms', () => {
-		test.beforeEach(async () => {
-			await poAdmin.sidenav.linkRooms.click();
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/admin/rooms');
 		});
 
 		test('expect find "general" channel', async ({ page }) => {
