@@ -19,6 +19,7 @@ import type {
 	Serialized,
 	ILivechatBusinessHour,
 	ILivechatTrigger,
+	ILivechatInquiryRecord,
 } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 import type { WithId } from 'mongodb';
@@ -2403,6 +2404,128 @@ const POSTLivechatFacebookParamsSchema = {
 
 export const isPOSTLivechatFacebookParams = ajv.compile<POSTLivechatFacebookParams>(POSTLivechatFacebookParamsSchema);
 
+type GETLivechatInquiriesListParams = PaginatedRequest<{ department?: string }>;
+
+const GETLivechatInquiriesListParamsSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'object',
+			nullable: true,
+		},
+		department: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isGETLivechatInquiriesListParams = ajv.compile<GETLivechatInquiriesListParams>(GETLivechatInquiriesListParamsSchema);
+
+type POSTLivechatInquiriesTakeParams = {
+	inquiryId: string;
+	userId?: string;
+};
+
+const POSTLivechatInquiriesTakeParamsSchema = {
+	type: 'object',
+	properties: {
+		inquiryId: {
+			type: 'string',
+		},
+		userId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+	required: ['inquiryId'],
+};
+
+export const isPOSTLivechatInquiriesTakeParams = ajv.compile<POSTLivechatInquiriesTakeParams>(POSTLivechatInquiriesTakeParamsSchema);
+
+type GETLivechatInquiriesQueuedParams = PaginatedRequest<{ department?: string }>;
+
+const GETLivechatInquiriesQueuedParamsSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'object',
+			nullable: true,
+		},
+		department: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isGETLivechatInquiriesQueuedParams = ajv.compile<GETLivechatInquiriesQueuedParams>(GETLivechatInquiriesQueuedParamsSchema);
+
+type GETLivechatInquiriesQueuedForUserParams = PaginatedRequest<{ department?: string }>;
+
+const GETLivechatInquiriesQueuedForUserParamsSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'object',
+			nullable: true,
+		},
+		department: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isGETLivechatInquiriesQueuedForUserParams = ajv.compile<GETLivechatInquiriesQueuedForUserParams>(
+	GETLivechatInquiriesQueuedForUserParamsSchema,
+);
+
+type GETLivechatInquiriesGetOneParams = {
+	roomId: string;
+};
+
+const GETLivechatInquiriesGetOneParamsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+	},
+	additionalProperties: false,
+	required: ['roomId'],
+};
+
+export const isGETLivechatInquiriesGetOneParams = ajv.compile<GETLivechatInquiriesGetOneParams>(GETLivechatInquiriesGetOneParamsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -2742,6 +2865,21 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/facebook': {
 		POST: (params: POSTLivechatFacebookParams) => { message: IMessage };
+	};
+	'/v1/livechat/inquiries.list': {
+		GET: (params: GETLivechatInquiriesListParams) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
+	};
+	'/v1/livechat/inquiries.take': {
+		POST: (params: POSTLivechatInquiriesTakeParams) => { inquiry: ILivechatInquiryRecord };
+	};
+	'/v1/livechat/inquiries.queued': {
+		GET: (params: GETLivechatInquiriesQueuedParams) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
+	};
+	'/v1/livechat/inquiries.queuedForUser': {
+		GET: (params: GETLivechatInquiriesQueuedForUserParams) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
+	};
+	'/v1/livechat/inquiries.getOne': {
+		GET: (params: GETLivechatInquiriesGetOneParams) => { inquiry: ILivechatInquiryRecord | null };
 	};
 } & {
 	// EE
