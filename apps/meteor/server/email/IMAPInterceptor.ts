@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 
+import type { ImapMessage, ImapMessageBodyInfo } from 'imap';
 import IMAP from 'imap';
 import type Connection from 'imap';
 import type { ParsedMail } from 'mailparser';
@@ -54,41 +55,42 @@ export class IMAPInterceptor extends EventEmitter {
 		this.start();
 	}
 
-	openInbox(cb: (error: Error, mailbox: Connection.Box) => void): void {
-		this.imap.openBox('INBOX', false, cb);
+	openInbox(): Promise<Connection.Box> {
+		return new Promise((resolve, reject) => {
+			const cb = (err: Error, mailbox: Connection.Box) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(mailbox);
+				}
+			};
+			this.imap.openBox('INBOX', false, cb);
+		});
 	}
 
-	start(): void {
+	async start(): Promise<void> {
+		const errorBuild =
+			(location: string, severity: 'error' | 'info' | 'warn' | 'debug' = 'error') =>
+			(err: Error) => {
+				logger[severity](`IMAP connect: ${location}: ${err.message}`);
+			};
 		// On successfully connected.
-		this.imap.on('ready', () => {
+		this.imap.on('ready', async () => {
 			if (this.isActive()) {
 				logger.info(`IMAP connected to ${this.config.user}`);
 				clearTimeout(this.backoff);
 				this.retries = 0;
 				this.backoffDurationMS = 3000;
-				this.openInbox((err) => {
-					if (err) {
-						logger.warn(`Error occurred opening inbox ${this.config.user}`);
-						logger.debug(err);
-						throw err;
-					}
-					// fetch new emails & wait [IDLE]
-					this.getEmails();
-
-					// If new message arrived, fetch them
-					this.imap.on('mail', () => {
-						this.getEmails();
-					});
-				});
+				await this.openInbox();
+				this.imap.on('mail', () => this.getEmails().catch(errorBuild('getEmails', 'debug')));
 			} else {
-				logger.warn(`IMAP did not connect on inbox ${this.config.user} (${this.retries} retries)`);
-				this.reconnect();
+				errorBuild('ready')(Error("Can't connect to IMAP server"));
 			}
 		});
 
 		this.imap.on('error', (err: Error) => {
-			logger.info(`Error occurred on inbox ${this.config.user}: `, err.message);
-			logger.debug(err);
+			logger.error(`IMAP error: ${err.message}`);
+			this.retries++;
 			this.reconnect();
 		});
 
@@ -96,7 +98,7 @@ export class IMAPInterceptor extends EventEmitter {
 			this.reconnect();
 		});
 		this.retries += 1;
-		this.imap.connect();
+		return this.imap.connect();
 	}
 
 	isActive(): boolean {
@@ -142,55 +144,87 @@ export class IMAPInterceptor extends EventEmitter {
 		this.backoff = setTimeout(loop, this.backoffDurationMS);
 	}
 
-	// Fetch all UNSEEN messages and pass them for further processing
-	getEmails(): void {
-		this.imap.search(this.options.filter, (err, newEmails) => {
-			logger.debug(`IMAP search on inbox ${this.config.user} returned ${newEmails.length} new emails: `, newEmails);
-			if (err) {
-				logger.debug(err);
-				throw err;
-			}
-			// newEmails => array containing serials of unseen messages
-			if (newEmails.length > 0) {
-				const fetch = this.imap.fetch(newEmails, {
-					bodies: ['HEADER', 'TEXT', ''],
-					struct: true,
-					markSeen: this.options.markSeen,
-				});
+	imapSearch(): Promise<number[]> {
+		return new Promise((resolve, reject) => {
+			const cb = (err: Error, results: number[]) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(results);
+				}
+			};
+			this.imap.search(this.options.filter, cb);
+		});
+	}
 
-				fetch.on('message', (msg, seqno) => {
-					msg.on('body', (stream, type) => {
-						if (type.which !== '') {
+	parseEmails(stream: NodeJS.ReadableStream, _info: ImapMessageBodyInfo): Promise<ParsedMail> {
+		return new Promise((resolve, reject) => {
+			const cb = (err: Error, mail: ParsedMail) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(mail);
+				}
+			};
+			simpleParser(stream, cb);
+		});
+	}
+
+	imapFetch(emailIds: number[]): Promise<number[]> {
+		return new Promise((resolve, reject) => {
+			const out: number[] = [];
+			const messagecb = (msg: ImapMessage, seqno: number) => {
+				out.push(seqno);
+				const bodycb = (stream: NodeJS.ReadableStream, _info: ImapMessageBodyInfo): void => {
+					simpleParser(stream, (_err, email) => {
+						logger.error([_err, JSON.stringify(email)]);
+						if (this.options.rejectBeforeTS && email.date && email.date < this.options.rejectBeforeTS) {
+							logger.error(`Rejecting email on inbox ${this.config.user}`, email.subject);
 							return;
 						}
-
-						simpleParser(stream, (_err, email) => {
-							if (this.options.rejectBeforeTS && email.date && email.date < this.options.rejectBeforeTS) {
-								logger.error(`Rejecting email on inbox ${this.config.user}`, email.subject);
-								return;
-							}
-							this.emit('email', email);
-						});
+						this.emit('email', email);
 					});
+				};
+				msg.once('body', bodycb);
+			};
+			const errorcb = (err: Error): void => {
+				logger.warn(`Fetch error: ${err}`);
+				reject(err);
+			};
+			const endcb = (): void => {
+				resolve(out);
+			};
+			const fetch = this.imap.fetch(emailIds, {
+				bodies: ['HEADER', 'TEXT', ''],
+				struct: true,
+				markSeen: this.options.markSeen,
+			});
 
-					// On fetched each message, pass it further
-					msg.once('end', () => {
-						// delete message from inbox
-						if (this.options.deleteAfterRead) {
-							this.imap.seq.addFlags(seqno, 'Deleted', (err) => {
-								if (err) {
-									logger.warn(`Mark deleted error: ${err}`);
-								}
-							});
-						}
-					});
-				});
+			fetch.on('message', messagecb);
+			fetch.on('error', errorcb);
+			fetch.on('end', endcb);
+		});
+	}
 
-				fetch.once('error', (err) => {
-					logger.warn(`Fetch error: ${err}`);
+	// Fetch all UNSEEN messages and pass them for further processing
+	async getEmails(): Promise<void> {
+		const emailIds = await this.imapSearch();
+		const emailsFetched = await this.imapFetch(emailIds);
+
+		// this.imapSearch()
+		// 	.then(this.imapFetch)
+		// 	.then((emails) => {
+		// emails.forEach((email) => {
+		for (const email of emailsFetched) {
+			// this.emit('email', email.mail);
+			if (this.options.deleteAfterRead) {
+				this.imap.seq.addFlags(email, 'Deleted', (err) => {
+					if (err) {
+						logger.warn(`Mark deleted error: ${err}`);
+					}
 				});
 			}
-		});
+		}
 	}
 
 	canRetry(): boolean {
