@@ -12,6 +12,8 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private broadcastEnabled = true;
 
+	private lostConTimeout?: NodeJS.Timeout;
+
 	async onNodeDisconnected({ node }: { node: IBrokerNode }): Promise<void> {
 		const affectedUsers = await this.removeLostConnections(node.id);
 		return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
@@ -29,10 +31,17 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async started(): Promise<void> {
-		setTimeout(async () => {
+		this.lostConTimeout = setTimeout(async () => {
 			const affectedUsers = await this.removeLostConnections();
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 		}, 10000);
+	}
+
+	async stopped(): Promise<void> {
+		if (!this.lostConTimeout) {
+			return;
+		}
+		clearTimeout(this.lostConTimeout);
 	}
 
 	toggleBroadcast(enabled: boolean): void {
