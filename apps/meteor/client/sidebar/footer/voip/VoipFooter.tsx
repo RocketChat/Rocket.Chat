@@ -22,10 +22,11 @@ type VoipFooterPropsType = {
 	tooltips: {
 		mute: string;
 		unmute: string;
-		resumeCall: string;
-		holdCall: string;
-		holdCallEEOnly: string;
-		acceptCall: string;
+		resume: string;
+		hold: string;
+		holdEEOnly: string;
+		accept: string;
+		decline: string;
 		endCall: string;
 	};
 	callsInQueue: string;
@@ -78,9 +79,9 @@ export const VoipFooter = ({
 
 	const holdTitle = useMemo(() => {
 		if (!isEnterprise) {
-			return tooltips.holdCallEEOnly;
+			return tooltips.holdEEOnly;
 		}
-		return paused ? tooltips.resumeCall : tooltips.holdCall;
+		return paused ? tooltips.resume : tooltips.hold;
 	}, [paused, tooltips, isEnterprise]);
 
 	return (
@@ -155,7 +156,7 @@ export const VoipFooter = ({
 							</Button>
 						)}
 						{callerState === 'OFFER_RECEIVED' && (
-							<Button data-tooltip={tooltips.endCall} aria-label={t('Reject_call')} small square danger onClick={callActions.reject}>
+							<Button data-tooltip={tooltips.decline} aria-label={tooltips.decline} small square danger onClick={callActions.reject}>
 								<Icon name='phone-off' size='x16' />
 							</Button>
 						)}
@@ -164,7 +165,7 @@ export const VoipFooter = ({
 								small
 								square
 								success
-								data-tooltip={tooltips.acceptCall}
+								data-tooltip={tooltips.accept}
 								onClick={async (): Promise<void> => {
 									callActions.pickUp();
 									const rid = await createRoom(caller);

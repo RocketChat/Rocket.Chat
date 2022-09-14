@@ -64,10 +64,11 @@ export const VoipFooter = (): ReactElement | null => {
 	const tooltips = {
 		mute: t('Turn_off_microphone'),
 		unmute: t('Turn_on_microphone'),
-		resumeCall: t('Resume_Call'),
-		holdCall: t('Hold_Call'),
-		holdCallEEOnly: t('Hold_Call_EE_only'),
-		acceptCall: t('Accept_Call'),
+		resume: t('Resume'),
+		hold: t('Hold'),
+		holdEEOnly: t('Hold_EE_only'),
+		accept: t('Accept'),
+		decline: t('Decline'),
 		endCall: t('End_Call'),
 	};
 

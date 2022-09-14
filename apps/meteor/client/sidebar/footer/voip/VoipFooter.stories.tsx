@@ -18,10 +18,11 @@ const callActions = {
 const tooltips = {
 	mute: 'Turn off microphone',
 	unmute: 'Turn on microphone',
-	holdCall: 'Hold Call',
-	resumeCall: 'Resume',
-	holdCallEEOnly: 'Hold Call (Enterprise Edition only)',
-	acceptCall: 'Accept Call',
+	hold: 'Hold',
+	resume: 'Resume',
+	holdEEOnly: 'Hold (Enterprise Edition only)',
+	accept: 'Accept',
+	decline: 'Decline',
 	endCall: 'End Call',
 };
 
