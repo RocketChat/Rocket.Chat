@@ -5,6 +5,8 @@ export type UpgradeTabVariant =
 	| 'trial-enterprise'
 	| 'upgrade-your-plan';
 
+type UpgradeLabel = 'Upgrade_tab_upgrade_your_plan' | 'Upgrade_tab_trial_guide' | 'Upgrade_tab_go_fully_featured';
+
 type UpgradeTabConditions = {
 	registered: boolean;
 	hasValidLicense: boolean;
@@ -41,3 +43,18 @@ export const getUpgradeTabType = ({
 
 	return false;
 };
+
+export const getUpgradeTabLabel = (type: UpgradeTabVariant | false): UpgradeLabel => {
+	switch (type) {
+		case 'go-fully-featured':
+		case 'go-fully-featured-registered':
+			return 'Upgrade_tab_go_fully_featured';
+		case 'trial-gold':
+		case 'trial-enterprise':
+			return 'Upgrade_tab_trial_guide';
+		default:
+			return 'Upgrade_tab_upgrade_your_plan';
+	}
+};
+
+export const isFullyFeature = (type: UpgradeTabVariant | false) => type === 'go-fully-featured';
