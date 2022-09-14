@@ -1,13 +1,10 @@
-import { IRoom, IOmnichannelRoom, isOmnichannelRoom, isVoipRoom, IVoipRoom } from '@rocket.chat/core-typings';
+import { IRoom, IOmnichannelRoom, isOmnichannelRoom, isVoipRoom, IVoipRoom, ISubscription } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
 
 export type RoomContextValue = {
 	rid: IRoom['_id'];
-	// room: IRoom;
-	// events: any;
-	// tabBar: TabBar;
 	room: IRoom;
-	subscribed: boolean;
+	subscription?: ISubscription;
 };
 
 export const RoomContext = createContext<RoomContextValue | null>(null);
@@ -30,6 +27,16 @@ export const useRoom = (): IRoom => {
 	}
 
 	return room;
+};
+
+export const useRoomSubscription = (): ISubscription | undefined => {
+	const context = useContext(RoomContext);
+
+	if (!context) {
+		throw new Error('use useRoomSubscription only inside opened rooms');
+	}
+
+	return context.subscription;
 };
 
 export const useOmnichannelRoom = (): IOmnichannelRoom => {
