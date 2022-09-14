@@ -1,4 +1,4 @@
-import { BLOCK_CONTEXT } from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
 
 import ButtonElement from '.';
@@ -27,7 +27,7 @@ export default {
 		url: { control: 'text' },
 		value: { control: 'text' },
 		style: { control: { type: 'inline-radio', options: [null, 'primary', 'danger'] } },
-		context: { control: { type: 'select', options: BLOCK_CONTEXT } },
+		context: { control: { type: 'select', options: BlockContext } },
 	},
 	args: {
 		text: { type: 'plain_text', text: 'Click Me' },
