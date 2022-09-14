@@ -44,13 +44,13 @@ const StartImportParamsPostSchema = {
 						properties: {
 							user_id: { type: 'string' }, // eslint-disable-line
 							username: { type: 'string' },
-							email: { type: 'string' },
+							email: { type: 'string', nullable: true },
 							is_deleted: { type: 'boolean' }, // eslint-disable-line
 							is_bot: { type: 'boolean' }, // eslint-disable-line
 							do_import: { type: 'boolean' }, // eslint-disable-line
 							is_email_taken: { type: 'boolean' }, // eslint-disable-line
 						},
-						required: ['user_id', 'username', 'email', 'is_deleted', 'is_bot', 'do_import', 'is_email_taken'],
+						required: ['user_id', 'username', 'is_deleted', 'is_bot', 'do_import', 'is_email_taken'],
 					},
 				},
 				channels: {
