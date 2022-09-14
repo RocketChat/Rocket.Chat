@@ -264,7 +264,8 @@ jobs:
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
 
-      - name: docker-env
+      - name: Docker env vars
+        id: docker-env
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -293,6 +294,7 @@ jobs:
           LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
           RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
           RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker compose -f docker-compose-ci.yml up -d --build rocketchat
 
@@ -317,6 +319,7 @@ jobs:
           LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
           RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
           RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
         run: |
           docker compose -f docker-compose-ci.yml push rocketchat
@@ -335,6 +338,7 @@ jobs:
           LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
           RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
           RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           sudo tcpdump -nn -i any -w sntp.cap &
           sleep 1
