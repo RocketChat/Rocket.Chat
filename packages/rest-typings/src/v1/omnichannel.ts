@@ -2242,7 +2242,7 @@ const GETLivechatTriggersParamsSchema = {
 
 export const isGETLivechatTriggersParams = ajv.compile<GETLivechatTriggersParams>(GETLivechatTriggersParamsSchema);
 
-type GETLivechatRoomsParams = PaginatedRequest<{
+export type GETLivechatRoomsParams = PaginatedRequest<{
 	fields?: string;
 	createdAt?: string;
 	customFields?: string;
@@ -2250,8 +2250,8 @@ type GETLivechatRoomsParams = PaginatedRequest<{
 	agents?: string[];
 	roomName?: string;
 	departmentId?: string;
-	open?: string;
-	onhold?: string;
+	open?: string | boolean;
+	onhold?: string | boolean;
 	tags?: string[];
 }>;
 
@@ -2302,11 +2302,11 @@ const GETLivechatRoomsParamsSchema = {
 			nullable: true,
 		},
 		open: {
-			type: 'string',
+			type: ['string', 'boolean'],
 			nullable: true,
 		},
 		onhold: {
-			type: 'string',
+			type: ['string', 'boolean'],
 			nullable: true,
 		},
 		tags: {
@@ -2794,7 +2794,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/visitors.search': {
-		GET: (params: GETLivechatVisitorsSearch) => PaginatedResult<{ visitors: ILivechatVisitor[] }>;
+		GET: (params: GETLivechatVisitorsSearch) => PaginatedResult<{ visitors: (ILivechatVisitor & { fname?: string })[] }>;
 	};
 	'/v1/omnichannel/contact': {
 		POST: (params: POSTOmnichannelContactProps) => { contact: string };
@@ -2897,9 +2897,9 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/queue': {
 		GET: (params: GETLivechatQueueParams) => PaginatedResult<{
 			queue: {
-				_id: number;
-				user: { userId: string; username?: string; status?: string };
-				department: { _id: string | null; name: string | null };
+				_id: string;
+				user: { _id: string; userId: string; username: string; status: string };
+				department: { _id: string; name: string };
 				chats: number;
 			}[];
 		}>;
