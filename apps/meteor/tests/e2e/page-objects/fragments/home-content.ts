@@ -176,6 +176,6 @@ export class HomeContent {
 	}
 
 	get takeOmnichannelChatButton(): Locator {
-		return this.page.locator('role=button[text="Take it!"]');
+		return this.page.locator('role=button[name="Take it!"]');
 	}
 }
