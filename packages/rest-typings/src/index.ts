@@ -198,6 +198,7 @@ export * from './v1/permissions';
 export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
+export * from './v1/teams/TeamsEraseRoomParamsPOST';
 export * from './v1/videoConference';
 export * from './v1/assets';
 export * from './v1/channels/ChannelsAddAllProps';

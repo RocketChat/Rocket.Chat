@@ -182,4 +182,8 @@ export type TeamsEndpoints = {
 			room: IRoom;
 		};
 	};
+
+	'/v1/teams.eraseRoom': {
+		POST: (params: { rid: string }) => void;
+	};
 };

@@ -10,6 +10,7 @@ import {
 	isTeamsDeleteProps,
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
+	isTeamsEraseRoomProps,
 } from '@rocket.chat/rest-typings';
 import type { ITeam } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
@@ -679,6 +680,29 @@ API.v1.addRoute(
 			}
 
 			await Team.update(this.userId, team._id, data);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'teams.eraseRoom',
+	{
+		authRequired: true,
+		validateParams: isTeamsEraseRoomProps,
+	},
+	{
+		post() {
+			const { rid } = this.bodyParams;
+
+			// Is this 'erase-room' permission correct?
+
+			// if (!hasPermission(this.userId, 'erase-room', rid)) {
+			// 	return API.v1.unauthorized();
+			// }
+
+			Meteor.call('eraseRoom', rid);
 
 			return API.v1.success();
 		},

@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import type { ITeam } from '@rocket.chat/core-typings';
 
-import { deleteRoom } from '../../app/lib';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
+import { deleteRoom } from '../../app/lib/server';
 import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Messages } from '../../app/models/server';
 import { Apps } from '../../app/apps/server';
@@ -9,10 +10,12 @@ import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { Team } from '../sdk';
 
 Meteor.methods({
-	eraseRoom(rid) {
-		check(rid, String);
+	eraseRoom(rid: string) {
+		methodDeprecationLogger.warn('eraseRoom will be deprecated in future versions of Rocket.Chat');
 
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'eraseRoom',
 			});
@@ -32,18 +35,14 @@ Meteor.methods({
 			});
 		}
 
-		if (
-			!roomCoordinator
-				.getRoomDirectives(room.t)
-				?.canBeDeleted((permissionId, rid) => hasPermission(Meteor.userId(), permissionId, rid), room)
-		) {
+		if (!roomCoordinator.getRoomDirectives(room.t)?.canBeDeleted((permissionId, rid) => hasPermission(uid, permissionId, rid), room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'eraseRoom',
 			});
 		}
 
-		if (Apps && Apps.isLoaded()) {
-			const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomDeletePrevent', room));
+		if (Apps?.isLoaded()) {
+			const prevent = Promise.await(Apps.getBridges()?.getListenerBridge().roomEvent('IPreRoomDeletePrevent', room));
 			if (prevent) {
 				throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
 			}
@@ -52,13 +51,13 @@ Meteor.methods({
 		const result = deleteRoom(rid);
 
 		if (room.teamId) {
-			const team = Promise.await(Team.getOneById(room.teamId));
+			const team = Promise.await(Team.getOneById(room.teamId)) as ITeam;
 			const user = Meteor.user();
 			Messages.createUserDeleteRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
 		}
 
-		if (Apps && Apps.isLoaded()) {
-			Apps.getBridges().getListenerBridge().roomEvent('IPostRoomDeleted', room);
+		if (Apps?.isLoaded()) {
+			Apps.getBridges()?.getListenerBridge().roomEvent('IPostRoomDeleted', room);
 		}
 
 		return result;

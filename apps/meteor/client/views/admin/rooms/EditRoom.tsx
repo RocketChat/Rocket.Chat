@@ -1,15 +1,7 @@
 import { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import {
-	useSetModal,
-	useToastMessageDispatch,
-	useRoute,
-	usePermission,
-	useEndpoint,
-	useMethod,
-	useTranslation,
-} from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo, ReactElement } from 'react';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
@@ -148,7 +140,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		handleRoomType(roomType === 'p' ? 'c' : 'p');
 	});
 
-	const eraseRoom = useMethod('eraseRoom');
+	const eraseRoom = useEndpoint('eraseRoom');
 	const deleteTeam = useEndpoint('POST', '/v1/teams.delete');
 
 	const handleDelete = useMutableCallback(() => {
