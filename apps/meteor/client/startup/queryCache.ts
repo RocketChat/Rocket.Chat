@@ -100,7 +100,7 @@ const mergeSubRoom = (subscription: ISubscription): SubscriptionWithRoom => {
 		livechatData: (room as IOmnichannelRoom | undefined)?.livechatData,
 		departmentId: (room as IOmnichannelRoom | undefined)?.departmentId,
 		ts: room?.ts ?? subscription.ts,
-		source: (room as IOmnichannelRoom).source, // TODO: unsafe access
+		source: (room as IOmnichannelRoom | undefined)?.source,
 		queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
 		federated: room?.federated,
 		lm: subscription.lr ? new Date(Math.max(subscription.lr.getTime(), lastRoomUpdate.getTime())) : lastRoomUpdate,
@@ -149,7 +149,7 @@ const mergeRoomSub = (room: IRoom): IRoom => {
 				livechatData: (room as IOmnichannelRoom | undefined)?.livechatData,
 				departmentId: (room as IOmnichannelRoom | undefined)?.departmentId,
 				ts: room.ts,
-				source: (room as IOmnichannelRoom).source, // TODO: unsafe access
+				source: (room as IOmnichannelRoom | undefined)?.source,
 				queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
 				federated: room.federated,
 				...getLowerCaseNames(room, sub.name, sub.fname),
