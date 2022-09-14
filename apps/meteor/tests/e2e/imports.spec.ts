@@ -3,7 +3,7 @@ import { Admin } from './page-objects';
 
 test.use({ storageState: 'admin-session.json' });
 
-test.describe.serial.only('imports', () => {
+test.describe.serial('imports', () => {
 	let poAdmin: Admin;
 
 	test.beforeEach(async ({ page }) => {
