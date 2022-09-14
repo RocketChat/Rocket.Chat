@@ -1,4 +1,4 @@
-import { BLOCK_CONTEXT } from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
 import { memo, useCallback } from 'preact/compat';
 
 import { createClassName } from '../../../helpers';
@@ -35,8 +35,8 @@ const ButtonElement = ({ text, actionId, url, value, style, context, confirm, pa
 			children={parser.text(text)}
 			className={createClassName(styles, 'uikit-button', {
 				style,
-				accessory: context === BLOCK_CONTEXT.SECTION,
-				action: context === BLOCK_CONTEXT.ACTION,
+				accessory: context === BlockContext.SECTION,
+				action: context === BlockContext.ACTION,
 			})}
 			disabled={performingAction}
 			type='button'
