@@ -7,11 +7,17 @@ import { sendMessage } from './sendMessage';
 import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export const processWebhookMessage = function (messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
+export const processWebhookMessage = function (messageObj, user, defaultValues = { channel: [], alias: '', avatar: '', emoji: '' }) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
 	for (const channel of channels) {
+		const isChannelInList = defaultValues.channel.find((c) => c === channel);
+
+		if (!isChannelInList) {
+			continue;
+		}
+
 		const channelType = channel[0];
 
 		let channelValue = channel.substr(1);
