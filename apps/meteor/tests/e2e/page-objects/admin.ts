@@ -117,7 +117,7 @@ export class Admin {
 		return this.page.locator('.rcx-button--primary.rcx-button >> text="Start Importing"');
 	}
 
-	get importRow(): Locator {
+	get importStatusTableRow(): Locator {
 		return this.page.locator('[data-qa-id="ImportTable"] tbody tr:first-child td >> text="Completed successfully"');
 	}
 }

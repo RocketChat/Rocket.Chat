@@ -44,7 +44,7 @@ test.describe.serial('imports', () => {
 
 		await page.locator('[data-qa-id="ImportTable"]').waitFor({ state: 'visible' });
 
-		await expect(poAdmin.importRow).toBeVisible();
+		await expect(poAdmin.importStatusTableFirstRowCell).toBeVisible();
 	});
 
 	test('expect all users is added is visible', async ({ page }) => {
