@@ -10,7 +10,7 @@ test.describe.serial.only('imports', () => {
 		poAdmin = new Admin(page);
 	});
 
-	test('expect import users data, channels', async ({ page }) => {
+	test('expect import users data from slack', async ({ page }) => {
 		await page.goto('/admin/import');
 
 		await poAdmin.btnImportNewFile.click();
@@ -19,10 +19,13 @@ test.describe.serial.only('imports', () => {
 		await poAdmin.inputFile.setInputFiles('./tests/e2e/fixtures/files/slack_csv_file.csv');
 
 		await poAdmin.btnImport.click();
+		await poAdmin.btnStartImport.waitFor({ state: 'visible' });
 
 		await poAdmin.btnStartImport.click();
 
-		expect(page.locator('.rcx-toastbar.rcx-toastbar--success')).toBeVisible();
+		await page.locator('[data-qa-id="ImportTable"]').waitFor({ state: 'visible' });
+
+		await expect(poAdmin.importRow).toBeVisible();
 	});
 
 	test('expect all users is added is visible', async ({ page }) => {

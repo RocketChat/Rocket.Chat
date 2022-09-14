@@ -155,7 +155,7 @@ function ImportHistoryPage() {
 							</Table.Row>
 						)}
 					</Table.Head>
-					<Table.Body>
+					<Table.Body data-qa-id='ImportTable'>
 						{isLoading ? (
 							Array.from({ length: 20 }, (_, i) => <ImportOperationSummary.Skeleton small={small} key={i} />)
 						) : (
