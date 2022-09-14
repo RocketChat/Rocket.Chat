@@ -174,7 +174,8 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	priorityId: any;
 	livechatData: any;
 	queuedAt?: Date;
-	status?: 'queued' | 'taken' | 'ready'  // TODO: missing types for this
+
+	status?: 'queued' | 'taken' | 'ready'; // TODO: missing types for this
 
 	ts: Date;
 	label?: string;

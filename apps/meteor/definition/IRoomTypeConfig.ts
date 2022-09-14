@@ -53,7 +53,9 @@ export interface IRoomTypeConfig {
 	label?: string;
 	route?: IRoomTypeRouteConfig;
 	customTemplate?: string;
+	/** @deprecated */
 	notSubscribedTpl?: 'livechatNotSubscribed';
+	/** @deprecated */
 	readOnlyTpl?: 'ComposerNotAvailablePhoneCalls' | 'livechatReadOnly';
 }
 
