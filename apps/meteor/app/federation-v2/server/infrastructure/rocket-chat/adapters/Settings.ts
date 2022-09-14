@@ -160,7 +160,7 @@ export class RocketChatSettingsAdapter {
 
 		settingsRegistry.addGroup('Federation', function () {
 			this.section('Matrix Bridge', function () {
-				this.add('Federation_Matrix_enabled', false, {
+				this.add('Federation_Matrix_enabled', Boolean(preExistingConfiguration), {
 					readonly: false,
 					type: 'boolean',
 					i18nLabel: 'Federation_Matrix_enabled',
@@ -236,6 +236,7 @@ export class RocketChatSettingsAdapter {
 			return;
 		}
 
+		Promise.await(Settings.updateValueById('Federation_Matrix_enabled', true));
 		Promise.await(Settings.updateValueById('Federation_Matrix_id', existingConfiguration.id));
 		Promise.await(Settings.updateValueById('Federation_Matrix_hs_token', existingConfiguration.homeserverToken));
 		Promise.await(Settings.updateValueById('Federation_Matrix_as_token', existingConfiguration.applicationServiceToken));
