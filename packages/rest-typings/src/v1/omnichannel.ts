@@ -2321,6 +2321,41 @@ const GETLivechatRoomsParamsSchema = {
 
 export const isGETLivechatRoomsParams = ajv.compile<GETLivechatRoomsParams>(GETLivechatRoomsParamsSchema);
 
+type GETLivechatQueueParams = PaginatedRequest<{ agentId?: string; departmentId?: string; includeOfflineAgents?: string }>;
+
+const GETLivechatQueueParamsSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'object',
+			nullable: true,
+		},
+		agentId: {
+			type: 'string',
+			nullable: true,
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+		includeOfflineAgents: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isGETLivechatQueueParams = ajv.compile<GETLivechatQueueParams>(GETLivechatQueueParamsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -2505,19 +2540,6 @@ export type OmnichannelEndpoints = {
 			status: string;
 		};
 	};
-
-	'/v1/livechat/queue': {
-		GET: (params: LivechatQueueProps) => {
-			queue: {
-				chats: number;
-				department: { _id: string; name: string };
-				user: { _id: string; username: string; status: string };
-			}[];
-			count: number;
-			offset: number;
-			total: number;
-		};
-	};
 	'/v1/livechat/agents/:uid/departments': {
 		GET: (params: { enableDepartmentsOnly: 'true' | 'false' | '0' | '1' }) => { departments: ILivechatDepartmentAgents[] };
 	};
@@ -2654,6 +2676,19 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/rooms': {
 		GET: (params: GETLivechatRoomsParams) => PaginatedResult<{ rooms: IOmnichannelRoom[] }>;
+	};
+	'/v1/livechat/queue': {
+		GET: (params: GETLivechatQueueParams) => PaginatedResult<{
+			queue: {
+				_id: number;
+				user: { userId: string; username?: string; status?: string };
+				department: { _id: string | null; name: string | null };
+				chats: number;
+			}[];
+		}>;
+	};
+	'/v1/livechat/integrations.settings': {
+		GET: () => { settings: ISetting[] };
 	};
 } & {
 	// EE

@@ -11,5 +11,5 @@ import '../imports/server/rest/triggers';
 import '../imports/server/rest/integrations.js';
 import '../imports/server/rest/visitors';
 import '../imports/server/rest/dashboards.js';
-import '../imports/server/rest/queue.js';
+import '../imports/server/rest/queue';
 import '../imports/server/rest/businessHours';
