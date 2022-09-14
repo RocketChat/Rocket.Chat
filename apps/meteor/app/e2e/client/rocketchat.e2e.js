@@ -1,7 +1,6 @@
 import URL from 'url';
 import QueryString from 'querystring';
 
-import { parse } from '@rocket.chat/message-parser';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
@@ -22,6 +21,7 @@ import {
 	importRawKey,
 	deriveKey,
 	generateMnemonicPhrase,
+	parseUrlsInMessage,
 } from './helper';
 import * as banners from '../../../client/lib/banners';
 import { Rooms, Subscriptions, Messages, ChatMessage } from '../../models/client';
@@ -34,7 +34,6 @@ import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import { call } from '../../../client/lib/utils/call';
 import { APIClient } from '../../utils/client';
-import { parseUrlsFromMessage } from '../../../lib/parseUrlsFromMessage';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 
 let failedToDecodeKey = false;
@@ -377,12 +376,9 @@ class E2E extends Emitter {
 			return message;
 		}
 
-		const parsedMessage = parse(data.text);
-
 		const decryptedMessage = {
 			...message,
 			msg: data.text,
-			md: parsedMessage,
 			e2e: 'done',
 		};
 
@@ -418,7 +414,9 @@ class E2E extends Emitter {
 	}
 
 	async getQuoteMessages(message) {
-		const urls = parseUrlsFromMessage(message);
+		const { msg } = message;
+
+		const urls = parseUrlsInMessage(msg);
 
 		urls.map(async (url) => {
 			if (!url.includes(Meteor.absoluteUrl())) {
