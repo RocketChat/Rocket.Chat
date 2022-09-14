@@ -178,45 +178,6 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
-		before('send sample message', (done) => {
-			request
-				.post(api('chat.sendMessage'))
-				.set(credentials)
-				.send({
-					message: {
-						text: 'Sample message',
-						rid,
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					firstMessage = res.body.message;
-				})
-				.end(done);
-		});
-
-		before('send sample message into thread', (done) => {
-			request
-				.post(api('chat.sendMessage'))
-				.set(userCredentials)
-				.send({
-					message: {
-						text: 'Second Sample message',
-						rid,
-						tmid: firstMessage._id,
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					firstThreadMessage = res.body.message;
-				})
-				.end(done);
-		});
-
 		it('should fail if not logged in', (done) => {
 			request
 				.post(methodCall('getReadReceipts'))
@@ -233,6 +194,25 @@ describe('Meteor.methods', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		before('send sample message', (done) => {
+			request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					firstMessage = res.body.message;
 				})
 				.end(done);
 		});
@@ -259,32 +239,6 @@ describe('Meteor.methods', function () {
 					expect(data).to.have.a.property('result').that.is.an('array');
 					expect(data.result.length).to.equal(1);
 					expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
-				})
-				.end(done);
-		});
-
-		it("should return the sender's read receipt for a message sent in a thread", (done) => {
-			request
-				.post(methodCall('getReadReceipts'))
-				.set(userCredentials)
-				.send({
-					message: JSON.stringify({
-						method: 'getReadReceipts',
-						params: [{ messageId: firstThreadMessage._id }],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
-					expect(data.result.length).to.equal(1);
-					expect(data.result[0]).to.have.property('userId', user._id);
 				})
 				.end(done);
 		});
@@ -338,16 +292,60 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		it("should return the sender's read receipt for a message sent in a thread", (done) => {
+			request
+				.post(api('chat.sendMessage'))
+				.set(userCredentials)
+				.send({
+					message: {
+						text: 'Second Sample message',
+						rid,
+						tmid: firstMessage._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					firstThreadMessage = res.body.message;
+				})
+				.then(() => {
+					request
+						.post(methodCall('getReadReceipts'))
+						.set(userCredentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: firstThreadMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(1);
+							expect(data.result[0]).to.have.property('userId', user._id);
+						})
+						.end(done);
+				});
+		});
+
 		it("should return only the sender's read receipt for a message sent in a thread after the main room is read", (done) => {
 			request
-				.post(methodCall('getReadReceipts'))
-				.set(credentials)
+				.post(methodCall('readMessages'))
+				.set(userCredentials)
 				.send({
 					message: JSON.stringify({
-						method: 'getReadReceipts',
-						params: [{ messageId: firstThreadMessage._id }],
 						id: 'id',
 						msg: 'method',
+						method: 'readMessages',
+						params: [rid],
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -355,13 +353,32 @@ describe('Meteor.methods', function () {
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
-
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
-					expect(data.result.length).to.equal(1);
-					expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
 				})
-				.end(done);
+				.then(() => {
+					request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: firstThreadMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(1);
+							expect(data.result[0]).to.have.property('userId', user._id);
+						})
+						.end(done);
+				});
 		});
 
 		it('should return an unread thread for the room owner', (done) => {
