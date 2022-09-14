@@ -55,7 +55,7 @@ const ThreadView = forwardRef<HTMLElement, ThreadViewProps>(function ThreadView(
 		hasExpand && expanded
 			? css`
 					max-width: 855px !important;
-					@media (width > 780px) and (width < 1135px) {
+					@media (min-width: 780px) and (max-width: 1135px) {
 						max-width: calc(100% - var(--sidebar-width)) !important;
 					}
 			  `
