@@ -174,7 +174,7 @@ callbacks.add(
 									msg_processing_type: 'sendMessage',
 								},
 							],
-						},	
+						},
 					],
 				},
 				room,
