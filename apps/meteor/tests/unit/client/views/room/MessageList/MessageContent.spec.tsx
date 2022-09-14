@@ -41,6 +41,7 @@ const MessageContent = proxyquire.noCallThru().load('../../../../../../client/vi
 		useUserData: () => '',
 	},
 	'../../../blocks/MessageBlock': () => '',
+	'../../../../components/message/Attachments': () => '',
 	'./MessageContentBody': () => baseMessage.msg,
 }).default;
 
