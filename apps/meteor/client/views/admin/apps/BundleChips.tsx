@@ -1,4 +1,4 @@
-import { Box, PositionAnimated, AnimatedVisibility, Tooltip } from '@rocket.chat/fuselage';
+import { Box, PositionAnimated, AnimatedVisibility, Tooltip, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { RefObject, useRef, useState, ReactElement, Fragment } from 'react';
 
@@ -22,24 +22,12 @@ const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 		<>
 			{bundledIn.map((bundle) => (
 				<Fragment key={bundle.bundleId}>
-					<Box
-						display='flex'
-						flexDirection='row'
-						alignItems='center'
-						justifyContent='center'
-						backgroundColor='primary'
-						pi='x4'
-						height='x20'
-						borderRadius='x2'
-						ref={bundleRef}
-						onMouseEnter={(): void => setIsHovered(true)}
-						onMouseLeave={(): void => setIsHovered(false)}
-					>
-						<Box fontScale='c2' color='surface' style={{ whiteSpace: 'nowrap' }}>
+					<Box ref={bundleRef} onMouseEnter={(): void => setIsHovered(true)} onMouseLeave={(): void => setIsHovered(false)}>
+						<Tag variant='primary'>
 							{t('bundle_chip_title', {
 								bundleName: bundle.bundleName,
 							})}
-						</Box>
+						</Tag>
 					</Box>
 					<PositionAnimated
 						anchor={bundleRef as RefObject<Element>}
