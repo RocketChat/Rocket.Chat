@@ -364,12 +364,16 @@ jobs:
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
 
-            docker compose -f ../../docker-compose-ci.yml up -d rocketchat
+            docker compose -f ../../docker-compose-ci.yml start rocketchat
 
             until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
               ((c++)) && ((c==10)) && exit 1
               sleep 10
+
+              docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW
+
+              docker ps
 
               df -h
               free -h
