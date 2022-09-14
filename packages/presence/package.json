@@ -19,7 +19,7 @@
 		"lint:fix": "eslint src --fix",
 		"jest": "jest",
 		"build": "tsc -p tsconfig.json",
-		"testunit": "tap --ts --no-check-coverage",
+		"testunit": "tap --ts --no-check-coverage tests/**/*.test.ts",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
 	"main": "./dist/packages/presence/src/Presence.js",
