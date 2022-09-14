@@ -592,6 +592,7 @@
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Are you sure you want to disable Facebook integration?",
   "Assets": "Assets",
   "Assets_Description": "Modify your workspace's logo, icon, favicon and more.",
+  "Asset_preview": "Asset preview",
   "Assign_admin": "Assigning admin",
   "Assign_new_conversations_to_bot_agent": "Assign new conversations to bot agent",
   "Assign_new_conversations_to_bot_agent_description": "The routing system will attempt to find a bot agent before addressing new conversations to a human agent.",

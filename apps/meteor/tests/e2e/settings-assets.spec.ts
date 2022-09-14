@@ -20,10 +20,10 @@ test.describe.serial('settings-assets', () => {
 
 		await poAdmin.inputAssetsLogo.setInputFiles('./tests/e2e/fixtures/files/test-image.jpeg');
 
-		await expect(page.locator('[data-qa-type="assets-preview"]')).toBeVisible();
+		await expect(page.locator('role=img[name="Asset preview"]')).toBeVisible();
 
 		await poAdmin.btnDeleteAssetsLogo.click();
 
-		await expect(page.locator('[data-qa-type="assets-preview"]')).not.toBeVisible();
+		await expect(page.locator('role=img[name="Asset preview"]')).not.toBeVisible();
 	});
 });

@@ -101,10 +101,10 @@ export class Admin {
 	}
 
 	get btnDeleteAssetsLogo(): Locator {
-		return this.page.locator('[data-qa-id="Assets_Settings_Input"] >> role=button[name="Delete"]');
+		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> role=button[name="Delete"]');
 	}
 
 	get inputAssetsLogo(): Locator {
-		return this.page.locator('[data-qa-setting-id="Assets_logo"]');
+		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
 	}
 }
