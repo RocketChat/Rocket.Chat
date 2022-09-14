@@ -30,7 +30,7 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'priorityId'
 		| 'livechatData'
 		| 'departmentId'
-		| 'source'
 		| 'queuedAt'
-	> &
-	Pick<Partial<IRoomWithRetentionPolicy>, 'retention'>;
+	> & {
+		source?: IOmnichannelRoom['source'];
+	} & Pick<Partial<IRoomWithRetentionPolicy>, 'retention'>;
