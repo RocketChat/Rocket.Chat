@@ -2526,6 +2526,53 @@ const GETLivechatInquiriesGetOneParamsSchema = {
 
 export const isGETLivechatInquiriesGetOneParams = ajv.compile<GETLivechatInquiriesGetOneParams>(GETLivechatInquiriesGetOneParamsSchema);
 
+type GETDashboardTotalizers = {
+	start: string;
+	end: string;
+	departmentId?: string;
+};
+
+const GETLivechatAnalyticsDashboardsConversationTotalizersParamsSchema = {
+	type: 'object',
+	properties: {
+		start: {
+			type: 'string',
+		},
+		end: {
+			type: 'string',
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+	required: ['start', 'end'],
+};
+
+export const isGETDashboardTotalizerParams = ajv.compile<GETDashboardTotalizers>(
+	GETLivechatAnalyticsDashboardsConversationTotalizersParamsSchema,
+);
+
+type GETDashboardsAgentStatusParams = {
+	departmentId?: string;
+};
+
+const GETLivechatAnalyticsDashboardsAgentStatusParamsSchema = {
+	type: 'object',
+	properties: {
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentStatusParams>(
+	GETLivechatAnalyticsDashboardsAgentStatusParamsSchema,
+);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -2880,6 +2927,54 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/inquiries.getOne': {
 		GET: (params: GETLivechatInquiriesGetOneParams) => { inquiry: ILivechatInquiryRecord | null };
+	};
+	'/v1/livechat/analytics/dashboards/conversation-totalizers': {
+		GET: (params: GETDashboardTotalizers) => {
+			totalizers: { title: string; value: number }[];
+		};
+	};
+	'/v1/livechat/analytics/dashboards/agents-productivity-totalizers': {
+		GET: (params: GETDashboardTotalizers) => {
+			totalizers: { title: string; value: number }[];
+		};
+	};
+	'/v1/livechat/analytics/dashboards/chats-totalizers': {
+		GET: (params: GETDashboardTotalizers) => {
+			totalizers: { title: string; value: number }[];
+		};
+	};
+	'/v1/livechat/analytics/dashboards/productivity-totalizers': {
+		GET: (params: GETDashboardTotalizers) => {
+			totalizers: { title: string; value: number }[];
+		};
+	};
+	'/v1/livechat/analytics/dashboards/charts/chats': {
+		GET: (params: GETDashboardTotalizers) => {
+			open: number;
+			closed: number;
+			queued: number;
+			onhold: number;
+		};
+	};
+	'/v1/livechat/analytics/dashboards/charts/chats-per-agent': {
+		GET: (params: GETDashboardTotalizers) => {
+			[k: string]: { open: number; closed: number; onhold: number };
+		};
+	};
+	'/v1/livechat/analytics/dashboards/charts/chats-per-department': {
+		GET: (params: GETDashboardTotalizers) => {
+			[k: string]: { open: number; closed: number };
+		};
+	};
+	'/v1/livechat/analytics/dashboards/charts/timings': {
+		GET: (params: GETDashboardTotalizers) => {
+			response: { avg: number; longest: number };
+			reaction: { avg: number; longest: number };
+			chatDuration: { avg: number; longest: number };
+		};
+	};
+	'/v1/livechat/analytics/dashboards/charts/agents-status': {
+		GET: (params: GETDashboardsAgentStatusParams) => { offline: number; away: number; busy: number; available: number };
 	};
 } & {
 	// EE
