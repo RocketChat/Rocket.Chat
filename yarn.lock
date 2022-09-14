@@ -5202,7 +5202,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": 0.31.18
     "@rocket.chat/logo": 0.31.18
     "@rocket.chat/sdk": ^1.0.0-alpha.42
-    "@rocket.chat/ui-kit": ^0.14.1
+    "@rocket.chat/ui-kit": ^0.31.16
     "@storybook/addon-actions": ~6.5.10
     "@storybook/addon-backgrounds": ~6.5.10
     "@storybook/addon-essentials": ~6.5.10
@@ -5882,10 +5882,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/ui-kit@npm:^0.14.1":
-  version: 0.14.1
-  resolution: "@rocket.chat/ui-kit@npm:0.14.1"
-  checksum: c9da95fbb079b2bbd39d746552083f0a67171347f303a3f27cad875f0eedf8d121d372fd0671c2ba9b2cd93b727fec10b01fe906cd71057a98872338c58f48bb
+"@rocket.chat/ui-kit@npm:^0.31.16":
+  version: 0.31.16
+  resolution: "@rocket.chat/ui-kit@npm:0.31.16"
+  checksum: 08e161a629476338aacbe9a9b46feeb372f052c4548999b2611894cf9778b1dab4ac48586c43827345d8024c86ddea509022d627bbb4bb39ca1b667172260a38
   languageName: node
   linkType: hard
 
