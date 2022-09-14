@@ -67,7 +67,7 @@ const MessageContent: FC<{
 				</MessageBlock>
 			)}
 
-			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} />}
+			{!!messageAttachments.length && <Attachments attachments={messageAttachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
 
