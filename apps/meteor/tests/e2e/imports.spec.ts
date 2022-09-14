@@ -19,7 +19,7 @@ const csvToJson = (): void => {
 		});
 };
 
-test.describe.serial.only('imports', () => {
+test.describe.serial('imports', () => {
 	let poAdmin: Admin;
 
 	test.beforeAll(() => {
