@@ -6,7 +6,6 @@ import { TextInput } from '.';
 import { Form, FormField } from '..';
 import { centered } from '../../../helpers.stories';
 
-
 storiesOf('Forms/TextInput', module)
 	.addDecorator(centered)
 	.addDecorator(withKnobs)

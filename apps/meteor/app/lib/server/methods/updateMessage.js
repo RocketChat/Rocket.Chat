@@ -20,7 +20,10 @@ Meteor.methods({
 		if (!originalMessage || !originalMessage._id) {
 			return;
 		}
-		if (originalMessage.msg === message.msg) {
+
+		const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
+
+		if (msgText === message.msg) {
 			return;
 		}
 

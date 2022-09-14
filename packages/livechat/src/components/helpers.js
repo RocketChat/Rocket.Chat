@@ -19,12 +19,15 @@ export function flatMap(arr, mapFunc) {
 	return result;
 }
 
-export const createClassName = (styles, elementName, modifiers = {}, classes = []) => [
-	styles[elementName],
-	...flatMap(Object.entries(modifiers), ([modifierKey, modifierValue]) => [
-		modifierValue && styles[`${ elementName }--${ modifierKey }`],
-		typeof modifierValue !== 'boolean' && styles[`${ elementName }--${ modifierKey }-${ modifierValue }`],
-	]).filter((className) => !!className), ...classes.filter((className) => !!className)].join(' ');
+export const createClassName = (styles, elementName, modifiers = {}, classes = []) =>
+	[
+		styles[elementName],
+		...flatMap(Object.entries(modifiers), ([modifierKey, modifierValue]) => [
+			modifierValue && styles[`${elementName}--${modifierKey}`],
+			typeof modifierValue !== 'boolean' && styles[`${elementName}--${modifierKey}-${modifierValue}`],
+		]).filter((className) => !!className),
+		...classes.filter((className) => !!className),
+	].join(' ');
 
 export async function asyncForEach(array, callback) {
 	for (let index = 0; index < array.length; index++) {
@@ -36,7 +39,7 @@ export async function asyncForEach(array, callback) {
 export async function asyncEvery(array, callback) {
 	for (let index = 0; index < array.length; index++) {
 		// eslint-disable-next-line no-await-in-loop
-		if (!await callback(array[index], index, array)) {
+		if (!(await callback(array[index], index, array))) {
 			return false;
 		}
 	}
@@ -60,7 +63,7 @@ export const debounce = (func, delay) => {
 
 export const throttle = (func, limit) => {
 	let inThrottle;
-	return function(...args) {
+	return function (...args) {
 		const context = this;
 		if (!inThrottle) {
 			func.apply(context, args);
@@ -110,31 +113,31 @@ export function upsert(array = [], item, predicate, ranking) {
 const getSecureCookieSettings = () => (useSsl ? 'SameSite=None; Secure;' : '');
 
 export const setInitCookies = () => {
-	document.cookie = `rc_is_widget=t; path=/; ${ getSecureCookieSettings() }`;
-	document.cookie = `rc_room_type=l; path=/; ${ getSecureCookieSettings() }`;
+	document.cookie = `rc_is_widget=t; path=/; ${getSecureCookieSettings()}`;
+	document.cookie = `rc_room_type=l; path=/; ${getSecureCookieSettings()}`;
 };
 
 export const setCookies = (rid, token) => {
-	document.cookie = `rc_rid=${ rid }; path=/; ${ getSecureCookieSettings() }`;
-	document.cookie = `rc_token=${ token }; path=/; ${ getSecureCookieSettings() }`;
-	document.cookie = `rc_room_type=l; path=/; ${ getSecureCookieSettings() }`;
+	document.cookie = `rc_rid=${rid}; path=/; ${getSecureCookieSettings()}`;
+	document.cookie = `rc_token=${token}; path=/; ${getSecureCookieSettings()}`;
+	document.cookie = `rc_room_type=l; path=/; ${getSecureCookieSettings()}`;
 };
 
-export const getAvatarUrl = (username) => (username ? `${ Livechat.client.host }/avatar/${ username }` : null);
+export const getAvatarUrl = (username) => (username ? `${Livechat.client.host}/avatar/${username}` : null);
 
 export const msgTypesNotRendered = ['livechat_video_call', 'livechat_navigation_history', 'au', 'command', 'uj', 'ul', 'livechat-close'];
 
 export const canRenderMessage = ({ t }) => !msgTypesNotRendered.includes(t);
 
-export const getAttachmentUrl = (url) => `${ Livechat.client.host }${ url }`;
+export const getAttachmentUrl = (url) => `${Livechat.client.host}${url}`;
 
-export const sortArrayByColumn = (array, column, inverted) => array.sort((a, b) => {
-	if (a[column] < b[column] && !inverted) {
-		return -1;
-	}
-	return 1;
-});
-
+export const sortArrayByColumn = (array, column, inverted) =>
+	array.sort((a, b) => {
+		if (a[column] < b[column] && !inverted) {
+			return -1;
+		}
+		return 1;
+	});
 
 export const normalizeTransferHistoryMessage = (transferData, sender, t) => {
 	if (!transferData) {
@@ -216,7 +219,6 @@ export const visibility = (() => {
 	};
 })();
 
-
 export class MemoizedComponent extends Component {
 	shouldComponentUpdate(nextProps) {
 		const { props } = this;
@@ -273,17 +275,12 @@ const escapeMap = {
 	'<': '&lt;',
 	'>': '&gt;',
 	'"': '&quot;',
-	'\'': '&#x27;',
+	"'": '&#x27;',
 	'`': '&#x60;',
 };
 
-const escapeRegex = new RegExp(`(?:${ Object.keys(escapeMap).join('|') })`, 'g');
+const escapeRegex = new RegExp(`(?:${Object.keys(escapeMap).join('|')})`, 'g');
 
-const escapeHtml = mem(
-	(string) => string.replace(escapeRegex, (match) => escapeMap[match]),
-);
+const escapeHtml = mem((string) => string.replace(escapeRegex, (match) => escapeMap[match]));
 
-export const parse = (plainText) =>
-	[{ plain: plainText }]
-		.map(({ plain, html }) => (plain ? escapeHtml(plain) : html || ''))
-		.join('');
+export const parse = (plainText) => [{ plain: plainText }].map(({ plain, html }) => (plain ? escapeHtml(plain) : html || '')).join('');
