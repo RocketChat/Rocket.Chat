@@ -2690,6 +2690,9 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/integrations.settings': {
 		GET: () => { settings: ISetting[] };
 	};
+	'/v1/livechat/upload/:rid': {
+		POST: () => IMessage & { newRoom: boolean; showConnecting: boolean };
+	};
 } & {
 	// EE
 	'/v1/livechat/analytics/agents/average-service-time': {
