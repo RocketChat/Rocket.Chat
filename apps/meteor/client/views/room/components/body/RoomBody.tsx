@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement, UIEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Subscriptions, ChatMessage, RoomRoles, Users } from '../../../../../app/models/client';
+import { ChatMessage, RoomRoles, Users } from '../../../../../app/models/client';
 import { readMessage, RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
 import { Uploading } from '../../../../../app/ui/client/lib/fileUpload';
@@ -28,7 +28,7 @@ import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import Announcement from '../../Announcement';
 import { MessageList } from '../../MessageList/MessageList';
-import { useRoom } from '../../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useTabBarAPI } from '../../providers/ToolboxProvider';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
@@ -54,9 +54,7 @@ const RoomBody = (): ReactElement => {
 	const user = useUser();
 	const tabBar = useTabBarAPI();
 	const admin = useRole('admin');
-	const subscription = useReactiveValue(
-		useCallback(() => Subscriptions.findOne({ rid: room._id }) as ISubscription | undefined, [room._id]),
-	);
+	const subscription = useRoomSubscription();
 
 	const [lastMessage, setLastMessage] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
