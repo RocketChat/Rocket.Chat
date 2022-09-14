@@ -4728,6 +4728,8 @@
   "Voice_Call": "Chamada de voz",
   "VoIP_Enabled": "Canal de voz habilitado",
   "VoIP_Enabled_Description": "Conecte agentes e clientes através de chamadas de voz",
+  "VoIP_Enable_Keep_Alive_For_Unstable_Networks": "SIP Options Keep Alive habilitado",
+  "VoIP_Enable_Keep_Alive_For_Unstable_Networks_Description": "Monitore o status de múltiplos gateways SIP externos enviando mensagens SIP OPTIONS periódicas. Usado para redes instáveis.",
   "VoIP_Extension": "Extensão de VoIP",
   "Voip_Server_Configuration": "Servidor Websocket Asterisk",
   "VoIP_Server_Websocket_Port": "Porta do webSocket",

@@ -3217,7 +3217,7 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 
 settingsRegistry.addGroup('Call_Center', function () {
 	this.with({ tab: 'Settings' }, function () {
-		this.section('General_settings', function () {
+		this.section('General_Settings', function () {
 			this.add('VoIP_Enabled', false, {
 				type: 'boolean',
 				public: true,
