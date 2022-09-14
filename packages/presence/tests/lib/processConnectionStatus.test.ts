@@ -1,54 +1,48 @@
-import tap from 'tap';
+import { describe, expect, test } from '@jest/globals';
 import { UserStatus } from '@rocket.chat/core-typings';
 
 import { processConnectionStatus, processStatus, processPresenceAndStatus } from '../../src/lib/processConnectionStatus';
 
-tap.test('Presence micro service', (t) => {
-	t.test('should return connection as online when there is a connection online', (t) => {
-		t.equal(processConnectionStatus(UserStatus.OFFLINE, UserStatus.ONLINE), UserStatus.ONLINE);
-		t.equal(processConnectionStatus(UserStatus.ONLINE, UserStatus.ONLINE), UserStatus.ONLINE);
-		t.equal(processConnectionStatus(UserStatus.BUSY, UserStatus.ONLINE), UserStatus.ONLINE);
-		t.equal(processConnectionStatus(UserStatus.AWAY, UserStatus.ONLINE), UserStatus.ONLINE);
-		t.end();
+describe('Presence micro service', () => {
+	test('should return connection as online when there is a connection online', () => {
+		expect(processConnectionStatus(UserStatus.OFFLINE, UserStatus.ONLINE)).toBe(UserStatus.ONLINE);
+		expect(processConnectionStatus(UserStatus.ONLINE, UserStatus.ONLINE)).toBe(UserStatus.ONLINE);
+		expect(processConnectionStatus(UserStatus.BUSY, UserStatus.ONLINE)).toBe(UserStatus.ONLINE);
+		expect(processConnectionStatus(UserStatus.AWAY, UserStatus.ONLINE)).toBe(UserStatus.ONLINE);
 	});
 
-	t.test('should return the connections status if the other connection is offline', (t) => {
-		t.equal(processConnectionStatus(UserStatus.OFFLINE, UserStatus.OFFLINE), UserStatus.OFFLINE);
-		t.equal(processConnectionStatus(UserStatus.ONLINE, UserStatus.OFFLINE), UserStatus.ONLINE);
-		t.equal(processConnectionStatus(UserStatus.AWAY, UserStatus.OFFLINE), UserStatus.AWAY);
-		t.end();
+	test('should return the connections status if the other connection is offline', () => {
+		expect(processConnectionStatus(UserStatus.OFFLINE, UserStatus.OFFLINE)).toBe(UserStatus.OFFLINE);
+		expect(processConnectionStatus(UserStatus.ONLINE, UserStatus.OFFLINE)).toBe(UserStatus.ONLINE);
+		expect(processConnectionStatus(UserStatus.AWAY, UserStatus.OFFLINE)).toBe(UserStatus.AWAY);
 	});
 
-	t.test('should return the connection status when the default status is online', (t) => {
-		t.equal(processStatus(UserStatus.ONLINE, UserStatus.ONLINE), UserStatus.ONLINE);
-		t.equal(processStatus(UserStatus.AWAY, UserStatus.ONLINE), UserStatus.AWAY);
-		t.equal(processStatus(UserStatus.OFFLINE, UserStatus.ONLINE), UserStatus.OFFLINE);
-		t.end();
+	test('should return the connection status when the default status is online', () => {
+		expect(processStatus(UserStatus.ONLINE, UserStatus.ONLINE)).toBe(UserStatus.ONLINE);
+		expect(processStatus(UserStatus.AWAY, UserStatus.ONLINE)).toBe(UserStatus.AWAY);
+		expect(processStatus(UserStatus.OFFLINE, UserStatus.ONLINE)).toBe(UserStatus.OFFLINE);
 	});
 
-	t.test('should return status busy when the default status is busy', (t) => {
-		t.equal(processStatus(UserStatus.ONLINE, UserStatus.BUSY), UserStatus.BUSY);
-		t.equal(processStatus(UserStatus.AWAY, UserStatus.BUSY), UserStatus.BUSY);
-		t.equal(processStatus(UserStatus.OFFLINE, UserStatus.BUSY), UserStatus.OFFLINE);
-		t.end();
+	test('should return status busy when the default status is busy', () => {
+		expect(processStatus(UserStatus.ONLINE, UserStatus.BUSY)).toBe(UserStatus.BUSY);
+		expect(processStatus(UserStatus.AWAY, UserStatus.BUSY)).toBe(UserStatus.BUSY);
+		expect(processStatus(UserStatus.OFFLINE, UserStatus.BUSY)).toBe(UserStatus.OFFLINE);
 	});
 
-	t.test('should return status away when the default status is away', (t) => {
-		t.equal(processStatus(UserStatus.ONLINE, UserStatus.AWAY), UserStatus.AWAY);
-		t.equal(processStatus(UserStatus.AWAY, UserStatus.AWAY), UserStatus.AWAY);
-		t.equal(processStatus(UserStatus.OFFLINE, UserStatus.AWAY), UserStatus.OFFLINE);
-		t.end();
+	test('should return status away when the default status is away', () => {
+		expect(processStatus(UserStatus.ONLINE, UserStatus.AWAY)).toBe(UserStatus.AWAY);
+		expect(processStatus(UserStatus.AWAY, UserStatus.AWAY)).toBe(UserStatus.AWAY);
+		expect(processStatus(UserStatus.OFFLINE, UserStatus.AWAY)).toBe(UserStatus.OFFLINE);
 	});
 
-	t.test('should return status offline when the default status is offline', (t) => {
-		t.equal(processStatus(UserStatus.ONLINE, UserStatus.OFFLINE), UserStatus.OFFLINE);
-		t.equal(processStatus(UserStatus.AWAY, UserStatus.OFFLINE), UserStatus.OFFLINE);
-		t.equal(processStatus(UserStatus.OFFLINE, UserStatus.OFFLINE), UserStatus.OFFLINE);
-		t.end();
+	test('should return status offline when the default status is offline', () => {
+		expect(processStatus(UserStatus.ONLINE, UserStatus.OFFLINE)).toBe(UserStatus.OFFLINE);
+		expect(processStatus(UserStatus.AWAY, UserStatus.OFFLINE)).toBe(UserStatus.OFFLINE);
+		expect(processStatus(UserStatus.OFFLINE, UserStatus.OFFLINE)).toBe(UserStatus.OFFLINE);
 	});
 
-	t.test('should return correct status and statusConnection when connected once', (t) => {
-		t.same(
+	test('should return correct status and statusConnection when connected once', () => {
+		expect(
 			processPresenceAndStatus(
 				[
 					{
@@ -61,10 +55,9 @@ tap.test('Presence micro service', (t) => {
 				],
 				UserStatus.ONLINE,
 			),
-			{ status: UserStatus.ONLINE, statusConnection: UserStatus.ONLINE },
-		);
+		).toStrictEqual({ status: UserStatus.ONLINE, statusConnection: UserStatus.ONLINE });
 
-		t.same(
+		expect(
 			processPresenceAndStatus(
 				[
 					{
@@ -77,10 +70,9 @@ tap.test('Presence micro service', (t) => {
 				],
 				UserStatus.ONLINE,
 			),
-			{ status: UserStatus.AWAY, statusConnection: UserStatus.AWAY },
-		);
+		).toStrictEqual({ status: UserStatus.AWAY, statusConnection: UserStatus.AWAY });
 
-		t.same(
+		expect(
 			processPresenceAndStatus(
 				[
 					{
@@ -93,10 +85,9 @@ tap.test('Presence micro service', (t) => {
 				],
 				UserStatus.BUSY,
 			),
-			{ status: UserStatus.BUSY, statusConnection: UserStatus.ONLINE },
-		);
+		).toStrictEqual({ status: UserStatus.BUSY, statusConnection: UserStatus.ONLINE });
 
-		t.same(
+		expect(
 			processPresenceAndStatus(
 				[
 					{
@@ -109,10 +100,9 @@ tap.test('Presence micro service', (t) => {
 				],
 				UserStatus.AWAY,
 			),
-			{ status: UserStatus.AWAY, statusConnection: UserStatus.ONLINE },
-		);
+		).toStrictEqual({ status: UserStatus.AWAY, statusConnection: UserStatus.ONLINE });
 
-		t.same(
+		expect(
 			processPresenceAndStatus(
 				[
 					{
@@ -125,10 +115,9 @@ tap.test('Presence micro service', (t) => {
 				],
 				UserStatus.BUSY,
 			),
-			{ status: UserStatus.BUSY, statusConnection: UserStatus.AWAY },
-		);
+		).toStrictEqual({ status: UserStatus.BUSY, statusConnection: UserStatus.AWAY });
 
-		t.same(
+		expect(
 			processPresenceAndStatus(
 				[
 					{
@@ -141,10 +130,9 @@ tap.test('Presence micro service', (t) => {
 				],
 				UserStatus.OFFLINE,
 			),
-			{ status: UserStatus.OFFLINE, statusConnection: UserStatus.ONLINE },
-		);
+		).toStrictEqual({ status: UserStatus.OFFLINE, statusConnection: UserStatus.ONLINE });
 
-		t.same(
+		expect(
 			processPresenceAndStatus(
 				[
 					{
@@ -157,14 +145,11 @@ tap.test('Presence micro service', (t) => {
 				],
 				UserStatus.OFFLINE,
 			),
-			{ status: UserStatus.OFFLINE, statusConnection: UserStatus.AWAY },
-		);
-
-		t.end();
+		).toStrictEqual({ status: UserStatus.OFFLINE, statusConnection: UserStatus.AWAY });
 	});
 
-	t.test('should return correct status and statusConnection when connected twice', (t) => {
-		t.same(
+	test('should return correct status and statusConnection when connected twice', () => {
+		expect(
 			processPresenceAndStatus(
 				[
 					{
@@ -184,10 +169,9 @@ tap.test('Presence micro service', (t) => {
 				],
 				UserStatus.ONLINE,
 			),
-			{ status: UserStatus.ONLINE, statusConnection: UserStatus.ONLINE },
-		);
+		).toStrictEqual({ status: UserStatus.ONLINE, statusConnection: UserStatus.ONLINE });
 
-		t.same(
+		expect(
 			processPresenceAndStatus(
 				[
 					{
@@ -207,10 +191,9 @@ tap.test('Presence micro service', (t) => {
 				],
 				UserStatus.ONLINE,
 			),
-			{ status: UserStatus.ONLINE, statusConnection: UserStatus.ONLINE },
-		);
+		).toStrictEqual({ status: UserStatus.ONLINE, statusConnection: UserStatus.ONLINE });
 
-		t.same(
+		expect(
 			processPresenceAndStatus(
 				[
 					{
@@ -230,33 +213,28 @@ tap.test('Presence micro service', (t) => {
 				],
 				UserStatus.ONLINE,
 			),
-			{ status: UserStatus.AWAY, statusConnection: UserStatus.AWAY },
-		);
-		t.end();
+		).toStrictEqual({ status: UserStatus.AWAY, statusConnection: UserStatus.AWAY });
 	});
 
-	t.test('should return correct status and statusConnection when not connected', (t) => {
-		t.same(processPresenceAndStatus([], UserStatus.ONLINE), {
+	test('should return correct status and statusConnection when not connected', () => {
+		expect(processPresenceAndStatus([], UserStatus.ONLINE)).toStrictEqual({
 			status: UserStatus.OFFLINE,
 			statusConnection: UserStatus.OFFLINE,
 		});
 
-		t.same(processPresenceAndStatus([], UserStatus.BUSY), {
+		expect(processPresenceAndStatus([], UserStatus.BUSY)).toStrictEqual({
 			status: UserStatus.OFFLINE,
 			statusConnection: UserStatus.OFFLINE,
 		});
 
-		t.same(processPresenceAndStatus([], UserStatus.AWAY), {
+		expect(processPresenceAndStatus([], UserStatus.AWAY)).toStrictEqual({
 			status: UserStatus.OFFLINE,
 			statusConnection: UserStatus.OFFLINE,
 		});
 
-		t.same(processPresenceAndStatus([], UserStatus.OFFLINE), {
+		expect(processPresenceAndStatus([], UserStatus.OFFLINE)).toStrictEqual({
 			status: UserStatus.OFFLINE,
 			statusConnection: UserStatus.OFFLINE,
 		});
-		t.end();
 	});
-
-	t.end();
 });
