@@ -5,6 +5,7 @@ import { updatePermission } from '../../data/permissions.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { createUser, login } from '../../data/users.helper';
 import { password } from '../../data/user';
+import { createRoom } from '../../data/rooms.helper.js';
 
 describe('[Incoming Integrations]', function () {
 	this.retries(0);
@@ -13,6 +14,7 @@ describe('[Incoming Integrations]', function () {
 	let integrationCreatedByAnUser;
 	let user;
 	let userCredentials;
+	let channel;
 
 	before((done) => getCredentials(done));
 
@@ -163,6 +165,36 @@ describe('[Incoming Integrations]', function () {
 					text: 'Example message',
 				})
 				.expect(200)
+				.end(done);
+		});
+
+		it('should not send a message for a channel that is not in the webhooks configuration', (done) => {
+			const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+
+			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
+				channel = res.body.channel;
+			});
+
+			request
+				.post(`/hooks/${integration._id}/${integration.token}`)
+				.send({
+					text: 'Example message',
+					channel: [testChannelName],
+				})
+				.expect(200);
+
+			request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages', []);
+				})
 				.end(done);
 		});
 	});
