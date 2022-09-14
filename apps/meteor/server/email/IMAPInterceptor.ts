@@ -177,7 +177,6 @@ export class IMAPInterceptor extends EventEmitter {
 				out.push(seqno);
 				const bodycb = (stream: NodeJS.ReadableStream, _info: ImapMessageBodyInfo): void => {
 					simpleParser(stream, (_err, email) => {
-						logger.error([_err, JSON.stringify(email)]);
 						if (this.options.rejectBeforeTS && email.date && email.date < this.options.rejectBeforeTS) {
 							logger.error(`Rejecting email on inbox ${this.config.user}`, email.subject);
 							return;

@@ -159,10 +159,9 @@ callbacks.add(
 		}
 
 		if (message.files?.length && message.u.username !== 'rocket.cat') {
-			const AttachMsg: IMessage = Object.assign(
-				{},
+			sendMessage(
+				user,
 				{
-					...message,
 					msg: '',
 					attachments: [
 						{
@@ -175,14 +174,12 @@ callbacks.add(
 									msg_processing_type: 'sendMessage',
 								},
 							],
-						},
+						},	
 					],
 				},
+				room,
+				true,
 			);
-			delete AttachMsg._id;
-			delete AttachMsg.file;
-			delete AttachMsg.files;
-			logger.error(sendMessage(user, AttachMsg, room, true));
 			return message;
 		}
 
