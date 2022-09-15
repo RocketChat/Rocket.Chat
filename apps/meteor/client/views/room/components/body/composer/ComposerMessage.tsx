@@ -5,20 +5,20 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import React, { memo, ReactElement, useCallback, useEffect, useRef } from 'react';
 
-import { ChatMessages } from '../../../../../app/ui';
-import { RoomManager } from '../../../../../app/ui-utils/client';
-import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import ComposerSkeleton from '../../Room/ComposerSkeleton';
+import { ChatMessages } from '../../../../../../app/ui';
+import { RoomManager } from '../../../../../../app/ui-utils/client';
+import { useEmbeddedLayout } from '../../../../../hooks/useEmbeddedLayout';
+import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
+import ComposerSkeleton from '../../../Room/ComposerSkeleton';
 
-type ComposerContainerProps = {
+export type ComposerMessageProps = {
 	rid: IRoom['_id'];
 	subscription?: ISubscription;
 	chatMessagesInstance: ChatMessages;
 	onResize?: () => void;
 };
 
-const ComposerContainer = ({ rid, subscription, chatMessagesInstance, onResize }: ComposerContainerProps): ReactElement => {
+const ComposerMessage = ({ rid, subscription, chatMessagesInstance, onResize }: ComposerMessageProps): ReactElement => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const showFormattingTips = useSetting('Message_ShowFormattingTips') as boolean;
 
@@ -88,9 +88,9 @@ const ComposerContainer = ({ rid, subscription, chatMessagesInstance, onResize }
 		[rid, chatMessagesInstance],
 	);
 
-	const subscriptionReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));
+	const publicationReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));
 
-	if (!subscriptionReady) {
+	if (!publicationReady) {
 		return (
 			<footer className='footer'>
 				<ComposerSkeleton />
@@ -101,4 +101,4 @@ const ComposerContainer = ({ rid, subscription, chatMessagesInstance, onResize }
 	return <footer ref={footerRef} className='footer' />;
 };
 
-export default memo(ComposerContainer);
+export default memo(ComposerMessage);
