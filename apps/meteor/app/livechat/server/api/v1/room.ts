@@ -33,7 +33,7 @@ API.v1.addRoute(
 				oldRoom: room,
 			});
 
-			return API.v1.success({});
+			return API.v1.success();
 		},
 	},
 );

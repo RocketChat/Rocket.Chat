@@ -1162,6 +1162,62 @@ describe('LIVECHAT - rooms', function () {
 			await sleep(1000);
 		});
 
+		it('should throw an error if roomData is not provided', async () => {
+			await updatePermission('view-l-room', ['admin']);
+
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					guestData: {
+						_id: 'invalid-guest-id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should throw an error if guestData is not provided', async () => {
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: 'invalid-room-id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should throw an error if roomData is not of valid type', async () => {
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: 'invalid-room-data',
+					guestData: {
+						_id: 'invalid-guest-id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should throw an error if guestData is not of valid type', async () => {
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					guestData: 'invalid-guest-data',
+					roomData: {
+						_id: 'invalid-room-id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
 		it('should allow user to update the room info', async () => {
 			await updatePermission('view-l-room', ['admin']);
 
@@ -1269,6 +1325,27 @@ describe('LIVECHAT - rooms', function () {
 			expect(latestRoom).to.have.property('tags').to.include('tag1');
 			expect(latestRoom).to.have.property('tags').to.include('tag2');
 			expect(latestRoom).to.not.have.property('livechatData');
+		});
+
+		(IS_EE ? it : it.skip)('should throw an error if custom fields are not valid', async () => {
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: 'invalid-room-id',
+						livechatData: {
+							key: {
+								value: 'invalid',
+							},
+						},
+					},
+					guestData: {
+						_id: 'invalid-visitor-id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
 		});
 	});
 });

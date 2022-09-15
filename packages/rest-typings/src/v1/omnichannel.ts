@@ -311,13 +311,13 @@ type LiveChatRoomSaveInfo = {
 		name?: string;
 		email?: string;
 		phone?: string;
-		livechatData?: object;
+		livechatData?: { [k: string]: string };
 	};
 	roomData: {
 		_id: string;
 		topic?: string;
 		tags?: string[];
-		livechatData?: object;
+		livechatData?: { [k: string]: string };
 		priorityId?: string;
 	};
 };
@@ -345,6 +345,11 @@ const LiveChatRoomSaveInfoSchema = {
 				},
 				livechatData: {
 					type: 'object',
+					patternProperties: {
+						'.*': {
+							type: 'string',
+						},
+					},
 					nullable: true,
 				},
 			},
@@ -1165,7 +1170,7 @@ export type OmnichannelEndpoints = {
 		POST: (params: LiveChatRoomForward) => { success: boolean };
 	};
 	'/v1/livechat/room.saveInfo': {
-		POST: (params: LiveChatRoomSaveInfo) => { success: boolean };
+		POST: (params: LiveChatRoomSaveInfo) => void;
 	};
 	'/v1/livechat/monitors': {
 		GET: (params: LivechatMonitorsListProps) => PaginatedResult<{
