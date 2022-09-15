@@ -86,7 +86,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 						<>
 							<AppDetailsHeader app={appData} />
 
-							<Tabs mis='-x24' mb='x36'>
+							<Tabs>
 								<Tabs.Item onClick={(): void => handleTabClick('details')} selected={!tab || tab === 'details'}>
 									{t('Details')}
 								</Tabs.Item>

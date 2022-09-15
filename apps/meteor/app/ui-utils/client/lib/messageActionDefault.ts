@@ -61,7 +61,7 @@ Meteor.startup(async function () {
 			}
 
 			// Check if we already have a DM started with the message user (not ourselves) or we can start one
-			if (user._id !== message.u._id && !hasPermission('create-d')) {
+			if (!!user && user._id !== message.u._id && !hasPermission('create-d')) {
 				const dmRoom = Rooms.findOne({ _id: [user._id, message.u._id].sort().join('') });
 				if (!dmRoom || !Subscriptions.findOne({ 'rid': dmRoom._id, 'u._id': user._id })) {
 					return false;
@@ -300,6 +300,10 @@ Meteor.startup(async function () {
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
+				return false;
+			}
+
+			if (!user) {
 				return false;
 			}
 

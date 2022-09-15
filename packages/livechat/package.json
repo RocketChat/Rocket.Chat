@@ -26,8 +26,8 @@
 		"@babel/eslint-parser": "^7.18.9",
 		"@babel/preset-env": "^7.18.9",
 		"@rocket.chat/eslint-config": "^0.4.0",
-		"@rocket.chat/fuselage-tokens": "0.31.18",
-		"@rocket.chat/logo": "0.31.18",
+		"@rocket.chat/fuselage-tokens": "next",
+		"@rocket.chat/logo": "next",
 		"@storybook/addon-actions": "~6.5.10",
 		"@storybook/addon-backgrounds": "~6.5.10",
 		"@storybook/addon-essentials": "~6.5.10",
@@ -87,7 +87,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
-		"@rocket.chat/ui-kit": "^0.14.1",
+		"@rocket.chat/ui-kit": "next",
 		"crypto-js": "^4.1.1",
 		"css-vars-ponyfill": "^2.4.7",
 		"date-fns": "^2.15.0",
@@ -108,6 +108,9 @@
 		"last 2 versions",
 		"not ie < 11"
 	],
+	"volta": {
+		"extends": "../../package.json"
+	},
 	"houston": {
 		"updateFiles": [
 			"package.json"

@@ -17,7 +17,7 @@ const SettingsPage = (): ReactElement => {
 	const isLoadingGroups = useIsSettingsContextLoading();
 
 	return (
-		<Page backgroundColor='neutral-100'>
+		<Page background='tint'>
 			<Page.Header title={t('Settings')} borderBlockEndColor='' />
 
 			<PageBlockWithBorder>
