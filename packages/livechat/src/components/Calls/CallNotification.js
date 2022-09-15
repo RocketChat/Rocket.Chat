@@ -12,22 +12,12 @@ import { createClassName, getAvatarUrl, isMobileDevice } from '../helpers';
 import { CallStatus } from './CallStatus';
 import styles from './styles.scss';
 
-
-const CallNotification = ({
-	callProvider,
-	callerUsername,
-	url,
-	dispatch,
-	time,
-	rid,
-	callId,
-	t,
-}) => {
+const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, rid, callId, t }) => {
 	const [show, setShow] = useState(true);
 
 	const callInNewTab = async () => {
 		const { token } = store.state;
-		const url = `${ Livechat.client.host }/meet/${ rid }?token=${ token }`;
+		const url = `${Livechat.client.host}/meet/${rid}?token=${token}`;
 		await dispatch({
 			ongoingCall: {
 				callStatus: CallStatus.IN_PROGRESS_DIFFERENT_TAB,
@@ -81,31 +71,24 @@ const CallNotification = ({
 
 	return (
 		<div className={createClassName(styles, 'call-notification')}>
-			{
-				show && (
-					<div className = { createClassName(styles, 'call-notification__content') }>
-						<div className = { createClassName(styles, 'call-notification__content-avatar') }>
-							<Avatar src = { getAvatarUrl(callerUsername) } large />
-						</div>
-						<div className = { createClassName(styles, 'call-notification__content-message') }>
-							{ t('incoming_video_call') }
-						</div>
-						<div className = { createClassName(styles, 'call-notification__content-actions') }>
-							<Button
-								onClick = { declineClick }
-								className = { createClassName(styles, 'call-notification__content-actions-decline') }>
-								<PhoneDecline width = {	20 } height = { 20 } />
-								<span style='margin-left:5px'> {t('decline')} </span >
-							</Button>
-							<Button onClick = { acceptClick }
-								className = {createClassName(styles, 'call-notification__content-actions-accept') }>
-								<PhoneAccept width = { 20 } height = { 20} />
-								<span style='margin-left:5px'> {t('accept')} </span >
-							</Button>
-						</div>
+			{show && (
+				<div className={createClassName(styles, 'call-notification__content')}>
+					<div className={createClassName(styles, 'call-notification__content-avatar')}>
+						<Avatar src={getAvatarUrl(callerUsername)} large />
 					</div>
-				)
-			}
+					<div className={createClassName(styles, 'call-notification__content-message')}>{t('incoming_video_call')}</div>
+					<div className={createClassName(styles, 'call-notification__content-actions')}>
+						<Button onClick={declineClick} className={createClassName(styles, 'call-notification__content-actions-decline')}>
+							<PhoneDecline width={20} height={20} />
+							<span style='margin-left:5px'> {t('decline')} </span>
+						</Button>
+						<Button onClick={acceptClick} className={createClassName(styles, 'call-notification__content-actions-accept')}>
+							<PhoneAccept width={20} height={20} />
+							<span style='margin-left:5px'> {t('accept')} </span>
+						</Button>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };

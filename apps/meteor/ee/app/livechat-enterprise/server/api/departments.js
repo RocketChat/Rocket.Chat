@@ -1,7 +1,6 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../../app/api/server';
-import { hasPermission } from '../../../../../app/authorization/server';
 import {
 	findAllRooms,
 	findAllAverageServiceTime,
@@ -15,12 +14,9 @@ import {
 
 API.v1.addRoute(
 	'livechat/analytics/departments/amount-of-chats',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { answered, departmentId } = this.requestParams();
@@ -59,12 +55,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/average-service-time',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -101,12 +94,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/average-chat-duration-time',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -143,12 +133,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/total-service-time',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -185,12 +172,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/average-waiting-time',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -227,12 +211,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/total-transferred-chats',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -269,12 +250,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/total-abandoned-chats',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -311,12 +289,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/percentage-abandoned-chats',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();

@@ -7,7 +7,7 @@ API.v1.addRoute(
 	'livechat/agents/:agentId/departments',
 	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				agentId: String,
 			});
@@ -15,13 +15,11 @@ API.v1.addRoute(
 				enabledDepartmentsOnly: Match.Maybe(String),
 			});
 
-			const departments = Promise.await(
-				findAgentDepartments({
-					userId: this.userId,
-					enabledDepartmentsOnly: this.queryParams.enabledDepartmentsOnly && this.queryParams.enabledDepartmentsOnly === 'true',
-					agentId: this.urlParams.agentId,
-				}),
-			);
+			const departments = await findAgentDepartments({
+				userId: this.userId,
+				enabledDepartmentsOnly: this.queryParams.enabledDepartmentsOnly && this.queryParams.enabledDepartmentsOnly === 'true',
+				agentId: this.urlParams.agentId,
+			});
 
 			return API.v1.success(departments);
 		},

@@ -12,7 +12,6 @@
 @import 'imports/forms/input.css';
 @import 'imports/forms/select.css';
 @import 'imports/forms/popup-list.css';
-@import 'imports/forms/select-avatar.css';
 @import 'imports/forms/switch.css';
 @import 'imports/forms/tags.css';
 @import 'imports/forms/checkbox.css';
@@ -22,7 +21,6 @@
 
 /* Sidebar */
 @import 'imports/components/sidebar/sidebar.css';
-@import 'imports/components/sidebar/sidebar-flex.css';
 @import 'imports/components/sidebar/rooms-list.css';
 
 /* Main */
@@ -31,20 +29,14 @@
 @import 'imports/components/main-content.css';
 @import 'imports/components/message-box.css';
 @import 'imports/components/avatar.css';
-@import 'imports/components/badge.css';
 @import 'imports/components/popover.css';
 @import 'imports/components/popout.css';
 @import 'imports/components/modal.css';
-@import 'imports/components/chip.css';
 @import 'imports/components/messages.css';
 @import 'imports/components/read-receipts.css';
 @import 'imports/components/contextual-bar.css';
 @import 'imports/components/emojiPicker.css';
 @import 'imports/components/table.css';
-@import 'imports/components/tabs.css';
-
-/* Modal */
-@import 'imports/components/modal/create-channel.css';
 
 /* User Info */
 @import 'imports/components/userInfo.css';
