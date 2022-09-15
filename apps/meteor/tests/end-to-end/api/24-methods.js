@@ -392,7 +392,8 @@ describe('Meteor.methods', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body.subscription).to.have.property('tunread', [firstMessage._id]);
+					expect(res.body.subscription).to.have.a.property('tunread').that.is.an('array');
+					expect(res.body.subscription.tunread).to.eql([firstMessage._id]);
 				})
 				.end(done);
 		});
@@ -437,7 +438,8 @@ describe('Meteor.methods', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body.subscription).to.have.property('tunread', []);
+					expect(res.body.subscription).to.have.a.property('tunread').that.is.an('array');
+					expect(res.body.subscription.tunread).to.eql([]);
 				})
 				.end(done);
 		});
