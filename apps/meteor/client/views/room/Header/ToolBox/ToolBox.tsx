@@ -96,7 +96,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 				}
 				return <Header.ToolBox.Action {...props} />;
 			})}
-			{featuredActions.length && <Box mi='x4'>|</Box>}
+			{featuredActions.length > 0 && <Header.ToolBox.Divider />}
 			{visibleActions.map(({ renderAction, id, icon, title, action = actionDefault, disabled, 'data-tooltip': tooltip }, index) => {
 				const props = {
 					id,

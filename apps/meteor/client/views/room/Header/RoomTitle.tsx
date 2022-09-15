@@ -11,7 +11,7 @@ type RoomTitleProps = {
 const RoomTitle = ({ room }: RoomTitleProps): ReactElement => (
 	<>
 		<HeaderIconWithRoom room={room} />
-		<Header.Title>{room.name}</Header.Title>
+		<Header.Title is='h1'>{room.name}</Header.Title>
 	</>
 );
 
