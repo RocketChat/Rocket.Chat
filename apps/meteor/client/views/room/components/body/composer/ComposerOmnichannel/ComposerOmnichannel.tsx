@@ -25,6 +25,10 @@ export const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement =
 		});
 	}, [_id, subscribeToRoom]);
 
+	useEffect(() => {
+		setIsInquired(!servedBy && queuedAt);
+	}, [queuedAt, servedBy, _id]);
+
 	if (!open) {
 		return (
 			<footer className='rc-message-box footer'>
