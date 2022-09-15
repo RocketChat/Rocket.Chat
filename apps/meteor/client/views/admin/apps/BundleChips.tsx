@@ -23,11 +23,7 @@ const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 			{bundledIn.map((bundle) => (
 				<Fragment key={bundle.bundleId}>
 					<Box ref={bundleRef} onMouseEnter={(): void => setIsHovered(true)} onMouseLeave={(): void => setIsHovered(false)}>
-						<Tag variant='primary'>
-							{t('bundle_chip_title', {
-								bundleName: bundle.bundleName,
-							})}
-						</Tag>
+						<Tag variant='primary'>{bundle.bundleName}</Tag>
 					</Box>
 					<PositionAnimated
 						anchor={bundleRef as RefObject<Element>}
