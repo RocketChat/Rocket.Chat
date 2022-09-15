@@ -1,4 +1,4 @@
-import { BLOCK_CONTEXT } from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
 import { useState, useMemo, useCallback } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
@@ -21,7 +21,8 @@ const ActionsBlock = ({ appId, blockId, elements, parser, t }) => {
 		<Block appId={appId} blockId={blockId}>
 			<div className={createClassName(styles, 'uikit-actions-block')}>
 				{renderableElements.map((element, key) => {
-					const renderedElement = parser.renderActions(element, BLOCK_CONTEXT.ACTION);
+					const renderedElement = parser.renderActions(element, BlockContext.ACTION);
+
 					if (!renderedElement) {
 						return null;
 					}
