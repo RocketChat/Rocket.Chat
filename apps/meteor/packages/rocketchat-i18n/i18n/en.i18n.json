@@ -742,6 +742,7 @@
   "Browse_Files": "Browse Files",
   "Browser_does_not_support_audio_element": "Your browser does not support the audio element.",
   "Browser_does_not_support_video_element": "Your browser does not support the video element.",
+  "Browser_does_not_support_recording_video": "Your browser does not support recording video",
   "Bugsnag_api_key": "Bugsnag API Key",
   "Build_Environment": "Build Environment",
   "bulk-register-user": "Bulk Create Users",
