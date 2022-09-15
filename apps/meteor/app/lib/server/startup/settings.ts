@@ -554,12 +554,6 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Use_Legacy_Message_Template',
 			alert: 'Use_Legacy_Message_Template_alert',
 		});
-
-		this.add('Accounts_Default_User_Preferences_showNewLoginEmailPreference', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Enable_Login_Emails',
-		});
 	});
 
 	this.section('Avatar', function () {

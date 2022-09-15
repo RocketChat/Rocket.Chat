@@ -30,7 +30,7 @@ type UserPreferences = {
 	sidebarGroupByType: boolean;
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
-	receiveNewLoginEmail: boolean;
+	receiveLoginDetectionEmail: boolean;
 };
 
 export type SaveUserPreferencesMethod = (preferences: Partial<UserPreferences>) => boolean;
