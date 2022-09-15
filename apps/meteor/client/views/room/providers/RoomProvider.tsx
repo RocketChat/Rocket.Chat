@@ -20,7 +20,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const subscriptionQuery = useQuery<ISubscription, Error>(['subscriptions', { rid }], { staleTime: Infinity });
 
 	const pseudoRoom = useMemo(() => {
-		if (!subscriptionQuery.isSuccess || !roomQuery.isSuccess) {
+		if (!roomQuery.isSuccess) {
 			return null;
 		}
 
@@ -29,7 +29,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			...roomQuery.data,
 			name: roomCoordinator.getRoomName(roomQuery.data.t, roomQuery.data),
 		};
-	}, [roomQuery.data, roomQuery.isSuccess, subscriptionQuery.data, subscriptionQuery.isSuccess]);
+	}, [roomQuery.data, roomQuery.isSuccess, subscriptionQuery.data]);
 
 	const context = useMemo((): ContextType<typeof RoomContext> => {
 		if (!pseudoRoom) {
