@@ -6,18 +6,18 @@ import { UserAction } from '../../../../app/ui';
 import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import RoomSkeleton from '../Room/RoomSkeleton';
+import RoomSkeleton from '../RoomSkeleton';
 import { RoomContext, RoomContextValue } from '../contexts/RoomContext';
 import ToolboxProvider from './ToolboxProvider';
 
-export type Props = {
+type RoomProviderProps = {
 	children: ReactNode;
 	rid: IRoom['_id'];
 };
 
 const fields = {};
 
-const RoomProvider = ({ rid, children }: Props): JSX.Element => {
+const RoomProvider = ({ rid, children }: RoomProviderProps): JSX.Element => {
 	const { phase, value: room } = useHandleRoom(rid);
 
 	const getMore = useCallback(() => {

@@ -211,7 +211,12 @@ Livechat.onMessage(async (message) => {
 	message = transformAgentInformationOnMessage(message);
 
 	await store.setState({
-		messages: upsert(store.state.messages, message, ({ _id }) => _id === message._id, ({ ts }) => ts),
+		messages: upsert(
+			store.state.messages,
+			message,
+			({ _id }) => _id === message._id,
+			({ ts }) => ts,
+		),
 	});
 
 	await processMessage(message);
