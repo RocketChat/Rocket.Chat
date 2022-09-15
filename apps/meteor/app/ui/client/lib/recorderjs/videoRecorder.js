@@ -40,7 +40,8 @@ export const VideoRecorder = new (class VideoRecorder {
 		if (this.stream == null) {
 			return;
 		}
-		this.mediaRecorder = new MediaRecorder(this.stream, { type: 'video/webm' });
+
+		this.mediaRecorder = new window.MediaRecorder(this.stream, { mimeType: 'video/webm; codecs=vp8,opus' });
 		this.mediaRecorder.ondataavailable = (blobev) => {
 			this.chunks.push(blobev.data);
 			if (!this.recordingAvailable.get()) {
@@ -99,7 +100,7 @@ export const VideoRecorder = new (class VideoRecorder {
 		this.recordingAvailable.set(false);
 
 		if (cb && this.chunks) {
-			const blob = new Blob(this.chunks, { type: 'video/webm' });
+			const blob = new Blob(this.chunks);
 			cb(blob);
 		}
 
