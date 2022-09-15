@@ -10,12 +10,11 @@ import {
 	useEndpoint,
 	useMethod,
 	useTranslation,
+	useRoute,
 } from '@rocket.chat/ui-contexts';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import React, { useCallback, useState, useEffect } from 'react';
 
-import { RoomManager } from '../../../../../../../app/ui-utils/client';
 import PlaceChatOnHoldModal from '../../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../../components/Omnichannel/modals/CloseChatModalData';
@@ -34,6 +33,7 @@ export const useQuickActions = (
 	getAction: (id: string) => void;
 } => {
 	const setModal = useSetModal();
+	const route = useRoute('home');
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -83,11 +83,11 @@ export const useQuickActions = (
 			await methodReturn(rid);
 			closeModal();
 			Session.set('openedRoom', null);
-			FlowRouter.go('/home');
+			route.push();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [closeModal, dispatchToastMessage, methodReturn, rid]);
+	}, [closeModal, dispatchToastMessage, methodReturn, rid, route]);
 
 	const requestTranscript = useMethod('livechat:requestTranscript');
 
@@ -96,7 +96,6 @@ export const useQuickActions = (
 			try {
 				await requestTranscript(rid, email, subject);
 				closeModal();
-				RoomManager.close(`l${rid}`);
 				dispatchToastMessage({
 					type: 'success',
 					message: t('Livechat_transcript_has_been_requested'),
@@ -169,13 +168,13 @@ export const useQuickActions = (
 					throw new Error(departmentId ? t('error-no-agents-online-in-department') : t('error-forwarding-chat'));
 				}
 				dispatchToastMessage({ type: 'success', message: t('Transferred') });
-				FlowRouter.go('/');
+				route.push();
 				closeModal();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeModal, dispatchToastMessage, forwardChat, rid, t],
+		[closeModal, dispatchToastMessage, forwardChat, rid, route, t],
 	);
 
 	const closeChat = useMethod('livechat:closeRoom');
@@ -284,10 +283,8 @@ export const useQuickActions = (
 
 	const visibleActions = actions.filter(({ id }) => hasPermissionButtons(id));
 
-	const actionDefault = useMutableCallback((e) => {
-		const index = e.currentTarget.getAttribute('data-quick-actions');
-		const { id } = visibleActions[index];
-		openModal(id);
+	const actionDefault = useMutableCallback((actionId) => {
+		openModal(actionId);
 	});
 
 	const getAction = useMutableCallback((id) => {

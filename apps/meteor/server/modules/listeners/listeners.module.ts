@@ -50,7 +50,7 @@ export class ListenersModule {
 			notifications.notifyUserInThisInstance(uid, 'message', {
 				groupable: false,
 				...message,
-				_id: String(Date.now()),
+				_id: message._id || String(Date.now()),
 				rid,
 				ts: new Date(),
 			});
@@ -167,6 +167,17 @@ export class ListenersModule {
 					type,
 					...inquiry,
 				});
+			}
+
+			// Don't do notifications for updating inquiries when the only thing changing is the queue metadata
+			if (
+				clientAction === 'updated' &&
+				diff?.hasOwnProperty('lockedAt') &&
+				diff?.hasOwnProperty('locked') &&
+				diff?.hasOwnProperty('_updatedAt') &&
+				Object.keys(diff).length === 3
+			) {
+				return;
 			}
 
 			notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
@@ -333,6 +344,9 @@ export class ListenersModule {
 
 		service.onEvent('connector.statuschanged', (enabled): void => {
 			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
+		});
+		service.onEvent('omnichannel.room', (roomId, data): void => {
+			notifications.streamLivechatRoom.emitWithoutBroadcast(roomId, data);
 		});
 	}
 }

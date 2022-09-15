@@ -4,18 +4,14 @@ import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { LivechatInquiry } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { hasPermission } from '../../../../authorization';
 import { Users, LivechatDepartment } from '../../../../models/server';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { department } = this.requestParams();
@@ -55,7 +51,7 @@ API.v1.addRoute(
 	'livechat/inquiries.take',
 	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		post() {
+		async post() {
 			check(this.bodyParams, {
 				inquiryId: String,
 				userId: Match.Maybe(String),
@@ -76,24 +72,22 @@ API.v1.addRoute(
 	'livechat/inquiries.queued',
 	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { department } = this.requestParams();
 
 			return API.v1.success(
-				Promise.await(
-					findInquiries({
-						userId: this.userId,
-						department,
-						status: 'queued',
-						pagination: {
-							offset,
-							count,
-							sort,
-						},
-					}),
-				),
+				await findInquiries({
+					userId: this.userId,
+					department,
+					status: 'queued',
+					pagination: {
+						offset,
+						count,
+						sort,
+					},
+				}),
 			);
 		},
 	},

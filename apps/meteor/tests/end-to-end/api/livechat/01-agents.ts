@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createAgent, createManager } from '../../../data/livechat/rooms';
+import { createAgent, createManager, createVisitor, createLivechatRoom, takeInquiry, fetchInquiry } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser } from '../../../data/users.helper';
 
@@ -18,6 +18,7 @@ describe('LIVECHAT - Agents', function () {
 
 	before((done) => {
 		updateSetting('Livechat_enabled', true)
+			.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
 			.then(createAgent)
 			.then((createdAgent) => {
 				agent = createdAgent;
@@ -36,16 +37,7 @@ describe('LIVECHAT - Agents', function () {
 				.then(() => updatePermission('transfer-livechat-guest', []))
 				.then(() => updatePermission('manage-livechat-agents', []))
 				.then(() => {
-					request
-						.get(api('livechat/users/agent'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body.error).to.be.equal('error-not-authorized');
-						})
-						.end(done);
+					request.get(api('livechat/users/agent')).set(credentials).expect('Content-Type', 'application/json').expect(403).end(done);
 				});
 		});
 		it('should throw an error when the type is invalid', (done) => {
@@ -67,6 +59,7 @@ describe('LIVECHAT - Agents', function () {
 		it('should return an array of agents', (done) => {
 			updatePermission('edit-omnichannel-contact', ['admin'])
 				.then(() => updatePermission('transfer-livechat-guest', ['admin']))
+				.then(() => updatePermission('manage-livechat-agents', ['admin']))
 				.then(() => {
 					request
 						.get(api('livechat/users/agent'))
@@ -295,11 +288,7 @@ describe('LIVECHAT - Agents', function () {
 					.get(api(`livechat/agents/${agent._id}/departments`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
-					})
+					.expect(403)
 					.end(done);
 			});
 		});
@@ -335,10 +324,54 @@ describe('LIVECHAT - Agents', function () {
 			});
 		});
 	});
+
+	describe('livechat/agent.info/:rid/:token', () => {
+		it('should fail when token in url params is not valid', async () => {
+			await request.get(api(`livechat/agent.info/soemthing/invalid-token`)).expect(400);
+		});
+		it('should fail when token is valid but rid isnt', async () => {
+			const visitor = await createVisitor();
+			await request.get(api(`livechat/agent.info/invalid-rid/${visitor.token}`)).expect(400);
+		});
+		/* it('should fail when room is not being served by any agent', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await request.get(api(`livechat/agent.info/${room._id}/${visitor.token}`)).expect(400);
+		}); */
+		it('should return a valid agent when the room is being served and the room belongs to visitor', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			const inq = await fetchInquiry(room._id);
+			await takeInquiry(inq._id);
+
+			const { body } = await request.get(api(`livechat/agent.info/${room._id}/${visitor.token}`));
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('agent');
+			expect(body.agent).to.have.property('_id', 'rocketchat.internal.admin.test');
+		});
+	});
+	describe('livechat/agent.next/:token', () => {
+		it('should fail when token in url params is not valid', async () => {
+			await request.get(api(`livechat/agent.next/invalid-token`)).expect(400);
+		});
+		it('should return success when visitor with token has an open room', async () => {
+			const visitor = await createVisitor();
+			await createLivechatRoom(visitor.token);
+
+			await request.get(api(`livechat/agent.next/${visitor.token}`)).expect(200);
+		});
+		it('should fail if theres no open room for visitor and algo is manual selection', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+			const visitor = await createVisitor();
+
+			await request.get(api(`livechat/agent.next/${visitor.token}`)).expect(400);
+		});
+		// TODO: test cases when algo is Auto_Selection
+	});
 });
 
 // TODO:
 // Missing tests for following endpoint:
 // livechat/users/:type/:_id
-// livechat/agent.info/:rid/:token
 // livechat/agent.next/:token

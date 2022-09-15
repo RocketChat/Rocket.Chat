@@ -57,12 +57,11 @@ type OmnichannelTypesValues =
 	| 'omnichannel_on_hold_chat_resumed';
 
 type OtrMessageTypeValues = 'otr' | 'otr-ack';
+
 type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
 export type MessageTypesValues =
 	| 'e2e'
-	| 'otr'
-	| 'otr-ack'
 	| 'uj'
 	| 'ul'
 	| 'ru'
@@ -89,6 +88,7 @@ export type MessageTypesValues =
 	| 'room-set-read-only'
 	| 'room-allowed-reacting'
 	| 'room-disallowed-reacting'
+	| 'command'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
@@ -113,6 +113,7 @@ export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
 	tmid?: string;
+	tshow?: boolean;
 	ts: Date;
 	mentions?: ({
 		type: MentionType;
@@ -125,8 +126,6 @@ export interface IMessage extends IRocketChatRecord {
 	alias?: string;
 	md?: ReturnType<typeof parser>;
 
-	// TODO: chapter day frontend - wrong type
-	ignored?: boolean;
 	_hidden?: boolean;
 	imported?: boolean;
 	replies?: IUser['_id'][];

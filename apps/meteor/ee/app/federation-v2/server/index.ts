@@ -1,45 +1,60 @@
-import { federationQueueInstance, runFederation, stopFederation } from '../../../../app/federation-v2/server';
-import { FederationFactory } from '../../../../app/federation-v2/server/infrastructure/Factory';
+import { runFederation, stopFederation, rocketSettingsAdapter, federationQueueInstance } from '../../../../app/federation-v2/server';
 import { onToggledFeature } from '../../license/server/license';
 import { FederationFactoryEE } from './infrastructure/Factory';
 
-const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapter();
-const federationEE = FederationFactoryEE.buildBridge(rocketSettingsAdapter, federationQueueInstance);
-const rocketRoomAdapter = FederationFactoryEE.buildRocketRoomAdapter();
-const rocketUserAdapter = FederationFactoryEE.buildRocketUserAdapter();
-const rocketNotificationAdapter = FederationFactoryEE.buildRocketNotificationdapter();
+const federationBridgeEE = FederationFactoryEE.buildBridge(rocketSettingsAdapter, federationQueueInstance);
+const rocketRoomAdapterEE = FederationFactoryEE.buildRocketRoomAdapter();
+const rocketUserAdapterEE = FederationFactoryEE.buildRocketUserAdapter();
 
 export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSender(
-	rocketRoomAdapter,
-	rocketUserAdapter,
+	rocketRoomAdapterEE,
+	rocketUserAdapterEE,
 	rocketSettingsAdapter,
-	rocketNotificationAdapter,
-	federationEE,
+	federationBridgeEE,
+);
+
+export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildRoomInternalHooksServiceSender(
+	rocketRoomAdapterEE,
+	rocketUserAdapterEE,
+	rocketSettingsAdapter,
+	federationBridgeEE,
+);
+
+export const federationDMRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildDMRoomInternalHooksServiceSender(
+	rocketRoomAdapterEE,
+	rocketUserAdapterEE,
+	rocketSettingsAdapter,
+	federationBridgeEE,
 );
 
 const runFederationEE = async (): Promise<void> => {
-	await federationEE.start();
+	await federationBridgeEE.start();
+	federationBridgeEE.logFederationStartupInfo('Running Federation Enterprise V2');
 };
 
 let cancelSettingsObserverEE: () => void;
 
 onToggledFeature('federation', {
 	up: async () => {
+		await stopFederation();
 		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged(
-			federationEE.onFederationAvailabilityChanged.bind(federationEE),
+			federationBridgeEE.onFederationAvailabilityChanged.bind(federationBridgeEE),
 		);
 		if (!rocketSettingsAdapter.isFederationEnabled()) {
 			return;
 		}
-		await stopFederation();
 		await runFederationEE();
-		FederationFactoryEE.setupListeners(federationRoomServiceSenderEE, rocketSettingsAdapter);
+		FederationFactoryEE.setupListeners(
+			federationRoomInternalHooksServiceSenderEE,
+			federationDMRoomInternalHooksServiceSenderEE,
+			rocketSettingsAdapter,
+		);
 		require('./infrastructure/rocket-chat/slash-commands');
 	},
 	down: async () => {
-		await federationEE.stop();
-		await runFederation();
-		FederationFactoryEE.removeListeners();
+		await federationBridgeEE.stop();
 		cancelSettingsObserverEE();
+		FederationFactoryEE.removeListeners();
+		await runFederation();
 	},
 });
