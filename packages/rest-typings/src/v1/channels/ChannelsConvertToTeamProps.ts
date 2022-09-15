@@ -22,15 +22,6 @@ const channelsConvertToTeamPropsSchema = {
 			required: ['channelName'],
 			additionalProperties: false,
 		},
-		{
-			type: 'object',
-			properties: {
-				channelId: { type: 'string' },
-				channelName: { type: 'string' },
-			},
-			required: ['channelId', 'channelName'],
-			additionalProperties: false,
-		},
 	],
 };
 

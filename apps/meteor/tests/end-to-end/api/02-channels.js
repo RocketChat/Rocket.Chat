@@ -1964,7 +1964,7 @@ describe('[Channels]', function () {
 			});
 		});
 
-		it(`should successfully convert a channel to a team when the channel's name and id are sent as parameter`, (done) => {
+		it(`should return an error when the channel's name and id are sent as parameter`, (done) => {
 			updatePermission('create-team', ['admin']).then(() => {
 				updatePermission('edit-room', ['admin']).then(() => {
 					request
@@ -1983,9 +1983,10 @@ describe('[Channels]', function () {
 									channelName: this.newChannel.name,
 									channelId: this.newChannel._id,
 								})
-								.expect(200)
+								.expect(400)
 								.expect((res) => {
-									expect(res.body).to.have.a.property('success', true);
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('error').include(`must match exactly one schema in oneOf`);
 								})
 								.end(done);
 						});

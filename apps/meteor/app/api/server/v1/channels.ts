@@ -32,13 +32,20 @@ function findChannelByIdOrName({
 	checkedArchived = true,
 	userId,
 }: {
-	params: { roomId?: string; roomName?: string };
+	params:
+		| {
+				roomId: string;
+		  }
+		| {
+				roomName: string;
+		  };
 	userId?: string;
 	checkedArchived?: boolean;
 }): IRoom {
 	const fields = { ...API.v1.defaultFieldsToExclude };
 
-	const room: IRoom = 'roomId' in params ? Rooms.findOneById(params.roomId, { fields }) : Rooms.findOneByName(params.roomName, { fields });
+	const room: IRoom =
+		'roomId' in params && params.roomId ? Rooms.findOneById(params.roomId, { fields }) : Rooms.findOneByName(params.roomName, { fields });
 
 	if (!room || (room.t !== 'c' && room.t !== 'l')) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
@@ -465,8 +472,8 @@ API.v1.addRoute(
 
 			const room = findChannelByIdOrName({
 				params: {
-					...(channelId && { roomId: channelId }),
-					...(channelName && { roomName: channelName }),
+					roomId: channelId,
+					roomName: channelName,
 				},
 				userId: this.userId,
 			});
