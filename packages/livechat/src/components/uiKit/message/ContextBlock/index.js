@@ -1,4 +1,4 @@
-import { BLOCK_CONTEXT } from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
 import { memo } from 'preact/compat';
 
 import { createClassName } from '../../../helpers';
@@ -10,7 +10,7 @@ const ContextBlock = ({ appId, blockId, elements, parser }) => (
 		<div className={createClassName(styles, 'uikit-context-block')}>
 			{elements.map((element, key) => (
 				<div key={key} className={createClassName(styles, 'uikit-context-block__item')}>
-					{parser.renderContext(element, BLOCK_CONTEXT.CONTEXT)}
+					{parser.renderContext(element, BlockContext.CONTEXT)}
 				</div>
 			))}
 		</div>
