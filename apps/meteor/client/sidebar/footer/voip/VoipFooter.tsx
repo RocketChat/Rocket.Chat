@@ -110,7 +110,7 @@ export const VoipFooter = ({
 								color={paused ? 'neutral-500' : 'info'}
 								onClick={handleHold}
 							/>
-							{options && <Menu color='neutral-500' options={options} />}
+							{options && <Menu color='neutral-500' data-tooltip={t('More_options')} options={options} />}
 						</ButtonGroup>
 					)}
 				</Box>
