@@ -362,9 +362,11 @@ jobs:
 
             docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
-            NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+            NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
-            docker compose -f ../../docker-compose-ci.yml start rocketchat
+            docker compose -f ../../docker-compose-ci.yml restart rocketchat
+
+            echo "NOW: $NOW"
 
             until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
@@ -416,9 +418,11 @@ jobs:
 
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
-          NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+          NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
           docker compose -f docker-compose-ci.yml restart rocketchat
+
+          echo "NOW: $NOW"
 
           df -h
           free -h
@@ -568,7 +572,7 @@ jobs:
 
             docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
-            NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+            NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
             docker compose -f ../../docker-compose-ci.yml start
 
@@ -601,9 +605,11 @@ jobs:
 
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
-          NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+          NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
           docker compose -f docker-compose-ci.yml restart
+
+          echo "NOW: $NOW"
 
           until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
