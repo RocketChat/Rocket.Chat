@@ -1,19 +1,16 @@
-import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import Page from '../../../components/Page';
 import ColorPalette from './ColorPalette';
 
-const ColorPaletteRoute = (): ReactElement => {
-	const route = useRoute('color-palette');
+const ColorPaletteRoute = (): ReactElement => (
+	<Page>
+		<Page.Header title='Main UI colors' />
 
-	return (
-		<Page>
-			<Page.Content>
-				<ColorPalette />
-			</Page.Content>
-		</Page>
-	);
-};
+		<Page.ScrollableContentWithShadow>
+			<ColorPalette />
+		</Page.ScrollableContentWithShadow>
+	</Page>
+);
 
 export default ColorPaletteRoute;
