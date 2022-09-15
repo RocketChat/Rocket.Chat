@@ -5361,6 +5361,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/account-service@workspace:ee/apps/account-service":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/account-service@workspace:ee/apps/account-service"
+  dependencies:
+    "@rocket.chat/emitter": next
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/string-helpers": next
+    "@types/bcrypt": ^5.0.0
+    "@types/eslint": ^8
+    "@types/node": ^14.18.21
+    "@types/polka": ^0.5.4
+    bcrypt: ^5.0.1
+    ejson: ^2.2.2
+    eslint: ^8.21.0
+    eventemitter3: ^4.0.7
+    mem: ^8.1.1
+    moleculer: ^0.14.21
+    mongodb: ^4.3.1
+    nats: ^2.4.0
+    pino: ^8.4.2
+    polka: ^0.5.2
+    ts-node: ^10.9.1
+    typescript: ~4.5.5
+    uuid: ^9.0.0
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/agenda@workspace:^, @rocket.chat/agenda@workspace:packages/agenda":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/agenda@workspace:packages/agenda"
@@ -5441,6 +5468,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/authorization-service@workspace:ee/apps/authorization-service":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service"
+  dependencies:
+    "@rocket.chat/emitter": next
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/string-helpers": next
+    "@types/eslint": ^8
+    "@types/node": ^14.18.21
+    "@types/polka": ^0.5.4
+    ejson: ^2.2.2
+    eslint: ^8.21.0
+    eventemitter3: ^4.0.7
+    mem: ^8.1.1
+    moleculer: ^0.14.21
+    mongodb: ^4.3.1
+    nats: ^2.4.0
+    pino: ^8.4.2
+    polka: ^0.5.2
+    ts-node: ^10.9.1
+    typescript: ~4.5.5
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/cas-validate@workspace:^, @rocket.chat/cas-validate@workspace:packages/cas-validate":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/cas-validate@workspace:packages/cas-validate"
@@ -5504,7 +5555,6 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": next
-    "@rocket.chat/ui-contexts": "workspace:^"
     "@types/ejson": ^2.2.0
     "@types/eslint": ^8
     "@types/meteor": 2.7.1
@@ -6396,7 +6446,6 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/ui-contexts": "workspace:^"
     "@types/node": ^14.18.21
     babel-jest: ^29.0.3
     eslint: ^8.21.0
@@ -6446,6 +6495,33 @@ __metadata:
   checksum: e54e0a6c7049c3fb14b9d3a7f32a082d6b282d1b77543fc09c22b252daf1c7663da348532de90c96013c8a571471012fea8193e063faf2dc0148c175bd15b3f8
   languageName: node
   linkType: hard
+
+"@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/emitter": next
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/string-helpers": next
+    "@types/bcrypt": ^5.0.0
+    "@types/eslint": ^8
+    "@types/node": ^14.18.21
+    "@types/polka": ^0.5.4
+    ejson: ^2.2.2
+    eslint: ^8.21.0
+    eventemitter3: ^4.0.7
+    mem: ^8.1.1
+    moleculer: ^0.14.21
+    mongodb: ^4.3.1
+    nats: ^2.4.0
+    pino: ^8.4.2
+    polka: ^0.5.2
+    ts-node: ^10.9.1
+    typescript: ~4.5.5
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/string-helpers@npm:next":
   version: 0.31.19-dev.19
@@ -34678,6 +34754,15 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 5575a8a75c13120e2f10e6ddc801b2c7ed7d8f3c8ac22c7ed0c7b2ba6383ec0abda88c905085d630e251719e0777045ae3236f04c812184b7c765f63a70e58df
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "uuid@npm:9.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
   languageName: node
   linkType: hard
 

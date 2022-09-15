@@ -34,9 +34,6 @@ export class NetworkBroker implements IBroker {
 		this.broker = broker;
 
 		this.metrics = broker.metrics;
-
-		// TODO move this to a proper startup method?
-		this.started = this.broker.start();
 	}
 
 	async call(method: string, data: any): Promise<any> {
@@ -184,5 +181,9 @@ export class NetworkBroker implements IBroker {
 
 	async nodeList(): Promise<IBrokerNode[]> {
 		return this.broker.call('$node.list');
+	}
+
+	async start(): Promise<void> {
+		this.started = this.broker.start();
 	}
 }

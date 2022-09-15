@@ -26,7 +26,7 @@ services:
 
   authorization-service:
     build:
-      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      dockerfile: ee/apps/authorization-service/Dockerfile
       args:
         SERVICE: authorization
     image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
@@ -41,7 +41,7 @@ services:
 
   account-service:
     build:
-      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      dockerfile: ee/apps/account-service/Dockerfile
       args:
         SERVICE: account
     image: ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${DOCKER_TAG}
@@ -92,7 +92,7 @@ services:
 
   stream-hub-service:
     build:
-      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      dockerfile: ee/apps/stream-hub-service/Dockerfile
       args:
         SERVICE: stream-hub
     image: ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${DOCKER_TAG}

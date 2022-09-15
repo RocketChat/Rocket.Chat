@@ -6,7 +6,7 @@ import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
-const PORT = process.env.PORT || 3031;
+const PORT = process.env.PORT || 3034;
 
 (async () => {
 	const db = await getConnection();
@@ -17,10 +17,10 @@ const PORT = process.env.PORT || 3031;
 
 	api.setBroker(broker);
 
-	// need to import Presence service after models are registered
-	const { Presence } = await import('@rocket.chat/presence');
+	// need to import service after models are registered
+	const { Authorization } = await import('../../../../apps/meteor/server/services/authorization/service');
 
-	api.registerService(new Presence());
+	api.registerService(new Authorization());
 
 	await api.start();
 

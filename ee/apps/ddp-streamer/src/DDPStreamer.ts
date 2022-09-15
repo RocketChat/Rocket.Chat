@@ -1,70 +1,29 @@
-import type { IncomingMessage, RequestOptions, ServerResponse } from 'http';
-import http from 'http';
-import url from 'url';
+import crypto from 'crypto';
 
+import polka from 'polka';
 import WebSocket from 'ws';
 
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
 import { MeteorService, Presence } from '../../../../apps/meteor/server/sdk';
 import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
-import { api } from '../../../../apps/meteor/server/sdk/api';
 import { Client } from './Client';
 import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
 import { notifications } from './streams';
+import { proxy } from './proxy';
 
-const { PORT: port = 4000 } = process.env;
-
-const proxy = function (req: IncomingMessage, res: ServerResponse): void {
-	req.pause();
-	const options: RequestOptions = url.parse(req.url || '');
-	options.headers = req.headers;
-	options.method = req.method;
-	options.agent = false;
-	options.hostname = 'localhost';
-	options.port = 3000;
-
-	const connector = http.request(options, function (serverResponse) {
-		serverResponse.pause();
-		if (serverResponse.statusCode) {
-			res.writeHead(serverResponse.statusCode, serverResponse.headers);
-		}
-		serverResponse.pipe(res);
-		serverResponse.resume();
-	});
-	req.pipe(connector);
-	req.resume();
-};
-
-const httpServer = http.createServer((req, res) => {
-	res.setHeader('Access-Control-Allow-Origin', '*');
-
-	if (process.env.NODE_ENV !== 'production' && !/^\/sockjs\/info\?cb=/.test(req.url || '')) {
-		return proxy(req, res);
-
-		// res.writeHead(404);
-		// return res.end();
-	}
-
-	res.writeHead(200, { 'Content-Type': 'text/plain' });
-
-	res.end('{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":666}');
-});
-
-httpServer.listen(port);
-
-const wss = new WebSocket.Server({ server: httpServer });
-
-wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
+const { PORT = 4000 } = process.env;
 
 export class DDPStreamer extends ServiceClass {
 	protected name = 'streamer';
 
-	constructor() {
-		super();
+	private app?: polka.Polka;
 
+	private wss?: WebSocket.Server;
+
+	async created(): Promise<void> {
 		new ListenersModule(this, notifications);
 
 		// TODO this is triggered by local events too, need to find a way to ignore if it's local
@@ -88,18 +47,7 @@ export class DDPStreamer extends ServiceClass {
 		this.onEvent('meteor.clientVersionUpdated', (versions): void => {
 			Autoupdate.updateVersion(versions);
 		});
-	}
 
-	async started(): Promise<void> {
-		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
-		const versions = await MeteorService.getAutoUpdateClientVersions();
-
-		Object.keys(versions).forEach((key) => {
-			Autoupdate.updateVersion(versions[key]);
-		});
-	}
-
-	async created(): Promise<void> {
 		if (!this.context) {
 			return;
 		}
@@ -147,13 +95,13 @@ export class DDPStreamer extends ServiceClass {
 			const { userId, connection } = info;
 
 			Presence.newConnection(userId, connection.id, nodeID);
-			api.broadcast('accounts.login', { userId, connection });
+			this.api.broadcast('accounts.login', { userId, connection });
 		});
 
 		server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
 			const { userId, connection } = info;
 
-			api.broadcast('accounts.logout', { userId, connection });
+			this.api.broadcast('accounts.logout', { userId, connection });
 
 			if (!userId) {
 				return;
@@ -164,7 +112,7 @@ export class DDPStreamer extends ServiceClass {
 		server.on(DDP_EVENTS.DISCONNECTED, (info) => {
 			const { userId, connection } = info;
 
-			api.broadcast('socket.disconnected', connection);
+			this.api.broadcast('socket.disconnected', connection);
 
 			if (!userId) {
 				return;
@@ -173,7 +121,41 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
-			api.broadcast('socket.connected', connection);
+			this.api.broadcast('socket.connected', connection);
 		});
+	}
+
+	async started(): Promise<void> {
+		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
+		const versions = await MeteorService.getAutoUpdateClientVersions();
+
+		Object.keys(versions).forEach((key) => {
+			Autoupdate.updateVersion(versions[key]);
+		});
+
+		this.app = polka()
+			.use(proxy)
+			.get('/health', async (_req, res) => {
+				await this.api.nodeList();
+				res.end('ok');
+			})
+			.get('*', function (_req, res) {
+				res.setHeader('Access-Control-Allow-Origin', '*');
+				res.setHeader('Content-Type', 'application/json');
+
+				res.writeHead(200);
+
+				res.end(`{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":${crypto.randomBytes(4).readUInt32LE(0)},"ms":true}`);
+			})
+			.listen(PORT);
+
+		this.wss = new WebSocket.Server({ server: this.app.server });
+
+		this.wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
+	}
+
+	async stopped(): Promise<void> {
+		this.app?.server?.close();
+		this.wss?.close();
 	}
 }

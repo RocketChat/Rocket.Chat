@@ -1,6 +1,13 @@
-import '../../../../apps/meteor/ee/server/startup/broker';
-
 import { api } from '../../../../apps/meteor/server/sdk/api';
-import { DDPStreamer } from './DDPStreamer';
+import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 
-api.registerService(new DDPStreamer());
+(async () => {
+	api.setBroker(broker);
+
+	// need to import service after models are registered
+	const { DDPStreamer } = await import('./DDPStreamer');
+
+	api.registerService(new DDPStreamer());
+
+	await api.start();
+})();
