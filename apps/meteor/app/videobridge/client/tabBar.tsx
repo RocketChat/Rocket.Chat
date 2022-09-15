@@ -95,6 +95,7 @@ addAction('start-call', ({ room }) => {
 						}),
 						full: true,
 						order: live ? -1 : 4,
+						featured: true,
 				  }
 				: null,
 		[groups, enableOption, live, handleOpenVideoConf, ownUser, federated],
