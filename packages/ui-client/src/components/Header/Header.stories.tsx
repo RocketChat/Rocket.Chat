@@ -1,22 +1,21 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { Avatar } from '@rocket.chat/fuselage';
 import { SettingsContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta } from '@storybook/react';
 import React from 'react';
 
 import Header from '.';
-import { useRoomIcon } from '../../hooks/useRoomIcon';
-import ToolBox from '../../views/room/Header/ToolBox';
-import { ActionRenderer, addAction } from '../../views/room/lib/Toolbox';
-import ToolboxProvider from '../../views/room/providers/ToolboxProvider';
-import RoomAvatar from '../avatar/RoomAvatar';
+
+const avatarUrl =
+	'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z';
 
 export default {
 	title: 'Components/Header',
 	component: Header,
 	subcomponents: {
 		'Header.ToolBox': Header.ToolBox,
-		'Header.ToolBoxAction': Header.ToolBoxAction,
+		'Header.ToolBox.Action': Header.ToolBox.Action,
 		'Header.Avatar': Header.Avatar,
 		'Header.Content': Header.Content,
 		'Header.Content.Row': Header.Content.Row,
@@ -73,16 +72,12 @@ const room: IRoom = {
 	_updatedAt: new Date(),
 } as const;
 
-export const ChatHeader = () => {
-	const icon = useRoomIcon(room);
-	const avatar = <RoomAvatar size='x40' room={room} />;
+const avatar = <Avatar size='x40' url={avatarUrl} />;
+const icon = { name: 'hash' };
 
+export const Default = () => {
 	return (
 		<Header>
-			<Header.ToolBox>
-				<Header.ToolBoxAction icon='burger' />
-				<Header.ToolBoxAction icon='back' />
-			</Header.ToolBox>
 			<Header.Avatar>{avatar}</Header.Avatar>
 			<Header.Content>
 				<Header.Content.Row>
@@ -97,78 +92,20 @@ export const ChatHeader = () => {
 				</Header.Content.Row>
 			</Header.Content>
 			<Header.ToolBox>
-				<Header.ToolBoxAction icon='magnifier' />
-				<Header.ToolBoxAction icon='key' />
-				<Header.ToolBoxAction icon='kebab' />
+				<Header.ToolBox.Action icon='magnifier' />
+				<Header.ToolBox.Action icon='key' />
+				<Header.ToolBox.Action icon='kebab' />
 			</Header.ToolBox>
 		</Header>
 	);
 };
 
-const toolboxRoom: IRoom = {
-	...room,
-	msgs: 2,
-	u: {
-		_id: 'rocket.cat',
-		name: 'rocket.cat',
-		username: 'rocket.cat',
-	},
-	usersCount: 2,
-};
-
-const renderWithBadge: ActionRenderer = (props) => (
-	<Header.ToolBoxAction {...props}>
-		<Header.Badge variant='primary'>1</Header.Badge>
-	</Header.ToolBoxAction>
-);
-
-const renderWithRedBadge: ActionRenderer = (props) => (
-	<Header.ToolBoxAction {...props}>
-		<Header.Badge variant='danger'>2</Header.Badge>
-	</Header.ToolBoxAction>
-);
-
-const renderWithOrangeBadge: ActionRenderer = (props) => (
-	<Header.ToolBoxAction {...props}>
-		<Header.Badge variant='warning'>99</Header.Badge>
-	</Header.ToolBoxAction>
-);
-
-addAction('render-action-example-badge', {
-	id: 'render-action-example-badge',
-	groups: ['channel'],
-	title: 'Phone',
-	icon: 'phone',
-	template: 'b',
-	order: 0,
-	renderAction: renderWithBadge,
-});
-
-addAction('render-action-example-badge-warning', {
-	id: 'render-action-example-badge-warning',
-	groups: ['channel'],
-	title: 'Threads',
-	icon: 'thread',
-	template: 'a',
-	order: 1,
-	renderAction: renderWithOrangeBadge,
-});
-
-addAction('render-action-example-badge-danger', {
-	id: 'render-action-example-badge-danger',
-	groups: ['channel'],
-	title: 'Discussion',
-	icon: 'discussion',
-	template: 'c',
-	order: 2,
-	renderAction: renderWithRedBadge,
-});
-
-export const WithToolboxContext: ComponentStory<typeof Header> = () => {
-	const icon = useRoomIcon(room);
-	const avatar = <RoomAvatar size='x40' room={room} />;
+export const WithBurger = () => {
 	return (
 		<Header>
+			<Header.ToolBox>
+				<Header.ToolBox.Action icon='burger' />
+			</Header.ToolBox>
 			<Header.Avatar>{avatar}</Header.Avatar>
 			<Header.Content>
 				<Header.Content.Row>
@@ -183,17 +120,15 @@ export const WithToolboxContext: ComponentStory<typeof Header> = () => {
 				</Header.Content.Row>
 			</Header.Content>
 			<Header.ToolBox>
-				<ToolboxProvider room={toolboxRoom}>
-					<ToolBox />
-				</ToolboxProvider>
+				<Header.ToolBox.Action icon='magnifier' />
+				<Header.ToolBox.Action icon='key' />
+				<Header.ToolBox.Action icon='kebab' />
 			</Header.ToolBox>
 		</Header>
 	);
 };
 
-export const Omnichannel = () => {
-	const icon = useRoomIcon(room);
-	const avatar = <RoomAvatar size='x40' room={room} />;
+export const WithActionBadge = () => {
 	return (
 		<Header>
 			<Header.Avatar>{avatar}</Header.Avatar>
@@ -202,17 +137,22 @@ export const Omnichannel = () => {
 					{icon && <Header.Icon icon={icon} />}
 					<Header.Title>{room.name}</Header.Title>
 					<Header.State onClick={action('onClick')} icon='star' />
-					<Header.State icon='key' />
-					<Header.State icon='language' />
 				</Header.Content.Row>
 				<Header.Content.Row>
 					<Header.Subtitle>{room.name}</Header.Subtitle>
 				</Header.Content.Row>
 			</Header.Content>
 			<Header.ToolBox>
-				<ToolboxProvider room={toolboxRoom}>
-					<ToolBox />
-				</ToolboxProvider>
+				<Header.ToolBox.Action icon='phone'>
+					<Header.ToolBox.ActionBadge variant='primary'>1</Header.ToolBox.ActionBadge>
+				</Header.ToolBox.Action>
+				<Header.ToolBox.Action icon='phone'>
+					<Header.ToolBox.ActionBadge variant='danger'>2</Header.ToolBox.ActionBadge>
+				</Header.ToolBox.Action>
+				<Header.ToolBox.Action icon='phone'>
+					<Header.ToolBox.ActionBadge variant='warning'>99</Header.ToolBox.ActionBadge>
+				</Header.ToolBox.Action>
+				<Header.ToolBox.Action icon='kebab' />
 			</Header.ToolBox>
 		</Header>
 	);
