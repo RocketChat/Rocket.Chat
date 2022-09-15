@@ -3,6 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { Filter } from 'mongodb';
 import { Users } from '@rocket.chat/models';
 import type { Mongo } from 'meteor/mongo';
+import { settings } from '../../../settings/server';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
@@ -36,7 +37,7 @@ export async function findUsersToAutocomplete({
 		sort: {
 			username: 1,
 		},
-		limit: 10,
+		limit: settings.get('Number_of_users_autocomplete_suggestions'),
 	};
 
 	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<UserAutoComplete>(
