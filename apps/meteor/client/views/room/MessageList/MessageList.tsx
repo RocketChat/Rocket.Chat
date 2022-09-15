@@ -1,7 +1,7 @@
 import { isThreadMessage, IThreadMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
 import { useUserSubscription, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, Fragment, memo } from 'react';
+import React, { Fragment, memo, ReactElement } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -19,7 +19,11 @@ import { isOwnUserMessage } from './lib/isOwnUserMessage';
 import MessageHighlightProvider from './providers/MessageHighlightProvider';
 import { MessageListProvider } from './providers/MessageListProvider';
 
-export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
+type MessageListProps = {
+	rid: IRoom['_id'];
+};
+
+export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 	const t = useTranslation();
 	const messages = useMessages({ rid });
 	const subscription = useUserSubscription(rid);

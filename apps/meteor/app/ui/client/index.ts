@@ -4,7 +4,6 @@ import './lib/iframeCommands';
 import './lib/menu';
 import './lib/parentTemplate';
 import './lib/codeMirror';
-import './views/app/room.ts';
 import './views/app/roomSearch.html';
 import './views/app/userSearch.html';
 import './views/app/roomSearch';
@@ -12,12 +11,11 @@ import './views/app/photoswipeContent.ts'; // without the *.ts extension, *.html
 import './components/icon';
 import './components/table.html';
 import './components/table';
-import './components/tabs';
 import './components/popupList.html';
 import './components/popupList';
 import './components/selectDropdown.html';
 
-import './components/tooltip';
+// import './components/tooltip';
 
 export { ChatMessages, chatMessages } from './lib/ChatMessages';
 export { fileUpload } from './lib/fileUpload';

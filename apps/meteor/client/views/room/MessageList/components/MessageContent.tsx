@@ -87,14 +87,14 @@ const MessageContent: FC<{
 				<ThreadMetric
 					openThread={openThread(message._id)}
 					counter={message.tcount}
-					following={Boolean(mineUid && message?.replies.indexOf(mineUid) > -1)}
+					following={Boolean(mineUid && message?.replies?.indexOf(mineUid) > -1)}
 					mid={message._id}
 					rid={message.rid}
 					lm={message.tlm}
 					unread={unread}
 					mention={mention}
 					all={all}
-					participants={message?.replies.length}
+					participants={message?.replies?.length}
 				/>
 			)}
 
