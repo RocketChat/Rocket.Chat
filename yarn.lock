@@ -5533,13 +5533,6 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/emitter@npm:next":
-  version: 0.31.19-dev.19
-  resolution: "@rocket.chat/emitter@npm:0.31.19-dev.19"
-  checksum: 1c87c6007779d3253da57bf7917d02c645fa9d9f90eb2b4748fd8345d87d2555b81474ae33720a1f52504eecaa777c6bd8eef3a8348d2bdf8821463164472045
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/emitter@npm:next":
   version: 0.31.19-dev.7
   resolution: "@rocket.chat/emitter@npm:0.31.19-dev.7"
   checksum: 328b0c061a831efe66a66f36189a9039ff5bfb9dd95d2a6d63cdc89798b8abd8f9de786b041b261c913c84190c410e39a2304cd909bc45f619e67ba82407c522
