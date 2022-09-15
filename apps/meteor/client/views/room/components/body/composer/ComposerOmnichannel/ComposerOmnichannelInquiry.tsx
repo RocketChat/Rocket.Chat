@@ -1,4 +1,4 @@
-import { MessageComposerDisabled, MessageComposerDisabledAction } from '@rocket.chat/ui-composer';
+import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import { useEndpoint, useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { ReactElement } from 'react';
@@ -31,12 +31,12 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 	const t = useTranslation();
 	return (
 		<footer className='rc-message-box footer'>
-			<MessageComposerDisabled aria-busy={result.isLoading}>
-				{t('you_are_in_preview_mode_of_incoming_livechat')}
-				<MessageComposerDisabledAction disabled={result.isLoading} onClick={handleTakeInquiry}>
+			<MessageFooterCallout aria-busy={result.isLoading}>
+				<MessageFooterCalloutContent>{t('you_are_in_preview_mode_of_incoming_livechat')}</MessageFooterCalloutContent>
+				<MessageFooterCalloutAction disabled={result.isLoading} onClick={handleTakeInquiry}>
 					{t('Take_it')}
-				</MessageComposerDisabledAction>
-			</MessageComposerDisabled>
+				</MessageFooterCalloutAction>
+			</MessageFooterCallout>
 		</footer>
 	);
 };

@@ -1,2 +1,2 @@
 export * from './MessageComposer';
-export * from './MessageComposerLocked';
+export * from './MessageFooterCallout';

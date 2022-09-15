@@ -1,5 +1,5 @@
 import { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { MessageComposerDisabled } from '@rocket.chat/ui-composer';
+import { MessageFooterCallout } from '@rocket.chat/ui-composer';
 import { useStream, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useState } from 'react';
 
@@ -28,7 +28,7 @@ export const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement =
 	if (!open) {
 		return (
 			<footer className='rc-message-box footer'>
-				<MessageComposerDisabled>{t('This_conversation_is_already_closed')}</MessageComposerDisabled>
+				<MessageFooterCallout>{t('This_conversation_is_already_closed')}</MessageFooterCallout>
 			</footer>
 		);
 	}

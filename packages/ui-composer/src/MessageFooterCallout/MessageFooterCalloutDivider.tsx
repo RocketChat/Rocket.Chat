@@ -2,8 +2,8 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import { forwardRef } from 'react';
 
-const MessageComposerDisabledDivider = forwardRef<HTMLButtonElement>(
+const MessageFooterCalloutDivider = forwardRef<HTMLButtonElement>(
 	(props, ref): ReactElement => <Box is='hr' ref={ref} borderInlineStart='1px solid' mi='x4' flexShrink={0} {...props} />,
 );
 
-export default MessageComposerDisabledDivider;
+export default MessageFooterCalloutDivider;

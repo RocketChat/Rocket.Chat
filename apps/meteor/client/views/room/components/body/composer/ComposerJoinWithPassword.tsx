@@ -1,5 +1,5 @@
 import { TextInput } from '@rocket.chat/fuselage';
-import { MessageComposerDisabled, MessageComposerDisabledAction, MessageComposerDisabledDivider } from '@rocket.chat/ui-composer';
+import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { ChangeEvent, ReactElement, useCallback, useState, FormEventHandler } from 'react';
 
@@ -36,13 +36,19 @@ export const ComposerJoinWithPassword = (): ReactElement => {
 	}, []);
 
 	return (
-		<MessageComposerDisabled is='form' aria-label={t('Join_with_password')} onSubmit={join}>
-			{t('you_are_in_preview')}
-			<MessageComposerDisabledDivider />
-			<TextInput error={error} value={joinCode} onChange={handleChange} placeholder={t('you_are_in_preview_please_insert_the_password')} />
-			<MessageComposerDisabledAction type='submit' disabled={Boolean(!joinCode)}>
+		<MessageFooterCallout is='form' aria-label={t('Join_with_password')} onSubmit={join}>
+			<MessageFooterCalloutContent>{t('you_are_in_preview')}</MessageFooterCalloutContent>
+			<MessageFooterCalloutContent>
+				<TextInput
+					error={error}
+					value={joinCode}
+					onChange={handleChange}
+					placeholder={t('you_are_in_preview_please_insert_the_password')}
+				/>
+			</MessageFooterCalloutContent>
+			<MessageFooterCalloutAction type='submit' disabled={Boolean(!joinCode)}>
 				{t('Join_with_password')}
-			</MessageComposerDisabledAction>
-		</MessageComposerDisabled>
+			</MessageFooterCalloutAction>
+		</MessageFooterCallout>
 	);
 };

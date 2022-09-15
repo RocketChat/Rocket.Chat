@@ -1,4 +1,4 @@
-import { MessageComposerDisabled, MessageComposerDisabledAction } from '@rocket.chat/ui-composer';
+import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
@@ -13,9 +13,9 @@ export const ComposerOmnichannelJoin = (): ReactElement => {
 	const t = useTranslation();
 	return (
 		<footer className='rc-message-box footer'>
-			<MessageComposerDisabled>
-				{t('room_is_read_only')}
-				<MessageComposerDisabledAction
+			<MessageFooterCallout>
+				<MessageFooterCalloutContent>{t('room_is_read_only')}</MessageFooterCalloutContent>
+				<MessageFooterCalloutAction
 					onClick={async (): Promise<void> => {
 						try {
 							await join({
@@ -27,8 +27,8 @@ export const ComposerOmnichannelJoin = (): ReactElement => {
 					}}
 				>
 					{t('Join')}
-				</MessageComposerDisabledAction>
-			</MessageComposerDisabled>
+				</MessageFooterCalloutAction>
+			</MessageFooterCallout>
 		</footer>
 	);
 };

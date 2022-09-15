@@ -1,4 +1,4 @@
-import { MessageComposerDisabled, MessageComposerDisabledAction } from '@rocket.chat/ui-composer';
+import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
@@ -10,10 +10,10 @@ export const ComposerOmnichannelOnHold = (): ReactElement => {
 	const t = useTranslation();
 	return (
 		<footer className='rc-message-box footer'>
-			<MessageComposerDisabled>
-				{t('chat_on_hold_due_to_inactivity')}
-				<MessageComposerDisabledAction onClick={(): Promise<unknown> => resume(room._id)}>{t('Resume')}</MessageComposerDisabledAction>
-			</MessageComposerDisabled>
+			<MessageFooterCallout>
+				<MessageFooterCalloutContent>{t('chat_on_hold_due_to_inactivity')}</MessageFooterCalloutContent>
+				<MessageFooterCalloutAction onClick={(): Promise<unknown> => resume(room._id)}>{t('Resume')}</MessageFooterCalloutAction>
+			</MessageFooterCallout>
 		</footer>
 	);
 };

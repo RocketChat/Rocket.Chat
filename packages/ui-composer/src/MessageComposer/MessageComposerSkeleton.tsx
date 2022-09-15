@@ -11,9 +11,9 @@ import {
 
 const MessageComposerSkeleton = (): ReactElement => (
 	<MessageComposer>
-		<Skeleton p='x4' mi='x8' />
+		<Skeleton p='x4' m='x8' />
 		<MessageComposerToolbar>
-			<MessageComposerToolbarActions mi='x8'>
+			<MessageComposerToolbarActions>
 				<Skeleton p='x4' pi='x6' />
 				<Skeleton p='x4' pi='x6' />
 				<MessageComposerActionsDivider />
