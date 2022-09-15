@@ -1,5 +1,6 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React, { FC, isValidElement, ReactElement } from 'react';
+import type { FC, ReactElement } from 'react';
+import React, { isValidElement } from 'react';
 
 type HeaderIconProps = { icon: ReactElement | { name: string; color?: string } | null };
 
