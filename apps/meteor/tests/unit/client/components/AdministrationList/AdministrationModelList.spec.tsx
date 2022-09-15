@@ -8,9 +8,6 @@ import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 
 const COMPONENT_PATH = '../../../../../client/components/AdministrationList/AdministrationModelList';
 const defaultConfig = {
-	'@rocket.chat/ui-contexts': {
-		useAtLeastOnePermission: (): boolean => true,
-	},
 	'../../../app/ui-utils/client': {
 		'SideNav': {},
 		'@noCallThru': true,
@@ -36,7 +33,7 @@ const defaultConfig = {
 describe('components/AdministrationList/AdministrationModelList', () => {
 	it('should render administration', async () => {
 		const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
-		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} />);
+		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={true} />);
 
 		expect(screen.getByText('Administration')).to.exist;
 		expect(screen.getByText('Manage_workspace')).to.exist;
@@ -44,14 +41,8 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 	});
 
 	it('should not render workspace and upgrade when does not have permission', async () => {
-		const AdministrationModelList = proxyquire.load(COMPONENT_PATH, {
-			...defaultConfig,
-			'@rocket.chat/ui-contexts': {
-				...defaultConfig['@rocket.chat/ui-contexts'],
-				useAtLeastOnePermission: (): boolean => false,
-			},
-		}).default;
-		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} />);
+		const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
+		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={false} />);
 
 		expect(screen.getByText('Administration')).to.exist;
 		expect(screen.queryByText('Manage_workspace')).to.not.exist;
@@ -65,7 +56,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AdministrationModelList closeList={closeList} accountBoxItems={[]} />
+					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Manage_workspace');
@@ -81,7 +72,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AdministrationModelList closeList={closeList} accountBoxItems={[]} />
+					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Upgrade');
@@ -105,7 +96,9 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 				},
 			}).default;
 
-			render(<AdministrationModelList closeList={closeList} accountBoxItems={[{ name: 'Admin Item', href: 'admin-item' }]} />);
+			render(
+				<AdministrationModelList closeList={closeList} accountBoxItems={[{ name: 'Admin Item', href: 'admin-item' }]} showAdmin={true} />,
+			);
 
 			const button = screen.getByText('Admin Item');
 
@@ -128,7 +121,9 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 					'@noCallThru': true,
 				},
 			}).default;
-			render(<AdministrationModelList closeList={closeList} accountBoxItems={[{ name: 'Admin Item', sideNav: 'admin' }]} />);
+			render(
+				<AdministrationModelList closeList={closeList} accountBoxItems={[{ name: 'Admin Item', sideNav: 'admin' }]} showAdmin={true} />,
+			);
 			const button = screen.getByText('Admin Item');
 
 			userEvent.click(button);

@@ -8,9 +8,6 @@ import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 
 const COMPONENT_PATH = '../../../../../client/components/AdministrationList/AppsModelList';
 const defaultConfig = {
-	'@rocket.chat/ui-contexts': {
-		useAtLeastOnePermission: (): boolean => true,
-	},
 	'../../../app/ui-message/client/ActionManager': {
 		'triggerActionButtonAction': {},
 		'@noCallThru': true,
@@ -20,7 +17,7 @@ const defaultConfig = {
 describe('components/AdministrationList/AppsModelList', () => {
 	it('should render apps', async () => {
 		const AppsModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
-		render(<AppsModelList closeList={() => null} appBoxItems={[]} />);
+		render(<AppsModelList showManageApps={true} closeList={() => null} appBoxItems={[]} />);
 
 		expect(screen.getByText('Apps')).to.exist;
 		expect(screen.getByText('Marketplace')).to.exist;
@@ -34,7 +31,7 @@ describe('components/AdministrationList/AppsModelList', () => {
 				useAtLeastOnePermission: (): boolean => false,
 			},
 		}).default;
-		render(<AppsModelList closeList={() => null} appBoxItems={[]} />);
+		render(<AppsModelList showManageApps={false} closeList={() => null} appBoxItems={[]} />);
 
 		expect(screen.getByText('Apps')).to.exist;
 		expect(screen.queryByText('Marketplace')).to.not.exist;
@@ -48,7 +45,7 @@ describe('components/AdministrationList/AppsModelList', () => {
 			const AppsModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList closeList={closeList} appBoxItems={[]} />
+					<AppsModelList showManageApps={true} closeList={closeList} appBoxItems={[]} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Marketplace');
@@ -64,7 +61,7 @@ describe('components/AdministrationList/AppsModelList', () => {
 			const AppsModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList closeList={closeList} appBoxItems={[]} />
+					<AppsModelList showManageApps={true} closeList={closeList} appBoxItems={[]} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Installed');
@@ -87,7 +84,7 @@ describe('components/AdministrationList/AppsModelList', () => {
 			}).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList closeList={closeList} appBoxItems={[{ name: 'Custom App' }]} />
+					<AppsModelList showManageApps={true} closeList={closeList} appBoxItems={[{ name: 'Custom App' }]} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Custom App');

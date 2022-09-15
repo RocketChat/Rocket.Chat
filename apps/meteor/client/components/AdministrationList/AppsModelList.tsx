@@ -1,21 +1,20 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
-import { useAtLeastOnePermission, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import { triggerActionButtonAction } from '../../../app/ui-message/client/ActionManager';
 import { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
-import { MANAGE_APPS_PERMISSIONS } from '../../sidebar/header/actions/constants';
 import ListItem from '../Sidebar/ListItem';
 
 type AppsModelListProps = {
 	appBoxItems: IAppAccountBoxItem[];
+	showManageApps: boolean;
 	closeList: () => void;
 };
 
-const AppsModelList: FC<AppsModelListProps> = ({ appBoxItems, closeList }) => {
+const AppsModelList: FC<AppsModelListProps> = ({ appBoxItems, showManageApps, closeList }) => {
 	const t = useTranslation();
 	const marketplaceRoute = useRoute('admin-marketplace');
-	const showManageApps = useAtLeastOnePermission(MANAGE_APPS_PERMISSIONS);
 
 	return (
 		<>

@@ -1,18 +1,17 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
-import { useAtLeastOnePermission, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { AUDIT_LOG_PERMISSIONS, AUDIT_PERMISSIONS } from '../../sidebar/header/actions/constants';
 import ListItem from '../Sidebar/ListItem';
 
 type AuditModelListProps = {
 	closeList: () => void;
+	showAudit: boolean;
+	showAuditLog: boolean;
 };
 
-const AuditModelList: FC<AuditModelListProps> = ({ closeList }) => {
+const AuditModelList: FC<AuditModelListProps> = ({ showAudit, showAuditLog, closeList }) => {
 	const t = useTranslation();
-	const showAudit = useAtLeastOnePermission(AUDIT_PERMISSIONS);
-	const showAuditLogs = useAtLeastOnePermission(AUDIT_LOG_PERMISSIONS);
 
 	const auditHomeRoute = useRoute('audit-home');
 	const auditSettingsRoute = useRoute('audit-log');
@@ -31,7 +30,7 @@ const AuditModelList: FC<AuditModelListProps> = ({ closeList }) => {
 						}}
 					/>
 				)}
-				{showAuditLogs && (
+				{showAuditLog && (
 					<ListItem
 						icon='document-eye'
 						text={t('Logs')}

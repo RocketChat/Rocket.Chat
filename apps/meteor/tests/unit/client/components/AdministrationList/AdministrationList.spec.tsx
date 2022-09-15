@@ -27,7 +27,7 @@ const defaultConfig = {
 describe('components/AdministrationList/AdministrationList', () => {
 	it('should render all model list', async () => {
 		const AdministrationList = proxyquire.noCallThru().load(COMPONENT_PATH, defaultConfig).default;
-		render(<AdministrationList closeList={() => null} accountBoxItems={[]} />);
+		render(<AdministrationList closeList={() => null} accountBoxItems={[{}]} />);
 
 		expect(screen.getByText('Administration Model List')).to.exist;
 		expect(screen.getByText('Apps Model List')).to.exist;

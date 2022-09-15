@@ -1,22 +1,22 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
-import { useAtLeastOnePermission, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { FC } from 'react';
 
 import { SideNav } from '../../../app/ui-utils/client';
 import { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../lib/upgradeTab';
-import { ADMIN_PERMISSIONS } from '../../sidebar/header/actions/constants';
 import { useUpgradeTabParams } from '../../views/hooks/useUpgradeTabParams';
 import Emoji from '../Emoji';
 import ListItem from '../Sidebar/ListItem';
 
 type AdministrationModelListProps = {
 	accountBoxItems: AccountBoxItem[];
+	showAdmin: boolean;
 	closeList: () => void;
 };
 
-const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxItems, closeList }) => {
+const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxItems, showAdmin, closeList }) => {
 	const t = useTranslation();
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 	const shouldShowEmoji = isFullyFeature(tabType);
@@ -24,7 +24,6 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 
 	const infoRoute = useRoute('admin-info');
 	const upgradeRoute = useRoute('upgrade');
-	const showAdmin = useAtLeastOnePermission(ADMIN_PERMISSIONS);
 	const showUpgradeItem = !isLoading && tabType;
 
 	return (
