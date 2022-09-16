@@ -232,6 +232,29 @@ jobs:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
 
+      - name: Docker env vars
+        id: docker-env
+        run: |
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+          echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
+          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
+
+          # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
+          if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
+            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
+            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
+          else
+            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
+            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
+          fi;
+
+          echo "RC_DOCKERFILE: ${RC_DOCKERFILE}"
+          echo "::set-output name=rc-dockerfile::${RC_DOCKERFILE}"
+
+          echo "RC_DOCKER_TAG: ${RC_DOCKER_TAG}"
+          echo "::set-output name=rc-docker-tag::${RC_DOCKER_TAG}"
+
       - uses: actions/checkout@v3
 
       - name: Use Node.js ${{ matrix.node-version }}
@@ -264,29 +287,6 @@ jobs:
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
 
-      - name: Docker env vars
-        id: docker-env
-        run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
-          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
-
-          # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
-          if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
-            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
-            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
-          else
-            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
-            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
-          fi;
-
-          echo "RC_DOCKERFILE: ${RC_DOCKERFILE}"
-          echo "::set-output name=rc-dockerfile::${RC_DOCKERFILE}"
-
-          echo "RC_DOCKER_TAG: ${RC_DOCKER_TAG}"
-          echo "::set-output name=rc-docker-tag::${RC_DOCKER_TAG}"
-
       - name: Start containers
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
@@ -297,14 +297,6 @@ jobs:
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker compose -f docker-compose-ci.yml up -d --build rocketchat
-
-          sleep 10
-
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
-            echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
-            sleep 10
-          done
 
       - name: Login to GitHub Container Registry
         if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
@@ -332,6 +324,19 @@ jobs:
             docker tag ${IMAGE_NAME_BASE}.official $IMAGE_NAME_BASE
             docker push $IMAGE_NAME_BASE
           fi;
+
+      - name: Wait for Rocket.Chat to start up
+        env:
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
+          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+        run: |
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
+            echo "Waiting Rocket.Chat to start up"
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
+            sleep 10
+          done
 
       - name: E2E Test API
         env:
@@ -380,7 +385,7 @@ jobs:
           cd ./apps/meteor
           npx playwright install --with-deps
 
-      - name: E2E Test UI
+      - name: Reset containers
         env:
           LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
           RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
@@ -389,7 +394,7 @@ jobs:
           docker ps
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
-          docker compose -f docker-compose-ci.yml stop
+          docker compose -f docker-compose-ci.yml stop rocketchat
 
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
@@ -397,12 +402,21 @@ jobs:
 
           docker compose -f docker-compose-ci.yml restart rocketchat
 
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+      - name: Wait for Rocket.Chat to start up
+        env:
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
+          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+        run: |
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && exit 1
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
             sleep 10
           done
 
+      - name: E2E Test UI
+        run: |
           cd ./apps/meteor
           yarn test:e2e
 
@@ -481,20 +495,6 @@ jobs:
         run: |
           docker compose -f docker-compose-ci.yml up -d --build
 
-          sleep 10
-
-          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
-            echo "Waiting 'ddp-streamer' to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
-            sleep 10
-          done
-
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
-            echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
-            sleep 10
-          done
-
       - name: Login to GitHub Container Registry
         if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
         uses: docker/login-action@v2
@@ -515,6 +515,25 @@ jobs:
             ddp-streamer-service \
             presence-service \
             stream-hub-service
+
+      - name: Wait services to start up
+        env:
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
+          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+        run: |
+          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
+            echo "Waiting 'ddp-streamer' to start up"
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
+            sleep 10
+          done
+
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
+            echo "Waiting Rocket.Chat to start up"
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
+            sleep 10
+          done
 
       - name: E2E Test API
         env:
@@ -548,21 +567,7 @@ jobs:
           done;
           exit $s
 
-      - name: Cache Playwright binaries
-        uses: actions/cache@v3
-        id: cache-playwright
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-          key: playwright-1.23.1
-
-      - name: Install Playwright
-        run: |
-          cd ./apps/meteor
-          npx playwright install --with-deps
-
-      - name: E2E Test UI
+      - name: Reset containers
         env:
           LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
           RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
@@ -580,12 +585,41 @@ jobs:
 
           docker compose -f docker-compose-ci.yml restart
 
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
-            echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && exit 1
+      - name: Cache Playwright binaries
+        uses: actions/cache@v3
+        id: cache-playwright
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
+          key: playwright-1.23.1
+
+      - name: Install Playwright
+        run: |
+          cd ./apps/meteor
+          npx playwright install --with-deps
+
+      - name: Wait services to start up
+        env:
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
+          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+        run: |
+          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
+            echo "Waiting 'ddp-streamer' to start up"
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
             sleep 10
           done
 
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
+            echo "Waiting Rocket.Chat to start up"
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
+            sleep 10
+          done
+
+      - name: E2E Test UI
+        run: |
           docker ps
 
           cd ./apps/meteor
