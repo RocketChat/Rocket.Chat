@@ -18,6 +18,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "next",
 		"@rocket.chat/model-typings": "workspace:^",
+		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
 		"@types/node": "^14.18.21",
 		"ejson": "^2.2.2",

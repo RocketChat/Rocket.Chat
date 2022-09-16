@@ -15,7 +15,10 @@
 	],
 	"author": "Rocket.Chat",
 	"dependencies": {
+		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "next",
+		"@rocket.chat/model-typings": "workspace:^",
+		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
 		"@types/node": "^14.18.21",
 		"bcrypt": "^5.0.1",

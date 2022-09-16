@@ -5439,8 +5439,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/account-service@workspace:ee/apps/account-service"
   dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/string-helpers": next
     "@types/bcrypt": ^5.0.0
     "@types/eslint": ^8
@@ -5546,8 +5549,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service"
   dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/string-helpers": next
     "@types/eslint": ^8
     "@types/node": ^14.18.21
@@ -6488,8 +6494,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/presence-service@workspace:ee/apps/presence-service"
   dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/presence": "workspace:^"
     "@rocket.chat/string-helpers": next
     "@types/eslint": ^8
@@ -6579,6 +6588,7 @@ __metadata:
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/string-helpers": next
     "@types/bcrypt": ^5.0.0
     "@types/eslint": ^8
