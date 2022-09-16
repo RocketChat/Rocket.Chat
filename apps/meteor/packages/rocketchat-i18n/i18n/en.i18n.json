@@ -3128,7 +3128,6 @@
   "mention-here": "Mention Here",
   "mention-here_description": "Permission to use the @here mention",
   "Mentions": "Mentions",
-  "Mentions_unavailable_for_federation": "Mentions are unavailable for Federated rooms",
   "Mentions_default": "Mentions (default)",
   "Mentions_only": "Mentions only",
   "Merge_Channels": "Merge Channels",
