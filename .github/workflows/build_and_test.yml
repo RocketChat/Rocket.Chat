@@ -264,22 +264,38 @@ jobs:
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
 
+      - name: Docker env vars
+        id: docker-env
+        run: |
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+          echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
+          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
+
+          # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
+          if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
+            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
+            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
+          else
+            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
+            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
+          fi;
+
+          echo "RC_DOCKERFILE: ${RC_DOCKERFILE}"
+          echo "::set-output name=rc-dockerfile::${RC_DOCKERFILE}"
+
+          echo "RC_DOCKER_TAG: ${RC_DOCKER_TAG}"
+          echo "::set-output name=rc-docker-tag::${RC_DOCKER_TAG}"
+
       - name: Start containers
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
           MONGO_OPLOG_URL: 'mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true'
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
+          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
-          export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
-          if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
-            export RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
-            export RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
-          else
-            export RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
-            export RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
-          fi;
-
           docker compose -f docker-compose-ci.yml up -d --build rocketchat
 
           sleep 10
@@ -299,17 +315,13 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Publish Docker images to GitHub Container Registry
+        env:
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
+          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
         run: |
-          export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
-          if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
-            export RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
-          else
-            export RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
-          fi;
-
           docker compose -f docker-compose-ci.yml push rocketchat
 
           if [[ '${{ matrix.mongodb-version }}' = '4.4' ]]; then
@@ -322,6 +334,11 @@ jobs:
           fi;
 
       - name: E2E Test API
+        env:
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
+          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker ps
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
@@ -336,9 +353,9 @@ jobs:
 
             docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
-            NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+            NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
-            docker compose -f ../../docker-compose-ci.yml start rocketchat
+            docker compose -f ../../docker-compose-ci.yml restart rocketchat
 
             until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
@@ -364,13 +381,17 @@ jobs:
           npx playwright install --with-deps
 
       - name: E2E Test UI
+        env:
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
+          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
         run: |
           docker ps
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
-          NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+          NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
           docker compose -f docker-compose-ci.yml restart rocketchat
 
@@ -511,7 +532,7 @@ jobs:
 
             docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
-            NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+            NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
             docker compose -f ../../docker-compose-ci.yml start
 
@@ -544,7 +565,7 @@ jobs:
 
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
-          NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+          NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
           docker compose -f docker-compose-ci.yml restart
 
