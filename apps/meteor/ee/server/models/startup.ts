@@ -1,10 +1,10 @@
 import { onLicense } from '../../app/license/server/license';
 
 onLicense('livechat-enterprise', () => {
-	require('./CannedResponse');
-	require('./LivechatPriority');
-	require('./LivechatTag');
-	require('./LivechatUnit');
-	require('./LivechatUnitMonitors');
-	require('./LivechatRooms');
+	import('./CannedResponse');
+	import('./LivechatPriority');
+	import('./LivechatTag');
+	import('./LivechatUnit');
+	import('./LivechatUnitMonitors');
+	import('./LivechatRooms');
 });
