@@ -3216,6 +3216,7 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 });
 
 settingsRegistry.addGroup('Call_Center', function () {
+	// TODO: Check with the backend team if an i18nPlaceholder is possible
 	this.with({ tab: 'Settings' }, function () {
 		this.section('General_Settings', function () {
 			this.add('VoIP_Enabled', false, {
@@ -3240,6 +3241,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Server_Name', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'WebSocket Server',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3248,6 +3250,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Server_Websocket_Path', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'wss://your.domain.name',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3257,6 +3260,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 				type: 'int',
 				public: true,
 				i18nDescription: 'VoIP_Retry_Count_Description',
+				placeholder: '1',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3277,6 +3281,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Host', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'https://your.domain.name',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3286,6 +3291,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Port', 0, {
 				type: 'int',
 				public: true,
+				placeholder: '8080',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3295,6 +3301,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Name', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'Server Name',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3304,6 +3311,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Username', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'Username',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
