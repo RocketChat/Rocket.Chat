@@ -459,17 +459,24 @@ jobs:
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
 
+      - name: Docker env vars
+        id: docker-env
+        run: |
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+          echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
+          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
+
       - name: Start containers
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
           RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
           RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
           TRANSPORTER: nats://nats:4222
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
         run: |
-          export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
           docker compose -f docker-compose-ci.yml up -d --build
 
           sleep 10
@@ -498,9 +505,8 @@ jobs:
         if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
         env:
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
         run: |
-          export LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
           docker compose -f docker-compose-ci.yml push \
             authorization-service \
             account-service \
