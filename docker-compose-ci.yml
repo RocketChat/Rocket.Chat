@@ -28,7 +28,7 @@ services:
     build:
       dockerfile: ee/apps/authorization-service/Dockerfile
       args:
-        SERVICE: authorization
+        SERVICE: authorization-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
     environment:
       - 'MONGO_URL=${MONGO_URL}'
@@ -43,7 +43,7 @@ services:
     build:
       dockerfile: ee/apps/account-service/Dockerfile
       args:
-        SERVICE: account
+        SERVICE: account-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
@@ -94,7 +94,7 @@ services:
     build:
       dockerfile: ee/apps/stream-hub-service/Dockerfile
       args:
-        SERVICE: stream-hub
+        SERVICE: stream-hub-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
