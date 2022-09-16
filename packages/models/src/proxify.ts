@@ -7,7 +7,10 @@ function handler<T extends object>(namespace: string): ProxyHandler<T> {
 	return {
 		get: (_target: T, prop: string): any => {
 			if (!models.has(namespace) && lazyModels.has(namespace)) {
-				models.set(namespace, (lazyModels.get(namespace) as () => IBaseModel<any>)());
+				const getModel = lazyModels.get(namespace);
+				if (getModel) {
+					models.set(namespace, getModel());
+				}
 			}
 
 			// @ts-ignore
