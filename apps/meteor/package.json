@@ -418,8 +418,8 @@
 			"**/.mocharc.client.js",
 			"**/.mocharc.definition.js",
 			"**/tests/*",
-			"**/imports/",
-			"**/dist/"
+			"**/imports/*",
+			"**/dist/*"
 		],
 		"all": true
 	},
