@@ -81,9 +81,6 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		// wait for the chat to be closed automatically for 5 seconds
 		await agent.page.waitForTimeout(7000);
 
-		// expect to be auto redirected to the home page by now
-		expect(agent.page.url()).toMatch(/.*\/home$/);
-
 		// expect to see a system message saying the chat was closed automatically in the closed chat room
 		await agent.page.goto(chatRoomUrl);
 		expect(await agent.poHomeChannel.content.lastSystemMessageBody.innerText()).toBe(
