@@ -16,6 +16,6 @@ export class OmnichannelEditRoomInfo {
 	}
 
 	get btnSave(): Locator {
-		return this.page.locator('button[data-qa="saveRoomEditInfo"]');
+		return this.page.locator('role=button[name=saveRoomEditInfo]');
 	}
 }
