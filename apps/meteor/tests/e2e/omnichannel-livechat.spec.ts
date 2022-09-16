@@ -69,7 +69,7 @@ test.describe('Livechat', () => {
 				await expect(poLiveChat.unreadMessagesBadge).toBeVisible();
 			});
 
-			test('expect unread messages be visible after a reload', async () => {
+			test('expect unread messages to be visible after a reload', async () => {
 				await page.reload();
 				await expect(poLiveChat.unreadMessagesBadge).toBeVisible();
 			});
