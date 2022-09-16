@@ -1,11 +1,12 @@
-import { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy, ISubscription, IUser } from '@rocket.chat/core-typings';
+import { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import { Tracker } from 'meteor/tracker';
 
-import { Rooms, Subscriptions, Users } from '../../app/models/client';
+import { Rooms, Subscriptions } from '../../app/models/client';
 import { callbacks } from '../../lib/callbacks';
 import { SubscriptionWithRoom } from '../definitions/SubscriptionWithRoom';
-import { queryClient } from '../lib/queryClient';
+import { runReactiveFunctions } from '../hooks/useReactiveQuery';
 
 const getLowerCaseNames = (
 	room: Pick<IRoom, 'name' | 'fname' | 'prid'>,
@@ -180,45 +181,8 @@ callbacks.add('cachedCollection-received-subscriptions', mergeSubRoom);
 callbacks.add('cachedCollection-sync-subscriptions', mergeSubRoom);
 callbacks.add('cachedCollection-loadFromServer-subscriptions', mergeSubRoom);
 
-const updateQueryCache = (_uid: IUser['_id'] | null): void => {
-	Tracker.autorun(() => {
-		queryClient.removeQueries(['users']);
-
-		const users = (Users as Mongo.Collection<IUser>).find().fetch();
-
-		queryClient.setQueryData(['users'], users);
-		for (const user of users) {
-			queryClient.setQueryData(['users', user._id], user);
-		}
-	});
-
-	Tracker.autorun(() => {
-		queryClient.removeQueries(['rooms']);
-
-		const rooms = (Rooms as Mongo.Collection<IRoom>).find().fetch();
-
-		queryClient.setQueryData(['rooms'], rooms);
-		for (const room of rooms) {
-			queryClient.setQueryData(['rooms', room._id], room);
-		}
-	});
-
-	Tracker.autorun(() => {
-		queryClient.removeQueries(['subscriptions']);
-
-		const subscriptions = (Subscriptions as Mongo.Collection<ISubscription>).find().fetch();
-
-		queryClient.setQueryData(['subscriptions'], subscriptions);
-		for (const subscription of subscriptions) {
-			queryClient.setQueryData(['subscriptions', subscription._id], subscription);
-			if (subscription.rid) queryClient.setQueryData(['subscriptions', { rid: subscription.rid }], subscription);
-		}
-	});
-};
-
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		const uid = Meteor.userId();
-		updateQueryCache(uid);
+		runReactiveFunctions();
 	});
 });
