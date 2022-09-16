@@ -1,5 +1,5 @@
 import type { Job } from '@rocket.chat/agenda';
-import type { IOmnichannelRoom, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users } from '@rocket.chat/models';
 import moment from 'moment';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -9,45 +9,20 @@ import { forwardRoomToAgent } from '../../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../app/settings/server';
 import { ServiceClassInternal } from '../../../../server/sdk/types/ServiceClass';
-import { omniEEServiceLogger, schedulerLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { omniEEServiceLogger } from '../../../app/livechat-enterprise/server/lib/logger';
 import { OmniJobSchedulerService } from '../../sdk';
-import type { IOmniEESchedulingSubService, IOmniEEService } from '../../sdk/types/IOmniEEService';
+import type { IOmniEEService } from '../../sdk/types/IOmniEEService';
+import type { OmniAutoTransferUnansweredChatJobData, OmniOnHoldJobData } from './OmniJobSchedulerService';
 import { OMNI_JOB_NAME } from './OmniJobSchedulerService';
-
-type OmniOnHoldJobData = {
-	roomId: IRoom['_id'];
-	comment: string;
-};
-
-type OmniAutoTransferUnansweredChatJobData = {
-	roomId: IRoom['_id'];
-};
 
 export class OmniEEService extends ServiceClassInternal implements IOmniEEService {
 	protected name = 'omni-ee-service';
-
-	public schedulingSubService: IOmniEESchedulingSubService;
 
 	private logger = omniEEServiceLogger;
 
 	constructor() {
 		super();
-		this.schedulingSubService = new OmniEESchedulingSubService();
 		this.logger.debug('OmniEEService started');
-	}
-
-	getSchedulingSubService(): IOmniEESchedulingSubService {
-		return this.schedulingSubService;
-	}
-}
-
-class OmniEESchedulingSubService implements IOmniEESchedulingSubService {
-	private logger = schedulerLogger;
-
-	private systemUser: IUser;
-
-	constructor() {
-		this.logger.debug('OmniEESchedulingSubService started');
 	}
 
 	async monitorOnHoldRoomForAutoClose(roomId: string, timeout: number, comment: string): Promise<void> {
@@ -167,14 +142,10 @@ class OmniEESchedulingSubService implements IOmniEESchedulingSubService {
 	}
 
 	private async getSystemUser(): Promise<IUser> {
-		if (this.systemUser) {
-			return this.systemUser;
-		}
 		const user = await Users.findOneById('rocket.cat');
 		if (!user) {
 			throw new Error(`Could not find scheduler user with id 'rocket.cat'`);
 		}
-		this.systemUser = user;
-		return this.systemUser;
+		return user;
 	}
 }

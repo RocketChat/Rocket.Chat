@@ -20,9 +20,8 @@ const handleAfterOnHold = async (room: any = {}): Promise<any> => {
 	}
 
 	cbLogger.debug(`Scheduling room ${rid} to be closed in ${autoCloseOnHoldChatTimeout} seconds`);
-	await (
-		await OmniEEService.getSchedulingSubService()
-	).monitorOnHoldRoomForAutoClose(
+
+	await OmniEEService.monitorOnHoldRoomForAutoClose(
 		room._id,
 		autoCloseOnHoldChatTimeout,
 		settings.get('Livechat_auto_close_on_hold_chats_custom_message') ||
