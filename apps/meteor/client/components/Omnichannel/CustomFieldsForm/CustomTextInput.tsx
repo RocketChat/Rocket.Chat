@@ -16,11 +16,13 @@ export const CustomTextInput = forwardRef<
 	} = useFormContext();
 
 	const errorMessage = useMemo(() => {
-		if (errors?.livechatData && errors?.livechatData[data._id]?.type === 'regexp') {
+		const error = errors?.livechatData && errors?.livechatData[data._id];
+
+		if (error?.type === 'regexp') {
 			return t('The_field_is_not_valid', data.label);
 		}
 
-		if (errors?.livechatData && errors?.livechatData[data._id]?.type === 'required') {
+		if (error?.type === 'required') {
 			return t('The_field_is_required', data.label);
 		}
 	}, [data._id, data.label, errors?.livechatData, t]);

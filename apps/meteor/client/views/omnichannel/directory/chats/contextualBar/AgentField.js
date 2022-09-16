@@ -27,7 +27,7 @@ const AgentField = ({ agent, isSmall = false }) => {
 	return (
 		<Field>
 			<Label>{t('Agent')}</Label>
-			<Info style={{ display: 'flex' }}>
+			<Info display='flex'>
 				<UserAvatar size={isSmall ? 'x28' : 'x40'} title={username} username={username} />
 				<AgentInfoDetails
 					mis={isSmall ? 'x8' : 'x10'}
