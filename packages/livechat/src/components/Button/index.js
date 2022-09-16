@@ -53,7 +53,11 @@ export const Button = memo(
 				},
 			)}
 		>
-			{badge ? <span className={createClassName(styles, 'button__badge')}>{badge}</span> : null}
+			{badge ? (
+				<span aria-label='unread_messages' className={createClassName(styles, 'button__badge')}>
+					{badge}
+				</span>
+			) : null}
 			{!img && (icon || children)}
 		</button>
 	),

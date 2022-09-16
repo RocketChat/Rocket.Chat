@@ -11,6 +11,10 @@ export class OmnichannelLiveChat {
 		return this.page.locator(`[aria-label="${label}"]`);
 	}
 
+	get unreadMessagesBadge(): Locator {
+		return this.page.locator('[aria-label="unread_messages"]');
+	}
+
 	get inputName(): Locator {
 		return this.page.locator('[name="name"]');
 	}
