@@ -13,27 +13,27 @@ export const createReactiveSubscriptionFactory =
 
 		let currentValue = computeCurrentValue();
 
-		let computation: Tracker.Computation | undefined;
-		const timeout = setTimeout(() => {
-			computation = Tracker.autorun(() => {
-				currentValue = computeCurrentValue();
-				callbacks.forEach((callback) => {
-					callback();
-				});
+		const computation = Tracker.autorun(() => {
+			currentValue = computeCurrentValue();
+			callbacks.forEach((callback) => {
+				Tracker.afterFlush(callback);
 			});
-		}, 0);
+		});
+
+		const { stop } = computation;
+
+		computation.stop = (): void => undefined;
 
 		return [
 			(callback): (() => void) => {
 				callbacks.add(callback);
 
 				return (): void => {
-					clearTimeout(timeout);
-
 					callbacks.delete(callback);
 
 					if (callbacks.size === 0) {
-						computation?.stop();
+						computation.stop = stop;
+						computation.stop();
 					}
 				};
 			},
