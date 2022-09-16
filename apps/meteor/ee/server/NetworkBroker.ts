@@ -2,7 +2,7 @@ import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { asyncLocalStorage } from '../../server/sdk';
 import type { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
-import type { ServiceClass } from '../../server/sdk/types/ServiceClass';
+import type { IServiceClass } from '../../server/sdk/types/ServiceClass';
 import type { EventSignatures } from '../../server/sdk/lib/Events';
 
 const events: { [k: string]: string } = {
@@ -35,6 +35,7 @@ export class NetworkBroker implements IBroker {
 
 		this.metrics = broker.metrics;
 
+		// TODO move this to a proper startup method?
 		this.started = this.broker.start();
 	}
 
@@ -73,18 +74,19 @@ export class NetworkBroker implements IBroker {
 		return this.broker.call(method, data);
 	}
 
-	destroyService(instance: ServiceClass): void {
+	destroyService(instance: IServiceClass): void {
 		this.broker.destroyService(instance.getName());
 	}
 
-	createService(instance: ServiceClass): void {
+	createService(instance: IServiceClass): void {
 		const methods = (
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
 				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
 		).filter((name) => name !== 'constructor');
 
-		if (!instance.getEvents() || !methods.length) {
+		const instanceEvents = instance.getEvents();
+		if (!instanceEvents && !methods.length) {
 			return;
 		}
 
@@ -98,7 +100,7 @@ export class NetworkBroker implements IBroker {
 					this.broker.logger.debug({ msg: 'Not shutting down, different node.', nodeID: this.broker.nodeID });
 					return;
 				}
-				this.broker.logger.info({ msg: 'Received shutdown event, destroying service.', nodeID: this.broker.nodeID });
+				this.broker.logger.warn({ msg: 'Received shutdown event, destroying service.', nodeID: this.broker.nodeID });
 				this.destroyService(instance);
 			});
 		}
@@ -109,7 +111,7 @@ export class NetworkBroker implements IBroker {
 			name,
 			actions: {},
 			...dependencies,
-			events: instance.getEvents().reduce<Record<string, (ctx: Context) => void>>((map, eventName) => {
+			events: instanceEvents.reduce<Record<string, (ctx: Context) => void>>((map, eventName) => {
 				map[eventName] = /^\$/.test(eventName)
 					? (ctx: Context): void => {
 							// internal events params are not an array
