@@ -5453,6 +5453,7 @@ __metadata:
     ejson: ^2.2.2
     eslint: ^8.21.0
     eventemitter3: ^4.0.7
+    fibers: ^5.0.3
     mem: ^8.1.1
     moleculer: ^0.14.21
     mongodb: ^4.3.1
@@ -5561,6 +5562,7 @@ __metadata:
     ejson: ^2.2.2
     eslint: ^8.21.0
     eventemitter3: ^4.0.7
+    fibers: ^5.0.3
     mem: ^8.1.1
     moleculer: ^0.14.21
     mongodb: ^4.3.1
@@ -5647,7 +5649,7 @@ __metadata:
     ejson: ^2.2.2
     eslint: ^8.21.0
     eventemitter3: ^4.0.7
-    fibers: ^5.0.1
+    fibers: ^5.0.3
     jaeger-client: ^3.19.0
     moleculer: ^0.14.21
     mongodb: ^4.3.1
@@ -6509,7 +6511,7 @@ __metadata:
     ejson: ^2.2.2
     eslint: ^8.21.0
     eventemitter3: ^4.0.7
-    fibers: ^5.0.1
+    fibers: ^5.0.3
     moleculer: ^0.14.21
     mongodb: ^4.3.1
     nats: ^2.4.0
@@ -6599,6 +6601,7 @@ __metadata:
     ejson: ^2.2.2
     eslint: ^8.21.0
     eventemitter3: ^4.0.7
+    fibers: ^5.0.3
     mem: ^8.1.1
     moleculer: ^0.14.21
     mongodb: ^4.3.1
@@ -18713,6 +18716,15 @@ __metadata:
   dependencies:
     detect-libc: ^1.0.3
   checksum: 823d148cb993c5aeb7e05e7ed289b9a6073b821bc124c70ac5c6dfee850dc0df65d680a10ce3fb6c37e4705115dcb2d98dad25abde26a2437ada86c5f21be11c
+  languageName: node
+  linkType: hard
+
+"fibers@npm:^5.0.3":
+  version: 5.0.3
+  resolution: "fibers@npm:5.0.3"
+  dependencies:
+    detect-libc: ^1.0.3
+  checksum: d66c5e18a911aab3480b846e1c837e5c7cfacb27a2a5fe512919865eaecef33cdd4abc14d777191a6a93473dc52356d48549c91a2a7b8b3450544c44104b23f3
   languageName: node
   linkType: hard
 

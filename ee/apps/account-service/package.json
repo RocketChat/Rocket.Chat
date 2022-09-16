@@ -24,6 +24,7 @@
 		"bcrypt": "^5.0.1",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
+		"fibers": "^5.0.3",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.21",
 		"mongodb": "^4.3.1",
