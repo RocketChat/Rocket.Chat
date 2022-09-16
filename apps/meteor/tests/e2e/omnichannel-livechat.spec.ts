@@ -36,7 +36,7 @@ test.describe('Livechat', () => {
 		});
 
 		test.describe('Send message to online agent', () => {
-			test('expect message is sended by livechat', async () => {
+			test('Expect message to be sent by livechat', async () => {
 				await poLiveChat.btnOpenLiveChat('R').click();
 				await poLiveChat.sendMessage(newUser, false);
 
