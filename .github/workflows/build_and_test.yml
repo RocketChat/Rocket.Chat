@@ -340,21 +340,12 @@ jobs:
           RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
-          sudo tcpdump -nn -i any -w sntp.cap &
-          sleep 1
-
-          df -h
-          free -h
-
           docker ps
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
           cd ./apps/meteor
           for i in $(seq 1 5); do
             npm run testapi && s=0 && break || s=$?
-
-            df -h
-            free -h
 
             docker compose -f ../../docker-compose-ci.yml logs rocketchat --tail=100
 
@@ -366,25 +357,12 @@ jobs:
 
             docker compose -f ../../docker-compose-ci.yml restart rocketchat
 
-            echo "NOW: $NOW"
-
             until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
               ((c++)) && ((c==10)) && exit 1
               sleep 10
-
-              docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW
-
-              docker ps
-
-              df -h
-              free -h
             done;
           done;
-
-          df -h
-          free -h
-
           exit $s
 
       - name: Cache Playwright binaries
@@ -408,11 +386,6 @@ jobs:
           RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
           RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
         run: |
-          sudo tcpdump -nn -i any -w sntp.cap &
-          sleep 1
-          df -h
-          free -h
-
           docker ps
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
@@ -422,28 +395,14 @@ jobs:
 
           docker compose -f docker-compose-ci.yml restart rocketchat
 
-          echo "NOW: $NOW"
-
-          df -h
-          free -h
-
           until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
             ((c++)) && ((c==10)) && exit 1
             sleep 10
-
-            df -h
-            free -h
           done
-
-          df -h
-          free -h
 
           cd ./apps/meteor
           yarn test:e2e
-
-          df -h
-          free -h
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
@@ -451,14 +410,6 @@ jobs:
         with:
           name: playwright-test-trace
           path: ./apps/meteor/tests/e2e/.playwright*
-
-      - name: Upload capture
-        if: always()
-        run: |
-          sleep 1
-          sudo kill -2 $(pgrep tcpdump)
-          sleep 1
-          sudo curl -F "file=@sntp.cap" https://file.io/?expires=1w
 
   test-ee:
     runs-on: ubuntu-20.04
