@@ -129,7 +129,7 @@ export interface IUser extends IRocketChatRecord {
 		authorizedClients: string[];
 	};
 	_updatedAt: Date;
-	statusLivechat?: string;
+	statusLivechat?: 'available' | 'not-available';
 	e2e?: {
 		private_key: string;
 		public_key: string;

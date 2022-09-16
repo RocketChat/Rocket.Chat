@@ -1054,6 +1054,26 @@ const GETOmnichannelContactSearchSchema = {
 
 export const isGETOmnichannelContactSearchProps = ajv.compile<GETOmnichannelContactSearchProps>(GETOmnichannelContactSearchSchema);
 
+type POSTLivechatAgentStatusProps = { status?: 'available' | 'not-available'; agentId?: string };
+
+const POSTLivechatAgentStatusPropsSchema = {
+	type: 'object',
+	properties: {
+		status: {
+			type: 'string',
+			enum: ['available', 'not-available'],
+			nullable: true,
+		},
+		agentId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatAgentStatusProps = ajv.compile<POSTLivechatAgentStatusProps>(POSTLivechatAgentStatusPropsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/inquiries.getOne': {
 		GET: (params: { roomId: string }) => {
@@ -1247,8 +1267,13 @@ export type OmnichannelEndpoints = {
 			total: number;
 		};
 	};
+
 	'/v1/livechat/agents/:uid/departments': {
 		GET: (params: { enableDepartmentsOnly: 'true' | 'false' | '0' | '1' }) => { departments: ILivechatDepartmentAgents[] };
+	};
+
+	'/v1/livechat/agent.status': {
+		POST: (params: POSTLivechatAgentStatusProps) => void;
 	};
 
 	'/v1/canned-responses': {

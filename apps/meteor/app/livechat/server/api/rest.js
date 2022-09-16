@@ -10,3 +10,4 @@ import './v1/room.js';
 import './v1/videoCall.js';
 import './v1/transfer.js';
 import './v1/contact';
+import './v1/agent.ts';

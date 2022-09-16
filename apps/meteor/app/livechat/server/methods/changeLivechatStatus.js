@@ -3,9 +3,14 @@ import { Meteor } from 'meteor/meteor';
 import { Livechat } from '../lib/Livechat';
 import { hasPermission } from '../../../authorization';
 import Users from '../../../models/server/models/Users';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	'livechat:changeLivechatStatus'({ status, agentId = Meteor.userId() } = {}) {
+		methodDeprecationLogger.warn(
+			'livechat:changeLivechatStatus will be deprecated in future versions of Rocket.Chat. Use livechat/agent.status API instead.',
+		);
+
 		const uid = Meteor.userId();
 
 		if (!uid || !agentId) {

@@ -1,6 +1,6 @@
 import { Box, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useLayout, useToastMessageDispatch, useRoute, usePermission, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useLayout, useToastMessageDispatch, useRoute, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
 import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
@@ -11,7 +11,7 @@ import { OmnichannelCallToggle } from './actions/OmnichannelCallToggle';
 
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
-	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
+	const changeAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 	const isCallEnabled = useIsCallEnabled();
 	const isCallReady = useIsCallReady();
 	const hasPermissionToSeeContactCenter = usePermission('view-omnichannel-contact-center');
@@ -30,7 +30,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 
 	const handleAvailableStatusChange = useMutableCallback(async () => {
 		try {
-			await changeAgentStatus();
+			await changeAgentStatus({});
 		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
