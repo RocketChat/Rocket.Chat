@@ -560,8 +560,6 @@ jobs:
 
           docker compose -f docker-compose-ci.yml restart
 
-          echo "NOW: $NOW"
-
           until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
             ((c++)) && ((c==10)) && exit 1
