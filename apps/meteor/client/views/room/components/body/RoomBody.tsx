@@ -28,7 +28,7 @@ import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import Announcement from '../../Announcement';
 import { MessageList } from '../../MessageList/MessageList';
-import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
+import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
 import { useTabBarAPI } from '../../providers/ToolboxProvider';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
@@ -127,11 +127,7 @@ const RoomBody = (): ReactElement => {
 		return modes[viewMode ?? 0] ?? modes[0];
 	}, [viewMode]);
 
-	const hasMore = useReactiveValue(useCallback(() => RoomHistoryManager.hasMore(room._id), [room._id]));
-
-	const hasMoreNext = useReactiveValue(useCallback(() => RoomHistoryManager.hasMoreNext(room._id), [room._id]));
-
-	const isLoading = useReactiveValue(useCallback(() => RoomHistoryManager.isLoading(room._id), [room._id]));
+	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead') as boolean | undefined;
 
@@ -567,7 +563,7 @@ const RoomBody = (): ReactElement => {
 								className={['messages-box', messageViewMode, roomLeader && 'has-leader'].filter(isTruthy).join(' ')}
 							>
 								<NewMessagesButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} />
-								<JumpToRecentMessagesBar visible={hasMoreNext} onClick={handleJumpToRecentButtonClick} />
+								<JumpToRecentMessagesBar visible={hasMoreNextMessages} onClick={handleJumpToRecentButtonClick} />
 								{!canPreview ? (
 									<div className='content room-not-found error-color'>
 										<div>{t('You_must_join_to_view_messages_in_this_channel')}</div>
@@ -587,7 +583,7 @@ const RoomBody = (): ReactElement => {
 									ref={wrapperRef}
 									className={[
 										'wrapper',
-										hasMoreNext && 'has-more-next',
+										hasMoreNextMessages && 'has-more-next',
 										hideUsernames && 'hide-usernames',
 										!displayAvatars && 'hide-avatar',
 									]
@@ -597,8 +593,8 @@ const RoomBody = (): ReactElement => {
 									<ul className='messages-list' aria-live='polite'>
 										{canPreview ? (
 											<>
-												{hasMore ? (
-													<li className='load-more'>{isLoading ? <LoadingMessagesIndicator /> : null}</li>
+												{hasMorePreviousMessages ? (
+													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : (
 													<li className='start color-info-font-color'>
 														{retentionPolicy ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
@@ -608,7 +604,9 @@ const RoomBody = (): ReactElement => {
 											</>
 										) : null}
 										{useLegacyMessageTemplate ? <LegacyMessageTemplateList room={room} /> : <MessageList rid={room._id} />}
-										{hasMoreNext ? <li className='load-more'>{isLoading ? <LoadingMessagesIndicator /> : null}</li> : null}
+										{hasMoreNextMessages ? (
+											<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+										) : null}
 									</ul>
 								</div>
 							</div>
