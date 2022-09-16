@@ -66,7 +66,7 @@ export interface IRoomTypeClientDirectives {
 	allowMemberAction: (room: Partial<IRoom>, action: ValueOf<typeof RoomMemberActions>) => boolean;
 	roomName: (room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>) => string | undefined;
 	isGroupChat: (room: Partial<IRoom>) => boolean;
-	openCustomProfileTab: (instance: any, room: IRoom, username: string) => boolean;
+	openCustomProfileTab: (instance: { tabBar: { openUserInfo: () => void } }, room: IRoom, username: string) => boolean;
 	getUiText: (context: ValueOf<typeof UiTextContext>) => string;
 	condition: () => boolean;
 	getAvatarPath: (
