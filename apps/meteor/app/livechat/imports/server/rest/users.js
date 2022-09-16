@@ -62,7 +62,7 @@ API.v1.addRoute(
 			}
 			throw new Error('Invalid type');
 		},
-		post() {
+		async post() {
 			check(this.urlParams, {
 				type: String,
 			});
@@ -94,7 +94,7 @@ API.v1.addRoute(
 	'livechat/users/:type/:_id',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				type: String,
 				_id: String,
@@ -126,7 +126,7 @@ API.v1.addRoute(
 				user: null,
 			});
 		},
-		delete() {
+		async delete() {
 			check(this.urlParams, {
 				type: String,
 				_id: String,

@@ -168,11 +168,9 @@ export class HomeContent {
 			return data;
 		}, contract);
 
-		await this.page.dispatchEvent(
-			'div.dropzone-overlay.dropzone-overlay--enabled.background-transparent-darkest.color-content-background-color',
-			'drop',
-			{ dataTransfer },
-		);
+		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
 	async openLastMessageMenu(): Promise<void> {
@@ -182,7 +180,7 @@ export class HomeContent {
 	}
 
 	get takeOmnichannelChatButton(): Locator {
-		return this.page.locator('button.rc-button >> text=Take it!');
+		return this.page.locator('role=button[name="Take it!"]');
 	}
 
 	get resumeOnHoldOmnichannelChatButton(): Locator {
