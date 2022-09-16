@@ -8,6 +8,7 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import RoomSkeleton from '../RoomSkeleton';
+import { useRoomRolesManagement } from '../components/body/useRoomRolesManagement';
 import { RoomAPIContext } from '../contexts/RoomAPIContext';
 import { RoomContext } from '../contexts/RoomContext';
 import ToolboxProvider from './ToolboxProvider';
@@ -18,6 +19,8 @@ type RoomProviderProps = {
 };
 
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
+	useRoomRolesManagement(rid);
+
 	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }));
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], ({ subscriptions }) => subscriptions.findOne({ rid }));
 

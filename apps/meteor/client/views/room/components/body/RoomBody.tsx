@@ -1,4 +1,4 @@
-import { IMessage, isEditedMessage, isOmnichannelRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import { IMessage, isEditedMessage, isOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import {
 	useCurrentRoute,
 	usePermission,
@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement, UIEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { ChatMessage, RoomRoles, Users } from '../../../../../app/models/client';
+import { ChatMessage } from '../../../../../app/models/client';
 import { readMessage, RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
 import { Uploading } from '../../../../../app/ui/client/lib/fileUpload';
@@ -23,7 +23,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
 import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import Announcement from '../../Announcement';
@@ -44,7 +44,6 @@ import ComposerContainer from './composer/ComposerContainer';
 import { useChatMessages } from './useChatMessages';
 import { useFileUploadDropTarget } from './useFileUploadDropTarget';
 import { useRetentionPolicy } from './useRetentionPolicy';
-import { useRoomRoles } from './useRoomRoles';
 import { useUnreadMessages } from './useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
@@ -72,7 +71,6 @@ const RoomBody = (): ReactElement => {
 	const lastScrollTopRef = useRef(0);
 
 	const chatMessagesInstance = useChatMessages(room._id, wrapperRef);
-	useRoomRoles(room._id);
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(room);
 
 	const _isAtBottom = useCallback((scrollThreshold = 0) => {
@@ -151,36 +149,28 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const roomRoles = useReactiveValue<ISubscription | undefined>(
-		useCallback(
-			() =>
-				RoomRoles.findOne({
-					'rid': room._id,
-					'roles': 'leader',
-					'u._id': { $ne: user?._id },
-				}),
-			[room._id, user?._id],
-		),
-	);
-
 	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
 
-	const roomLeader = useReactiveValue(
-		useCallback(() => {
-			if (!roomRoles) {
-				return;
-			}
+	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], ({ roomRoles, users }) => {
+		const leaderRoomRole = roomRoles.findOne({
+			'rid': room._id,
+			'roles': 'leader',
+			'u._id': { $ne: user?._id },
+		});
 
-			const leaderUser = Users.findOne({ _id: roomRoles.u._id }, { fields: { status: 1, statusText: 1 } }) as IUser | undefined;
+		if (!leaderRoomRole) {
+			return;
+		}
 
-			return {
-				...roomRoles.u,
-				name: useRealName ? roomRoles.u.name || roomRoles.u.username : roomRoles.u.username,
-				status: leaderUser?.status,
-				statusText: leaderUser?.statusText,
-			} as const;
-		}, [roomRoles, useRealName]),
-	);
+		const leaderUser = users.findOne({ _id: leaderRoomRole.u._id }, { fields: { status: 1, statusText: 1 } });
+
+		return {
+			...leaderRoomRole.u,
+			name: useRealName ? leaderRoomRole.u.name || leaderRoomRole.u.username : leaderRoomRole.u.username,
+			status: leaderUser?.status,
+			statusText: leaderUser?.statusText,
+		};
+	});
 
 	const handleOpenUserCardButtonClick = useCallback(
 		(event: UIEvent, username: IUser['username']) => {

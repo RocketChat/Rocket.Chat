@@ -2,7 +2,7 @@ import { IRole, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useQuery, UseQueryOptions, QueryKey, UseQueryResult, useQueryClient, QueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { Roles, Rooms, Subscriptions, Users } from '../../app/models/client';
+import { Roles, RoomRoles, Rooms, Subscriptions, Users } from '../../app/models/client';
 
 // For convenience as we want to minimize references to the old client models
 const queryableCollections = {
@@ -10,6 +10,7 @@ const queryableCollections = {
 	rooms: Rooms as Mongo.Collection<IRoom>,
 	subscriptions: Subscriptions as Mongo.Collection<ISubscription>,
 	roles: Roles as Mongo.Collection<IRole>,
+	roomRoles: RoomRoles as Mongo.Collection<Pick<ISubscription, 'rid' | 'u' | 'roles'>>,
 } as const;
 
 const dep = new Tracker.Dependency();
