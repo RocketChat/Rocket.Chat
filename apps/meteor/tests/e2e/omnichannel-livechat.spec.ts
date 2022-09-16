@@ -54,7 +54,7 @@ test.describe('Livechat', () => {
 		});
 
 		test.describe('Send message to livechat costumer', () => {
-			test('expect message is sended by agent', async () => {
+			test('Expect message to be sent by agent', async () => {
 				await poAuxContext.poHomeChannel.content.sendMessage('this_a_test_message_from_agent');
 				await expect(page.locator('div >>text="this_a_test_message_from_agent"')).toBeVisible();
 			});
