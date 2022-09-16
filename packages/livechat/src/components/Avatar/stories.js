@@ -4,7 +4,6 @@ import { storiesOf } from '@storybook/react';
 import { Avatar } from '.';
 import { avatarResolver, centered } from '../../helpers.stories';
 
-
 const defaultSrc = avatarResolver('guilherme.gazzo');
 const defaultDescription = 'user description';
 const statuses = [null, 'offline', 'away', 'busy', 'online'];

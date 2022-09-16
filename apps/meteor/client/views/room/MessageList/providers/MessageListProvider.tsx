@@ -35,8 +35,11 @@ export const MessageListProvider: FC<{
 	const katexEnabled = Boolean(useSetting('Katex_Enabled'));
 	const katexDollarSyntaxEnabled = Boolean(useSetting('Katex_Dollar_Syntax'));
 	const katexParenthesisSyntaxEnabled = Boolean(useSetting('Katex_Parenthesis_Syntax'));
+	const showColors = useSetting('HexColorPreview_Enabled') as boolean;
 
-	const showRoles = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
+	const displayRolesGlobal = Boolean(useSetting('UI_DisplayRoles'));
+	const hideRolesPreference = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
+	const showRoles = displayRolesGlobal && hideRolesPreference;
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
 
@@ -46,6 +49,7 @@ export const MessageListProvider: FC<{
 
 	const context: MessageListContextValue = useMemo(
 		() => ({
+			showColors,
 			useReactionsFilter: (message: IMessage): ((reaction: string) => string[]) => {
 				const { reactions } = message;
 				return !showRealName
@@ -77,6 +81,7 @@ export const MessageListProvider: FC<{
 			useShowFollowing: uid
 				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
 				: (): boolean => false,
+			autoTranslateLanguage,
 			useShowTranslated:
 				uid && autoTranslateEnabled && hasSubscription && autoTranslateLanguage
 					? ({ message }): boolean =>
@@ -157,6 +162,7 @@ export const MessageListProvider: FC<{
 			katexParenthesisSyntaxEnabled,
 			highlights,
 			reactToMessage,
+			showColors,
 		],
 	);
 

@@ -226,6 +226,8 @@ export interface ServerMethods {
 	'livechat:changeLivechatStatus': (params?: void | { status?: string; agentId?: string }) => unknown;
 	'livechat:saveAgentInfo': (_id: string, agentData: unknown, agentDepartments: unknown) => unknown;
 	'livechat:saveInfo': (visitorData: unknown, roomData: unknown) => unknown;
+	'livechat:takeInquiry': (inquiryId: string) => unknown;
+	'livechat:resumeOnHold': (roomId: string) => unknown;
 	'autoTranslate.getProviderUiMetadata': () => Record<string, { name: string; displayName: string }>;
 	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
 	'spotlight': (
