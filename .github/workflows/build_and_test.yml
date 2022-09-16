@@ -332,11 +332,15 @@ jobs:
           RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
+          docker ps
+
           until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
             ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
             sleep 10
           done
+
+          docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
       - name: E2E Test API
         env:
@@ -345,9 +349,6 @@ jobs:
           RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
-          docker ps
-          docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
-
           cd ./apps/meteor
           for i in $(seq 1 5); do
             npm run testapi && s=0 && break || s=$?
@@ -419,6 +420,15 @@ jobs:
         run: |
           cd ./apps/meteor
           yarn test:e2e
+
+      - name: Grab logs
+        if: failure()
+        run: |
+          docker ps
+
+          docker compose -f docker-compose-ci.yml logs
+
+          curl -v http://localhost:3000
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
@@ -523,6 +533,8 @@ jobs:
           RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
+          docker ps
+
           until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
             ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
@@ -535,6 +547,8 @@ jobs:
             sleep 10
           done
 
+          docker compose -f docker-compose-ci.yml logs --tail=50
+
       - name: E2E Test API
         env:
           LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
@@ -542,9 +556,6 @@ jobs:
           RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
-          docker ps
-          docker compose -f docker-compose-ci.yml logs --tail=50
-
           cd ./apps/meteor
           for i in $(seq 1 5); do
             IS_EE=true npm run testapi && s=0 && break || s=$?
@@ -606,6 +617,8 @@ jobs:
           RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
+          docker ps
+
           until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
             ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
@@ -620,10 +633,17 @@ jobs:
 
       - name: E2E Test UI
         run: |
-          docker ps
-
           cd ./apps/meteor
           E2E_COVERAGE=true IS_EE=true yarn test:e2e
+
+      - name: Grab logs
+        if: failure()
+        run: |
+          docker ps
+
+          docker compose -f docker-compose-ci.yml logs
+
+          curl -v http://localhost:3000
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
