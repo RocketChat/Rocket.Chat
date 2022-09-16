@@ -46,7 +46,7 @@ test.describe('Livechat', () => {
 				await expect(page.locator('div >>text="this_a_test_message_from_user"')).toBeVisible();
 			});
 
-			test('expect message is received by agent', async () => {
+			test('expect message to be received by agent', async () => {
 				await poAuxContext.poHomeChannel.sidenav.openChat(newUser.name);
 				await expect(poAuxContext.poHomeChannel.content.lastUserMessage).toBeVisible();
 				await expect(poAuxContext.poHomeChannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
