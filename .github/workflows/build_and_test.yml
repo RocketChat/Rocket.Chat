@@ -603,7 +603,7 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    needs: [test, release-versions]
+    needs: [test, test-ee, release-versions]
 
     steps:
       - uses: actions/checkout@v3
