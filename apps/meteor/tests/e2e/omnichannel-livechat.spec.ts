@@ -64,7 +64,7 @@ test.describe('Livechat', () => {
 				await expect(page.locator('[contenteditable="true"]')).not.toBeVisible();
 			});
 
-			test('expect message is received by minimized livechat', async () => {
+			test('expect message to be received by minimized livechat', async () => {
 				await poAuxContext.poHomeChannel.content.sendMessage('this_a_test_message_again_from_agent');
 				await expect(poLiveChat.unreadMessagesBadge).toBeVisible();
 			});
