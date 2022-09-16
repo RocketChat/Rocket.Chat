@@ -26,8 +26,6 @@ import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
 import './messageBoxAudioMessage.ts';
-import './messageBoxNotSubscribed.ts';
-import './messageBoxReadOnly.ts';
 import './messageBox.html';
 
 type MessageBoxTemplateInstance = Blaze.TemplateInstance<{

@@ -12,7 +12,7 @@ test.describe.serial('Current Chats', () => {
 		await page.goto('/omnichannel/current');
 	});
 
-	test.describe('Render Fields', async () => {
+	test('Render Fields', async () => {
 		await test.step('expect show guest Field', async () => {
 			await expect(pageOmnichannelCurrentChats.guestField).toBeVisible();
 		});
@@ -42,12 +42,9 @@ test.describe.serial('Current Chats', () => {
 		});
 	});
 
-	test.describe('Render Options', async () => {
-		test.beforeEach(async () => {
-			await pageOmnichannelCurrentChats.doOpenOptions();
-		});
-
+	test('Render Options', async () => {
 		await test.step('expect show form options button', async () => {
+			await pageOmnichannelCurrentChats.doOpenOptions();
 			await expect(pageOmnichannelCurrentChats.formOptions).toBeVisible();
 		});
 
@@ -64,7 +61,7 @@ test.describe.serial('Current Chats', () => {
 		});
 	});
 
-	test.describe('Render Table', async () => {
+	test('Render Table', async () => {
 		await test.step('expect show table', async () => {
 			await expect(pageOmnichannelCurrentChats.table).toBeVisible();
 		});

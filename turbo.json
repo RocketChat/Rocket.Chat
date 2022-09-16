@@ -36,6 +36,9 @@
 			"dependsOn": ["build"],
 			"cache": false
 		},
+		"ms": {
+			"dependsOn": ["^build"]
+		},
 		"@rocket.chat/ui-contexts#build": {
 			"dependsOn": ["^build"],
 			"cache": false
