@@ -59,7 +59,7 @@ test.describe('Livechat', () => {
 				await expect(page.locator('div >>text="this_a_test_message_from_agent"')).toBeVisible();
 			});
 
-			test("expect after user minimize livechat screen don't show composer", async () => {
+			test("Expect when user minimizes the livechat screen, the composer should be hidden", async () => {
 				await poLiveChat.btnOpenLiveChat('R').click();
 				await expect(page.locator('[contenteditable="true"]')).not.toBeVisible();
 			});
