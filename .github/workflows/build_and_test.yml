@@ -389,6 +389,8 @@ jobs:
           docker ps
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
+          docker compose -f docker-compose-ci.yml stop
+
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
@@ -515,13 +517,18 @@ jobs:
             stream-hub-service
 
       - name: E2E Test API
+        env:
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
+          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker ps
           docker compose -f docker-compose-ci.yml logs --tail=50
 
           cd ./apps/meteor
           for i in $(seq 1 5); do
-            IS_EE=true npm run testapi && s=0 && break || s=$?;
+            IS_EE=true npm run testapi && s=0 && break || s=$?
 
             docker compose -f ../../docker-compose-ci.yml logs --tail=100
 
@@ -531,7 +538,7 @@ jobs:
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
-            docker compose -f ../../docker-compose-ci.yml start
+            docker compose -f ../../docker-compose-ci.yml restart
 
             until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
@@ -556,9 +563,16 @@ jobs:
           npx playwright install --with-deps
 
       - name: E2E Test UI
+        env:
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
+          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker ps
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
+
+          docker compose -f docker-compose-ci.yml stop
 
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
@@ -572,8 +586,9 @@ jobs:
             sleep 10
           done
 
-          cd ./apps/meteor
+          docker ps
 
+          cd ./apps/meteor
           E2E_COVERAGE=true IS_EE=true yarn test:e2e
 
       - name: Store playwright test trace
