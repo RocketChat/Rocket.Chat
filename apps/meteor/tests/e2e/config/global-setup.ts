@@ -7,9 +7,15 @@ import injectInitialData from '../fixtures/inject-initial-data';
 
 export default async function (): Promise<void> {
 	const browser = await chromium.launch();
+	const context = await browser.newContext();
+	await context.tracing.start({ screenshots: true, snapshots: true });
 	const page = await browser.newPage();
 
+	console.log('constants.BASE_URL ->', constants.BASE_URL);
+
 	await page.goto(constants.BASE_URL);
+
+	await context.tracing.stop({ path: './tests/e2e/.playwright/custom-trace.zip' });
 
 	await page.locator('[name=emailOrUsername]').type(constants.ADMIN_CREDENTIALS.email);
 	await page.locator('[name=pass]').type(constants.ADMIN_CREDENTIALS.password);
