@@ -412,10 +412,14 @@ jobs:
             sleep 10
           done;
 
-          lsof | wc -l
+          docker compose -f docker-compose-ci.yml logs --tail=50
 
       - name: E2E Test UI
         run: |
+          curl -v http://localhost:3000/api/info
+          curl -v http://localhost:3000/sockjs/info
+          curl -v http://localhost:3000
+
           cd ./apps/meteor
           yarn test:e2e
 
@@ -426,7 +430,11 @@ jobs:
 
           docker compose -f docker-compose-ci.yml logs
 
+          curl -v http://localhost:3000/api/info
+          curl -v http://localhost:3000/sockjs/info
           curl -v http://localhost:3000
+
+          sudo lsof | wc -l
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
@@ -536,8 +544,6 @@ jobs:
           df -h
           free -h
 
-          lsof | wc -l
-
           for c in $(seq 1 10); do
             echo "Waiting 'ddp-streamer' to start up"
             echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully" && break
@@ -548,8 +554,6 @@ jobs:
           df -h
           free -h
 
-          lsof | wc -l
-
           for c in $(seq 1 10); do
             echo "Waiting Rocket.Chat to start up"
             echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING" && break
@@ -558,8 +562,6 @@ jobs:
           done;
 
           docker compose -f docker-compose-ci.yml logs --tail=50
-
-          lsof | wc -l
 
       - name: E2E Test API
         env:
@@ -603,16 +605,18 @@ jobs:
 
           docker compose -f docker-compose-ci.yml stop
 
+          docker ps
+
           docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
           docker compose -f docker-compose-ci.yml restart
 
+          docker ps
+
           df -h
           free -h
-
-          lsof | wc -l
 
           for c in $(seq 1 10); do
             echo "Waiting 'ddp-streamer' to start up"
@@ -624,8 +628,6 @@ jobs:
           df -h
           free -h
 
-          lsof | wc -l
-
           for c in $(seq 1 10); do
             echo "Waiting Rocket.Chat to start up"
             echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING" && break
@@ -634,8 +636,6 @@ jobs:
           done;
 
           docker compose -f docker-compose-ci.yml logs --tail=50
-
-          lsof | wc -l
 
       - name: Cache Playwright binaries
         uses: actions/cache@v3
@@ -653,6 +653,10 @@ jobs:
 
       - name: E2E Test UI
         run: |
+          curl -v http://localhost:3000/api/info
+          curl -v http://localhost:3000/sockjs/info
+          curl -v http://localhost:3000
+
           cd ./apps/meteor
           E2E_COVERAGE=true IS_EE=true yarn test:e2e
 
@@ -663,7 +667,11 @@ jobs:
 
           docker compose -f docker-compose-ci.yml logs
 
+          curl -v http://localhost:3000/api/info
+          curl -v http://localhost:3000/sockjs/info
           curl -v http://localhost:3000
+
+          sudo lsof | wc -l
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
