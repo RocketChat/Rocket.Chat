@@ -1,5 +1,4 @@
-import crypto from 'crypto';
-
+// import crypto from 'crypto';
 import polka from 'polka';
 import WebSocket from 'ws';
 
@@ -145,7 +144,8 @@ export class DDPStreamer extends ServiceClass {
 
 				res.writeHead(200);
 
-				res.end(`{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":${crypto.randomBytes(4).readUInt32LE(0)},"ms":true}`);
+				res.end(`{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":666}`);
+				// res.end(`{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":${crypto.randomBytes(4).readUInt32LE(0)},"ms":true}`);
 			})
 			.listen(PORT);
 
