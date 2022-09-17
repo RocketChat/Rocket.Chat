@@ -204,7 +204,7 @@ export const fileUpload = async (
 				file: file.file,
 				fileName: file.name,
 				fileDescription: messageBoxText,
-				showDescription: !isRoomFederated(room),
+				showDescription: room && !isRoomFederated(room),
 				onClose: (): void => {
 					imperativeModal.close();
 					uploadNextFile();

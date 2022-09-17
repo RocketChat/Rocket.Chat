@@ -71,7 +71,13 @@ const canGetGeolocation = new ReactiveVar(false);
 messageBox.actions.add('Share', 'My_location', {
 	id: 'share-location',
 	icon: 'map-pin',
-	condition: () => canGetGeolocation.get() && !isRoomFederated(Rooms.findOne(Session.get('openedRoom'))),
+	condition: () => {
+		const room = Rooms.findOne(Session.get('openedRoom'));
+		if (!room) {
+			return false;
+		}
+		return canGetGeolocation.get() && !isRoomFederated(room);
+	},
 	async action({ rid, tmid }) {
 		imperativeModal.open({ component: ShareLocationModal, props: { rid, tmid, onClose: imperativeModal.close } });
 	},
