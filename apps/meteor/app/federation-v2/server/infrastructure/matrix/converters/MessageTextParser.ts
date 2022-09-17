@@ -7,7 +7,8 @@ const HREF_REGEX = /href=/; // href="https://matrix.to/#/@user:server.com"
 const A_LINKS_REGEX = /<a [^>]+>([^<]+)<\/a>/gm; // <a href="https://matrix.to/#/@user:server.com">user</a>
 const SPACES_REGEX = /\ /g;
 const MATRIX_MENTION_LINK_REGEX = /\[(https?:\/\/(.+?.)?matrix.to(\/[A-Za-z0-9-._~:/?#[@!$&'()*+,;=]*)?)\]/gm; // [https://matrix.to/#/@marcos.defendi:b.rc.allskar.com]
-const INTERNAL_MENTIONS_REGEX = new RegExp(`@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)`, 'gm'); // @username, @username:server.com
+const INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX = new RegExp(`@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)`, 'gm'); // @username:server.com
+const INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX = new RegExp(`@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?)$`, 'gm'); // @username, @username.name
 const INTERNAL_GENERAL_REGEX = /(@all)|(@here)/gm;
 
 // return links in the following format: [mentionLink]
@@ -45,15 +46,42 @@ const replaceExternalWithInternalMentions = (message: string, homeServerDomain: 
 		.replace(/\s+/g, ' ');
 };
 
-const replaceMentionsInMatrixFormatForEachUserInternalMention = async (message: string): Promise<string> => {
+const replaceMentionsInMatrixFormatForEachUserExternalMention = async (message: string): Promise<string> => {
 	const { MentionPill } = await import('@rocket.chat/forked-matrix-bot-sdk');
 	const promises: Promise<MentionPillType>[] = [];
 
-	message.replace(INTERNAL_MENTIONS_REGEX, (match): any => promises.push(MentionPill.forUser(match.trimStart())));
+	message
+		.split(' ')
+		.forEach((word) =>
+			word.replace(INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX, (match): any => promises.push(MentionPill.forUser(match.trimStart()))),
+		);
 
 	const externalUserMentions = await Promise.all(promises);
 
-	return message.replace(INTERNAL_MENTIONS_REGEX, () => ` ${externalUserMentions.shift()?.html}`);
+	return message
+		.split(' ')
+		.map((word) => word.replace(INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX, () => ` ${externalUserMentions.shift()?.html}`))
+		.join(' ');
+};
+
+const replaceMentionsInMatrixFormatForEachInternalUserMention = async (message: string, homeServerDomain: string): Promise<string> => {
+	const { MentionPill } = await import('@rocket.chat/forked-matrix-bot-sdk');
+	const promises: Promise<MentionPillType>[] = [];
+
+	message
+		.split(' ')
+		.forEach((word) =>
+			word.replace(INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX, (match): any =>
+				promises.push(MentionPill.forUser(`${match.trimStart()}:${homeServerDomain}`)),
+			),
+		);
+
+	const externalUserMentions = await Promise.all(promises);
+
+	return message
+		.split(' ')
+		.map((word) => word.replace(INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX, () => ` ${externalUserMentions.shift()?.html}`))
+		.join(' ');
 };
 
 const replaceMentionsInMatrixFormatForEachInternalMentions = async (message: string, externalRoomId: string): Promise<string> => {
@@ -67,16 +95,19 @@ const replaceMentionsInMatrixFormatForEachInternalMentions = async (message: str
 	return message.replace(INTERNAL_GENERAL_REGEX, () => ` ${externalMentions.shift()?.html}`);
 };
 
-const replaceInternalWithExternalMentions = async (message: string, externalRoomId: string): Promise<string> =>
+const replaceInternalWithExternalMentions = async (message: string, externalRoomId: string, homeServerDomain: string): Promise<string> =>
 	(
-		await replaceMentionsInMatrixFormatForEachUserInternalMention(
-			await replaceMentionsInMatrixFormatForEachInternalMentions(message, externalRoomId),
+		await replaceMentionsInMatrixFormatForEachInternalUserMention(
+			await replaceMentionsInMatrixFormatForEachUserExternalMention(
+				await replaceMentionsInMatrixFormatForEachInternalMentions(message, externalRoomId),
+			),
+			homeServerDomain,
 		)
 	)
 		.replace(/\s+/g, ' ')
 		.trim();
 
-export const toExternalMessageFormat = async (message: string, externalRoomId: string): Promise<string> =>
-	replaceInternalWithExternalMentions(message, externalRoomId);
+export const toExternalMessageFormat = async (message: string, externalRoomId: string, homeServerDomain: string): Promise<string> =>
+	replaceInternalWithExternalMentions(message, externalRoomId, homeServerDomain);
 export const toInternalMessageFormat = (message: string, homeServerDomain: string): string =>
 	replaceExternalWithInternalMentions(message, homeServerDomain);

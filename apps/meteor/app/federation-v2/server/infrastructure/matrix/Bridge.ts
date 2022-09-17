@@ -148,7 +148,7 @@ export class MatrixBridge implements IFederationBridge {
 		try {
 			await this.bridgeInstance
 				.getIntent(externalSenderId)
-				.matrixClient.sendHtmlText(externalRoomId, await toExternalMessageFormat(message.msg, externalRoomId));
+				.matrixClient.sendHtmlText(externalRoomId, await toExternalMessageFormat(message.msg, externalRoomId, this.homeServerDomain));
 		} catch (e) {
 			throw new Error('User is not part of the room.');
 		}
