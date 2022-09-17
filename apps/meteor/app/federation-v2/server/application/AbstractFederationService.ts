@@ -33,7 +33,7 @@ export abstract class FederationService {
 		});
 
 		await this.internalUserAdapter.createFederatedUser(federatedUser);
-		await this.updateUserAvatarInternally(federatedUser);
+		await this.updateUserAvatarInternally(await this.internalUserAdapter.getFederatedUserByExternalId(externalUserId) as FederatedUser);
 	}
 
 	protected async updateUserAvatarInternally(federatedUser: FederatedUser): Promise<void> {
