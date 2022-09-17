@@ -656,9 +656,14 @@ jobs:
 
       - name: E2E Test UI
         run: |
-          curl -v http://localhost:3000/api/info
-          curl -v http://localhost:3000/sockjs/info
-          curl -v http://localhost:3000
+          echo "/api/info"
+          curl -i http://localhost:3000/api/info
+
+          echo "/sockjs/info?cb=12"
+          curl -i "http://localhost:3000/sockjs/info?cb=12"
+
+          echo "scripts"
+          curl -i http://localhost:3000/scripts.js?c297ffc94dc8b1cc0bf99a59b92ce1f9f01f5208
 
           cd ./apps/meteor
           E2E_COVERAGE=true IS_EE=true yarn test:e2e
@@ -668,13 +673,17 @@ jobs:
         run: |
           docker ps
 
+          echo "/api/info"
+          curl -i http://localhost:3000/api/info
+
+          echo "/sockjs/info?cb=12"
+          curl -i "http://localhost:3000/sockjs/info?cb=12"
+
+          echo "scripts"
+          curl -i http://localhost:3000/scripts.js?c297ffc94dc8b1cc0bf99a59b92ce1f9f01f5208
+
+          // sudo lsof | wc -l
           docker compose -f docker-compose-ci.yml logs
-
-          curl -v http://localhost:3000/api/info
-          curl -v http://localhost:3000/sockjs/info
-          curl -v http://localhost:3000
-
-          sudo lsof | wc -l
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
