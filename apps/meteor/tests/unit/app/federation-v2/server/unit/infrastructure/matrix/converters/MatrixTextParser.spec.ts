@@ -8,31 +8,41 @@ import {
 describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 	describe('#toExternalMessageFormat ()', () => {
 		it('should parse the user mention correctly', async () => {
-			expect(await toExternalMessageFormat('hey @user:server.com', 'externalRoomId')).to.be.equal(
+			expect(await toExternalMessageFormat('hey @user:server.com', 'externalRoomId', 'localDomain')).to.be.equal(
 				'hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>',
 			);
 		});
 
 		it('should parse the @all mention correctly', async () => {
-			expect(await toExternalMessageFormat('hey @all', 'externalRoomId')).to.be.equal(
+			expect(await toExternalMessageFormat('hey @all', 'externalRoomId', 'localDomain')).to.be.equal(
 				'hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>',
 			);
 		});
 
 		it('should parse the @here mention correctly', async () => {
-			expect(await toExternalMessageFormat('hey @here', 'externalRoomId')).to.be.equal(
+			expect(await toExternalMessageFormat('hey @here', 'externalRoomId', 'localDomain')).to.be.equal(
 				'hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>',
 			);
 		});
 
+		it('should parse the user local mentions appending the local domain server in the mention', async () => {
+			expect(await toExternalMessageFormat('hey @user', 'externalRoomId', 'localDomain.com')).to.be.equal(
+				'hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>',
+			);
+		});
+
 		it('should parse multiple and different mentions in the same message correctly', async () => {
-			expect(await toExternalMessageFormat('hey @user:server.com, hey @all, hey @here', 'externalRoomId')).to.be.equal(
-				'hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>',
+			expect(
+				await toExternalMessageFormat('hey @user:server.com, hey @all, hey @here @user', 'externalRoomId', 'localDomain.com'),
+			).to.be.equal(
+				'hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a> <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>',
 			);
 		});
 
 		it('should return the message as-is when it does not have any mention', async () => {
-			expect(await toExternalMessageFormat('hey people, how are you?', 'externalRoomId')).to.be.equal('hey people, how are you?');
+			expect(await toExternalMessageFormat('hey people, how are you?', 'externalRoomId', 'localDomain')).to.be.equal(
+				'hey people, how are you?',
+			);
 		});
 	});
 
