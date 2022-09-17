@@ -23,6 +23,8 @@ import { FederationHooks } from './rocket-chat/hooks';
 import { FederationRoomSenderConverter } from './rocket-chat/converters/RoomSender';
 import { FederationRoomInternalHooksValidator } from '../application/sender/RoomInternalHooksValidator';
 
+import { FederationUserServiceSender } from '../application/sender/UserServiceSender';
+
 export class FederationFactory {
 	public static buildRocketSettingsAdapter(): RocketChatSettingsAdapter {
 		return new RocketChatSettingsAdapter();
@@ -61,6 +63,14 @@ export class FederationFactory {
 		bridge: IFederationBridge,
 	): FederationRoomServiceSender {
 		return new FederationRoomServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, bridge);
+	}
+
+	public static buildUserServiceSender(
+		rocketUserAdapter: RocketChatUserAdapter,
+		rocketSettingsAdapter: RocketChatSettingsAdapter,
+		bridge: IFederationBridge,
+	): FederationUserServiceSender {
+		return new FederationUserServiceSender(rocketUserAdapter, rocketSettingsAdapter, bridge);
 	}
 
 	public static buildRoomInternalHooksValidator(
@@ -108,12 +118,16 @@ export class FederationFactory {
 	public static setupListeners(
 		roomServiceSender: FederationRoomServiceSender,
 		roomInternalHooksValidator: FederationRoomInternalHooksValidator,
+		userServiceSender: FederationUserServiceSender,
 	): void {
-		FederationFactory.setupActions(roomServiceSender);
+		FederationFactory.setupActions(roomServiceSender, userServiceSender);
 		FederationFactory.setupValidators(roomInternalHooksValidator);
 	}
 
-	private static setupActions(roomServiceSender: FederationRoomServiceSender): void {
+	private static setupActions(
+		roomServiceSender: FederationRoomServiceSender,
+		userServiceSender: FederationUserServiceSender,
+	): void {
 		FederationHooks.afterUserLeaveRoom((user: IUser, room: IRoom) =>
 			roomServiceSender.afterUserLeaveRoom(FederationRoomSenderConverter.toAfterUserLeaveRoom(user._id, room._id)),
 		);
@@ -122,6 +136,7 @@ export class FederationFactory {
 				FederationRoomSenderConverter.toOnUserRemovedFromRoom(user._id, room._id, userWhoRemoved._id),
 			),
 		);
+		FederationHooks.afterUserAvatarChanged(async (user: IUser) => userServiceSender.afterUserAvatarChanged(user));
 	}
 
 	private static setupValidators(roomInternalHooksValidator: FederationRoomInternalHooksValidator): void {

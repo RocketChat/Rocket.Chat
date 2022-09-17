@@ -27,6 +27,7 @@ export interface IFederationChangeMembershipInputDto extends IFederationReceiver
 	leave?: boolean;
 	roomType?: RoomType;
 	externalRoomName?: string;
+	userAvatarUrl?: string;
 }
 
 export interface IFederationSendInternalMessageInputDto extends IFederationReceiverBaseRoomInputDto {
@@ -95,6 +96,7 @@ export class FederationRoomCreateInputDto extends FederationBaseRoomInputDto {
 	roomType?: RoomType;
 }
 
+
 export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDto {
 	constructor({
 		externalRoomId,
@@ -109,6 +111,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		leave,
 		roomType,
 		externalRoomName,
+		userAvatarUrl,
 	}: IFederationChangeMembershipInputDto) {
 		super({ externalRoomId, normalizedRoomId });
 		this.externalInviterId = externalInviterId;
@@ -121,6 +124,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		this.leave = leave;
 		this.roomType = roomType;
 		this.externalRoomName = externalRoomName;
+		this.userAvatarUrl = userAvatarUrl;
 	}
 
 	externalInviterId: string;
@@ -142,6 +146,8 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 	leave?: boolean;
 
 	externalRoomName?: string;
+
+	userAvatarUrl?: string;
 }
 
 export class FederationRoomReceiveExternalMessageDto extends FederationBaseRoomInputDto {

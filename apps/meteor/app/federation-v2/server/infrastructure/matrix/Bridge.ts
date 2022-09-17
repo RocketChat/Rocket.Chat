@@ -86,10 +86,15 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async getUserProfileInformation(externalUserId: string): Promise<IExternalUserProfileInformation | undefined> {
 		try {
-			const externalInformation = await this.bridgeInstance.getIntent(externalUserId).getProfileInfo(externalUserId);
+			const externalInformation = await this.bridgeInstance.getIntent(externalUserId).getProfileInfo(externalUserId, undefined, false);
 
 			return {
 				displayName: externalInformation.displayname || '',
+				...(externalInformation.avatar_url
+					? {
+							avatarUrl: externalInformation.avatar_url,
+					  }
+					: {}),
 			};
 		} catch (err) {
 			// no-op
@@ -108,13 +113,23 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
-	public async createUser(username: string, name: string, domain: string): Promise<string> {
+	public async setUserAvatar(externalUserId: string, avatarUrl: string): Promise<void> {
+		try {
+			await this.bridgeInstance.getIntent(externalUserId).matrixClient.setAvatarUrl(avatarUrl);
+		}
+		catch (e) {
+			console.log({ e })
+		}
+		
+	}
+
+	public async createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string> {
 		if (!MatrixUserInstance) {
 			throw new Error('Error loading the Matrix User instance from the external library');
 		}
 		const matrixUserId = `@${username?.toLowerCase()}:${domain}`;
 		const newUser = new MatrixUserInstance(matrixUserId);
-		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})` });
+		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})`, ...(avatarUrl ? { url: avatarUrl } : {}) });
 
 		return matrixUserId;
 	}
@@ -187,6 +202,26 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void> {
 		await this.bridgeInstance.getIntent(externalOwnerId).kick(externalRoomId, externalUserId);
+	}
+
+	public async uploadContent(
+		externalSenderId: string,
+		content: Buffer,
+		options?: { name?: string; type?: string },
+	): Promise<string | undefined> {
+		try {
+			const mxcUrl = await this.bridgeInstance.getIntent(externalSenderId).uploadContent(content, options);
+
+			return mxcUrl;
+		} catch (e: any) {
+			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
+				throw new Error('File is too large');
+			}
+		}
+	}
+
+	public convertMatrixUrlToHttp(externalUserId: string, matrixUrl: string): string {
+		return this.bridgeInstance.getIntent(externalUserId).matrixClient.mxcToHttp(matrixUrl);
 	}
 
 	protected async createInstance(): Promise<void> {

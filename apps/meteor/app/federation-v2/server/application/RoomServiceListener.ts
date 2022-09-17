@@ -86,12 +86,19 @@ export class FederationRoomServiceListener extends FederationService {
 			eventOrigin,
 			roomType,
 			leave,
+			userAvatarUrl,
 		} = roomChangeMembershipInput;
 		const wasGeneratedOnTheProxyServer = eventOrigin === EVENT_ORIGIN.LOCAL;
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 
+		if (userAvatarUrl) {
+			const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
+			federatedUser && (await this.updateUserAvatarInternally(federatedUser));
+			return;
+		}
+
 		if (wasGeneratedOnTheProxyServer && !affectedFederatedRoom) {
-			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
+			return;
 		}
 
 		const isInviterFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
@@ -146,7 +153,7 @@ export class FederationRoomServiceListener extends FederationService {
 
 		const federatedRoom = affectedFederatedRoom || (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId));
 		if (!federatedRoom) {
-			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
+			return;
 		}
 
 		if (leave) {

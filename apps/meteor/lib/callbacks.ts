@@ -67,6 +67,7 @@ type EventLikeCallbackSignatures = {
 	'beforeCreateDirectRoom': (members: IUser[]) => void;
 	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
 	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
+	'afterUserAvatarChanged': (params: { user: IUser }) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 };
 

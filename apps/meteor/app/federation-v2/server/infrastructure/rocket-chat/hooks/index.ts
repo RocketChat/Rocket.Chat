@@ -64,6 +64,17 @@ export class FederationHooks {
 		);
 	}
 
+	public static afterUserAvatarChanged(callback: (user: IUser) => Promise<void>): void {
+		callbacks.add(
+			'afterUserAvatarChanged',
+			({ user }: { user: IUser }): void => {
+				Promise.await(callback(user));
+			},
+			callbacks.priority.HIGH,
+			'federation-v2-after-user-avatar-changed',
+		);
+	}
+
 	public static removeCEValidation(): void {
 		callbacks.remove('federation.beforeAddUserAToRoom', 'federation-v2-can-add-federated-user-to-federated-room');
 		callbacks.remove('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce');
