@@ -334,11 +334,12 @@ jobs:
         run: |
           docker ps
 
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
+          for c in $(seq 1 10); do
             echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
+            echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING" && break
+            ((c==10)) && exit 1
             sleep 10
-          done
+          done;
 
           docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
@@ -363,9 +364,10 @@ jobs:
 
             docker compose -f ../../docker-compose-ci.yml restart rocketchat
 
-            until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+            for c in $(seq 1 10); do
               echo "Waiting Rocket.Chat to start up"
-              ((c++)) && ((c==10)) && exit 1
+              echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING" && break
+              ((c==10)) && exit 1
               sleep 10
             done;
           done;
@@ -403,18 +405,14 @@ jobs:
 
           docker compose -f docker-compose-ci.yml restart rocketchat
 
-      - name: Wait for Rocket.Chat to start up
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
-          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-        run: |
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
+          for c in $(seq 1 10); do
             echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
+            echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING" && break
+            ((c==10)) && exit 1
             sleep 10
-          done
+          done;
+
+          lsof | wc -l
 
       - name: E2E Test UI
         run: |
@@ -535,19 +533,33 @@ jobs:
         run: |
           docker ps
 
-          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
-            echo "Waiting 'ddp-streamer' to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
-            sleep 10
-          done
+          df -h
+          free -h
 
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
-            echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
+          lsof | wc -l
+
+          for c in $(seq 1 10); do
+            echo "Waiting 'ddp-streamer' to start up"
+            echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully" && break
+            ((c==10)) && exit 1
             sleep 10
-          done
+          done;
+
+          df -h
+          free -h
+
+          lsof | wc -l
+
+          for c in $(seq 1 10); do
+            echo "Waiting Rocket.Chat to start up"
+            echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING" && break
+            ((c==10)) && exit 1
+            sleep 10
+          done;
 
           docker compose -f docker-compose-ci.yml logs --tail=50
+
+          lsof | wc -l
 
       - name: E2E Test API
         env:
@@ -570,9 +582,10 @@ jobs:
 
             docker compose -f ../../docker-compose-ci.yml restart
 
-            until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+            for c in $(seq 1 10); do
               echo "Waiting Rocket.Chat to start up"
-              ((c++)) && ((c==10)) && exit 1
+              echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING" && break
+              ((c==10)) && exit 1
               sleep 10
             done;
           done;
@@ -596,6 +609,34 @@ jobs:
 
           docker compose -f docker-compose-ci.yml restart
 
+          df -h
+          free -h
+
+          lsof | wc -l
+
+          for c in $(seq 1 10); do
+            echo "Waiting 'ddp-streamer' to start up"
+            echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service --since $NOW)" | grep -q "NetworkBroker started successfully" && break
+            ((c==10)) && exit 1
+            sleep 10
+          done;
+
+          df -h
+          free -h
+
+          lsof | wc -l
+
+          for c in $(seq 1 10); do
+            echo "Waiting Rocket.Chat to start up"
+            echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING" && break
+            ((c==10)) && exit 1
+            sleep 10
+          done;
+
+          docker compose -f docker-compose-ci.yml logs --tail=50
+
+          lsof | wc -l
+
       - name: Cache Playwright binaries
         uses: actions/cache@v3
         id: cache-playwright
@@ -609,27 +650,6 @@ jobs:
         run: |
           cd ./apps/meteor
           npx playwright install --with-deps
-
-      - name: Wait services to start up
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-        run: |
-          docker ps
-
-          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
-            echo "Waiting 'ddp-streamer' to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
-            sleep 10
-          done
-
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
-            echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
-            sleep 10
-          done
 
       - name: E2E Test UI
         run: |
