@@ -4,8 +4,10 @@ import url from 'url';
 
 import type polka from 'polka';
 
+const isProdEnv = process.env.NODE_ENV === 'production';
+
 export function proxy(req: IncomingMessage, res: ServerResponse, next: polka.Next): void {
-	if (process.env.NODE_ENV !== 'production' || !/^\/sockjs\/info\?cb=/.test(req.url || '')) {
+	if (isProdEnv || /^\/sockjs\/info\?cb=/.test(req.url || '')) {
 		return next();
 	}
 

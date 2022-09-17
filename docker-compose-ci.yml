@@ -107,10 +107,6 @@ services:
 
   nats:
     image: nats:2.6-alpine
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    ports:
-      - '4222:4222'
 
   traefik:
     image: traefik:v2.8
