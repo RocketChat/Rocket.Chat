@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import polka from 'polka';
 import WebSocket from 'ws';
 
+import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
 import { MeteorService, Presence } from '../../../../apps/meteor/server/sdk';
@@ -11,7 +12,6 @@ import { Client } from './Client';
 import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
-import { notifications } from './streams';
 import { proxy } from './proxy';
 
 const { PORT = 4000 } = process.env;
@@ -23,7 +23,9 @@ export class DDPStreamer extends ServiceClass {
 
 	private wss?: WebSocket.Server;
 
-	async created(): Promise<void> {
+	constructor(notifications: NotificationsModule) {
+		super();
+
 		new ListenersModule(this, notifications);
 
 		// TODO this is triggered by local events too, need to find a way to ignore if it's local
@@ -47,7 +49,9 @@ export class DDPStreamer extends ServiceClass {
 		this.onEvent('meteor.clientVersionUpdated', (versions): void => {
 			Autoupdate.updateVersion(versions);
 		});
+	}
 
+	async created(): Promise<void> {
 		if (!this.context) {
 			return;
 		}
@@ -140,6 +144,8 @@ export class DDPStreamer extends ServiceClass {
 				res.end('ok');
 			})
 			.get('*', function (_req, res) {
+				console.log('GET EVERYTHING');
+
 				res.setHeader('Access-Control-Allow-Origin', '*');
 				res.setHeader('Content-Type', 'application/json');
 

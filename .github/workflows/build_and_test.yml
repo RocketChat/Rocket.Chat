@@ -476,6 +476,9 @@ jobs:
       - name: yarn install
         run: yarn
 
+      - name: yarn build
+        run: yarn build
+
       - name: Unit Test
         run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
