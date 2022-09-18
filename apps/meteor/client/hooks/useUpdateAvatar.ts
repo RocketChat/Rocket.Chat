@@ -11,8 +11,10 @@ const isServiceObject = (avatarObj: AvatarObject): avatarObj is AvatarServiceObj
 const isAvatarUrl = (avatarObj: AvatarObject): avatarObj is AvatarUrlObj =>
 	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'service' && 'avatarUrl' in avatarObj;
 
+type AvatarObjectWithString = AvatarObject & { blob: string };
+
 export const useUpdateAvatar = (
-	avatarObj: AvatarObject,
+	avatarObj: AvatarObjectWithString,
 	userId: IUser['_id'],
 ): (() => Promise<{ success: boolean } | null | undefined>) => {
 	const t = useTranslation();

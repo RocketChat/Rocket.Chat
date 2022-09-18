@@ -3,13 +3,13 @@ import { Match, check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { settings } from '../../app/settings/server';
-import { setUserAvatar } from '../../app/lib';
+import { setUserAvatar } from '../../app/lib/server';
 import { Users } from '../../app/models/server';
 import { hasPermission } from '../../app/authorization/server';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
-	setAvatarFromService(dataURI, contentType, service, userId) {
+	setAvatarFromService(dataURI: string, contentType: string, service: string, userId: string) {
 		methodDeprecationLogger.warn('setAvatarFromService will be deprecated in future versions of Rocket.Chat');
 		check(dataURI, String);
 		check(contentType, Match.Optional(String));
@@ -31,7 +31,8 @@ Meteor.methods({
 		let user;
 
 		if (userId && userId !== Meteor.userId()) {
-			if (!hasPermission(Meteor.userId(), 'edit-other-user-avatar')) {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			if (!hasPermission(Meteor.userId()!, 'edit-other-user-avatar')) {
 				throw new Meteor.Error('error-unauthorized', 'Unauthorized', {
 					method: 'setAvatarFromService',
 				});
