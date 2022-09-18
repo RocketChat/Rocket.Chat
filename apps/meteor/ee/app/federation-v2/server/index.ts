@@ -1,4 +1,10 @@
-import { runFederation, stopFederation, rocketSettingsAdapter, federationQueueInstance } from '../../../../app/federation-v2/server';
+import {
+	runFederation,
+	stopFederation,
+	rocketSettingsAdapter,
+	federationQueueInstance,
+	rocketFileAdapter,
+} from '../../../../app/federation-v2/server';
 import { onToggledFeature } from '../../license/server/license';
 import { FederationFactoryEE } from './infrastructure/Factory';
 
@@ -9,6 +15,7 @@ const rocketUserAdapterEE = FederationFactoryEE.buildRocketUserAdapter();
 export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	federationBridgeEE,
 );
@@ -16,6 +23,7 @@ export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServic
 export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildRoomInternalHooksServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	federationBridgeEE,
 );
@@ -23,6 +31,7 @@ export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.bu
 export const federationDMRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildDMRoomInternalHooksServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	federationBridgeEE,
 );

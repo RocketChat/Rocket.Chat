@@ -1,3 +1,4 @@
+import type { RocketChatFileAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/File';
 import type { RocketChatSettingsAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
 import { FederatedUserEE } from '../../domain/FederatedUser';
 import type { IFederationBridgeEE } from '../../domain/IFederationBridge';
@@ -14,10 +15,11 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapterEE,
 		protected internalUserAdapter: RocketChatUserAdapterEE,
+		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected bridge: IFederationBridgeEE,
 	) {
-		super(bridge, internalUserAdapter, internalSettingsAdapter);
+		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
 	}
 
 	public async onDirectMessageRoomCreation(dmRoomOnCreationInput: FederationOnDirectMessageRoomCreationDto): Promise<void> {

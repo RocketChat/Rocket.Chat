@@ -116,11 +116,9 @@ export class MatrixBridge implements IFederationBridge {
 	public async setUserAvatar(externalUserId: string, avatarUrl: string): Promise<void> {
 		try {
 			await this.bridgeInstance.getIntent(externalUserId).matrixClient.setAvatarUrl(avatarUrl);
+		} catch (e) {
+			// no-op
 		}
-		catch (e) {
-			console.log({ e })
-		}
-		
 	}
 
 	public async createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string> {

@@ -45,6 +45,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		getInternalRoomById: sinon.stub(),
 	};
 	const userAdapter = {
+		getFederatedUserByExternalId: sinon.stub(),
 		getFederatedUserByInternalId: sinon.stub(),
 		createFederatedUser: sinon.stub(),
 		getInternalUserById: sinon.stub(),
@@ -65,6 +66,9 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		setRoomTopic: sinon.stub(),
 		getRoomTopic: sinon.stub(),
 	};
+	const fileAdapter = {
+		getBufferForAvatarFile: sinon.stub().resolves(undefined),
+	};
 	const invitees = [
 		{
 			inviteeUsernameOnly: 'marcos.defendi',
@@ -74,7 +78,13 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 	];
 
 	beforeEach(() => {
-		service = new FederationRoomInternalHooksServiceSender(roomAdapter as any, userAdapter as any, settingsAdapter as any, bridge as any);
+		service = new FederationRoomInternalHooksServiceSender(
+			roomAdapter as any,
+			userAdapter as any,
+			fileAdapter as any,
+			settingsAdapter as any,
+			bridge as any,
+		);
 	});
 
 	afterEach(() => {
@@ -83,6 +93,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		roomAdapter.getInternalRoomById.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getInternalUserById.reset();
+		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.getFederatedUserByInternalUsername.reset();
 		userAdapter.createLocalUser.reset();

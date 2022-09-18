@@ -44,6 +44,7 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 		updateFederatedRoomByInternalRoomId: sinon.stub(),
 	};
 	const userAdapter = {
+		getFederatedUserByExternalId: sinon.stub(),
 		getFederatedUserByInternalId: sinon.stub(),
 		createFederatedUser: sinon.stub(),
 		getInternalUserById: sinon.stub(),
@@ -68,7 +69,13 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 	];
 
 	beforeEach(() => {
-		service = new FederationDMRoomInternalHooksServiceSender(roomAdapter as any, userAdapter as any, settingsAdapter as any, bridge as any);
+		service = new FederationDMRoomInternalHooksServiceSender(
+			roomAdapter as any,
+			userAdapter as any,
+			{} as any,
+			settingsAdapter as any,
+			bridge as any,
+		);
 	});
 
 	afterEach(() => {
@@ -78,6 +85,7 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 		userAdapter.getInternalUserById.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.getFederatedUserByInternalUsername.reset();
+		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.createLocalUser.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.createUser.reset();

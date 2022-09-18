@@ -62,6 +62,8 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
 		createFederatedUser: sinon.stub(),
+		updateFederationAvatar: sinon.stub(),
+		setAvatar: sinon.stub(),
 	};
 	const messageAdapter = {
 		sendMessage: sinon.stub(),
@@ -73,6 +75,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		getUserProfileInformation: sinon.stub().resolves({}),
 		extractHomeserverOrigin: sinon.stub().returns('localDomain'),
 		joinRoom: sinon.stub(),
+		convertMatrixUrlToHttp: sinon.stub().returns('toHttpUrl'),
 	};
 
 	beforeEach(() => {
@@ -80,6 +83,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			roomAdapter as any,
 			userAdapter as any,
 			messageAdapter as any,
+			{} as any,
 			settingsAdapter as any,
 			bridge as any,
 		);
@@ -101,9 +105,12 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		roomAdapter.addUserToRoom.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.createFederatedUser.reset();
+		userAdapter.updateFederationAvatar.reset();
+		userAdapter.setAvatar.reset();
 		messageAdapter.sendMessage.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.joinRoom.reset();
+		bridge.getUserProfileInformation.reset();
 	});
 
 	describe('#onCreateRoom()', () => {
@@ -178,8 +185,8 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 				existsOnlyOnProxyServer: false,
 			});
 			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
-			userAdapter.getFederatedUserByExternalId.onCall(0).resolves(undefined);
-			userAdapter.getFederatedUserByExternalId.onCall(1).resolves(creator);
+			userAdapter.getFederatedUserByExternalId.resolves(undefined);
+			userAdapter.getFederatedUserByExternalId.onThirdCall().resolves(creator);
 			await service.onCreateRoom({ externalInviterId: 'externalInviterId', normalizedInviterId: 'normalizedInviterId' } as any);
 
 			expect(userAdapter.createFederatedUser.calledWith(creator)).to.be.true;
@@ -195,8 +202,8 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 
 		it('should create the room if it does not exists yet', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
-			userAdapter.getFederatedUserByExternalId.onCall(0).resolves(undefined);
-			userAdapter.getFederatedUserByExternalId.onCall(1).resolves(creator);
+			userAdapter.getFederatedUserByExternalId.resolves(undefined);
+			userAdapter.getFederatedUserByExternalId.onThirdCall().resolves(creator);
 			await service.onCreateRoom({
 				externalInviterId: 'externalInviterId',
 				normalizedInviterId: 'normalizedInviterId',
@@ -217,13 +224,6 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			existsOnlyOnProxyServer: false,
 		});
 		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
-		it('should throw an error if the room does not exists AND the event was originally from LOCAL', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
-
-			await expect(
-				service.onChangeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.LOCAL } as any),
-			).to.be.rejectedWith('Could not find room with external room id: externalRoomId');
-		});
 
 		it('should NOT throw an error if the room already exists AND event origin is equal to LOCAL', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
@@ -285,7 +285,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 				existsOnlyOnProxyServer: false,
 			});
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
-			userAdapter.getFederatedUserByExternalId.resolves({ ...user, username: 'normalizedInviteeId' } as any);
+			userAdapter.getFederatedUserByExternalId.resolves(invitee);
 			userAdapter.getFederatedUserByExternalId.onSecondCall().resolves(undefined);
 			bridge.extractHomeserverOrigin.onCall(1).returns('externalDomain');
 			await service.onChangeRoomMembership({
@@ -406,22 +406,6 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(bridge.joinRoom.called).to.be.false;
 		});
 
-		it('should throw an error if the federated room was not found and the event is REMOTE', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
-			userAdapter.getFederatedUserByExternalId.resolves(user);
-
-			await expect(
-				service.onChangeRoomMembership({
-					externalRoomId: 'externalRoomId',
-					normalizedRoomId: 'normalizedRoomId',
-					eventOrigin: EVENT_ORIGIN.REMOTE,
-					roomType: RoomType.CHANNEL,
-					externalInviteeId: 'externalInviteeId',
-					normalizedInviteeId: 'normalizedInviteeId',
-				} as any),
-			).to.be.rejectedWith('Could not find room with external room id: externalRoomId');
-		});
-
 		it('should remove the user from room if its a LEAVE event and the user is in the room already', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			roomAdapter.isUserAlreadyJoined.resolves(true);
@@ -523,6 +507,96 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
 			expect(bridge.joinRoom.called).to.be.false;
 			expect(roomAdapter.addUserToRoom.calledWith(room, user, user)).to.be.true;
+		});
+
+		describe('User avatar changed event', () => {
+			it('should NOT call the function to update the avatar internally if the event is not an avatar update event', async () => {
+				await service.onChangeRoomMembership({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomId: 'normalizedRoomId',
+					eventOrigin: EVENT_ORIGIN.LOCAL,
+					roomType: RoomType.CHANNEL,
+					externalInviteeId: 'externalInviteeId',
+					leave: false,
+					normalizedInviteeId: 'normalizedInviteeId',
+				} as any);
+
+				expect(bridge.getUserProfileInformation.called).to.be.false;
+			});
+
+			const eventForAvatarChanges = {
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.LOCAL,
+				roomType: RoomType.CHANNEL,
+				externalInviteeId: 'externalInviteeId',
+				leave: false,
+				normalizedInviteeId: 'normalizedInviteeId',
+				userAvatarUrl: 'userAvatarUrl',
+			} as any;
+
+			it('should NOT call the function to update the avatar internally if the user does not exists', async () => {
+				userAdapter.getFederatedUserByExternalId.resolves(undefined);
+				await service.onChangeRoomMembership(eventForAvatarChanges);
+
+				expect(bridge.getUserProfileInformation.called).to.be.false;
+			});
+
+			it('should NOT update the avatar url if the url retrieved from the home server does not exists', async () => {
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				bridge.getUserProfileInformation.resolves(undefined);
+				await service.onChangeRoomMembership(eventForAvatarChanges);
+
+				expect(userAdapter.setAvatar.called).to.be.false;
+				expect(userAdapter.updateFederationAvatar.called).to.be.false;
+			});
+
+			it('should NOT update the avatar url if the user is from the local home server', async () => {
+				userAdapter.getFederatedUserByExternalId.resolves(
+					FederatedUser.createInstance('externalInviterId', {
+						name: 'normalizedInviterId',
+						username: 'normalizedInviterId',
+						existsOnlyOnProxyServer: true,
+					}),
+				);
+				bridge.getUserProfileInformation.resolves({ avatarUrl: 'currentAvatarUrl' });
+				await service.onChangeRoomMembership(eventForAvatarChanges);
+
+				expect(userAdapter.setAvatar.called).to.be.false;
+				expect(userAdapter.updateFederationAvatar.called).to.be.false;
+			});
+
+			it('should NOT update the avatar url if the url retrieved from the home server is equal to the one already used', async () => {
+				const existsOnlyOnProxyServer = false;
+				bridge.getUserProfileInformation.resolves({ avatarUrl: 'currentAvatarUrl' });
+				userAdapter.getFederatedUserByExternalId.resolves(
+					FederatedUser.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
+						federation: {
+							avatarUrl: 'currentAvatarUrl',
+						},
+					}),
+				);
+				await service.onChangeRoomMembership(eventForAvatarChanges);
+
+				expect(userAdapter.setAvatar.called).to.be.false;
+				expect(userAdapter.updateFederationAvatar.called).to.be.false;
+			});
+
+			it('should call the functions to update the avatar internally correctly', async () => {
+				const existsOnlyOnProxyServer = false;
+				const userAvatar = FederatedUser.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
+					federation: {
+						avatarUrl: 'currentAvatarUrl',
+					},
+					_id: 'userId',
+				});
+				bridge.getUserProfileInformation.resolves({ avatarUrl: 'newAvatarUrl' });
+				userAdapter.getFederatedUserByExternalId.resolves(userAvatar);
+				await service.onChangeRoomMembership(eventForAvatarChanges);
+
+				expect(userAdapter.setAvatar.calledWith(userAvatar, 'toHttpUrl')).to.be.true;
+				expect(userAdapter.updateFederationAvatar.calledWith(userAvatar.getInternalId(), 'newAvatarUrl')).to.be.true;
+			});
 		});
 	});
 

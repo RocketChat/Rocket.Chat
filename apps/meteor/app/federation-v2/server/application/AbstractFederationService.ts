@@ -1,9 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Avatars } from '@rocket.chat/models';
 
-import { FileUpload } from '../../../file-upload/server';
 import { FederatedUser } from '../domain/FederatedUser';
 import type { IFederationBridge } from '../domain/IFederationBridge';
+import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
 
@@ -13,6 +12,7 @@ export abstract class FederationService {
 	constructor(
 		protected bridge: IFederationBridge,
 		protected internalUserAdapter: RocketChatUserAdapter,
+		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 	) {
 		this.internalHomeServerDomain = this.internalSettingsAdapter.getHomeServerDomain();
@@ -33,18 +33,25 @@ export abstract class FederationService {
 		});
 
 		await this.internalUserAdapter.createFederatedUser(federatedUser);
-		await this.updateUserAvatarInternally(await this.internalUserAdapter.getFederatedUserByExternalId(externalUserId) as FederatedUser);
+		const insertedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalUserId);
+		if (!insertedUser) {
+			return;
+		}
+		await this.updateUserAvatarInternally(insertedUser);
 	}
 
 	protected async updateUserAvatarInternally(federatedUser: FederatedUser): Promise<void> {
 		const externalUserProfileInformation = await this.bridge.getUserProfileInformation(federatedUser.getExternalId());
-		if(!externalUserProfileInformation?.avatarUrl) {
+		if (!externalUserProfileInformation?.avatarUrl) {
 			return;
 		}
 		if (!federatedUser.isRemote() || !federatedUser.shouldUpdateFederationAvatar(externalUserProfileInformation.avatarUrl)) {
 			return;
 		}
-		await this.internalUserAdapter.setAvatar(federatedUser, this.bridge.convertMatrixUrlToHttp(federatedUser.getExternalId(), externalUserProfileInformation.avatarUrl));
+		await this.internalUserAdapter.setAvatar(
+			federatedUser,
+			this.bridge.convertMatrixUrlToHttp(federatedUser.getExternalId(), externalUserProfileInformation.avatarUrl),
+		);
 		await this.internalUserAdapter.updateFederationAvatar(federatedUser.getInternalId(), externalUserProfileInformation.avatarUrl);
 	}
 
@@ -57,20 +64,34 @@ export abstract class FederationService {
 		const externalInviterId = await this.bridge.createUser(internalUser.username, name, this.internalHomeServerDomain);
 		const existsOnlyOnProxyServer = true;
 		await this.createFederatedUser(externalInviterId, internalUser.username, existsOnlyOnProxyServer, name);
-		await this.updateUserAvatarExternally(internalUser, await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId) as FederatedUser);
+		await this.updateUserAvatarExternally(
+			internalUser,
+			(await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId)) as FederatedUser,
+		);
 
 		return externalInviterId;
 	}
 
 	protected async updateUserAvatarExternally(internalUser: IUser, externalInviter: FederatedUser): Promise<void> {
-		const file = (await Avatars.findOneByName(internalUser.username as string)) as Record<string, any>;
-		if (file?._id) {
-			const buffer = FileUpload.getBufferSync(file);
-			const externalFileUri = await this.bridge.uploadContent(externalInviter.getExternalId(), buffer, { type: file?.type, name: file?.name });
-			if (externalFileUri) {
-				await this.internalUserAdapter.updateFederationAvatar(internalUser._id, externalFileUri);
-				await this.bridge.setUserAvatar(externalInviter.getExternalId(), externalFileUri);
-			}
+		if (!internalUser.username) {
+			return;
 		}
+		const buffer = await this.internalFileAdapter.getBufferForAvatarFile(internalUser.username);
+		if (!buffer) {
+			return;
+		}
+		const avatarFileRecord = await this.internalFileAdapter.getFileMetadataForAvatarFile(internalUser.username);
+		if (!avatarFileRecord?.type || !avatarFileRecord?.name) {
+			return;
+		}
+		const externalFileUri = await this.bridge.uploadContent(externalInviter.getExternalId(), buffer, {
+			type: avatarFileRecord.type,
+			name: avatarFileRecord.name,
+		});
+		if (!externalFileUri) {
+			return;
+		}
+		await this.internalUserAdapter.updateFederationAvatar(internalUser._id, externalFileUri);
+		await this.bridge.setUserAvatar(externalInviter.getExternalId(), externalFileUri);
 	}
 }

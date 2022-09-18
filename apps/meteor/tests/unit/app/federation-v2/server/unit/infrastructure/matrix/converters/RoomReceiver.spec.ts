@@ -86,7 +86,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 
 	describe('#toChangeRoomMembershipDto()', () => {
 		const event = {
-			content: { name: 'roomName' },
+			content: { name: 'roomName', avatar_url: 'avatar_url' },
 			room_id: '!roomId:matrix.org',
 			sender: '@marcos.defendi:matrix.org',
 			state_key: '@marcos.defendi2:matrix.org',
@@ -207,6 +207,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 				leave: false,
 				externalRoomName: undefined,
 				roomType: undefined,
+				userAvatarUrl: 'avatar_url',
 			});
 		});
 	});

@@ -96,7 +96,6 @@ export class FederationRoomCreateInputDto extends FederationBaseRoomInputDto {
 	roomType?: RoomType;
 }
 
-
 export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDto {
 	constructor({
 		externalRoomId,

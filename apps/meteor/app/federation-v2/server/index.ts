@@ -6,6 +6,7 @@ export const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapte
 export const queueInstance = FederationFactory.buildFederationQueue();
 rocketSettingsAdapter.initialize();
 export const federationQueueInstance = FederationFactory.buildFederationQueue();
+export const rocketFileAdapter = FederationFactory.buildRocketFileAdapter();
 const federationBridge = FederationFactory.buildFederationBridge(rocketSettingsAdapter, federationQueueInstance);
 const rocketRoomAdapter = FederationFactory.buildRocketRoomAdapter();
 const rocketUserAdapter = FederationFactory.buildRocketUserAdapter();
@@ -15,6 +16,7 @@ const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver
 	rocketRoomAdapter,
 	rocketUserAdapter,
 	rocketMessageAdapter,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	federationBridge,
 );
@@ -24,6 +26,7 @@ const federationEventsHandler = FederationFactory.buildFederationEventHandler(fe
 export let federationRoomServiceSender = FederationFactory.buildRoomServiceSender(
 	rocketRoomAdapter,
 	rocketUserAdapter,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	federationBridge,
 );
@@ -31,11 +34,17 @@ export let federationRoomServiceSender = FederationFactory.buildRoomServiceSende
 const federationRoomInternalHooksValidator = FederationFactory.buildRoomInternalHooksValidator(
 	rocketRoomAdapter,
 	rocketUserAdapter,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	federationBridge,
 );
 
-const federationUserServiceSender = FederationFactory.buildUserServiceSender(rocketUserAdapter, rocketSettingsAdapter, federationBridge);
+const federationUserServiceSender = FederationFactory.buildUserServiceSender(
+	rocketUserAdapter,
+	rocketFileAdapter,
+	rocketSettingsAdapter,
+	federationBridge,
+);
 
 let cancelSettingsObserver: () => void;
 
@@ -43,14 +52,11 @@ export const runFederation = async (): Promise<void> => {
 	federationRoomServiceSender = FederationFactory.buildRoomServiceSender(
 		rocketRoomAdapter,
 		rocketUserAdapter,
+		rocketFileAdapter,
 		rocketSettingsAdapter,
 		federationBridge,
 	);
-	FederationFactory.setupListeners(
-		federationRoomServiceSender,
-		federationRoomInternalHooksValidator,
-		federationUserServiceSender,
-	);
+	FederationFactory.setupListeners(federationRoomServiceSender, federationRoomInternalHooksValidator, federationUserServiceSender);
 	federationQueueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 	cancelSettingsObserver = rocketSettingsAdapter.onFederationEnabledStatusChanged(
 		federationBridge.onFederationAvailabilityChanged.bind(federationBridge),

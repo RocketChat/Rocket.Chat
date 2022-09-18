@@ -50,6 +50,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		createFederatedRoom: sinon.stub(),
 	};
 	const userAdapter = {
+		getFederatedUserByExternalId: sinon.stub(),
 		getFederatedUserByInternalId: sinon.stub(),
 		createFederatedUser: sinon.stub(),
 		getInternalUserById: sinon.stub(),
@@ -57,6 +58,9 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
+	};
+	const fileAdapter = {
+		getBufferForAvatarFile: sinon.stub().resolves(undefined),
 	};
 	const bridge = {
 		getUserProfileInformation: sinon.stub().resolves({}),
@@ -71,7 +75,13 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 	};
 
 	beforeEach(() => {
-		service = new FederationRoomServiceSender(roomAdapter as any, userAdapter as any, settingsAdapter as any, bridge as any);
+		service = new FederationRoomServiceSender(
+			roomAdapter as any,
+			userAdapter as any,
+			fileAdapter as any,
+			settingsAdapter as any,
+			bridge as any,
+		);
 	});
 
 	afterEach(() => {
@@ -81,6 +91,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		roomAdapter.addUserToRoom.reset();
 		roomAdapter.createFederatedRoom.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
+		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getInternalUserById.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.getFederatedUserByInternalUsername.reset();

@@ -18,16 +18,18 @@ import type {
 	FederationRoomChangeTopicDto,
 } from './input/RoomReceiverDto';
 import { FederationService } from './AbstractFederationService';
+import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapter,
 		protected internalUserAdapter: RocketChatUserAdapter,
 		protected internalMessageAdapter: RocketChatMessageAdapter,
+		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected bridge: IFederationBridge,
 	) {
-		super(bridge, internalUserAdapter, internalSettingsAdapter);
+		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
 	}
 
 	public async onCreateRoom(roomCreateInput: FederationRoomCreateInputDto): Promise<void> {

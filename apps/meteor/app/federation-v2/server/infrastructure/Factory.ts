@@ -22,8 +22,8 @@ import type { IFederationBridge } from '../domain/IFederationBridge';
 import { FederationHooks } from './rocket-chat/hooks';
 import { FederationRoomSenderConverter } from './rocket-chat/converters/RoomSender';
 import { FederationRoomInternalHooksValidator } from '../application/sender/RoomInternalHooksValidator';
-
 import { FederationUserServiceSender } from '../application/sender/UserServiceSender';
+import { RocketChatFileAdapter } from './rocket-chat/adapters/File';
 
 export class FederationFactory {
 	public static buildRocketSettingsAdapter(): RocketChatSettingsAdapter {
@@ -42,6 +42,10 @@ export class FederationFactory {
 		return new RocketChatMessageAdapter();
 	}
 
+	public static buildRocketFileAdapter(): RocketChatFileAdapter {
+		return new RocketChatFileAdapter();
+	}
+
 	public static buildFederationQueue(): InMemoryQueue {
 		return new InMemoryQueue();
 	}
@@ -50,36 +54,47 @@ export class FederationFactory {
 		rocketRoomAdapter: RocketChatRoomAdapter,
 		rocketUserAdapter: RocketChatUserAdapter,
 		rocketMessageAdapter: RocketChatMessageAdapter,
+		rocketFileAdapter: RocketChatFileAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		bridge: IFederationBridge,
 	): FederationRoomServiceListener {
-		return new FederationRoomServiceListener(rocketRoomAdapter, rocketUserAdapter, rocketMessageAdapter, rocketSettingsAdapter, bridge);
+		return new FederationRoomServiceListener(
+			rocketRoomAdapter,
+			rocketUserAdapter,
+			rocketMessageAdapter,
+			rocketFileAdapter,
+			rocketSettingsAdapter,
+			bridge,
+		);
 	}
 
 	public static buildRoomServiceSender(
 		rocketRoomAdapter: RocketChatRoomAdapter,
 		rocketUserAdapter: RocketChatUserAdapter,
+		rocketFileAdapter: RocketChatFileAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		bridge: IFederationBridge,
 	): FederationRoomServiceSender {
-		return new FederationRoomServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, bridge);
+		return new FederationRoomServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketFileAdapter, rocketSettingsAdapter, bridge);
 	}
 
 	public static buildUserServiceSender(
 		rocketUserAdapter: RocketChatUserAdapter,
+		rocketFileAdapter: RocketChatFileAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		bridge: IFederationBridge,
 	): FederationUserServiceSender {
-		return new FederationUserServiceSender(rocketUserAdapter, rocketSettingsAdapter, bridge);
+		return new FederationUserServiceSender(rocketUserAdapter, rocketFileAdapter, rocketSettingsAdapter, bridge);
 	}
 
 	public static buildRoomInternalHooksValidator(
 		rocketRoomAdapter: RocketChatRoomAdapter,
 		rocketUserAdapter: RocketChatUserAdapter,
+		rocketFileAdapter: RocketChatFileAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		bridge: IFederationBridge,
 	): FederationRoomInternalHooksValidator {
-		return new FederationRoomInternalHooksValidator(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, bridge);
+		return new FederationRoomInternalHooksValidator(rocketRoomAdapter, rocketUserAdapter, rocketFileAdapter, rocketSettingsAdapter, bridge);
 	}
 
 	public static buildFederationBridge(rocketSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridge {
@@ -124,10 +139,7 @@ export class FederationFactory {
 		FederationFactory.setupValidators(roomInternalHooksValidator);
 	}
 
-	private static setupActions(
-		roomServiceSender: FederationRoomServiceSender,
-		userServiceSender: FederationUserServiceSender,
-	): void {
+	private static setupActions(roomServiceSender: FederationRoomServiceSender, userServiceSender: FederationUserServiceSender): void {
 		FederationHooks.afterUserLeaveRoom((user: IUser, room: IRoom) =>
 			roomServiceSender.afterUserLeaveRoom(FederationRoomSenderConverter.toAfterUserLeaveRoom(user._id, room._id)),
 		);

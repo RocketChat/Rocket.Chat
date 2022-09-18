@@ -3,6 +3,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { DirectMessageFederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
 import type { IFederationBridge } from '../../domain/IFederationBridge';
+import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
@@ -18,10 +19,11 @@ export class FederationRoomServiceSender extends FederationService {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapter,
 		protected internalUserAdapter: RocketChatUserAdapter,
+		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected bridge: IFederationBridge,
 	) {
-		super(bridge, internalUserAdapter, internalSettingsAdapter);
+		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
 	}
 
 	public async createDirectMessageRoomAndInviteUser(roomCreateDMAndInviteUserInput: FederationCreateDMAndInviteUserDto): Promise<void> {
