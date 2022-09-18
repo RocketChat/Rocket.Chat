@@ -19,7 +19,7 @@ export default {
 		permissions: ['microphone'],
 	},
 	outputDir: 'tests/e2e/.playwright',
-	reporter: 'list',
+	reporter: process.env.CI ? 'github' : 'list',
 	testDir: 'tests/e2e',
 	workers: 1,
 	retries: process.env.CI ? 2 : undefined,

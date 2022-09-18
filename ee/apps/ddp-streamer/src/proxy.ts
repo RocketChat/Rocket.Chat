@@ -8,10 +8,8 @@ const isProdEnv = process.env.NODE_ENV === 'production';
 
 export function proxy(req: IncomingMessage, res: ServerResponse, next: polka.Next): void {
 	if (isProdEnv || /^\/sockjs\/info\?cb=/.test(req.url || '')) {
-		console.log('next ->', isProdEnv, req.url);
 		return next();
 	}
-	console.log('req.pause() ->', isProdEnv, req.url);
 
 	req.pause();
 

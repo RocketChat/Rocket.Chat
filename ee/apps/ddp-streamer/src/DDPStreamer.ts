@@ -144,8 +144,6 @@ export class DDPStreamer extends ServiceClass {
 				res.end('ok');
 			})
 			.get('*', function (_req, res) {
-				console.log('GET EVERYTHING');
-
 				res.setHeader('Access-Control-Allow-Origin', '*');
 				res.setHeader('Content-Type', 'application/json');
 
