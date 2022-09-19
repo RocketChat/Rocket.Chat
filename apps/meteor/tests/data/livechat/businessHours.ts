@@ -4,7 +4,7 @@ import { updateSetting } from "../permissions.helper"
 export const makeDefaultBusinessHourActiveAndClosed = async () => {
 	// enable settings
 	await updateSetting('Livechat_enable_business_hours', true);
-	await updateSetting('Livechat_business_hour_type', 'Multiple');
+	await updateSetting('Livechat_business_hour_type', 'Single');
 
 	// create business hours
 	const { body: { businessHour } } = await request
@@ -40,7 +40,7 @@ export const makeDefaultBusinessHourActiveAndClosed = async () => {
 export const disableDefaultBusinessHour = async () => {
 	// disable settings
 	await updateSetting('Livechat_enable_business_hours', false);
-	await updateSetting('Livechat_business_hour_type', 'Multiple');
+	await updateSetting('Livechat_business_hour_type', 'Single');
 
 	// create business hours
 	const { body: { businessHour } } = await request
