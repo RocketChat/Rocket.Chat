@@ -2,22 +2,22 @@ import { faker } from '@faker-js/faker';
 import type { Browser, Page } from '@playwright/test';
 
 import { test, expect } from './utils/test';
-import { OmnichannelLiveChat, HomeChannel } from './page-objects';
+import { OmnichannelLiveChat, HomeOmnichannel } from './page-objects';
 
-const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
+const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeOmnichannel: HomeOmnichannel }> => {
 	const page = await browser.newPage({ storageState });
-	const poHomeChannel = new HomeChannel(page);
+	const poHomeOmnichannel = new HomeOmnichannel(page);
 	await page.goto('/');
 	await page.locator('.main-content').waitFor();
 
-	return { page, poHomeChannel };
+	return { page, poHomeOmnichannel };
 };
 
 test.describe('Omnichannel close chat', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newUser: { email: string; name: string };
 
-	let agent: { page: Page; poHomeChannel: HomeChannel };
+	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
 	test.beforeAll(async ({ api, browser }) => {
 		newUser = {
@@ -49,14 +49,14 @@ test.describe('Omnichannel close chat', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newUser.name);
+			await agent.poHomeOmnichannel.sidenav.openChat(newUser.name);
 		});
 
 		await test.step('Expect to be able to close an omnichannel to conversation', async () => {
-			await agent.poHomeChannel.content.btnCloseChat.click();
-			await agent.poHomeChannel.content.inputModalClosingComment.type('any_comment');
-			await agent.poHomeChannel.content.btnModalConfirm.click();
-			await expect(agent.poHomeChannel.toastSuccess).toBeVisible();
+			await agent.poHomeOmnichannel.content.btnCloseChat.click();
+			await agent.poHomeOmnichannel.content.inputModalClosingComment.type('any_comment');
+			await agent.poHomeOmnichannel.content.btnModalConfirm.click();
+			await expect(agent.poHomeOmnichannel.toastSuccess).toBeVisible();
 		});
 	});
 });
