@@ -12,6 +12,16 @@ export type RoomContextValue = {
 
 export const RoomContext = createContext<RoomContextValue | null>(null);
 
+export const useUserIsSubscribed = (): boolean => {
+	const context = useContext(RoomContext);
+
+	if (!context) {
+		throw new Error('use useRoom only inside opened rooms');
+	}
+
+	return context.subscribed ?? false;
+};
+
 export const useRoom = (): IRoom => {
 	const { room } = useContext(RoomContext) || {};
 
