@@ -28,6 +28,10 @@ const defaultConfig = {
 		getUpgradeTabLabel: () => 'Upgrade',
 		isFullyFeature: () => true,
 	},
+	'../../../app/authorization/client': {
+		'userHasAllPermission': () => true,
+		'@noCallThru': true,
+	},
 };
 
 describe('components/AdministrationList/AdministrationModelList', () => {
@@ -63,6 +67,28 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 
 			userEvent.click(button);
 			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-info'));
+			await waitFor(() => expect(closeList).to.have.been.called());
+		});
+
+		it('should go to admin index if no permission', async () => {
+			const pushRoute = spy();
+			const closeList = spy();
+			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, {
+				...defaultConfig,
+				'../../../app/authorization/client': {
+					'userHasAllPermission': () => false,
+					'@noCallThru': true,
+				},
+			}).default;
+			render(
+				<RouterContextMock pushRoute={pushRoute}>
+					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} />
+				</RouterContextMock>,
+			);
+			const button = screen.getByText('Manage_workspace');
+
+			userEvent.click(button);
+			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-index'));
 			await waitFor(() => expect(closeList).to.have.been.called());
 		});
 

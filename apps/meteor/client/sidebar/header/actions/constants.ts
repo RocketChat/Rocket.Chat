@@ -19,6 +19,7 @@ export const SETTINGS_PERMISSIONS = ['view-privileged-setting', 'edit-privileged
 export const AUDIT_PERMISSIONS = ['can-audit'];
 export const AUDIT_LOG_PERMISSIONS = ['can-audit-log'];
 export const MANAGE_APPS_PERMISSIONS = ['manage-apps'];
+export const INFO_PERMISSIONS = ['view-statistics'];
 
 export const ADMINISTRATION_MENU_PERMISSIONS = [
 	...ADMIN_PERMISSIONS,

@@ -3,9 +3,11 @@ import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { FC } from 'react';
 
+import { userHasAllPermission } from '../../../app/authorization/client';
 import { SideNav } from '../../../app/ui-utils/client';
 import { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../lib/upgradeTab';
+import { INFO_PERMISSIONS } from '../../sidebar/header/actions/constants';
 import { useUpgradeTabParams } from '../../views/hooks/useUpgradeTabParams';
 import Emoji from '../Emoji';
 import ListItem from '../Sidebar/ListItem';
@@ -21,8 +23,10 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 	const shouldShowEmoji = isFullyFeature(tabType);
 	const label = getUpgradeTabLabel(tabType);
+	const hasInfoPermission = userHasAllPermission(INFO_PERMISSIONS);
 
 	const infoRoute = useRoute('admin-info');
+	const adminRoute = useRoute('admin-index');
 	const upgradeRoute = useRoute('upgrade');
 	const showUpgradeItem = !isLoading && tabType;
 
@@ -50,7 +54,13 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 							icon='cog'
 							text={t('Manage_workspace')}
 							action={(): void => {
-								infoRoute.push();
+								if (hasInfoPermission) {
+									infoRoute.push();
+									closeList();
+									return;
+								}
+
+								adminRoute.push({ context: '/' });
 								closeList();
 							}}
 						/>
