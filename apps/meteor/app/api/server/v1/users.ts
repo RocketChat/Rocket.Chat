@@ -990,8 +990,8 @@ API.v1.addRoute(
 				),
 			);
 
-			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
-				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
+			if (this.bodyParams.message && !settings.get('Accounts_AllowUserStatusMessageChange')) {
+				throw new Meteor.Error('error-not-allowed', 'Change status message is not allowed', {
 					method: 'users.setStatus',
 				});
 			}
