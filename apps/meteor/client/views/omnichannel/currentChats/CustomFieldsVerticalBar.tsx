@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import VerticalBar from '../../../components/VerticalBar';
 
 type CustomFieldsVerticalBarProps = {
-	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string }>>;
+	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string } | undefined>>;
 	allCustomFields: OmnichannelCustomFieldEndpointPayload[];
 };
 

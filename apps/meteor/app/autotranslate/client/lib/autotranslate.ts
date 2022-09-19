@@ -12,7 +12,7 @@ import type {
 
 import { Subscriptions, Messages } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
-import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { call } from '../../../../client/lib/utils/call';
 
 let userLanguage = 'en';
 let username = '';
@@ -102,8 +102,8 @@ export const AutoTranslate = {
 
 			try {
 				[this.providersMetadata, this.supportedLanguages] = await Promise.all([
-					callWithErrorHandling('autoTranslate.getProviderUiMetadata'),
-					callWithErrorHandling('autoTranslate.getSupportedLanguages', 'en'),
+					call('autoTranslate.getProviderUiMetadata'),
+					call('autoTranslate.getSupportedLanguages', 'en'),
 				]);
 			} catch (e: unknown) {
 				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data

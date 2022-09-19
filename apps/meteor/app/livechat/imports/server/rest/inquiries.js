@@ -51,7 +51,7 @@ API.v1.addRoute(
 	'livechat/inquiries.take',
 	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		post() {
+		async post() {
 			check(this.bodyParams, {
 				inquiryId: String,
 				userId: Match.Maybe(String),
@@ -72,24 +72,22 @@ API.v1.addRoute(
 	'livechat/inquiries.queued',
 	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { department } = this.requestParams();
 
 			return API.v1.success(
-				Promise.await(
-					findInquiries({
-						userId: this.userId,
-						department,
-						status: 'queued',
-						pagination: {
-							offset,
-							count,
-							sort,
-						},
-					}),
-				),
+				await findInquiries({
+					userId: this.userId,
+					department,
+					status: 'queued',
+					pagination: {
+						offset,
+						count,
+						sort,
+					},
+				}),
 			);
 		},
 	},
