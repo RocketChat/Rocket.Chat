@@ -27,8 +27,14 @@ Meteor.methods({
 		});
 
 		if (!agent) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'livechat:saveAgentInfo',
+			throw new Meteor.Error('error-not-allowed', 'Invalid Agent Id', {
+				method: 'livechat:changeLivechatStatus',
+			});
+		}
+
+		if (status && !['available', 'not-available'].includes(status)) {
+			throw new Meteor.Error('error-not-allowed', 'Invalid Status', {
+				method: 'livechat:changeLivechatStatus',
 			});
 		}
 
