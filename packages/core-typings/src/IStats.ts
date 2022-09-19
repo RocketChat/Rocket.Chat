@@ -76,6 +76,7 @@ export interface IStats {
 	};
 	instanceCount: number;
 	oplogEnabled: boolean;
+	msEnabled: boolean;
 	mongoVersion: string;
 	mongoStorageEngine: string;
 	pushQueue: number;
