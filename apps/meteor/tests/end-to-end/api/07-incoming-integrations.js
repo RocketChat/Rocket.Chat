@@ -27,11 +27,11 @@ describe('[Incoming Integrations]', function () {
 
 		testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 
-		createRoom({ type: 'c', name: testChannelName })
-			.then((res) => {
-				channel = res.body.channel;
-			})
-			.end(done);
+		createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
+			channel = res.body.channel;
+
+			return done();
+		});
 	});
 
 	after((done) => {
