@@ -15,6 +15,7 @@ describe('[Incoming Integrations]', function () {
 	let user;
 	let userCredentials;
 	let channel;
+	let testChannelName;
 
 	before((done) => getCredentials(done));
 
@@ -22,8 +23,15 @@ describe('[Incoming Integrations]', function () {
 		updatePermission('manage-incoming-integrations', [])
 			.then(() => updatePermission('manage-own-incoming-integrations', []))
 			.then(() => updatePermission('manage-own-outgoing-integrations', []))
-			.then(() => updatePermission('manage-outgoing-integrations', []))
-			.then(done);
+			.then(() => updatePermission('manage-outgoing-integrations', []));
+
+		testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+
+		createRoom({ type: 'c', name: testChannelName })
+			.then((res) => {
+				channel = res.body.channel;
+			})
+			.end(done);
 	});
 
 	after((done) => {
@@ -169,12 +177,6 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should not send a message for a channel that is not in the webhooks configuration', (done) => {
-			const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
-
-			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
-				channel = res.body.channel;
-			});
-
 			request
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
