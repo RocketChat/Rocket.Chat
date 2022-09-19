@@ -335,10 +335,6 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('[invalid-token]');
-				})
 				.end(done);
 		});
 
@@ -352,10 +348,6 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('[invalid-room]');
-				})
 				.end(done);
 		});
 
@@ -387,10 +379,6 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('[room-closed]');
-				})
 				.end(done);
 		});
 	});
@@ -540,7 +528,6 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('[invalid-token]');
 				})
 				.end(done);
 		});
@@ -558,7 +545,6 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('[invalid-room]');
 				})
 				.end(done);
 		});
@@ -576,7 +562,6 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('[invalid-data]');
 				})
 				.end(done);
 		});
