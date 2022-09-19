@@ -216,7 +216,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.emit('incoming/changed');
 
 		debug && console.log(`[VideoConf] Notifying user ${callData.uid} that we accept their call.`);
-		this.notifyUser(callData.uid, 'accepted', { callId, uid: this.userId as string, rid: callData.rid });
+		this.userId && this.notifyUser(callData.uid, 'accepted', { callId, uid: this.userId, rid: callData.rid });
 	}
 
 	public rejectIncomingCall(callId: string): void {
@@ -227,7 +227,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return;
 		}
 
-		this.notifyUser(callData.uid, 'rejected', { callId, uid: this.userId as string, rid: callData.rid });
+		this.userId && this.notifyUser(callData.uid, 'rejected', { callId, uid: this.userId, rid: callData.rid });
 		this.loseIncomingCall(callId);
 	}
 
@@ -401,12 +401,12 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			}
 
 			debug && console.log(`[VideoConf] Ringing user ${uid}, attempt number ${attempt}.`);
-			this.notifyUser(uid, 'call', { uid: this.userId as string, rid, callId });
+			this.userId && this.notifyUser(uid, 'call', { uid: this.userId, rid, callId });
 		}, CALL_INTERVAL);
 		this.emit('calling/changed');
 
 		debug && console.log(`[VideoConf] Ringing user ${uid} for the first time.`);
-		this.notifyUser(uid, 'call', { uid: this.userId as string, rid, callId });
+		this.userId && this.notifyUser(uid, 'call', { uid: this.userId, rid, callId });
 	}
 
 	private async giveUp({ uid, rid, callId }: DirectCallParams): Promise<void> {
@@ -421,7 +421,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		}
 
 		debug && console.log(`[VideoConf] Notifying user ${uid} that we are no longer calling.`);
-		this.notifyUser(uid, 'canceled', { uid: this.userId as string, rid, callId });
+		this.userId && this.notifyUser(uid, 'canceled', { uid: this.userId, rid, callId });
 
 		this.emit('direct/cancel', { uid, rid, callId });
 		this.emit('direct/stopped', { uid, rid, callId });
@@ -490,7 +490,6 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	private async notifyUser(uid: IUser['_id'], action: string, params: DirectCallParams): Promise<void> {
-		console.log('send notification', uid, action, params);
 		return Notifications.notifyUser(uid, 'video-conference', { action, params });
 	}
 
@@ -648,7 +647,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		}
 
 		debug && console.log(`[VideoConf] Notifying user ${callData.uid} that they can join the call now.`);
-		this.notifyUser(callData.uid, 'confirmed', { callId: callData.callId, uid: this.userId as string, rid: callData.rid });
+		this.userId && this.notifyUser(callData.uid, 'confirmed', { callId: callData.callId, uid: this.userId, rid: callData.rid });
 	}
 
 	private onDirectCallConfirmed(params: DirectCallParams): void {
