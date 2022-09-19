@@ -3117,6 +3117,10 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.autocomplete]', () => {
+		after(() => {
+			updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
+		});
+
 		describe('[without permission]', () => {
 			let user;
 			let userCredentials;
