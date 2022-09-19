@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Settings } from '@rocket.chat/models';
@@ -25,17 +24,17 @@ API.v1.addRoute(
 				{},
 			);
 			if (!room) {
-				throw new Meteor.Error('invalid-room');
+				throw new Error('invalid-room');
 			}
 
 			const webrtcCallingAllowed = rcSettings.get('WebRTC_Enabled') === true && rcSettings.get('Omnichannel_call_provider') === 'WebRTC';
 			if (!webrtcCallingAllowed) {
-				throw new Meteor.Error('webRTC calling not enabled');
+				throw new Error('webRTC calling not enabled');
 			}
 
 			const config = await settings();
 			if (!config.theme || !config.theme.actionLinks || !config.theme.actionLinks.webrtc) {
-				throw new Meteor.Error('invalid-livechat-config');
+				throw new Error('invalid-livechat-config');
 			}
 
 			let { callStatus } = room;
@@ -82,12 +81,12 @@ API.v1.addRoute(
 				{},
 			);
 			if (!room) {
-				throw new Meteor.Error('invalid-room');
+				throw new Error('invalid-room');
 			}
 
 			const call = await Messages.findOneById(callId);
 			if (!call || call.t !== 'livechat_webrtc_video_call') {
-				throw new Meteor.Error('invalid-callId');
+				throw new Error('invalid-callId');
 			}
 
 			Livechat.updateCallStatus(callId, rid, status, this.user);

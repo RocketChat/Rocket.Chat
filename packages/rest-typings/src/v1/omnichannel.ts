@@ -1114,7 +1114,7 @@ export const isLivechatAnalyticsAgentsTotalServiceTimeProps = ajv.compile<Livech
 type LivechatAnalyticsAgentsAvailableForServiceHistoryProps = {
 	start: string;
 	end: string;
-	fullReport: string;
+	fullReport?: string;
 };
 
 const LivechatAnalyticsAgentsAvailableForServiceHistorySchema = {
@@ -1128,9 +1128,10 @@ const LivechatAnalyticsAgentsAvailableForServiceHistorySchema = {
 		},
 		fullReport: {
 			type: 'string',
+			nullable: true,
 		},
 	},
-	required: ['start', 'end', 'fullReport'],
+	required: ['start', 'end'],
 	additionalProperties: false,
 };
 
@@ -2113,7 +2114,11 @@ export const isGETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams =
 		GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParamsSchema,
 	);
 
-type GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams = PaginatedRequest;
+type GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams = PaginatedRequest<{
+	searchText?: string;
+	closedChatsOnly?: string;
+	servedChatsOnly?: string;
+}>;
 
 const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
 	type: 'object',
@@ -2127,6 +2132,18 @@ const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
 			nullable: true,
 		},
 		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		searchText: {
+			type: 'string',
+			nullable: true,
+		},
+		closedChatsOnly: {
+			type: 'string',
+			nullable: true,
+		},
+		servedChatsOnly: {
 			type: 'string',
 			nullable: true,
 		},

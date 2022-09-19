@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import {
@@ -28,23 +27,23 @@ API.v1.addRoute(
 
 			const guest = await findGuest(token);
 			if (!guest) {
-				throw new Meteor.Error('invalid-token');
+				throw new Error('invalid-token');
 			}
 
 			const room = findRoom(token, rid);
 			if (!room) {
-				throw new Meteor.Error('invalid-room');
+				throw new Error('invalid-room');
 			}
 
 			if (!room.open) {
-				throw new Meteor.Error('room-closed');
+				throw new Error('room-closed');
 			}
 
 			if (
 				settings.get('Livechat_enable_message_character_limit') &&
 				msg.length > parseInt(settings.get('Livechat_message_character_limit'))
 			) {
-				throw new Meteor.Error('message-length-exceeds-character-limit');
+				throw new Error('message-length-exceeds-character-limit');
 			}
 
 			const _id = this.bodyParams._id || Random.id();
@@ -86,17 +85,17 @@ API.v1.addRoute(
 
 			const guest = await findGuest(token);
 			if (!guest) {
-				throw new Meteor.Error('invalid-token');
+				throw new Error('invalid-token');
 			}
 
 			const room = findRoom(token, rid);
 			if (!room) {
-				throw new Meteor.Error('invalid-room');
+				throw new Error('invalid-room');
 			}
 
 			let message = Messages.findOneById(_id);
 			if (!message) {
-				throw new Meteor.Error('invalid-message');
+				throw new Error('invalid-message');
 			}
 
 			if (message.file) {
@@ -112,17 +111,17 @@ API.v1.addRoute(
 
 			const guest = await findGuest(token);
 			if (!guest) {
-				throw new Meteor.Error('invalid-token');
+				throw new Error('invalid-token');
 			}
 
 			const room = findRoom(token, rid);
 			if (!room) {
-				throw new Meteor.Error('invalid-room');
+				throw new Error('invalid-room');
 			}
 
 			const msg = Messages.findOneById(_id);
 			if (!msg) {
-				throw new Meteor.Error('invalid-message');
+				throw new Error('invalid-message');
 			}
 
 			const result = Livechat.updateMessage({
@@ -146,17 +145,17 @@ API.v1.addRoute(
 
 			const guest = await findGuest(token);
 			if (!guest) {
-				throw new Meteor.Error('invalid-token');
+				throw new Error('invalid-token');
 			}
 
 			const room = findRoom(token, rid);
 			if (!room) {
-				throw new Meteor.Error('invalid-room');
+				throw new Error('invalid-room');
 			}
 
 			const message = Messages.findOneById(_id);
 			if (!message) {
-				throw new Meteor.Error('invalid-message');
+				throw new Error('invalid-message');
 			}
 
 			const result = await Livechat.deleteMessage({ guest, message });
@@ -185,17 +184,17 @@ API.v1.addRoute(
 			const { sort } = this.parseJsonQuery();
 
 			if (!token) {
-				throw new Meteor.Error('error-token-param-not-provided', 'The required "token" query param is missing.');
+				throw new Error('error-token-param-not-provided');
 			}
 
 			const guest = await findGuest(token);
 			if (!guest) {
-				throw new Meteor.Error('invalid-token');
+				throw new Error('invalid-token');
 			}
 
 			const room = findRoom(token, rid);
 			if (!room) {
-				throw new Meteor.Error('invalid-room');
+				throw new Error('invalid-room');
 			}
 
 			let ls = undefined;

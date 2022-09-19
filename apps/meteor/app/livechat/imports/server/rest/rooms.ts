@@ -42,8 +42,8 @@ API.v1.addRoute(
 			if (customFields) {
 				try {
 					const parsedCustomFields = JSON.parse(customFields) as { [key: string]: string };
-					if (typeof parsedCustomFields !== 'object' && parsedCustomFields !== null && !Array.isArray(parsedCustomFields)) {
-						throw new Error();
+					if (typeof parsedCustomFields !== 'object' || Array.isArray(parsedCustomFields) || parsedCustomFields === null) {
+						throw new Error('Invalid custom fields');
 					}
 
 					// Model's already checking for the keys, so we don't need to do it here.

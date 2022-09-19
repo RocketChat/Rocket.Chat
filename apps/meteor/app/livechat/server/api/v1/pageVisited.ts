@@ -1,4 +1,3 @@
-import { Match, check } from 'meteor/check';
 import { isPOSTLivechatPageVisitedParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
@@ -9,18 +8,6 @@ API.v1.addRoute(
 	{ validateParams: isPOSTLivechatPageVisitedParams },
 	{
 		async post() {
-			check(this.bodyParams, {
-				token: String,
-				rid: Match.Maybe(String),
-				pageInfo: Match.ObjectIncluding({
-					change: String,
-					title: String,
-					location: Match.ObjectIncluding({
-						href: String,
-					}),
-				}),
-			});
-
 			const { token, rid, pageInfo } = this.bodyParams;
 			const obj = Livechat.savePageHistory(token, rid, pageInfo);
 			if (obj) {

@@ -425,7 +425,6 @@ export class APIClass extends Restivus {
 								typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
 
 							if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
-								console.log(this.queryParams, JSON.stringify(validatorFunc.errors, null, 2));
 								const errors = validatorFunc.errors
 									?.map((error) => {
 										switch (error.keyword) {

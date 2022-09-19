@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import { isLivechatCustomFieldsProps, isPOSTLivechatCustomFieldParams, isPOSTLivechatCustomFieldsParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
@@ -16,7 +14,7 @@ API.v1.addRoute(
 
 			const guest = await findGuest(token);
 			if (!guest) {
-				throw new Meteor.Error('invalid-token');
+				throw new Error('invalid-token');
 			}
 
 			if (!(await Livechat.setCustomFields({ token, key, value, overwrite }))) {
@@ -33,21 +31,10 @@ API.v1.addRoute(
 	{ validateParams: isPOSTLivechatCustomFieldsParams },
 	{
 		async post() {
-			check(this.bodyParams, {
-				token: String,
-				customFields: [
-					Match.ObjectIncluding({
-						key: String,
-						value: String,
-						overwrite: Boolean,
-					}),
-				],
-			});
-
 			const { token } = this.bodyParams;
 			const guest = await findGuest(token);
 			if (!guest) {
-				throw new Meteor.Error('invalid-token');
+				throw new Error('invalid-token');
 			}
 
 			const fields = await Promise.all(

@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { isGETAgentNextToken } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
@@ -9,17 +8,17 @@ API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	async get() {
 		const visitor = await findGuest(this.urlParams.token);
 		if (!visitor) {
-			throw new Meteor.Error('invalid-token');
+			throw new Error('invalid-token');
 		}
 
 		const room = findRoom(this.urlParams.token, this.urlParams.rid);
 		if (!room) {
-			throw new Meteor.Error('invalid-room');
+			throw new Error('invalid-room');
 		}
 
 		const agent = room?.servedBy && findAgent(room.servedBy._id);
 		if (!agent) {
-			throw new Meteor.Error('invalid-agent');
+			throw new Error('invalid-agent');
 		}
 
 		return API.v1.success({ agent });
@@ -47,12 +46,12 @@ API.v1.addRoute(
 
 			const agentData = await Livechat.getNextAgent(department);
 			if (!agentData) {
-				throw new Meteor.Error('agent-not-found');
+				throw new Error('agent-not-found');
 			}
 
 			const agent = findAgent(agentData.agentId);
 			if (!agent) {
-				throw new Meteor.Error('invalid-agent');
+				throw new Error('invalid-agent');
 			}
 
 			return API.v1.success({ agent });

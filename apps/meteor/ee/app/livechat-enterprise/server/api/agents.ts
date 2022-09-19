@@ -1,4 +1,3 @@
-import { Match, check } from 'meteor/check';
 import {
 	isLivechatAnalyticsAgentsTotalServiceTimeProps,
 	isLivechatAnalyticsAgentsAverageServiceTimeProps,
@@ -19,9 +18,6 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { start, end } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -55,9 +51,6 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { start, end } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -96,10 +89,6 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { start, end } = this.requestParams();
 			const { fullReport } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(fullReport, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
