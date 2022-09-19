@@ -7,6 +7,7 @@ import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModul
 import {
 	ADMIN_PERMISSIONS,
 	AUDIT_LICENSE_MODULE,
+	AUDIT_LOG_PERMISSIONS,
 	AUDIT_PERMISSIONS,
 	MANAGE_APPS_PERMISSIONS,
 	SETTINGS_PERMISSIONS,
@@ -27,7 +28,7 @@ const AdministrationList: FC<AdministrationListProps> = ({ accountBoxItems, clos
 
 	const hasAuditLicense = useHasLicenseModule(AUDIT_LICENSE_MODULE) === true;
 	const hasAuditPermission = useAtLeastOnePermission(AUDIT_PERMISSIONS) && hasAuditLicense;
-	const hasAuditLogPermission = useAtLeastOnePermission(AUDIT_PERMISSIONS) && hasAuditLicense;
+	const hasAuditLogPermission = useAtLeastOnePermission(AUDIT_LOG_PERMISSIONS) && hasAuditLicense;
 	const hasManageApps = useAtLeastOnePermission(MANAGE_APPS_PERMISSIONS);
 	const hasAdminPermission = useAtLeastOnePermission(ADMIN_PERMISSIONS);
 	const showSettings = useAtLeastOnePermission(SETTINGS_PERMISSIONS);
