@@ -270,6 +270,21 @@ function executeIntegrationRest() {
 	this.bodyParams.bot = { i: this.integration._id };
 
 	try {
+		const channels = [].concat(this.bodyParams.channel || this.bodyParams.roomId || defaultValues.channel);
+
+		this.bodyParams.channel = channels
+			.map((channel) => {
+				if (defaultValues.channel.find((c) => c === channel)) {
+					return channel;
+				}
+
+				return null;
+			})
+			.filter(Boolean);
+
+		// if exists, already include in channel list
+		delete this.bodyParams.roomId;
+
 		processWebhookMessage(this.bodyParams, this.user, defaultValues);
 
 		if (this.scriptResponse) {
