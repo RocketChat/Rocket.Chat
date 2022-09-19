@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { isMessageSequential } from '../../../../../../../client/views/room/MessageList/lib/isMessageSequential';
@@ -132,6 +132,18 @@ describe('isMessageSequential', () => {
 			...previous,
 			ts: new Date('2021-10-27T00:04:59.999Z'),
 			t: 'au',
+		};
+		expect(isMessageSequential(current, previous, TIME_RANGE_IN_SECONDS)).to.be.false;
+	});
+
+	it('should return false if previous message is thread preview', () => {
+		const previous: IThreadMessage = {
+			...baseMessage,
+			tmid: 'threadId',
+			tshow: true,
+		};
+		const current: IMessage = {
+			...baseMessage,
 		};
 		expect(isMessageSequential(current, previous, TIME_RANGE_IN_SECONDS)).to.be.false;
 	});
