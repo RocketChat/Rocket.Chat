@@ -1,7 +1,7 @@
 {
   "403": "បានហាមឃាត់",
   "500": "កំហុសខាងក្នុងម៉ាស៊ីនម៉េ",
-  "__count__empty_rooms_will_be_removed_automatically": null,
+  "__count__empty_rooms_will_be_removed_automatically": "ចំនួនបន្ទប់ដែលនៅសល់នឹងត្រូវលុបចោលដោយស្វ័យប្រវត្តិ។",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ នឹងត្រូវលុបចោលដោយស្វ័យប្រវត្តិ៖ <br/> __rooms__ ។",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__  មិនមាន __role__by __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ ត្រូវបានកំណត់តួនាទីជា __role__ ដោយ __user_by__",
@@ -1706,6 +1706,7 @@
   "italic": "ទ្រេត",
   "italics": "ទ្រេត",
   "Job_Title": "ចំណងជើងការងារ",
+  "Join": "ចូល​រួម",
   "Join_audio_call": "ចូលរួមជាមួយការហៅជាសំឡេង",
   "Join_Chat": "ចូលរួមជជែក",
   "Join_default_channels": "ចូលរួមជាមួយបណ្តាញលំនាំដើម",
