@@ -55,8 +55,8 @@ const MessageContent: FC<{
 		<>
 			{!message.blocks && (message.md || message.msg) && (
 				<MessageBody data-qa-type='message-body'>
-					{!isEncryptedMessage && <MessageContentBody message={message} />}
-					{isEncryptedMessage && message.e2e === 'done' && <MessageContentBody message={message} />}
+					{!isEncryptedMessage && <MessageContentBody tokens={message.md} message={message} />}
+					{isEncryptedMessage && message.e2e === 'done' && <MessageContentBody tokens={message.md} message={message} />}
 					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</MessageBody>
 			)}

@@ -6,9 +6,7 @@ import React, { ReactElement } from 'react';
 
 import Attachments from '.';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import MessageMarkup from '../../../views/room/MessageList/components/MessageMarkup';
-import { useMessageListContext } from '../../../views/room/MessageList/contexts/MessageListContext';
-import { useParsedText } from '../../../views/room/MessageList/hooks/useParsedText';
+import MessageContentBody from '../../../views/room/MessageList/components/MessageContentBody';
 import AttachmentAuthor from './Attachment/AttachmentAuthor';
 import AttachmentAuthorAvatar from './Attachment/AttachmentAuthorAvatar';
 import AttachmentAuthorName from './Attachment/AttachmentAuthorName';
@@ -38,9 +36,6 @@ type QuoteAttachmentProps = {
 
 export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
 	const format = useTimeAgo();
-	const { katex, showColors } = useMessageListContext();
-
-	const tokens = useParsedText(attachment.text, { katexEnabled: Boolean(katex), ...katex, showColors });
 
 	return (
 		<>
@@ -69,7 +64,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 							</Box>
 						)}
 					</AttachmentAuthor>
-					{tokens.length ? <MessageMarkup tokens={tokens} /> : ''}
+					{attachment.md ? <MessageContentBody tokens={attachment.md} /> : attachment.text}
 					{attachment.attachments && (
 						<AttachmentInner>
 							<Attachments attachments={attachment.attachments} />

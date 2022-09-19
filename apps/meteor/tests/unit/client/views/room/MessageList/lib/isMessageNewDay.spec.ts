@@ -1,11 +1,12 @@
 /* eslint-env mocha */
+import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { isMessageNewDay } from './isMessageNewDay';
+import { isMessageNewDay } from '../../../../../../../client/views/room/MessageList/lib/isMessageNewDay';
 
 const date = new Date('2021-10-27T00:00:00.000Z');
 
-const baseMessage = {
+const baseMessage: IMessage = {
 	ts: date,
 	u: {
 		_id: 'userId',
