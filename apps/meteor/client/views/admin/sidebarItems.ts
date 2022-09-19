@@ -123,4 +123,11 @@ export const {
 		permissionGranted: (): boolean =>
 			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
 	},
+	{
+		icon: 'squares',
+		href: 'color-palette',
+		i18nLabel: 'Colors',
+		// permissionGranted: (): boolean =>
+		// 	hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
+	},
 ]);
