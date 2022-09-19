@@ -1,10 +1,10 @@
 import { IVoipRoom } from '@rocket.chat/core-typings';
+import { Header as TemplateHeader } from '@rocket.chat/ui-client';
 import { useLayout, useCurrentRoute } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import BurgerMenu from '../../../../components/BurgerMenu';
-import TemplateHeader from '../../../../components/Header';
 import { ToolboxActionConfig } from '../../lib/Toolbox';
 import { ToolboxContext, useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
 import RoomHeader, { RoomHeaderProps } from '../RoomHeader';

@@ -1,7 +1,6 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../../app/api/server';
-import { hasPermission } from '../../../../../app/authorization/server';
 import {
 	findAllAverageServiceTime,
 	findAllServiceTime,
@@ -10,12 +9,9 @@ import {
 
 API.v1.addRoute(
 	'livechat/analytics/agents/average-service-time',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 
@@ -49,12 +45,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/agents/total-service-time',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 
@@ -88,12 +81,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/agents/available-for-service-history',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { fullReport } = this.requestParams();

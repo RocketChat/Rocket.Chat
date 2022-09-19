@@ -63,7 +63,12 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 			<Field.Row>
 				<div className='settings-file-preview'>
 					{value?.url ? (
-						<div className='preview' style={{ backgroundImage: `url(${value.url}?_dc=${Random.id()})` }} />
+						<div
+							className='preview'
+							style={{ backgroundImage: `url(${value.url}?_dc=${Random.id()})` }}
+							role='img'
+							aria-label={t('Asset_preview')}
+						/>
 					) : (
 						<div className='preview no-file background-transparent-light secondary-font-color'>
 							<Icon name='upload' />
