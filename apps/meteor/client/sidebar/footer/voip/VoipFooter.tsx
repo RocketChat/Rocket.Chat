@@ -3,7 +3,7 @@ import { ICallerInfo, VoIpCallerInfo, VoipClientEvents } from '@rocket.chat/core
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, MouseEvent, ReactNode, useMemo } from 'react';
+import React, { ReactElement, MouseEvent, ReactNode } from 'react';
 
 import type { VoipFooterMenuOptions } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import { CallActionsType } from '../../../contexts/CallContext';
@@ -65,12 +65,12 @@ export const VoipFooter = ({
 		togglePause(!paused);
 	};
 
-	const holdTitle = useMemo(() => {
+	const holdTitle = ((): string => {
 		if (!isEnterprise) {
 			return t('Hold_EE_only');
 		}
 		return paused ? t('Resume') : t('Hold');
-	}, [isEnterprise, paused, t]);
+	})();
 
 	return (
 		<SidebarFooter elevated>
