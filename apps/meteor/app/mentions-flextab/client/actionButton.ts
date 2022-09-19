@@ -33,7 +33,7 @@ Meteor.startup(function () {
 					},
 				);
 			}
-			RoomHistoryManager.getSurroundingMessages(message, 50);
+			RoomHistoryManager.getSurroundingMessages(message);
 		},
 		order: 100,
 		group: ['message', 'menu'],
