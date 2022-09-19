@@ -736,6 +736,35 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
+	/**
+	 * @param {string} userId
+	 * @param {object} status
+	 * @param {string} status.status
+	 * @param {string} status.statusConnection
+	 * @param {string} [status.statusDefault]
+	 * @param {string} [status.statusText]
+	 */
+	updateStatusById(userId, { statusDefault, status, statusConnection, statusText }) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				status,
+				statusConnection,
+				...(statusDefault && { statusDefault }),
+				...(statusText && {
+					statusText: String(statusText).trim().substr(0, 120),
+				}),
+			},
+		};
+
+		// We don't want to update the _updatedAt field on this operation,
+		// so we can check if the status update triggered a change
+		return this.col.updateOne(query, update);
+	}
+
 	openAgentsBusinessHoursByBusinessHourId(businessHourIds) {
 		const query = {
 			roles: 'livechat-agent',
