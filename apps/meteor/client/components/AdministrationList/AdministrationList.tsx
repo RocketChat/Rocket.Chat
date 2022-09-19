@@ -39,25 +39,12 @@ const AdministrationList: FC<AdministrationListProps> = ({ accountBoxItems, clos
 	return (
 		<>
 			{showAdmin && <AdministrationModelList showAdmin={showAdmin} accountBoxItems={adminBoxItems} closeList={closeList} />}
-			{showSettings && (
-				<>
-					<OptionDivider />
-					<SettingsModelList closeList={closeList} />
-				</>
-			)}
-			{showManageApps && (
-				<>
-					<OptionDivider />
-					<AppsModelList appBoxItems={appBoxItems} closeList={closeList} showManageApps={showManageApps} />
-				</>
-			)}
-
-			{showAudit && (
-				<>
-					<OptionDivider />
-					<AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} closeList={closeList} />
-				</>
-			)}
+			{showSettings && showAdmin && <OptionDivider />}
+			{showSettings && <SettingsModelList closeList={closeList} />}
+			{showManageApps && (showSettings || showAdmin) && <OptionDivider />}
+			{showManageApps && <AppsModelList appBoxItems={appBoxItems} closeList={closeList} showManageApps={showManageApps} />}
+			{showAudit && (showManageApps || showSettings || showAdmin) && <OptionDivider />}
+			{showAudit && <AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} closeList={closeList} />}
 		</>
 	);
 };
