@@ -333,10 +333,9 @@ jobs:
         run: |
           docker ps
 
-          for c in $(seq 1 10); do
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
-            echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING" && break
-            ((c==10)) && exit 1
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
             sleep 10
           done;
 
@@ -361,10 +360,9 @@ jobs:
 
             docker compose -f ../../docker-compose-ci.yml restart rocketchat
 
-            for c in $(seq 1 10); do
+            until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
-              echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING" && break
-              ((c==10)) && exit 1
+              ((c++)) && ((c==10)) && exit 1
               sleep 10
             done;
           done;
@@ -391,7 +389,6 @@ jobs:
           RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
         run: |
           docker ps
-          docker compose -f docker-compose-ci.yml logs rocketchat --tail=50
 
           docker compose -f docker-compose-ci.yml stop rocketchat
 
@@ -401,10 +398,9 @@ jobs:
 
           docker compose -f docker-compose-ci.yml restart rocketchat
 
-          for c in $(seq 1 10); do
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
-            echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING" && break
-            ((c==10)) && exit 1
+            ((c++)) && ((c==10)) && exit 1
             sleep 10
           done;
 
@@ -520,17 +516,15 @@ jobs:
         run: |
           docker ps
 
-          for c in $(seq 1 10); do
+          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
-            echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully" && break
-            ((c==10)) && exit 1
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
             sleep 10
           done;
 
-          for c in $(seq 1 10); do
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
-            echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING" && break
-            ((c==10)) && exit 1
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
             sleep 10
           done;
 
@@ -555,10 +549,9 @@ jobs:
 
             docker compose -f ../../docker-compose-ci.yml restart
 
-            for c in $(seq 1 10); do
+            until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
-              echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING" && break
-              ((c==10)) && exit 1
+              ((c++)) && ((c==10)) && exit 1
               sleep 10
             done;
           done;
@@ -579,17 +572,15 @@ jobs:
 
           docker compose -f docker-compose-ci.yml restart
 
-          for c in $(seq 1 10); do
+          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
-            echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service --since $NOW)" | grep -q "NetworkBroker started successfully" && break
-            ((c==10)) && exit 1
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
             sleep 10
           done;
 
-          for c in $(seq 1 10); do
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
-            echo "$(docker compose -f docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING" && break
-            ((c==10)) && exit 1
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
             sleep 10
           done;
 
