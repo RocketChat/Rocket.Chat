@@ -170,7 +170,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 						bg={AppStatusStyle.bg}
 						color={AppStatusStyle.color}
 					>
-						<Icon size='x20' name={status.icon} mie='x4' />
+						<Icon size='x20' name={status.icon} />
 					</Box>
 					<PositionAnimated
 						anchor={statusRef}
