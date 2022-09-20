@@ -12,6 +12,17 @@ const baseMessage = {
 		username: 'userName',
 	},
 	msg: 'message',
+	md: [
+		{
+			type: 'PARAGRAPH',
+			value: [
+				{
+					type: 'PLAIN_TEXT',
+					value: 'message',
+				},
+			],
+		},
+	],
 	rid: 'roomId',
 	_id: 'messageId',
 	_updatedAt: date,
