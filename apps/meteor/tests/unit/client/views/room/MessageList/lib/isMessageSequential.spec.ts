@@ -2,6 +2,7 @@
 import type { IMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
+import { MessageTypes } from '../../../../../../../app/ui-utils/lib/MessageTypes';
 import { isMessageSequential } from '../../../../../../../client/views/room/MessageList/lib/isMessageSequential';
 
 const TIME_RANGE_IN_SECONDS = 300;
@@ -125,6 +126,11 @@ describe('isMessageSequential', () => {
 	});
 
 	it('should return false if message is from system', () => {
+		MessageTypes.registerType({
+			id: 'au',
+			system: true,
+			message: 'User_added_by',
+		});
 		const previous: IMessage = {
 			...baseMessage,
 		};
