@@ -76,7 +76,7 @@ export class IMAPInterceptor extends EventEmitter {
 				this.retries = 0;
 				this.backoffDurationMS = 3000;
 				await this.openInbox();
-				this.imap.on('mail', () => this.getEmails().catch((err:Error) => logger.debug("Error on getEmails: ",err.message));
+				this.imap.on('mail', () => this.getEmails().catch((err: Error) => logger.debug('Error on getEmails: ', err.message)));
 			} else {
 				logger.error("Can't connect to IMAP server");
 			}
