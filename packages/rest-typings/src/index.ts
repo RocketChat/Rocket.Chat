@@ -216,6 +216,8 @@ export * from './v1/channels/ChannelsModeratorsProps';
 export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
 export * from './v1/channels/ChannelsDeleteProps';
+export * from './v1/customSounds/CustomSoundsListParamsGET';
+export * from './v1/customSounds/CustomSoundsUploadParamsPOST';
 export * from './v1/subscriptionsEndpoints';
 export * from './v1/misc';
 export * from './v1/invites';

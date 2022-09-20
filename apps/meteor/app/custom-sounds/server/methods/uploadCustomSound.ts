@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization/server';
@@ -10,7 +11,6 @@ Meteor.methods({
 	uploadCustomSound(binaryContent, contentType, soundData) {
 		methodDeprecationLogger.warn('uploadCustomSound will be deprecated in future versions of Rocket.Chat');
 
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		if (!hasPermission(this.userId!, 'manage-sounds')) {
 			throw new Meteor.Error('not_authorized');
 		}
