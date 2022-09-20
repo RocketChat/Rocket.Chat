@@ -1,8 +1,6 @@
-import { IMessage, isActionAttachment, MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
+import { isActionAttachment, MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import React, { FC, ReactNode, ComponentProps } from 'react';
 
-import { useDecryptedMessage } from '../../../hooks/useDecryptedMessage';
-import { useOpenedRoom } from '../../../lib/RoomManager';
 import MarkdownText from '../../MarkdownText';
 import { ActionAttachment } from './ActionAttachtment';
 import AttachmentAuthor from './Attachment/AttachmentAuthor';
@@ -27,8 +25,6 @@ const applyMarkdownIfRequires = (
 
 const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
-	const rid = useOpenedRoom();
-	const attachmentMessage = useDecryptedMessage({ ...attachment, msg: attachment.text, rid } as IMessage);
 
 	return (
 		<AttachmentBlock
