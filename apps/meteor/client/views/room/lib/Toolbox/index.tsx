@@ -43,6 +43,7 @@ export type ToolboxActionConfig = {
 				rid: IRoom['_id'];
 				teamId: IRoom['teamId'];
 		  }>;
+	'featured'?: boolean;
 };
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;
