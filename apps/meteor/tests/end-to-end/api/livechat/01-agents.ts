@@ -1,18 +1,22 @@
 /* eslint-env mocha */
 
-import type { ILivechatAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../../data/livechat/businessHours';
 import { createAgent, createManager, createVisitor, createLivechatRoom, takeInquiry, fetchInquiry } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { createUser } from '../../../data/users.helper';
+import { password } from '../../../data/user';
+import { createUser, getMe, login } from '../../../data/users.helper';
 
 describe('LIVECHAT - Agents', function () {
 	this.retries(0);
 	let agent: ILivechatAgent;
 	let manager: ILivechatAgent;
+
+	let agent2: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
 
 	before((done) => getCredentials(done));
 
@@ -28,6 +32,19 @@ describe('LIVECHAT - Agents', function () {
 				manager = createdManager;
 				done();
 			});
+	});
+
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+
+		const user: IUser = await createUser();
+		const userCredentials = await login(user.username, password);
+		await createAgent(user.username);
+
+		agent2 = {
+			user,
+			credentials: userCredentials,
+		};
 	});
 
 	// TODO: missing test cases for POST method
@@ -351,6 +368,7 @@ describe('LIVECHAT - Agents', function () {
 			expect(body.agent).to.have.property('_id', 'rocketchat.internal.admin.test');
 		});
 	});
+
 	describe('livechat/agent.next/:token', () => {
 		it('should fail when token in url params is not valid', async () => {
 			await request.get(api(`livechat/agent.next/invalid-token`)).expect(400);
@@ -368,6 +386,119 @@ describe('LIVECHAT - Agents', function () {
 			await request.get(api(`livechat/agent.next/${visitor.token}`)).expect(400);
 		});
 		// TODO: test cases when algo is Auto_Selection
+	});
+
+	describe('livechat/agent.status', () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission to change other status', async () => {
+			await updatePermission('manage-livechat-agents', []);
+			await request
+				.post(api('livechat/agent.status'))
+				.set(credentials)
+				.send({ status: 'not-available', agentId: agent2.user._id })
+				.expect(403);
+
+			await updatePermission('manage-livechat-agents', ['admin']);
+		});
+		it('should return an error if user is not an agent', async () => {
+			const user: IUser = await createUser();
+			const userCredentials = await login(user.username, password);
+			await request
+				.post(api('livechat/agent.status'))
+				.set(userCredentials)
+				.send({ status: 'available', agentId: user._id })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Agent not found');
+				});
+		});
+		it('should return an error if status is not valid', async () => {
+			await request
+				.post(api('livechat/agent.status'))
+				.set(agent2.credentials)
+				.send({ status: 'invalid-status', agentId: agent2.user._id })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				});
+		});
+		it('should return an error if agentId param is not valid', async () => {
+			await request
+				.post(api('livechat/agent.status'))
+				.set(agent2.credentials)
+				.send({ status: 'available', agentId: 'invalid-agent-id' })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Agent not found');
+				});
+		});
+		it('should change logged in users status', async () => {
+			const currentUser: ILivechatAgent = await getMe(agent2.credentials as any);
+			const currentStatus = currentUser.statusLivechat;
+			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
+
+			await request
+				.post(api('livechat/agent.status'))
+				.set(agent2.credentials)
+				.send({ status: newStatus, agentId: currentUser._id })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+		it('should allow managers to change other agents status', async () => {
+			await updatePermission('manage-livechat-agents', ['admin']);
+
+			const currentUser: ILivechatAgent = await getMe(agent2.credentials as any);
+			const currentStatus = currentUser.statusLivechat;
+			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
+
+			await request
+				.post(api('livechat/agent.status'))
+				.set(credentials)
+				.send({ status: newStatus, agentId: currentUser._id })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+		it('should throw an error if agent tries to make themselves available outside of Business hour', async () => {
+			await makeDefaultBusinessHourActiveAndClosed();
+
+			const currentUser: ILivechatAgent = await getMe(agent2.credentials as any);
+			const currentStatus = currentUser.statusLivechat;
+			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
+
+			await request
+				.post(api('livechat/agent.status'))
+				.set(agent2.credentials)
+				.send({ status: newStatus, agentId: currentUser._id })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-business-hours-are-closed');
+				});
+		});
+		it('should allow managers to make other agents available outside business hour', async () => {
+			await updatePermission('manage-livechat-agents', ['admin']);
+
+			const currentUser: ILivechatAgent = await getMe(agent2.credentials as any);
+			const currentStatus = currentUser.statusLivechat;
+			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
+
+			await request
+				.post(api('livechat/agent.status'))
+				.set(credentials)
+				.send({ status: newStatus, agentId: currentUser._id })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await disableDefaultBusinessHour();
+		});
 	});
 });
 
