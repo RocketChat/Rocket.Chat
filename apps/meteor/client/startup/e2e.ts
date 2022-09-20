@@ -99,6 +99,11 @@ Meteor.startup(() => {
 			if (!e2eRoom || !e2eRoom.shouldConvertReceivedMessages()) {
 				return msg;
 			}
+
+			if (msg.t === 'message_pinned') {
+				return e2e.decryptPinnedMessage(msg);
+			}
+
 			return e2e.decryptMessage(msg);
 		});
 

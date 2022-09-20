@@ -353,6 +353,34 @@ class E2E extends Emitter {
 		}
 	}
 
+	async decryptPinnedMessage(message) {
+		if (message.t !== 'message_pinned') {
+			return message;
+		}
+
+		if(!message?.attachments || !message.attachments[0]?.text || message.attachments[0]?.t !== 'e2e') {
+			return message;
+		}
+
+		const e2eRoom = await this.getInstanceByRoomId(message.rid);
+		const pinnedMessage = message.attachments[0]?.text;
+
+		if(!e2eRoom || !pinnedMessage) {
+			return message;
+		}
+
+		const data = await e2eRoom.decrypt(pinnedMessage);
+
+		if(!data) {
+			return message;
+		}
+
+		const decryptedPinnedMessage = { ...message };
+		decryptedPinnedMessage.attachments[0].text = data.text;
+
+		return decryptedPinnedMessage;
+	}
+
 	async decryptMessage(message) {
 		if (message.t !== 'e2e' || message.e2e === 'done') {
 			return message;
@@ -379,6 +407,7 @@ class E2E extends Emitter {
 
 	async decryptPendingMessages() {
 		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
+			console.log("Msg = ", msg);
 			Messages.direct.update({ _id }, await this.decryptMessage(msg));
 		});
 	}
