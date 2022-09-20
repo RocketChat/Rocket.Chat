@@ -191,6 +191,27 @@ const EmailInboxSendMailSchema = {
 
 export const isEmailInboxSendMail = ajv.compile<EmailInboxSendMail>(EmailInboxSendMailSchema);
 
+type MailerUnsubscribeProps = {
+	_id: string;
+	createdAt: string;
+};
+
+const MailerUnsubscribePropsSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+		},
+		createdAt: {
+			type: 'string',
+		},
+	},
+	required: ['_id', 'createdAt'],
+	additionalProperties: false,
+};
+
+export const isMailerUnsubscribeProps = ajv.compile<MailerUnsubscribeProps>(MailerUnsubscribePropsSchema);
+
 export type EmailInboxEndpoints = {
 	'/v1/email-inbox.list': {
 		GET: (params: EmailInboxListProps) => PaginatedResult<{ emailInboxes: IEmailInbox[] }>;
@@ -215,5 +236,9 @@ export type EmailInboxEndpoints = {
 
 	'/v1/mailer': {
 		POST: (params: EmailInboxSendMail) => void;
+	};
+
+	'/v1/mailer.unsubscribe': {
+		POST: (params: MailerUnsubscribeProps) => void;
 	};
 };

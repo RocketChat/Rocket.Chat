@@ -1,5 +1,5 @@
 import { Box, Callout, Throbber } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useRouteParameter, useAbsoluteUrl, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouteParameter, useAbsoluteUrl, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useEffect } from 'react';
 
 import { AsyncState, AsyncStatePhase, useAsyncState } from '../../hooks/useAsyncState';
@@ -7,7 +7,7 @@ import { AsyncState, AsyncStatePhase, useAsyncState } from '../../hooks/useAsync
 const useMailerUnsubscriptionState = (): AsyncState<boolean> => {
 	const { resolve, reject, ...unsubscribedState } = useAsyncState<boolean>();
 
-	const unsubscribe = useMethod('Mailer:unsubscribe');
+	const unsubscribe = useEndpoint('POST', '/v1/mailer.unsubscribe');
 	const _id = useRouteParameter('_id');
 	const createdAt = useRouteParameter('createdAt');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -15,7 +15,7 @@ const useMailerUnsubscriptionState = (): AsyncState<boolean> => {
 	useEffect(() => {
 		const doUnsubscribe = async (_id: string, createdAt: string): Promise<void> => {
 			try {
-				await unsubscribe(_id, createdAt);
+				await unsubscribe({ _id, createdAt });
 				resolve(true);
 			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
