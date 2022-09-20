@@ -2,7 +2,6 @@ import { EventEmitter } from 'events';
 
 import type { ImapMessage, ImapMessageBodyInfo } from 'imap';
 import IMAP from 'imap';
-import type Connection from 'imap';
 import type { ParsedMail } from 'mailparser';
 import { simpleParser } from 'mailparser';
 import { EmailInbox } from '@rocket.chat/models';
@@ -55,9 +54,9 @@ export class IMAPInterceptor extends EventEmitter {
 		this.start();
 	}
 
-	openInbox(): Promise<Connection.Box> {
+	openInbox(): Promise<IMAP.Box> {
 		return new Promise((resolve, reject) => {
-			const cb = (err: Error, mailbox: Connection.Box) => {
+			const cb = (err: Error, mailbox: IMAP.Box) => {
 				if (err) {
 					reject(err);
 				} else {
@@ -69,11 +68,6 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	async start(): Promise<void> {
-		const errorBuild =
-			(location: string, severity: 'error' | 'info' | 'warn' | 'debug' = 'error') =>
-			(err: Error) => {
-				logger[severity](`IMAP connect: ${location}: ${err.message}`);
-			};
 		// On successfully connected.
 		this.imap.on('ready', async () => {
 			if (this.isActive()) {
@@ -82,9 +76,9 @@ export class IMAPInterceptor extends EventEmitter {
 				this.retries = 0;
 				this.backoffDurationMS = 3000;
 				await this.openInbox();
-				this.imap.on('mail', () => this.getEmails().catch(errorBuild('getEmails', 'debug')));
+				this.imap.on('mail', () => this.getEmails().catch((err:Error) => logger.debug("Error on getEmails: ",err.message));
 			} else {
-				errorBuild('ready')(Error("Can't connect to IMAP server"));
+				logger.error("Can't connect to IMAP server");
 			}
 		});
 
@@ -182,6 +176,13 @@ export class IMAPInterceptor extends EventEmitter {
 							return;
 						}
 						this.emit('email', email);
+						if (this.options.deleteAfterRead) {
+							this.imap.seq.addFlags(email, 'Deleted', (err) => {
+								if (err) {
+									logger.warn(`Mark deleted error: ${err}`);
+								}
+							});
+						}
 					});
 				};
 				msg.once('body', bodycb);
@@ -208,22 +209,7 @@ export class IMAPInterceptor extends EventEmitter {
 	// Fetch all UNSEEN messages and pass them for further processing
 	async getEmails(): Promise<void> {
 		const emailIds = await this.imapSearch();
-		const emailsFetched = await this.imapFetch(emailIds);
-
-		// this.imapSearch()
-		// 	.then(this.imapFetch)
-		// 	.then((emails) => {
-		// emails.forEach((email) => {
-		for (const email of emailsFetched) {
-			// this.emit('email', email.mail);
-			if (this.options.deleteAfterRead) {
-				this.imap.seq.addFlags(email, 'Deleted', (err) => {
-					if (err) {
-						logger.warn(`Mark deleted error: ${err}`);
-					}
-				});
-			}
-		}
+		await this.imapFetch(emailIds);
 	}
 
 	canRetry(): boolean {
@@ -232,5 +218,6 @@ export class IMAPInterceptor extends EventEmitter {
 
 	selfDisable(): void {
 		EmailInbox.findOneAndUpdate({ email: this.config.user }, { $set: { active: false } });
+		logger.info(`IMAP inbox ${this.config.user} automatically disabled`);
 	}
 }
