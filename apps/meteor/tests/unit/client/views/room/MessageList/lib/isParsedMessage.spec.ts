@@ -1,3 +1,4 @@
+import type { Root } from '@rocket.chat/message-parser';
 /* eslint-env mocha */
 import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
@@ -37,7 +38,7 @@ describe('isParsedMessage', () => {
 			...baseMessage,
 		};
 
-		expect(isParsedMessage(message.md)).to.be.true;
+		expect(isParsedMessage(message.md as Root)).to.be.true;
 	});
 
 	it('should return false if the message is not parsed', () => {
@@ -45,6 +46,6 @@ describe('isParsedMessage', () => {
 			...baseMessage,
 		};
 
-		expect(isParsedMessage(message.msg)).to.be.false;
+		expect(isParsedMessage(message.msg as string)).to.be.false;
 	});
 });

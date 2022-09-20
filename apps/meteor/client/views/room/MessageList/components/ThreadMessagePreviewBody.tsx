@@ -11,7 +11,7 @@ type ThreadMessagePreviewBodyProps = {
 const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): ReactElement => {
 	const parsedMessage = parseMessage(message, { colors: true, emoticons: true });
 
-	return <PreviewMarkup tokens={parsedMessage.md} />;
+	return parsedMessage.md ? <PreviewMarkup tokens={parsedMessage.md} /> : <></>;
 };
 
 export default ThreadMessagePreviewBody;

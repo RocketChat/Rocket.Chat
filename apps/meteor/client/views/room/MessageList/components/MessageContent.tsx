@@ -53,7 +53,7 @@ const MessageContent: FC<{
 
 	return (
 		<>
-			{!message.blocks && (message.md || message.msg) && (
+			{!message.blocks && message.md && (
 				<MessageBody data-qa-type='message-body'>
 					{!isEncryptedMessage && <MessageContentBody tokens={message.md} message={message} />}
 					{isEncryptedMessage && message.e2e === 'done' && <MessageContentBody tokens={message.md} message={message} />}
