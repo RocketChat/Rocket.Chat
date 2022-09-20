@@ -25,6 +25,7 @@ module.exports = {
 	exit: true,
 	spec: [
 		'ee/tests/**/*.tests.ts',
+		'ee/tests/**/*.spec.ts',
 		'tests/unit/app/**/*.spec.ts',
 		'tests/unit/app/**/*.tests.js',
 		'tests/unit/app/**/*.tests.ts',

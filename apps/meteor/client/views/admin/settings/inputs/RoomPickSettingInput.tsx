@@ -22,7 +22,7 @@ type RoomPickSettingInputProps = {
 function RoomPickSettingInput({
 	_id,
 	label,
-	value,
+	value = [],
 	placeholder,
 	readonly,
 	autocomplete,
@@ -31,6 +31,8 @@ function RoomPickSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }: RoomPickSettingInputProps): ReactElement {
+	value = value || [];
+
 	const wrapperRef = useRef() as MutableRefObject<HTMLDivElement>;
 	const valueRef = useRef(value);
 

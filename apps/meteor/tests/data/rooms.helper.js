@@ -1,6 +1,6 @@
 import { api, credentials, request } from './api-data';
 
-export const createRoom = ({ name, type, username, token, agentId, members = [], credentials: customCredentials }) => {
+export const createRoom = ({ name, type, username, token, agentId, members, credentials: customCredentials, voipCallDirection = 'inbound' }) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom.ts" test helper');
 	}
@@ -11,7 +11,7 @@ export const createRoom = ({ name, type, username, token, agentId, members = [],
 		 * is handled separately here.
 		 */
 		return request
-			.get(api(`voip/room?token=${token}&agentId=${agentId}`))
+			.get(api(`voip/room?token=${token}&agentId=${agentId}&direction=${voipCallDirection}`))
 			.set(customCredentials || credentials)
 			.send();
 	}
@@ -30,7 +30,7 @@ export const createRoom = ({ name, type, username, token, agentId, members = [],
 		.set(customCredentials || credentials)
 		.send({
 			...params,
-			members,
+			...(members && { members }),
 		});
 };
 

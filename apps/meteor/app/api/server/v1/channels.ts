@@ -18,9 +18,10 @@ import {
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
 } from '@rocket.chat/rest-typings';
+import { Messages } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions, Messages } from '../../../models/server';
-import { hasPermission, hasAllPermission } from '../../../authorization/server';
+import { Rooms, Subscriptions } from '../../../models/server';
+import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
@@ -129,9 +130,9 @@ API.v1.addRoute(
 	},
 	{
 		get() {
-			const { roomId, unreads, oldest, latest, showThreadMessages, inclusive } = this.queryParams;
+			const { unreads, oldest, latest, showThreadMessages, inclusive, ...params } = this.queryParams;
 			const findResult = findChannelByIdOrName({
-				params: { roomId },
+				params,
 				checkedArchived: false,
 			});
 
@@ -184,13 +185,13 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			const { roomId, joinCode } = this.bodyParams;
-			const findResult = findChannelByIdOrName({ params: { roomId } });
+			const { joinCode, ...params } = this.bodyParams;
+			const findResult = findChannelByIdOrName({ params });
 
 			Meteor.call('joinRoom', findResult._id, joinCode);
 
 			return API.v1.success({
-				channel: findChannelByIdOrName({ params: { roomId }, userId: this.userId }),
+				channel: findChannelByIdOrName({ params, userId: this.userId }),
 			});
 		},
 	},
@@ -204,15 +205,15 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			const { roomId /* userId */ } = this.bodyParams;
-			const findResult = findChannelByIdOrName({ params: { roomId } });
+			const { ...params /* userId */ } = this.bodyParams;
+			const findResult = findChannelByIdOrName({ params });
 
 			const user = this.getUserFromParams();
 
 			Meteor.call('removeUserFromRoom', { rid: findResult._id, username: user.username });
 
 			return API.v1.success({
-				channel: findChannelByIdOrName({ params: { roomId }, userId: this.userId }),
+				channel: findChannelByIdOrName({ params, userId: this.userId }),
 			});
 		},
 	},
@@ -226,15 +227,15 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			const { roomId } = this.bodyParams;
-			const findResult = findChannelByIdOrName({ params: { roomId } });
+			const { ...params } = this.bodyParams;
+			const findResult = findChannelByIdOrName({ params });
 
 			Meteor.runAsUser(this.userId, () => {
 				Meteor.call('leaveRoom', findResult._id);
 			});
 
 			return API.v1.success({
-				channel: findChannelByIdOrName({ params: { roomId }, userId: this.userId }),
+				channel: findChannelByIdOrName({ params, userId: this.userId }),
 			});
 		},
 	},
@@ -247,7 +248,7 @@ API.v1.addRoute(
 		validateParams: isChannelsMessagesProps,
 	},
 	{
-		get() {
+		async get() {
 			const { roomId } = this.queryParams;
 			const findResult = findChannelByIdOrName({
 				params: { roomId },
@@ -269,15 +270,15 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const cursor = Messages.find(ourQuery, {
+			// @ts-expect-error recursive types are causing issues here
+			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			});
 
-			const total = cursor.count();
-			const messages = cursor.fetch();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),
@@ -297,10 +298,10 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			const { roomId } = this.bodyParams;
+			const { ...params } = this.bodyParams;
 
 			const findResult = findChannelByIdOrName({
-				params: { roomId },
+				params,
 				checkedArchived: false,
 			});
 
@@ -329,9 +330,7 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			const { roomId } = this.bodyParams;
-
-			const findResult = findChannelByIdOrName({ params: { roomId } });
+			const findResult = findChannelByIdOrName({ params: this.bodyParams });
 
 			if (findResult.ro === this.bodyParams.readOnly) {
 				return API.v1.failure('The channel read only setting is the same as what it would be changed to.');
@@ -340,7 +339,7 @@ API.v1.addRoute(
 			Meteor.call('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
 
 			return API.v1.success({
-				channel: findChannelByIdOrName({ params: { roomId }, userId: this.userId }),
+				channel: findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
 			});
 		},
 	},
@@ -354,9 +353,9 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			const { roomId, announcement } = this.bodyParams;
+			const { announcement, ...params } = this.bodyParams;
 
-			const findResult = findChannelByIdOrName({ params: { roomId } });
+			const findResult = findChannelByIdOrName({ params });
 
 			Meteor.call('saveRoomSettings', findResult._id, 'roomAnnouncement', announcement);
 
@@ -379,23 +378,19 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			const mentions = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('getUserMentionsByChannel', {
-					roomId,
-					options: {
-						sort: sort || { ts: 1 },
-						skip: offset,
-						limit: count,
-					},
-				}),
-			);
+			const mentions = Meteor.call('getUserMentionsByChannel', {
+				roomId,
+				options: {
+					sort: sort || { ts: 1 },
+					skip: offset,
+					limit: count,
+				},
+			});
 
-			const allMentions = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('getUserMentionsByChannel', {
-					roomId,
-					options: {},
-				}),
-			);
+			const allMentions = Meteor.call('getUserMentionsByChannel', {
+				roomId,
+				options: {},
+			});
 
 			return API.v1.success({
 				mentions,
@@ -415,9 +410,9 @@ API.v1.addRoute(
 	},
 	{
 		get() {
-			const { roomId } = this.queryParams;
+			const { ...params } = this.queryParams;
 
-			const findResult = findChannelByIdOrName({ params: { roomId } });
+			const findResult = findChannelByIdOrName({ params });
 
 			const moderators = Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
 				fields: { u: 1 },
@@ -460,7 +455,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (!hasAllPermission(this.userId, ['create-team', 'edit-room'])) {
+			if (!hasPermission(this.userId, 'create-team')) {
 				return API.v1.unauthorized();
 			}
 
@@ -468,6 +463,10 @@ API.v1.addRoute(
 
 			if (!channelId && !channelName) {
 				return API.v1.failure('The parameter "channelId" or "channelName" is required');
+			}
+
+			if (!hasPermission(this.userId, 'edit-room', channelId)) {
+				return API.v1.unauthorized();
 			}
 
 			const room = findChannelByIdOrName({
@@ -486,7 +485,7 @@ API.v1.addRoute(
 				fields: { 'u._id': 1 },
 			});
 
-			const members = subscriptions.fetch().map((s: ISubscription) => s.u && s.u._id);
+			const members = subscriptions.fetch().map((s: ISubscription) => s.u?._id);
 
 			const teamData = {
 				team: {

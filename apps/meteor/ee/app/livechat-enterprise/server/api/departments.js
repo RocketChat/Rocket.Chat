@@ -1,7 +1,6 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../../app/api/server';
-import { hasPermission } from '../../../../../app/authorization/server';
 import {
 	findAllRooms,
 	findAllAverageServiceTime,
@@ -12,16 +11,12 @@ import {
 	findPercentageOfAbandonedRooms,
 	findAllAverageOfChatDurationTime,
 } from '../../../../../app/livechat/server/lib/analytics/departments';
-import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../lib/Department';
 
 API.v1.addRoute(
 	'livechat/analytics/departments/amount-of-chats',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { answered, departmentId } = this.requestParams();
@@ -60,12 +55,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/average-service-time',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -102,12 +94,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/average-chat-duration-time',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -144,12 +133,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/total-service-time',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -186,12 +172,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/average-waiting-time',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -228,12 +211,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/total-transferred-chats',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -270,12 +250,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/total-abandoned-chats',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -312,12 +289,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/percentage-abandoned-chats',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
@@ -342,55 +316,6 @@ API.v1.addRoute(
 				departmentId,
 				options: { offset, count },
 			});
-			return API.v1.success({
-				departments,
-				count: departments.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/departments.available-by-unit/:unitId',
-	{ authRequired: true },
-	{
-		get() {
-			check(this.urlParams, {
-				unitId: Match.Maybe(String),
-			});
-			const { offset, count } = this.getPaginationItems();
-			const { unitId } = this.urlParams;
-			const { text, onlyMyDepartments } = this.queryParams;
-
-			const { departments, total } = Promise.await(
-				findAllDepartmentsAvailable(this.userId, unitId, offset, count, text, onlyMyDepartments === 'true'),
-			);
-
-			return API.v1.success({
-				departments,
-				count: departments.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/departments.by-unit/:id',
-	{ authRequired: true },
-	{
-		async get() {
-			check(this.urlParams, {
-				id: String,
-			});
-			const { offset, count } = this.getPaginationItems();
-			const { id } = this.urlParams;
-
-			const { departments, total } = await findAllDepartmentsByUnit(id, offset, count);
-
 			return API.v1.success({
 				departments,
 				count: departments.length,

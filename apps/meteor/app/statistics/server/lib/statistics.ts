@@ -5,12 +5,6 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import type { IRoom, IStats } from '@rocket.chat/core-typings';
-
-import { Settings, Users, Rooms, Subscriptions, Messages, LivechatVisitors } from '../../../models/server';
-import { settings } from '../../../settings/server';
-import { Info, getMongoInfo } from '../../../utils/server';
-import { getControl } from '../../../../server/lib/migrations';
-import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import {
 	NotificationQueue,
 	Users as UsersRaw,
@@ -18,18 +12,29 @@ import {
 	Statistics,
 	Sessions,
 	Integrations,
+	Invites,
 	Uploads,
 	LivechatDepartment,
+	LivechatVisitors,
 	EmailInbox,
 	LivechatBusinessHours,
 	Messages as MessagesRaw,
+	Roles as RolesRaw,
 	InstanceStatus,
-} from '../../../models/server/raw';
+	Settings,
+} from '@rocket.chat/models';
+
+import { Users, Rooms, Subscriptions, Messages } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { Info, getMongoInfo } from '../../../utils/server';
+import { getControl } from '../../../../server/lib/migrations';
+import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
+import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { Analytics } from '../../../../server/sdk';
+import { Analytics, Team, VideoConf } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
@@ -63,18 +68,21 @@ export const statistics = {
 
 		// Setup Wizard
 		statistics.wizard = {};
-		wizardFields.forEach((field) => {
-			const record = Settings.findOne(field);
-			if (record) {
-				const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
-				statistics.wizard[wizardField] = record.value;
-			}
-		});
+		await Promise.all(
+			wizardFields.map(async (field) => {
+				const record = await Settings.findOne(field);
+				if (record) {
+					const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
+					statistics.wizard[wizardField] = record.value;
+				}
+			}),
+		);
 
 		// Version
+		const uniqueID = await Settings.findOne('uniqueID');
 		statistics.uniqueId = settings.get('uniqueID');
-		if (Settings.findOne('uniqueID')) {
-			statistics.installedAt = Settings.findOne('uniqueID').createdAt;
+		if (uniqueID) {
+			statistics.installedAt = uniqueID.createdAt.toISOString();
 		}
 
 		if (Info) {
@@ -110,7 +118,7 @@ export const statistics = {
 		statistics.totalThreads = Messages.countThreads();
 
 		// livechat visitors
-		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
+		statistics.totalLivechatVisitors = await LivechatVisitors.find().count();
 
 		// livechat agents
 		statistics.totalLivechatAgents = Users.findAgents().count();
@@ -180,8 +188,8 @@ export const statistics = {
 
 		// Amount of chats placed on hold
 		statsPms.push(
-			MessagesRaw.col.distinct('rid', { t: 'omnichannel_placed_chat_on_hold' }).then((msgs) => {
-				statistics.chatsOnHold = msgs.length;
+			MessagesRaw.countRoomsWithMessageType('omnichannel_placed_chat_on_hold', { readPreference }).then((total) => {
+				statistics.chatsOnHold = total;
 			}),
 		);
 
@@ -190,12 +198,9 @@ export const statistics = {
 
 		// Amount of VoIP Calls
 		statsPms.push(
-			RoomsRaw.col
-				.find({ t: 'v' })
-				.count()
-				.then((count) => {
-					statistics.voipCalls = count;
-				}),
+			RoomsRaw.countByType('v').then((count) => {
+				statistics.voipCalls = count;
+			}),
 		);
 
 		// Amount of VoIP Extensions connected
@@ -210,27 +215,21 @@ export const statistics = {
 
 		// Amount of Calls that ended properly
 		statsPms.push(
-			MessagesRaw.col
-				.find({ t: 'voip-call-wrapup' })
-				.count()
-				.then((count) => {
-					statistics.voipSuccessfulCalls = count;
-				}),
+			MessagesRaw.countByType('voip-call-wrapup', { readPreference }).then((count) => {
+				statistics.voipSuccessfulCalls = count;
+			}),
 		);
 
 		// Amount of Calls that ended with an error
 		statsPms.push(
-			MessagesRaw.col
-				.find({ t: 'voip-call-ended-unexpectedly' })
-				.count()
-				.then((count) => {
-					statistics.voipErrorCalls = count;
-				}),
+			MessagesRaw.countByType('voip-call-ended-unexpectedly', { readPreference }).then((count) => {
+				statistics.voipErrorCalls = count;
+			}),
 		);
 		// Amount of Calls that were put on hold
 		statsPms.push(
-			MessagesRaw.col.distinct('rid', { t: 'voip-call-on-hold' }).then((msgs) => {
-				statistics.voipOnHoldCalls = msgs.length;
+			MessagesRaw.countRoomsWithMessageType('voip-call-on-hold', { readPreference }).then((count) => {
+				statistics.voipOnHoldCalls = count;
 			}),
 		);
 
@@ -395,6 +394,8 @@ export const statistics = {
 
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();
+		statistics.importer = getImporterStatistics();
+		statistics.videoConf = await VideoConf.getStatistics();
 
 		// If getSettingsStatistics() returns an error, save as empty object.
 		statsPms.push(
@@ -448,7 +449,15 @@ export const statistics = {
 			}),
 		);
 
+		statsPms.push(
+			Team.getStatistics().then((result) => {
+				statistics.teams = result;
+			}),
+		);
+
 		statsPms.push(Analytics.resetSeatRequestCount());
+
+		// TODO: Is that the best way to do this? maybe we should use a promise.all()
 
 		statistics.dashboardCount = settings.get('Engagement_Dashboard_Load_Count');
 		statistics.messageAuditApply = settings.get('Message_Auditing_Apply_Count');
@@ -457,6 +466,46 @@ export const statistics = {
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
 		statistics.totalOTRRooms = Rooms.findByCreatedOTR().count();
 		statistics.totalOTR = settings.get('OTR_Count');
+		statistics.totalBroadcastRooms = await RoomsRaw.findByBroadcast().count();
+		statistics.totalRoomsWithActiveLivestream = await RoomsRaw.findByActiveLivestream().count();
+		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
+		statistics.totalRoomsWithStarred = await MessagesRaw.countRoomsWithStarredMessages({ readPreference });
+		statistics.totalRoomsWithPinned = await MessagesRaw.countRoomsWithPinnedMessages({ readPreference });
+		statistics.totalUserTOTP = await UsersRaw.findActiveUsersTOTPEnable({ readPreference }).count();
+		statistics.totalUserEmail2fa = await UsersRaw.findActiveUsersEmail2faEnable({ readPreference }).count();
+		statistics.totalPinned = await MessagesRaw.findPinned({ readPreference }).count();
+		statistics.totalStarred = await MessagesRaw.findStarred({ readPreference }).count();
+		statistics.totalLinkInvitation = await Invites.find().count();
+		statistics.totalLinkInvitationUses = await Invites.countUses();
+		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
+		statistics.totalE2ERooms = await RoomsRaw.findByE2E({ readPreference }).count();
+		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
+		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
+		statistics.totalEncryptedMessages = await MessagesRaw.countByType('e2e', { readPreference });
+		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
+		statistics.totalSubscriptionRoles = await RolesRaw.findByScope('Subscriptions').count();
+		statistics.totalUserRoles = await RolesRaw.findByScope('Users').count();
+		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
+		statistics.matrixBridgeEnabled = settings.get('Federation_Matrix_enabled');
+		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
+
+		const defaultHomeTitle = (await Settings.findOneById('Layout_Home_Title'))?.packageValue;
+		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== defaultHomeTitle;
+
+		const defaultHomeBody = (await Settings.findOneById('Layout_Home_Body'))?.packageValue;
+		statistics.homeBodyChanged = settings.get('Layout_Home_Body') !== defaultHomeBody;
+
+		const defaultCustomCSS = (await Settings.findOneById('theme-custom-css'))?.packageValue;
+		statistics.customCSSChanged = settings.get('theme-custom-css') !== defaultCustomCSS;
+
+		const defaultOnLogoutCustomScript = (await Settings.findOneById('Custom_Script_On_Logout'))?.packageValue;
+		statistics.onLogoutCustomScriptChanged = settings.get('Custom_Script_On_Logout') !== defaultOnLogoutCustomScript;
+
+		const defaultLoggedOutCustomScript = (await Settings.findOneById('Custom_Script_Logged_Out'))?.packageValue;
+		statistics.loggedOutCustomScriptChanged = settings.get('Custom_Script_Logged_Out') !== defaultLoggedOutCustomScript;
+
+		const defaultLoggedInCustomScript = (await Settings.findOneById('Custom_Script_Logged_In'))?.packageValue;
+		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
 
 		await Promise.all(statsPms).catch(log);
 

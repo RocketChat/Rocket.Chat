@@ -20,7 +20,7 @@ import { useMessageActions } from '../../contexts/MessageContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 import { useMessageBody } from '../hooks/useMessageBody';
 import { useParentMessage } from '../hooks/useParentMessage';
-import MessageRender from './MessageRender';
+import ThreadMessagePreviewBody from './ThreadMessagePreviewBody';
 
 export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }> = ({ message, sequential, ...props }) => {
 	const {
@@ -48,19 +48,27 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 						<ThreadMessageIconThread />
 					</ThreadMessageLeftContainer>
 					<ThreadMessageContainer>
-						<ThreadMessageOrigin>{parentMessage.phase === AsyncStatePhase.RESOLVED ? body : <Skeleton />}</ThreadMessageOrigin>
+						<ThreadMessageOrigin>
+							{parentMessage.phase === AsyncStatePhase.RESOLVED ? (
+								<ThreadMessagePreviewBody message={{ ...parentMessage.value, msg: body }} />
+							) : (
+								<Skeleton />
+							)}
+						</ThreadMessageOrigin>
 						<ThreadMessageUnfollow />
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}
-			<ThreadMessageRow onClick={!message.ignored && !isSelecting ? openThread(message.tmid, message._id) : undefined}>
+			<ThreadMessageRow
+				onClick={!(message as { ignored?: boolean }).ignored && !isSelecting ? openThread(message.tmid, message._id) : undefined}
+			>
 				<ThreadMessageLeftContainer>
 					{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>
-						{message.ignored ? t('Message_Ignored') : <MessageRender isThreadPreview message={message} />}
+						{(message as { ignored?: boolean }).ignored ? t('Message_Ignored') : <ThreadMessagePreviewBody message={message} />}
 					</ThreadMessageBody>
 				</ThreadMessageContainer>
 			</ThreadMessageRow>

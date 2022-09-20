@@ -3,10 +3,11 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
+import { isUserFederated } from '@rocket.chat/core-typings';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
@@ -14,6 +15,8 @@ import { saveUserIdentity } from './saveUserIdentity';
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { AppEvents, Apps } from '../../../apps/server/orchestrator';
+import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
@@ -327,6 +330,10 @@ const saveNewUser = function (userData, sendPassword) {
 };
 
 export const saveUser = function (userId, userData) {
+	const oldUserData = Users.findOneById(userData._id);
+	if (oldUserData && isUserFederated(oldUserData)) {
+		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
+	}
 	validateUserData(userId, userData);
 	let sendPassword = false;
 
@@ -410,6 +417,16 @@ export const saveUser = function (userId, userData) {
 	Meteor.users.update({ _id: userData._id }, updateUser);
 
 	callbacks.run('afterSaveUser', userData);
+
+	// App IPostUserUpdated event hook
+	const userUpdated = Users.findOneById(userId);
+	Promise.await(
+		Apps.triggerEvent(AppEvents.IPostUserUpdated, {
+			user: userUpdated,
+			previousUser: oldUserData,
+			performedBy: safeGetMeteorUser(),
+		}),
+	);
 
 	if (sendPassword) {
 		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);

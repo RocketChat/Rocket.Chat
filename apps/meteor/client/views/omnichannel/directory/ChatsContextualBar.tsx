@@ -37,7 +37,7 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 		[id],
 	);
 
-	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(`rooms.info`, query);
+	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(`/v1/rooms.info`, query);
 
 	if (bar === 'view' && id) {
 		return <Chat rid={id} />;

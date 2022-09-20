@@ -180,6 +180,26 @@ settingsRegistry.addGroup('Accounts', function () {
 			type: 'string',
 			hidden: true,
 		});
+		this.add('Manual_Entry_User_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('CSV_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Hipchat_Enterprise_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Slack_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Slack_Users_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
 		this.add('Accounts_UseDefaultBlockedDomainsList', true, {
 			type: 'boolean',
 		});
@@ -406,10 +426,23 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Sort_By',
 		});
 
-		this.add('Accounts_Default_User_Preferences_showMessageInMainThread', false, {
-			type: 'boolean',
+		this.add('Accounts_Default_User_Preferences_alsoSendThreadToChannel', 'default', {
+			type: 'select',
+			values: [
+				{
+					key: 'default',
+					i18nLabel: 'Default',
+				},
+				{
+					key: 'always',
+					i18nLabel: 'Always',
+				},
+				{
+					key: 'never',
+					i18nLabel: 'Never',
+				},
+			],
 			public: true,
-			i18nLabel: 'Show_Message_In_Main_Thread',
 		});
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
@@ -437,6 +470,7 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Enter_Behaviour',
 		});
+
 		this.add('Accounts_Default_User_Preferences_messageViewMode', 0, {
 			type: 'select',
 			values: [
@@ -514,11 +548,11 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
 
-		this.add('Accounts_Default_User_Preferences_enableNewMessageTemplate', false, {
+		this.add('Accounts_Default_User_Preferences_useLegacyMessageTemplate', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Enable_New_Message_Template',
-			alert: 'Enable_New_Message_Template_alert',
+			i18nLabel: 'Use_Legacy_Message_Template',
+			alert: 'Use_Legacy_Message_Template_alert',
 		});
 	});
 
@@ -809,7 +843,6 @@ settingsRegistry.addGroup('General', function () {
 		],
 	});
 
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	this.add(
 		'Site_Url',
 		typeof (global as any).__meteor_runtime_config__ !== 'undefined' && (global as any).__meteor_runtime_config__ !== null
@@ -1522,11 +1555,22 @@ settingsRegistry.addGroup('Layout', function () {
 			type: 'boolean',
 			public: true,
 		});
+		this.add('Layout_Custom_Body_Only', false, {
+			i18nDescription: 'Layout_Custom_Body_Only_description',
+			type: 'boolean',
+			invalidValue: false,
+			enterprise: true,
+			public: true,
+		});
 		this.add(
 			'Layout_Home_Body',
-			'<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat,\n  for Android and iOS is available from <a title="Rocket.Chat on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> &rarr; <strong>Layout</strong> &rarr; <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>',
+			'<p>~~~~ Default html example ~~~~</p>\n<strong>Welcome to (ENTER ORGANIZATION NAME HERE)</strong>\n\n<p>All general communications should be done through #general</p>\n<p>find more information <a href="INSERT LINK" target="_blank" rel="noopener">here</a></p>',
 			{
 				type: 'code',
+				enableQuery: {
+					_id: 'Layout_Custom_Body',
+					value: true,
+				},
 				code: 'text/html',
 				multiline: true,
 				public: true,
@@ -1680,6 +1724,11 @@ settingsRegistry.addGroup('Logs', function () {
 			_id: 'Log_Trace_Subscriptions',
 			value: true,
 		},
+	});
+
+	this.add('Uncaught_Exceptions_Count', 0, {
+		hidden: true,
+		type: 'int',
 	});
 
 	this.section('Prometheus', function () {
@@ -2891,6 +2940,10 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 		this.add('Organization_Email', '', {
 			type: 'string',
 		});
+		this.add('Triggered_Emails_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
 	});
 
 	this.section('Cloud_Info', function () {
@@ -3167,7 +3220,6 @@ settingsRegistry.addGroup('Call_Center', function () {
 		this.add('VoIP_Enabled', false, {
 			type: 'boolean',
 			public: true,
-			alert: 'Experimental_Feature_Alert',
 			enableQuery: {
 				_id: 'Livechat_enabled',
 				value: true,
@@ -3182,22 +3234,6 @@ settingsRegistry.addGroup('Call_Center', function () {
 			},
 		});
 		this.section('Server_Configuration', function () {
-			this.add('VoIP_Server_Host', '', {
-				type: 'string',
-				public: true,
-				enableQuery: {
-					_id: 'VoIP_Enabled',
-					value: true,
-				},
-			});
-			this.add('VoIP_Server_Websocket_Port', 0, {
-				type: 'int',
-				public: true,
-				enableQuery: {
-					_id: 'VoIP_Enabled',
-					value: true,
-				},
-			});
 			this.add('VoIP_Server_Name', '', {
 				type: 'string',
 				public: true,
@@ -3219,6 +3255,15 @@ settingsRegistry.addGroup('Call_Center', function () {
 				public: true,
 				enableQuery: {
 					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Enable_Keep_Alive_For_Unstable_Networks', true, {
+				type: 'boolean',
+				public: true,
+				i18nDescription: 'VoIP_Enable_Keep_Alive_For_Unstable_Networks_Description',
+				enableQuery: {
+					_id: 'Livechat_enabled',
 					value: true,
 				},
 			});

@@ -4,9 +4,12 @@ import { useCallback, useContext } from 'react';
 
 import { ServerContext } from '../ServerContext';
 
-type EndpointFunction<TMethod extends Method, TPathPattern extends PathPattern> = (
-	params: void extends OperationParams<TMethod, TPathPattern> ? void : Serialized<OperationParams<TMethod, TPathPattern>>,
-) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
+export type EndpointFunction<TMethod extends Method, TPathPattern extends PathPattern> = undefined extends OperationParams<
+	TMethod,
+	TPathPattern
+>
+	? (params?: OperationParams<TMethod, TPathPattern>) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>
+	: (params: OperationParams<TMethod, TPathPattern>) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 
 export const useEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	method: TMethod,
@@ -14,8 +17,5 @@ export const useEndpoint = <TMethod extends Method, TPath extends PathFor<TMetho
 ): EndpointFunction<TMethod, MatchPathPattern<TPath>> => {
 	const { callEndpoint } = useContext(ServerContext);
 
-	return useCallback(
-		(params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>) => callEndpoint(method, path, params),
-		[callEndpoint, path, method],
-	);
+	return useCallback((params: any) => callEndpoint(method, path, params), [callEndpoint, path, method]);
 };

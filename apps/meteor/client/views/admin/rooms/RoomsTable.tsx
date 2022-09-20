@@ -14,8 +14,8 @@ import FilterByTypeAndText from './FilterByTypeAndText';
 type RoomParamsType = {
 	text?: string;
 	types?: string[];
-	current?: number;
-	itemsPerPage?: 25 | 50 | 100;
+	current: number;
+	itemsPerPage: 25 | 50 | 100;
 };
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
@@ -112,7 +112,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const query = useQuery(debouncedParams, debouncedSort);
 
-	const endpointData = useEndpointData('rooms.adminRooms', query);
+	const endpointData = useEndpointData('/v1/rooms.adminRooms', query);
 
 	const { value: data, reload: reloadEndPoint } = endpointData;
 

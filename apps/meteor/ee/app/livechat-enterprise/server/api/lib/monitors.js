@@ -1,12 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Users } from '@rocket.chat/models';
 
-import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import { Users } from '../../../../../../app/models/server/raw';
-
-export async function findMonitors({ userId, text, pagination: { offset, count, sort } }) {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-monitors'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findMonitors({ text, pagination: { offset, count, sort } }) {
 	const query = {};
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
@@ -15,7 +10,7 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 		});
 	}
 
-	const cursor = Users.findUsersInRolesWithQuery('livechat-monitor', query, {
+	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery('livechat-monitor', query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
@@ -29,9 +24,7 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 		},
 	});
 
-	const total = await cursor.count();
-
-	const monitors = await cursor.toArray();
+	const [monitors, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		monitors,
@@ -41,10 +34,7 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 	};
 }
 
-export async function findMonitorByUsername({ userId, username }) {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-monitors'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findMonitorByUsername({ username }) {
 	const user = await Users.findOne(
 		{ username },
 		{

@@ -1,3 +1,5 @@
+import type Url from 'url';
+
 import type Icons from '@rocket.chat/icons';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { parser } from '@rocket.chat/message-parser';
@@ -7,6 +9,7 @@ import type { IUser } from '../IUser';
 import type { IRoom, RoomID } from '../IRoom';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
+import type { ILivechatVisitor } from '../ILivechatVisitor';
 
 type MentionType = 'user' | 'team';
 
@@ -14,7 +17,9 @@ type MessageUrl = {
 	url: string;
 	source?: string;
 	meta: Record<string, string>;
-	headers?: { contentLength: string; contentType: string };
+	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
+	ignoreParse?: boolean;
+	parsedUrl?: Pick<Url.UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
 
 type VoipMessageTypesValues =
@@ -38,7 +43,20 @@ type TeamMessageTypes =
 	| 'user-added-room-to-team'
 	| 'ujt';
 
-type OmnichannelTypesValues = 'livechat_transfer_history_fallback' | 'livechat-close';
+type LivechatMessageTypes =
+	| 'livechat_navigation_history'
+	| 'livechat_transfer_history'
+	| 'livechat_transcript_history'
+	| 'livechat_video_call'
+	| 'livechat_webrtc_video_call';
+
+type OmnichannelTypesValues =
+	| 'livechat_transfer_history_fallback'
+	| 'livechat-close'
+	| 'omnichannel_placed_chat_on_hold'
+	| 'omnichannel_on_hold_chat_resumed';
+
+type OtrMessageTypeValues = 'otr' | 'otr-ack';
 
 type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
@@ -70,15 +88,32 @@ export type MessageTypesValues =
 	| 'room-set-read-only'
 	| 'room-allowed-reacting'
 	| 'room-disallowed-reacting'
+	| 'command'
+	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
 	| OmnichannelTypesValues
+	| OtrMessageTypeValues
 	| OtrSystemMessages;
+
+export type TokenType = 'code' | 'inlinecode' | 'bold' | 'italic' | 'strike' | 'link';
+export type Token = {
+	token: string;
+	text: string;
+	type?: TokenType;
+	noHtml?: string;
+} & TokenExtra;
+
+export type TokenExtra = {
+	highlight?: boolean;
+	noHtml?: string;
+};
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
 	tmid?: string;
+	tshow?: boolean;
 	ts: Date;
 	mentions?: ({
 		type: MentionType;
@@ -91,14 +126,12 @@ export interface IMessage extends IRocketChatRecord {
 	alias?: string;
 	md?: ReturnType<typeof parser>;
 
-	// TODO: chapter day frontend - wrong type
-	ignored?: boolean;
 	_hidden?: boolean;
 	imported?: boolean;
 	replies?: IUser['_id'][];
 	location?: {
 		type: 'Point';
-		coordinates: [string, string];
+		coordinates: [number, number];
 	};
 	starred?: { _id: IUser['_id'] }[];
 	pinned?: boolean;
@@ -111,6 +144,7 @@ export interface IMessage extends IRocketChatRecord {
 	tcount?: number;
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
+	otrAck?: string;
 
 	urls?: MessageUrl[];
 
@@ -141,6 +175,12 @@ export interface IMessage extends IRocketChatRecord {
 
 	avatar?: string;
 	emoji?: string;
+
+	// Tokenization fields
+	tokens?: Token[];
+	html?: string;
+	// Messages sent from visitors have this field
+	token?: string;
 }
 
 export type MessageSystem = {
@@ -155,7 +195,10 @@ export interface IEditedMessage extends IMessage {
 export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
 
 export interface ITranslatedMessage extends IMessage {
-	translations: { [key: string]: unknown };
+	translations: { [key: string]: string } & { original?: string };
+	translationProvider: string;
+	autoTranslateShowInverse?: boolean;
+	autoTranslateFetching?: boolean;
 }
 
 export const isTranslatedMessage = (message: IMessage): message is ITranslatedMessage => 'translations' in message;
@@ -199,6 +242,41 @@ export interface IMessageReactionsNormalized extends IMessage {
 export const isMessageReactionsNormalized = (message: IMessage): message is IMessageReactionsNormalized =>
 	Boolean('reactions' in message && message.reactions && message.reactions[0] && 'names' in message.reactions[0]);
 
+export interface IOmnichannelSystemMessage extends IMessage {
+	navigation?: {
+		page: {
+			title: string;
+			location: {
+				href: string;
+			};
+			token?: string;
+		};
+	};
+	transferData?: {
+		comment: string;
+		transferredBy: {
+			name?: string;
+			username: string;
+		};
+		transferredTo: {
+			name?: string;
+			username: string;
+		};
+		nextDepartment?: {
+			_id: string;
+			name?: string;
+		};
+		scope: 'department' | 'agent' | 'queue';
+	};
+	requestData?: {
+		type: 'visitor' | 'user';
+		visitor?: ILivechatVisitor;
+		user?: IUser;
+	};
+	webRtcCallEndTs?: Date;
+	comment?: string;
+}
+
 export type IVoipMessage = IMessage & {
 	voipData: {
 		callDuration?: number;
@@ -233,3 +311,15 @@ export type IMessageInbox = IMessage & {
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
 export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;
+
+export type IE2EEMessage = IMessage & {
+	t: 'e2e';
+	e2e: 'pending' | 'done';
+};
+
+export type IOTRMessage = IMessage & {
+	t: 'otr' | 'otr-ack';
+};
+
+export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
+export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr' || message.t === 'otr-ack';

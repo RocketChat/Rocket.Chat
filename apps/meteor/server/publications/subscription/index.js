@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Subscriptions } from '../../../app/models';
+import { Subscriptions } from '../../../app/models/server';
 import { subscriptionFields } from '../../modules/watchers/watchers.module';
 
 Meteor.methods({

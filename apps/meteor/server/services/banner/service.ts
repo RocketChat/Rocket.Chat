@@ -1,38 +1,20 @@
-import { Db } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
-import { BannerPlatform, IBanner, IBannerDismiss, Optional } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { BannerPlatform, IBanner, IBannerDismiss, Optional, IUser } from '@rocket.chat/core-typings';
+import { Banners, BannersDismiss, Users } from '@rocket.chat/models';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { BannersRaw } from '../../../app/models/server/raw/Banners';
-import { BannersDismissRaw } from '../../../app/models/server/raw/BannersDismiss';
-import { UsersRaw } from '../../../app/models/server/raw/Users';
-import { IBannerService } from '../../sdk/types/IBannerService';
+import type { IBannerService } from '../../sdk/types/IBannerService';
 import { api } from '../../sdk/api';
 
 export class BannerService extends ServiceClassInternal implements IBannerService {
 	protected name = 'banner';
 
-	private Banners: BannersRaw;
-
-	private BannersDismiss: BannersDismissRaw;
-
-	private Users: UsersRaw;
-
-	constructor(db: Db) {
-		super();
-
-		this.Banners = new BannersRaw(db.collection('rocketchat_banner'));
-		this.BannersDismiss = new BannersDismissRaw(db.collection('rocketchat_banner_dismiss'));
-		this.Users = new UsersRaw(db.collection('users'));
-	}
-
 	async getById(bannerId: string): Promise<null | IBanner> {
-		return this.Banners.findOneById(bannerId);
+		return Banners.findOneById(bannerId);
 	}
 
 	async discardDismissal(bannerId: string): Promise<boolean> {
-		const result = await this.Banners.findOneById(bannerId);
+		const result = await Banners.findOneById(bannerId);
 
 		if (!result) {
 			return false;
@@ -42,7 +24,7 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 
 		const snapshot = await this.create({ ...banner, snapshot: _id, active: false }); // create a snapshot
 
-		await this.BannersDismiss.updateMany({ bannerId }, { $set: { bannerId: snapshot._id } });
+		await BannersDismiss.updateMany({ bannerId }, { $set: { bannerId: snapshot._id } });
 		return true;
 	}
 
@@ -52,12 +34,12 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 		doc.view.appId = 'banner-core';
 		doc.view.viewId = bannerId;
 
-		await this.Banners.create({
+		await Banners.create({
 			...doc,
 			_id: bannerId,
 		});
 
-		const banner = await this.Banners.findOneById(bannerId);
+		const banner = await Banners.findOneById(bannerId);
 		if (!banner) {
 			throw new Error('error-creating-banner');
 		}
@@ -68,17 +50,17 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 	}
 
 	async getBannersForUser(userId: string, platform: BannerPlatform, bannerId?: string): Promise<IBanner[]> {
-		const user = await this.Users.findOneById<Pick<IUser, 'roles'>>(userId, {
+		const user = await Users.findOneById<Pick<IUser, 'roles'>>(userId, {
 			projection: { roles: 1 },
 		});
 
 		const { roles } = user || { roles: [] };
 
-		const banners = await this.Banners.findActiveByRoleOrId(roles, platform, bannerId).toArray();
+		const banners = await Banners.findActiveByRoleOrId(roles, platform, bannerId).toArray();
 
 		const bannerIds = banners.map(({ _id }) => _id);
 
-		const result = await this.BannersDismiss.findByUserIdAndBannerId<Pick<IBannerDismiss, 'bannerId'>>(userId, bannerIds, {
+		const result = await BannersDismiss.findByUserIdAndBannerId<Pick<IBannerDismiss, 'bannerId'>>(userId, bannerIds, {
 			projection: { bannerId: 1, _id: 0 },
 		}).toArray();
 
@@ -92,12 +74,12 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 			throw new Error('Invalid params');
 		}
 
-		const banner = await this.Banners.findOneById(bannerId);
+		const banner = await Banners.findOneById(bannerId);
 		if (!banner) {
 			throw new Error('Banner not found');
 		}
 
-		const user = await this.Users.findOneById<Pick<IUser, 'username' | '_id'>>(userId, {
+		const user = await Users.findOneById<Pick<IUser, 'username' | '_id'>>(userId, {
 			projection: { username: 1 },
 		});
 		if (!user) {
@@ -119,13 +101,13 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 			_updatedAt: today,
 		};
 
-		await this.BannersDismiss.insertOne(doc);
+		await BannersDismiss.insertOne(doc);
 
 		return true;
 	}
 
 	async disable(bannerId: string): Promise<boolean> {
-		const result = await this.Banners.disable(bannerId);
+		const result = await Banners.disable(bannerId);
 
 		if (result) {
 			api.broadcast('banner.disabled', bannerId);
@@ -135,7 +117,7 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 	}
 
 	async enable(bannerId: string, doc: Partial<Omit<IBanner, '_id'>> = {}): Promise<boolean> {
-		const result = await this.Banners.findOneById(bannerId);
+		const result = await Banners.findOneById(bannerId);
 
 		if (!result) {
 			return false;
@@ -143,7 +125,7 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 
 		const { _id, ...banner } = result;
 
-		this.Banners.update({ _id }, { ...banner, ...doc, active: true }); // reenable the banner
+		Banners.updateOne({ _id }, { $set: { ...banner, ...doc, active: true } }); // reenable the banner
 
 		api.broadcast('banner.enabled', bannerId);
 		return true;

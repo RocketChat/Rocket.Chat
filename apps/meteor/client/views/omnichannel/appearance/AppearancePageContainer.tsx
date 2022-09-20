@@ -12,7 +12,7 @@ import AppearancePage from './AppearancePage';
 const AppearancePageContainer: FC = () => {
 	const t = useTranslation();
 
-	const { value: data, phase: state, error } = useEndpointData('livechat/appearance');
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/appearance');
 
 	const canViewAppearance = usePermission('view-livechat-appearance');
 

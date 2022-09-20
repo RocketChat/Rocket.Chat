@@ -1,15 +1,13 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import _ from 'underscore';
-import { MessageAttachment, FileAttachmentProps } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { MessageAttachment, FileAttachmentProps, IUser } from '@rocket.chat/core-typings';
+import { Rooms, Uploads } from '@rocket.chat/models';
 
-import { Rooms, Uploads } from '../../../models/server/raw';
 import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { omit } from '../../../../lib/utils/omit';
 
 Meteor.methods({
 	async sendFileMessage(roomId, _store, file, msgData = {}) {
@@ -21,6 +19,9 @@ Meteor.methods({
 		}
 
 		const room = await Rooms.findOneById(roomId);
+		if (!room) {
+			return false;
+		}
 
 		if (user?.type !== 'app' && !canAccessRoom(room, user)) {
 			return false;
@@ -35,7 +36,7 @@ Meteor.methods({
 			tmid: Match.Optional(String),
 		});
 
-		await Uploads.updateFileComplete(file._id, user._id, _.omit(file, '_id'));
+		await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
 
 		const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
 
@@ -61,7 +62,7 @@ Meteor.methods({
 				image_size: file.size,
 			};
 
-			if (file.identify && file.identify.size) {
+			if (file.identify?.size) {
 				attachment.image_dimensions = file.identify.size;
 			}
 
@@ -126,12 +127,12 @@ Meteor.methods({
 		const msg = Meteor.call('sendMessage', {
 			rid: roomId,
 			ts: new Date(),
-			msg: '',
 			file: files[0],
 			files,
-			groupable: false,
 			attachments,
 			...msgData,
+			msg: msgData.msg ?? '',
+			groupable: msgData.groupable ?? false,
 		});
 
 		callbacks.runAsync('afterFileUpload', { user, room, message: msg });

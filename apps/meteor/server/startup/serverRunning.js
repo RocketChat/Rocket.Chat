@@ -20,6 +20,8 @@ const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	process.exit(errorCode);
 };
 
+const skipMongoDbDeprecationCheck = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_CHECK).toLowerCase());
+
 Meteor.startup(function () {
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
 
@@ -72,8 +74,8 @@ Meteor.startup(function () {
 			exitIfNotBypassed(process.env.BYPASS_NODEJS_VALIDATION);
 		}
 
-		if (!semver.satisfies(semver.coerce(mongoVersion), '>=3.6.0')) {
-			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 3.6 OR LATER'].join('\n');
+		if (!semver.satisfies(semver.coerce(mongoVersion), '>=4.2.0')) {
+			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 4.4 OR LATER'].join('\n');
 			showErrorBox('SERVER ERROR', msg);
 
 			exitIfNotBypassed(process.env.BYPASS_MONGO_VALIDATION);
@@ -82,11 +84,11 @@ Meteor.startup(function () {
 		showSuccessBox('SERVER RUNNING', msg);
 
 		// Deprecation
-		if (!semver.satisfies(semver.coerce(mongoVersion), '>=4.2.0')) {
+		if (!skipMongoDbDeprecationCheck && !semver.satisfies(semver.coerce(mongoVersion), '>=4.4.0')) {
 			msg = [
 				`YOUR CURRENT MONGODB VERSION (${mongoVersion}) IS DEPRECATED.`,
-				'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 5.0.0 AND GREATER,',
-				'PLEASE UPGRADE MONGODB TO VERSION 4.2 OR GREATER',
+				'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 6.0.0 AND GREATER,',
+				'PLEASE UPGRADE MONGODB TO VERSION 4.4 OR GREATER',
 			].join('\n');
 			showWarningBox('DEPRECATION', msg);
 

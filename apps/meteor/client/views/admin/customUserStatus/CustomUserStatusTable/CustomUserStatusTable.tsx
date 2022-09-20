@@ -41,7 +41,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 		500,
 	);
 
-	const { value, reload: reloadEndpoint, phase } = useEndpointData('custom-user-status.list', query);
+	const { value, reload: reloadEndpoint, phase } = useEndpointData('/v1/custom-user-status.list', query);
 
 	useEffect(() => {
 		reload.current = reloadEndpoint;

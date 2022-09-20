@@ -1,5 +1,5 @@
 import { ILivechatDepartment } from '@rocket.chat/core-typings';
-import { Field, Button, TextInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
+import { Field, Button, TextInput, Modal, Box } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useEffect, ReactElement, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
@@ -82,7 +82,7 @@ const CloseChatModal = ({
 	return commentRequired || tagRequired ? (
 		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
 			<Modal.Header>
-				<Icon name='baloon-close-top-right' size={20} />
+				<Modal.Icon name='baloon-close-top-right' />
 				<Modal.Title>{t('Closing_chat')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
@@ -101,19 +101,19 @@ const CloseChatModal = ({
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					<Button type='submit' disabled={cannotSubmit} primary>
 						{t('Confirm')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	) : (
 		<GenericModal
 			variant='warning'
 			title={t('Are_you_sure_you_want_to_close_this_chat')}
-			onConfirm={onConfirm}
+			onConfirm={(): Promise<void> => onConfirm()}
 			onCancel={onCancel}
 			onClose={onCancel}
 			confirmText={t('Confirm')}

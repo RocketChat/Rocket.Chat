@@ -1,8 +1,8 @@
-import { IRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import type { ISubscription, IRegisterUser, IUser } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom } from '@rocket.chat/core-typings';
+import type { ISubscription, IRegisterUser, IUser, IRoom } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { Subscriptions, Users } from '../../../models/server';
-import { Settings } from '../../../models/server/raw';
 import { STATUS_ENABLED, STATUS_REGISTERING } from '../constants';
 
 export const getNameAndDomain = (fullyQualifiedName: string): string[] => fullyQualifiedName.split('@');

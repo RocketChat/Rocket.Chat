@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
@@ -8,29 +7,27 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'r',
 		system: true,
-		message: 'Room_name_changed',
+		message: 'Room_name_changed_to',
 		data(message) {
 			return {
 				room_name: message.msg,
-				user_by: message.u.username,
 			};
 		},
 	});
 	MessageTypes.registerType({
 		id: 'au',
 		system: true,
-		message: 'User_added_by',
+		message: 'User_added_to',
 		data(message) {
 			return {
 				user_added: message.msg,
-				user_by: message.u.username,
 			};
 		},
 	});
 	MessageTypes.registerType({
 		id: 'added-user-to-team',
 		system: true,
-		message: 'Added__username__to_team',
+		message: 'Added__username__to_this_team',
 		data(message) {
 			return {
 				user_added: message.msg,
@@ -40,18 +37,17 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'ru',
 		system: true,
-		message: 'User_removed_by',
+		message: 'User_has_been_removed',
 		data(message) {
 			return {
 				user_removed: message.msg,
-				user_by: message.u.username,
 			};
 		},
 	});
 	MessageTypes.registerType({
 		id: 'removed-user-from-team',
 		system: true,
-		message: 'Removed__username__from_team',
+		message: 'Removed__username__from_the_team',
 		data(message) {
 			return {
 				user_removed: message.msg,
@@ -61,27 +57,17 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'ul',
 		system: true,
-		message: 'User_left',
-		data(message) {
-			return {
-				user_left: message.u.username,
-			};
-		},
+		message: 'User_left_this_channel',
 	});
 	MessageTypes.registerType({
 		id: 'ult',
 		system: true,
-		message: 'User_left_team',
-		data(message) {
-			return {
-				user_left: message.u.username,
-			};
-		},
+		message: 'User_left_this_team',
 	});
 	MessageTypes.registerType({
 		id: 'user-converted-to-team',
 		system: true,
-		message: 'Converted__roomName__to_team',
+		message: 'Converted__roomName__to_a_team',
 		data(message) {
 			return {
 				roomName: message.msg,
@@ -91,7 +77,7 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'user-converted-to-channel',
 		system: true,
-		message: 'Converted__roomName__to_channel',
+		message: 'Converted__roomName__to_a_channel',
 		data(message) {
 			return {
 				roomName: message.msg,
@@ -101,7 +87,7 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'user-removed-room-from-team',
 		system: true,
-		message: 'Removed__roomName__from_this_team',
+		message: 'Removed__roomName__from_the_team',
 		data(message) {
 			return {
 				roomName: message.msg,
@@ -111,7 +97,7 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'user-deleted-room-from-team',
 		system: true,
-		message: 'Deleted__roomName__',
+		message: 'Deleted__roomName__room',
 		data(message) {
 			return {
 				roomName: message.msg,
@@ -121,7 +107,7 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'user-added-room-to-team',
 		system: true,
-		message: 'added__roomName__to_team',
+		message: 'added__roomName__to_this_team',
 		data(message) {
 			return {
 				roomName: message.msg,
@@ -131,7 +117,7 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'uj',
 		system: true,
-		message: 'User_joined_channel',
+		message: 'User_joined_the_channel',
 		data(message) {
 			return {
 				user: message.u.username,
@@ -141,7 +127,7 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'ujt',
 		system: true,
-		message: 'User_joined_team',
+		message: 'User_joined_the_team',
 		data(message) {
 			return {
 				user: message.u.username,
@@ -151,7 +137,7 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'ut',
 		system: true,
-		message: 'User_joined_conversation',
+		message: 'User_joined_the_conversation',
 		data(message) {
 			return {
 				user: message.u.username,
@@ -171,12 +157,7 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'rm',
 		system: true,
-		message: 'Message_removed',
-		data(message) {
-			return {
-				user: message.u.username,
-			};
-		},
+		message: 'Message_is_removed',
 	});
 	// MessageTypes.registerType({
 	// 	id: 'rtc',
@@ -187,22 +168,20 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'user-muted',
 		system: true,
-		message: 'User_muted_by',
+		message: 'User_has_been_muted',
 		data(message) {
 			return {
 				user_muted: message.msg,
-				user_by: message.u.username,
 			};
 		},
 	});
 	MessageTypes.registerType({
 		id: 'user-unmuted',
 		system: true,
-		message: 'User_unmuted_by',
+		message: 'User_has_been_unmuted',
 		data(message) {
 			return {
 				user_unmuted: message.msg,
-				user_by: message.u.username,
 			};
 		},
 	});
@@ -233,67 +212,37 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'room-archived',
 		system: true,
-		message: 'This_room_has_been_archived_by__username_',
-		data(message) {
-			return {
-				username: message.u.username,
-			};
-		},
+		message: 'This_room_has_been_archived',
 	});
 	MessageTypes.registerType({
 		id: 'room-unarchived',
 		system: true,
-		message: 'This_room_has_been_unarchived_by__username_',
-		data(message) {
-			return {
-				username: message.u.username,
-			};
-		},
+		message: 'This_room_has_been_unarchived',
 	});
 	MessageTypes.registerType({
 		id: 'room-removed-read-only',
 		system: true,
-		message: 'room_removed_read_only',
-		data(message) {
-			return {
-				user_by: message.u.username,
-			};
-		},
+		message: 'room_removed_read_only_permission',
 	});
 	MessageTypes.registerType({
 		id: 'room-set-read-only',
 		system: true,
-		message: 'room_set_read_only',
-		data(message) {
-			return {
-				user_by: message.u.username,
-			};
-		},
+		message: 'room_set_read_only_permission',
 	});
 	MessageTypes.registerType({
 		id: 'room-allowed-reacting',
 		system: true,
-		message: 'room_allowed_reacting',
-		data(message) {
-			return {
-				user_by: message.u.username,
-			};
-		},
+		message: 'room_allowed_reactions',
 	});
 	MessageTypes.registerType({
 		id: 'room-disallowed-reacting',
 		system: true,
-		message: 'room_disallowed_reacting',
-		data(message) {
-			return {
-				user_by: message.u.username,
-			};
-		},
+		message: 'room_disallowed_reactions',
 	});
 	MessageTypes.registerType({
 		id: 'room_e2e_enabled',
 		system: true,
-		message: 'This_room_encryption_has_been_enabled_by__username_',
+		message: 'Enabled_E2E_Encryption_for_this_room',
 		data(message) {
 			return {
 				username: message.u.username,
@@ -303,7 +252,7 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'room_e2e_disabled',
 		system: true,
-		message: 'This_room_encryption_has_been_disabled_by__username_',
+		message: 'Disabled_E2E_Encryption_for_this_room',
 		data(message) {
 			return {
 				username: message.u.username,

@@ -7,7 +7,7 @@ import { Subscriptions, Rooms } from '../../app/models/client';
 import { getUserPreference } from '../../app/utils/client';
 import { callbacks } from '../../lib/callbacks';
 import { useReactiveValue } from '../hooks/useReactiveValue';
-import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
+import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 
 const getUserId = (): string | null => Meteor.userId();
 
@@ -48,7 +48,9 @@ const UserProvider: FC = ({ children }) => {
 			user,
 			loginWithPassword,
 			logout,
-			queryPreference: createReactiveSubscriptionFactory((key, defaultValue) => getUserPreference(userId, key, defaultValue)),
+			queryPreference: createReactiveSubscriptionFactory(
+				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
+			),
 			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields) =>
 				Subscriptions.findOne(query, { fields }),
 			),

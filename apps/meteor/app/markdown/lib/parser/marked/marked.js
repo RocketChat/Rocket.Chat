@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
 import _ from 'underscore';
-import _marked from 'marked';
+import { marked as _marked } from 'marked';
 import createDOMPurify from 'dompurify';
 import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
 
@@ -87,7 +87,7 @@ export const marked = (message, { marked: { gfm, tables, breaks, pedantic, smart
 		message.tokens = [];
 	}
 
-	message.html = _marked(unescapeHTML(message.html), {
+	message.html = _marked.parse(unescapeHTML(message.html), {
 		gfm,
 		tables,
 		breaks,
@@ -100,7 +100,7 @@ export const marked = (message, { marked: { gfm, tables, breaks, pedantic, smart
 
 	const window = getGlobalWindow();
 	const DomPurify = createDOMPurify(window);
-	message.html = DomPurify.sanitize(message.html, { ADD_ATTR: ['target'] });
+	message.html = DomPurify.sanitize(message.html, { ADD_ATTR: ['target'], FORBID_ATTR: ['style'], FORBID_TAGS: ['style'] });
 
 	return message;
 };

@@ -6,13 +6,12 @@ import moment from 'moment';
 
 import { Users } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { isRtl } from '../../app/utils/client';
 import { filterLanguage } from '../lib/utils/filterLanguage';
+import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 
 const currentLanguage = new ReactiveVar<string | null>(null);
 
 Meteor.startup(() => {
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
 	currentLanguage.set(Meteor._localStorage.getItem('userLanguage'));
 
@@ -48,8 +47,8 @@ Meteor.startup(() => {
 		if (!language) {
 			return;
 		}
-		document.documentElement.classList[isRtl(language) ? 'add' : 'remove']('rtl');
-		document.documentElement.setAttribute('dir', isRtl(language) ? 'rtl' : 'ltr');
+		document.documentElement.classList[isRTLScriptLanguage(language) ? 'add' : 'remove']('rtl');
+		document.documentElement.setAttribute('dir', isRTLScriptLanguage(language) ? 'rtl' : 'ltr');
 		document.documentElement.lang = language;
 
 		TAPi18n.setLanguage(language);

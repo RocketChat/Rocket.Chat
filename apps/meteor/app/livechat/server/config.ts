@@ -226,6 +226,7 @@ Meteor.startup(function () {
 			type: 'boolean',
 			group: 'Omnichannel',
 			i18nLabel: 'Accept_new_livechats_when_agent_is_idle',
+			public: true,
 			enableQuery: omnichannelEnabledQuery,
 		});
 
@@ -468,15 +469,6 @@ Meteor.startup(function () {
 			group: 'Omnichannel',
 			section: 'Facebook',
 			i18nDescription: 'If_you_dont_have_one_send_an_email_to_omni_rocketchat_to_get_yours',
-			enableQuery: omnichannelEnabledQuery,
-		});
-
-		this.add('Livechat_RDStation_Token', '', {
-			type: 'string',
-			group: 'Omnichannel',
-			public: false,
-			section: 'RD Station',
-			i18nLabel: 'RDStation_Token',
 			enableQuery: omnichannelEnabledQuery,
 		});
 

@@ -1,13 +1,9 @@
-import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import LivechatPriority from '../../../../models/server/raw/LivechatPriority';
-import { LivechatInquiry, Users } from '../../../../../../app/models/server/raw';
+import { LivechatInquiry, Users, LivechatPriority } from '@rocket.chat/models';
+
 import { LivechatEnterprise } from '../../lib/LivechatEnterprise';
 
 export async function setPriorityToInquiry({ userId, roomId, priority }) {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
-	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { fields: { status: 1 } });
+	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { status: 1 } });
 	if (!inquiry || inquiry.status !== 'queued') {
 		throw new Error('error-invalid-inquiry');
 	}
@@ -17,5 +13,5 @@ export async function setPriorityToInquiry({ userId, roomId, priority }) {
 		throw new Error('error-invalid-priority');
 	}
 
-	LivechatEnterprise.updateRoomPriority(roomId, await Users.findOneById(userId, { fields: { username: 1 } }), priorityData);
+	LivechatEnterprise.updateRoomPriority(roomId, await Users.findOneById(userId, { projection: { username: 1 } }), priorityData);
 }

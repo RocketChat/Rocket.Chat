@@ -1,7 +1,6 @@
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
-
-import ExternalLink from '../../components/ExternalLink';
 
 type MapViewImageProps = {
 	linkUrl: string;

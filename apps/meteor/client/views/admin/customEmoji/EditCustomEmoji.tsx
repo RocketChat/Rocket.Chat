@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, FieldGroup, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useMemo, useEffect, FC, ChangeEvent } from 'react';
 
@@ -53,7 +53,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		[previousName, name, aliases, previousAliases, emojiFile],
 	);
 
-	const saveAction = useEndpointUpload('emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
+	const saveAction = useEndpointUpload('/v1/emoji-custom.update', t('Custom_Emoji_Updated_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		if (!name) {
@@ -82,7 +82,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 
 	const deleteAction = useEndpointAction(
 		'POST',
-		'emoji-custom.delete',
+		'/v1/emoji-custom.delete',
 		useMemo(() => ({ emojiId: _id }), [_id]),
 	);
 
@@ -92,7 +92,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 				await deleteAction();
 				dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Has_Been_Deleted') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				onChange();
 				setModal(null);
@@ -152,9 +152,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 				<Field>
 					<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
 						{t('Custom_Emoji')}
-						<Button square onClick={clickUpload}>
-							<Icon name='upload' size='x20' />
-						</Button>
+						<IconButton icon='upload' secondary onClick={clickUpload} />
 					</Field.Label>
 					{newEmojiPreview && (
 						<Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
@@ -173,7 +171,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 			</ButtonGroup>
 
 			<ButtonGroup stretch w='full'>
-				<Button primary danger onClick={handleDeleteButtonClick}>
+				<Button danger onClick={handleDeleteButtonClick}>
 					<Icon name='trash' mie='x4' />
 					{t('Delete')}
 				</Button>

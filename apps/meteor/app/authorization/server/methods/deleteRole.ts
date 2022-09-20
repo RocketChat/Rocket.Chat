@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRole } from '@rocket.chat/core-typings';
+import { Roles } from '@rocket.chat/models';
 
-import { Roles } from '../../../models/server/raw';
 import { hasPermission } from '../functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 

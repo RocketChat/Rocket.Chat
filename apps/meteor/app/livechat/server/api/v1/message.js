@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models';
-import { hasPermission } from '../../../../authorization';
+import { Messages, LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
@@ -13,262 +13,242 @@ import { normalizeMessageFileUpload } from '../../../../utils/server/functions/n
 import { settings } from '../../../../settings/server';
 
 API.v1.addRoute('livechat/message', {
-	post() {
-		try {
-			check(this.bodyParams, {
-				_id: Match.Maybe(String),
-				token: String,
-				rid: String,
-				msg: String,
-				agent: Match.Maybe({
-					agentId: String,
-					username: String,
-				}),
-			});
+	async post() {
+		check(this.bodyParams, {
+			_id: Match.Maybe(String),
+			token: String,
+			rid: String,
+			msg: String,
+			agent: Match.Maybe({
+				agentId: String,
+				username: String,
+			}),
+		});
 
-			const { token, rid, agent, msg } = this.bodyParams;
+		const { token, rid, agent, msg } = this.bodyParams;
 
-			const guest = findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			if (!room.open) {
-				throw new Meteor.Error('room-closed');
-			}
-
-			if (
-				settings.get('Livechat_enable_message_character_limit') &&
-				msg.length > parseInt(settings.get('Livechat_message_character_limit'))
-			) {
-				throw new Meteor.Error('message-length-exceeds-character-limit');
-			}
-
-			const _id = this.bodyParams._id || Random.id();
-
-			const sendMessage = {
-				guest,
-				message: {
-					_id,
-					rid,
-					msg,
-					token,
-				},
-				agent,
-				roomInfo: {
-					source: {
-						type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
-					},
-				},
-			};
-
-			const result = Promise.await(Livechat.sendMessage(sendMessage));
-			if (result) {
-				const message = Messages.findOneById(_id);
-				return API.v1.success({ message });
-			}
-
-			return API.v1.failure();
-		} catch (e) {
-			return API.v1.failure(e);
+		const guest = await findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
 		}
+
+		const room = findRoom(token, rid);
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		if (!room.open) {
+			throw new Meteor.Error('room-closed');
+		}
+
+		if (
+			settings.get('Livechat_enable_message_character_limit') &&
+			msg.length > parseInt(settings.get('Livechat_message_character_limit'))
+		) {
+			throw new Meteor.Error('message-length-exceeds-character-limit');
+		}
+
+		const _id = this.bodyParams._id || Random.id();
+
+		const sendMessage = {
+			guest,
+			message: {
+				_id,
+				rid,
+				msg,
+				token,
+			},
+			agent,
+			roomInfo: {
+				source: {
+					type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+				},
+			},
+		};
+
+		const result = await Livechat.sendMessage(sendMessage);
+		if (result) {
+			const message = Messages.findOneById(_id);
+			return API.v1.success({ message });
+		}
+
+		return API.v1.failure();
 	},
 });
 
 API.v1.addRoute('livechat/message/:_id', {
-	get() {
-		try {
-			check(this.urlParams, {
-				_id: String,
-			});
+	async get() {
+		check(this.urlParams, {
+			_id: String,
+		});
 
-			check(this.queryParams, {
-				token: String,
-				rid: String,
-			});
+		check(this.queryParams, {
+			token: String,
+			rid: String,
+		});
 
-			const { token, rid } = this.queryParams;
-			const { _id } = this.urlParams;
+		const { token, rid } = this.queryParams;
+		const { _id } = this.urlParams;
 
-			const guest = findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
-			}
+		const guest = await findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
+		}
 
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
+		const room = findRoom(token, rid);
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
 
+		let message = Messages.findOneById(_id);
+		if (!message) {
+			throw new Meteor.Error('invalid-message');
+		}
+
+		if (message.file) {
+			message = await normalizeMessageFileUpload(message);
+		}
+
+		return API.v1.success({ message });
+	},
+
+	async put() {
+		check(this.urlParams, {
+			_id: String,
+		});
+
+		check(this.bodyParams, {
+			token: String,
+			rid: String,
+			msg: String,
+		});
+
+		const { token, rid } = this.bodyParams;
+		const { _id } = this.urlParams;
+
+		const guest = await findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
+		}
+
+		const room = findRoom(token, rid);
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		const msg = Messages.findOneById(_id);
+		if (!msg) {
+			throw new Meteor.Error('invalid-message');
+		}
+
+		const result = Livechat.updateMessage({
+			guest,
+			message: { _id: msg._id, msg: this.bodyParams.msg },
+		});
+		if (result) {
 			let message = Messages.findOneById(_id);
-			if (!message) {
-				throw new Meteor.Error('invalid-message');
-			}
-
 			if (message.file) {
-				message = Promise.await(normalizeMessageFileUpload(message));
+				message = await normalizeMessageFileUpload(message);
 			}
 
 			return API.v1.success({ message });
-		} catch (e) {
-			return API.v1.failure(e);
 		}
+
+		return API.v1.failure();
 	},
+	async delete() {
+		check(this.urlParams, {
+			_id: String,
+		});
 
-	put() {
-		try {
-			check(this.urlParams, {
-				_id: String,
-			});
+		check(this.bodyParams, {
+			token: String,
+			rid: String,
+		});
 
-			check(this.bodyParams, {
-				token: String,
-				rid: String,
-				msg: String,
-			});
+		const { token, rid } = this.bodyParams;
+		const { _id } = this.urlParams;
 
-			const { token, rid } = this.bodyParams;
-			const { _id } = this.urlParams;
-
-			const guest = findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			const msg = Messages.findOneById(_id);
-			if (!msg) {
-				throw new Meteor.Error('invalid-message');
-			}
-
-			const result = Livechat.updateMessage({
-				guest,
-				message: { _id: msg._id, msg: this.bodyParams.msg },
-			});
-			if (result) {
-				let message = Messages.findOneById(_id);
-				if (message.file) {
-					message = Promise.await(normalizeMessageFileUpload(message));
-				}
-
-				return API.v1.success({ message });
-			}
-
-			return API.v1.failure();
-		} catch (e) {
-			return API.v1.failure(e);
+		const guest = await findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
 		}
-	},
-	delete() {
-		try {
-			check(this.urlParams, {
-				_id: String,
-			});
 
-			check(this.bodyParams, {
-				token: String,
-				rid: String,
-			});
-
-			const { token, rid } = this.bodyParams;
-			const { _id } = this.urlParams;
-
-			const guest = findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			const message = Messages.findOneById(_id);
-			if (!message) {
-				throw new Meteor.Error('invalid-message');
-			}
-
-			const result = Promise.await(Livechat.deleteMessage({ guest, message }));
-			if (result) {
-				return API.v1.success({
-					message: {
-						_id,
-						ts: new Date().toISOString(),
-					},
-				});
-			}
-
-			return API.v1.failure();
-		} catch (e) {
-			return API.v1.failure(e);
+		const room = findRoom(token, rid);
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
 		}
+
+		const message = Messages.findOneById(_id);
+		if (!message) {
+			throw new Meteor.Error('invalid-message');
+		}
+
+		const result = await Livechat.deleteMessage({ guest, message });
+		if (result) {
+			return API.v1.success({
+				message: {
+					_id,
+					ts: new Date().toISOString(),
+				},
+			});
+		}
+
+		return API.v1.failure();
 	},
 });
 
 API.v1.addRoute('livechat/messages.history/:rid', {
-	get() {
-		try {
-			check(this.urlParams, {
-				rid: String,
-			});
+	async get() {
+		check(this.urlParams, {
+			rid: String,
+		});
 
-			const { offset } = this.getPaginationItems();
-			const { searchText: text, token } = this.queryParams;
-			const { rid } = this.urlParams;
-			const { sort } = this.parseJsonQuery();
+		const { offset } = this.getPaginationItems();
+		const { searchText: text, token } = this.queryParams;
+		const { rid } = this.urlParams;
+		const { sort } = this.parseJsonQuery();
 
-			if (!token) {
-				throw new Meteor.Error('error-token-param-not-provided', 'The required "token" query param is missing.');
-			}
-
-			const guest = findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			let ls = undefined;
-			if (this.queryParams.ls) {
-				ls = new Date(this.queryParams.ls);
-			}
-
-			let end = undefined;
-			if (this.queryParams.end) {
-				end = new Date(this.queryParams.end);
-			}
-
-			let limit = 20;
-			if (this.queryParams.limit) {
-				limit = parseInt(this.queryParams.limit);
-			}
-
-			const messages = loadMessageHistory({
-				userId: guest._id,
-				rid,
-				end,
-				limit,
-				ls,
-				sort,
-				offset,
-				text,
-			}).messages.map((...args) => Promise.await(normalizeMessageFileUpload(...args)));
-			return API.v1.success({ messages });
-		} catch (e) {
-			return API.v1.failure(e);
+		if (!token) {
+			throw new Meteor.Error('error-token-param-not-provided', 'The required "token" query param is missing.');
 		}
+
+		const guest = await findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
+		}
+
+		const room = findRoom(token, rid);
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		let ls = undefined;
+		if (this.queryParams.ls) {
+			ls = new Date(this.queryParams.ls);
+		}
+
+		let end = undefined;
+		if (this.queryParams.end) {
+			end = new Date(this.queryParams.end);
+		}
+
+		let limit = 20;
+		if (this.queryParams.limit) {
+			limit = parseInt(this.queryParams.limit);
+		}
+
+		const messages = loadMessageHistory({
+			userId: guest._id,
+			rid,
+			end,
+			limit,
+			ls,
+			sort,
+			offset,
+			text,
+		}).messages.map((...args) => Promise.await(normalizeMessageFileUpload(...args)));
+		return API.v1.success({ messages });
 	},
 });
 
@@ -276,11 +256,7 @@ API.v1.addRoute(
 	'livechat/messages',
 	{ authRequired: true },
 	{
-		post() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
-
+		async post() {
 			if (!this.bodyParams.visitor) {
 				return API.v1.failure('Body param "visitor" is required');
 			}
@@ -299,7 +275,7 @@ API.v1.addRoute(
 
 			const visitorToken = this.bodyParams.visitor.token;
 
-			let visitor = LivechatVisitors.getVisitorByToken(visitorToken);
+			let visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
 			let rid;
 			if (visitor) {
 				const rooms = LivechatRooms.findOpenByVisitorToken(visitorToken).fetch();
@@ -314,8 +290,8 @@ API.v1.addRoute(
 				const guest = this.bodyParams.visitor;
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 
-				const visitorId = Livechat.registerGuest(guest);
-				visitor = LivechatVisitors.findOneById(visitorId);
+				const visitorId = await Livechat.registerGuest(guest);
+				visitor = await LivechatVisitors.findOneById(visitorId);
 			}
 
 			const sentMessages = this.bodyParams.messages.map((message) => {

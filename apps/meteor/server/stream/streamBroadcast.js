@@ -1,17 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import { UserPresence } from 'meteor/konecty:user-presence';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
 import { DDP } from 'meteor/ddp';
+import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Logger } from '../lib/logger/Logger';
 import { hasPermission } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 import { isDocker, getURL } from '../../app/utils/server';
-import { Users } from '../../app/models/server';
-import { InstanceStatus as InstanceStatusRaw } from '../../app/models/server/raw';
 import { StreamerCentral } from '../modules/streamer/streamer.module';
-import { isPresenceMonitorEnabled } from '../lib/isPresenceMonitorEnabled';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -56,16 +54,15 @@ function authorizeConnection(instance) {
 }
 
 const cache = new Map();
-const originalSetDefaultStatus = UserPresence.setDefaultStatus;
 export let matrixBroadCastActions;
 function startMatrixBroadcast() {
-	if (!isPresenceMonitorEnabled()) {
-		UserPresence.setDefaultStatus = originalSetDefaultStatus;
-	}
-
 	matrixBroadCastActions = {
 		added: Meteor.bindEnvironment((record) => {
 			cache.set(record._id, record);
+
+			if (cache.size > 1) {
+				logger.warn(TAPi18n.__('Multiple_monolith_instances_alert'));
+			}
 
 			const subPath = getURL('', { cdn: false, full: false });
 			let instance = `${record.extraInformation.host}:${record.extraInformation.port}${subPath}`;
@@ -150,12 +147,6 @@ function startStreamCastBroadcast(value) {
 	const instance = 'StreamCast';
 
 	connLogger.info({ msg: 'connecting in', instance, value });
-
-	if (!isPresenceMonitorEnabled()) {
-		UserPresence.setDefaultStatus = (id, status) => {
-			Users.updateDefaultStatus(id, status);
-		};
-	}
 
 	const connection = DDP.connect(value, {
 		_dontPrintErrors: settings.get('Log_Level') !== '2',

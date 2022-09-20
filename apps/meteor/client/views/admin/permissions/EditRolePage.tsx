@@ -16,9 +16,9 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 	const usersInRoleRouter = useRoute('admin-permissions');
 	const router = useRoute('admin-permissions');
 
-	const createRole = useEndpoint('POST', 'roles.create');
-	const updateRole = useEndpoint('POST', 'roles.update');
-	const deleteRole = useEndpoint('POST', 'roles.delete');
+	const createRole = useEndpoint('POST', '/v1/roles.create');
+	const updateRole = useEndpoint('POST', '/v1/roles.update');
+	const deleteRole = useEndpoint('POST', '/v1/roles.delete');
 
 	const methods = useForm({
 		defaultValues: {
@@ -103,7 +103,7 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 						{t('Save')}
 					</Button>
 					{!role?.protected && role?._id && (
-						<Button danger onClick={handleDelete}>
+						<Button secondary danger onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					)}

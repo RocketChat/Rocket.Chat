@@ -1,7 +1,5 @@
 import { exec } from 'child_process';
 import os from 'os';
-import fs from 'fs';
-import path from 'path';
 
 import Future from 'fibers/future';
 import async from 'async';
@@ -26,6 +24,8 @@ class VersionCompiler {
 				cpus: os.cpus().length,
 			};
 
+			output.marketplaceApiVersion = require('@rocket.chat/apps-engine/package.json').version.replace(/^[^0-9]/g, '');
+
 			exec("git log --pretty=format:'%H%n%ad%n%an%n%s' -n 1", function (err, result) {
 				if (err == null) {
 					result = result.split('\n');
@@ -45,9 +45,6 @@ class VersionCompiler {
 						if (err == null && output.commit != null) {
 							output.commit.branch = result.replace('\n', '');
 						}
-
-						const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
-						output.marketplaceApiVersion = pkg.dependencies['@rocket.chat/apps-engine'].replace(/^[^0-9]/g, '');
 
 						output = `exports.Info = ${JSON.stringify(output, null, 4)};`;
 						file.addJavaScript({

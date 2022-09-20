@@ -1,12 +1,12 @@
-import xmldom from 'xmldom';
+import xmldom from '@xmldom/xmldom';
 import xmlenc from 'xml-encryption';
 import xmlCrypto from 'xml-crypto';
 
 import { SAMLUtils } from '../Utils';
 import { StatusCode } from '../constants';
-import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
-import { IResponseValidateCallback } from '../../definition/callbacks';
-import { ISAMLAssertion } from '../../definition/ISAMLAssertion';
+import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
+import type { IResponseValidateCallback } from '../../definition/callbacks';
+import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
 
 type XmlParent = Element | Document;
 
@@ -62,7 +62,7 @@ export class ResponseParser {
 
 			this.verifySignatures(response, assertionData, xml);
 		} catch (e) {
-			return callback(e, null, false);
+			return callback(e instanceof Error ? e : String(e), null, false);
 		}
 
 		const profile: Record<string, any> = {};
@@ -74,7 +74,7 @@ export class ResponseParser {
 		try {
 			issuer = this.getIssuer(assertion);
 		} catch (e) {
-			return callback(e, null, false);
+			return callback(e instanceof Error ? e : String(e), null, false);
 		}
 
 		if (issuer) {
@@ -95,14 +95,14 @@ export class ResponseParser {
 			try {
 				this.validateSubjectConditions(subject);
 			} catch (e) {
-				return callback(e, null, false);
+				return callback(e instanceof Error ? e : String(e), null, false);
 			}
 		}
 
 		try {
 			this.validateAssertionConditions(assertion);
 		} catch (e) {
-			return callback(e, null, false);
+			return callback(e instanceof Error ? e : String(e), null, false);
 		}
 
 		const authnStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AuthnStatement')[0];
@@ -287,9 +287,9 @@ export class ResponseParser {
 		const sig = new xmlCrypto.SignedXml();
 
 		sig.keyInfoProvider = {
-			getKeyInfo: (/* key*/): string => '<X509Data></X509Data>',
-			// @ts-ignore - the definition file must be wrong
-			getKey: (/* keyInfo*/): string => SAMLUtils.certToPEM(cert),
+			file: '',
+			getKeyInfo: () => '<X509Data></X509Data>',
+			getKey: () => Buffer.from(SAMLUtils.certToPEM(cert)),
 		};
 
 		sig.loadSignature(signature);

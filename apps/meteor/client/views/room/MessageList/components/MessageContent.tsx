@@ -1,34 +1,41 @@
 /* eslint-disable complexity */
-import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } from '@rocket.chat/core-typings';
-import { MessageBody } from '@rocket.chat/fuselage';
-import { useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
+import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription, isE2EEMessage } from '@rocket.chat/core-typings';
+import { MessageBody, MessageBlock } from '@rocket.chat/fuselage';
+import { useTranslation, useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
-import Attachments from '../../../../components/Message/Attachments';
-import MessageActions from '../../../../components/Message/MessageActions';
-import BroadcastMetric from '../../../../components/Message/Metrics/Broadcast';
-import DiscussionMetric from '../../../../components/Message/Metrics/Discussion';
-import ThreadMetric from '../../../../components/Message/Metrics/Thread';
+import Attachments from '../../../../components/message/Attachments';
+import MessageActions from '../../../../components/message/MessageActions';
+import BroadcastMetric from '../../../../components/message/Metrics/Broadcast';
+import DiscussionMetric from '../../../../components/message/Metrics/Discussion';
+import ThreadMetric from '../../../../components/message/Metrics/Thread';
 import { useUserData } from '../../../../hooks/useUserData';
 import { UserPresence } from '../../../../lib/presence';
-import MessageBlock from '../../../blocks/MessageBlock';
+import MessageBlockUiKit from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
+import { useTranslateAttachments, useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
+import MessageContentBody from './MessageContentBody';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
-import MessageRender from './MessageRender';
 import PreviewList from './UrlPreview';
 
-const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
-	message,
-	subscription,
-}) => {
+const MessageContent: FC<{
+	message: IMessage;
+	sequential: boolean;
+	subscription?: ISubscription;
+	id: IMessage['_id'];
+	unread: boolean;
+	mention: boolean;
+	all: boolean;
+}> = ({ message, unread, all, mention, subscription }) => {
 	const {
 		broadcast,
 		actions: { openRoom, openThread, replyBroadcast },
 	} = useMessageActions();
+
+	const t = useTranslation();
 
 	const runActionLink = useMessageRunActionLink();
 
@@ -40,13 +47,27 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 	const mineUid = useUserId();
 
+	const isEncryptedMessage = isE2EEMessage(message);
+
+	const messageAttachments = useTranslateAttachments({ message });
+
 	return (
 		<>
-			<MessageBody data-qa-type='message-body'>
-				<MessageRender message={message} />
-			</MessageBody>
-			{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
-			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
+			{!message.blocks && (message.md || message.msg) && (
+				<MessageBody data-qa-type='message-body'>
+					{!isEncryptedMessage && <MessageContentBody message={message} />}
+					{isEncryptedMessage && message.e2e === 'done' && <MessageContentBody message={message} />}
+					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
+				</MessageBody>
+			)}
+			{message.blocks && (
+				<MessageBlock fixedWidth>
+					<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
+				</MessageBlock>
+			)}
+			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} />}
+
+			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
 
 			{message.actionLinks?.length && (
 				<MessageActions
@@ -66,14 +87,14 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 				<ThreadMetric
 					openThread={openThread(message._id)}
 					counter={message.tcount}
-					following={Boolean(mineUid && message?.replies.indexOf(mineUid) > -1)}
+					following={Boolean(mineUid && message?.replies?.indexOf(mineUid) > -1)}
 					mid={message._id}
 					rid={message.rid}
 					lm={message.tlm}
-					unread={Boolean(subscription?.tunread?.includes(message._id))}
-					mention={Boolean(subscription?.tunreadUser?.includes(message._id))}
-					all={Boolean(subscription?.tunreadGroup?.includes(message._id))}
-					participants={message?.replies.length}
+					unread={unread}
+					mention={mention}
+					all={all}
+					participants={message?.replies?.length}
 				/>
 			)}
 
@@ -92,8 +113,6 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 			{broadcast && !!user.username && !isOwnUserMessage(message, subscription) && (
 				<BroadcastMetric replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
 			)}
-
-			{oembedIsEnabled && message.urls && <PreviewList urls={message.urls} />}
 
 			{shouldShowReadReceipt && <ReadReceipt unread={message.unread} />}
 		</>

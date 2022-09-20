@@ -1,5 +1,6 @@
+import { Users } from '@rocket.chat/models';
+
 import { RoutingManager } from '../../../../../../app/livechat/server/lib/RoutingManager';
-import { Users } from '../../../../../../app/models/server/raw';
 
 /* Load Balancing Queuing method:
  *

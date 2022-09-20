@@ -8,7 +8,7 @@ import _ from 'underscore';
 
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { MessageAction, RoomHistoryManager } from '../../../ui-utils';
-import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { Rooms } from '../../../models/client';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 import { goToRoomById } from '../../../../client/lib/utils/goToRoomById';
@@ -37,7 +37,7 @@ Meteor.startup(function () {
 			}
 
 			if (Session.get('openedRoom') === message.rid) {
-				return RoomHistoryManager.getSurroundingMessages(message, 50);
+				return RoomHistoryManager.getSurroundingMessages(message);
 			}
 
 			goToRoomById(message.rid);
@@ -48,7 +48,7 @@ Meteor.startup(function () {
 			}
 
 			window.setTimeout(() => {
-				RoomHistoryManager.getSurroundingMessages(message, 50);
+				RoomHistoryManager.getSurroundingMessages(message);
 			}, 400);
 			// 400ms is popular among game devs as a good delay before transition starts
 			// ie. 50, 100, 200, 400, 800 are the favored timings

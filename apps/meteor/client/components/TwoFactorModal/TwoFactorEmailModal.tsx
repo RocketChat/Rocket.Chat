@@ -18,7 +18,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus<HTMLInputElement>();
 
-	const sendEmailCode = useEndpoint('POST', 'users.2fa.sendEmailCode');
+	const sendEmailCode = useEndpoint('POST', '/v1/users.2fa.sendEmailCode');
 
 	const onClickResendCode = async (): Promise<void> => {
 		try {

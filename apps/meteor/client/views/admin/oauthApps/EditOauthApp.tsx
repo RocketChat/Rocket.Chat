@@ -54,7 +54,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 			dispatchToastMessage({ type: 'success', message: t('Application_updated') });
 			onChange();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
@@ -73,7 +73,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 				</GenericModal>
 			));
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [close, data._id, deleteApp, dispatchToastMessage, setModal, t]);
 
@@ -157,7 +157,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 				<Field>
 					<Field.Row>
 						<ButtonGroup stretch w='full'>
-							<Button primary danger onClick={openConfirmDelete}>
+							<Button danger onClick={openConfirmDelete}>
 								<Icon name='trash' mie='x4' />
 								{t('Delete')}
 							</Button>

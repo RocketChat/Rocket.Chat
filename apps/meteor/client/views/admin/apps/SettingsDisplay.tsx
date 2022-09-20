@@ -1,15 +1,15 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import { Box, Divider } from '@rocket.chat/fuselage';
+import { SettingValue } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo, useEffect, MutableRefObject } from 'react';
 
+import { ISettings } from '../../../../app/apps/client/@types/IOrchestrator';
 import { useForm } from '../../../hooks/useForm';
 import AppSettingsAssembler from './AppSettingsAssembler';
 
 type SettingsDisplayProps = {
-	settings: {
-		[id: string]: ISetting;
-	};
+	settings: ISettings;
 	setHasUnsavedChanges: (hasUnsavedChanges: boolean) => void;
 	settingsRef: MutableRefObject<Record<string, ISetting['value']>>;
 };
@@ -24,7 +24,11 @@ const SettingsDisplay: FC<SettingsDisplayProps> = ({ settings, setHasUnsavedChan
 		return Object.values(settings).reduce((ret, { id, value, packageValue }) => ({ ...ret, [id]: value ?? packageValue }), {});
 	}, [stringifiedSettings]);
 
-	const { values, handlers, hasUnsavedChanges } = useForm(reducedSettings);
+	const { values, handlers, hasUnsavedChanges } = useForm(reducedSettings) as {
+		values: Record<string, SettingValue>;
+		handlers: Record<string, (eventOrValue: SettingValue) => void>;
+		hasUnsavedChanges: boolean;
+	};
 	const stringifiedValues = JSON.stringify(values);
 
 	useEffect(() => {
@@ -35,8 +39,7 @@ const SettingsDisplay: FC<SettingsDisplayProps> = ({ settings, setHasUnsavedChan
 
 	return (
 		<>
-			<Divider />
-			<Box display='flex' flexDirection='column'>
+			<Box display='flex' flexDirection='column' maxWidth='x640' w='full' marginInline='auto'>
 				<Box fontScale='h4' mb='x12'>
 					{t('Settings')}
 				</Box>

@@ -9,7 +9,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 	const closeModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const saveCannedResponse = useEndpoint('POST', 'canned-responses');
+	const saveCannedResponse = useEndpoint('POST', '/v1/canned-responses');
 
 	const hasManagerPermission = usePermission('view-all-canned-responses');
 	const hasMonitorPermission = usePermission('save-department-canned-responses');
@@ -91,7 +91,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 			});
 			closeModal(null);
 			reloadCannedList?.();
-		} catch (error) {
+		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [values, saveCannedResponse, dispatchToastMessage, t, closeModal, reloadCannedList]);
