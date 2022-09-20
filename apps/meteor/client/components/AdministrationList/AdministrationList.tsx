@@ -32,7 +32,7 @@ const AdministrationList: FC<AdministrationListProps> = ({ accountBoxItems, clos
 	const hasManageApps = useAtLeastOnePermission(MANAGE_APPS_PERMISSIONS);
 	const hasAdminPermission = useAtLeastOnePermission(ADMIN_PERMISSIONS);
 	const showSettings = useAtLeastOnePermission(SETTINGS_PERMISSIONS);
-	const showAudit = hasAuditPermission && hasAuditLogPermission;
+	const showAudit = hasAuditPermission || hasAuditLogPermission;
 	const showManageApps = hasManageApps || !!appBoxItems.length;
 	const showAdmin = hasAdminPermission || !!adminBoxItems.length;
 
