@@ -354,10 +354,6 @@ class E2E extends Emitter {
 	}
 
 	async decryptPinnedMessage(message) {
-		if (message.t !== 'message_pinned') {
-			return message;
-		}
-
 		if (!message?.attachments || !message.attachments[0]?.text || message.attachments[0]?.t !== 'e2e') {
 			return message;
 		}
