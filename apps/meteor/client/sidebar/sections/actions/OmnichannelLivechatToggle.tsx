@@ -8,7 +8,7 @@ import { useOmnichannelAgentAvailable } from '../../../hooks/omnichannel/useOmni
 export const OmnichannelLivechatToggle = (): ReactElement => {
 	const t = useTranslation();
 	const agentAvailable = useOmnichannelAgentAvailable();
-	const changeAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');;
+	const changeAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleAvailableStatusChange = useMutableCallback(async () => {
