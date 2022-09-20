@@ -2584,7 +2584,9 @@ const GETLivechatAnalyticsDashboardsAgentStatusParamsSchema = {
 			nullable: true,
 		},
 	},
-	additionalProperties: false,
+	// FE is sending start/end params, since they use the same container for doing all calls.
+	// This will prevent FE breaking, but's a TODO for an upcoming engday
+	additionalProperties: true,
 };
 
 export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentStatusParams>(
