@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv({ coerceTypes: true });
+const ajv = new Ajv();
 
 export type TeamsDeleteProps = ({ teamId: string } | { teamName: string }) & {
 	roomsToRemove?: string[];

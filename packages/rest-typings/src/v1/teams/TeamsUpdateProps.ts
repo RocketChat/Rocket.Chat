@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
-const ajv = new Ajv({ coerceTypes: true });
+const ajv = new Ajv();
 
 export type TeamsUpdateProps = ({ teamId: string } | { teamName: string }) & {
 	data:

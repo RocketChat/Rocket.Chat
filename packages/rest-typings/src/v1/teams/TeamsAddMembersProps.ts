@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 
 import type { ITeamMemberParams } from './ITeamMemberParams';
 
-const ajv = new Ajv({ coerceTypes: true });
+const ajv = new Ajv();
 
 export type TeamsAddMembersProps = ({ teamId: string } | { teamName: string }) & {
 	members: ITeamMemberParams[];

@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv({ coerceTypes: true });
+const ajv = new Ajv();
 
 export type TeamsLeaveProps = ({ teamId: string } | { teamName: string }) & { rooms?: string[] };
 
