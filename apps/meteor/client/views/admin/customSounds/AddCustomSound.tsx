@@ -16,8 +16,6 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	// const successText = t('Sound_uploaded_successfully');
-
 	const [name, setName] = useState('');
 	const [sound, setSound] = useState<{ name: string }>();
 
