@@ -18,7 +18,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/conversation-totalizers',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
+		async get() {
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -48,7 +48,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/agents-productivity-totalizers',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
+		async get() {
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -78,7 +78,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/chats-totalizers',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
+		async get() {
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -106,7 +106,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/productivity-totalizers',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
+		async get() {
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -137,7 +137,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
+		async get() {
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -165,7 +165,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats-per-agent',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
+		async get() {
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -193,7 +193,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/agents-status',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
+		async get() {
 			const { departmentId } = this.requestParams();
 			check(departmentId, Match.Maybe(String));
 
@@ -208,7 +208,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats-per-department',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
+		async get() {
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
@@ -236,7 +236,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/timings',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
-		get() {
+		async get() {
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 

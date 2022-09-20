@@ -1,9 +1,9 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
+import { Header } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, FC, ComponentProps } from 'react';
 
-import Header from '../../../../../components/Header';
 import { useQuickActions } from './hooks/useQuickActions';
 
 type QuickActionsProps = {
@@ -16,24 +16,23 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 	const { visibleActions, actionDefault } = useQuickActions(room);
 
 	return (
-		<ButtonGroup mi='x4' medium>
+		<Header.ToolBox aria-label={t('Omnichannel_quick_actions')}>
 			{visibleActions.map(({ id, color, icon, title, action = actionDefault }, index) => {
 				const props = {
 					id,
 					icon,
 					color,
-					'title': t(title),
+					title: t(title),
 					className,
 					index,
-					'primary': false,
-					'data-quick-actions': index,
+					primary: false,
 					action,
-					'key': id,
+					key: id,
 				};
 
-				return <Header.ToolBoxAction {...props} />;
+				return <Header.ToolBox.Action {...props} />;
 			})}
-		</ButtonGroup>
+		</Header.ToolBox>
 	);
 };
 

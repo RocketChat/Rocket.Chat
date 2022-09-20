@@ -4,20 +4,8 @@ import SwitchDepartmentContainer from './container';
 const SwitchDepartmentConnector = ({ ref, ...props }) => (
 	<Consumer>
 		{({
-			config: {
-				departments = {},
-				theme: {
-					color,
-				} = {},
-			} = {},
-			iframe: {
-				theme: {
-					color: customColor,
-					fontColor: customFontColor,
-					iconColor: customIconColor,
-				} = {},
-				guest,
-			} = {},
+			config: { departments = {}, theme: { color } = {} } = {},
+			iframe: { theme: { color: customColor, fontColor: customFontColor, iconColor: customIconColor } = {}, guest } = {},
 			iframe,
 			room,
 			loading = false,
