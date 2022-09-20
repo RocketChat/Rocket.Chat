@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useMediaQueries } from '@rocket.chat/fuselage-hooks';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, KeyboardEvent, MouseEvent } from 'react';
@@ -15,11 +15,8 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 	const { name, id, description, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed, isMarketplace, bundledIn } =
 		props;
 
-	const [isAppNameTruncated, isBundleTextVisible, isDescriptionVisible] = useMediaQueries(
-		'(max-width: 510px)',
-		'(max-width: 887px)',
-		'(min-width: 1200px)',
-	);
+	const breakpoints = useBreakpoints();
+	const isDescriptionVisible = breakpoints.includes('xl');
 
 	const appsRoute = useRoute('admin-apps');
 	const marketplaceRoute = useRoute('admin-marketplace');
@@ -83,14 +80,12 @@ const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
 			<Box display='flex' flexDirection='row' width='80%'>
 				<AppAvatar size='x40' mie='x16' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 				<Box display='flex' alignItems='center' color='default' fontScale='p2m' mie='x16' style={{ whiteSpace: 'nowrap' }}>
-					<Box is='span' withTruncatedText={isAppNameTruncated}>
-						{name}
-					</Box>
+					<Box is='span'>{name}</Box>
 				</Box>
 				<Box display='flex' mie='x16' alignItems='center' color='default'>
 					{bundledIn && Boolean(bundledIn.length) && (
 						<Box display='flex' alignItems='center' color='default' mie='x16'>
-							<BundleChips bundledIn={bundledIn} isIconOnly={isBundleTextVisible} />
+							<BundleChips bundledIn={bundledIn} />
 						</Box>
 					)}
 					{isDescriptionVisible && (
