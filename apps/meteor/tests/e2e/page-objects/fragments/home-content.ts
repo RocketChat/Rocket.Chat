@@ -107,11 +107,11 @@ export class HomeContent {
 	}
 
 	get btnForwardChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
+		return this.page.locator('button[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
 	}
 
 	get btnCloseChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
+		return this.page.locator('button[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
 	}
 
 	get btnContactInformation(): Locator {

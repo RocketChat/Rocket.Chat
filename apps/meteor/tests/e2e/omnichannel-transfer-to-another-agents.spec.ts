@@ -69,7 +69,7 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 
 	test('transfer omnichannel chat to another agent', async () => {
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent1.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent1.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name, false);
 		});
 
 		await test.step('Expect to not be able to transfer chat to "user-2" when that user is offline', async () => {
@@ -85,17 +85,17 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 		await test.step('Expect to be able to transfer an omnichannel to conversation to agent 2 as agent 1 when agent 2 is online', async () => {
 			await agent2.poHomeChannel.sidenav.switchStatus('online');
 
-			await agent1.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent1.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name, false);
 			await agent1.poHomeChannel.content.btnForwardChat.click();
 			await agent1.poHomeChannel.content.inputModalAgentUserName.type('user2');
-			await agent1.page.locator('.rcx-option .rcx-option__wrapper >> text="user2"').click();
+			await agent1.page.locator('.rcx-option > .rcx-option__wrapper >> text="user2"').click();
 			await agent1.poHomeChannel.content.inputModalAgentForwardComment.type('any_comment');
 			await agent1.poHomeChannel.content.btnModalConfirm.click();
 			await expect(agent1.poHomeChannel.toastSuccess).toBeVisible();
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 2', async () => {
-			await agent2.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent2.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name, false);
 		});
 	});
 });

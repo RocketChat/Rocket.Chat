@@ -10,6 +10,7 @@ test.describe.serial('omnichannel-agents', () => {
 		poOmnichannelAgents = new OmnichannelAgents(page);
 
 		await page.goto('/omnichannel');
+		await poOmnichannelAgents.sidenav.linkAgents.waitFor();
 		await poOmnichannelAgents.sidenav.linkAgents.click();
 	});
 

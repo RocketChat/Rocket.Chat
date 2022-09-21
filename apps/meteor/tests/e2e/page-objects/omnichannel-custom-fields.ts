@@ -40,6 +40,10 @@ export class OmnichannelCustomFields {
 		return this.page.locator(`[qa-user-id="${filedName}"]`);
 	}
 
+	textInTable(text: string) {
+		return this.page.locator(`[data-qa-id="GenericTableManagerInfoBody"] >> text="${text}"`);
+	}
+
 	get btnDeletefirstRowInTable() {
 		return this.page.locator('button[title="Remove"]');
 	}

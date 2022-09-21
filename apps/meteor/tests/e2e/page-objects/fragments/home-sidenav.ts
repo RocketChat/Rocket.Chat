@@ -39,12 +39,17 @@ export class HomeSidenav {
 	async openChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
 		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
-		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
+		await this.page.locator(`a[aria-label="${name}"]`).first().click();
 	}
 
 	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
-	async openQueuedOmnichannelChat(name: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
+	async openQueuedOmnichannelChat(name: string, takeIt = false): Promise<void> {
+		// await this.page.locator('').waitFor();
+		await this.page.locator(`[data-qa="sidebar-item-title"] >> text=${name}`).first().click();
+
+		if (takeIt) {
+			await this.page.locator('button >> text="Take it!"');
+		}
 	}
 
 	async createPublicChannel(name: string) {
