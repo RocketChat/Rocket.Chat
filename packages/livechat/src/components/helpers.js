@@ -129,18 +129,7 @@ export const msgTypesNotRendered = ['livechat_video_call', 'livechat_navigation_
 
 export const canRenderMessage = ({ t }) => !msgTypesNotRendered.includes(t);
 
-<<<<<<< HEAD
 export const getAttachmentUrl = (url) => new URL(url, Livechat.client.host).toString();
-
-export const sortArrayByColumn = (array, column, inverted) => array.sort((a, b) => {
-	if (a[column] < b[column] && !inverted) {
-		return -1;
-	}
-	return 1;
-});
-=======
-export const getAttachmentUrl = (url) => `${Livechat.client.host}${url}`;
->>>>>>> 30230229608a442ff63614cb92cb62df89bb3ec8
 
 export const sortArrayByColumn = (array, column, inverted) =>
 	array.sort((a, b) => {
