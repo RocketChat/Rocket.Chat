@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import type { ReactElement, SyntheticEvent } from 'react';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
-import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 
 import { useTabBarClose } from '../../../../client/views/room/providers/ToolboxProvider';
 import GameCenterContainer from './GameCenterContainer';
@@ -11,10 +12,8 @@ import GameCenterList from './GameCenterList';
 export type IGame = IExternalComponent;
 
 const GameCenter = (): ReactElement => {
-	const [games, setGames] = useState<IGame[]>();
 	const [isOpened, setIsOpened] = useState<boolean>(false);
 	const [openedGame, setOpenedGame] = useState<IGame>();
-	const [isLoading, setLoading] = useSafely(useState(false));
 
 	const closeTabBar = useTabBarClose();
 	const prevent = (e: SyntheticEvent): void => {
@@ -26,19 +25,11 @@ const GameCenter = (): ReactElement => {
 	};
 
 	const getGamesEndpoint = useEndpoint('GET', '/apps/externalComponents');
+	const { isLoading, data } = useQuery([isOpened], () => getGamesEndpoint(), {
+		refetchOnWindowFocus: false,
+	});
 
-	useEffect(() => {
-		async function getGames() {
-			const { externalComponents } = await getGamesEndpoint();
-			setGames(externalComponents);
-		}
-
-		if (!games) {
-			setLoading(true);
-			getGames();
-			setLoading(false);
-		}
-	}, [games, getGamesEndpoint, setLoading]);
+	const games = data?.externalComponents;
 
 	const handleClose = useMutableCallback((e) => {
 		prevent(e);
@@ -49,7 +40,6 @@ const GameCenter = (): ReactElement => {
 	const handleBack = useMutableCallback((e) => {
 		prevent(e);
 		setIsOpened(false);
-		setGames(undefined);
 	});
 
 	const handleOpenGame = (isOpened: boolean, game: IGame) => {
