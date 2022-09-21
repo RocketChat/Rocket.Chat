@@ -19,9 +19,9 @@ import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
 import { useRadioToggle } from './hooks/useRadioToggle';
 
-type AppsPageContentProps = { isMarketplace: boolean; isAdminSection: boolean; currentRouteName: string };
+type AppsPageContentProps = { context: string | undefined; isAdminSection: boolean; currentRouteName: string };
 
-const AppsPageContent = ({ isMarketplace, isAdminSection, currentRouteName }: AppsPageContentProps): ReactElement => {
+const AppsPageContent = ({ context, isAdminSection, currentRouteName }: AppsPageContentProps): ReactElement => {
 	const t = useTranslation();
 	const { marketplaceApps, installedApps } = useAppsResult();
 	const [text, setText] = useDebouncedState('', 500);
@@ -63,7 +63,8 @@ const AppsPageContent = ({ isMarketplace, isAdminSection, currentRouteName }: Ap
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
-		appsData: isMarketplace ? marketplaceApps : installedApps,
+		appsData: context === 'all' || context === 'enterprise' ? marketplaceApps : installedApps,
+		context,
 		text,
 		current,
 		itemsPerPage,
@@ -73,12 +74,16 @@ const AppsPageContent = ({ isMarketplace, isAdminSection, currentRouteName }: Ap
 		status: useMemo(() => statusFilterStructure.items.find(({ checked }) => checked)?.id, [statusFilterStructure]),
 	});
 
-	const noInstalledAppsFound = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total === 0;
+	const noInstalledAppsFound = appsResult.phase === AsyncStatePhase.RESOLVED && context === 'installed' && appsResult.value.total === 0;
 
-	const noMarketplaceOrInstalledAppMatches = appsResult.phase === AsyncStatePhase.RESOLVED && isMarketplace && appsResult.value.count === 0;
+	const noMarketplaceOrInstalledAppMatches =
+		appsResult.phase === AsyncStatePhase.RESOLVED && context === 'all' && appsResult.value.count === 0;
 
 	const noInstalledAppMatches =
-		appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total !== 0 && appsResult.value.count === 0;
+		appsResult.phase === AsyncStatePhase.RESOLVED &&
+		context === 'installed' &&
+		appsResult.value.total !== 0 &&
+		appsResult.value.count === 0;
 
 	const isFiltered =
 		Boolean(text.length) ||
@@ -112,7 +117,7 @@ const AppsPageContent = ({ isMarketplace, isAdminSection, currentRouteName }: Ap
 				!noMarketplaceOrInstalledAppMatches &&
 				(!noInstalledAppMatches || !noInstalledAppsFound) && (
 					<>
-						{isMarketplace && !isFiltered && (
+						{context === 'all' && !isFiltered && (
 							<FeaturedAppsSections
 								appsResult={appsResult.value.items}
 								isAdminSection={isAdminSection}
@@ -123,7 +128,6 @@ const AppsPageContent = ({ isMarketplace, isAdminSection, currentRouteName }: Ap
 							<AppsList
 								apps={appsResult.value.items}
 								title={t('All_Apps')}
-								isMarketplace={isMarketplace}
 								isAdminSection={isAdminSection}
 								currentRouteName={currentRouteName}
 							/>

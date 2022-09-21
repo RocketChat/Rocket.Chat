@@ -11,7 +11,7 @@ import AppStatus from './AppStatus';
 import BundleChips from './BundleChips';
 import { App } from './types';
 
-type AppRowProps = { isMarketplace: boolean; isAdminSection: boolean; currentRouteName: string } & App;
+type AppRowProps = { isAdminSection: boolean; currentRouteName: string } & App;
 
 const AppRow = (props: AppRowProps): ReactElement => {
 	const {

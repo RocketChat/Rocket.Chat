@@ -17,6 +17,7 @@ type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextTy
 
 export const useFilteredApps = ({
 	appsData,
+	context,
 	text,
 	current,
 	itemsPerPage,
@@ -26,6 +27,7 @@ export const useFilteredApps = ({
 	status,
 }: {
 	appsData: appsDataType;
+	context: string | undefined;
 	text: string;
 	current: number;
 	itemsPerPage: number;
@@ -52,6 +54,10 @@ export const useFilteredApps = ({
 			lru: () =>
 				filtered.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(secondApp.modifiedAt, firstApp.modifiedAt)),
 		};
+
+		if (context && context === 'enterprise') {
+			filtered = apps.filter(({ categories }) => categories.includes('Enterprise'));
+		}
 
 		if (sortingMethod) {
 			filtered = sortingMethods[sortingMethod]();
@@ -90,7 +96,7 @@ export const useFilteredApps = ({
 		const slice = filtered.slice(offset, end);
 
 		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText };
-	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, current, itemsPerPage]);
+	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, context, current, itemsPerPage]);
 
 	if (appsData.phase === AsyncStatePhase.RESOLVED) {
 		if (!value) {

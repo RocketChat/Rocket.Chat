@@ -50,8 +50,6 @@ const AppsRoute: FC = () => {
 
 	const context = useRouteParameter('context');
 
-	const isMarketplace = !context;
-
 	const id = useRouteParameter('id');
 
 	if (!canManageApps && isAdminSection) {
@@ -64,13 +62,8 @@ const AppsRoute: FC = () => {
 
 	return (
 		<AppsProvider>
-			{((!context || context === 'installed') && (
-				<AppsPage
-					isMarketplace={isMarketplace}
-					canManageApps={canManageApps}
-					isAdminSection={isAdminSection}
-					currentRouteName={currentRouteName}
-				/>
+			{((context === 'all' || context === 'installed' || context === 'enterprise') && (
+				<AppsPage context={context} canManageApps={canManageApps} isAdminSection={isAdminSection} currentRouteName={currentRouteName} />
 			)) ||
 				(id && context === 'details' && <AppDetailsPage id={id} isAdminSection={isAdminSection} />) ||
 				(context === 'install' && <AppInstallPage />)}

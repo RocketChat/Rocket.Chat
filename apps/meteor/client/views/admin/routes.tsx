@@ -24,6 +24,13 @@ registerAdminRoute('/apps/what-is-it', {
 registerAdminRoute('/marketplace/:context?/:id?/:version?/:tab?', {
 	name: 'admin-marketplace',
 	component: lazy(() => import('./apps/AppsRoute')),
+	triggersEnter: [
+		(context, redirect): void => {
+			if (!context.params.context) {
+				redirect('/admin/marketplace/all');
+			}
+		},
+	],
 });
 
 registerAdminRoute('/apps/:context?/:id?/:version?/:tab?', {
@@ -39,7 +46,6 @@ registerAdminRoute('/info', {
 registerAdminRoute('/import', {
 	name: 'admin-import',
 	component: lazy(() => import('./import/ImportRoute')),
-	props: { page: 'history' },
 });
 
 registerAdminRoute('/import/new/:importerKey?', {

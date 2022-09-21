@@ -6,13 +6,13 @@ import Page from '../../../components/Page';
 import AppsPageContent from './AppsPageContent';
 
 type AppsPageProps = {
-	isMarketplace: boolean;
 	canManageApps: boolean;
 	isAdminSection: boolean;
 	currentRouteName: string;
+	context: string | undefined;
 };
 
-const AppsPage = ({ isMarketplace, canManageApps, isAdminSection, currentRouteName }: AppsPageProps): ReactElement => {
+const AppsPage = ({ canManageApps, isAdminSection, currentRouteName, context }: AppsPageProps): ReactElement => {
 	const t = useTranslation();
 
 	const isDevelopmentMode = useSetting('Apps_Framework_Development_Mode');
@@ -39,18 +39,22 @@ const AppsPage = ({ isMarketplace, canManageApps, isAdminSection, currentRouteNa
 	};
 
 	const handleMarketplaceTabClick = (): void => {
-		router.push({ context: '' });
+		router.push({ context: 'all' });
 	};
 
 	const handleInstalledTabClick = (): void => {
 		router.push({ context: 'installed' });
 	};
 
+	const handleEnterpriseTabClick = (): void => {
+		router.push({ context: 'enterprise' });
+	};
+
 	return (
 		<Page background='tint'>
 			<Page.Header title={t('Apps')}>
 				<ButtonGroup>
-					{isMarketplace && !isLoggedInCloud && canManageApps && isAdminSection && (
+					{context === 'all' && !isLoggedInCloud && canManageApps && isAdminSection && (
 						<Button disabled={isLoggedInCloud === undefined} onClick={handleLoginButtonClick}>
 							{isLoggedInCloud === undefined ? (
 								<Skeleton width='x80' />
@@ -69,15 +73,18 @@ const AppsPage = ({ isMarketplace, canManageApps, isAdminSection, currentRouteNa
 				</ButtonGroup>
 			</Page.Header>
 			<Tabs>
-				<Tabs.Item onClick={handleMarketplaceTabClick} selected={isMarketplace}>
+				<Tabs.Item onClick={handleMarketplaceTabClick} selected={context === 'all'}>
 					{t('Marketplace')}
 				</Tabs.Item>
-				<Tabs.Item onClick={handleInstalledTabClick} selected={!isMarketplace} mbe='neg-x4' borderWidth='0' borderBlockWidth='x4'>
+				<Tabs.Item onClick={handleEnterpriseTabClick} selected={context === 'enterprise'}>
+					{t('Enterprise')}
+				</Tabs.Item>
+				<Tabs.Item onClick={handleInstalledTabClick} selected={context === 'installed'}>
 					{t('Installed')}
 				</Tabs.Item>
 			</Tabs>
 			<Page.Content overflowY='auto'>
-				<AppsPageContent isMarketplace={isMarketplace} isAdminSection={isAdminSection} currentRouteName={currentRouteName} />
+				<AppsPageContent context={context} isAdminSection={isAdminSection} currentRouteName={currentRouteName} />
 			</Page.Content>
 		</Page>
 	);
