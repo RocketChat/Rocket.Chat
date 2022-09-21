@@ -16,7 +16,8 @@ const newUser = {
 	email: faker.internet.email(),
 };
 
-const testImg = 'https://assets-global.website-files.com/611a19b9853b7414a0f6b3f6/6132017c7a979557454a1bf2_favicon%2032px.png';
+const testImg =
+	'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==';
 test.describe('Livechat', () => {
 	test.describe('Send message from user', () => {
 		let poLiveChat: OmnichannelLiveChat;
@@ -64,7 +65,7 @@ test.describe('Livechat', () => {
 			test('expect message is received from user', async ({ page }) => {
 				await page.goto('/');
 				const poHomeChannel = new HomeChannel(page);
-				await poHomeChannel.sidenav.openQueuedOmnichannelChat(newUser.name, true);
+				await poHomeChannel.sidenav.openQueuedOmnichannelChat(newUser.name);
 				await expect(poHomeChannel.content.lastUserMessageNotSequential).toBeVisible();
 				await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText('this_a_test_message_from_user');
 			});
@@ -101,7 +102,7 @@ test.describe('Livechat', () => {
 			test('expect message is received from user', async ({ page }) => {
 				await page.goto('/');
 				const poHomeChannel = new HomeChannel(page);
-				await poHomeChannel.sidenav.openQueuedOmnichannelChat(newUser.name, true);
+				await poHomeChannel.sidenav.openQueuedOmnichannelChat(newUser.name);
 				await expect(poHomeChannel.content.lastUserMessageNotSequential).toBeVisible();
 				await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText('image_test');
 			});
