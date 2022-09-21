@@ -103,7 +103,7 @@ const CloseChatModal = ({
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button role='button' type='submit' disabled={cannotSubmit} primary>
+					<Button type='submit' disabled={cannotSubmit} primary>
 						{t('Confirm')}
 					</Button>
 				</Modal.FooterControllers>
