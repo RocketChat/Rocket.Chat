@@ -36,7 +36,7 @@ export async function findUsersToAutocomplete({
 	};
 
 	// Search on DMs first, to list known users before others.
-	const contacts = await Subscriptions.findConnectedUsersExcept(uid, selector.term, exceptions, searchFields, 10, 'd');
+	const contacts = await Subscriptions.findConnectedUsersExcept(uid, selector.term, exceptions, searchFields, conditions, 10, 'd');
 	if (contacts.length >= options.limit) {
 		return { items: contacts as UserAutoComplete[] };
 	}
@@ -45,7 +45,7 @@ export async function findUsersToAutocomplete({
 	contacts.forEach(({ username }) => exceptions.push(username));
 
 	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
-		const users = await Subscriptions.findConnectedUsersExcept(uid, selector.term, exceptions, searchFields, 10);
+		const users = await Subscriptions.findConnectedUsersExcept(uid, selector.term, exceptions, searchFields, conditions, 10);
 		return { items: contacts.concat(users) as UserAutoComplete[] };
 	}
 
