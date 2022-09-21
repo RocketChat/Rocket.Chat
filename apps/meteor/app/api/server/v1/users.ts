@@ -39,9 +39,9 @@ import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKe
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { Team } from '../../../../server/sdk';
 import { isValidQuery } from '../lib/isValidQuery';
-import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { getURL } from '../../../utils/server';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { api } from '../../../../server/sdk/api';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -1035,7 +1035,11 @@ API.v1.addRoute(
 							},
 						});
 
-						setUserStatus(user, status);
+						const { _id, username, statusText, roles, name } = user;
+						api.broadcast('presence.status', {
+							user: { status, _id, username, statusText, roles, name },
+							previousStatus: user.status,
+						});
 					} else {
 						throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
 							method: 'users.setStatus',

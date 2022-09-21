@@ -1,4 +1,4 @@
-import { BLOCK_CONTEXT } from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
 import { memo } from 'preact/compat';
 
 import { createClassName } from '../../../helpers';
@@ -8,8 +8,8 @@ const ImageElement = ({ imageUrl, altText, context }) => (
 	<div
 		aria-label={altText}
 		className={createClassName(styles, 'uikit-image', {
-			accessory: context === BLOCK_CONTEXT.SECTION,
-			context: context === BLOCK_CONTEXT.CONTEXT,
+			accessory: context === BlockContext.SECTION,
+			context: context === BlockContext.CONTEXT,
 		})}
 		role='img'
 		style={{

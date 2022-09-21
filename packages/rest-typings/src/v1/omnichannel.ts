@@ -13,6 +13,7 @@ import type {
 	IRoom,
 	ISetting,
 	ILivechatPriority,
+	ILivechatInquiryRecord,
 } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
@@ -1054,6 +1055,11 @@ const GETOmnichannelContactSearchSchema = {
 export const isGETOmnichannelContactSearchProps = ajv.compile<GETOmnichannelContactSearchProps>(GETOmnichannelContactSearchSchema);
 
 export type OmnichannelEndpoints = {
+	'/v1/livechat/inquiries.getOne': {
+		GET: (params: { roomId: string }) => {
+			inquiry: ILivechatInquiryRecord;
+		};
+	};
 	'/v1/livechat/appearance': {
 		GET: () => {
 			appearance: ISetting[];

@@ -5,7 +5,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import React, { useMemo, FC, useEffect } from 'react';
 
 import { callbacks } from '../../lib/callbacks';
-import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
+import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 
 const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
 
