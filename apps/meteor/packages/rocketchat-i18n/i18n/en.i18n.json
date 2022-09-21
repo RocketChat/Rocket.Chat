@@ -5443,6 +5443,5 @@
   "onboarding.form.standaloneServerForm.servicesUnavailable": "Some of the services will be unavailable or will require manual setup",
   "onboarding.form.standaloneServerForm.publishOwnApp": "In order to send push notitications you need to compile and publish your own app to Google Play and App Store",
   "onboarding.form.standaloneServerForm.manuallyIntegrate": "Need to manually integrate with external services",
-  "Toolbox_room_actions": "Primary Room actions",
-  "Something_Went_Wrong": "Something went wrong"
+  "Toolbox_room_actions": "Primary Room actions"
 }
