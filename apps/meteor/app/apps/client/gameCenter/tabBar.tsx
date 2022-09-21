@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import { lazy, useMemo } from 'react';
 
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
 
@@ -10,6 +10,8 @@ addAction('game-center', () => {
 		staleTime: 10_000,
 	});
 
+	const template = lazy(() => import('./GameCenter'));
+
 	return useMemo(
 		() =>
 			result.isSuccess && result.data.externalComponents.length > 0
@@ -18,10 +20,10 @@ addAction('game-center', () => {
 						id: 'game-center',
 						title: 'Apps_Game_Center',
 						icon: 'game',
-						template: 'GameCenter',
+						template,
 						order: -1,
 				  }
 				: null,
-		[result.data?.externalComponents.length, result.isSuccess],
-	);
+		[result.isSuccess, result?.data?.externalComponents, template],
+	) as any;
 });

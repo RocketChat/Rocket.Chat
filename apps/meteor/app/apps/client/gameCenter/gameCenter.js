@@ -19,6 +19,7 @@ const getExternalComponents = async (instance) => {
 };
 
 const openGame = (gameManifestInfo) => {
+	console.log(`gameManifestInfo`, Object.keys(gameManifestInfo));
 	const instance = Template.instance();
 	const { location = 'MODAL' } = gameManifestInfo;
 
