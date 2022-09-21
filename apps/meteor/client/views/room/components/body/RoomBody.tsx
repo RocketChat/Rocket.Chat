@@ -28,6 +28,7 @@ import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import Announcement from '../../Announcement';
 import { MessageList } from '../../MessageList/MessageList';
+import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
 import { useToolboxContext } from '../../contexts/ToolboxContext';
 import DropTargetOverlay from './DropTargetOverlay';
@@ -586,24 +587,26 @@ const RoomBody = (): ReactElement => {
 										.filter(isTruthy)
 										.join(' ')}
 								>
-									<ul className='messages-list' aria-live='polite'>
-										{canPreview ? (
-											<>
-												{hasMorePreviousMessages ? (
-													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-												) : (
-													<li className='start color-info-font-color'>
-														{retentionPolicy ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
-														<RoomForeword user={user} room={room} />
-													</li>
-												)}
-											</>
-										) : null}
-										{useLegacyMessageTemplate ? <LegacyMessageTemplateList room={room} /> : <MessageList rid={room._id} />}
-										{hasMoreNextMessages ? (
-											<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-										) : null}
-									</ul>
+									<MessageListErrorBoundary>
+										<ul className='messages-list' aria-live='polite'>
+											{canPreview ? (
+												<>
+													{hasMorePreviousMessages ? (
+														<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+													) : (
+														<li className='start color-info-font-color'>
+															{retentionPolicy ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
+															<RoomForeword user={user} room={room} />
+														</li>
+													)}
+												</>
+											) : null}
+											{useLegacyMessageTemplate ? <LegacyMessageTemplateList room={room} /> : <MessageList rid={room._id} />}
+											{hasMoreNextMessages ? (
+												<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+											) : null}
+										</ul>
+									</MessageListErrorBoundary>
 								</div>
 							</div>
 							<ComposerContainer
