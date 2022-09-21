@@ -61,7 +61,13 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 				<Tabs.Item onClick={(): void => marketplaceRoute.push({ context: '' })} selected={isMarketplace}>
 					{t('Marketplace')}
 				</Tabs.Item>
-				<Tabs.Item onClick={(): void => marketplaceRoute.push({ context: 'installed' })} selected={!isMarketplace}>
+				<Tabs.Item
+					onClick={(): void => marketplaceRoute.push({ context: 'installed' })}
+					selected={!isMarketplace}
+					mbe='neg-x4'
+					borderWidth='0'
+					borderBlockWidth='x4'
+				>
 					{t('Installed')}
 				</Tabs.Item>
 			</Tabs>
