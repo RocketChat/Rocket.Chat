@@ -1891,8 +1891,9 @@ describe('[Channels]', function () {
 		});
 
 		it('should fail to convert channel if lacking edit-room permission', (done) => {
-			updatePermission('create-team', []).then(() => {
-				updatePermission('edit-room', ['admin']).then(() => {
+			updatePermission('create-team', [])
+				.then(() => updatePermission('edit-room', ['admin']))
+				.then(() => {
 					request
 						.post(api('channels.convertToTeam'))
 						.set(credentials)
