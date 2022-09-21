@@ -2,6 +2,8 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 
+import { RoomManager } from '../../../app/ui-utils/client';
+
 const testIfPathAreEquals = (oldPath = '', newPath = ''): boolean => oldPath.replace(/"/g, '') === newPath;
 export const roomExit = function (_context: { params: Record<string, string>; queryParams: Record<string, string> }): void {
 	const oldRoute = FlowRouter.current();
@@ -27,7 +29,5 @@ export const roomExit = function (_context: { params: Record<string, string>; qu
 		}
 	});
 
-	if (typeof (window as any).currentTracker !== 'undefined') {
-		(window as any).currentTracker.stop();
-	}
+	RoomManager.currentTracker?.stop();
 };
