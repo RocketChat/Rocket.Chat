@@ -104,6 +104,10 @@ const UsersSetAvatarFromServiceSchema = {
 		service: {
 			type: 'string',
 		},
+		url: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: ['blob', 'contentType', 'service'],
 	additionalProperties: false,
