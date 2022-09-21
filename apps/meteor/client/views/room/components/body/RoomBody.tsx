@@ -29,7 +29,7 @@ import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import Announcement from '../../Announcement';
 import { MessageList } from '../../MessageList/MessageList';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
-import { useTabBarAPI } from '../../providers/ToolboxProvider';
+import { useToolboxContext } from '../../contexts/ToolboxContext';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
 import LeaderBar from './LeaderBar';
@@ -51,7 +51,7 @@ const RoomBody = (): ReactElement => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
 	const user = useUser();
-	const tabBar = useTabBarAPI();
+	const toolbox = useToolboxContext();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 
@@ -180,11 +180,11 @@ const RoomBody = (): ReactElement => {
 				target: event.currentTarget,
 				open: (event: MouseEvent) => {
 					event.preventDefault();
-					if (username) tabBar.openUserInfo(username);
+					if (username) toolbox.openRoomInfo(username);
 				},
 			});
 		},
-		[room._id, tabBar],
+		[room._id, toolbox],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
@@ -252,19 +252,22 @@ const RoomBody = (): ReactElement => {
 	}, [sendToBottomIfNecessary]);
 
 	const [routeName] = useCurrentRoute();
-	const openedRoom = useSession('openedRoom');
+
+	const roomRef = useRef(room);
+	roomRef.current = room;
+	const tabBarRef = useRef(toolbox);
+	tabBarRef.current = toolbox;
 
 	useEffect(() => {
+		const room = roomRef.current;
+		const tabBar = tabBarRef.current;
 		Tracker.afterFlush(() => {
-			if (room._id !== openedRoom) {
-				return;
-			}
-
-			if (room && isOmnichannelRoom(room)) {
-				roomCoordinator.getRoomDirectives(room.t)?.openCustomProfileTab(null, room, room.v.username);
+			// Find a better way to do this, declaratively
+			if (room && isOmnichannelRoom(room) && tabBar.activeTabBar?.id !== 'room-info') {
+				tabBar.openRoomInfo();
 			}
 		});
-	}, [openedRoom, room, room._id]);
+	}, [room._id]);
 
 	const debouncedReadMessageRead = useMemo(
 		() =>
@@ -273,6 +276,8 @@ const RoomBody = (): ReactElement => {
 			}),
 		[room._id],
 	);
+
+	const openedRoom = useSession('openedRoom');
 
 	useEffect(() => {
 		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName) || room._id !== openedRoom) {
@@ -341,7 +346,8 @@ const RoomBody = (): ReactElement => {
 			return {
 				event,
 				selector,
-				listener: (e: JQuery.TriggeredEvent<HTMLUListElement, undefined>) => handler.call(null, e, { data: { rid: room._id, tabBar } }),
+				listener: (e: JQuery.TriggeredEvent<HTMLUListElement, undefined>) =>
+					handler.call(null, e, { data: { rid: room._id, tabBar: toolbox } }),
 			};
 		});
 
@@ -354,7 +360,7 @@ const RoomBody = (): ReactElement => {
 				$(messageList).off(event, selector, listener);
 			}
 		};
-	}, [room._id, sendToBottomIfNecessary, tabBar]);
+	}, [room._id, sendToBottomIfNecessary, toolbox]);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -523,7 +529,7 @@ const RoomBody = (): ReactElement => {
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
 					aria-label={t('Channel')}
-					onClick={hideFlexTab ? tabBar.close : undefined}
+					onClick={hideFlexTab ? toolbox.close : undefined}
 				>
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' {...fileUploadTriggerProps}>
