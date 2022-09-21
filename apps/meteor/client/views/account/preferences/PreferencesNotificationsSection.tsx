@@ -35,7 +35,10 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 		'Accounts_Default_User_Preferences_pushNotifications',
 	) as keyof typeof notificationOptionsLabelMap;
 	const canChangeEmailNotification = useSetting('Accounts_AllowEmailNotifications');
-	const showNewLoginEmailPreference = useSetting('Device_Management_Allow_Login_Email_preference');
+
+	const loginEmailEnabled = useSetting('Device_Management_Enable_Login_Emails');
+	const allowLoginEmailPreference = useSetting('Device_Management_Allow_Login_Email_preference');
+	const showNewLoginEmailPreference = loginEmailEnabled && allowLoginEmailPreference;
 
 	const { values, handlers, commit } = useForm(
 		{
