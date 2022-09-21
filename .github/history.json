@@ -93600,6 +93600,114 @@
         "5.0"
       ],
       "pull_requests": []
+    },
+    "5.1.1": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26776",
+          "title": "[FIX] Livechat trigger messages covering all the website",
+          "userLogin": "tiagoevanp",
+          "milestone": "5.1.1",
+          "contributors": [
+            "tiagoevanp",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26808",
+          "title": "[FIX] Restore current chats  default table order",
+          "userLogin": "MartinSchoeler",
+          "milestone": "5.1.1",
+          "contributors": [
+            "MartinSchoeler",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26819",
+          "title": "[FIX] Fix broken legacy message view",
+          "userLogin": "hugocostadev",
+          "description": "Fixed `messagesHistory` function, it was filtering messages only with existing threads.",
+          "milestone": "5.1.1",
+          "contributors": [
+            "hugocostadev"
+          ]
+        }
+      ]
+    },
+    "4.8.5": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "5.0.6": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "5.1.2": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26776",
+          "title": "[FIX] Livechat trigger messages covering all the website",
+          "userLogin": "tiagoevanp",
+          "milestone": "5.1.1",
+          "contributors": [
+            "tiagoevanp",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26808",
+          "title": "[FIX] Restore current chats  default table order",
+          "userLogin": "MartinSchoeler",
+          "milestone": "5.1.1",
+          "contributors": [
+            "MartinSchoeler",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26819",
+          "title": "[FIX] Fix broken legacy message view",
+          "userLogin": "hugocostadev",
+          "description": "Fixed `messagesHistory` function, it was filtering messages only with existing threads.",
+          "milestone": "5.1.1",
+          "contributors": [
+            "hugocostadev"
+          ]
+        }
+      ]
     }
   }
 }
