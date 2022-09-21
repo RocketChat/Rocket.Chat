@@ -195,7 +195,8 @@ describe('[Incoming Integrations]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('messages', []);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect(res.body.messages).to.eql([]);
 				})
 				.end(done);
 		});
