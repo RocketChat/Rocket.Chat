@@ -49,7 +49,7 @@ test.describe('omnichannel-transcript', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newUser.name, true);
+			await agent.poHomeChannel.sidenav.openChat(newUser.name);
 		});
 
 		await test.step('Expect to be able to create transcript', async () => {

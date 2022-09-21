@@ -25,11 +25,11 @@ export class OmnichannelAgents {
 	}
 
 	get firstRowInTable() {
-		return this.page.locator('[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell').first();
+		return this.page.locator('[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell:first-child');
 	}
 
 	get btnDeletefirstRowInTable() {
-		return this.page.locator('button[title="Remove"]').first();
+		return this.page.locator('button[title="Remove"]');
 	}
 
 	get btnModalRemove(): Locator {

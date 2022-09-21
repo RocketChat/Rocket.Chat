@@ -24,10 +24,6 @@ export class OmnichannelManager {
 		return this.page.locator(`[data-qa-id="GenericTableManagerInfoBody"] [qa-user-id="${userId}"]`);
 	}
 
-	textInTable(text: string) {
-		return this.page.locator(`[data-qa-id="GenericTableManagerInfoBody"] >> text="${text}"`);
-	}
-
 	get btnDeleteFirstRowInTable() {
 		return this.page.locator('button[title="Remove"]');
 	}
