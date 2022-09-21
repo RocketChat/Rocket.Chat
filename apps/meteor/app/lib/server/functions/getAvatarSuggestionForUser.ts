@@ -124,7 +124,9 @@ const avatarProviders = {
 /**
  * @return {Object}
  */
-export async function getAvatarSuggestionForUser(user: IUser) {
+export async function getAvatarSuggestionForUser(
+	user: IUser,
+): Promise<Record<string, { blob: string; contentType: string; service: string; url: string }>> {
 	check(user, Object);
 
 	const avatars = [];
@@ -140,7 +142,7 @@ export async function getAvatarSuggestionForUser(user: IUser) {
 		}
 	}
 
-	const validAvatars: Record<string, unknown> = {};
+	const validAvatars: Record<string, { blob: string; contentType: string; service: string; url: string }> = {};
 	for await (const avatar of avatars) {
 		try {
 			const response = await fetch(avatar.url);
