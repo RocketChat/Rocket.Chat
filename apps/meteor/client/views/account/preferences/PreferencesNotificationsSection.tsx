@@ -136,7 +136,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 					</Field.Row>
 				</Field>
 				<Field>
-					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Notification_RequireInteraction')}</Field.Label>
 						<Field.Row>
 							<ToggleSwitch checked={desktopNotificationRequireInteraction} onChange={handleDesktopNotificationRequireInteraction} />
@@ -174,7 +174,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 
 				{showNewLoginEmailPreference && (
 					<Field>
-						<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Receive_Login_Detection_Emails')}</Field.Label>
 							<Field.Row>
 								<ToggleSwitch checked={receiveLoginDetectionEmail} onChange={handleReceiveLoginDetectionEmail} />

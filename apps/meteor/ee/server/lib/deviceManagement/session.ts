@@ -89,7 +89,7 @@ export const listenSessionLogin = async (): Promise<void> => {
 					: true;
 				const shouldSendLoginEmail = settings.get('Device_Management_Enable_Login_Emails') && userReceiveLoginEmailPreference;
 
-				shouldSendLoginEmail &&
+				if (shouldSendLoginEmail) {
 					Mailer.send({
 						to: `${name} <${email}>`,
 						from: Accounts.emailTemplates.from,
@@ -97,6 +97,7 @@ export const listenSessionLogin = async (): Promise<void> => {
 						html: mailTemplates,
 						data: mailData,
 					});
+				}
 			} catch ({ message }) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 					method: 'listenSessionLogin',
