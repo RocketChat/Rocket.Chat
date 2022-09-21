@@ -233,8 +233,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('Invalid User');
 		}
 
-		const user = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(userId, {
-			projection: { username: 1, name: 1 },
+		const user = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(userId, {
+			projection: { username: 1, name: 1, avatarETag: 1 },
 		});
 		if (!user) {
 			throw new Error('Invalid User');
@@ -244,6 +244,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			_id: user._id,
 			username: user.username,
 			name: user.name,
+			avatarETag: user.avatarETag,
 			ts: ts || new Date(),
 		});
 	}
@@ -799,7 +800,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async addUserToCall(
 		call: Optional<VideoConference, 'providerData'>,
-		{ _id, username, name, avatarETag, ts }: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> & { ts?: Date },
+		{ _id, username, name, avatarETag, ts }: AtLeast<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'> & { ts?: Date },
 	): Promise<void> {
 		if (call.users.find((user) => user._id === _id)) {
 			return;
