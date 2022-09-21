@@ -138,7 +138,7 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		this.app = polka()
-			.use(proxy)
+			.use(proxy())
 			.get('/health', async (_req, res) => {
 				await this.api.nodeList();
 				res.end('ok');

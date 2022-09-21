@@ -82,11 +82,6 @@ export class NetworkBroker implements IBroker {
 				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
 		).filter((name) => name !== 'constructor');
 
-		const instanceEvents = instance.getEvents();
-		if (!instanceEvents && !methods.length) {
-			return;
-		}
-
 		const serviceInstance = instance as any;
 
 		const name = instance.getName();
@@ -94,12 +89,17 @@ export class NetworkBroker implements IBroker {
 		if (!instance.isInternal()) {
 			instance.onEvent('shutdown', async (services) => {
 				if (!services[name]?.includes(this.broker.nodeID)) {
-					this.broker.logger.debug({ msg: 'Not shutting down, different node.', nodeID: this.broker.nodeID });
+					this.broker.logger.info({ msg: 'Not shutting down, different node.', nodeID: this.broker.nodeID });
 					return;
 				}
 				this.broker.logger.warn({ msg: 'Received shutdown event, destroying service.', nodeID: this.broker.nodeID });
 				this.destroyService(instance);
 			});
+		}
+
+		const instanceEvents = instance.getEvents();
+		if (!instanceEvents && !methods.length) {
+			return;
 		}
 
 		const dependencies = name !== 'license' ? { dependencies: ['license'] } : {};
