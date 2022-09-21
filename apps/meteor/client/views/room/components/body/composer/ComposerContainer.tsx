@@ -8,16 +8,16 @@ import { ComposerJoinWithPassword } from './ComposerJoinWithPassword';
 import ComposerMessage, { ComposerMessageProps } from './ComposerMessage';
 import { ComposerOmnichannel } from './ComposerOmnichannel/ComposerOmnichannel';
 import { ComposerReadOnly } from './ComposerReadOnly';
+import { RoomComposer } from './RoomComposer';
 import { useMessageComposerIsAnonymous } from './hooks/useMessageComposerIsAnonymous';
 import { useMessageComposerIsBlocked } from './hooks/useMessageComposerIsBlocked';
 import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOnly';
 
 const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
+	const isAnonymous = useMessageComposerIsAnonymous();
 	const room = useRoom();
 
 	const mustJoinWithCode = !props.subscription && room.joinCodeRequired;
-
-	const isAnonymous = useMessageComposerIsAnonymous();
 
 	const isBlockedOrBlocker = useMessageComposerIsBlocked({ subscription: props.subscription });
 
@@ -61,7 +61,12 @@ const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
 		);
 	}
 
-	return <ComposerMessage {...props} />;
+	return (
+		<>
+			<RoomComposer />
+			{/* <ComposerMessage {...props} />; */}
+		</>
+	);
 };
 
 export default memo(ComposerContainer);
