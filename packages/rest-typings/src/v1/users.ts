@@ -1,4 +1,4 @@
-import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken } from '@rocket.chat/core-typings';
+import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
@@ -311,7 +311,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.setStatus': {
-		POST: (params: { message?: string; status?: 'online' | 'offline' | 'away' | 'busy' }) => void;
+		POST: (params: { message?: string; status?: UserStatus }) => void;
 	};
 
 	'/v1/users.getStatus': {

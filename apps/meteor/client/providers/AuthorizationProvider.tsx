@@ -7,7 +7,7 @@ import React, { FC, useCallback, useEffect } from 'react';
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
 import { Roles } from '../../app/models/client/models/Roles';
 import { useReactiveValue } from '../hooks/useReactiveValue';
-import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
+import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 
 class RoleStore extends Emitter<{
 	change: { [_id: string]: IRole };

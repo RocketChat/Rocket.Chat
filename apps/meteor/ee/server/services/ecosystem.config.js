@@ -6,18 +6,18 @@ module.exports = {
 			name: 'authorization',
 			watch: [...watch, '../../../server/services/authorization'],
 		},
-		{
-			name: 'presence',
-		},
+		// {
+		// 	name: 'presence',
+		// },
 		{
 			name: 'account',
 		},
 		{
 			name: 'stream-hub',
 		},
-		{
-			name: 'ddp-streamer',
-		},
+		// {
+		// 	name: 'ddp-streamer',
+		// },
 	].map((app) =>
 		Object.assign(app, {
 			script: app.script || `ts-node --files ${app.name}/service.ts`,
