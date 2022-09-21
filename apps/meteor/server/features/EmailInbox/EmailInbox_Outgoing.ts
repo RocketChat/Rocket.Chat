@@ -21,6 +21,7 @@ const user: IUser = Users.findOneById('rocket.cat');
 const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
+// TODO: change these messages with room notifications
 const sendErrorReplyMessage = (error: string, options: any): void => {
 	if (!options?.rid || !options?.msgId) {
 		return;
@@ -29,6 +30,21 @@ const sendErrorReplyMessage = (error: string, options: any): void => {
 	const message = {
 		groupable: false,
 		msg: `@${options.sender} something went wrong when replying email, sorry. **Error:**: ${error}`,
+		_id: String(Date.now()),
+		rid: options.rid,
+		ts: new Date(),
+	};
+
+	sendMessage(user, message, { _id: options.rid });
+};
+
+const sendSuccessReplyMessage = (options: any): void => {
+	if (!options?.rid || !options?.msgId) {
+		return;
+	}
+	const message = {
+		groupable: false,
+		msg: `@${options.sender} Attachment was sent successfully`,
 		_id: String(Date.now()),
 		rid: options.rid,
 		ts: new Date(),
@@ -143,6 +159,12 @@ slashCommands.add({
 				},
 			},
 		);
+
+		return sendSuccessReplyMessage({
+			msgId: message._id,
+			sender: message.u.username,
+			rid: room._id,
+		});
 	},
 	options: {
 		description: 'Send attachment as email',

@@ -31,6 +31,8 @@ export class IMAPInterceptor extends EventEmitter {
 
 	private retries = 0;
 
+	private inboxId: string;
+
 	constructor(
 		imapConfig: IMAP.Config,
 		private options: IMAPOptions = {
@@ -39,6 +41,7 @@ export class IMAPInterceptor extends EventEmitter {
 			markSeen: true,
 			maxRetries: 10,
 		},
+		id: string,
 	) {
 		super();
 
@@ -51,6 +54,7 @@ export class IMAPInterceptor extends EventEmitter {
 			...imapConfig,
 		});
 		this.retries = 0;
+		this.inboxId = id;
 		this.start();
 	}
 
@@ -82,14 +86,15 @@ export class IMAPInterceptor extends EventEmitter {
 			}
 		});
 
-		this.imap.on('error', (err: Error) => {
+		this.imap.on('error', async (err: Error) => {
+			logger.error({ err });
 			logger.error(`IMAP error: ${err.message}`);
 			this.retries++;
-			this.reconnect();
+			await this.reconnect();
 		});
 
-		this.imap.on('close', () => {
-			this.reconnect();
+		this.imap.on('close', async () => {
+			await this.reconnect();
 		});
 		this.retries += 1;
 		return this.imap.connect();
@@ -109,12 +114,11 @@ export class IMAPInterceptor extends EventEmitter {
 		this.imap.end();
 	}
 
-	reconnect(): void {
+	async reconnect(): Promise<void> {
 		if (!this.isActive() && !this.canRetry()) {
 			logger.info(`Max retries reached for ${this.config.user}`);
 			this.stop();
-			this.selfDisable();
-			return;
+			return this.selfDisable();
 		}
 		if (this.backoff) {
 			clearTimeout(this.backoff);
@@ -216,8 +220,11 @@ export class IMAPInterceptor extends EventEmitter {
 		return this.retries < this.options.maxRetries || this.options.maxRetries === -1;
 	}
 
-	selfDisable(): void {
-		EmailInbox.findOneAndUpdate({ email: this.config.user }, { $set: { active: false } });
-		logger.info(`IMAP inbox ${this.config.user} automatically disabled`);
+	async selfDisable(): Promise<void> {
+		logger.info(`Disabling inbox ${this.inboxId}`);
+		// Again, if there's 2 inboxes with the same email, this will prevent looping over the already disabled one
+		// Active filter is just in case :)
+		await EmailInbox.findOneAndUpdate({ _id: this.inboxId, active: true }, { $set: { active: false } });
+		logger.info(`IMAP inbox ${this.inboxId} automatically disabled`);
 	}
 }

@@ -54,6 +54,7 @@ export async function configureEmailInboxes(): Promise<void> {
 				markSeen: true,
 				maxRetries: emailInboxRecord.imap.maxRetries,
 			},
+			emailInboxRecord._id,
 		);
 
 		imap.on(
