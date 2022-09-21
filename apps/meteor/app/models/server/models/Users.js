@@ -1082,16 +1082,6 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
-	updateStatusById(_id, status) {
-		const update = {
-			$set: {
-				status,
-			},
-		};
-
-		return this.update(_id, update);
-	}
-
 	addPasswordToHistory(_id, password) {
 		const update = {
 			$push: {
