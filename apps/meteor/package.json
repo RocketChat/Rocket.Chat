@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "5.1.1",
+	"version": "5.1.2",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
@@ -373,7 +373,7 @@
 		"use-subscription": "~1.6.0",
 		"use-sync-external-store": "^1.2.0",
 		"uuid": "^8.3.2",
-		"vm2": "^3.9.10",
+		"vm2": "^3.9.11",
 		"webdav": "^4.10.0",
 		"xml-crypto": "^2.1.4",
 		"xml-encryption": "2.0.0",
