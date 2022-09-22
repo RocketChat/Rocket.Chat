@@ -191,6 +191,9 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	t: 'l';
+	omnichannel?: {
+		predictedVisitorAbandonmentAt: Date;
+	};
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
