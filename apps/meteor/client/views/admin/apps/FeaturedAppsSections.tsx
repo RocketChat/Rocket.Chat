@@ -10,9 +10,10 @@ type FeaturedSectionsProps = {
 	appsResult: App[];
 	isAdminSection: boolean;
 	currentRouteName: string;
+	context: string | undefined;
 };
 
-const FeaturedAppsSections = ({ appsResult, isAdminSection, currentRouteName }: FeaturedSectionsProps): ReactElement | null => {
+const FeaturedAppsSections = ({ appsResult, isAdminSection, currentRouteName, context }: FeaturedSectionsProps): ReactElement | null => {
 	const t = useTranslation();
 
 	const featuredApps = useFeaturedApps();
@@ -25,7 +26,7 @@ const FeaturedAppsSections = ({ appsResult, isAdminSection, currentRouteName }: 
 						key={section.slug}
 						apps={normalizeFeaturedApps(section.apps, appsResult)}
 						title={t.has(section.i18nLabel) ? t(section.i18nLabel) : section.i18nLabel}
-						isMarketplace={true}
+						context={context}
 						isAdminSection={isAdminSection}
 						currentRouteName={currentRouteName}
 					/>

@@ -9,12 +9,13 @@ type AppsListProps = {
 	title: string;
 	isAdminSection: boolean;
 	currentRouteName: string;
+	context: string | undefined;
 };
 
-const AppsList = ({ apps, title, isAdminSection, currentRouteName }: AppsListProps): ReactElement => (
+const AppsList = ({ apps, title, isAdminSection, currentRouteName, context }: AppsListProps): ReactElement => (
 	<>
 		<Box is='h3' fontScale='h3' color='default' mbe='x20'>
-			{title}
+			{context === 'all' && title}
 		</Box>
 		<Box mbe='x36'>
 			{apps.map((app) => (

@@ -122,6 +122,7 @@ const AppsPageContent = ({ context, isAdminSection, currentRouteName }: AppsPage
 								appsResult={appsResult.value.items}
 								isAdminSection={isAdminSection}
 								currentRouteName={currentRouteName}
+								context={context}
 							/>
 						)}
 						{!noInstalledAppsFound && (
@@ -130,6 +131,7 @@ const AppsPageContent = ({ context, isAdminSection, currentRouteName }: AppsPage
 								title={t('All_Apps')}
 								isAdminSection={isAdminSection}
 								currentRouteName={currentRouteName}
+								context={context}
 							/>
 						)}
 						{Boolean(appsResult.value.count) && (
