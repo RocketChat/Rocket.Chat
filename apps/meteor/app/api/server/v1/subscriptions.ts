@@ -6,7 +6,6 @@ import {
 	isSubscriptionsUnreadProps,
 } from '@rocket.chat/rest-typings';
 import { Subscriptions } from '@rocket.chat/models';
-import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
 import { readMessages } from '../../../../server/lib/readMessages';
