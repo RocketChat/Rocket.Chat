@@ -10,7 +10,7 @@ export const mapMessageFromApi = ({ attachments, tlm, ts, _updatedAt, webRtcCall
 	...(attachments && {
 		attachments: attachments.map(({ ts, ...attachment }) => ({
 			...(ts && { ts: new Date(ts) }),
-			...attachment,
+			...(attachment as any),
 		})),
 	}),
 });
