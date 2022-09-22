@@ -89,6 +89,7 @@ export type MessageTypesValues =
 	| 'room-allowed-reacting'
 	| 'room-disallowed-reacting'
 	| 'command'
+	| 'message_pinned'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues

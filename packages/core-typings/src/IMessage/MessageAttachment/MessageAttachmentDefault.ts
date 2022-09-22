@@ -1,3 +1,4 @@
+import type { IMessage } from '../IMessage';
 import type { FieldProps } from './FieldProps';
 import type { Dimensions } from './Files/Dimensions';
 import type { MessageAttachmentBase } from './MessageAttachmentBase';
@@ -25,6 +26,7 @@ export type MessageAttachmentDefault = {
 
 	color?: string;
 
+	t?: IMessage['t'];
 	translations?: {
 		[language: string]: string;
 	};

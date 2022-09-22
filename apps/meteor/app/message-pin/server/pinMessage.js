@@ -113,6 +113,7 @@ Meteor.methods({
 					author_icon: getUserAvatarURL(originalMessage.u.username),
 					ts: originalMessage.ts,
 					attachments: recursiveRemove(attachments),
+					t: originalMessage.t,
 				},
 			],
 		});
