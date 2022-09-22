@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Rooms } from '../../app/models/server';
+import { readMessages as readMessagesFunction } from '../lib/readMessages';
 
 Meteor.methods({
 	readMessages(rid) {
@@ -14,6 +14,6 @@ Meteor.methods({
 			});
 		}
 
-		Promise.await(readMessages(rid, userId, false));
+		Promise.await(readMessagesFunction(rid, userId, false));
 	},
 });
