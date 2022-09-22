@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 import { Rooms } from '../../app/models/server';
 
 Meteor.methods({
-	readMessages(rid: IRoom['_id']) {
+	readMessages(rid) {
 		check(rid, String);
 
 		const userId = Meteor.userId();
