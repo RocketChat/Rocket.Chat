@@ -1,6 +1,6 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { LivechatRoomsProps } from '@rocket.chat/rest-typings';
+import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { memo, ReactElement, useCallback, useMemo, useState } from 'react';
@@ -41,7 +41,7 @@ type useQueryType = (
 	},
 	customFields: { [key: string]: string } | undefined,
 	[column, direction]: [string, 'asc' | 'desc'],
-) => LivechatRoomsProps | undefined;
+) => GETLivechatRoomsParams | undefined;
 
 const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
 
