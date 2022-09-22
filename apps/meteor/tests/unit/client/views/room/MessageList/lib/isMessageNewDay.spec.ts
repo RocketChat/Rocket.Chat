@@ -46,4 +46,16 @@ describe('isMessageNewDay', () => {
 		};
 		expect(isMessageNewDay(message, undefined)).to.be.true;
 	});
+
+	it('should return true for different days even if the range is on second', () => {
+		const previous: IMessage = {
+			...baseMessage,
+			ts: new Date(2022, 0, 1, 23, 59, 59, 999),
+		};
+		const current: IMessage = {
+			...baseMessage,
+			ts: new Date(2022, 0, 2, 0, 0, 0, 0),
+		};
+		expect(isMessageNewDay(current, previous)).to.be.true;
+	});
 });
