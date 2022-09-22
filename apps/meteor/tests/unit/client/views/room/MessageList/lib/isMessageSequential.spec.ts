@@ -1,13 +1,13 @@
 /* eslint-env mocha */
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { isMessageSequential } from './isMessageSequential';
+import { isMessageSequential } from '../../../../../../../client/views/room/MessageList/lib/isMessageSequential';
 
 const TIME_RANGE_IN_SECONDS = 300;
 
 const date = new Date('2021-10-27T00:00:00.000Z');
-const baseMessage = {
+const baseMessage: IMessage = {
 	ts: date,
 	u: {
 		_id: 'userId',

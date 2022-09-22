@@ -2,7 +2,7 @@ import type Url from 'url';
 
 import type Icons from '@rocket.chat/icons';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
-import type { parser } from '@rocket.chat/message-parser';
+import type { Root } from '@rocket.chat/message-parser';
 
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IUser } from '../IUser';
@@ -124,7 +124,7 @@ export interface IMessage extends IRocketChatRecord {
 	u: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
 	blocks?: MessageSurfaceLayout;
 	alias?: string;
-	md?: ReturnType<typeof parser>;
+	md?: Root;
 
 	_hidden?: boolean;
 	imported?: boolean;

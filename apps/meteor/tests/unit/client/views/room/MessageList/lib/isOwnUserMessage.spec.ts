@@ -2,12 +2,12 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
-import { isOwnUserMessage } from './isOwnUserMessage';
+import { MessageTypes } from '../../../../../../../app/ui-utils/lib/MessageTypes';
+import { isOwnUserMessage } from '../../../../../../../client/views/room/MessageList/lib/isOwnUserMessage';
 
 const date = new Date('2021-10-27T00:00:00.000Z');
 
-const baseMessage = {
+const baseMessage: IMessage = {
 	ts: date,
 	u: {
 		_id: 'userId',
