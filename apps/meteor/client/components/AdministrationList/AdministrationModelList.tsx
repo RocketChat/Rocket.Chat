@@ -7,7 +7,6 @@ import { userHasAllPermission } from '../../../app/authorization/client';
 import { SideNav } from '../../../app/ui-utils/client';
 import { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../lib/upgradeTab';
-import { INFO_PERMISSIONS } from '../../sidebar/header/actions/constants';
 import { useUpgradeTabParams } from '../../views/hooks/useUpgradeTabParams';
 import Emoji from '../Emoji';
 import ListItem from '../Sidebar/ListItem';
@@ -17,6 +16,8 @@ type AdministrationModelListProps = {
 	showAdmin: boolean;
 	closeList: () => void;
 };
+
+const INFO_PERMISSIONS = ['view-statistics'];
 
 const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxItems, showAdmin, closeList }) => {
 	const t = useTranslation();

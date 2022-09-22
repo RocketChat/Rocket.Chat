@@ -9,14 +9,30 @@ import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseMo
 import AdministrationList from '../../../components/AdministrationList/AdministrationList';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useDropdownVisibility } from '../hooks/useDropdownVisibility';
-import {
-	ADMIN_PERMISSIONS,
-	AUDIT_LICENSE_MODULE,
-	AUDIT_LOG_PERMISSIONS,
-	AUDIT_PERMISSIONS,
-	MANAGE_APPS_PERMISSIONS,
-	SETTINGS_PERMISSIONS,
-} from './constants';
+
+const ADMIN_PERMISSIONS = [
+	'view-logs',
+	'manage-emoji',
+	'manage-sounds',
+	'view-statistics',
+	'manage-oauth-apps',
+	'view-privileged-setting',
+	'manage-selected-settings',
+	'view-room-administration',
+	'view-user-administration',
+	'access-setting-permissions',
+	'manage-outgoing-integrations',
+	'manage-incoming-integrations',
+	'manage-own-outgoing-integrations',
+	'manage-own-incoming-integrations',
+	'view-engagement-dashboard',
+];
+const SETTINGS_PERMISSIONS = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
+const AUDIT_PERMISSIONS = ['can-audit'];
+const AUDIT_LOG_PERMISSIONS = ['can-audit-log'];
+const MANAGE_APPS_PERMISSIONS = ['manage-apps'];
+
+const AUDIT_LICENSE_MODULE = 'auditing';
 
 const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 	const reference = useRef(null);
