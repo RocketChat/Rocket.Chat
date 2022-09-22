@@ -138,6 +138,13 @@ FlowRouter.route('/directory/:tab?', {
 
 FlowRouter.route('/marketplace/:context?/:id?/:version?/:tab?', {
 	name: 'marketplace',
+	triggersEnter: [
+		(context, redirect): void => {
+			if (!context.params.context) {
+				redirect('/marketplace/all');
+			}
+		},
+	],
 	action: () => {
 		appLayout.render(
 			<MainLayout>
