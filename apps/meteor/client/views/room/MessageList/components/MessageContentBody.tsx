@@ -1,20 +1,16 @@
-import { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, MessageBody } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { MarkupInteractionContext, Markup, UserMention, ChannelMention } from '@rocket.chat/gazzodown';
-import { Root } from '@rocket.chat/message-parser';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import React, { ReactElement, useCallback, useMemo } from 'react';
 
 import { emoji } from '../../../../../app/emoji/client';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useMessageListHighlights } from '../contexts/MessageListContext';
+import { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 
-type MessageContentBodyProps = {
-	message?: IMessage;
-	tokens: Root;
-};
+type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'>;
 
 const detectEmoji = (text: string): { name: string; className: string; image?: string; content: string }[] => {
 	const html = Object.values(emoji.packages)
@@ -31,7 +27,7 @@ const detectEmoji = (text: string): { name: string; className: string; image?: s
 	}));
 };
 
-const MessageContentBody = ({ message, tokens }: MessageContentBodyProps): ReactElement => {
+const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps): ReactElement => {
 	const highlights = useMessageListHighlights();
 	const highlightRegex = useMemo(() => {
 		if (!highlights || !highlights.length) {
@@ -50,9 +46,9 @@ const MessageContentBody = ({ message, tokens }: MessageContentBodyProps): React
 				return undefined;
 			}
 
-			return message?.mentions?.find(({ username }) => username === mention);
+			return mentions?.find(({ username }) => username === mention);
 		},
-		[message?.mentions],
+		[mentions],
 	);
 
 	const {
@@ -70,15 +66,12 @@ const MessageContentBody = ({ message, tokens }: MessageContentBodyProps): React
 		[openUserCard],
 	);
 
-	const resolveChannelMention = useCallback(
-		(mention: string) => message?.channels?.find(({ name }) => name === mention),
-		[message?.channels],
-	);
+	const resolveChannelMention = useCallback((mention: string) => channels?.find(({ name }) => name === mention), [channels]);
 
 	const onChannelMentionClick = useCallback(({ _id: rid }: ChannelMention) => openRoom(rid), [openRoom]);
 
 	// TODO:  this style should go to Fuselage <MessageBody> repository
-	const messageBodyAditionalStyles = css`
+	const messageBodyAdditionalStyles = css`
 		> blockquote {
 			padding-inline: 8px;
 			border-radius: 2px;
@@ -112,7 +105,7 @@ const MessageContentBody = ({ message, tokens }: MessageContentBodyProps): React
 
 	return (
 		<MessageBody>
-			<Box className={messageBodyAditionalStyles}>
+			<Box className={messageBodyAdditionalStyles}>
 				<MarkupInteractionContext.Provider
 					value={{
 						detectEmoji,
@@ -123,7 +116,7 @@ const MessageContentBody = ({ message, tokens }: MessageContentBodyProps): React
 						onChannelMentionClick,
 					}}
 				>
-					<Markup tokens={tokens} />
+					<Markup tokens={md} />
 				</MarkupInteractionContext.Provider>
 			</Box>
 		</MessageBody>

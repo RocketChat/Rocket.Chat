@@ -3,7 +3,7 @@ import type { Options, Root } from '@rocket.chat/message-parser';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { parseMessage } from '../../../../../../../client/views/room/MessageList/lib/parseMessage';
+import { parseMessageTextToAstMarkdown } from '../../../../../../../client/views/room/MessageList/lib/parseMessageTextToAstMarkdown';
 
 const date = new Date('2021-10-27T00:00:00.000Z');
 
@@ -126,11 +126,11 @@ const baseMessage: IMessage = {
 
 describe('parseMessage', () => {
 	it('should return md property populated if the message is parsed', () => {
-		expect(parseMessage(baseMessage, parseOptions).md).to.deep.equal(messageParserTokenMessage);
+		expect(parseMessageTextToAstMarkdown(baseMessage, parseOptions).md).to.deep.equal(messageParserTokenMessage);
 	});
 
 	it('should return correct parsed md property populated and fail in comparison with different Root element', () => {
-		expect(parseMessage(baseMessage, parseOptions).md).to.not.deep.equal(messageParserTokenMessageWithWrongData);
+		expect(parseMessageTextToAstMarkdown(baseMessage, parseOptions).md).to.not.deep.equal(messageParserTokenMessageWithWrongData);
 	});
 
 	// TODO: Add more tests for each type of message and for each type of token

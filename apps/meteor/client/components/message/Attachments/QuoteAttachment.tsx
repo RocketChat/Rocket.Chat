@@ -64,7 +64,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 							</Box>
 						)}
 					</AttachmentAuthor>
-					{attachment.md ? <MessageContentBody tokens={attachment.md} /> : attachment.text}
+					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text}
 					{attachment.attachments && (
 						<AttachmentInner>
 							<Attachments attachments={attachment.attachments} />
