@@ -9,7 +9,7 @@ import type { IGame } from './GameCenter';
 
 interface IGameCenterListProps {
 	handleClose: (e: any) => void;
-	handleOpenGame: (isOpened: boolean, game: IGame) => void;
+	handleOpenGame: (game: IGame) => void;
 	games?: IGame[];
 	isLoading: boolean;
 }
@@ -37,7 +37,7 @@ const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGame
 								</TableHead>
 								<TableBody>
 									{games.map((game, key) => (
-										<TableRow onKeyDown={() => handleOpenGame(true, game)} onClick={() => handleOpenGame(true, game)} key={key} action>
+										<TableRow onKeyDown={() => handleOpenGame(game)} onClick={() => handleOpenGame(game)} key={key} action>
 											<TableCell>
 												<Avatar url={game.icon} /> {game.name}
 											</TableCell>
