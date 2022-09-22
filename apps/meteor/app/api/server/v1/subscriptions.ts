@@ -81,13 +81,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { rid, readThreads } = this.bodyParams;
-			check(rid, String);
-			check(readThreads, Match.Maybe(Boolean));
-			try {
-				await readMessages(rid, this.userId, readThreads ?? false);
-			} catch (err: unknown) {
-				return API.v1.failure(err instanceof Error ? err.message : String(err));
-			}
+			await readMessages(rid, this.userId, readThreads ?? false);
 			return API.v1.success();
 		},
 	},
