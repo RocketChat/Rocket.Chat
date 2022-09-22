@@ -1,5 +1,6 @@
 import { Messages, Subscriptions } from '../../models/server';
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
+import { Reads } from '../../../server/sdk';
 
 export const reply = ({ tmid }, message, parentMessage, followers) => {
 	const { rid, ts, u, editedAt } = message;
@@ -75,6 +76,8 @@ export const readThread = ({ userId, rid, tmid }) => {
 	const clearAlert = sub.tunread?.length <= 1 && sub.tunread.includes(tmid);
 
 	Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert);
+
+	Reads.readThread(userId, tmid);
 };
 
 export const readAllThreads = (rid, userId) => Subscriptions.removeAllUnreadThreadsByRoomIdAndUserId(rid, userId);
