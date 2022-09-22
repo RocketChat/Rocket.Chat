@@ -21,12 +21,4 @@ export const AUDIT_LOG_PERMISSIONS = ['can-audit-log'];
 export const MANAGE_APPS_PERMISSIONS = ['manage-apps'];
 export const INFO_PERMISSIONS = ['view-statistics'];
 
-export const ADMINISTRATION_MENU_PERMISSIONS = [
-	...ADMIN_PERMISSIONS,
-	...MANAGE_APPS_PERMISSIONS,
-	...SETTINGS_PERMISSIONS,
-	...AUDIT_PERMISSIONS,
-	...AUDIT_LOG_PERMISSIONS,
-];
-
 export const AUDIT_LICENSE_MODULE = 'auditing';

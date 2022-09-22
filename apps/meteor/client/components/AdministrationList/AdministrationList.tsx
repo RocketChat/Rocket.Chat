@@ -1,17 +1,7 @@
 import { OptionDivider } from '@rocket.chat/fuselage';
-import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import React, { FC, Fragment } from 'react';
 
 import { AccountBoxItem, IAppAccountBoxItem, isAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
-import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
-import {
-	ADMIN_PERMISSIONS,
-	AUDIT_LICENSE_MODULE,
-	AUDIT_LOG_PERMISSIONS,
-	AUDIT_PERMISSIONS,
-	MANAGE_APPS_PERMISSIONS,
-	SETTINGS_PERMISSIONS,
-} from '../../sidebar/header/actions/constants';
 import AdministrationModelList from './AdministrationModelList';
 import AppsModelList from './AppsModelList';
 import AuditModelList from './AuditModelList';
@@ -20,31 +10,45 @@ import SettingsModelList from './SettingsModelList';
 type AdministrationListProps = {
 	accountBoxItems: (IAppAccountBoxItem | AccountBoxItem)[];
 	closeList: () => void;
+	hasAdminPermission: boolean;
+	hasAuditLicense: boolean;
+	hasAuditPermission: boolean;
+	hasAuditLogPermission: boolean;
+	hasManageApps: boolean;
+	hasSettingsPermission: boolean;
 };
 
-const AdministrationList: FC<AdministrationListProps> = ({ accountBoxItems, closeList }) => {
+const AdministrationList: FC<AdministrationListProps> = ({
+	accountBoxItems,
+	hasAuditPermission,
+	hasAuditLogPermission,
+	hasManageApps,
+	hasSettingsPermission,
+	hasAdminPermission,
+	closeList,
+}) => {
 	const appBoxItems = accountBoxItems.filter((item): item is IAppAccountBoxItem => isAppAccountBoxItem(item));
 	const adminBoxItems = accountBoxItems.filter((item): item is AccountBoxItem => !isAppAccountBoxItem(item));
-
-	const hasAuditLicense = useHasLicenseModule(AUDIT_LICENSE_MODULE) === true;
-	const hasAuditPermission = useAtLeastOnePermission(AUDIT_PERMISSIONS) && hasAuditLicense;
-	const hasAuditLogPermission = useAtLeastOnePermission(AUDIT_LOG_PERMISSIONS) && hasAuditLicense;
-	const hasManageApps = useAtLeastOnePermission(MANAGE_APPS_PERMISSIONS);
-	const hasAdminPermission = useAtLeastOnePermission(ADMIN_PERMISSIONS);
-	const showSettings = useAtLeastOnePermission(SETTINGS_PERMISSIONS);
 	const showAudit = hasAuditPermission || hasAuditLogPermission;
 	const showManageApps = hasManageApps || !!appBoxItems.length;
 	const showAdmin = hasAdminPermission || !!adminBoxItems.length;
+	const showSettings = hasSettingsPermission;
+
+	const list = [
+		showAdmin && <AdministrationModelList showAdmin={showAdmin} accountBoxItems={adminBoxItems} closeList={closeList} />,
+		showSettings && <SettingsModelList closeList={closeList} />,
+		showManageApps && <AppsModelList appBoxItems={appBoxItems} closeList={closeList} showManageApps={showManageApps} />,
+		showAudit && <AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} closeList={closeList} />,
+	];
 
 	return (
 		<>
-			{showAdmin && <AdministrationModelList showAdmin={showAdmin} accountBoxItems={adminBoxItems} closeList={closeList} />}
-			{showSettings && showAdmin && <OptionDivider />}
-			{showSettings && <SettingsModelList closeList={closeList} />}
-			{showManageApps && (showSettings || showAdmin) && <OptionDivider />}
-			{showManageApps && <AppsModelList appBoxItems={appBoxItems} closeList={closeList} showManageApps={showManageApps} />}
-			{showAudit && (showManageApps || showSettings || showAdmin) && <OptionDivider />}
-			{showAudit && <AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} closeList={closeList} />}
+			{list.filter(Boolean).map((item, index) => (
+				<Fragment key={index}>
+					{index > 0 && <OptionDivider />}
+					{item}
+				</Fragment>
+			))}
 		</>
 	);
 };
