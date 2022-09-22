@@ -173,7 +173,7 @@ export class SettingsRegistry {
 
 		if (settingStored && isOverwritten) {
 			if (settingStored.value !== settingFromCodeOverwritten.value) {
-				await this.model.updateOne({ _id }, settingProps, { upsert: true });
+				await this.model.updateOne({ _id }, { $set: settingProps }, { upsert: true });
 			}
 			return;
 		}
