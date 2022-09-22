@@ -8,6 +8,7 @@ import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useIsMessageHighlight } from '../contexts/MessageHighlightContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
+import { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 import MessageContent from './MessageContent';
 import MessageContentIgnored from './MessageContentIgnored';
 import MessageHeader from './MessageHeader';
@@ -15,7 +16,7 @@ import { MessageIndicators } from './MessageIndicators';
 import Toolbox from './Toolbox';
 
 const Message: FC<{
-	message: IMessage;
+	message: MessageWithMdEnforced;
 	sequential: boolean;
 	id: IMessage['_id'];
 	unread: boolean;

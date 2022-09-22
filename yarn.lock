@@ -6253,7 +6253,7 @@ __metadata:
     fibers: ^5.0.1
     file-type: ^16.5.3
     filenamify: ^4.3.0
-    filesize: ^3.6.1
+    filesize: 9.0.11
     google-libphonenumber: ^3.2.28
     googleapis: ^104.0.0
     grapheme-splitter: ^1.0.4
@@ -6370,7 +6370,7 @@ __metadata:
     use-sync-external-store: ^1.2.0
     uuid: ^8.3.2
     vm2: ^3.9.10
-    webdav: ^4.10.0
+    webdav: ^4.11.0
     webpack: ^4.46.0
     xml-crypto: ^2.1.4
     xml-encryption: 2.0.0
@@ -18683,10 +18683,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filesize@npm:^3.6.1":
-  version: 3.6.1
-  resolution: "filesize@npm:3.6.1"
-  checksum: 9ba47e9df90cd6bb6c0434418123facf9dafbe92c850f29ed50bfa42d60d00f8501a8a9b962f77ec7d1ba30190d5dbda5f6f56c5e56bce9e09729988bf0613c4
+"filesize@npm:9.0.11":
+  version: 9.0.11
+  resolution: "filesize@npm:9.0.11"
+  checksum: 7e8a9f9a4089e3ee29de64c241b50db8db4008351ace959873cb950bac0c2e1e09f4b45f42eaed8acd589a895dde978ed199e7a9982902fa06ca0be48e5ea92d
   languageName: node
   linkType: hard
 
@@ -25812,7 +25812,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^5.0.1":
+"minimatch@npm:^5.1.0":
   version: 5.1.0
   resolution: "minimatch@npm:5.1.0"
   dependencies:
@@ -35954,15 +35954,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vm2@npm:^3.9.10":
-  version: 3.9.10
-  resolution: "vm2@npm:3.9.10"
+"vm2@npm:^3.9.11":
+  version: 3.9.11
+  resolution: "vm2@npm:3.9.11"
   dependencies:
     acorn: ^8.7.0
     acorn-walk: ^8.2.0
   bin:
     vm2: bin/vm2
-  checksum: 5534df3d3f3aa9060ab23fd22a2f5e756c19bec7b9af50028aa05c6f7c21c3da303101f1982004964d5320f9484d02a2d299e841994dce03af7fe1061871b518
+  checksum: aab39e6e4b59146d24abacd79f490e854a6e058a8b23d93d2be5aca7720778e2605d2cc028ccc4a5f50d3d91b0c38be9a6247a80d2da1a6de09425cc437770b4
   languageName: node
   linkType: hard
 
@@ -36092,9 +36092,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webdav@npm:^4.10.0":
-  version: 4.10.0
-  resolution: "webdav@npm:4.10.0"
+"webdav@npm:^4.11.0":
+  version: 4.11.0
+  resolution: "webdav@npm:4.11.0"
   dependencies:
     axios: ^0.27.2
     base-64: ^1.0.0
@@ -36104,12 +36104,12 @@ __metadata:
     hot-patcher: ^0.5.0
     layerr: ^0.1.2
     md5: ^2.3.0
-    minimatch: ^5.0.1
+    minimatch: ^5.1.0
     nested-property: ^4.0.0
     path-posix: ^1.0.0
     url-join: ^4.0.1
     url-parse: ^1.5.10
-  checksum: 0cfea9c233cfb8c490b6f6be01cb789f20fd01dbfe0ebc8f89057000390117a7cdbd55501c5fc248f54f2393d529cc60a058bf982d96e7e2507a7c99528444ab
+  checksum: 0a7aab0a3118deea20485d3c417fda40e71c3930b866a92cfff5dedce4a25c0fbed0cd083bf14ac5a4ee7cab55136265d5011b2601cbb2a1b359da551910ec97
   languageName: node
   linkType: hard
 

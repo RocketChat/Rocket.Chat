@@ -29,7 +29,7 @@ const EngagementDashboardCardErrorBoundary = ({ children }: EngagementDashboardC
 					fallbackRender={({ resetErrorBoundary }): ReactElement => (
 						<States>
 							<StatesIcon name='circle-exclamation' />
-							<StatesTitle>{t('Something_Went_Wrong')}</StatesTitle>
+							<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 							<StatesSubtitle>{isError(error) && error?.message}</StatesSubtitle>
 							<StatesActions data-qa='EngagementDashboardCardErrorBoundary'>
 								<StatesAction onClick={(): void => resetErrorBoundary()}>{t('Retry')}</StatesAction>
