@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { memo, KeyboardEvent, MouseEvent, ReactElement } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
@@ -32,12 +32,15 @@ const AppRow = (props: AppRowProps): ReactElement => {
 	const isDescriptionVisible = breakpoints.includes('xl');
 
 	const router = useRoute(currentRouteName);
+	const context = useRouteParameter('context');
 
 	const handleClick = (): void => {
 		router.push({
-			context: 'details',
+			context: context || '',
+			page: 'info',
 			version: marketplaceVersion,
 			id,
+			tab: 'details',
 		});
 	};
 

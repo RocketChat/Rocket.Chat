@@ -38,16 +38,18 @@ const AppsPage = ({ canManageApps, isAdminSection, currentRouteName, context }: 
 		router.push({ context: 'install' });
 	};
 
+	const page = 'list';
+
 	const handleMarketplaceTabClick = (): void => {
-		router.push({ context: 'all' });
+		router.push({ context: 'all', page });
 	};
 
 	const handleInstalledTabClick = (): void => {
-		router.push({ context: 'installed' });
+		router.push({ context: 'installed', page });
 	};
 
 	const handleEnterpriseTabClick = (): void => {
-		router.push({ context: 'enterprise' });
+		router.push({ context: 'enterprise', page });
 	};
 
 	return (

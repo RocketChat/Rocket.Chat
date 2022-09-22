@@ -137,12 +137,12 @@ FlowRouter.route('/directory/:tab?', {
 	},
 });
 
-FlowRouter.route('/marketplace/:context?/:id?/:version?/:tab?', {
+FlowRouter.route('/marketplace/:context?/:page?/:id?/:version?/:tab?', {
 	name: 'marketplace',
 	triggersEnter: [
 		(context, redirect): void => {
 			if (!context.params.context) {
-				redirect('/marketplace/all');
+				redirect('/marketplace/all/list');
 			}
 		},
 	],

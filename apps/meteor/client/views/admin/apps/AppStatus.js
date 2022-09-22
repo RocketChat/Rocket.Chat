@@ -113,7 +113,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 		color: status.label === 'Disabled' ? colors.w800 : colors.p500,
 	};
 
-	const shouldShowPriceDisplay = isAppDetailsPage && button && button.action !== 'update';
+	const shouldShowPriceDisplay = isAppDetailsPage && button && button.action !== 'update' && isAdminSection && !installed;
 
 	return (
 		<Box {...props}>
@@ -150,9 +150,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 					</Button>
 					{shouldShowPriceDisplay && (
 						<Box pi='x14' color='primary-500' minHeight='x32' display='flex' alignItems='center'>
-							{!installed && (
-								<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
-							)}
+							<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
 						</Box>
 					)}
 				</Box>

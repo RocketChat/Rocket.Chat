@@ -49,6 +49,7 @@ const AppsRoute: FC = () => {
 	}, [canManageApps, isAppsEngineEnabled, appsWhatIsItRoute, isAdminSection]);
 
 	const context = useRouteParameter('context');
+	const page = useRouteParameter('page');
 
 	const id = useRouteParameter('id');
 
@@ -62,10 +63,10 @@ const AppsRoute: FC = () => {
 
 	return (
 		<AppsProvider>
-			{((context === 'all' || context === 'installed' || context === 'enterprise') && (
+			{(page === 'list' && (
 				<AppsPage context={context} canManageApps={canManageApps} isAdminSection={isAdminSection} currentRouteName={currentRouteName} />
 			)) ||
-				(id && context === 'details' && <AppDetailsPage id={id} isAdminSection={isAdminSection} />) ||
+				(id && page === 'info' && <AppDetailsPage id={id} isAdminSection={isAdminSection} />) ||
 				(context === 'install' && <AppInstallPage />)}
 		</AppsProvider>
 	);
