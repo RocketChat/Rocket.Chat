@@ -84,7 +84,7 @@ API.v1.addRoute(
 			check(rid, String);
 			check(readThreads, Match.Maybe(Boolean));
 			try {
-				await readMessages(rid, this.userId, readThreads ?? true);
+				await readMessages(rid, this.userId, readThreads ?? false);
 			} catch (err: unknown) {
 				return API.v1.failure(err instanceof Error ? err.message : String(err));
 			}
