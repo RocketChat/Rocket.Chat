@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import type { Locator, Page } from '@playwright/test';
 
 export class HomeContent {
-	private readonly page: Page;
+	protected readonly page: Page;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -104,14 +104,6 @@ export class HomeContent {
 
 	get linkUserCard(): Locator {
 		return this.page.locator('[data-qa="UserCard"] a');
-	}
-
-	get btnForwardChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
-	}
-
-	get btnCloseChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
 	}
 
 	get btnContactInformation(): Locator {
