@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useMediaQueries } from '@rocket.chat/fuselage-hooks';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { memo, KeyboardEvent, MouseEvent, ReactElement } from 'react';
@@ -11,7 +11,7 @@ import AppStatus from './AppStatus';
 import BundleChips from './BundleChips';
 import { App } from './types';
 
-type AppRowProps = { isMarketplace: boolean; isAdminSection: boolean; currentRouteName: string } & App;
+type AppRowProps = { isAdminSection: boolean; currentRouteName: string } & App;
 
 const AppRow = (props: AppRowProps): ReactElement => {
 	const {
@@ -28,11 +28,8 @@ const AppRow = (props: AppRowProps): ReactElement => {
 		currentRouteName,
 	} = props;
 
-	const [isAppNameTruncated, isBundleTextVisible, isDescriptionVisible] = useMediaQueries(
-		'(max-width: 510px)',
-		'(max-width: 887px)',
-		'(min-width: 1200px)',
-	);
+	const breakpoints = useBreakpoints();
+	const isDescriptionVisible = breakpoints.includes('xl');
 
 	const router = useRoute(currentRouteName);
 
@@ -86,14 +83,12 @@ const AppRow = (props: AppRowProps): ReactElement => {
 			<Box display='flex' flexDirection='row' width='80%'>
 				<AppAvatar size='x40' mie='x16' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 				<Box display='flex' alignItems='center' color='default' fontScale='p2m' mie='x16' style={{ whiteSpace: 'nowrap' }}>
-					<Box is='span' withTruncatedText={isAppNameTruncated}>
-						{name}
-					</Box>
+					<Box is='span'>{name}</Box>
 				</Box>
 				<Box display='flex' mie='x16' alignItems='center' color='default'>
 					{bundledIn && Boolean(bundledIn.length) && (
 						<Box display='flex' alignItems='center' color='default' mie='x16'>
-							<BundleChips bundledIn={bundledIn} isIconOnly={isBundleTextVisible} />
+							<BundleChips bundledIn={bundledIn} />
 						</Box>
 					)}
 					{isDescriptionVisible && (

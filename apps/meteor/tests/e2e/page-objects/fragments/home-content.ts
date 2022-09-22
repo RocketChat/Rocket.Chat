@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import type { Locator, Page } from '@playwright/test';
 
 export class HomeContent {
-	private readonly page: Page;
+	protected readonly page: Page;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -106,14 +106,6 @@ export class HomeContent {
 		return this.page.locator('[data-qa="UserCard"] a');
 	}
 
-	get btnForwardChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
-	}
-
-	get btnCloseChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
-	}
-
 	get btnContactInformation(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
 	}
@@ -164,11 +156,9 @@ export class HomeContent {
 			return data;
 		}, contract);
 
-		await this.page.dispatchEvent(
-			'div.dropzone-overlay.dropzone-overlay--enabled.background-transparent-darkest.color-content-background-color',
-			'drop',
-			{ dataTransfer },
-		);
+		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
 	async openLastMessageMenu(): Promise<void> {
@@ -178,6 +168,6 @@ export class HomeContent {
 	}
 
 	get takeOmnichannelChatButton(): Locator {
-		return this.page.locator('button.rc-button >> text=Take it!');
+		return this.page.locator('role=button[name="Take it!"]');
 	}
 }

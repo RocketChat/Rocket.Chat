@@ -72,7 +72,7 @@ const AppsPage = ({ isMarketplace, canManageApps, isAdminSection, currentRouteNa
 				<Tabs.Item onClick={handleMarketplaceTabClick} selected={isMarketplace}>
 					{t('Marketplace')}
 				</Tabs.Item>
-				<Tabs.Item onClick={handleInstalledTabClick} selected={!isMarketplace} mbe='neg-x4' borderWidth='0' borderBlockWidth='x4'>
+				<Tabs.Item onClick={handleInstalledTabClick} selected={!isMarketplace}>
 					{t('Installed')}
 				</Tabs.Item>
 			</Tabs>

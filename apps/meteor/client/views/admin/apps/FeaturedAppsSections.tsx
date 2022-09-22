@@ -25,7 +25,6 @@ const FeaturedAppsSections = ({ appsResult, isAdminSection, currentRouteName }: 
 						key={section.slug}
 						apps={normalizeFeaturedApps(section.apps, appsResult)}
 						title={t.has(section.i18nLabel) ? t(section.i18nLabel) : section.i18nLabel}
-						isMarketplace={true}
 						isAdminSection={isAdminSection}
 						currentRouteName={currentRouteName}
 					/>
