@@ -8,7 +8,13 @@ export class OmnichannelLiveChat {
 	}
 
 	btnOpenLiveChat(label: string): Locator {
-		return this.page.locator(`[aria-label="${label}"]`);
+		return this.page.locator(`role=button[name="${label}"]`);
+	}
+
+	unreadMessagesBadge(count: number): Locator {
+		const name = count === 1 ? `${count} unread message` : `${count} unread messages`;
+
+		return this.page.locator(`role=status[name="${name}"]`);
 	}
 
 	get inputName(): Locator {
