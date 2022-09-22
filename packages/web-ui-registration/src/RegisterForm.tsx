@@ -136,6 +136,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 								}
 								aria-invalid={errors.username ? 'true' : undefined}
 								id='username'
+								placeholder={t('Username')}
 							/>
 						</Field.Row>
 						{errors.username?.message && <Field.Error>{errors.username.message}</Field.Error>}

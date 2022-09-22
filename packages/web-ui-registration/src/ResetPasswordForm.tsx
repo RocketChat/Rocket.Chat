@@ -53,6 +53,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 							/>
 						</Field.Row>
 						{errors.email && <Field.Error>{errors.email.message || t('registration.component.form.requiredField')}</Field.Error>}
+						<Field.Hint>{t('registration.component.form.emailHint')}</Field.Hint>
 					</Field>
 				</FieldGroup>
 				{sent && (
