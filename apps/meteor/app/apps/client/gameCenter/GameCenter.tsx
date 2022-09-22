@@ -11,55 +11,47 @@ import GameCenterList from './GameCenterList';
 
 export type IGame = IExternalComponent;
 
+const prevent = (e: SyntheticEvent): void => {
+	if (e) {
+		(e.nativeEvent || e).stopImmediatePropagation();
+		e.stopPropagation();
+		e.preventDefault();
+	}
+};
+
 const GameCenter = (): ReactElement => {
-	const [isOpened, setIsOpened] = useState<boolean>(false);
 	const [openedGame, setOpenedGame] = useState<IGame>();
 
 	const closeTabBar = useTabBarClose();
-	const prevent = (e: SyntheticEvent): void => {
-		if (e) {
-			(e.nativeEvent || e).stopImmediatePropagation();
-			e.stopPropagation();
-			e.preventDefault();
-		}
-	};
 
 	const getGamesEndpoint = useEndpoint('GET', '/apps/externalComponents');
-	const { isLoading, data } = useQuery([isOpened], () => getGamesEndpoint(), {
-		refetchOnWindowFocus: false,
+	const result = useQuery(['gameCenter'], async () => {
+		return (await getGamesEndpoint()).externalComponents;
 	});
-
-	const games = data?.externalComponents;
 
 	const handleClose = useMutableCallback((e) => {
 		prevent(e);
-		setIsOpened(false);
 		closeTabBar();
 	});
 
 	const handleBack = useMutableCallback((e) => {
+		setOpenedGame(undefined);
 		prevent(e);
-		setIsOpened(false);
 	});
-
-	const handleOpenGame = (isOpened: boolean, game: IGame) => {
-		setIsOpened(isOpened);
-		setOpenedGame(game);
-	};
 
 	return (
 		<>
-			{!isOpened && (
+			{!openedGame && (
 				<GameCenterList
 					data-testid='game-center-list'
 					handleClose={handleClose}
-					handleOpenGame={handleOpenGame}
-					games={games}
-					isLoading={isLoading}
+					handleOpenGame={setOpenedGame}
+					games={result.data}
+					isLoading={result.isLoading}
 				/>
 			)}
 
-			{isOpened && openedGame && (
+			{openedGame && (
 				<GameCenterContainer data-testid='game-center-container' handleBack={handleBack} handleClose={handleClose} game={openedGame} />
 			)}
 		</>

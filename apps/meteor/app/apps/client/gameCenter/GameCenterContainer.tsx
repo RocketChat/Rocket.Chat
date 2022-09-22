@@ -13,7 +13,7 @@ interface IGameCenterContainerProps {
 
 const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterContainerProps): ReactElement => {
 	return (
-		<div>
+		<>
 			<VerticalBar.Header>
 				{handleBack && <VerticalBar.Back onClick={handleBack} />}
 				<VerticalBar.Text>
@@ -25,7 +25,7 @@ const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterConta
 			<VerticalBar.Content pb='x16'>
 				<iframe style={{ position: 'absolute', width: '95%', height: '80%' }} src={game.url}></iframe>
 			</VerticalBar.Content>
-		</div>
+		</>
 	);
 };
 

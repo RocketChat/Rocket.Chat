@@ -2,7 +2,7 @@ import type Url from 'url';
 
 import type Icons from '@rocket.chat/icons';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
-import type { parser } from '@rocket.chat/message-parser';
+import type { Root } from '@rocket.chat/message-parser';
 
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IUser } from '../IUser';
@@ -57,12 +57,11 @@ type OmnichannelTypesValues =
 	| 'omnichannel_on_hold_chat_resumed';
 
 type OtrMessageTypeValues = 'otr' | 'otr-ack';
+
 type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
 export type MessageTypesValues =
 	| 'e2e'
-	| 'otr'
-	| 'otr-ack'
 	| 'uj'
 	| 'ul'
 	| 'ru'
@@ -125,7 +124,7 @@ export interface IMessage extends IRocketChatRecord {
 	u: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
 	blocks?: MessageSurfaceLayout;
 	alias?: string;
-	md?: ReturnType<typeof parser>;
+	md?: Root;
 
 	_hidden?: boolean;
 	imported?: boolean;
