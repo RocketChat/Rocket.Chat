@@ -193,7 +193,7 @@ const computation = Tracker.autorun(() => {
 								}
 							}
 
-							msg.name = room.name;
+							msg.name = room.name || '';
 
 							handleTrackSettingsChange(msg);
 

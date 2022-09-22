@@ -21,10 +21,15 @@ import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
 import PreviewList from './UrlPreview';
 
-const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
-	message,
-	subscription,
-}) => {
+const MessageContent: FC<{
+	message: IMessage;
+	sequential: boolean;
+	subscription?: ISubscription;
+	id: IMessage['_id'];
+	unread: boolean;
+	mention: boolean;
+	all: boolean;
+}> = ({ message, unread, all, mention, subscription }) => {
 	const {
 		broadcast,
 		actions: { openRoom, openThread, replyBroadcast },
@@ -82,14 +87,14 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 				<ThreadMetric
 					openThread={openThread(message._id)}
 					counter={message.tcount}
-					following={Boolean(mineUid && message?.replies.indexOf(mineUid) > -1)}
+					following={Boolean(mineUid && message?.replies?.indexOf(mineUid) > -1)}
 					mid={message._id}
 					rid={message.rid}
 					lm={message.tlm}
-					unread={Boolean(subscription?.tunread?.includes(message._id))}
-					mention={Boolean(subscription?.tunreadUser?.includes(message._id))}
-					all={Boolean(subscription?.tunreadGroup?.includes(message._id))}
-					participants={message?.replies.length}
+					unread={unread}
+					mention={mention}
+					all={all}
+					participants={message?.replies?.length}
 				/>
 			)}
 

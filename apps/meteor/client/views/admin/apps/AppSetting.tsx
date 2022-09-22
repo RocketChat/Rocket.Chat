@@ -90,7 +90,7 @@ function AppSetting({ appSetting, onChange, value, ...props }: AppSettingProps):
 			value={value}
 			onChangeValue={onChange}
 			_id={id}
-			{...{ translatedValues }}
+			{...(translatedValues && { values: translatedValues })}
 			{...props}
 		/>
 	);
