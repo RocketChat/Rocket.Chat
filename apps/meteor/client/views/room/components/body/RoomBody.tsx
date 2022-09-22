@@ -281,7 +281,7 @@ const RoomBody = (): ReactElement => {
 			}
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [openedRoom, room, room._id]);
+	}, [openedRoom, room._id]);
 
 	const debouncedReadMessageRead = useMemo(
 		() =>
