@@ -56,9 +56,9 @@ services:
 
   presence-service:
     build:
-      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      dockerfile: ee/apps/presence-service/Dockerfile
       args:
-        SERVICE: presence
+        SERVICE: presence-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
