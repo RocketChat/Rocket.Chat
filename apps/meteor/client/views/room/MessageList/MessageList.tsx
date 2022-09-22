@@ -16,7 +16,6 @@ import { isMessageFirstUnread } from './lib/isMessageFirstUnread';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
 import { isOwnUserMessage } from './lib/isOwnUserMessage';
-import { isPreviousThreadAnswer } from './lib/isPreviousThreadAnswer';
 import MessageHighlightProvider from './providers/MessageHighlightProvider';
 import { MessageListProvider } from './providers/MessageListProvider';
 
@@ -46,10 +45,9 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 								const isNewDay = isMessageNewDay(message, previous);
 								const isFirstUnread = isMessageFirstUnread(subscription, message, previous);
 								const isUserOwnMessage = isOwnUserMessage(message, subscription);
-								const isPreviousThread = isPreviousThreadAnswer(previous);
 								const shouldShowDivider = isNewDay || isFirstUnread;
 
-								const shouldShowAsSequential = isSequential && !isNewDay && !isPreviousThread;
+								const shouldShowAsSequential = isSequential && !isNewDay;
 
 								const isSystemMessage = MessageTypes.isSystemMessage(message);
 								const shouldShowMessage = !isThreadMessage(message) && !isSystemMessage;
