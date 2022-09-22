@@ -159,6 +159,10 @@ export class DDPStreamer extends ServiceClass {
 	}
 
 	async stopped(): Promise<void> {
+		this.wss?.clients.forEach(function (client) {
+			client.terminate();
+		});
+
 		this.app?.server?.close();
 		this.wss?.close();
 	}
