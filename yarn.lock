@@ -36132,15 +36132,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vm2@npm:^3.9.10":
-  version: 3.9.10
-  resolution: "vm2@npm:3.9.10"
+"vm2@npm:^3.9.11":
+  version: 3.9.11
+  resolution: "vm2@npm:3.9.11"
   dependencies:
     acorn: ^8.7.0
     acorn-walk: ^8.2.0
   bin:
     vm2: bin/vm2
-  checksum: 5534df3d3f3aa9060ab23fd22a2f5e756c19bec7b9af50028aa05c6f7c21c3da303101f1982004964d5320f9484d02a2d299e841994dce03af7fe1061871b518
+  checksum: aab39e6e4b59146d24abacd79f490e854a6e058a8b23d93d2be5aca7720778e2605d2cc028ccc4a5f50d3d91b0c38be9a6247a80d2da1a6de09425cc437770b4
   languageName: node
   linkType: hard
 
