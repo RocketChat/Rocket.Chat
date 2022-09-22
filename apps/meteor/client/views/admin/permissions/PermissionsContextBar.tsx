@@ -19,7 +19,7 @@ const PermissionsContextBar = (): ReactElement | null => {
 		(context && (
 			<VerticalBar>
 				<VerticalBar.Header>
-					{context === 'edit' ? t('Role_Editing') : t('New_role')}
+					<VerticalBar.Text>{context === 'edit' ? t('Role_Editing') : t('New_role')}</VerticalBar.Text>
 					<VerticalBar.Close onClick={handleCloseVerticalBar} />
 				</VerticalBar.Header>
 				<EditRolePageWithData roleId={_id} />

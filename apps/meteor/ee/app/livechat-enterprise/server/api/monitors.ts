@@ -1,9 +1,14 @@
+import type { ILivechatMonitor } from '@rocket.chat/core-typings';
+
 import { API } from '../../../../../app/api/server';
 import { findMonitors, findMonitorByUsername } from './lib/monitors';
 
 API.v1.addRoute(
 	'livechat/monitors',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-livechat-monitors'],
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -12,7 +17,6 @@ API.v1.addRoute(
 
 			return API.v1.success(
 				await findMonitors({
-					userId: this.userId,
 					text,
 					pagination: {
 						offset,
@@ -27,16 +31,18 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/monitors/:username',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-livechat-monitors'],
+	},
 	{
 		async get() {
 			const { username } = this.urlParams;
 
 			return API.v1.success(
-				await findMonitorByUsername({
-					userId: this.userId,
+				(await findMonitorByUsername({
 					username,
-				}),
+				})) as unknown as ILivechatMonitor,
 			);
 		},
 	},

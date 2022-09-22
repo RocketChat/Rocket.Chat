@@ -5,7 +5,6 @@ import { withTranslation } from 'react-i18next';
 import { createClassName, memo } from '../../helpers';
 import styles from './styles.scss';
 
-
 const parseDate = (ts, t) => {
 	const timestamp = new Date(ts).toISOString();
 	return t('message_time', {

@@ -1,15 +1,13 @@
-import { createClient, WebDavClient, Stat } from 'webdav';
+import stream from 'stream';
+import type { Readable, Writable } from 'stream';
 
-export type ServerCredentials = {
-	token?: string;
-	username?: string;
-	password?: string;
-};
+import type { WebDAVClient, FileStat, ResponseDataDetailed, WebDAVClientOptions } from 'webdav';
+import { createClient } from 'webdav';
 
 export class WebdavClientAdapter {
-	_client: WebDavClient;
+	_client: WebDAVClient;
 
-	constructor(serverConfig: string, cred: ServerCredentials) {
+	constructor(serverConfig: string, cred: WebDAVClientOptions) {
 		if (cred.token) {
 			this._client = createClient(serverConfig, { token: cred.token });
 		} else {
@@ -20,29 +18,27 @@ export class WebdavClientAdapter {
 		}
 	}
 
-	async stat(path: string): Promise<undefined> {
+	async stat(path: string): Promise<FileStat | ResponseDataDetailed<FileStat>> {
 		try {
 			return await this._client.stat(path);
 		} catch (error: any) {
-			throw new Error(
-				error.response && error.response.statusText ? error.response.statusText : 'Error checking if directory exists on webdav',
-			);
+			throw new Error(error.response?.statusText ? error.response.statusText : 'Error checking if directory exists on webdav');
 		}
 	}
 
-	async createDirectory(path: string): Promise<Response> {
+	async createDirectory(path: string): Promise<void> {
 		try {
 			return await this._client.createDirectory(path);
 		} catch (error: any) {
-			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error creating directory on webdav');
+			throw new Error(error.response?.statusText ? error.response.statusText : 'Error creating directory on webdav');
 		}
 	}
 
-	async deleteFile(path: string): Promise<Response> {
+	async deleteFile(path: string): Promise<void> {
 		try {
 			return await this._client.deleteFile(path);
 		} catch (error: any) {
-			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error deleting file on webdav');
+			throw new Error(error.response?.statusText ? error.response.statusText : 'Error deleting file on webdav');
 		}
 	}
 
@@ -50,15 +46,15 @@ export class WebdavClientAdapter {
 		try {
 			return (await this._client.getFileContents(filename)) as Buffer;
 		} catch (error: any) {
-			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error getting file contents webdav');
+			throw new Error(error.response?.statusText ? error.response.statusText : 'Error getting file contents webdav');
 		}
 	}
 
-	async getDirectoryContents(path: string): Promise<Array<Stat>> {
+	async getDirectoryContents(path: string): Promise<FileStat[] | ResponseDataDetailed<FileStat[]>> {
 		try {
 			return await this._client.getDirectoryContents(path);
 		} catch (error: any) {
-			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error getting directory contents webdav');
+			throw new Error(error.response?.statusText ? error.response.statusText : 'Error getting directory contents webdav');
 		}
 	}
 
@@ -70,11 +66,26 @@ export class WebdavClientAdapter {
 		}
 	}
 
-	createReadStream(path: string, options?: Record<string, any>): ReadableStream {
+	createReadStream(path: string, options?: Record<string, any>): Readable {
 		return this._client.createReadStream(path, options);
 	}
 
-	createWriteStream(path: string): WritableStream {
-		return this._client.createWriteStream(path);
+	createWriteStream(path: string, fileSize: number): Writable {
+		const ws = new stream.PassThrough();
+
+		this._client
+			.customRequest(path, {
+				method: 'PUT',
+				headers: {
+					...(fileSize ? { 'Content-Length': String(fileSize) } : {}),
+				},
+				data: ws,
+				maxRedirects: 0,
+			})
+			.catch((err) => {
+				ws.emit('error', err);
+			});
+
+		return ws;
 	}
 }

@@ -1,8 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatTag } from '@rocket.chat/models';
-import { ILivechatTag } from '@rocket.chat/core-typings';
-
-import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
+import type { ILivechatTag } from '@rocket.chat/core-typings';
+import type { FindOptions } from 'mongodb';
 
 type FindTagsParams = {
 	userId: string;
@@ -10,7 +9,7 @@ type FindTagsParams = {
 	pagination: {
 		offset: number;
 		count: number;
-		sort: object;
+		sort: FindOptions<ILivechatTag>['sort'];
 	};
 };
 
@@ -28,23 +27,18 @@ type FindTagsByIdParams = {
 
 type FindTagsByIdResult = ILivechatTag | null;
 
-export async function findTags({ userId, text, pagination: { offset, count, sort } }: FindTagsParams): Promise<FindTagsResult> {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-tags')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findTags({ text, pagination: { offset, count, sort } }: FindTagsParams): Promise<FindTagsResult> {
 	const query = {
 		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
 	};
 
-	const cursor = LivechatTag.find(query, {
+	const { cursor, totalCount } = LivechatTag.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const tags = await cursor.toArray();
+	const [tags, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		tags,
@@ -54,9 +48,6 @@ export async function findTags({ userId, text, pagination: { offset, count, sort
 	};
 }
 
-export async function findTagById({ userId, tagId }: FindTagsByIdParams): Promise<FindTagsByIdResult> {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-tags')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findTagById({ tagId }: FindTagsByIdParams): Promise<FindTagsByIdResult> {
 	return LivechatTag.findOneById(tagId);
 }

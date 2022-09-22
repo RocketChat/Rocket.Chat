@@ -1,4 +1,4 @@
-import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
@@ -52,25 +52,20 @@ const AppDetails: FC<AppDetailsProps> = ({ app }) => {
 						<Box fontScale='h4' mbe='x8'>
 							{t('Description')}
 						</Box>
-						<Box
-							display='flex'
-							flexDirection='row'
-							mbe='neg-x16'
-							dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }}
-						/>
+						<Box dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }} withRichContent />
 					</Box>
 
 					<Box is='section'>
 						<Box fontScale='h4' mbe='x8'>
 							{t('Categories')}
 						</Box>
-						<Box display='flex' flexDirection='row'>
+						<ButtonGroup medium flexWrap='wrap'>
 							{categories?.map((current) => (
-								<Chip key={current} textTransform='uppercase' mie='x8'>
-									<Box color='hint'>{current}</Box>
+								<Chip key={current} textTransform='uppercase'>
+									{current}
 								</Chip>
 							))}
-						</Box>
+						</ButtonGroup>
 					</Box>
 
 					<Box is='section'>
@@ -93,7 +88,11 @@ const AppDetails: FC<AppDetailsProps> = ({ app }) => {
 						</Box>
 					</Box>
 
-					<Box is='section'>{apis?.length && <APIsDisplay apis={apis || []} />}</Box>
+					{apis?.length ? (
+						<Box is='section'>
+							<APIsDisplay apis={apis || []} />
+						</Box>
+					) : null}
 				</Margins>
 			</Box>
 		</Box>

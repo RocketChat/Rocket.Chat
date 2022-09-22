@@ -103,6 +103,8 @@
 				"transcript_success": "Transcript sent",
         "travel_and_places": "Travel & Places",
         "type_your_message_here": "Type your message here",
+				"unread_messages_count_one": "{{count}} unread message",
+				"unread_messages_count_other": "{{count}} unread messages",
         "unread_messages": "unread messages",
         "user_added_by": "User added by",
         "user_joined": "User joined",

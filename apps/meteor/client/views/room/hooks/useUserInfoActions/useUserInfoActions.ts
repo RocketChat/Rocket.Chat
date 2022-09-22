@@ -2,8 +2,8 @@ import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 
 import { Action } from '../../../hooks/useActionSpread';
-import { useAudioCallAction } from './actions/useAudioCallAction';
 import { useBlockUserAction } from './actions/useBlockUserAction';
+import { useCallAction } from './actions/useCallAction';
 import { useChangeLeaderAction } from './actions/useChangeLeaderAction';
 import { useChangeModeratorAction } from './actions/useChangeModeratorAction';
 import { useChangeOwnerAction } from './actions/useChangeOwnerAction';
@@ -11,7 +11,6 @@ import { useDirectMessageAction } from './actions/useDirectMessageAction';
 import { useIgnoreUserAction } from './actions/useIgnoreUserAction';
 import { useMuteUserAction } from './actions/useMuteUserAction';
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
-import { useVideoCallAction } from './actions/useVideoCallAction';
 
 export const useUserInfoActions = (
 	user: Pick<IUser, '_id' | 'username'>,
@@ -20,7 +19,6 @@ export const useUserInfoActions = (
 ): {
 	[key: string]: Action;
 } => {
-	const audioCallOption = useAudioCallAction(rid);
 	const blockUserOption = useBlockUserAction(user, rid);
 	const changeLeaderOption = useChangeLeaderAction(user, rid);
 	const changeModeratorOption = useChangeModeratorAction(user, rid);
@@ -29,13 +27,12 @@ export const useUserInfoActions = (
 	const ignoreUserOption = useIgnoreUserAction(user, rid);
 	const muteUserOption = useMuteUserAction(user, rid);
 	const removeUserOption = useRemoveUserAction(user, rid, reload);
-	const videoCallOption = useVideoCallAction(rid);
+	const callOption = useCallAction(user);
 
 	return useMemo(
 		() => ({
 			...(openDirectMessageOption && { openDirectMessage: openDirectMessageOption }),
-			...(videoCallOption && { video: videoCallOption }),
-			...(audioCallOption && { audio: audioCallOption }),
+			...(callOption && { call: callOption }),
 			...(changeOwnerOption && { changeOwner: changeOwnerOption }),
 			...(changeLeaderOption && { changeLeader: changeLeaderOption }),
 			...(changeModeratorOption && { changeModerator: changeModeratorOption }),
@@ -45,7 +42,6 @@ export const useUserInfoActions = (
 			...(removeUserOption && { removeUser: removeUserOption }),
 		}),
 		[
-			audioCallOption,
 			changeLeaderOption,
 			changeModeratorOption,
 			changeOwnerOption,
@@ -53,7 +49,7 @@ export const useUserInfoActions = (
 			muteUserOption,
 			openDirectMessageOption,
 			removeUserOption,
-			videoCallOption,
+			callOption,
 			blockUserOption,
 		],
 	);

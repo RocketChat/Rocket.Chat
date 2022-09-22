@@ -7,7 +7,7 @@ import styles from './styles.scss';
 export class Form extends MemoizedComponent {
 	static defaultHandleSubmit = (event) => {
 		event.preventDefault();
-	}
+	};
 
 	render = ({ onSubmit, className, style = {}, children }) => (
 		<form
@@ -18,7 +18,7 @@ export class Form extends MemoizedComponent {
 		>
 			{children}
 		</form>
-	)
+	);
 }
 
 export const Validations = {
@@ -26,7 +26,6 @@ export const Validations = {
 	email: ({ value }) => (validateEmail(String(value).toLowerCase(), { style: 'rfc' }) ? null : i18next.t('invalid_email')),
 	custom: ({ value, pattern }) => (new RegExp(pattern, 'i').test(String(value)) ? null : i18next.t('invalid_value')),
 };
-
 
 export { FormField } from './FormField';
 export { TextInput } from './TextInput';

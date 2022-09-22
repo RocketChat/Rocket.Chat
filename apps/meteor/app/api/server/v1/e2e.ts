@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
 import {
 	ise2eGetUsersOfRoomWithoutKeyParamsGET,
@@ -6,7 +5,7 @@ import {
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
 	ise2eUpdateGroupKeyParamsPOST,
 } from '@rocket.chat/rest-typings';
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { API } from '../api';
 
@@ -134,7 +133,8 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			const { public_key, private_key } = Meteor.call('e2e.fetchMyKeys');
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			const { public_key, private_key } = this.bodyParams;
 
 			Meteor.call('e2e.setUserPublicAndPrivateKeys', {
 				public_key,

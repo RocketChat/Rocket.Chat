@@ -1,6 +1,6 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
-import { useQuery } from 'react-query';
 
 type UseHourlyChatActivityOptions = {
 	displacement: number;
@@ -17,7 +17,7 @@ export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivi
 			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day')).subtract(displacement, 'days').toDate();
 
 			const response = await getHourlyChatActivity({
-				start: day,
+				start: day.toISOString(),
 			});
 
 			return response
@@ -29,6 +29,7 @@ export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivi
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
 		},
 	);
 };

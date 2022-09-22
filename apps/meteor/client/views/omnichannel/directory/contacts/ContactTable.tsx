@@ -1,9 +1,9 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Icon, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box } from '@rocket.chat/fuselage';
 import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useEffect, ReactElement } from 'react';
 
+import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import FilterByText from '../../../../components/FilterByText';
 import {
 	GenericTable,
@@ -20,20 +20,11 @@ import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
-import { ContactTableDialpadButton } from './ContactTableDialpadButton';
+import { CallDialpadButton } from '../CallDialpadButton';
 
 type ContactTableProps = {
 	setContactReload(fn: () => void): void;
 };
-
-const rowClass = css`
-	.contact-table__call-button {
-		display: none;
-	}
-	&:hover .contact-table__call-button {
-		display: block !important;
-	}
-`;
 
 function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
@@ -129,27 +120,27 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 				</GenericTableHeader>
 				{result.phase === AsyncStatePhase.RESOLVED && (
 					<GenericTableBody>
-						{result.value.visitors.map(({ _id, username, name, visitorEmails, phone, lastChat }) => {
-							const phoneNumber = phone?.length && phone[0].phoneNumber;
+						{result.value.visitors.map(({ _id, username, fname, name, visitorEmails, phone, lastChat }) => {
+							const phoneNumber = (phone?.length && phone[0].phoneNumber) || '';
 							const visitorEmail = visitorEmails?.length && visitorEmails[0].address;
 
 							return (
 								<GenericTableRow
+									action
 									key={_id}
 									tabIndex={0}
 									role='link'
-									onClick={onRowClick(_id)}
-									action
-									qa-user-id={_id}
-									className={rowClass}
 									height='40px'
+									qa-user-id={_id}
+									rcx-show-call-button-on-hover
+									onClick={onRowClick(_id)}
 								>
 									<GenericTableCell withTruncatedText>{username}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{phoneNumber}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(fname || name)}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>
-									<GenericTableCell>{isCallReady && <ContactTableDialpadButton phoneNumber={phoneNumber} />}</GenericTableCell>
+									<GenericTableCell>{isCallReady && <CallDialpadButton phoneNumber={phoneNumber} />}</GenericTableCell>
 								</GenericTableRow>
 							);
 						})}

@@ -1,5 +1,6 @@
 import { useModal, useCurrentModal } from '@rocket.chat/ui-contexts';
 import React, { useCallback, ReactElement } from 'react';
+import { FocusScope } from 'react-aria';
 
 import ModalBackdrop from '../../components/modal/ModalBackdrop';
 import ModalPortal from '../../components/modal/ModalPortal';
@@ -15,7 +16,11 @@ const ModalRegion = (): ReactElement | null => {
 
 	return (
 		<ModalPortal>
-			<ModalBackdrop onDismiss={handleDismiss}>{currentModal}</ModalBackdrop>
+			<ModalBackdrop onDismiss={handleDismiss}>
+				<FocusScope contain restoreFocus autoFocus>
+					{currentModal}
+				</FocusScope>
+			</ModalBackdrop>
 		</ModalPortal>
 	);
 };

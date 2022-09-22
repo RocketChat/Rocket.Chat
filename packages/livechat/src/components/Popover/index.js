@@ -3,26 +3,20 @@ import { Component, createContext } from 'preact';
 import { createClassName, normalizeDOMRect } from '../helpers';
 import styles from './styles.scss';
 
-
 const PopoverContext = createContext();
 
-
 const PopoverOverlay = ({ children, className, visible, ...props }) => (
-	<div
-		className={createClassName(styles, 'popover__overlay', { visible }, [className])}
-		{...props}
-	>
+	<div className={createClassName(styles, 'popover__overlay', { visible }, [className])} {...props}>
 		{children}
 	</div>
 );
-
 
 export class PopoverContainer extends Component {
 	state = {
 		renderer: null,
 		expanded: false,
 		currentTarget: null,
-	}
+	};
 
 	open = (renderer, props, { currentTarget } = {}) => {
 		let overlayBounds;
@@ -36,12 +30,12 @@ export class PopoverContainer extends Component {
 			triggerBounds = normalizeDOMRect(currentTarget.getBoundingClientRect());
 		}
 
-		this.setState({ renderer, ...props, overlayBounds, triggerBounds, currentTarget, expanded: true });
-	}
+	this.setState({ renderer, ...props, overlayBounds, triggerBounds, currentTarget, expanded: true });
+	};
 
 	dismiss = () => {
 		this.setState({ renderer: null, overlayBounds: null, triggerBounds: null, currentTarget: null, expanded: false });
-	}
+	};
 
 	handleOverlayGesture = ({ currentTarget, target }) => {
 		if (currentTarget !== target) {
@@ -49,7 +43,7 @@ export class PopoverContainer extends Component {
 		}
 
 		this.dismiss();
-	}
+	};
 
 	handleKeyDown = ({ e }) => {
 		const { key } = e;
@@ -60,19 +54,19 @@ export class PopoverContainer extends Component {
 		this.state.currentTarget.focus();
 		this.dismiss();
 		e.stopPropagation();
-	}
+	};
 
 	handleOverlayRef = (ref) => {
 		this.overlayRef = ref;
-	}
+	};
 
 	componentDidMount() {
 		this.mounted = true;
-	}
+	};
 
 	componentWillUnmount() {
 		this.mounted = false;
-	}
+	};
 
 	render = ({ children }, { renderer, overlayProps, overlayBounds, triggerBounds, expanded }) => (
 		<PopoverContext.Provider value={{ open: this.open, expanded }}>
@@ -90,9 +84,8 @@ export class PopoverContainer extends Component {
 				</PopoverOverlay>
 			</div>
 		</PopoverContext.Provider>
-	)
+	);
 }
-
 
 export const PopoverTrigger = ({ children, ...props }) => (
 	<PopoverContext.Consumer>

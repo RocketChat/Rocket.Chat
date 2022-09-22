@@ -5,13 +5,11 @@ import { PopoverTrigger } from '../Popover';
 import { createClassName, normalizeDOMRect } from '../helpers';
 import styles from './styles.scss';
 
-
 export const Menu = ({ children, hidden, placement, ...props }) => (
 	<div className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
 		{children}
 	</div>
 );
-
 
 export const Group = ({ children, title, ...props }) => (
 	<div className={createClassName(styles, 'menu__group')} role='menu' {...props}>
@@ -20,8 +18,7 @@ export const Group = ({ children, title, ...props }) => (
 	</div>
 );
 
-
-export const Item = ({ children, primary, danger, disabled, icon, ...props }) =>
+export const Item = ({ children, primary, danger, disabled, icon, ...props }) => (
 	<button
 		className={createClassName(styles, 'menu__item', { primary, danger, disabled })}
 		disabled={disabled}
@@ -34,22 +31,23 @@ export const Item = ({ children, primary, danger, disabled, icon, ...props }) =>
 			</div>
 		)}
 		{children}
-	</button>;
+	</button>
+);
 class PopoverMenuWrapper extends Component {
-	state = {}
+	state = {};
 
 	handleRef = (ref) => {
 		this.menuRef = ref;
-	}
+	};
 
 	handleClick = ({ target }) => {
-		if (!target.closest(`.${ styles.menu__item }`)) {
+		if (!target.closest(`.${styles.menu__item}`)) {
 			return;
 		}
 
 		const { dismiss } = this.props;
 		dismiss();
-	}
+	};
 
 	handleCancel = () => {
 		const { dismiss } = this.props;
@@ -94,7 +92,7 @@ class PopoverMenuWrapper extends Component {
 		const top = menuHeight < bottomSpace ? triggerBounds.bottom : null;
 		const bottom = menuHeight < bottomSpace ? null : overlayBounds.bottom - triggerBounds.top;
 
-		const placement = `${ menuWidth < rightSpace ? 'right' : 'left' }-${ menuHeight < bottomSpace ? 'bottom' : 'top' }`;
+		const placement = `${menuWidth < rightSpace ? 'right' : 'left'}-${menuHeight < bottomSpace ? 'bottom' : 'top'}`;
 
 		addFocusFirstElement(this.menuRef.base);
 
@@ -118,9 +116,8 @@ class PopoverMenuWrapper extends Component {
 		>
 			{children}
 		</Menu>
-	)
+	);
 }
-
 
 export const PopoverMenu = ({ children, trigger, overlayed }) => (
 	<PopoverTrigger
@@ -130,21 +127,15 @@ export const PopoverMenu = ({ children, trigger, overlayed }) => (
 	>
 		{trigger}
 		{({ dismiss, triggerBounds, overlayBounds }) => (
-			<PopoverMenuWrapper
-				dismiss={dismiss}
-				triggerBounds={triggerBounds}
-				overlayBounds={overlayBounds}
-			>
+			<PopoverMenuWrapper dismiss={dismiss} triggerBounds={triggerBounds} overlayBounds={overlayBounds}>
 				{children}
 			</PopoverMenuWrapper>
 		)}
 	</PopoverTrigger>
 );
 
-
 Menu.Group = Group;
 Menu.Item = Item;
 Menu.Popover = PopoverMenu;
-
 
 export default Menu;

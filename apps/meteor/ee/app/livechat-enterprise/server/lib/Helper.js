@@ -1,19 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import { Rooms as RoomRaw } from '@rocket.chat/models';
+import {
+	Rooms as RoomRaw,
+	LivechatRooms as LivechatRoomsRaw,
+	LivechatDepartment as LivechatDepartmentRaw,
+	LivechatCustomField,
+} from '@rocket.chat/models';
 
 import { memoizeDebounce } from './debounceByParams';
-import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms, Messages, LivechatCustomField } from '../../../../../app/models/server';
+import { Users, LivechatInquiry, LivechatRooms, Messages } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
-import notifications from '../../../../../app/notifications/server/lib/Notifications';
 import { logger, helperLogger } from './logger';
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
+import { api } from '../../../../../server/sdk/api';
 
-export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
+export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }) => {
 	if (departmentId) {
-		const department = LivechatDepartment.findOneById(departmentId);
+		const department = await LivechatDepartmentRaw.findOneById(departmentId);
 		const { maxNumberSimultaneousChat } = department || {};
 		if (maxNumberSimultaneousChat > 0) {
 			return maxNumberSimultaneousChat;
@@ -31,8 +36,8 @@ export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
 	return settings.get('Livechat_maximum_chats_per_agent');
 };
 
-const getWaitingQueueMessage = (departmentId) => {
-	const department = departmentId && LivechatDepartment.findOneById(departmentId);
+const getWaitingQueueMessage = async (departmentId) => {
+	const department = departmentId && (await LivechatDepartmentRaw.findOneById(departmentId));
 	if (department && department.waitingQueueMessage) {
 		return department.waitingQueueMessage;
 	}
@@ -43,7 +48,7 @@ const getWaitingQueueMessage = (departmentId) => {
 const getQueueInfo = async (department) => {
 	const numberMostRecentChats = settings.get('Livechat_number_most_recent_chats_estimate_wait_time');
 	const statistics = await RoomRaw.getMostRecentAverageChatDurationTime(numberMostRecentChats, department);
-	const text = getWaitingQueueMessage(department);
+	const text = await getWaitingQueueMessage(department);
 	const message = {
 		text,
 		user: { _id: 'rocket.cat', username: 'rocket.cat' },
@@ -76,7 +81,7 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 	const { position, department } = inquiry;
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
 	const propagateInquiryPosition = Meteor.bindEnvironment((inquiry) => {
-		notifications.streamLivechatRoom.emit(inquiry.rid, {
+		api.broadcast('omnichannel.room', inquiry.rid, {
 			type: 'queueData',
 			data,
 		});
@@ -137,7 +142,7 @@ export const processWaitingQueue = async (department, inquiry) => {
 	return false;
 };
 
-export const setPredictedVisitorAbandonmentTime = (room) => {
+export const setPredictedVisitorAbandonmentTime = async (room) => {
 	if (
 		!room.v ||
 		!room.v.lastMessageTs ||
@@ -149,7 +154,7 @@ export const setPredictedVisitorAbandonmentTime = (room) => {
 
 	let secondsToAdd = settings.get('Livechat_visitor_inactivity_timeout');
 
-	const department = room.departmentId && LivechatDepartment.findOneById(room.departmentId);
+	const department = room.departmentId && (await LivechatDepartmentRaw.findOneById(room.departmentId));
 	if (department && department.visitorInactivityTimeoutInSeconds) {
 		secondsToAdd = department.visitorInactivityTimeoutInSeconds;
 	}
@@ -162,11 +167,15 @@ export const setPredictedVisitorAbandonmentTime = (room) => {
 	LivechatRooms.setPredictedVisitorAbandonment(room._id, willBeAbandonedAt);
 };
 
-export const updatePredictedVisitorAbandonment = () => {
+export const updatePredictedVisitorAbandonment = async () => {
 	if (!settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none') {
 		LivechatRooms.unsetPredictedVisitorAbandonment();
 	} else {
-		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
+		// Eng day: use a promise queue to update the predicted visitor abandonment time instead of all at once
+		const promisesArray = [];
+		await LivechatRoomsRaw.findOpen().forEach((room) => promisesArray.push(setPredictedVisitorAbandonmentTime(room)));
+
+		await Promise.all(promisesArray);
 	}
 };
 
@@ -244,12 +253,12 @@ export const updatePriorityInquiries = (priority) => {
 	});
 };
 
-export const getLivechatCustomFields = () => {
-	const customFields = LivechatCustomField.find({
+export const getLivechatCustomFields = async () => {
+	const customFields = await LivechatCustomField.find({
 		visibility: 'visible',
 		scope: 'visitor',
 		public: true,
-	}).fetch();
+	}).toArray();
 	return customFields.map(({ _id, label, regexp, required = false, type, defaultValue = null, options }) => ({
 		_id,
 		label,

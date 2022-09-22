@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus as UserStatusEnum, ValueOf } from '@rocket.chat/core-typings';
-import { Box, Margins, Option } from '@rocket.chat/fuselage';
+import { Box, Margins, Option, OptionColumn, OptionContent, OptionDivider, OptionTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, useLogout, useSetting, useAtLeastOnePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -42,7 +42,7 @@ const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) 
 const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum => isDefaultStatus(id);
 
 const setStatus = (status: typeof userStatus.list['']): void => {
-	AccountBox.setStatus(status.statusType as unknown as number, !isDefaultStatus(status.id) ? status.name : '');
+	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : '');
 	callbacks.run('userStatusManuallySet', status);
 };
 
@@ -109,25 +109,15 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 	return (
 		<Box display='flex' flexDirection='column' w={!isMobile ? '244px' : undefined}>
-			<Box display='flex' flexDirection='row'>
-				<Box mie='x4' mis='x16'>
+			<Box pi='x12' display='flex' flexDirection='row' alignItems='center'>
+				<Box mie='x4'>
 					<UserAvatar size='x36' username={username || ''} etag={avatarETag} />
 				</Box>
-				<Box
-					mie='x8'
-					mis='x4'
-					display='flex'
-					overflow='hidden'
-					flexDirection='column'
-					fontScale='p2'
-					mb='neg-x4'
-					flexGrow={1}
-					flexShrink={1}
-				>
+				<Box mis='x4' display='flex' overflow='hidden' flexDirection='column' fontScale='p2' mb='neg-x4' flexGrow={1} flexShrink={1}>
 					<Box withTruncatedText w='full' display='flex' alignItems='center' flexDirection='row'>
 						<Margins inline='x4'>
 							<UserStatus status={status} />
-							<Box is='span' withTruncatedText display='inline-block'>
+							<Box is='span' withTruncatedText display='inline-block' fontWeight='700'>
 								{displayName}
 							</Box>
 						</Margins>
@@ -142,10 +132,8 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 					</Box>
 				</Box>
 			</Box>
-			<Option.Divider />
-			<Box pi='x16' fontScale='c1' textTransform='uppercase'>
-				{t('Status')}
-			</Box>
+			<OptionDivider />
+			<OptionTitle>{t('Status')}</OptionTitle>
 			{Object.values(userStatus.list)
 				.filter(filterInvisibleStatus)
 				.map((status, i) => {
@@ -160,12 +148,12 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 								onClose();
 							}}
 						>
-							<Option.Column>
+							<OptionColumn>
 								<UserStatus status={modifier} />
-							</Option.Column>
-							<Option.Content>
+							</OptionColumn>
+							<OptionContent>
 								<MarkdownText content={name} parseEmoji={true} variant='inline' />
-							</Option.Content>
+							</OptionContent>
 						</Option>
 					);
 				})}
@@ -173,7 +161,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 			{(accountBoxItems.length || showAdmin) && (
 				<>
-					<Option.Divider />
+					<OptionDivider />
 					{showAdmin && <Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}></Option>}
 					{accountBoxItems
 						.filter((item) => !isAppAccountBoxItem(item))
@@ -204,7 +192,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 			{appBoxItems().length > 0 && (
 				<>
-					<Option.Divider />
+					<OptionDivider />
 					<Box pi='x16' fontScale='c1' textTransform='uppercase'>
 						{t('Apps')}
 					</Box>
@@ -228,7 +216,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				</>
 			)}
 
-			<Option.Divider />
+			<OptionDivider />
 			<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
 			<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
 		</Box>

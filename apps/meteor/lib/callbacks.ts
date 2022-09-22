@@ -1,7 +1,7 @@
-import Url from 'url';
+import type Url from 'url';
 
 import { Meteor } from 'meteor/meteor';
-import { FilterQuery } from 'mongodb';
+import type { FilterOperators } from 'mongodb';
 import type {
 	IMessage,
 	IRoom,
@@ -20,7 +20,8 @@ import type {
 import type { Logger } from '../app/logger/server';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import { getRandomId } from './random';
-import { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
+import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
+import { compareByRanking } from './utils/comparisons';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -64,6 +65,7 @@ type EventLikeCallbackSignatures = {
 	'onValidateLogin': (login: ILoginAttempt) => void;
 	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
 	'beforeCreateDirectRoom': (members: IUser[]) => void;
+	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
 	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 };
@@ -105,11 +107,11 @@ type ChainedCallbackSignatures = {
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
 	'livechat.beforeCloseRoom': (params: { room: IRoom; options: unknown }) => { room: IRoom; options: unknown };
-	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent;
+	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent | null;
 	'livechat.applyDepartmentRestrictions': (
-		query: FilterQuery<ILivechatDepartmentRecord>,
+		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
-	) => FilterQuery<ILivechatDepartmentRecord>;
+	) => FilterOperators<ILivechatDepartmentRecord>;
 	'livechat.onMaxNumberSimultaneousChatsReached': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
@@ -147,6 +149,7 @@ type Hook =
 	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
 	| 'afterRoomNameChange'
+	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateLogin'
 	| 'afterValidateNewOAuthUser'
@@ -356,8 +359,7 @@ class Callbacks {
 				stack: new Error().stack,
 			}),
 		);
-		const rank = (callback: Callback): number => callback.priority ?? this.priority.MEDIUM;
-		callbacks.sort((a, b) => rank(a) - rank(b));
+		callbacks.sort(compareByRanking((callback: Callback): number => callback.priority ?? this.priority.MEDIUM));
 
 		this.setCallbacks(hook, callbacks);
 	}

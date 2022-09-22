@@ -1,10 +1,9 @@
 /* eslint-disable complexity */
-import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } from '@rocket.chat/core-typings';
+import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageBody, MessageBlock } from '@rocket.chat/fuselage';
 import { useTranslation, useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
-import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import Attachments from '../../../../components/message/Attachments';
 import MessageActions from '../../../../components/message/MessageActions';
 import BroadcastMetric from '../../../../components/message/Metrics/Broadcast';
@@ -15,17 +14,23 @@ import { UserPresence } from '../../../../lib/presence';
 import MessageBlockUiKit from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
+import { useTranslateAttachments, useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
+import { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 import MessageContentBody from './MessageContentBody';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
 import PreviewList from './UrlPreview';
 
-const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
-	message,
-	subscription,
-}) => {
+const MessageContent: FC<{
+	message: MessageWithMdEnforced;
+	sequential: boolean;
+	subscription?: ISubscription;
+	id: IMessage['_id'];
+	unread: boolean;
+	mention: boolean;
+	all: boolean;
+}> = ({ message, unread, all, mention, subscription }) => {
 	const {
 		broadcast,
 		actions: { openRoom, openThread, replyBroadcast },
@@ -45,21 +50,27 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 	const isEncryptedMessage = isE2EEMessage(message);
 
+	const messageAttachments = useTranslateAttachments({ message });
+
 	return (
 		<>
-			{!message.blocks && (message.md || message.msg) && (
+			{!message.blocks && message.md && (
 				<MessageBody data-qa-type='message-body'>
-					{!isEncryptedMessage && <MessageContentBody message={message} />}
-					{isEncryptedMessage && message.e2e === 'done' && <MessageContentBody message={message} />}
+					{!isEncryptedMessage && <MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />}
+					{isEncryptedMessage && message.e2e === 'done' && (
+						<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
+					)}
 					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</MessageBody>
 			)}
+
 			{message.blocks && (
 				<MessageBlock fixedWidth>
 					<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
 				</MessageBlock>
 			)}
-			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
+
+			{!!messageAttachments.length && <Attachments attachments={messageAttachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
 
@@ -81,14 +92,14 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 				<ThreadMetric
 					openThread={openThread(message._id)}
 					counter={message.tcount}
-					following={Boolean(mineUid && message?.replies.indexOf(mineUid) > -1)}
+					following={Boolean(mineUid && message?.replies?.indexOf(mineUid) > -1)}
 					mid={message._id}
 					rid={message.rid}
 					lm={message.tlm}
-					unread={Boolean(subscription?.tunread?.includes(message._id))}
-					mention={Boolean(subscription?.tunreadUser?.includes(message._id))}
-					all={Boolean(subscription?.tunreadGroup?.includes(message._id))}
-					participants={message?.replies.length}
+					unread={unread}
+					mention={mention}
+					all={all}
+					participants={message?.replies?.length}
 				/>
 			)}
 

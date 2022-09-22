@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem, IUser } from '@rocket.chat/core-typings';
 import { NotificationQueue, Users } from '@rocket.chat/models';
 
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
@@ -92,7 +91,7 @@ class NotificationClass {
 		this.worker(counter++);
 	}
 
-	getNextNotification(): Promise<INotification | undefined> {
+	getNextNotification(): Promise<INotification | null> {
 		const expired = new Date();
 		expired.setMinutes(expired.getMinutes() - 5);
 

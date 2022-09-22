@@ -1,13 +1,32 @@
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
-import { IFederationBridge } from '../../domain/IFederationBridge';
-import { bridgeLogger } from '../rocket-chat/adapters/logger';
-import { IMatrixEvent } from './definitions/IMatrixEvent';
-import { MatrixEventType } from './definitions/MatrixEventType';
+import type { IExternalUserProfileInformation, IFederationBridge } from '../../domain/IFederationBridge';
+import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
+import type { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
 let MatrixUserInstance: any;
+
+interface IRegistrationFileNamespaceRule {
+	exclusive: boolean;
+	regex: string;
+}
+
+interface IRegistrationFileNamespaces {
+	users: IRegistrationFileNamespaceRule[];
+	rooms: IRegistrationFileNamespaceRule[];
+	aliases: IRegistrationFileNamespaceRule[];
+}
+
+export interface IFederationBridgeRegistrationFile {
+	id: string;
+	homeserverToken: string;
+	applicationServiceToken: string;
+	bridgeUrl: string;
+	botName: string;
+	listenTo: IRegistrationFileNamespaces;
+}
 
 export class MatrixBridge implements IFederationBridge {
 	protected bridgeInstance: Bridge;
@@ -22,11 +41,9 @@ export class MatrixBridge implements IFederationBridge {
 		protected homeServerDomain: string,
 		protected bridgeUrl: string,
 		protected bridgePort: number,
-		protected homeServerRegistrationFile: Record<string, any>,
-		protected eventHandler: Function,
-	) {
-		this.logInfo();
-	}
+		protected homeServerRegistrationFile: IFederationBridgeRegistrationFile,
+		protected eventHandler: (event: AbstractMatrixEvent) => void,
+	) {} // eslint-disable-line no-empty-function
 
 	public async onFederationAvailabilityChanged(enabled: boolean): Promise<void> {
 		if (!enabled) {
@@ -50,8 +67,7 @@ export class MatrixBridge implements IFederationBridge {
 				this.isRunning = true;
 			}
 		} catch (e) {
-			bridgeLogger.error('Failed to initialize the matrix-appservice-bridge.', e);
-			bridgeLogger.error('Disabling Matrix Bridge.  Please resolve error and try again');
+			federationBridgeLogger.error('Failed to initialize the matrix-appservice-bridge.', e);
 		} finally {
 			this.isUpdatingBridgeStatus = false;
 		}
@@ -66,9 +82,13 @@ export class MatrixBridge implements IFederationBridge {
 		await this.bridgeInstance?.close();
 	}
 
-	public async getUserProfileInformation(externalUserId: string): Promise<any> {
+	public async getUserProfileInformation(externalUserId: string): Promise<IExternalUserProfileInformation | undefined> {
 		try {
-			return await this.bridgeInstance.getIntent(externalUserId).getProfileInfo(externalUserId);
+			const externalInformation = await this.bridgeInstance.getIntent(externalUserId).getProfileInfo(externalUserId);
+
+			return {
+				displayName: externalInformation.displayname || '',
+			};
 		} catch (err) {
 			// no-op
 		}
@@ -97,7 +117,11 @@ export class MatrixBridge implements IFederationBridge {
 		return matrixUserId;
 	}
 
-	public async createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[]): Promise<string> {
+	public async createDirectMessageRoom(
+		externalCreatorId: string,
+		externalInviteeIds: string[],
+		extraData: Record<string, any> = {},
+	): Promise<string> {
 		const intent = this.bridgeInstance.getIntent(externalCreatorId);
 
 		const visibility = MatrixRoomVisibility.PRIVATE;
@@ -107,13 +131,11 @@ export class MatrixBridge implements IFederationBridge {
 			options: {
 				visibility,
 				preset,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				is_direct: true,
 				invite: externalInviteeIds,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				creation_content: {
-					// eslint-disable-next-line @typescript-eslint/camelcase
 					was_internally_programatically_created: true,
+					...extraData,
 				},
 			},
 		});
@@ -129,17 +151,21 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean {
-		const userDomain = externalUserId.includes(':') ? externalUserId.split(':').pop() : '';
+		const userDomain = this.extractHomeserverOrigin(externalUserId);
 
 		return userDomain === domain;
 	}
 
-	public getInstance(): IFederationBridge {
-		return this;
+	public extractHomeserverOrigin(externalUserId: string): string {
+		return externalUserId.includes(':') ? externalUserId.split(':').pop() || '' : this.homeServerDomain;
 	}
 
-	protected logInfo(): void {
-		bridgeLogger.info(`Running Federation V2:
+	public isRoomFromTheSameHomeserver(externalRoomId: string, domain: string): boolean {
+		return this.isUserIdFromTheSameHomeserver(externalRoomId, domain);
+	}
+
+	public logFederationStartupInfo(info?: string): void {
+		federationBridgeLogger.info(`${info}:
 			id: ${this.appServiceId}
 			bridgeUrl: ${this.bridgeUrl}
 			homeserverURL: ${this.homeServerUrl}
@@ -156,11 +182,11 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void> {
-		this.bridgeInstance.getIntent(externalOwnerId).kick(externalRoomId, externalUserId);
+		await this.bridgeInstance.getIntent(externalOwnerId).kick(externalRoomId, externalUserId);
 	}
 
 	protected async createInstance(): Promise<void> {
-		bridgeLogger.info('Performing Dynamic Import of matrix-appservice-bridge');
+		federationBridgeLogger.info('Performing Dynamic Import of matrix-appservice-bridge');
 
 		// Dynamic import to prevent Rocket.Chat from loading the module until needed and then handle if that fails
 		const { Bridge, AppServiceRegistration, MatrixUser } = await import('@rocket.chat/forked-matrix-appservice-bridge');
@@ -169,12 +195,11 @@ export class MatrixBridge implements IFederationBridge {
 		this.bridgeInstance = new Bridge({
 			homeserverUrl: this.homeServerUrl,
 			domain: this.homeServerDomain,
-			registration: AppServiceRegistration.fromObject(this.homeServerRegistrationFile as AppServiceOutput),
+			registration: AppServiceRegistration.fromObject(this.convertRegistrationFileToMatrixFormat()),
 			disableStores: true,
 			controller: {
-				onEvent: async (request /* , context*/): Promise<void> => {
-					// Get the event
-					const event = request.getData() as unknown as IMatrixEvent<MatrixEventType>;
+				onEvent: async (request): Promise<void> => {
+					const event = request.getData() as unknown as AbstractMatrixEvent;
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {
@@ -182,5 +207,16 @@ export class MatrixBridge implements IFederationBridge {
 				},
 			},
 		});
+	}
+
+	private convertRegistrationFileToMatrixFormat(): AppServiceOutput {
+		return {
+			id: this.homeServerRegistrationFile.id,
+			hs_token: this.homeServerRegistrationFile.homeserverToken,
+			as_token: this.homeServerRegistrationFile.applicationServiceToken,
+			url: this.homeServerRegistrationFile.bridgeUrl,
+			sender_localpart: this.homeServerRegistrationFile.botName,
+			namespaces: this.homeServerRegistrationFile.listenTo,
+		};
 	}
 }

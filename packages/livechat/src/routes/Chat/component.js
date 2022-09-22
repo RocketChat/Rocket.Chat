@@ -20,17 +20,18 @@ import RemoveIcon from '../../icons/remove.svg';
 import SendIcon from '../../icons/send.svg';
 import EmojiIcon from '../../icons/smile.svg';
 import styles from './styles.scss';
+import 'emoji-mart/css/emoji-mart.css';
 
 class Chat extends Component {
 	state = {
 		atBottom: true,
 		text: '',
 		emojiPickerActive: false,
-	}
+	};
 
 	handleFilesDropTargetRef = (ref) => {
 		this.filesDropTarget = ref;
-	}
+	};
 
 	handleMenuOptionsRef = (ref) => {
 		this.menuOptionsRef = ref;
@@ -42,7 +43,7 @@ class Chat extends Component {
 
 	handleMessagesContainerRef = (messagesContainer) => {
 		this.messagesContainer = messagesContainer ? messagesContainer.base : null;
-	}
+	};
 
 	handleScrollTo = (region) => {
 		const { onTop, onBottom } = this.props;
@@ -58,18 +59,18 @@ class Chat extends Component {
 		if (region === MessageList.SCROLL_AT_TOP) {
 			onTop && onTop();
 		}
-	}
+	};
 
 	handleUploadClick = (event) => {
 		event.preventDefault();
 		this.filesDropTarget.browse();
-	}
+	};
 
 	handleSendClick = (event) => {
 		event.preventDefault();
 		this.inputRef.el.focus();
 		this.handleSubmit(this.state.text);
-	}
+	};
 
 	handleSubmit = (text) => {
 		if (this.props.onSubmit) {
@@ -77,7 +78,7 @@ class Chat extends Component {
 			this.setState({ text: '' });
 			this.turnOffEmojiPicker();
 		}
-	}
+	};
 
 	handleChangeText = (text) => {
 		let value = text;
@@ -87,77 +88,73 @@ class Chat extends Component {
 		}
 		this.setState({ text: value });
 		onChangeText && onChangeText(value);
-	}
+	};
 
 	toggleEmojiPickerState = () => {
 		this.setState({ emojiPickerActive: !this.state.emojiPickerActive });
-	}
+	};
 
 	handleEmojiSelect = (emoji) => {
 		this.toggleEmojiPickerState();
 		this.notifyEmojiSelect(emoji.native);
-	}
+	};
 
 	handleEmojiClick = () => {
 		this.turnOffEmojiPicker();
-	}
+	};
 
 	turnOffEmojiPicker = () => {
 		if (this.state.emojiPickerActive) {
 			this.setState({ emojiPickerActive: !this.state.emojiPickerActive });
 		}
-	}
+	};
 
-	render = ({
-		color,
-		title,
-		fontColor,
-		uid,
-		agent,
-		typingUsernames,
-		avatarResolver,
-		conversationFinishedMessage,
-		loading,
-		onUpload,
-		messages,
-		uploads = false,
-		options,
-		onChangeDepartment,
-		onFinishChat,
-		onRemoveUserData,
-		lastReadMessageId,
-		queueInfo,
-		registrationRequired,
-		onRegisterUser,
-		limitTextLength,
-		t,
-		incomingCallAlert,
-		ongoingCall,
-		dispatch,
-		...props
-	}, {
-		atBottom = true,
-		text,
-	}) => <Screen
-		color={color}
-		title={title || t('need_help')}
-		fontColor={fontColor}
-		agent={agent || null}
-		queueInfo={queueInfo}
-		nopadding
-		onChangeDepartment={onChangeDepartment}
-		onFinishChat={onFinishChat}
-		onRemoveUserData={onRemoveUserData}
-		className={createClassName(styles, 'chat')}
-		handleEmojiClick={this.handleEmojiClick}
-		{...props}
-	>
-		<FilesDropTarget
-			ref={this.handleFilesDropTargetRef}
-			overlayed
-			overlayText={t('drop_here_to_upload_a_file')}
-			onUpload={onUpload}
+	render = (
+		{
+			color,
+			title,
+			fontColor,
+			uid,
+			agent,
+			typingUsernames,
+			avatarResolver,
+			conversationFinishedMessage,
+			loading,
+			onUpload,
+			messages,
+			uploads = false,
+			options,
+			onChangeDepartment,
+			onFinishChat,
+			onRemoveUserData,
+			lastReadMessageId,
+			queueInfo,
+			registrationRequired,
+			onRegisterUser,
+			limitTextLength,
+			t,
+			incomingCallAlert,
+			ongoingCall,
+			dispatch,
+			...props
+		},
+		{ atBottom = true, text },
+	) => (
+		<Screen
+			color={color}
+			title={title || t('need_help')}
+			fontColor={fontColor}
+			agent={agent || null}
+			queueInfo={queueInfo}
+			nopadding
+			onChangeDepartment={onChangeDepartment}
+			onFinishChat={onFinishChat}
+			onRemoveUserData={onRemoveUserData}
+			className={createClassName(styles, 'chat')}
+			handleEmojiClick={this.handleEmojiClick}
+			{...props}
 		>
+    <FilesDropTarget ref={this.handleFilesDropTargetRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
 			<Screen.Content nopadding>
 				{ incomingCallAlert && !!incomingCallAlert.show && <CallNotification { ...incomingCallAlert } dispatch={dispatch} />}
 				{ incomingCallAlert?.show && ongoingCall && ongoingCall.callStatus === CallStatus.IN_PROGRESS_SAME_TAB ? <CallIframe { ...incomingCallAlert } /> : null }
@@ -260,6 +257,7 @@ class Chat extends Component {
 			</Screen.Footer>
 		</FilesDropTarget>
 	</Screen>
+	);
 }
 
 export default withTranslation()(Chat);

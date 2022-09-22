@@ -1,16 +1,14 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatPriority } from '@rocket.chat/models';
-import { ILivechatPriority } from '@rocket.chat/core-typings';
-
-import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
+import type { ILivechatPriority } from '@rocket.chat/core-typings';
+import type { FindOptions } from 'mongodb';
 
 type FindPrioritiesParams = {
-	userId: string;
 	text?: string;
 	pagination: {
 		offset: number;
 		count: number;
-		sort: object;
+		sort: FindOptions<ILivechatPriority>['sort'];
 	};
 };
 
@@ -22,34 +20,23 @@ type FindPrioritiesResult = {
 };
 
 type FindPrioritiesByIdParams = {
-	userId: string;
 	priorityId: string;
 };
 
 type FindPrioritiesByIdResult = ILivechatPriority | null;
 
-export async function findPriorities({
-	userId,
-	text,
-	pagination: { offset, count, sort },
-}: FindPrioritiesParams): Promise<FindPrioritiesResult> {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
-
+export async function findPriorities({ text, pagination: { offset, count, sort } }: FindPrioritiesParams): Promise<FindPrioritiesResult> {
 	const query = {
 		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
 	};
 
-	const cursor = LivechatPriority.find(query, {
+	const { cursor, totalCount } = LivechatPriority.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const priorities = await cursor.toArray();
+	const [priorities, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		priorities,
@@ -59,9 +46,6 @@ export async function findPriorities({
 	};
 }
 
-export async function findPriorityById({ userId, priorityId }: FindPrioritiesByIdParams): Promise<FindPrioritiesByIdResult> {
-	if (!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findPriorityById({ priorityId }: FindPrioritiesByIdParams): Promise<FindPrioritiesByIdResult> {
 	return LivechatPriority.findOneById(priorityId);
 }

@@ -12,6 +12,10 @@ Meteor.methods({
 		// We're now only passed in the `_id` property to lower the amount of data sent to the server
 		const message = ChatMessage.findOne({ _id: msg._id });
 
+		if (!message) {
+			return false;
+		}
+
 		if (
 			!canDeleteMessage({
 				rid: message.rid,

@@ -3,31 +3,30 @@ import { Component } from 'preact';
 import { createClassName } from '../helpers';
 import styles from './styles.scss';
 
-
 const escapeForRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export class FilesDropTarget extends Component {
 	state = {
 		dragLevel: 0,
-	}
+	};
 
 	handleInputRef = (ref) => {
 		this.input = ref;
-	}
+	};
 
 	handleDragOver = (event) => {
 		event.preventDefault();
-	}
+	};
 
 	handleDragEnter = (event) => {
 		event.preventDefault();
 		this.setState({ dragLevel: this.state.dragLevel + 1 });
-	}
+	};
 
 	handleDragLeave = (event) => {
 		event.preventDefault();
 		this.setState({ dragLevel: this.state.dragLevel - 1 });
-	}
+	};
 
 	handleDrop = (event) => {
 		event.preventDefault();
@@ -41,11 +40,11 @@ export class FilesDropTarget extends Component {
 		this.setState({ dragLevel });
 
 		this.handleUpload(event.dataTransfer.files);
-	}
+	};
 
 	handleInputChange = (event) => {
 		this.handleUpload(event.currentTarget.files);
-	}
+	};
 
 	handleUpload = (files) => {
 		const { accept, multiple, onUpload } = this.props;
@@ -57,19 +56,18 @@ export class FilesDropTarget extends Component {
 		let filteredFiles = Array.from(files);
 
 		if (accept) {
-			const acceptMatchers = accept.split(',')
-				.map((acceptString) => {
-					if (acceptString.charAt(0) === '.') {
-						return ({ name }) => new RegExp(`${ escapeForRegExp(acceptString) }$`, 'i').test(name);
-					}
+			const acceptMatchers = accept.split(',').map((acceptString) => {
+				if (acceptString.charAt(0) === '.') {
+					return ({ name }) => new RegExp(`${escapeForRegExp(acceptString)}$`, 'i').test(name);
+				}
 
-					const matchTypeOnly = /^(.+)\/\*$/i.exec(acceptString);
-					if (matchTypeOnly) {
-						return ({ type }) => new RegExp(`^${ escapeForRegExp(matchTypeOnly[1]) }/.*$`, 'i').test(type);
-					}
+				const matchTypeOnly = /^(.+)\/\*$/i.exec(acceptString);
+				if (matchTypeOnly) {
+					return ({ type }) => new RegExp(`^${escapeForRegExp(matchTypeOnly[1])}/.*$`, 'i').test(type);
+				}
 
-					return ({ type }) => new RegExp(`^s${ escapeForRegExp(acceptString) }$`, 'i').test(type);
-				});
+				return ({ type }) => new RegExp(`^s${escapeForRegExp(acceptString)}$`, 'i').test(type);
+			});
 
 			filteredFiles = filteredFiles.filter((file) => acceptMatchers.some((acceptMatcher) => acceptMatcher(file)));
 		}
@@ -79,21 +77,13 @@ export class FilesDropTarget extends Component {
 		}
 
 		filteredFiles.length && onUpload(filteredFiles);
-	}
+	};
 
 	browse = () => {
 		this.input.click();
-	}
+	};
 
-	render = ({
-		overlayed,
-		overlayText,
-		accept,
-		multiple,
-		className,
-		style = {},
-		children,
-	}, { dragLevel }) => (
+	render = ({ overlayed, overlayText, accept, multiple, className, style = {}, children }, { dragLevel }) => (
 		<div
 			data-overlay-text={overlayText}
 			onDragOver={this.handleDragOver}
@@ -113,5 +103,5 @@ export class FilesDropTarget extends Component {
 			/>
 			{children}
 		</div>
-	)
+	);
 }

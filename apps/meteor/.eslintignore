@@ -3,7 +3,6 @@ data/
 tests/e2e/test-failures/
 packages/autoupdate/
 packages/meteor-streams/
-packages/meteor-timesync/
 app/emoji-emojione/generateEmojiIndex.js
 packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 packages/rocketchat-livechat/assets/rocket-livechat.js

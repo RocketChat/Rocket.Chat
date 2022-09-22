@@ -1,10 +1,11 @@
-import React, { ReactNode, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import React, { useMemo } from 'react';
 import { Option, Badge } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Header } from '@rocket.chat/ui-client';
 
 import { addAction } from '../../../client/views/room/lib/Toolbox';
-import Header from '../../../client/components/Header';
 
 addAction('livestream', ({ room }) => {
 	const enabled = useSetting('Livestream_enabled');
@@ -16,24 +17,26 @@ addAction('livestream', ({ room }) => {
 		() =>
 			enabled
 				? {
-						'groups': ['channel', 'group', 'team'],
-						'id': 'livestream',
-						'title': 'Livestream',
-						'icon': 'podcast',
-						'template': 'liveStreamTab',
-						'order': isLive ? -1 : 15,
-						'disabled': federated,
-						'data-tooltip': 'Discussions_unavailable_for_federation',
-						'renderAction': (props): ReactNode => (
-							<Header.ToolBoxAction {...props}>
+						groups: ['channel', 'group', 'team'],
+						id: 'livestream',
+						title: 'Livestream',
+						icon: 'podcast',
+						template: 'liveStreamTab',
+						order: isLive ? -1 : 15,
+						...(federated && {
+							'data-tooltip': federated ? 'Livestream_unavailable_for_federation' : '',
+							'disabled': true,
+						}),
+						renderAction: (props): ReactNode => (
+							<Header.ToolBox.Action {...props}>
 								{isLive ? (
-									<Header.Badge title={t('Livestream_live_now')} variant='danger'>
+									<Header.ToolBox.ActionBadge title={t('Livestream_live_now')} variant='danger'>
 										!
-									</Header.Badge>
+									</Header.ToolBox.ActionBadge>
 								) : null}
-							</Header.ToolBoxAction>
+							</Header.ToolBox.Action>
 						),
-						'renderOption': ({ label: { title, icon }, ...props }: any): ReactNode => (
+						renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => (
 							<Option label={title} title={title} icon={icon} {...props}>
 								{isLive ? (
 									<Badge title={t('Livestream_live_now')} variant='danger'>

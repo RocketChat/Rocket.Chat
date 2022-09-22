@@ -13,19 +13,12 @@ import ScreenHeader from './Header';
 import styles from './styles.scss';
 
 export const ScreenContent = ({ children, nopadding, triggered = false }) => (
-	<main className={createClassName(styles, 'screen__main', { nopadding, triggered })}>
-		{children}
-	</main>
+	<main className={createClassName(styles, 'screen__main', { nopadding, triggered })}>{children}</main>
 );
-
 
 export const ScreenFooter = ({ children, options, limit }) => (
 	<Footer>
-		{children && (
-			<FooterContent>
-				{children}
-			</FooterContent>
-		)}
+		{children && <FooterContent>{children}</FooterContent>}
 		<FooterContent>
 			{options}
 			{limit}
@@ -79,13 +72,15 @@ const CssVar = ({ theme }) => {
 		};
 	}, [theme]);
 
-	return <style>{`
-		.${ styles.screen } {
-			${ theme.color ? `--color: ${ theme.color };` : '' }
-			${ theme.fontColor ? `--font-color: ${ theme.fontColor };` : '' }
-			${ theme.iconColor ? `--icon-color: ${ theme.iconColor };` : '' }
+	return (
+		<style>{`
+		.${styles.screen} {
+			${theme.color ? `--color: ${theme.color};` : ''}
+			${theme.fontColor ? `--font-color: ${theme.fontColor};` : ''}
+			${theme.iconColor ? `--icon-color: ${theme.iconColor};` : ''}
 		}
-	`}</style>;
+	`}</style>
+	);
 };
 
 export class Screen extends Component {
@@ -217,6 +212,5 @@ export class Screen extends Component {
 
 Screen.Content = ScreenContent;
 Screen.Footer = ScreenFooter;
-
 
 export default Screen;

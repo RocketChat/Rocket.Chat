@@ -1,13 +1,11 @@
-import { IVoipRoom } from '@rocket.chat/core-typings';
-import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
 import React, { useState, useMemo, useCallback, FC } from 'react';
 
 import GenericTable from '../../../../components/GenericTable';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { CallTableRow } from './CallTableRow';
 
 const useQuery = (
 	{
@@ -16,8 +14,8 @@ const useQuery = (
 		current,
 	}: {
 		text?: string;
-		itemsPerPage?: 25 | 50 | 100;
-		current?: number;
+		itemsPerPage: 25 | 50 | 100;
+		current: number;
 	},
 	[column, direction]: string[],
 	userIdLoggedIn: string | null,
@@ -42,7 +40,7 @@ const useQuery = (
 	);
 
 const CallTable: FC = () => {
-	const [params, setParams] = useState<{ text?: string; current?: number; itemsPerPage?: 25 | 50 | 100 }>({
+	const [params, setParams] = useState<{ text?: string; current: number; itemsPerPage: 25 | 50 | 100 }>({
 		text: '',
 		current: 0,
 		itemsPerPage: 25,
@@ -54,17 +52,6 @@ const CallTable: FC = () => {
 	const userIdLoggedIn = Meteor.userId();
 	const query = useQuery(debouncedParams, debouncedSort, userIdLoggedIn);
 	const directoryRoute = useRoute('omnichannel-directory');
-
-	const resolveDirectionLabel = useCallback(
-		(direction: IVoipRoom['direction']) => {
-			const labels = {
-				inbound: 'Incoming',
-				outbound: 'Outgoing',
-			} as const;
-			return t(labels[direction] || 'Not_Available');
-		},
-		[t],
-	);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -138,26 +125,12 @@ const CallTable: FC = () => {
 				>
 					{t('Direction')}
 				</GenericTable.HeaderCell>,
+				<GenericTable.HeaderCell key='call' width={44} />,
 			].filter(Boolean),
 		[sort, onHeaderClick, t],
 	);
 
-	const renderRow = useCallback(
-		({ _id, fname, callStarted, queue, callDuration, v, direction }) => {
-			const duration = moment.duration(callDuration / 1000, 'seconds');
-			return (
-				<Table.Row key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id, v?.token)} action qa-user-id={_id}>
-					<Table.Cell withTruncatedText>{fname}</Table.Cell>
-					<Table.Cell withTruncatedText>{Array.isArray(v?.phone) ? v?.phone[0]?.phoneNumber : v?.phone}</Table.Cell>
-					<Table.Cell withTruncatedText>{queue}</Table.Cell>
-					<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
-					<Table.Cell withTruncatedText>{duration.isValid() && duration.humanize()}</Table.Cell>
-					<Table.Cell withTruncatedText>{resolveDirectionLabel(direction)}</Table.Cell>
-				</Table.Row>
-			);
-		},
-		[onRowClick, resolveDirectionLabel],
-	);
+	const renderRow = useCallback((room) => <CallTableRow room={room} onRowClick={onRowClick} />, [onRowClick]);
 
 	return (
 		<GenericTable

@@ -2,16 +2,16 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback } from 'react';
 
-import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient } from '../../../contexts/CallContext';
+import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient, useVoipNetworkStatus } from '../../../contexts/CallContext';
 
-export const OmnichannelCallToggleReady = (): ReactElement => {
+export const OmnichannelCallToggleReady = ({ ...props }): ReactElement => {
 	const t = useTranslation();
 
 	const caller = useCallerInfo();
 	const unregister = useCallUnregisterClient();
 	const register = useCallRegisterClient();
 
-	const networkStatus = ['ERROR'].includes(caller.state) ? 'offline' : 'online';
+	const networkStatus = useVoipNetworkStatus();
 	const registered = !['ERROR', 'INITIAL', 'UNREGISTERED'].includes(caller.state);
 	const inCall = ['IN_CALL'].includes(caller.state);
 
@@ -25,7 +25,7 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 
 	const getTitle = (): string => {
 		if (networkStatus === 'offline') {
-			return t('Signaling_connection_disconnected');
+			return t('Waiting_for_server_connection');
 		}
 
 		if (inCall) {
@@ -33,10 +33,10 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		}
 
 		if (registered) {
-			return t('Enabled');
+			return t('Turn_off_answer_calls');
 		}
 
-		return t('Disabled');
+		return t('Turn_on_answer_calls');
 	};
 
 	const getIcon = (): 'phone-issue' | 'phone' | 'phone-disabled' => {
@@ -53,11 +53,16 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		return registered ? 'success' : undefined;
 	};
 
-	const voipCallIcon = {
-		title: getTitle(),
-		icon: getIcon(),
-		color: getColor(),
-	};
-
-	return <Sidebar.TopBar.Action disabled={inCall} {...voipCallIcon} onClick={onClickVoipButton} />;
+	return (
+		<Sidebar.TopBar.Action
+			icon={getIcon()}
+			disabled={inCall}
+			color={getColor()}
+			aria-checked={registered}
+			aria-label={t('VoIP_Toggle')}
+			data-tooltip={getTitle()}
+			{...props}
+			onClick={onClickVoipButton}
+		/>
+	);
 };

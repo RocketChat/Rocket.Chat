@@ -23,33 +23,38 @@ class SwitchDepartment extends Component {
 
 	state = {
 		department: null,
-	}
+	};
 
 	validations = {
 		department: [Validations.nonEmpty],
-	}
+	};
 
-	getValidableFields = () => Object.keys(this.validations)
-		.map((fieldName) => (this.state[fieldName] ? { fieldName, ...this.state[fieldName] } : null))
-		.filter(Boolean)
+	getValidableFields = () =>
+		Object.keys(this.validations)
+			.map((fieldName) => (this.state[fieldName] ? { fieldName, ...this.state[fieldName] } : null))
+			.filter(Boolean);
 
-	validate = ({ name, value }) => this.validations[name].reduce((error, validation) => error || validation({ value }), undefined)
+	validate = ({ name, value }) => this.validations[name].reduce((error, validation) => error || validation({ value }), undefined);
 
 	validateAll = () => {
 		for (const { fieldName: name, value } of this.getValidableFields()) {
 			const error = this.validate({ name, value });
 			this.setState({ [name]: { ...this.state[name], value, error, showError: false } });
 		}
-	}
+	};
 
-	isValid = () => this.getValidableFields().every(({ error } = {}) => !error)
+	isValid = () => this.getValidableFields().every(({ error } = {}) => !error);
 
-	handleFieldChange = (name) => ({ target: { value } }) => {
-		const error = this.validate({ name, value });
-		this.setState({ [name]: { ...this.state[name], value, error, showError: false } }, () => { this.validateAll(); });
-	}
+	handleFieldChange =
+		(name) =>
+		({ target: { value } }) => {
+			const error = this.validate({ name, value });
+			this.setState({ [name]: { ...this.state[name], value, error, showError: false } }, () => {
+				this.validateAll();
+			});
+		};
 
-	handleDepartmentChange = this.handleFieldChange('department')
+	handleDepartmentChange = this.handleFieldChange('department');
 
 	handleSubmit = (event) => {
 		event.preventDefault();
@@ -61,12 +66,12 @@ class SwitchDepartment extends Component {
 				.reduce((values, entry) => ({ ...values, ...entry }), {});
 			this.props.onSubmit(values);
 		}
-	}
+	};
 
 	handleCancelClick = () => {
 		const { onCancel } = this.props;
 		onCancel && onCancel();
-	}
+	};
 
 	constructor(props) {
 		super(props);
@@ -88,20 +93,12 @@ class SwitchDepartment extends Component {
 		const valid = this.isValid();
 
 		return (
-			<Screen
-				color={color}
-				title={title || defaultTitle}
-				className={createClassName(styles, 'switch-department')}
-				{...props}
-			>
+			<Screen color={color} title={title || defaultTitle} className={createClassName(styles, 'switch-department')} {...props}>
 				<Screen.Content>
 					<p className={createClassName(styles, 'switch-department__message')}>{message || defaultMessage}</p>
 
 					<Form onSubmit={this.handleSubmit}>
-						<FormField
-							label={t('departments')}
-							error={department && department.showError && department.error}
-						>
+						<FormField label={t('departments')} error={department && department.showError && department.error}>
 							<SelectInput
 								name='department'
 								value={department && department.value}
@@ -114,8 +111,12 @@ class SwitchDepartment extends Component {
 						</FormField>
 
 						<ButtonGroup>
-							<Button submit loading={loading} disabled={!valid || loading} stack>{t('start_chat')}</Button>
-							<Button disabled={loading} stack secondary onClick={this.handleCancelClick}>{t('cancel')}</Button>
+							<Button submit loading={loading} disabled={!valid || loading} stack>
+								{t('start_chat')}
+							</Button>
+							<Button disabled={loading} stack secondary onClick={this.handleCancelClick}>
+								{t('cancel')}
+							</Button>
 						</ButtonGroup>
 					</Form>
 				</Screen.Content>

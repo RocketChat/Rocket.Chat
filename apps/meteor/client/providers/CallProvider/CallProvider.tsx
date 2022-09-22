@@ -12,6 +12,8 @@ import {
 	isVoipEventCallAbandoned,
 	UserState,
 	ICallDetails,
+	ILivechatVisitor,
+	Serialized,
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -36,23 +38,34 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { isOutboundClient, useVoipClient } from '../../../ee/client/hooks/useVoipClient';
+import { parseOutboundPhoneNumber } from '../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
 import { CallContext, CallContextValue, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
 
-const startRingback = (user: IUser): void => {
+type VoipSound = 'telephone' | 'outbound-call-ringing' | 'call-ended';
+
+const startRingback = (user: IUser, soundId: VoipSound, loop = true): void => {
 	const audioVolume = getUserPreference(user, 'notificationsSoundVolume', 100) as number;
-	CustomSounds.play('telephone', {
+	CustomSounds.play(soundId, {
 		volume: Number((audioVolume / 100).toPrecision(2)),
-		loop: true,
+		loop,
 	});
 };
 
-const stopRingback = (): void => {
-	CustomSounds.pause('telephone');
-	CustomSounds.remove('telephone');
+const stopRingBackById = (soundId: VoipSound): void => {
+	CustomSounds.pause(soundId);
+	CustomSounds.remove(soundId);
+};
+
+const stopTelephoneRingback = (): void => stopRingBackById('telephone');
+const stopOutboundCallRinging = (): void => stopRingBackById('outbound-call-ringing');
+
+const stopAllRingback = (): void => {
+	stopTelephoneRingback();
+	stopOutboundCallRinging();
 };
 
 type NetworkState = 'online' | 'offline';
@@ -66,6 +79,7 @@ export const CallProvider: FC = ({ children }) => {
 	const visitorEndpoint = useEndpoint('POST', '/v1/livechat/visitor');
 	const voipEndpoint = useEndpoint('GET', '/v1/voip/room');
 	const voipCloseRoomEndpoint = useEndpoint('POST', '/v1/voip/room.close');
+	const getContactBy = useEndpoint('GET', '/v1/omnichannel/contact.search');
 	const setModal = useSetModal();
 	const t = useTranslation();
 
@@ -139,12 +153,39 @@ export const CallProvider: FC = ({ children }) => {
 
 		setQueueAggregator(voipClient.getAggregator());
 
-		return (): void => voipClient.unregister();
-	}, [result]);
+		return (): void => {
+			if (clientState === 'registered') {
+				return voipClient.unregister();
+			}
+		};
+	}, [result, clientState]);
 
 	const openRoom = useCallback((rid: IVoipRoom['_id']): void => {
 		roomCoordinator.openRouteLink('v', { rid });
 	}, []);
+
+	const findOrCreateVisitor = useCallback(
+		async (caller: ICallerInfo): Promise<Serialized<ILivechatVisitor>> => {
+			const phone = parseOutboundPhoneNumber(caller.callerId);
+
+			const { contact } = await getContactBy({ phone });
+
+			if (contact) {
+				return contact;
+			}
+
+			const { visitor } = await visitorEndpoint({
+				visitor: {
+					token: Random.id(),
+					phone,
+					name: caller.callerName || phone,
+				},
+			});
+
+			return visitor;
+		},
+		[getContactBy, visitorEndpoint],
+	);
 
 	const createRoom = useCallback(
 		async (caller: ICallerInfo, direction: IVoipRoom['direction'] = 'inbound'): Promise<IVoipRoom['_id']> => {
@@ -152,13 +193,7 @@ export const CallProvider: FC = ({ children }) => {
 				return '';
 			}
 			try {
-				const { visitor } = await visitorEndpoint({
-					visitor: {
-						token: Random.id(),
-						phone: caller.callerId,
-						name: caller.callerName || caller.callerId,
-					},
-				});
+				const visitor = await findOrCreateVisitor(caller);
 				const voipRoom = await voipEndpoint({ token: visitor.token, agentId: user._id, direction });
 				openRoom(voipRoom.room._id);
 				voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
@@ -172,7 +207,7 @@ export const CallProvider: FC = ({ children }) => {
 				return '';
 			}
 		},
-		[openRoom, result.voipClient, user, visitorEndpoint, voipEndpoint],
+		[openRoom, result.voipClient, user, voipEndpoint, findOrCreateVisitor],
 	);
 
 	useEffect(() => {
@@ -322,7 +357,7 @@ export const CallProvider: FC = ({ children }) => {
 			if (!callDetails.callInfo) {
 				return;
 			}
-			stopRingback();
+			stopAllRingback();
 			if (callDetails.userState !== UserState.UAC) {
 				return;
 			}
@@ -363,11 +398,33 @@ export const CallProvider: FC = ({ children }) => {
 		};
 
 		const onRinging = (): void => {
-			startRingback(user);
+			startRingback(user, 'outbound-call-ringing');
 		};
 
-		const onCallFailed = (): void => {
-			openDialModal({ errorMessage: t('Something_went_wrong_try_again_later') });
+		const onIncomingCallRinging = (): void => {
+			startRingback(user, 'telephone');
+		};
+
+		const onCallTerminated = (): void => {
+			startRingback(user, 'call-ended', false);
+			stopAllRingback();
+		};
+
+		const onCallFailed = (reason: 'Not Found' | 'Address Incomplete' | 'Request Terminated' | string): void => {
+			switch (reason) {
+				case 'Not Found':
+					// This happens when the call matches dialplan and goes to the world, but the trunk doesnt find the number.
+					openDialModal({ errorMessage: t('Dialed_number_doesnt_exist') });
+					break;
+				case 'Address Incomplete':
+					// This happens when the dialed number doesnt match a valid asterisk dialplan pattern or the number is invalid.
+					openDialModal({ errorMessage: t('Dialed_number_is_incomplete') });
+					break;
+				case 'Request Terminated':
+					break;
+				default:
+					openDialModal({ errorMessage: t('Something_went_wrong_try_again_later') });
+			}
 		};
 
 		result.voipClient.onNetworkEvent('connected', onNetworkConnected);
@@ -376,9 +433,9 @@ export const CallProvider: FC = ({ children }) => {
 		result.voipClient.onNetworkEvent('localnetworkonline', onNetworkConnected);
 		result.voipClient.onNetworkEvent('localnetworkoffline', onNetworkDisconnected);
 		result.voipClient.on('callestablished', onCallEstablished);
-		result.voipClient.on('ringing', onRinging);
-		result.voipClient.on('incomingcall', onRinging);
-		result.voipClient.on('callterminated', stopRingback);
+		result.voipClient.on('ringing', onRinging); // not called for incoming call
+		result.voipClient.on('incomingcall', onIncomingCallRinging);
+		result.voipClient.on('callterminated', onCallTerminated);
 
 		if (isOutboundClient(result.voipClient)) {
 			result.voipClient.on('callfailed', onCallFailed);
@@ -390,10 +447,10 @@ export const CallProvider: FC = ({ children }) => {
 			result.voipClient?.offNetworkEvent('connectionerror', onNetworkDisconnected);
 			result.voipClient?.offNetworkEvent('localnetworkonline', onNetworkConnected);
 			result.voipClient?.offNetworkEvent('localnetworkoffline', onNetworkDisconnected);
-			result.voipClient?.off('incomingcall', onRinging);
+			result.voipClient?.off('incomingcall', onIncomingCallRinging);
 			result.voipClient?.off('ringing', onRinging);
 			result.voipClient?.off('callestablished', onCallEstablished);
-			result.voipClient?.off('callterminated', stopRingback);
+			result.voipClient?.off('callterminated', onCallTerminated);
 
 			if (isOutboundClient(result.voipClient)) {
 				result.voipClient?.off('callfailed', onCallFailed);
@@ -471,6 +528,7 @@ export const CallProvider: FC = ({ children }) => {
 			openRoom,
 			createRoom,
 			closeRoom,
+			networkStatus,
 			openWrapUpModal,
 			changeAudioOutputDevice,
 			changeAudioInputDevice,
@@ -492,6 +550,7 @@ export const CallProvider: FC = ({ children }) => {
 		openWrapUpModal,
 		changeAudioOutputDevice,
 		changeAudioInputDevice,
+		networkStatus,
 	]);
 
 	return (

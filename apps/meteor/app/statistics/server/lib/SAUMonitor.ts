@@ -24,7 +24,7 @@ const logger = new Logger('SAUMonitor');
 
 const getUserRoles = mem(
 	async (userId: string): Promise<string[]> => {
-		const user = await Users.findOneById<IUser>(userId, { projection: { roles: 1 } });
+		const user = await Users.findOneById<Pick<IUser, 'roles'>>(userId, { projection: { roles: 1 } });
 
 		return user?.roles || [];
 	},
@@ -263,7 +263,7 @@ export class SAUMonitorClass {
 			return obj;
 		};
 
-		if (result.browser && result.browser.name) {
+		if (result.browser?.name) {
 			info.type = 'browser';
 			info.name = result.browser.name;
 			info.longVersion = result.browser.version || '';
