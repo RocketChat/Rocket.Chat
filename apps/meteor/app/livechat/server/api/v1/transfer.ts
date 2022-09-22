@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-
 import { LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findLivechatTransferHistory } from '../lib/transfer';
@@ -10,15 +7,11 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-rooms'] },
 	{
 		async get() {
-			check(this.urlParams, {
-				rid: String,
-			});
-
 			const { rid } = this.urlParams;
 
 			const room = LivechatRooms.findOneById(rid, { _id: 1 });
 			if (!room) {
-				throw new Meteor.Error('invalid-room');
+				throw new Error('invalid-room');
 			}
 
 			const { offset, count } = this.getPaginationItems();

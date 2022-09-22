@@ -1,5 +1,11 @@
+import {
+	isGETLivechatInquiriesListParams,
+	isPOSTLivechatInquiriesTakeParams,
+	isGETLivechatInquiriesQueuedParams,
+	isGETLivechatInquiriesQueuedForUserParams,
+	isGETLivechatInquiriesGetOneParams,
+} from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { LivechatInquiry } from '@rocket.chat/models';
 
@@ -9,19 +15,20 @@ import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/i
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETLivechatInquiriesListParams },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { department } = this.requestParams();
-			const ourQuery = Object.assign({}, { status: 'queued' });
+			const ourQuery: { status: string; department?: string } = { status: 'queued' };
 			if (department) {
 				const departmentFromDB = LivechatDepartment.findOneByIdOrName(department);
 				if (departmentFromDB) {
 					ourQuery.department = departmentFromDB._id;
 				}
 			}
+			// @ts-expect-error - attachments...
 			const { cursor, totalCount } = LivechatInquiry.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
@@ -49,13 +56,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.take',
-	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPOSTLivechatInquiriesTakeParams },
 	{
 		async post() {
-			check(this.bodyParams, {
-				inquiryId: String,
-				userId: Match.Maybe(String),
-			});
 			if (this.bodyParams.userId && !Users.findOneById(this.bodyParams.userId, { fields: { _id: 1 } })) {
 				return API.v1.failure('The user is invalid');
 			}
@@ -70,7 +73,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.queued',
-	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatInquiriesQueuedParams },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -95,7 +98,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.queuedForUser',
-	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatInquiriesQueuedForUserParams },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -105,7 +108,7 @@ API.v1.addRoute(
 			return API.v1.success(
 				await findInquiries({
 					userId: this.userId,
-					filterDepartment: department,
+					department,
 					status: LivechatInquiryStatus.QUEUED,
 					pagination: {
 						offset,
@@ -120,13 +123,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.getOne',
-	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatInquiriesGetOneParams },
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			if (!roomId) {
-				return API.v1.failure("The 'roomId' param is required");
-			}
 
 			return API.v1.success(
 				await findOneInquiryByRoomId({

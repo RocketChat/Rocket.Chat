@@ -1,7 +1,21 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users } from '@rocket.chat/models';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { ILivechatMonitor, IUser } from '@rocket.chat/core-typings';
 
-export async function findMonitors({ text, pagination: { offset, count, sort } }) {
+export async function findMonitors({
+	text,
+	pagination: { offset, count, sort },
+}: {
+	text?: string;
+	pagination: {
+		offset: number;
+		count: number;
+		sort: {
+			[key: string]: 1 | -1;
+		};
+	};
+}): Promise<PaginatedResult<{ monitors: ILivechatMonitor[] }>> {
 	const query = {};
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
@@ -34,9 +48,9 @@ export async function findMonitors({ text, pagination: { offset, count, sort } }
 	};
 }
 
-export async function findMonitorByUsername({ username }) {
+export async function findMonitorByUsername({ username }: { username: string }): Promise<IUser> {
 	const user = await Users.findOne(
-		{ username },
+		{ username, roles: 'livechat-monitor' },
 		{
 			projection: {
 				username: 1,
@@ -49,7 +63,7 @@ export async function findMonitorByUsername({ username }) {
 		},
 	);
 
-	if (!user || !(await Users.isUserInRole(user._id, 'livechat-monitor'))) {
+	if (!user) {
 		throw new Error('invalid-user');
 	}
 

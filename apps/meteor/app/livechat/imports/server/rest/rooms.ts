@@ -1,41 +1,36 @@
-import { Match, check } from 'meteor/check';
+import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
 import { hasPermission } from '../../../../authorization/server';
 
-const validateDateParams = (property, date) => {
+const validateDateParams = (property: string, date?: string) => {
+	let parsedDate: { start?: string; end?: string } | undefined = undefined;
 	if (date) {
-		date = JSON.parse(date);
+		parsedDate = JSON.parse(date) as { start?: string; end?: string };
 	}
-	if (date && date.start && isNaN(Date.parse(date.start))) {
+
+	if (parsedDate?.start && isNaN(Date.parse(parsedDate.start))) {
 		throw new Error(`The "${property}.start" query parameter must be a valid date.`);
 	}
-	if (date && date.end && isNaN(Date.parse(date.end))) {
+	if (parsedDate?.end && isNaN(Date.parse(parsedDate.end))) {
 		throw new Error(`The "${property}.end" query parameter must be a valid date.`);
 	}
-	return date;
+	return parsedDate;
 };
 
 API.v1.addRoute(
 	'livechat/rooms',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGETLivechatRoomsParams },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
 			const { agents, departmentId, open, tags, roomName, onhold } = this.requestParams();
-			let { createdAt, customFields, closedAt } = this.requestParams();
-			check(agents, Match.Maybe([String]));
-			check(roomName, Match.Maybe(String));
-			check(departmentId, Match.Maybe(String));
-			check(open, Match.Maybe(String));
-			check(onhold, Match.Maybe(String));
-			check(tags, Match.Maybe([String]));
-			check(customFields, Match.Maybe(String));
+			const { createdAt, customFields, closedAt } = this.requestParams();
 
-			createdAt = validateDateParams('createdAt', createdAt);
-			closedAt = validateDateParams('closedAt', closedAt);
+			const createdAtParam = validateDateParams('createdAt', createdAt);
+			const closedAtParam = validateDateParams('closedAt', closedAt);
 
 			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
 			const hasAgentAccess = hasPermission(this.userId, 'view-l-room') && agents?.includes(this.userId) && agents?.length === 1;
@@ -43,12 +38,16 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
+			let parsedCf: { [key: string]: string } | undefined = undefined;
 			if (customFields) {
 				try {
-					const parsedCustomFields = JSON.parse(customFields);
-					check(parsedCustomFields, Object);
+					const parsedCustomFields = JSON.parse(customFields) as { [key: string]: string };
+					if (typeof parsedCustomFields !== 'object' || Array.isArray(parsedCustomFields) || parsedCustomFields === null) {
+						throw new Error('Invalid custom fields');
+					}
+
 					// Model's already checking for the keys, so we don't need to do it here.
-					customFields = parsedCustomFields;
+					parsedCf = parsedCustomFields;
 				} catch (e) {
 					throw new Error('The "customFields" query parameter must be a valid JSON.');
 				}
@@ -60,10 +59,10 @@ API.v1.addRoute(
 					roomName,
 					departmentId,
 					open: open && open === 'true',
-					createdAt,
-					closedAt,
+					createdAt: createdAtParam,
+					closedAt: closedAtParam,
 					tags,
-					customFields,
+					customFields: parsedCf,
 					onhold,
 					options: { offset, count, sort, fields },
 				}),

@@ -1,9 +1,11 @@
+import { isGETLivechatQueueParams } from '@rocket.chat/rest-typings';
+
 import { API } from '../../../../api/server';
 import { findQueueMetrics } from '../../../server/api/lib/queue';
 
 API.v1.addRoute(
 	'livechat/queue',
-	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatQueueParams },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();

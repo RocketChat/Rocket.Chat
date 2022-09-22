@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import filesize from 'filesize';
-import { LivechatVisitors, Settings } from '@rocket.chat/models';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { settings } from '../../../../settings/server';
 import { LivechatRooms } from '../../../../models/server';
@@ -9,16 +9,6 @@ import { FileUpload } from '../../../../file-upload/server';
 import { API } from '../../../../api/server';
 import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData';
 
-let maxFileSize;
-
-settings.watch('FileUpload_MaxFileSize', async function (value) {
-	try {
-		maxFileSize = parseInt(value);
-	} catch (e) {
-		maxFileSize = await Settings.findOneById('FileUpload_MaxFileSize').packageValue;
-	}
-});
-
 API.v1.addRoute('livechat/upload/:rid', {
 	async post() {
 		if (!this.request.headers['x-visitor-token']) {
@@ -26,7 +16,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 		}
 
 		const visitorToken = this.request.headers['x-visitor-token'];
-		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
+		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken as string, {});
 
 		if (!visitor) {
 			return API.v1.unauthorized();
@@ -50,6 +40,8 @@ API.v1.addRoute('livechat/upload/:rid', {
 			});
 		}
 
+		const maxFileSize = settings.get<number>('FileUpload_MaxFileSize') || 104857600;
+
 		// -1 maxFileSize means there is no limit
 		if (maxFileSize > -1 && file.fileBuffer.length > maxFileSize) {
 			return API.v1.failure({
@@ -70,7 +62,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 
 		const uploadedFile = fileStore.insertSync(details, file.fileBuffer);
 		if (!uploadedFile) {
-			return API.v1.error('Invalid file');
+			return API.v1.failure('Invalid file');
 		}
 
 		uploadedFile.description = fields.description;

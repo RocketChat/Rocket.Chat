@@ -1,41 +1,40 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
+import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Settings } from '@rocket.chat/models';
 
-import { Messages, Rooms } from '../../../../models';
+import { Messages, Rooms } from '../../../../models/server';
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { settings } from '../lib/livechat';
-import { canSendMessage } from '../../../../authorization';
+import { canSendMessage } from '../../../../authorization/server';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute(
 	'livechat/webrtc.call',
-	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETWebRTCCall },
 	{
 		async get() {
-			check(this.queryParams, {
-				rid: Match.Maybe(String),
-			});
-
-			const room = canSendMessage(this.queryParams.rid, {
-				uid: this.userId,
-				username: this.user.username,
-				type: this.user.type,
-			});
+			const room = canSendMessage(
+				this.queryParams.rid,
+				{
+					uid: this.userId,
+					username: this.user.username,
+					type: this.user.type,
+				},
+				{},
+			);
 			if (!room) {
-				throw new Meteor.Error('invalid-room');
+				throw new Error('invalid-room');
 			}
 
 			const webrtcCallingAllowed = rcSettings.get('WebRTC_Enabled') === true && rcSettings.get('Omnichannel_call_provider') === 'WebRTC';
 			if (!webrtcCallingAllowed) {
-				throw new Meteor.Error('webRTC calling not enabled');
+				throw new Error('webRTC calling not enabled');
 			}
 
 			const config = await settings();
 			if (!config.theme || !config.theme.actionLinks || !config.theme.actionLinks.webrtc) {
-				throw new Meteor.Error('invalid-livechat-config');
+				throw new Error('invalid-livechat-config');
 			}
 
 			let { callStatus } = room;
@@ -66,33 +65,28 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/webrtc.call/:callId',
-	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPUTWebRTCCallId },
 	{
 		async put() {
-			check(this.urlParams, {
-				callId: String,
-			});
-
-			check(this.bodyParams, {
-				rid: Match.Maybe(String),
-				status: Match.Maybe(String),
-			});
-
 			const { callId } = this.urlParams;
 			const { rid, status } = this.bodyParams;
 
-			const room = canSendMessage(rid, {
-				uid: this.userId,
-				username: this.user.username,
-				type: this.user.type,
-			});
+			const room = canSendMessage(
+				rid,
+				{
+					uid: this.userId,
+					username: this.user.username,
+					type: this.user.type,
+				},
+				{},
+			);
 			if (!room) {
-				throw new Meteor.Error('invalid-room');
+				throw new Error('invalid-room');
 			}
 
 			const call = await Messages.findOneById(callId);
 			if (!call || call.t !== 'livechat_webrtc_video_call') {
-				throw new Meteor.Error('invalid-callId');
+				throw new Error('invalid-callId');
 			}
 
 			Livechat.updateCallStatus(callId, rid, status, this.user);

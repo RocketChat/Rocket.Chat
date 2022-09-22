@@ -1,4 +1,14 @@
 import { Match, check } from 'meteor/check';
+import {
+	isLivechatAnalyticsDepartmentsAmountOfChatsProps,
+	isLivechatAnalyticsDepartmentsAverageServiceTimeProps,
+	isLivechatAnalyticsDepartmentsAverageChatDurationTimeProps,
+	isLivechatAnalyticsDepartmentsTotalServiceTimeProps,
+	isLivechatAnalyticsDepartmentsAverageWaitingTimeProps,
+	isLivechatAnalyticsDepartmentsTotalTransferredChatsProps,
+	isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps,
+	isLivechatAnalyticsDepartmentsPercentageAbandonedChatsProps,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
 import {
@@ -14,31 +24,26 @@ import {
 
 API.v1.addRoute(
 	'livechat/analytics/departments/amount-of-chats',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsDepartmentsAmountOfChatsProps },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { answered, departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(answered, Match.Maybe(String));
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
 			const { departments, total } = findAllRooms({
-				start,
-				end,
+				start: startDate,
+				end: endDate,
 				answered: answered && answered === 'true',
 				departmentId,
 				options: { offset, count },
@@ -55,30 +60,30 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/average-service-time',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'],
+		validateParams: isLivechatAnalyticsDepartmentsAverageServiceTimeProps,
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
 			const { departments, total } = findAllAverageServiceTime({
-				start,
-				end,
+				start: startDate,
+				end: endDate,
 				departmentId,
 				options: { offset, count },
 			});
@@ -94,30 +99,30 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/average-chat-duration-time',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'],
+		validateParams: isLivechatAnalyticsDepartmentsAverageChatDurationTimeProps,
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
 			const { departments, total } = findAllAverageOfChatDurationTime({
-				start,
-				end,
+				start: startDate,
+				end: endDate,
 				departmentId,
 				options: { offset, count },
 			});
@@ -133,30 +138,30 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/total-service-time',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'],
+		validateParams: isLivechatAnalyticsDepartmentsTotalServiceTimeProps,
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
 			const { departments, total } = findAllServiceTime({
-				start,
-				end,
+				start: startDate,
+				end: endDate,
 				departmentId,
 				options: { offset, count },
 			});
@@ -172,11 +177,15 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/average-waiting-time',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'],
+		validateParams: isLivechatAnalyticsDepartmentsAverageWaitingTimeProps,
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
 			check(start, String);
@@ -186,16 +195,16 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
 			const { departments, total } = findAllAverageWaitingTime({
-				start,
-				end,
+				start: startDate,
+				end: endDate,
 				departmentId,
 				options: { offset, count },
 			});
@@ -211,30 +220,30 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/total-transferred-chats',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'],
+		validateParams: isLivechatAnalyticsDepartmentsTotalTransferredChatsProps,
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
 			const { departments, total } = findAllNumberOfTransferredRooms({
-				start,
-				end,
+				start: startDate,
+				end: endDate,
 				departmentId,
 				options: { offset, count },
 			});
@@ -250,30 +259,30 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/total-abandoned-chats',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'],
+		validateParams: isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps,
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
 			const { departments, total } = findAllNumberOfAbandonedRooms({
-				start,
-				end,
+				start: startDate,
+				end: endDate,
 				departmentId,
 				options: { offset, count },
 			});
@@ -289,30 +298,30 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/departments/percentage-abandoned-chats',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'],
+		validateParams: isLivechatAnalyticsDepartmentsPercentageAbandonedChatsProps,
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
 			const { departments, total } = findPercentageOfAbandonedRooms({
-				start,
-				end,
+				start: startDate,
+				end: endDate,
 				departmentId,
 				options: { offset, count },
 			});
