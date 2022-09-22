@@ -2,11 +2,11 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { isMessageFirstUnread } from './isMessageFirstUnread';
+import { isMessageFirstUnread } from '../../../../../../../client/views/room/MessageList/lib/isMessageFirstUnread';
 
 const date = new Date('2021-10-27T00:00:00.000Z');
 
-const baseMessage = {
+const baseMessage: IMessage = {
 	ts: date,
 	u: {
 		_id: 'userId',
