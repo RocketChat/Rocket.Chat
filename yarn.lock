@@ -36132,7 +36132,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vm2@npm:^3.9.11":
+"vm2@npm:^3.9.10":
   version: 3.9.11
   resolution: "vm2@npm:3.9.11"
   dependencies:
