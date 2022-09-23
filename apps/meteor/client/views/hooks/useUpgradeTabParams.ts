@@ -23,7 +23,6 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 
 	const trialLicense = licenses?.find(({ meta }) => meta?.trial);
 	const isTrial = licenses?.every(({ meta }) => meta?.trial) ?? false;
-	const hasGoldLicense = licenses?.some(({ tag }) => tag?.name === 'Gold') ?? false;
 	const trialEndDate = trialLicense?.meta ? format(new Date(trialLicense.meta.trialEnd), 'yyyy-MM-dd') : undefined;
 
 	const upgradeTabType = getUpgradeTabType({
@@ -31,7 +30,6 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 		hasValidLicense,
 		hadExpiredTrials,
 		isTrial,
-		hasGoldLicense,
 	});
 
 	return { tabType: upgradeTabType, trialEndDate, isLoading: !isSuccess };

@@ -11,7 +11,6 @@ describe('getUpgradeTabType()', () => {
 				hasValidLicense: false,
 				isTrial: false,
 				hadExpiredTrials: false,
-				hasGoldLicense: false,
 			}),
 		).to.be.equal('go-fully-featured');
 	});
@@ -23,7 +22,6 @@ describe('getUpgradeTabType()', () => {
 				hasValidLicense: false,
 				isTrial: false,
 				hadExpiredTrials: false,
-				hasGoldLicense: false,
 			}),
 		).to.be.equal('go-fully-featured-registered');
 	});
@@ -35,7 +33,6 @@ describe('getUpgradeTabType()', () => {
 				hasValidLicense: false,
 				isTrial: false,
 				hadExpiredTrials: true,
-				hasGoldLicense: false,
 			}),
 		).to.be.equal('upgrade-your-plan');
 	});
@@ -47,21 +44,8 @@ describe('getUpgradeTabType()', () => {
 				hasValidLicense: true,
 				isTrial: true,
 				hadExpiredTrials: false,
-				hasGoldLicense: false,
 			}),
 		).to.be.equal('trial-enterprise');
-	});
-
-	it("should return 'trial-gold'", () => {
-		expect(
-			getUpgradeTabType({
-				registered: true,
-				hasValidLicense: true,
-				isTrial: true,
-				hadExpiredTrials: false,
-				hasGoldLicense: true,
-			}),
-		).to.be.equal('trial-gold');
 	});
 
 	it('should return false', () => {
@@ -71,7 +55,6 @@ describe('getUpgradeTabType()', () => {
 				hasValidLicense: true,
 				isTrial: false,
 				hadExpiredTrials: false,
-				hasGoldLicense: false,
 			}),
 		).to.be.equal(false);
 	});
@@ -84,7 +67,6 @@ describe('getUpgradeTabLabel()', () => {
 	});
 
 	it("should return 'Upgrade_tab_trial_guide'", () => {
-		expect(getUpgradeTabLabel('trial-gold')).to.be.equal('Upgrade_tab_trial_guide');
 		expect(getUpgradeTabLabel('trial-enterprise')).to.be.equal('Upgrade_tab_trial_guide');
 	});
 
