@@ -8,7 +8,7 @@ export const useStream = (
 		retransmit?: boolean | undefined;
 		retransmitToSelf?: boolean | undefined;
 	},
-): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
+): (<TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void) => {
 	const { getStream } = useContext(ServerContext);
 	return useMemo(() => getStream(streamName, options), [getStream, streamName, options]);
 };
