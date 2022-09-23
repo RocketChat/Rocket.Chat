@@ -17,13 +17,12 @@ import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../lib/asyncState';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import Chat from '../directory/chats/Chat';
 import CustomFieldsVerticalBar from './CustomFieldsVerticalBar';
 import FilterByText from './FilterByText';
 import RemoveChatButton from './RemoveChatButton';
+import { useCurrentChats } from './hooks/useCurrentChats';
 import { useAllCustomFields } from './useAllCustomFields';
 
 type useQueryType = (
@@ -41,74 +40,73 @@ type useQueryType = (
 	},
 	customFields: { [key: string]: string } | undefined,
 	[column, direction]: [string, 'asc' | 'desc'],
-) => GETLivechatRoomsParams | undefined;
+) => GETLivechatRoomsParams;
 
 const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery: useQueryType = (
+const currentChatQuery: useQueryType = (
 	{ guest, servedBy, department, status, from, to, tags, itemsPerPage, current },
 	customFields,
 	[column, direction],
-) =>
-	useMemo(() => {
-		const query: {
-			agents?: string[];
-			offset?: number;
-			roomName?: string;
-			departmentId?: string;
-			open?: boolean;
-			createdAt?: string;
-			closedAt?: string;
-			tags?: string[];
-			onhold?: boolean;
-			customFields?: string;
-			sort: string;
-			count?: number;
-		} = {
-			...(guest && { roomName: guest }),
-			sort: JSON.stringify({
-				[column]: sortDir(direction),
-				ts: column === 'ts' ? sortDir(direction) : undefined,
+) => {
+	const query: {
+		agents?: string[];
+		offset?: number;
+		roomName?: string;
+		departmentId?: string;
+		open?: boolean;
+		createdAt?: string;
+		closedAt?: string;
+		tags?: string[];
+		onhold?: boolean;
+		customFields?: string;
+		sort: string;
+		count?: number;
+	} = {
+		...(guest && { roomName: guest }),
+		sort: JSON.stringify({
+			[column]: sortDir(direction),
+			ts: column === 'ts' ? sortDir(direction) : undefined,
+		}),
+		...(itemsPerPage && { count: itemsPerPage }),
+		...(current && { offset: current }),
+	};
+
+	if (from || to) {
+		query.createdAt = JSON.stringify({
+			...(from && {
+				start: moment(new Date(from)).set({ hour: 0, minutes: 0, seconds: 0 }).format('YYYY-MM-DDTHH:mm:ss'),
 			}),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		};
+			...(to && {
+				end: moment(new Date(to)).set({ hour: 23, minutes: 59, seconds: 59 }).format('YYYY-MM-DDTHH:mm:ss'),
+			}),
+		});
+	}
 
-		if (from || to) {
-			query.createdAt = JSON.stringify({
-				...(from && {
-					start: moment(new Date(from)).set({ hour: 0, minutes: 0, seconds: 0 }).format('YYYY-MM-DDTHH:mm:ss'),
-				}),
-				...(to && {
-					end: moment(new Date(to)).set({ hour: 23, minutes: 59, seconds: 59 }).format('YYYY-MM-DDTHH:mm:ss'),
-				}),
-			});
-		}
+	if (status !== 'all') {
+		query.open = status === 'opened' || status === 'onhold';
+		query.onhold = status === 'onhold';
+	}
+	if (servedBy && servedBy !== 'all') {
+		query.agents = [servedBy];
+	}
+	if (department && department !== 'all') {
+		query.departmentId = department;
+	}
 
-		if (status !== 'all') {
-			query.open = status === 'opened' || status === 'onhold';
-			query.onhold = status === 'onhold';
-		}
-		if (servedBy && servedBy !== 'all') {
-			query.agents = [servedBy];
-		}
-		if (department && department !== 'all') {
-			query.departmentId = department;
-		}
+	if (tags && tags.length > 0) {
+		query.tags = tags;
+	}
 
-		if (tags && tags.length > 0) {
-			query.tags = tags;
+	if (customFields && Object.keys(customFields).length > 0) {
+		const customFieldsQuery = Object.fromEntries(Object.entries(customFields).filter((item) => item[1] !== undefined && item[1] !== ''));
+		if (Object.keys(customFieldsQuery).length > 0) {
+			query.customFields = JSON.stringify(customFieldsQuery);
 		}
+	}
 
-		if (customFields && Object.keys(customFields).length > 0) {
-			const customFieldsQuery = Object.fromEntries(Object.entries(customFields).filter((item) => item[1] !== undefined && item[1] !== ''));
-			if (Object.keys(customFieldsQuery).length > 0) {
-				query.customFields = JSON.stringify(customFieldsQuery);
-			}
-		}
-
-		return query;
-	}, [guest, column, direction, itemsPerPage, current, from, to, status, servedBy, department, tags, customFields]);
+	return query;
+};
 
 const CurrentChatsRoute = (): ReactElement => {
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open'>('ts', 'desc');
@@ -136,12 +134,13 @@ const CurrentChatsRoute = (): ReactElement => {
 		500,
 	) as ['fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open', 'asc' | 'desc'];
 
-	const query = useQuery(debouncedParams, debouncedCustomFields, debouncedSort);
+	const query = currentChatQuery(debouncedParams, debouncedCustomFields, debouncedSort);
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const directoryRoute = useRoute('omnichannel-current-chats');
 
-	const { reload, ...result } = useEndpointData('/v1/livechat/rooms', query);
+	const result = useCurrentChats(query);
+
 	const { data: allCustomFields } = useAllCustomFields();
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
@@ -184,13 +183,13 @@ const CurrentChatsRoute = (): ReactElement => {
 					</GenericTableCell>
 					{canRemoveClosedChats && !open && (
 						<GenericTableCell withTruncatedText>
-							<RemoveChatButton _id={_id} reload={reload} />
+							<RemoveChatButton _id={_id} />
 						</GenericTableCell>
 					)}
 				</GenericTableRow>
 			);
 		},
-		[canRemoveClosedChats, onRowClick, reload, t],
+		[canRemoveClosedChats, onRowClick, t],
 	);
 
 	if (!canViewCurrentChats) {
@@ -282,15 +281,15 @@ const CurrentChatsRoute = (): ReactElement => {
 							)}
 						</GenericTableHeader>
 						<GenericTableBody data-qa='GenericTableCurrentChatsBody'>
-							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
-							{result.phase === AsyncStatePhase.RESOLVED && result.value.rooms.map((room) => renderRow({ ...room }))}
+							{result.isLoading && <GenericTableLoadingTable headerCells={4} />}
+							{result.isSuccess && result.data.rooms.map((room) => renderRow({ ...room }))}
 						</GenericTableBody>
 					</GenericTable>
-					{result.phase === AsyncStatePhase.RESOLVED && (
+					{result.isSuccess && (
 						<Pagination
 							current={current}
 							itemsPerPage={itemsPerPage}
-							count={result.value.total}
+							count={result.data.total}
 							onSetItemsPerPage={setItemsPerPage}
 							onSetCurrent={setCurrent}
 							{...paginationProps}

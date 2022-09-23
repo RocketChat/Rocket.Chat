@@ -4,8 +4,10 @@ import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from 
 import React, { FC } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
+import { useClientQueryInvalidateCurrentChats } from './hooks/useCurrentChats';
 
-const RemoveChatButton: FC<{ _id: string; reload: () => void }> = ({ _id, reload }) => {
+const RemoveChatButton: FC<{ _id: string }> = ({ _id }) => {
+	const invalidate = useClientQueryInvalidateCurrentChats();
 	const removeChat = useMethod('livechat:removeRoom');
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -17,7 +19,7 @@ const RemoveChatButton: FC<{ _id: string; reload: () => void }> = ({ _id, reload
 		} catch (error) {
 			console.log(error);
 		}
-		reload();
+		invalidate();
 	});
 
 	const handleDelete = useMutableCallback((e) => {
