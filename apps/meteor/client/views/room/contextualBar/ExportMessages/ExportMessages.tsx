@@ -4,7 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo, FC } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import FileExport from './FileExport';
 import MailExportForm from './MailExportForm';
 

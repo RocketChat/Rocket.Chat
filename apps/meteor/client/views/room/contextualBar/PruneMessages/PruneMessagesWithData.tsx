@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useState, ReactElement } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useForm } from '../../../../hooks/useForm';
-import { ToolboxContextValue } from '../../lib/Toolbox/ToolboxContext';
+import { ToolboxContextValue } from '../../contexts/ToolboxContext';
 import PruneMessages from './PruneMessages';
 
 const getTimeZoneOffset = (): string => {

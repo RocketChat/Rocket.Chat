@@ -7,7 +7,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
 import VerticalBar from '../../../../../../client/components/VerticalBar';
-import { useTabContext } from '../../../../../../client/views/room/providers/ToolboxProvider';
+import { useTabContext } from '../../../../../../client/views/room/contexts/ToolboxContext';
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
 
