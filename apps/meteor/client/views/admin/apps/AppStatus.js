@@ -43,7 +43,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 
 	const { price, purchaseType, pricingPlans } = app;
 
-	const button = appButtonProps({ ...app, isAdminSection } || {});
+	const button = appButtonProps({ ...app, isAdminSection });
 	const status = !button && appStatusSpanProps(app);
 
 	const action = button?.action || '';
