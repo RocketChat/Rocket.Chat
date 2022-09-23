@@ -22,7 +22,8 @@ test.describe('Livechat', () => {
 		let page: Page;
 
 		test.beforeAll(async ({ browser, api }) => {
-			await api.post('/livechat/users/agent', { username: 'user1' });
+			const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
+			expect(statusCode).toBe(200);
 
 			page = await browser.newPage();
 			poLiveChat = new OmnichannelLiveChat(page);
@@ -36,8 +37,8 @@ test.describe('Livechat', () => {
 			await poAuxContext.page.close();
 		});
 
-		test.describe('Send message to online agent', () => {
-			test('Expect message to be sent by livechat', async () => {
+		test('Send message to online agent', async () => {
+			await test.step('Expect message to be sent by livechat', async () => {
 				await poLiveChat.btnOpenLiveChat('R').click();
 				await poLiveChat.sendMessage(newUser, false);
 
@@ -47,30 +48,30 @@ test.describe('Livechat', () => {
 				await expect(page.locator('div >>text="this_a_test_message_from_user"')).toBeVisible();
 			});
 
-			test('expect message to be received by agent', async () => {
+			await test.step('expect message to be received by agent', async () => {
 				await poAuxContext.poHomeOmnichannel.sidenav.openChat(newUser.name);
 				await expect(poAuxContext.poHomeOmnichannel.content.lastUserMessage).toBeVisible();
 				await expect(poAuxContext.poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 			});
 		});
 
-		test.describe('Send message to livechat costumer', () => {
-			test('Expect message to be sent by agent', async () => {
+		test('Send message to livechat costumer', async () => {
+			await test.step('Expect message to be sent by agent', async () => {
 				await poAuxContext.poHomeOmnichannel.content.sendMessage('this_a_test_message_from_agent');
 				await expect(page.locator('div >>text="this_a_test_message_from_agent"')).toBeVisible();
 			});
 
-			test('Expect when user minimizes the livechat screen, the composer should be hidden', async () => {
+			await test.step('Expect when user minimizes the livechat screen, the composer should be hidden', async () => {
 				await poLiveChat.btnOpenLiveChat('R').click();
 				await expect(page.locator('[contenteditable="true"]')).not.toBeVisible();
 			});
 
-			test('expect message to be received by minimized livechat', async () => {
+			await test.step('expect message to be received by minimized livechat', async () => {
 				await poAuxContext.poHomeOmnichannel.content.sendMessage('this_a_test_message_again_from_agent');
 				await expect(poLiveChat.unreadMessagesBadge(1)).toBeVisible();
 			});
 
-			test('expect unread messages to be visible after a reload', async () => {
+			await test.step('expect unread messages to be visible after a reload', async () => {
 				await page.reload();
 				await expect(poLiveChat.unreadMessagesBadge(1)).toBeVisible();
 			});
