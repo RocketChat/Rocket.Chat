@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { memo, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { ComponentProps, memo, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import {
 	GenericTableBody,
@@ -196,7 +196,7 @@ const CurrentChatsRoute = (): ReactElement => {
 				<Page.Header title={t('Current_Chats')} />
 				<Box pi='24px'>
 					<FilterByText
-						setFilter={setParams}
+						setFilter={setParams as ComponentProps<typeof FilterByText>['setFilter']}
 						setCustomFields={setCustomFields}
 						customFields={customFields}
 						hasCustomFields={hasCustomFields}
