@@ -7,18 +7,18 @@ import Header from '../Header';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
 import RoomBody from '../components/body/RoomBody';
 import { useRoom } from '../contexts/RoomContext';
+import { useTab, useToolboxContext } from '../contexts/ToolboxContext';
 import AppsContextualBar from '../contextualBar/Apps';
 import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
 import RoomLayout from '../layout/RoomLayout';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
-import { useTab, useTabBarAPI } from '../providers/ToolboxProvider';
 
 const Room = (): ReactElement => {
 	const t = useTranslation();
 
 	const room = useRoom();
 
-	const tabBar = useTabBarAPI();
+	const toolbox = useToolboxContext();
 
 	const tab = useTab();
 	const appsContextualBarContext = useAppsContextualBar();
@@ -34,11 +34,11 @@ const Room = (): ReactElement => {
 					<ErrorBoundary fallback={null}>
 						<SelectedMessagesProvider>
 							{typeof tab.template === 'string' && (
-								<VerticalBarOldActions {...tab} name={tab.template} tabBar={tabBar} rid={room._id} _id={room._id} />
+								<VerticalBarOldActions {...tab} name={tab.template} tabBar={toolbox} rid={room._id} _id={room._id} />
 							)}
 							{typeof tab.template !== 'string' && typeof tab.template !== 'undefined' && (
 								<Suspense fallback={<VerticalBarSkeleton />}>
-									{createElement(tab.template, { tabBar, _id: room._id, rid: room._id, teamId: room.teamId })}
+									{createElement(tab.template, { tabBar: toolbox, _id: room._id, rid: room._id, teamId: room.teamId })}
 								</Suspense>
 							)}
 						</SelectedMessagesProvider>

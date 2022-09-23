@@ -5,7 +5,7 @@ import React, { FC, memo, useMemo } from 'react';
 
 import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
 import { useRoom } from '../../../contexts/RoomContext';
-import { getTabBarContext } from '../../../lib/Toolbox/ToolboxContext';
+import { useToolboxContext } from '../../../contexts/ToolboxContext';
 import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
 import { MessageActionMenu } from './MessageActionMenu';
 
@@ -26,7 +26,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 
 	const menuActions = MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings }, context, 'menu');
 
-	const tabbar = getTabBarContext(message.rid);
+	const toolbox = useToolboxContext();
 
 	const isSelecting = useIsSelecting();
 
@@ -39,7 +39,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 			{messageActions.map((action) => (
 				<MessageToolboxItem
 					onClick={(e): void => {
-						action.action(e, { message, tabbar, room });
+						action.action(e, { message, tabbar: toolbox, room });
 					}}
 					key={action.id}
 					icon={action.icon}
@@ -53,7 +53,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 					options={menuActions.map((action) => ({
 						...action,
 						action: (e): void => {
-							action.action(e, { message, tabbar, room });
+							action.action(e, { message, tabbar: toolbox, room });
 						},
 					}))}
 					data-qa-type='message-action-menu-options'
