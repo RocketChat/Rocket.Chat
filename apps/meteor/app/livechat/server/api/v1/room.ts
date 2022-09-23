@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
@@ -22,10 +22,11 @@ import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } 
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
-import { canAccessRoom } from '../../../../authorization/server';
+import { canAccessRoom, hasPermission } from '../../../../authorization/server';
 import { addUserToRoom } from '../../../../lib/server/functions';
 import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
+import { callbacks } from '../../../../../lib/callbacks';
 
 API.v1.addRoute('livechat/room', {
 	async get() {
