@@ -134,10 +134,10 @@ export interface IStats {
 		modules: string[];
 		tags: string[];
 		seatRequests: number;
-		livechatTags: number;
-		cannedResponses: number;
-		priorities: number;
-		businessUnits: number;
+		livechatTags?: number;
+		cannedResponses?: number;
+		priorities?: number;
+		businessUnits?: number;
 	};
 	createdAt: Date | string;
 	totalOTR: number;

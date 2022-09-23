@@ -42,6 +42,7 @@ describe('LIVECHAT - Utils', function () {
 		});
 		it('should fail if setting Livechat_offline_email is not setup or is invalid', async () => {
 			await updateSetting('Livechat_validate_offline_email', false);
+			await updateSetting('Livechat_validate_offline_email', 'afsdxcvxc');
 			await request
 				.post(api('livechat/offline.message'))
 				.set(credentials)
