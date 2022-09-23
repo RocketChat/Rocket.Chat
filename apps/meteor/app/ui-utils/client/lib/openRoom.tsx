@@ -41,6 +41,7 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 
 				RoomManager.open({ typeName: type + name, rid: room._id });
 
+				c.stop();
 				if (room._id === Session.get('openedRoom') && !FlowRouter.getQueryParam('msg')) {
 					return;
 				}
@@ -56,8 +57,6 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 						</MainLayout>,
 					);
 				}
-
-				c.stop();
 
 				if (RoomManager.currentTracker) {
 					RoomManager.currentTracker = undefined;
