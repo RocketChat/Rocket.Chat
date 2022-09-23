@@ -30,7 +30,6 @@ import Announcement from '../../Announcement';
 import { MessageList } from '../../MessageList/MessageList';
 import { useRoom } from '../../contexts/RoomContext';
 import { useTabBarAPI } from '../../providers/ToolboxProvider';
-import ComposerContainer from './ComposerContainer';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
 import LeaderBar from './LeaderBar';
@@ -41,6 +40,7 @@ import RetentionPolicyWarning from './RetentionPolicyWarning';
 import RoomForeword from './RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
+import ComposerContainer from './composer/ComposerContainer';
 import { useChatMessages } from './useChatMessages';
 import { useFileUploadDropTarget } from './useFileUploadDropTarget';
 import { useRetentionPolicy } from './useRetentionPolicy';
@@ -276,11 +276,12 @@ const RoomBody = (): ReactElement => {
 				return;
 			}
 
-			if (room && isOmnichannelRoom(room)) {
-				roomCoordinator.getRoomDirectives(room.t)?.openCustomProfileTab(null, room, room.v.username);
+			if (room && isOmnichannelRoom(room) && !tabBar.activeTabBar) {
+				roomCoordinator.getRoomDirectives(room.t)?.openCustomProfileTab({ tabBar }, room, room.v.username);
 			}
 		});
-	}, [openedRoom, room, room._id]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [openedRoom, room._id]);
 
 	const debouncedReadMessageRead = useMemo(
 		() =>

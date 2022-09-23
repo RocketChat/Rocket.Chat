@@ -20,10 +20,10 @@ type DialPadStateHandlers = {
 
 type DialPadProps = {
 	initialValue?: string;
-	errorMessage?: string;
+	initialErrorMessage?: string;
 };
 
-export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPadStateHandlers => {
+export const useDialPad = ({ initialValue, initialErrorMessage }: DialPadProps): DialPadStateHandlers => {
 	const t = useTranslation();
 	const outboundClient = useOutboundDialer();
 	const { closeDialModal } = useDialModal();
@@ -35,7 +35,7 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 		setError,
 		clearErrors,
 		watch,
-		formState: { errors },
+		formState: { errors, isDirty },
 	} = useForm<{ PhoneInput: string }>({
 		defaultValues: {
 			PhoneInput: initialValue,
@@ -50,14 +50,14 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 
 	const handleBackspaceClick = useCallback((): void => {
 		clearErrors();
-		setValue('PhoneInput', value.slice(0, -1));
+		setValue('PhoneInput', value.slice(0, -1), { shouldDirty: true });
 	}, [clearErrors, setValue, value]);
 
 	const handlePadButtonClick = useCallback(
 		(digit: PadDigit[0]): void => {
 			clearErrors();
 
-			setValue('PhoneInput', value + digit);
+			setValue('PhoneInput', value + digit, { shouldDirty: true });
 		},
 		[clearErrors, setValue, value],
 	);
@@ -82,17 +82,7 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 		closeDialModal();
 	}, [outboundClient, setError, t, value, closeDialModal]);
 
-	const handleOnChange = useCallback(
-		(e) => {
-			clearErrors();
-			onChange(e);
-		},
-		[clearErrors, onChange],
-	);
-
-	useEffect(() => {
-		setError('PhoneInput', { message: errorMessage });
-	}, [setError, errorMessage]);
+	const handleOnChange = useCallback((e) => onChange(e), [onChange]);
 
 	useEffect(() => {
 		setDisabled(!value);
@@ -105,7 +95,7 @@ export const useDialPad = ({ initialValue, errorMessage }: DialPadProps): DialPa
 	return {
 		inputName: 'PhoneInput',
 		inputRef: ref,
-		inputError: errors.PhoneInput?.message,
+		inputError: isDirty ? errors.PhoneInput?.message : initialErrorMessage,
 		isButtonDisabled: disabled,
 		handleOnChange,
 		handleBackspaceClick,
