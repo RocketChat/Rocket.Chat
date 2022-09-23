@@ -1,18 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import type {
-	Collection,
-	FindCursor,
-	Db,
-	Filter,
-	FindOptions,
-	UpdateResult,
-	DeleteResult,
-	Document,
-	AggregateOptions,
-	UpdateFilter,
-} from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, DeleteResult, Document, AggregateOptions } from 'mongodb';
 import { Rooms, Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
 
@@ -112,47 +101,25 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.findOne(query, { projection: { roles: 1 } });
 	}
 
-	setMessagesAsReadByRoomIdAndUserId(
-		rid: string,
-		uid: string,
-		alert = false,
-		options: FindOptions<ISubscription> = {},
-	): ReturnType<BaseRaw<ISubscription>['updateOne']> {
-		const query: Filter<ISubscription> = {
-			rid,
-			'u._id': uid,
-		};
-
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				open: true,
-				alert,
-				unread: 0,
-				userMentions: 0,
-				groupMentions: 0,
-				ls: new Date(),
-			},
-		};
-
-		return this.updateOne(query, update, options);
-	}
-
 	setAsReadByRoomIdAndUserId(
 		rid: string,
 		uid: string,
+		readThreads = false,
 		options: FindOptions<ISubscription> = {},
-	): ReturnType<BaseRaw<ISubscription>['updateOne']> {
+	): ReturnType<BaseRaw<ISubscription>['update']> {
 		const query: Filter<ISubscription> = {
 			rid,
 			'u._id': uid,
 		};
 
-		const update: UpdateFilter<ISubscription> = {
-			$unset: {
-				tunread: 1,
-				tunreadUser: 1,
-				tunreadGroup: 1,
-			},
+		const update = {
+			...(readThreads && {
+				$unset: {
+					tunread: 1,
+					tunreadUser: 1,
+					tunreadGroup: 1,
+				} as const,
+			}),
 			$set: {
 				open: true,
 				alert: false,

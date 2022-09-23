@@ -79,8 +79,8 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { rid, readThreads } = this.bodyParams;
-			await readMessages(rid, this.userId, readThreads ?? false);
+			const { rid, readThreads = false } = this.bodyParams;
+			await readMessages(rid, this.userId, readThreads);
 			return API.v1.success();
 		},
 	},

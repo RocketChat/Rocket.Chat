@@ -20,18 +20,12 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<ISubscription | null>;
 
-	setMessagesAsReadByRoomIdAndUserId(
-		rid: string,
-		uid: string,
-		alert?: boolean,
-		options?: FindOptions<ISubscription>,
-	): ReturnType<IBaseModel<ISubscription>['updateOne']>;
-
 	setAsReadByRoomIdAndUserId(
 		rid: string,
 		uid: string,
+		readThreads?: boolean,
 		options?: FindOptions<ISubscription>,
-	): ReturnType<IBaseModel<ISubscription>['updateOne']>;
+	): ReturnType<IBaseModel<ISubscription>['update']>;
 
 	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid: IRoom['_id']): Promise<UpdateResult>;
 
