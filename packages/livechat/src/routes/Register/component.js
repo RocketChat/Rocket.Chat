@@ -127,33 +127,36 @@ class Register extends Component {
 
 	static getDerivedStateFromProps(nextProps, state) {
 		const { hasNameField, hasEmailField, hasDepartmentField, departmentDefault, departments, nameDefault, emailDefault } = nextProps;
+		let newState = { ...state };
 
 		const nameValue = nameDefault || '';
-		if (hasNameField && (!state.name || state.name !== nameValue)) {
-			state = { ...state, name: { ...state.name, value: nameValue } };
+		if (hasNameField && (!newState.name || newState.name !== nameValue)) {
+			newState = { ...newState, name: { ...newState.name, value: nameValue } };
 		} else if (!hasNameField) {
-			state = { ...state, name: null };
+			newState = { ...newState, name: null };
 		}
 
 		const emailValue = emailDefault || '';
-		if (hasEmailField && (!state.email || state.name !== emailValue)) {
-			state = { ...state, email: { ...state.email, value: emailValue } };
+		if (hasEmailField && (!newState.email || newState.name !== emailValue)) {
+			newState = { ...newState, email: { ...newState.email, value: emailValue } };
 		} else if (!hasEmailField) {
-			state = { ...state, email: null };
+			newState = { ...newState, email: null };
 		}
 
 		const departmentValue = departmentDefault || getDefaultDepartment(departments);
 		const showDepartmentField = hasDepartmentField && departments && departments.length > 1;
-		if (showDepartmentField && (!state.department || state.department !== departmentValue)) {
-			state = { ...state, department: { ...state.department, value: departmentValue } };
+		if (showDepartmentField && (!newState.department || newState.department !== departmentValue)) {
+			newState = { ...newState, department: { ...newState.department, value: departmentValue } };
 		} else if (!showDepartmentField) {
-			state = { ...state, department: null };
+			newState = { ...newState, department: null };
 		}
 
-		for (const { fieldName: name, value, regexp } of getValidableFields(state)) {
+		for (const { fieldName: name, value, regexp } of getValidableFields(newState)) {
 			const error = validate(nextProps, { name, value, regexp });
-			state = { ...state, [name]: { ...state[name], value, error, showError: false } };
+			newState = { ...newState, [name]: { ...newState[name], value, error, showError: false } };
 		}
+
+		return newState;
 	}
 
 	state = {
