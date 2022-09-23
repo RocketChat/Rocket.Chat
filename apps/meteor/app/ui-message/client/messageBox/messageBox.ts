@@ -26,8 +26,6 @@ import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
 import './messageBoxAudioMessage.ts';
-import './messageBoxNotSubscribed.ts';
-import './messageBoxReadOnly.ts';
 import './messageBox.html';
 
 type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
@@ -300,7 +298,9 @@ Template.messageBox.helpers({
 	isFederatedRoom() {
 		const { rid } = Template.currentData();
 
-		return isRoomFederated(ChatRoom.findOne(rid));
+		const room = ChatRoom.findOne(rid);
+
+		return room && isRoomFederated(room);
 	},
 });
 

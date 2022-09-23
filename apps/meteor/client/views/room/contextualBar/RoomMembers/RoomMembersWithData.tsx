@@ -7,7 +7,7 @@ import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import * as Federation from '../../../../lib/federation/Federation';
 import { useMembersList } from '../../../hooks/useMembersList';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import UserInfoWithData from '../UserInfo';
 import AddUsers from './AddUsers';
 import InviteUsers from './InviteUsers';
