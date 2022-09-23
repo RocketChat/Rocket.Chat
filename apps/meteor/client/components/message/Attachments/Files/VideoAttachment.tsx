@@ -5,6 +5,7 @@ import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
+import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import AttachmentContent from '../Attachment/AttachmentContent';
@@ -46,7 +47,7 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({
 			{!collapsed && (
 				<AttachmentContent width='full' className={videoAttachmentCss}>
 					<Box is='video' width='full' controls preload='metadata'>
-						<source src={getURL(url)} type={type} />
+						<source src={getURL(url)} type={userAgentMIMETypeFallback(type)} />
 					</Box>
 					{description && (
 						<AttachmentDetails is='figcaption'>

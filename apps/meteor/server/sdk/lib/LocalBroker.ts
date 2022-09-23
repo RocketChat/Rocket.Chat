@@ -13,6 +13,8 @@ export class LocalBroker implements IBroker {
 
 	private events = new EventEmitter();
 
+	private services = new Set<IServiceClass>();
+
 	async call(method: string, data: any): Promise<any> {
 		const result = await asyncLocalStorage.run(
 			{
@@ -54,6 +56,8 @@ export class LocalBroker implements IBroker {
 	createService(instance: IServiceClass): void {
 		const namespace = instance.getName();
 
+		this.services.add(instance);
+
 		instance.created();
 
 		instance.getEvents().forEach((eventName) => {
@@ -74,8 +78,6 @@ export class LocalBroker implements IBroker {
 
 			this.methods.set(`${namespace}.${method}`, i[method].bind(i));
 		}
-
-		instance.started();
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
@@ -101,5 +103,9 @@ export class LocalBroker implements IBroker {
 		const instances = await InstanceStatus.find({}, { projection: { _id: 1 } }).toArray();
 
 		return instances.map(({ _id }) => ({ id: _id, available: true }));
+	}
+
+	async start(): Promise<void> {
+		await Promise.all([...this.services].map((service) => service.started()));
 	}
 }

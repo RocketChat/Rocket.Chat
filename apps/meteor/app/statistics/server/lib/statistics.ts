@@ -37,6 +37,7 @@ import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/lic
 import { Analytics, Team, VideoConf } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 import { getMatrixFederationStatistics } from '../../../federation-v2/server/infrastructure/rocket-chat/statistics';
+import { isRunningMs } from '../../../../server/lib/isRunningMs';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -343,6 +344,7 @@ export const statistics = {
 		);
 
 		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
+		statistics.msEnabled = isRunningMs();
 		statistics.oplogEnabled = oplogEnabled;
 		statistics.mongoVersion = mongoVersion;
 		statistics.mongoStorageEngine = mongoStorageEngine;
