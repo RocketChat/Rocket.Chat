@@ -5,9 +5,9 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-import { useTabBarClose } from '../../../../client/views/room/providers/ToolboxProvider';
 import GameCenterContainer from './GameCenterContainer';
 import GameCenterList from './GameCenterList';
+import { useTabBarClose } from '../../../../client/views/room/providers/ToolboxProvider';
 
 export type IGame = IExternalComponent;
 
