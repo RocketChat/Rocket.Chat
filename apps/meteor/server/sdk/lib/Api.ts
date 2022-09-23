@@ -64,4 +64,11 @@ export class Api implements IApiService {
 	nodeList(): Promise<IBrokerNode[]> {
 		return this.broker.nodeList();
 	}
+
+	async start(): Promise<void> {
+		if (!this.broker) {
+			throw new Error('No broker set to start.');
+		}
+		await this.broker.start();
+	}
 }
