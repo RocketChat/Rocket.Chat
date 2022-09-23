@@ -1,9 +1,10 @@
 import { IMessage, isRoomFederated, IUser } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
-import { useUser, useUserRoom, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useMemo } from 'react';
 
 import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
+import { useRoom } from '../../../contexts/RoomContext';
 import { useToolboxContext } from '../../../contexts/ToolboxContext';
 import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
 import { MessageActionMenu } from './MessageActionMenu';
@@ -11,11 +12,7 @@ import { MessageActionMenu } from './MessageActionMenu';
 export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 	const t = useTranslation();
 
-	const room = useUserRoom(message.rid);
-
-	if (!room) {
-		throw new Error('Room not found');
-	}
+	const room = useRoom();
 
 	const subscription = useUserSubscription(message.rid);
 	const settings = useSettings();
