@@ -91,6 +91,7 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		setActiveTabBar([list.get(tab as string) as ToolboxActionConfig, context]);
 	}, [tab, list, currentRoom, context]);
 
+	// TODO: make the object stable, preventing re-renders
 	const contextValue = useMemo(
 		() => ({
 			listen,
