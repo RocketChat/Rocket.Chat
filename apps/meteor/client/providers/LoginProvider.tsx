@@ -6,6 +6,7 @@ import React, { useMemo, FC, useEffect } from 'react';
 
 import { callbacks } from '../../lib/callbacks';
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
+import { call } from '../lib/utils/call';
 
 const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -25,7 +26,7 @@ const config: Record<string, Partial<LoginService>> = {
 const getUser = (): IUser | null => Meteor.user() as IUser | null;
 
 const logout = (): Promise<void> =>
-	new Promise((resolve) => {
+	new Promise((resolve, reject) => {
 		const user = getUser();
 
 		if (!user) {
@@ -34,7 +35,7 @@ const logout = (): Promise<void> =>
 
 		Meteor.logout(() => {
 			callbacks.run('afterLogoutCleanUp', user);
-			Meteor.call('logoutCleanUp', user, resolve);
+			call('logoutCleanUp', user).then(resolve, reject);
 		});
 	});
 
