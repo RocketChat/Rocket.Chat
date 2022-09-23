@@ -1,6 +1,5 @@
-import { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, MessageBody } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { MarkupInteractionContext, Markup, UserMention, ChannelMention } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -9,7 +8,9 @@ import React, { ReactElement, useCallback, useMemo } from 'react';
 import { emoji } from '../../../../../app/emoji/client';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useMessageListHighlights } from '../contexts/MessageListContext';
-import { useParsedMessage } from '../hooks/useParsedMessage';
+import { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
+
+type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'>;
 
 const detectEmoji = (text: string): { name: string; className: string; image?: string; content: string }[] => {
 	const html = Object.values(emoji.packages)
@@ -26,13 +27,7 @@ const detectEmoji = (text: string): { name: string; className: string; image?: s
 	}));
 };
 
-type MessageContentBodyProps = {
-	message: IMessage;
-};
-
-const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement => {
-	const tokens = useParsedMessage(message);
-
+const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps): ReactElement => {
 	const highlights = useMessageListHighlights();
 	const highlightRegex = useMemo(() => {
 		if (!highlights || !highlights.length) {
@@ -45,20 +40,20 @@ const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement 
 		return (): RegExp => new RegExp(expression, 'gmi');
 	}, [highlights]);
 
-	const {
-		actions: { openRoom, openUserCard },
-	} = useMessageActions();
-
 	const resolveUserMention = useCallback(
 		(mention: string) => {
 			if (mention === 'all' || mention === 'here') {
 				return undefined;
 			}
 
-			return message.mentions?.find(({ username }) => username === mention);
+			return mentions?.find(({ username }) => username === mention);
 		},
-		[message.mentions],
+		[mentions],
 	);
+
+	const {
+		actions: { openRoom, openUserCard },
+	} = useMessageActions();
 
 	const onUserMentionClick = useCallback(
 		({ username }: UserMention) => {
@@ -71,61 +66,60 @@ const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement 
 		[openUserCard],
 	);
 
-	const resolveChannelMention = useCallback(
-		(mention: string) => message.channels?.find(({ name }) => name === mention),
-		[message.channels],
-	);
+	const resolveChannelMention = useCallback((mention: string) => channels?.find(({ name }) => name === mention), [channels]);
 
 	const onChannelMentionClick = useCallback(({ _id: rid }: ChannelMention) => openRoom(rid), [openRoom]);
 
+	// TODO:  this style should go to Fuselage <MessageBody> repository
+	const messageBodyAdditionalStyles = css`
+		> blockquote {
+			padding-inline: 8px;
+			border-radius: 2px;
+			border-width: 2px;
+			border-style: solid;
+			background-color: var(--rcx-color-neutral-100, ${colors.n100});
+			border-color: var(--rcx-color-neutral-200, ${colors.n200});
+			border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
+
+			&:hover,
+			&:focus {
+				background-color: var(--rcx-color-neutral-200, ${colors.n200});
+				border-color: var(--rcx-color-neutral-300, ${colors.n300});
+				border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
+			}
+		}
+		> ul.task-list {
+			> li::before {
+				display: none;
+			}
+
+			> li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
+				z-index: 1;
+			}
+
+			list-style: none;
+			margin-inline-start: 0;
+			padding-inline-start: 0;
+		}
+	`;
+
 	return (
-		<Box
-			className={css`
-				> blockquote {
-					padding-inline: 8px;
-					border-radius: 2px;
-					border-width: 2px;
-					border-style: solid;
-					background-color: var(--rcx-color-neutral-100, ${colors.n100});
-					border-color: var(--rcx-color-neutral-200, ${colors.n200});
-					border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
-
-					&:hover,
-					&:focus {
-						background-color: var(--rcx-color-neutral-200, ${colors.n200});
-						border-color: var(--rcx-color-neutral-300, ${colors.n300});
-						border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
-					}
-				}
-
-				> ul.task-list {
-					> li::before {
-						display: none;
-					}
-
-					> li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
-						z-index: 1;
-					}
-
-					list-style: none;
-					margin-inline-start: 0;
-					padding-inline-start: 0;
-				}
-			`}
-		>
-			<MarkupInteractionContext.Provider
-				value={{
-					detectEmoji,
-					highlightRegex,
-					resolveUserMention,
-					onUserMentionClick,
-					resolveChannelMention,
-					onChannelMentionClick,
-				}}
-			>
-				<Markup tokens={tokens} />
-			</MarkupInteractionContext.Provider>
-		</Box>
+		<MessageBody>
+			<Box className={messageBodyAdditionalStyles}>
+				<MarkupInteractionContext.Provider
+					value={{
+						detectEmoji,
+						highlightRegex,
+						resolveUserMention,
+						onUserMentionClick,
+						resolveChannelMention,
+						onChannelMentionClick,
+					}}
+				>
+					<Markup tokens={md} />
+				</MarkupInteractionContext.Provider>
+			</Box>
+		</MessageBody>
 	);
 };
 
