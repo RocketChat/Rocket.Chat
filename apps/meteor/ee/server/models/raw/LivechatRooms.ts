@@ -178,7 +178,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			_id: rid,
 		};
 		const update = departmentAncestors ? { $set: { departmentAncestors } } : { $unset: { departmentAncestors: 1 } };
-		await this.update(query, update);
+		await this.updateOne(query, update);
 	}
 
 	find(...args: Parameters<LivechatRoomsRaw['find']>) {
