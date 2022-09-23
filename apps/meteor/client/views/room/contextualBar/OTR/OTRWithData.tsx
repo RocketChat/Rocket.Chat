@@ -5,7 +5,7 @@ import ORTInstance from '../../../../../app/otr/client/OTR';
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import { usePresence } from '../../../../hooks/usePresence';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import OTR from './OTR';
 
 const OTRWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {

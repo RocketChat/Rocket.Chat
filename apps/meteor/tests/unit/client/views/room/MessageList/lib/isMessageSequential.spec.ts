@@ -2,6 +2,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
+import { MessageTypes } from '../../../../../../../app/ui-utils/lib/MessageTypes';
 import { isMessageSequential } from '../../../../../../../client/views/room/MessageList/lib/isMessageSequential';
 
 const TIME_RANGE_IN_SECONDS = 300;
@@ -101,6 +102,18 @@ describe('isMessageSequential', () => {
 		expect(isMessageSequential(current, previous, TIME_RANGE_IN_SECONDS)).to.be.true;
 	});
 
+	it('should return false if previous message is thread message but the current is a regular one', () => {
+		const previous: IMessage = {
+			tmid: 'threadId',
+			...baseMessage,
+		};
+		const current: IMessage = {
+			...baseMessage,
+		};
+
+		expect(isMessageSequential(current, previous, TIME_RANGE_IN_SECONDS)).to.be.false;
+	});
+
 	it('should return true if message is a reply from a previous message', () => {
 		const previous: IMessage = {
 			...baseMessage,
@@ -125,6 +138,11 @@ describe('isMessageSequential', () => {
 	});
 
 	it('should return false if message is from system', () => {
+		MessageTypes.registerType({
+			id: 'au',
+			system: true,
+			message: 'User_added_by',
+		});
 		const previous: IMessage = {
 			...baseMessage,
 		};
@@ -132,6 +150,18 @@ describe('isMessageSequential', () => {
 			...previous,
 			ts: new Date('2021-10-27T00:04:59.999Z'),
 			t: 'au',
+		};
+		expect(isMessageSequential(current, previous, TIME_RANGE_IN_SECONDS)).to.be.false;
+	});
+
+	it('should return false even if messages should be sequential, but they are from a different day', () => {
+		const previous: IMessage = {
+			...baseMessage,
+			ts: new Date(2022, 0, 1, 23, 59, 59, 999),
+		};
+		const current: IMessage = {
+			...baseMessage,
+			ts: new Date(2022, 0, 2, 0, 0, 0, 0),
 		};
 		expect(isMessageSequential(current, previous, TIME_RANGE_IN_SECONDS)).to.be.false;
 	});

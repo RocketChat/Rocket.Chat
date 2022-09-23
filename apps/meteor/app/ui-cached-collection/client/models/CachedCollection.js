@@ -275,7 +275,6 @@ export class CachedCollection extends Emitter {
 	}
 
 	async setupListener(eventType, eventName) {
-		const { RoomManager } = await import('../../../ui-utils');
 		const { ChatRoom, CachedChatRoom } = await import('../../../models');
 		Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
 			this.log('record received', t, record);
@@ -291,10 +290,6 @@ export class CachedCollection extends Emitter {
 					room = this.collection.findOne({
 						_id: record._id,
 					});
-				}
-				if (room) {
-					room.name && RoomManager.close(room.t + room.name);
-					!room.name && RoomManager.close(room.t + room._id);
 				}
 				this.collection.remove(record._id);
 			} else {
