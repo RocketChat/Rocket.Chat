@@ -15,7 +15,7 @@ import { kitContext } from '@rocket.chat/fuselage-ui-kit';
 import React, { memo, useState, useEffect, useReducer, Dispatch, SyntheticEvent, ContextType } from 'react';
 
 import { triggerBlockAction, triggerCancel, triggerSubmitView, on, off } from '../../../../../app/ui-message/client/ActionManager';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import Apps from './Apps';
 
 type FieldStateValue = string | Array<string> | undefined;

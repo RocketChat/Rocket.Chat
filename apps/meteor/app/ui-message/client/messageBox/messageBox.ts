@@ -299,7 +299,9 @@ Template.messageBox.helpers({
 	isFederatedRoom() {
 		const { rid } = Template.currentData();
 
-		return isRoomFederated(ChatRoom.findOne(rid));
+		const room = ChatRoom.findOne(rid);
+
+		return room && isRoomFederated(room);
 	},
 });
 

@@ -17,7 +17,7 @@ import MarkdownText from '../../../../components/MarkdownText';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { useTabBarClose, useTabBarOpen } from '../../../room/providers/ToolboxProvider';
+import { useTabBarClose, useTabBarOpen } from '../../../room/contexts/ToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './Delete';
 import LeaveTeamModal from './Leave';

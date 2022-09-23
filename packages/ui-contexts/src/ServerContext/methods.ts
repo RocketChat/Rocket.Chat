@@ -174,6 +174,7 @@ export interface ServerMethods {
 		moreBefore: boolean;
 		moreAfter: boolean;
 	};
+	'logoutCleanUp': (user: IUser) => void;
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
 	'openRoom': (rid: IRoom['_id']) => ISubscription;
