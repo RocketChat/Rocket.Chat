@@ -1,6 +1,11 @@
 import { useMemo } from 'react';
 
-export function useQuery({ text, itemsPerPage, current }, [column, direction], type, workspace = 'local') {
+export function useQuery(
+	{ text, itemsPerPage, current }: { text: string; current: number; itemsPerPage: number },
+	[column, direction]: string[],
+	type: string,
+	workspace = 'local',
+): { offset?: number | undefined; count?: number; query: string; sort: string } {
 	return useMemo(
 		() => ({
 			query: JSON.stringify({
