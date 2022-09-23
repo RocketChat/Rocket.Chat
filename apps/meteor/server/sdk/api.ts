@@ -6,4 +6,5 @@ export const api = new Api();
 
 if (!isRunningMs()) {
 	api.setBroker(new LocalBroker());
+	api.start();
 }
