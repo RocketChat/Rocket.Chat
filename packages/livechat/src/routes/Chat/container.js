@@ -190,7 +190,8 @@ class ChatContainer extends Component {
 			return;
 		}
 
-		const { alerts, dispatch, room: { _id: rid } = {} } = this.props;
+		const { alerts, dispatch, room } = this.props;
+		const { _id: rid } = room || {};
 
 		await dispatch({ loading: true });
 		try {

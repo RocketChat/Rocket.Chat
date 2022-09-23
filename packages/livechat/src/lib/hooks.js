@@ -79,6 +79,7 @@ const api = {
 		const {
 			user,
 			config: { departments = [] },
+			defaultAgent,
 		} = store.state;
 
 		const { department: existingDepartment } = user || {};
@@ -86,6 +87,10 @@ const api = {
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
 		updateIframeGuestData({ department });
+
+		if (defaultAgent && defaultAgent.department !== department) {
+			store.setState({ defaultAgent: null });
+		}
 
 		if (department !== existingDepartment) {
 			await loadConfig();
