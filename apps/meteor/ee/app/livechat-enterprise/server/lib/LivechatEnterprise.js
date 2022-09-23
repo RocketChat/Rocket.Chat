@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, Users } from '@rocket.chat/models';
+import { LivechatInquiry, Users, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
 
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
+import { Subscriptions, Messages } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
@@ -177,7 +177,7 @@ export const LivechatEnterprise = {
 		}
 		const removed = LivechatPriority.removeById(_id);
 		if (removed) {
-			removePriorityFromRooms(_id);
+			Promise.await(removePriorityFromRooms(_id));
 		}
 		return removed;
 	},
@@ -187,14 +187,14 @@ export const LivechatEnterprise = {
 		updateRoomPriorityHistory(roomId, user, priority);
 	},
 
-	placeRoomOnHold(room, comment, onHoldBy) {
+	async placeRoomOnHold(room, comment, onHoldBy) {
 		logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
 		const { _id: roomId, onHold } = room;
 		if (!roomId || onHold) {
 			logger.debug(`Room ${roomId} invalid or already on hold. Skipping`);
 			return false;
 		}
-		LivechatRooms.setOnHold(roomId);
+		await LivechatRoomsRaw.setOnHoldByRoomId(roomId);
 		Subscriptions.setOnHold(roomId);
 
 		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
@@ -213,7 +213,7 @@ export const LivechatEnterprise = {
 		}
 
 		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
-		LivechatRooms.unsetAllOnHoldFieldsByRoomId(roomId);
+		await LivechatRoomsRaw.unsetAllOnHoldFieldsByRoomId(roomId);
 		Subscriptions.unsetOnHold(roomId);
 	},
 };

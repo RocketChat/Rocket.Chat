@@ -91,8 +91,10 @@ export class VisitorInactivityMonitor {
 		const guest = visitor.name || visitor.username;
 		const comment = TAPi18n.__('Omnichannel_On_Hold_due_to_inactivity', { guest, timeout });
 
-		LivechatEnterprise.placeRoomOnHold(room, comment, this.user) &&
-			(await LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id));
+		await Promise.all([
+			LivechatEnterprise.placeRoomOnHold(room, comment, this.user),
+			LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id),
+		]);
 	}
 
 	handleAbandonedRooms() {
@@ -100,18 +102,20 @@ export class VisitorInactivityMonitor {
 		if (!action || action === 'none') {
 			return;
 		}
-		Promise.await(LivechatRooms.findAbandonedOpenRooms(new Date())).forEach((room) => {
-			switch (action) {
-				case 'close': {
-					this.closeRooms(room);
-					break;
+		Promise.all(
+			LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => {
+				switch (action) {
+					case 'close': {
+						this.closeRooms(room);
+						break;
+					}
+					case 'on-hold': {
+						Promise.await(this.placeRoomOnHold(room));
+						break;
+					}
 				}
-				case 'on-hold': {
-					Promise.await(this.placeRoomOnHold(room));
-					break;
-				}
-			}
-		});
+			}),
+		);
 		this._initializeMessageCache();
 	}
 }
