@@ -21,6 +21,9 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 		if (!result.isSuccess) {
 			return;
 		}
+		if (!result.data.inquiry) {
+			return;
+		}
 		try {
 			await takeInquiry(result.data.inquiry._id);
 		} catch (error) {

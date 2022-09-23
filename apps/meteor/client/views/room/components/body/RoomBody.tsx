@@ -276,11 +276,12 @@ const RoomBody = (): ReactElement => {
 				return;
 			}
 
-			if (room && isOmnichannelRoom(room)) {
-				roomCoordinator.getRoomDirectives(room.t)?.openCustomProfileTab(null, room, room.v.username);
+			if (room && isOmnichannelRoom(room) && !tabBar.activeTabBar) {
+				roomCoordinator.getRoomDirectives(room.t)?.openCustomProfileTab({ tabBar }, room, room.v.username);
 			}
 		});
-	}, [openedRoom, room, room._id]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [openedRoom, room._id]);
 
 	const debouncedReadMessageRead = useMemo(
 		() =>
