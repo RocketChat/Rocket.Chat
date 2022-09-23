@@ -22,8 +22,8 @@ import Chat from '../directory/chats/Chat';
 import CustomFieldsVerticalBar from './CustomFieldsVerticalBar';
 import FilterByText from './FilterByText';
 import RemoveChatButton from './RemoveChatButton';
+import { useAllCustomFields } from './hooks/useAllCustomFields';
 import { useCurrentChats } from './hooks/useCurrentChats';
-import { useAllCustomFields } from './useAllCustomFields';
 
 type useQueryType = (
 	debouncedParams: {
