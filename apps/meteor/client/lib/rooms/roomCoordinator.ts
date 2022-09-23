@@ -9,7 +9,6 @@ import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../definition/IRoomTypeConfig';
 import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
-import { ToolboxContextValue } from '../../views/room/lib/Toolbox/ToolboxContext';
 import { roomExit } from './roomExit';
 
 class RoomCoordinatorClient extends RoomCoordinator {
