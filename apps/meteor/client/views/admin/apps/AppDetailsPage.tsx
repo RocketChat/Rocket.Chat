@@ -1,5 +1,5 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import { Button, ButtonGroup, Box, Throbber, Tabs } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Box, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useRef, ReactElement } from 'react';
@@ -9,6 +9,7 @@ import { Apps } from '../../../../app/apps/client/orchestrator';
 import Page from '../../../components/Page';
 import AppDetails from './AppDetails';
 import AppDetailsHeader from './AppDetailsHeader';
+import AppDetailsTabs from './AppDetailsTabs';
 import AppLogs from './AppLogs';
 import AppReleases from './AppReleases';
 import AppSecurity from './AppSecurity';
@@ -28,7 +29,7 @@ const AppDetailsPage = function AppDetailsPage({ id, isAdminSection }: AppDetail
 	const settingsRef = useRef<Record<string, ISetting['value']>>({});
 	const appData = useAppInfo(id);
 
-	const [routeName, urlParams] = useCurrentRoute();
+	const [routeName] = useCurrentRoute();
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
 
@@ -51,8 +52,7 @@ const AppDetailsPage = function AppDetailsPage({ id, isAdminSection }: AppDetail
 		}
 	});
 
-	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, marketplace } = appData || {};
-	const isSecurityVisible = privacyPolicySummary || permissions || tosLink || privacyLink;
+	const { settings, privacyPolicySummary, permissions, tosLink, privacyLink } = appData || {};
 
 	const saveAppSettings = useCallback(async () => {
 		const { current } = settingsRef;
@@ -71,9 +71,7 @@ const AppDetailsPage = function AppDetailsPage({ id, isAdminSection }: AppDetail
 		setIsSaving(false);
 	}, [id, settings]);
 
-	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs'): void => {
-		router.replace({ ...urlParams, tab });
-	};
+	const isSecurityVisible = Boolean(privacyPolicySummary || permissions || tosLink || privacyLink);
 
 	return (
 		<Page flexDirection='column'>
@@ -92,31 +90,7 @@ const AppDetailsPage = function AppDetailsPage({ id, isAdminSection }: AppDetail
 						<>
 							<AppDetailsHeader app={appData} isAdminSection={isAdminSection} />
 
-							<Tabs>
-								<Tabs.Item onClick={(): void => handleTabClick('details')} selected={!tab || tab === 'details'}>
-									{t('Details')}
-								</Tabs.Item>
-								{Boolean(installed) && isSecurityVisible && (
-									<Tabs.Item onClick={(): void => handleTabClick('security')} selected={tab === 'security'}>
-										{t('Security')}
-									</Tabs.Item>
-								)}
-								{Boolean(installed) && marketplace !== false && (
-									<Tabs.Item onClick={(): void => handleTabClick('releases')} selected={tab === 'releases'}>
-										{t('Releases')}
-									</Tabs.Item>
-								)}
-								{Boolean(installed && settings && Object.values(settings).length) && (
-									<Tabs.Item onClick={(): void => handleTabClick('settings')} selected={tab === 'settings'}>
-										{t('Settings')}
-									</Tabs.Item>
-								)}
-								{Boolean(installed) && (
-									<Tabs.Item onClick={(): void => handleTabClick('logs')} selected={tab === 'logs'}>
-										{t('Logs')}
-									</Tabs.Item>
-								)}
-							</Tabs>
+							<AppDetailsTabs appData={appData} isSecurityVisible={isSecurityVisible} isAdminSection={isAdminSection} />
 
 							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
 
