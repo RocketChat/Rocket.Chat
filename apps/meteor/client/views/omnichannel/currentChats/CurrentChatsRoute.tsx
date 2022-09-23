@@ -1,9 +1,9 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { memo, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { ComponentProps, memo, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import {
 	GenericTableBody,
@@ -115,7 +115,7 @@ const CurrentChatsRoute = (): ReactElement => {
 		guest: '',
 		fname: '',
 		servedBy: '',
-		status: '',
+		status: 'all',
 		department: '',
 		from: '',
 		to: '',
@@ -126,15 +126,7 @@ const CurrentChatsRoute = (): ReactElement => {
 	const t = useTranslation();
 	const id = useRouteParameter('id');
 
-	const debouncedParams = useDebouncedValue(params, 500);
-	const debouncedCustomFields = useDebouncedValue(customFields, 500);
-
-	const debouncedSort = useDebouncedValue(
-		useMemo(() => [sortBy, sortDirection], [sortBy, sortDirection]),
-		500,
-	) as ['fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open', 'asc' | 'desc'];
-
-	const query = currentChatQuery(debouncedParams, debouncedCustomFields, debouncedSort);
+	const query = currentChatQuery(params, customFields, [sortBy, sortDirection]);
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const directoryRoute = useRoute('omnichannel-current-chats');
@@ -204,7 +196,7 @@ const CurrentChatsRoute = (): ReactElement => {
 				<Page.Header title={t('Current_Chats')} />
 				<Box pi='24px'>
 					<FilterByText
-						setFilter={setParams}
+						setFilter={setParams as ComponentProps<typeof FilterByText>['setFilter']}
 						setCustomFields={setCustomFields}
 						customFields={customFields}
 						hasCustomFields={hasCustomFields}
