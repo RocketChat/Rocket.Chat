@@ -13,7 +13,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { call } from '../../../../client/lib/utils/call';
 import { RoomManager, RoomHistoryManager } from '..';
-import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import MainLayout from '../../../../client/views/root/MainLayout';
@@ -40,11 +39,11 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 					return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 				}
 
+				RoomManager.open({ typeName: type + name, rid: room._id });
+
 				if (room._id === Session.get('openedRoom') && !FlowRouter.getQueryParam('msg')) {
 					return;
 				}
-
-				RoomManager.open({ typeName: type + name, rid: room._id });
 
 				if (render) {
 					appLayout.render(
@@ -63,9 +62,6 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 				if (RoomManager.currentTracker) {
 					RoomManager.currentTracker = undefined;
 				}
-
-				NewRoomManager.open(room._id);
-				Session.set('openedRoom', room._id);
 
 				fireGlobalEvent('room-opened', omit(room, 'usernames'));
 
