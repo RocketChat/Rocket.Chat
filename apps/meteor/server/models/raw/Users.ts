@@ -8,7 +8,7 @@ import type {
 	IUser,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated } from '@rocket.chat/model-typings';
+import type { FindPaginated, IUsersModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Db, Collection, UpdateResult, FindOptions, FindCursor, Filter, ModifyResult, Document, UpdateFilter, WithId } from 'mongodb';
 
@@ -20,7 +20,7 @@ type AggregationLimitStage<T> = Parameters<ReturnType<Collection<T>['aggregate']
 type AggregationSortStage<T> = Parameters<ReturnType<Collection<T>['aggregate']>['sort']>[0];
 
 // @ts-ignore
-export class UsersRaw extends BaseRaw<IUser> {
+export class UsersRaw extends BaseRaw<IUser> implements IUsersModel {
 	constructor(db: Db, trash: Collection<RocketChatRecordDeleted<IUser>>) {
 		super(db, 'users', trash, {
 			collectionNameResolver(name: string) {
@@ -53,12 +53,11 @@ export class UsersRaw extends BaseRaw<IUser> {
 	 * @param {null} scope the value for the role scope (room id) - not used in the users collection
 	 * @param {any} options
 	 */
-	// DONE
 	findUsersInRoles<T>(
 		roles: Array<IRole['_id']>,
 		_scope?: IRole['scope'],
-		options?: FindOptions<T extends IUser ? T : IUser>,
-	): FindCursor<T> | FindCursor<IUser> {
+		options?: FindOptions<T extends IUser ? IUser : T>,
+	): FindCursor<T | IUser> {
 		// TODO roles
 
 		const query: Filter<IUser> = {
@@ -70,7 +69,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 
 	findPaginatedUsersInRoles<T>(
 		roles: Array<IRole['_id']>,
-		options: FindOptions<T extends IUser ? T : IUser>,
+		options: FindOptions<T extends IUser ? IUser : T>,
 	): FindPaginated<FindCursor<WithId<T>>> | FindPaginated<FindCursor<WithId<IUser>>> {
 		// TODO roles
 
@@ -81,19 +80,19 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.findPaginated(query, options);
 	}
 
-	findOneByUsername<T>(
+	async findOneByUsername<T>(
 		username: NonNullable<IUser['username']>,
-		options: FindOptions<T extends IUser ? T : IUser> = {},
-	): Promise<T | null> | Promise<IUser | null> {
+		options: FindOptions<T extends IUser ? IUser : T>,
+	): Promise<T | IUser | null> {
 		const query: Filter<IUser> = { username };
 
-		return this.findOne(query, options);
+		return this.findOne(query, options ?? {});
 	}
 
-	findOneAgentById<T>(
+	async findOneAgentById<T>(
 		_id: ILivechatAgent['_id'],
-		options: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,
-	): Promise<T | null> | Promise<ILivechatAgent | null> {
+		options: FindOptions<T extends ILivechatAgent ? ILivechatAgent : T>,
+	): Promise<T | ILivechatAgent | null> {
 		const query: Filter<IUser> = {
 			_id,
 			roles: 'livechat-agent',
@@ -110,8 +109,8 @@ export class UsersRaw extends BaseRaw<IUser> {
 	findUsersInRolesWithQuery<T>(
 		roles: Array<IRole['_id']>,
 		query: Filter<IUser>,
-		options: FindOptions<T extends IUser ? T : IUser>,
-	): FindCursor<T> | FindCursor<IUser> {
+		options: FindOptions<T extends IUser ? IUser : T>,
+	): FindCursor<T | IUser> {
 		// TODO roles
 
 		Object.assign(query, { roles: { $in: roles } });
@@ -127,7 +126,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 	findPaginatedUsersInRolesWithQuery<T>(
 		roles: Array<IRole['_id']>,
 		query: Filter<IUser>,
-		options: FindOptions<T extends IUser ? T : IUser>,
+		options: FindOptions<T extends IUser ? IUser : T>,
 	): FindPaginated<FindCursor<WithId<T>>> | FindPaginated<FindCursor<WithId<IUser>>> {
 		// TODO roles
 
@@ -136,11 +135,11 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.findPaginated(query, options);
 	}
 
-	findOneByUsernameAndRoomIgnoringCase<T>(
+	async findOneByUsernameAndRoomIgnoringCase<T>(
 		username: IUser['_id'] | RegExp,
 		rid: IRoom['_id'],
-		options: FindOptions<T extends IUser ? T : IUser>,
-	): Promise<T | null> | Promise<IUser | null> {
+		options: FindOptions<T extends IUser ? IUser : T>,
+	): Promise<T | IUser | null> {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
@@ -153,11 +152,11 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.findOne(query, options);
 	}
 
-	findOneByIdAndLoginHashedToken<T>(
+	async findOneByIdAndLoginHashedToken<T>(
 		_id: IUser['_id'],
 		token: string,
-		options: FindOptions<T extends IUser ? T : IUser>,
-	): Promise<null | T> | Promise<IUser | null> {
+		options: FindOptions<T extends IUser ? IUser : T>,
+	): Promise<T | IUser | null> {
 		const query: Filter<IUser> = {
 			_id,
 			'services.resume.loginTokens.hashedToken': token,
@@ -169,11 +168,11 @@ export class UsersRaw extends BaseRaw<IUser> {
 	findByActiveUsersExcept<T>(
 		searchTerm: string,
 		exceptions: string | string[],
-		options: FindOptions<T extends IUser ? T : IUser>,
+		options: FindOptions<T extends IUser ? IUser : T>,
 		searchFields: any,
 		extraQuery = [],
 		{ startsWith = false, endsWith = false } = {},
-	): FindCursor<T> | FindCursor<IUser> {
+	): FindCursor<T | IUser> {
 		if (exceptions == null) {
 			exceptions = [];
 		}
@@ -212,7 +211,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 	findPaginatedByActiveUsersExcept<T>(
 		searchTerm: string,
 		exceptions: string | string[],
-		options: FindOptions<T extends IUser ? T : IUser>,
+		options: FindOptions<T extends IUser ? IUser : T>,
 		searchFields: any,
 		extraQuery: Filter<IUser>[] = [],
 		{ startsWith = false, endsWith = false } = {},
@@ -255,7 +254,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 	findPaginatedByActiveLocalUsersExcept<T>(
 		searchTerm: string,
 		exceptions: string | string[],
-		options: FindOptions<T extends IUser ? T : IUser>,
+		options: FindOptions<T extends IUser ? IUser : T>,
 		forcedSearchFields: any,
 		localDomain: any,
 	): FindPaginated<FindCursor<WithId<T>>> | FindPaginated<FindCursor<WithId<IUser>>> {
@@ -270,7 +269,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 	findPaginatedByActiveExternalUsersExcept<T>(
 		searchTerm: string,
 		exceptions: string | string[],
-		options: FindOptions<T extends IUser ? T : IUser>,
+		options: FindOptions<T extends IUser ? IUser : T>,
 		forcedSearchFields: any,
 		localDomain: any,
 	): FindPaginated<FindCursor<WithId<T>>> | FindPaginated<FindCursor<WithId<IUser>>> {
@@ -278,13 +277,13 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
-	findActive<T>(query: Filter<IUser>, options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
+	findActive<T>(query: Filter<IUser>, options: FindOptions<T extends IUser ? IUser : T>): FindCursor<T | IUser> {
 		Object.assign(query, { active: true });
 
 		return this.find(query, options);
 	}
 
-	findActiveByIds<T>(userIds: Array<IUser['_id']>, options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
+	findActiveByIds<T>(userIds: Array<IUser['_id']>, options: FindOptions<T extends IUser ? IUser : T>): FindCursor<T | IUser> {
 		const query: Filter<IUser> = {
 			_id: { $in: userIds },
 			active: true,
@@ -295,8 +294,8 @@ export class UsersRaw extends BaseRaw<IUser> {
 
 	findActiveByIdsOrUsernames<T>(
 		userIds: Array<IUser['_id']>,
-		options: FindOptions<T extends IUser ? T : IUser> = {},
-	): FindCursor<T> | FindCursor<IUser> {
+		options: FindOptions<T extends IUser ? IUser : T> = {},
+	): FindCursor<T | IUser> {
 		const query: Filter<IUser> = {
 			$or: [{ _id: { $in: userIds } }, { username: { $in: userIds } }],
 			active: true,
@@ -305,7 +304,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	findByIds<T>(userIds: Array<IUser['_id']>, options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
+	findByIds<T>(userIds: Array<IUser['_id']>, options: FindOptions<T extends IUser ? IUser : T>): FindCursor<T | IUser> {
 		const query: Filter<IUser> = {
 			_id: { $in: userIds },
 		};
@@ -313,10 +312,10 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	findOneByUsernameIgnoringCase<T>(
+	async findOneByUsernameIgnoringCase<T>(
 		username: NonNullable<IUser['username']> | RegExp,
-		options: FindOptions<T extends IUser ? T : IUser>,
-	): Promise<null | T> | Promise<IUser | null> {
+		options: FindOptions<T extends IUser ? IUser : T>,
+	): Promise<T | IUser | null> {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
@@ -338,19 +337,19 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.findOne(query);
 	}
 
-	findOneByAppId<T>(appId: string, options: FindOptions<T extends IUser ? T : IUser>): Promise<null | T> | Promise<IUser | null> {
+	async findOneByAppId<T>(appId: string, options: FindOptions<T extends IUser ? IUser : T>): Promise<T | IUser | null> {
 		const query: Filter<IUser> = { appId };
 
 		return this.findOne(query, options);
 	}
 
-	findLDAPUsers<T>(options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
+	findLDAPUsers<T>(options: FindOptions<T extends IUser ? IUser : T>): FindCursor<T | IUser> {
 		const query: Filter<IUser> = { ldap: true };
 
 		return this.find(query, options);
 	}
 
-	findConnectedLDAPUsers<T>(options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
+	findConnectedLDAPUsers<T>(options: FindOptions<T extends IUser ? IUser : T>): FindCursor<T | IUser> {
 		const query: Filter<IUser> = {
 			'ldap': true,
 			'services.resume.loginTokens': {
@@ -362,7 +361,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']): Promise<{ roles: IUser['roles'] } | null> {
+	async isUserInRole(userId: IUser['_id'], roleId: IRole['_id']): Promise<{ roles: IUser['roles'] } | null> {
 		const query: Filter<IUser> = {
 			_id: userId,
 			roles: roleId,
@@ -371,7 +370,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.findOne(query, { projection: { roles: 1 } });
 	}
 
-	getDistinctFederationDomains(): Promise<Array<string>> {
+	async getDistinctFederationDomains(): Promise<Array<string>> {
 		return this.col.distinct('federation.origin', { federation: { $exists: true } });
 	}
 
@@ -523,7 +522,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return result.value;
 	}
 
-	setLivechatStatusIf(
+	async setLivechatStatusIf(
 		userId: ILivechatAgent['_id'],
 		status: ILivechatAgent['statusLivechat'],
 		conditions = {},
@@ -603,7 +602,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return agent;
 	}
 
-	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<Array<{ tokens: ILoginToken[] }>> {
+	async findAllResumeTokensByUserId(userId: IUser['_id']): Promise<Array<{ tokens: ILoginToken[] }>> {
 		return this.col
 			.aggregate<{ tokens: ILoginToken[] }>([
 				{
@@ -636,7 +635,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		exceptions: NonNullable<IUser['username'][]>,
 		conditions: Filter<IUser>,
 		options: FindOptions<T extends IUser ? T : IUser>,
-	): FindCursor<T> | FindCursor<IUser> {
+	): FindCursor<T | IUser> {
 		if (exceptions == null) {
 			exceptions = [];
 		}
@@ -684,7 +683,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	countAllAgentsStatus({ departmentId }: { departmentId: ILivechatDepartment['_id'] }): Promise<
+	async countAllAgentsStatus({ departmentId }: { departmentId: ILivechatDepartment['_id'] }): Promise<
 		Array<{
 			offline: number;
 			away: number;
@@ -787,7 +786,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 			.toArray();
 	}
 
-	getTotalOfRegisteredUsersByDate({
+	async getTotalOfRegisteredUsersByDate({
 		start,
 		end,
 		options,
@@ -852,7 +851,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 			.toArray();
 	}
 
-	getUserLanguages(): Promise<
+	async getUserLanguages(): Promise<
 		Array<{
 			_id: IUser['language'];
 			total: number;
@@ -883,7 +882,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 			.toArray();
 	}
 
-	updateStatusText(_id: IUser['_id'], statusText: string): Promise<UpdateResult> {
+	async updateStatusText(_id: IUser['_id'], statusText: string): Promise<UpdateResult> {
 		const update: UpdateFilter<IUser> = {
 			$set: {
 				statusText,
@@ -916,7 +915,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 	 * @param {string} [status.statusDefault]
 	 * @param {string} [status.statusText]
 	 */
-	updateStatusById(
+	async updateStatusById(
 		userId: IUser['_id'],
 		{
 			status,
@@ -950,7 +949,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.col.updateOne(query, update);
 	}
 
-	openAgentsBusinessHoursByBusinessHourId(businessHourIds: ILivechatBusinessHour['_id'][]): Promise<Document | UpdateResult> {
+	async openAgentsBusinessHoursByBusinessHourId(businessHourIds: ILivechatBusinessHour['_id'][]): Promise<Document | UpdateResult> {
 		const query: Filter<IUser> = {
 			roles: 'livechat-agent',
 		};
@@ -967,7 +966,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.updateMany(query, update);
 	}
 
-	openAgentBusinessHoursByBusinessHourIdsAndAgentId(
+	async openAgentBusinessHoursByBusinessHourIdsAndAgentId(
 		businessHourIds: ILivechatBusinessHour['_id'][],
 		agentId: ILivechatAgent['_id'],
 	): Promise<Document | UpdateResult> {
@@ -988,7 +987,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.updateMany(query, update);
 	}
 
-	addBusinessHourByAgentIds(
+	async addBusinessHourByAgentIds(
 		agentIds: ILivechatAgent['_id'][],
 		businessHourId: ILivechatBusinessHour['_id'],
 	): Promise<Document | UpdateResult> {
@@ -1009,7 +1008,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.updateMany(query, update);
 	}
 
-	removeBusinessHourByAgentIds(
+	async removeBusinessHourByAgentIds(
 		agentIds: ILivechatAgent['_id'][],
 		businessHourId: ILivechatBusinessHour['_id'],
 	): Promise<Document | UpdateResult> {
@@ -1027,7 +1026,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.updateMany(query, update);
 	}
 
-	openBusinessHourToAgentsWithoutDepartment(
+	async openBusinessHourToAgentsWithoutDepartment(
 		agentIdsWithDepartment: ILivechatAgent['_id'][],
 		businessHourId: ILivechatBusinessHour['_id'],
 	): Promise<Document | UpdateResult> {
@@ -1047,7 +1046,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.updateMany(query, update);
 	}
 
-	closeBusinessHourToAgentsWithoutDepartment(
+	async closeBusinessHourToAgentsWithoutDepartment(
 		agentIdsWithDepartment: ILivechatAgent['_id'][],
 		businessHourId: ILivechatBusinessHour['_id'],
 	): Promise<Document | UpdateResult> {
@@ -1064,7 +1063,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.updateMany(query, update);
 	}
 
-	closeAgentsBusinessHoursByBusinessHourIds(businessHourIds: ILivechatBusinessHour['_id'][]): Promise<Document | UpdateResult> {
+	async closeAgentsBusinessHoursByBusinessHourIds(businessHourIds: ILivechatBusinessHour['_id'][]): Promise<Document | UpdateResult> {
 		const query: Filter<IUser> = {
 			roles: 'livechat-agent',
 		};
@@ -1078,7 +1077,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.updateMany(query, update);
 	}
 
-	updateLivechatStatusBasedOnBusinessHours(userIds: IUser['_id'][]): Promise<Document | UpdateResult> {
+	async updateLivechatStatusBasedOnBusinessHours(userIds: IUser['_id'][]): Promise<Document | UpdateResult> {
 		const query: Filter<IUser> = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
 			roles: 'livechat-agent',
@@ -1094,7 +1093,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.updateMany(query, update);
 	}
 
-	setLivechatStatusActiveBasedOnBusinessHours(userId: IUser['_id']): Promise<UpdateResult> {
+	async setLivechatStatusActiveBasedOnBusinessHours(userId: IUser['_id']): Promise<UpdateResult> {
 		const query: Filter<IUser> = {
 			_id: userId,
 			openBusinessHours: {
@@ -1124,7 +1123,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		);
 	}
 
-	removeBusinessHoursFromAllUsers(): Promise<Document | UpdateResult> {
+	async removeBusinessHoursFromAllUsers(): Promise<Document | UpdateResult> {
 		const query: Filter<IUser> = {
 			roles: 'livechat-agent',
 			openBusinessHours: {
@@ -1141,7 +1140,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.updateMany(query, update);
 	}
 
-	resetTOTPById(userId: IUser['_id']): Promise<UpdateResult> {
+	async resetTOTPById(userId: IUser['_id']): Promise<UpdateResult> {
 		return this.col.updateOne(
 			{
 				_id: userId,
@@ -1154,7 +1153,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		);
 	}
 
-	unsetOneLoginToken(_id: IUser['_id'], token: ILoginToken): Promise<UpdateResult> {
+	async unsetOneLoginToken(_id: IUser['_id'], token: ILoginToken): Promise<UpdateResult> {
 		const update: UpdateFilter<IUser> = {
 			$pull: {
 				'services.resume.loginTokens': { hashedToken: token },
@@ -1164,7 +1163,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.col.updateOne({ _id }, update);
 	}
 
-	unsetLoginTokens(userId: IUser['_id']): Promise<UpdateResult> {
+	async unsetLoginTokens(userId: IUser['_id']): Promise<UpdateResult> {
 		return this.col.updateOne(
 			{
 				_id: userId,
@@ -1177,7 +1176,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		);
 	}
 
-	removeNonPATLoginTokensExcept(userId: IUser['_id'], authToken: ILoginToken): Promise<UpdateResult> {
+	async removeNonPATLoginTokensExcept(userId: IUser['_id'], authToken: ILoginToken): Promise<UpdateResult> {
 		return this.col.updateOne(
 			{
 				_id: userId,
@@ -1193,7 +1192,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		);
 	}
 
-	removeRoomsByRoomIdsAndUserId(rids: IRoom['_id'][], userId: IUser['_id']): Promise<UpdateResult | Document> {
+	async removeRoomsByRoomIdsAndUserId(rids: IRoom['_id'][], userId: IUser['_id']): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{
 				_id: userId,
@@ -1209,7 +1208,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 	 * @param {string} uid
 	 * @param {IRole['_id']} roles the list of role ids to remove
 	 */
-	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult> {
+	async removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult> {
 		const query: Filter<IUser> = {
 			_id: uid,
 		};
@@ -1239,7 +1238,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 	// FIXME is IBanner the right one?
 	// banner._id ???
 	// or am i missign something
-	addBannerById(_id: IUser['_id'], banner: any): Promise<UpdateResult> {
+	async addBannerById(_id: IUser['_id'], banner: any): Promise<UpdateResult> {
 		const query: Filter<IUser> = {
 			_id,
 			[`banners.${banner.id}.read`]: {
@@ -1257,21 +1256,21 @@ export class UsersRaw extends BaseRaw<IUser> {
 	}
 
 	// Voip functions
-	findOneByAgentUsername<T>(
+	async findOneByAgentUsername<T>(
 		username: ILivechatAgent['username'],
 		options: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,
-	): Promise<null | T> | Promise<ILivechatAgent | null> {
+	): Promise<T | ILivechatAgent | null> {
 		const query: Filter<ILivechatAgent> = { username, roles: 'livechat-agent' };
 
 		return this.findOne(query as any, options);
 	}
 
-	findOneByExtension(extension: ILivechatAgent['extension']): Promise<ILivechatAgent | null>;
-	findOneByExtension(extension: ILivechatAgent['extension'], options?: FindOptions<ILivechatAgent>): Promise<ILivechatAgent | null>;
-	findOneByExtension<T>(
+	async findOneByExtension(extension: ILivechatAgent['extension']): Promise<ILivechatAgent | null>;
+	async findOneByExtension(extension: ILivechatAgent['extension'], options?: FindOptions<ILivechatAgent>): Promise<ILivechatAgent | null>;
+	async findOneByExtension<T>(
 		extension: ILivechatAgent['extension'],
 		options?: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,
-	): Promise<null | T> | Promise<ILivechatAgent | null> {
+	): Promise<T | ILivechatAgent | null> {
 		const query: Filter<IUser> = {
 			extension,
 		};
@@ -1287,7 +1286,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 	findByExtensions<T>(
 		extensions: NonNullable<ILivechatAgent['extension']>[],
 		options?: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,
-	): FindCursor<T> | FindCursor<ILivechatAgent> {
+	): FindCursor<T | ILivechatAgent> {
 		const query: Filter<ILivechatAgent> = {
 			extension: {
 				$in: extensions,
@@ -1298,10 +1297,10 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query as Filter<IUser>, options);
 	}
 
-	getVoipExtensionByUserId<T>(
+	async getVoipExtensionByUserId<T>(
 		userId: ILivechatAgent['_id'],
 		options: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,
-	): Promise<null | T> | Promise<ILivechatAgent | null> {
+	): Promise<T | ILivechatAgent | null> {
 		const query: Filter<ILivechatAgent> = {
 			_id: userId,
 			extension: { $exists: true },
@@ -1309,7 +1308,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.findOne(query as any, options);
 	}
 
-	setExtension(userId: ILivechatAgent['_id'], extension: ILivechatAgent['extension']): Promise<UpdateResult> {
+	async setExtension(userId: ILivechatAgent['_id'], extension: ILivechatAgent['extension']): Promise<UpdateResult> {
 		const query: Filter<ILivechatAgent> = {
 			_id: userId,
 		};
@@ -1322,7 +1321,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.updateOne(query as any, update);
 	}
 
-	unsetExtension(userId: ILivechatAgent['_id']): Promise<UpdateResult> {
+	async unsetExtension(userId: ILivechatAgent['_id']): Promise<UpdateResult> {
 		const query: Filter<ILivechatAgent> = {
 			_id: userId,
 		};
@@ -1352,7 +1351,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.findPaginated(query, options);
 	}
 
-	findActiveUsersTOTPEnable<T>(options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
+	findActiveUsersTOTPEnable<T>(options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T | IUser> {
 		const query: Filter<IUser> = {
 			'active': true,
 			'services.totp.enabled': true,
@@ -1360,7 +1359,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	findActiveUsersEmail2faEnable<T>(options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
+	findActiveUsersEmail2faEnable<T>(options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T | IUser> {
 		const query: Filter<IUser> = {
 			'active': true,
 			'services.email2fa.enabled': true,
@@ -1368,7 +1367,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	setAsFederated(uid: IUser['_id']): Promise<UpdateResult> {
+	async setAsFederated(uid: IUser['_id']): Promise<UpdateResult> {
 		const query: Filter<IUser> = {
 			_id: uid,
 		};
@@ -1381,7 +1380,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		return this.updateOne(query, update);
 	}
 
-	removeRoomByRoomId(rid: IRoom['_id']): Promise<UpdateResult | Document> {
+	async removeRoomByRoomId(rid: IRoom['_id']): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{
 				__rooms: rid,
@@ -1392,7 +1391,7 @@ export class UsersRaw extends BaseRaw<IUser> {
 		);
 	}
 
-	findOneByResetToken<T>(token: ILoginToken, options: FindOptions<T extends IUser ? T : IUser>): Promise<null | T> | Promise<IUser | null> {
+	async findOneByResetToken<T>(token: ILoginToken, options: FindOptions<T extends IUser ? T : IUser>): Promise<T | IUser | null> {
 		return this.findOne({ 'services.password.reset.token': token }, options);
 	}
 }
