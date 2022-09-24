@@ -4,22 +4,20 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 const remove = sinon.stub();
-
-const { FederationHooksEE } = proxyquire
-    .noCallThru()
-    .load('../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/hooks', {
-        'meteor/meteor': {
-            '@global': true,
-        },
-        'meteor/random': {
-            '@global': true,
-        },
-        '../../../../../../../lib/callbacks': {
-            callbacks: {
-                remove
-            },
-        },
-    });
+const { FederationHooksEE } = proxyquire.noCallThru().load('../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/hooks', {
+	'meteor/meteor': {
+		'@global': true,
+	},
+	'meteor/random': {
+		Random: {
+			id: () => 1,
+		},
+		'@global': true,
+	},
+	'../../../../../../../lib/callbacks': {
+		callbacks: { remove },
+	},
+});
 
 describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 	describe('#removeAll()', () => {

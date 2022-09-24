@@ -29,4 +29,14 @@ export interface IFederationBridge {
 	uploadContent(externalSenderId: string, content: Buffer, options?: { name?: string; type?: string }): Promise<string | undefined>;
 	convertMatrixUrlToHttp(externalUserId: string, matrixUrl: string): string;
 	setUserAvatar(externalUserId: string, avatarUrl: string): Promise<void>;
+	getReadStreamForFileFromUrl(externaUserId: string, fileUrl: string): Promise<ReadableStream>;
+	redactEvent(externalRoomId: string, externalUserId: string, externalEventId: string): Promise<void>;
+	updateMessage(externalRoomId: string, externalUserId: string, externalEventId: string, newMessageText: string): Promise<void>;
+	sendMessageReaction(externalRoomId: string, externalUserId: string, externalEventId: string, reaction: string): Promise<string>;
+	sendMessageFileToRoom(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+	): Promise<void>;
 }

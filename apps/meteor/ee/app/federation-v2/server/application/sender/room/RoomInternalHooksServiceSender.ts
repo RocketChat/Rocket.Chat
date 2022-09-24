@@ -1,18 +1,19 @@
-import type { RocketChatFileAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/File';
-import type { RocketChatSettingsAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
-import { FederatedRoomEE } from '../../domain/FederatedRoom';
-import { FederatedUserEE } from '../../domain/FederatedUser';
-import type { IFederationBridgeEE } from '../../domain/IFederationBridge';
-import type { RocketChatRoomAdapterEE } from '../../infrastructure/rocket-chat/adapters/Room';
-import type { RocketChatUserAdapterEE } from '../../infrastructure/rocket-chat/adapters/User';
+import { RocketChatFileAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/File';
+import type { RocketChatMessageAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatSettingsAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
+import { FederatedRoomEE } from '../../../domain/FederatedRoom';
+import { FederatedUserEE } from '../../../domain/FederatedUser';
+import type { IFederationBridgeEE } from '../../../domain/IFederationBridge';
+import type { RocketChatRoomAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatUserAdapterEE } from '../../../infrastructure/rocket-chat/adapters/User';
 import type {
 	FederationBeforeAddUserToARoomDto,
 	FederationOnRoomCreationDto,
 	FederationOnUsersAddedToARoomDto,
 	FederationRoomInviteUserDto,
 	FederationSetupRoomDto,
-} from '../input/RoomSenderDto';
-import { FederationServiceEE } from './AbstractFederationService';
+} from '../../input/RoomSenderDto';
+import { FederationServiceEE } from '../AbstractFederationService';
 
 export class FederationRoomInternalHooksServiceSender extends FederationServiceEE {
 	constructor(
@@ -20,6 +21,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 		protected internalUserAdapter: RocketChatUserAdapterEE,
 		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
+		protected internalMessageAdapter: RocketChatMessageAdapter,
 		protected bridge: IFederationBridgeEE,
 	) {
 		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);

@@ -74,6 +74,10 @@ export class RocketChatUserAdapter {
 		return user;
 	}
 
+	public async getInternalUserByUsername(username: string): Promise<IUser | undefined> {
+		return Users.findOneByUsername(username);
+	}
+
 	public async createFederatedUser(federatedUser: FederatedUser): Promise<void> {
 		const existingLocalUser = federatedUser.getUsername() && (await Users.findOneByUsername(federatedUser.getUsername() as string));
 		if (existingLocalUser) {

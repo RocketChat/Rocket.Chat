@@ -24,14 +24,19 @@ export abstract class FederationService {
 		existsOnlyOnProxyServer = false,
 		providedName?: string,
 	): Promise<void> {
+		const internalUser = await this.internalUserAdapter.getInternalUserByUsername(username);
 		const externalUserProfileInformation = await this.bridge.getUserProfileInformation(externalUserId);
-		const name = externalUserProfileInformation?.displayName || providedName || username;
-		const federatedUser = FederatedUser.createInstance(externalUserId, {
-			name,
-			username,
-			existsOnlyOnProxyServer,
-		});
-
+		let federatedUser;
+		if (internalUser) {
+			federatedUser = FederatedUser.createWithInternalReference(externalUserId, existsOnlyOnProxyServer, internalUser);
+		} else {
+			const name = externalUserProfileInformation?.displayName || providedName || username;
+			federatedUser = FederatedUser.createInstance(externalUserId, {
+				name,
+				username,
+				existsOnlyOnProxyServer,
+			});
+		}
 		await this.internalUserAdapter.createFederatedUser(federatedUser);
 		const insertedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalUserId);
 		if (!insertedUser) {

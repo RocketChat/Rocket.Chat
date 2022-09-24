@@ -3,6 +3,7 @@ import {
 	stopFederation,
 	rocketSettingsAdapter,
 	federationQueueInstance,
+	rocketMessageAdapter,
 	rocketFileAdapter,
 } from '../../../../app/federation-v2/server';
 import { onToggledFeature } from '../../license/server/license';
@@ -25,6 +26,7 @@ export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.bu
 	rocketUserAdapterEE,
 	rocketFileAdapter,
 	rocketSettingsAdapter,
+	rocketMessageAdapter,
 	federationBridgeEE,
 );
 
@@ -45,7 +47,7 @@ let cancelSettingsObserverEE: () => void;
 
 onToggledFeature('federation', {
 	up: async () => {
-		await stopFederation();
+		await stopFederation(federationRoomServiceSenderEE);
 		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged(
 			federationBridgeEE.onFederationAvailabilityChanged.bind(federationBridgeEE),
 		);

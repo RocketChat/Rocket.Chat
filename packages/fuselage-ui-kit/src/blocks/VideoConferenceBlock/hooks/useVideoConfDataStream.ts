@@ -5,9 +5,9 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { useVideoConfData } from './useVideoConfData';
 
-const ee = new Emitter();
+const ee = new Emitter<Record<string, void>>();
 
-const events = new Map();
+const events = new Map<string, () => void>();
 
 const useStreamBySubPath = (
   streamer: ReturnType<typeof useStream>,
@@ -18,8 +18,8 @@ const useStreamBySubPath = (
     if (!ee.has(subpath)) {
       events.set(
         subpath,
-        streamer(subpath, (...args) => {
-          ee.emit(subpath, ...args);
+        streamer(subpath, () => {
+          ee.emit(subpath);
         })
       );
     }

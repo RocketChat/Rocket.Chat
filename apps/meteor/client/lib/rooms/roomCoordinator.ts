@@ -9,7 +9,6 @@ import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../definition/IRoomTypeConfig';
 import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
-import { ToolboxContextValue } from '../../views/room/lib/Toolbox/ToolboxContext';
 import { roomExit } from './roomExit';
 
 class RoomCoordinatorClient extends RoomCoordinator {
@@ -25,13 +24,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 				return '';
 			},
 			isGroupChat(_room: Partial<IRoom>): boolean {
-				return false;
-			},
-			openCustomProfileTab<
-				T extends {
-					tabBar: ToolboxContextValue;
-				},
-			>(_instance: T, _room: IRoom, _username: string): boolean {
 				return false;
 			},
 			getUiText(_context: ValueOf<typeof UiTextContext>): string {

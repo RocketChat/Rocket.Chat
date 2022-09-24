@@ -1,15 +1,19 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
+import { fetch } from '../../../../../server/lib/http/fetch';
 import type { IExternalUserProfileInformation, IFederationBridge } from '../../domain/IFederationBridge';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
 import { toExternalMessageFormat } from './converters/MessageTextParser';
+import { convertEmojisRCFormatToMatrixFormat } from './converters/MessageReceiver';
 import type { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
+import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definitions/events/RoomMessageSent';
+import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
 let MatrixUserInstance: any;
-
+require('util').inspect.defaultOptions.depth = null;
 interface IRegistrationFileNamespaceRule {
 	exclusive: boolean;
 	regex: string;
@@ -161,10 +165,23 @@ export class MatrixBridge implements IFederationBridge {
 		try {
 			await this.bridgeInstance
 				.getIntent(externalSenderId)
-				.matrixClient.sendHtmlText(externalRoomId, await toExternalMessageFormat(message.msg, externalRoomId, this.homeServerDomain));
+				.matrixClient.sendHtmlText(externalRoomId, this.escapeEmojis(await toExternalMessageFormat(message.msg, externalRoomId, this.homeServerDomain)));
 		} catch (e) {
 			throw new Error('User is not part of the room.');
 		}
+	}
+
+	private escapeEmojis(text: string): string {
+		return convertEmojisRCFormatToMatrixFormat(text);
+	}
+
+	public async getReadStreamForFileFromUrl(externalUserId: string, fileUrl: string): Promise<ReadableStream> {
+		const response = await fetch(this.convertMatrixUrlToHttp(externalUserId, fileUrl));
+		if (!response.body) {
+			throw new Error('Not able to download the file');
+		}
+
+		return response.body;
 	}
 
 	public isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean {
@@ -200,6 +217,94 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void> {
 		await this.bridgeInstance.getIntent(externalOwnerId).kick(externalRoomId, externalUserId);
+	}
+
+	public async redactEvent(externalRoomId: string, externalUserId: string, externalEventId: string): Promise<void> {
+		await this.bridgeInstance.getIntent(externalUserId).matrixClient.redactEvent(externalRoomId, externalEventId);
+	}
+
+	public async sendMessageReaction(
+		externalRoomId: string,
+		externalUserId: string,
+		externalEventId: string,
+		reaction: string,
+	): Promise<string> {
+		const eventId = await this.bridgeInstance
+			.getIntent(externalUserId)
+			.matrixClient.sendEvent(externalRoomId, MatrixEventType.MESSAGE_REACTED, {
+				'm.relates_to': {
+					event_id: externalEventId,
+					key: convertEmojisRCFormatToMatrixFormat(reaction),
+					rel_type: 'm.annotation',
+				},
+			});
+
+		return eventId;
+	}
+
+	public async updateMessage(
+		externalRoomId: string,
+		externalUserId: string,
+		externalEventId: string,
+		newMessageText: string,
+	): Promise<void> {
+		await this.bridgeInstance.getIntent(externalUserId).matrixClient.sendEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+			'body': ` * ${newMessageText}`,
+			'm.new_content': {
+				body: newMessageText,
+				msgtype: MatrixEnumSendMessageType.TEXT,
+			},
+			'm.relates_to': {
+				rel_type: MatrixEnumRelatesToRelType.REPLACE,
+				event_id: externalEventId,
+			},
+			'msgtype': MatrixEnumSendMessageType.TEXT,
+		});
+	}
+
+	public async sendMessageFileToRoom(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+	): Promise<void> {
+		try {
+			const mxcUrl = await this.bridgeInstance.getIntent(externaSenderId).uploadContent(content);
+			await this.bridgeInstance.getIntent(externaSenderId).sendMessage(externalRoomId, {
+				body: fileDetails.filename,
+				filename: fileDetails.filename,
+				info: {
+					size: fileDetails.fileSize,
+					mimetype: fileDetails.mimeType,
+					...(fileDetails.metadata?.height && fileDetails.metadata?.width
+						? { h: fileDetails.metadata?.height, w: fileDetails.metadata?.width }
+						: {}),
+				},
+				msgtype: this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
+				url: mxcUrl,
+			});
+		} catch (e: any) {
+			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
+				throw new Error('File is too large');
+			}
+		}
+	}
+
+	private getMsgTypeBasedOnMimeType(mimeType: string): MatrixEnumSendMessageType {
+		const knownImageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+		const knownAudioMimeTypes = ['audio/mpeg', 'audio/ogg', 'audio/wav'];
+		const knownVideoMimeTypes = ['video/mp4', 'video/ogg', 'video/webm'];
+
+		if (knownImageMimeTypes.includes(mimeType)) {
+			return MatrixEnumSendMessageType.IMAGE;
+		}
+		if (knownAudioMimeTypes.includes(mimeType)) {
+			return MatrixEnumSendMessageType.AUDIO;
+		}
+		if (knownVideoMimeTypes.includes(mimeType)) {
+			return MatrixEnumSendMessageType.VIDEO;
+		}
+		return MatrixEnumSendMessageType.FILE;
 	}
 
 	public async uploadContent(

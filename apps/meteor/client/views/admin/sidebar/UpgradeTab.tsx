@@ -1,24 +1,11 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import { useRoutePath, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
+import { useRoutePath, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
-import type { UpgradeTabVariant } from '../../../../lib/getUpgradeTabType';
+import { getUpgradeTabLabel, isFullyFeature, UpgradeTabVariant } from '../../../../lib/upgradeTab';
 import Emoji from '../../../components/Emoji';
 import Sidebar from '../../../components/Sidebar';
-
-const getUpgradeTabLabel = (type: UpgradeTabVariant): TranslationKey => {
-	switch (type) {
-		case 'go-fully-featured':
-		case 'go-fully-featured-registered':
-			return 'Upgrade_tab_go_fully_featured';
-		case 'trial-gold':
-		case 'trial-enterprise':
-			return 'Upgrade_tab_trial_guide';
-		case 'upgrade-your-plan':
-			return 'Upgrade_tab_upgrade_your_plan';
-	}
-};
 
 const customColors = {
 	default: colors['s2-700'],
@@ -42,7 +29,7 @@ const UpgradeTab = ({ type, currentPath, trialEndDate }: UpgradeTabProps): React
 	const t = useTranslation();
 
 	const label = getUpgradeTabLabel(type);
-	const displayEmoji = type === 'go-fully-featured';
+	const displayEmoji = isFullyFeature(type);
 
 	return (
 		<Sidebar.GenericItem active={currentPath === path} href={String(path)} customColors={customColors} textColor='alternative'>

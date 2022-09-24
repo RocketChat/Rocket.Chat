@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { FederationRoomServiceListener } from '../application/RoomServiceListener';
 import { FederationRoomServiceSender } from '../application/sender/RoomServiceSender';
@@ -7,6 +7,7 @@ import { MatrixEventsHandler } from './matrix/handlers';
 import type { MatrixBaseEventHandler } from './matrix/handlers/BaseEvent';
 import {
 	MatrixRoomCreatedHandler,
+	MatrixRoomEventRedactedHandler,
 	MatrixRoomJoinRulesChangedHandler,
 	MatrixRoomMembershipChangedHandler,
 	MatrixRoomMessageSentHandler,
@@ -24,6 +25,9 @@ import { FederationRoomSenderConverter } from './rocket-chat/converters/RoomSend
 import { FederationRoomInternalHooksValidator } from '../application/sender/RoomInternalHooksValidator';
 import { FederationUserServiceSender } from '../application/sender/UserServiceSender';
 import { RocketChatFileAdapter } from './rocket-chat/adapters/File';
+import { FederationMessageServiceListener } from '../application/MessageServiceListener';
+import { MatrixMessageReactedHandler } from './matrix/handlers/Message';
+import { FederationMessageServiceSender } from '../application/sender/MessageServiceSender';
 
 export class FederationFactory {
 	public static buildRocketSettingsAdapter(): RocketChatSettingsAdapter {
@@ -87,6 +91,27 @@ export class FederationFactory {
 		return new FederationUserServiceSender(rocketUserAdapter, rocketFileAdapter, rocketSettingsAdapter, bridge);
 	}
 
+	public static buildMessageServiceSender(
+		rocketRoomAdapter: RocketChatRoomAdapter,
+		rocketUserAdapter: RocketChatUserAdapter,
+		rocketSettingsAdapter: RocketChatSettingsAdapter,
+		rocketMessageAdapter: RocketChatMessageAdapter,
+		bridge: IFederationBridge,
+	): FederationMessageServiceSender {
+		return new FederationMessageServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, rocketMessageAdapter, bridge);
+	}
+
+	public static buildMessageServiceReceiver(
+		rocketRoomAdapter: RocketChatRoomAdapter,
+		rocketUserAdapter: RocketChatUserAdapter,
+		rocketMessageAdapter: RocketChatMessageAdapter,
+		rocketFileAdapter: RocketChatFileAdapter,
+		rocketSettingsAdapter: RocketChatSettingsAdapter,
+		bridge: IFederationBridge,
+	): FederationMessageServiceListener {
+		return new FederationMessageServiceListener(rocketRoomAdapter, rocketUserAdapter, rocketMessageAdapter, rocketFileAdapter, rocketSettingsAdapter, bridge);
+	}
+
 	public static buildRoomInternalHooksValidator(
 		rocketRoomAdapter: RocketChatRoomAdapter,
 		rocketUserAdapter: RocketChatUserAdapter,
@@ -111,13 +136,15 @@ export class FederationFactory {
 
 	public static buildFederationEventHandler(
 		roomServiceReceive: FederationRoomServiceListener,
+		messageServiceReceiver: FederationMessageServiceListener,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 	): MatrixEventsHandler {
-		return new MatrixEventsHandler(FederationFactory.getEventHandlers(roomServiceReceive, rocketSettingsAdapter));
+		return new MatrixEventsHandler(FederationFactory.getEventHandlers(roomServiceReceive, messageServiceReceiver, rocketSettingsAdapter));
 	}
 
 	public static getEventHandlers(
 		roomServiceReceiver: FederationRoomServiceListener,
+		messageServiceReceiver: FederationMessageServiceListener,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 	): MatrixBaseEventHandler[] {
 		return [
@@ -127,6 +154,8 @@ export class FederationFactory {
 			new MatrixRoomJoinRulesChangedHandler(roomServiceReceiver),
 			new MatrixRoomNameChangedHandler(roomServiceReceiver),
 			new MatrixRoomTopicChangedHandler(roomServiceReceiver),
+			new MatrixRoomEventRedactedHandler(roomServiceReceiver),
+			new MatrixMessageReactedHandler(messageServiceReceiver),
 		];
 	}
 
@@ -134,12 +163,17 @@ export class FederationFactory {
 		roomServiceSender: FederationRoomServiceSender,
 		roomInternalHooksValidator: FederationRoomInternalHooksValidator,
 		userServiceSender: FederationUserServiceSender,
+		messageServiceSender: FederationMessageServiceSender,
 	): void {
-		FederationFactory.setupActions(roomServiceSender, userServiceSender);
+		FederationFactory.setupActions(roomServiceSender, userServiceSender, messageServiceSender);
 		FederationFactory.setupValidators(roomInternalHooksValidator);
 	}
 
-	private static setupActions(roomServiceSender: FederationRoomServiceSender, userServiceSender: FederationUserServiceSender): void {
+	private static setupActions(
+		roomServiceSender: FederationRoomServiceSender,
+		userServiceSender: FederationUserServiceSender,
+		messageServiceSender: FederationMessageServiceSender,
+	): void {
 		FederationHooks.afterUserLeaveRoom((user: IUser, room: IRoom) =>
 			roomServiceSender.afterUserLeaveRoom(FederationRoomSenderConverter.toAfterUserLeaveRoom(user._id, room._id)),
 		);
@@ -149,6 +183,16 @@ export class FederationFactory {
 			),
 		);
 		FederationHooks.afterUserAvatarChanged(async (user: IUser) => userServiceSender.afterUserAvatarChanged(user));
+		FederationHooks.afterMessageReacted((message: IMessage, user: IUser, reaction: string) =>
+			messageServiceSender.sendExternalMessageReaction(message, user, reaction),
+		);
+		FederationHooks.afterMessageunReacted((message: IMessage, user: IUser, reaction: string) =>
+			messageServiceSender.sendExternalMessageUnReaction(message, user, reaction),
+		);
+		FederationHooks.afterMessageDeleted((message: IMessage, roomId: string) => roomServiceSender.afterMessageDeleted(message, roomId));
+		FederationHooks.afterMessageUpdated((message: IMessage, roomId: string, userId: string) =>
+			roomServiceSender.afterMessageUpdated(message, roomId, userId),
+		);
 	}
 
 	private static setupValidators(roomInternalHooksValidator: FederationRoomInternalHooksValidator): void {

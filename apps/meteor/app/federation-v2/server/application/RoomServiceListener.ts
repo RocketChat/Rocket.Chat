@@ -16,9 +16,13 @@ import type {
 	FederationRoomChangeJoinRulesDto,
 	FederationRoomChangeNameDto,
 	FederationRoomChangeTopicDto,
+	FederationRoomReceiveExternalFileMessageDto,
+	FederationRoomRedactEventDto,
+	FederationRoomEditExternalMessageDto,
 } from './input/RoomReceiverDto';
 import { FederationService } from './AbstractFederationService';
 import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
+import { getRedactMessageHandler } from './RoomRedactionHandlers';
 
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
@@ -189,7 +193,7 @@ export class FederationRoomServiceListener extends FederationService {
 	}
 
 	public async onExternalMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalMessageDto): Promise<void> {
-		const { externalRoomId, externalSenderId, messageText } = roomReceiveExternalMessageInput;
+		const { externalRoomId, externalSenderId, messageText, externalEventId } = roomReceiveExternalMessageInput;
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
@@ -201,7 +205,62 @@ export class FederationRoomServiceListener extends FederationService {
 			return;
 		}
 
-		await this.internalMessageAdapter.sendMessage(senderUser, federatedRoom, messageText);
+		await this.internalMessageAdapter.sendMessage(senderUser, federatedRoom, messageText, externalEventId);
+	}
+
+	public async onExternalMessageEditedReceived(roomEditExternalMessageInput: FederationRoomEditExternalMessageDto): Promise<void> {
+		const { externalRoomId, externalSenderId, editsEvent, newMessageText } = roomEditExternalMessageInput;
+
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const senderUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!senderUser) {
+			return;
+		}
+
+		const message = await this.internalMessageAdapter.getMessageByFederationId(editsEvent);
+		if (!message) {
+			return;
+		}
+		// TODO: create an entity to abstract all the message logic
+		if (!FederatedRoom.shouldUpdateMessage(newMessageText, message)) {
+			return;
+		}
+
+		await this.internalMessageAdapter.editMessage(senderUser, newMessageText, message);
+	}
+
+	public async onExternalFileMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalFileMessageDto): Promise<void> {
+		const { externalRoomId, externalSenderId, messageBody, externalEventId } = roomReceiveExternalMessageInput;
+
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const senderUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!senderUser) {
+			return;
+		}
+		const fileDetails = {
+			name: messageBody.filename,
+			size: messageBody.size,
+			type: messageBody.mimetype,
+			rid: federatedRoom.getInternalId(),
+			userId: senderUser.getInternalId(),
+		};
+		const readableStream = await this.bridge.getReadStreamForFileFromUrl(senderUser.getExternalId(), messageBody.url);
+		const { files = [], attachments } = await this.internalFileAdapter.uploadFile(
+			readableStream,
+			federatedRoom.getInternalId(),
+			senderUser.getInternalReference(),
+			fileDetails,
+		);
+
+		await this.internalMessageAdapter.sendFileMessage(senderUser, federatedRoom, files, attachments, externalEventId);
 	}
 
 	public async onChangeJoinRules(roomJoinRulesChangeInput: FederationRoomChangeJoinRulesDto): Promise<void> {
@@ -263,5 +322,24 @@ export class FederationRoomServiceListener extends FederationService {
 		federatedRoom.changeRoomTopic(roomTopic);
 
 		await this.internalRoomAdapter.updateRoomTopic(federatedRoom, federatedUser);
+	}
+
+	public async onRedactEvent(roomRedactEventInput: FederationRoomRedactEventDto): Promise<void> {
+		const { externalRoomId, redactsEvent, externalSenderId } = roomRedactEventInput;
+
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!federatedUser) {
+			return;
+		}
+		const handler = await getRedactMessageHandler(this.internalMessageAdapter, redactsEvent, federatedUser);
+		if (!handler) {
+			return;
+		}
+		await handler.handle();
 	}
 }
