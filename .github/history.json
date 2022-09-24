@@ -93674,37 +93674,82 @@
         "4.4",
         "5.0"
       ],
+      "pull_requests": []
+    },
+    "4.8.6": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "5.0.7": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "5.1.3": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
       "pull_requests": [
         {
-          "pr": "26776",
-          "title": "[FIX] Livechat trigger messages covering all the website",
-          "userLogin": "tiagoevanp",
-          "milestone": "5.1.1",
+          "pr": "26880",
+          "title": "[FIX] `MongoInvalidArgumentError` on overwriting existing setting",
+          "userLogin": "debdutdeb",
+          "milestone": "5.1.3",
           "contributors": [
-            "tiagoevanp",
+            "debdutdeb",
+            "sampaiodiego",
             "kodiakhq[bot]",
             "web-flow"
           ]
         },
         {
-          "pr": "26808",
-          "title": "[FIX] Restore current chats  default table order",
-          "userLogin": "MartinSchoeler",
-          "milestone": "5.1.1",
+          "pr": "26917",
+          "title": "[FIX] Error when mentioning a non-member of a public channel",
+          "userLogin": "debdutdeb",
+          "milestone": "5.1.3",
           "contributors": [
-            "MartinSchoeler",
+            "debdutdeb",
             "kodiakhq[bot]",
             "web-flow"
           ]
         },
         {
-          "pr": "26819",
-          "title": "[FIX] Fix broken legacy message view",
-          "userLogin": "hugocostadev",
-          "description": "Fixed `messagesHistory` function, it was filtering messages only with existing threads.",
-          "milestone": "5.1.1",
+          "pr": "26836",
+          "title": "[FIX] Importer fails when file includes user without an email.",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "5.1.3",
           "contributors": [
-            "hugocostadev"
+            "pierre-lehnen-rc",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26652",
+          "title": "[FIX] Check if messsage.replies exist on new message template",
+          "userLogin": "filipemarins",
+          "milestone": "5.1.3",
+          "contributors": [
+            "filipemarins",
+            "web-flow",
+            "kodiakhq[bot]"
           ]
         }
       ]
