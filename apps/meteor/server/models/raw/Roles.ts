@@ -205,7 +205,8 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 				return Subscriptions.findUsersInRoles([role._id], scope, options);
 			case 'Users':
 			default:
-				return Users.findUsersInRoles([role._id], undefined, options);
+				// TODO change this unknown cast
+				return Users.findUsersInRoles([role._id], undefined, options) as unknown as Promise<FindCursor<IUser> | FindCursor<P>>;
 		}
 	}
 
