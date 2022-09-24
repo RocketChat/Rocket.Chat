@@ -1,4 +1,4 @@
-import { isEmailInboxSendMail, isMailerUnsubscribeProps } from '@rocket.chat/rest-typings';
+import { isMailerProps, isMailerUnsubscribeProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
@@ -7,7 +7,7 @@ API.v1.addRoute(
 	'mailer',
 	{
 		authRequired: true,
-		validateParams: isEmailInboxSendMail,
+		validateParams: isMailerProps,
 	},
 	{
 		async post() {

@@ -60,3 +60,51 @@ describe('Mailer', () => {
 		});
 	});
 });
+
+describe('Mailer Unsubscribe', () => {
+	describe('POST mailer unsubscribe', () => {
+		it('should unsubscribe to mailer if the request is correct', (done) => {
+			request
+				.post(api('mailer.unsubscribe'))
+				.set(credentials)
+				.send({
+					_id: credentials['X-User-Id'],
+					createdAt: new Date().getTime().toString(),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(() => done());
+		});
+		it('should throw an error if the "_id" param is missing', (done) => {
+			request
+				.post(api('mailer.unsubscribe'))
+				.set(credentials)
+				.send({
+					createdAt: new Date().getTime().toString(),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(() => done());
+		});
+		it('should throw an error if the "createdAt" param is missing', (done) => {
+			request
+				.post(api('mailer.unsubscribe'))
+				.set(credentials)
+				.send({
+					_id: credentials['X-User-Id'],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(() => done());
+		});
+	});
+});
