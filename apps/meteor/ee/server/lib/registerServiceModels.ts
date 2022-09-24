@@ -3,7 +3,7 @@ import type {
 	ILivechatDepartmentAgents,
 	ILivechatInquiryRecord,
 	ISetting,
-  IUser,
+	IUser,
 	ISubscription,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
@@ -39,7 +39,8 @@ export function registerServiceModels(db: Db, trash?: Collection): void {
 	);
 	registerModel('ITeamModel', () => new TeamRaw(db));
 	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
-	registerModel('IUsersModel', () => new UsersRaw(db, trash as unknown as Collection<RocketChatRecordDeleted<IUser>>));
+	// @ts-ignore-error
+	registerModel('IUsersModel', () => new UsersRaw(db));
 
 	// @ts-ignore-error
 	registerModel('IMessagesModel', () => new MessagesRaw(db));
