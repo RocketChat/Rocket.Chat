@@ -19,7 +19,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
   findUsersInRoles<T>(
     roles: Array<IRole['_id']>,
-    _scope?: IRole['scope'],
+    scope?: IRole['scope'],
     options?: FindOptions<T extends IUser ? IUser : T>,
   ): FindCursor<T | IUser>;
 
