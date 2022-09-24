@@ -1,7 +1,6 @@
-import { Avatars } from '@rocket.chat/models';
+import { Avatars, Uploads } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { IMessage, IUpload, IUser } from '@rocket.chat/core-typings';
-import { Uploads } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../../../file-upload/server';
 import { parseFileIntoMessageAttachments } from '../../../../../file-upload/server/methods/sendFileMessage';

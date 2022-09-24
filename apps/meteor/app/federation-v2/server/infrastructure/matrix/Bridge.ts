@@ -13,7 +13,7 @@ import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
 let MatrixUserInstance: any;
-require('util').inspect.defaultOptions.depth = null;
+
 interface IRegistrationFileNamespaceRule {
 	exclusive: boolean;
 	regex: string;
@@ -165,7 +165,10 @@ export class MatrixBridge implements IFederationBridge {
 		try {
 			await this.bridgeInstance
 				.getIntent(externalSenderId)
-				.matrixClient.sendHtmlText(externalRoomId, this.escapeEmojis(await toExternalMessageFormat(message.msg, externalRoomId, this.homeServerDomain)));
+				.matrixClient.sendHtmlText(
+					externalRoomId,
+					this.escapeEmojis(await toExternalMessageFormat(message.msg, externalRoomId, this.homeServerDomain)),
+				);
 		} catch (e) {
 			throw new Error('User is not part of the room.');
 		}
@@ -250,8 +253,12 @@ export class MatrixBridge implements IFederationBridge {
 	): Promise<void> {
 		await this.bridgeInstance.getIntent(externalUserId).matrixClient.sendEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
 			'body': ` * ${newMessageText}`,
+			'format': 'org.matrix.custom.html',
+			'formatted_body': this.escapeEmojis(await toExternalMessageFormat(newMessageText, externalRoomId, this.homeServerDomain)),
 			'm.new_content': {
-				body: newMessageText,
+				body: this.escapeEmojis(await toExternalMessageFormat(newMessageText, externalRoomId, this.homeServerDomain)),
+				format: 'org.matrix.custom.html',
+				formatted_body: this.escapeEmojis(await toExternalMessageFormat(newMessageText, externalRoomId, this.homeServerDomain)),
 				msgtype: MatrixEnumSendMessageType.TEXT,
 			},
 			'm.relates_to': {

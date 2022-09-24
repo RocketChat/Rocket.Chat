@@ -31,7 +31,7 @@ describe('Federation - Application - Message Senders', () => {
 		describe('#sendMessage()', () => {
 			it('should send a message through the bridge', async () => {
 				await getExternalMessageSender({} as any, bridge as any, fileAdapter as any).sendMessage(roomId, senderId, message);
-				expect(bridge.sendMessage.calledWith(roomId, senderId, message.msg)).to.be.true;
+				expect(bridge.sendMessage.calledWith(roomId, senderId, message)).to.be.true;
 			});
 		});
 	});
@@ -66,6 +66,7 @@ describe('Federation - Application - Message Senders', () => {
 			it('should send a message (upload the file) through the bridge', async () => {
 				fileAdapter.getFileRecordById.resolves({ name: 'filename', size: 12, type: 'image/png' });
 				fileAdapter.getBufferFromFileRecord.resolves({ buffer: 'buffer' });
+				fileAdapter.extractMetadataFromFile.resolves({ width: 100, height: 100, format: 'png' });
 				await getExternalMessageSender(message, bridge as any, fileAdapter as any).sendMessage(roomId, senderId, message);
 				expect(fileAdapter.getBufferFromFileRecord.calledWith({ name: 'filename', size: 12, type: 'image/png' })).to.be.true;
 				expect(
@@ -77,11 +78,7 @@ describe('Federation - Application - Message Senders', () => {
 							filename: 'filename',
 							fileSize: 12,
 							mimeType: 'image/png',
-							metadata: {
-								width: undefined,
-								height: undefined,
-								format: undefined,
-							},
+							metadata: { width: 100, height: 100, format: 'png' },
 						},
 					),
 				).to.be.true;

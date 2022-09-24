@@ -10,11 +10,11 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapterEE,
 		protected internalUserAdapter: RocketChatUserAdapterEE,
-		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected internalFileAdapter: RocketChatFileAdapter,
+		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected bridge: IFederationBridgeEE,
 	) {
-		super(internalRoomAdapter, internalUserAdapter, internalSettingsAdapter, internalFileAdapter, bridge);
+		super(internalRoomAdapter, internalUserAdapter, internalFileAdapter, internalSettingsAdapter, bridge);
 	}
 
 	public async createLocalDirectMessageRoom(dmRoomCreateInput: FederationCreateDirectMessageDto): Promise<void> {

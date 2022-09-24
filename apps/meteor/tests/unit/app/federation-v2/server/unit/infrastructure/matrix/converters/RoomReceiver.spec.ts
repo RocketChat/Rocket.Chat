@@ -197,7 +197,10 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		});
 
 		it('should return the avatarUrl if the event is equal to join', () => {
-			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto({ ...event, content: { ...event.content, membership: 'join' } } as any, 'domain');
+			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
+				{ ...event, content: { ...event.content, membership: 'join' } } as any,
+				'domain',
+			);
 			expect(result).to.be.eql({
 				externalEventId: 'eventId',
 				externalRoomId: '!roomId:matrix.org',
@@ -217,7 +220,10 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		});
 
 		it('should NOT return the avatarUrl if the event is different from join', () => {
-			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto({ ...event, content: { ...event.content, membership: 'invite' } } as any, 'domain');
+			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
+				{ ...event, content: { ...event.content, membership: 'invite' } } as any,
+				'domain',
+			);
 			expect(result).to.be.eql({
 				externalEventId: 'eventId',
 				externalRoomId: '!roomId:matrix.org',

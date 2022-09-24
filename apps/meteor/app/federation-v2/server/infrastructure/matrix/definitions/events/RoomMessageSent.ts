@@ -38,8 +38,8 @@ export interface IMatrixEventContentRoomMessageSent extends IBaseEventContent {
 	'm.new_content'?: {
 		body: string;
 		msgtype: MatrixSendMessageType;
-		'format'?: string;
-		'formatted_body'?: string;
+		format?: string;
+		formatted_body?: string;
 	};
 	'm.relates_to'?: {
 		rel_type: MatrixRelatesToRelType;

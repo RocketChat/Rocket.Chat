@@ -11,7 +11,7 @@ class TextExternalMessageSender implements IExternalMessageSender {
 	constructor(private readonly bridge: IFederationBridge) {}
 
 	public async sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<void> {
-		await this.bridge.sendMessage(externalRoomId, externalSenderId, message.msg);
+		await this.bridge.sendMessage(externalRoomId, externalSenderId, message);
 	}
 }
 

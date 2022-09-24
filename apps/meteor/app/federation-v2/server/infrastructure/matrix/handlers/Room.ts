@@ -51,8 +51,12 @@ export class MatrixRoomMessageSentHandler extends MatrixBaseEventHandler {
 			eventContent['m.relates_to'] &&
 			eventContent['m.relates_to'].rel_type === MatrixEnumRelatesToRelType.REPLACE;
 		return isAnEditionEvent
-			? this.roomService.onExternalMessageEditedReceived(MatrixRoomReceiverConverter.toEditRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()))
-			: this.roomService.onExternalMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()));
+			? this.roomService.onExternalMessageEditedReceived(
+					MatrixRoomReceiverConverter.toEditRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+			  )
+			: this.roomService.onExternalMessageReceived(
+					MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+			  );
 	}
 
 	public async handle(externalEvent: MatrixEventRoomMessageSent): Promise<void> {
@@ -65,17 +69,23 @@ export class MatrixRoomMessageSentHandler extends MatrixBaseEventHandler {
 			[MatrixEnumSendMessageType.IMAGE]: () =>
 				this.roomService.onExternalFileMessageReceived(MatrixRoomReceiverConverter.toSendRoomFileMessageDto(externalEvent)),
 			[MatrixEnumSendMessageType.NOTICE]: () =>
-				this.roomService.onExternalMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain())),
+				this.roomService.onExternalMessageReceived(
+					MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+				),
 			[MatrixEnumSendMessageType.VIDEO]: () =>
 				this.roomService.onExternalFileMessageReceived(MatrixRoomReceiverConverter.toSendRoomFileMessageDto(externalEvent)),
 			[MatrixEnumSendMessageType.EMOTE]: () =>
-				this.roomService.onExternalMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain())),
+				this.roomService.onExternalMessageReceived(
+					MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+				),
 			[MatrixEnumSendMessageType.LOCATION]: () => {
 				throw new Error('Location events are not supported yet');
 			},
 		};
 		const defaultHandler = () =>
-			this.roomService.onExternalMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()));
+			this.roomService.onExternalMessageReceived(
+				MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+			);
 
 		await (handlers[externalEvent.content.msgtype as MatrixEnumSendMessageType] || defaultHandler)();
 	}

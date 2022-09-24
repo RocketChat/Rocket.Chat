@@ -153,7 +153,7 @@ export class FederationRoomServiceSender extends FederationService {
 		if (!federatedRoom) {
 			throw new Error(`Could not find room id for ${internalRoomId}`);
 		}
-		
+
 		await getExternalMessageSender(message, this.bridge, this.internalFileAdapter).sendMessage(
 			federatedRoom.getExternalId(),
 			federatedSender.getExternalId(),

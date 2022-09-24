@@ -133,7 +133,8 @@ export class MatrixRoomReceiverConverter {
 			inviterUsernameOnly: formatExternalUserIdToInternalUsernameFormat(externalEvent.sender),
 			eventOrigin: getEventOrigin(externalEvent.sender, homeServerDomain),
 			leave: externalEvent.content?.membership === RoomMembershipChangedEventType.LEAVE,
-			userAvatarUrl: externalEvent.content?.membership === RoomMembershipChangedEventType.JOIN ? externalEvent.content?.avatar_url : undefined,
+			userAvatarUrl:
+				externalEvent.content?.membership === RoomMembershipChangedEventType.JOIN ? externalEvent.content?.avatar_url : undefined,
 		});
 	}
 
@@ -161,7 +162,10 @@ export class MatrixRoomReceiverConverter {
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			newMessageText: toInternalMessageFormat((externalEvent.content['m.new_content']?.formatted_body || externalEvent.content['m.new_content']?.body) as string, homeServerDomain),
+			newMessageText: toInternalMessageFormat(
+				(externalEvent.content['m.new_content']?.formatted_body || externalEvent.content['m.new_content']?.body) as string,
+				homeServerDomain,
+			),
 			editsEvent: externalEvent.content['m.relates_to']?.event_id as string,
 		});
 	}
