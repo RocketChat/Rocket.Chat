@@ -32,8 +32,6 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			// Should we check permission for mailer.unsubscribe?
-
 			const { _id, createdAt } = this.bodyParams;
 
 			const result = Meteor.call('Mailer:unsubscribe', _id, createdAt);
