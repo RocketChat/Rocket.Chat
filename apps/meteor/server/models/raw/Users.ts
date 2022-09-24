@@ -10,16 +10,17 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { FindPaginated } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Db, Collection, UpdateResult, FindOptions, FindCursor, Filter, ModifyResult, Document, UpdateFilter } from 'mongodb';
+import type { Db, Collection, UpdateResult, FindOptions, FindCursor, Filter, ModifyResult, Document, UpdateFilter, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 type AggregationParameter<T> = Exclude<Parameters<Collection<T>['aggregate']>[0], undefined>;
+// TODO: is there a better way?
 type AggregationLimitStage<T> = Parameters<ReturnType<Collection<T>['aggregate']>['limit']>[0];
 type AggregationSortStage<T> = Parameters<ReturnType<Collection<T>['aggregate']>['sort']>[0];
 
 // @ts-ignore
-class UsersRaw extends BaseRaw<IUser> {
+export class UsersRaw extends BaseRaw<IUser> {
 	constructor(db: Db, trash: Collection<RocketChatRecordDeleted<IUser>>) {
 		super(db, 'users', trash, {
 			collectionNameResolver(name: string) {
@@ -52,7 +53,12 @@ class UsersRaw extends BaseRaw<IUser> {
 	 * @param {null} scope the value for the role scope (room id) - not used in the users collection
 	 * @param {any} options
 	 */
-	findUsersInRoles(roles: Array<IRole['_id']>, _scope: IRole['scope'], options: FindOptions<IUser>): FindCursor<IUser> {
+	// DONE
+	findUsersInRoles<T>(
+		roles: Array<IRole['_id']>,
+		_scope?: IRole['scope'],
+		options?: FindOptions<T extends IUser ? T : IUser>,
+	): FindCursor<T> | FindCursor<IUser> {
 		// TODO roles
 
 		const query: Filter<IUser> = {
@@ -62,7 +68,10 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	findPaginatedUsersInRoles(roles: Array<IRole['_id']>, options: FindOptions<IUser>): FindPaginated<FindCursor<IUser>> {
+	findPaginatedUsersInRoles<T>(
+		roles: Array<IRole['_id']>,
+		options: FindOptions<T extends IUser ? T : IUser>,
+	): FindPaginated<FindCursor<WithId<T>>> | FindPaginated<FindCursor<WithId<IUser>>> {
 		// TODO roles
 
 		const query: Filter<IUser> = {
@@ -72,19 +81,25 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.findPaginated(query, options);
 	}
 
-	findOneByUsername(username: IUser['username'], options: FindOptions<IUser>): Promise<IUser | null> {
+	findOneByUsername<T>(
+		username: NonNullable<IUser['username']>,
+		options: FindOptions<T extends IUser ? T : IUser> = {},
+	): Promise<T | null> | Promise<IUser | null> {
 		const query: Filter<IUser> = { username };
 
 		return this.findOne(query, options);
 	}
 
-	findOneAgentById(_id: ILivechatAgent['_id'], options: FindOptions<ILivechatAgent>): Promise<ILivechatAgent> {
+	findOneAgentById<T>(
+		_id: ILivechatAgent['_id'],
+		options: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,
+	): Promise<T | null> | Promise<ILivechatAgent | null> {
 		const query: Filter<IUser> = {
 			_id,
 			roles: 'livechat-agent',
 		};
 
-		return this.findOne(query, options) as Promise<ILivechatAgent>;
+		return this.findOne(query, options);
 	}
 
 	/**
@@ -92,7 +107,11 @@ class UsersRaw extends BaseRaw<IUser> {
 	 * @param {any} query
 	 * @param {any} options
 	 */
-	findUsersInRolesWithQuery(roles: Array<IRole['_id']>, query: Filter<IUser>, options: FindOptions<IUser>): FindCursor<IUser> {
+	findUsersInRolesWithQuery<T>(
+		roles: Array<IRole['_id']>,
+		query: Filter<IUser>,
+		options: FindOptions<T extends IUser ? T : IUser>,
+	): FindCursor<T> | FindCursor<IUser> {
 		// TODO roles
 
 		Object.assign(query, { roles: { $in: roles } });
@@ -105,11 +124,11 @@ class UsersRaw extends BaseRaw<IUser> {
 	 * @param {any} query
 	 * @param {any} options
 	 */
-	findPaginatedUsersInRolesWithQuery(
+	findPaginatedUsersInRolesWithQuery<T>(
 		roles: Array<IRole['_id']>,
 		query: Filter<IUser>,
-		options: FindOptions<IUser>,
-	): FindPaginated<FindCursor<IUser>> {
+		options: FindOptions<T extends IUser ? T : IUser>,
+	): FindPaginated<FindCursor<WithId<T>>> | FindPaginated<FindCursor<WithId<IUser>>> {
 		// TODO roles
 
 		Object.assign(query, { roles: { $in: roles } });
@@ -117,11 +136,11 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.findPaginated(query, options);
 	}
 
-	findOneByUsernameAndRoomIgnoringCase(
+	findOneByUsernameAndRoomIgnoringCase<T>(
 		username: IUser['_id'] | RegExp,
 		rid: IRoom['_id'],
-		options: FindOptions<IUser>,
-	): Promise<IUser | null> {
+		options: FindOptions<T extends IUser ? T : IUser>,
+	): Promise<T | null> | Promise<IUser | null> {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
@@ -134,7 +153,11 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.findOne(query, options);
 	}
 
-	findOneByIdAndLoginHashedToken(_id: IUser['_id'], token: string, options: FindOptions<IUser>): Promise<IUser | null> {
+	findOneByIdAndLoginHashedToken<T>(
+		_id: IUser['_id'],
+		token: string,
+		options: FindOptions<T extends IUser ? T : IUser>,
+	): Promise<null | T> | Promise<IUser | null> {
 		const query: Filter<IUser> = {
 			_id,
 			'services.resume.loginTokens.hashedToken': token,
@@ -143,14 +166,14 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.findOne(query, options);
 	}
 
-	findByActiveUsersExcept(
+	findByActiveUsersExcept<T>(
 		searchTerm: string,
 		exceptions: string | string[],
-		options: FindOptions<IUser>,
+		options: FindOptions<T extends IUser ? T : IUser>,
 		searchFields: any,
 		extraQuery = [],
 		{ startsWith = false, endsWith = false } = {},
-	): FindCursor<IUser> {
+	): FindCursor<T> | FindCursor<IUser> {
 		if (exceptions == null) {
 			exceptions = [];
 		}
@@ -186,14 +209,14 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	findPaginatedByActiveUsersExcept(
+	findPaginatedByActiveUsersExcept<T>(
 		searchTerm: string,
 		exceptions: string | string[],
-		options: FindOptions<IUser>,
+		options: FindOptions<T extends IUser ? T : IUser>,
 		searchFields: any,
 		extraQuery: Filter<IUser>[] = [],
 		{ startsWith = false, endsWith = false } = {},
-	): FindPaginated<FindCursor<IUser>> {
+	): FindPaginated<FindCursor<WithId<T>>> | FindPaginated<FindCursor<WithId<IUser>>> {
 		if (exceptions == null) {
 			exceptions = [];
 		}
@@ -229,13 +252,13 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.findPaginated(query, options);
 	}
 
-	findPaginatedByActiveLocalUsersExcept(
+	findPaginatedByActiveLocalUsersExcept<T>(
 		searchTerm: string,
 		exceptions: string | string[],
-		options: FindOptions<IUser>,
+		options: FindOptions<T extends IUser ? T : IUser>,
 		forcedSearchFields: any,
 		localDomain: any,
-	): FindPaginated<FindCursor<IUser>> {
+	): FindPaginated<FindCursor<WithId<T>>> | FindPaginated<FindCursor<WithId<IUser>>> {
 		const extraQuery: Filter<IUser>[] = [
 			{
 				$or: [{ federation: { $exists: false } }, { 'federation.origin': localDomain }],
@@ -244,24 +267,24 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
-	findPaginatedByActiveExternalUsersExcept(
+	findPaginatedByActiveExternalUsersExcept<T>(
 		searchTerm: string,
 		exceptions: string | string[],
-		options: FindOptions<IUser>,
+		options: FindOptions<T extends IUser ? T : IUser>,
 		forcedSearchFields: any,
 		localDomain: any,
-	): FindPaginated<FindCursor<IUser>> {
+	): FindPaginated<FindCursor<WithId<T>>> | FindPaginated<FindCursor<WithId<IUser>>> {
 		const extraQuery: Filter<IUser>[] = [{ federation: { $exists: true } }, { 'federation.origin': { $ne: localDomain } }];
 		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
-	findActive(query: Filter<IUser>, options: FindOptions<IUser>): FindCursor<IUser> {
+	findActive<T>(query: Filter<IUser>, options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
 		Object.assign(query, { active: true });
 
 		return this.find(query, options);
 	}
 
-	findActiveByIds(userIds: Array<IUser['_id']>, options: FindOptions<IUser>): FindCursor<IUser> {
+	findActiveByIds<T>(userIds: Array<IUser['_id']>, options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
 		const query: Filter<IUser> = {
 			_id: { $in: userIds },
 			active: true,
@@ -270,7 +293,10 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	findActiveByIdsOrUsernames(userIds: Array<IUser['_id']>, options: FindOptions<IUser>): FindCursor<IUser> {
+	findActiveByIdsOrUsernames<T>(
+		userIds: Array<IUser['_id']>,
+		options: FindOptions<T extends IUser ? T : IUser> = {},
+	): FindCursor<T> | FindCursor<IUser> {
 		const query: Filter<IUser> = {
 			$or: [{ _id: { $in: userIds } }, { username: { $in: userIds } }],
 			active: true,
@@ -279,7 +305,7 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	findByIds(userIds: Array<IUser['_id']>, options: FindOptions<IUser>): FindCursor<IUser> {
+	findByIds<T>(userIds: Array<IUser['_id']>, options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
 		const query: Filter<IUser> = {
 			_id: { $in: userIds },
 		};
@@ -287,7 +313,10 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	findOneByUsernameIgnoringCase(username: NonNullable<IUser['username']> | RegExp, options: FindOptions<IUser>): Promise<IUser | null> {
+	findOneByUsernameIgnoringCase<T>(
+		username: NonNullable<IUser['username']> | RegExp,
+		options: FindOptions<T extends IUser ? T : IUser>,
+	): Promise<null | T> | Promise<IUser | null> {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
@@ -309,19 +338,19 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.findOne(query);
 	}
 
-	async findOneByAppId(appId: string, options: FindOptions<IUser>): Promise<IUser | null> {
+	findOneByAppId<T>(appId: string, options: FindOptions<T extends IUser ? T : IUser>): Promise<null | T> | Promise<IUser | null> {
 		const query: Filter<IUser> = { appId };
 
 		return this.findOne(query, options);
 	}
 
-	findLDAPUsers(options: FindOptions<IUser>): FindCursor<IUser> {
+	findLDAPUsers<T>(options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
 		const query: Filter<IUser> = { ldap: true };
 
 		return this.find(query, options);
 	}
 
-	findConnectedLDAPUsers(options: FindOptions<IUser>): FindCursor<IUser> {
+	findConnectedLDAPUsers<T>(options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
 		const query: Filter<IUser> = {
 			'ldap': true,
 			'services.resume.loginTokens': {
@@ -602,12 +631,12 @@ class UsersRaw extends BaseRaw<IUser> {
 			.toArray();
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions<T>(
 		termRegex: RegExp,
 		exceptions: NonNullable<IUser['username'][]>,
 		conditions: Filter<IUser>,
-		options: FindOptions<IUser>,
-	): FindCursor<IUser> {
+		options: FindOptions<T extends IUser ? T : IUser>,
+	): FindCursor<T> | FindCursor<IUser> {
 		if (exceptions == null) {
 			exceptions = [];
 		}
@@ -655,7 +684,7 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	countAllAgentsStatus({ departmentId = undefined }): Promise<
+	countAllAgentsStatus({ departmentId }: { departmentId: ILivechatDepartment['_id'] }): Promise<
 		Array<{
 			offline: number;
 			away: number;
@@ -890,15 +919,15 @@ class UsersRaw extends BaseRaw<IUser> {
 	updateStatusById(
 		userId: IUser['_id'],
 		{
-			statusDefault,
 			status,
 			statusConnection,
+			statusDefault,
 			statusText,
 		}: {
-			statusDefault: IUser['statusDefault'];
 			status: IUser['status'];
 			statusConnection: IUser['statusConnection'];
-			statusText: IUser['statusText'];
+			statusDefault?: IUser['statusDefault'];
+			statusText?: IUser['statusText'];
 		},
 	): Promise<UpdateResult> {
 		const query: Filter<IUser> = {
@@ -1228,24 +1257,37 @@ class UsersRaw extends BaseRaw<IUser> {
 	}
 
 	// Voip functions
-	findOneByAgentUsername(username: ILivechatAgent['username'], options: FindOptions<ILivechatAgent>): Promise<ILivechatAgent | null> {
+	findOneByAgentUsername<T>(
+		username: ILivechatAgent['username'],
+		options: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,
+	): Promise<null | T> | Promise<ILivechatAgent | null> {
 		const query: Filter<ILivechatAgent> = { username, roles: 'livechat-agent' };
 
 		return this.findOne(query as any, options);
 	}
 
-	findOneByExtension(extension: ILivechatAgent['extension'], options: FindOptions<ILivechatAgent>): Promise<IUser | null> {
+	findOneByExtension(extension: ILivechatAgent['extension']): Promise<ILivechatAgent | null>;
+	findOneByExtension(extension: ILivechatAgent['extension'], options?: FindOptions<ILivechatAgent>): Promise<ILivechatAgent | null>;
+	findOneByExtension<T>(
+		extension: ILivechatAgent['extension'],
+		options?: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,
+	): Promise<null | T> | Promise<ILivechatAgent | null> {
 		const query: Filter<IUser> = {
 			extension,
 		};
 
-		return this.findOne(query, options);
+		return this.findOne(query, options ?? {}) as any;
 	}
 
+	findByExtensions(extensions: NonNullable<ILivechatAgent['extension']>[]): FindCursor<ILivechatAgent>;
 	findByExtensions(
 		extensions: NonNullable<ILivechatAgent['extension']>[],
-		options: FindOptions<ILivechatAgent>,
-	): FindCursor<ILivechatAgent> {
+		options?: FindOptions<ILivechatAgent>,
+	): FindCursor<ILivechatAgent>;
+	findByExtensions<T>(
+		extensions: NonNullable<ILivechatAgent['extension']>[],
+		options?: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,
+	): FindCursor<T> | FindCursor<ILivechatAgent> {
 		const query: Filter<ILivechatAgent> = {
 			extension: {
 				$in: extensions,
@@ -1256,7 +1298,10 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query as Filter<IUser>, options);
 	}
 
-	getVoipExtensionByUserId(userId: IUser['_id'], options: FindOptions<ILivechatAgent>): Promise<IUser | null> {
+	getVoipExtensionByUserId<T>(
+		userId: ILivechatAgent['_id'],
+		options: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,
+	): Promise<null | T> | Promise<ILivechatAgent | null> {
 		const query: Filter<ILivechatAgent> = {
 			_id: userId,
 			extension: { $exists: true },
@@ -1289,11 +1334,11 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.updateOne(query as any, update);
 	}
 
-	getAvailableAgentsIncludingExt(
+	getAvailableAgentsIncludingExt<T>(
 		includeExt: ILivechatAgent['extension'],
 		text: string,
-		options: FindOptions<ILivechatAgent>,
-	): FindPaginated<FindCursor<ILivechatAgent>> {
+		options: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,
+	): FindPaginated<FindCursor<WithId<T>>> | FindPaginated<FindCursor<WithId<ILivechatAgent>>> {
 		const query: Filter<IUser> = {
 			roles: { $in: ['livechat-agent'] },
 			$and: [
@@ -1307,7 +1352,7 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.findPaginated(query, options);
 	}
 
-	findActiveUsersTOTPEnable(options: FindOptions<IUser>): FindCursor<IUser> {
+	findActiveUsersTOTPEnable<T>(options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
 		const query: Filter<IUser> = {
 			'active': true,
 			'services.totp.enabled': true,
@@ -1315,7 +1360,7 @@ class UsersRaw extends BaseRaw<IUser> {
 		return this.find(query, options);
 	}
 
-	findActiveUsersEmail2faEnable(options: FindOptions<IUser>): FindCursor<IUser> {
+	findActiveUsersEmail2faEnable<T>(options: FindOptions<T extends IUser ? T : IUser>): FindCursor<T> | FindCursor<IUser> {
 		const query: Filter<IUser> = {
 			'active': true,
 			'services.email2fa.enabled': true,
@@ -1347,7 +1392,7 @@ class UsersRaw extends BaseRaw<IUser> {
 		);
 	}
 
-	findOneByResetToken(token: ILoginToken, options: FindOptions<IUser>): Promise<IUser | null> {
+	findOneByResetToken<T>(token: ILoginToken, options: FindOptions<T extends IUser ? T : IUser>): Promise<null | T> | Promise<IUser | null> {
 		return this.findOne({ 'services.password.reset.token': token }, options);
 	}
 }

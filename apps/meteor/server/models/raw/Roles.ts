@@ -205,7 +205,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 				return Subscriptions.findUsersInRoles([role._id], scope, options);
 			case 'Users':
 			default:
-				return Users.findUsersInRoles([role._id], null, options);
+				return Users.findUsersInRoles([role._id], undefined, options);
 		}
 	}
 

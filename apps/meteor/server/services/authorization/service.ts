@@ -1,4 +1,4 @@
-import type { Db, Collection } from 'mongodb';
+import type { Db, Collection, FindOptions } from 'mongodb';
 import mem from 'mem';
 import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users, Roles } from '@rocket.chat/models';
@@ -123,7 +123,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private getUserFromRoles = mem(
 		async (roleIds: string[]) => {
-			const options = {
+			const options: FindOptions<IUser> = {
 				sort: {
 					username: 1,
 				},
@@ -133,7 +133,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 				},
 			};
 
-			const users = await Users.findUsersInRoles(roleIds, null, options).toArray();
+			const users = await Users.findUsersInRoles(roleIds, undefined, options).toArray();
 
 			return users.map((user) => ({
 				...user,
