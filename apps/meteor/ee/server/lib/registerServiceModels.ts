@@ -3,7 +3,6 @@ import type {
 	ILivechatDepartmentAgents,
 	ILivechatInquiryRecord,
 	ISetting,
-	IUser,
 	ISubscription,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';

@@ -1266,7 +1266,9 @@ export class UsersRaw extends BaseRaw<IUser> implements IUsersModel {
 	}
 
 	async findOneByExtension(extension: ILivechatAgent['extension']): Promise<ILivechatAgent | null>;
+
 	async findOneByExtension(extension: ILivechatAgent['extension'], options?: FindOptions<ILivechatAgent>): Promise<ILivechatAgent | null>;
+
 	async findOneByExtension<T>(
 		extension: ILivechatAgent['extension'],
 		options?: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,
@@ -1279,10 +1281,12 @@ export class UsersRaw extends BaseRaw<IUser> implements IUsersModel {
 	}
 
 	findByExtensions(extensions: NonNullable<ILivechatAgent['extension']>[]): FindCursor<ILivechatAgent>;
+
 	findByExtensions(
 		extensions: NonNullable<ILivechatAgent['extension']>[],
 		options?: FindOptions<ILivechatAgent>,
 	): FindCursor<ILivechatAgent>;
+
 	findByExtensions<T>(
 		extensions: NonNullable<ILivechatAgent['extension']>[],
 		options?: FindOptions<T extends ILivechatAgent ? T : ILivechatAgent>,

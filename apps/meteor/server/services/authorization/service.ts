@@ -1,4 +1,4 @@
-import type { Db, Collection, FindOptions } from 'mongodb';
+import type { FindOptions } from 'mongodb';
 import mem from 'mem';
 import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
