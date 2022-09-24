@@ -189,7 +189,10 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		});
 	}
 
-	public async addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'> & { ts?: Date }): Promise<void> {
+	public async addUserById(
+		callId: string,
+		user: Required<Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>> & { ts?: Date },
+	): Promise<void> {
 		await this.updateOneById(callId, {
 			$addToSet: {
 				users: {

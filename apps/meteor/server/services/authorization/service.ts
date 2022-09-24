@@ -1,7 +1,7 @@
 import type { Db, Collection, FindOptions } from 'mongodb';
 import mem from 'mem';
 import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { Subscriptions, Rooms, Users, Roles } from '@rocket.chat/models';
+import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
 
 import type { IAuthorization, RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
@@ -15,8 +15,6 @@ import './canAccessRoomLivechat';
 export class Authorization extends ServiceClass implements IAuthorization {
 	protected name = 'authorization';
 
-	private Permissions: Collection;
-
 	private getRolesCached = mem(this.getRoles.bind(this), {
 		maxAge: 1000,
 		cacheKey: JSON.stringify,
@@ -27,10 +25,8 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		...(process.env.TEST_MODE === 'true' && { maxAge: 1 }),
 	});
 
-	constructor(db: Db) {
+	constructor() {
 		super();
-
-		this.Permissions = db.collection('rocketchat_permissions');
 
 		const clearCache = (): void => {
 			mem.clear(this.getRolesCached);
@@ -148,7 +144,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 			return false;
 		}
 
-		const result = await this.Permissions.findOne({ _id: permission, roles: { $in: roles } }, { projection: { _id: 1 } });
+		const result = await Permissions.findOne({ _id: permission, roles: { $in: roles } }, { projection: { _id: 1 } });
 		return !!result;
 	}
 
