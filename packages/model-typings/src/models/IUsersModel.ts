@@ -17,12 +17,6 @@ type AggregationSortStage<T> = Parameters<ReturnType<Collection<T>['aggregate']>
 export interface IUsersModel extends IBaseModel<IUser> {
   addRolesByUserId(uid: IUser['_id'], roles: Array<IRole['_id']>): Promise<UpdateResult>;
 
-  /**
-   * @param {IRole['_id'][]} roles list of role ids
-   * @param {null} scope the value for the role scope (room id) - not used in the users collection
-   * @param {any} options
-   */
-  // DONE
   findUsersInRoles<T>(
     roles: Array<IRole['_id']>,
     _scope?: IRole['scope'],
@@ -44,22 +38,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
     options: FindOptions<T extends ILivechatAgent ? ILivechatAgent : T>,
   ): Promise<T | ILivechatAgent | null>;
 
-  /**
-   * @param {IRole['_id'][] | IRole['_id']} roles the list of role ids
-   * @param {any} query
-   * @param {any} options
-   */
   findUsersInRolesWithQuery<T>(
     roles: Array<IRole['_id']>,
     query: Filter<IUser>,
     options: FindOptions<T extends IUser ? IUser : T>,
   ): FindCursor<T | IUser>;
 
-  /**
-   * @param {IRole['_id'][] | IRole['_id']} roles the list of role ids
-   * @param {any} query
-   * @param {any} options
-   */
   findPaginatedUsersInRolesWithQuery<T>(
     roles: Array<IRole['_id']>,
     query: Filter<IUser>,
@@ -286,10 +270,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
   removeRoomsByRoomIdsAndUserId(rids: IRoom['_id'][], userId: IUser['_id']): Promise<UpdateResult | Document>;
 
-  /**
-   * @param {string} uid
-   * @param {IRole['_id']} roles the list of role ids to remove
-   */
   removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
 
   isUserInRoleScope(uid: IUser['_id']): Promise<boolean>;
