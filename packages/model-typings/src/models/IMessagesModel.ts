@@ -63,4 +63,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null>;
 
 	findOneByFederationId(federationEventId: string): Promise<IMessage | null>;
+
+	setFederationEventIdById(_id: string,federationEventId: string): Promise<void>;
 }

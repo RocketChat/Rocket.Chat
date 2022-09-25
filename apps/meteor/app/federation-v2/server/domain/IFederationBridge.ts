@@ -18,7 +18,7 @@ export interface IFederationBridge {
 	joinRoom(externalRoomId: string, externalUserId: string): Promise<void>;
 	createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[], extraData?: Record<string, any>): Promise<string>;
 	inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void>;
-	sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<void>;
+	sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<string>;
 	createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string>;
 	isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean;
 	extractHomeserverOrigin(externalUserId: string): string;
@@ -38,5 +38,12 @@ export interface IFederationBridge {
 		externaSenderId: string,
 		content: Buffer,
 		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
-	): Promise<void>;
+	): Promise<string>;
+	sendReplyToMessage(
+		externalRoomId: string,
+		externalUserId: string,
+		eventToReplyTo: string,
+		eventOriginalSender: string,
+		message: string,
+	): Promise<string>;
 }

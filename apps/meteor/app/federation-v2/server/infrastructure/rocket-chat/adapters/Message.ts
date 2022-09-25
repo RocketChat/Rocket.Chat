@@ -80,7 +80,11 @@ export class RocketChatMessageAdapter {
 		return Messages.findOneByFederationId(federationEventId);
 	}
 
-	public async unsetExternalFederationEventOnMessage(externalEventId: string, message: IMessage, reaction: string): Promise<void> {
+	public async setExternalFederationEventOnMessage(messageId: string, federationEventId: string): Promise<void> {
+		return Messages.setFederationEventIdById(messageId, federationEventId);
+	}
+
+	public async unsetExternalFederationEventOnMessageReaction(externalEventId: string, message: IMessage, reaction: string): Promise<void> {
 		await Messages.unsetFederationReactionEventId(externalEventId, message._id, reaction);
 	}
 
@@ -88,7 +92,7 @@ export class RocketChatMessageAdapter {
 		return Messages.findOneById(internalMessageId);
 	}
 
-	public async setExternalFederationEventOnMessage(
+	public async setExternalFederationEventOnMessageReaction(
 		username: string,
 		message: IMessage,
 		reaction: string,

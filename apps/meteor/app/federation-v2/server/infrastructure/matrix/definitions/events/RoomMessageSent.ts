@@ -44,6 +44,9 @@ export interface IMatrixEventContentRoomMessageSent extends IBaseEventContent {
 	'm.relates_to'?: {
 		rel_type: MatrixRelatesToRelType;
 		event_id: string;
+		'm.in_reply_to'?: {
+			event_id: string;
+		};
 	};
 }
 

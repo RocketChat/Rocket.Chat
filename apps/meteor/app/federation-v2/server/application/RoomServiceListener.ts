@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { IRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../domain/FederatedRoom';
 import { FederatedUser } from '../domain/FederatedUser';
@@ -23,6 +23,7 @@ import type {
 import { FederationService } from './AbstractFederationService';
 import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 import { getRedactMessageHandler } from './RoomRedactionHandlers';
+import { toInternalQuoteMessageFormat } from '../infrastructure/matrix/converters/MessageTextParser';
 
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
@@ -96,7 +97,7 @@ export class FederationRoomServiceListener extends FederationService {
 		} = roomChangeMembershipInput;
 		const wasGeneratedOnTheProxyServer = eventOrigin === EVENT_ORIGIN.LOCAL;
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
-
+		
 		if (userAvatarUrl) {
 			const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
 			federatedUser && (await this.updateUserAvatarInternally(federatedUser));
@@ -193,7 +194,7 @@ export class FederationRoomServiceListener extends FederationService {
 	}
 
 	public async onExternalMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalMessageDto): Promise<void> {
-		const { externalRoomId, externalSenderId, messageText, externalEventId } = roomReceiveExternalMessageInput;
+		const { externalRoomId, externalSenderId, messageText, externalEventId, replyToEventId } = roomReceiveExternalMessageInput;
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
@@ -202,6 +203,24 @@ export class FederationRoomServiceListener extends FederationService {
 
 		const senderUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
 		if (!senderUser) {
+			return;
+		}
+		const message = await this.internalMessageAdapter.getMessageByFederationId(externalEventId);
+		if (message) {
+			return;
+		}
+
+		if (replyToEventId) {
+			const messageToReplyTo = await this.internalMessageAdapter.getMessageByFederationId(replyToEventId);
+			if (!messageToReplyTo) {
+				return;
+			}
+			await this.internalMessageAdapter.sendMessage(
+				senderUser,
+				federatedRoom,
+				toInternalQuoteMessageFormat(messageToReplyTo, federatedRoom, messageText, this.internalHomeServerDomain),
+				externalEventId
+			);
 			return;
 		}
 
@@ -243,6 +262,10 @@ export class FederationRoomServiceListener extends FederationService {
 
 		const senderUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
 		if (!senderUser) {
+			return;
+		}
+		const message = await this.internalMessageAdapter.getMessageByFederationId(externalEventId);
+		if (message) {
 			return;
 		}
 		const fileDetails = {

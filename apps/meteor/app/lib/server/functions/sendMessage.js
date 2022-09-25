@@ -11,6 +11,9 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { isRoomFederated } from '@rocket.chat/core-typings';
+import { federationRoomServiceSender } from '../../../federation-v2/server';
+import { FederationRoomSenderConverter } from '../../../federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
 
 /**
  * IMPORTANT
@@ -276,6 +279,7 @@ export const sendMessage = function (user, message, room, upsert = false) {
 		/*
 		Defer other updates as their return is not interesting to the user
 		*/
+		
 		// Execute all callbacks
 		callbacks.runAsync('afterSaveMessage', message, room);
 		return message;

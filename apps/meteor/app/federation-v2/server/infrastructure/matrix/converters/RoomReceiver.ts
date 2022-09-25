@@ -142,13 +142,19 @@ export class MatrixRoomReceiverConverter {
 		externalEvent: MatrixEventRoomMessageSent,
 		homeServerDomain: string,
 	): FederationRoomReceiveExternalMessageDto {
+		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
 		return new FederationRoomReceiveExternalMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			messageText: toInternalMessageFormat(externalEvent.content.formatted_body || externalEvent.content.body, homeServerDomain),
+			messageText: toInternalMessageFormat({
+				message: externalEvent.content.formatted_body || externalEvent.content.body,
+				homeServerDomain,
+				isAReplyToAMessage,
+			}),
+			replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
 		});
 	}
 
@@ -156,16 +162,18 @@ export class MatrixRoomReceiverConverter {
 		externalEvent: MatrixEventRoomMessageSent,
 		homeServerDomain: string,
 	): FederationRoomEditExternalMessageDto {
+		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
 		return new FederationRoomEditExternalMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			newMessageText: toInternalMessageFormat(
-				(externalEvent.content['m.new_content']?.formatted_body || externalEvent.content['m.new_content']?.body) as string,
+			newMessageText: toInternalMessageFormat({
+				message: (externalEvent.content['m.new_content']?.formatted_body || externalEvent.content['m.new_content']?.body) as string,
 				homeServerDomain,
-			),
+				isAReplyToAMessage,
+			}),
 			editsEvent: externalEvent.content['m.relates_to']?.event_id as string,
 		});
 	}

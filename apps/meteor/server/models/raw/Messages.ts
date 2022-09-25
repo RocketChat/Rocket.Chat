@@ -380,6 +380,17 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne({ 'federation.eventId': federationEventId });
 	}
 
+	async setFederationEventIdById(_id: string,federationEventId: string): Promise<void> {
+		await this.updateOne(
+			{ _id },
+			{
+				$set: {
+					'federation.eventId': federationEventId,
+				},
+			},
+		);
+	}
+
 	async findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null> {
 		return (
 			await this.col

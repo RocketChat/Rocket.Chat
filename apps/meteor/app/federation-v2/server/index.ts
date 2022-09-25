@@ -41,6 +41,7 @@ export let federationRoomServiceSender = FederationFactory.buildRoomServiceSende
 	rocketRoomAdapter,
 	rocketUserAdapter,
 	rocketFileAdapter,
+	rocketMessageAdapter,
 	rocketSettingsAdapter,
 	federationBridge,
 );
@@ -75,6 +76,7 @@ export const runFederation = async (): Promise<void> => {
 		rocketRoomAdapter,
 		rocketUserAdapter,
 		rocketFileAdapter,
+		rocketMessageAdapter,
 		rocketSettingsAdapter,
 		federationBridge,
 	);

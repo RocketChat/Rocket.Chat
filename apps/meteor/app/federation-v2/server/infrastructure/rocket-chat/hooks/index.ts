@@ -121,17 +121,36 @@ export class FederationHooks {
 	public static afterMessageUpdated(callback: (message: IMessage, roomId: IRoom['_id'], userId: string) => Promise<void>): void {
 		callbacks.add(
 			'afterSaveMessage',
-			(message: IMessage, room: IRoom): void => {
+			(message: IMessage, room: IRoom): IMessage => {
 				if (!room || !isRoomFederated(room) || !isMessageFromMatrixFederation(message)) {
-					return;
+					return message;
 				}
 				if (!isEditedMessage(message)) {
-					return;
+					return message;
 				}
 				Promise.await(callback(message, room._id, message.editedBy._id));
+				return message;
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-room-message-updated',
+		);
+	}
+
+	public static afterMessageSent(callback: (message: IMessage, roomId: IRoom['_id'], userId: string) => Promise<void>): void {
+		callbacks.add(
+			'afterSaveMessage',
+			(message: IMessage, room: IRoom): IMessage => {
+				if (!room || !isRoomFederated(room)) {
+					return message;
+				}
+				if (isEditedMessage(message)) {
+					return message;
+				}
+				Promise.await(callback(message, room._id, message.u._id));
+				return message;
+			},
+			callbacks.priority.HIGH,
+			'federation-v2-after-room-message-sent',
 		);
 	}
 

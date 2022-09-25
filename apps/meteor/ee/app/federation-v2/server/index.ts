@@ -17,6 +17,7 @@ export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServic
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
 	rocketFileAdapter,
+	rocketMessageAdapter,
 	rocketSettingsAdapter,
 	federationBridgeEE,
 );
