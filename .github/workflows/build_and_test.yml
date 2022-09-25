@@ -20,6 +20,9 @@ env:
   TOOL_NODE_FLAGS: --max_old_space_size=4096
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
+permissions:
+  contents: read
+
 jobs:
   release-versions:
     runs-on: ubuntu-latest
