@@ -1,6 +1,7 @@
 import { IMessage } from '@rocket.chat/core-typings';
 import sanitizeHtml from 'sanitize-html';
-import removeMarkdown from 'remove-markdown';
+import { remark } from 'remark'
+import strip from 'strip-markdown'
 import type { MentionPill as MentionPillType } from '@rocket.chat/forked-matrix-bot-sdk';
 import { roomCoordinator } from '../../../../../../server/lib/rooms/roomCoordinator';
 import { getURL } from '../../../../../utils/server';
@@ -113,8 +114,15 @@ const replaceInternalWithExternalMentions = async (message: string, externalRoom
 		.replace(/\s+/g, ' ')
 		.trim();
 
-export const toExternalMessageFormat = async (message: string, externalRoomId: string, homeServerDomain: string): Promise<string> =>
-	replaceInternalWithExternalMentions(removeMarkdown(message), externalRoomId, homeServerDomain);
+export const toExternalMessageFormat = async (message: string, externalRoomId: string, homeServerDomain: string): Promise<string> => 
+	replaceInternalWithExternalMentions(await removeMarkdownFromMessage(message), externalRoomId, homeServerDomain);
+
+const removeMarkdownFromMessage = async (message: string): Promise<string> =>
+	String(
+		remark()
+			.use(strip)
+			.processSync(message),
+	);
 
 export const toInternalMessageFormat = ({
 	message,
@@ -145,7 +153,8 @@ export const toExternalQuoteMessageFormat = async (
 ): Promise<{ message: string, formattedMessage: string }> => {
 	const { RichReply } = await import('@rocket.chat/forked-matrix-bot-sdk');
 
-	const { body, formatted_body: formattedBody } = RichReply.createFor(externalRoomId, { event_id: eventToReplyTo, sender: originalEventSender }, removeMarkdown(message), await toExternalMessageFormat(removeMarkdown(message), externalRoomId, homeServerDomain));
+	const formattedMessage = await removeMarkdownFromMessage(message);
+	const { body, formatted_body: formattedBody } = RichReply.createFor(externalRoomId, { event_id: eventToReplyTo, sender: originalEventSender }, formattedMessage, await toExternalMessageFormat(formattedMessage, externalRoomId, homeServerDomain));
 
 	return {
 		message: body,
