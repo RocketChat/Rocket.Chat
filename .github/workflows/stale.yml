@@ -4,8 +4,12 @@ on:
   schedule:
   - cron: "0 */6 * * *"
 
+permissions: {}
 jobs:
   no-response:
+    permissions:
+      issues: write # to close stale issues (actions/stale)
+
     runs-on: ubuntu-latest
     steps:
     - uses: actions/stale@v4
