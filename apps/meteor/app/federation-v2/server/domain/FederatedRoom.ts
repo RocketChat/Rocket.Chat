@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { ObjectId } from 'mongodb'; // This should not be in the domain layer, but its a known "problem"
 
 import type { FederatedUser } from './FederatedUser';
@@ -94,6 +94,10 @@ export abstract class AbstractFederatedRoom {
 
 	public shouldUpdateRoomTopic(aRoomTopic: string): boolean {
 		return this.internalReference?.topic !== aRoomTopic && !this.isDirectMessage();
+	}
+
+	public static shouldUpdateMessage(newMessageText: string, originalMessage: IMessage): boolean {
+		return originalMessage.msg !== newMessageText;
 	}
 }
 

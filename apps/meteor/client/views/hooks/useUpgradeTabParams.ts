@@ -2,7 +2,7 @@ import { useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 
-import { UpgradeTabVariant, getUpgradeTabType } from '../../../lib/getUpgradeTabType';
+import { getUpgradeTabType, UpgradeTabVariant } from '../../../lib/upgradeTab';
 
 export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; trialEndDate: string | undefined; isLoading: boolean } => {
 	const getRegistrationStatus = useEndpoint('GET', '/v1/cloud.registrationStatus');
@@ -23,7 +23,6 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 
 	const trialLicense = licenses?.find(({ meta }) => meta?.trial);
 	const isTrial = licenses?.every(({ meta }) => meta?.trial) ?? false;
-	const hasGoldLicense = licenses?.some(({ tag }) => tag?.name === 'Gold') ?? false;
 	const trialEndDate = trialLicense?.meta ? format(new Date(trialLicense.meta.trialEnd), 'yyyy-MM-dd') : undefined;
 
 	const upgradeTabType = getUpgradeTabType({
@@ -31,7 +30,6 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 		hasValidLicense,
 		hadExpiredTrials,
 		isTrial,
-		hasGoldLicense,
 	});
 
 	return { tabType: upgradeTabType, trialEndDate, isLoading: !isSuccess };
