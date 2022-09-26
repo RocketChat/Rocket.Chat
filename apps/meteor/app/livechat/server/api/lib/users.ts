@@ -1,12 +1,22 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users } from '@rocket.chat/models';
+import type { ILivechatAgent, IPaginationOptions, IUser } from '@rocket.chat/core-typings';
+import type { SortDirection } from 'mongodb';
 
 /**
  * @param {IRole['_id']} role the role id
  * @param {string} text
  * @param {any} pagination
  */
-async function findUsers({ role, text, pagination: { offset, count, sort } }) {
+async function findUsers<T = IUser>({
+	text,
+	role,
+	pagination: { offset, count, sort },
+}: {
+	text: string | undefined;
+	role: string;
+	pagination: IPaginationOptions & { sort: { [k: string]: SortDirection } };
+}) {
 	const query = {};
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
@@ -15,7 +25,7 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 		});
 	}
 
-	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery(role, query, {
+	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery<T>([role], query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
@@ -38,8 +48,18 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 		total,
 	};
 }
-export async function findAgents({ text, pagination: { offset, count, sort } }) {
-	return findUsers({
+export async function findAgents({
+	text,
+	pagination: { offset, count, sort },
+}: {
+	text: string | undefined;
+	pagination: IPaginationOptions & {
+		sort: {
+			[k: string]: SortDirection;
+		};
+	};
+}) {
+	return findUsers<ILivechatAgent>({
 		role: 'livechat-agent',
 		text,
 		pagination: {
@@ -50,8 +70,14 @@ export async function findAgents({ text, pagination: { offset, count, sort } }) 
 	});
 }
 
-export async function findManagers({ text, pagination: { offset, count, sort } }) {
-	return findUsers({
+export async function findManagers({
+	text,
+	pagination: { offset, count, sort },
+}: {
+	text: string | undefined;
+	pagination: IPaginationOptions & { sort: { [k: string]: SortDirection } };
+}) {
+	return findUsers<ILivechatAgent>({
 		role: 'livechat-manager',
 		text,
 		pagination: {

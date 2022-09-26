@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import type { FindCursor } from 'mongodb';
+import type { Filter, FindCursor, FindOptions } from 'mongodb';
 import type { FindPaginated } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
 
@@ -22,7 +22,7 @@ export function findUsersOfRoom({
 	filter = '',
 	sort = {},
 }: FindUsersParam): FindPaginated<FindCursor<IUser>> {
-	const options = {
+	const options: FindOptions<IUser> = {
 		projection: {
 			name: 1,
 			username: 1,
@@ -40,12 +40,12 @@ export function findUsersOfRoom({
 		...(limit > 0 && { limit }),
 	};
 
-	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
+	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',') as Array<keyof IUser>;
 
-	return Users.findPaginatedByActiveUsersExcept(filter, undefined, options, searchFields, [
+	return Users.findPaginatedByActiveUsersExcept(filter, [], options, searchFields, [
 		{
 			__rooms: rid,
 			...(status && { status }),
-		},
+		} as Filter<IUser>,
 	]);
 }

@@ -127,7 +127,7 @@ API.v1.addRoute(
 					return API.v1.failure('agent-not-found');
 				}
 
-				const agentObj: ILivechatAgent = await Users.findOneAgentById(agentId, {
+				const agentObj = await Users.findOneAgentById<{ _id: ILivechatAgent['_id']; username: ILivechatAgent['username'] }>(agentId, {
 					projection: { username: 1 },
 				});
 				if (!agentObj?.username) {

@@ -75,8 +75,9 @@ export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 	find<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindCursor<P>;
 	find<P>(query: Filter<T> | undefined, options?: FindOptions<P extends T ? T : P>): FindCursor<WithId<P>> | FindCursor<WithId<T>>;
 
-	findPaginated<P = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
-	findPaginated(query: Filter<T>, options?: any): FindPaginated<FindCursor<WithId<T>>>;
+	findPaginated(query: Filter<T>, options?: any): FindPaginated<FindCursor<T>>;
+	findPaginated<P = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<P>>;
+	findPaginated<P>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
 
 	update(
 		filter: Filter<T>,

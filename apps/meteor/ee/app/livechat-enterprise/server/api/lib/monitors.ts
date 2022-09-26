@@ -2,6 +2,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { ILivechatMonitor, IUser } from '@rocket.chat/core-typings';
+import type { WithId } from 'mongodb';
 
 export async function findMonitors({
 	text,
@@ -15,7 +16,7 @@ export async function findMonitors({
 			[key: string]: 1 | -1;
 		};
 	};
-}): Promise<PaginatedResult<{ monitors: ILivechatMonitor[] }>> {
+}): Promise<PaginatedResult<{ monitors: WithId<ILivechatMonitor>[] }>> {
 	const query = {};
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
@@ -24,7 +25,7 @@ export async function findMonitors({
 		});
 	}
 
-	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery('livechat-monitor', query, {
+	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery<ILivechatMonitor>(['livechat-monitor'], query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,

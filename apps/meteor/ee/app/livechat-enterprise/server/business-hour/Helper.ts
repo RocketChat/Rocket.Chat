@@ -10,7 +10,7 @@ const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	).map((dept: any) => dept.agentId);
 	const agentIdsWithoutDepartment = (
 		await Users.findUsersInRolesWithQuery(
-			'livechat-agent',
+			['livechat-agent'],
 			{
 				_id: { $nin: agentIdsWithDepartment },
 			},

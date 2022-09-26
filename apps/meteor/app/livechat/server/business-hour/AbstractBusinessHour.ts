@@ -1,5 +1,5 @@
 import moment from 'moment-timezone';
-import type { ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
@@ -43,7 +43,7 @@ export abstract class AbstractBusinessHourBehavior {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 
-	async changeAgentActiveStatus(agentId: string, status: string): Promise<any> {
+	async changeAgentActiveStatus(agentId: string, status: ILivechatAgent['statusLivechat']): Promise<any> {
 		return this.UsersRepository.setLivechatStatusIf(
 			agentId,
 			status,

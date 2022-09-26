@@ -1,7 +1,7 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IMessage, IRoom, ISubscription, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUpload, IUser } from '@rocket.chat/core-typings';
 import {
 	isDmDeleteProps,
 	isDmFileProps,
@@ -311,7 +311,7 @@ API.v1.addRoute(
 				limit: count,
 			};
 
-			const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
+			const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',') as Array<keyof IUser>;
 
 			const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter, [], options, searchFields, [extraQuery]);
 

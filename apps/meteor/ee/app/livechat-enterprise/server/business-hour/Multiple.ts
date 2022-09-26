@@ -1,6 +1,10 @@
 import moment from 'moment';
-import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import type { ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import type {
+	ILivechatDepartmentRecord,
+	LivechatBusinessHourTypes,
+	ILivechatDepartment,
+	ILivechatBusinessHour,
+} from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
@@ -200,7 +204,16 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 				return false;
 			}
 
-			const activeBusinessHoursForAgent = departmentsWithActiveBH.map(({ businessHourId }) => businessHourId);
+			const activeBusinessHoursForAgent = departmentsWithActiveBH.reduce(
+				(businessHours: Array<ILivechatBusinessHour['_id']>, curr: ILivechatDepartmentRecord) => {
+					const { businessHourId } = curr;
+					if (businessHourId) {
+						businessHours.push(businessHourId);
+					}
+					return businessHours;
+				},
+				[],
+			);
 			await this.UsersRepository.openAgentBusinessHoursByBusinessHourIdsAndAgentId(activeBusinessHoursForAgent, agentId);
 
 			bhLogger.debug(

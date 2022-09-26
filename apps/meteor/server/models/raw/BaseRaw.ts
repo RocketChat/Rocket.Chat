@@ -166,6 +166,8 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		return this.col.find(query, optionsDef);
 	}
 
+	findPaginated<P = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<P>>;
+
 	findPaginated<P = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
 
 	findPaginated(query: Filter<T> | undefined = {}, options?: any): FindPaginated<FindCursor<WithId<T>>> {

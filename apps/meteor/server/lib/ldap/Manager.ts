@@ -104,13 +104,15 @@ export class LDAPManager {
 	}
 
 	// This method will only find existing users that are already linked to LDAP
-	protected static async findExistingLDAPUser(ldapUser: ILDAPEntry): Promise<IUser | undefined> {
+	protected static async findExistingLDAPUser(ldapUser: ILDAPEntry): Promise<IUser | null> {
 		const uniqueIdentifierField = this.getLdapUserUniqueID(ldapUser);
 
 		if (uniqueIdentifierField) {
 			logger.debug({ msg: 'Querying user', uniqueId: uniqueIdentifierField.value });
 			return UsersRaw.findOneByLDAPId(uniqueIdentifierField.value, uniqueIdentifierField.attribute);
 		}
+
+    return null
 	}
 
 	protected static getConverterOptions(): IConverterOptions {
@@ -266,7 +268,7 @@ export class LDAPManager {
 		ldapUser: ILDAPEntry,
 		existingUser?: IUser,
 		usedUsername?: string | undefined,
-	): Promise<IUser | undefined> {
+	): Promise<IUser | null> {
 		logger.debug({
 			msg: 'Syncing user data',
 			ldapUser: omit(ldapUser, '_raw'),
@@ -417,7 +419,7 @@ export class LDAPManager {
 	}
 
 	// This method will find existing users by LDAP id or by username.
-	private static async findExistingUser(ldapUser: ILDAPEntry, slugifiedUsername: string): Promise<IUser | undefined> {
+	private static async findExistingUser(ldapUser: ILDAPEntry, slugifiedUsername: string): Promise<IUser | null> {
 		const user = await this.findExistingLDAPUser(ldapUser);
 		if (user) {
 			return user;

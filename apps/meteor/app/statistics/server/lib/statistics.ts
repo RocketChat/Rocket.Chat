@@ -4,7 +4,7 @@ import { log } from 'console';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import type { IRoom, IStats } from '@rocket.chat/core-typings';
+import type { IRoom, IStats, IUser } from '@rocket.chat/core-typings';
 import {
 	NotificationQueue,
 	Users as UsersRaw,
@@ -47,7 +47,7 @@ const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: nu
 		none: totalUsers,
 	};
 
-	result.forEach(({ _id, total }: { _id: string; total: number }) => {
+	result.forEach(({ _id, total }: { _id: IUser['language']; total: number }) => {
 		if (!_id) {
 			return;
 		}

@@ -1,4 +1,4 @@
-import type { IOmnichannelCustomAgent } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatDepartment, IOmnichannelCustomAgent } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { RoutingManager } from '../../../../../../app/livechat/server/lib/RoutingManager';
@@ -26,7 +26,7 @@ class LoadRotation {
 		return this._config;
 	}
 
-	public async getNextAgent(department?: string, ignoreAgentId?: string): Promise<IOmnichannelCustomAgent | undefined> {
+	public async getNextAgent(department: ILivechatDepartment['_id'], ignoreAgentId: ILivechatAgent['_id']): Promise<IOmnichannelCustomAgent | undefined> {
 		const nextAgent = await Users.getLastAvailableAgentRouted(department, ignoreAgentId);
 		if (!nextAgent) {
 			return;

@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IUser } from '@rocket.chat/core-typings';
-import type { Filter } from 'mongodb';
+import type { Filter, FindOptions } from 'mongodb';
 import { Users } from '@rocket.chat/models';
 import type { Mongo } from 'meteor/mongo';
 
@@ -25,7 +25,7 @@ export async function findUsersToAutocomplete({
 	}
 	const exceptions = selector.exceptions || [];
 	const conditions = selector.conditions || {};
-	const options = {
+	const options: FindOptions<IUser> = {
 		projection: {
 			name: 1,
 			username: 1,
