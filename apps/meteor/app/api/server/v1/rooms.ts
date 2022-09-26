@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import Ajv from 'ajv';
+import { isRoomsEraseProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 
@@ -34,6 +35,22 @@ API.v1.addRoute(
 			const { roomName } = this.queryParams;
 
 			return API.v1.success({ exists: Meteor.call('roomNameExists', roomName) });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.erase',
+	{
+		authRequired: true,
+		validateParams: isRoomsEraseProps,
+	},
+	{
+		post() {
+			const { rid } = this.bodyParams;
+
+			Meteor.call('eraseRoom', rid);
+			return API.v1.success();
 		},
 	},
 );

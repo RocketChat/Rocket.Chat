@@ -140,7 +140,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		handleRoomType(roomType === 'p' ? 'c' : 'p');
 	});
 
-	const eraseRoom = useEndpoint('POST', '/v1/teams.eraseRoom');
+	const eraseRoom = useEndpoint('POST', '/v1/rooms.erase');
 	const deleteTeam = useEndpoint('POST', '/v1/teams.delete');
 
 	const handleDelete = useMutableCallback(() => {

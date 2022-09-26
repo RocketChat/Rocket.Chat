@@ -2,11 +2,11 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv({ coerceTypes: true });
 
-export type TeamsEraseRoomProps = {
+export type RoomsEraseProps = {
 	rid: string;
 };
 
-const TeamsEraseRoomPropsSchema = {
+const RoomsErasePropsSchema = {
 	type: 'object',
 	properties: {
 		rid: {
@@ -17,4 +17,4 @@ const TeamsEraseRoomPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isTeamsEraseRoomProps = ajv.compile<TeamsEraseRoomProps>(TeamsEraseRoomPropsSchema);
+export const isRoomsEraseProps = ajv.compile<RoomsEraseProps>(RoomsErasePropsSchema);
