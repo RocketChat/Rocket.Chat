@@ -123,7 +123,6 @@ const AppsPageContent = ({ isMarketplace, isAdminSection, currentRouteName }: Ap
 							<AppsList
 								apps={appsResult.value.items}
 								title={t('All_Apps')}
-								isMarketplace={isMarketplace}
 								isAdminSection={isAdminSection}
 								currentRouteName={currentRouteName}
 							/>
