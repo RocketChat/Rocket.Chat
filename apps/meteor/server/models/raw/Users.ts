@@ -14,11 +14,7 @@ import type { Db, Collection, UpdateResult, FindOptions, FindCursor, Filter, Mod
 import { BaseRaw } from './BaseRaw';
 
 type AggregationParameter<T> = Exclude<Parameters<Collection<T>['aggregate']>[0], undefined>;
-// TODO: is there a better way?
-type AggregationLimitStage<T> = Parameters<ReturnType<Collection<T>['aggregate']>['limit']>[0];
-type AggregationSortStage<T> = Parameters<ReturnType<Collection<T>['aggregate']>['sort']>[0];
 
-// @ts-ignore
 export class UsersRaw extends BaseRaw<IUser> implements IUsersModel {
 	constructor(db: Db) {
 		super(db, 'users', undefined, {
@@ -775,8 +771,8 @@ export class UsersRaw extends BaseRaw<IUser> implements IUsersModel {
 		start: Date | number;
 		end: Date | number;
 		options?: {
-			sort: AggregationSortStage<IUser>;
-			count: AggregationLimitStage<IUser>;
+			sort: NonNullable<FindOptions<IUser>['sort']>;
+			count: NonNullable<FindOptions<IUser>['limit']>;
 		};
 	}): Promise<Array<{ _id: IUser['_id']; date: string; users: number; type: 'users' }>> {
 		const params: AggregationParameter<IUser> = [

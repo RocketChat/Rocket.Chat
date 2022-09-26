@@ -11,9 +11,6 @@ import type {
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
-type AggregationLimitStage<T> = Parameters<ReturnType<Collection<T>['aggregate']>['limit']>[0];
-type AggregationSortStage<T> = Parameters<ReturnType<Collection<T>['aggregate']>['sort']>[0];
-
 export interface IUsersModel extends IBaseModel<IUser> {
 	addRolesByUserId(uid: IUser['_id'], roles: Array<IRole['_id']>): Promise<UpdateResult>;
 
@@ -102,7 +99,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findActiveByIdsOrUsernames<T = IUser>(userIds: Array<IUser['_id']>, options?: FindOptions<T extends IUser ? IUser : T>): FindCursor<T>;
 
-	// FIXME delete
 	findByIds(userIds: Array<IUser['_id']>): FindCursor<IUser>;
 	findByIds(userIds: Array<IUser['_id']>, options?: FindOptions<IUser>): FindCursor<IUser>;
 	findByIds<T = IUser>(userIds: Array<IUser['_id']>, options?: FindOptions<T extends IUser ? IUser : T>): FindCursor<T>;
@@ -164,7 +160,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<Array<{ tokens: ILoginToken[] }>>;
 
-	// FIXME delete
 	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
 		termRegex: RegExp,
 		exceptions: NonNullable<IUser['username'][]>,
@@ -200,8 +195,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		start: Date | number;
 		end: Date | number;
 		options?: {
-			sort: AggregationSortStage<IUser>;
-			count: AggregationLimitStage<IUser>;
+			sort: NonNullable<FindOptions<IUser>['sort']>;
+			count: NonNullable<FindOptions<IUser>['limit']>;
 		};
 	}): Promise<Array<{ _id: IUser['_id']; date: string; users: number; type: 'users' }>>;
 
@@ -288,7 +283,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: FindOptions<T extends ILivechatAgent ? ILivechatAgent : T>,
 	): Promise<T | null>;
 
-	// FIXME delete
 	findOneByExtension(extension: ILivechatAgent['extension']): Promise<ILivechatAgent | null>;
 	findOneByExtension(extension: ILivechatAgent['extension'], options?: FindOptions<ILivechatAgent>): Promise<ILivechatAgent | null>;
 	findOneByExtension<T = ILivechatAgent>(
@@ -296,7 +290,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: FindOptions<T extends ILivechatAgent ? ILivechatAgent : T>,
 	): Promise<T | null>;
 
-	// FIXME delete v
 	findByExtensions(extensions: NonNullable<ILivechatAgent['extension']>[]): FindCursor<ILivechatAgent>;
 	findByExtensions(
 		extensions: NonNullable<ILivechatAgent['extension']>[],
