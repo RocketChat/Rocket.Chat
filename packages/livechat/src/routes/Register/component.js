@@ -126,7 +126,7 @@ class Register extends Component {
 	}
 
 	componentDidMount() {
-		const { hasNameField, hasEmailField, hasDepartmentField, nameDefault, emailDefault, departmentDefault, departments } = this.props;
+		const { hasNameField, hasEmailField, hasDepartmentField, nameDefault, emailDefault, departmentDefault } = this.props;
 		const { name, email, department } = this.state;
 		const newState = {};
 
@@ -141,9 +141,8 @@ class Register extends Component {
 		}
 
 		if (hasDepartmentField && departmentDefault) {
-			const value = departmentDefault || getDefaultDepartment(departments);
-			const error = validate(this.props, { name: 'department', value, regexp: department?.regexp });
-			newState.department = { ...department, value, error };
+			const error = validate(this.props, { name: 'department', value: departmentDefault, regexp: department?.regexp });
+			newState.department = { ...department, value: departmentDefault, error };
 		}
 
 		this.setState(newState);
