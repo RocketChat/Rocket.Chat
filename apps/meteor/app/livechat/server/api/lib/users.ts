@@ -8,6 +8,9 @@ import type { SortDirection } from 'mongodb';
  * @param {string} text
  * @param {any} pagination
  */
+
+type PaginationWithSort = IPaginationOptions & { sort: { [K: string]: SortDirection } };
+
 async function findUsers<T = IUser>({
 	text,
 	role,
@@ -15,7 +18,7 @@ async function findUsers<T = IUser>({
 }: {
 	text: string | undefined;
 	role: string;
-	pagination: IPaginationOptions & { sort: { [K: string]: SortDirection } };
+	pagination: PaginationWithSort;
 }) {
 	const query = {};
 	if (text) {
@@ -53,11 +56,7 @@ export async function findAgents({
 	pagination: { offset, count, sort },
 }: {
 	text: string | undefined;
-	pagination: IPaginationOptions & {
-		sort: {
-			[k: string]: SortDirection;
-		};
-	};
+	pagination: PaginationWithSort;
 }) {
 	return findUsers<ILivechatAgent>({
 		role: 'livechat-agent',

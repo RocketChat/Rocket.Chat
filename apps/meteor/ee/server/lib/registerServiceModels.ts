@@ -38,7 +38,6 @@ export function registerServiceModels(db: Db, trash?: Collection): void {
 	);
 	registerModel('ITeamModel', () => new TeamRaw(db));
 	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
-	// @ts-ignore-error
 	registerModel('IUsersModel', () => new UsersRaw(db));
 
 	// @ts-ignore-error
