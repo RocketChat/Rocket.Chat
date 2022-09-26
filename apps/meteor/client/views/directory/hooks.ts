@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 export function useQuery(
 	{ text, itemsPerPage, current }: { text: string; current: number; itemsPerPage: number },
-	[column, direction]: string[],
+	[column, direction]: [string, 'asc' | 'desc'],
 	type: string,
 	workspace = 'local',
 ): { offset?: number | undefined; count?: number; query: string; sort: string } {
