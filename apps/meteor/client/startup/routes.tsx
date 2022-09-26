@@ -26,6 +26,7 @@ const MeetPage = lazy(() => import('../views/meet/MeetPage'));
 const DirectoryPage = lazy(() => import('../views/directory/DirectoryPage'));
 const OmnichannelDirectoryPage = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
+const VideoConfWrapper = lazy(() => import('../views/room/contextualBar/VideoConference/VideoConfWrapper'));
 
 FlowRouter.wait();
 
@@ -89,6 +90,30 @@ FlowRouter.route('/meet/:rid', {
 		}
 
 		appLayout.render(<MeetPage />);
+	},
+});
+
+FlowRouter.route('/call/:callId', {
+	name: 'call',
+
+	async action(params, _queryParams) {
+		if (params?.callId !== undefined) {
+			const result = await APIClient.post('/v1/video-conference.join', { callId: params.callId });
+			if ('url' in result) {
+				appLayout.render(<VideoConfWrapper {...result} />);
+				return;
+			}
+
+			dispatchToastMessage({ type: 'error', message: TAPi18n.__('Conf Not Exist') });
+			return;
+		}
+
+		if (!Meteor.userId()) {
+			FlowRouter.go('home');
+			return;
+		}
+
+		FlowRouter.go('home');
 	},
 });
 

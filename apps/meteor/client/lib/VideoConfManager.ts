@@ -1,5 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -340,24 +341,26 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			this.removeIncomingCall(callId);
 		}
 
-		const params = {
-			callId,
-			state: {
-				...(this._preferences.mic !== undefined ? { mic: this._preferences.mic } : {}),
-				...(this._preferences.cam !== undefined ? { cam: this._preferences.cam } : {}),
-			},
-		};
+		// const params = {
+		// 	callId,
+		// 	state: {
+		// 		...(this._preferences.mic !== undefined ? { mic: this._preferences.mic } : {}),
+		// 		...(this._preferences.cam !== undefined ? { cam: this._preferences.cam } : {}),
+		// 	},
+		// };
 
-		const { url } = await APIClient.post('/v1/video-conference.join', params).catch((e) => {
-			debug && console.error(`[VideoConf] Failed to join call ${callId}`);
-			this.emit('join/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
+		// const { url } = await APIClient.post('/v1/video-conference.join', params).catch((e) => {
+		// 	debug && console.error(`[VideoConf] Failed to join call ${callId}`);
+		// 	this.emit('join/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
 
-			return Promise.reject(e);
-		});
+		// 	return Promise.reject(e);
+		// });
 
-		if (!url) {
-			throw new Error('Failed to get video conference URL.');
-		}
+		// if (!url) {
+		// 	throw new Error('Failed to get video conference URL.');
+		// }
+
+		const url = FlowRouter.url(`call/${callId}`);
 
 		debug && console.log(`[VideoConf] Opening ${url}.`);
 		this.emit('call/join', { url, callId });
