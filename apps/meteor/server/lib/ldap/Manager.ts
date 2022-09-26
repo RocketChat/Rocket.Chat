@@ -112,7 +112,7 @@ export class LDAPManager {
 			return UsersRaw.findOneByLDAPId(uniqueIdentifierField.value, uniqueIdentifierField.attribute);
 		}
 
-    return null
+		return null;
 	}
 
 	protected static getConverterOptions(): IConverterOptions {

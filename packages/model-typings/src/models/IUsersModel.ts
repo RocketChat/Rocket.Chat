@@ -1,4 +1,4 @@
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, ModifyResult, Collection } from 'mongodb';
+import type { Document, UpdateResult, FindCursor, FindOptions, Filter, ModifyResult } from 'mongodb';
 import type {
 	IUser,
 	IRole,

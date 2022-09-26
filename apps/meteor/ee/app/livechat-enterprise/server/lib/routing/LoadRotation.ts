@@ -26,7 +26,10 @@ class LoadRotation {
 		return this._config;
 	}
 
-	public async getNextAgent(department: ILivechatDepartment['_id'], ignoreAgentId: ILivechatAgent['_id']): Promise<IOmnichannelCustomAgent | undefined> {
+	public async getNextAgent(
+		department: ILivechatDepartment['_id'],
+		ignoreAgentId: ILivechatAgent['_id'],
+	): Promise<IOmnichannelCustomAgent | undefined> {
 		const nextAgent = await Users.getLastAvailableAgentRouted(department, ignoreAgentId);
 		if (!nextAgent) {
 			return;

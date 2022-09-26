@@ -15,7 +15,7 @@ async function findUsers<T = IUser>({
 }: {
 	text: string | undefined;
 	role: string;
-	pagination: IPaginationOptions & { sort: { [k: string]: SortDirection } };
+	pagination: IPaginationOptions & { sort: { [K: string]: SortDirection } };
 }) {
 	const query = {};
 	if (text) {

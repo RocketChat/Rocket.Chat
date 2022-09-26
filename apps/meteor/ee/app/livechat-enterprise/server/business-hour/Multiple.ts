@@ -1,10 +1,6 @@
 import moment from 'moment';
-import type {
-	ILivechatDepartmentRecord,
-	LivechatBusinessHourTypes,
-	ILivechatDepartment,
-	ILivechatBusinessHour,
-} from '@rocket.chat/core-typings';
+import type { ILivechatDepartmentRecord, ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
