@@ -737,7 +737,6 @@
   "Build_Environment": "Build-Umgebung",
   "bulk-register-user": "Massen-Registrierung von Benutzern",
   "bulk-register-user_description": "Berechtigung zur Massen-Registrierung von Benutzern",
-  "bundle_chip_title": "__bundleName__ Bundle",
   "Bundles": "Bundle",
   "Busiest_day": "Geschäftigster Tag",
   "Busiest_time": "Geschäftigste Zeit",
@@ -2096,8 +2095,6 @@
   "files": "Dateien",
   "Files": "Dateien",
   "Files_only": "Entferne nur die angehängten Dateien, behalte Nachrichten",
-  "Files_unavailable_for_federation": "Dateien sind für Verbundräume nicht verfügbar",
-  "files_pruned": "Dateien gelöscht",
   "FileSize_Bytes": "__fileSize__ Bytes",
   "FileSize_KB": "__fileSize__ KB",
   "FileSize_MB": "__fileSize__ MB",
@@ -2535,6 +2532,7 @@
   "italics": "kursiv",
   "Items_per_page:": "Artikel pro Seite:",
   "Job_Title": "Berufsbezeichnung",
+  "Join": "Beitreten",
   "Join_audio_call": "Anruf beitreten",
   "Join_call": "Anruf beitreten",
   "Join_Chat": "Chat beitreten",
@@ -5260,6 +5258,5 @@
   "Device_Management_Device_Unknown": "Unbekannt",
   "Device_Management_IP": "IP",
   "Device_Management_Email_Subject": "[Site_Name] - Anmeldung erkannt",
-  "Device_Management_Email_Body": "Sie können die folgenden Platzhalter verwenden: <h2 class=\"rc-color\">{Login_Detected}</h2><p><strong>[name] ([username]) {Logged_In_Via}</strong></p><p><strong>{Device_Management_Client}:</strong> [browserInfo]<br><strong>{Device_Management_OS}:</strong> [osInfo]<br><strong>{Device_Management_Device}:</strong> [deviceInfo]<br><strong>{Device_Management_IP}:</strong>[ipInfo]</p><p><small>[userAgent]</small></p><a class=\"btn\" href=\"[Site_URL]\">{Access_Your_Account}</a><p>{Or_Copy_And_Paste_This_URL_Into_A_Tab_Of_Your_Browser}<br><a href=\"[Site_URL]\">[SITE_URL]</a></p><p>{Thank_You_For_Choosing_RocketChat}</p>",
-  "Something_Went_Wrong": "Etwas ist schief gelaufen"
+  "Device_Management_Email_Body": "Sie können die folgenden Platzhalter verwenden: <h2 class=\"rc-color\">{Login_Detected}</h2><p><strong>[name] ([username]) {Logged_In_Via}</strong></p><p><strong>{Device_Management_Client}:</strong> [browserInfo]<br><strong>{Device_Management_OS}:</strong> [osInfo]<br><strong>{Device_Management_Device}:</strong> [deviceInfo]<br><strong>{Device_Management_IP}:</strong>[ipInfo]</p><p><small>[userAgent]</small></p><a class=\"btn\" href=\"[Site_URL]\">{Access_Your_Account}</a><p>{Or_Copy_And_Paste_This_URL_Into_A_Tab_Of_Your_Browser}<br><a href=\"[Site_URL]\">[SITE_URL]</a></p><p>{Thank_You_For_Choosing_RocketChat}</p>"
 }

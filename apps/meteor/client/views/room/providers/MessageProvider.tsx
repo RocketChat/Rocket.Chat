@@ -10,7 +10,7 @@ import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { MessageContext } from '../contexts/MessageContext';
-import { useTabBarOpen } from './ToolboxProvider';
+import { useTabBarOpen } from '../contexts/ToolboxContext';
 
 export const MessageProvider = memo(function MessageProvider({
 	rid,

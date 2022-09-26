@@ -7,10 +7,6 @@
 	"scripts": {
 		"dev": "pm2 start ecosystem.config.js",
 		"pm2": "pm2",
-		"ms": "MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} run-p start:account start:authorization start:stream-hub",
-		"start:account": "ts-node --files ./account/service.ts",
-		"start:authorization": "ts-node --files ./authorization/service.ts",
-		"start:stream-hub": "ts-node --files ./stream-hub/service.ts",
 		"typecheck": "tsc --noEmit --skipLibCheck",
 		"build": "tsc",
 		"build-containers": "npm run build && docker-compose build && rm -rf ./dist",

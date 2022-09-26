@@ -741,7 +741,6 @@
   "Build_Environment": "Środowisko kompilacji",
   "bulk-register-user": "Utwórz masowo użytkowników",
   "bulk-register-user_description": "Uprawnienie do masowego tworzenia użytkowników",
-  "bundle_chip_title": "__bundleName__ Paczka",
   "Bundles": "Pakiety",
   "Busiest_day": "Najpracowitszy dzień",
   "Busiest_time": "Najpracowitszy czas",
@@ -2563,6 +2562,7 @@
   "italics": "kursywa",
   "Items_per_page:": "Elementów na stronę:",
   "Job_Title": "Stanowisko",
+  "Join": "Dołącz",
   "Join_audio_call": "Dołącz do rozmowy audio",
   "Join_call": "Dołącz do połączenia",
   "Join_Chat": "Dołącz do czatu",
@@ -5386,6 +5386,5 @@
   "Device_Management_Device_Unknown": "Nieznane",
   "Device_Management_IP": "IP",
   "Device_Management_Email_Subject": "[Site_Name] - Login wykryty",
-  "Device_Management_Email_Body": "Możesz użyć następujących placeholderów: <h2 class=\"rc-color\">{Login_Detected}</h2><p><strong>[name] ([username]) {Logged_In_Via}</strong></p><p><strong>{Device_Management_Client}:</strong> [browserInfo]<br><strong>{Device_Management_OS}:</strong> [osInfo]<br><strong>{Device_Management_Device}:</strong> [deviceInfo]<br><strong>{Device_Management_IP}:</strong>[ipInfo]</p><p><small>[userAgent]</small></p><a class=\"btn\" href=\"[Site_URL]\">{Access_Your_Account}</a><p>{Or_Copy_And_Paste_This_URL_Into_A_Tab_Of_Your_Browser}<br><a href=\"[Site_URL]\">[SITE_URL]</a></p><p>{Thank_You_For_Choosing_RocketChat}</p>",
-  "Something_Went_Wrong": "Coś poszło nie tak"
+  "Device_Management_Email_Body": "Możesz użyć następujących placeholderów: <h2 class=\"rc-color\">{Login_Detected}</h2><p><strong>[name] ([username]) {Logged_In_Via}</strong></p><p><strong>{Device_Management_Client}:</strong> [browserInfo]<br><strong>{Device_Management_OS}:</strong> [osInfo]<br><strong>{Device_Management_Device}:</strong> [deviceInfo]<br><strong>{Device_Management_IP}:</strong>[ipInfo]</p><p><small>[userAgent]</small></p><a class=\"btn\" href=\"[Site_URL]\">{Access_Your_Account}</a><p>{Or_Copy_And_Paste_This_URL_Into_A_Tab_Of_Your_Browser}<br><a href=\"[Site_URL]\">[SITE_URL]</a></p><p>{Thank_You_For_Choosing_RocketChat}</p>"
 }
