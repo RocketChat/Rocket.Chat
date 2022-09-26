@@ -1,9 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
 import moment from 'moment';
 import _ from 'underscore';
 
-import { Users, Rooms } from '../../../../../models/client';
+import { Users } from '../../../../../models/client';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
 import { settings } from '../../../../../settings/client';
 import { RoomManager } from '../../../../../ui-utils/client';
@@ -56,11 +55,6 @@ export const dropzoneHelpers = {
 	},
 
 	dragAndDropLabel(this: { _id: IRoom['_id']; rid: IRoom['_id'] }): string {
-		const room = Rooms.findOne({ _id: this.rid });
-		if (isRoomFederated(room)) {
-			return 'FileUpload_Disabled_for_federation';
-		}
-
 		if (!userCanDrop(this._id)) {
 			return 'error-not-allowed';
 		}
@@ -125,12 +119,10 @@ export const dropzoneEvents = {
 	) {
 		event.currentTarget.parentNode.classList.remove('over');
 
-		const room = Rooms.findOne({ _id: this.rid });
-
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (isRoomFederated(room) || !userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
+		if (!userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
 			return false;
 		}
 

@@ -1640,7 +1640,6 @@
   "files": "soubory",
   "Files": "Soubory",
   "Files_only": "Odstranit pouze připojené soubory, zachovat zprávy",
-  "files_pruned": "soubory pročištěny",
   "FileSize_Bytes": "__fileSize__ Bytů",
   "FileSize_KB": "__fileSize__ KB",
   "FileSize_MB": "__fileSize__ MB",
