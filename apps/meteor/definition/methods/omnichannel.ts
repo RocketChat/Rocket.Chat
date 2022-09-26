@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import '@rocket.chat/ui-contexts';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -30,7 +31,7 @@ declare module '@rocket.chat/ui-contexts' {
 		'livechat:removeCustomField': (...args: any[]) => any;
 		'livechat:removeMonitor': (...args: any[]) => any;
 		'livechat:removePriority': (...args: any[]) => any;
-		'livechat:removeRoom': (...args: any[]) => any;
+		'livechat:removeRoom': (rid: IRoom['_id']) => void;
 		'livechat:removeTag': (...args: any[]) => any;
 		'livechat:removeTrigger': (...args: any[]) => any;
 		'livechat:removeUnit': (...args: any[]) => any;

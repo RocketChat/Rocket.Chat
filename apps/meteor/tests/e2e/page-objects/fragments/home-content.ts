@@ -67,7 +67,7 @@ export class HomeContent {
 	}
 
 	get waitForLastMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
+		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
 	}
 
 	get btnOptionEditMessage(): Locator {

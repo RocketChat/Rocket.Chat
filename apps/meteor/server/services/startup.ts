@@ -50,6 +50,6 @@ if (!isRunningMs()) {
 		const { Authorization } = await import('./authorization/service');
 
 		api.registerService(new Presence());
-		api.registerService(new Authorization(db));
+		api.registerService(new Authorization());
 	})();
 }
