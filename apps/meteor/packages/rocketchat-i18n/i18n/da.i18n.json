@@ -1650,7 +1650,6 @@
   "files": "filer",
   "Files": "Filer",
   "Files_only": "Fjern kun de vedhæftede filer. Behold meddelelser",
-  "files_pruned": "filer beskåret",
   "FileSize_Bytes": "__fileSize__ Bytes",
   "FileSize_KB": "__fileSize__ KB",
   "FileSize_MB": "__fileSize__ MB",

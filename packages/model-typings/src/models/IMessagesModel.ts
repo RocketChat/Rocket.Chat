@@ -55,4 +55,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	countByType(type: IMessage['t'], options: CountDocumentsOptions): Promise<number>;
 
 	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
+
+	setFederationReactionEventId(username: string, _id: string, reaction: string, federationEventId: string): Promise<void>;
+
+	unsetFederationReactionEventId(federationEventId: string, _id: string, reaction: string): Promise<void>;
+
+	findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null>;
+
+	findOneByFederationId(federationEventId: string): Promise<IMessage | null>;
 }
