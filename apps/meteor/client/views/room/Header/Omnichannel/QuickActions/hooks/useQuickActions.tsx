@@ -184,12 +184,13 @@ export const useQuickActions = (
 			try {
 				await closeChat(rid, comment, { clientAction: true, tags });
 				closeModal();
+				route.push();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeChat, closeModal, dispatchToastMessage, rid, t],
+		[closeChat, closeModal, dispatchToastMessage, rid, route, t],
 	);
 
 	const onHoldChat = useEndpoint('POST', '/v1/livechat/room.onHold');
