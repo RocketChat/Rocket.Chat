@@ -1300,4 +1300,54 @@ describe('[Rooms]', function () {
 			});
 		});
 	});
+
+	describe('/rooms.erase:', () => {
+		let testChannel;
+		it('create an channel', (done) => {
+			createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` }).end((err, res) => {
+				testChannel = res.body.channel;
+				done();
+			});
+		});
+		it('should delete a room when the request is correct', (done) => {
+			request
+				.post(api('rooms.erase'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should throw an error when the room id is not provided', (done) => {
+			request
+				.post(api('rooms.erase'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+		it('should throw an error when the room id is incorrect', (done) => {
+			request
+				.post(api('rooms.erase'))
+				.set(credentials)
+				.send({
+					rid: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+	});
 });
