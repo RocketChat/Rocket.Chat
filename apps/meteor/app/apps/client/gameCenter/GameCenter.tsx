@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import GameCenterContainer from './GameCenterContainer';
 import GameCenterList from './GameCenterList';
-import { useTabBarClose } from '../../../../client/views/room/providers/ToolboxProvider';
+import { useTabBarClose } from '../../../../client/views/room/contexts/ToolboxContext';
 
 export type IGame = IExternalComponent;
 
