@@ -219,6 +219,18 @@ class AppClientOrchestrator {
 		throw new Error('Failed to build external url');
 	}
 
+	public async buildAppRequestExternalUrl(appId: string) {
+		const result = await APIClient.get('/apps', {
+			buildAppRequestExternalUrl: 'true',
+			appId,
+		});
+
+		if ('url' in result) {
+			return result;
+		}
+		throw new Error('Failed to build App Request external url');
+	}
+
 	public async getCategories(): Promise<Serialized<ICategory[]>> {
 		const result = await APIClient.get('/apps', { categories: 'true' });
 

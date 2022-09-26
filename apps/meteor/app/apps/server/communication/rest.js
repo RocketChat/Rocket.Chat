@@ -146,6 +146,19 @@ export class AppsRestApi {
 						});
 					}
 
+					if (this.queryParams.buildAppRequestExternalUrl && this.queryParams.appId) {
+						const workspaceId = settings.get('Cloud_Workspace_Id');
+
+						const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
+						if (!token) {
+							return API.v1.failure({ error: 'Unauthorized' });
+						}
+
+						return API.v1.success({
+							url: `${baseUrl}/apps/${this.queryParams.appId}/requestAccess?workspaceId=${workspaceId}&token=${token}`,
+						});
+					}
+
 					const apps = manager.get().map(formatAppInstanceForRest);
 
 					return API.v1.success({ apps });

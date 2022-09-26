@@ -95,6 +95,16 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 			return;
 		}
 
+		if (action === 'request') {
+			try {
+				const data = await Apps.buildAppRequestExternalUrl(app.id);
+				setModal(<IframeModal url={data.url} cancel={cancelAction} />);
+			} catch (error) {
+				handleAPIError(error);
+			}
+			return;
+		}
+
 		if (action === 'purchase' && !isAppPurchased) {
 			try {
 				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);

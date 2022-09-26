@@ -107,6 +107,9 @@ export type AppsEndpoints = {
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
 					url: string;
 			  })
+			| ((params: { buildAppRequestExternalUrl: 'true'; appId?: string }) => {
+					url: string;
+			  })
 			| ((params: {
 					purchaseType?: 'buy' | 'subscription';
 					marketplace?: 'false';
