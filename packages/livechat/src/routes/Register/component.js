@@ -125,27 +125,27 @@ class Register extends Component {
 		this.state = getDefaultState(props);
 	}
 
-	componentDidMount() {
-		const { hasNameField, hasEmailField, hasDepartmentField, nameDefault, emailDefault, departmentDefault } = this.props;
-		const { name, email, department } = this.state;
+	static getDerivedStateFromProps(nextProps, state) {
+		const { hasNameField, hasEmailField, hasDepartmentField, nameDefault, emailDefault, departmentDefault } = nextProps;
+		const { name, email, department } = state;
 		const newState = {};
 
-		if (hasNameField && nameDefault) {
+		if (hasNameField && nameDefault && nameDefault !== name?.value) {
 			const error = validate(this.props, { name: 'name', value: nameDefault, regexp: name?.regexp });
 			newState.name = { ...name, value: nameDefault, error };
 		}
 
-		if (hasEmailField && emailDefault) {
+		if (hasEmailField && emailDefault && emailDefault !== email?.value) {
 			const error = validate(this.props, { name: 'email', value: emailDefault, regexp: email?.regexp });
-			newState.email = { ...email, value: nameDefault, error };
+			newState.email = { ...email, value: emailDefault, error };
 		}
 
-		if (hasDepartmentField && departmentDefault) {
+		if (hasDepartmentField && departmentDefault && departmentDefault !== department?.value) {
 			const error = validate(this.props, { name: 'department', value: departmentDefault, regexp: department?.regexp });
 			newState.department = { ...department, value: departmentDefault, error };
 		}
 
-		this.setState(newState);
+		return newState;
 	}
 
 	state = {
