@@ -28,7 +28,7 @@ type logs = {
 	_updatedAt: string;
 }[];
 
-type data = AppOverview & { logs: logs; logsError: unknown };
+type data = AppOverview & { logs: logs; logsError: string };
 
 const useAppWithLogs = ({ id }: { id: string }): data => {
 	const dispatchToastMessage = useToastMessageDispatch();
