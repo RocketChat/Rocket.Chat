@@ -185,7 +185,7 @@ function handleOpenUserCardButtonClick(event: JQuery.ClickEvent, template: Commo
 			target: event.currentTarget,
 			open: (e: MouseEvent) => {
 				e.preventDefault();
-				tabBar.openUserInfo(username);
+				tabBar.openRoomInfo(username);
 			},
 		});
 	}
@@ -327,7 +327,7 @@ function handleMentionLinkClick(event: JQuery.ClickEvent, template: CommonRoomTe
 			target: event.currentTarget,
 			open: (e: MouseEvent) => {
 				e.preventDefault();
-				tabBar.openUserInfo(username);
+				tabBar.openRoomInfo(username);
 			},
 		});
 	}

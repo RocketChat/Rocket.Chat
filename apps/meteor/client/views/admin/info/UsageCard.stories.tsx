@@ -103,6 +103,7 @@ export default {
 				lockedAt: '',
 			},
 			instanceCount: 0,
+			msEnabled: false,
 			oplogEnabled: false,
 			mongoVersion: '',
 			mongoStorageEngine: '',
