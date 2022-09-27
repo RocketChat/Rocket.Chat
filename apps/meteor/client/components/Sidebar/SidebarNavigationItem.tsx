@@ -1,6 +1,6 @@
 import { Box, Icon, IconProps, Tag } from '@rocket.chat/fuselage';
 import { useRoutePath } from '@rocket.chat/ui-contexts';
-import React, { memo, useMemo, FC, useEffect } from 'react';
+import React, { memo, useMemo, FC } from 'react';
 
 import SidebarGenericItem from './SidebarGenericItem';
 
@@ -25,10 +25,8 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 }) => {
 	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
 	const path = useRoutePath(pathSection, params);
-	const isActive = currentPath?.includes(path);
-	useEffect(() => {
-		console.log(currentPath?.includes(path));
-	}, [path, currentPath]);
+	const isActive = currentPath?.includes(path as string);
+
 	if (permissionGranted === false || (typeof permissionGranted === 'function' && !permissionGranted())) {
 		return null;
 	}
