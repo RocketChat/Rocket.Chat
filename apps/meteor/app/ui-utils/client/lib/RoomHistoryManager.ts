@@ -1,10 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { v4 as uuidv4 } from 'uuid';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { Emitter } from '@rocket.chat/emitter';
-import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { MutableRefObject } from 'react';
 
 import { waitUntilWrapperExists } from './waitUntilWrapperExists';
@@ -12,66 +11,11 @@ import { readMessage } from './readMessages';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ChatMessage, ChatSubscription } from '../../../models/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import { normalizeThreadMessage } from '../../../../client/lib/normalizeThreadMessage';
-
-export async function upsertMessage(
-	{
-		msg,
-		subscription,
-		uid = Tracker.nonreactive(() => Meteor.userId()) ?? undefined,
-	}: {
-		msg: IMessage & { ignored?: boolean };
-		subscription?: ISubscription;
-		uid?: IUser['_id'];
-	},
-	{ direct } = ChatMessage,
-) {
-	const userId = msg.u?._id;
-
-	if (subscription?.ignored?.includes(userId)) {
-		msg.ignored = true;
-	}
-
-	if (msg.t === 'e2e' && !msg.file) {
-		msg.e2e = 'pending';
-	}
-	msg = (await onClientMessageReceived(msg)) || msg;
-
-	const { _id, ...messageToUpsert } = msg;
-
-	if (msg.tcount) {
-		direct.update(
-			{ tmid: _id },
-			{
-				$set: {
-					following: uid && (msg.replies?.includes(uid) ?? false),
-					threadMsg: normalizeThreadMessage(messageToUpsert),
-					repliesCount: msg.tcount,
-				},
-			},
-			{ multi: true },
-		);
-	}
-
-	return direct.upsert({ _id }, messageToUpsert);
-}
-
-export function upsertMessageBulk({ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription }, collection = ChatMessage) {
-	const uid = Tracker.nonreactive(() => Meteor.userId()) ?? undefined;
-	const { queries } = collection;
-	collection.queries = [];
-	msgs.forEach((msg, index) => {
-		if (index === msgs.length - 1) {
-			collection.queries = queries;
-		}
-		upsertMessage({ msg, subscription, uid }, collection);
-	});
-}
+import { upsertMessageBulk } from '../../../../client/lib/rooms/upsertMessageBulk';
 
 const defaultLimit = parseInt(getConfig('roomListLimit') ?? '50') || 50;
 

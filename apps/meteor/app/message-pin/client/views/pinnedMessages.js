@@ -3,7 +3,7 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
+import { upsertMessageBulk } from '../../../../client/lib/rooms/upsertMessageBulk';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { APIClient } from '../../../utils/client';
 import { Messages } from '../../../models/client';

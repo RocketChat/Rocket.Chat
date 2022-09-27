@@ -7,7 +7,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
-import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
+import { RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { callbacks } from '../../../../lib/callbacks';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models/client';
@@ -15,6 +15,7 @@ import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Notifications } from '../../../notifications/client';
+import { upsertMessage } from '../../../../client/lib/rooms/upsertMessage';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 

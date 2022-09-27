@@ -5,7 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
-import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
+import { upsertMessageBulk } from '../../../../client/lib/rooms/upsertMessageBulk';
 import { APIClient } from '../../../utils/client';
 import { Messages, Users } from '../../../models/client';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';

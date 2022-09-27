@@ -6,7 +6,7 @@ import { Mongo } from 'meteor/mongo';
 
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { Messages } from '../../../models/client';
-import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
+import { upsertMessageBulk } from '../../../../client/lib/rooms/upsertMessageBulk';
 import { APIClient } from '../../../utils/client';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 

@@ -11,7 +11,7 @@ import type { IMessage, IEditedMessage, ISubscription } from '@rocket.chat/core-
 import { ChatMessages, chatMessages, chatMessages as allChatMessages } from '../../../ui';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
-import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
+import { upsertMessageBulk } from '../../../../client/lib/rooms/upsertMessageBulk';
 import { Messages } from '../../../models/client';
 import type { FileUploadProp } from '../../../ui/client/lib/fileUpload';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';

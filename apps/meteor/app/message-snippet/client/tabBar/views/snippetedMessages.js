@@ -6,7 +6,7 @@ import { Mongo } from 'meteor/mongo';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { APIClient } from '../../../../utils/client';
 import { Messages } from '../../../../models/client';
-import { upsertMessageBulk } from '../../../../ui-utils/client/lib/RoomHistoryManager';
+import { upsertMessageBulk } from '../../../../../client/lib/rooms/upsertMessageBulk';
 
 const LIMIT_DEFAULT = 50;
 
