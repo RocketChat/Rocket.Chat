@@ -102,7 +102,7 @@ describe('[Assets]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('message');
 				})
 				.end(done);
 		});
