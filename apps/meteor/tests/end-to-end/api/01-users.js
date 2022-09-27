@@ -903,20 +903,12 @@ describe('[Users]', function () {
 		});
 
 		it('should return 401 unauthorized when user is not logged in', (done) => {
-			request
-				.get(api('users.getAvatarSuggestion'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+			request.get(api('users.getAvatarSuggestion')).expect('Content-Type', 'application/json').expect(401).end(done);
 		});
 
 		after(async () => {
 			await deleteUser(user);
 			user = undefined;
-			await updatePermission('edit-other-user-info', ['admin']);
 		});
 
 		it('should get avatar suggestion of the logged user via userId', (done) => {
@@ -927,6 +919,10 @@ describe('[Users]', function () {
 					userId: userCredentials['X-User-Id'],
 				})
 				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('suggestions').and.to.be.an('object');
+				})
 				.end(done);
 		});
 	});

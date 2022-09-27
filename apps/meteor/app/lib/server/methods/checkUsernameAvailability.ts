@@ -4,9 +4,12 @@ import { check } from 'meteor/check';
 import { settings } from '../../../settings/server';
 import { checkUsernameAvailability } from '../functions';
 import { RateLimiter } from '../lib';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 Meteor.methods({
 	checkUsernameAvailability(username) {
+		methodDeprecationLogger.warn('checkUsernameAvailability will be deprecated in future versions of Rocket.Chat');
+
 		check(username, String);
 
 		const user = Meteor.user();
