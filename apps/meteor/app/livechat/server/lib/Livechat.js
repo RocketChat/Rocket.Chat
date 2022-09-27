@@ -946,6 +946,7 @@ export const Livechat = {
 			this.setUserStatusLivechat(_id, 'not-available');
 			LivechatDepartmentAgents.removeByAgentId(_id);
 			Promise.await(LivechatVisitors.removeContactManagerByUsername(username));
+			Promise.await(UsersRaw.unsetExtension(_id));
 			return true;
 		}
 
