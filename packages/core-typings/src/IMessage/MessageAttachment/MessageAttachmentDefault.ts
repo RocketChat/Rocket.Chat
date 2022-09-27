@@ -1,3 +1,5 @@
+import type { Root } from '@rocket.chat/message-parser';
+
 import type { FieldProps } from './FieldProps';
 import type { Dimensions } from './Files/Dimensions';
 import type { MessageAttachmentBase } from './MessageAttachmentBase';
@@ -20,6 +22,7 @@ export type MessageAttachmentDefault = {
 	mrkdwn_in?: Array<MarkdownFields>;
 	pretext?: string;
 	text?: string;
+	md?: Root;
 
 	thumb_url?: string;
 
