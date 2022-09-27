@@ -1,6 +1,6 @@
 import { ISetting } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
 import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
@@ -14,7 +14,7 @@ function AssetsGroupPage({ _id, ...group }: AssetsGroupPageProps): ReactElement 
 	const solo = sections.length === 1;
 	const t = useTranslation();
 
-	const refreshClients = useMethod('refreshClients');
+	const refreshClients = useEndpoint('POST', '/v1/assets.refreshClients');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleApplyAndRefreshAllClientsButtonClick = async (): Promise<void> => {

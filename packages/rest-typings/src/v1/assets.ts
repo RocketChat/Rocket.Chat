@@ -14,6 +14,10 @@ export type AssetsEndpoints = {
 	'/v1/assets.unsetAsset': {
 		POST: (params: AssetsUnsetAssetProps) => void;
 	};
+
+	'/v1/assets.refreshClients': {
+		POST: () => void;
+	};
 };
 
 const ajv = new Ajv();

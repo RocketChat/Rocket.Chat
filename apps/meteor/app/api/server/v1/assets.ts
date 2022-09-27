@@ -56,3 +56,16 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'assets.refreshClients',
+	{
+		authRequired: true,
+	},
+	{
+		post() {
+			Meteor.call('refreshClients');
+			return API.v1.success();
+		},
+	},
+);

@@ -82,4 +82,29 @@ describe('[Assets]', function () {
 				.end(done);
 		});
 	});
+
+	describe('[/assets.refreshClients]', () => {
+		it('should refresh all clients when requested', (done) => {
+			request
+				.post(api('assets.refreshClients'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should throw an error when the user is not logged in', (done) => {
+			request
+				.post(api('assets.refreshClients'))
+				.set({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+	});
 });
