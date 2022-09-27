@@ -39,6 +39,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
 		receiveLoginDetectionEmail?: boolean;
+		idleTimeLimit?: boolean;
 	};
 };
 
@@ -177,6 +178,14 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				muteFocusedConversations: {
+					type: 'boolean',
+					nullable: true,
+				},
+				idleTimeLimit: {
+					type: 'number',
+					nullable: true,
+				},
+				receiveLoginDetectionEmail: {
 					type: 'boolean',
 					nullable: true,
 				},
