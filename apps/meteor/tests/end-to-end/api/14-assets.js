@@ -100,7 +100,7 @@ describe('[Assets]', function () {
 				.post(api('assets.refreshClients'))
 				.set({})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(401)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				})
