@@ -87,7 +87,11 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 
 		setLoading(true);
 
-		const isLoggedIn = await checkUserLoggedIn();
+		let isLoggedIn = true;
+
+		if (action !== 'request') {
+			isLoggedIn = await checkUserLoggedIn();
+		}
 
 		if (!isLoggedIn) {
 			setLoading(false);

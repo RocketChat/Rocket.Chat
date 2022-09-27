@@ -71,81 +71,6 @@ export class AppsRestApi {
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
-					// Gets the Apps from the marketplace
-					if (this.queryParams.marketplace) {
-						const headers = getDefaultHeaders();
-						const token = await getWorkspaceAccessToken();
-						if (token) {
-							headers.Authorization = `Bearer ${token}`;
-						}
-
-						let result;
-						try {
-							result = HTTP.get(`${baseUrl}/v1/apps`, {
-								headers,
-							});
-						} catch (e) {
-							return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
-						}
-
-						if (!result || result.statusCode !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Apps:', result.data);
-							return API.v1.failure();
-						}
-
-						return API.v1.success(result.data);
-					}
-
-					if (this.queryParams.categories) {
-						const headers = getDefaultHeaders();
-						const token = await getWorkspaceAccessToken();
-						if (token) {
-							headers.Authorization = `Bearer ${token}`;
-						}
-
-						let result;
-						try {
-							result = HTTP.get(`${baseUrl}/v1/categories`, {
-								headers,
-							});
-						} catch (e) {
-							orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e.response.data);
-							return API.v1.internalError();
-						}
-
-						if (!result || result.statusCode !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', result.data);
-							return API.v1.failure();
-						}
-
-						return API.v1.success(result.data);
-					}
-
-					if (this.queryParams.buildExternalUrl && this.queryParams.appId) {
-						const workspaceId = settings.get('Cloud_Workspace_Id');
-
-						if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
-							return API.v1.failure({ error: 'Invalid purchase type' });
-						}
-
-						const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
-						if (!token) {
-							return API.v1.failure({ error: 'Unauthorized' });
-						}
-
-						const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
-
-						const seats = Users.getActiveLocalUserCount();
-
-						return API.v1.success({
-							url: `${baseUrl}/apps/${this.queryParams.appId}/${
-								this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : subscribeRoute
-							}?workspaceId=${workspaceId}&token=${token}&seats=${seats}`,
-						});
-					}
-
 					const apps = manager.get().map(formatAppInstanceForRest);
 
 					return API.v1.success({ apps });
@@ -263,18 +188,112 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
-			'externalAppRequest',
-			{ authRequired: true, permissionsRequired: ['manage-apps'] },
+			'marketplace',
+			{},
 			{
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
+
+					// Gets the Apps from the marketplace
+					const headers = getDefaultHeaders();
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					let result;
+					try {
+						result = HTTP.get(`${baseUrl}/v1/apps`, {
+							headers,
+						});
+					} catch (e) {
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
+					}
+
+					if (!result || result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the Apps:', result.data);
+						return API.v1.failure();
+					}
+
+					return API.v1.success(result.data);
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'categories',
+			{},
+			{
+				async get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const headers = getDefaultHeaders();
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					let result;
+					try {
+						result = HTTP.get(`${baseUrl}/v1/categories`, {
+							headers,
+						});
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e.response.data);
+						return API.v1.internalError();
+					}
+
+					if (!result || result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', result.data);
+						return API.v1.failure();
+					}
+
+					return API.v1.success(result.data);
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'buildExternalUrl',
+			{},
+			{
+				async get() {
 					if (this.queryParams.appId) {
+						const baseUrl = orchestrator.getMarketplaceUrl();
 						const workspaceId = settings.get('Cloud_Workspace_Id');
+
+						if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
+							return API.v1.failure({ error: 'Invalid purchase type' });
+						}
 
 						const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
 						if (!token) {
 							return API.v1.failure({ error: 'Unauthorized' });
 						}
+
+						const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
+
+						const seats = Users.getActiveLocalUserCount();
+
+						return API.v1.success({
+							url: `${baseUrl}/apps/${this.queryParams.appId}/${
+								this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : subscribeRoute
+							}?workspaceId=${workspaceId}&token=${token}&seats=${seats}`,
+						});
+					}
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'buildExternalAppRequest',
+			{ authRequired: true },
+			{
+				get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					if (this.queryParams.appId) {
+						const workspaceId = settings.get('Cloud_Workspace_Id');
+
+						const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
 
 						return API.v1.success({
 							url: `${baseUrl}/apps/${this.queryParams.appId}/requestAccess?workspaceId=${workspaceId}&token=${token}`,

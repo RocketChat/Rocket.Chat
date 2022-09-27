@@ -99,7 +99,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getAppsFromMarketplace(): Promise<App[]> {
-		const result = await APIClient.get('/apps', { marketplace: 'true' });
+		const result = await APIClient.get('/apps/marketplace');
 
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -118,6 +118,40 @@ class AppClientOrchestrator {
 				bundledIn,
 			};
 		});
+	}
+
+	public async getCategories(): Promise<Serialized<ICategory[]>> {
+		const result = await APIClient.get('/apps/categories');
+
+		if (Array.isArray(result)) {
+			// TODO: chapter day: multiple results are returned, but we only need one
+			return result as Serialized<ICategory>[];
+		}
+		throw new Error('Failed to get categories');
+	}
+
+	public async buildExternalUrl(appId: string, purchaseType: 'buy' | 'subscription' = 'buy', details = false): Promise<IAppExternalURL> {
+		const result = await APIClient.get('/apps/buildExternalUrl', {
+			appId,
+			purchaseType,
+			details: `${details}`,
+		});
+
+		if ('url' in result) {
+			return result;
+		}
+		throw new Error('Failed to build external url');
+	}
+
+	public async buildAppRequestExternalUrl(appId: string) {
+		const result = await APIClient.get('/apps/buildExternalAppRequest', {
+			appId,
+		});
+
+		if ('url' in result) {
+			return result;
+		}
+		throw new Error('Failed to build App Request external url');
 	}
 
 	public async getAppsOnBundle(bundleId: string): Promise<App[]> {
@@ -203,41 +237,6 @@ class AppClientOrchestrator {
 
 	public disableApp(appId: string): Promise<string> {
 		return this.setAppStatus(appId, AppStatus.MANUALLY_ENABLED);
-	}
-
-	public async buildExternalUrl(appId: string, purchaseType: 'buy' | 'subscription' = 'buy', details = false): Promise<IAppExternalURL> {
-		const result = await APIClient.get('/apps', {
-			buildExternalUrl: 'true',
-			appId,
-			purchaseType,
-			details: `${details}`,
-		});
-
-		if ('url' in result) {
-			return result;
-		}
-		throw new Error('Failed to build external url');
-	}
-
-	public async buildAppRequestExternalUrl(appId: string) {
-		const result = await APIClient.get('/apps/externalAppRequest', {
-			appId,
-		});
-
-		if ('url' in result) {
-			return result;
-		}
-		throw new Error('Failed to build App Request external url');
-	}
-
-	public async getCategories(): Promise<Serialized<ICategory[]>> {
-		const result = await APIClient.get('/apps', { categories: 'true' });
-
-		if (Array.isArray(result)) {
-			// TODO: chapter day: multiple results are returned, but we only need one
-			return result as Serialized<ICategory>[];
-		}
-		throw new Error('Failed to get categories');
 	}
 
 	public getUIHost(): RealAppsEngineUIHost {
