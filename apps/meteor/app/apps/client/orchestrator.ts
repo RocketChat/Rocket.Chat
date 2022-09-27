@@ -220,8 +220,7 @@ class AppClientOrchestrator {
 	}
 
 	public async buildAppRequestExternalUrl(appId: string) {
-		const result = await APIClient.get('/apps', {
-			buildAppRequestExternalUrl: 'true',
+		const result = await APIClient.get('/apps/externalAppRequest', {
 			appId,
 		});
 

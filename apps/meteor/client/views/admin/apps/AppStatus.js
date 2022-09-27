@@ -159,7 +159,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 						)}
 					</Button>
 					{shouldShowPriceDisplay && (
-						<Box pi='x14' color='primary-500' minHeight='x32' display='flex' alignItems='center'>
+						<Box pi='x14' color='primary-500' display='flex' alignItems='center'>
 							{!installed && (
 								<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
 							)}
