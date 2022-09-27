@@ -363,7 +363,7 @@
 		"speakeasy": "^2.0.0",
 		"stream-buffers": "^3.0.2",
 		"strict-uri-encode": "^2.0.0",
-		"string-strip-html": "^7.0.3",
+		"string-strip-html": "^11.6.8",
 		"tar-stream": "^1.6.2",
 		"tinykeys": "^1.4.0",
 		"turndown": "^7.1.1",
