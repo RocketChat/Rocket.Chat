@@ -115,7 +115,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	constructor() {
 		super();
 		this.incomingDirectCalls = new Map<string, IncomingDirectCall>();
-		this._preferences = { mic: true };
+		this._preferences = { mic: true, cam: false };
 		this._capabilities = {};
 	}
 
