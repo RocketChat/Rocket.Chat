@@ -45,21 +45,6 @@ describe('components/AdministrationList/AdministrationList', () => {
 		expect(screen.getByText('Audit Model List')).to.exist;
 	});
 
-	it('should render nothing when no permission', async () => {
-		const AdministrationList = proxyquire.noCallThru().load(COMPONENT_PATH, {
-			...defaultConfig,
-			'@rocket.chat/ui-contexts': {
-				useAtLeastOnePermission: () => false,
-			},
-		}).default;
-		render(<AdministrationList closeList={() => null} accountBoxItems={[]} />);
-
-		expect(screen.queryByText('Administration Model List')).to.not.exist;
-		expect(screen.queryByText('Apps Model List')).to.not.exist;
-		expect(screen.queryByText('Settings Model List')).to.not.exist;
-		expect(screen.queryByText('Audit Model List')).to.not.exist;
-	});
-
 	it('should render administration model list when has account box item', async () => {
 		const AdministrationList = proxyquire.noCallThru().load(COMPONENT_PATH, {
 			...defaultConfig,
@@ -70,7 +55,7 @@ describe('components/AdministrationList/AdministrationList', () => {
 		render(<AdministrationList closeList={() => null} accountBoxItems={[{}]} />);
 
 		expect(screen.getByText('Administration Model List')).to.exist;
-		expect(screen.queryByText('Apps Model List')).to.not.exist;
+		expect(screen.queryByText('Apps Model List')).to.exist;
 		expect(screen.queryByText('Settings Model List')).to.not.exist;
 		expect(screen.queryByText('Audit Model List')).to.not.exist;
 	});

@@ -1,5 +1,5 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import { triggerActionButtonAction } from '../../../app/ui-message/client/ActionManager';
@@ -8,38 +8,39 @@ import ListItem from '../Sidebar/ListItem';
 
 type AppsModelListProps = {
 	appBoxItems: IAppAccountBoxItem[];
-	showManageApps: boolean;
 	closeList: () => void;
 };
 
-const AppsModelList: FC<AppsModelListProps> = ({ appBoxItems, showManageApps, closeList }) => {
+const MANAGE_APPS_PERMISSIONS = ['manage-apps'];
+
+const AppsModelList: FC<AppsModelListProps> = ({ appBoxItems, closeList }) => {
 	const t = useTranslation();
-	const marketplaceRoute = useRoute('admin-marketplace');
+	const canManageApps = useAtLeastOnePermission(MANAGE_APPS_PERMISSIONS);
+	const adminAppsRoute = useRoute('admin-marketplace');
+	const appsRoute = useRoute('marketplace');
 
 	return (
 		<>
 			<OptionTitle>{t('Apps')}</OptionTitle>
 			<ul>
-				{showManageApps && (
-					<>
-						<ListItem
-							icon='cube'
-							text={t('Marketplace')}
-							action={(): void => {
-								marketplaceRoute.push();
-								closeList();
-							}}
-						/>
-						<ListItem
-							icon='cube'
-							text={t('Installed')}
-							action={(): void => {
-								marketplaceRoute.push({ context: 'installed' });
-								closeList();
-							}}
-						/>
-					</>
-				)}
+				<>
+					<ListItem
+						icon='cube'
+						text={t('Marketplace')}
+						action={(): void => {
+							canManageApps ? adminAppsRoute.push() : appsRoute.push();
+							closeList();
+						}}
+					/>
+					<ListItem
+						icon='cube'
+						text={t('Installed')}
+						action={(): void => {
+							canManageApps ? adminAppsRoute.push({ context: 'installed' }) : appsRoute.push({ context: 'installed' });
+							closeList();
+						}}
+					/>
+				</>
 				{appBoxItems.length > 0 && (
 					<>
 						{appBoxItems.map((item, key) => {

@@ -53,8 +53,16 @@ test.describe.serial('administration-menu', () => {
 	test.describe('user', () => {
 		test.use({ storageState: 'user1-session.json' });
 
-		test('expect to not render administration menu when no permission', async ({ page }) => {
-			await expect(page.locator('role=button[name="Administration"]')).not.toBeVisible();
+		test('expect to open end-user marketplace page', async ({ page }) => {
+			await poHomeDiscussion.sidenav.openAdministrationByLabel('Marketplace');
+
+			await expect(page).toHaveURL('marketplace');
+		});
+
+		test('expect to open end-user installed apps page', async ({ page }) => {
+			await poHomeDiscussion.sidenav.openAdministrationByLabel('Installed');
+
+			await expect(page).toHaveURL('marketplace/installed');
 		});
 	});
 });
