@@ -34,8 +34,14 @@ const api = {
 			Triggers.processRequest(info);
 		}
 
-		const { token, room: { _id: rid } = {} } = store.state;
-		const { change, title, location: { href } } = info;
+		const { token, room } = store.state;
+		const { _id: rid } = room || {};
+
+		const {
+			change,
+			title,
+			location: { href },
+		} = info;
 
 		Livechat.sendVisitorNavigation({ token, rid, pageInfo: { change, title, location: { href } } });
 	},
@@ -62,11 +68,21 @@ const api = {
 	},
 
 	async setDepartment(value) {
-		const { config: { departments = [] }, user: { department: existingDepartment } = {} } = store.state;
+		const {
+			user,
+			config: { departments = [] },
+			defaultAgent,
+		} = store.state;
+
+		const { department: existingDepartment } = user || {};
 
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
 		updateIframeGuestData({ department });
+
+		if (defaultAgent && defaultAgent.department !== department) {
+			store.setState({ defaultAgent: null });
+		}
 
 		if (department !== existingDepartment) {
 			await loadConfig();
