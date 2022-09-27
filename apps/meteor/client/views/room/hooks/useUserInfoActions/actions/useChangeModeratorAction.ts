@@ -17,7 +17,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 	const { _id: uid } = user;
 
 	const userCanSetModerator = usePermission('set-moderator', rid);
-	const isModerator = useUserHasRoomRole(uid, rid, 'moderator');
+	const { data: isModerator } = useUserHasRoomRole(uid, rid, 'moderator');
 
 	if (!room) {
 		throw Error('Room not provided');

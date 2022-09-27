@@ -31,8 +31,7 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 
 	const showRoles = useMessageListShowRoles();
-	const roles = useMessageRoles(message.u._id, message.rid, showRoles);
-	const shouldShowRolesList = roles.length > 0;
+	const { data: roles = [] } = useMessageRoles(message.u._id, message.rid, showRoles);
 
 	return (
 		<MessageHeaderTemplate>
@@ -56,7 +55,7 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 				</MessageUsername>
 			)}
 
-			{shouldShowRolesList && <RolesList roles={roles} isBot={message.bot} />}
+			{roles.length > 0 && <RolesList roles={roles} isBot={message.bot} />}
 			<MessageTimestamp title={formatters.dateAndTime(message.ts)}>{formatters.time(message.ts)}</MessageTimestamp>
 			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
 			<MessageIndicators message={message} />

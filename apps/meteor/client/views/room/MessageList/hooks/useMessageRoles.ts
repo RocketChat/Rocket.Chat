@@ -1,40 +1,52 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { useCallback } from 'react';
+import { UseQueryResult } from '@tanstack/react-query';
 
-import { RoomRoles, UserRoles, Roles } from '../../../../../app/models/client';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
 
-export const useMessageRoles = (userId: IUser['_id'] | undefined, roomId: IRoom['_id'], shouldLoadRoles: boolean): Array<string> =>
-	useReactiveValue(
-		useCallback(() => {
-			if (!shouldLoadRoles || !userId) {
-				return [];
-			}
+export const useMessageRoles = (
+	uid: IUser['_id'] | undefined,
+	rid: IRoom['_id'],
+	shouldLoadRoles: boolean,
+): UseQueryResult<string[], Error> => {
+	const userRolesQueryResult = useReactiveQuery(['users', uid, 'roles'], ({ userRoles }) => userRoles.findOne(uid), {
+		enabled: shouldLoadRoles && !!uid,
+	});
 
-			const userRoles = UserRoles.findOne(userId);
-			const roomRoles = RoomRoles.findOne({
-				'u._id': userId,
-				'rid': roomId,
-			});
-
-			const roles = [...(userRoles?.roles || []), ...(roomRoles?.roles || [])];
-
-			const result = Roles.find(
-				{
-					_id: {
-						$in: roles,
-					},
-					description: {
-						$exists: 1,
-						$ne: '',
-					},
-				},
-				{
-					fields: {
-						description: 1,
-					},
-				},
-			).fetch();
-			return result.map(({ description }) => description);
-		}, [userId, roomId, shouldLoadRoles]),
+	const roomRolesQueryResult = useReactiveQuery(
+		['rooms', rid, 'user', uid, 'roles'],
+		({ roomRoles }) =>
+			roomRoles.findOne({
+				'u._id': uid,
+				rid,
+			}),
+		{
+			enabled: shouldLoadRoles && !!uid,
+		},
 	);
+
+	return useReactiveQuery(
+		['rooms', rid, 'messages', 'roles', uid],
+		({ roles }) =>
+			roles
+				.find(
+					{
+						_id: {
+							$in: [...(userRolesQueryResult.data?.roles ?? []), ...(roomRolesQueryResult.data?.roles ?? [])],
+						},
+						description: {
+							$exists: true,
+							$ne: '',
+						},
+					},
+					{
+						fields: {
+							description: 1,
+						},
+					},
+				)
+				.map(({ description }) => description),
+		{
+			enabled: userRolesQueryResult.isSuccess && roomRolesQueryResult.isSuccess,
+		},
+	);
+};

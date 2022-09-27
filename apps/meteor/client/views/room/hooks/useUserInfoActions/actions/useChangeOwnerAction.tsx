@@ -16,7 +16,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const room = useUserRoom(rid);
 	const { _id: uid } = user;
 	const userCanSetOwner = usePermission('set-owner', rid);
-	const isOwner = useUserHasRoomRole(uid, rid, 'owner');
+	const { data: isOwner } = useUserHasRoomRole(uid, rid, 'owner');
 
 	if (!room) {
 		throw Error('Room not provided');

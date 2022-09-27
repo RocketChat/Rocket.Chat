@@ -23,7 +23,7 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const { roomCanSetLeader } = getRoomDirectives(room);
-	const isLeader = useUserHasRoomRole(uid, rid, 'leader');
+	const { data: isLeader } = useUserHasRoomRole(uid, rid, 'leader');
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const changeLeaderEndpoint = isLeader ? 'removeLeader' : 'addLeader';
