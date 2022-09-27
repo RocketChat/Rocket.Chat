@@ -1,6 +1,24 @@
 
+# 5.1.4
+`2022-09-27  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Adjusted livechat fallbacks to take null values into account ([#26909](https://github.com/RocketChat/Rocket.Chat/pull/26909))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 5.1.3
-`2022-09-23  ·  4 🐛  ·  4 👩‍💻👨‍💻`
+`2022-09-24  ·  4 🐛  ·  4 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `14.19.3`
