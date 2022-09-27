@@ -146,10 +146,6 @@
 		}
 	}
 
-	&__federation_icon {
-		width: 20px;
-	}
-
 	&__action-menu {
 		position: relative;
 
