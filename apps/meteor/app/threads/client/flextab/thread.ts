@@ -53,7 +53,7 @@ const sort = { ts: 1 };
 
 Template.thread.events({
 	...dropzoneEvents,
-	...getCommonRoomEvents(),
+	...getCommonRoomEvents(true),
 	'click .js-close'(e: JQuery.ClickEvent) {
 		e.preventDefault();
 		e.stopPropagation();

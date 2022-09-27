@@ -333,7 +333,7 @@ function handleMentionLinkClick(event: JQuery.ClickEvent, template: CommonRoomTe
 	}
 }
 
-export const getCommonRoomEvents = () => ({
+export const getCommonRoomEvents = (useLegacyMessageTemplate: boolean) => ({
 	...createMessageTouchEvents(),
 	'click [data-message-action]': handleMessageActionButtonClick,
 	'click .js-follow-thread': handleFollowThreadButtonClick,
@@ -345,5 +345,5 @@ export const getCommonRoomEvents = () => ({
 	'click .js-actionButton-respondWithQuotedMessage': handleRespondWithQuotedMessageActionButtonClick,
 	'click .js-actionButton-sendMessage': handleSendMessageActionButtonClick,
 	'click .message-actions__menu': handleMessageActionMenuClick,
-	'click .mention-link': handleMentionLinkClick,
+	...(useLegacyMessageTemplate && { 'click .mention-link': handleMentionLinkClick }),
 });
