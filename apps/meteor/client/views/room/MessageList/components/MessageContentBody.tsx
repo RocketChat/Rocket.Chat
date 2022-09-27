@@ -57,7 +57,6 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 	const {
 		actions: { openRoom, openUserCard },
 	} = useMessageActions();
-	123;
 
 	const onUserMentionClick = useCallback(
 		({ username }: UserMention) => {
