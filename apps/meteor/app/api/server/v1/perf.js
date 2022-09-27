@@ -31,6 +31,10 @@ router.get('/auth-async', authenticationMiddleware({ rejectUnauthorized: true })
 	res.json(await Promise.resolve({ sucess: true, data: 'string' }));
 });
 
+router.get('/me', authenticationMiddleware({ rejectUnauthorized: true }), async (req, res) => {
+	res.json(await Promise.resolve({ sucess: true, user: req.user }));
+});
+
 WebApp.connectHandlers.use('/api/v1/perf/connect/non-auth-sync', (req, res) => {
 	res.writeHead(200, { 'Content-Type': 'application/json' });
 	res.end(JSON.stringify({ sucess: true, data: 'string' }));
@@ -51,6 +55,12 @@ WebApp.connectHandlers.use('/api/v1/perf/connect/auth-async', authenticationMidd
 WebApp.connectHandlers.use('/api/v1/perf/connect/auth-async', async (req, res) => {
 	res.writeHead(200, { 'Content-Type': 'application/json' });
 	res.end(JSON.stringify({ sucess: true, data: 'string' }));
+});
+
+WebApp.connectHandlers.use('/api/v1/perf/connect/me', authenticationMiddleware({ rejectUnauthorized: true }));
+WebApp.connectHandlers.use('/api/v1/perf/connect/me', async (req, res) => {
+	res.writeHead(200, { 'Content-Type': 'application/json' });
+	res.end(JSON.stringify({ sucess: true, user: req.user }));
 });
 
 API.v1.addRoute(
