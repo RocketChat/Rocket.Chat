@@ -1729,7 +1729,6 @@
   "files": "文件",
   "Files": "文件",
   "Files_only": "只删除附加的文件，保留消息",
-  "files_pruned": "修剪过的文件",
   "FileSize_Bytes": "__fileSize__ Bytes",
   "FileSize_KB": "__fileSize__ KB",
   "FileSize_MB": "__fileSize__ MB",
