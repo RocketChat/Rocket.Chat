@@ -3,7 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { ChatMessage, ChatSubscription } from '../../app/models/client';
-import { RoomManager, upsertMessage } from '../../app/ui-utils/client';
+import { RoomManager } from '../../app/ui-utils/client';
+import { upsertMessage } from '../lib/rooms/upsertMessage';
 import { callWithErrorHandling } from '../lib/utils/callWithErrorHandling';
 
 const loadMissedMessages = async function (rid: IRoom['_id']): Promise<void> {
