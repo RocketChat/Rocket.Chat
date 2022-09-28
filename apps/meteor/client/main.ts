@@ -12,7 +12,6 @@ import '../ee/client';
 import './templateHelpers';
 import './methods/deleteMessage';
 import './methods/hideRoom';
-import './methods/openRoom';
 import './methods/setUserActiveStatus';
 import './methods/toggleFavorite';
 import './methods/updateMessage';
