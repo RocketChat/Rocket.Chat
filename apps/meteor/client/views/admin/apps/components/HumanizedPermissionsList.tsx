@@ -1,6 +1,6 @@
 import { AppPermission } from '@rocket.chat/core-typings';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import React, { Fragment, ReactElement } from 'react';
 
 const defaultPermissions = [
 	'user.read',
@@ -40,10 +40,10 @@ const HumanizedPermissionsList = ({ appPermissions }: { appPermissions: AppPermi
 		return (
 			<>
 				{appPermissions.map((permission) => (
-					<>
-						<li key={permission.name}>{handleHumanizePermission(permission.name)}</li>
+					<Fragment key={permission.name}>
+						<li>{handleHumanizePermission(permission.name)}</li>
 						{permission.required && <span style={{ color: 'red' }}> ({t('required')})</span>}
-					</>
+					</Fragment>
 				))}
 			</>
 		);
@@ -52,7 +52,9 @@ const HumanizedPermissionsList = ({ appPermissions }: { appPermissions: AppPermi
 	return (
 		<>
 			{defaultPermissions.map((permission) => (
-				<li key={permission}>{handleHumanizePermission(permission)}</li>
+				<Fragment key={permission}>
+					<li>{handleHumanizePermission(permission)}</li>
+				</Fragment>
 			))}
 		</>
 	);
