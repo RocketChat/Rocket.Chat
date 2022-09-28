@@ -9,7 +9,6 @@ import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../definition/IRoomTypeConfig';
 import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
-import { roomExit } from './roomExit';
 
 class RoomCoordinatorClient extends RoomCoordinator {
 	add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeClientDirectives>): void {
@@ -59,7 +58,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	protected addRoute(path: string, routeConfig: RouteOptions): void {
-		super.addRoute(path, { ...routeConfig, triggersExit: [roomExit] });
+		super.addRoute(path, { ...routeConfig });
 	}
 
 	getRoomDirectives(roomType: string): IRoomTypeClientDirectives | undefined {

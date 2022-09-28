@@ -21,7 +21,7 @@ const RoomList = (): ReactElement => {
 
 	const { ref } = useResizeObserver({ debounceDelay: 100 });
 
-	const openedRoom = (useSession('openedRoom') as string) || '';
+	const openedRoom = (useSession('openedRoom') as string) ?? '';
 
 	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') || 'extended';
 	const sideBarItemTemplate = useTemplateByViewMode();

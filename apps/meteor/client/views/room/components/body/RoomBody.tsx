@@ -278,8 +278,7 @@ const RoomBody = (): ReactElement => {
 		[room._id],
 	);
 
-	const openedRoom = useSession('openedRoom');
-
+	const openedRoom = (useSession('openedRoom') as string) ?? '';
 	useEffect(() => {
 		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName) || room._id !== openedRoom) {
 			return;
