@@ -52,6 +52,13 @@ createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/inde
 		}),
 });
 
+createTemplateForComponent('userActionIndicator', () => import('./views/room/components/body/composer/UserActionIndicator'), {
+	renderContainerView: () =>
+		HTML.DIV({
+			style: 'display: flex; flex: 1 1 100%; padding: 0 24px',
+		}),
+});
+
 createTemplateForComponent('omnichannelFlex', () => import('./views/omnichannel/sidebar/OmnichannelSidebar'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
 });

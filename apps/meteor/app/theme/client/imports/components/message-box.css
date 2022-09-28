@@ -55,9 +55,6 @@
 	&__activity {
 		position: absolute;
 		top: 4px;
-		left: 0;
-
-		margin-left: 24px;
 
 		color: var(--message-box-user-activity-color);
 
@@ -75,9 +72,15 @@
 
 			width: 0;
 
-			content: "\2026"; /* ascii code for the ellipsis character */
+			content: '\2026'; /* ascii code for the ellipsis character */
 			animation: ellipsis steps(4, end) 1.5s infinite;
 			vertical-align: bottom;
+		}
+
+		&-wrapper {
+			position: relative;
+			width: 100%;
+			flex-shrink: 0;
 		}
 	}
 
@@ -379,10 +382,4 @@
 			margin-top: var(--popover-column-padding);
 		}
 	}
-}
-
-.rtl .rc-message-box__activity {
-	right: 0;
-
-	margin-right: 24px;
 }
