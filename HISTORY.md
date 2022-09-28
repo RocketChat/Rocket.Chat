@@ -1,6 +1,39 @@
 
 # 5.2.0 (Under Release Candidate Process)
 
+## 5.2.0-rc.1
+`2022-09-27  ·  1 🐛  ·  4 🔍  ·  6 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Adjusted livechat fallbacks to take null values into account ([#26909](https://github.com/RocketChat/Rocket.Chat/pull/26909))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Missing Also_send_thread_message_to_channel setting translation ([#26926](https://github.com/RocketChat/Rocket.Chat/pull/26926))
+
+- Chore: Tests for EE features ([#26939](https://github.com/RocketChat/Rocket.Chat/pull/26939))
+
+- i18n: Language update from LingoHub 🤖 on 2022-09-26Z ([#26948](https://github.com/RocketChat/Rocket.Chat/pull/26948))
+
+- Regression: Sidebar Room List not working properly. ([#26950](https://github.com/RocketChat/Rocket.Chat/pull/26950))
+
+  The CachedCollection Class was assuming that the passed parameter would be modified, instead of using the callback return.
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@tassoevan](https://github.com/tassoevan)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 ## 5.2.0-rc.0
 `2022-09-23  ·  5 🎉  ·  10 🚀  ·  21 🐛  ·  39 🔍  ·  28 👩‍💻👨‍💻`
 
@@ -319,6 +352,46 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.1.3
+`2022-09-24  ·  4 🐛  ·  2 🔍  ·  8 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- `MongoInvalidArgumentError` on overwriting existing setting ([#26880](https://github.com/RocketChat/Rocket.Chat/pull/26880))
+
+- Check if messsage.replies exist on new message template ([#26652](https://github.com/RocketChat/Rocket.Chat/pull/26652))
+
+- Error when mentioning a non-member of a public channel ([#26917](https://github.com/RocketChat/Rocket.Chat/pull/26917))
+
+- Importer fails when file includes user without an email. ([#26836](https://github.com/RocketChat/Rocket.Chat/pull/26836))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 5.1.1 ([#26822](https://github.com/RocketChat/Rocket.Chat/pull/26822))
+
+- Release 5.1.3 ([#26914](https://github.com/RocketChat/Rocket.Chat/pull/26914))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@filipemarins](https://github.com/filipemarins)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
 
 # 5.1.2
 `2022-09-12  ·  1 🐛  ·  1 👩‍💻👨‍💻`

@@ -94511,6 +94511,144 @@
           ]
         }
       ]
+    },
+    "5.1.3": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26914",
+          "title": "Release 5.1.3",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "filipemarins",
+            "tassoevan",
+            "pierre-lehnen-rc",
+            "debdutdeb"
+          ]
+        },
+        {
+          "pr": "26880",
+          "title": "[FIX] `MongoInvalidArgumentError` on overwriting existing setting",
+          "userLogin": "debdutdeb",
+          "milestone": "5.1.3",
+          "contributors": [
+            "debdutdeb",
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26917",
+          "title": "[FIX] Error when mentioning a non-member of a public channel",
+          "userLogin": "debdutdeb",
+          "milestone": "5.1.3",
+          "contributors": [
+            "debdutdeb",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26836",
+          "title": "[FIX] Importer fails when file includes user without an email.",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "5.1.3",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26652",
+          "title": "[FIX] Check if messsage.replies exist on new message template",
+          "userLogin": "filipemarins",
+          "milestone": "5.1.3",
+          "contributors": [
+            "filipemarins",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "26822",
+          "title": "Release 5.1.1",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "hugocostadev",
+            "tassoevan",
+            "MartinSchoeler",
+            "tiagoevanp"
+          ]
+        }
+      ]
+    },
+    "5.2.0-rc.1": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26909",
+          "title": "[FIX] Adjusted livechat fallbacks to take null values into account",
+          "userLogin": "aleksandernsilva",
+          "milestone": "5.1.4",
+          "contributors": [
+            "aleksandernsilva",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26950",
+          "title": "Regression: Sidebar Room List not working properly.",
+          "userLogin": "gabriellsh",
+          "description": "The CachedCollection Class was assuming that the passed parameter would be modified, instead of using the callback return.",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "26939",
+          "title": "Chore: Tests for EE features",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26926",
+          "title": "Chore: Missing Also_send_thread_message_to_channel setting translation",
+          "userLogin": "yash-rajpal",
+          "contributors": [
+            "yash-rajpal",
+            "web-flow",
+            "kodiakhq[bot]",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "26948",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-09-26Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "yash-rajpal"
+          ]
+        }
+      ]
     }
   }
 }
