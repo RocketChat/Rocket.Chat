@@ -1,4 +1,4 @@
-import type { ToolboxContextValue } from '../../../../../../client/views/room/lib/Toolbox/ToolboxContext';
+import type { ToolboxContextValue } from '../../../../../../client/views/room/contexts/ToolboxContext';
 
 export type CommonRoomTemplateInstance = {
 	data: {

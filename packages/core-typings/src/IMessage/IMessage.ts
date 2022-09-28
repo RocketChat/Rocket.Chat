@@ -2,7 +2,7 @@ import type Url from 'url';
 
 import type Icons from '@rocket.chat/icons';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
-import type { parser } from '@rocket.chat/message-parser';
+import type { Root } from '@rocket.chat/message-parser';
 
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IUser } from '../IUser';
@@ -124,7 +124,7 @@ export interface IMessage extends IRocketChatRecord {
 	u: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
 	blocks?: MessageSurfaceLayout;
 	alias?: string;
-	md?: ReturnType<typeof parser>;
+	md?: Root;
 
 	_hidden?: boolean;
 	imported?: boolean;
@@ -163,7 +163,7 @@ export interface IMessage extends IRocketChatRecord {
 	attachments?: MessageAttachment[];
 
 	reactions?: {
-		[key: string]: { names?: (string | undefined)[]; usernames: string[] };
+		[key: string]: { names?: (string | undefined)[]; usernames: string[]; federationReactionEventIds?: Record<string, string> };
 	};
 
 	private?: boolean;
@@ -181,6 +181,9 @@ export interface IMessage extends IRocketChatRecord {
 	html?: string;
 	// Messages sent from visitors have this field
 	token?: string;
+	federation?: {
+		eventId: string;
+	};
 }
 
 export type MessageSystem = {
@@ -193,6 +196,10 @@ export interface IEditedMessage extends IMessage {
 }
 
 export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
+export const isDeletedMessage = (message: IMessage): message is IEditedMessage =>
+	'editedAt' in message && 'editedBy' in message && message.t === 'rm';
+export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
+	'federation' in message && Boolean(message.federation?.eventId);
 
 export interface ITranslatedMessage extends IMessage {
 	translations: { [key: string]: string } & { original?: string };

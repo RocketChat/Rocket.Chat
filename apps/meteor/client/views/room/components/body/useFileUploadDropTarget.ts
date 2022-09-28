@@ -1,4 +1,4 @@
-import { IRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactNode, useCallback, useMemo } from 'react';
@@ -27,7 +27,6 @@ export const useFileUploadDropTarget = (
 	const t = useTranslation();
 
 	const fileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
-	const roomFederated = isRoomFederated(room);
 	const fileUploadAllowedForUser = useReactiveValue(
 		useCallback(
 			() => !roomCoordinator.readOnly(room._id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } })),
@@ -61,14 +60,6 @@ export const useFileUploadDropTarget = (
 			} as const;
 		}
 
-		if (roomFederated) {
-			return {
-				enabled: false,
-				reason: t('FileUpload_Disabled_for_federation'),
-				...overlayProps,
-			} as const;
-		}
-
 		if (!fileUploadAllowedForUser) {
 			return {
 				enabled: false,
@@ -82,7 +73,7 @@ export const useFileUploadDropTarget = (
 			onFileDrop,
 			...overlayProps,
 		} as const;
-	}, [fileUploadAllowedForUser, fileUploadEnabled, onFileDrop, overlayProps, roomFederated, t]);
+	}, [fileUploadAllowedForUser, fileUploadEnabled, onFileDrop, overlayProps, t]);
 
 	return [triggerProps, allOverlayProps] as const;
 };

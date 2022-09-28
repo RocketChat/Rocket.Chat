@@ -4,7 +4,7 @@ import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.ch
 import React, { useState, useEffect, ReactElement } from 'react';
 
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
-import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../../contexts/ToolboxContext';
 import InviteUsers from './InviteUsers';
 
 type InviteUsersWithDataProps = {
