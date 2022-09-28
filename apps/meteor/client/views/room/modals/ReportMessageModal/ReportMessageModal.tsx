@@ -51,7 +51,9 @@ const ReportMessageModal = ({ messageText, messageId, onClose }: ReportMessageMo
 			onConfirm={handleSubmit(handleReportMessage)}
 			confirmText={t('Report_exclamation_mark')}
 		>
-			<Box className={wordBreak}>{messageText}</Box>
+			<Box mbe='x24' className={wordBreak}>
+				{messageText}
+			</Box>
 			<FieldGroup>
 				<Field>
 					<Field.Row>
