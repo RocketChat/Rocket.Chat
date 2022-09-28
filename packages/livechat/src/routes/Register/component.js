@@ -137,34 +137,26 @@ class Register extends Component {
 	}
 
 	static getDerivedStateFromProps(nextProps, state) {
-		const { hasNameField, hasEmailField, hasDepartmentField, departmentDefault, departments, nameDefault, emailDefault } = nextProps;
+		const { hasNameField, hasEmailField, hasDepartmentField, nameDefault, emailDefault, departmentDefault } = nextProps;
+		const { name, email, department } = state;
+		const newState = {};
 
-		const nameValue = nameDefault || '';
-		if (hasNameField && (!state.name || state.name !== nameValue)) {
-			state = { ...state, name: { ...state.name, value: nameValue } };
-		} else if (!hasNameField) {
-			state = { ...state, name: null };
+		if (hasNameField && nameDefault && nameDefault !== name?.value) {
+			const error = validate(this.props, { name: 'name', value: nameDefault, regexp: name?.regexp });
+			newState.name = { ...name, value: nameDefault, error };
 		}
 
-		const emailValue = emailDefault || '';
-		if (hasEmailField && (!state.email || state.name !== emailValue)) {
-			state = { ...state, email: { ...state.email, value: emailValue } };
-		} else if (!hasEmailField) {
-			state = { ...state, email: null };
+		if (hasEmailField && emailDefault && emailDefault !== email?.value) {
+			const error = validate(this.props, { name: 'email', value: emailDefault, regexp: email?.regexp });
+			newState.email = { ...email, value: emailDefault, error };
 		}
 
-		const departmentValue = departmentDefault || getDefaultDepartment(departments);
-		const showDepartmentField = hasDepartmentField && departments && departments.length > 1;
-		if (showDepartmentField && (!state.department || state.department !== departmentValue)) {
-			state = { ...state, department: { ...state.department, value: departmentValue } };
-		} else if (!showDepartmentField) {
-			state = { ...state, department: null };
+		if (hasDepartmentField && departmentDefault && departmentDefault !== department?.value) {
+			const error = validate(this.props, { name: 'department', value: departmentDefault, regexp: department?.regexp });
+			newState.department = { ...department, value: departmentDefault, error };
 		}
 
-		for (const { fieldName: name, value, regexp } of getValidableFields(state)) {
-			const error = validate(nextProps, { name, value, regexp });
-			state = { ...state, [name]: { ...state[name], value, error, showError: false } };
-		}
+		return newState;
 	}
 
 	state = {
