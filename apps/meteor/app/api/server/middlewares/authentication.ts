@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
+import { Users } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
 
-import { Users } from '../../../models/server';
 import { oAuth2ServerAuth } from '../../../oauth2-server-config/server/oauth/oauth2-server';
 
 export type AuthenticationMiddlewareConfig = {
@@ -12,11 +13,16 @@ export const defaultAuthenticationMiddlewareConfig = {
 };
 
 export function authenticationMiddleware(config: AuthenticationMiddlewareConfig = defaultAuthenticationMiddlewareConfig) {
-	return (req: Request, res: Response, next: NextFunction): void => {
+	return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const { 'x-user-id': userId, 'x-auth-token': authToken } = req.headers;
 
 		if (userId && authToken) {
-			req.user = Users.findOneByIdAndLoginToken(userId, authToken);
+			const query = {
+				'_id': userId,
+				'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(String(authToken)),
+			};
+
+			req.user = await Users.findOne(query);
 		} else {
 			req.user = oAuth2ServerAuth(req)?.user;
 		}

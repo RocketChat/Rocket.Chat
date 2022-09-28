@@ -13,8 +13,6 @@ WebApp.connectHandlers.use(apiServer);
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
-apiServer.use('/api/v1/perf/express/', router); // didn't have the rateLimiter option
-
 router.get('/non-auth-sync', (req, res) => {
 	res.json({ sucess: true, data: 'string' });
 });
@@ -34,6 +32,8 @@ router.get('/auth-async', authenticationMiddleware({ rejectUnauthorized: true })
 router.get('/me', authenticationMiddleware({ rejectUnauthorized: true }), async (req, res) => {
 	res.json(await Promise.resolve({ sucess: true, user: req.user }));
 });
+
+apiServer.use('/api/v1/perf/express/', router).listen(3030);
 
 WebApp.connectHandlers.use('/api/v1/perf/connect/non-auth-sync', (req, res) => {
 	res.writeHead(200, { 'Content-Type': 'application/json' });
