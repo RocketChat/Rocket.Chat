@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { IMessage } from '@rocket.chat/core-typings';
 import { TextAreaInput, FieldGroup, Field, Box } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
@@ -15,6 +16,10 @@ type ReportMessageModalProps = {
 	messageText?: string;
 	messageId: IMessage['_id'];
 };
+
+const wordBreak = css`
+	word-break: break-word;
+`;
 
 const ReportMessageModal = ({ messageText, messageId, onClose }: ReportMessageModalProps): ReactElement => {
 	const t = useTranslation();
@@ -46,11 +51,7 @@ const ReportMessageModal = ({ messageText, messageId, onClose }: ReportMessageMo
 			onConfirm={handleSubmit(handleReportMessage)}
 			confirmText={t('Report_exclamation_mark')}
 		>
-			<Box style={{
-				whiteSpace: 'nowrap',
-				overflow: 'hidden',
-				textOverflow: 'ellipsis',
-			}}>{messageText}</Box>
+			<Box className={wordBreak}>{messageText}</Box>
 			<FieldGroup>
 				<Field>
 					<Field.Row>
