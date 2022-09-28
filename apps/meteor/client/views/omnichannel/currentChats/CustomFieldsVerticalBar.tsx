@@ -1,5 +1,5 @@
+import { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { Field, TextInput, Select } from '@rocket.chat/fuselage';
-import { OmnichannelCustomFieldEndpointPayload } from '@rocket.chat/rest-typings/src/v1/omnichannel';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, Dispatch, SetStateAction, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -7,8 +7,8 @@ import { Controller, useForm } from 'react-hook-form';
 import VerticalBar from '../../../components/VerticalBar';
 
 type CustomFieldsVerticalBarProps = {
-	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string }>>;
-	allCustomFields: OmnichannelCustomFieldEndpointPayload[];
+	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string } | undefined>>;
+	allCustomFields: ILivechatCustomField[];
 };
 
 const CustomFieldsVerticalBar = ({ setCustomFields, allCustomFields }: CustomFieldsVerticalBarProps): ReactElement => {
@@ -34,7 +34,7 @@ const CustomFieldsVerticalBar = ({ setCustomFields, allCustomFields }: CustomFie
 				{/* TODO: REMOVE FILTER ONCE THE ENDPOINT SUPPORTS A SCOPE PARAMETER */}
 				{allCustomFields
 					.filter((customField) => customField.scope !== 'visitor')
-					.map((customField: OmnichannelCustomFieldEndpointPayload) =>
+					.map((customField: ILivechatCustomField) =>
 						customField.type === 'select' ? (
 							<Field>
 								<Field.Label>{customField.label}</Field.Label>
@@ -43,7 +43,7 @@ const CustomFieldsVerticalBar = ({ setCustomFields, allCustomFields }: CustomFie
 										name={customField._id}
 										control={control}
 										render={({ field }): ReactElement => (
-											<Select {...field} options={customField.options.split(',').map((item) => [item, item])} />
+											<Select {...field} options={(customField.options || '').split(',').map((item) => [item, item])} />
 										)}
 									/>
 								</Field.Row>

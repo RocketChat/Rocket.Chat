@@ -90,7 +90,7 @@ Meteor.startup(function () {
 					},
 				);
 			}
-			return RoomHistoryManager.getSurroundingMessages(message, 50);
+			return RoomHistoryManager.getSurroundingMessages(message);
 		},
 		condition({ subscription }) {
 			return !!subscription;

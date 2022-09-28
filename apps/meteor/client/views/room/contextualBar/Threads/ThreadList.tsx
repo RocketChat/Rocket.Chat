@@ -7,7 +7,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useTabContext } from '../../providers/ToolboxProvider';
+import { useTabContext } from '../../contexts/ToolboxContext';
 import ThreadComponent from '../../threads/ThreadComponent';
 import ThreadRow from './ThreadRow';
 import { withData } from './withData';

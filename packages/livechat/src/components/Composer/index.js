@@ -64,15 +64,15 @@ export class Composer extends Component {
 
 		const items = Array.from(event.clipboardData.items);
 
-		const files = items.filter((item) => item.kind === 'file' && /^image\//.test(item.type))
-			.map((item) => item.getAsFile());
+		const files = items.filter((item) => item.kind === 'file' && /^image\//.test(item.type)).map((item) => item.getAsFile());
 		if (files.length) {
 			onUpload && onUpload(files);
 			return;
 		}
 
 		const texts = await Promise.all(
-			items.filter((item) => item.kind === 'string' && /^text\/plain/.test(item.type))
+			items
+				.filter((item) => item.kind === 'string' && /^text\/plain/.test(item.type))
 				.map((item) => new Promise((resolve) => item.getAsString(resolve))),
 		);
 
@@ -88,15 +88,15 @@ export class Composer extends Component {
 
 		const items = Array.from(event.dataTransfer.items);
 
-		const files = items.filter((item) => item.kind === 'file' && /^image\//.test(item.type))
-			.map((item) => item.getAsFile());
+		const files = items.filter((item) => item.kind === 'file' && /^image\//.test(item.type)).map((item) => item.getAsFile());
 		if (files.length) {
 			onUpload && onUpload(files);
 			return;
 		}
 
 		const texts = await Promise.all(
-			items.filter((item) => item.kind === 'string' && /^text\/plain/.test(item.type))
+			items
+				.filter((item) => item.kind === 'string' && /^text\/plain/.test(item.type))
 				.map((item) => new Promise((resolve) => item.getAsString(resolve))),
 		);
 		texts.forEach((text) => this.pasteText(parse(text)));
@@ -176,7 +176,7 @@ export class Composer extends Component {
 		const { onChange } = this.props;
 		const caretPosition = this.getCaretPosition(this.el);
 		const oldText = this.el.innerText;
-		const newText = `${ oldText.substr(0, caretPosition) }${ emoji }&nbsp;${ oldText.substr(caretPosition) }`;
+		const newText = `${oldText.substr(0, caretPosition)}${emoji}&nbsp;${oldText.substr(caretPosition)}`;
 		this.el.innerHTML = newText;
 		this.moveCursorToEndAndFocus(caretPosition + emoji.length + 1);
 		onChange && onChange(this.el.innerText);
@@ -219,34 +219,30 @@ export class Composer extends Component {
 	}
 
 	render = ({ pre, post, value, placeholder, onChange, onSubmit, onUpload, className, style }) => (
-		<div className={createClassName(styles, 'composer', { }, [className])} style={style}>
+		<div className={createClassName(styles, 'composer', {}, [className])} style={style}>
 			{pre}
 			<div
 				ref={this.handleRef}
-				{...(
-					{
-						contentEditable: true,
-						'data-placeholder': placeholder,
-						onInput: this.handleInput(onChange),
-						onKeypress: this.handleKeypress(onSubmit),
-						onPaste: this.handlePaste(onUpload),
-						onDrop: this.handleDrop(onUpload),
-						onClick: this.handleClick,
-					}
-				)}
-
+				{...{
+					'contentEditable': true,
+					'data-placeholder': placeholder,
+					'onInput': this.handleInput(onChange),
+					'onKeypress': this.handleKeypress(onSubmit),
+					'onPaste': this.handlePaste(onUpload),
+					'onDrop': this.handleDrop(onUpload),
+					'onClick': this.handleClick,
+				}}
 				onCompositionStart={() => {
 					this.handleInputLock(true);
 				}}
-
 				onCompositionEnd={() => {
 					this.handleInputLock(false);
 					onChange && onChange(this.el.innerText);
 				}}
-
-
 				className={createClassName(styles, 'composer__input')}
-			>{value}</div>
+			>
+				{value}
+			</div>
 			{post}
 		</div>
 	);

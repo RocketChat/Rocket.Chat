@@ -33,7 +33,7 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			return !Array.isArray(message.starred) || !message.starred.find((star: any) => star._id === user._id);
+			return !Array.isArray(message.starred) || !message.starred.find((star: any) => star._id === user?._id);
 		},
 		order: 9,
 		group: 'menu',
@@ -58,7 +58,7 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			return Boolean(message.starred?.find((star: any) => star._id === user._id));
+			return Boolean(message.starred?.find((star: any) => star._id === user?._id));
 		},
 		order: 9,
 		group: 'menu',
@@ -90,14 +90,14 @@ Meteor.startup(function () {
 					},
 				);
 			}
-			RoomHistoryManager.getSurroundingMessages(message, 50);
+			RoomHistoryManager.getSurroundingMessages(message);
 		},
 		condition({ message, subscription, user }) {
 			if (subscription == null || !settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
-			return Boolean(message.starred?.find((star) => star._id === user._id));
+			return Boolean(message.starred?.find((star) => star._id === user?._id));
 		},
 		order: 100,
 		group: ['message', 'menu'],
@@ -120,7 +120,7 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			return Boolean(message.starred?.find((star) => star._id === user._id));
+			return Boolean(message.starred?.find((star) => star._id === user?._id));
 		},
 		order: 101,
 		group: 'menu',

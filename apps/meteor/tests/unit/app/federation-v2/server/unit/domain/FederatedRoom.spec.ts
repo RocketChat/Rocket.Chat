@@ -222,6 +222,16 @@ describe('Federation - Domain - FederatedRoom', () => {
 				expect(federatedRoom.shouldUpdateRoomTopic('new topic')).to.be.equal(false);
 			});
 		});
+
+		describe('#shouldUpdateMessage()', () => {
+			it('should return true if the old message is different from the new one', () => {
+				expect(MyClass.shouldUpdateMessage('new message', { msg: 'different' })).to.be.equal(true);
+			});
+
+			it('should return false if the old message is EQUAL from the new one', () => {
+				expect(MyClass.shouldUpdateMessage('new message', { msg: 'new message' })).to.be.equal(false);
+			});
+		});
 	});
 
 	describe('FederatedRoom', () => {

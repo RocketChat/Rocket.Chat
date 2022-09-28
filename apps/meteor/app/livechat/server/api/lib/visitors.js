@@ -86,13 +86,13 @@ export async function searchChats({
 	const [total] = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
 		open: closedChatsOnly !== 'true',
-		served: served !== 'true',
+		served: served === 'true',
 		searchText,
 		onlyCount: true,
 	}).toArray();
 	const cursor = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
-		open: closedChatsOnly === 'true',
+		open: closedChatsOnly !== 'true',
 		served: served === 'true',
 		searchText,
 		options,
