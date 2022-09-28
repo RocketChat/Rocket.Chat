@@ -33,7 +33,12 @@ router.get('/me', authenticationMiddleware({ rejectUnauthorized: true }), async 
 	res.json(await Promise.resolve({ sucess: true, user: req.user }));
 });
 
-apiServer.use('/api/v1/perf/express/', router).listen(3030);
+apiServer.use('/api/v1/perf/express/', router);
+
+const customServer = express();
+
+customServer.disable('x-powered-by');
+customServer.use('/v2/express/', router).listen(3030);
 
 WebApp.connectHandlers.use('/api/v1/perf/connect/non-auth-sync', (req, res) => {
 	res.writeHead(200, { 'Content-Type': 'application/json' });
