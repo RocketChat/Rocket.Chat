@@ -1,5 +1,5 @@
-import { css } from '@rocket.chat/css-in-js';
 import { IMessage } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import { TextAreaInput, FieldGroup, Field, Box } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
