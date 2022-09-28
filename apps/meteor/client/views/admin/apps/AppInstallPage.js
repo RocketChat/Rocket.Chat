@@ -77,17 +77,13 @@ function AppInstallPage() {
 	};
 
 	const handleAppPermissionsReview = async (permissions, appFile, appId) => {
-		if (!permissions || permissions.length === 0) {
-			await sendFile(permissions, appFile, appId);
-		} else {
-			setModal(
-				<AppPermissionsReviewModal
-					appPermissions={permissions}
-					cancel={cancelAction}
-					confirm={(permissionsGranted) => sendFile(permissionsGranted, appFile, appId)}
-				/>,
-			);
-		}
+		setModal(
+			<AppPermissionsReviewModal
+				appPermissions={permissions}
+				cancel={cancelAction}
+				confirm={(permissionsGranted) => sendFile(permissionsGranted, appFile, appId)}
+			/>,
+		);
 	};
 
 	const install = async () => {

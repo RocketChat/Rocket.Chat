@@ -1,7 +1,9 @@
 import { AppPermission } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
+
+import HumanizedPermissions from './components/HumanizedPermissionsList';
 
 type AppSecurityProps = {
 	privacyPolicySummary: string | undefined;
@@ -12,39 +14,6 @@ type AppSecurityProps = {
 
 const AppSecurity: FC<AppSecurityProps> = ({ privacyPolicySummary, appPermissions, tosLink, privacyLink }) => {
 	const t = useTranslation();
-
-	const defaultPermissions = [
-		'user.read',
-		'user.write',
-		'upload.read',
-		'upload.write',
-		'ui.interact',
-		'server-setting.read',
-		'server-setting.write',
-		'room.read',
-		'room.write',
-		'message.read',
-		'message.write',
-		'livechat-department.read',
-		'livechat-department.write',
-		'livechat-room.read',
-		'livechat-room.write',
-		'livechat-message.read',
-		'livechat-message.write',
-		'livechat-visitor.read',
-		'livechat-visitor.write',
-		'livechat-status.read',
-		'livechat-custom-fields.write',
-		'scheduler',
-		'networking',
-		'persistence',
-		'env.read',
-		'slashcommand',
-		'api',
-	];
-
-	const handleHumanizePermissionName = (permission: string): string =>
-		t(`Apps_Permissions_${permission.replace('.', '_')}` as TranslationKey);
 
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto'>
@@ -64,9 +33,7 @@ const AppSecurity: FC<AppSecurityProps> = ({ privacyPolicySummary, appPermission
 							{t('Permissions')}
 						</Box>
 						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis='x24'>
-							{appPermissions?.length
-								? appPermissions.map((permission) => <li key={permission.name}>{handleHumanizePermissionName(permission.name)}</li>)
-								: defaultPermissions.map((permission) => <li key={permission}>{handleHumanizePermissionName(permission)}</li>)}
+							<HumanizedPermissions appPermissions={appPermissions} />
 						</Box>
 					</Box>
 

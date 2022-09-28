@@ -57,6 +57,7 @@ export type AppSubscriptionInfo = {
 
 export type AppPermission = {
 	name: string;
+	required?: boolean;
 };
 
 export type App = {

@@ -1,6 +1,8 @@
-import { Button, Modal } from '@rocket.chat/fuselage';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
+import { Box, Button, Modal } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
+
+import HumanizedPermissionsList from './components/HumanizedPermissionsList';
 
 type AppPermissionsReviewModalProps = {
 	appPermissions: Array<{ name: string; required?: boolean }>;
@@ -34,17 +36,9 @@ const AppPermissionsReviewModal = ({ appPermissions, cancel, confirm, ...props }
 				{t('Apps_Permissions_Review_Modal_Subtitle')}
 			</Modal.Content>
 			<Modal.Content fontScale='p2'>
-				<ul>
-					{appPermissions.length
-						? appPermissions.map((permission, count) => (
-								<li key={permission.name}>
-									<b>{count + 1} - </b>
-									{t(`Apps_Permissions_${permission.name.replace('.', '_')}` as TranslationKey)}
-									{permission.required && <span style={{ color: 'red' }}> ({t('required')})</span>}
-								</li>
-						  ))
-						: t('Apps_Permissions_No_Permissions_Required')}
-				</ul>
+				<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis='x24'>
+					<HumanizedPermissionsList appPermissions={appPermissions} />
+				</Box>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
