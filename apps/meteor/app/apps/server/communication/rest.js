@@ -348,7 +348,7 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
-			'featured',
+			'featured-apps',
 			{ authRequired: true },
 			{
 				async get() {
@@ -362,7 +362,7 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/apps/featured`, {
+						result = HTTP.get(`${baseUrl}/v1/featured-apps`, {
 							headers,
 						});
 					} catch (e) {

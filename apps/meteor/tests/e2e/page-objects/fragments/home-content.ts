@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import type { Locator, Page } from '@playwright/test';
 
 export class HomeContent {
-	private readonly page: Page;
+	protected readonly page: Page;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -67,7 +67,7 @@ export class HomeContent {
 	}
 
 	get waitForLastMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
+		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
 	}
 
 	get btnOptionEditMessage(): Locator {
@@ -106,12 +106,12 @@ export class HomeContent {
 		return this.page.locator('[data-qa="UserCard"] a');
 	}
 
-	get btnForwardChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
+	get btnContactInformation(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
 	}
 
-	get btnCloseChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
+	get btnContactEdit(): Locator {
+		return this.page.locator('.rcx-vertical-bar button:has-text("Edit")');
 	}
 
 	get inputModalClosingComment(): Locator {
@@ -120,6 +120,14 @@ export class HomeContent {
 
 	get btnSendTranscript(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-mail-arrow-top-right"]');
+	}
+
+	get btnCannedResponses(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-canned-response"]');
+	}
+
+	get btnNewCannedResponse(): Locator {
+		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
 	}
 
 	get inputModalAgentUserName(): Locator {
@@ -148,11 +156,9 @@ export class HomeContent {
 			return data;
 		}, contract);
 
-		await this.page.dispatchEvent(
-			'div.dropzone-overlay.dropzone-overlay--enabled.background-transparent-darkest.color-content-background-color',
-			'drop',
-			{ dataTransfer },
-		);
+		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
 	async openLastMessageMenu(): Promise<void> {
@@ -162,6 +168,6 @@ export class HomeContent {
 	}
 
 	get takeOmnichannelChatButton(): Locator {
-		return this.page.locator('button.rc-button >> text=Take it!');
+		return this.page.locator('role=button[name="Take it!"]');
 	}
 }

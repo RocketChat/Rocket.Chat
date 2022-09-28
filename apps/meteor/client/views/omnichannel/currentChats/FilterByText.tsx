@@ -12,9 +12,9 @@ import Label from './Label';
 import RemoveAllClosed from './RemoveAllClosed';
 
 type FilterByTextType = FC<{
-	setFilter: Dispatch<SetStateAction<any>>;
-	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string }>>;
-	customFields: { [key: string]: string };
+	setFilter: Dispatch<SetStateAction<Record<string, any>>>;
+	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string } | undefined>>;
+	customFields: { [key: string]: string } | undefined;
 	hasCustomFields: boolean;
 	reload?: () => void;
 }>;
@@ -55,7 +55,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 		setFrom('');
 		setTo('');
 		setTags([]);
-		setCustomFields({});
+		setCustomFields(undefined);
 	});
 
 	const forms = useFormsSubscription() as any;
@@ -69,7 +69,8 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 	const onSubmit = useMutableCallback((e) => e.preventDefault());
 
 	useEffect(() => {
-		setFilter({
+		setFilter((data) => ({
+			...data,
 			guest,
 			servedBy,
 			status,
@@ -78,7 +79,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			tags: tags.map((tag) => tag.label),
 			customFields,
-		});
+		}));
 	}, [setFilter, guest, servedBy, status, department, from, to, tags, customFields]);
 
 	const handleClearFilters = useMutableCallback(() => {

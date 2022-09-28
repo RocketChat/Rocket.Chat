@@ -24,7 +24,7 @@ export const Users = {
 	 * @param {string} scope the value for the scope (room id)
 	 * @param {any} options
 	 */
-	findUsersInRoles(roles, scope, options) {
+	findUsersInRoles(roles, _scope, options) {
 		roles = [].concat(roles);
 
 		const query = {

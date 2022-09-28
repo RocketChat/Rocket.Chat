@@ -21,6 +21,11 @@ export class HomeSidenav {
 		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
+	async openAdministrationByLabel(text: string): Promise<void> {
+		await this.page.locator('role=button[name="Administration"]').click();
+		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+	}
+
 	async openNewByLabel(text: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-create"]').click();
 		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
@@ -31,11 +36,6 @@ export class HomeSidenav {
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 	}
 
-	async goToMyAccount(): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
-		await this.page.locator('//li[@class="rcx-option"]//div[contains(text(), "My Account")]').click();
-	}
-
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
 		await this.page.locator(`//li[@class="rcx-option"]//div[contains(text(), "${status}")]`).click();
@@ -44,7 +44,7 @@ export class HomeSidenav {
 	async openChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
 		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
+		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
 	}
 
 	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
