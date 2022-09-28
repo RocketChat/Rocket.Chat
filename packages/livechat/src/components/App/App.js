@@ -202,17 +202,13 @@ export class App extends Component {
 		}
 	}
 
-	render = ({
-		sound,
-		undocked,
-		minimized,
-		expanded,
-		alerts,
-		modal,
-	}, { initialized, poppedOut }) => {
+	render = ({ sound, undocked, minimized, expanded, alerts, modal, iframe }, { initialized, poppedOut }) => {
 		if (!initialized) {
 			return null;
 		}
+
+		const { department, name, email } = iframe.guest || {};
+
 		const screenProps = {
 			notificationsEnabled: sound && sound.enabled,
 			minimized: !poppedOut && (minimized || undocked),
@@ -221,6 +217,9 @@ export class App extends Component {
 			sound,
 			alerts,
 			modal,
+			nameDefault: name,
+			emailDefault: email,
+			departmentDefault: department,
 			onEnableNotifications: this.handleEnableNotifications,
 			onDisableNotifications: this.handleDisableNotifications,
 			onMinimize: this.handleMinimize,
