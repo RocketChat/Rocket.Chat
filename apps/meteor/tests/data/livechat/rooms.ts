@@ -42,7 +42,7 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 		});
 	});
 
-export const takeInquiry = (roomId: string, _agentId: string): Promise<IOmnichannelRoom> => {
+export const takeInquiry = (roomId: string, _agentId?: string): Promise<IOmnichannelRoom> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(methodCall(`livechat:takeInquiry`))
@@ -187,3 +187,20 @@ export const sendMessage = (roomId: string, message: string, visitorToken: strin
 			});
 	});
 }
+
+export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMessage[]> => {
+	return new Promise((resolve, reject) => {
+		request
+			.get(api(`livechat/messages.history/${roomId}`))
+			.set(credentials)
+			.query({
+				token: visitorToken,
+			})
+			.end((err: Error, res: DummyResponse<IMessage[]>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.messages);
+			});
+	});
+} 

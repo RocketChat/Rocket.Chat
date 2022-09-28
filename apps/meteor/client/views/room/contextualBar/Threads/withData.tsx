@@ -5,7 +5,7 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import { ThreadListProps } from './ThreadList';
 import { useThreadsList } from './useThreadsList';
 

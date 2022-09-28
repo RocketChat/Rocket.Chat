@@ -5,7 +5,6 @@ import { storiesOf } from '@storybook/react';
 import { screenCentered, screenProps } from '../../helpers.stories';
 import LeaveMessage from './component';
 
-
 storiesOf('Routes/Leave a message', module)
 	.addDecorator(screenCentered)
 	.addDecorator(withKnobs)

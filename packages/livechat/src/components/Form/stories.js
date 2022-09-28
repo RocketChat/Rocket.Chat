@@ -1,17 +1,11 @@
 import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
 
-import {
-	Form,
-	PasswordInput,
-	SelectInput,
-	TextInput,
-} from '.';
+import { Form, PasswordInput, SelectInput, TextInput } from '.';
 import { centered } from '../../helpers.stories';
 import { Button } from '../Button';
 import { ButtonGroup } from '../ButtonGroup';
 import { FormField } from './FormField';
-
 
 function handleSubmit(event, ...args) {
 	event.preventDefault();
@@ -22,22 +16,13 @@ storiesOf('Forms/Form', module)
 	.addDecorator(centered)
 	.add('default', () => (
 		<Form onSubmit={handleSubmit}>
-			<FormField
-				label='Text'
-				description='Input field for plain text'
-			>
+			<FormField label='Text' description='Input field for plain text'>
 				<TextInput />
 			</FormField>
-			<FormField
-				label='Password'
-				description='Input field for secret text'
-			>
+			<FormField label='Password' description='Input field for secret text'>
 				<PasswordInput />
 			</FormField>
-			<FormField
-				label='Select'
-				description='Input field for secret text'
-			>
+			<FormField label='Select' description='Input field for secret text'>
 				<SelectInput
 					options={[
 						{ value: '1', label: 'Option 1' },
@@ -47,8 +32,12 @@ storiesOf('Forms/Form', module)
 				/>
 			</FormField>
 			<ButtonGroup>
-				<Button submit stack>Submit</Button>
-				<Button nude secondary stack>Cancel</Button>
+				<Button submit stack>
+					Submit
+				</Button>
+				<Button nude secondary stack>
+					Cancel
+				</Button>
 			</ButtonGroup>
 		</Form>
 	));
