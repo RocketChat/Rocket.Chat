@@ -1,10 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import Ajv from 'ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
-
-// TO-DO: Replace this instance by only one Ajv import
-const ajv = new Ajv({ coerceTypes: true });
 
 type GETRoomsNameExists = {
 	roomName: string;

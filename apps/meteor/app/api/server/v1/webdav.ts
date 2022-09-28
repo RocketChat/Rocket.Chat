@@ -1,10 +1,7 @@
-import Ajv from 'ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 import { findWebdavAccountsByUserId } from '../lib/webdav';
-
-// TO-DO: remove this AJV instance and import one from the core-typings
-const ajv = new Ajv({ coerceTypes: true });
 
 type POSTRemoveWebdavAccount = {
 	accountId: string;

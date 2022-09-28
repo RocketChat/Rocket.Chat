@@ -1,7 +1,5 @@
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
-import Ajv from 'ajv';
-
-const ajv = new Ajv({ coerceTypes: true });
+import { ajv } from '@rocket.chat/rest-typings';
 
 export type SessionsPaginateProps = PaginatedRequest<{
 	filter?: string;

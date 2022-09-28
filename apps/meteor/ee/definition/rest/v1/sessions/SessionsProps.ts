@@ -1,6 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({ coerceTypes: true });
+import { ajv } from '@rocket.chat/rest-typings';
 
 export type SessionsProps = {
 	sessionId: string;

@@ -6,6 +6,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/rocketchat:restivus';
 import _ from 'underscore';
 import { RateLimiter } from 'meteor/rate-limit';
+import { betterAjvErrors } from '@apideck/better-ajv-errors';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
@@ -51,6 +52,16 @@ const getRequestIP = (req) => {
 	}
 
 	return forwardedFor[forwardedFor.length - httpForwardedCount];
+};
+
+// Errors is Ajv.ErrorObject[]
+const parseValidationError = (schma, data, errors, method) => {
+	const errlist = betterAjvErrors({ schma, data, errors, basePath: method === 'GET' ? '{queryParams}' : '{requestBody}' });
+	console.log(errlist);
+	return errlist.map((err) => {
+		const { path, message } = err;
+		return `Error at ${path}: ${message}`;
+	});
 };
 
 export class APIClass extends Restivus {
@@ -424,8 +435,10 @@ export class APIClass extends Restivus {
 							const validatorFunc =
 								typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
 
-							if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
-								throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error) => error.message).join('\n '));
+							const data = requestMethod === 'GET' ? this.queryParams : this.bodyParams;
+							if (validatorFunc && !validatorFunc(data)) {
+								const error = parseValidationError(validatorFunc.schema, data, validatorFunc.errors);
+								throw new Meteor.Error('error-invalid-params', 'Validation Error', { method: route, validationErrors: error });
 							}
 						}
 						if (

@@ -189,6 +189,7 @@
 		"webpack": "^4.46.0"
 	},
 	"dependencies": {
+		"@apideck/better-ajv-errors": "^0.3.6",
 		"@babel/runtime": "^7.18.9",
 		"@bugsnag/js": "^7.17.0",
 		"@google-cloud/storage": "^5.20.5",

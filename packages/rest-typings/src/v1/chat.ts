@@ -1,9 +1,6 @@
 import type { IMessage, IRoom, ReadReceipt } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../ajv';
 
 type ChatSendMessage = {
 	message: Partial<IMessage>;
