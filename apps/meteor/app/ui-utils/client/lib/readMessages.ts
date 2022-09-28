@@ -5,7 +5,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
-import { ChatSubscription, ChatMessage } from '../../../models/client';
+import { Subscriptions, ChatMessage } from '../../../models/client';
 
 export class ReadMessage extends Emitter {
 	protected enabled: boolean;
@@ -39,7 +39,7 @@ export class ReadMessage extends Emitter {
 			return;
 		}
 
-		const subscription = ChatSubscription.findOne({ rid });
+		const subscription = Subscriptions.findOne({ rid });
 		if (subscription == null) {
 			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
 			return;
@@ -80,7 +80,7 @@ export class ReadMessage extends Emitter {
 			return;
 		}
 
-		const subscription = ChatSubscription.findOne({ rid });
+		const subscription = Subscriptions.findOne({ rid });
 		if (subscription == null) {
 			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
 			return;
@@ -97,7 +97,7 @@ export class ReadMessage extends Emitter {
 			return;
 		}
 
-		const subscription = ChatSubscription.findOne({ rid }, { reactive: false });
+		const subscription = Subscriptions.findOne({ rid }, { reactive: false });
 		if (subscription == null) {
 			return;
 		}

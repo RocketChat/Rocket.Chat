@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
 import { UiTextContext } from '../../../definition/IRoomTypeConfig';
-import { ChatSubscription, Rooms, Users } from '../../models/client';
+import { Subscriptions, Rooms, Users } from '../../models/client';
 import { getUserPreference } from '../../utils';
 import { settings } from '../../settings';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
@@ -49,7 +49,7 @@ Template.roomList.helpers({
 			query.alert = true;
 			query.$or = [{ hideUnreadStatus: { $ne: true } }, { unread: { $gt: 0 } }];
 
-			return ChatSubscription.find(query, { sort });
+			return Subscriptions.find(query, { sort });
 		}
 
 		const favoritesEnabled = !!(settings.get('Favorite_Rooms') && getUserPreference(user, 'sidebarShowFavorites'));
@@ -85,7 +85,7 @@ Template.roomList.helpers({
 				query.f = { $ne: favoritesEnabled };
 			}
 		}
-		return ChatSubscription.find(query, { sort });
+		return Subscriptions.find(query, { sort });
 	},
 
 	isLivechat() {

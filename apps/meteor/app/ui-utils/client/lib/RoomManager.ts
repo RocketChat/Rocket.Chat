@@ -10,7 +10,7 @@ import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { callbacks } from '../../../../lib/callbacks';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models/client';
+import { CachedChatRoom, ChatMessage, Subscriptions, CachedChatSubscription, ChatRoom } from '../../../models/client';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -138,7 +138,7 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 			const type = FlowRouter.current().route?.name === 'channel' ? 'c' : 'p';
 			close(type + FlowRouter.getParam('name'));
 
-			const subscription = ChatSubscription.findOne({ rid: msg.rid });
+			const subscription = Subscriptions.findOne({ rid: msg.rid });
 			const route = subscription.t === 'c' ? 'channel' : 'group';
 			FlowRouter.go(route, { name: subscription.name }, FlowRouter.current().queryParams);
 		}
@@ -181,7 +181,7 @@ const computation = Tracker.autorun(() => {
 							// }
 							// Do not load command messages into channel
 							if (msg.t !== 'command') {
-								const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+								const subscription = Subscriptions.findOne({ rid: record.rid }, { reactive: false });
 								const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
 								upsertMessage({ msg, subscription });
 

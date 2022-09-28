@@ -3,7 +3,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { Subscriptions, ChatSubscription } from '../../models/client';
+import { Subscriptions } from '../../models/client';
 
 slashCommands.add({
 	command: 'open',
@@ -21,7 +21,7 @@ slashCommands.add({
 			...(type && { t: { $in: type } }),
 		};
 
-		const subscription = ChatSubscription.findOne(query);
+		const subscription = Subscriptions.findOne(query);
 
 		if (subscription) {
 			roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);

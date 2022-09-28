@@ -9,7 +9,7 @@ import { t } from '../../utils';
 import { Notifications } from '../../notifications';
 import { settings } from '../../settings';
 import { modal } from '../../ui-utils';
-import { ChatSubscription } from '../../models/client';
+import { Subscriptions } from '../../models/client';
 import { WEB_RTC_EVENTS } from '..';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 
@@ -692,7 +692,7 @@ class WebRTCClass {
 		if (user && user.username) {
 			fromUsername = user.username;
 		}
-		const subscription = ChatSubscription.findOne({
+		const subscription = Subscriptions.findOne({
 			rid: data.room,
 		});
 
@@ -930,7 +930,7 @@ const WebRTC = new (class {
 	getInstanceByRoomId(rid, visitorId = null) {
 		let enabled = false;
 		if (!visitorId) {
-			const subscription = ChatSubscription.findOne({ rid });
+			const subscription = Subscriptions.findOne({ rid });
 			if (!subscription) {
 				return;
 			}

@@ -3,7 +3,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { RoomManager, MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
-import { ChatSubscription } from '../../models/client';
+import { Subscriptions } from '../../models/client';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
@@ -20,7 +20,7 @@ Meteor.startup(() => {
 					dispatchToastMessage({ type: 'error', message: error });
 					return;
 				}
-				const subscription = ChatSubscription.findOne({
+				const subscription = Subscriptions.findOne({
 					rid: message.rid,
 				});
 				if (subscription == null) {

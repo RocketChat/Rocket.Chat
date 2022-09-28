@@ -9,7 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { e2e } from '../../../e2e/client';
-import { Users, ChatSubscription } from '../../../models/client';
+import { Users, Subscriptions } from '../../../models/client';
 import { getUserPreference } from '../../../utils';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
@@ -146,7 +146,7 @@ export const KonchatNotification = {
 		const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
 		const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
 
-		const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
+		const sub = Subscriptions.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 
 		if (!sub || sub.audioNotificationValue === 'none') {
 			return;

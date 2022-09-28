@@ -4,13 +4,13 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 
-import { ChatSubscription, ChatRoom } from '../../app/models/client';
+import { Subscriptions, ChatRoom } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { getUserPreference } from '../../app/utils/client';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 const fetchSubscriptions = (): ISubscription[] =>
-	ChatSubscription.find(
+	Subscriptions.find(
 		{
 			open: true,
 			hideUnreadStatus: { $ne: true },

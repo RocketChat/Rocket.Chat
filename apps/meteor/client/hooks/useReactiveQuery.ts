@@ -1,5 +1,6 @@
 import { IRole, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useQuery, UseQueryOptions, QueryKey, UseQueryResult, useQueryClient } from '@tanstack/react-query';
+import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 
 import { Roles, RoomRoles, Rooms, Subscriptions, UserRoles, Users } from '../../app/models/client';

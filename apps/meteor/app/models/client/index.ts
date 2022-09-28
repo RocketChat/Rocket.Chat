@@ -13,7 +13,6 @@ import { CachedChatRoom } from './models/CachedChatRoom';
 import { CachedChatSubscription } from './models/CachedChatSubscription';
 import { CachedUserList } from './models/CachedUserList';
 import { ChatRoom } from './models/ChatRoom';
-import { ChatSubscription } from './models/ChatSubscription';
 import { ChatMessage } from './models/ChatMessage';
 import { RoomRoles } from './models/RoomRoles';
 import { UserAndRoom } from './models/UserAndRoom';
@@ -24,7 +23,7 @@ import CustomSounds from './models/CustomSounds';
 import EmojiCustom from './models/EmojiCustom';
 
 const Users = _.extend({}, users, Meteor.users);
-const Subscriptions = _.extend({}, subscriptions, ChatSubscription);
+const Subscriptions = _.extend({}, subscriptions, CachedChatSubscription.collection);
 const Messages = _.extend({}, ChatMessage);
 const Rooms = _.extend({}, ChatRoom);
 
@@ -48,7 +47,6 @@ export {
 	AuthzCachedCollection,
 	ChatPermissions,
 	ChatMessage,
-	ChatSubscription,
 	Rooms,
 	CustomSounds,
 	EmojiCustom,

@@ -2,7 +2,7 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { memoize } from '@rocket.chat/memo';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { ChatSubscription } from '../../../app/models/client';
+import { Subscriptions } from '../../../app/models/client';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 import { callWithErrorHandling } from './callWithErrorHandling';
 
@@ -13,7 +13,7 @@ export const goToRoomById = async (rid: IRoom['_id']): Promise<void> => {
 		return;
 	}
 
-	const subscription: ISubscription | undefined = ChatSubscription.findOne({ rid });
+	const subscription: ISubscription | undefined = Subscriptions.findOne({ rid });
 
 	if (subscription) {
 		roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);

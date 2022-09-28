@@ -9,7 +9,7 @@ import type { MutableRefObject } from 'react';
 import { waitUntilWrapperExists } from './waitUntilWrapperExists';
 import { readMessage } from './readMessages';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { ChatMessage, ChatSubscription } from '../../../models/client';
+import { ChatMessage, Subscriptions } from '../../../models/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import {
 	setHighlightMessage,
@@ -108,7 +108,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		let ls = undefined;
 
-		const subscription = ChatSubscription.findOne({ rid });
+		const subscription = Subscriptions.findOne({ rid });
 		if (subscription) {
 			({ ls } = subscription);
 		}
@@ -175,7 +175,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: -1 } });
 
-		const subscription = ChatSubscription.findOne({ rid });
+		const subscription = Subscriptions.findOne({ rid });
 
 		if (lastMessage?.ts) {
 			const { ts } = lastMessage;
@@ -272,7 +272,7 @@ class RoomHistoryManagerClass extends Emitter {
 		room.isLoading.set(true);
 		room.hasMore.set(false);
 
-		const subscription = ChatSubscription.findOne({ rid: message.rid });
+		const subscription = Subscriptions.findOne({ rid: message.rid });
 
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
 

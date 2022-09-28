@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { ChatSubscription } from '../../app/models/client';
+import { Subscriptions } from '../../app/models/client';
 
 Meteor.methods({
 	toggleFavorite(rid, f) {
@@ -8,7 +8,7 @@ Meteor.methods({
 			return false;
 		}
 
-		ChatSubscription.update(
+		Subscriptions.update(
 			{
 				rid,
 				'u._id': Meteor.userId(),

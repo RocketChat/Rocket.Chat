@@ -14,7 +14,7 @@ import { t, slashCommands, APIClient } from '../../../utils/client';
 import { messageProperties, MessageTypes, readMessage } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
-import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
+import { Messages, Rooms, ChatMessage, Subscriptions } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
@@ -279,7 +279,7 @@ export class ChatMessages {
 
 		UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
 
-		if (!ChatSubscription.findOne({ rid })) {
+		if (!Subscriptions.findOne({ rid })) {
 			await callWithErrorHandling('joinRoom', rid);
 		}
 

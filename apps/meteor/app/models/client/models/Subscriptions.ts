@@ -1,23 +1,22 @@
 import _ from 'underscore';
 import mem from 'mem';
+import { Meteor } from 'meteor/meteor';
+import type { IRole, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { Mongo } from 'meteor/mongo';
 
-import { Users } from '..';
-
-const Subscriptions = {};
-
-Object.assign(Subscriptions, {
+const Subscriptions = {
 	isUserInRole: mem(
 		/**
 		 * @param {string} userId
 		 * @param {IRole['_id']} roleId
 		 * @param {string} roomId
 		 */
-		function (userId, roleId, roomId) {
-			if (roomId == null) {
+		function (this: Mongo.Collection<ISubscription>, _userId: IUser['_id'], roleId: IRole['_id'], roomId: IRoom['_id']) {
+			if (!roomId) {
 				return false;
 			}
 
-			const query = {
+			const query: Mongo.Selector<ISubscription> = {
 				rid: roomId,
 			};
 
@@ -29,15 +28,15 @@ Object.assign(Subscriptions, {
 	),
 
 	findUsersInRoles: mem(
-		/**
-		 * @param {IRole['_id'][]} roles the list of role ids
-		 * @param {string} scope the value for the role scope (room id)
-		 * @param {any} options
-		 */
-		function (roles, scope, options) {
-			roles = [].concat(roles);
+		function (
+			this: Mongo.Collection<ISubscription>,
+			roles: IRole['_id'] | IRole['_id'][],
+			scope: string,
+			options: Mongo.Options<Meteor.User>,
+		) {
+			roles = ([] as IRole['_id'][]).concat(roles);
 
-			const query = {
+			const query: Mongo.Selector<ISubscription> = {
 				roles: { $in: roles },
 			};
 
@@ -55,10 +54,10 @@ Object.assign(Subscriptions, {
 				}),
 			);
 
-			return Users.find({ _id: { $in: users } }, options);
+			return Meteor.users.find({ _id: { $in: users } }, options);
 		},
 		{ maxAge: 1000, cacheKey: JSON.stringify },
 	),
-});
+} as const;
 
 export { Subscriptions };

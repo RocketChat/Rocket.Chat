@@ -2,7 +2,7 @@ import { IRoom } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { ChatMessage, ChatSubscription } from '../../app/models/client';
+import { ChatMessage, Subscriptions } from '../../app/models/client';
 import { RoomManager } from '../../app/ui-utils/client';
 import { upsertMessage } from '../lib/rooms/upsertMessage';
 import { callWithErrorHandling } from '../lib/utils/callWithErrorHandling';
@@ -17,7 +17,7 @@ const loadMissedMessages = async function (rid: IRoom['_id']): Promise<void> {
 	try {
 		const result = await callWithErrorHandling('loadMissedMessages', rid, lastMessage.ts);
 		if (result) {
-			const subscription = ChatSubscription.findOne({ rid });
+			const subscription = Subscriptions.findOne({ rid });
 			await Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
 		}
 	} catch (error) {

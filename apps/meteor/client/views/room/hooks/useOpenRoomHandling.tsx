@@ -6,7 +6,7 @@ import React, { Suspense, useEffect } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { Room, RoomSkeleton, RoomProvider, RoomNotFound } from '..';
-import { Messages, Rooms, Subscriptions, ChatSubscription } from '../../../../app/models/client';
+import { Messages, Rooms, Subscriptions } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { RoomManager, RoomHistoryManager } from '../../../../app/ui-utils/client';
 import * as openRoom from '../../../../app/ui-utils/client/lib/openRoom';
@@ -79,7 +79,7 @@ export const useOpenRoomHandling = (): void => {
 					Session.set('editRoomTitle', false);
 					// KonchatNotification.removeRoomNotification(params._id)
 					// update user's room subscription
-					const sub = ChatSubscription.findOne({ rid: room._id });
+					const sub = Subscriptions.findOne({ rid: room._id });
 					if (sub && sub.open === false) {
 						await callWithErrorHandling('openRoom', room._id);
 					}

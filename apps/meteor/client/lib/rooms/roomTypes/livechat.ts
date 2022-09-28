@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 
 import { hasPermission } from '../../../../app/authorization/client';
 import { LivechatInquiry } from '../../../../app/livechat/client/collections/LivechatInquiry';
-import { ChatRoom, ChatSubscription } from '../../../../app/models/client';
+import { ChatRoom, Subscriptions } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
@@ -78,7 +78,7 @@ roomCoordinator.add(LivechatRoomType, {
 			return true;
 		}
 
-		const subscription = ChatSubscription.findOne({ rid });
+		const subscription = Subscriptions.findOne({ rid });
 		return !subscription;
 	},
 } as AtLeast<IRoomTypeClientDirectives, 'roomName'>);
