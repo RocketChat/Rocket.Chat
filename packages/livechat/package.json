@@ -24,10 +24,10 @@
 	},
 	"devDependencies": {
 		"@babel/eslint-parser": "^7.18.9",
-		"@babel/preset-env": "^7.18.9",
+		"@babel/preset-env": "^7.18.10",
 		"@rocket.chat/eslint-config": "^0.4.0",
-		"@rocket.chat/fuselage-tokens": "0.31.18",
-		"@rocket.chat/logo": "0.31.18",
+		"@rocket.chat/fuselage-tokens": "next",
+		"@rocket.chat/logo": "next",
 		"@storybook/addon-actions": "~6.5.10",
 		"@storybook/addon-backgrounds": "~6.5.10",
 		"@storybook/addon-essentials": "~6.5.10",
@@ -36,7 +36,6 @@
 		"@storybook/addon-viewport": "~6.5.10",
 		"@storybook/react": "~6.5.10",
 		"@storybook/theming": "~6.5.10",
-		"@types/react-dom": "^17.0.17",
 		"autoprefixer": "^9.8.8",
 		"babel-loader": "^8.1.0",
 		"babel-plugin-jsx-pragmatic": "^1.0.2",
@@ -44,7 +43,7 @@
 		"css-loader": "^4.3.0",
 		"cssnano": "^4.1.11",
 		"desvg-loader": "^0.1.0",
-		"eslint": "^8.20.0",
+		"eslint": "^8.22.0",
 		"eslint-plugin-import": "^2.26.0",
 		"eslint-plugin-react": "^7.30.1",
 		"eslint-plugin-react-hooks": "^4.6.0",
@@ -87,7 +86,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
-		"@rocket.chat/ui-kit": "^0.14.1",
+		"@rocket.chat/ui-kit": "next",
 		"crypto-js": "^4.1.1",
 		"css-vars-ponyfill": "^2.4.7",
 		"date-fns": "^2.15.0",
@@ -108,6 +107,9 @@
 		"last 2 versions",
 		"not ie < 11"
 	],
+	"volta": {
+		"extends": "../../package.json"
+	},
 	"houston": {
 		"updateFiles": [
 			"package.json"

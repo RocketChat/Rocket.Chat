@@ -5,7 +5,7 @@ import React, { ReactElement } from 'react';
 
 import { useForm } from '../../../../../hooks/useForm';
 import { useRoom } from '../../../contexts/RoomContext';
-import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../../contexts/ToolboxContext';
 import AddUsers from './AddUsers';
 
 type AddUsersWithDataProps = {

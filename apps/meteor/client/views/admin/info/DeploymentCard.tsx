@@ -56,9 +56,9 @@ const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): R
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('MongoDB')}</Card.Col.Title>
-						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} (oplog ${
-							statistics.oplogEnabled ? t('Enabled') : t('Disabled')
-						})`}
+						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} ${
+							!statistics.msEnabled ? `(oplog ${statistics.oplogEnabled ? t('Enabled') : t('Disabled')})` : ''
+						}`}
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Commit_details')}</Card.Col.Title>
