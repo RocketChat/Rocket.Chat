@@ -1,12 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
-import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
@@ -18,6 +16,7 @@ const HomePage = lazy(() => import('../views/home/HomePage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const CMSPage = lazy(() => import('../views/root/CMSPage'));
+const LoginTokenPage = lazy(() => import('../views/root/LoginTokenPage'));
 const ResetPasswordPage = lazy(() => import('../views/login/ResetPassword/ResetPassword'));
 const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
@@ -94,29 +93,7 @@ FlowRouter.route('/meet/:rid', {
 
 FlowRouter.route('/home', {
 	name: 'home',
-
-	action(_params, queryParams) {
-		KonchatNotification.getDesktopPermission();
-		if (queryParams?.saml_idp_credentialToken !== undefined) {
-			const token = queryParams.saml_idp_credentialToken;
-			FlowRouter.setQueryParams({
-				saml_idp_credentialToken: null,
-			});
-			(Meteor as any).loginWithSamlToken(token, (error?: unknown) => {
-				if (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
-
-				appLayout.render(
-					<MainLayout>
-						<HomePage />
-					</MainLayout>,
-				);
-			});
-
-			return;
-		}
-
+	action() {
 		appLayout.render(
 			<MainLayout>
 				<HomePage />
@@ -209,18 +186,8 @@ FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
 
 FlowRouter.route('/login-token/:token', {
 	name: 'tokenLogin',
-	action(params) {
-		Accounts.callLoginMethod({
-			methodArguments: [
-				{
-					loginToken: params?.token,
-				},
-			],
-			userCallback(error) {
-				console.error(error);
-				FlowRouter.go('/');
-			},
-		});
+	action() {
+		appLayout.render(<LoginTokenPage />);
 	},
 });
 
