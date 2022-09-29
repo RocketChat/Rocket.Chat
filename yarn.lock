@@ -5079,7 +5079,7 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": next
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/message-parser": 0.32.0-dev.104
     "@rocket.chat/ui-kit": next
     eslint: ^8.22.0
     mongodb: ^4.3.1
@@ -5390,7 +5390,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": next
     "@rocket.chat/fuselage-tokens": next
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/message-parser": 0.32.0-dev.104
     "@rocket.chat/styled": next
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -5563,10 +5563,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/message-parser@npm:next":
-  version: 0.32.0-dev.105
-  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.105"
-  checksum: 67dded5f5aa285c56f5fa67c27f27870822edad4c7023e5ffec0c3d194c7ccc0a8ffb94c57c8aa4a6fa19ac6904ee2a8c4abef9f9095f5361c64558c03f0e45a
+"@rocket.chat/message-parser@npm:0.32.0-dev.104":
+  version: 0.32.0-dev.104
+  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.104"
+  checksum: 6445cad4eb7ea6ceae3ecd7bee85314c3913014c8f2429c6ba9dd0b7468a915ed9c413492287b3036aeb39ff11ae02e1bcca90db61617978150a68bbb868fd8f
   languageName: node
   linkType: hard
 
@@ -5614,7 +5614,7 @@ __metadata:
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logo": next
     "@rocket.chat/memo": next
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/message-parser": 0.32.0-dev.104
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/mp3-encoder": 0.24.0
@@ -6034,7 +6034,7 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/message-parser": 0.32.0-dev.104
     "@rocket.chat/ui-kit": next
     "@types/jest": ^27.4.1
     ajv: ^8.11.0
@@ -30310,7 +30310,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/icons": next
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/message-parser": 0.32.0-dev.104
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
