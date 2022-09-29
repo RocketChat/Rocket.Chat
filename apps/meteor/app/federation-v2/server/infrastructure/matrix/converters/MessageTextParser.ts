@@ -1,9 +1,9 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import sanitizeHtml from 'sanitize-html';
 import type { MentionPill as MentionPillType } from '@rocket.chat/forked-matrix-bot-sdk';
 
 import { FederatedUser } from '../../../domain/FederatedUser';
-import { FederatedRoom } from '../../../domain/FederatedRoom';
+import type { FederatedRoom } from '../../../domain/FederatedRoom';
 
 const A_HREF_LINKS_REGEX = /href="(.*?)"/gm; // '<a => href="https://matrix.to/#/@user:server.com" <= >user</a>
 const HREF_REGEX = /href=/; // href="https://matrix.to/#/@user:server.com"
@@ -19,7 +19,7 @@ const extractAllMentionsLinksFromMessage = (message: string): string[] => {
 	const mentionLinks: string[] = [];
 	message.replace(A_HREF_LINKS_REGEX, (match): any => {
 		const mentionLink = match.replace(HREF_REGEX, '').replace(/\"/g, '');
-		mentionLinks.push(`[${ mentionLink }]`);
+		mentionLinks.push(`[${mentionLink}]`);
 	});
 
 	return mentionLinks;
@@ -29,7 +29,7 @@ const replaceExternalWithInternalMentions = (message: string, homeServerDomain: 
 	const allMentionLinks = extractAllMentionsLinksFromMessage(message);
 
 	return message
-		.replace(A_LINKS_REGEX, () => ` ${ allMentionLinks.shift() }`)
+		.replace(A_LINKS_REGEX, () => ` ${allMentionLinks.shift()}`)
 		.replace(SPACES_REGEX, '\n')
 		.replace(MATRIX_MENTION_LINK_REGEX, (match: any) => {
 			const isUsernameMention = match.includes('@');
@@ -37,8 +37,8 @@ const replaceExternalWithInternalMentions = (message: string, homeServerDomain: 
 				const [, username] = match.replace('[', '').replace(']', '').split('@');
 				const [, serverDomain] = username.split(':');
 
-				const withoutServerIdentification = `@${ username.split(':').shift() }`;
-				const fullUsername = `@${ username }`;
+				const withoutServerIdentification = `@${username.split(':').shift()}`;
+				const fullUsername = `@${username}`;
 
 				return FederatedUser.isOriginalFromTheProxyServer(serverDomain, homeServerDomain) ? withoutServerIdentification : fullUsername;
 			}
@@ -63,7 +63,7 @@ const replaceMentionsInMatrixFormatForEachUserExternalMention = async (message: 
 
 	return message
 		.split(' ')
-		.map((word) => word.replace(INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX, () => ` ${ externalUserMentions.shift()?.html }`))
+		.map((word) => word.replace(INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX, () => ` ${externalUserMentions.shift()?.html}`))
 		.join(' ');
 };
 
@@ -75,7 +75,7 @@ const replaceMentionsInMatrixFormatForEachInternalUserMention = async (message: 
 		.split(' ')
 		.forEach((word) =>
 			word.replace(INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX, (match): any =>
-				promises.push(MentionPill.forUser(`${ match.trimStart() }:${ homeServerDomain }`)),
+				promises.push(MentionPill.forUser(`${match.trimStart()}:${homeServerDomain}`)),
 			),
 		);
 
@@ -83,7 +83,7 @@ const replaceMentionsInMatrixFormatForEachInternalUserMention = async (message: 
 
 	return message
 		.split(' ')
-		.map((word) => word.replace(INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX, () => ` ${ externalUserMentions.shift()?.html }`))
+		.map((word) => word.replace(INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX, () => ` ${externalUserMentions.shift()?.html}`))
 		.join(' ');
 };
 
@@ -95,7 +95,7 @@ const replaceMentionsInMatrixFormatForEachInternalMentions = async (message: str
 
 	const externalMentions = await Promise.all(promises);
 
-	return message.replace(INTERNAL_GENERAL_REGEX, () => ` ${ externalMentions.shift()?.html }`);
+	return message.replace(INTERNAL_GENERAL_REGEX, () => ` ${externalMentions.shift()?.html}`);
 };
 
 const replaceInternalWithExternalMentions = async (message: string, externalRoomId: string, homeServerDomain: string): Promise<string> =>
@@ -119,14 +119,25 @@ export const toInternalMessageFormat = ({
 	message,
 	homeServerDomain,
 	isAReplyToAMessage = false,
-}: { message: string, homeServerDomain: string, isAReplyToAMessage?: boolean }): string =>
-	isAReplyToAMessage ? message : replaceExternalWithInternalMentions(message, homeServerDomain);
+}: {
+	message: string;
+	homeServerDomain: string;
+	isAReplyToAMessage?: boolean;
+}): string => (isAReplyToAMessage ? message : replaceExternalWithInternalMentions(message, homeServerDomain));
 
-export const toInternalQuoteMessageFormat = async (messageToReplyTo: IMessage, federatedRoom: FederatedRoom, message: string, homeServerDomain: string): Promise<string> => {
+export const toInternalQuoteMessageFormat = async (
+	messageToReplyTo: IMessage,
+	federatedRoom: FederatedRoom,
+	message: string,
+	homeServerDomain: string,
+): Promise<string> => {
 	const { roomCoordinator } = await import('../../../../../../server/lib/rooms/roomCoordinator');
 	const { getURL } = await import('../../../../../utils/server');
 	const room = federatedRoom.getInternalReference();
-	const messageToReplyToUrl = getURL(`${ roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name }) }?msg=${ messageToReplyTo._id }`, { full: true });
+	const messageToReplyToUrl = getURL(
+		`${roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name })}?msg=${messageToReplyTo._id}`,
+		{ full: true },
+	);
 	const sanitizedMessage = sanitizeHtml(message, {
 		allowedTags: ['a'],
 		allowedAttributes: {
@@ -134,8 +145,8 @@ export const toInternalQuoteMessageFormat = async (messageToReplyTo: IMessage, f
 		},
 		nonTextTags: ['mx-reply', 'blockquote'],
 	});
-	return `[ ](${ messageToReplyToUrl }) ${ replaceExternalWithInternalMentions(sanitizedMessage, homeServerDomain) }`;
-}
+	return `[ ](${messageToReplyToUrl}) ${replaceExternalWithInternalMentions(sanitizedMessage, homeServerDomain)}`;
+};
 
 export const toExternalQuoteMessageFormat = async (
 	externalRoomId: string,
@@ -143,14 +154,19 @@ export const toExternalQuoteMessageFormat = async (
 	originalEventSender: string,
 	message: string,
 	homeServerDomain: string,
-): Promise<{ message: string, formattedMessage: string }> => {
+): Promise<{ message: string; formattedMessage: string }> => {
 	const { RichReply } = await import('@rocket.chat/forked-matrix-bot-sdk');
 
 	const formattedMessage = removeMarkdownFromMessage(message);
-	const { body, formatted_body: formattedBody } = RichReply.createFor(externalRoomId, { event_id: eventToReplyTo, sender: originalEventSender }, formattedMessage, await toExternalMessageFormat(formattedMessage, externalRoomId, homeServerDomain));
+	const { body, formatted_body: formattedBody } = RichReply.createFor(
+		externalRoomId,
+		{ event_id: eventToReplyTo, sender: originalEventSender },
+		formattedMessage,
+		await toExternalMessageFormat(formattedMessage, externalRoomId, homeServerDomain),
+	);
 
 	return {
 		message: body,
 		formattedMessage: formattedBody,
 	};
-}
+};

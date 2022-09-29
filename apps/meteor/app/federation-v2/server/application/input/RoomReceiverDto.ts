@@ -208,7 +208,7 @@ export class FederationRoomReceiveExternalMessageDto extends ExternalMessageBase
 	normalizedSenderId: string;
 
 	messageText: string;
-	
+
 	replyToEventId?: string;
 }
 

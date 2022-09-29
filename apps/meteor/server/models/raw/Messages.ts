@@ -380,7 +380,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne({ 'federation.eventId': federationEventId });
 	}
 
-	async setFederationEventIdById(_id: string,federationEventId: string): Promise<void> {
+	async setFederationEventIdById(_id: string, federationEventId: string): Promise<void> {
 		await this.updateOne(
 			{ _id },
 			{

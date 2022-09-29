@@ -2,17 +2,14 @@ import type { IMessage } from '@rocket.chat/core-typings';
 
 import type { IFederationBridge } from '../../domain/IFederationBridge';
 import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
-import { RocketChatMessageAdapter } from '../../infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatMessageAdapter } from '../../infrastructure/rocket-chat/adapters/Message';
 
 export interface IExternalMessageSender {
 	sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<void>;
 }
 
 class TextExternalMessageSender implements IExternalMessageSender {
-	constructor(
-		private readonly bridge: IFederationBridge,
-		private readonly internalMessageAdapter: RocketChatMessageAdapter,
-		) {}
+	constructor(private readonly bridge: IFederationBridge, private readonly internalMessageAdapter: RocketChatMessageAdapter) {}
 
 	public async sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<void> {
 		const externalMessageId = await this.bridge.sendMessage(externalRoomId, externalSenderId, message);
@@ -26,7 +23,7 @@ class FileExternalMessageSender implements IExternalMessageSender {
 		private readonly bridge: IFederationBridge,
 		private readonly internalFileHelper: RocketChatFileAdapter,
 		private readonly internalMessageAdapter: RocketChatMessageAdapter,
-		) {}
+	) {}
 
 	public async sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<void> {
 		const file = await this.internalFileHelper.getFileRecordById((message.files || [])[0]?._id);
@@ -58,5 +55,7 @@ export const getExternalMessageSender = (
 	internalFileHelper: RocketChatFileAdapter,
 	internalMessageAdapter: RocketChatMessageAdapter,
 ): IExternalMessageSender => {
-	return message.files ? new FileExternalMessageSender(bridge, internalFileHelper, internalMessageAdapter) : new TextExternalMessageSender(bridge, internalMessageAdapter);
+	return message.files
+		? new FileExternalMessageSender(bridge, internalFileHelper, internalMessageAdapter)
+		: new TextExternalMessageSender(bridge, internalMessageAdapter);
 };

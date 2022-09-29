@@ -86,6 +86,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter as any,
 			userAdapter as any,
 			fileAdapter as any,
+			{} as any,
 			settingsAdapter as any,
 			bridge as any,
 		);

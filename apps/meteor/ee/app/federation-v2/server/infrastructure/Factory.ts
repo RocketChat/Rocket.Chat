@@ -24,7 +24,14 @@ export class FederationFactoryEE {
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		bridge: IFederationBridgeEE,
 	): FederationRoomServiceSenderEE {
-		return new FederationRoomServiceSenderEE(rocketRoomAdapter, rocketUserAdapter, rocketFileAdapter, rocketMessageAdapter, rocketSettingsAdapter, bridge);
+		return new FederationRoomServiceSenderEE(
+			rocketRoomAdapter,
+			rocketUserAdapter,
+			rocketFileAdapter,
+			rocketMessageAdapter,
+			rocketSettingsAdapter,
+			bridge,
+		);
 	}
 
 	public static buildRoomInternalHooksServiceSender(

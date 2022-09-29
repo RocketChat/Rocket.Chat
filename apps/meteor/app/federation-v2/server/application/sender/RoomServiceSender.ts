@@ -1,12 +1,11 @@
-import type { IMessage } from '@rocket.chat/core-typings';
-import { isDeletedMessage, isEditedMessage, isMessageFromMatrixFederation } from '@rocket.chat/core-typings';
-import { isQuoteAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import { isDeletedMessage, isEditedMessage, isMessageFromMatrixFederation, isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { DirectMessageFederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
 import type { IFederationBridge } from '../../domain/IFederationBridge';
 import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
-import { RocketChatMessageAdapter } from '../../infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatMessageAdapter } from '../../infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
@@ -84,7 +83,7 @@ export class FederationRoomServiceSender extends FederationService {
 
 		if (!federatedRoom) {
 			throw new Error(
-				`Could not find room id for users: ${ [federatedInviteeUser.getInternalId(), federatedInviterUser.getInternalId()].join(' ') }`,
+				`Could not find room id for users: ${[federatedInviteeUser.getInternalId(), federatedInviterUser.getInternalId()].join(' ')}`,
 			);
 		}
 
@@ -149,12 +148,12 @@ export class FederationRoomServiceSender extends FederationService {
 		const { internalRoomId, internalSenderId, message } = roomSendExternalMessageInput;
 		const federatedSender = await this.internalUserAdapter.getFederatedUserByInternalId(internalSenderId);
 		if (!federatedSender) {
-			throw new Error(`Could not find user id for ${ internalSenderId }`);
+			throw new Error(`Could not find user id for ${internalSenderId}`);
 		}
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 		if (!federatedRoom) {
-			throw new Error(`Could not find room id for ${ internalRoomId }`);
+			throw new Error(`Could not find room id for ${internalRoomId}`);
 		}
 
 		if (message.federation?.eventId) {

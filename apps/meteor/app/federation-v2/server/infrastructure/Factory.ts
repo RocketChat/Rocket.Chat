@@ -80,7 +80,14 @@ export class FederationFactory {
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		bridge: IFederationBridge,
 	): FederationRoomServiceSender {
-		return new FederationRoomServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketFileAdapter, rocketMessageAdapter, rocketSettingsAdapter, bridge);
+		return new FederationRoomServiceSender(
+			rocketRoomAdapter,
+			rocketUserAdapter,
+			rocketFileAdapter,
+			rocketMessageAdapter,
+			rocketSettingsAdapter,
+			bridge,
+		);
 	}
 
 	public static buildUserServiceSender(
@@ -202,9 +209,7 @@ export class FederationFactory {
 			roomServiceSender.afterMessageUpdated(message, roomId, userId),
 		);
 		FederationHooks.afterMessageSent((message: IMessage, roomId: string, userId: string) =>
-			roomServiceSender.sendExternalMessage(
-				FederationRoomSenderConverter.toSendExternalMessageDto(userId, roomId, message),
-			),
+			roomServiceSender.sendExternalMessage(FederationRoomSenderConverter.toSendExternalMessageDto(userId, roomId, message)),
 		);
 	}
 

@@ -14,6 +14,9 @@ describe('Federation - Application - Message Senders', () => {
 		getFileRecordById: sinon.stub(),
 		extractMetadataFromFile: sinon.stub(),
 	};
+	const messageAdapter = {
+		setExternalFederationEventOnMessage: sinon.stub(),
+	};
 
 	afterEach(() => {
 		bridge.sendMessage.reset();
@@ -21,6 +24,7 @@ describe('Federation - Application - Message Senders', () => {
 		fileAdapter.getBufferFromFileRecord.reset();
 		fileAdapter.getFileRecordById.reset();
 		fileAdapter.extractMetadataFromFile.reset();
+		messageAdapter.setExternalFederationEventOnMessage.reset();
 	});
 
 	describe('TextExternalMessageSender', () => {
@@ -30,7 +34,11 @@ describe('Federation - Application - Message Senders', () => {
 
 		describe('#sendMessage()', () => {
 			it('should send a message through the bridge', async () => {
-				await getExternalMessageSender({} as any, bridge as any, fileAdapter as any).sendMessage(roomId, senderId, message);
+				await getExternalMessageSender({} as any, bridge as any, fileAdapter as any, messageAdapter as any).sendMessage(
+					roomId,
+					senderId,
+					message,
+				);
 				expect(bridge.sendMessage.calledWith(roomId, senderId, message)).to.be.true;
 			});
 		});
@@ -44,21 +52,33 @@ describe('Federation - Application - Message Senders', () => {
 		describe('#sendMessage()', () => {
 			it('should not upload the file to the bridge if the file does not exists', async () => {
 				fileAdapter.getFileRecordById.resolves(undefined);
-				await getExternalMessageSender(message, bridge as any, fileAdapter as any).sendMessage(roomId, senderId, message);
+				await getExternalMessageSender(message, bridge as any, fileAdapter as any, messageAdapter as any).sendMessage(
+					roomId,
+					senderId,
+					message,
+				);
 				expect(bridge.sendMessageFileToRoom.called).to.be.false;
 				expect(fileAdapter.getBufferFromFileRecord.called).to.be.false;
 			});
 
 			it('should not upload the file to the bridge if the file size does not exists', async () => {
 				fileAdapter.getFileRecordById.resolves({});
-				await getExternalMessageSender(message, bridge as any, fileAdapter as any).sendMessage(roomId, senderId, message);
+				await getExternalMessageSender(message, bridge as any, fileAdapter as any, messageAdapter as any).sendMessage(
+					roomId,
+					senderId,
+					message,
+				);
 				expect(bridge.sendMessageFileToRoom.called).to.be.false;
 				expect(fileAdapter.getBufferFromFileRecord.called).to.be.false;
 			});
 
 			it('should not upload the file to the bridge if the file type does not exists', async () => {
 				fileAdapter.getFileRecordById.resolves({ size: 12 });
-				await getExternalMessageSender(message, bridge as any, fileAdapter as any).sendMessage(roomId, senderId, message);
+				await getExternalMessageSender(message, bridge as any, fileAdapter as any, messageAdapter as any).sendMessage(
+					roomId,
+					senderId,
+					message,
+				);
 				expect(bridge.sendMessageFileToRoom.called).to.be.false;
 				expect(fileAdapter.getBufferFromFileRecord.called).to.be.false;
 			});
@@ -67,7 +87,11 @@ describe('Federation - Application - Message Senders', () => {
 				fileAdapter.getFileRecordById.resolves({ name: 'filename', size: 12, type: 'image/png' });
 				fileAdapter.getBufferFromFileRecord.resolves({ buffer: 'buffer' });
 				fileAdapter.extractMetadataFromFile.resolves({ width: 100, height: 100, format: 'png' });
-				await getExternalMessageSender(message, bridge as any, fileAdapter as any).sendMessage(roomId, senderId, message);
+				await getExternalMessageSender(message, bridge as any, fileAdapter as any, messageAdapter as any).sendMessage(
+					roomId,
+					senderId,
+					message,
+				);
 				expect(fileAdapter.getBufferFromFileRecord.calledWith({ name: 'filename', size: 12, type: 'image/png' })).to.be.true;
 				expect(
 					bridge.sendMessageFileToRoom.calledWith(

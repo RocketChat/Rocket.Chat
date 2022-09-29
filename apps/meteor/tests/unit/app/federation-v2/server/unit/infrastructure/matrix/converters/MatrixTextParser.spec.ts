@@ -52,7 +52,7 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				await toInternalMessageFormat({
 					message: 'hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>',
 					homeServerDomain: 'localDomain',
-				})
+				}),
 			).to.be.equal('hey @user:server.com');
 		});
 
@@ -61,7 +61,7 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				await toInternalMessageFormat({
 					message: 'hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>',
 					homeServerDomain: 'localDomain',
-				})
+				}),
 			).to.be.equal('hey @all');
 		});
 
@@ -70,16 +70,17 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				await toInternalMessageFormat({
 					message: 'hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>',
 					homeServerDomain: 'localDomain',
-				})
+				}),
 			).to.be.equal('hey @all');
 		});
 
 		it('should parse multiple and different mentions in the same message correctly', async () => {
 			expect(
 				await toInternalMessageFormat({
-					message: 'hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>',
+					message:
+						'hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>',
 					homeServerDomain: 'localDomain',
-				})
+				}),
 			).to.be.equal('hey @user:server.com, hey @all, hey @all');
 		});
 
@@ -97,7 +98,7 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				await toInternalMessageFormat({
 					message: 'hey people, how are you?',
 					homeServerDomain: 'localDomain',
-				})
+				}),
 			).to.be.equal('hey people, how are you?');
 		});
 	});
