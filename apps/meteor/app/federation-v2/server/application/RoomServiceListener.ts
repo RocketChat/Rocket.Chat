@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../domain/FederatedRoom';
 import { FederatedUser } from '../domain/FederatedUser';
@@ -218,7 +218,7 @@ export class FederationRoomServiceListener extends FederationService {
 			await this.internalMessageAdapter.sendMessage(
 				senderUser,
 				federatedRoom,
-				toInternalQuoteMessageFormat(messageToReplyTo, federatedRoom, messageText, this.internalHomeServerDomain),
+				await toInternalQuoteMessageFormat(messageToReplyTo, federatedRoom, messageText, this.internalHomeServerDomain),
 				externalEventId
 			);
 			return;

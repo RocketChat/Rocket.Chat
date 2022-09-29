@@ -1,8 +1,6 @@
 import { IMessage } from '@rocket.chat/core-typings';
 import sanitizeHtml from 'sanitize-html';
 import type { MentionPill as MentionPillType } from '@rocket.chat/forked-matrix-bot-sdk';
-import { roomCoordinator } from '../../../../../../server/lib/rooms/roomCoordinator';
-import { getURL } from '../../../../../utils/server';
 
 import { FederatedUser } from '../../../domain/FederatedUser';
 import { FederatedRoom } from '../../../domain/FederatedRoom';
@@ -112,19 +110,21 @@ const replaceInternalWithExternalMentions = async (message: string, externalRoom
 		.replace(/\s+/g, ' ')
 		.trim();
 
-export const toExternalMessageFormat = async (message: string, externalRoomId: string, homeServerDomain: string): Promise<string> => 
-	replaceInternalWithExternalMentions(removeMarkdownFromMessage(message), externalRoomId, homeServerDomain);
-
 const removeMarkdownFromMessage = (message: string): string => message.replace(/\[(.*?)\]\(.*?\)/g, '').trim();
+
+export const toExternalMessageFormat = async (message: string, externalRoomId: string, homeServerDomain: string): Promise<string> =>
+	replaceInternalWithExternalMentions(removeMarkdownFromMessage(message), externalRoomId, homeServerDomain);
 
 export const toInternalMessageFormat = ({
 	message,
 	homeServerDomain,
-	isAReplyToAMessage,
-}: { message: string, homeServerDomain: string, isAReplyToAMessage: boolean }): string =>
+	isAReplyToAMessage = false,
+}: { message: string, homeServerDomain: string, isAReplyToAMessage?: boolean }): string =>
 	isAReplyToAMessage ? message : replaceExternalWithInternalMentions(message, homeServerDomain);
 
-export const toInternalQuoteMessageFormat = (messageToReplyTo: IMessage, federatedRoom: FederatedRoom, message: string, homeServerDomain: string): string => {
+export const toInternalQuoteMessageFormat = async (messageToReplyTo: IMessage, federatedRoom: FederatedRoom, message: string, homeServerDomain: string): Promise<string> => {
+	const { roomCoordinator } = await import('../../../../../../server/lib/rooms/roomCoordinator');
+	const { getURL } = await import('../../../../../utils/server');
 	const room = federatedRoom.getInternalReference();
 	const messageToReplyToUrl = getURL(`${ roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name }) }?msg=${ messageToReplyTo._id }`, { full: true });
 	const sanitizedMessage = sanitizeHtml(message, {
