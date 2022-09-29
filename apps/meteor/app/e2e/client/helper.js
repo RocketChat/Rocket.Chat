@@ -151,12 +151,3 @@ export class Deferred {
 		return p;
 	}
 }
-
-// TODO: Remove regex matching for parsing urls, and use message-parser to get the urls here and everywhere else.
-export function parseUrlsInMessage(msg) {
-	const urls =
-		msg?.match(
-			/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g,
-		) || [];
-	return urls;
-}
