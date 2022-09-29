@@ -45,7 +45,7 @@ createTemplateForComponent('messageLocation', () => import('./views/location/Mes
 
 createTemplateForComponent('sidebarHeader', () => import('./sidebar/header'));
 
-createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/index'), {
+createTemplateForComponent('RoomList', () => import('./sidebar/RoomList/index'), {
 	renderContainerView: () =>
 		HTML.DIV({
 			style: 'display: flex; flex: 1 1 100%;',

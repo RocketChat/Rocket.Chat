@@ -1,5 +1,5 @@
 <template name="sideNav">
-	<aside class="rcx-sidebar sidebar sidebar--main sidebar--{{sidebarViewMode}} {{#if sidebarHideAvatar}}sidebar--hide-avatar{{/if}}" role="navigation"  data-qa-opened="{{dataQa}}">
+	<aside class="rcx-sidebar sidebar sidebar--main sidebar--{{sidebarViewMode}} {{#if sidebarHideAvatar}}sidebar--hide-avatar{{/if}}" role="navigation">
 		{{> sidebarHeader }}
 		<div class="wrapper-unread">
 			<div class="unread-rooms background-primary-action-color color-primary-action-contrast top-unread-rooms hidden">
@@ -7,7 +7,7 @@
 			</div>
 		</div>
 		<div class="rooms-list sidebar--custom-colors" aria-label="{{_ "Channels"}}" role="region">
-			{{> sidebarChats }}
+			{{> RoomList }}
 		</div>
 		<div class="wrapper-unread">
 			<div class="unread-rooms background-primary-action-color color-primary-action-contrast bottom-unread-rooms hidden">
