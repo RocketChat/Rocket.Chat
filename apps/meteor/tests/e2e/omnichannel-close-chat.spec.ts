@@ -57,6 +57,7 @@ test.describe('Omnichannel close chat', () => {
 			await agent.poHomeOmnichannel.content.inputModalClosingComment.type('any_comment');
 			await agent.poHomeOmnichannel.content.btnModalConfirm.click();
 			await expect(agent.poHomeOmnichannel.toastSuccess).toBeVisible();
+			await expect(page.locator('[data-qa-id="home-header"]')).toBeVisible();
 		});
 	});
 });
