@@ -74,6 +74,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		editMessage: sinon.stub(),
 		findOneByFederationIdOnReactions: sinon.stub(),
 		unreactToMessage: sinon.stub(),
+		sendQuoteMessage: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
@@ -126,6 +127,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		messageAdapter.editMessage.reset();
 		messageAdapter.unreactToMessage.reset();
 		messageAdapter.findOneByFederationIdOnReactions.reset();
+		messageAdapter.sendQuoteMessage.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.joinRoom.reset();
 		bridge.getUserProfileInformation.reset();
@@ -687,14 +689,57 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(messageAdapter.sendMessage.called).to.be.false;
 		});
 
-		it('should send a message if the room and the sender already exists', async () => {
+		it('should NOT send a message if the message was already be sent through federation and is just a reply back event', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
 			userAdapter.getFederatedUserByExternalId.resolves({} as any);
+			messageAdapter.getMessageByFederationId.resolves({} as any);
+			await service.onExternalMessageReceived({
+				messageText: 'text',
+			} as any);
+
+			expect(messageAdapter.sendMessage.called).to.be.false;
+		});
+
+		it('should send a message if the room, the sender already exists and the message does not, because it was sent originally from RC', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			userAdapter.getFederatedUserByExternalId.resolves({} as any);
+			messageAdapter.getMessageByFederationId.resolves(undefined);
 			await service.onExternalMessageReceived({
 				messageText: 'text',
 			} as any);
 
 			expect(messageAdapter.sendMessage.calledWith({}, {}, 'text')).to.be.true;
+			expect(messageAdapter.sendQuoteMessage.called).to.be.false;
+		});
+
+		describe('Quoting messages', () => {
+			it('should NOT send a quote message if its necessary to quote but the message to quote does not exists', async () => {
+				roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+				userAdapter.getFederatedUserByExternalId.resolves({} as any);
+				messageAdapter.getMessageByFederationId.resolves(undefined);
+				await service.onExternalMessageReceived({
+					messageText: 'text',
+					replyToEventId: 'replyToEventId',
+				} as any);
+
+				expect(messageAdapter.sendQuoteMessage.called).to.be.false;
+				expect(messageAdapter.sendMessage.called).to.be.false;
+			});
+
+			it('should send a quote message if its necessary to quote and the message to quote exists', async () => {
+				roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+				userAdapter.getFederatedUserByExternalId.resolves({} as any);
+				messageAdapter.getMessageByFederationId.onFirstCall().resolves(undefined);
+				messageAdapter.getMessageByFederationId.onSecondCall().resolves({} as any);
+				await service.onExternalMessageReceived({
+					messageText: 'text',
+					externalEventId: 'externalEventId',
+					replyToEventId: 'replyToEventId',
+				} as any);
+
+				expect(messageAdapter.sendQuoteMessage.calledWith({}, {}, 'text', 'externalEventId', {}, 'localDomain')).to.be.true;
+				expect(messageAdapter.sendMessage.called).to.be.false;
+			});
 		});
 	});
 

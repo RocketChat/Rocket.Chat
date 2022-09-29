@@ -30,16 +30,18 @@ describe('Federation - Application - Message Senders', () => {
 	describe('TextExternalMessageSender', () => {
 		const roomId = 'roomId';
 		const senderId = 'senderId';
-		const message = { msg: 'text' } as any;
+		const message = { _id: '_id', msg: 'text' } as any;
 
 		describe('#sendMessage()', () => {
 			it('should send a message through the bridge', async () => {
+				bridge.sendMessage.resolves('externalMessageId');
 				await getExternalMessageSender({} as any, bridge as any, fileAdapter as any, messageAdapter as any).sendMessage(
 					roomId,
 					senderId,
 					message,
 				);
 				expect(bridge.sendMessage.calledWith(roomId, senderId, message)).to.be.true;
+				expect(messageAdapter.setExternalFederationEventOnMessage.calledWith(message._id, 'externalMessageId')).to.be.true;
 			});
 		});
 	});
@@ -47,7 +49,7 @@ describe('Federation - Application - Message Senders', () => {
 	describe('FileExternalMessageSender', () => {
 		const roomId = 'roomId';
 		const senderId = 'senderId';
-		const message = { msg: 'text', files: [{ _id: 'fileId' }] } as any;
+		const message = { _id: '_id', msg: 'text', files: [{ _id: 'fileId' }] } as any;
 
 		describe('#sendMessage()', () => {
 			it('should not upload the file to the bridge if the file does not exists', async () => {
@@ -87,6 +89,7 @@ describe('Federation - Application - Message Senders', () => {
 				fileAdapter.getFileRecordById.resolves({ name: 'filename', size: 12, type: 'image/png' });
 				fileAdapter.getBufferFromFileRecord.resolves({ buffer: 'buffer' });
 				fileAdapter.extractMetadataFromFile.resolves({ width: 100, height: 100, format: 'png' });
+				bridge.sendMessageFileToRoom.resolves('externalMessageId');
 				await getExternalMessageSender(message, bridge as any, fileAdapter as any, messageAdapter as any).sendMessage(
 					roomId,
 					senderId,
@@ -106,6 +109,7 @@ describe('Federation - Application - Message Senders', () => {
 						},
 					),
 				).to.be.true;
+				expect(messageAdapter.setExternalFederationEventOnMessage.calledWith(message._id, 'externalMessageId')).to.be.true;
 			});
 		});
 	});
