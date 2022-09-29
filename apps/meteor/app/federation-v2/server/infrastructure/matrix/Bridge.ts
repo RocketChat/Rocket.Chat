@@ -49,7 +49,7 @@ export class MatrixBridge implements IFederationBridge {
 		protected bridgePort: number,
 		protected homeServerRegistrationFile: IFederationBridgeRegistrationFile,
 		protected eventHandler: (event: AbstractMatrixEvent) => void,
-	) {} // eslint-disable-line no-empty-function
+	) { } // eslint-disable-line no-empty-function
 
 	public async onFederationAvailabilityChanged(enabled: boolean): Promise<void> {
 		if (!enabled) {
@@ -96,8 +96,8 @@ export class MatrixBridge implements IFederationBridge {
 				displayName: externalInformation.displayname || '',
 				...(externalInformation.avatar_url
 					? {
-							avatarUrl: externalInformation.avatar_url,
-					  }
+						avatarUrl: externalInformation.avatar_url,
+					}
 					: {}),
 			};
 		} catch (err) {
@@ -129,9 +129,9 @@ export class MatrixBridge implements IFederationBridge {
 		if (!MatrixUserInstance) {
 			throw new Error('Error loading the Matrix User instance from the external library');
 		}
-		const matrixUserId = `@${username?.toLowerCase()}:${domain}`;
+		const matrixUserId = `@${ username?.toLowerCase() }:${ domain }`;
 		const newUser = new MatrixUserInstance(matrixUserId);
-		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})`, ...(avatarUrl ? { url: avatarUrl } : {}) });
+		await this.bridgeInstance.provisionUser(newUser, { name: `${ username } (${ name })`, ...(avatarUrl ? { url: avatarUrl } : {}) });
 
 		return matrixUserId;
 	}
@@ -167,7 +167,13 @@ export class MatrixBridge implements IFederationBridge {
 				.getIntent(externalSenderId)
 				.matrixClient.sendHtmlText(
 					externalRoomId,
-					this.escapeEmojis(await toExternalMessageFormat(message.msg, externalRoomId, this.homeServerDomain)),
+					this.escapeEmojis(
+						await toExternalMessageFormat({
+							message: message.msg,
+							externalRoomId,
+							homeServerDomain: this.homeServerDomain,
+						})
+					),
 				);
 
 			return messageId;
@@ -180,16 +186,16 @@ export class MatrixBridge implements IFederationBridge {
 		externalRoomId: string,
 		externalUserId: string,
 		eventToReplyTo: string,
-		eventOriginalSender: string,
+		originalEventSender: string,
 		replyMessage: string,
 	): Promise<string> {
-		const { formattedMessage, message } = await toExternalQuoteMessageFormat(
+		const { formattedMessage, message } = await toExternalQuoteMessageFormat({
 			externalRoomId,
 			eventToReplyTo,
-			eventOriginalSender,
-			this.escapeEmojis(replyMessage),
-			this.homeServerDomain,
-		);
+			originalEventSender,
+			message: this.escapeEmojis(replyMessage),
+			homeServerDomain: this.homeServerDomain,
+		});
 		const messageId = await this.bridgeInstance
 			.getIntent(externalUserId)
 			.matrixClient.sendEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
@@ -233,11 +239,11 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public logFederationStartupInfo(info?: string): void {
-		federationBridgeLogger.info(`${info}:
-			id: ${this.appServiceId}
-			bridgeUrl: ${this.bridgeUrl}
-			homeserverURL: ${this.homeServerUrl}
-			homeserverDomain: ${this.homeServerDomain}
+		federationBridgeLogger.info(`${ info }:
+			id: ${ this.appServiceId }
+			bridgeUrl: ${ this.bridgeUrl }
+			homeserverURL: ${ this.homeServerUrl }
+			homeserverDomain: ${ this.homeServerDomain }
 		`);
 	}
 
@@ -282,14 +288,16 @@ export class MatrixBridge implements IFederationBridge {
 		externalEventId: string,
 		newMessageText: string,
 	): Promise<void> {
+		const messageInExternalFormat = this.escapeEmojis(await toExternalMessageFormat({ message: newMessageText, externalRoomId, homeServerDomain: this.homeServerDomain }));
+
 		await this.bridgeInstance.getIntent(externalUserId).matrixClient.sendEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
-			'body': ` * ${newMessageText}`,
+			'body': ` * ${ newMessageText }`,
 			'format': 'org.matrix.custom.html',
-			'formatted_body': this.escapeEmojis(await toExternalMessageFormat(newMessageText, externalRoomId, this.homeServerDomain)),
+			'formatted_body': messageInExternalFormat,
 			'm.new_content': {
-				body: this.escapeEmojis(await toExternalMessageFormat(newMessageText, externalRoomId, this.homeServerDomain)),
+				body: messageInExternalFormat,
 				format: 'org.matrix.custom.html',
-				formatted_body: this.escapeEmojis(await toExternalMessageFormat(newMessageText, externalRoomId, this.homeServerDomain)),
+				formatted_body: messageInExternalFormat,
 				msgtype: MatrixEnumSendMessageType.TEXT,
 			},
 			'm.relates_to': {
