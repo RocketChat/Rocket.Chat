@@ -47,7 +47,7 @@ let failedToDecodeKey = false;
 class E2E extends Emitter {
 	private started: boolean;
 
-	private enabled: ReactiveVarType<boolean>;
+	public enabled: ReactiveVarType<boolean>;
 
 	private _ready: ReactiveVarType<boolean>;
 
@@ -57,7 +57,7 @@ class E2E extends Emitter {
 
 	private db_private_key: string | null;
 
-	private privateKey: CryptoKey | null;
+	private privateKey: CryptoKey | undefined;
 
 	constructor() {
 		super();
@@ -222,7 +222,7 @@ class E2E extends Emitter {
 		Meteor._localStorage.removeItem('public_key');
 		Meteor._localStorage.removeItem('private_key');
 		this.instancesByRoomId = {};
-		this.privateKey = null;
+		this.privateKey = undefined;
 		this.enabled.set(false);
 		this._ready.set(false);
 		this.started = false;
