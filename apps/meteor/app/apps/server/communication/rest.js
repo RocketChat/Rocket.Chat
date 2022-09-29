@@ -691,7 +691,7 @@ export class AppsRestApi {
 
 		this.api.addRoute(
 			':id/versions',
-			{ authRequired: true, permissionsRequired: ['manage-apps'] },
+			{ authRequired: true },
 			{
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();

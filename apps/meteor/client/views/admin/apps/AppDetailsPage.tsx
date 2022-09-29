@@ -29,8 +29,6 @@ const AppDetailsPage = function AppDetailsPage({ id, isAdminSection }: AppDetail
 	const appData = useAppInfo(id);
 
 	const [routeName, urlParams] = useCurrentRoute();
-	const appsRoute = useRoute('admin-apps');
-	const marketplaceRoute = useRoute('admin-marketplace');
 	const tab = useRouteParameter('tab');
 
 	if (!routeName) {
@@ -60,13 +58,7 @@ const AppDetailsPage = function AppDetailsPage({ id, isAdminSection }: AppDetail
 	}, [id, settings]);
 
 	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs'): void => {
-		if (routeName === 'admin-marketplace') {
-			marketplaceRoute.replace({ ...urlParams, tab });
-		}
-
-		if (routeName === 'admin-apps') {
-			appsRoute.replace({ ...urlParams, tab });
-		}
+		router.replace({ ...urlParams, tab });
 	};
 
 	return (
@@ -105,7 +97,7 @@ const AppDetailsPage = function AppDetailsPage({ id, isAdminSection }: AppDetail
 										{t('Settings')}
 									</Tabs.Item>
 								)}
-								{Boolean(installed) && (
+								{Boolean(installed) && isAdminSection && (
 									<Tabs.Item onClick={(): void => handleTabClick('logs')} selected={tab === 'logs'}>
 										{t('Logs')}
 									</Tabs.Item>

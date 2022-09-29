@@ -108,6 +108,10 @@ export const appButtonProps = ({
 	isEnterpriseOnly,
 	isAdminSection,
 }: App & { isAdminSection: boolean }): appButtonPropsResponse | undefined => {
+	if (installed) {
+		return;
+	}
+
 	if (!isAdminSection) {
 		return {
 			action: 'request',
@@ -123,11 +127,6 @@ export const appButtonProps = ({
 			label: 'Update',
 		};
 	}
-
-	if (installed) {
-		return;
-	}
-
 	const canDownload = isPurchased;
 	if (canDownload) {
 		return {
