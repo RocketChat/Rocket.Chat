@@ -23,7 +23,6 @@ import type {
 import { FederationService } from './AbstractFederationService';
 import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 import { getRedactMessageHandler } from './RoomRedactionHandlers';
-import { toInternalQuoteMessageFormat } from '../infrastructure/matrix/converters/MessageTextParser';
 
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
@@ -215,11 +214,13 @@ export class FederationRoomServiceListener extends FederationService {
 			if (!messageToReplyTo) {
 				return;
 			}
-			await this.internalMessageAdapter.sendMessage(
+			await this.internalMessageAdapter.sendQuoteMessage(
 				senderUser,
 				federatedRoom,
-				await toInternalQuoteMessageFormat(messageToReplyTo, federatedRoom, messageText, this.internalHomeServerDomain),
-				externalEventId
+				messageText,
+				externalEventId,
+				messageToReplyTo,
+				this.internalHomeServerDomain,
 			);
 			return;
 		}
