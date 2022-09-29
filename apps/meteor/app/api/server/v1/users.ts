@@ -43,7 +43,6 @@ import { isValidQuery } from '../lib/isValidQuery';
 import { getURL } from '../../../utils/server';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { api } from '../../../../server/sdk/api';
-import { clean } from '../lib/cleanQuery';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -819,21 +818,11 @@ API.v1.addRoute(
 		async get() {
 			const { selector: selectorRaw } = this.queryParams;
 
-			let selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = {
-				exceptions: [],
-				conditions: {},
-				term: '',
-			};
+			const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = JSON.parse(selectorRaw);
 
 			try {
-				selector = JSON.parse(selectorRaw);
-
-				if (selector) {
-					selector = clean(selector) as typeof selector;
-
-					if (selector.conditions && !isValidQuery(selector.conditions, ['*'], ['$or', '$and'])) {
-						throw new Error('error-invalid-query');
-					}
+				if (selector?.conditions && !isValidQuery(selector.conditions, ['*'], ['$or', '$and'])) {
+					throw new Error('error-invalid-query');
 				}
 			} catch (e) {
 				return API.v1.failure(e);
