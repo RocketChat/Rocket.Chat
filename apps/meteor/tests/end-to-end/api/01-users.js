@@ -65,28 +65,17 @@ function deleteTestUser(user) {
 	});
 }
 
-function createChannel(userCredentials, name) {
-	return new Promise((resolve, reject) => {
-		request
-			.post(api('channels.create'))
-			.set(userCredentials)
-			.send({
-				name,
-			})
-			.then((res) => resolve(res.body.channel._id))
-			.catch(reject);
+async function createChannel(userCredentials, name) {
+	const res = await request.post(api('channels.create')).set(userCredentials).send({
+		name,
 	});
+
+	return res.body.channel._id;
 }
 
-function joinChannel(userCredentials, roomId) {
-	return new Promise((resolve) => {
-		request
-			.post(api('channels.join'))
-			.set(userCredentials)
-			.send({
-				roomId,
-			})
-			.end(resolve);
+async function joinChannel(userCredentials, roomId) {
+	return request.post(api('channels.join')).set(userCredentials).send({
+		roomId,
 	});
 }
 
@@ -3155,36 +3144,36 @@ describe('[Users]', function () {
 					.end(done);
 			});
 
-			it('should return users that are subscribed to the same rooms as the requester', (done) => {
-				joinChannel(user2Credentials, roomId).then(() => {
-					request
-						.get(api('users.autocomplete?selector={}'))
-						.set(userCredentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
-						})
-						.end(done);
-				});
+			it('should return users that are subscribed to the same rooms as the requester', async () => {
+				await joinChannel(user2Credentials, roomId);
+
+				request
+					.get(api('users.autocomplete?selector={}'))
+					.set(userCredentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
+					});
 			});
 		});
 
 		describe('[with permission]', () => {
-			it('should return an error when the required parameter "selector" is not provided', (done) => {
-				updatePermission('view-outside-room', ['admin', 'user']).then(() => {
-					request
-						.get(api('users.autocomplete'))
-						.set(credentials)
-						.query({})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
+			before(() => {
+				updatePermission('view-outside-room', ['admin', 'user']);
+			});
+
+			it('should return an error when the required parameter "selector" is not provided', () => {
+				request
+					.get(api('users.autocomplete'))
+					.set(credentials)
+					.query({})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					});
 			});
 			it('should return the users to fill auto complete', (done) => {
 				request
@@ -3195,6 +3184,63 @@ describe('[Users]', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array');
+					})
+					.end(done);
+			});
+
+			it('should filter results when using allowed operators', (done) => {
+				request
+					.get(api('users.autocomplete'))
+					.set(credentials)
+					.query({
+						selector: JSON.stringify({
+							conditions: {
+								$and: [
+									{
+										active: false,
+									},
+									{
+										status: 'online',
+									},
+								],
+							},
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(0);
+					})
+					.end(done);
+			});
+
+			it('should return an error when using forbidden operators', (done) => {
+				request
+					.get(api('users.autocomplete'))
+					.set(credentials)
+					.query({
+						selector: JSON.stringify({
+							conditions: {
+								$nor: [
+									{
+										username: {
+											$exists: false,
+										},
+									},
+									{
+										status: {
+											$exists: false,
+										},
+									},
+								],
+							},
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
 					})
 					.end(done);
 			});

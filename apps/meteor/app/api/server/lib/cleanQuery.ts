@@ -14,15 +14,20 @@ export const removeDangerousProps = (v: Query): Query => {
 };
 /* @deprecated */
 export function clean(v: Query, allowList: string[] = []): Query {
+	if (Array.isArray(v)) {
+		return v.map((item) => clean(item, allowList));
+	}
+
 	const typedParam = removeDangerousProps(v);
 	if (v instanceof Object) {
 		/* eslint-disable guard-for-in */
 		for (const key in typedParam) {
 			if (key.startsWith('$') && !allowList.includes(key)) {
 				delete typedParam[key];
-			} else {
-				clean(typedParam[key], allowList);
+				continue;
 			}
+
+			typedParam[key] = clean(typedParam[key], allowList);
 		}
 	}
 	return typedParam;
