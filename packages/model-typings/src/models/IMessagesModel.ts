@@ -64,5 +64,5 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findOneByFederationId(federationEventId: string): Promise<IMessage | null>;
 
-	setFederationEventIdById(_id: string,federationEventId: string): Promise<void>;
+	setFederationEventIdById(_id: string, federationEventId: string): Promise<void>;
 }
