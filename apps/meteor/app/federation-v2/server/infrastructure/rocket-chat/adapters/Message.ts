@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { deleteMessage, sendMessage, updateMessage } from '../../../../../lib/server';
 import { executeSetReaction } from '../../../../../reactions/server/setReaction';
 import type { FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
-import { toInternalQuoteMessageFormat } from '../../matrix/converters/MessageTextParser';
 import { roomCoordinator } from '../../../../../../server/lib/rooms/roomCoordinator';
 import { getURL } from '../../../../../utils/server';
+import { toInternalQuoteMessageFormat } from '../converters/MessageTextParser';
 
 const DEFAULT_EMOJI_TO_REACT_WHEN_RECEIVED_EMOJI_DOES_NOT_EXIST = ':grey_question:';
 
@@ -27,7 +27,7 @@ export class RocketChatMessageAdapter {
 	): Promise<void> {
 		const room = federatedRoom.getInternalReference();
 		const messageToReplyToUrl = getURL(
-			`${ roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name }) }?msg=${ messageToReplyTo._id }`,
+			`${roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name })}?msg=${messageToReplyTo._id}`,
 			{ full: true },
 		);
 		sendMessage(
