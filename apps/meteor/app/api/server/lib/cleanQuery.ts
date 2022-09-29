@@ -14,6 +14,10 @@ export const removeDangerousProps = (v: Query): Query => {
 };
 /* @deprecated */
 export function clean(v: Query, allowList: string[] = []): Query {
+	if (typeof v !== 'object') {
+		return v;
+	}
+
 	if (Array.isArray(v)) {
 		return v.map((item) => clean(item, allowList));
 	}
