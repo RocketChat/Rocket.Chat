@@ -59,4 +59,5 @@ export interface IBroker {
 	broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
 	broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
 	nodeList(): Promise<IBrokerNode[]>;
+	start(): Promise<void>;
 }
