@@ -1,9 +1,7 @@
-import type { IMessage } from '@rocket.chat/core-typings';
 import sanitizeHtml from 'sanitize-html';
 import type { MentionPill as MentionPillType } from '@rocket.chat/forked-matrix-bot-sdk';
 
 import { FederatedUser } from '../../../domain/FederatedUser';
-import type { FederatedRoom } from '../../../domain/FederatedRoom';
 
 const INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX = new RegExp(`@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)`, 'gm'); // @username:server.com
 const INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX = new RegExp(`@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?)$`, 'gm'); // @username, @username.name
@@ -122,19 +120,15 @@ export const toInternalMessageFormat = ({
 	isAReplyToAMessage?: boolean;
 }): string => (isAReplyToAMessage ? message : replaceExternalWithInternalMentions(message, homeServerDomain));
 
-export const toInternalQuoteMessageFormat = async (
-	messageToReplyTo: IMessage,
-	federatedRoom: FederatedRoom,
+export const toInternalQuoteMessageFormat = async ({
+	homeServerDomain,
+	message,
+	messageToReplyToUrl,
+}:{
+	messageToReplyToUrl: string,
 	message: string,
 	homeServerDomain: string,
-): Promise<string> => {
-	const { roomCoordinator } = await import('../../../../../../server/lib/rooms/roomCoordinator');
-	const { getURL } = await import('../../../../../utils/server');
-	const room = federatedRoom.getInternalReference();
-	const messageToReplyToUrl = getURL(
-		`${ roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name }) }?msg=${ messageToReplyTo._id }`,
-		{ full: true },
-	);
+}): Promise<string> => {
 	const sanitizedMessage = sanitizeHtml(message, {
 		allowedTags: ['a'],
 		allowedAttributes: {

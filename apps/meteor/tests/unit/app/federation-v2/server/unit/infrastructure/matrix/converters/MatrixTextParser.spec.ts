@@ -4,6 +4,7 @@ import {
 	toExternalMessageFormat,
 	toExternalQuoteMessageFormat,
 	toInternalMessageFormat,
+	toInternalQuoteMessageFormat,
 } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/converters/MessageTextParser';
 
 describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
@@ -151,7 +152,7 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 	});
 
 	describe('#toExternalQuoteMessageFormat ()', () => {
-		it('should parse the user mention correctly', async () => {
+		it('should parse the internal quote to the external one correctly', async () => {
 			const eventToReplyTo = 'eventToReplyTo';
 			const message = 'hey people, how are you?';
 			const externalRoomId = 'externalRoomId';
@@ -170,6 +171,21 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				message: `> <${originalEventSender}> \n\n${message}`,
 				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply>${ message }`,
 			});
+		});
+	});
+
+	describe('#toInternalQuoteMessageFormat ()', () => {
+		it('should parse the external quote to the internal one correctly', async () => {
+			const message = '<mx-reply><blockquote><a href="https://matrix.to/#/externalRoomId/eventToReplyToId">In reply to</a> <a href="https://matrix.to/#/originalEventSender">originalEventSender</a><br /></blockquote></mx-reply>hey people, how are you?';
+			const homeServerDomain = 'localDomain.com';
+
+			expect(
+				await toInternalQuoteMessageFormat({
+					homeServerDomain,
+					message,
+					messageToReplyToUrl: 'http://localhost:3000/group/1?msg=2354543564'
+				}),
+			).to.be.equal(`[ ](http://localhost:3000/group/1?msg=2354543564) hey people, how are you?`);
 		});
 	});
 });
