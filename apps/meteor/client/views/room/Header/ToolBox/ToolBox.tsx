@@ -6,9 +6,8 @@ import { TranslationKey, useLayout, useTranslation } from '@rocket.chat/ui-conte
 import React, { memo, ReactNode, useRef, ComponentProps, ReactElement } from 'react';
 
 // used to open the menu option by keyboard
+import { useToolboxContext, useTab, useTabBarOpen } from '../../contexts/ToolboxContext';
 import { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
-import { useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
-import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
 
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
 	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} {...props} />
