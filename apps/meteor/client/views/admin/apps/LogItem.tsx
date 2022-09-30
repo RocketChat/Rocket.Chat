@@ -1,3 +1,4 @@
+import { ILogEntry } from '@rocket.chat/core-typings/src/ILogs';
 import { Box, Accordion } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
@@ -5,12 +6,7 @@ import React, { FC } from 'react';
 import LogEntry from './LogEntry';
 
 type LogItemProps = {
-	entries: {
-		severity: string;
-		timestamp: string;
-		caller: string;
-		args: unknown;
-	}[];
+	entries: ILogEntry[];
 	instanceId: string;
 	title: string;
 };

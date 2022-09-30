@@ -1,83 +1,33 @@
-import { AppOverview } from '@rocket.chat/core-typings';
 import { Accordion, Box } from '@rocket.chat/fuselage';
-import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, useEffect, ReactElement } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React, { ReactElement } from 'react';
 
+import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import { AsyncStatePhase } from '../../../lib/asyncState';
 import AccordionLoading from './AccordionLoading';
 import LogItem from './LogItem';
 
-type logEntries = {
-	args: string[];
-	caller: string;
-	severity: string;
-	timestamp: string;
-}[];
-
-type logs = {
-	appId: string;
-	endTime: string;
-	entries: logEntries;
-	instanceId: string;
-	method: string;
-	startTime: string;
-	totalTime: number;
-	_createdAt: string;
-	_id: string;
-	_updatedAt: string;
-}[];
-
-type data = AppOverview & { logs: logs; logsError: string };
-
-const useAppWithLogs = ({ id }: { id: string }): data => {
-	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
-
-	const [data, setData] = useSafely(useState<data>({} as data));
-	const [logsError, setLogsError] = useState('');
-	const getAppData = useEndpoint('GET', `/apps/${id}`) as any;
-	const getAppLogs = useEndpoint('GET', `/apps/${id}/logs`) as any;
-
-	const fetchData = useCallback(async () => {
-		try {
-			const [{ app }, { logs }] = await Promise.all([getAppData(), getAppLogs()]);
-			setData({ ...app, logs });
-		} catch (error) {
-			let message = t('Unknown_error');
-
-			if (error instanceof Error) message = error.message;
-
-			dispatchToastMessage({ type: 'error', message });
-			setLogsError(message);
-		}
-	}, [dispatchToastMessage, getAppData, getAppLogs, setData, t]);
-
-	useEffect(() => {
-		fetchData();
-	}, [fetchData]);
-
-	return { ...data, logsError };
-};
-
 const AppLogs = ({ id }: { id: string }): ReactElement => {
+	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
+	const { value, phase: logsPhase, error } = useEndpointData(`/apps/${id}/logs`);
 
-	const app = useAppWithLogs({ id });
+	const loading = logsPhase === AsyncStatePhase.LOADING;
 
-	const loading = !Object.values(app).length;
+	const isLogsFailing = logsPhase === AsyncStatePhase.REJECTED;
 
 	return (
 		<>
 			{loading && <AccordionLoading />}
-			{Boolean(app.logsError) && (
+			{isLogsFailing && (
 				<Box maxWidth='x600' alignSelf='center'>
-					{app.logsError}
+					{error ? error.message : t('Unknown_error')}
 				</Box>
 			)}
-			{!loading && (
+			{!loading && logsPhase === AsyncStatePhase.RESOLVED && (
 				<Accordion width='100%' alignSelf='center'>
-					{app.logs?.map((log) => (
+					{value.logs.map((log) => (
 						<LogItem
 							key={log._createdAt}
 							title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${log.totalTime}ms)`}
