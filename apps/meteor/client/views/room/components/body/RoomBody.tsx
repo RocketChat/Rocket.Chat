@@ -63,7 +63,7 @@ const RoomBody = (): ReactElement => {
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab');
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
-	const useLegacyMessageTemplate = useUserPreference<boolean>('useLegacyMessageTemplate');
+	const useLegacyMessageTemplate = useUserPreference<boolean>('useLegacyMessageTemplate') ?? false;
 	const viewMode = useUserPreference<number>('messageViewMode');
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -329,7 +329,7 @@ const RoomBody = (): ReactElement => {
 		}
 
 		const messageEvents: Record<string, (event: any, template: CommonRoomTemplateInstance) => void> = {
-			...getCommonRoomEvents(),
+			...getCommonRoomEvents(useLegacyMessageTemplate),
 			'click .toggle-hidden'(event: JQuery.ClickEvent) {
 				const mid = event.target.dataset.message;
 				if (mid) document.getElementById(mid)?.classList.toggle('message--ignored');
@@ -361,7 +361,7 @@ const RoomBody = (): ReactElement => {
 				$(messageList).off(event, selector, listener);
 			}
 		};
-	}, [room._id, sendToBottomIfNecessary, toolbox]);
+	}, [room._id, sendToBottomIfNecessary, toolbox, useLegacyMessageTemplate]);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
