@@ -27,7 +27,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			)}
 			{!loading && logsPhase === AsyncStatePhase.RESOLVED && (
 				<Accordion width='100%' alignSelf='center'>
-					{value.logs.map((log) => (
+					{value?.logs?.map((log) => (
 						<LogItem
 							key={log._createdAt}
 							title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${log.totalTime}ms)`}
