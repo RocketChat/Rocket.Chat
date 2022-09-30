@@ -188,7 +188,6 @@ export class MatrixRoomReceiverConverter {
 		if (!externalEvent.content.info?.size) {
 			throw new Error('Missing size in the file message info');
 		}
-
 		return new FederationRoomReceiveExternalFileMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
@@ -200,6 +199,7 @@ export class MatrixRoomReceiverConverter {
 			mimetype: externalEvent.content.info.mimetype,
 			size: externalEvent.content.info.size,
 			messageText: externalEvent.content.body,
+			replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
 		});
 	}
 

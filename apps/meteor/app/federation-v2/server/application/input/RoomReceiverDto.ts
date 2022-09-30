@@ -244,6 +244,7 @@ export interface IFederationFileMessageInputDto {
 	size: number;
 	messageText: string;
 	url: string;
+	replyToEventId?: string;
 }
 
 class FederationFileMessageInputDto {
@@ -278,10 +279,12 @@ export class FederationRoomReceiveExternalFileMessageDto extends ExternalMessage
 		messageText,
 		url,
 		externalEventId,
+		replyToEventId,
 	}: IFederationSendInternalMessageBaseInputDto & IFederationFileMessageInputDto) {
 		super({ externalRoomId, normalizedRoomId, externalEventId });
 		this.externalSenderId = externalSenderId;
 		this.normalizedSenderId = normalizedSenderId;
+		this.replyToEventId = replyToEventId;
 		this.messageBody = new FederationFileMessageInputDto({ filename, mimetype, size, messageText, url });
 	}
 
@@ -290,6 +293,8 @@ export class FederationRoomReceiveExternalFileMessageDto extends ExternalMessage
 	normalizedSenderId: string;
 
 	messageBody: FederationFileMessageInputDto;
+
+	replyToEventId?: string;
 }
 
 export class FederationRoomChangeJoinRulesDto extends FederationBaseRoomInputDto {

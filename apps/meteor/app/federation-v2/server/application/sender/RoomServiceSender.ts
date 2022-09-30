@@ -162,7 +162,7 @@ export class FederationRoomServiceSender extends FederationService {
 
 		if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
 			// TODO: move this to the domain layer in a proper entity
-			const messageLink = (message.attachments.find((attachment) => isQuoteAttachment(attachment)) as MessageQuoteAttachment).message_link;
+			const messageLink = (message.attachments.find((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link)) as MessageQuoteAttachment).message_link;
 			if (!messageLink) {
 				return;
 			}
@@ -174,15 +174,13 @@ export class FederationRoomServiceSender extends FederationService {
 			if (!messageToReplyTo) {
 				return;
 			}
-			const originalSender = await this.internalUserAdapter.getFederatedUserByInternalId(messageToReplyTo?.u?._id);
-			const externalMessageId = await this.bridge.sendReplyToMessage(
+
+			await getExternalMessageSender(message, this.bridge, this.internalFileAdapter, this.internalMessageAdapter).sendQuoteMessage(
 				federatedRoom.getExternalId(),
 				federatedSender.getExternalId(),
-				messageToReplyTo.federation?.eventId as string,
-				originalSender?.getExternalId() as string,
-				message.msg,
+				message,
+				messageToReplyTo,
 			);
-			await this.internalMessageAdapter.setExternalFederationEventOnMessage(message._id, externalMessageId);
 			return;
 		}
 

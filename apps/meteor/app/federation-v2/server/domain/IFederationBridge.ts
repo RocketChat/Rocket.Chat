@@ -46,4 +46,11 @@ export interface IFederationBridge {
 		eventOriginalSender: string,
 		message: string,
 	): Promise<string>;
+	sendReplyMessageFileToRoom(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		eventToReplyTo: string,
+	): Promise<string>;
 }

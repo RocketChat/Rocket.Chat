@@ -27,7 +27,7 @@ export class RocketChatMessageAdapter {
 	): Promise<void> {
 		const room = federatedRoom.getInternalReference();
 		const messageToReplyToUrl = getURL(
-			`${roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name })}?msg=${messageToReplyTo._id}`,
+			`${ roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name }) }?msg=${ messageToReplyTo._id }`,
 			{ full: true },
 		);
 		sendMessage(
@@ -56,19 +56,51 @@ export class RocketChatMessageAdapter {
 		attachments: IMessage['attachments'],
 		externalEventId: string,
 	): Promise<void> {
-		Promise.resolve(
-			sendMessage(
-				user.getInternalReference(),
-				{
-					federation: { eventId: externalEventId },
-					rid: room.getInternalId(),
-					ts: new Date(),
-					file: (files || [])[0],
-					files,
-					attachments,
-				},
-				room.getInternalReference(),
-			),
+		sendMessage(
+			user.getInternalReference(),
+			{
+				federation: { eventId: externalEventId },
+				rid: room.getInternalId(),
+				ts: new Date(),
+				file: (files || [])[0],
+				files,
+				attachments,
+			},
+			room.getInternalReference(),
+		);
+	}
+
+	public async sendQuoteFileMessage(
+		user: FederatedUser,
+		federatedRoom: FederatedRoom,
+		files: IMessage['files'],
+		attachments: IMessage['attachments'],
+		externalEventId: string,
+		messageToReplyTo: IMessage,
+		homeServerDomain: string,
+	): Promise<void> {
+		const room = federatedRoom.getInternalReference();
+		const messageToReplyToUrl = getURL(
+			`${ roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name }) }?msg=${ messageToReplyTo._id }`,
+			{ full: true },
+		);
+
+		sendMessage(
+			user.getInternalReference(),
+			{
+				federation: { eventId: externalEventId },
+				rid: federatedRoom.getInternalId(),
+				ts: new Date(),
+				file: (files || [])[0],
+				files,
+				attachments,
+				msg: await toInternalQuoteMessageFormat({
+					messageToReplyToUrl,
+					message: '',
+					homeServerDomain,
+				}),
+			},
+			room,
 		);
 	}
 

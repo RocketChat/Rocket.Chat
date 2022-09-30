@@ -339,6 +339,41 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
+	public async sendReplyMessageFileToRoom(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		eventToReplyTo: string,
+	): Promise<string> {
+		try {
+			const mxcUrl = await this.bridgeInstance.getIntent(externaSenderId).uploadContent(content);
+			const { event_id: messageId } = await this.bridgeInstance.getIntent(externaSenderId).sendMessage(externalRoomId, {
+				body: fileDetails.filename,
+				filename: fileDetails.filename,
+				info: {
+					size: fileDetails.fileSize,
+					mimetype: fileDetails.mimeType,
+					...(fileDetails.metadata?.height && fileDetails.metadata?.width
+						? { h: fileDetails.metadata?.height, w: fileDetails.metadata?.width }
+						: {}),
+				},
+				'm.relates_to': {
+					'm.in_reply_to': { event_id: eventToReplyTo },
+				},
+				msgtype: this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
+				url: mxcUrl,
+			});
+
+			return messageId;
+		} catch (e: any) {
+			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
+				throw new Error('File is too large');
+			}
+			return '';
+		}
+	}
+
 	private getMsgTypeBasedOnMimeType(mimeType: string): MatrixEnumSendMessageType {
 		const knownImageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 		const knownAudioMimeTypes = ['audio/mpeg', 'audio/ogg', 'audio/wav'];
@@ -397,6 +432,9 @@ export class MatrixBridge implements IFederationBridge {
 				onLog: async (line, isError): Promise<void> => {
 					console.log(line, isError);
 				},
+				onEphemeralEvent(request) {
+					console.log(request.data);
+				},		
 			},
 		});
 	}

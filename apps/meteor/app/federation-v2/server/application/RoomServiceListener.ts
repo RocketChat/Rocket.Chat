@@ -23,7 +23,7 @@ import type {
 import { FederationService } from './AbstractFederationService';
 import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 import { getRedactMessageHandler } from './RoomRedactionHandlers';
-
+require('util').inspect.defaultOptions.depth = null;
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapter,
@@ -254,7 +254,7 @@ export class FederationRoomServiceListener extends FederationService {
 	}
 
 	public async onExternalFileMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalFileMessageDto): Promise<void> {
-		const { externalRoomId, externalSenderId, messageBody, externalEventId } = roomReceiveExternalMessageInput;
+		const { externalRoomId, externalSenderId, messageBody, externalEventId, replyToEventId } = roomReceiveExternalMessageInput;
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
@@ -283,6 +283,23 @@ export class FederationRoomServiceListener extends FederationService {
 			senderUser.getInternalReference(),
 			fileDetails,
 		);
+
+		if (replyToEventId) {
+			const messageToReplyTo = await this.internalMessageAdapter.getMessageByFederationId(replyToEventId);
+			if (!messageToReplyTo) {
+				return;
+			}
+			await this.internalMessageAdapter.sendQuoteFileMessage(
+				senderUser,
+				federatedRoom,
+				files,
+				attachments,
+				externalEventId,
+				messageToReplyTo,
+				this.internalHomeServerDomain,
+			);
+			return;
+		}
 
 		await this.internalMessageAdapter.sendFileMessage(senderUser, federatedRoom, files, attachments, externalEventId);
 	}
