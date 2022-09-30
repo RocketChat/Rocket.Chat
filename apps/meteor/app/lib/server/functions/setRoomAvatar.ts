@@ -31,18 +31,15 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 		uid: user._id,
 	};
 
-	fileStore.insert(file, buffer, (err: unknown, result: { etag: string }) => {
-		if (err) {
-			throw err;
-		}
+	if (current) {
+		fileStore.deleteByRoomId(rid);
+	}
 
-		Meteor.setTimeout(function () {
-			if (current) {
-				fileStore.deleteById(current._id);
-			}
-			Rooms.setAvatarData(rid, 'upload', result.etag);
-			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
-			api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
-		}, 500);
-	});
+	const result = fileStore.insertSync(file, buffer);
+
+	Meteor.setTimeout(function () {
+		Rooms.setAvatarData(rid, 'upload', result.etag);
+		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
+		api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
+	}, 500);
 };
