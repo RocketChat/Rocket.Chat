@@ -166,30 +166,24 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		options?: FindOptions<ILivechatVisitor>,
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
 		const query = {
-			$or: [
-				...(emailOrPhone
-					? [
-							{
-								'visitorEmails.address': emailOrPhone,
-							},
-							{
-								'phone.phoneNumber': emailOrPhone,
-							},
-					  ]
-					: []),
-				...(nameOrUsername
-					? [
-							{
-								name: nameOrUsername,
-							},
-							{
-								username: nameOrUsername,
-							},
-					  ]
-					: []),
-				// nameorusername is a clean regex, so we should be good
-				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
-			],
+			...((emailOrPhone || nameOrUsername) && {
+				$or: [
+					{
+						'visitorEmails.address': emailOrPhone,
+					},
+					{
+						'phone.phoneNumber': emailOrPhone,
+					},
+					{
+						name: nameOrUsername,
+					},
+					{
+						username: nameOrUsername,
+					},
+					// nameorusername is a clean regex, so we should be good
+					...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
+				],
+			}),
 		};
 
 		return this.findPaginated(query, options);
