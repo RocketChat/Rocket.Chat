@@ -5,7 +5,7 @@ const denyList = ['constructor', '__proto__', 'prototype'];
 export const removeDangerousProps = (v: Query): Query => {
 	const query = Object.create(null);
 	for (const key in v) {
-		if (Object.prototype.hasOwnProperty.call(v, key) && !denyList.includes(key)) {
+		if (v.hasOwnProperty(key) && !denyList.includes(key)) {
 			query[key] = v[key];
 		}
 	}
@@ -14,24 +14,15 @@ export const removeDangerousProps = (v: Query): Query => {
 };
 /* @deprecated */
 export function clean(v: Query, allowList: string[] = []): Query {
-	if (typeof v !== 'object') {
-		return v;
-	}
-
-	if (Array.isArray(v)) {
-		return v.map((item) => clean(item, allowList));
-	}
-
 	const typedParam = removeDangerousProps(v);
 	if (v instanceof Object) {
 		/* eslint-disable guard-for-in */
 		for (const key in typedParam) {
 			if (key.startsWith('$') && !allowList.includes(key)) {
 				delete typedParam[key];
-				continue;
+			} else {
+				clean(typedParam[key], allowList);
 			}
-
-			typedParam[key] = clean(typedParam[key], allowList);
 		}
 	}
 	return typedParam;
