@@ -54,7 +54,13 @@ export interface IUserServices {
 	resume?: {
 		loginTokens?: LoginToken[];
 	};
-	cloud?: unknown;
+	cloud?: {
+		refreshToken: string;
+		accessToken: string;
+		expiresAt: Date;
+		scope: string;
+		tokenType: string;
+	};
 	google?: any;
 	facebook?: any;
 	github?: any;
