@@ -139,7 +139,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			const nameOrUsername = new RegExp(escapeRegExp(term || ''), 'i');
+			const nameOrUsername = term ? new RegExp(escapeRegExp(term), 'i') : undefined;
 
 			return API.v1.success(
 				await findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
