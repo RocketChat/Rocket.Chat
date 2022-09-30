@@ -100,8 +100,9 @@ export const getExternalMessageSender = (
 	bridge: IFederationBridge,
 	internalFileHelper: RocketChatFileAdapter,
 	internalMessageAdapter: RocketChatMessageAdapter,
+	internalUserAdapter: RocketChatMessageAdapter,
 ): IExternalMessageSender => {
 	return message.files
 		? new FileExternalMessageSender(bridge, internalFileHelper, internalMessageAdapter)
-		: new TextExternalMessageSender(bridge, internalMessageAdapter);
+		: new TextExternalMessageSender(bridge, internalMessageAdapter, internalUserAdapter);
 };
