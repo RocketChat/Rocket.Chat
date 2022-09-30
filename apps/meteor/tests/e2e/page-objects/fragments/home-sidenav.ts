@@ -21,6 +21,11 @@ export class HomeSidenav {
 		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
+	async openAdministrationByLabel(text: string): Promise<void> {
+		await this.page.locator('role=button[name="Administration"]').click();
+		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+	}
+
 	async openNewByLabel(text: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-create"]').click();
 		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
@@ -29,11 +34,6 @@ export class HomeSidenav {
 	async logout(): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
-	}
-
-	async goToMyAccount(): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
-		await this.page.locator('//li[@class="rcx-option"]//div[contains(text(), "My Account")]').click();
 	}
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {

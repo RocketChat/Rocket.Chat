@@ -20,6 +20,7 @@ import './notifications';
 import './oauth';
 import './openedRoom';
 import './otr';
+import './queryCache';
 import './readMessage';
 import './readReceipt';
 import './reloadRoomAfterLogin';

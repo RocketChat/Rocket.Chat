@@ -6,9 +6,8 @@ import { createClassName } from '../../components/helpers';
 import { parentCall } from '../../lib/parentCall';
 import styles from './styles.scss';
 
-
 class TriggerMessage extends Component {
-	state = { };
+	state = {};
 
 	constructor(props) {
 		super(props);
@@ -27,20 +26,20 @@ class TriggerMessage extends Component {
 
 	render({ title, messages, loading, onStartChat = () => {}, departments, t, ...props }) {
 		const defaultTitle = t('messages');
-		const { theme: { color } } = props;
+		const {
+			theme: { color },
+		} = props;
 		return (
-			<Screen
-				title={title || defaultTitle}
-				{...props}
-				triggered={true}
-				ref={this.ref}
-			>
+			<Screen title={title || defaultTitle} {...props} triggered={true} ref={this.ref}>
 				<Screen.Content triggered={true}>
-					{messages && messages.map((message) => message.msg && <p className={createClassName(styles, 'trigger-message__message')}>{message.msg}</p>)}
+					{messages &&
+						messages.map((message) => message.msg && <p className={createClassName(styles, 'trigger-message__message')}>{message.msg}</p>)}
 				</Screen.Content>
 				<footer className={createClassName(styles, 'trigger-message__footer')}>
 					<hr className={createClassName(styles, 'trigger-message__separator')} />
-					<button style={color && { color }} onClick={onStartChat} className={createClassName(styles, 'trigger-message__link-reply')}>{t('start_chat')}</button>
+					<button style={color && { color }} onClick={onStartChat} className={createClassName(styles, 'trigger-message__link-reply')}>
+						{t('start_chat')}
+					</button>
 				</footer>
 			</Screen>
 		);

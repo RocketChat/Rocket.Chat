@@ -18,14 +18,14 @@ const getStream = (
 		retransmit?: boolean | undefined;
 		retransmitToSelf?: boolean | undefined;
 	} = {},
-): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
+): (<TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void) => {
 	logAction('getStream', streamName, options);
 
-	return (eventName, callback): (() => void) => {
+	return (eventName: string, callback: () => void): (() => void) => {
 		const subId = Math.random().toString(16).slice(2);
 		logAction('getStream.subscribe', streamName, eventName, subId);
 
-		randomDelay().then(() => callback(undefined as any));
+		randomDelay().then(() => callback());
 
 		return (): void => {
 			logAction('getStream.unsubscribe', streamName, eventName, subId);

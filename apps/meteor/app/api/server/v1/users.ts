@@ -18,6 +18,7 @@ import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IExportOperation, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
+import type { Filter } from 'mongodb';
 
 import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
@@ -39,9 +40,9 @@ import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKe
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { Team } from '../../../../server/sdk';
 import { isValidQuery } from '../lib/isValidQuery';
-import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { getURL } from '../../../utils/server';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { api } from '../../../../server/sdk/api';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -815,11 +816,22 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUsersAutocompleteProps },
 	{
 		async get() {
-			const { selector } = this.queryParams;
+			const { selector: selectorRaw } = this.queryParams;
+
+			const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = JSON.parse(selectorRaw);
+
+			try {
+				if (selector?.conditions && !isValidQuery(selector.conditions, ['*'], ['$or', '$and'])) {
+					throw new Error('error-invalid-query');
+				}
+			} catch (e) {
+				return API.v1.failure(e);
+			}
+
 			return API.v1.success(
 				await findUsersToAutocomplete({
 					uid: this.userId,
-					selector: JSON.parse(selector),
+					selector,
 				}),
 			);
 		},
@@ -1031,7 +1043,11 @@ API.v1.addRoute(
 							},
 						});
 
-						setUserStatus(user, status);
+						const { _id, username, statusText, roles, name } = user;
+						api.broadcast('presence.status', {
+							user: { status, _id, username, statusText, roles, name },
+							previousStatus: user.status,
+						});
 					} else {
 						throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
 							method: 'users.setStatus',
