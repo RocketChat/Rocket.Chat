@@ -13,6 +13,10 @@ export class HomeContent {
 		return this.page.locator('[name="msg"]');
 	}
 
+	get homePage(): Locator {
+		return this.page.locator('[data-qa="page-home"]');
+	}
+
 	get messagePopUpItems(): Locator {
 		return this.page.locator('.message-popup-items');
 	}
