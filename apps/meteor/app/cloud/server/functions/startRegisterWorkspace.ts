@@ -26,12 +26,14 @@ export async function startRegisterWorkspace(resend = false) {
 		result = HTTP.post(`${cloudUrl}/api/v2/register/workspace?resend=${resend}`, {
 			data: regInfo,
 		});
-	} catch (e: any) {
-		if (e.response?.data?.error) {
-			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${e.response.data.error}`);
-		} else {
-			SystemLogger.error(e);
-		}
+	} catch (err: any) {
+		SystemLogger.error({
+			msg: 'Failed to register with Rocket.Chat Cloud',
+			url: '/api/v2/register/workspace',
+			...(err.response?.data?.error && { errorMessage: err.response.data.error }),
+			err,
+		});
+
 		return false;
 	}
 	const { data } = result;
