@@ -75,6 +75,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		findOneByFederationIdOnReactions: sinon.stub(),
 		unreactToMessage: sinon.stub(),
 		sendQuoteMessage: sinon.stub(),
+		sendQuoteFileMessage: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
@@ -127,6 +128,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		messageAdapter.editMessage.reset();
 		messageAdapter.unreactToMessage.reset();
 		messageAdapter.findOneByFederationIdOnReactions.reset();
+		messageAdapter.sendQuoteFileMessage.reset();
 		messageAdapter.sendQuoteMessage.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.joinRoom.reset();
@@ -666,6 +668,62 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			} as any);
 
 			expect(messageAdapter.sendFileMessage.calledWith(user, room, files, attachments)).to.be.true;
+		});
+
+		describe('Quoting messages', () => {
+			it('should NOT send a quote message if its necessary to quote but the message to quote does not exists', async () => {
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				messageAdapter.getMessageByFederationId.resolves(undefined);
+				fileAdapter.uploadFile.resolves({} as any);
+				await service.onExternalFileMessageReceived({
+					messageBody: {
+						filename: 'filename',
+						size: 12,
+						mimetype: 'mimetype',
+						url: 'url',
+					},
+					replyToEventId: 'replyToEventId',
+				} as any);
+
+				expect(messageAdapter.sendQuoteFileMessage.called).to.be.false;
+				expect(messageAdapter.sendFileMessage.called).to.be.false;
+			});
+
+			it('should send a quote message if its necessary to quote and the message to quote exists', async () => {
+				const messageToReplyTo = { federation: { eventId: 'eventId' } } as any;
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				messageAdapter.getMessageByFederationId.onFirstCall().resolves(undefined);
+				messageAdapter.getMessageByFederationId.onSecondCall().resolves(messageToReplyTo);
+				const files = [{ id: 'fileId', name: 'filename' }];
+				const attachments = ['attachment', 'attachment2'];
+				fileAdapter.uploadFile.resolves({ files, attachments } as any);
+
+				await service.onExternalFileMessageReceived({
+					messageBody: {
+						filename: 'filename',
+						size: 12,
+						mimetype: 'mimetype',
+						url: 'url',
+					},
+					replyToEventId: 'replyToEventId',
+					externalEventId: 'externalEventId',
+				} as any);
+
+				expect(
+					messageAdapter.sendQuoteFileMessage.calledWith(
+						user,
+						room,
+						files,
+						attachments,
+						'externalEventId',
+						messageToReplyTo,
+						'localDomain',
+					),
+				).to.be.true;
+				expect(messageAdapter.sendFileMessage.called).to.be.false;
+			});
 		});
 	});
 

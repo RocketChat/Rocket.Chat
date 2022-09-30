@@ -3,7 +3,8 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 
-const stub = sinon.stub();
+const sendMessageStub = sinon.stub();
+const sendQuoteMessageStub = sinon.stub();
 const { FederationRoomServiceSender } = proxyquire
 	.noCallThru()
 	.load('../../../../../../../../app/federation-v2/server/application/sender/RoomServiceSender', {
@@ -16,7 +17,7 @@ const { FederationRoomServiceSender } = proxyquire
 			'@global': true,
 		},
 		'./MessageSenders': {
-			getExternalMessageSender: () => ({ sendMessage: stub }),
+			getExternalMessageSender: () => ({ sendMessage: sendMessageStub, sendQuoteMessage: sendQuoteMessageStub }),
 		},
 	});
 
@@ -83,7 +84,6 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		kickUserFromRoom: sinon.stub(),
 		redactEvent: sinon.stub(),
 		updateMessage: sinon.stub(),
-		sendReplyToMessage: sinon.stub(),
 	};
 
 	beforeEach(() => {
@@ -119,10 +119,10 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		bridge.kickUserFromRoom.reset();
 		bridge.redactEvent.reset();
 		bridge.updateMessage.reset();
-		bridge.sendReplyToMessage.reset();
 		messageAdapter.getMessageById.reset();
 		messageAdapter.setExternalFederationEventOnMessage.reset();
-		stub.reset();
+		sendMessageStub.reset();
+		sendQuoteMessageStub.reset();
 	});
 
 	describe('#createDirectMessageRoomAndInviteUser()', () => {
@@ -431,8 +431,8 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 
 			await service.sendExternalMessage({ internalRoomId: 'internalRoomId', message: { federation: { eventId: 'eventId' } } } as any);
 
-			expect(stub.called).to.be.false;
-			expect(bridge.sendReplyToMessage.called).to.be.false;
+			expect(sendMessageStub.called).to.be.false;
+			expect(sendQuoteMessageStub.called).to.be.false;
 		});
 
 		it('should send the message through the bridge', async () => {
@@ -446,7 +446,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			await service.sendExternalMessage({ message: { msg: 'text' } } as any);
 
-			expect(stub.calledWith(room.getExternalId(), user.getExternalId(), { msg: 'text' })).to.be.true;
+			expect(sendMessageStub.calledWith(room.getExternalId(), user.getExternalId(), { msg: 'text' })).to.be.true;
 		});
 
 		describe('Quoting messages', () => {
@@ -459,8 +459,8 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 					message: { attachments: [{ message_link: 'http://localhost:3000/group/1' }] },
 				} as any);
 
-				expect(stub.called).to.be.false;
-				expect(bridge.sendReplyToMessage.called).to.be.false;
+				expect(sendMessageStub.called).to.be.false;
+				expect(sendQuoteMessageStub.called).to.be.false;
 			});
 
 			it('should send a quote message if the current attachment is valid', async () => {
@@ -479,28 +479,19 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				userAdapter.getFederatedUserByInternalId.onSecondCall().resolves(originalSender);
 				roomAdapter.getFederatedRoomByInternalId.resolves(room);
 				messageAdapter.getMessageById.resolves({ federation: { eventId: 'eventId' } });
-				bridge.sendReplyToMessage.resolves('externalMessageId');
-
+				const message = {
+					_id: '_id',
+					msg: 'message',
+					attachments: [{ message_link: 'http://localhost:3000/group/1?msg=1' }],
+				};
 				await service.sendExternalMessage({
 					internalRoomId: 'internalRoomId',
-					message: {
-						_id: '_id',
-						msg: 'message',
-						attachments: [{ message_link: 'http://localhost:3000/group/1?msg=1' }],
-					},
+					message,
 				} as any);
 
-				expect(
-					bridge.sendReplyToMessage.calledWith(
-						room.getExternalId(),
-						user.getExternalId(),
-						'eventId',
-						originalSender.getExternalId(),
-						'message',
-					),
-				).to.be.true;
-				expect(messageAdapter.setExternalFederationEventOnMessage.calledWith('_id', 'externalMessageId')).to.be.true;
-				expect(stub.called).to.be.false;
+				expect(sendQuoteMessageStub.calledWith(room.getExternalId(), user.getExternalId(), message, { federation: { eventId: 'eventId' } }))
+					.to.be.true;
+				expect(sendMessageStub.called).to.be.false;
 			});
 		});
 	});

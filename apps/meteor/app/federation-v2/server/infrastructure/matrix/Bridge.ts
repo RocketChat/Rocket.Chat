@@ -349,9 +349,9 @@ export class MatrixBridge implements IFederationBridge {
 		try {
 			const mxcUrl = await this.bridgeInstance.getIntent(externaSenderId).uploadContent(content);
 			const { event_id: messageId } = await this.bridgeInstance.getIntent(externaSenderId).sendMessage(externalRoomId, {
-				body: fileDetails.filename,
-				filename: fileDetails.filename,
-				info: {
+				'body': fileDetails.filename,
+				'filename': fileDetails.filename,
+				'info': {
 					size: fileDetails.fileSize,
 					mimetype: fileDetails.mimeType,
 					...(fileDetails.metadata?.height && fileDetails.metadata?.width
@@ -361,8 +361,8 @@ export class MatrixBridge implements IFederationBridge {
 				'm.relates_to': {
 					'm.in_reply_to': { event_id: eventToReplyTo },
 				},
-				msgtype: this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
-				url: mxcUrl,
+				'msgtype': this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
+				'url': mxcUrl,
 			});
 
 			return messageId;
@@ -432,9 +432,6 @@ export class MatrixBridge implements IFederationBridge {
 				onLog: async (line, isError): Promise<void> => {
 					console.log(line, isError);
 				},
-				onEphemeralEvent(request) {
-					console.log(request.data);
-				},		
 			},
 		});
 	}

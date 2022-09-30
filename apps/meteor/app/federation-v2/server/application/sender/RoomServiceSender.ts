@@ -162,7 +162,11 @@ export class FederationRoomServiceSender extends FederationService {
 
 		if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
 			// TODO: move this to the domain layer in a proper entity
-			const messageLink = (message.attachments.find((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link)) as MessageQuoteAttachment).message_link;
+			const messageLink = (
+				message.attachments.find(
+					(attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link),
+				) as MessageQuoteAttachment
+			).message_link;
 			if (!messageLink) {
 				return;
 			}
@@ -175,20 +179,23 @@ export class FederationRoomServiceSender extends FederationService {
 				return;
 			}
 
-			await getExternalMessageSender(message, this.bridge, this.internalFileAdapter, this.internalMessageAdapter, this.internalUserAdapter).sendQuoteMessage(
-				federatedRoom.getExternalId(),
-				federatedSender.getExternalId(),
+			await getExternalMessageSender(
 				message,
-				messageToReplyTo,
-			);
+				this.bridge,
+				this.internalFileAdapter,
+				this.internalMessageAdapter,
+				this.internalUserAdapter,
+			).sendQuoteMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message, messageToReplyTo);
 			return;
 		}
 
-		await getExternalMessageSender(message, this.bridge, this.internalFileAdapter, this.internalMessageAdapter, this.internalUserAdapter).sendMessage(
-			federatedRoom.getExternalId(),
-			federatedSender.getExternalId(),
+		await getExternalMessageSender(
 			message,
-		);
+			this.bridge,
+			this.internalFileAdapter,
+			this.internalMessageAdapter,
+			this.internalUserAdapter,
+		).sendMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message);
 	}
 
 	public async afterMessageDeleted(internalMessage: IMessage, internalRoomId: string): Promise<void> {

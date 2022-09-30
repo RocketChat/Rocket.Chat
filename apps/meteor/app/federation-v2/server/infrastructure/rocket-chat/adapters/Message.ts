@@ -27,7 +27,7 @@ export class RocketChatMessageAdapter {
 	): Promise<void> {
 		const room = federatedRoom.getInternalReference();
 		const messageToReplyToUrl = getURL(
-			`${ roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name }) }?msg=${ messageToReplyTo._id }`,
+			`${roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name })}?msg=${messageToReplyTo._id}`,
 			{ full: true },
 		);
 		sendMessage(
@@ -81,7 +81,7 @@ export class RocketChatMessageAdapter {
 	): Promise<void> {
 		const room = federatedRoom.getInternalReference();
 		const messageToReplyToUrl = getURL(
-			`${ roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name }) }?msg=${ messageToReplyTo._id }`,
+			`${roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name })}?msg=${messageToReplyTo._id}`,
 			{ full: true },
 		);
 

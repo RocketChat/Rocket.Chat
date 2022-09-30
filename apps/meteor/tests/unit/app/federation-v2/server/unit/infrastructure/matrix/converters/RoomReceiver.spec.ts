@@ -409,7 +409,12 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 	describe('#toSendRoomFileMessageDto()', () => {
 		const event = {
 			event_id: 'eventId',
-			content: { body: 'filename', url: 'url', info: { mimetype: 'mime', size: 12 } },
+			content: {
+				'body': 'filename',
+				'url': 'url',
+				'info': { mimetype: 'mime', size: 12 },
+				'm.relates_to': { 'm.in_reply_to': { event_id: 'replyToEventId' } },
+			},
 			room_id: '!roomId:matrix.org',
 			sender: '@marcos.defendi:matrix.org',
 		};
@@ -455,6 +460,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 					size: event.content.info.size,
 					messageText: event.content.body,
 				},
+				replyToEventId: 'replyToEventId',
 			});
 		});
 	});
