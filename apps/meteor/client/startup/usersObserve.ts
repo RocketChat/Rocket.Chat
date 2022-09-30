@@ -2,8 +2,6 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { RoomManager } from '../../app/ui-utils/client';
-
 Meteor.startup(() => {
 	// TODO: find correct typing for meteor collection
 	(Meteor.users as any)
@@ -23,19 +21,16 @@ Meteor.startup(() => {
 			added(user: IUser) {
 				Session.set(`user_${user.username}_status`, user.status);
 				Session.set(`user_${user.username}_status_text`, user.statusText);
-				RoomManager.updateUserStatus(user, user.status, user.utcOffset);
 			},
 			changed(user: IUser) {
 				Session.set(`user_${user.username}_status`, user.status);
 				if (user.statusText !== undefined) {
 					Session.set(`user_${user.username}_status_text`, user.statusText);
 				}
-				RoomManager.updateUserStatus(user, user.status, user.utcOffset);
 			},
 			removed(user: IUser) {
 				Session.set(`user_${user.username}_status`, null);
 				Session.set(`user_${user.username}_status_text`, null);
-				RoomManager.updateUserStatus(user, 'offline', null);
 			},
 		});
 });

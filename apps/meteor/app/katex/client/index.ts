@@ -3,7 +3,7 @@ import KatexPackage from 'katex';
 import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
 import 'katex/dist/katex.min.css';
 import './style.css';
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 class Boundary {
 	start: number;
@@ -152,8 +152,10 @@ class Katex {
 					'\\href': '\\@secondoftwo',
 				},
 			});
-		} catch ({ message }) {
-			return `<div class="katex-error katex-${displayMode ? 'block' : 'inline'}-error">${escapeHTML(message)}</div>`;
+		} catch (e) {
+			return `<div class="katex-error katex-${displayMode ? 'block' : 'inline'}-error">${escapeHTML(
+				e instanceof Error ? e.message : String(e),
+			)}</div>`;
 		}
 	};
 

@@ -1,4 +1,4 @@
-import { Box, ActionButton } from '@rocket.chat/fuselage';
+import { Box, IconButton } from '@rocket.chat/fuselage';
 import React, { FC, ReactNode } from 'react';
 
 type HeaderProps = {
@@ -15,7 +15,7 @@ const Header: FC<HeaderProps> = ({ title, onClose, children, ...props }) => (
 						{title}
 					</Box>
 				)}
-				{onClose && <ActionButton ghost small icon='cross' onClick={onClose} />}
+				{onClose && <IconButton small icon='cross' onClick={onClose} />}
 			</Box>
 		)}
 		{children}

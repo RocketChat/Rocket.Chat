@@ -2,22 +2,33 @@ import { EventEmitter } from 'events';
 
 import IMAP from 'imap';
 import type Connection from 'imap';
-import { simpleParser, ParsedMail } from 'mailparser';
+import type { ParsedMail } from 'mailparser';
+import { simpleParser } from 'mailparser';
+
+import { logger } from '../features/EmailInbox/logger';
 
 type IMAPOptions = {
 	deleteAfterRead: boolean;
 	filter: any[];
 	rejectBeforeTS?: Date;
 	markSeen: boolean;
+	maxRetries: number;
 };
 
 export declare interface IMAPInterceptor {
 	on(event: 'email', listener: (email: ParsedMail) => void): this;
-	on(event: string, listener: Function): this;
 }
 
 export class IMAPInterceptor extends EventEmitter {
 	private imap: IMAP;
+
+	private config: IMAP.Config;
+
+	private initialBackoffDurationMS = 30000;
+
+	private backoff: NodeJS.Timeout;
+
+	private retries = 0;
 
 	constructor(
 		imapConfig: IMAP.Config,
@@ -25,21 +36,28 @@ export class IMAPInterceptor extends EventEmitter {
 			deleteAfterRead: false,
 			filter: ['UNSEEN'],
 			markSeen: true,
+			maxRetries: 10,
 		},
 	) {
 		super();
 
+		this.config = imapConfig;
+
 		this.imap = new IMAP({
-			connTimeout: 30000,
+			connTimeout: 10000,
 			keepalive: true,
+			...(imapConfig.tls && { tlsOptions: { servername: imapConfig.host } }),
 			...imapConfig,
 		});
 
 		// On successfully connected.
 		this.imap.on('ready', () => {
 			if (this.imap.state !== 'disconnected') {
+				clearTimeout(this.backoff);
+				this.retries = 0;
 				this.openInbox((err) => {
 					if (err) {
+						logger.error(`Error occurred during imap on inbox ${this.config.user}: `, err);
 						throw err;
 					}
 					// fetch new emails & wait [IDLE]
@@ -51,19 +69,20 @@ export class IMAPInterceptor extends EventEmitter {
 					});
 				});
 			} else {
-				this.log('IMAP did not connected.');
+				logger.error(`IMAP did not connect on inbox ${this.config.user}`);
 				this.imap.end();
+				this.reconnect();
 			}
 		});
 
 		this.imap.on('error', (err: Error) => {
-			this.log('Error occurred: ', err);
-			throw err;
+			logger.error(`Error occurred on inbox ${this.config.user}: `, err);
+			this.stop(() => this.reconnect());
 		});
-	}
 
-	log(...msg: any[]): void {
-		console.log(...msg);
+		this.imap.on('close', () => {
+			this.reconnect();
+		});
 	}
 
 	openInbox(cb: (error: Error, mailbox: Connection.Box) => void): void {
@@ -75,7 +94,7 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	isActive(): boolean {
-		if (this.imap && this.imap.state && this.imap.state === 'disconnected') {
+		if (this.imap?.state && this.imap.state === 'disconnected') {
 			return false;
 		}
 
@@ -83,25 +102,37 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	stop(callback = new Function()): void {
+		logger.info('IMAP stop called');
 		this.imap.end();
-		this.imap.once('end', callback);
+		this.imap.once('end', () => {
+			logger.info('IMAP stopped');
+			callback?.();
+		});
 	}
 
-	restart(): void {
-		this.stop(() => {
-			this.log('Restarting IMAP ....');
+	reconnect(): void {
+		const loop = (): void => {
 			this.start();
-		});
+			if (this.retries < this.options.maxRetries) {
+				this.retries += 1;
+				this.initialBackoffDurationMS *= 2;
+				this.backoff = setTimeout(loop, this.initialBackoffDurationMS);
+			} else {
+				logger.error(`IMAP reconnection failed on inbox ${this.config.user}`);
+				clearTimeout(this.backoff);
+			}
+		};
+		this.backoff = setTimeout(loop, this.initialBackoffDurationMS);
 	}
 
 	// Fetch all UNSEEN messages and pass them for further processing
 	getEmails(): void {
 		this.imap.search(this.options.filter, (err, newEmails) => {
+			logger.debug(`IMAP search on inbox ${this.config.user} returned ${newEmails.length} new emails: `, newEmails);
 			if (err) {
-				this.log(err);
+				logger.error(err);
 				throw err;
 			}
-
 			// newEmails => array containing serials of unseen messages
 			if (newEmails.length > 0) {
 				const fetch = this.imap.fetch(newEmails, {
@@ -111,6 +142,8 @@ export class IMAPInterceptor extends EventEmitter {
 				});
 
 				fetch.on('message', (msg, seqno) => {
+					logger.debug('E-mail received', seqno, msg);
+
 					msg.on('body', (stream, type) => {
 						if (type.which !== '') {
 							return;
@@ -118,10 +151,9 @@ export class IMAPInterceptor extends EventEmitter {
 
 						simpleParser(stream, (_err, email) => {
 							if (this.options.rejectBeforeTS && email.date && email.date < this.options.rejectBeforeTS) {
-								this.log('Rejecting email', email.subject);
+								logger.error(`Rejecting email on inbox ${this.config.user}`, email.subject);
 								return;
 							}
-
 							this.emit('email', email);
 						});
 					});
@@ -132,7 +164,7 @@ export class IMAPInterceptor extends EventEmitter {
 						if (this.options.deleteAfterRead) {
 							this.imap.seq.addFlags(seqno, 'Deleted', (err) => {
 								if (err) {
-									this.log(`Mark deleted error: ${err}`);
+									logger.error(`Mark deleted error: ${err}`);
 								}
 							});
 						}
@@ -140,7 +172,7 @@ export class IMAPInterceptor extends EventEmitter {
 				});
 
 				fetch.once('error', (err) => {
-					this.log(`Fetch error: ${err}`);
+					logger.error(`Fetch error: ${err}`);
 				});
 			}
 		});

@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper.js';
 import { createUser, login } from '../../data/users.helper';
-import { password } from '../../data/user';
+import { adminUsername, password } from '../../data/user';
 
 describe('[Teams]', () => {
 	before((done) => getCredentials(done));
@@ -105,7 +105,11 @@ describe('[Teams]', () => {
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
-							const member = response.body.members[0];
+
+							// remove admin user from members because it's added automatically as owner
+							const members = response.body.members.filter(({ user }) => user.username !== adminUsername);
+
+							const [member] = members;
 							expect(member.user.username).to.be.equal(testUser.username);
 						});
 				})
@@ -809,6 +813,77 @@ describe('[Teams]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
 					expect(res.body.errorType).to.be.equal('invalid-params');
+				})
+				.then(() => done())
+				.catch(done);
+		});
+	});
+
+	describe('/teams.info', () => {
+		it('should successfully get a team info by name', (done) => {
+			request
+				.get(api('teams.info'))
+				.set(credentials)
+				.query({
+					teamName: publicTeam.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', true);
+					expect(response.body).to.have.property('teamInfo');
+					expect(response.body.teamInfo).to.have.property('_id', publicTeam._id);
+					expect(response.body.teamInfo).to.have.property('name', publicTeam.name);
+				})
+				.then(() => done())
+				.catch(done);
+		});
+		it('should successfully get a team info by id', (done) => {
+			request
+				.get(api('teams.info'))
+				.set(credentials)
+				.query({
+					teamId: publicTeam._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', true);
+					expect(response.body).to.have.property('teamInfo');
+					expect(response.body.teamInfo).to.have.property('_id', publicTeam._id);
+					expect(response.body.teamInfo).to.have.property('name', publicTeam.name);
+				})
+				.then(() => done())
+				.catch(done);
+		});
+		it('should fail if a team is not found', (done) => {
+			request
+				.get(api('teams.info'))
+				.set(credentials)
+				.query({
+					teamName: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error', 'Team not found');
+				})
+				.then(() => done())
+				.catch(done);
+		});
+		it('should fail if a user doesnt belong to a team', (done) => {
+			request
+				.get(api('teams.info'))
+				.set(testUserCredentials)
+				.query({
+					teamName: privateTeam.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error', 'unauthorized');
 				})
 				.then(() => done())
 				.catch(done);

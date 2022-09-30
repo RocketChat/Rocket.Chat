@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
+import { Button, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, ReactNode } from 'react';
 
@@ -63,7 +63,7 @@ const CreateCannedResponseModal: FC<{
 				></CannedResponseForm>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button
 						onClick={(): void => {
 							onClose(null);
@@ -74,7 +74,7 @@ const CreateCannedResponseModal: FC<{
 					<Button primary disabled={!hasUnsavedChanges || !canSave} onClick={onSave}>
 						{t('Save')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

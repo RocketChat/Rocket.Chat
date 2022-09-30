@@ -2,11 +2,11 @@ import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
+import InfoPanel from '../../../../../components/InfoPanel';
+import RetentionPolicyCallout from '../../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../../components/MarkdownText';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
-import InfoPanel from '../../../../InfoPanel';
-import RetentionPolicyCallout from '../../../../InfoPanel/RetentionPolicyCallout';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
 
 const RoomInfo = ({
@@ -96,7 +96,8 @@ const RoomInfo = ({
 				flexShrink={0}
 				mi='x2'
 				key='menu'
-				ghost={false}
+				maxHeight='initial'
+				secondary
 				renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
 				options={menuOptions}
 			/>

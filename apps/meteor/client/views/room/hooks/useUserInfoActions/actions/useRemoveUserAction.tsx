@@ -1,12 +1,13 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import { IRoom, isRoomFederated, IUser } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { usePermission, useSetModal, useTranslation, useUserRoom } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetModal, useTranslation, useUser, useUserRoom } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
+import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { Action } from '../../../../hooks/useActionSpread';
 import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUsersModal';
@@ -16,16 +17,20 @@ import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id'], reload?: () => void): Action | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
+	const currentUser = useUser();
 	const { _id: uid } = user;
-
-	const userCanRemove = usePermission('remove-user', rid);
-	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal(null));
-	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	if (!room) {
 		throw Error('Room not provided');
 	}
+
+	const hasPermissionToRemove = usePermission('remove-user', rid);
+	const userCanRemove = isRoomFederated(room)
+		? Federation.isEditableByTheUser(currentUser || undefined, room) && hasPermissionToRemove
+		: hasPermissionToRemove;
+	const setModal = useSetModal();
+	const closeModal = useMutableCallback(() => setModal(null));
+	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const { roomCanRemove } = getRoomDirectives(room);

@@ -1,8 +1,8 @@
 import { Match, check } from 'meteor/check';
 import type { IVoipExtensionBase } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { API } from '../../api';
-import { Users } from '../../../../models/server/raw/index';
 import { Voip } from '../../../../../server/sdk';
 import { generateJWT } from '../../../../utils/server/lib/JWTHelper';
 import { settings } from '../../../../settings/server';

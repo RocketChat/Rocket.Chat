@@ -3,10 +3,11 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettings, SettingsContextQuery } from '@rocket.chat/ui-contexts';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import { FilterQuery } from 'mongodb';
+import type { FilterOperators } from 'mongodb';
 import React, { useEffect, useMemo, FunctionComponent, useRef, MutableRefObject } from 'react';
 
-import { createReactiveSubscriptionFactory } from '../../../providers/createReactiveSubscriptionFactory';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { createReactiveSubscriptionFactory } from '../../../lib/createReactiveSubscriptionFactory';
 import { EditableSettingsContext, EditableSetting, EditableSettingsContextValue } from '../EditableSettingsContext';
 
 const defaultQuery: SettingsContextQuery = {};
@@ -38,7 +39,7 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 
 	const queryEditableSetting = useMemo(() => {
 		const validateSettingQueries = (
-			query: undefined | string | FilterQuery<ISetting> | FilterQuery<ISetting>[],
+			query: undefined | string | FilterOperators<ISetting> | FilterOperators<ISetting>[],
 			settingsCollection: Mongo.Collection<EditableSetting>,
 		): boolean => {
 			if (!query) {
@@ -180,6 +181,8 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 		Tracker.flush();
 	});
 
+	const isEnterprise = useIsEnterprise();
+
 	const contextValue = useMemo<EditableSettingsContextValue>(
 		() => ({
 			queryEditableSetting,
@@ -187,8 +190,9 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 			queryGroupSections,
 			queryGroupTabs,
 			dispatch,
+			isEnterprise,
 		}),
-		[queryEditableSetting, queryEditableSettings, queryGroupSections, queryGroupTabs, dispatch],
+		[queryEditableSetting, queryEditableSettings, queryGroupSections, queryGroupTabs, dispatch, isEnterprise],
 	);
 
 	return <EditableSettingsContext.Provider children={children} value={contextValue} />;

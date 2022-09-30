@@ -1,4 +1,4 @@
-import { Table, Icon, Button } from '@rocket.chat/fuselage';
+import { Table, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
@@ -41,9 +41,7 @@ const RemoveManagerButton = ({ _id, reload }: { _id: string; reload: () => void 
 
 	return (
 		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
-			<Button small ghost title={t('Remove')} onClick={handleDelete}>
-				<Icon name='trash' size='x16' />
-			</Button>
+			<IconButton small icon='trash' title={t('Remove')} onClick={handleDelete} />
 		</Table.Cell>
 	);
 };

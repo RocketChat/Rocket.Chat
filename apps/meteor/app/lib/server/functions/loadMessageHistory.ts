@@ -4,13 +4,14 @@ import { Messages, Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
-export const loadMessageHistory = function loadMessageHistory({
+export function loadMessageHistory({
 	userId,
 	rid,
 	end,
 	limit = 20,
 	ls,
 	showThreadMessages = true,
+	offset = 0,
 }: {
 	userId: string;
 	rid: string;
@@ -18,6 +19,7 @@ export const loadMessageHistory = function loadMessageHistory({
 	limit: number;
 	ls: string;
 	showThreadMessages: boolean;
+	offset: number;
 }) {
 	const room = Rooms.findOneById(rid, { fields: { sysMes: 1 } });
 
@@ -28,6 +30,7 @@ export const loadMessageHistory = function loadMessageHistory({
 			ts: -1,
 		},
 		limit,
+		skip: offset,
 		fields: {},
 	};
 
@@ -48,8 +51,7 @@ export const loadMessageHistory = function loadMessageHistory({
 	if (ls != null) {
 		const firstMessage = messages[messages.length - 1];
 
-		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
-			// delete options.limit;
+		if (firstMessage && new Date(firstMessage.ts) > new Date(ls)) {
 			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 				rid,
 				ls,
@@ -64,8 +66,17 @@ export const loadMessageHistory = function loadMessageHistory({
 				showThreadMessages,
 			);
 
+			const totalCursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+				rid,
+				ls,
+				firstMessage.ts,
+				hiddenMessageTypes,
+				{},
+				showThreadMessages,
+			);
+
 			firstUnread = unreadMessages.fetch()[0];
-			unreadNotLoaded = unreadMessages.count();
+			unreadNotLoaded = totalCursor.count();
 		}
 	}
 
@@ -74,4 +85,4 @@ export const loadMessageHistory = function loadMessageHistory({
 		firstUnread,
 		unreadNotLoaded,
 	};
-};
+}

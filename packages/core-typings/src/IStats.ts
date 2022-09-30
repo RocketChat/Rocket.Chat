@@ -76,6 +76,7 @@ export interface IStats {
 	};
 	instanceCount: number;
 	oplogEnabled: boolean;
+	msEnabled: boolean;
 	mongoVersion: string;
 	mongoStorageEngine: string;
 	pushQueue: number;
@@ -112,7 +113,7 @@ export interface IStats {
 	uniqueOSOfLastWeek: OSSessionAggregationResult;
 	uniqueOSOfLastMonth: OSSessionAggregationResult;
 	apps: {
-		engineVersion: number;
+		engineVersion: string;
 		enabled: SettingValue;
 		totalInstalled: number | false;
 		totalActive: number | false;
@@ -133,10 +134,10 @@ export interface IStats {
 		modules: string[];
 		tags: string[];
 		seatRequests: number;
-		livechatTags: number;
-		cannedResponses: number;
-		priorities: number;
-		businessUnits: number;
+		livechatTags?: number;
+		cannedResponses?: number;
+		priorities?: number;
+		businessUnits?: number;
 	};
 	createdAt: Date | string;
 	totalOTR: number;
@@ -146,6 +147,9 @@ export interface IStats {
 	messageAuditLoad: number;
 	dashboardCount: number;
 	joinJitsiButton: number;
+	totalBroadcastRooms: number;
+	totalRoomsWithActiveLivestream: number;
+	totalTriggeredEmails: number;
 	totalRoomsWithStarred: number;
 	totalRoomsWithPinned: number;
 	totalUserEmail2fa: number;
@@ -154,14 +158,44 @@ export interface IStats {
 	totalPinned: number;
 	totalLinkInvitation: number;
 	totalEmailInvitation: number;
-	roomsWithPinnedMessages: number;
-	roomsWithStarredMessages: number;
 	totalE2ERooms: number;
 	logoChange: boolean;
 	homeTitleChanged: boolean;
+	homeBodyChanged: boolean;
+	customCSSChanged: boolean;
+	onLogoutCustomScriptChanged: boolean;
+	loggedOutCustomScriptChanged: boolean;
+	loggedInCustomScriptChanged: boolean;
 	roomsInsideTeams: number;
 	showHomeButton: boolean;
 	totalEncryptedMessages: number;
 	totalLinkInvitationUses: number;
 	totalManuallyAddedUsers: number;
+	videoConf: {
+		videoConference: {
+			started: number;
+			ended: number;
+		};
+		direct: {
+			calling: number;
+			started: number;
+			ended: number;
+		};
+		livechat: {
+			started: number;
+			ended: number;
+		};
+		settings: {
+			provider: string;
+			dms: boolean;
+			channels: boolean;
+			groups: boolean;
+			teams: boolean;
+		};
+	};
+	totalSubscriptionRoles: number;
+	totalUserRoles: number;
+	totalWebRTCCalls: number;
+	matrixBridgeEnabled: boolean;
+	uncaughtExceptionsCount: number;
 }

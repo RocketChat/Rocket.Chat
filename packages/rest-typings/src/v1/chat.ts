@@ -5,6 +5,23 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
+type ChatSendMessage = {
+	message: Partial<IMessage>;
+};
+
+const chatSendMessageSchema = {
+	type: 'object',
+	properties: {
+		message: {
+			type: 'object',
+		},
+	},
+	required: ['message'],
+	additionalProperties: false,
+};
+
+export const isChatSendMessageProps = ajv.compile<ChatFollowMessage>(chatSendMessageSchema);
+
 type ChatFollowMessage = {
 	mid: IMessage['_id'];
 };
@@ -198,12 +215,14 @@ const ChatGetThreadsListSchema = {
 		},
 		offset: {
 			type: 'number',
+			nullable: true,
 		},
 		count: {
 			type: 'number',
+			nullable: true,
 		},
 	},
-	required: ['rid', 'type', 'offset', 'count'],
+	required: ['rid', 'type'],
 	additionalProperties: false,
 };
 
@@ -387,6 +406,9 @@ const ChatGetMessageReadReceiptsSchema = {
 export const isChatGetMessageReadReceiptsProps = ajv.compile<ChatGetMessageReadReceipts>(ChatGetMessageReadReceiptsSchema);
 
 export type ChatEndpoints = {
+	'/v1/chat.sendMessage': {
+		POST: (params: ChatSendMessage) => IMessage;
+	};
 	'/v1/chat.getMessage': {
 		GET: (params: ChatGetMessage) => {
 			message: IMessage;
@@ -444,7 +466,7 @@ export type ChatEndpoints = {
 		POST: (params: ChatReact) => void;
 	};
 	'/v1/chat.ignoreUser': {
-		GET: (params: ChatIgnoreUser) => {};
+		GET: (params: ChatIgnoreUser) => void;
 	};
 	'/v1/chat.search': {
 		GET: (params: ChatSearch) => {

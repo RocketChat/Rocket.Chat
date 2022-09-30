@@ -1,5 +1,5 @@
-import { ISetting } from '@rocket.chat/apps-engine/definition/settings/ISetting';
-import { App } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/ISetting';
+import type { App } from '@rocket.chat/core-typings';
 
 export interface IDetailedDescription {
 	raw: string;

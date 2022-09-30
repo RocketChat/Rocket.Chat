@@ -18,9 +18,11 @@ export type UsersUpdateParamsPOST = {
 		roles?: string[];
 		joinDefaultChannels?: boolean;
 		requirePasswordChange?: boolean;
+		setRandomPassword?: boolean;
 		sendWelcomeEmail?: boolean;
 		verified?: boolean;
-		customFields?: {};
+		customFields?: Record<string, unknown>;
+		status?: string;
 	};
 	confirmRelinquish?: boolean;
 };
@@ -84,6 +86,10 @@ const UsersUpdateParamsPostSchema = {
 					type: 'boolean',
 					nullable: true,
 				},
+				setRandomPassword: {
+					type: 'boolean',
+					nullable: true,
+				},
 				sendWelcomeEmail: {
 					type: 'boolean',
 					nullable: true,
@@ -94,6 +100,10 @@ const UsersUpdateParamsPostSchema = {
 				},
 				customFields: {
 					type: 'object',
+					nullable: true,
+				},
+				status: {
+					type: 'string',
 					nullable: true,
 				},
 			},

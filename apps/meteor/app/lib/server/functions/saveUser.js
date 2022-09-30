@@ -3,10 +3,11 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
+import { isUserFederated } from '@rocket.chat/core-typings';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
@@ -329,6 +330,10 @@ const saveNewUser = function (userData, sendPassword) {
 };
 
 export const saveUser = function (userId, userData) {
+	const oldUserData = Users.findOneById(userData._id);
+	if (oldUserData && isUserFederated(oldUserData)) {
+		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
+	}
 	validateUserData(userId, userData);
 	let sendPassword = false;
 
@@ -347,8 +352,6 @@ export const saveUser = function (userId, userData) {
 	}
 
 	validateUserEditing(userId, userData);
-
-	const oldUserData = Users.findOneById(userData._id);
 
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {

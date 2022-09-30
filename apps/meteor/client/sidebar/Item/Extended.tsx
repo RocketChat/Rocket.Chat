@@ -1,4 +1,4 @@
-import { Sidebar, ActionButton, IconProps } from '@rocket.chat/fuselage';
+import { Sidebar, IconButton, IconProps } from '@rocket.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useState, VFC } from 'react';
 
@@ -70,7 +70,7 @@ const Extended: VFC<ExtendedProps> = ({
 						<Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>
 						{menu && (
 							<Sidebar.Item.Menu {...handleMenuEvent}>
-								{menuVisibility ? menu() : <ActionButton square ghost mini rcx-sidebar-item__menu icon='kebab' />}
+								{menuVisibility ? menu() : <IconButton mini rcx-sidebar-item__menu icon='kebab' />}
 							</Sidebar.Item.Menu>
 						)}
 					</Sidebar.Item.Wrapper>

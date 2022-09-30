@@ -1,9 +1,10 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
-import { LivechatRooms, LivechatDepartment, Users, LivechatVisitors } from '../../../../../app/models/server';
+import { LivechatDepartment, Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { LivechatEnterprise } from './LivechatEnterprise';
 
@@ -78,11 +79,11 @@ export class VisitorInactivityMonitor {
 		});
 	}
 
-	placeRoomOnHold(room) {
+	async placeRoomOnHold(room) {
 		const timeout = settings.get('Livechat_visitor_inactivity_timeout');
 
 		const { v: { _id: visitorId } = {} } = room;
-		const visitor = LivechatVisitors.findOneById(visitorId);
+		const visitor = await LivechatVisitors.findOneById(visitorId);
 		if (!visitor) {
 			throw new Meteor.Error('error-invalid_visitor', 'Visitor Not found');
 		}
@@ -90,7 +91,8 @@ export class VisitorInactivityMonitor {
 		const guest = visitor.name || visitor.username;
 		const comment = TAPi18n.__('Omnichannel_On_Hold_due_to_inactivity', { guest, timeout });
 
-		LivechatEnterprise.placeRoomOnHold(room, comment, this.user) && LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
+		LivechatEnterprise.placeRoomOnHold(room, comment, this.user) &&
+			(await LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id));
 	}
 
 	handleAbandonedRooms() {
@@ -98,14 +100,14 @@ export class VisitorInactivityMonitor {
 		if (!action || action === 'none') {
 			return;
 		}
-		LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => {
+		Promise.await(LivechatRooms.findAbandonedOpenRooms(new Date())).forEach((room) => {
 			switch (action) {
 				case 'close': {
 					this.closeRooms(room);
 					break;
 				}
 				case 'on-hold': {
-					this.placeRoomOnHold(room);
+					Promise.await(this.placeRoomOnHold(room));
 					break;
 				}
 			}

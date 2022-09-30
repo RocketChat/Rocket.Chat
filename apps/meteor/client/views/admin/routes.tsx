@@ -21,7 +21,7 @@ registerAdminRoute('/apps/what-is-it', {
 	component: lazy(() => import('./apps/AppsWhatIsIt')),
 });
 
-registerAdminRoute('/marketplace/:context?/:id?/:version?', {
+registerAdminRoute('/marketplace/:context?/:id?/:version?/:tab?', {
 	name: 'admin-marketplace',
 	component: lazy(() => import('./apps/AppsRoute')),
 });

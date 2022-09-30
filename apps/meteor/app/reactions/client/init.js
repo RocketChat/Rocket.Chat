@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 
-import { Rooms, Subscriptions } from '../../models';
+import { Rooms, Subscriptions } from '../../models/client';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { EmojiPicker } from '../../emoji';
@@ -68,7 +68,7 @@ Meteor.startup(function () {
 		id: 'reaction-message',
 		icon: 'add-reaction',
 		label: 'Add_Reaction',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(event, props) {
 			event.stopPropagation();
 			const { message = messageArgs(this).msg } = props;

@@ -7,14 +7,15 @@ import s from 'underscore.string';
 import moment from 'moment';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
+import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 
 import * as Models from '../../../models/server';
-import { Integrations, IntegrationHistory } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 import { outgoingLogger } from '../logger';
 import { outgoingEvents } from '../../lib/outgoingEvents';
 import { fetch } from '../../../../server/lib/http/fetch';
+import { omit } from '../../../../lib/utils/omit';
 
 export class RocketChatIntegrationHandler {
 	constructor() {
@@ -103,7 +104,7 @@ export class RocketChatIntegrationHandler {
 			history.data = { ...data };
 
 			if (data.user) {
-				history.data.user = _.omit(data.user, ['services']);
+				history.data.user = omit(data.user, 'services');
 			}
 
 			if (data.room) {
@@ -274,7 +275,7 @@ export class RocketChatIntegrationHandler {
 		const { store, sandbox } = this.buildSandbox();
 
 		try {
-			outgoingLogger.info({ msg: 'Will evaluate script of Trigger', name: integration.name });
+			outgoingLogger.info({ msg: 'Will evaluate script of Trigger', integration: integration.name });
 			outgoingLogger.debug(script);
 
 			const vmScript = new VMScript(`${script}; Script;`, 'script.js');
@@ -296,7 +297,7 @@ export class RocketChatIntegrationHandler {
 		} catch (err) {
 			outgoingLogger.error({
 				msg: 'Error evaluating Script in Trigger',
-				name: integration.name,
+				integration: integration.name,
 				script,
 				err,
 			});
@@ -385,12 +386,12 @@ export class RocketChatIntegrationHandler {
 			});
 			outgoingLogger.error({
 				msg: 'Error running Script in the Integration',
-				name: integration.name,
+				integration: integration.name,
 				err,
 			});
 			outgoingLogger.debug({
 				msg: 'Error running Script in the Integration',
-				name: integration.name,
+				integration: integration.name,
 				script: integration.scriptCompiled,
 			}); // Only output the compiled script if debugging is enabled, so the logs don't get spammed.
 		}
@@ -708,7 +709,7 @@ export class RocketChatIntegrationHandler {
 		this.updateHistory({ historyId, step: 'mapped-args-to-data', data, triggerWord: word });
 
 		outgoingLogger.info(`Will be executing the Integration "${trigger.name}" to the url: ${url}`);
-		outgoingLogger.debug(data);
+		outgoingLogger.debug({ data });
 
 		let opts = {
 			params: {},

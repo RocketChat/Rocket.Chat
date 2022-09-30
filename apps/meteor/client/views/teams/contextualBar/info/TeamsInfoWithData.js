@@ -17,7 +17,7 @@ import MarkdownText from '../../../../components/MarkdownText';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { useTabBarClose, useTabBarOpen } from '../../../room/providers/ToolboxProvider';
+import { useTabBarClose, useTabBarOpen } from '../../../room/contexts/ToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './Delete';
 import LeaveTeamModal from './Leave';
@@ -60,9 +60,9 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 
-	const deleteTeam = useEndpointActionExperimental('POST', 'teams.delete');
-	const leaveTeam = useEndpointActionExperimental('POST', 'teams.leave');
-	const convertTeamToChannel = useEndpointActionExperimental('POST', 'teams.convertToChannel');
+	const deleteTeam = useEndpointActionExperimental('POST', '/v1/teams.delete');
+	const leaveTeam = useEndpointActionExperimental('POST', '/V1/teams.leave');
+	const convertTeamToChannel = useEndpointActionExperimental('POST', '/v1/teams.convertToChannel');
 
 	const hideTeam = useMethod('hideRoom');
 

@@ -1,8 +1,8 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
-import { Subscriptions, Rooms } from '../../../models/server/raw';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
@@ -14,7 +14,7 @@ const subscriptionOptions = {
 };
 
 async function validateRoomMessagePermissionsAsync(
-	room: IRoom,
+	room: IRoom | null,
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
 	extraData: Record<string, any>,
 ): Promise<void> {
@@ -51,6 +51,10 @@ export async function canSendMessageAsync(
 	extraData: Record<string, any>,
 ): Promise<IRoom> {
 	const room = await Rooms.findOneById(rid);
+	if (!room) {
+		throw new Error('error-invalid-room');
+	}
+
 	await validateRoomMessagePermissionsAsync(room, { uid, username, type }, extraData);
 	return room;
 }

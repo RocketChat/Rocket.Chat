@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 
 Meteor.startup(function () {
 	return WebApp.connectHandlers.use(

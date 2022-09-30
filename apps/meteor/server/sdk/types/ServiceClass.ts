@@ -1,8 +1,9 @@
 import { EventEmitter } from 'events';
 
 import { asyncLocalStorage } from '..';
-import { IBroker, IBrokerNode } from './IBroker';
-import { EventSignatures } from '../lib/Events';
+import type { IBroker, IBrokerNode } from './IBroker';
+import type { EventSignatures } from '../lib/Events';
+import type { IApiService } from './IApiService';
 
 export interface IServiceContext {
 	id: string; // Context ID
@@ -29,12 +30,18 @@ export interface IServiceClass {
 	onNodeConnected?({ node, reconnected }: { node: IBrokerNode; reconnected: boolean }): void;
 	onNodeUpdated?({ node }: { node: IBrokerNode }): void;
 	onNodeDisconnected?({ node, unexpected }: { node: IBrokerNode; unexpected: boolean }): Promise<void>;
+	getEvents(): Array<keyof EventSignatures>;
+
+	setApi(api: IApiService): void;
 
 	onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void;
+	emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void;
 
-	created?(): Promise<void>;
-	started?(): Promise<void>;
-	stopped?(): Promise<void>;
+	isInternal(): boolean;
+
+	created(): Promise<void>;
+	started(): Promise<void>;
+	stopped(): Promise<void>;
 }
 
 export abstract class ServiceClass implements IServiceClass {
@@ -44,8 +51,14 @@ export abstract class ServiceClass implements IServiceClass {
 
 	protected internal = false;
 
+	protected api: IApiService;
+
 	constructor() {
 		this.emit = this.emit.bind(this);
+	}
+
+	setApi(api: IApiService): void {
+		this.api = api;
 	}
 
 	getEvents(): Array<keyof EventSignatures> {
@@ -70,6 +83,18 @@ export abstract class ServiceClass implements IServiceClass {
 
 	public emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void {
 		this.events.emit(event, ...args);
+	}
+
+	async created(): Promise<void> {
+		// noop
+	}
+
+	async started(): Promise<void> {
+		// noop
+	}
+
+	async stopped(): Promise<void> {
+		// noop
 	}
 }
 

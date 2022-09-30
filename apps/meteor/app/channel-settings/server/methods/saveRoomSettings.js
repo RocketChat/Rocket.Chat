@@ -4,7 +4,7 @@ import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
+import { Rooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';

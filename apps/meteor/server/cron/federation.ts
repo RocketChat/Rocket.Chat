@@ -1,11 +1,11 @@
-import { SettingValue } from '@rocket.chat/core-typings';
+import type { SettingValue } from '@rocket.chat/core-typings';
+import { Users, Settings } from '@rocket.chat/models';
 
 import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/resolveDNS';
 import { settings, settingsRegistry } from '../../app/settings/server';
 import { dispatchEvent } from '../../app/federation/server/handler';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { eventTypes } from '../../app/models/server/models/FederationEvents';
-import { Users, Settings } from '../../app/models/server/raw';
 
 function updateSetting(id: string, value: SettingValue | null): void {
 	if (value !== null) {
@@ -17,7 +17,7 @@ function updateSetting(id: string, value: SettingValue | null): void {
 			Settings.updateValueById(id, value);
 		}
 	} else {
-		Settings.updateValueById(id, undefined);
+		Settings.updateValueById(id, null);
 	}
 }
 
@@ -75,6 +75,7 @@ async function runFederation(): Promise<void> {
 	}
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function federationCron(SyncedCron: any): void {
 	settings.watch('FEDERATION_Enabled', (value) => {
 		if (!value) {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { CustomUserStatus } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
-import { CustomUserStatus } from '../../../models/server/raw';
 import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
