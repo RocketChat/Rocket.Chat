@@ -7,7 +7,7 @@ import { Users } from '../../../models/server';
 import { userScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function finishOAuthAuthorization(code, state) {
+export function finishOAuthAuthorization(code: string, state: string) {
 	if (settings.get('Cloud_Workspace_Registration_State') !== state) {
 		throw new Meteor.Error('error-invalid-state', 'Invalid state provided', {
 			method: 'cloud:finishOAuthAuthorization',
@@ -15,8 +15,8 @@ export function finishOAuthAuthorization(code, state) {
 	}
 
 	const cloudUrl = settings.get('Cloud_Url');
-	const clientId = settings.get('Cloud_Workspace_Client_Id');
-	const clientSecret = settings.get('Cloud_Workspace_Client_Secret');
+	const clientId = settings.get<string>('Cloud_Workspace_Client_Id');
+	const clientSecret = settings.get<string>('Cloud_Workspace_Client_Secret');
 
 	const scope = userScopes.join(' ');
 
@@ -33,7 +33,7 @@ export function finishOAuthAuthorization(code, state) {
 				redirect_uri: getRedirectUri(),
 			},
 		});
-	} catch (err) {
+	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to finish OAuth authorization with Rocket.Chat Cloud',
 			url: '/api/oauth/token',
