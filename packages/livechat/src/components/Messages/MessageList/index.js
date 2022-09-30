@@ -101,9 +101,7 @@ export class MessageList extends MemoizedComponent {
 
 	isVideoConfMessage(message) {
 		return Boolean(
-			message.blocks
-				?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
-				?.elements?.find(({ actionId }) => actionId === 'joinLivechat'),
+			message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat'),
 		);
 	}
 
@@ -139,7 +137,7 @@ export class MessageList extends MemoizedComponent {
 			}
 
 			const videoConfJoinBlock = message.blocks
-				?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
+				?.find(({ appId }) => appId === 'videoconf-core')
 				?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
 			if (videoConfJoinBlock) {
 				// If the call is not accepted yet, don't render the message.
