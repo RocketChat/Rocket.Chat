@@ -175,7 +175,7 @@ export class FederationRoomServiceSender extends FederationService {
 				return;
 			}
 
-			await getExternalMessageSender(message, this.bridge, this.internalFileAdapter, this.internalMessageAdapter).sendQuoteMessage(
+			await getExternalMessageSender(message, this.bridge, this.internalFileAdapter, this.internalMessageAdapter, this.internalUserAdapter).sendQuoteMessage(
 				federatedRoom.getExternalId(),
 				federatedSender.getExternalId(),
 				message,
@@ -184,7 +184,7 @@ export class FederationRoomServiceSender extends FederationService {
 			return;
 		}
 
-		await getExternalMessageSender(message, this.bridge, this.internalFileAdapter, this.internalMessageAdapter).sendMessage(
+		await getExternalMessageSender(message, this.bridge, this.internalFileAdapter, this.internalMessageAdapter, this.internalUserAdapter).sendMessage(
 			federatedRoom.getExternalId(),
 			federatedSender.getExternalId(),
 			message,

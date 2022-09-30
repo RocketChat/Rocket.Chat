@@ -14,7 +14,7 @@ class TextExternalMessageSender implements IExternalMessageSender {
 	constructor(
 		private readonly bridge: IFederationBridge,
 		private readonly internalMessageAdapter: RocketChatMessageAdapter,
-		protected internalUserAdapter: RocketChatUserAdapter,
+		private readonly internalUserAdapter: RocketChatUserAdapter,
 	) { }
 
 	public async sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<void> {
@@ -100,7 +100,7 @@ export const getExternalMessageSender = (
 	bridge: IFederationBridge,
 	internalFileHelper: RocketChatFileAdapter,
 	internalMessageAdapter: RocketChatMessageAdapter,
-	internalUserAdapter: RocketChatMessageAdapter,
+	internalUserAdapter: RocketChatUserAdapter,
 ): IExternalMessageSender => {
 	return message.files
 		? new FileExternalMessageSender(bridge, internalFileHelper, internalMessageAdapter)
