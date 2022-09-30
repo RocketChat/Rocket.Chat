@@ -165,25 +165,34 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		allowedCustomFields: string[] = [],
 		options?: FindOptions<ILivechatVisitor>,
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
-		const query = {
-			...((emailOrPhone || nameOrUsername) && {
-				$or: [
-					{
-						'visitorEmails.address': emailOrPhone,
-					},
-					{
-						'phone.phoneNumber': emailOrPhone,
-					},
-					{
-						name: nameOrUsername,
-					},
-					{
-						username: nameOrUsername,
-					},
-					// nameorusername is a clean regex, so we should be good
-					...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
-				],
-			}),
+		if (!emailOrPhone && !nameOrUsername && allowedCustomFields.length === 0) {
+			return this.findPaginated({}, options);
+		}
+
+		const query: Filter<ILivechatVisitor> = {
+			$or: [
+				...(emailOrPhone
+					? [
+							{
+								'visitorEmails.address': emailOrPhone,
+							},
+							{
+								'phone.phoneNumber': emailOrPhone,
+							},
+					  ]
+					: []),
+				...(nameOrUsername
+					? [
+							{
+								name: nameOrUsername,
+							},
+							{
+								username: nameOrUsername,
+							},
+					  ]
+					: []),
+				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
+			],
 		};
 
 		return this.findPaginated(query, options);
