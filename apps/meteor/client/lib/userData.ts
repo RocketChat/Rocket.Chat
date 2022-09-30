@@ -93,7 +93,7 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 	// }
 
 	if (userData) {
-		const { email, resume, email2fa, emailCode, ...services } = rawServices || {};
+		const { email, resume, email2fa, emailCode, cloud, ...services } = rawServices || {};
 
 		updateUser({
 			...userData,
@@ -123,6 +123,10 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 								when: new Date(token.when),
 							})),
 						},
+					}),
+					...(cloud && {
+						...cloud,
+						expiresAt: new Date(cloud.expiresAt),
 					}),
 				},
 			}),
