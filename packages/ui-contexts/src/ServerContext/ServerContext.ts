@@ -36,7 +36,7 @@ export type ServerContextValue = {
 			retransmit?: boolean | undefined;
 			retransmitToSelf?: boolean | undefined;
 		},
-	) => <T>(eventName: string, callback: (data: T) => void) => () => void;
+	) => <TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void;
 };
 
 export const ServerContext = createContext<ServerContextValue>({

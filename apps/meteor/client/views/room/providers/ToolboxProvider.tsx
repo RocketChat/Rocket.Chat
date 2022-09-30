@@ -1,40 +1,18 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useSession, useCurrentRoute, useRoute, useUserId, useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useContext, useMemo, useState, useLayoutEffect, useEffect } from 'react';
+import { useCurrentRoute, useRoute, useUserId, useSetting } from '@rocket.chat/ui-contexts';
+import React, { ReactNode, useMemo } from 'react';
 
-import {
-	removeTabBarContext,
-	setTabBarContext,
-	ToolboxContext,
-	ToolboxContextValue,
-	ToolboxEventHandler,
-} from '../lib/Toolbox/ToolboxContext';
+import { ToolboxContext, ToolboxContextValue } from '../contexts/ToolboxContext';
 import { Store } from '../lib/Toolbox/generator';
 import { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
 import VirtualAction from './VirtualAction';
-
-const useToolboxActions = (room: IRoom): { listen: ToolboxEventHandler; actions: Array<[string, ToolboxAction]> } => {
-	const { listen, actions } = useContext(ToolboxContext);
-	const [state, setState] = useState<Array<[string, ToolboxAction]>>(Array.from(actions.entries()));
-
-	useLayoutEffect(() => {
-		const stop = listen((actions) => {
-			setState(Array.from(actions.entries()));
-		});
-		return (): void => {
-			stop();
-		};
-	}, [listen, room, setState]);
-
-	return { listen, actions: state };
-};
+import { useToolboxActions } from './hooks/useToolboxActions';
 
 const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const uid = useUserId();
-	const [activeTabBar, setActiveTabBar] = useState<[ToolboxActionConfig | undefined, string?]>([undefined]);
-	const [list, setList] = useSafely(useDebouncedState<Store<ToolboxAction>>(new Map(), 5));
+	const [list, setList] = useSafely(useDebouncedState<Store<ToolboxAction>>(new Map<string, ToolboxActionConfig>(), 5));
 	const handleChange = useMutableCallback((fn) => {
 		fn(list);
 		setList((list) => new Map(list));
@@ -44,10 +22,13 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 	const [routeName, params] = useCurrentRoute();
 	const router = useRoute(routeName || '');
 
-	const currentRoom = useSession('openedRoom');
-
 	const tab = params?.tab;
 	const context = params?.context;
+
+	const activeTabBar = useMemo(
+		(): [ToolboxActionConfig | undefined, string?] => [tab ? (list.get(tab) as ToolboxActionConfig) : undefined, context],
+		[tab, list, context],
+	);
 
 	const close = useMutableCallback(() => {
 		router.push({
@@ -69,7 +50,7 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		});
 	});
 
-	const openUserInfo = useMutableCallback((username) => {
+	const openRoomInfo = useMutableCallback((username?: string) => {
 		switch (room.t) {
 			case 'l':
 				open('room-info', username);
@@ -83,35 +64,18 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		}
 	});
 
-	useLayoutEffect(() => {
-		if (!tab) {
-			setActiveTabBar([undefined, undefined]);
-		}
-
-		setActiveTabBar([list.get(tab as string) as ToolboxActionConfig, context]);
-	}, [tab, list, currentRoom, context]);
-
-	// TODO: make the object stable, preventing re-renders
 	const contextValue = useMemo(
-		() => ({
+		(): ToolboxContextValue => ({
 			listen,
 			actions: new Map(list),
 			activeTabBar: activeTabBar[0],
 			context: activeTabBar[1],
 			open,
 			close,
-			openUserInfo,
+			openRoomInfo,
 		}),
-		[listen, list, activeTabBar, open, close, openUserInfo],
+		[listen, list, activeTabBar, open, close, openRoomInfo],
 	);
-
-	// TODO: remove this when the messages are running on react diretly, not wrapped by blaze
-	useEffect(() => {
-		setTabBarContext(room._id, contextValue);
-		return (): void => {
-			removeTabBarContext(room._id);
-		};
-	}, [contextValue, room._id]);
 
 	return (
 		<ToolboxContext.Provider value={contextValue}>
@@ -126,12 +90,5 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		</ToolboxContext.Provider>
 	);
 };
-
-export const useTabContext = (): unknown | undefined => useContext(ToolboxContext).context;
-export const useTab = (): ToolboxActionConfig | undefined => useContext(ToolboxContext).activeTabBar;
-export const useTabBarOpen = (): ((actionId: string, context?: string) => void) => useContext(ToolboxContext).open;
-export const useTabBarClose = (): (() => void) => useContext(ToolboxContext).close;
-export const useTabBarOpenUserInfo = (): ((username: string) => void) => useContext(ToolboxContext).openUserInfo;
-export const useTabBarAPI = (): ToolboxContextValue => useContext(ToolboxContext);
 
 export default ToolboxProvider;

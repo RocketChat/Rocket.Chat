@@ -3,7 +3,7 @@ import { Box, Option, Icon } from '@rocket.chat/fuselage';
 import { TranslationKey } from '@rocket.chat/ui-contexts';
 import { ReactNode, MouseEvent, ComponentProps, ComponentType } from 'react';
 
-import { ToolboxContextValue } from './ToolboxContext';
+import { ToolboxContextValue } from '../../contexts/ToolboxContext';
 import { generator, Events as GeneratorEvents } from './generator';
 
 type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null;
