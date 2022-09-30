@@ -1,4 +1,5 @@
 import { IRoom } from '@rocket.chat/core-typings';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { ReactNode, useMemo, memo, useEffect, ContextType, ReactElement, useCallback } from 'react';
 
 import { UserAction } from '../../../../app/ui';
@@ -7,6 +8,7 @@ import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
 import { useRoomRolesManagement } from '../components/body/useRoomRolesManagement';
 import { RoomAPIContext } from '../contexts/RoomAPIContext';
@@ -22,6 +24,15 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
 
 	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }));
+
+	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
+	const homeRoute = useRoute('home');
+	useEffect(() => {
+		if (roomQuery.isSuccess && !roomQuery.data) {
+			homeRoute.push();
+		}
+	}, [roomQuery.isSuccess, roomQuery.data, homeRoute]);
+
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], ({ subscriptions }) => subscriptions.findOne({ rid }));
 
 	const pseudoRoom = useMemo(() => {
@@ -84,7 +95,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const api = useMemo(() => ({}), []);
 
 	if (!pseudoRoom) {
-		return <RoomSkeleton />;
+		return roomQuery.isSuccess ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (

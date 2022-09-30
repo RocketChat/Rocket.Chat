@@ -15,7 +15,7 @@ const queryableCollections = {
 
 const dep = new Tracker.Dependency();
 const reactiveSources = new Set<{
-	reactiveQueryFn: (collections: typeof queryableCollections) => unknown | undefined;
+	reactiveQueryFn: (collections: typeof queryableCollections) => unknown;
 	queryClient: QueryClient;
 	queryKey: QueryKey;
 }>();
@@ -30,7 +30,7 @@ export const runReactiveFunctions = (): void => {
 	for (const { reactiveQueryFn, queryClient, queryKey } of reactiveSources) {
 		// This tracker will be invalidated when the query data changes
 		Tracker.autorun((c) => {
-			const data = reactiveQueryFn(queryableCollections);
+			const data = reactiveQueryFn(queryableCollections) ?? null; // *1
 			if (!c.firstRun) queryClient.setQueryData(queryKey, data);
 		});
 	}
@@ -39,7 +39,7 @@ export const runReactiveFunctions = (): void => {
 // While React Query handles all async stuff, we need to handle the reactive stuff ourselves using effects
 export const useReactiveQuery = <TQueryFnData, TData = TQueryFnData, TQueryKey extends QueryKey = QueryKey>(
 	queryKey: TQueryKey,
-	reactiveQueryFn: (collections: typeof queryableCollections) => TQueryFnData | undefined,
+	reactiveQueryFn: (collections: typeof queryableCollections) => TQueryFnData,
 	options?: UseQueryOptions<TQueryFnData, Error, TData, TQueryKey>,
 ): UseQueryResult<TData, Error> => {
 	const queryClient = useQueryClient();
@@ -59,7 +59,7 @@ export const useReactiveQuery = <TQueryFnData, TData = TQueryFnData, TQueryKey e
 	return useQuery(
 		queryKey,
 		(): Promise<TQueryFnData> => {
-			const result = Tracker.nonreactive(() => reactiveQueryFn(queryableCollections));
+			const result = Tracker.nonreactive(() => reactiveQueryFn(queryableCollections) ?? null); // *1
 
 			if (result) return Promise.resolve(result);
 
@@ -68,3 +68,5 @@ export const useReactiveQuery = <TQueryFnData, TData = TQueryFnData, TQueryKey e
 		{ staleTime: Infinity, ...options },
 	);
 };
+
+// *1: We need to return null if the result is undefined, otherwise the query data will not be updated
