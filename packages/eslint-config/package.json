@@ -7,7 +7,7 @@
 		"@types/prettier": "^2.6.3",
 		"@typescript-eslint/eslint-plugin": "^5.30.7",
 		"@typescript-eslint/parser": "^5.30.7",
-		"eslint": "^8.22.0",
+		"eslint": "^8.20.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-anti-trojan-source": "^1.1.0",
 		"eslint-plugin-import": "^2.26.0",
