@@ -1,7 +1,7 @@
 import { Box, Button, Icon, Throbber, Tooltip, PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useMethod, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useRef, memo } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
@@ -10,6 +10,7 @@ import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
 import PriceDisplay from './PriceDisplay';
 import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange, handleInstallError } from './helpers';
+import { useUsers } from './hooks/useUsers';
 
 const installApp = async ({ id, name, version, permissionsGranted }) => {
 	try {
@@ -35,6 +36,11 @@ const actions = {
 
 const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, installed, isAdminSection, ...props }) => {
 	const t = useTranslation();
+	const user = useUser();
+	console.log('User', user);
+	const users = useUsers();
+	console.log(users);
+
 	const [loading, setLoading] = useSafely(useState());
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
 	const [isHovered, setIsHovered] = useState(false);
