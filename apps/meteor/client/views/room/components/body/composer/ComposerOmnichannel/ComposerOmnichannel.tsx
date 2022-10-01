@@ -9,7 +9,7 @@ import { ComposerOmnichannelInquiry } from './ComposerOmnichannelInquiry';
 import { ComposerOmnichannelJoin } from './ComposerOmnichannelJoin';
 import { ComposerOmnichannelOnHold } from './ComposerOmnichannelOnHold';
 
-export const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement => {
+const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement => {
 	const { queuedAt, servedBy, _id, open, onHold } = useOmnichannelRoom();
 
 	const isSubscribed = useUserIsSubscribed();
@@ -20,12 +20,14 @@ export const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement =
 
 	const t = useTranslation();
 
-	useEffect(() => {
-		subscribeToRoom(_id, (entry: IOmnichannelRoom) => {
-			setIsInquired(!entry.servedBy && entry.queuedAt);
-			setIsOpen(entry.open);
-		});
-	}, [_id, subscribeToRoom]);
+	useEffect(
+		() =>
+			subscribeToRoom(_id, (entry: IOmnichannelRoom) => {
+				setIsInquired(!entry.servedBy && entry.queuedAt);
+				setIsOpen(entry.open);
+			}),
+		[_id, subscribeToRoom],
+	);
 
 	useEffect(() => {
 		setIsInquired(!servedBy && queuedAt);
@@ -57,3 +59,5 @@ export const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement =
 		</>
 	);
 };
+
+export default ComposerOmnichannel;
