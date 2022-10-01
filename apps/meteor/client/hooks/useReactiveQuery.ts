@@ -1,8 +1,10 @@
 import { IRole, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { useQuery, UseQueryOptions, QueryKey, UseQueryResult, useQueryClient, QueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useQuery, UseQueryOptions, QueryKey, UseQueryResult, useQueryClient } from '@tanstack/react-query';
+import { Tracker } from 'meteor/tracker';
+import { useEffect, useRef } from 'react';
 
 import { Roles, RoomRoles, Rooms, Subscriptions, Users } from '../../app/models/client';
+import { queueMicrotask } from '../lib/utils/queueMicrotask';
 
 // For convenience as we want to minimize references to the old client models
 const queryableCollections = {
@@ -13,30 +15,6 @@ const queryableCollections = {
 	roomRoles: RoomRoles as Mongo.Collection<Pick<ISubscription, 'rid' | 'u' | 'roles'>>,
 } as const;
 
-const dep = new Tracker.Dependency();
-const reactiveSources = new Set<{
-	reactiveQueryFn: (collections: typeof queryableCollections) => unknown;
-	queryClient: QueryClient;
-	queryKey: QueryKey;
-}>();
-
-export const runReactiveFunctions = (): void => {
-	if (!Tracker.currentComputation) {
-		throw new Error('runReactiveFunctions must be called inside a Tracker.autorun');
-	}
-
-	dep.depend();
-
-	for (const { reactiveQueryFn, queryClient, queryKey } of reactiveSources) {
-		// This tracker will be invalidated when the query data changes
-		Tracker.autorun((c) => {
-			const data = reactiveQueryFn(queryableCollections) ?? null; // *1
-			if (!c.firstRun) queryClient.setQueryData(queryKey, data);
-		});
-	}
-};
-
-// While React Query handles all async stuff, we need to handle the reactive stuff ourselves using effects
 export const useReactiveQuery = <TQueryFnData, TData = TQueryFnData, TQueryKey extends QueryKey = QueryKey>(
 	queryKey: TQueryKey,
 	reactiveQueryFn: (collections: typeof queryableCollections) => TQueryFnData,
@@ -44,29 +22,39 @@ export const useReactiveQuery = <TQueryFnData, TData = TQueryFnData, TQueryKey e
 ): UseQueryResult<TData, Error> => {
 	const queryClient = useQueryClient();
 
-	useEffect(() => {
-		const reactiveSource = { reactiveQueryFn, queryClient, queryKey };
+	const ref = useRef<Tracker.Computation>();
 
-		reactiveSources.add(reactiveSource);
-		dep.changed();
-
-		return (): void => {
-			reactiveSources.delete(reactiveSource);
-			dep.changed();
-		};
-	});
+	useEffect(
+		() => () => {
+			ref.current?.stop();
+		},
+		[],
+	);
 
 	return useQuery(
 		queryKey,
-		(): Promise<TQueryFnData> => {
-			const result = Tracker.nonreactive(() => reactiveQueryFn(queryableCollections) ?? null); // *1
+		(): Promise<TQueryFnData> =>
+			new Promise((resolve, reject) => {
+				queueMicrotask(() => {
+					ref.current?.stop();
 
-			if (result) return Promise.resolve(result);
+					ref.current = Tracker.autorun((c) => {
+						const data = reactiveQueryFn(queryableCollections);
 
-			return new Promise(() => undefined);
-		},
+						if (c.firstRun) {
+							if (data === undefined) {
+								reject(new Error('Reactive query returned undefined'));
+							} else {
+								resolve(data);
+							}
+							return;
+						}
+
+						queryClient.refetchQueries(queryKey, { exact: true });
+						c.stop();
+					});
+				});
+			}),
 		{ staleTime: Infinity, ...options },
 	);
 };
-
-// *1: We need to return null if the result is undefined, otherwise the query data will not be updated
