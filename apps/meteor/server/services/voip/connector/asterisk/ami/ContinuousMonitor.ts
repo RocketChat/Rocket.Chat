@@ -268,7 +268,7 @@ export class ContinuousMonitor extends Command {
 			return;
 		}
 
-		if (event.dialstatus.toLowerCase() !== 'answer' && event.dialstatus.toLowerCase() !== 'ringing') {
+		if (!['answer', 'ringing'].includes(event.dialstatus.toLowerCase())) {
 			this.logger.warn(`Received unexpected event ${event.event} dialstatus =  ${event.dialstatus}`);
 			return;
 		}
@@ -283,7 +283,7 @@ export class ContinuousMonitor extends Command {
 				uniqueId: `${event.event}-${event.calleridnum}-${event.channel}-${event.destchannel}-${event.uniqueid}`,
 				event: event.event,
 				ts: new Date(),
-				phone: event?.connectedlinenum,
+				phone: event?.connectedlinenum.replace(/\D/g, ''), // Remove all non-numeric characters
 				callUniqueId: event.uniqueid,
 				callUniqueIdFallback: event.linkedid,
 				agentExtension: event.calleridnum,
