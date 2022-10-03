@@ -35,8 +35,6 @@ export async function syncWorkspace(reconnectCheck = false) {
 			data: info,
 			headers,
 		});
-
-		await getWorkspaceLicense();
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to sync with Rocket.Chat Cloud',
@@ -45,6 +43,9 @@ export async function syncWorkspace(reconnectCheck = false) {
 		});
 
 		return false;
+	} finally {
+		// aways fetch the license
+		await getWorkspaceLicense();
 	}
 
 	const { data } = result;
