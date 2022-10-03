@@ -4284,6 +4284,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-stately/data@npm:^3.6.1":
+  version: 3.6.1
+  resolution: "@react-stately/data@npm:3.6.1"
+  dependencies:
+    "@babel/runtime": ^7.6.2
+    "@react-types/shared": ^3.14.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 79c9eae2ff674453010ed9b37fc23de687fe9dd5413c2931cadd2b7d85bcd567ed45078c0234d1c5117677321ad3eaf34952af6113546033643a7e78dde23242
+  languageName: node
+  linkType: hard
+
 "@react-stately/datepicker@npm:^3.0.2":
   version: 3.0.2
   resolution: "@react-stately/datepicker@npm:3.0.2"
@@ -5123,12 +5135,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/css-in-js@npm:~0.31.19-dev.26":
+  version: 0.31.19-dev.26
+  resolution: "@rocket.chat/css-in-js@npm:0.31.19-dev.26"
+  dependencies:
+    "@emotion/hash": ^0.8.0
+    "@rocket.chat/css-supports": ~0.31.19-dev.26
+    "@rocket.chat/memo": ~0.31.19-dev.26
+    "@rocket.chat/stylis-logical-props-middleware": ~0.31.19-dev.26
+    stylis: ~4.0.13
+  checksum: a89128e73179c98d9b78f26cfe1ee26ec07581427b056f2142373a15c56204e3d489f04c50abf35baff83109848c61a1d286320e0dfe683d9ea80c0ffbaba4c4
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/css-supports@npm:~0.31.19-dev.19":
   version: 0.31.19-dev.19
   resolution: "@rocket.chat/css-supports@npm:0.31.19-dev.19"
   dependencies:
     "@rocket.chat/memo": ~0.31.19-dev.19
   checksum: ea8aaab14336894d028bb9ef86db2efa7df9252c403b6faac50276708431a2ffe29150acacf836f1e4aa05a2ac87c42a8e5821c0903bd42158e4c9adfc71e226
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/css-supports@npm:~0.31.19-dev.26":
+  version: 0.31.19-dev.26
+  resolution: "@rocket.chat/css-supports@npm:0.31.19-dev.26"
+  dependencies:
+    "@rocket.chat/memo": ~0.31.19-dev.26
+  checksum: c890f2b8b32f77dba62569e5ca3d5e79e0d50a4b3678334afdaa8213385c1b2a9481033aaab263905abe0c833fb1f26e919f384fba714030fa8a99226e87f3d8
   languageName: node
   linkType: hard
 
@@ -5319,10 +5353,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:next, @rocket.chat/fuselage-tokens@npm:~0.32.0-dev.101":
+"@rocket.chat/fuselage-tokens@npm:next":
   version: 0.32.0-dev.101
   resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.101"
   checksum: 516aeecbfb84311bf819a867447a189467c7058cf65affe1e4b43ebde48b1d7db3714cbbcb4d1e8f4cc45369338f643ecd6d9e3d8b7b076ec12319492e1d8979
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.108":
+  version: 0.32.0-dev.108
+  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.108"
+  checksum: 40a85e19eea4359c56d16a253b30bcb10c85be3e117e836afeb57bd29596a809d4820278801a0b1dbf6dc8c38279006fcc8cfab761a724de974b6d0e14c057fc
   languageName: node
   linkType: hard
 
@@ -5391,16 +5432,18 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/fuselage@npm:next":
-  version: 0.32.0-dev.151
-  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.151"
+  version: 0.32.0-dev.158
+  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.158"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.19-dev.19
-    "@rocket.chat/css-supports": ~0.31.19-dev.19
-    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.101
-    "@rocket.chat/memo": ~0.31.19-dev.19
-    "@rocket.chat/styled": ~0.31.19-dev.19
+    "@rocket.chat/css-in-js": ~0.31.19-dev.26
+    "@rocket.chat/css-supports": ~0.31.19-dev.26
+    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.108
+    "@rocket.chat/memo": ~0.31.19-dev.26
+    "@rocket.chat/styled": ~0.31.19-dev.26
     invariant: ^2.2.4
+    react-aria: ~3.19.0
     react-keyed-flatten-children: ^1.3.0
+    react-stately: ~3.17.0
   peerDependencies:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/fuselage-polyfills": "*"
@@ -5408,7 +5451,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 9d9d278e47b3e07095d6fb3ff988c1aafa5da802444069d9898b5d6fc706685949a939fdd9f336c6eac6a7d853c83ec15762158a9a11faab3c1a44aedf2e4a77
+  checksum: bd617d89fb2477a068bec33421457b93b5f97066c796bd621e8e358608d893fe41cbfaba9f7ebfea3435d98756ed473d805b1bad3d231c7ffc0699b5242fdd55
   languageName: node
   linkType: hard
 
@@ -5593,6 +5636,13 @@ __metadata:
   version: 0.31.19-dev.19
   resolution: "@rocket.chat/memo@npm:0.31.19-dev.19"
   checksum: 90d66af5499c6d49ff64a695faaebf8ed5f073c78472ff8f5f3432697fc3ef6065914ac302f64cb88d840d0816cba7d0148461bd15157a1678f886fe3e5d7adf
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/memo@npm:~0.31.19-dev.26":
+  version: 0.31.19-dev.26
+  resolution: "@rocket.chat/memo@npm:0.31.19-dev.26"
+  checksum: 438059e30795269ab461fd557a9efbad956cbe93624ff5927d3e3abd9132d7cb6b1ac379b4f28efec11c87c34a145a168167e3d96cd111a380aaa23565874c99
   languageName: node
   linkType: hard
 
@@ -6140,6 +6190,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/styled@npm:~0.31.19-dev.26":
+  version: 0.31.19-dev.26
+  resolution: "@rocket.chat/styled@npm:0.31.19-dev.26"
+  dependencies:
+    "@rocket.chat/css-in-js": ~0.31.19-dev.26
+    tslib: ^2.3.1
+  checksum: 43fe29955169450a0669905ccfcdedecca03cc3e6277be3faeb85b38332afb4df83736da7c5501d452ce869aafd4527af5bacb284948bb5fa83f669f54656142
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/stylis-logical-props-middleware@npm:~0.31.19-dev.19":
   version: 0.31.19-dev.19
   resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.19-dev.19"
@@ -6149,6 +6209,18 @@ __metadata:
   peerDependencies:
     stylis: 4.0.10
   checksum: 9e78c7411de4c1f52b842a35c5060e8122814ccbcc5302878bbab5201baa5a6521478a0a70f31e7747b3782960d35c2f8ce39dee212e4270db2ab1b019766bce
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/stylis-logical-props-middleware@npm:~0.31.19-dev.26":
+  version: 0.31.19-dev.26
+  resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.19-dev.26"
+  dependencies:
+    "@rocket.chat/css-supports": ~0.31.19-dev.26
+    tslib: ^2.3.1
+  peerDependencies:
+    stylis: 4.0.10
+  checksum: ae845d95833790c60156114878691585de8c24e749f6f52742087584e4ae46b8a364c2ef5a29a7f5cde99de01013961c7475e162daf49b4160b6e81fc1e573b6
   languageName: node
   linkType: hard
 
@@ -29159,7 +29231,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-aria@npm:^3.19.0":
+"react-aria@npm:^3.19.0, react-aria@npm:~3.19.0":
   version: 3.19.0
   resolution: "react-aria@npm:3.19.0"
   dependencies:
@@ -29409,6 +29481,37 @@ __metadata:
     react: ^16.8.0 || ^17.0.0
     react-dom: ^16.8.0 || ^17.0.0
   checksum: 082c818369fb8c7ce50bbd51260b21794f58dd41e9df5e0798c10e10478fb44b9fd88247f24720d5b443d77a6ec8afa733ecdd15a7722fde85c27bb87c379962
+  languageName: node
+  linkType: hard
+
+"react-stately@npm:~3.17.0":
+  version: 3.17.0
+  resolution: "react-stately@npm:3.17.0"
+  dependencies:
+    "@react-stately/calendar": ^3.0.2
+    "@react-stately/checkbox": ^3.2.1
+    "@react-stately/collections": ^3.4.3
+    "@react-stately/combobox": ^3.2.1
+    "@react-stately/data": ^3.6.1
+    "@react-stately/datepicker": ^3.0.2
+    "@react-stately/list": ^3.5.3
+    "@react-stately/menu": ^3.4.1
+    "@react-stately/numberfield": ^3.2.1
+    "@react-stately/overlays": ^3.4.1
+    "@react-stately/radio": ^3.5.1
+    "@react-stately/searchfield": ^3.3.1
+    "@react-stately/select": ^3.3.1
+    "@react-stately/selection": ^3.10.3
+    "@react-stately/slider": ^3.2.1
+    "@react-stately/table": ^3.4.0
+    "@react-stately/tabs": ^3.2.1
+    "@react-stately/toggle": ^3.4.1
+    "@react-stately/tooltip": ^3.2.1
+    "@react-stately/tree": ^3.3.3
+    "@react-types/shared": ^3.14.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: da233f06f0c4a2b821755cde7b484b8cc07743b075224225a7213be1b62cf1db0966216528775d755fe83cb2a5eeda43c59684bbba47fcf2652f465557f8f4d2
   languageName: node
   linkType: hard
 
