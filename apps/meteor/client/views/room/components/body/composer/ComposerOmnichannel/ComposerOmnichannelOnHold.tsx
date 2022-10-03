@@ -12,7 +12,9 @@ export const ComposerOmnichannelOnHold = (): ReactElement => {
 		<footer className='rc-message-box footer'>
 			<MessageFooterCallout>
 				<MessageFooterCalloutContent>{t('chat_on_hold_due_to_inactivity')}</MessageFooterCalloutContent>
-				<MessageFooterCalloutAction onClick={(): Promise<unknown> => resume(room._id)}>{t('Resume')}</MessageFooterCalloutAction>
+				<MessageFooterCalloutAction onClick={(): Promise<unknown> => resume(room._id, { clientAction: true })}>
+					{t('Resume')}
+				</MessageFooterCalloutAction>
 			</MessageFooterCallout>
 		</footer>
 	);
