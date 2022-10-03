@@ -33,7 +33,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		}
 	}, [roomQuery.isSuccess, roomQuery.data, homeRoute]);
 
-	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], ({ subscriptions }) => subscriptions.findOne({ rid }));
+	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], ({ subscriptions }) => subscriptions.findOne({ rid }) ?? null);
 
 	const pseudoRoom = useMemo(() => {
 		if (!roomQuery.data) {
@@ -67,7 +67,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		return {
 			rid,
 			room: pseudoRoom,
-			subscription: subscriptionQuery.data,
+			subscription: subscriptionQuery.data ?? undefined,
 			hasMorePreviousMessages,
 			hasMoreNextMessages,
 			isLoadingMoreMessages,

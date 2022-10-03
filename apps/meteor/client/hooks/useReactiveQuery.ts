@@ -1,7 +1,6 @@
 import { IRole, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useQuery, UseQueryOptions, QueryKey, UseQueryResult, useQueryClient } from '@tanstack/react-query';
 import { Tracker } from 'meteor/tracker';
-import { useEffect, useRef } from 'react';
 
 import { Roles, RoomRoles, Rooms, Subscriptions, Users } from '../../app/models/client';
 import { queueMicrotask } from '../lib/utils/queueMicrotask';
@@ -22,23 +21,12 @@ export const useReactiveQuery = <TQueryFnData, TData = TQueryFnData, TQueryKey e
 ): UseQueryResult<TData, Error> => {
 	const queryClient = useQueryClient();
 
-	const ref = useRef<Tracker.Computation>();
-
-	useEffect(
-		() => () => {
-			ref.current?.stop();
-		},
-		[],
-	);
-
 	return useQuery(
 		queryKey,
 		(): Promise<TQueryFnData> =>
 			new Promise((resolve, reject) => {
 				queueMicrotask(() => {
-					ref.current?.stop();
-
-					ref.current = Tracker.autorun((c) => {
+					Tracker.autorun((c) => {
 						const data = reactiveQueryFn(queryableCollections);
 
 						if (c.firstRun) {
