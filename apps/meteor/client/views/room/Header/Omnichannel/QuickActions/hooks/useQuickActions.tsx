@@ -25,6 +25,7 @@ import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/u
 import { QuickActionsActionConfig, QuickActionsEnum } from '../../../../lib/QuickActions';
 import { useQuickActionsContext } from '../../../../lib/QuickActions/QuickActionsContext';
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
+import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 
 export const useQuickActions = (
 	room: IOmnichannelRoom,
@@ -71,19 +72,6 @@ export const useQuickActions = (
 	}, [roomLastMessage, onHoldModalActive, setModal]);
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
-
-	const methodReturn = useMethod('livechat:returnAsInquiry');
-
-	const handleMoveChat = useCallback(async () => {
-		try {
-			await methodReturn(rid);
-			closeModal();
-			Session.set('openedRoom', null);
-			homeRoute.push();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [closeModal, dispatchToastMessage, methodReturn, rid, homeRoute]);
 
 	const requestTranscript = useMethod('livechat:requestTranscript');
 
@@ -188,6 +176,19 @@ export const useQuickActions = (
 		[closeChat, closeModal, dispatchToastMessage, rid, t],
 	);
 
+	const returnChatToQueueMutation = useReturnChatToQueueMutation({
+		onSuccess: () => {
+			Session.set('openedRoom', null);
+			homeRoute.push();
+		},
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+		onSettled: () => {
+			closeModal();
+		},
+	});
+
 	const putChatOnHoldMutation = usePutChatOnHoldMutation({
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Chat_On_Hold_Successfully') });
@@ -203,7 +204,14 @@ export const useQuickActions = (
 	const openModal = useMutableCallback(async (id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
-				setModal(<ReturnChatQueueModal onMoveChat={handleMoveChat} onCancel={closeModal} />);
+				setModal(
+					<ReturnChatQueueModal
+						onMoveChat={(): void => returnChatToQueueMutation.mutate(rid)}
+						onCancel={(): void => {
+							closeModal();
+						}}
+					/>,
+				);
 				break;
 			case QuickActionsEnum.Transcript:
 				const visitorEmail = await getVisitorEmail();
