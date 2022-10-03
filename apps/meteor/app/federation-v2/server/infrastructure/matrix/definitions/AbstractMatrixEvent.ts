@@ -17,6 +17,8 @@ export abstract class AbstractMatrixEvent {
 
 	public user_id: string;
 
+	public redacts?: string;
+
 	public abstract content: IBaseEventContent;
 
 	public abstract type: string;
