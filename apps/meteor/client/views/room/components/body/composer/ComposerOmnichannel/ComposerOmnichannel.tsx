@@ -14,6 +14,7 @@ export const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement =
 
 	const isSubscribed = useUserIsSubscribed();
 	const [isInquired, setIsInquired] = useState(() => !servedBy && queuedAt);
+	const [isOpen, setIsOpen] = useState(() => open);
 
 	const subscribeToRoom = useStream('room-data');
 
@@ -22,6 +23,7 @@ export const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement =
 	useEffect(() => {
 		subscribeToRoom(_id, (entry: IOmnichannelRoom) => {
 			setIsInquired(!entry.servedBy && entry.queuedAt);
+			setIsOpen(entry.open);
 		});
 	}, [_id, subscribeToRoom]);
 
@@ -29,7 +31,7 @@ export const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement =
 		setIsInquired(!servedBy && queuedAt);
 	}, [queuedAt, servedBy, _id]);
 
-	if (!open) {
+	if (!isOpen) {
 		return (
 			<footer className='rc-message-box footer'>
 				<MessageFooterCallout>{t('This_conversation_is_already_closed')}</MessageFooterCallout>
