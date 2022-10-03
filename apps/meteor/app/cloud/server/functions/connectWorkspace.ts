@@ -40,7 +40,7 @@ export async function connectWorkspace(token: string) {
 		SystemLogger.error({
 			msg: 'Failed to register with Rocket.Chat Cloud',
 			url: '/api/oauth/clients',
-			...(err.response?.data?.error && { errorMessage: err.response.data.error }),
+			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 

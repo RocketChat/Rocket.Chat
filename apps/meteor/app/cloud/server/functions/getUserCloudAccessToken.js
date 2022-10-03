@@ -65,7 +65,7 @@ export function getUserCloudAccessToken(userId, forceNew = false, scope = '', sa
 		SystemLogger.error({
 			msg: 'Failed to get User AccessToken from Rocket.Chat Cloud',
 			url: '/api/oauth/token',
-			...(err.response?.data?.error && { errorMessage: err.response.data.error }),
+			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 

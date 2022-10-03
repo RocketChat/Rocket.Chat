@@ -40,7 +40,7 @@ export async function syncWorkspace(reconnectCheck = false) {
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to sync with Rocket.Chat Cloud',
-			...(err.response?.data?.error && { errorMessage: err.response.data.error }),
+			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 

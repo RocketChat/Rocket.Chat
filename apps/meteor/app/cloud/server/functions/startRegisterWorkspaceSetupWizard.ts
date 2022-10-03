@@ -18,7 +18,7 @@ export async function startRegisterWorkspaceSetupWizard(resend = false, email: s
 		SystemLogger.error({
 			msg: 'Failed to register workspace intent with Rocket.Chat Cloud',
 			url: '/api/v2/register/workspace',
-			...(err.response?.data?.error && { errorMessage: err.response.data.error }),
+			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 

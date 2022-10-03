@@ -41,7 +41,7 @@ export async function userLogout(userId: string) {
 			SystemLogger.error({
 				msg: 'Failed to get Revoke refresh token to logout of Rocket.Chat Cloud',
 				url: '/api/oauth/revoke',
-				...(err.response?.data?.error && { errorMessage: err.response.data.error }),
+				...(err.response?.data && { cloudError: err.response.data }),
 				err,
 			});
 		}

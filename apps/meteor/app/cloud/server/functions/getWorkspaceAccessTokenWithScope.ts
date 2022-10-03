@@ -46,7 +46,7 @@ export function getWorkspaceAccessTokenWithScope(scope = '') {
 			msg: 'Failed to get Workspace AccessToken from Rocket.Chat Cloud',
 			url: '/api/oauth/token',
 			scope,
-			...(err.response?.data?.error && { errorMessage: err.response.data.error }),
+			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 

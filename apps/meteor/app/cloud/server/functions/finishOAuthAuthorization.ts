@@ -37,7 +37,7 @@ export async function finishOAuthAuthorization(userId: string, code: string, sta
 		SystemLogger.error({
 			msg: 'Failed to finish OAuth authorization with Rocket.Chat Cloud',
 			url: '/api/oauth/token',
-			...(err.response?.data?.error && { errorMessage: err.response.data.error }),
+			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 

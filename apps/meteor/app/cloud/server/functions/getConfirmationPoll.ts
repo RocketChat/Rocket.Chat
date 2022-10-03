@@ -14,7 +14,7 @@ export async function getConfirmationPoll(deviceCode: string): Promise<CloudConf
 		SystemLogger.error({
 			msg: 'Failed to get confirmation poll from Rocket.Chat Cloud',
 			url: '/api/v2/register/workspace/poll',
-			...(err.response?.data?.error && { errorMessage: err.response.data.error }),
+			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 
