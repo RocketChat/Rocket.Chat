@@ -16,8 +16,8 @@ export function getWorkspaceAccessTokenWithScope(scope = '') {
 		return tokenResponse;
 	}
 
-	const clientId = settings.get<string>('Cloud_Workspace_Client_Id');
-	if (!clientId) {
+	const client_id = settings.get('Cloud_Workspace_Client_Id');
+	if (!client_id) {
 		return tokenResponse;
 	}
 
@@ -26,7 +26,7 @@ export function getWorkspaceAccessTokenWithScope(scope = '') {
 	}
 
 	const cloudUrl = settings.get('Cloud_Url');
-	const clientSecret = settings.get<string>('Cloud_Workspace_Client_Secret');
+	const client_secret = settings.get('Cloud_Workspace_Client_Secret');
 	const redirectUri = getRedirectUri();
 
 	let authTokenResult;
@@ -34,14 +34,14 @@ export function getWorkspaceAccessTokenWithScope(scope = '') {
 		authTokenResult = HTTP.post(`${cloudUrl}/api/oauth/token`, {
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			params: {
-				client_id: clientId,
-				client_secret: clientSecret,
+				client_id,
+				client_secret,
 				scope,
 				grant_type: 'client_credentials',
 				redirect_uri: redirectUri,
 			},
 		});
-	} catch (err: any) {
+	} catch (err) {
 		SystemLogger.error({
 			msg: 'Failed to get Workspace AccessToken from Rocket.Chat Cloud',
 			url: '/api/oauth/token',
