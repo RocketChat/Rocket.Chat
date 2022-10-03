@@ -10,19 +10,18 @@ import { disconnectWorkspace } from './functions/disconnectWorkspace';
 import { syncWorkspace } from './functions/syncWorkspace';
 import { checkUserHasCloudLogin } from './functions/checkUserHasCloudLogin';
 import { userLogout } from './functions/userLogout';
-import { hasPermission } from '../../authorization/server';
+import { hasPermission } from '../../authorization';
 import { buildWorkspaceRegistrationData } from './functions/buildRegistrationData';
 
 Meteor.methods({
 	'cloud:checkRegisterStatus'() {
-		const userId = Meteor.userId();
-		if (!userId) {
+		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'cloud:checkRegisterStatus',
 			});
 		}
 
-		if (!hasPermission(userId, 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:checkRegisterStatus',
 			});
@@ -31,30 +30,28 @@ Meteor.methods({
 		return retrieveRegistrationStatus();
 	},
 	async 'cloud:getWorkspaceRegisterData'() {
-		const userId = Meteor.userId();
-		if (!userId) {
+		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'cloud:getWorkspaceRegisterData',
 			});
 		}
 
-		if (!hasPermission(userId, 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:getWorkspaceRegisterData',
 			});
 		}
 
-		return Buffer.from(JSON.stringify(await buildWorkspaceRegistrationData(undefined))).toString('base64');
+		return Buffer.from(JSON.stringify(await buildWorkspaceRegistrationData())).toString('base64');
 	},
 	async 'cloud:registerWorkspace'() {
-		const userId = Meteor.userId();
-		if (!userId) {
+		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'cloud:startRegister',
 			});
 		}
 
-		if (!hasPermission(userId, 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:startRegister',
 			});
@@ -63,14 +60,13 @@ Meteor.methods({
 		return startRegisterWorkspace();
 	},
 	async 'cloud:syncWorkspace'() {
-		const userId = Meteor.userId();
-		if (!userId) {
+		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'cloud:syncWorkspace',
 			});
 		}
 
-		if (!hasPermission(userId, 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:syncWorkspace',
 			});
@@ -81,14 +77,13 @@ Meteor.methods({
 	'cloud:connectWorkspace'(token) {
 		check(token, String);
 
-		const userId = Meteor.userId();
-		if (!userId) {
+		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'cloud:connectServer',
 			});
 		}
 
-		if (!hasPermission(userId, 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:connectServer',
 			});
@@ -103,14 +98,13 @@ Meteor.methods({
 		return connectWorkspace(token);
 	},
 	'cloud:disconnectWorkspace'() {
-		const userId = Meteor.userId();
-		if (!userId) {
+		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'cloud:connectServer',
 			});
 		}
 
-		if (!hasPermission(userId, 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:connectServer',
 			});
@@ -120,14 +114,13 @@ Meteor.methods({
 	},
 	// Currently unused but will link local account to Rocket.Chat Cloud account.
 	'cloud:getOAuthAuthorizationUrl'() {
-		const userId = Meteor.userId();
-		if (!userId) {
+		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'cloud:connectServer',
 			});
 		}
 
-		if (!hasPermission(userId, 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:connectServer',
 			});
@@ -139,51 +132,48 @@ Meteor.methods({
 		check(code, String);
 		check(state, String);
 
-		const userId = Meteor.userId();
-		if (!userId) {
+		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'cloud:finishOAuthAuthorization',
 			});
 		}
 
-		if (!hasPermission(userId, 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:connectServer',
 			});
 		}
 
-		return finishOAuthAuthorization(userId, code, state);
+		return finishOAuthAuthorization(code, state);
 	},
 	'cloud:checkUserLoggedIn'() {
-		const userId = Meteor.userId();
-		if (!userId) {
+		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'cloud:connectServer',
 			});
 		}
 
-		if (!hasPermission(userId, 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:connectServer',
 			});
 		}
 
-		return checkUserHasCloudLogin(userId);
+		return checkUserHasCloudLogin(Meteor.userId());
 	},
 	'cloud:logout'() {
-		const userId = Meteor.userId();
-		if (!userId) {
+		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'cloud:connectServer',
 			});
 		}
 
-		if (!hasPermission(userId, 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:connectServer',
 			});
 		}
 
-		return userLogout(userId);
+		return userLogout(Meteor.userId());
 	},
 });

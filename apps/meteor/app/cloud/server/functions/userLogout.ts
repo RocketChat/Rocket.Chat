@@ -1,20 +1,23 @@
 import { HTTP } from 'meteor/http';
-import { Users } from '@rocket.chat/models';
-import type { IUser } from '@rocket.chat/core-typings';
 
 import { userLoggedOut } from './userLoggedOut';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export async function userLogout(userId: string) {
+export function userLogout(userId?: string) {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
 		return '';
 	}
 
-	const user = await Users.findOneById<Pick<IUser, 'services'>>(userId, { projection: { 'services.cloud': 1 } });
+	if (!userId) {
+		return '';
+	}
+
+	const user = Users.findOneById(userId);
 
 	if (user?.services?.cloud?.refreshToken) {
 		try {
