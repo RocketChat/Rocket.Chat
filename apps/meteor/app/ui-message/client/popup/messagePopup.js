@@ -127,9 +127,10 @@ Template.messagePopup.onCreated(function () {
 			if (template.data.cleanOnEnter) {
 				template.input.value = '';
 			}
-			event.preventDefault();
-			event.stopPropagation();
-			return;
+			event.originalEvent.preventDefault();
+			event.originalEvent.stopPropagation();
+			event.originalEvent.stopImmediatePropagation();
+			return false;
 		}
 		if (event.which === keys.ARROW_UP) {
 			template.up();
@@ -211,9 +212,23 @@ Template.messagePopup.onCreated(function () {
 			return;
 		}
 		firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + getValue + template.suffix);
+
 		template.input.value = firstPartValue + lastPartValue;
-		return setCursorPosition(template.input, firstPartValue.length);
+
+		const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
+		nativeInputValueSetter.call(template.input, firstPartValue + lastPartValue);
+
+		const event = new Event('input', { bubbles: true });
+		// TODO: Remove this hack for react to trigger onChange
+		const tracker = template.input._valueTracker;
+		if (tracker) {
+			tracker.setValue('');
+		}
+		template.input.dispatchEvent(event);
+
+		setCursorPosition(template.input, firstPartValue.length);
 	};
+
 	template.records = new ReactiveVar([]);
 	template.autorun(function () {
 		const filter = template.textFilter.get();
@@ -258,10 +273,10 @@ Template.messagePopup.onRendered(function () {
 			$('#popup').removeClass('popup-with-reply-preview');
 		}
 	});
-	$(this.input).on('keyup', this.onInputKeyup.bind(this));
-	$(this.input).on('keydown', this.onInputKeydown.bind(this));
-	$(this.input).on('focus', this.onFocus.bind(this));
-	$(this.input).on('blur', this.onBlur.bind(this));
+	$(this.input).on('keyup', this.onInputKeyup);
+	$(this.input).on('keydown', this.onInputKeydown);
+	$(this.input).on('focus', this.onFocus);
+	$(this.input).on('blur', this.onBlur);
 });
 
 Template.messagePopup.onDestroyed(function () {

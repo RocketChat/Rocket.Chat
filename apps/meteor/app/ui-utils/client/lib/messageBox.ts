@@ -1,6 +1,6 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
-type MessageBoxAction = {
+export type MessageBoxAction = {
 	label: string;
 	id: string;
 	icon?: string;

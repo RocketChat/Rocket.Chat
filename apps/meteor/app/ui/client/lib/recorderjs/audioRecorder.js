@@ -18,9 +18,11 @@ const getUserMedia = ((navigator) => {
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
+const isSupported = Boolean(getUserMedia) && Boolean(AudioContext);
+
 class AudioRecorder {
 	isSupported() {
-		return Boolean(getUserMedia) && Boolean(AudioContext);
+		return isSupported;
 	}
 
 	createAudioContext() {

@@ -1,7 +1,7 @@
 import { Markdown } from '../../../markdown/client';
 import { settings } from '../../../settings/client';
 
-type FormattingButton = {
+export type FormattingButton = {
 	label: string;
 	icon?: string;
 	pattern?: string;
@@ -11,26 +11,30 @@ type FormattingButton = {
 	condition?: () => boolean;
 };
 
+export const getFormattingButtons = (): FormattingButton[] => {
+	return formattingButtons.filter(({ condition }) => !condition || condition());
+};
+
 export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
 		label: 'bold',
 		icon: 'bold',
 		pattern: '*{{text}}*',
-		command: 'b',
+		command: '$mod+b',
 		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
 	},
 	{
 		label: 'bold',
 		icon: 'bold',
 		pattern: '**{{text}}**',
-		command: 'b',
+		command: '$mod+b',
 		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
 	},
 	{
 		label: 'italic',
 		icon: 'italic',
 		pattern: '_{{text}}_',
-		command: 'i',
+		command: '$mod+i',
 		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
@@ -74,6 +78,31 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		condition: () => settings.get('Katex_Enabled'),
 	},
 ] as const;
+
+export const applyFormattingFromEvent = <E extends Event>(e: E, pattern: string, input: HTMLTextAreaElement): void => {
+	e.preventDefault();
+	e.stopPropagation();
+	return applyFormatting(pattern, input);
+};
+
+export const handleFormattingShortcut = (event: KeyboardEvent, input: HTMLTextAreaElement) => {
+	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
+	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
+
+	if (!isCmdOrCtrlPressed) {
+		return false;
+	}
+
+	const key = event.key.toLowerCase();
+
+	const { pattern } = getFormattingButtons().find(({ command }) => command === key) || {};
+
+	if (!pattern) {
+		return false;
+	}
+	applyFormatting(pattern, input);
+	return true;
+};
 
 export function applyFormatting(pattern: string, input: HTMLTextAreaElement) {
 	const { selectionEnd = input.value.length, selectionStart = 0 } = input;

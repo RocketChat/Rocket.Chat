@@ -8,8 +8,9 @@ type DeviceProviderProps = {
 	children?: ReactNode | undefined;
 };
 
+const enabled = typeof isSecureContext && isSecureContext;
+
 export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement => {
-	const [enabled] = useState(typeof isSecureContext && isSecureContext);
 	const [availableAudioOutputDevices, setAvailableAudioOutputDevices] = useState<Device[]>([]);
 	const [availableAudioInputDevices, setAvailableAudioInputDevices] = useState<Device[]>([]);
 	const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] = useState<Device>({
@@ -74,7 +75,7 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 		return (): void => {
 			navigator.mediaDevices?.removeEventListener('devicechange', setMediaDevices);
 		};
-	}, [enabled]);
+	}, []);
 
 	const contextValue = useMemo((): DeviceContextValue => {
 		if (!enabled) {
@@ -92,13 +93,6 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 			setAudioOutputDevice,
 			setAudioInputDevice,
 		};
-	}, [
-		availableAudioInputDevices,
-		availableAudioOutputDevices,
-		enabled,
-		selectedAudioInputDevice,
-		selectedAudioOutputDevice,
-		setAudioOutputDevice,
-	]);
+	}, [availableAudioInputDevices, availableAudioOutputDevices, selectedAudioInputDevice, selectedAudioOutputDevice, setAudioOutputDevice]);
 	return <DeviceContext.Provider value={contextValue}>{children}</DeviceContext.Provider>;
 };

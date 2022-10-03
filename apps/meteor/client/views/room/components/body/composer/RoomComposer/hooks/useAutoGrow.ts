@@ -1,9 +1,6 @@
 import { useBorderBoxSize } from '@rocket.chat/fuselage-hooks';
 import { CSSProperties, useEffect, RefObject, useState } from 'react';
 
-import { createAnchor } from '../../../../../../lib/utils/createAnchor';
-import { deleteAnchor } from '../../../../../../lib/utils/deleteAnchor';
-
 const shadowStyleBase: CSSProperties = {
 	position: 'fixed',
 	top: '-10000px',
@@ -13,7 +10,7 @@ const shadowStyleBase: CSSProperties = {
 	wordWrap: 'break-word',
 };
 
-export const useAutogrow = (
+export const useAutoGrow = (
 	ref: RefObject<HTMLTextAreaElement>,
 	shadowRef: RefObject<HTMLTextAreaElement>,
 ): {

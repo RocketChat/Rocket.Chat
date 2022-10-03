@@ -27,6 +27,13 @@ export const messageBoxState = {
 	set: (input: HTMLTextAreaElement, value: string) => {
 		input.value = value;
 		$(input).trigger('change').trigger('input');
+		const event = new Event('input', { bubbles: true });
+		// TODO: Remove this hack for react to trigger onChange
+		const tracker = (input as any)._valueTracker;
+		if (tracker) {
+			tracker.setValue('');
+		}
+		input.dispatchEvent(event);
 	},
 
 	purgeAll: () => {

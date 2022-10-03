@@ -8,17 +8,16 @@ import moment from 'moment';
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { Blaze } from 'meteor/blaze';
+import tinykeys from 'tinykeys';
 
 import { setupAutogrow } from './messageBoxAutogrow';
-import { formattingButtons, applyFormatting } from './messageBoxFormatting';
-import { EmojiPicker } from '../../../emoji/client';
+import { getFormattingButtons, applyFormattingFromEvent } from './messageBoxFormatting';
 import { Users, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { fileUpload, KonchatNotification } from '../../../ui/client';
 import { messageBox, popover } from '../../../ui-utils/client';
 import { t, getUserPreference } from '../../../utils/client';
 import { getImageExtensionFromMime } from '../../../../lib/getImageExtensionFromMime';
-import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -26,23 +25,36 @@ import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './messageBoxAudioMessage.ts';
 import './messageBox.html';
+import { messageBoxOnEnter } from './messageBoxOnEnter';
 
-type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
+export type MessageboxPropTypes = {
 	rid: IRoom['_id'];
 	tmid: IMessage['_id'];
+	showFormattingTips: boolean;
+
 	onSend: (
 		event: Event,
 		params: {
-			rid: string;
-			tmid?: string;
+			// rid: string;
+			// tmid?: string;
 			value: string;
-			tshow?: boolean;
+			// tshow?: boolean;
 		},
 		done?: () => void,
 	) => void;
+
+	onInputChanged: (input: HTMLTextAreaElement) => void;
 	tshow: IMessage['tshow'];
 	subscription: ISubscription & IRoom;
-}> & {
+
+	onKeyDown: (event: KeyboardEvent) => void;
+	onKeyUp: (event: KeyboardEvent) => void;
+	sendOnEnter: 'normal' | 'desktop';
+	openEmojiPicker: (event: Event, input: HTMLTextAreaElement) => void;
+	useEmojis: boolean;
+};
+
+type MessageBoxTemplateInstance = Blaze.TemplateInstance<MessageboxPropTypes> & {
 	state: ReactiveDict<{
 		mustJoinWithCode?: boolean;
 		isBlockedOrBlocker?: boolean;
@@ -65,6 +77,8 @@ type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	set: (value: string) => void;
 	insertNewLine: () => void;
 	send: (event: Event) => void;
+	stopComposerShortcut: () => void;
+	stopComposerEnter: () => void;
 	sendIconDisabled: ReactiveVar<boolean>;
 };
 
@@ -86,21 +100,14 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 	};
 
 	this.insertNewLine = () => {
-		const { input, autogrow } = this;
+		const { input, autogrow, onNewLine } = this;
+
 		if (!input) {
 			return;
 		}
 
-		if (input.selectionStart || input.selectionStart === 0) {
-			const newPosition = input.selectionStart + 1;
-			const before = input.value.substring(0, input.selectionStart);
-			const after = input.value.substring(input.selectionEnd, input.value.length);
-			input.value = `${before}\n${after}`;
-			input.selectionStart = newPosition;
-			input.selectionEnd = newPosition;
-		} else {
-			input.value += '\n';
-		}
+		onNewLine();
+
 		$(input).trigger('change').trigger('input');
 
 		input.blur();
@@ -133,8 +140,42 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 	};
 });
 
+let sendOnEnter;
+let sendOnEnterActive: boolean;
+
+Tracker.autorun(() => {
+	sendOnEnter = getUserPreference(Meteor.userId(), 'sendOnEnter');
+	sendOnEnterActive = Boolean(sendOnEnter == null || sendOnEnter === 'normal' || (sendOnEnter === 'desktop' && Meteor.Device.isDesktop()));
+});
 Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 	let inputSetup = false;
+
+	const setupEnter = () => {
+		this.stopComposerEnter?.();
+		this.stopComposerEnter = messageBoxOnEnter(sendOnEnterActive, this.input, (e) => {
+			this.send(e as unknown as Event);
+		});
+	};
+
+	const setupShortcuts = () => {
+		this.stopComposerShortcut?.();
+
+		this.stopComposerShortcut = tinykeys(this.input, {
+			...getFormattingButtons().reduce((config, button) => {
+				if (!button.command) {
+					return config;
+				}
+				config[button.command] = (e) => {
+					if (!button.pattern) {
+						return;
+					}
+					applyFormattingFromEvent(e, button.pattern, this.input);
+				};
+
+				return config;
+			}, {} as Record<string, (e: KeyboardEvent) => void>),
+		});
+	};
 
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData() as MessageBoxTemplateInstance['data'];
@@ -205,6 +246,8 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 				return;
 			}
 
+			setupShortcuts();
+			setupEnter();
 			const shadow = this.find('.js-input-message-shadow');
 			this.autogrow = setupAutogrow(input, shadow, onResize);
 		});
@@ -212,11 +255,9 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 });
 
 Template.messageBox.onDestroyed(function (this: MessageBoxTemplateInstance) {
-	if (!this.autogrow) {
-		return;
-	}
-
-	this.autogrow.destroy();
+	this.stopComposerShortcut?.();
+	this.stopComposerEnter?.();
+	this.autogrow?.destroy();
 });
 
 Template.messageBox.helpers({
@@ -282,7 +323,7 @@ Template.messageBox.helpers({
 		return Object.values(actionGroups).reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
 	},
 	formattingButtons() {
-		return formattingButtons.filter(({ condition }) => !condition || condition());
+		return getFormattingButtons();
 	},
 	isBlockedOrBlocker() {
 		return (Template.instance() as MessageBoxTemplateInstance).state.get('isBlockedOrBlocker');
@@ -304,56 +345,6 @@ Template.messageBox.helpers({
 	},
 });
 
-const handleFormattingShortcut = (event: KeyboardEvent, instance: MessageBoxTemplateInstance) => {
-	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
-	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
-
-	if (!isCmdOrCtrlPressed) {
-		return false;
-	}
-
-	const key = event.key.toLowerCase();
-
-	const { pattern } = formattingButtons.filter(({ condition }) => !condition || condition()).find(({ command }) => command === key) || {};
-
-	if (!pattern) {
-		return false;
-	}
-
-	const { input } = instance;
-	applyFormatting(pattern, input);
-	return true;
-};
-
-let sendOnEnter;
-let sendOnEnterActive: boolean | undefined;
-
-Tracker.autorun(() => {
-	sendOnEnter = getUserPreference(Meteor.userId(), 'sendOnEnter');
-	sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal' || (sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
-});
-
-const handleSubmit = (event: KeyboardEvent, instance: MessageBoxTemplateInstance) => {
-	const { which: keyCode } = event;
-
-	const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
-
-	if (!isSubmitKey) {
-		return false;
-	}
-
-	const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
-	const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
-
-	if (isSending) {
-		instance.send(event);
-		return true;
-	}
-
-	instance.insertNewLine();
-	return true;
-};
-
 Template.messageBox.events({
 	async 'click .js-join'(event: JQuery.ClickEvent) {
 		event.stopPropagation();
@@ -365,55 +356,19 @@ Template.messageBox.events({
 		await call('joinRoom', this.rid, joinCode);
 	},
 	'click .js-emoji-picker'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {
-		event.stopPropagation();
-		event.preventDefault();
-
-		if (!getUserPreference(Meteor.userId(), 'useEmojis')) {
-			return;
-		}
-
-		if (EmojiPicker.isOpened()) {
-			EmojiPicker.close();
-			return;
-		}
-
-		EmojiPicker.open(instance.source, (emoji: string) => {
-			const emojiValue = `:${emoji}: `;
-
-			const { input } = instance;
-
-			const caretPos = input.selectionStart;
-			const textAreaTxt = input.value;
-
-			input.focus();
-			if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
-				instance.set(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos));
-				input.focus();
-			}
-
-			input.selectionStart = caretPos + emojiValue.length;
-			input.selectionEnd = caretPos + emojiValue.length;
-		});
+		this.openEmojiPicker(event, instance.input);
 	},
 	'focus .js-input-message'() {
 		KonchatNotification.removeRoomNotification(this.rid);
 	},
-	'keydown .js-input-message'(event: JQuery.KeyDownEvent, instance: MessageBoxTemplateInstance) {
+	'keydown .js-input-message'(event: JQuery.KeyDownEvent) {
 		const { originalEvent } = event;
 		if (!originalEvent) {
 			throw new Error('Event is not an original event');
 		}
 
-		const isEventHandled = handleFormattingShortcut(originalEvent, instance) || handleSubmit(originalEvent, instance);
-
-		if (isEventHandled) {
-			event.preventDefault();
-			event.stopPropagation();
-			return;
-		}
-
-		const { rid, tmid, onKeyDown } = this;
-		onKeyDown?.call(this, event, { rid, tmid });
+		const { onKeyDown } = this;
+		onKeyDown?.call(this, event);
 	},
 	'keyup .js-input-message'(event: JQuery.KeyUpEvent) {
 		const { rid, tmid, onKeyUp } = this;
@@ -570,16 +525,13 @@ Template.messageBox.events({
 			});
 	},
 	'click .js-format'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {
-		event.preventDefault();
-		event.stopPropagation();
-
 		const { id } = event.currentTarget.dataset;
-		const { pattern } = formattingButtons.filter(({ condition }) => !condition || condition()).find(({ label }) => label === id) ?? {};
+		const { pattern } = getFormattingButtons().find(({ label }) => label === id) ?? {};
 
 		if (!pattern) {
 			return;
 		}
 
-		applyFormatting(pattern, instance.input);
+		applyFormattingFromEvent(event as unknown as Event, pattern, instance.input);
 	},
 });

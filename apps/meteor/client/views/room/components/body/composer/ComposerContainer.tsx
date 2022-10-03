@@ -9,7 +9,6 @@ import ComposerMessage, { ComposerMessageProps } from './ComposerMessage';
 import { ComposerOmnichannel } from './ComposerOmnichannel/ComposerOmnichannel';
 import { ComposerReadOnly } from './ComposerReadOnly';
 import ComposerVoIP from './ComposerVoIP';
-import { RoomComposer } from './RoomComposer';
 import { useMessageComposerIsAnonymous } from './hooks/useMessageComposerIsAnonymous';
 import { useMessageComposerIsBlocked } from './hooks/useMessageComposerIsBlocked';
 import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOnly';
@@ -68,12 +67,7 @@ const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
 		);
 	}
 
-	return (
-		<>
-			<RoomComposer />
-			{/* <ComposerMessage {...props} />; */}
-		</>
-	);
+	return <ComposerMessage {...props} />;
 };
 
 export default memo(ComposerContainer);
