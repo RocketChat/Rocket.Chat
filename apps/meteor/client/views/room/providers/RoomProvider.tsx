@@ -1,13 +1,16 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { useUserSubscription } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useContext, useMemo, memo, useEffect, useCallback } from 'react';
+import { IRoom } from '@rocket.chat/core-typings';
+import React, { ReactNode, useMemo, memo, useEffect, ContextType, ReactElement, useCallback } from 'react';
 
 import { UserAction } from '../../../../app/ui';
-import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
-import { AsyncStatePhase } from '../../../lib/asyncState';
+import { RoomHistoryManager } from '../../../../app/ui-utils/client';
+import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
+import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import RoomSkeleton from '../RoomSkeleton';
-import { RoomContext, RoomContextValue } from '../contexts/RoomContext';
+import { useRoomRolesManagement } from '../components/body/useRoomRolesManagement';
+import { RoomAPIContext } from '../contexts/RoomAPIContext';
+import { RoomContext } from '../contexts/RoomContext';
 import ToolboxProvider from './ToolboxProvider';
 
 type RoomProviderProps = {
@@ -15,28 +18,50 @@ type RoomProviderProps = {
 	rid: IRoom['_id'];
 };
 
-const fields = {};
+const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
+	useRoomRolesManagement(rid);
 
-const RoomProvider = ({ rid, children }: RoomProviderProps): JSX.Element => {
-	const { phase, value: room } = useHandleRoom(rid);
+	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }));
+	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], ({ subscriptions }) => subscriptions.findOne({ rid }));
 
-	const getMore = useCallback(() => {
-		RoomManager.getMore(rid);
-	}, [rid]);
-
-	const subscribed = Boolean(useUserSubscription(rid, fields));
-	const context = useMemo(() => {
-		if (!room) {
+	const pseudoRoom = useMemo(() => {
+		if (!roomQuery.data) {
 			return null;
 		}
-		room._id = rid;
+
 		return {
-			subscribed,
-			rid,
-			getMore,
-			room: { ...room, name: roomCoordinator.getRoomName(room.t, room) },
+			...subscriptionQuery.data,
+			...roomQuery.data,
+			name: roomCoordinator.getRoomName(roomQuery.data.t, roomQuery.data),
 		};
-	}, [room, rid, subscribed, getMore]);
+	}, [roomQuery.data, subscriptionQuery.data]);
+
+	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useReactiveValue(
+		useCallback(() => {
+			const { hasMore, hasMoreNext, isLoading } = RoomHistoryManager.getRoom(rid);
+
+			return {
+				hasMorePreviousMessages: hasMore.get(),
+				hasMoreNextMessages: hasMoreNext.get(),
+				isLoadingMoreMessages: isLoading.get(),
+			};
+		}, [rid]),
+	);
+
+	const context = useMemo((): ContextType<typeof RoomContext> => {
+		if (!pseudoRoom) {
+			return null;
+		}
+
+		return {
+			rid,
+			room: pseudoRoom,
+			subscription: subscriptionQuery.data,
+			hasMorePreviousMessages,
+			hasMoreNextMessages,
+			isLoadingMoreMessages,
+		};
+	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscriptionQuery.data]);
 
 	useEffect(() => {
 		RoomManager.open(rid);
@@ -46,41 +71,29 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): JSX.Element => {
 	}, [rid]);
 
 	useEffect(() => {
-		if (!subscribed) {
-			return (): void => undefined;
+		if (!subscriptionQuery.data) {
+			return;
 		}
 
 		UserAction.addStream(rid);
 		return (): void => {
 			UserAction.cancel(rid);
 		};
-	}, [rid, subscribed]);
+	}, [rid, subscriptionQuery.data]);
 
-	if (phase === AsyncStatePhase.LOADING || !room) {
+	const api = useMemo(() => ({}), []);
+
+	if (!pseudoRoom) {
 		return <RoomSkeleton />;
 	}
 
 	return (
-		<RoomContext.Provider value={context}>
-			<ToolboxProvider room={room}>{children}</ToolboxProvider>
-		</RoomContext.Provider>
+		<RoomAPIContext.Provider value={api}>
+			<RoomContext.Provider value={context}>
+				<ToolboxProvider room={pseudoRoom}>{children}</ToolboxProvider>
+			</RoomContext.Provider>
+		</RoomAPIContext.Provider>
 	);
-};
-
-export const useRoom = (): IRoom => {
-	const context = useContext(RoomContext);
-	if (!context) {
-		throw Error('useRoom should be used only inside rooms context');
-	}
-	return context.room;
-};
-
-export const useRoomContext = (): RoomContextValue => {
-	const context = useContext(RoomContext);
-	if (!context) {
-		throw Error('useRoom should be used only inside rooms context');
-	}
-	return context;
 };
 
 export default memo(RoomProvider);

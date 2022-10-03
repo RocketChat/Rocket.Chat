@@ -12,6 +12,7 @@ type FileUploadModalProps = {
 	fileName: string;
 	fileDescription?: string;
 	invalidContentType: boolean;
+	showDescription?: boolean;
 };
 
 const FileUploadModal = ({
@@ -21,6 +22,7 @@ const FileUploadModal = ({
 	fileDescription,
 	onSubmit,
 	invalidContentType,
+	showDescription = true,
 }: FileUploadModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
 	const [description, setDescription] = useState<string>(fileDescription || '');
@@ -86,12 +88,14 @@ const FileUploadModal = ({
 							</Field.Row>
 							{!name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
 						</Field>
-						<Field>
-							<Field.Label>{t('Upload_file_description')}</Field.Label>
-							<Field.Row>
-								<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
-							</Field.Row>
-						</Field>
+						{showDescription && (
+							<Field>
+								<Field.Label>{t('Upload_file_description')}</Field.Label>
+								<Field.Row>
+									<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
+								</Field.Row>
+							</Field>
+						)}
 					</FieldGroup>
 				</Modal.Content>
 				<Modal.Footer>

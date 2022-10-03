@@ -253,11 +253,6 @@ export const loadMessages = async () => {
 	await initRoom();
 	await store.setState({ messages: (messages || []).reverse(), noMoreMessages: false, loading: false });
 
-	if (messages && messages.length) {
-		const lastMessage = messages[messages.length - 1];
-		await store.setState({ lastReadMessageId: lastMessage && lastMessage._id });
-	}
-
 	if (ongoingCall && isCallOngoing(ongoingCall.callStatus)) {
 		return;
 	}
@@ -302,7 +297,8 @@ export const loadMessages = async () => {
 };
 
 export const loadMoreMessages = async () => {
-	const { room: { _id: rid } = {}, messages = [], noMoreMessages = false } = store.state;
+	const { room, messages = [], noMoreMessages = false } = store.state;
+	const { _id: rid } = room || {};
 
 	if (!rid || noMoreMessages) {
 		return;
