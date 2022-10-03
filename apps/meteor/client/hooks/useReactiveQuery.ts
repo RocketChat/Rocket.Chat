@@ -31,6 +31,7 @@ export const useReactiveQuery = <TQueryFnData, TData = TQueryFnData, TQueryKey e
 
 						if (c.firstRun) {
 							if (data === undefined) {
+								console.warn('Reactive query returned undefined:', queryKey);
 								reject(new Error('Reactive query returned undefined'));
 							} else {
 								resolve(data);
