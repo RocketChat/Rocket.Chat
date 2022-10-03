@@ -79,14 +79,15 @@ API.v1.addRoute(
 			}
 
 			const pollData = await getConfirmationPoll(deviceCode);
-			if (pollData) {
-				if ('successful' in pollData && pollData.successful) {
-					Promise.await(saveRegistrationData(pollData.payload));
-				}
-				return API.v1.success({ pollData });
+			if (!pollData) {
+				return API.v1.failure('Invalid query');
 			}
 
-			return API.v1.failure('Invalid query');
+			if ('successful' in pollData && pollData.successful) {
+				await saveRegistrationData(pollData.payload);
+			}
+
+			return API.v1.success({ pollData });
 		},
 	},
 );
