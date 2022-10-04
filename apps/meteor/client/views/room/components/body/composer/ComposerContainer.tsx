@@ -6,7 +6,7 @@ import { ComposerAnonymous } from './ComposerAnonymous';
 import { ComposerBlocked } from './ComposerBlocked';
 import { ComposerJoinWithPassword } from './ComposerJoinWithPassword';
 import ComposerMessage, { ComposerMessageProps } from './ComposerMessage';
-import { ComposerOmnichannel } from './ComposerOmnichannel/ComposerOmnichannel';
+import ComposerOmnichannel from './ComposerOmnichannel/ComposerOmnichannel';
 import { ComposerReadOnly } from './ComposerReadOnly';
 import ComposerVoIP from './ComposerVoIP';
 import { useMessageComposerIsAnonymous } from './hooks/useMessageComposerIsAnonymous';
