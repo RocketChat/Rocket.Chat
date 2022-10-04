@@ -38,7 +38,7 @@ function getOAuthSettings(serviceName: string): IOAuthSettings {
 		rolesClaim: settings.get(`Accounts_OAuth_Custom-${serviceName}-roles_claim`) as string,
 		groupsClaim: settings.get(`Accounts_OAuth_Custom-${serviceName}-groups_claim`) as string,
 		channelsAdmin: settings.get(`Accounts_OAuth_Custom-${serviceName}-channels_admin`) as string,
-		channelsMap: settings.get(`Accounts_OAuth_Custom-${serviceName}-channels_map`) as string,
+		channelsMap: settings.get(`Accounts_OAuth_Custom-${serviceName}-groups_channel_map`) as string,
 	};
 }
 

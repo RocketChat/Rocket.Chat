@@ -35,7 +35,12 @@ export class FederationHooks {
 	public static canAddFederatedUserToNonFederatedRoom(callback: (user: IUser | string, room: IRoom) => Promise<void>): void {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
-			(params: { user: IUser | string }, room: IRoom): void => {
+			(params: { user: IUser | string; inviter: IUser }, room: IRoom): void => {
+				if (!params) return;
+				if (!params.user || !params.inviter || !room) {
+					return;
+				}
+
 				Promise.await(callback(params.user, room));
 			},
 			callbacks.priority.HIGH,
@@ -47,6 +52,11 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
 			(params: { user: IUser | string; inviter: IUser }, room: IRoom): void => {
+				if (!params) return;
+				if (!params.user || !params.inviter || !room) {
+					return;
+				}
+
 				Promise.await(callback(params.user, params.inviter, room));
 			},
 			callbacks.priority.HIGH,
