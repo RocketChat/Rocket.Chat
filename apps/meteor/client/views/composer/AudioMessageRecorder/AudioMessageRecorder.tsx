@@ -24,7 +24,7 @@ const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactEl
 
 	const stopRecording = useMutableCallback(async () => {
 		if (recordingInterval) {
-			clearInterval(recordingInterval ?? undefined);
+			clearInterval(recordingInterval);
 		}
 		setRecordingInterval(null);
 		setRecordingRoomId(null);
