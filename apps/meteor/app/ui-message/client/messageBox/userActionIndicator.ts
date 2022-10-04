@@ -16,6 +16,11 @@ Template.userActionIndicator.helpers({
 		}
 
 		const activities = Object.entries(roomAction);
+		
+
+		console.log('activities');
+		console.table(activities);
+
 		const userActions = activities
 			.map(([key, _users]) => {
 				const users = Object.keys(_users);
@@ -28,8 +33,8 @@ Template.userActionIndicator.helpers({
 				const action = key.split('-')[1];
 				if (users.length === 1) {
 					return {
-						action,
-						multi: false,
+						action: `is_${action}`,
+						// multi: false,
 						users: users[0],
 						end: false,
 					};
@@ -42,7 +47,7 @@ Template.userActionIndicator.helpers({
 
 				const usernames = [users.slice(0, maxUsernames - 1).join(', '), last];
 				return {
-					action,
+					action: `are_${action}`,
 					multi: true,
 					users: usernames.join(` ${t('and')} `),
 					end: false,
@@ -53,6 +58,9 @@ Template.userActionIndicator.helpers({
 		if (!Object.keys(userActions).length) {
 			return [];
 		}
+
+		console.log('userActions');
+		console.table(userActions);
 
 		// insert end=true for the last item.
 		userActions[userActions.length - 1].end = true;

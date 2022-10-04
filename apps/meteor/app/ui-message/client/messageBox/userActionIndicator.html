@@ -4,9 +4,9 @@
 			{{#each data}}
 				<span class="rc-message-box__activity-user">{{ users }}</span>
 				{{#if multi}}
-					{{_ "are" }}&nbsp;{{_ action}}{{#unless end}},{{/unless}}
+					{{_ action}}{{#unless end}},{{/unless}}
 				{{else}}
-					{{_ "is" }}&nbsp;{{_ action}}{{#unless end}},{{/unless}}
+					{{_ action}}{{#unless end}},{{/unless}}
 				{{/if}}
 			{{/each}}
 		</div>
