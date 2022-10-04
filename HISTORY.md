@@ -1,6 +1,79 @@
 
 # 5.2.0 (Under Release Candidate Process)
 
+## 5.2.0-rc.2
+`2022-10-04  ·  3 🚀  ·  1 🐛  ·  9 🔍  ·  13 👩‍💻👨‍💻`
+
+### 🚀 Improvements
+
+
+- Results of user auto complete ([#26687](https://github.com/RocketChat/Rocket.Chat/pull/26687))
+
+- Use cached EE Cloud license on startup ([#26987](https://github.com/RocketChat/Rocket.Chat/pull/26987))
+
+- VideoConference Messages UI (#26548)" ([#26961](https://github.com/RocketChat/Rocket.Chat/pull/26961))
+
+### 🐛 Bug fixes
+
+
+- Admin sidebar navigation ([#26958](https://github.com/RocketChat/Rocket.Chat/pull/26958))
+
+  ## [MKP-125](https://rocketchat.atlassian.net/browse/MKP-125?atlOrigin=eyJpIjoiMThlMTIwYmFkZWI5NDBlYjhlMWI3YTc1ZDliYTY3NDUiLCJwIjoiaiJ9)
+  Fix the behavior of the admin sidebar, it didn't activate its options properly on pages that had sub-routes.
+  Demo gif:
+  ![sidebar-bug](https://user-images.githubusercontent.com/43561537/192585542-ddd8fd37-e833-4960-ae67-fb408595c7ba.gif)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Composer not reactive when omnichannel room closed ([#26983](https://github.com/RocketChat/Rocket.Chat/pull/26983))
+
+- Regression: Event handler blocking mention links ([#26964](https://github.com/RocketChat/Rocket.Chat/pull/26964))
+
+  Fixes mention links being irresponsive to clicks.
+  Jira: [TC-55]
+
+  [TC-55]: https://rocketchat.atlassian.net/browse/TC-55?atlOrigin=eyJpIjoiMmQ3ZmE0MWE2NGQwNDIzZThkMzc5NGNhMzU1MjExMGMiLCJwIjoiaiJ9
+
+- Regression: Fixed takeInquiry method not displaying error messages on the client ([#26976](https://github.com/RocketChat/Rocket.Chat/pull/26976))
+
+  This pull request brings back the toast message "The maximum number of simultaneous chats per agent has been reached." that should be displayed when an agent tries to take more chats than the maximum allowed.
+
+  ![image](https://user-images.githubusercontent.com/6494543/192891486-8720a5e3-f0c8-4863-b0dc-fa3b922d776b.png)
+
+- Regression: Handle `undefined` values on `useReactiveQuery`'s query function ([#26988](https://github.com/RocketChat/Rocket.Chat/pull/26988))
+
+  According to https://tanstack.com/query/v4/docs/reference/useQuery, the query function must **not** return `undefined` values, a quirk that we've been ignoring.
+
+- Regression: Incorrect on-hold chat resume message ([#26935](https://github.com/RocketChat/Rocket.Chat/pull/26935))
+
+- Regression: Omnichannel Contact Center empty on no filter search ([#26975](https://github.com/RocketChat/Rocket.Chat/pull/26975))
+
+- Regression: Remove section and replace icon on administration kebab menu ([#26986](https://github.com/RocketChat/Rocket.Chat/pull/26986))
+
+- Regression: Remove symbols from number before storing PBX event ([#26969](https://github.com/RocketChat/Rocket.Chat/pull/26969))
+
+- Regression: Typo on livechat/queue endpoint client call ([#26962](https://github.com/RocketChat/Rocket.Chat/pull/26962))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@filipemarins](https://github.com/filipemarins)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 ## 5.2.0-rc.1
 `2022-09-27  ·  1 🐛  ·  4 🔍  ·  6 👩‍💻👨‍💻`
 
@@ -352,6 +425,27 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.1.4
+`2022-09-28  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 5.1.4  ([#26965](https://github.com/RocketChat/Rocket.Chat/pull/26965))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@tassoevan](https://github.com/tassoevan)
 
 # 5.1.3
 `2022-09-24  ·  4 🐛  ·  2 🔍  ·  8 👩‍💻👨‍💻`
