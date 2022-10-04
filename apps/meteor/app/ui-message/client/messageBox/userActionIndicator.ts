@@ -16,11 +16,6 @@ Template.userActionIndicator.helpers({
 		}
 
 		const activities = Object.entries(roomAction);
-		
-
-		console.log('activities');
-		console.table(activities);
-
 		const userActions = activities
 			.map(([key, _users]) => {
 				const users = Object.keys(_users);
@@ -58,9 +53,6 @@ Template.userActionIndicator.helpers({
 		if (!Object.keys(userActions).length) {
 			return [];
 		}
-
-		console.log('userActions');
-		console.table(userActions);
 
 		// insert end=true for the last item.
 		userActions[userActions.length - 1].end = true;
