@@ -13,6 +13,6 @@ export class AdminLdap {
 	}
 
 	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar-content');
+		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 }
