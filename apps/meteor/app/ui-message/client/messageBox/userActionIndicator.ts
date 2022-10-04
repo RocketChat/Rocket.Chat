@@ -29,7 +29,6 @@ Template.userActionIndicator.helpers({
 				if (users.length === 1) {
 					return {
 						action: `is_${action}`,
-						// multi: false,
 						users: users[0],
 						end: false,
 					};
@@ -43,7 +42,6 @@ Template.userActionIndicator.helpers({
 				const usernames = [users.slice(0, maxUsernames - 1).join(', '), last];
 				return {
 					action: `are_${action}`,
-					multi: true,
 					users: usernames.join(` ${t('and')} `),
 					end: false,
 				};
