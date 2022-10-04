@@ -27,7 +27,6 @@ const ADMIN_PERMISSIONS = [
 	'manage-own-incoming-integrations',
 	'view-engagement-dashboard',
 ];
-const SETTINGS_PERMISSIONS = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
 const AUDIT_PERMISSIONS = ['can-audit'];
 const AUDIT_LOG_PERMISSIONS = ['can-audit-log'];
 const MANAGE_APPS_PERMISSIONS = ['manage-apps'];
@@ -48,9 +47,7 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 	const hasAuditLogPermission = useAtLeastOnePermission(AUDIT_LOG_PERMISSIONS) && hasAuditLicense;
 	const hasManageApps = useAtLeastOnePermission(MANAGE_APPS_PERMISSIONS);
 	const hasAdminPermission = useAtLeastOnePermission(ADMIN_PERMISSIONS);
-	const hasSettingsPermission = useAtLeastOnePermission(SETTINGS_PERMISSIONS);
-	const showMenu =
-		hasAuditPermission || hasAuditLogPermission || hasManageApps || hasAdminPermission || hasSettingsPermission || !!accountBoxItems.length;
+	const showMenu = hasAuditPermission || hasAuditLogPermission || hasManageApps || hasAdminPermission || !!accountBoxItems.length;
 
 	return (
 		<>
@@ -66,7 +63,6 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 							hasAuditPermission={hasAuditPermission}
 							hasAuditLogPermission={hasAuditLogPermission}
 							hasManageApps={hasManageApps}
-							hasSettingsPermission={hasSettingsPermission}
 						/>
 					</Dropdown>,
 					document.body,
