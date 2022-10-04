@@ -22,7 +22,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			)}
 			{isSuccess && (
 				<Accordion width='100%' alignSelf='center'>
-					{data.logs.map((log) => (
+					{data?.logs?.map((log) => (
 						<LogItem
 							key={log._createdAt}
 							title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${log.totalTime}ms)`}
