@@ -1169,4 +1169,32 @@ export class UsersRaw extends BaseRaw {
 	findOneByResetToken(token, options) {
 		return this.findOne({ 'services.password.reset.token': token }, options);
 	}
+
+	unsetCloudServicesById(_id) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$unset: {
+				'services.cloud': 1,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setCloudServicesById(_id, cloud) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				'services.cloud': cloud,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
 }

@@ -1,15 +1,14 @@
 import { HTTP } from 'meteor/http';
+import { Users } from '@rocket.chat/models';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
-import { userLoggedOut } from './userLoggedOut';
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { userScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function getUserCloudAccessToken(userId, forceNew = false, scope = '', save = true) {
+export async function getUserCloudAccessToken(userId, forceNew = false, scope = '', save = true) {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
@@ -20,8 +19,7 @@ export function getUserCloudAccessToken(userId, forceNew = false, scope = '', sa
 		return '';
 	}
 
-	const user = Users.findOneById(userId);
-
+	const user = await Users.findOneById(userId, { projection: { 'services.cloud': 1 } });
 	if (!user || !user.services || !user.services.cloud || !user.services.cloud.accessToken || !user.services.cloud.refreshToken) {
 		return '';
 	}
@@ -76,7 +74,7 @@ export function getUserCloudAccessToken(userId, forceNew = false, scope = '', sa
 			}
 
 			if (err.response.data.error === 'unauthorized') {
-				userLoggedOut(userId);
+				await Users.unsetCloudServicesById(userId);
 			}
 		}
 
@@ -87,15 +85,9 @@ export function getUserCloudAccessToken(userId, forceNew = false, scope = '', sa
 		const expiresAt = new Date();
 		expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
 
-		Users.update(user._id, {
-			$set: {
-				services: {
-					cloud: {
-						accessToken: authTokenResult.data.access_token,
-						expiresAt,
-					},
-				},
-			},
+		await Users.setCloudServicesById(user._id, {
+			accessToken: authTokenResult.data.access_token,
+			expiresAt,
 		});
 	}
 

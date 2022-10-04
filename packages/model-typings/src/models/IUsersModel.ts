@@ -1,5 +1,5 @@
 import type { Document, UpdateResult, FindCursor, FindOptions } from 'mongodb';
-import type { IUser, IRole, IRoom, ILivechatAgent, UserStatus } from '@rocket.chat/core-typings';
+import type { IUser, IRole, IRoom, ILivechatAgent, UserStatus, IUserServices } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -163,4 +163,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 			statusText,
 		}: { statusDefault?: string; status: UserStatus; statusConnection: UserStatus; statusText?: string },
 	): Promise<UpdateResult>;
+
+	unsetCloudServicesById(_id: IUser['_id']): Promise<UpdateResult>;
+
+	setCloudServicesById(_id: IUser['_id'], cloud: IUserServices['cloud']): Promise<UpdateResult>;
 }
