@@ -443,6 +443,7 @@ settingsRegistry.addGroup('Accounts', function () {
 				},
 			],
 			public: true,
+			i18nLabel: 'Also_send_thread_message_to_channel_behavior',
 		});
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
