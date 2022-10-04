@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import type ldapjs from 'ldapjs';
 import type { ILDAPEntry, IUser, IRoom, ICreatedRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
