@@ -15,30 +15,32 @@ export type CloudRegistrationIntentData = {
 	expires_in: number;
 };
 
+export type CloudConfirmationPollDataPayload = {
+	workspaceId: string;
+	client_name: string;
+	client_id: string;
+	client_secret: string;
+	redirect_uris: Array<string>;
+	publicKey: string;
+	client_secret_expires_at: number;
+	registration_client_uri: string;
+	licenseData: {
+		version: number;
+		address: string;
+		license: string;
+		updatedAt: string;
+		modules: string;
+		expireAt: string;
+	};
+};
+
 type CloudConfirmationPollDataPending = {
 	status: 'authorization_pending';
 };
 
 type CloudConfirmationPollDataSuccess = {
 	successful: boolean;
-	payload: {
-		workspaceId: string;
-		client_name: string;
-		client_id: string;
-		client_secret: string;
-		redirect_uris: Array<string>;
-		publicKey: string;
-		client_secret_expires_at: number;
-		registration_client_uri: string;
-		licenseData: {
-			version: number;
-			address: string;
-			license: string;
-			updatedAt: string;
-			modules: string;
-			expireAt: string;
-		};
-	};
+	payload: CloudConfirmationPollDataPayload;
 };
 
 export type CloudConfirmationPollData = CloudConfirmationPollDataPending | CloudConfirmationPollDataSuccess;

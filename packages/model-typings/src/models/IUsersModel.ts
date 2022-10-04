@@ -166,5 +166,5 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	unsetCloudServicesById(_id: IUser['_id']): Promise<UpdateResult>;
 
-	setCloudServicesById(_id: IUser['_id'], cloud: IUserServices['cloud']): Promise<UpdateResult>;
+	setCloudServicesById(_id: IUser['_id'], cloud: Partial<IUserServices['cloud']>): Promise<UpdateResult>;
 }

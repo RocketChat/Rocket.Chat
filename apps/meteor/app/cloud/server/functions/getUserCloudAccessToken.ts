@@ -1,5 +1,6 @@
 import { HTTP } from 'meteor/http';
 import { Users } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
@@ -8,7 +9,7 @@ import { settings } from '../../../settings/server';
 import { userScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export async function getUserCloudAccessToken(userId, forceNew = false, scope = '', save = true) {
+export async function getUserCloudAccessToken(userId: IUser['_id'], forceNew = false, scope = '', save = true): Promise<string> {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
@@ -19,27 +20,27 @@ export async function getUserCloudAccessToken(userId, forceNew = false, scope = 
 		return '';
 	}
 
-	const user = await Users.findOneById(userId, { projection: { 'services.cloud': 1 } });
+	const user = await Users.findOneById<Pick<IUser, '_id' | 'services'>>(userId, { projection: { 'services.cloud': 1 } });
 	if (!user || !user.services || !user.services.cloud || !user.services.cloud.accessToken || !user.services.cloud.refreshToken) {
 		return '';
 	}
 
 	const { accessToken, refreshToken } = user.services.cloud;
 
-	const client_id = settings.get('Cloud_Workspace_Client_Id');
-	if (!client_id) {
+	const clientId = settings.get<string>('Cloud_Workspace_Client_Id');
+	if (!clientId) {
 		return '';
 	}
 
-	const expires = user.services.cloud.expiresAt;
+	const expires = new Date(user.services.cloud.expiresAt);
 	const now = new Date();
 
-	if (now < expires.value && !forceNew) {
+	if (now < expires && !forceNew) {
 		return accessToken;
 	}
 
 	const cloudUrl = settings.get('Cloud_Url');
-	const client_secret = settings.get('Cloud_Workspace_Client_Secret');
+	const clientSecret = settings.get<string>('Cloud_Workspace_Client_Secret');
 	const redirectUri = getRedirectUri();
 
 	if (scope === '') {
@@ -51,15 +52,15 @@ export async function getUserCloudAccessToken(userId, forceNew = false, scope = 
 		authTokenResult = HTTP.post(`${cloudUrl}/api/oauth/token`, {
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			params: {
-				client_id,
-				client_secret,
+				client_id: clientId,
+				client_secret: clientSecret,
 				refresh_token: refreshToken,
 				scope,
 				grant_type: 'refresh_token',
 				redirect_uri: redirectUri,
 			},
 		});
-	} catch (err) {
+	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to get User AccessToken from Rocket.Chat Cloud',
 			url: '/api/oauth/token',
@@ -70,7 +71,7 @@ export async function getUserCloudAccessToken(userId, forceNew = false, scope = 
 		if (err.response?.data?.error) {
 			if (err.response.data.error === 'oauth_invalid_client_credentials') {
 				SystemLogger.error('Server has been unregistered from cloud');
-				unregisterWorkspace();
+				await unregisterWorkspace();
 			}
 
 			if (err.response.data.error === 'unauthorized') {

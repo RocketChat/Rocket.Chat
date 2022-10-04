@@ -1,13 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-import './methods';
-import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
-import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
-import { getWorkspaceLicense } from './functions/getWorkspaceLicense';
-import { getUserCloudAccessToken } from './functions/getUserCloudAccessToken';
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
-import { getWorkspaceKey } from './functions/getWorkspaceKey';
 import { syncWorkspace } from './functions/syncWorkspace';
 import { connectWorkspace } from './functions/connectWorkspace';
 import { settings } from '../../settings/server';
@@ -17,8 +11,8 @@ const licenseCronName = 'Cloud Workspace Sync';
 
 Meteor.startup(function () {
 	// run token/license sync if registered
-	let TroubleshootDisableWorkspaceSync;
-	settings.watch('Troubleshoot_Disable_Workspace_Sync', (value) => {
+	let TroubleshootDisableWorkspaceSync: boolean;
+	settings.watch<boolean>('Troubleshoot_Disable_Workspace_Sync', (value) => {
 		if (TroubleshootDisableWorkspaceSync === value) {
 			return;
 		}
@@ -51,10 +45,8 @@ Meteor.startup(function () {
 			}
 
 			console.log('Successfully registered with token provided by REG_TOKEN!');
-		} catch (e) {
+		} catch (e: any) {
 			SystemLogger.error('An error occured registering with token.', e.message);
 		}
 	}
 });
-
-export { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope, getWorkspaceLicense, getWorkspaceKey, getUserCloudAccessToken };
