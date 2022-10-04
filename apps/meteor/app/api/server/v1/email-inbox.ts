@@ -30,8 +30,8 @@ API.v1.addRoute(
 				active: Boolean,
 				name: String,
 				email: String,
-				description: String,
-				senderInfo: String,
+				description: Match.Maybe(String),
+				senderInfo: Match.Maybe(String),
 				department: Match.Maybe(String),
 				smtp: Match.ObjectIncluding({
 					server: String,
@@ -79,13 +79,13 @@ API.v1.addRoute(
 			if (!_id) {
 				throw new Error('error-invalid-param');
 			}
-			const emailInboxes = await findOneEmailInbox({ _id });
+			const emailInbox = await findOneEmailInbox({ _id });
 
-			if (!emailInboxes) {
+			if (!emailInbox) {
 				return API.v1.notFound();
 			}
 
-			return API.v1.success(emailInboxes);
+			return API.v1.success(emailInbox);
 		},
 		async delete() {
 			check(this.urlParams, {
