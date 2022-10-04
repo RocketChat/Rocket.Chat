@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { FC, CSSProperties } from 'react';
+import type { FC, CSSProperties } from 'react';
 
 type DotLeaderProps = {
 	color?: CSSProperties['borderColor'];

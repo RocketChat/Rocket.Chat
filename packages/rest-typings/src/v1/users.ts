@@ -1,4 +1,4 @@
-import type { IExportOperation, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
@@ -104,6 +104,8 @@ export type UserPresence = Readonly<
 	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
 >;
 
+export type UserPersonalTokens = Pick<IPersonalAccessToken, 'name' | 'lastTokenPart' | 'bypassTwoFactor'> & { createdAt: string };
+
 export type UsersEndpoints = {
 	'/v1/users.2fa.enableEmail': {
 		POST: () => void;
@@ -193,12 +195,7 @@ export type UsersEndpoints = {
 
 	'/v1/users.getPersonalAccessTokens': {
 		GET: () => {
-			tokens: {
-				name?: string;
-				createdAt: string;
-				lastTokenPart: string;
-				bypassTwoFactor: boolean;
-			}[];
+			tokens: UserPersonalTokens[];
 		};
 	};
 	'/v1/users.regeneratePersonalAccessToken': {
@@ -271,7 +268,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.setStatus': {
-		POST: (params: { message?: string; status?: 'online' | 'offline' | 'away' | 'busy' }) => void;
+		POST: (params: { message?: string; status?: UserStatus }) => void;
 	};
 
 	'/v1/users.getStatus': {
@@ -299,6 +296,10 @@ export type UsersEndpoints = {
 		POST: (params: UserLogoutParamsPOST) => {
 			message: string;
 		};
+	};
+
+	'/v1/users.delete': {
+		POST: (params: { userId: IUser['_id']; confirmRelinquish?: boolean }) => void;
 	};
 };
 

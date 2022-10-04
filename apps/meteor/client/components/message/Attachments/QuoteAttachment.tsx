@@ -2,11 +2,11 @@ import { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { FC } from 'react';
+import React, { ReactElement } from 'react';
 
 import Attachments from '.';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import MarkdownText from '../../MarkdownText';
+import MessageContentBody from '../../../views/room/MessageList/components/MessageContentBody';
 import AttachmentAuthor from './Attachment/AttachmentAuthor';
 import AttachmentAuthorAvatar from './Attachment/AttachmentAuthorAvatar';
 import AttachmentAuthorName from './Attachment/AttachmentAuthorName';
@@ -14,7 +14,12 @@ import AttachmentContent from './Attachment/AttachmentContent';
 import AttachmentDetails from './Attachment/AttachmentDetails';
 import AttachmentInner from './Attachment/AttachmentInner';
 
-const hover = css`
+const quoteStyles = css`
+	.rcx-attachment__details {
+		.rcx-message-body {
+			color: ${colors.n700} !important;
+		}
+	}
 	&:hover,
 	&:focus {
 		.rcx-attachment__details {
@@ -25,42 +30,44 @@ const hover = css`
 	}
 `;
 
-export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
-	author_icon: url,
-	author_name: name,
-	author_link: authorLink,
-	message_link: messageLink,
-	ts,
-	text,
-	attachments,
-}) => {
+type QuoteAttachmentProps = {
+	attachment: MessageQuoteAttachment;
+};
+
+export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
 	const format = useTimeAgo();
+
 	return (
 		<>
-			<AttachmentContent className={hover} width='full'>
+			<AttachmentContent className={quoteStyles} width='full'>
 				<AttachmentDetails
 					is='blockquote'
 					borderRadius='x2'
 					borderWidth='x2'
 					borderStyle='solid'
 					borderColor='neutral-200'
-					borderInlineStartColor='neutral-600'
+					borderInlineStartColor='neutral-500'
 				>
 					<AttachmentAuthor>
-						<AttachmentAuthorAvatar url={url} />
-						<AttachmentAuthorName {...(authorLink && { is: 'a', href: authorLink, target: '_blank', color: undefined })}>
-							{name}
+						<AttachmentAuthorAvatar url={attachment.author_icon} />
+						<AttachmentAuthorName
+							{...(attachment.author_name && { is: 'a', href: attachment.author_link, target: '_blank', color: 'info' })}
+						>
+							{attachment.author_name}
 						</AttachmentAuthorName>
-						{ts && (
-							<Box fontScale='c1' {...(messageLink ? { is: 'a', href: messageLink } : { color: 'hint' })}>
-								{format(ts)}
+						{attachment.ts && (
+							<Box
+								fontScale='c1'
+								{...(attachment.message_link ? { is: 'a', href: attachment.message_link, color: 'hint' } : { color: 'hint' })}
+							>
+								{format(attachment.ts)}
 							</Box>
 						)}
 					</AttachmentAuthor>
-					<MarkdownText parseEmoji variant='document' content={text} />
-					{attachments && (
+					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text}
+					{attachment.attachments && (
 						<AttachmentInner>
-							<Attachments attachments={attachments} />
+							<Attachments attachments={attachment.attachments} />
 						</AttachmentInner>
 					)}
 				</AttachmentDetails>

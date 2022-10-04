@@ -1,4 +1,4 @@
-import { IServiceClass } from './ServiceClass';
+import type { IServiceClass } from './ServiceClass';
 
 export interface IAnalyticsService extends IServiceClass {
 	saveSeatRequest(): Promise<void>;

@@ -3,12 +3,12 @@ import { EventEmitter } from 'events';
 
 import _ from 'underscore';
 
-import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
-import { ISAMLUser } from '../definition/ISAMLUser';
-import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
-import { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import type { ISAMLUser } from '../definition/ISAMLUser';
+import type { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
+import type { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 import { StatusCode } from './constants';
-import { Logger } from '../../../../server/lib/logger/Logger';
+import type { Logger } from '../../../../server/lib/logger/Logger';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 
 let providerList: Array<IServiceProviderOptions> = [];

@@ -26,9 +26,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			isGroupChat(_room: Partial<IRoom>): boolean {
 				return false;
 			},
-			openCustomProfileTab(_instance: any, _room: IRoom, _username: string): boolean {
-				return false;
-			},
 			getUiText(_context: ValueOf<typeof UiTextContext>): string {
 				return '';
 			},
@@ -88,7 +85,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		}
 	}
 
-	openRoom(type: string, name: string, render = true): void {
+	openRoom(type: RoomType, name: string, render = true): void {
 		openRoom(type, name, render);
 	}
 

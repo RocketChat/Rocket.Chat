@@ -1,5 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { getPeriodRange, Period } from '../dataView/periods';
 
@@ -29,6 +29,7 @@ export const useMessagesSent = ({ period }: UseMessagesSentOptions) => {
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
 		},
 	);
 };

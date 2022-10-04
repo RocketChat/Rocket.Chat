@@ -7,9 +7,9 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useTabContext } from '../../providers/ToolboxProvider';
+import { useTabContext } from '../../contexts/ToolboxContext';
 import ThreadComponent from '../../threads/ThreadComponent';
-import Row from './Row';
+import ThreadRow from './ThreadRow';
 import { withData } from './withData';
 
 export type ThreadListProps = {
@@ -154,7 +154,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 							components={{ Scroller: ScrollableContentWrapper as any }}
 							itemContent={(_index, data: IMessage): FC<IMessage> =>
 								(
-									<Row
+									<ThreadRow
 										thread={data}
 										showRealNames={showRealNames}
 										unread={unread}

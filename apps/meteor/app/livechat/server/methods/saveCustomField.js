@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { LivechatCustomField } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization';
-import { LivechatCustomField } from '../../../models/server';
+import { hasPermission } from '../../../authorization/server';
 
 Meteor.methods({
-	'livechat:saveCustomField'(_id, customFieldData) {
+	async 'livechat:saveCustomField'(_id, customFieldData) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveCustomField',
@@ -24,6 +24,7 @@ Meteor.methods({
 				scope: String,
 				visibility: String,
 				regexp: String,
+				searchable: Boolean,
 			}),
 		);
 
@@ -36,7 +37,7 @@ Meteor.methods({
 		}
 
 		if (_id) {
-			const customField = LivechatCustomField.findOneById(_id);
+			const customField = await LivechatCustomField.findOneById(_id);
 			if (!customField) {
 				throw new Meteor.Error('error-invalid-custom-field', 'Custom Field Not found', {
 					method: 'livechat:saveCustomField',
@@ -45,7 +46,7 @@ Meteor.methods({
 		}
 
 		if (!_id) {
-			const customField = LivechatCustomField.findOneById(customFieldData.field);
+			const customField = await LivechatCustomField.findOneById(customFieldData.field);
 			if (customField) {
 				throw new Meteor.Error('error-custom-field-name-already-exists', 'Custom field name already exists', {
 					method: 'livechat:saveCustomField',

@@ -389,6 +389,66 @@ describe('miscellaneous', function () {
 				})
 				.end(done);
 		});
+
+		const teamName = `new-team-name-${Date.now()}`;
+		let teamCreated = {};
+		before((done) => {
+			request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.expect((res) => {
+					teamCreated = res.body.team;
+				})
+				.end(done);
+		});
+
+		after((done) => {
+			request
+				.post(api('teams.delete'))
+				.set(credentials)
+				.send({
+					teamName,
+				})
+				.end(done);
+		});
+
+		it('should return an object containing rooms and totalCount from teams', (done) => {
+			request
+				.get(api('directory'))
+				.set(credentials)
+				.query({
+					query: JSON.stringify({
+						text: '',
+						type: 'teams',
+					}),
+					sort: JSON.stringify({
+						name: 1,
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('result');
+					expect(res.body.result).to.be.an(`array`);
+					expect(res.body).to.have.property('total', 1);
+					expect(res.body.total).to.be.an('number');
+					expect(res.body.result[0]).to.have.property('_id', teamCreated.roomId);
+					expect(res.body.result[0]).to.have.property('fname');
+					expect(res.body.result[0]).to.have.property('teamMain');
+					expect(res.body.result[0]).to.have.property('name');
+					expect(res.body.result[0]).to.have.property('t');
+					expect(res.body.result[0]).to.have.property('usersCount');
+					expect(res.body.result[0]).to.have.property('ts');
+					expect(res.body.result[0]).to.have.property('teamId');
+					expect(res.body.result[0]).to.have.property('default');
+					expect(res.body.result[0]).to.have.property('roomsCount');
+				})
+				.end(done);
+		});
 	});
 	describe('[/spotlight]', () => {
 		let user;
@@ -594,6 +654,75 @@ describe('miscellaneous', function () {
 					.expect(200)
 					.end(done);
 			});
+		});
+	});
+
+	describe('/pw.getPolicy', () => {
+		it('should fail if not logged in', (done) => {
+			request
+				.get(api('pw.getPolicy'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should return policies', (done) => {
+			request
+				.get(api('pw.getPolicy'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('enabled');
+					expect(res.body).to.have.property('policy').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/pw.getPolicyReset', () => {
+		it('should fail if no token provided', (done) => {
+			request
+				.get(api('pw.getPolicyReset'))
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				})
+				.end(done);
+		});
+
+		it('should fail if no token is invalid format', (done) => {
+			request
+				.get(api('pw.getPolicyReset?token=123'))
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
+				})
+				.end(done);
+		});
+
+		// not sure we have a way to get the reset token, looks like it is only sent via email by Meteor
+		it.skip('should return policies if correct token is provided', (done) => {
+			request
+				.get(api('pw.getPolicyReset?token'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('enabled');
+					expect(res.body).to.have.property('policy').and.to.be.an('array');
+				})
+				.end(done);
 		});
 	});
 });

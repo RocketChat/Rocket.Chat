@@ -263,7 +263,7 @@ export class SAUMonitorClass {
 			return obj;
 		};
 
-		if (result.browser && result.browser.name) {
+		if (result.browser?.name) {
 			info.type = 'browser';
 			info.name = result.browser.name;
 			info.longVersion = result.browser.version || '';

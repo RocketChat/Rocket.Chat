@@ -14,14 +14,14 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import * as Federation from '../../../../../../app/federation-v2/client/Federation';
-import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManager';
+import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { UiTextContext } from '../../../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
+import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import WarningModal from '../../../../admin/apps/WarningModal';
-import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../../contexts/ToolboxContext';
 import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';
 import RoomInfo from './RoomInfo';
 

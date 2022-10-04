@@ -33,7 +33,7 @@ const actions = {
 	},
 };
 
-const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, installed = false, ...props }) => {
+const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, installed, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState());
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
@@ -124,7 +124,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 					flexDirection='row'
 					alignItems='center'
 					justifyContent='center'
-					borderRadius='x2'
+					borderRadius='x4'
 					invisible={!showStatus && !loading}
 				>
 					<Button
@@ -134,7 +134,6 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 						fontWeight={700}
 						disabled={loading}
 						onClick={handleClick}
-						mie={isAppDetailsPage || isSubscribed ? '0' : 'x32'}
 						pi='x8'
 						pb='x6'
 						lineHeight='x12'

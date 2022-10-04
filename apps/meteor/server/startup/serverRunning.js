@@ -20,6 +20,8 @@ const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	process.exit(errorCode);
 };
 
+const skipMongoDbDeprecationCheck = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_CHECK).toLowerCase());
+
 Meteor.startup(function () {
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
 
@@ -27,6 +29,8 @@ Meteor.startup(function () {
 	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion).major);
 
 	return Meteor.setTimeout(function () {
+		const replicaSet = isRunningMs() ? 'Not required (running micro services)' : `${oplogEnabled ? 'Enabled' : 'Disabled'}`;
+
 		let msg = [
 			`Rocket.Chat Version: ${Info.version}`,
 			`     NodeJS Version: ${process.versions.node} - ${process.arch}`,
@@ -35,7 +39,7 @@ Meteor.startup(function () {
 			`           Platform: ${process.platform}`,
 			`       Process Port: ${process.env.PORT}`,
 			`           Site URL: ${settings.get('Site_Url')}`,
-			`   ReplicaSet OpLog: ${oplogEnabled ? 'Enabled' : 'Disabled'}`,
+			`   ReplicaSet OpLog: ${replicaSet}`,
 		];
 
 		if (Info.commit && Info.commit.hash) {
@@ -82,7 +86,7 @@ Meteor.startup(function () {
 		showSuccessBox('SERVER RUNNING', msg);
 
 		// Deprecation
-		if (!semver.satisfies(semver.coerce(mongoVersion), '>=4.4.0')) {
+		if (!skipMongoDbDeprecationCheck && !semver.satisfies(semver.coerce(mongoVersion), '>=4.4.0')) {
 			msg = [
 				`YOUR CURRENT MONGODB VERSION (${mongoVersion}) IS DEPRECATED.`,
 				'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 6.0.0 AND GREATER,',

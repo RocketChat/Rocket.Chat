@@ -1,9 +1,9 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
+import { Header as TemplateHeader } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useContext, FC, ComponentProps, ReactNode } from 'react';
 
 import BurgerMenu from '../BurgerMenu';
-import TemplateHeader from '../Header';
 import PageContext from './PageContext';
 
 type PageHeaderProps = {
@@ -36,7 +36,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 					</TemplateHeader.ToolBox>
 				)}
 				{onClickBack && <IconButton small mie='x8' icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
-				<Box is='h2' fontScale='h2' flexGrow={1}>
+				<Box is='h2' fontScale='h2' flexGrow={1} data-qa-type='PageHeader-title'>
 					{title}
 				</Box>
 				{children}

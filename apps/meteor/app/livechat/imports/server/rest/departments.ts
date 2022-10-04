@@ -1,8 +1,8 @@
-import { isLivechatDepartmentProps } from '@rocket.chat/rest-typings';
+import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { hasPermission, hasAtLeastOnePermission } from '../../../../authorization/server';
+import { hasPermission } from '../../../../authorization/server';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import {
@@ -15,75 +15,71 @@ import {
 
 API.v1.addRoute(
 	'livechat/department',
-	{ authRequired: true, validateParams: isLivechatDepartmentProps },
+	{
+		authRequired: true,
+		validateParams: { GET: isGETLivechatDepartmentProps, POST: isPOSTLivechatDepartmentProps },
+		permissionsRequired: {
+			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
+			POST: { permissions: ['manage-livechat-departments'], operation: 'hasAll' },
+		},
+	},
 	{
 		async get() {
-			if (!hasAtLeastOnePermission(this.userId, ['view-livechat-departments', 'view-l-room'])) {
-				return API.v1.unauthorized();
-			}
-
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
 			const { text, enabled, onlyMyDepartments, excludeDepartmentId } = this.queryParams;
 
-			const { departments, total } = Promise.await(
-				findDepartments({
-					userId: this.userId,
-					text,
-					enabled: enabled === 'true',
-					onlyMyDepartments: onlyMyDepartments === 'true',
-					excludeDepartmentId,
-					pagination: {
-						offset,
-						count,
-						// IMO, sort type shouldn't be record, but a generic of the model we're trying to sort
-						// or the form { [k: keyof T]: number | string }
-						sort: sort as any,
-					},
-				}),
-			);
+			const { departments, total } = await findDepartments({
+				userId: this.userId,
+				text,
+				enabled: enabled === 'true',
+				onlyMyDepartments: onlyMyDepartments === 'true',
+				excludeDepartmentId,
+				pagination: {
+					offset,
+					count,
+					// IMO, sort type shouldn't be record, but a generic of the model we're trying to sort
+					// or the form { [k: keyof T]: number | string }
+					sort: sort as any,
+				},
+			});
 
 			return API.v1.success({ departments, count: departments.length, offset, total });
 		},
-		post() {
-			if (!hasPermission(this.userId, 'manage-livechat-departments')) {
-				return API.v1.unauthorized();
-			}
+		async post() {
+			check(this.bodyParams, {
+				department: Object,
+				agents: Match.Maybe(Array),
+			});
 
-			try {
-				check(this.bodyParams, {
-					department: Object,
-					agents: Match.Maybe(Array),
+			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
+			const department = Livechat.saveDepartment(null, this.bodyParams.department, agents);
+
+			if (department) {
+				return API.v1.success({
+					department,
+					agents: LivechatDepartmentAgents.find({ departmentId: department._id }).fetch(),
 				});
-
-				const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
-				const department = Livechat.saveDepartment(null, this.bodyParams.department, agents);
-
-				if (department) {
-					return API.v1.success({
-						department,
-						agents: LivechatDepartmentAgents.find({ departmentId: department._id }).fetch(),
-					});
-				}
-
-				return API.v1.failure();
-			} catch (e) {
-				return API.v1.failure(e);
 			}
+
+			return API.v1.failure();
 		},
 	},
 );
 
 API.v1.addRoute(
 	'livechat/department/:_id',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: {
+			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
+			PUT: { permissions: ['manage-livechat-departments', 'add-livechat-department-agents'], operation: 'hasAny' },
+			DELETE: { permissions: ['manage-livechat-departments', 'remove-livechat-department'], operation: 'hasAny' },
+		},
+	},
 	{
 		async get() {
-			if (!hasAtLeastOnePermission(this.userId, ['view-livechat-departments', 'view-l-room'])) {
-				return API.v1.unauthorized();
-			}
-
 			check(this.urlParams, {
 				_id: String,
 			});
@@ -103,95 +99,83 @@ API.v1.addRoute(
 
 			return API.v1.success({ department, agents });
 		},
-		put() {
+		async put() {
 			const permissionToSave = hasPermission(this.userId, 'manage-livechat-departments');
 			const permissionToAddAgents = hasPermission(this.userId, 'add-livechat-department-agents');
 
-			if (!permissionToSave && !permissionToAddAgents) {
-				return API.v1.unauthorized();
+			check(this.urlParams, {
+				_id: String,
+			});
+
+			check(this.bodyParams, {
+				department: Object,
+				agents: Match.Maybe(Array),
+			});
+
+			const { _id } = this.urlParams;
+			const { department, agents } = this.bodyParams;
+
+			let success;
+			if (permissionToSave) {
+				success = Livechat.saveDepartment(_id, department);
 			}
 
-			try {
-				check(this.urlParams, {
-					_id: String,
-				});
-
-				check(this.bodyParams, {
-					department: Object,
-					agents: Match.Maybe(Array),
-				});
-
-				const { _id } = this.urlParams;
-				const { department, agents } = this.bodyParams;
-
-				let success;
-				if (permissionToSave) {
-					success = Livechat.saveDepartment(_id, department);
-				}
-
-				if (success && agents && permissionToAddAgents) {
-					success = Livechat.saveDepartmentAgents(_id, { upsert: agents });
-				}
-
-				if (success) {
-					return API.v1.success({
-						department: LivechatDepartment.findOneById(_id),
-						agents: LivechatDepartmentAgents.find({ departmentId: _id }).fetch(),
-					});
-				}
-
-				return API.v1.failure();
-			} catch (e) {
-				return API.v1.failure(e);
+			if (success && agents && permissionToAddAgents) {
+				success = Livechat.saveDepartmentAgents(_id, { upsert: agents });
 			}
+
+			if (success) {
+				return API.v1.success({
+					department: LivechatDepartment.findOneById(_id),
+					agents: LivechatDepartmentAgents.find({ departmentId: _id }).fetch(),
+				});
+			}
+
+			return API.v1.failure();
 		},
 		delete() {
-			if (!hasPermission(this.userId, 'manage-livechat-departments') && !hasPermission(this.userId, 'remove-livechat-department')) {
-				return API.v1.unauthorized();
-			}
+			check(this.urlParams, {
+				_id: String,
+			});
 
-			try {
-				check(this.urlParams, {
-					_id: String,
-				});
-
-				if (Livechat.removeDepartment(this.urlParams._id)) {
-					return API.v1.success();
-				}
-				return API.v1.failure();
-			} catch (e) {
-				return API.v1.failure(e);
+			if (Livechat.removeDepartment(this.urlParams._id)) {
+				return API.v1.success();
 			}
+			return API.v1.failure();
 		},
 	},
 );
 
 API.v1.addRoute(
 	'livechat/department.autocomplete',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' } } },
 	{
-		get() {
+		async get() {
 			const { selector, onlyMyDepartments } = this.queryParams;
 			if (!selector) {
 				return API.v1.failure("The 'selector' param is required");
 			}
 
 			return API.v1.success(
-				Promise.await(
-					findDepartmentsToAutocomplete({
-						uid: this.userId,
-						selector: JSON.parse(selector),
-						onlyMyDepartments: onlyMyDepartments === 'true',
-					}),
-				),
+				await findDepartmentsToAutocomplete({
+					uid: this.userId,
+					selector: JSON.parse(selector),
+					onlyMyDepartments: onlyMyDepartments === 'true',
+				}),
 			);
 		},
 	},
 );
 
-API.v1.addRoute<'livechat/department/:departmentId/agents', { authRequired: true }>(
+API.v1.addRoute(
 	'livechat/department/:departmentId/agents',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: {
+			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
+			POST: { permissions: ['manage-livechat-departments', 'add-livechat-department-agents'], operation: 'hasAny' },
+		},
+	},
 	{
 		async get() {
 			check(this.urlParams, {
@@ -213,10 +197,7 @@ API.v1.addRoute<'livechat/department/:departmentId/agents', { authRequired: true
 
 			return API.v1.success(agents);
 		},
-		post() {
-			if (!hasPermission(this.userId, 'manage-livechat-departments') || !hasPermission(this.userId, 'add-livechat-department-agents')) {
-				return API.v1.unauthorized();
-			}
+		async post() {
 			check(this.urlParams, {
 				departmentId: String,
 			});
@@ -237,9 +218,9 @@ API.v1.addRoute<'livechat/department/:departmentId/agents', { authRequired: true
 
 API.v1.addRoute(
 	'livechat/department.listByIds',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' } } },
 	{
-		get() {
+		async get() {
 			const { ids } = this.queryParams;
 			const { fields } = this.parseJsonQuery();
 			if (!ids) {
@@ -250,13 +231,10 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success(
-				Promise.await(
-					findDepartmentsBetweenIds({
-						uid: this.userId,
-						ids,
-						fields,
-					}),
-				),
+				await findDepartmentsBetweenIds({
+					ids,
+					fields,
+				}),
 			);
 		},
 	},

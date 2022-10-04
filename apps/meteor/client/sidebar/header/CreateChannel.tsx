@@ -1,6 +1,6 @@
-import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Modal, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, TranslationKey, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
@@ -61,7 +61,7 @@ const CreateChannel = ({
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const federationEnabled = useSetting('Federation_Matrix_enabled');
-	const channelNameExists = useMethod('roomNameExists');
+	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 
@@ -83,8 +83,9 @@ const CreateChannel = ({
 			if (!allowSpecialNames && !channelNameRegex.test(name)) {
 				return setNameError(t('error-invalid-name'));
 			}
-			const isNotAvailable = await channelNameExists(name);
-			if (isNotAvailable) {
+			const { exists } = await channelNameExists({ roomName: name });
+
+			if (exists) {
 				return setNameError(t('Channel_already_exist', name));
 			}
 		},
@@ -104,7 +105,7 @@ const CreateChannel = ({
 	const canSave = useMemo(() => hasUnsavedChanges && !nameError, [hasUnsavedChanges, nameError]);
 
 	return (
-		<Modal>
+		<Modal data-qa='create-channel-modal'>
 			<Modal.Header>
 				<Modal.Title>{t('Create_channel')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
@@ -115,6 +116,7 @@ const CreateChannel = ({
 						<Field.Label>{t('Name')}</Field.Label>
 						<Field.Row>
 							<TextInput
+								data-qa-type='channel-name-input'
 								error={hasUnsavedChanges ? nameError : undefined}
 								addon={<Icon name={values.type ? 'lock' : 'hash'} size='x20' />}
 								placeholder={t('Channel_name')}
@@ -131,7 +133,11 @@ const CreateChannel = ({
 							</Box>
 						</Field.Label>
 						<Field.Row>
-							<TextInput placeholder={t('Channel_what_is_this_channel_about')} onChange={handlers.handleDescription} />
+							<TextInput
+								placeholder={t('Channel_what_is_this_channel_about')}
+								onChange={handlers.handleDescription}
+								data-qa-type='channel-topic-input'
+							/>
 						</Field.Row>
 					</Field>
 					<Field>
@@ -142,7 +148,12 @@ const CreateChannel = ({
 									{values.type ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}
 								</Field.Description>
 							</Box>
-							<ToggleSwitch checked={!!values.type} disabled={!!canOnlyCreateOneType} onChange={onChangeType} />
+							<ToggleSwitch
+								checked={!!values.type}
+								disabled={!!canOnlyCreateOneType}
+								onChange={onChangeType}
+								data-qa-type='channel-private-toggle'
+							/>
 						</Box>
 					</Field>
 					<Field>
@@ -192,12 +203,12 @@ const CreateChannel = ({
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!canSave} onClick={onCreate} primary>
+					<Button disabled={!canSave} onClick={onCreate} primary data-qa-type='create-channel-confirm-button'>
 						{t('Create')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

@@ -26,6 +26,7 @@ export type EditableSettingsContextValue = {
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SectionName[]];
 	readonly queryGroupTabs: (_id: GroupId) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => TabId[]];
 	readonly dispatch: (changes: Partial<EditableSetting>[]) => void;
+	readonly isEnterprise: boolean;
 };
 
 export const EditableSettingsContext = createContext<EditableSettingsContextValue>({
@@ -34,7 +35,10 @@ export const EditableSettingsContext = createContext<EditableSettingsContextValu
 	queryGroupSections: () => [(): (() => void) => (): void => undefined, (): SectionName[] => []],
 	queryGroupTabs: () => [(): (() => void) => (): void => undefined, (): TabId[] => []],
 	dispatch: () => undefined,
+	isEnterprise: false,
 });
+
+export const useIsEnterprise = (): boolean => useContext(EditableSettingsContext).isEnterprise;
 
 export const useEditableSetting = (_id: SettingId): EditableSetting | undefined => {
 	const { queryEditableSetting } = useContext(EditableSettingsContext);

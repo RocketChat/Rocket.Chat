@@ -12,14 +12,20 @@ const randomDelay = (): Promise<UploadResult> => new Promise((resolve) => setTim
 const uploadToEndpoint = (endpoint: PathFor<'POST'>, formData: any): Promise<UploadResult> =>
 	Promise.resolve(logAction('uploadToEndpoint', endpoint, formData)).then(randomDelay);
 
-const getStream = (streamName: string, options: {} = {}): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
+const getStream = (
+	streamName: string,
+	options: {
+		retransmit?: boolean | undefined;
+		retransmitToSelf?: boolean | undefined;
+	} = {},
+): (<TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void) => {
 	logAction('getStream', streamName, options);
 
-	return (eventName, callback): (() => void) => {
+	return (eventName: string, callback: () => void): (() => void) => {
 		const subId = Math.random().toString(16).slice(2);
 		logAction('getStream.subscribe', streamName, eventName, subId);
 
-		randomDelay().then(() => callback(undefined as any));
+		randomDelay().then(() => callback());
 
 		return (): void => {
 			logAction('getStream.unsubscribe', streamName, eventName, subId);

@@ -16,7 +16,6 @@ import type {
 	SettingValue,
 	ILivechatInquiryRecord,
 	IRole,
-	IUserSession,
 } from '@rocket.chat/core-typings';
 import {
 	Subscriptions,
@@ -24,7 +23,6 @@ import {
 	Users,
 	Settings,
 	Roles,
-	UsersSessions,
 	LivechatInquiry,
 	LivechatDepartmentAgents,
 	Rooms,
@@ -38,9 +36,8 @@ import {
 } from '@rocket.chat/models';
 
 import { subscriptionFields, roomFields } from './publishFields';
-import { EventSignatures } from '../../sdk/lib/Events';
-import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
-import { DatabaseWatcher } from '../../database/DatabaseWatcher';
+import type { EventSignatures } from '../../sdk/lib/Events';
+import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
@@ -159,25 +156,6 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 			role,
 		});
 	});
-
-	if (isPresenceMonitorEnabled()) {
-		watcher.on<IUserSession>(UsersSessions.getCollectionName(), async ({ clientAction, id, data: eventData }) => {
-			switch (clientAction) {
-				case 'inserted':
-				case 'updated':
-					const data = eventData ?? (await UsersSessions.findOneById(id));
-					if (!data) {
-						return;
-					}
-
-					broadcast('watch.userSessions', { clientAction, userSession: data });
-					break;
-				case 'removed':
-					broadcast('watch.userSessions', { clientAction, userSession: { _id: id } });
-					break;
-			}
-		});
-	}
 
 	watcher.on<ILivechatInquiryRecord>(LivechatInquiry.getCollectionName(), async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
