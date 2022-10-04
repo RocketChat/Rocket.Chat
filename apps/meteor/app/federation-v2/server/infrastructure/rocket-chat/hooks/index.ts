@@ -65,17 +65,6 @@ export class FederationHooks {
 		);
 	}
 
-	public static afterUserAvatarChanged(callback: (user: IUser) => Promise<void>): void {
-		callbacks.add(
-			'afterUserAvatarChanged',
-			({ user }: { user: IUser }): void => {
-				Promise.await(callback(user));
-			},
-			callbacks.priority.HIGH,
-			'federation-v2-after-user-avatar-changed',
-		);
-	}
-
 	public static afterMessageReacted(callback: (message: IMessage, user: IUser, reaction: string) => Promise<void>): void {
 		callbacks.add(
 			'afterSetReaction',

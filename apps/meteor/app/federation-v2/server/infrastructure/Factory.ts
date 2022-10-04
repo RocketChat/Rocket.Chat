@@ -177,18 +177,13 @@ export class FederationFactory {
 	public static setupListeners(
 		roomServiceSender: FederationRoomServiceSender,
 		roomInternalHooksValidator: FederationRoomInternalHooksValidator,
-		userServiceSender: FederationUserServiceSender,
 		messageServiceSender: FederationMessageServiceSender,
 	): void {
-		FederationFactory.setupActions(roomServiceSender, userServiceSender, messageServiceSender);
+		FederationFactory.setupActions(roomServiceSender, messageServiceSender);
 		FederationFactory.setupValidators(roomInternalHooksValidator);
 	}
 
-	private static setupActions(
-		roomServiceSender: FederationRoomServiceSender,
-		userServiceSender: FederationUserServiceSender,
-		messageServiceSender: FederationMessageServiceSender,
-	): void {
+	private static setupActions(roomServiceSender: FederationRoomServiceSender, messageServiceSender: FederationMessageServiceSender): void {
 		FederationHooks.afterUserLeaveRoom((user: IUser, room: IRoom) =>
 			roomServiceSender.afterUserLeaveRoom(FederationRoomSenderConverter.toAfterUserLeaveRoom(user._id, room._id)),
 		);
@@ -197,7 +192,6 @@ export class FederationFactory {
 				FederationRoomSenderConverter.toOnUserRemovedFromRoom(user._id, room._id, userWhoRemoved._id),
 			),
 		);
-		FederationHooks.afterUserAvatarChanged(async (user: IUser) => userServiceSender.afterUserAvatarChanged(user));
 		FederationHooks.afterMessageReacted((message: IMessage, user: IUser, reaction: string) =>
 			messageServiceSender.sendExternalMessageReaction(message, user, reaction),
 		);

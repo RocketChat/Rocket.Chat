@@ -1,5 +1,3 @@
-import type { IUser } from '@rocket.chat/core-typings';
-
 import type { IFederationBridge } from '../../domain/IFederationBridge';
 import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
@@ -16,8 +14,8 @@ export class FederationUserServiceSender extends FederationService {
 		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
 	}
 
-	public async afterUserAvatarChanged(internalUser: IUser): Promise<void> {
-		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalUser._id);
+	public async afterUserAvatarChanged(internalUsername: string): Promise<void> {
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalUsername(internalUsername);
 		if (!federatedUser) {
 			return;
 		}
@@ -26,6 +24,6 @@ export class FederationUserServiceSender extends FederationService {
 			return;
 		}
 
-		await this.updateUserAvatarExternally(internalUser, federatedUser);
+		await this.updateUserAvatarExternally(federatedUser.getInternalReference(), federatedUser);
 	}
 }

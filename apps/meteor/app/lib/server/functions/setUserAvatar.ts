@@ -7,7 +7,6 @@ import { Users } from '../../../models/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
 import { fetch } from '../../../../server/lib/http/fetch';
-import { callbacks } from '../../../../lib/callbacks';
 
 export function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
@@ -117,6 +116,5 @@ export function setUserAvatar(
 			username: user.username,
 			avatarETag,
 		});
-		callbacks.runAsync('afterUserAvatarChanged', { user: Users.findOneById(user._id) });
 	}, 500);
 }
