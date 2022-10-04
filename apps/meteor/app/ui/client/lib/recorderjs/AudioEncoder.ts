@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { settings } from '../../../../settings';
+export class AudioEncoder extends Emitter {
+	private worker: Worker;
 
-class AudioEncoder extends Emitter {
-	constructor(source, { bufferLen = 4096, numChannels = 1, bitRate = settings.get('Message_Audio_bitRate') || 32 } = {}) {
+	private scriptNode: ScriptProcessorNode;
+
+	constructor(source: MediaStreamAudioSourceNode, { bufferLen = 4096, numChannels = 1, bitRate = 32 } = {}) {
 		super();
 
 		const workerPath = Meteor.absoluteUrl('workers/mp3-encoder/index.js');
@@ -21,12 +23,7 @@ class AudioEncoder extends Emitter {
 			},
 		});
 
-		this.scriptNode = (source.context.createScriptProcessor || source.context.createJavaScriptNode).call(
-			source.context,
-			bufferLen,
-			numChannels,
-			numChannels,
-		);
+		this.scriptNode = source.context.createScriptProcessor(bufferLen, numChannels, numChannels);
 		this.scriptNode.onaudioprocess = this.handleAudioProcess;
 
 		source.connect(this.scriptNode);
@@ -37,7 +34,7 @@ class AudioEncoder extends Emitter {
 		this.worker.postMessage({ command: 'finish' });
 	}
 
-	handleWorkerMessage = (event) => {
+	handleWorkerMessage = (event: MessageEvent) => {
 		switch (event.data.command) {
 			case 'end': {
 				// prepend mp3 magic number to the buffer
@@ -51,7 +48,7 @@ class AudioEncoder extends Emitter {
 		}
 	};
 
-	handleAudioProcess = (event) => {
+	handleAudioProcess = (event: AudioProcessingEvent) => {
 		for (let channel = 0; channel < event.inputBuffer.numberOfChannels; channel++) {
 			const buffer = event.inputBuffer.getChannelData(channel);
 			this.worker.postMessage({
@@ -61,5 +58,3 @@ class AudioEncoder extends Emitter {
 		}
 	};
 }
-
-export { AudioEncoder };
