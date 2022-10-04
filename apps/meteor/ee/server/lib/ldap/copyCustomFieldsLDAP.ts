@@ -35,9 +35,8 @@ export const copyCustomFieldsLDAP = (
 	const map: Record<string, string> = (() => {
 		try {
 			return JSON.parse(customFieldsMap);
-		} catch (e) {
-			logger.error('Error parsing LDAP custom fields map.');
-			logger.error(e);
+		} catch (err) {
+			logger.error({ msg: 'Error parsing LDAP custom fields map.', err });
 		}
 	})();
 
@@ -48,9 +47,8 @@ export const copyCustomFieldsLDAP = (
 	let customFields: Record<string, any>;
 	try {
 		customFields = JSON.parse(customFieldsSettings) as Record<string, any>;
-	} catch (error) {
-		logger.error('Failed to parse Custom Fields');
-		logger.error(error);
+	} catch (err) {
+		logger.error({ msg: 'Failed to parse Custom Fields', err });
 		return;
 	}
 
