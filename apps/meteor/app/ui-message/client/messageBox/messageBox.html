@@ -26,11 +26,9 @@
 			></textarea>
 			<div class="js-input-message-shadow"></div>
 			{{#if isSendIconVisible}}
-			<span class="rc-message-box__icon rc-message-box__send js-send">
-				{{> icon block="rc-input__icon-svg" icon="send"}}
-			</span>
+			<span class="rc-message-box__icon rc-message-box__send js-send"> {{> icon block="rc-input__icon-svg" icon="send"}} </span>
 			{{else}} {{# if customAction }} {{> Template.dynamic template=customAction.template data=customAction.data }} {{ else }} {{#if
-			canSend}} {{> messageBoxAudioMessage rid=rid tmid=tmid}}
+			canSend}} {{> AudioMessageRecorder rid=rid tmid=tmid }}
 			<span class="rc-message-box__action-menu js-action-menu" data-desktop aria-haspopup="true" data-qa-id="menu-more-actions">
 				{{#if actions}}
 				<span class="rc-message-box__icon"> {{> icon block="rc-input__icon-svg" icon="plus"}} </span>

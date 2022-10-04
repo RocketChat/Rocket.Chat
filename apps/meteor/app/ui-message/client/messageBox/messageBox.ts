@@ -23,7 +23,6 @@ import { call } from '../../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
-import './messageBoxAudioMessage.ts';
 import './messageBox.html';
 import { messageBoxOnEnter } from './messageBoxOnEnter';
 
