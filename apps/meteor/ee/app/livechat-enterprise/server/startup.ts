@@ -25,7 +25,7 @@ Meteor.startup(async function () {
 		if (!value || value === 'none') {
 			return visitorActivityMonitor.stop();
 		}
-		visitorActivityMonitor.start();
+		Promise.await(visitorActivityMonitor.start());
 	});
 	settings.change('Livechat_visitor_inactivity_timeout', function () {
 		Promise.await(updatePredictedVisitorAbandonment());
