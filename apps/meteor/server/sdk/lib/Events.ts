@@ -22,7 +22,6 @@ import type {
 	IWebdavAccount,
 	ICustomSound,
 	VoipEventDataSignature,
-	AtLeast,
 	UserStatus,
 } from '@rocket.chat/core-typings';
 
@@ -137,5 +136,4 @@ export type EventSignatures = {
 	'call.callerhangup'(userId: string, data: { roomId: string }): void;
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
-	'message.update'(data: { message: AtLeast<IMessage, 'rid'> }): void;
 };
