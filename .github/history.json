@@ -94649,6 +94649,180 @@
           ]
         }
       ]
+    },
+    "5.1.4": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26965",
+          "title": "Release 5.1.4 ",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "aleksandernsilva",
+            "tassoevan"
+          ]
+        }
+      ]
+    },
+    "5.2.0-rc.2": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26986",
+          "title": "Regression: Remove section and replace icon on administration kebab menu",
+          "userLogin": "filipemarins",
+          "milestone": "5.2.0",
+          "contributors": [
+            "filipemarins",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26975",
+          "title": "Regression: Omnichannel Contact Center empty on no filter search",
+          "userLogin": "tiagoevanp",
+          "milestone": "5.2.0",
+          "contributors": [
+            "tiagoevanp",
+            "KevLehman",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26987",
+          "title": "[IMPROVE] Use cached EE Cloud license on startup",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.2.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26976",
+          "title": "Regression: Fixed takeInquiry method not displaying error messages on the client",
+          "userLogin": "aleksandernsilva",
+          "description": "This pull request brings back the toast message \"The maximum number of simultaneous chats per agent has been reached.\" that should be displayed when an agent tries to take more chats than the maximum allowed.\r\n\r\n![image](https://user-images.githubusercontent.com/6494543/192891486-8720a5e3-f0c8-4863-b0dc-fa3b922d776b.png)",
+          "milestone": "5.2.0",
+          "contributors": [
+            "aleksandernsilva"
+          ]
+        },
+        {
+          "pr": "26988",
+          "title": "Regression: Handle `undefined` values on `useReactiveQuery`'s query function",
+          "userLogin": "tassoevan",
+          "description": "According to https://tanstack.com/query/v4/docs/reference/useQuery, the query function must **not** return `undefined` values, a quirk that we've been ignoring.",
+          "milestone": "5.2.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "26983",
+          "title": "Regression: Composer not reactive when omnichannel room closed",
+          "userLogin": "MartinSchoeler",
+          "milestone": "5.2.0",
+          "contributors": [
+            "MartinSchoeler",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26687",
+          "title": "[IMPROVE] Results of user auto complete",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "5.2.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26935",
+          "title": "Regression: Incorrect on-hold chat resume message",
+          "userLogin": "murtaza98",
+          "milestone": "5.2.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "KevLehman",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "26964",
+          "title": "Regression: Event handler blocking mention links",
+          "userLogin": "tassoevan",
+          "description": "Fixes mention links being irresponsive to clicks.\r\nJira: [TC-55]\r\n\r\n[TC-55]: https://rocketchat.atlassian.net/browse/TC-55?atlOrigin=eyJpIjoiMmQ3ZmE0MWE2NGQwNDIzZThkMzc5NGNhMzU1MjExMGMiLCJwIjoiaiJ9",
+          "milestone": "5.2.0",
+          "contributors": [
+            "tassoevan",
+            "yash-rajpal",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26969",
+          "title": "Regression: Remove symbols from number before storing PBX event",
+          "userLogin": "KevLehman",
+          "milestone": "5.2.0",
+          "contributors": [
+            "KevLehman",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26962",
+          "title": "Regression: Typo on livechat/queue endpoint client call",
+          "userLogin": "KevLehman",
+          "milestone": "5.2.0",
+          "contributors": [
+            "KevLehman",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26961",
+          "title": "Revert: \"[IMPROVE] VideoConference Messages UI (#26548)\"",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "5.2.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "debdutdeb",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "26958",
+          "title": "[FIX] Admin sidebar navigation",
+          "userLogin": "juliajforesti",
+          "description": "## [MKP-125](https://rocketchat.atlassian.net/browse/MKP-125?atlOrigin=eyJpIjoiMThlMTIwYmFkZWI5NDBlYjhlMWI3YTc1ZDliYTY3NDUiLCJwIjoiaiJ9)\r\nFix the behavior of the admin sidebar, it didn't activate its options properly on pages that had sub-routes.\r\nDemo gif:\r\n![sidebar-bug](https://user-images.githubusercontent.com/43561537/192585542-ddd8fd37-e833-4960-ae67-fb408595c7ba.gif)",
+          "contributors": [
+            "juliajforesti",
+            "rique223",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
