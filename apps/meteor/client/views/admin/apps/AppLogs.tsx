@@ -1,4 +1,5 @@
 import { Accordion, Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
@@ -7,15 +8,16 @@ import LogItem from './LogItem';
 import { useLogs } from './hooks/useLogs';
 
 const AppLogs = ({ id }: { id: string }): ReactElement => {
+	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
-	const { data, isSuccess, isError, isLoading, error } = useLogs(id);
+	const { data, isSuccess, isError, isLoading } = useLogs(id);
 
 	return (
 		<>
 			{isLoading && <AccordionLoading />}
 			{isError && (
 				<Box maxWidth='x600' alignSelf='center'>
-					{error}
+					{t('Unknown_error')}
 				</Box>
 			)}
 			{isSuccess && (
