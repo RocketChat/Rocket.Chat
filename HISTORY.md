@@ -1,6 +1,25 @@
 
 # 5.2.0 (Under Release Candidate Process)
 
+## 5.2.0-rc.3
+`2022-10-04  ·  2 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: `improve/media-recorder` ([#26426](https://github.com/RocketChat/Rocket.Chat/pull/26426))
+
+- Regression: Use raw models instead of meteor ones on visitor inactivity processing ([#27002](https://github.com/RocketChat/Rocket.Chat/pull/27002))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@ggazzo](https://github.com/ggazzo)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 5.2.0-rc.2
 `2022-10-04  ·  3 🚀  ·  1 🐛  ·  9 🔍  ·  13 👩‍💻👨‍💻`
 
