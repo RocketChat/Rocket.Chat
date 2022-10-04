@@ -97,7 +97,7 @@ export const RoomComposer = ({
 						<RoomComposerAttachmentsAndShortcutsToolbar />
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
-						<Button small>Preview</Button>
+						{/* <Button small>Preview</Button> */}
 						<IconButton secondary info small disabled={!value.trim()} onClick={handleOnSend} icon='send' />
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>

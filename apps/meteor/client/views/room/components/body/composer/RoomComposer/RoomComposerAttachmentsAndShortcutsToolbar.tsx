@@ -1,7 +1,11 @@
+import { Tooltip } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
 // import { useSelectedDevices, useSetting } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
+
+import { AudioRecorder } from '../../../../../../../app/ui/client/lib/recorderjs/audioRecorder';
 
 // import { AudioRecorder } from '../../../../../../../app/ui';
 
@@ -95,14 +99,29 @@ const useGetUserMediaAudio = (): {
 		getUserMedia,
 	};
 };
+const useAudioRecorderState = () => {
+	const [subscribe, getSnapshot] = useMemo(() => {
+		const callback = (cb: () => void): (() => void) => AudioRecorder.on('state', cb);
 
-// .match(/audio\/mp3|audio\/\*/i
+		const getSnapshot = () => AudioRecorder.state;
+		return [callback, getSnapshot];
+	}, []);
+
+	return useSyncExternalStore(subscribe, getSnapshot);
+};
+
 const RoomComposerAttachmentsAndShortcutsToolbar = (): ReactElement => {
-	const { state, getUserMedia } = useGetUserMediaAudio();
+	const state = useAudioRecorderState();
+
 	return (
 		<>
-			{state === 'denied' && <MessageComposerAction icon='mic-off' disabled />}
-			{state !== 'denied' && <MessageComposerAction icon='mic' onClick={() => getUserMedia(console.log)} />}
+			{state === 'recording' && (
+				<>
+					<Tooltip children='Tooltip' placement='top-middle' />
+					<MessageComposerAction icon='mic-off' onClick={() => AudioRecorder.stop()} />
+				</>
+			)}
+			{state !== 'recording' && <MessageComposerAction icon='mic' onClick={() => AudioRecorder.start()} />}
 			<MessageComposerAction icon='video' />
 			<MessageComposerAction icon='plus' />
 		</>

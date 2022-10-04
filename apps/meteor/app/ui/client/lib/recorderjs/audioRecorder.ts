@@ -1,6 +1,8 @@
+import { Emitter } from '@rocket.chat/emitter';
+
 import { AudioEncoder } from './audioEncoder';
 
-const getUserMedia = ((navigator) => {
+const getUserMedia = ((navigator: any) => {
 	if (navigator.mediaDevices) {
 		return navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
 	}
@@ -14,13 +16,34 @@ const getUserMedia = ((navigator) => {
 				legacyGetUserMedia.call(navigator, options, resolve, reject);
 			});
 	}
-})(window.navigator);
+})(window.navigator) as typeof navigator.mediaDevices.getUserMedia;
 
-const AudioContext = window.AudioContext || window.webkitAudioContext;
+const AudioContext =
+	window.AudioContext ||
+	(
+		window as unknown as {
+			webkitAudioContext: typeof window.AudioContext;
+		}
+	).webkitAudioContext;
 
 const isSupported = Boolean(getUserMedia) && Boolean(AudioContext);
 
-class AudioRecorder {
+class AudioRecorder extends Emitter<{
+	state: 'recording' | 'stopped';
+}> {
+	public state: 'recording' | 'stopped' = 'stopped';
+
+	private encoder?: AudioEncoder;
+
+	private audioContext?: AudioContext;
+
+	private stream?: MediaStream;
+
+	private setState(state: 'recording' | 'stopped') {
+		this.state = state;
+		this.emit('state', state);
+	}
+
 	isSupported() {
 		return isSupported;
 	}
@@ -64,7 +87,11 @@ class AudioRecorder {
 			return;
 		}
 
-		const input = this.audioContext.createMediaStreamSource(this.stream);
+		if (!this.stream) {
+			throw new Error('No stream available');
+		}
+
+		const input = this.audioContext?.createMediaStreamSource(this.stream);
 		this.encoder = new AudioEncoder(input);
 	}
 
@@ -77,24 +104,28 @@ class AudioRecorder {
 		delete this.encoder;
 	}
 
-	async start(cb) {
+	async start(cb?: (state: boolean) => void) {
 		try {
 			await this.createAudioContext();
 			await this.createStream();
 			await this.createEncoder();
-			cb && cb.call(this, true);
+			this.setState('recording');
+			cb?.call(this, true);
 		} catch (error) {
 			console.error(error);
 			this.destroyEncoder();
 			this.destroyStream();
 			this.destroyAudioContext();
-			cb && cb.call(this, false);
+			cb?.call(this, false);
 		}
 	}
 
-	stop(cb) {
-		this.encoder.on('encoded', cb);
-		this.encoder.close();
+	stop(cb?: (blob: Blob) => void) {
+		this.encoder?.on('encoded', (blob) => {
+			this.setState('stopped');
+			cb?.(blob);
+		});
+		this.encoder?.close();
 
 		this.destroyEncoder();
 		this.destroyStream();
