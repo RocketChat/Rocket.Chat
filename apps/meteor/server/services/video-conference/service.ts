@@ -145,9 +145,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-load-own-data');
 		}
 
-		if (call.messages.started) {
-			this.updateVideoConfMessage(call.messages.started);
-		}
+		this.notifyVideoConfUpdate(call.rid, call._id);
 
 		await VideoConferenceModel.setDataById(callId, {
 			ringing: false,
@@ -369,11 +367,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return true;
 	}
 
-	private async updateVideoConfMessage(messageId: IMessage['_id']): Promise<void> {
-		const message = await Messages.findOneById(messageId);
-		if (message) {
-			api.broadcast('message.update', { message });
-		}
+	private notifyVideoConfUpdate(rid: IRoom['_id'], callId: VideoConference['_id']): void {
+		Notifications.notifyRoom(rid, callId);
 	}
 
 	private async endCall(callId: VideoConference['_id']): Promise<void> {
@@ -383,9 +378,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.ENDED });
-		if (call.messages?.started) {
-			this.updateVideoConfMessage(call.messages.started);
-		}
+		this.notifyVideoConfUpdate(call.rid, call._id);
 
 		if (call.type === 'direct') {
 			return this.endDirectCall(call);
@@ -833,9 +826,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.setStatusById(call._id, VideoConferenceStatus.STARTED);
-
-		if (call.messages.started) {
-			this.updateVideoConfMessage(call.messages.started);
-		}
+		this.notifyVideoConfUpdate(call.rid, call._id);
 	}
 }
