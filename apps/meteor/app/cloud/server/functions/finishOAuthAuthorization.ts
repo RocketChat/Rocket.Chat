@@ -47,21 +47,13 @@ export async function finishOAuthAuthorization(userId: string, code: string, sta
 	const expiresAt = new Date();
 	expiresAt.setSeconds(expiresAt.getSeconds() + result.data.expires_in);
 
-	// TODO move operation to model
-	await Users.updateOne(
-		{ _id: userId },
-		{
-			$set: {
-				'services.cloud': {
-					accessToken: result.data.access_token,
-					expiresAt,
-					scope: result.data.scope,
-					tokenType: result.data.token_type,
-					refreshToken: result.data.refresh_token,
-				},
-			},
-		},
-	);
+	await Users.setCloudServicesById(userId, {
+		accessToken: result.data.access_token,
+		expiresAt,
+		scope: result.data.scope,
+		tokenType: result.data.token_type,
+		refreshToken: result.data.refresh_token,
+	});
 
 	return true;
 }

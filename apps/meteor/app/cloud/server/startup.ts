@@ -45,8 +45,8 @@ Meteor.startup(function () {
 			}
 
 			console.log('Successfully registered with token provided by REG_TOKEN!');
-		} catch (e: any) {
-			SystemLogger.error('An error occured registering with token.', e.message);
+		} catch (err: unknown) {
+			SystemLogger.error({ msg: 'An error occured registering with token.', err });
 		}
 	}
 });

@@ -1,4 +1,5 @@
 import { Settings } from '@rocket.chat/models';
+import type { ISetting } from '@rocket.chat/core-typings';
 
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
@@ -17,11 +18,14 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 		return '';
 	}
 
-	const expires = await Settings.findOneById('Cloud_Workspace_Access_Token_Expires_At');
+	const expires = await Settings.findOneById<Pick<ISetting, 'value'>>('Cloud_Workspace_Access_Token_Expires_At', {
+		projection: { value: 1 },
+	});
 
-	if (expires === null) {
+	if (!expires) {
 		throw new Error('Cloud_Workspace_Access_Token_Expires_At is not set');
 	}
+
 	const now = new Date();
 
 	if (expires.value && now < expires.value && !forceNew) {

@@ -1,5 +1,6 @@
 import { HTTP } from 'meteor/http';
 import { Settings } from '@rocket.chat/models';
+import type { ISetting } from '@rocket.chat/core-typings';
 
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { settings } from '../../../settings/server';
@@ -8,7 +9,9 @@ import { LICENSE_VERSION } from '../license';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export async function getWorkspaceLicense(): Promise<{ updated: boolean; license: string }> {
-	const currentLicense = await Settings.findOne('Cloud_Workspace_License');
+	const currentLicense = await Settings.findOne<Pick<ISetting, 'value' | '_updatedAt'>>('Cloud_Workspace_License', {
+		projection: { value: 1, _updatedAt: 1 },
+	});
 
 	const cachedLicenseReturn = () => {
 		const license = currentLicense?.value as string;
