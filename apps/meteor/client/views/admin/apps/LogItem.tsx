@@ -1,4 +1,4 @@
-import { ILogEntry } from '@rocket.chat/core-typings/src/ILogs';
+import { ILogEntry } from '@rocket.chat/core-typings';
 import { Box, Accordion } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
