@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IRoom } from '@rocket.chat/core-typings';
 import '@rocket.chat/ui-contexts';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -36,7 +36,7 @@ declare module '@rocket.chat/ui-contexts' {
 		'livechat:removeTrigger': (...args: any[]) => any;
 		'livechat:removeUnit': (...args: any[]) => any;
 		'livechat:requestTranscript': (...args: any[]) => any;
-		'livechat:returnAsInquiry': (...args: any[]) => any;
+		'livechat:returnAsInquiry': (rid: IRoom['_id'], departmentID?: ILivechatDepartment['_id']) => boolean;
 		'livechat:sendTranscript': (...args: any[]) => any;
 		'livechat:transfer': (...args: any[]) => any;
 		'livechat:saveAppearance': (...args: any[]) => any;

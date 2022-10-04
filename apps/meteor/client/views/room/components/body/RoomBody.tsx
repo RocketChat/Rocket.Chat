@@ -160,7 +160,7 @@ const RoomBody = (): ReactElement => {
 		});
 
 		if (!leaderRoomRole) {
-			return;
+			return null;
 		}
 
 		const leaderUser = users.findOne({ _id: leaderRoomRole.u._id }, { fields: { status: 1, statusText: 1 } });
