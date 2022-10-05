@@ -7,7 +7,7 @@ import { expect, test } from './utils/test';
 import { AdminLdap } from './page-objects/admin-ldap';
 
 test.use({ storageState: 'admin-session.json' });
-test.describe.only('ldap test', async () => {
+test.describe('ldap test', async () => {
 	let container: StartedTestContainer;
 	const ldapConnectionUrl = '/admin/settings/LDAP';
 
@@ -32,7 +32,7 @@ test.describe.only('ldap test', async () => {
 	test('expect connection is ok', async ({ page }) => {
 		await page.goto(ldapConnectionUrl);
 		const isChecked = await poAdminLdap.ldapConnection.inputCheck.isChecked();
-
+		// FIXME: why is possible verify connection with reload in page
 		if (!isChecked) {
 			await poAdminLdap.ldapConnection.btnEnable.click();
 			await poAdminLdap.ldapConnection.selectLdapServerType();
