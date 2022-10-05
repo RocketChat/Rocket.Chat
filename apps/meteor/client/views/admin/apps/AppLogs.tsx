@@ -17,7 +17,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			{isLoading && <AccordionLoading />}
 			{isError && (
 				<Box maxWidth='x600' alignSelf='center'>
-					{t('Unknown_error')}
+					{t('App_not_found')}
 				</Box>
 			)}
 			{isSuccess && (
