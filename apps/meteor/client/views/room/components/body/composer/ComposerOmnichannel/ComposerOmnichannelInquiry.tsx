@@ -25,7 +25,7 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 			return;
 		}
 		try {
-			await takeInquiry(result.data.inquiry._id);
+			await takeInquiry(result.data.inquiry._id, { clientAction: true });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
