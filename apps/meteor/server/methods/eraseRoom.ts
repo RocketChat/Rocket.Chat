@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
-import { deleteRoom } from '../../app/lib/server';
+import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
 import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Messages } from '../../app/models/server';
 import { Apps } from '../../app/apps/server';
@@ -50,7 +50,7 @@ Meteor.methods({
 			}
 		}
 
-		const result = deleteRoom(rid);
+		deleteRoom(rid);
 
 		const team = room.teamId && (await Team.getOneById(room.teamId));
 
@@ -63,6 +63,6 @@ Meteor.methods({
 			Apps.getBridges()?.getListenerBridge().roomEvent('IPostRoomDeleted', room);
 		}
 
-		return result;
+		return true;
 	},
 });
