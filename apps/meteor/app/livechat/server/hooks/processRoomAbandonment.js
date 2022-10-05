@@ -64,11 +64,7 @@ callbacks.add(
 		if (!closedByAgent || !wasTheLastMessageSentByAgent) {
 			return;
 		}
-		// There's a possibility of a visitor not sending any message b4 agent, and this will cause
-		// The old find here to fail.
-		const agentLastMessage = room.v?.lastMessageTs
-			? Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v.lastMessageTs)
-			: Messages.findOneById(room.lastMessage._id);
+		const agentLastMessage = Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v.lastMessageTs);
 		if (!agentLastMessage) {
 			return;
 		}

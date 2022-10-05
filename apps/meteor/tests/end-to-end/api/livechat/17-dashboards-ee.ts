@@ -12,6 +12,8 @@ import {
 	makeAgentAvailable,
 	createAgent,
 	sendAgentMessage,
+	sendMessage,
+	fetchInquiry,
 } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -22,7 +24,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 	before((done) => getCredentials(done));
 
 	before((done) => {
-		updateSetting('Livechat_enabled', true).then(done);
+		updateSetting('Livechat_enabled', true)
+			.then(() => createAgent())
+			.then(() => done());
 	});
 
 	describe('livechat/analytics/agents/average-service-time', () => {
@@ -76,7 +80,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const date = new Date(new Date().setDate(new Date().getDate() - 2)).toISOString();
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await takeInquiry(room._id);
+			const inq = await fetchInquiry(room._id);
+			await takeInquiry(inq._id);
 			await closeRoom(room._id);
 
 			const { body } = await request
@@ -639,7 +644,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const date = new Date(new Date().setDate(new Date().getDate() - 2)).toISOString();
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await takeInquiry(room._id);
+			const inq = await fetchInquiry(room._id);
+			await takeInquiry(inq._id);
+			await sendMessage(room._id, 'first message', visitor.token);
 			await sendAgentMessage(room._id);
 			await closeRoom(room._id);
 
