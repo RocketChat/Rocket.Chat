@@ -146,10 +146,6 @@
 		}
 	}
 
-	&__federation_icon {
-		width: 20px;
-	}
-
 	&__action-menu {
 		position: relative;
 
@@ -171,8 +167,7 @@
 
 		&-done,
 		&-cancel,
-		&-timer,
-		&-loading {
+		&-timer {
 			display: none;
 		}
 
@@ -207,12 +202,6 @@
 				border-radius: 50%;
 				background-color: red;
 			}
-		}
-
-		&-loading {
-			cursor: pointer;
-
-			animation: spin 1s linear infinite;
 		}
 
 		&--recording {
