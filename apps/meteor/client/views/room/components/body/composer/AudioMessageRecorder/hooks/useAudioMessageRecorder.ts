@@ -1,19 +1,20 @@
 import { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { Icon, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useMemo, useState } from 'react';
+import { useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffect, useMemo, useState } from 'react';
 
-import { AudioRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../../../app/ui/client';
+import { AudioRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../../../../../../../app/ui/client';
 
 const audioRecorder = new AudioRecorder();
 
-type AudioMessageRecorderProps = {
+export type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
 	tmid: IMessage['_id'];
 };
 
-const useAudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps) => {
+export const useAudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps) => {
+	const dispatchToastMessage = useToastMessageDispatch();
+	const t = useTranslation();
 	const [state, setState] = useState<'idle' | 'loading' | 'recording'>('idle');
 	const [time, setTime] = useState('00:00');
 	const [isMicrophoneDenied, setIsMicrophoneDenied] = useState(false);
@@ -72,48 +73,10 @@ const useAudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps) => {
 		}
 	});
 
-	return {
-		state,
-		setState,
-		time,
-		isMicrophoneDenied,
-		recordingInterval,
-		recordingRoomId,
-		stopRecording,
-		handleMount,
-		handleUnmount,
-		setRecordingInterval,
-		setRecordingRoomId,
-		setIsMicrophoneDenied,
-		setTime,
-	};
-};
-
-const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactElement | null => {
-	const t = useTranslation();
-
-	const {
-		state,
-		setState,
-		time,
-		isMicrophoneDenied,
-		recordingRoomId,
-		stopRecording,
-		handleMount,
-		handleUnmount,
-		setRecordingInterval,
-		setRecordingRoomId,
-		setTime,
-		setIsMicrophoneDenied,
-	} = useAudioMessageRecorder({
-		rid,
-		tmid,
-	});
-
 	useEffect(() => {
 		handleMount();
 
-		return () => {
+		return (): void => {
 			handleUnmount();
 		};
 	}, [handleMount, handleUnmount]);
@@ -123,24 +86,16 @@ const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactEl
 	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList') as string;
 	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList') as string;
 
+	const isNotSupported = !audioRecorder.isSupported();
+
 	const isAllowed = useMemo(
 		() =>
-			audioRecorder.isSupported() &&
-			!isMicrophoneDenied &&
 			isFileUploadEnabled &&
 			isAudioRecorderEnabled &&
 			(!fileUploadMediaTypeBlackList || !fileUploadMediaTypeBlackList.match(/audio\/mp3|audio\/\*/i)) &&
 			(!fileUploadMediaTypeWhiteList || fileUploadMediaTypeWhiteList.match(/audio\/mp3|audio\/\*/i)),
-		[fileUploadMediaTypeBlackList, fileUploadMediaTypeWhiteList, isAudioRecorderEnabled, isFileUploadEnabled, isMicrophoneDenied],
+		[fileUploadMediaTypeBlackList, fileUploadMediaTypeWhiteList, isAudioRecorderEnabled, isFileUploadEnabled],
 	);
-
-	const stateClass = useMemo(() => {
-		if (recordingRoomId && recordingRoomId !== rid) {
-			return 'rc-message-box__audio-message--busy';
-		}
-
-		return state && `rc-message-box__audio-message--${state}`;
-	}, [recordingRoomId, rid, state]);
 
 	const handleRecordButtonClick = useMutableCallback(async () => {
 		if (recordingRoomId && recordingRoomId !== rid) {
@@ -165,6 +120,7 @@ const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactEl
 			setRecordingRoomId(rid);
 		} catch (error) {
 			console.log(error);
+			dispatchToastMessage({ type: 'error', message: t('AudioRecorder_error') });
 			setIsMicrophoneDenied(true);
 			setState('idle');
 		}
@@ -185,38 +141,24 @@ const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactEl
 		await fileUpload([{ file, name: fileName }], [], { rid, tmid });
 	});
 
-	if (!isAllowed) {
-		return null;
-	}
-
-	return (
-		<div className={`rc-message-box__audio-message ${stateClass}`}>
-			{state === 'recording' && (
-				<>
-					<div className='rc-message-box__icon rc-message-box__audio-message-cancel' onClick={handleCancelButtonClick}>
-						<Icon name='circle-cross' size={24} />
-					</div>
-					<div className='rc-message-box__audio-message-timer'>
-						<span className='rc-message-box__audio-message-timer-dot'></span>
-						<span className='rc-message-box__audio-message-timer-text'>{time}</span>
-					</div>
-					<div className='rc-message-box__icon rc-message-box__audio-message-done' onClick={handleDoneButtonClick}>
-						<Icon name='circle-check' size={24} />
-					</div>
-				</>
-			)}
-			{state === 'idle' && (
-				<div className='rc-message-box__icon rc-message-box__audio-message-mic' data-qa-id='audio-record' onClick={handleRecordButtonClick}>
-					<Icon name='mic' size={24} />
-				</div>
-			)}
-			{state === 'loading' && (
-				<div className='rc-message-box__icon'>
-					<Throbber inheritColor size='x12' />
-				</div>
-			)}
-		</div>
-	);
+	return {
+		state,
+		setState,
+		time,
+		recordingInterval,
+		recordingRoomId,
+		stopRecording,
+		handleMount,
+		handleUnmount,
+		setRecordingInterval,
+		setRecordingRoomId,
+		setIsMicrophoneDenied,
+		setTime,
+		handleCancelButtonClick,
+		handleDoneButtonClick,
+		handleRecordButtonClick,
+		isAllowed,
+		isNotSupported,
+		isMicrophoneDenied,
+	};
 };
-
-export default AudioMessageRecorder;

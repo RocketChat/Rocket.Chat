@@ -65,7 +65,6 @@ type MessageBoxTemplateInstance = Blaze.TemplateInstance<MessageboxPropTypes> & 
 		getInput: () => HTMLTextAreaElement;
 	} | null>;
 	replyMessageData: ReactiveVar<IMessage[] | null>;
-	isMicrophoneDenied: ReactiveVar<boolean>;
 	isSendIconVisible: ReactiveVar<boolean>;
 	input: HTMLTextAreaElement;
 	source?: HTMLTextAreaElement;
@@ -85,7 +84,6 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 	this.state = new ReactiveDict();
 	this.popupConfig = new ReactiveVar(null);
 	this.replyMessageData = new ReactiveVar(null);
-	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.isSendIconVisible = new ReactiveVar(false);
 
 	this.set = (value) => {

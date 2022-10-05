@@ -26,7 +26,7 @@ const getName = (t: ReturnType<typeof useTranslation>, permission: IPermission):
 type PermissionRowProps = {
 	permission: IPermission;
 	roleList: IRole[];
-	onGrant: (permissionId: IPermission['_id'], roleId: IRole['_id']) => Promise<void>;
+	onGrant: (params: { permissionId: IPermission['_id']; roleId: IRole['_id'] }) => Promise<void>;
 	onRemove: (permissionId: IPermission['_id'], roleId: IRole['_id']) => Promise<void>;
 };
 

@@ -1,6 +1,9 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement } from 'react';
+import { forwardRef } from 'react';
 
-const MessageComposerAction = (props: ComponentProps<typeof IconButton>): ReactElement => <IconButton small {...props} />;
+const MessageComposerAction = forwardRef<HTMLDivElement, ComponentProps<typeof IconButton>>(
+	(props, ref): ReactElement => <IconButton ref={ref} small {...props} />,
+);
 
 export default MessageComposerAction;
