@@ -12,7 +12,7 @@ test.describe('ldap test', async () => {
 	const ldapConnectionUrl = '/admin/settings/LDAP';
 
 	let poAdminLdap: AdminLdap;
-	test.beforeAll(async () => {
+	test.beforeEach(async () => {
 		const buildContext = path.resolve(__dirname, 'fixtures', 'ldap-client');
 
 		container = await (await GenericContainer.fromDockerfile(buildContext).build())
@@ -21,15 +21,16 @@ test.describe('ldap test', async () => {
 			.start();
 	});
 
-	test.afterAll(async () => {
-		await container.stop();
-	});
-
 	test.beforeEach(async ({ page }) => {
 		poAdminLdap = new AdminLdap(page);
 	});
 
+	test.afterEach(async () => {
+		await container.stop();
+	});
+
 	test('expect connection is ok', async ({ page }) => {
+		console.log(container);
 		await page.goto(ldapConnectionUrl);
 		const isChecked = await poAdminLdap.ldapConnection.inputCheck.isChecked();
 		// FIXME: why is possible verify connection with reload in page
