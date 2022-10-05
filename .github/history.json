@@ -94854,6 +94854,28 @@
           ]
         }
       ]
+    },
+    "5.2.0-rc.4": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26994",
+          "title": "Chore: break LDAP manager into smaller pieces to improve unit tests",
+          "userLogin": "ggazzo",
+          "milestone": "5.2.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }

@@ -1,6 +1,22 @@
 
 # 5.2.0 (Under Release Candidate Process)
 
+## 5.2.0-rc.4
+`2022-10-05  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: break LDAP manager into smaller pieces to improve unit tests ([#26994](https://github.com/RocketChat/Rocket.Chat/pull/26994))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 5.2.0-rc.3
 `2022-10-04  ·  2 🔍  ·  3 👩‍💻👨‍💻`
 
