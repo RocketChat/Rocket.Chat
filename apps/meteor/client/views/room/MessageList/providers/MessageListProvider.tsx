@@ -6,12 +6,13 @@ import {
 	MessageAttachment,
 	isThreadMainMessage,
 } from '@rocket.chat/core-typings';
-import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint, useUserRoom } from '@rocket.chat/ui-contexts';
+import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useMemo, FC, memo } from 'react';
 
 import { AutoTranslate } from '../../../../../app/autotranslate/client';
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
+import { useRoom } from '../../contexts/RoomContext';
 import ToolboxProvider from '../../providers/ToolboxProvider';
 import { MessageListContext, MessageListContextValue } from '../contexts/MessageListContext';
 import { useAutotranslateLanguage } from '../hooks/useAutotranslateLanguage';
@@ -166,7 +167,7 @@ export const MessageListProvider: FC<{
 		],
 	);
 
-	const room = useUserRoom(rid);
+	const room = useRoom();
 
 	if (!room) {
 		throw new Error('Room not found');

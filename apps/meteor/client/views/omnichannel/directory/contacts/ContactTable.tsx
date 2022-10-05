@@ -121,7 +121,7 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 				{result.phase === AsyncStatePhase.RESOLVED && (
 					<GenericTableBody>
 						{result.value.visitors.map(({ _id, username, fname, name, visitorEmails, phone, lastChat }) => {
-							const phoneNumber = phone?.length && phone[0].phoneNumber;
+							const phoneNumber = (phone?.length && phone[0].phoneNumber) || '';
 							const visitorEmail = visitorEmails?.length && visitorEmails[0].address;
 
 							return (
