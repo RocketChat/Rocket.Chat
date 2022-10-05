@@ -79,3 +79,5 @@ createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));
 createTemplateForComponent('loggedOutBanner', () => import('../ee/client/components/deviceManagement/LoggedOutBanner'), {
 	renderContainerView: () => HTML.DIV({ style: 'max-width: 520px; margin: 0 auto;' }),
 });
+
+createTemplateForComponent('AudioMessageRecorder', () => import('./views/composer/AudioMessageRecorder'));
