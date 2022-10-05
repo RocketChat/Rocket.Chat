@@ -27,8 +27,10 @@ export const copyCustomFieldsLDAP = (
 
 	if (!customFieldsMap || !customFieldsSettings) {
 		if (customFieldsMap) {
-			logger.debug('Skipping LDAP custom fields because there are no custom fields configured.');
+			logger.debug('Skipping LDAP custom fields because there are no custom map fields configured.');
+			return;
 		}
+		logger.debug('Skipping LDAP custom fields because there are no custom fields configured.');
 		return;
 	}
 
