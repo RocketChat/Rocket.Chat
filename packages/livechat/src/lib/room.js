@@ -297,7 +297,8 @@ export const loadMessages = async () => {
 };
 
 export const loadMoreMessages = async () => {
-	const { room: { _id: rid } = {}, messages = [], noMoreMessages = false } = store.state;
+	const { room, messages = [], noMoreMessages = false } = store.state;
+	const { _id: rid } = room || {};
 
 	if (!rid || noMoreMessages) {
 		return;
