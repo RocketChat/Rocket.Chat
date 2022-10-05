@@ -3,9 +3,11 @@ import path from 'path';
 import type { StartedTestContainer } from 'testcontainers';
 import { GenericContainer } from 'testcontainers';
 
+import { IS_EE } from './config/constants';
 import { expect, test } from './utils/test';
 import { AdminLdap } from './page-objects/admin-ldap';
 
+test.skip(!IS_EE, 'LDAP > Enterprise Only');
 test.use({ storageState: 'admin-session.json' });
 test.describe('ldap test', async () => {
 	let container: StartedTestContainer;
