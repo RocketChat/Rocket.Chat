@@ -1,10 +1,9 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Meteor } from 'meteor/meteor';
-import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
-import { LivechatDepartment, Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { LivechatEnterprise } from './LivechatEnterprise';
 
@@ -15,10 +14,10 @@ export class VisitorInactivityMonitor {
 		this.messageCache = new Map();
 	}
 
-	start() {
+	async start() {
 		this._startMonitoring();
 		this._initializeMessageCache();
-		this.user = Users.findOneById('rocket.cat');
+		this.user = await Users.findOneById('rocket.cat');
 	}
 
 	_startMonitoring() {
@@ -55,11 +54,11 @@ export class VisitorInactivityMonitor {
 		this.messageCache.set('default', settings.get('Livechat_abandoned_rooms_closed_custom_message') || TAPi18n.__('Closed_automatically'));
 	}
 
-	_getDepartmentAbandonedCustomMessage(departmentId) {
+	async _getDepartmentAbandonedCustomMessage(departmentId) {
 		if (this.messageCache.has('departmentId')) {
 			return this.messageCache.get('departmentId');
 		}
-		const department = LivechatDepartment.findOneById(departmentId);
+		const department = await LivechatDepartment.findOneById(departmentId);
 		if (!department) {
 			return;
 		}
@@ -67,10 +66,10 @@ export class VisitorInactivityMonitor {
 		return department.abandonedRoomsCloseCustomMessage;
 	}
 
-	closeRooms(room) {
+	async closeRooms(room) {
 		let comment = this.messageCache.get('default');
 		if (room.departmentId) {
-			comment = this._getDepartmentAbandonedCustomMessage(room.departmentId) || comment;
+			comment = (await this._getDepartmentAbandonedCustomMessage(room.departmentId)) || comment;
 		}
 		Livechat.closeRoom({
 			comment,
@@ -100,10 +99,11 @@ export class VisitorInactivityMonitor {
 		if (!action || action === 'none') {
 			return;
 		}
+		// TODO: change this to an async map or reduce
 		Promise.await(LivechatRooms.findAbandonedOpenRooms(new Date())).forEach((room) => {
 			switch (action) {
 				case 'close': {
-					this.closeRooms(room);
+					Promise.await(this.closeRooms(room));
 					break;
 				}
 				case 'on-hold': {
