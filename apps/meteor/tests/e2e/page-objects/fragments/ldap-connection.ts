@@ -11,6 +11,10 @@ export class LdapConnection {
 		return this.page.locator('[data-qa-setting-id="LDAP_Enable"]');
 	}
 
+	get inputCheck(): Locator {
+		return this.page.locator('#LDAP_Enable');
+	}
+
 	async selectLdapServerType(): Promise<void> {
 		await this.page.locator('[data-qa-setting-id="LDAP_Server_Type"]').click();
 		await this.page.locator('.rcx-option__content >> text="Other"').click();

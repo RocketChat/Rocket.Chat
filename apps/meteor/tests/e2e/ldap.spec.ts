@@ -7,7 +7,7 @@ import { expect, test } from './utils/test';
 import { AdminLdap } from './page-objects/admin-ldap';
 
 test.use({ storageState: 'admin-session.json' });
-test.describe.only('ldap test', async () => {
+test.describe('ldap test', async () => {
 	let container: StartedTestContainer;
 	const ldapConnectionUrl = '/admin/settings/LDAP';
 
@@ -31,13 +31,16 @@ test.describe.only('ldap test', async () => {
 
 	test('expect connection is ok', async ({ page }) => {
 		await page.goto(ldapConnectionUrl);
+		const isChecked = await poAdminLdap.ldapConnection.inputCheck.isChecked();
 
-		await poAdminLdap.ldapConnection.btnEnable.click();
-		await poAdminLdap.ldapConnection.selectLdapServerType();
-		await poAdminLdap.ldapConnection.inputLdapHost.fill('localhost');
-		await poAdminLdap.ldapConnection.btnLdapReconnect.click();
-		await poAdminLdap.ldapConnection.btnLoginFallBack.click();
-		await poAdminLdap.ldapConnection.btnSaveChanges.click();
+		if (!isChecked) {
+			await poAdminLdap.ldapConnection.btnEnable.click();
+			await poAdminLdap.ldapConnection.selectLdapServerType();
+			await poAdminLdap.ldapConnection.inputLdapHost.fill('localhost');
+			await poAdminLdap.ldapConnection.btnLdapReconnect.click();
+			await poAdminLdap.ldapConnection.btnLoginFallBack.click();
+			await poAdminLdap.ldapConnection.btnSaveChanges.click();
+		}
 
 		await poAdminLdap.ldapConnection.btnTestConnection.click();
 		await expect(poAdminLdap.toastSuccess).toBeVisible();
