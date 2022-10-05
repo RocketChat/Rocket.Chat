@@ -1,4 +1,4 @@
-import { isOauthAppsGetParams, isUpdateOAuthAppParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
+import { isOauthAppsGetParams, isUpdateOAuthAppParams } from '@rocket.chat/rest-typings';
 import { OAuthApps } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -60,16 +60,15 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'oauth-apps.deleteOAuthApp',
+	'oauth-apps/:_id',
 	{
 		authRequired: true,
-		validateParams: isDeleteOAuthAppParams,
 	},
 	{
-		async post() {
-			const { applicationId } = this.bodyParams;
+		async delete() {
+			const { _id } = this.urlParams;
 
-			const result = Meteor.call('deleteOAuthApp', applicationId);
+			const result = Meteor.call('deleteOAuthApp', _id);
 
 			return API.v1.success(result);
 		},
