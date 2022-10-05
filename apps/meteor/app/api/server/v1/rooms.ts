@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import Ajv from 'ajv';
-import { isRoomsEraseProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 
@@ -40,14 +39,13 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'rooms.erase',
+	'rooms/:rid',
 	{
 		authRequired: true,
-		validateParams: isRoomsEraseProps,
 	},
 	{
-		post() {
-			const { rid } = this.bodyParams;
+		delete() {
+			const { rid } = this.urlParams;
 
 			Meteor.call('eraseRoom', rid);
 			return API.v1.success();

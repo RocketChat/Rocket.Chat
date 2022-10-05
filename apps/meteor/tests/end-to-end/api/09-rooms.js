@@ -1311,10 +1311,9 @@ describe('[Rooms]', function () {
 		});
 		it('should delete a room when the request is correct', (done) => {
 			request
-				.post(api('rooms.erase'))
+				.delete(api(`rooms/${testChannel._id}`))
 				.set(credentials)
 				.send({
-					rid: testChannel._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1323,24 +1322,11 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
-		it('should throw an error when the room id is not provided', (done) => {
+		it('should throw an error when the room id doesn exist', (done) => {
 			request
-				.post(api('rooms.erase'))
-				.set(credentials)
-				.send({})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
-		});
-		it('should throw an error when the room id is incorrect', (done) => {
-			request
-				.post(api('rooms.erase'))
+				.delete(api('rooms/invalid'))
 				.set(credentials)
 				.send({
-					rid: false,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
