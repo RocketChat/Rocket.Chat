@@ -7,7 +7,7 @@ export const useChangeRole = ({
 	onRemove,
 	permissionId,
 }: {
-	onGrant: (permissionId: IPermission['_id'], roleId: IRole['_id']) => Promise<void>;
+	onGrant: (params: { permissionId: IPermission['_id']; roleId: IRole['_id'] }) => Promise<void>;
 	onRemove: (permissionId: IPermission['_id'], roleId: IRole['_id']) => Promise<void>;
 	permissionId: IPermission['_id'];
 }): ((roleId: IRole['_id'], granted: boolean) => Promise<boolean>) => {
@@ -18,7 +18,7 @@ export const useChangeRole = ({
 			if (granted) {
 				await onRemove(permissionId, roleId);
 			} else {
-				await onGrant(permissionId, roleId);
+				await onGrant({ permissionId, roleId });
 			}
 			return !granted;
 		} catch (error: unknown) {

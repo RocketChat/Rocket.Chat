@@ -98,11 +98,7 @@ const PermissionsTable = (): ReactElement => {
 												key={permission._id}
 												permission={permission}
 												roleList={roleList}
-												// onGrant: Type 'Promise<null>' is not assignable to type '(permissionId: string, roleId: string) => Promise<void>'
-												onGrant={grantRole({
-													permissionId: permission._id,
-													roleId: permission.roles[0],
-												})}
+												onGrant={grantRole}
 												onRemove={removeRole}
 											/>
 										))}
