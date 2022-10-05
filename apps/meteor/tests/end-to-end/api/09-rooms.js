@@ -1313,8 +1313,7 @@ describe('[Rooms]', function () {
 			request
 				.delete(api(`rooms/${testChannel._id}`))
 				.set(credentials)
-				.send({
-				})
+				.send({})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -1326,8 +1325,7 @@ describe('[Rooms]', function () {
 			request
 				.delete(api('rooms/invalid'))
 				.set(credentials)
-				.send({
-				})
+				.send({})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {

@@ -12,7 +12,7 @@ import { Team } from '../sdk';
 Meteor.methods({
 	async eraseRoom(rid: string) {
 		check(rid, String);
-		
+
 		methodDeprecationLogger.warn('eraseRoom will be deprecated in future versions of Rocket.Chat');
 
 		const uid = Meteor.userId();
