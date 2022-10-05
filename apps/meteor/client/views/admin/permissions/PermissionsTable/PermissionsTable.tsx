@@ -1,6 +1,6 @@
 import { Margins, Icon, Tabs, Button, Pagination, Tile } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, usePermission, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, usePermission, useEndpoint, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useState, ReactElement } from 'react';
 
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../components/GenericTable';
@@ -21,7 +21,7 @@ const PermissionsTable = (): ReactElement => {
 	const [type, setType] = useState(defaultType);
 	const router = useRoute('admin-permissions');
 
-	const grantRole = useMethod('authorization:addPermissionToRole');
+	const grantRole = useEndpoint('POST', '/v1/authorization.addPermission');
 	const removeRole = useMethod('authorization:removeRoleFromPermission');
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -98,7 +98,11 @@ const PermissionsTable = (): ReactElement => {
 												key={permission._id}
 												permission={permission}
 												roleList={roleList}
-												onGrant={grantRole}
+												// onGrant: Type 'Promise<null>' is not assignable to type '(permissionId: string, roleId: string) => Promise<void>'
+												onGrant={grantRole({
+													permissionId: permission._id,
+													roleId: permission.roles[0],
+												})}
 												onRemove={removeRole}
 											/>
 										))}
