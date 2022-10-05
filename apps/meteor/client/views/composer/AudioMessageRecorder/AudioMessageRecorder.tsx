@@ -13,9 +13,7 @@ type AudioMessageRecorderProps = {
 	tmid: IMessage['_id'];
 };
 
-const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactElement | null => {
-	const t = useTranslation();
-
+const useAudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps) => {
 	const [state, setState] = useState<'idle' | 'loading' | 'recording'>('idle');
 	const [time, setTime] = useState('00:00');
 	const [isMicrophoneDenied, setIsMicrophoneDenied] = useState(false);
@@ -72,6 +70,44 @@ const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactEl
 		if (state === 'recording') {
 			await stopRecording();
 		}
+	});
+
+	return {
+		state,
+		setState,
+		time,
+		isMicrophoneDenied,
+		recordingInterval,
+		recordingRoomId,
+		stopRecording,
+		handleMount,
+		handleUnmount,
+		setRecordingInterval,
+		setRecordingRoomId,
+		setIsMicrophoneDenied,
+		setTime,
+	};
+};
+
+const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactElement | null => {
+	const t = useTranslation();
+
+	const {
+		state,
+		setState,
+		time,
+		isMicrophoneDenied,
+		recordingRoomId,
+		stopRecording,
+		handleMount,
+		handleUnmount,
+		setRecordingInterval,
+		setRecordingRoomId,
+		setTime,
+		setIsMicrophoneDenied,
+	} = useAudioMessageRecorder({
+		rid,
+		tmid,
 	});
 
 	useEffect(() => {

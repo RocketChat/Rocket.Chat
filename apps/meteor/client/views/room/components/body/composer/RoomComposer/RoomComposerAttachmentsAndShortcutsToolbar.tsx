@@ -5,7 +5,7 @@ import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import React, { memo, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { AudioRecorder } from '../../../../../../../app/ui/client/lib/recorderjs/audioRecorder';
+import { AudioRecorder } from '../../../../../../../app/ui/client/lib/recorderjs/AudioRecorder';
 
 // import { AudioRecorder } from '../../../../../../../app/ui';
 
@@ -99,29 +99,29 @@ const useGetUserMediaAudio = (): {
 		getUserMedia,
 	};
 };
-const useAudioRecorderState = () => {
-	const [subscribe, getSnapshot] = useMemo(() => {
-		const callback = (cb: () => void): (() => void) => AudioRecorder.on('state', cb);
+// const useAudioRecorderState = () => {
+// 	const [subscribe, getSnapshot] = useMemo(() => {
+// 		const callback = (cb: () => void): (() => void) => AudioRecorder.on('state', cb);
 
-		const getSnapshot = () => AudioRecorder.state;
-		return [callback, getSnapshot];
-	}, []);
+// 		const getSnapshot = () => AudioRecorder.state;
+// 		return [callback, getSnapshot];
+// 	}, []);
 
-	return useSyncExternalStore(subscribe, getSnapshot);
-};
+// 	return useSyncExternalStore(subscribe, getSnapshot);
+// };
 
 const RoomComposerAttachmentsAndShortcutsToolbar = (): ReactElement => {
-	const state = useAudioRecorderState();
+	// const state = useAudioRecorderState();
 
 	return (
 		<>
-			{state === 'recording' && (
+			{/* {state === 'recording' && (
 				<>
 					<Tooltip children='Tooltip' placement='top-middle' />
 					<MessageComposerAction icon='mic-off' onClick={() => AudioRecorder.stop()} />
 				</>
 			)}
-			{state !== 'recording' && <MessageComposerAction icon='mic' onClick={() => AudioRecorder.start()} />}
+			{state !== 'recording' && <MessageComposerAction icon='mic' onClick={() => AudioRecorder.start()} />} */}
 			<MessageComposerAction icon='video' />
 			<MessageComposerAction icon='plus' />
 		</>
