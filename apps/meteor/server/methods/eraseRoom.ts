@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import type { ITeam } from '@rocket.chat/core-typings';
 
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { deleteRoom } from '../../app/lib/server';
@@ -10,7 +9,7 @@ import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { Team } from '../sdk';
 
 Meteor.methods({
-	eraseRoom(rid: string) {
+	async eraseRoom(rid: string) {
 		methodDeprecationLogger.warn('eraseRoom will be deprecated in future versions of Rocket.Chat');
 
 		const uid = Meteor.userId();
@@ -50,8 +49,9 @@ Meteor.methods({
 
 		const result = deleteRoom(rid);
 
-		if (room.teamId) {
-			const team = Promise.await(Team.getOneById(room.teamId)) as ITeam;
+		const team = room.teamId && (await Team.getOneById(room.teamId));
+
+		if (team) {
 			const user = Meteor.user();
 			Messages.createUserDeleteRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
 		}
