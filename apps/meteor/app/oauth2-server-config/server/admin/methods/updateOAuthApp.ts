@@ -11,8 +11,7 @@ Meteor.methods({
 	async updateOAuthApp(applicationId, application) {
 		methodDeprecationLogger.warn('updateOAuthApp will be deprecated in future versions of Rocket.Chat');
 
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		if (!hasPermission(this.userId!, 'manage-oauth-apps')) {
+		if (!this.userId || !hasPermission(this.userId, 'manage-oauth-apps')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'updateOAuthApp' });
 		}
 		if (!_.isString(application.name) || application.name.trim() === '') {

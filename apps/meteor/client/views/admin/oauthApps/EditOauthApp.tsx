@@ -45,15 +45,12 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 	const authUrl = useMemo(() => absoluteUrl('oauth/authorize'), [absoluteUrl]);
 	const tokenUrl = useMemo(() => absoluteUrl('oauth/token'), [absoluteUrl]);
 
-	const saveApp = useEndpoint('POST', '/v1/oauth-apps.updateOAuthApp');
+	const saveApp = useEndpoint('POST', `/v1/oauth-apps/${data._id}`);
 	const deleteApp = useEndpoint('DELETE', `/v1/oauth-apps/${data._id}`);
 
 	const onSubmit: SubmitHandler<EditOAuthAddAppPayload> = async (newData: EditOAuthAddAppPayload) => {
 		try {
-			await saveApp({
-				applicationId: data._id,
-				application: newData,
-			});
+			await saveApp(newData);
 			dispatchToastMessage({ type: 'success', message: t('Application_updated') });
 			onChange();
 		} catch (error) {

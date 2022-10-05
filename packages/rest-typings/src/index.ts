@@ -226,7 +226,6 @@ export * from './v1/omnichannel';
 export * from './v1/oauthapps';
 export * from './v1/oauthapps/UpdateOAuthAppParamsPOST';
 export * from './v1/oauthapps/OAuthAppsGetParamsGET';
-export * from './v1/oauthapps/DeleteOAuthAppParamsPOST';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
@@ -246,5 +245,3 @@ export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/import';
 export * from './v1/voip';
-
-export * from './v1/Ajv';

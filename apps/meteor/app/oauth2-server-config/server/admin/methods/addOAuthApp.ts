@@ -6,11 +6,12 @@ import { OAuthApps } from '@rocket.chat/models';
 import { hasPermission } from '../../../../authorization/server';
 import { Users } from '../../../../models/server';
 import { parseUriList } from '../functions/parseUriList';
+import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	async addOAuthApp(application) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		if (!hasPermission(this.userId!, 'manage-oauth-apps')) {
+		methodDeprecationLogger.warn('addOAuthApp will be deprecated in future versions of Rocket.Chat');
+		if (!this.userId || !hasPermission(this.userId, 'manage-oauth-apps')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addOAuthApp' });
 		}
 		if (!_.isString(application.name) || application.name.trim() === '') {

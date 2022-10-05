@@ -42,27 +42,12 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'oauth-apps.updateOAuthApp',
-	{
-		authRequired: true,
-		validateParams: isUpdateOAuthAppParams,
-	},
-	{
-		async post() {
-			const { applicationId, application } = this.bodyParams;
-
-			const result = Meteor.call('updateOAuthApp', applicationId, application);
-
-			return API.v1.success(result);
-		},
-	},
-);
 
 API.v1.addRoute(
 	'oauth-apps/:_id',
 	{
 		authRequired: true,
+		validateParams: { POST: isUpdateOAuthAppParams }
 	},
 	{
 		async delete() {
@@ -72,5 +57,13 @@ API.v1.addRoute(
 
 			return API.v1.success(result);
 		},
+		async post() {
+			const { _id } = this.urlParams;
+
+			const result = Meteor.call('updateOAuthApp', _id, this.bodyParams);
+
+			return API.v1.success(result);
+		},
 	},
+	
 );
