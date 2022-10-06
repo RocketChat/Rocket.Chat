@@ -205,15 +205,8 @@ const computation = Tracker.autorun(() => {
 						record.streamActive = true;
 						openedRoomsDependency.changed();
 					});
-					const subscription = ChatSubscription.findOne({ rid: record.rid });
-
-					if (subscription) {
-						Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream);
-						Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream);
-					} else {
-						Notifications.unRoom(record.rid, 'deleteMessage', onDeleteMessageStream);
-						Notifications.unRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream);
-					}
+					Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream);
+					Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream);
 				}
 			}
 

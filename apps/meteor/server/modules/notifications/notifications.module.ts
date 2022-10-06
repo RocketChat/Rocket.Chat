@@ -5,6 +5,7 @@ import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
 import { Authorization, VideoConf } from '../../sdk';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
+import { canAccessRoomAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer;
@@ -161,6 +162,14 @@ export class NotificationsModule {
 				return true;
 			}
 
+			const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v' | '_id'>>(rid, {
+				projection: { 't': 1, 'v.token': 1 },
+			});
+
+			if (!room) {
+				return false;
+			}
+
 			// typing from livechat widget
 			if (extraData?.token) {
 				// TODO improve this to make a query 'v.token'
@@ -174,8 +183,7 @@ export class NotificationsModule {
 				return false;
 			}
 
-			const subsCount = await Subscriptions.countByRoomIdAndUserId(rid, this.userId);
-			return subsCount > 0;
+			return canAccessRoomAsync(room, { _id: this.userId });
 		});
 
 		async function canType({
