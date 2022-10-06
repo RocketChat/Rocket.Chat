@@ -100,6 +100,8 @@ const initGallery = async (items: Slide[], options: PhotoSwipe.Options): Promise
 
 const defaultGalleryOptions = {
 	bgOpacity: 0.7,
+	counterEl: false,
+	arrowEl: false,
 	index: 0,
 	wheelToZoom: true,
 	padding: { top: 20, bottom: 40, left: 100, right: 100 },
