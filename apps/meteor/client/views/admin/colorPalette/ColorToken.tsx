@@ -1,7 +1,9 @@
-import { Box, Button, Modal } from '@rocket.chat/fuselage';
-import React, { ReactElement, useState } from 'react';
+import { Box, Button, Dropdown } from '@rocket.chat/fuselage';
+import React, { ReactElement, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 import ColorPicker from './ColorPicker';
+import { useDropdownVisibility } from '/client/sidebar/header/hooks/useDropdownVisibility';
 
 type ColorTokenProps = {
 	item: { name: string; token: string; color: string; isDark: boolean; rgb: string };
@@ -10,31 +12,41 @@ type ColorTokenProps = {
 };
 
 const ColorToken = ({ item, position, ...props }: ColorTokenProps): ReactElement => {
-	const [showColorPicker, setShowColorPicker] = useState(false);
+	const reference = useRef(null);
+	const target = useRef(null);
 
-	const closeColorPicker = (): void => setShowColorPicker(false);
-	const openColorPicker = (): void => setShowColorPicker(true);
+	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
+
+	const openColorPicker = (): void => toggle(true);
+	const closeColorPicker = (): void => toggle(false);
 
 	return (
 		<>
-			{showColorPicker && (
-				<Modal width='240px' height='320px' position='absolute'>
-					<Modal.Header display='flex' justifyContent='flex-end'>
-						<Modal.Close onClick={closeColorPicker} />
-					</Modal.Header>
-					<Box display='flex' justifyContent='center'>
-						<ColorPicker {...props} item={item} />
-					</Box>
-					<Modal.Footer>
-						<Modal.FooterControllers>
-							<Button>Cancel</Button>
-							<Button primary>Apply</Button>
-						</Modal.FooterControllers>
-					</Modal.Footer>
-				</Modal>
-			)}
+			{isVisible &&
+				createPortal(
+					<Dropdown reference={reference} ref={target}>
+						<Box pi='x8'>
+							<Box fontSize='p2b' fontWeight='p2b' display='flex' justifyContent='center'>
+								{item.name}
+							</Box>
+							<Box display='flex' justifyContent='center' mb='x8'>
+								<ColorPicker {...props} item={item} />
+							</Box>
+							<Box>
+								<Button mi='x2' onClick={closeColorPicker}>
+									Cancel
+								</Button>
+								<Button mi='x2' primary>
+									Apply
+								</Button>
+							</Box>
+						</Box>
+					</Dropdown>,
+					document.body,
+				)}
 
 			<Box
+				ref={reference}
 				width='120px'
 				height='120px'
 				backgroundColor={item.color}
