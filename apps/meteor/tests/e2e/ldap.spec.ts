@@ -9,7 +9,7 @@ import { AdminLdap } from './page-objects/admin-ldap';
 
 test.skip(!IS_EE, 'LDAP > Enterprise Only');
 test.use({ storageState: 'admin-session.json' });
-test.describe('ldap test', async () => {
+test.describe.only('ldap test', async () => {
 	let container: StartedTestContainer;
 	const ldapConnectionUrl = '/admin/settings/LDAP';
 
@@ -21,6 +21,8 @@ test.describe('ldap test', async () => {
 			.withName('ldap-test')
 			.withExposedPorts({ container: 10389, host: 389 })
 			.start();
+
+		console.log('container initialized');
 	});
 
 	test.afterAll(async () => {
@@ -43,7 +45,7 @@ test.describe('ldap test', async () => {
 			await poAdminLdap.ldapConnection.btnLoginFallBack.click();
 			await poAdminLdap.ldapConnection.btnSaveChanges.click();
 		}
-
+		console.log(container);
 		await poAdminLdap.ldapConnection.btnTestConnection.click();
 		await expect(poAdminLdap.toastSuccess).toBeVisible();
 	});
