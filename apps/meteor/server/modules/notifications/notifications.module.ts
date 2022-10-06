@@ -5,7 +5,6 @@ import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
 import { Authorization, VideoConf } from '../../sdk';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
-import { canAccessRoomAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer;
@@ -183,7 +182,7 @@ export class NotificationsModule {
 				return false;
 			}
 
-			return canAccessRoomAsync(room, { _id: this.userId });
+			return Authorization.canAccessRoom(room, { _id: this.userId }, extraData);
 		});
 
 		async function canType({
