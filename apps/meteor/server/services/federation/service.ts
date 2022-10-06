@@ -12,5 +12,18 @@ export class FederationService extends ServiceClassInternal implements IFederati
 			}
 			await federationUserServiceSender.afterUserAvatarChanged(username);
 		});
+		this.onEvent('presence.status', async ({ user }): Promise<void> => {
+			if (!user || !user._id || !user.status) {
+				return;
+			}
+			await federationUserServiceSender.afterUserPresenceChanged(user._id, user.status, user.statusText);
+		});
+		this.onEvent('user.typing', async ({ isTyping, roomId, user: { username }}): Promise<void> => {
+			if (!roomId || !username) {
+				return;
+			}
+
+			await federationUserServiceSender.onUserTyping(username, roomId, isTyping);
+		});
 	}
 }

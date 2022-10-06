@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../../../../settings/server';
-import type { IFederationBridgeRegistrationFile } from '../../matrix/Bridge';
+import { IFederationBridgeRegistrationFile } from '../../../domain/IFederationBridge';
 
 const EVERYTHING_REGEX = '.*';
 const LISTEN_RULES = EVERYTHING_REGEX;
@@ -58,7 +58,37 @@ export class RocketChatSettingsAdapter {
 		return settings.get('Federation_Matrix_enabled') === true;
 	}
 
-	public onFederationEnabledStatusChanged(callback: (enabled: boolean) => Promise<void>): () => void {
+	public areEphemeralEventsEnabled(): boolean {
+		return (
+			settings.get('Federation_Matrix_enable_presence_status') === true ||
+			settings.get('Federation_Matrix_enable_typing_status') === true ||
+			settings.get('Federation_Matrix_enable_sync_user_avatar') === true
+		);
+	}
+
+	public isUserPresenceStatusEnabled(): boolean {
+		return settings.get('Federation_Matrix_enable_presence_status') === true;
+	}
+
+	public isTypingStatusEnabled(): boolean {
+		return settings.get('Federation_Matrix_enable_typing_status') === true;
+	}
+
+	public isSyncUserAvatarEnabled(): boolean {
+		return settings.get('Federation_Matrix_enable_sync_user_avatar') === true;
+	}
+
+	public onFederationEnabledStatusChanged(
+		callback: (
+			enabled: boolean,
+			appServiceId: string,
+			homeServerUrl: string,
+			homeServerDomain: string,
+			bridgeUrl: string,
+			bridgePort: number,
+			homeServerRegistrationFile: IFederationBridgeRegistrationFile,
+		) => Promise<void>,
+	): () => void {
 		return settings.watchMultiple<boolean>(
 			[
 				'Federation_Matrix_enabled',
@@ -69,8 +99,22 @@ export class RocketChatSettingsAdapter {
 				'Federation_Matrix_homeserver_domain',
 				'Federation_Matrix_bridge_url',
 				'Federation_Matrix_bridge_localpart',
+				'Federation_Matrix_enable_presence_status',
+				'Federation_Matrix_enable_typing_status',
+				'Federation_Matrix_enable_sync_user_avatar',
 			],
-			([enabled]) => Promise.await(callback(enabled === true)),
+			([enabled]) =>
+				Promise.await(
+					callback(
+						enabled === true,
+						this.getApplicationServiceId(),
+						this.getHomeServerUrl(),
+						this.getHomeServerDomain(),
+						this.getBridgeUrl(),
+						this.getBridgePort(),
+						this.generateRegistrationFileObject(),
+					),
+				),
 		);
 	}
 
@@ -81,6 +125,7 @@ export class RocketChatSettingsAdapter {
 			applicationServiceToken: this.getApplicationApplicationServiceToken(),
 			bridgeUrl: this.getBridgeUrl(),
 			botName: this.getBridgeBotUsername(),
+			enableEphemeralEvents: this.areEphemeralEventsEnabled(),
 			listenTo: {
 				users: [
 					{
@@ -109,12 +154,13 @@ export class RocketChatSettingsAdapter {
 		await Settings.updateValueById(
 			'Federation_Matrix_registration_file',
 			yaml.dump({
-				id: registrationFile.id,
-				hs_token: registrationFile.homeserverToken,
-				as_token: registrationFile.applicationServiceToken,
-				url: registrationFile.bridgeUrl,
-				sender_localpart: registrationFile.botName,
-				namespaces: registrationFile.listenTo,
+				'id': registrationFile.id,
+				'hs_token': registrationFile.homeserverToken,
+				'as_token': registrationFile.applicationServiceToken,
+				'url': registrationFile.bridgeUrl,
+				'sender_localpart': registrationFile.botName,
+				'namespaces': registrationFile.listenTo,
+				'de.sorunome.msc2409.push_ephemeral': registrationFile.enableEphemeralEvents,
 			}),
 		);
 	}
@@ -129,6 +175,9 @@ export class RocketChatSettingsAdapter {
 				'Federation_Matrix_homeserver_domain',
 				'Federation_Matrix_bridge_url',
 				'Federation_Matrix_bridge_localpart',
+				'Federation_Matrix_enable_presence_status',
+				'Federation_Matrix_enable_typing_status',
+				'Federation_Matrix_enable_sync_user_avatar',
 			],
 			this.updateRegistrationFile.bind(this),
 		);
@@ -202,6 +251,30 @@ export class RocketChatSettingsAdapter {
 					type: 'code',
 					i18nLabel: 'Federation_Matrix_registration_file',
 					i18nDescription: 'Federation_Matrix_registration_file_desc',
+				});
+
+				this.add('Federation_Matrix_enable_presence_status', false, {
+					readonly: false,
+					type: 'boolean',
+					i18nLabel: 'Federation_Matrix_enable_presence_status',
+					i18nDescription: 'Federation_Matrix_enable_presence_status_desc',
+					alert: 'Federation_Matrix_enable_presence_status_Alert',
+				});
+
+				this.add('Federation_Matrix_enable_typing_status', false, {
+					readonly: false,
+					type: 'boolean',
+					i18nLabel: 'Federation_Matrix_enable_typing_status',
+					i18nDescription: 'Federation_Matrix_enable_typing_status_desc',
+					alert: 'Federation_Matrix_enable_typing_status_Alert',
+				});
+
+				this.add('Federation_Matrix_enable_sync_user_avatar', false, {
+					readonly: false,
+					type: 'boolean',
+					i18nLabel: 'Federation_Matrix_enable_sync_user_avatar',
+					i18nDescription: 'Federation_Matrix_enable_sync_user_avatar_desc',
+					alert: 'Federation_Matrix_enable_sync_user_avatar_Alert',
 				});
 			});
 		});

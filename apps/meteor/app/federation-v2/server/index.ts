@@ -31,9 +31,18 @@ const federationMessageServiceReceiver = FederationFactory.buildMessageServiceRe
 	federationBridge,
 );
 
+const federationUserServiceReceiver = FederationFactory.buildUserServiceReceiver(
+	rocketRoomAdapter,
+	rocketUserAdapter,
+	rocketFileAdapter,
+	rocketSettingsAdapter,
+	federationBridge,
+);
+
 const federationEventsHandler = FederationFactory.buildFederationEventHandler(
 	federationRoomServiceReceiver,
 	federationMessageServiceReceiver,
+	federationUserServiceReceiver,
 	rocketSettingsAdapter,
 );
 
@@ -55,6 +64,7 @@ const federationRoomInternalHooksValidator = FederationFactory.buildRoomInternal
 );
 
 export const federationUserServiceSender = FederationFactory.buildUserServiceSender(
+	rocketRoomAdapter,
 	rocketUserAdapter,
 	rocketFileAdapter,
 	rocketSettingsAdapter,

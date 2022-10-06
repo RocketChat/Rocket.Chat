@@ -1,6 +1,6 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { IFederationBridgeRegistrationFile } from '../../../../../../app/federation-v2/server/domain/IFederationBridge';
 
-import type { IFederationBridgeRegistrationFile } from '../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge';
 import { MatrixBridge } from '../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge';
 import type { AbstractMatrixEvent } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/AbstractMatrixEvent';
 import type { MatrixEventRoomNameChanged } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/events/RoomNameChanged';

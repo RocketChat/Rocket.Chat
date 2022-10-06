@@ -110,6 +110,10 @@ export class FederatedUser {
 		return this.internalReference.federation?.avatarUrl !== federationAvatarUrl;
 	}
 
+	public shouldUpdateStatus(status: UserStatus): boolean {
+		return this.internalReference.status !== status;
+	}
+
 	public getInternalId(): string {
 		return this.internalId;
 	}
