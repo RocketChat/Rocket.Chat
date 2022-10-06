@@ -39,7 +39,9 @@ const api = {
 			Triggers.processRequest(info);
 		}
 
-		const { token, room: { _id: rid } = {} } = store.state;
+		const { token, room } = store.state;
+		const { _id: rid } = room || {};
+
 		const {
 			change,
 			title,
@@ -75,13 +77,20 @@ const api = {
 
 	async setDepartment(value) {
 		const {
+			user,
 			config: { departments = [] },
-			user: { department: existingDepartment } = {},
+			defaultAgent,
 		} = store.state;
+
+		const { department: existingDepartment } = user || {};
 
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
 		updateIframeGuestData({ department });
+
+		if (defaultAgent && defaultAgent.department !== department) {
+			store.setState({ defaultAgent: null });
+		}
 
 		if (department !== existingDepartment) {
 			await loadConfig();

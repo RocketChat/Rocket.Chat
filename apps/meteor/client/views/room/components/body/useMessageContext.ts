@@ -1,24 +1,24 @@
 import { IRoom } from '@rocket.chat/core-typings';
-import { useLayout, usePermission, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useLayout, usePermission, useSetting, useUser, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 
 import { AutoTranslate } from '../../../../../app/autotranslate/client';
-import { Subscriptions, Users } from '../../../../../app/models/client';
 import { createMessageContext } from '../../../../../app/ui-utils/client/lib/messageContext';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { useRoomSubscription } from '../../contexts/RoomContext';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useMessageContext = (room: IRoom) => {
 	const uid = useUserId();
-	const user = useReactiveValue(useCallback(() => Users.findOne({ _id: uid }), [uid]));
+	const user = useUser() ?? undefined;
 	const rid = room._id;
-	const subscription = useReactiveValue(useCallback(() => Subscriptions.findOne({ rid }), [rid]));
+	const subscription = useRoomSubscription();
 	const { isEmbedded: embeddedLayout, isMobile: mobile } = useLayout();
 	const translateLanguage = useReactiveValue(useCallback(() => AutoTranslate.getLanguage(rid), [rid]));
 	const autoImageLoad = useUserPreference('autoImageLoad');
 	const useLegacyMessageTemplate = useUserPreference('useLegacyMessageTemplate');
 	const saveMobileBandwidth = useUserPreference('saveMobileBandwidth');
-	const collapseMediaByDefault = useUserPreference(user, 'collapseMediaByDefault');
+	const collapseMediaByDefault = useUserPreference('collapseMediaByDefault');
 	const hasPermissionDeleteMessage = usePermission('delete-message', rid);
 	const hasPermissionDeleteOwnMessage = usePermission('delete-own-message');
 	const displayRoles = useSetting('UI_DisplayRoles');

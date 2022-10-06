@@ -185,7 +185,7 @@ function handleOpenUserCardButtonClick(event: JQuery.ClickEvent, template: Commo
 			target: event.currentTarget,
 			open: (e: MouseEvent) => {
 				e.preventDefault();
-				tabBar.openUserInfo(username);
+				tabBar.openRoomInfo(username);
 			},
 		});
 	}
@@ -327,13 +327,13 @@ function handleMentionLinkClick(event: JQuery.ClickEvent, template: CommonRoomTe
 			target: event.currentTarget,
 			open: (e: MouseEvent) => {
 				e.preventDefault();
-				tabBar.openUserInfo(username);
+				tabBar.openRoomInfo(username);
 			},
 		});
 	}
 }
 
-export const getCommonRoomEvents = () => ({
+export const getCommonRoomEvents = (useLegacyMessageTemplate = true) => ({
 	...createMessageTouchEvents(),
 	'click [data-message-action]': handleMessageActionButtonClick,
 	'click .js-follow-thread': handleFollowThreadButtonClick,
@@ -345,5 +345,5 @@ export const getCommonRoomEvents = () => ({
 	'click .js-actionButton-respondWithQuotedMessage': handleRespondWithQuotedMessageActionButtonClick,
 	'click .js-actionButton-sendMessage': handleSendMessageActionButtonClick,
 	'click .message-actions__menu': handleMessageActionMenuClick,
-	'click .mention-link': handleMentionLinkClick,
+	...(useLegacyMessageTemplate && { 'click .mention-link': handleMentionLinkClick }),
 });
