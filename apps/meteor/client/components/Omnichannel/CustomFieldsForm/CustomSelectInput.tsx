@@ -1,8 +1,10 @@
-import { Field, Select } from '@rocket.chat/fuselage';
+import { Select } from '@rocket.chat/fuselage';
 import type { OmnichannelCustomFieldEndpointPayload } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { forwardRef, ReactElement, useMemo } from 'react';
 import { UseControllerReturn, useFormContext } from 'react-hook-form';
+
+import { CustomField } from './CustomField';
 
 export const CustomSelectInput = forwardRef<
 	HTMLInputElement,
@@ -24,25 +26,18 @@ export const CustomSelectInput = forwardRef<
 	}, [data._id, data.label, errors?.livechatData, t]);
 
 	return (
-		<Field>
-			<Field.Label>
-				{data.label}
-				{data.required && '*'}
-			</Field.Label>
-			<Field.Row>
-				<Select
-					name={name}
-					value={value}
-					onChange={onChange}
-					required={data.required}
-					error={errorMessage}
-					flexGrow={1}
-					options={mappedOptions}
-					visibility={data.visibility}
-					ref={ref}
-				/>
-			</Field.Row>
-			<Field.Error>{errorMessage}</Field.Error>
-		</Field>
+		<CustomField data={data}>
+			<Select
+				name={name}
+				value={value}
+				onChange={onChange}
+				required={data.required}
+				error={errorMessage}
+				flexGrow={1}
+				options={mappedOptions}
+				visibility={data.visibility}
+				ref={ref}
+			/>
+		</CustomField>
 	);
 });
