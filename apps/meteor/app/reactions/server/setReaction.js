@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { EmojiCustom } from '@rocket.chat/models';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { Messages, Rooms } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
@@ -9,7 +10,7 @@ import { emoji } from '../../emoji/server';
 import { isTheLastMessage, msgStream } from '../../lib/server';
 import { canAccessRoom, hasPermission } from '../../authorization/server';
 import { api } from '../../../server/sdk/api';
-import { AppEvents, Apps } from '../../apps/server/orchestrator';
+import { Apps } from '../../../server/sdk';
 
 const removeUserReaction = (message, reaction, username) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);

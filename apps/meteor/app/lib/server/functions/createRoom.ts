@@ -4,13 +4,12 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 
-import { Apps } from '../../../apps/server';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
-import { Team } from '../../../../server/sdk';
+import { Apps, Team } from '../../../../server/sdk';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '../../../../server/sdk/types/IRoomService';
 
 const isValidName = (name: unknown): name is string => {

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import {
 	createLivechatSubscription,
@@ -14,7 +15,7 @@ import {
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../../server/lib/logger/Logger';
 import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../models/server';
-import { Apps, AppEvents } from '../../../apps/server';
+import { Apps } from '../../../../server/sdk';
 
 const logger = new Logger('RoutingManager');
 

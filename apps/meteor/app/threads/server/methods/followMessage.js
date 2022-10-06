@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { Messages } from '../../../models/server';
 import { RateLimiter } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { canAccessRoomId } from '../../../authorization/server';
 import { follow } from '../functions';
-import { Apps, AppEvents } from '../../../apps/server/orchestrator';
+import { Apps } from '../../../../server/sdk';
 
 Meteor.methods({
 	followMessage({ mid }) {

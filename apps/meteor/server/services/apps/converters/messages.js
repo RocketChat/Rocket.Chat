@@ -1,7 +1,7 @@
 import { Random } from 'meteor/random';
 
-import { Messages, Rooms, Users } from '../../../models/server';
-import { transformMappedData } from '../../lib/misc/transformMappedData';
+import { Messages, Rooms, Users } from '../../../../app/models/server';
+import { transformMappedData } from '../../../../app/apps/lib/misc/transformMappedData';
 
 export class AppMessagesConverter {
 	constructor(orch) {

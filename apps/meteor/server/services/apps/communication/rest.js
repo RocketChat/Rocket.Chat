@@ -2,16 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Settings } from '@rocket.chat/models';
 
-import { API } from '../../../api/server';
-import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
-import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
-import { settings } from '../../../settings/server';
-import { Info } from '../../../utils';
-import { Users } from '../../../models/server';
+import { API } from '../../../../app/api/server';
+import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
+import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../../app/cloud/server';
+import { settings } from '../../../../app/settings/server';
+import { Info } from '../../../../app/utils';
+import { Users } from '../../../../app/models/server';
 import { Apps } from '../orchestrator';
-import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
+import { formatAppInstanceForRest } from '../../../../app/apps/lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
-import { fetch } from '../../../../server/lib/http/fetch';
+import { fetch } from '../../../lib/http/fetch';
 
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({

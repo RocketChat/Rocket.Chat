@@ -7,14 +7,15 @@ import { settings } from '../../../settings/server';
 import { Messages, Rooms } from '../../../models/server';
 import { api } from '../../../../server/sdk/api';
 import { callbacks } from '../../../../lib/callbacks';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../server/sdk';
 
 export const deleteMessage = async function (message: IMessage, user: IUser): Promise<void> {
 	const deletedMsg = Messages.findOneById(message._id);
 	const isThread = deletedMsg.tcount > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
-	const bridges = Apps?.isLoaded() && Apps.getBridges();
+	// const bridges = Apps.isLoaded() && Apps.getBridges();
+	const bridges = Apps.getBridges();
 
 	if (deletedMsg && bridges) {
 		const prevent = Promise.await(bridges.getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg));

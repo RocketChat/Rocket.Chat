@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { settings } from '../../settings/server';
 import { isTheLastMessage } from '../../lib/server';
 import { canAccessRoom, roomAccessAttributes } from '../../authorization/server';
 import { Subscriptions, Rooms, Messages } from '../../models/server';
-import { Apps, AppEvents } from '../../apps/server/orchestrator';
+import { Apps } from '../../../server/sdk';
 
 Meteor.methods({
 	starMessage(message) {

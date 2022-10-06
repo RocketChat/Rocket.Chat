@@ -1,6 +1,6 @@
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 
-import { API } from '../../../../api/server';
+import { API } from '../../../../../app/api/server';
 import type { AppsRestApi } from '../rest';
 
 export const actionButtonsHandler = (apiManager: AppsRestApi) =>

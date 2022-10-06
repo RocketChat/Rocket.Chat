@@ -6,7 +6,7 @@ import { Subscriptions } from '@rocket.chat/models';
 import type { MatchKeysAndValues } from 'mongodb';
 
 import { Users, Rooms } from '../../../models/server';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../server/sdk';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';

@@ -5,11 +5,11 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { ISubscription } from '@rocket.chat/core-typings';
 
-import { Messages, Users, Subscriptions } from '../../../models/server';
-import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
-import { api } from '../../../../server/sdk/api';
-import notifications from '../../../notifications/server/lib/Notifications';
+import { Messages, Users, Subscriptions } from '../../../../app/models/server';
+import { updateMessage } from '../../../../app/lib/server/functions/updateMessage';
+import { executeSendMessage } from '../../../../app/lib/server/methods/sendMessage';
+import { api } from '../../../sdk/api';
+import notifications from '../../../../app/notifications/server/lib/Notifications';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppMessageBridge extends MessageBridge {

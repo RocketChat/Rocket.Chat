@@ -13,9 +13,9 @@ import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/acces
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
-import { getRoom } from '../../../livechat/server/api/lib/livechat';
-import { Livechat } from '../../../livechat/server/lib/Livechat';
-import { Users, LivechatDepartment, LivechatRooms } from '../../../models/server';
+import { getRoom } from '../../../../app/livechat/server/api/lib/livechat';
+import { Livechat } from '../../../../app/livechat/server/lib/Livechat';
+import { Users, LivechatDepartment, LivechatRooms } from '../../../../app/models/server';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppLivechatBridge extends LivechatBridge {

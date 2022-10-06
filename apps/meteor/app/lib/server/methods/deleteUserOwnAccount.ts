@@ -3,11 +3,12 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { SHA256 } from 'meteor/sha';
 import s from 'underscore.string';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { deleteUser } from '../functions';
-import { AppEvents, Apps } from '../../../apps/server/orchestrator';
+import { Apps } from '../../../../server/sdk';
 
 Meteor.methods({
 	async deleteUserOwnAccount(password, confirmRelinquish) {

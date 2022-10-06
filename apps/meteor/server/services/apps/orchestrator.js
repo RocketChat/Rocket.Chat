@@ -4,8 +4,8 @@ import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
 
 import { Logger } from '../../lib/logger/Logger';
-import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models/server';
-import { settings, settingsRegistry } from '../../settings/server';
+import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../../app/models/server';
+import { settings } from '../../../app/settings/server';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import {
@@ -203,12 +203,3 @@ export class AppServerOrchestrator {
 }
 
 export const AppEvents = AppInterface;
-// export const Apps = new AppServerOrchestrator();
-
-// Meteor.startup(function _appServerOrchestrator() {
-// 	Apps.initialize();
-
-// 	if (Apps.isEnabled()) {
-// 		Apps.load();
-// 	}
-// });

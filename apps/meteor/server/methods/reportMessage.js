@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Reports, Rooms } from '@rocket.chat/models';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { Messages } from '../../app/models/server';
 import { canAccessRoomAsync } from '../../app/authorization/server/functions/canAccessRoom';
-import { AppEvents, Apps } from '../../app/apps/server';
+import { Apps } from '../sdk';
 
 Meteor.methods({
 	async reportMessage(messageId, description) {

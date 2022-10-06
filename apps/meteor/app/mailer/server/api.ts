@@ -11,7 +11,7 @@ import { Settings } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { replaceVariables } from './replaceVariables';
-import { Apps } from '../../apps/server';
+import { Apps } from '../../../server/sdk';
 import { validateEmail } from '../../../lib/emailValidator';
 
 let contentHeader: string | undefined;

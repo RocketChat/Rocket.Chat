@@ -6,9 +6,9 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Settings } from '@rocket.chat/models';
 
 import { Apps } from './orchestrator';
-import { getWorkspaceAccessToken } from '../../cloud/server';
-import { Users } from '../../models/server';
-import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
+import { getWorkspaceAccessToken } from '../../../app/cloud/server';
+import { Users } from '../../../app/models/server';
+import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
 
 const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {

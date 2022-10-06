@@ -3,8 +3,8 @@ import { UploadBridge } from '@rocket.chat/apps-engine/server/bridges/UploadBrid
 import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 
-import { FileUpload } from '../../../file-upload/server';
-import { determineFileType } from '../../lib/misc/determineFileType';
+import { FileUpload } from '../../../../app/file-upload/server';
+import { determineFileType } from '../../../../app/apps/lib/misc/determineFileType';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {

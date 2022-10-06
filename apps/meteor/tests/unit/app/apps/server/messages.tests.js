@@ -7,7 +7,7 @@ import { MessagesMock } from './mocks/models/Messages.mock';
 import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
 
-const { AppMessagesConverter } = proxyquire.noCallThru().load('../../../../../app/apps/server/converters/messages', {
+const { AppMessagesConverter } = proxyquire.noCallThru().load('../../../../../server/services/apps/converters/messages', {
 	'../../../models/server': {
 		Messages: new MessagesMock(),
 		Rooms: new RoomsMock(),

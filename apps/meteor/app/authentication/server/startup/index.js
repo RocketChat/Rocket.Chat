@@ -5,6 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Roles, Settings, Users as UsersRaw } from '@rocket.chat/models';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -17,7 +18,7 @@ import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLo
 import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
-import { AppEvents, Apps } from '../../../apps/server/orchestrator';
+import { Apps } from '../../../../server/sdk';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 
 Accounts.config({

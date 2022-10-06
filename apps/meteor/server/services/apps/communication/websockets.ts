@@ -4,8 +4,8 @@ import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting } from '@rocket.chat/core-typings';
 import type { IStreamer } from 'meteor/rocketchat:streamer';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import notifications from '../../../notifications/server/lib/Notifications';
+import { SystemLogger } from '../../../lib/logger/system';
+import notifications from '../../../../app/notifications/server/lib/Notifications';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 export enum AppEvents {

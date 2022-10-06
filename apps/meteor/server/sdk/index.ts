@@ -19,8 +19,8 @@ import type { ILDAPService } from './types/ILDAPService';
 import type { IVideoConfService } from './types/IVideoConfService';
 import type { ISAUMonitorService } from './types/ISAUMonitorService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
+import type { IAppsService } from './types/IAppsService';
 import { FibersContextStore } from './lib/ContextStore';
-import { IAppsService } from './types/IAppsService';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');

@@ -7,11 +7,11 @@ import { WebApp } from 'meteor/webapp';
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../app/settings/server';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
-import { UiKitCoreApp } from '../../../../server/sdk';
-import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
+import { UiKitCoreApp } from '../../../sdk';
+import { authenticationMiddleware } from '../../../../app/api/server/middlewares/authentication';
 
 const apiServer = express();
 

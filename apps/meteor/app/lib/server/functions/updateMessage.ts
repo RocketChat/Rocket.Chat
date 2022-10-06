@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../server/sdk';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 export const updateMessage = function (message: IMessage, user: IUser, originalMessage?: IMessage): void {

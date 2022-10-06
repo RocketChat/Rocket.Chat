@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { AppSourceStorage } from '@rocket.chat/apps-engine/server/storage';
 
-import { streamToBuffer } from '../../../file-upload/server/lib/streamToBuffer';
+import { streamToBuffer } from '../../../../app/file-upload/server/lib/streamToBuffer';
 
 export class AppGridFSSourceStorage extends AppSourceStorage {
 	private pathPrefix = 'GridFS:/';

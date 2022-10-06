@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
@@ -7,7 +8,7 @@ import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoom, hasPermission, roomAccessAttributes } from '../../authorization/server';
 import { Subscriptions, Messages, Users, Rooms } from '../../models/server';
-import { Apps, AppEvents } from '../../apps/server/orchestrator';
+import { Apps } from '../../../server/sdk';
 
 const recursiveRemove = (msg, deep = 1) => {
 	if (!msg) {

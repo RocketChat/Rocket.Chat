@@ -31,7 +31,7 @@ import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscr
 
 import type { IVideoConfService, VideoConferenceJoinOptions } from '../../sdk/types/IVideoConfService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { Apps } from '../../../app/apps/server';
+import { Apps } from '../../sdk';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { getURL } from '../../../app/utils/server';

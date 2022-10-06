@@ -4,6 +4,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
 import { isUserFederated } from '@rocket.chat/core-typings';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
@@ -15,7 +16,7 @@ import { saveUserIdentity } from './saveUserIdentity';
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { AppEvents, Apps } from '../../../apps/server/orchestrator';
+import { Apps } from '../../../../server/sdk';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 
 const MAX_BIO_LENGTH = 260;

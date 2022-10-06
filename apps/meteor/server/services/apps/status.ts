@@ -1,6 +1,7 @@
 import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
-import { AppEvents, Apps } from './orchestrator';
+import { Apps } from '../../sdk';
 
 UserPresenceMonitor.onSetUserStatus((...args: any) => {
 	const [user, status] = args;
