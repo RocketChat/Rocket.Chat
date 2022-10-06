@@ -10,6 +10,9 @@ addMigration({
 				name: {
 					$regex: 'thumb-',
 				},
+				typeGroup: {
+					$exists: false,
+				},
 			},
 			{
 				typeGroup: 'thumbnail',
