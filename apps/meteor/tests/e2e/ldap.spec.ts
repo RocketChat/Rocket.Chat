@@ -3,12 +3,15 @@ import path from 'path';
 import type { StartedTestContainer } from 'testcontainers';
 import { GenericContainer } from 'testcontainers';
 
+import { IS_EE } from './config/constants';
 import { expect, test } from './utils/test';
 import { AdminLdap } from './page-objects/admin-ldap';
 
+test.skip(!IS_EE, 'LDAP > Enterprise Only');
 test.use({ storageState: 'admin-session.json' });
-test.describe.only('ldap test', async () => {
+test.describe('ldap test', async () => {
 	let container: StartedTestContainer;
+	const ldapConnectionUrl = '/admin/settings/LDAP';
 
 	let poAdminLdap: AdminLdap;
 	test.beforeAll(async () => {
@@ -20,31 +23,26 @@ test.describe.only('ldap test', async () => {
 			.start();
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poAdminLdap = new AdminLdap(page);
-	});
-
 	test.afterAll(async () => {
 		await container.stop();
 	});
 
-	test('expect connection is ok', async ({ page }) => {
-		await test.step('expect set ldap configuration', async () => {
-			await page.goto('/admin/settings/LDAP');
-			await poAdminLdap.ldapConnection.inputCheck.waitFor();
-			const isChecked = await poAdminLdap.ldapConnection.inputCheck.isChecked();
-			// FIXME: why is possible verify connection with reload in page
-			if (!isChecked) {
-				await poAdminLdap.ldapConnection.btnEnable.click();
-				await poAdminLdap.ldapConnection.selectLdapServerType();
-				await poAdminLdap.ldapConnection.inputLdapHost.fill('localhost');
-				await poAdminLdap.ldapConnection.btnLdapReconnect.click();
-				await poAdminLdap.ldapConnection.btnLoginFallBack.click();
-				await poAdminLdap.ldapConnection.btnSaveChanges.click();
+	test.beforeEach(async ({ page }) => {
+		poAdminLdap = new AdminLdap(page);
+	});
 
-				await page.reload();
-			}
-		});
+	test('expect connection is ok', async ({ page }) => {
+		await page.goto(ldapConnectionUrl);
+		const isChecked = await poAdminLdap.ldapConnection.inputCheck.isChecked();
+
+		if (!isChecked) {
+			await poAdminLdap.ldapConnection.btnEnable.click();
+			await poAdminLdap.ldapConnection.selectLdapServerType();
+			await poAdminLdap.ldapConnection.inputLdapHost.fill('localhost');
+			await poAdminLdap.ldapConnection.btnLdapReconnect.click();
+			await poAdminLdap.ldapConnection.btnLoginFallBack.click();
+			await poAdminLdap.ldapConnection.btnSaveChanges.click();
+		}
 
 		await poAdminLdap.ldapConnection.btnTestConnection.click();
 		await expect(poAdminLdap.toastSuccess).toBeVisible();
