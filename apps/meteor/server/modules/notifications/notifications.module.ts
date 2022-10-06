@@ -181,8 +181,9 @@ export class NotificationsModule {
 			if (!this.userId) {
 				return false;
 			}
+			const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId }, extraData);
 
-			return Authorization.canAccessRoom(room, { _id: this.userId }, extraData);
+			return canAccess;
 		});
 
 		async function canType({
