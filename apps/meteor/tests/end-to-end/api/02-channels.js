@@ -7,6 +7,7 @@ import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createVisitor } from '../../data/livechat/rooms';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
+import { imgURL } from '../../data/interactions.js';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -303,6 +304,25 @@ describe('[Channels]', function () {
 
 	describe('[/channels.files]', () => {
 		before(() => updateSetting('VoIP_Enabled', true));
+
+		before((done) => {
+			request
+				.post(api(`rooms.upload/${channel._id}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message._id', message._id);
+					expect(res.body).to.have.nested.property('message.rid', channel._id);
+					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
+					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+					expect(res.body).to.have.nested.property('message.file.type', message.file.name);
+				})
+				.end(done);
+		});
 		const createVoipRoom = async () => {
 			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
 			const testUserCredentials = await login(testUser.username, password);
@@ -359,6 +379,43 @@ describe('[Channels]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('files').and.to.be.an('array');
+				})
+				.end(done);
+		});
+
+		it('should not list thumbnails when listing by room id', (done) => {
+			request
+				.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array');
+					const thumbnails = res.body.files.filter((f) => f.typeGroup === 'thumbnail');
+					expect(thumbnails.length).to.be.eq(0);
+				})
+				.end(done);
+		});
+
+		it('should list thumbnails when specifically searching for it', (done) => {
+			request
+				.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+					typeGroup: 'thumbnail',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array');
+					const thumbnails = res.body.files.filter((f) => f.typeGroup === 'thumbnail');
+					expect(thumbnails.length).to.be.eq(1);
 				})
 				.end(done);
 		});

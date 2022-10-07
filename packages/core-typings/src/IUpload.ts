@@ -1,7 +1,7 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface IUpload extends IRocketChatRecord {
-	typeGroup?: 'all' | 'image' | 'file' | 'thumbnail' | 'video' | 'audio' | 'text';
+	typeGroup?: string;
 	description?: string;
 	type?: string;
 	name: string;

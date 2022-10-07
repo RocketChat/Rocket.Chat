@@ -15,7 +15,9 @@ addMigration({
 				},
 			},
 			{
-				typeGroup: 'thumbnail',
+				$set: {
+					typeGroup: 'thumbnail',
+				},
 			},
 		);
 	},
