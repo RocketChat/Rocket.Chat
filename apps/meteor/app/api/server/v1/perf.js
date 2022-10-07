@@ -4,6 +4,16 @@ import express from 'express';
 import { API } from '../api';
 import { authenticationMiddleware } from '../middlewares/authentication';
 
+function syncJsonReturn(req, res) {
+	res.writeHead(200, { 'Content-Type': 'application/json' });
+	res.end(JSON.stringify({ sucess: true, data: 'string' }));
+}
+
+async function asyncJsonReturn(req, res) {
+	res.writeHead(200, { 'Content-Type': 'application/json' });
+	res.end(await Promise.resolve(JSON.stringify({ sucess: true, data: 'string' })));
+}
+
 const apiServer = express();
 
 apiServer.disable('x-powered-by');
@@ -40,33 +50,21 @@ const customServer = express();
 customServer.disable('x-powered-by');
 customServer.use('/v2/express/', router).listen(3030);
 
-WebApp.connectHandlers.use('/api/v1/perf/connect/non-auth-sync', (req, res) => {
-	res.writeHead(200, { 'Content-Type': 'application/json' });
-	res.end(JSON.stringify({ sucess: true, data: 'string' }));
-});
-
-WebApp.connectHandlers.use('/api/v1/perf/connect/non-auth-async', async (req, res) => {
-	res.writeHead(200, { 'Content-Type': 'application/json' });
-	res.end(JSON.stringify(await Promise.resolve({ sucess: true, data: 'string' })));
-});
-
+WebApp.connectHandlers.use('/api/v1/perf/connect/non-auth-sync', syncJsonReturn);
+WebApp.connectHandlers.use('/api/v1/perf/connect/non-auth-async', asyncJsonReturn);
 WebApp.connectHandlers.use('/api/v1/perf/connect/auth-sync', authenticationMiddleware({ rejectUnauthorized: true }));
-WebApp.connectHandlers.use('/api/v1/perf/connect/auth-sync', (req, res) => {
-	res.writeHead(200, { 'Content-Type': 'application/json' });
-	res.end(JSON.stringify({ sucess: true, data: 'string' }));
-});
-
+WebApp.connectHandlers.use('/api/v1/perf/connect/auth-sync', syncJsonReturn);
 WebApp.connectHandlers.use('/api/v1/perf/connect/auth-async', authenticationMiddleware({ rejectUnauthorized: true }));
-WebApp.connectHandlers.use('/api/v1/perf/connect/auth-async', async (req, res) => {
-	res.writeHead(200, { 'Content-Type': 'application/json' });
-	res.end(JSON.stringify({ sucess: true, data: 'string' }));
-});
-
+WebApp.connectHandlers.use('/api/v1/perf/connect/auth-async', asyncJsonReturn);
 WebApp.connectHandlers.use('/api/v1/perf/connect/me', authenticationMiddleware({ rejectUnauthorized: true }));
 WebApp.connectHandlers.use('/api/v1/perf/connect/me', async (req, res) => {
 	res.writeHead(200, { 'Content-Type': 'application/json' });
 	res.end(JSON.stringify({ sucess: true, user: req.user }));
 });
+
+WebApp.rawConnectHandlers.use('/api/v1/perf/raw-connect/non-auth-async', asyncJsonReturn);
+WebApp.rawConnectHandlers.use('/api/v1/perf/raw-connect/auth-async', authenticationMiddleware({ rejectUnauthorized: true }));
+WebApp.rawConnectHandlers.use('/api/v1/perf/raw-connect/auth-async', asyncJsonReturn);
 
 API.v1.addRoute(
 	'perf/restivus/auth-sync',
