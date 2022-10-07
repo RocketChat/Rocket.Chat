@@ -33,8 +33,9 @@ test.describe.serial('teams-management', () => {
 	test('expect throw validation error if team name already exists', async () => {
 		await poHomeTeam.sidenav.openNewByLabel('Team');
 		await poHomeTeam.inputTeamName.type(targetTeam);
+		await poHomeTeam.btnTeamCreate.click();
 
-		await expect(poHomeTeam.btnTeamCreate).toBeDisabled();
+		await expect(poHomeTeam.fieldError).toBeVisible();
 	});
 
 	test('expect send hello in the "targetTeam" and reply in a thread', async ({ page }) => {

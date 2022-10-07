@@ -24,6 +24,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const dispatchToastMessage = useToastMessageDispatch();
+	const canCreateTeam = usePermission('create-team');
 
 	const checkTeamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createTeamAction = useEndpoint('POST', '/v1/teams.create');
@@ -84,9 +85,6 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 
 	const canChangeReadOnly = !broadcast;
 	const canChangeEncrypted = isPrivate && !broadcast && e2eEnabled && !e2eEnabledForPrivateByDefault;
-
-	// const canSave = hasUnsavedChanges && !nameError;
-	const canCreateTeam = usePermission('create-team');
 	const isButtonEnabled = isDirty && canCreateTeam;
 
 	const handleCreateTeam = async ({
