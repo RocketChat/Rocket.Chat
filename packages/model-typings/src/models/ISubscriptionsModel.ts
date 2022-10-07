@@ -1,4 +1,4 @@
-import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document, AggregateOptions } from 'mongodb';
+import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document, AggregateOptions, Filter } from 'mongodb';
 import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
@@ -64,6 +64,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		searchTerm: string,
 		exceptions: string[],
 		searchFields: string[],
+		extraConditions: Filter<IUser>,
 		limit: number,
 		roomType?: ISubscription['t'],
 		{ startsWith, endsWith }?: { startsWith?: string | false; endsWith?: string | false },
