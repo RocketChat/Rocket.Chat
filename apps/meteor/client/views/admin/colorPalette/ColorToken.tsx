@@ -6,6 +6,8 @@ import { parseColor } from '@react-stately/color';
 import ColorPicker from './ColorPicker';
 
 import { useDropdownVisibility } from '/client/sidebar/header/hooks/useDropdownVisibility';
+import ColorSlider from './ColorSlider';
+import ColorArea from './ColorArea';
 
 type ColorTokenProps = {
 	item: { name: string; token: string; color: string; isDark: boolean; rgb: string };
@@ -13,11 +15,11 @@ type ColorTokenProps = {
 	disabled?: boolean;
 };
 
-const ColorToken = ({ item, position, ...props }: ColorTokenProps): ReactElement => {
+const ColorToken = ({ item, position }: ColorTokenProps): ReactElement => {
 	const reference = useRef(null);
 	const target = useRef(null);
 
-	const [color, setColor] = React.useState(parseColor(item.rgb));
+	const [color, setColor] = React.useState(parseColor(item.rgb).toFormat('hsba'));
 	const [endColor, setEndColor] = React.useState(color);
 	const [xChannel, yChannel, zChannel] = color.getColorChannels();
 
@@ -25,8 +27,8 @@ const ColorToken = ({ item, position, ...props }: ColorTokenProps): ReactElement
 
 	const openColorPicker = (): void => toggle(true);
 	const closeColorPicker = (): void => {
-		setEndColor(parseColor(item.rgb));
-		setColor(parseColor(item.rgb));
+		setEndColor(parseColor(item.rgb).toFormat('hsba'));
+		setColor(parseColor(item.rgb).toFormat('hsba'));
 		toggle(false);
 	};
 
@@ -39,17 +41,16 @@ const ColorToken = ({ item, position, ...props }: ColorTokenProps): ReactElement
 							<Box fontSize='p2b' fontWeight='p2b' display='flex' justifyContent='center'>
 								{item.name}
 							</Box>
-							<Box display='flex' justifyContent='center' mb='x8'>
-								<ColorPicker
-									{...props}
-									item={item}
-									aria-labelledby='gbr-label-id-1'
+							<Box display='flex' justifyContent='center' flexDirection='column' mb='x8'>
+								<ColorArea
+									aria-labelledby='hsb-label-id-1'
 									value={color}
 									onChange={setColor}
 									onChangeEnd={setEndColor}
 									xChannel={xChannel}
 									yChannel={yChannel}
 								/>
+								<ColorSlider channel={zChannel} value={color} onChange={setColor} onChangeEnd={setEndColor} />
 							</Box>
 							<Box>
 								<Button mi='x2' onClick={closeColorPicker}>
@@ -84,7 +85,7 @@ const ColorToken = ({ item, position, ...props }: ColorTokenProps): ReactElement
 			>
 				<Box>{item.name}</Box>
 				<Box display='flex' justifyContent='space-between'>
-					<Box>{item.color}</Box>
+					<Box>{endColor.toString('rgb')}</Box>
 					<Box>{item.token}</Box>
 				</Box>
 			</Box>

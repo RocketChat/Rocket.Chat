@@ -1,8 +1,7 @@
 import { useColorArea } from '@react-aria/color';
+import { useFocusRing } from '@react-aria/focus';
 import { useColorAreaState } from '@react-stately/color';
-import { Box } from '@rocket.chat/fuselage';
 import React, { Dispatch, ReactElement, SetStateAction } from 'react';
-import { useFocusRing } from 'react-aria';
 
 type ColorFormat = 'hex' | 'hexa' | 'rgb' | 'rgba' | 'hsl' | 'hsla' | 'hsb' | 'hsba';
 type ColorAxes = { xChannel: ColorChannel; yChannel: ColorChannel; zChannel: ColorChannel };
@@ -17,7 +16,7 @@ interface ColorChannelRange {
 	pageSize: number;
 }
 
-type Color = {
+export type Color = {
 	/** Converts the color to the given color format, and returns a new Color object. */
 	toFormat(format: ColorFormat): Color;
 	/** Converts the color to a string in the given format. */
@@ -61,61 +60,66 @@ type Color = {
 	getColorChannels(): [ColorChannel, ColorChannel, ColorChannel];
 };
 
-type ColorChannel = 'hue' | 'saturation' | 'brightness' | 'lightness' | 'red' | 'green' | 'blue' | 'alpha';
+export type ColorChannel = 'hue' | 'saturation' | 'brightness' | 'lightness' | 'red' | 'green' | 'blue' | 'alpha';
 
-type ColorPickerProps = {
-	item: { name: string; token: string; color: string; isDark: boolean; rgb: string };
-	disabled?: boolean;
-	value?: any;
+type ColorAreaProps = {
+	isDisabled?: boolean;
+	value: string | Color | undefined;
 	onChange?: Dispatch<SetStateAction<Color>>;
 	onChangeEnd?: Dispatch<SetStateAction<Color>>;
 	xChannel?: ColorChannel;
 	yChannel?: ColorChannel;
 };
 
+const SIZE = 192;
 const FOCUSED_THUMB_SIZE = 28;
 const THUMB_SIZE = 20;
+const BORDER_RADIUS = 4;
 
-const ColorPicker = ({ item, disabled, ...props }: ColorPickerProps): ReactElement => {
+const ColorArea = (props: ColorAreaProps): ReactElement => {
 	const inputXRef = React.useRef(null);
 	const inputYRef = React.useRef(null);
 	const containerRef = React.useRef(null);
 
-	const defaultValue = item.rgb;
+	const state = useColorAreaState(props);
 
-	const state = useColorAreaState({ defaultValue, ...props });
+	const { isDisabled } = props;
 
 	const { colorAreaProps, gradientProps, xInputProps, yInputProps, thumbProps } = useColorArea(
-		{ ...props, defaultValue, inputXRef, inputYRef, containerRef },
+		{ ...props, inputXRef, inputYRef, containerRef },
 		state,
 	);
 
 	const { focusProps, isFocusVisible } = useFocusRing();
 
 	return (
-		<Box
+		<div
 			ref={containerRef}
 			{...colorAreaProps}
 			style={{
 				...colorAreaProps.style,
-				opacity: disabled ? 0.3 : undefined,
+				width: SIZE,
+				height: SIZE,
+				borderRadius: BORDER_RADIUS,
+				opacity: isDisabled ? 0.3 : undefined,
 			}}
-			width='120px'
-			height='120px'
 		>
 			<div
 				{...gradientProps}
 				style={{
-					backgroundColor: disabled ? 'rgb(142, 142, 142)' : undefined,
+					backgroundColor: isDisabled ? 'rgb(142, 142, 142)' : undefined,
 					...gradientProps.style,
+					borderRadius: BORDER_RADIUS,
+					height: SIZE,
+					width: SIZE,
 				}}
 			/>
 			<div
 				{...thumbProps}
 				style={{
 					...thumbProps.style,
-					background: disabled ? 'rgb(142, 142, 142)' : state.getDisplayColor().toString('css'),
-					border: `2px solid ${disabled ? 'rgb(142, 142, 142)' : 'white'}`,
+					background: isDisabled ? 'rgb(142, 142, 142)' : state.getDisplayColor().toString('css'),
+					border: `2px solid ${isDisabled ? 'rgb(142, 142, 142)' : 'white'}`,
 					borderRadius: '50%',
 					boxShadow: '0 0 0 1px black, inset 0 0 0 1px black',
 					boxSizing: 'border-box',
@@ -127,8 +131,8 @@ const ColorPicker = ({ item, disabled, ...props }: ColorPickerProps): ReactEleme
 				<input ref={inputXRef} {...xInputProps} {...focusProps} />
 				<input ref={inputYRef} {...yInputProps} {...focusProps} />
 			</div>
-		</Box>
+		</div>
 	);
 };
 
-export default ColorPicker;
+export default ColorArea;
