@@ -5,7 +5,6 @@ import { api } from '../../../../apps/meteor/server/sdk/api';
 import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
-import { DatabaseWatcher } from '../../../../apps/meteor/server/database/DatabaseWatcher';
 
 const PORT = process.env.PORT || 3035;
 
@@ -24,6 +23,7 @@ const maxDocMs = instancePing * 4; // 4 times the ping interval
 
 	// need to import service after models are registered
 	const { StreamHub } = await import('./StreamHub');
+	const { DatabaseWatcher } = await import('../../../../apps/meteor/server/database/DatabaseWatcher');
 
 	const watcher = new DatabaseWatcher({ db });
 
