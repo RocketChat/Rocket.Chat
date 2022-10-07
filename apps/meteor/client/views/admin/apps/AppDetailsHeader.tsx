@@ -11,7 +11,7 @@ import { App } from './types';
 
 const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
 	const t = useTranslation();
-	const { iconFileData, name, author, version, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn, description } = app;
+	const { iconFileData, name, author, version, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn, shortDescription } = app;
 	const lastUpdated = modifiedAt && moment(modifiedAt).fromNow();
 
 	return (
@@ -24,7 +24,7 @@ const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
 					</Box>
 					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
 				</Box>
-				<Box mbe='x16'>{description}</Box>
+				<Box mbe='x16'>{shortDescription}</Box>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
 					<Box display='flex' flexDirection='row' alignItems='center'>
 						<AppStatus app={app} installed={installed} isAppDetailsPage={true} mie='x8' isSubscribed={isSubscribed} />
