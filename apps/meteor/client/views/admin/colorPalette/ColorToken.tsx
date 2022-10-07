@@ -1,8 +1,10 @@
 import { Box, Button, Dropdown } from '@rocket.chat/fuselage';
-import React, { ReactElement, useRef } from 'react';
+import React, { ReactElement, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { parseColor } from '@react-stately/color';
 
 import ColorPicker from './ColorPicker';
+
 import { useDropdownVisibility } from '/client/sidebar/header/hooks/useDropdownVisibility';
 
 type ColorTokenProps = {
@@ -15,10 +17,18 @@ const ColorToken = ({ item, position, ...props }: ColorTokenProps): ReactElement
 	const reference = useRef(null);
 	const target = useRef(null);
 
+	const [color, setColor] = React.useState(parseColor(item.rgb));
+	const [endColor, setEndColor] = React.useState(color);
+	const [xChannel, yChannel, zChannel] = color.getColorChannels();
+
 	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
 
 	const openColorPicker = (): void => toggle(true);
-	const closeColorPicker = (): void => toggle(false);
+	const closeColorPicker = (): void => {
+		setEndColor(parseColor(item.rgb));
+		setColor(parseColor(item.rgb));
+		toggle(false);
+	};
 
 	return (
 		<>
@@ -30,7 +40,16 @@ const ColorToken = ({ item, position, ...props }: ColorTokenProps): ReactElement
 								{item.name}
 							</Box>
 							<Box display='flex' justifyContent='center' mb='x8'>
-								<ColorPicker {...props} item={item} />
+								<ColorPicker
+									{...props}
+									item={item}
+									aria-labelledby='gbr-label-id-1'
+									value={color}
+									onChange={setColor}
+									onChangeEnd={setEndColor}
+									xChannel={xChannel}
+									yChannel={yChannel}
+								/>
 							</Box>
 							<Box>
 								<Button mi='x2' onClick={closeColorPicker}>
@@ -49,7 +68,7 @@ const ColorToken = ({ item, position, ...props }: ColorTokenProps): ReactElement
 				ref={reference}
 				width='120px'
 				height='120px'
-				backgroundColor={item.color}
+				backgroundColor={endColor.toString('rgb')}
 				display='flex'
 				flexDirection='column'
 				justifyContent='space-between'
