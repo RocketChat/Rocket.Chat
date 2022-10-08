@@ -22,11 +22,8 @@ export class FederationUserServiceListener extends FederationService {
 
     public async onUserPresence(userPresenceInput: FederationUserPresenceEventDto): Promise<void> {
         const {
-            currentlyActive,
             externalSenderId,
-            lastActiveAgo,
             presence,
-            avatarUrl,
             statusMessage,
         } = userPresenceInput;
 
@@ -35,15 +32,11 @@ export class FederationUserServiceListener extends FederationService {
             return;
         }
 
-        if (federatedUser.isRemote()) {
+        if (!federatedUser.shouldUpdateStatus(presence, statusMessage)) {
             return;
         }
 
-        if (!federatedUser.shouldUpdateStatus(presence)) {
-            return;
-        }
-
-        await this.internalUserAdapter.updateStatus(federatedUser, presence);
+        await this.internalUserAdapter.updateStatus(federatedUser, presence, statusMessage);
 
     }
 

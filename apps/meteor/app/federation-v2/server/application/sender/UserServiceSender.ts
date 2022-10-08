@@ -58,6 +58,9 @@ export class FederationUserServiceSender extends FederationService {
 		if (!federatedUser) {
 			return;
 		}
+		if (federatedUser.isRemote()) {
+            return;
+        }
 		let externalStatus
 		if (status === 'online') {
 			externalStatus = 'online';

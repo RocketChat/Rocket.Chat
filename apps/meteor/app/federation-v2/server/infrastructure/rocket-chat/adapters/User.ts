@@ -114,12 +114,12 @@ export class RocketChatUserAdapter {
 		await Users.setFederationAvatarUrlById(internalUserId, externalAvatarUrl);
 	}
 
-	public async updateStatus(federatedUser: FederatedUser, status: UserStatus): Promise<void> {
+	public async updateStatus(federatedUser: FederatedUser, status: UserStatus, statusMessage?: string): Promise<void> {
 		const user = federatedUser.getInternalReference();
 		const { _id, username, statusText, roles, name } = user;
-		await Users.updateOne({ _id }, { $set: { status } });
+		await Users.updateOne({ _id }, { $set: { status, statusText: statusMessage || '' } });
 		api.broadcast('presence.status', {
-			user: { status, _id , username, statusText, roles, name },
+			user: { status, _id , username, statusText: statusMessage || statusText, roles, name },
 			previousStatus: user.status,
 		});
 	}
