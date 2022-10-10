@@ -14,7 +14,7 @@ const Emoji = ({ big = false, preview = false, ...emoji }: EmojiProps): ReactEle
 	const { convertAsciiToEmoji } = useContext(MarkupInteractionContext);
 
 	const asciiEmoji = useMemo(
-		() => ('shortCode' in emoji ? (emoji.value.value !== emoji.shortCode ? emoji.value.value : undefined) : undefined),
+		() => ('shortCode' in emoji && emoji.value.value !== emoji.shortCode ? emoji.value.value : undefined),
 		[emoji],
 	);
 

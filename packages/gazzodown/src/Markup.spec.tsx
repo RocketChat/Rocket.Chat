@@ -1,10 +1,9 @@
 import { render, screen, cleanup, waitFor } from '@testing-library/react';
 import { Suspense } from 'react';
 
-import Markup from './Markup';
-
 import '@testing-library/jest-dom';
 import { MarkupInteractionContext } from '.';
+import Markup from './Markup';
 
 afterEach(cleanup);
 
