@@ -1,6 +1,21 @@
 
 # 5.2.0 (Under Release Candidate Process)
 
+## 5.2.0-rc.6
+`2022-10-10  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Bump fuselage to latest ([#27042](https://github.com/RocketChat/Rocket.Chat/pull/27042))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+
 ## 5.2.0-rc.5
 `2022-10-10  ·  3 🔍  ·  5 👩‍💻👨‍💻`
 
