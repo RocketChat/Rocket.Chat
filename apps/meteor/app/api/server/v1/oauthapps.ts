@@ -42,12 +42,11 @@ API.v1.addRoute(
 	},
 );
 
-
 API.v1.addRoute(
 	'oauth-apps/:_id',
 	{
 		authRequired: true,
-		validateParams: { POST: isUpdateOAuthAppParams }
+		validateParams: { POST: isUpdateOAuthAppParams },
 	},
 	{
 		async delete() {
@@ -65,5 +64,4 @@ API.v1.addRoute(
 			return API.v1.success(result);
 		},
 	},
-	
 );
