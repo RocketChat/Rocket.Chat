@@ -21,7 +21,6 @@ const defaultConfig = {
 	'./AdministrationModelList': () => <p>Administration Model List</p>,
 	'./AppsModelList': () => <p>Apps Model List</p>,
 	'./AuditModelList': () => <p>Audit Model List</p>,
-	'./SettingsModelList': () => <p>Settings Model List</p>,
 };
 
 describe('components/AdministrationList/AdministrationList', () => {
@@ -34,14 +33,12 @@ describe('components/AdministrationList/AdministrationList', () => {
 				hasAuditPermission={true}
 				hasAuditLogPermission={true}
 				hasManageApps={true}
-				hasSettingsPermission={true}
 				hasAdminPermission={true}
 			/>,
 		);
 
 		expect(screen.getByText('Administration Model List')).to.exist;
 		expect(screen.getByText('Apps Model List')).to.exist;
-		expect(screen.getByText('Settings Model List')).to.exist;
 		expect(screen.getByText('Audit Model List')).to.exist;
 	});
 
@@ -56,7 +53,6 @@ describe('components/AdministrationList/AdministrationList', () => {
 
 		expect(screen.queryByText('Administration Model List')).to.not.exist;
 		expect(screen.queryByText('Apps Model List')).to.not.exist;
-		expect(screen.queryByText('Settings Model List')).to.not.exist;
 		expect(screen.queryByText('Audit Model List')).to.not.exist;
 	});
 
@@ -71,7 +67,6 @@ describe('components/AdministrationList/AdministrationList', () => {
 
 		expect(screen.getByText('Administration Model List')).to.exist;
 		expect(screen.queryByText('Apps Model List')).to.not.exist;
-		expect(screen.queryByText('Settings Model List')).to.not.exist;
 		expect(screen.queryByText('Audit Model List')).to.not.exist;
 	});
 
@@ -91,7 +86,6 @@ describe('components/AdministrationList/AdministrationList', () => {
 
 		expect(screen.getByText('Apps Model List')).to.exist;
 		expect(screen.queryByText('Administration Model List')).to.not.exist;
-		expect(screen.queryByText('Settings Model List')).to.not.exist;
 		expect(screen.queryByText('Audit Model List')).to.not.exist;
 	});
 });
