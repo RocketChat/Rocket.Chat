@@ -19,7 +19,6 @@ const detectEmoji = (text: string): { name: string; className: string; image?: s
 	const html = Object.values(emoji.packages)
 		.reverse()
 		.reduce((html, { render }) => render(html), text);
-	console.log("html = ", html)
 	const div = document.createElement('div');
 	div.innerHTML = html;
 	return Array.from(div.querySelectorAll('span')).map((span) => ({
