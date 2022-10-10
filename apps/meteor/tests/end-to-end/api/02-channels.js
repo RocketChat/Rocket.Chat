@@ -319,7 +319,7 @@ describe('[Channels]', function () {
 					expect(res.body).to.have.nested.property('message.rid', channel._id);
 					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
 					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
-					expect(res.body).to.have.nested.property('message.file.type', message.file.name);
+					expect(res.body).to.have.nested.property('message.file.name', message.file.name);
 				})
 				.end(done);
 		});
