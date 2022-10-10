@@ -1,6 +1,33 @@
 
 # 5.2.0 (Under Release Candidate Process)
 
+## 5.2.0-rc.5
+`2022-10-10  ·  3 🔍  ·  5 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Cannot edit messages in some environments. ([#27023](https://github.com/RocketChat/Rocket.Chat/pull/27023))
+
+  An empty `$unset` object was being used and causes exceptions in some mongo versions.
+
+- Regression: Double Table Cell Causing extra padding on Current Chats ([#27008](https://github.com/RocketChat/Rocket.Chat/pull/27008))
+
+- Regression: VideoConf Actions Reactivity in SidebarItem ([#27009](https://github.com/RocketChat/Rocket.Chat/pull/27009))
+
+  Jira Issue: [VC-10]
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 5.2.0-rc.4
 `2022-10-05  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
