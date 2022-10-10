@@ -197,6 +197,27 @@ type RoleSyncProps = {
 	updatedSince?: string;
 };
 
+export type AddPermissionProps = {
+	permissionId: string;
+	roleId: string;
+};
+
+const AddPermissionPropsSchema = {
+	type: 'object',
+	properties: {
+		permissionId: {
+			type: 'string',
+		},
+		roleId: {
+			type: 'string',
+		},
+	},
+	required: ['permissionId', 'roleId'],
+	additionalProperties: false,
+};
+
+export const isAddPermissionProps = ajv.compile<AddPermissionProps>(AddPermissionPropsSchema);
+
 export type RolesEndpoints = {
 	'/v1/roles.list': {
 		GET: () => {
@@ -244,5 +265,9 @@ export type RolesEndpoints = {
 		POST: (props: RoleRemoveUserFromRoleProps) => {
 			role: IRole;
 		};
+	};
+
+	'/v1/roles.addPermission': {
+		POST: (params: AddPermissionProps) => void;
 	};
 };

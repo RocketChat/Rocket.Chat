@@ -40,7 +40,6 @@ import type { CommandsEndpoints } from './v1/commands';
 import type { MeEndpoints } from './v1/me';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { ImportEndpoints } from './v1/import';
-import type { AuthorizationEndpoints } from './v1/authorization';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention
 export interface Endpoints
@@ -83,7 +82,6 @@ export interface Endpoints
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
-		AuthorizationEndpoints,
 		ImportEndpoints {}
 
 type OperationsByPathPatternAndMethod<
@@ -245,4 +243,3 @@ export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/import';
 export * from './v1/voip';
-export * from './v1/authorization';

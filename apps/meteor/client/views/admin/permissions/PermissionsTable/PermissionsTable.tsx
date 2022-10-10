@@ -21,7 +21,7 @@ const PermissionsTable = (): ReactElement => {
 	const [type, setType] = useState(defaultType);
 	const router = useRoute('admin-permissions');
 
-	const grantRole = useEndpoint('POST', '/v1/authorization.addPermission');
+	const grantRole = useEndpoint('POST', '/v1/roles.addPermission');
 	const removeRole = useMethod('authorization:removeRoleFromPermission');
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -98,7 +98,7 @@ const PermissionsTable = (): ReactElement => {
 												key={permission._id}
 												permission={permission}
 												roleList={roleList}
-												onGrant={grantRole}
+												onGrant={(permissionId: string, roleId: string): Promise<void> => grantRole({ permissionId, roleId })}
 												onRemove={removeRole}
 											/>
 										))}

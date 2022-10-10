@@ -6,6 +6,7 @@ import {
 	isRoleDeleteProps,
 	isRoleRemoveUserFromRoleProps,
 	isRoleUpdateProps,
+	isAddPermissionProps,
 } from '@rocket.chat/rest-typings';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
@@ -327,6 +328,23 @@ API.v1.addRoute(
 			return API.v1.success({
 				role,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'roles.addPermission',
+	{
+		authRequired: true,
+		validateParams: isAddPermissionProps,
+	},
+	{
+		post() {
+			const { permissionId, roleId } = this.bodyParams;
+
+			Meteor.call('authorization:addPermissionToRole', permissionId, roleId);
+
+			return API.v1.success();
 		},
 	},
 );
