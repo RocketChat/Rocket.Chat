@@ -1,20 +1,31 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
+// import { VideoRecorder } from '../../ui/client/lib/recorderjs/videoRecorder';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { VideoRecorder } from '../../ui';
 import { t } from '../../utils/client';
 
-export const VRecDialog = new (class {
+class VRecDialog {
 	opened = false;
 
-	dialogView = null;
+	dialogView: Blaze.View | null = null;
+
+	source: HTMLElement | null = null;
 
 	init() {
 		this.dialogView = Blaze.render(Template.vrecDialog, document.body);
 	}
 
-	open(source, { rid, tmid }) {
+	open(
+		{
+			rid,
+			tmid,
+		}: {
+			rid: string;
+			tmid?: string;
+		},
+		source,
+	) {
 		if (!this.dialogView) {
 			this.init();
 		}
@@ -54,4 +65,7 @@ export const VRecDialog = new (class {
 		}
 		return VideoRecorder.start(this.video);
 	}
-})();
+}
+
+const vRecDialog = new VRecDialog();
+export { vRecDialog as VRecDialog };

@@ -23,5 +23,5 @@ export { UserAction, USER_ACTIVITIES } from './lib/UserAction';
 export { KonchatNotification } from './lib/notification';
 export { Login, Button } from './lib/rocket';
 export { AudioRecorder } from './lib/recorderjs/AudioRecorder';
-export { VideoRecorder } from './lib/recorderjs/videoRecorder';
+// export { VideoRecorder } from './lib/recorderjs/videoRecorders';
 export * from './lib/userPopoverStatus';

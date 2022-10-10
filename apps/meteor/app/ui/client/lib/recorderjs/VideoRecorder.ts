@@ -91,7 +91,7 @@ export const VideoRecorder = new (class VideoRecorder {
 		}
 
 		if (this.videoel) {
-			this.videoel.pause;
+			this.videoel.pause();
 			this.videoel.src = '';
 		}
 

@@ -1,9 +1,11 @@
 import { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { AudioRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../../../../../../../app/ui/client';
+import { useIsRecorderEnabled } from '../../hooks/useIsRecorderEnabled';
+import { useRecordingState } from '../../hooks/useRecordingState';
 
 const audioRecorder = new AudioRecorder();
 
@@ -12,10 +14,27 @@ export type AudioMessageRecorderProps = {
 	tmid: IMessage['_id'];
 };
 
+type RecordingState = {
+	isAllowed: boolean;
+	isNotSupported: boolean;
+};
+
+const useAudioMessageRecorderIsEnabled = (): RecordingState => {
+	const { isAllowed: isUploadAllowed, isNotSupported } = useIsRecorderEnabled(/audio\/mp3|audio\/\*/i);
+
+	const videoRecorderEnabled = Boolean(useSetting('Message_VideoRecorderEnabled'));
+
+	return {
+		isAllowed: isUploadAllowed && videoRecorderEnabled,
+		isNotSupported: isNotSupported || !audioRecorder.isSupported(),
+	};
+};
+
 export const useAudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps) => {
+	const { isAllowed, isNotSupported } = useAudioMessageRecorderIsEnabled();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
-	const [state, setState] = useState<'idle' | 'loading' | 'recording'>('idle');
+	const [state, setState] = useRecordingState();
 	const [time, setTime] = useState('00:00');
 	const [isMicrophoneDenied, setIsMicrophoneDenied] = useState(false);
 	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
@@ -80,22 +99,6 @@ export const useAudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps
 			handleUnmount();
 		};
 	}, [handleMount, handleUnmount]);
-
-	const isFileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
-	const isAudioRecorderEnabled = useSetting('Message_AudioRecorderEnabled') as boolean;
-	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList') as string;
-	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList') as string;
-
-	const isNotSupported = !audioRecorder.isSupported();
-
-	const isAllowed = useMemo(
-		() =>
-			isFileUploadEnabled &&
-			isAudioRecorderEnabled &&
-			(!fileUploadMediaTypeBlackList || !fileUploadMediaTypeBlackList.match(/audio\/mp3|audio\/\*/i)) &&
-			(!fileUploadMediaTypeWhiteList || fileUploadMediaTypeWhiteList.match(/audio\/mp3|audio\/\*/i)),
-		[fileUploadMediaTypeBlackList, fileUploadMediaTypeWhiteList, isAudioRecorderEnabled, isFileUploadEnabled],
-	);
 
 	const handleRecordButtonClick = useMutableCallback(async () => {
 		if (recordingRoomId && recordingRoomId !== rid) {
