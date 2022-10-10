@@ -6,7 +6,7 @@ import type { PreviewMetadata } from './PreviewList';
 
 const OEmbedHtmlPreview = ({ html, ...props }: PreviewMetadata): ReactElement => (
 	<OEmbedCollapseable {...props}>
-		{html && <Box fontScale='p2' withRichContent dangerouslySetInnerHTML={{ __html: html }} />}
+		{html && <Box withRichContent dangerouslySetInnerHTML={{ __html: html }} />}
 	</OEmbedCollapseable>
 );
 
