@@ -7,10 +7,10 @@ const BaseAvatar: FC<BaseAvatarProps> = ({ size, ...props }) => {
 	const [error, setError] = useState<unknown>(false);
 
 	if (error) {
-		return <Skeleton variant='rect' {...props} />;
+		return <Skeleton aria-hidden variant='rect' {...props} />;
 	}
 
-	return <Avatar onError={setError} size={size} {...props} />;
+	return <Avatar aria-hidden onError={setError} size={size} {...props} />;
 };
 
 export default BaseAvatar;
