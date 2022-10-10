@@ -94876,6 +94876,51 @@
           ]
         }
       ]
+    },
+    "5.2.0-rc.5": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27009",
+          "title": "Regression: VideoConf Actions Reactivity in SidebarItem",
+          "userLogin": "dougfabris",
+          "description": "Jira Issue: [VC-10]",
+          "milestone": "5.2.0",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27008",
+          "title": "Regression: Double Table Cell Causing extra padding on Current Chats",
+          "userLogin": "MartinSchoeler",
+          "milestone": "5.2.0",
+          "contributors": [
+            "MartinSchoeler",
+            "KevLehman",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "27023",
+          "title": "Regression: Cannot edit messages in some environments.",
+          "userLogin": "gabriellsh",
+          "description": "An empty `$unset` object was being used and causes exceptions in some mongo versions.",
+          "milestone": "5.2.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
     }
   }
 }
