@@ -18,7 +18,7 @@ import { adminEmail, preferences, password, adminUsername } from '../../data/use
 import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
+import { createUser, login, deleteUser, getUserStatus, getUserByUsername } from '../../data/users.helper.js';
 import { createRoom } from '../../data/rooms.helper';
 
 function createTestUser() {
@@ -1377,11 +1377,13 @@ describe('[Users]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
-					expect(user.username).to.be.equal(editedUsername);
-					expect(user.name).to.be.equal(editedName);
-					expect(user).to.not.have.property('e2e');
+
+					getUserByUsername(editedUsername).then((user) => {
+						expect(user.username).to.be.equal(editedUsername);
+						expect(user.name).to.be.equal(editedName);
+						expect(user).to.not.have.property('e2e');
+					});
 				})
 				.end(done);
 		});
