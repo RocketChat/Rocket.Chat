@@ -23,7 +23,7 @@ const AppsModelList: FC<AppsModelListProps> = ({ appBoxItems, showManageApps, cl
 				{showManageApps && (
 					<>
 						<ListItem
-							icon='cube'
+							icon='store'
 							text={t('Marketplace')}
 							action={(): void => {
 								marketplaceRoute.push();
