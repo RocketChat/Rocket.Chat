@@ -5,9 +5,7 @@ import OEmbedCollapseable from './OEmbedCollapseable';
 import type { PreviewMetadata } from './PreviewList';
 
 const OEmbedHtmlPreview = ({ html, ...props }: PreviewMetadata): ReactElement => (
-	<OEmbedCollapseable {...props}>
-		{html && <Box withRichContent dangerouslySetInnerHTML={{ __html: html }} />}
-	</OEmbedCollapseable>
+	<OEmbedCollapseable {...props}>{html && <Box withRichContent dangerouslySetInnerHTML={{ __html: html }} />}</OEmbedCollapseable>
 );
 
 export default OEmbedHtmlPreview;
