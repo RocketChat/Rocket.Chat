@@ -173,11 +173,7 @@ const CurrentChatsRoute = (): ReactElement => {
 					<GenericTableCell withTruncatedText data-qa='current-chats-cell-status'>
 						{getStatusText(open, onHold)}
 					</GenericTableCell>
-					{canRemoveClosedChats && !open && (
-						<GenericTableCell withTruncatedText>
-							<RemoveChatButton _id={_id} />
-						</GenericTableCell>
-					)}
+					{canRemoveClosedChats && !open && <RemoveChatButton _id={_id} />}
 				</GenericTableRow>
 			);
 		},

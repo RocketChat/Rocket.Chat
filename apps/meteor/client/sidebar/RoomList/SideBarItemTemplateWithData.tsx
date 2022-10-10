@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { Badge, Sidebar, SidebarItemAction } from '@rocket.chat/fuselage';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { AllHTMLAttributes, ComponentType, memo, ReactElement, ReactNode } from 'react';
+import React, { AllHTMLAttributes, ComponentType, memo, ReactElement, ReactNode, useMemo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
@@ -115,6 +115,17 @@ function SideBarItemTemplateWithData({
 		</Sidebar.Item.Icon>
 	);
 
+	const actions = useMemo(
+		() =>
+			videoConfActions && (
+				<>
+					<SidebarItemAction onClick={videoConfActions.acceptCall} secondary success icon='phone' />
+					<SidebarItemAction onClick={videoConfActions.rejectCall} secondary danger icon='phone-off' />
+				</>
+			),
+		[videoConfActions],
+	);
+
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 
 	const threadUnread = tunread.length > 0;
@@ -151,14 +162,7 @@ function SideBarItemTemplateWithData({
 			style={style}
 			badges={badges}
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
-			actions={
-				videoConfActions && (
-					<>
-						<SidebarItemAction onClick={videoConfActions.acceptCall} secondary success icon='phone' />
-						<SidebarItemAction onClick={videoConfActions.rejectCall} secondary danger icon='phone-off' />
-					</>
-				)
-			}
+			actions={actions}
 			menu={
 				!isAnonymous &&
 				!isQueued &&
@@ -195,6 +199,7 @@ const keys: (keyof RoomListRowProps)[] = [
 	'AvatarTemplate',
 	't',
 	'sidebarViewMode',
+	'videoConfActions',
 ];
 
 // eslint-disable-next-line react/no-multi-comp
