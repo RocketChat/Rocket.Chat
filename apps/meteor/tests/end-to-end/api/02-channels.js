@@ -401,25 +401,6 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 
-		it('should list thumbnails when specifically searching for it', (done) => {
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomId: channel._id,
-					typeGroup: 'thumbnail',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-					const thumbnails = res.body.files.filter((f) => f.typeGroup === 'thumbnail');
-					expect(thumbnails.length).to.be.eq(1);
-				})
-				.end(done);
-		});
-
 		it('should succeed when searching by roomId even requested with count and offset params', (done) => {
 			request
 				.get(api('channels.files'))
