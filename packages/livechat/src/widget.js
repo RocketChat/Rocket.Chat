@@ -1,17 +1,15 @@
 import mitt from 'mitt';
 
-
-const log = process.env.NODE_ENV === 'development'
-	? (...args) => window.console.log('%cwidget%c', 'color: red', 'color: initial', ...args)
-	: () => {};
-
+const log =
+	process.env.NODE_ENV === 'development'
+		? (...args) => window.console.log('%cwidget%c', 'color: red', 'color: initial', ...args)
+		: () => {};
 
 const WIDGET_OPEN_WIDTH = 365;
 const WIDGET_OPEN_HEIGHT = 525;
 const WIDGET_MINIMIZED_WIDTH = 54;
 const WIDGET_MINIMIZED_HEIGHT = 54;
 const WIDGET_MARGIN = 16;
-
 
 window.RocketChat = window.RocketChat || { _: [] };
 const config = {};
@@ -82,7 +80,6 @@ const updateWidgetStyle = (isOpened) => {
 		}
 	}
 
-
 	if (isOpened) {
 		widget.style.left = isFullscreen ? '0' : 'auto';
 
@@ -94,12 +91,12 @@ const updateWidgetStyle = (isOpened) => {
 		 * for widget.style.width
 		 */
 
-		widget.style.height = isFullscreen ? '100%' : `${ WIDGET_MARGIN + widget_height + WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT }px`;
-		widget.style.width = isFullscreen ? '100%' : `${ WIDGET_MARGIN + WIDGET_OPEN_WIDTH + WIDGET_MARGIN }px`;
+		widget.style.height = isFullscreen ? '100%' : `${WIDGET_MARGIN + widget_height + WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT}px`;
+		widget.style.width = isFullscreen ? '100%' : `${WIDGET_MARGIN + WIDGET_OPEN_WIDTH + WIDGET_MARGIN}px`;
 	} else {
 		widget.style.left = 'auto';
-		widget.style.width = `${ WIDGET_MARGIN + WIDGET_MINIMIZED_WIDTH + WIDGET_MARGIN }px`;
-		widget.style.height = `${ WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT + WIDGET_MARGIN }px`;
+		widget.style.width = `${WIDGET_MARGIN + WIDGET_MINIMIZED_WIDTH + WIDGET_MARGIN}px`;
+		widget.style.height = `${WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT + WIDGET_MARGIN}px`;
 	}
 };
 
@@ -107,8 +104,8 @@ const createWidget = (url) => {
 	widget = document.createElement('div');
 	widget.className = 'rocketchat-widget';
 	widget.style.position = 'fixed';
-	widget.style.width = `${ WIDGET_MARGIN + WIDGET_MINIMIZED_WIDTH + WIDGET_MARGIN }px`;
-	widget.style.height = `${ WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT + WIDGET_MARGIN }px`;
+	widget.style.width = `${WIDGET_MARGIN + WIDGET_MINIMIZED_WIDTH + WIDGET_MARGIN}px`;
+	widget.style.height = `${WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT + WIDGET_MARGIN}px`;
 	widget.style.maxHeight = '100vh';
 	widget.style.bottom = '0';
 	widget.style.right = '0';
@@ -182,7 +179,7 @@ const api = {
 	ready() {
 		ready = true;
 		if (hookQueue.length > 0) {
-			hookQueue.forEach(function(hookParams) {
+			hookQueue.forEach(function (hookParams) {
 				callHook.apply(this, hookParams);
 			});
 			hookQueue = [];
@@ -203,8 +200,11 @@ const api = {
 
 	openPopout() {
 		closeWidget();
-		api.popup = window.open(`${ config.url }${ config.url.lastIndexOf('?') > -1 ? '&' : '?' }mode=popout`,
-			'livechat-popout', `width=${ WIDGET_OPEN_WIDTH }, height=${ widget_height }, toolbars=no`);
+		api.popup = window.open(
+			`${config.url}${config.url.lastIndexOf('?') > -1 ? '&' : '?'}mode=popout`,
+			'livechat-popout',
+			`width=${WIDGET_OPEN_WIDTH}, height=${widget_height}, toolbars=no`,
+		);
 		api.popup.focus();
 	},
 
@@ -379,15 +379,19 @@ const currentPage = {
 };
 
 const attachMessageListener = () => {
-	window.addEventListener('message', (msg) => {
-		if (typeof msg.data === 'object' && msg.data.src !== undefined && msg.data.src === 'rocketchat') {
-			if (api[msg.data.fn] !== undefined && typeof api[msg.data.fn] === 'function') {
-				const args = [].concat(msg.data.args || []);
-				log(`api.${ msg.data.fn }`, ...args);
-				api[msg.data.fn].apply(null, args);
+	window.addEventListener(
+		'message',
+		(msg) => {
+			if (typeof msg.data === 'object' && msg.data.src !== undefined && msg.data.src === 'rocketchat') {
+				if (api[msg.data.fn] !== undefined && typeof api[msg.data.fn] === 'function') {
+					const args = [].concat(msg.data.args || []);
+					log(`api.${msg.data.fn}`, ...args);
+					api[msg.data.fn].apply(null, args);
+				}
 			}
-		}
-	}, false);
+		},
+		false,
+	);
 };
 
 const trackNavigation = () => {
@@ -427,7 +431,7 @@ if (typeof window.RocketChat.url !== 'undefined') {
 
 const queue = window.RocketChat._;
 
-window.RocketChat._.push = function(c) {
+window.RocketChat._.push = function (c) {
 	c.call(window.RocketChat.livechat);
 };
 window.RocketChat = window.RocketChat._.push;
@@ -455,18 +459,42 @@ window.RocketChat.livechat = {
 	clearBusinessUnit,
 
 	// callbacks
-	onChatMaximized(fn) { registerCallback('chat-maximized', fn); },
-	onChatMinimized(fn) { registerCallback('chat-minimized', fn); },
-	onChatStarted(fn) { registerCallback('chat-started', fn); },
-	onChatEnded(fn) { registerCallback('chat-ended', fn); },
-	onPrechatFormSubmit(fn) { registerCallback('pre-chat-form-submit', fn); },
-	onOfflineFormSubmit(fn) { registerCallback('offline-form-submit', fn); },
-	onWidgetShown(fn) { registerCallback('show-widget', fn); },
-	onWidgetHidden(fn) { registerCallback('hide-widget', fn); },
-	onAssignAgent(fn) { registerCallback('assign-agent', fn); },
-	onAgentStatusChange(fn) { registerCallback('agent-status-change', fn); },
-	onQueuePositionChange(fn) { registerCallback('queue-position-change', fn); },
-	onServiceOffline(fn) { registerCallback('no-agent-online', fn); },
+	onChatMaximized(fn) {
+		registerCallback('chat-maximized', fn);
+	},
+	onChatMinimized(fn) {
+		registerCallback('chat-minimized', fn);
+	},
+	onChatStarted(fn) {
+		registerCallback('chat-started', fn);
+	},
+	onChatEnded(fn) {
+		registerCallback('chat-ended', fn);
+	},
+	onPrechatFormSubmit(fn) {
+		registerCallback('pre-chat-form-submit', fn);
+	},
+	onOfflineFormSubmit(fn) {
+		registerCallback('offline-form-submit', fn);
+	},
+	onWidgetShown(fn) {
+		registerCallback('show-widget', fn);
+	},
+	onWidgetHidden(fn) {
+		registerCallback('hide-widget', fn);
+	},
+	onAssignAgent(fn) {
+		registerCallback('assign-agent', fn);
+	},
+	onAgentStatusChange(fn) {
+		registerCallback('agent-status-change', fn);
+	},
+	onQueuePositionChange(fn) {
+		registerCallback('queue-position-change', fn);
+	},
+	onServiceOffline(fn) {
+		registerCallback('no-agent-online', fn);
+	},
 };
 
 // proccess queue

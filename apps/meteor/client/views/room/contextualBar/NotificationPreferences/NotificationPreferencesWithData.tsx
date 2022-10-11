@@ -4,7 +4,7 @@ import React, { memo, ReactElement } from 'react';
 
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../hooks/useForm';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import NotificationPreferences from './NotificationPreferences';
 
 export type NotificationFormValues = {

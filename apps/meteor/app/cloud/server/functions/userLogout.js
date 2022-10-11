@@ -40,12 +40,13 @@ export function userLogout(userId) {
 					token_type_hint: 'refresh_token',
 				},
 			});
-		} catch (e) {
-			if (e.response && e.response.data && e.response.data.error) {
-				SystemLogger.error(`Failed to get Revoke refresh token to logout of Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
-			} else {
-				SystemLogger.error(e);
-			}
+		} catch (err) {
+			SystemLogger.error({
+				msg: 'Failed to get Revoke refresh token to logout of Rocket.Chat Cloud',
+				url: '/api/oauth/revoke',
+				...(err.response?.data && { cloudError: err.response.data }),
+				err,
+			});
 		}
 	}
 
