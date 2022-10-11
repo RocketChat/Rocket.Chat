@@ -201,17 +201,18 @@ function AppMenu({ app, ...props }) {
 
 	const menuOptions = useMemo(() => {
 		const bothAppStatusOptions = {
-			...(canAppBeSubscribed && {
-				subscribe: {
-					label: (
-						<Box>
-							<Icon name='card' size='x16' marginInlineEnd='x4' />
-							{t('Subscription')}
-						</Box>
-					),
-					action: handleSubscription,
-				},
-			}),
+			...(canAppBeSubscribed &&
+				isSubscribed && {
+					subscribe: {
+						label: (
+							<Box>
+								<Icon name='card' size='x16' marginInlineEnd='x4' />
+								{t('Subscription')}
+							</Box>
+						),
+						action: handleSubscription,
+					},
+				}),
 		};
 
 		const nonInstalledAppOptions = {
