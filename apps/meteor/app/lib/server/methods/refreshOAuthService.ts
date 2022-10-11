@@ -3,9 +3,12 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { Settings } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 Meteor.methods({
 	async refreshOAuthService() {
+		methodDeprecationLogger.warn('refreshOAuthService will be deprecated in future versions of Rocket.Chat');
+
 		const userId = Meteor.userId();
 
 		if (!userId) {

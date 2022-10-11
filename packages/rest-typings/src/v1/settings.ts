@@ -1,6 +1,11 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
+import Ajv from 'ajv';
 
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type SettingsUpdateProps = SettingsUpdatePropDefault | SettingsUpdatePropsActions | SettingsUpdatePropsColor;
 
@@ -64,6 +69,23 @@ type SettingsUpdatePropDefault = {
 
 export const isSettingsUpdatePropDefault = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropDefault => 'value' in props;
 
+export type RemoveOAuthServiceParams = {
+	name: string;
+};
+
+const RemoveOAuthServiceParamsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+	},
+	required: ['name'],
+	additionalProperties: false,
+};
+
+export const isRemoveOAuthServiceParams = ajv.compile<RemoveOAuthServiceParams>(RemoveOAuthServiceParamsSchema);
+
 export type SettingsEndpoints = {
 	'/v1/settings.public': {
 		GET: () => PaginatedResult & {
@@ -79,6 +101,14 @@ export type SettingsEndpoints = {
 
 	'/v1/settings.addCustomOAuth': {
 		POST: (params: { name: string }) => void;
+	};
+
+	'/v1/settings.refreshOAuthService': {
+		POST: () => void;
+	};
+
+	'/v1/settings.removeOAuthService': {
+		POST: (params: RemoveOAuthServiceParams) => void;
 	};
 
 	'/v1/settings': {

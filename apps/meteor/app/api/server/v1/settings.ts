@@ -8,6 +8,7 @@ import {
 	isSettingsUpdatePropDefault,
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
+	isRemoveOAuthServiceParams,
 } from '@rocket.chat/rest-typings';
 import { Settings } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
@@ -108,6 +109,37 @@ API.v1.addRoute(
 
 			await Meteor.call('addOAuthService', this.bodyParams.name, this.userId);
 
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'settings.refreshOAuthService',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+	},
+	{
+		async post() {
+			await Meteor.call('refreshOAuthService');
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'settings.removeOAuthService',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		validateParams: isRemoveOAuthServiceParams,
+	},
+	{
+		async post() {
+			const { name } = this.bodyParams;
+
+			await Meteor.call('removeOAuthService', name);
 			return API.v1.success();
 		},
 	},

@@ -4,9 +4,12 @@ import { check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 Meteor.methods({
 	async removeOAuthService(name) {
+		methodDeprecationLogger.warn('removeOAuthService will be deprecated in future versions of Rocket.Chat');
+
 		check(name, String);
 
 		const userId = Meteor.userId();
