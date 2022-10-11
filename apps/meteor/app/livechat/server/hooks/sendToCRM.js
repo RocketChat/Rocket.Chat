@@ -1,4 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { dump } from 'js-yaml';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
@@ -64,7 +65,8 @@ function sendToCRM(type, room, includeMessages = true) {
 			const msg = {
 				_id: message._id,
 				username: message.u.username,
-				msg: message.msg,
+				msg: message.msg || dump(message.blocks),
+				...(message.blocks && message.blocks.length > 0 ? { blocks: message.blocks } : {}),
 				ts: message.ts,
 				editedAt: message.editedAt,
 			};
