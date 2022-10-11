@@ -18,17 +18,17 @@ registerAdminRoute('/custom-sounds/:context?/:id?', {
 
 registerAdminRoute('/apps/what-is-it', {
 	name: 'admin-apps-disabled',
-	component: lazy(() => import('./apps/AppsWhatIsIt')),
+	component: lazy(() => import('../marketplace/AppsWhatIsIt')),
 });
 
 registerAdminRoute('/marketplace/:context?/:id?/:version?/:tab?', {
 	name: 'admin-marketplace',
-	component: lazy(() => import('./apps/AppsRoute')),
+	component: lazy(() => import('../marketplace/AppsRoute')),
 });
 
 registerAdminRoute('/apps/:context?/:id?/:version?/:tab?', {
 	name: 'admin-apps',
-	component: lazy(() => import('./apps/AppsRoute')),
+	component: lazy(() => import('../marketplace/AppsRoute')),
 });
 
 registerAdminRoute('/info', {
