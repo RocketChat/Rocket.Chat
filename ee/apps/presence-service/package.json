@@ -16,11 +16,11 @@
 	"author": "Rocket.Chat",
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "next",
+		"@rocket.chat/emitter": "0.31.19",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/presence": "workspace:^",
-		"@rocket.chat/string-helpers": "next",
+		"@rocket.chat/string-helpers": "0.31.19",
 		"@types/node": "^14.18.21",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
