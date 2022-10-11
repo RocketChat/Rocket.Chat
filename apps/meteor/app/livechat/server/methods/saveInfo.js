@@ -9,7 +9,7 @@ import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 /**
- * @deprecated since version 6.0.0
+ * @deprecated Will be removed in future versions.
  */
 Meteor.methods({
 	async 'livechat:saveInfo'(guestData, roomData) {
