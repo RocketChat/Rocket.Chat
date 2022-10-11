@@ -1400,10 +1400,12 @@ describe('[Users]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
-					expect(user.username).to.be.equal(editedUsername);
-					expect(user).to.not.have.property('e2e');
+
+					getUserByUsername(editedUsername).then((user) => {
+						expect(user.username).to.be.equal(editedUsername);
+						expect(user.name).to.be.equal(editedName);
+					});
 				})
 				.end(done);
 		});
@@ -1466,11 +1468,13 @@ describe('[Users]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
-					expect(user.emails[0].address).to.be.equal(editedEmail);
-					expect(user.emails[0].verified).to.be.false;
-					expect(user).to.not.have.property('e2e');
+
+					getUserByUsername(editedUsername).then((user) => {
+						expect(user.emails[0].address).to.be.equal(editedEmail);
+						expect(user.emails[0].verified).to.be.false;
+						expect(user).to.not.have.property('e2e');
+					});
 				})
 				.end(done);
 		});
