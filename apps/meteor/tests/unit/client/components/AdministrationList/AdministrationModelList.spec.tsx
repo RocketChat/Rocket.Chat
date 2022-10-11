@@ -40,7 +40,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={true} />);
 
 		expect(screen.getByText('Administration')).to.exist;
-		expect(screen.getByText('Manage_workspace')).to.exist;
+		expect(screen.getByText('Workspace')).to.exist;
 		expect(screen.getByText('Upgrade')).to.exist;
 	});
 
@@ -49,7 +49,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={false} />);
 
 		expect(screen.getByText('Administration')).to.exist;
-		expect(screen.queryByText('Manage_workspace')).to.not.exist;
+		expect(screen.queryByText('Workspace')).to.not.exist;
 		expect(screen.queryByText('Upgrade')).to.not.exist;
 	});
 
@@ -63,7 +63,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} />
 				</RouterContextMock>,
 			);
-			const button = screen.getByText('Manage_workspace');
+			const button = screen.getByText('Workspace');
 
 			userEvent.click(button);
 			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-info'));
@@ -85,7 +85,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} />
 				</RouterContextMock>,
 			);
-			const button = screen.getByText('Manage_workspace');
+			const button = screen.getByText('Workspace');
 
 			userEvent.click(button);
 			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-index'));
