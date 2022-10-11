@@ -49,9 +49,7 @@ const ColorToken = ({ item, position }: ColorTokenProps): ReactElement => {
 								<ColorSlider channel={zChannel} value={color} onChange={setColor} />
 							</Box>
 							<Box display='flex' justifyContent='space-between'>
-								<Button onClick={closeColorPicker}>
-									Cancel
-								</Button>
+								<Button onClick={closeColorPicker}>Cancel</Button>
 								<Button primary onClick={applyColor}>
 									Apply
 								</Button>
