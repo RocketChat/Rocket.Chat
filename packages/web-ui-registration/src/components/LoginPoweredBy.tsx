@@ -1,13 +1,19 @@
+import { Link } from '@rocket.chat/layout';
+import { Trans } from 'react-i18next';
 import type { ReactElement } from 'react';
+import React from 'react';
 
 export const LoginPoweredBy = (): ReactElement => (
-	<div className='powered-by'>
+	<Trans i18nKey='registration.page.register.back'>
 		Powered by{' '}
-		<a className='color-tertiary-font-color' href='https://rocket.chat'>
-			Open Source Chat Platform Rocket.Chat
-		</a>
-		.
-	</div>
+		<Link
+			href='https://rocket.chat/'
+			// target='_blank'
+			// rel='noopener noreferrer'
+		>
+			Rocket.Chat
+		</Link>
+	</Trans>
 );
 
 export default LoginPoweredBy;

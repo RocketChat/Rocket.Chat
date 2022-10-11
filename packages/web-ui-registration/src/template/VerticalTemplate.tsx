@@ -19,6 +19,7 @@ const VerticalTemplate = ({ children }: { children: ReactNode }): ReactElement =
 		>
 			<VerticalWizardLayoutTitle>
 				<RegisterTitle />
+				<LoginPoweredBy />
 			</VerticalWizardLayoutTitle>
 			<Box is='h2' fontScale='h2'>
 				{children}
@@ -26,7 +27,6 @@ const VerticalTemplate = ({ children }: { children: ReactNode }): ReactElement =
 			<VerticalWizardLayoutFooter>
 				<LoginTerms />
 				<LoginSwitchLanguageFooter />
-				<LoginPoweredBy />
 			</VerticalWizardLayoutFooter>
 		</VerticalWizardLayout>
 	);

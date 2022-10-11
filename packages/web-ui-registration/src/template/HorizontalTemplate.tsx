@@ -4,6 +4,7 @@ import {
 	HorizontalWizardLayoutContent,
 	HorizontalWizardLayoutTitle,
 	HorizontalWizardLayoutFooter,
+	HorizontalWizardLayoutDescription,
 } from '@rocket.chat/layout';
 import type { ReactElement, ReactNode } from 'react';
 import { Box } from '@rocket.chat/fuselage';
@@ -27,13 +28,15 @@ const HorizontalTemplate = ({ children }: { children: ReactNode }): ReactElement
 				<HorizontalWizardLayoutTitle>
 					<RegisterTitle />
 				</HorizontalWizardLayoutTitle>
+				<HorizontalWizardLayoutDescription>
+					<LoginPoweredBy />
+				</HorizontalWizardLayoutDescription>
 			</HorizontalWizardLayoutAside>
 			<HorizontalWizardLayoutContent>
 				{children}
 				<HorizontalWizardLayoutFooter>
 					<LoginTerms />
 					<LoginSwitchLanguageFooter />
-					<LoginPoweredBy />
 				</HorizontalWizardLayoutFooter>
 			</HorizontalWizardLayoutContent>
 		</HorizontalWizardLayout>
