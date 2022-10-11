@@ -117,7 +117,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 
 	return (
 		<Box {...props}>
-			{button && (
+			{button && isAppDetailsPage && (
 				<Box
 					bg={isAppDetailsPage ? colors.p100 : 'transparent'}
 					display='flex'

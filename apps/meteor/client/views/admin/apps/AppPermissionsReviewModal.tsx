@@ -35,7 +35,7 @@ const AppPermissionsReviewModal = ({ appPermissions, cancel, confirm, ...props }
 			</Modal.Content>
 			<Modal.Content fontScale='p2'>
 				<ul>
-					{appPermissions.length
+					{appPermissions?.length
 						? appPermissions.map((permission, count) => (
 								<li key={permission.name}>
 									<b>{count + 1} - </b>
