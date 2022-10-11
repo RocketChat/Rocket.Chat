@@ -48,8 +48,9 @@ MessageTypes.registerType({
 					...(comment && { comment }),
 				}),
 			queue: (): string =>
-				TAPi18n.__('Livechat_transfer_return_to_the_queue', {
+				TAPi18n.__(`Livechat_transfer_return_to_the_queue${commentLabel}`, {
 					from,
+					...(comment && { comment }),
 				}),
 		};
 		return {

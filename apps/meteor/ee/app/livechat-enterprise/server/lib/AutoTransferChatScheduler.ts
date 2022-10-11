@@ -1,12 +1,15 @@
 import { Agenda } from '@rocket.chat/agenda';
 import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
+import { LivechatRooms } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { LivechatRooms, Users } from '../../../../../app/models/server';
+import { Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
+import { settings } from '../../../../../app/settings/server';
 
 const schedulerUser = Users.findOneById('rocket.cat');
 const SCHEDULER_NAME = 'omnichannel_scheduler';
@@ -53,7 +56,7 @@ class AutoTransferChatSchedulerClass {
 	}
 
 	private async transferRoom(roomId: string): Promise<boolean> {
-		const room = LivechatRooms.findOneById(roomId, {
+		const room = await LivechatRooms.findOneById(roomId, {
 			_id: 1,
 			v: 1,
 			servedBy: 1,
@@ -69,8 +72,12 @@ class AutoTransferChatSchedulerClass {
 			servedBy: { _id: ignoreAgentId },
 		} = room;
 
+		const comment = TAPi18n.__('Livechat_auto_transfer_unanswered_chats_comment', {
+			duration: settings.get('Livechat_auto_transfer_chat_timeout'),
+		});
+
 		if (!RoutingManager.getConfig().autoAssignAgent) {
-			return Livechat.returnRoomAsInquiry(room._id, departmentId);
+			return Livechat.returnRoomAsInquiry(room._id, departmentId, comment);
 		}
 
 		const agent = await RoutingManager.getNextAgent(departmentId, ignoreAgentId);
@@ -79,6 +86,7 @@ class AutoTransferChatSchedulerClass {
 				userId: agent.agentId,
 				transferredBy: schedulerUser,
 				transferredTo: agent,
+				comment,
 			});
 		}
 
@@ -89,7 +97,7 @@ class AutoTransferChatSchedulerClass {
 		const { roomId } = data;
 
 		if (await this.transferRoom(roomId)) {
-			LivechatRooms.setAutoTransferredAtById(roomId);
+			await LivechatRooms.setAutoTransferredAtById(roomId);
 		}
 
 		await this.unscheduleRoom(roomId);

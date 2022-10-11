@@ -1,5 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { expect } from '../../utils/test';
+
 export class HomeSidenav {
 	private readonly page: Page;
 
@@ -45,6 +47,26 @@ export class HomeSidenav {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
 		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
 		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
+	}
+
+	async switchOmnichannelStatus(status: 'offline' | 'online') {
+		// button has a id of "omnichannel-status-toggle"
+		const toggleButton = this.page.locator('#omnichannel-status-toggle');
+		expect(toggleButton).toBeVisible();
+
+		const currentStatus: 'Available' | 'Not Available' = (await toggleButton.getAttribute('title')) as any;
+		if (status === 'offline') {
+			if (currentStatus === 'Available') {
+				await toggleButton.click();
+			}
+		} else if (currentStatus === 'Not Available') {
+			await toggleButton.click();
+		}
+
+		await this.page.waitForTimeout(500);
+
+		const newStatus: 'Available' | 'Not Available' = (await this.page.locator('#omnichannel-status-toggle').getAttribute('title')) as any;
+		expect(newStatus).toBe(status === 'offline' ? 'Not Available' : 'Available');
 	}
 
 	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
