@@ -17,11 +17,11 @@
 	"dependencies": {
 		"@rocket.chat/apps-engine": "^1.32.0",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "next",
+		"@rocket.chat/emitter": "0.31.19",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "next",
+		"@rocket.chat/string-helpers": "0.31.19",
 		"colorette": "^1.4.0",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
@@ -47,7 +47,7 @@
 		"@types/sharp": "^0.30.4",
 		"@types/uuid": "^8.3.4",
 		"@types/ws": "^8.5.3",
-		"eslint": "^8.22.0",
+		"eslint": "^8.21.0",
 		"pino-pretty": "^7.6.1",
 		"ts-node": "^10.9.1",
 		"typescript": "~4.5.5"

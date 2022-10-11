@@ -3,9 +3,12 @@ import { Box, MessageBody } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { MarkupInteractionContext, Markup, UserMention, ChannelMention } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import React, { ReactElement, useCallback, useMemo } from 'react';
+import { useLayout } from '@rocket.chat/ui-contexts';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import React, { ReactElement, UIEvent, useCallback, useMemo } from 'react';
 
 import { emoji } from '../../../../../app/emoji/client';
+import { fireGlobalEvent } from '../../../../lib/utils/fireGlobalEvent';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useMessageListHighlights } from '../contexts/MessageListContext';
 import { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
@@ -61,14 +64,33 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 				return;
 			}
 
-			return openUserCard(username);
+			return (event: UIEvent): void => {
+				event.stopPropagation();
+				openUserCard(username)(event);
+			};
 		},
 		[openUserCard],
 	);
 
 	const resolveChannelMention = useCallback((mention: string) => channels?.find(({ name }) => name === mention), [channels]);
 
-	const onChannelMentionClick = useCallback(({ _id: rid }: ChannelMention) => openRoom(rid), [openRoom]);
+	const { isEmbedded } = useLayout();
+
+	const onChannelMentionClick = useCallback(
+		({ _id: rid }: ChannelMention) =>
+			(event: UIEvent): void => {
+				if (isEmbedded) {
+					fireGlobalEvent('click-mention-link', {
+						path: FlowRouter.path('channel', { name: rid }),
+						channel: rid,
+					});
+				}
+
+				event.stopPropagation();
+				openRoom(rid)(event);
+			},
+		[isEmbedded, openRoom],
+	);
 
 	// TODO:  this style should go to Fuselage <MessageBody> repository
 	const messageBodyAdditionalStyles = css`
