@@ -1,4 +1,4 @@
-import { isOauthAppsGetParams } from '@rocket.chat/rest-typings';
+import { isOauthAppsGetParams, isOauthAppsAddParams } from '@rocket.chat/rest-typings';
 import { OAuthApps } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -38,6 +38,21 @@ API.v1.addRoute(
 			return API.v1.success({
 				oauthApp,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'oauth-apps.addOAuthApp',
+	{
+		authRequired: true,
+		validateParams: isOauthAppsAddParams,
+	},
+	{
+		async post() {
+			Meteor.call('addOAuthApp', this.bodyParams);
+
+			return API.v1.success();
 		},
 	},
 );
