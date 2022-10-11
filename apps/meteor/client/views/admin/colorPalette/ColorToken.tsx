@@ -50,7 +50,7 @@ const ColorToken = ({ item, position }: ColorTokenProps): ReactElement => {
 			{isVisible &&
 				createPortal(
 					<Dropdown reference={reference} ref={target} key={item.name}>
-						<Box pi='x8'>
+						<Box pi='x16'>
 							<Box fontSize='p2b' fontWeight='p2b' display='flex' justifyContent='center'>
 								{item.name}
 							</Box>
@@ -58,6 +58,7 @@ const ColorToken = ({ item, position }: ColorTokenProps): ReactElement => {
 								<ColorArea aria-labelledby='hsb-label-id-1' value={color} onChange={setColor} xChannel={xChannel} yChannel={yChannel} />
 								<ColorSlider channel={zChannel} value={color} onChange={setColor} />
 								<Input
+									mbs='x8'
 									value={input}
 									onChange={(e): void => {
 										setIsTyping(true);

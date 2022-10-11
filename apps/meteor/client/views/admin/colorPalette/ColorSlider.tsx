@@ -40,7 +40,7 @@ const ColorSlider = (props: ColorSliderProps): ReactElement => {
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='center' w='192'>
-			<Box display='flex' alignSelf='stretch'>
+			<Box display='flex' alignSelf='stretch' mb='x8'>
 				<Label {...labelProps}>{label}</Label>
 				<Box {...outputProps} is='output' w='100%' textAlign='end'>
 					{state.value.formatChannelValue(props.channel, locale)}
