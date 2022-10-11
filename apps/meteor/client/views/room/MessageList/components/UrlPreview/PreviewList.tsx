@@ -49,6 +49,25 @@ type PreviewData = {
 	data: PreviewMetadata | UrlPreview;
 };
 
+const isValidLink = (link: string): boolean => {
+	try {
+		return Boolean(new URL(link));
+	} catch (error) {
+		return false;
+	}
+};
+
+const buildImageURL = (url: string, imageUrl: string): string => {
+	if (isValidLink(imageUrl)) {
+		return JSON.stringify(imageUrl);
+	}
+
+	const { origin } = new URL(url);
+	const imgURL = `${origin}/${imageUrl}`;
+
+	return imgURL.replaceAll(/(?<!:)\/+/gm, '/');
+};
+
 const normalizeMeta = ({ url, meta }: OembedUrlLegacy): PreviewMetadata => {
 	const image = meta.ogImage || meta.twitterImage || meta.msapplicationTileImage || meta.oembedThumbnailUrl || meta.oembedThumbnailUrl;
 
@@ -65,7 +84,7 @@ const normalizeMeta = ({ url, meta }: OembedUrlLegacy): PreviewMetadata => {
 			authorUrl: meta.oembedAuthorUrl,
 			...(image && {
 				image: {
-					url: image,
+					url: buildImageURL(url, image),
 					dimensions: {
 						...(imageHeight && { height: imageHeight }),
 						...(imageWidth && { width: imageWidth }),
