@@ -10,6 +10,10 @@ export class MatrixEventsHandler {
 		if (!handler) {
 			return console.log(`Could not find handler for ${event.type}`, event);
 		}
-		return handler.handle(event);
+		try {
+			await handler.handle(event);
+		} catch (e: any) {
+			throw new Meteor.Error(e.message);
+		}
 	}
 }

@@ -33,12 +33,13 @@ export function finishOAuthAuthorization(code, state) {
 				redirect_uri: getRedirectUri(),
 			},
 		});
-	} catch (e) {
-		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
-		} else {
-			SystemLogger.error(e);
-		}
+	} catch (err) {
+		SystemLogger.error({
+			msg: 'Failed to finish OAuth authorization with Rocket.Chat Cloud',
+			url: '/api/oauth/token',
+			...(err.response?.data && { cloudError: err.response.data }),
+			err,
+		});
 
 		return false;
 	}
