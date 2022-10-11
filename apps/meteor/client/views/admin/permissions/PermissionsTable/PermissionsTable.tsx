@@ -98,7 +98,9 @@ const PermissionsTable = (): ReactElement => {
 												key={permission._id}
 												permission={permission}
 												roleList={roleList}
-												onGrant={(permissionId: string, roleId: string): Promise<void> => grantRole({ permissionId, roleId })}
+												onGrant={({ permissionId, roleId }: { permissionId: string; roleId: string }): Promise<void> =>
+													grantRole({ permissionId, roleId })
+												}
 												onRemove={removeRole}
 											/>
 										))}
