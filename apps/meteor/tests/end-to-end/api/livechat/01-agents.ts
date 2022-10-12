@@ -404,7 +404,7 @@ describe('LIVECHAT - Agents', function () {
 				.post(api('livechat/agent.status'))
 				.set(userCredentials)
 				.send({ status: 'available', agentId: user._id })
-				.expect(400)
+				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'Agent not found');
@@ -426,7 +426,7 @@ describe('LIVECHAT - Agents', function () {
 				.post(api('livechat/agent.status'))
 				.set(agent2.credentials)
 				.send({ status: 'available', agentId: 'invalid-agent-id' })
-				.expect(400)
+				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'Agent not found');
