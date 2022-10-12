@@ -11,7 +11,7 @@ import { password } from '../../../../data/user';
 import { createUser, getMe, login } from '../../../../data/users.helper';
 import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../../../data/livechat/businessHours';
 
-describe('Omni-Method - changeLivechatStatus', function () {
+describe('livechat:changeLivechatStatus', function () {
 	this.retries(0);
 
 	let agent: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };

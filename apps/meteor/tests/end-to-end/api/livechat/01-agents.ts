@@ -35,8 +35,6 @@ describe('LIVECHAT - Agents', function () {
 	});
 
 	before(async () => {
-		await updateSetting('Livechat_enabled', true);
-
 		const user: IUser = await createUser();
 		const userCredentials = await login(user.username, password);
 		await createAgent(user.username);
@@ -446,6 +444,7 @@ describe('LIVECHAT - Agents', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('status', newStatus);
 				});
 		});
 		it('should allow managers to change other agents status', async () => {
@@ -462,6 +461,7 @@ describe('LIVECHAT - Agents', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('status', newStatus);
 				});
 		});
 		it('should throw an error if agent tries to make themselves available outside of Business hour', async () => {
@@ -495,6 +495,7 @@ describe('LIVECHAT - Agents', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('status', newStatus);
 				});
 
 			await disableDefaultBusinessHour();

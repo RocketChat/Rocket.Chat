@@ -76,7 +76,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 	const { handleDepartments, handleStatus, handleVoipExtension } = handlers;
 	const { departments, status, voipExtension } = values as {
 		departments: string[];
-		status: 'available' | 'not-available';
+		status: ILivechatAgent['statusLivechat'];
 		voipExtension: string;
 	};
 

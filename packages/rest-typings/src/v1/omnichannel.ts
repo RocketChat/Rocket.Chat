@@ -1088,7 +1088,7 @@ const GETOmnichannelContactSearchSchema = {
 
 export const isGETOmnichannelContactSearchProps = ajv.compile<GETOmnichannelContactSearchProps>(GETOmnichannelContactSearchSchema);
 
-type POSTLivechatAgentStatusProps = { status?: 'available' | 'not-available'; agentId?: string };
+type POSTLivechatAgentStatusProps = { status?: ILivechatAgent['statusLivechat']; agentId?: string };
 
 const POSTLivechatAgentStatusPropsSchema = {
 	type: 'object',
@@ -2803,7 +2803,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/agent.status': {
-		POST: (params: POSTLivechatAgentStatusProps) => void;
+		POST: (params: POSTLivechatAgentStatusProps) => { status: ILivechatAgent['statusLivechat'] };
 	};
 
 	'/v1/canned-responses': {

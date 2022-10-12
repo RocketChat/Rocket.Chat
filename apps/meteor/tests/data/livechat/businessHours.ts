@@ -8,7 +8,7 @@ export const makeDefaultBusinessHourActiveAndClosed = async () => {
 
 	// create business hours
 	const { body: { businessHour } } = await request
-		.get(api('livechat/business-hour'))
+		.get(api('livechat/business-hour?type=default'))
 		.set(credentials)
 		.send();
 
@@ -44,7 +44,7 @@ export const disableDefaultBusinessHour = async () => {
 
 	// create business hours
 	const { body: { businessHour } } = await request
-		.get(api('livechat/business-hour'))
+		.get(api('livechat/business-hour?type=default'))
 		.set(credentials)
 		.send();
 

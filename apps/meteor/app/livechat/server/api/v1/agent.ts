@@ -1,10 +1,11 @@
 import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
 import { Users } from '@rocket.chat/models';
+import type { ILivechatAgent } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../api/server';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	async get() {
@@ -63,14 +64,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/agent.status',
-	{ authRequired: true, validateParams: isPOSTLivechatAgentStatusProps },
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPOSTLivechatAgentStatusProps },
 	{
 		async post() {
-			const { status } = this.bodyParams;
-			let { agentId } = this.bodyParams;
-			if (!agentId) {
-				agentId = this.userId;
-			}
+			const { status, agentId: inputAgentId } = this.bodyParams;
+
+			const agentId = inputAgentId || this.userId;
 
 			const agent = await Users.findOneAgentById(agentId, {
 				projection: {
@@ -79,21 +78,21 @@ API.v1.addRoute(
 				},
 			});
 			if (!agent) {
-				return API.v1.failure('Agent not found');
+				return API.v1.notFound('Agent not found');
 			}
 
-			const newStatus = status || (agent.statusLivechat === 'available' ? 'not-available' : 'available');
+			const newStatus: ILivechatAgent['statusLivechat'] = status || (agent.statusLivechat === 'available' ? 'not-available' : 'available');
 			if (newStatus === agent.statusLivechat) {
-				return API.v1.success();
+				return API.v1.success({ status: agent.statusLivechat });
 			}
 
 			if (agentId !== this.userId) {
-				if (!hasPermission(this.userId, 'manage-livechat-agents')) {
+				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
 					return API.v1.unauthorized();
 				}
 				Livechat.setUserStatusLivechat(agentId, newStatus);
 
-				return API.v1.success();
+				return API.v1.success({ status: newStatus });
 			}
 
 			if (!Livechat.allowAgentChangeServiceStatus(newStatus, agentId)) {
@@ -102,7 +101,7 @@ API.v1.addRoute(
 
 			Livechat.setUserStatusLivechat(agentId, newStatus);
 
-			return API.v1.success();
+			return API.v1.success({ status: newStatus });
 		},
 	},
 );
