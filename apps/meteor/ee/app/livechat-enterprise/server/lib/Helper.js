@@ -235,11 +235,17 @@ export const updateInquiryQueuePriority = (roomId, priority) => {
 };
 
 export const removePriorityFromRooms = async (priorityId) => {
-	await Promise.all(
+	const result = await Promise.allSettled(
 		LivechatRoomsRaw.findOpenRoomsByPriorityId(priorityId).forEach((room) => {
 			updateInquiryQueuePriority(room._id);
 		}),
 	);
+	if (result.some((result) => result.status === 'rejected')) {
+		logger.error(
+			'Error removing priority from rooms',
+			result.filter((result) => result.status === 'rejected'),
+		);
+	}
 
 	await LivechatRoomsRaw.unsetPriorityByIdFromAllOpenRooms(priorityId);
 };

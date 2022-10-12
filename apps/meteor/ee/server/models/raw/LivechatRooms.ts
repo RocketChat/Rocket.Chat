@@ -17,7 +17,7 @@ declare module '@rocket.chat/model-typings' {
 		unsetAllPredictedVisitorAbandonment(): Promise<void>;
 		setOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
 		unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
-		unsetAllOnHoldFieldsByRoomId(roomId: string): Promise<UpdateResult>;
+		unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult>;
 		unsetPriorityByIdFromAllOpenRooms(priorityId: string): Promise<void>;
 		findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom>;
 	}
@@ -46,7 +46,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return this.updateOne({ _id: roomId }, { $unset: { onHold: 1 } });
 	}
 
-	unsetAllOnHoldFieldsByRoomId(roomId: string): Promise<UpdateResult> {
+	unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -195,9 +195,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return super.findPaginated(restrictedQuery, ...restArgs);
 	}
 
-	/*
-	 * deprecated. Use updateOne or updateMany instead
-	 */
+	/** @deprecated Use updateOne or updateMany instead */
 	update(...args: Parameters<LivechatRoomsRaw['update']>) {
 		const [query, ...restArgs] = args;
 		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);

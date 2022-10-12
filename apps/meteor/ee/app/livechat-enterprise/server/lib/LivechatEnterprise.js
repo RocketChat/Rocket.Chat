@@ -165,7 +165,7 @@ export const LivechatEnterprise = {
 		return priority;
 	},
 
-	removePriority(_id) {
+	async removePriority(_id) {
 		check(_id, String);
 
 		const priority = LivechatPriority.findOneById(_id, { fields: { _id: 1 } });
@@ -177,7 +177,7 @@ export const LivechatEnterprise = {
 		}
 		const removed = LivechatPriority.removeById(_id);
 		if (removed) {
-			Promise.await(removePriorityFromRooms(_id));
+			await removePriorityFromRooms(_id);
 		}
 		return removed;
 	},
@@ -213,7 +213,7 @@ export const LivechatEnterprise = {
 		}
 
 		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
-		await LivechatRoomsRaw.unsetAllOnHoldFieldsByRoomId(roomId);
+		await LivechatRoomsRaw.unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId);
 		Subscriptions.unsetOnHold(roomId);
 	},
 };

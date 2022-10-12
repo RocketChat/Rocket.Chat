@@ -11,6 +11,6 @@ Meteor.methods({
 			});
 		}
 
-		return LivechatEnterprise.removePriority(id);
+		Promise.await(LivechatEnterprise.removePriority(id));
 	},
 });

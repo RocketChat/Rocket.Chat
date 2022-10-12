@@ -6,6 +6,7 @@ import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@roc
 import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { LivechatEnterprise } from './LivechatEnterprise';
+import { logger } from './logger';
 
 export class VisitorInactivityMonitor {
 	constructor() {
@@ -28,8 +29,8 @@ export class VisitorInactivityMonitor {
 		SyncedCron.add({
 			name: this._name,
 			schedule: (parser) => parser.cron(everyMinute),
-			job: async () => {
-				await this.handleAbandonedRooms();
+			job: () => {
+				Promise.await(this.handleAbandonedRooms());
 			},
 		});
 		this._started = true;
@@ -90,10 +91,17 @@ export class VisitorInactivityMonitor {
 		const guest = visitor.name || visitor.username;
 		const comment = TAPi18n.__('Omnichannel_On_Hold_due_to_inactivity', { guest, timeout });
 
-		await Promise.all([
+		const result = await Promise.allSettled([
 			LivechatEnterprise.placeRoomOnHold(room, comment, this.user),
 			LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id),
 		]);
+		if (result.some((r) => r.status === 'rejected')) {
+			logger.error(
+				'Error placing room on hold',
+				result.filter((r) => r.status === 'rejected').map((r) => r.reason),
+			);
+			throw new Error(`Error placing room on hold: ${result.find((r) => r.status === 'rejected').reason}`);
+		}
 	}
 
 	async handleAbandonedRooms() {
@@ -101,20 +109,28 @@ export class VisitorInactivityMonitor {
 		if (!action || action === 'none') {
 			return;
 		}
-		await Promise.all(
-			LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => {
+		const result = await Promise.allSettled(
+			LivechatRooms.findAbandonedOpenRooms(new Date()).map(async (room) => {
 				switch (action) {
 					case 'close': {
-						this.closeRooms(room);
+						await this.closeRooms(room);
 						break;
 					}
 					case 'on-hold': {
-						Promise.await(this.placeRoomOnHold(room));
+						await this.placeRoomOnHold(room);
 						break;
 					}
 				}
 			}),
 		);
+		const failed = result.filter((r) => r.status === 'rejected');
+		if (failed.length) {
+			logger.error(
+				'Failed to handle abandoned omnichannel rooms',
+				failed.map((r) => r.reason),
+			);
+		}
+
 		this._initializeMessageCache();
 	}
 }
