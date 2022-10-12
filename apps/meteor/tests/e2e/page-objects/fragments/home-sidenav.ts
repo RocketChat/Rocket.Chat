@@ -54,19 +54,24 @@ export class HomeSidenav {
 		const toggleButton = this.page.locator('#omnichannel-status-toggle');
 		expect(toggleButton).toBeVisible();
 
-		const currentStatus: 'Available' | 'Not Available' = (await toggleButton.getAttribute('title')) as any;
+		enum StatusTitleMap {
+			offline = 'Turn on answer chats',
+			online = 'Turn off answer chats',
+		}
+
+		const currentStatus: StatusTitleMap = (await toggleButton.getAttribute('data-tooltip')) as any;
 		if (status === 'offline') {
-			if (currentStatus === 'Available') {
+			if (currentStatus === StatusTitleMap.online) {
 				await toggleButton.click();
 			}
-		} else if (currentStatus === 'Not Available') {
+		} else if (currentStatus === StatusTitleMap.offline) {
 			await toggleButton.click();
 		}
 
 		await this.page.waitForTimeout(500);
 
-		const newStatus: 'Available' | 'Not Available' = (await this.page.locator('#omnichannel-status-toggle').getAttribute('title')) as any;
-		expect(newStatus).toBe(status === 'offline' ? 'Not Available' : 'Available');
+		const newStatus: StatusTitleMap = (await this.page.locator('#omnichannel-status-toggle').getAttribute('data-tooltip')) as any;
+		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
 
 	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
