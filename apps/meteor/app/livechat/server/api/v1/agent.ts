@@ -1,6 +1,6 @@
 import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
 import { Users } from '@rocket.chat/models';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../api/server';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
@@ -81,7 +81,9 @@ API.v1.addRoute(
 				return API.v1.notFound('Agent not found');
 			}
 
-			const newStatus: ILivechatAgent['statusLivechat'] = status || (agent.statusLivechat === 'available' ? 'not-available' : 'available');
+			const newStatus: ILivechatAgentStatus =
+				status ||
+				(agent.statusLivechat === ILivechatAgentStatus.AVAILABLE ? ILivechatAgentStatus.NOT_AVAILABLE : ILivechatAgentStatus.AVAILABLE);
 			if (newStatus === agent.statusLivechat) {
 				return API.v1.success({ status: agent.statusLivechat });
 			}
