@@ -11,13 +11,18 @@ import Triggers from './triggers';
 
 const createOrUpdateGuest = async (guest) => {
 	const { token } = guest;
-	token && await store.setState({ token });
+	token && (await store.setState({ token }));
 	const user = await Livechat.grantVisitor({ visitor: { ...guest } });
 	store.setState({ user });
 };
 
 const updateIframeGuestData = (data) => {
-	const { iframe, iframe: { guest }, user: _id, token } = store.state;
+	const {
+		iframe,
+		iframe: { guest },
+		user: _id,
+		token,
+	} = store.state;
 	store.setState({ iframe: { ...iframe, guest: { ...guest, ...data } } });
 
 	if (!_id) {
@@ -51,7 +56,10 @@ const api = {
 	},
 
 	setTheme({ color, fontColor, iconColor, title, offlineTitle } = {}) {
-		const { iframe, iframe: { theme } } = store.state;
+		const {
+			iframe,
+			iframe: { theme },
+		} = store.state;
 		store.setState({
 			iframe: {
 				...iframe,
@@ -129,7 +137,11 @@ const api = {
 	},
 
 	async setGuestToken(token) {
-		const { token: localToken, iframe, iframe: { guest } } = store.state;
+		const {
+			token: localToken,
+			iframe,
+			iframe: { guest },
+		} = store.state;
 		if (token === localToken) {
 			return;
 		}
