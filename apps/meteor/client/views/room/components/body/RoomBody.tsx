@@ -1,4 +1,4 @@
-import { IMessage, isEditedMessage, isOmnichannelRoom, isVoipRoom, IUser } from '@rocket.chat/core-typings';
+import { IMessage, isEditedMessage, isOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import {
 	useCurrentRoute,
 	usePermission,
@@ -264,7 +264,7 @@ const RoomBody = (): ReactElement => {
 		const tabBar = tabBarRef.current;
 		Tracker.afterFlush(() => {
 			// Find a better way to do this, declaratively
-			if (room && (isOmnichannelRoom(room) || isVoipRoom(room)) && tabBar.activeTabBar?.id !== 'room-info') {
+			if (room && isOmnichannelRoom(room) && tabBar.activeTabBar?.id !== 'room-info') {
 				tabBar.openRoomInfo();
 			}
 		});
