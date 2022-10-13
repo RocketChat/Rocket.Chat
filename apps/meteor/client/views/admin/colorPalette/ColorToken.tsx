@@ -22,14 +22,14 @@ const ColorToken = ({ item, onChange }: ColorTokenProps): ReactElement => {
 
 	const [isTyping, setIsTyping] = useState(false);
 	const [input, setInput] = useState(item.color);
-	const [color, setColor] = useState(parseColor(item.rgb).toFormat('hsba'));
+	const [color, setColor] = useState(parseColor(item.color).toFormat('hsba'));
 	const [xChannel, yChannel, zChannel] = color.getColorChannels();
 
 	const openColorPicker = (): void => toggle(true);
 	const closeColorPicker = useCallback((): void => {
-		setColor(parseColor(item.rgb).toFormat('hsba'));
+		setColor(parseColor(item.color).toFormat('hsba'));
 		toggle(false);
-	}, [item.rgb, toggle]);
+	}, [item.color, toggle]);
 
 	const applyColor = (): void => {
 		onChange(color.toString('hex'));
