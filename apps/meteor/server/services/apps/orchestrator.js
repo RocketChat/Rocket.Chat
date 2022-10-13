@@ -2,6 +2,7 @@ import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definiti
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { Logger } from '../../lib/logger/Logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../../app/models/server';
@@ -147,6 +148,22 @@ export class AppServerOrchestrator {
 
 	getMarketplaceUrl() {
 		return this._marketplaceUrl;
+	}
+
+	getAppsStatistics() {
+		const totalInstalled = this.isInitialized() && this.getManager().get().length;
+		const totalActive = this.isInitialized() && this.getManager().get({ enabled: true }).length;
+		const totalFailed =
+			this.isInitialized() &&
+			this.getManager()
+				.get({ disabled: true })
+				.filter(({ app: { status } }) => status !== AppStatus.MANUALLY_DISABLED).length;
+
+		return {
+			totalInstalled,
+			totalActive,
+			totalFailed,
+		};
 	}
 
 	async load() {

@@ -17,6 +17,12 @@ type AppsInitParams = {
 	marketplaceUrl?: string | undefined;
 };
 
+type AppStatistcs = {
+	totalInstalled: number | boolean;
+	totalActive: number | boolean;
+	totalFailed: number | boolean;
+};
+
 export class AppsOrchestratorService extends ServiceClass implements IAppsService {
 	protected name = 'apps';
 
@@ -96,5 +102,9 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 
 	getPersistenceModel(): AppsPersistenceModel {
 		return this.apps.getPersistenceModel();
+	}
+
+	getAppsStatistics(): AppStatistcs {
+		return this.apps.getAppsStatistics();
 	}
 }
