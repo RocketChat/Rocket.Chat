@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/ubi8/nodejs-12
 
-ENV RC_VERSION 5.2.0-rc.6
+ENV RC_VERSION 5.2.0
 
 MAINTAINER buildmaster@rocket.chat
 
