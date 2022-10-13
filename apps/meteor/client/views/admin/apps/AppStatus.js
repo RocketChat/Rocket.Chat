@@ -119,7 +119,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 		<Box {...props}>
 			{button && isAppDetailsPage && (
 				<Box
-					bg={isAppDetailsPage ? colors.p100 : 'transparent'}
+					bg={colors.p100}
 					display='flex'
 					flexDirection='row'
 					alignItems='center'
