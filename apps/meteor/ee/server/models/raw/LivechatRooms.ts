@@ -10,7 +10,7 @@ declare module '@rocket.chat/model-typings' {
 	export interface ILivechatRoomsModel {
 		associateRoomsWithDepartmentToUnit: (departments: string[], unit: string) => Promise<void>;
 		removeUnitAssociationFromRooms: (unit: string) => Promise<void>;
-		updateDepartmentAncestorsById: (rid: string, ancestors: string[]) => Promise<void>;
+		updateDepartmentAncestorsById: (rid: string, ancestors: string[]) => Promise<UpdateResult>;
 		unsetPredictedVisitorAbandonmentByRoomId(rid: string): Promise<UpdateResult>;
 		findAbandonedOpenRooms(date: Date): FindCursor<IOmnichannelRoom>;
 		setPredictedVisitorAbandonmentByRoomId(roomId: string, date: Date): Promise<UpdateResult>;
@@ -26,7 +26,7 @@ declare module '@rocket.chat/model-typings' {
 // Note: Expect a circular dependency error here 😓
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
-		await this.updateMany(
+		return this.updateMany(
 			{
 				'open': true,
 				't': 'l',
@@ -35,7 +35,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			{
 				$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
 			},
-		);
+		).then();
 	}
 
 	setOnHoldByRoomId(roomId: string): Promise<UpdateResult> {
@@ -61,7 +61,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	async unsetPriorityByIdFromAllOpenRooms(priorityId: string): Promise<void> {
-		await this.updateMany(
+		return this.updateMany(
 			{
 				open: true,
 				t: 'l',
@@ -70,7 +70,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			{
 				$unset: { priorityId: 1 },
 			},
-		);
+		).then();
 	}
 
 	findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom> {
@@ -178,7 +178,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			_id: rid,
 		};
 		const update = departmentAncestors ? { $set: { departmentAncestors } } : { $unset: { departmentAncestors: 1 } };
-		await this.updateOne(query, update);
+		return this.updateOne(query, update);
 	}
 
 	find(...args: Parameters<LivechatRoomsRaw['find']>) {

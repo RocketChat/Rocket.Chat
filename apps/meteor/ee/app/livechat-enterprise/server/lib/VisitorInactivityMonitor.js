@@ -95,12 +95,10 @@ export class VisitorInactivityMonitor {
 			LivechatEnterprise.placeRoomOnHold(room, comment, this.user),
 			LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id),
 		]);
-		if (result.some((r) => r.status === 'rejected')) {
-			logger.error(
-				'Error placing room on hold',
-				result.filter((r) => r.status === 'rejected').map((r) => r.reason),
-			);
-			throw new Error(`Error placing room on hold: ${result.find((r) => r.status === 'rejected').reason}`);
+		const rejected = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
+		if (rejected.length) {
+			logger.error('Error placing room on hold. Detail: ', rejected);
+			throw new Error('Error placing room on hold. Please check logs for more details.');
 		}
 	}
 
@@ -123,12 +121,9 @@ export class VisitorInactivityMonitor {
 				}
 			}),
 		);
-		const failed = result.filter((r) => r.status === 'rejected');
-		if (failed.length) {
-			logger.error(
-				'Failed to handle abandoned omnichannel rooms',
-				failed.map((r) => r.reason),
-			);
+		const rejected = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
+		if (rejected.length) {
+			logger.error('Failed to handle abandoned omnichannel rooms. Detail: ', rejected);
 		}
 
 		this._initializeMessageCache();
