@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { deleteRoom } from '../../app/lib';
 import { hasPermission } from '../../app/authorization/server';
@@ -41,11 +42,9 @@ Meteor.methods({
 			});
 		}
 
-		if (Apps && Apps.isLoaded()) {
-			const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomDeletePrevent', room));
-			if (prevent) {
-				throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
-			}
+		const prevent = Promise.await(Apps.triggerEvent(AppEvents.IPreRoomDeletedPrevent, room));
+		if (prevent) {
+			throw new Meteor.Error('error-app-prevented-deletion', 'A Rocket.Chat App prevented the room erasing.');
 		}
 
 		const result = deleteRoom(rid);
@@ -56,9 +55,7 @@ Meteor.methods({
 			Messages.createUserDeleteRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
 		}
 
-		if (Apps && Apps.isLoaded()) {
-			Apps.getBridges().getListenerBridge().roomEvent('IPostRoomDeleted', room);
-		}
+		Apps.triggerEvent(AppEvents.IPostRoomDeleted, room);
 
 		return result;
 	},

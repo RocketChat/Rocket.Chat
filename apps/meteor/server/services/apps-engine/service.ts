@@ -1,6 +1,8 @@
+import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
+
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import type { IAppsEngineService } from '../../sdk/types/IAppsEngineService';
-import { Apps, AppEvents } from '../../../app/apps/server/orchestrator';
+import { Apps } from '../../sdk';
 
 export class AppsEngineService extends ServiceClassInternal implements IAppsEngineService {
 	protected name = 'apps-engine';
