@@ -10,15 +10,16 @@ import AppsProvider from './AppsProvider';
 
 const AppsRoute: FC = () => {
 	const [isLoading, setLoading] = useState(true);
-	const canViewAppsAndMarketplace = usePermission('manage-apps');
+	const canManageApps = usePermission('manage-apps');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
 	const appsWhatIsItRoute = useRoute('admin-apps-disabled');
+	const marketplaceRoute = useRoute('admin-marketplace');
 
 	useEffect(() => {
 		let mounted = true;
 
 		const initialize = async (): Promise<void> => {
-			if (!canViewAppsAndMarketplace) {
+			if (!canManageApps) {
 				return;
 			}
 
@@ -39,15 +40,16 @@ const AppsRoute: FC = () => {
 		return (): void => {
 			mounted = false;
 		};
-	}, [canViewAppsAndMarketplace, isAppsEngineEnabled, appsWhatIsItRoute]);
+	}, [canManageApps, isAppsEngineEnabled, appsWhatIsItRoute, marketplaceRoute]);
 
 	const context = useRouteParameter('context');
 
 	const isMarketplace = !context;
 
 	const id = useRouteParameter('id');
+	const page = useRouteParameter('page');
 
-	if (!canViewAppsAndMarketplace) {
+	if (!canManageApps) {
 		return <NotAuthorizedPage />;
 	}
 
@@ -57,8 +59,8 @@ const AppsRoute: FC = () => {
 
 	return (
 		<AppsProvider>
-			{((!context || context === 'installed') && <AppsPage isMarketplace={isMarketplace} />) ||
-				(id && context === 'details' && <AppDetailsPage id={id} />) ||
+			{(page === 'list' && <AppsPage isMarketplace={isMarketplace} />) ||
+				(id && page === 'info' && <AppDetailsPage id={id} />) ||
 				(context === 'install' && <AppInstallPage />)}
 		</AppsProvider>
 	);

@@ -15,6 +15,7 @@ type AppsModelListProps = {
 const AppsModelList: FC<AppsModelListProps> = ({ appBoxItems, showManageApps, closeList }) => {
 	const t = useTranslation();
 	const marketplaceRoute = useRoute('admin-marketplace');
+	const page = 'list';
 
 	return (
 		<>
@@ -26,7 +27,7 @@ const AppsModelList: FC<AppsModelListProps> = ({ appBoxItems, showManageApps, cl
 							icon='store'
 							text={t('Marketplace')}
 							action={(): void => {
-								marketplaceRoute.push();
+								marketplaceRoute.push({ context: 'all', page });
 								closeList();
 							}}
 						/>
@@ -34,7 +35,7 @@ const AppsModelList: FC<AppsModelListProps> = ({ appBoxItems, showManageApps, cl
 							icon='cube'
 							text={t('Installed')}
 							action={(): void => {
-								marketplaceRoute.push({ context: 'installed' });
+								marketplaceRoute.push({ context: 'installed', page });
 								closeList();
 							}}
 						/>
