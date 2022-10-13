@@ -2,34 +2,34 @@ export const palette = [
 	{
 		category: 'Background',
 		list: [
-			{ name: 'light', token: 'white', color: '#FFFFFF', isDark: false, rgb: 'rgb(255, 255, 255)' },
-			{ name: 'tint', token: 'N100', color: '#F7F8FA', isDark: false, rgb: 'rgb(247, 248, 250)' },
+			{ name: 'background-light', token: 'white', color: '#FFFFFF', isDark: false, rgb: 'rgb(255, 255, 255)' },
+			{ name: 'background-tint', token: 'N100', color: '#F7F8FA', isDark: false, rgb: 'rgb(247, 248, 250)' },
 		],
 	},
 	{
 		category: 'Stroke',
-		description: "Use as component's outline, stroke, deviders",
+		description: "Use as component's outline, stroke, dividers",
 		list: [
-			{ name: 'extra-light', token: 'N200', color: '#F2F3F5', isDark: false, rgb: 'rgb(242, 243, 245)' },
-			{ name: 'light', token: 'N500', color: '#CBCED1', isDark: false, rgb: 'rgb(203, 206, 209)' },
-			{ name: 'medium', token: 'N600', color: '#9EA2A8', isDark: false, rgb: 'rgb(158, 162, 168)' },
-			{ name: 'dark', token: 'N700', color: '#6C727A', isDark: true, rgb: 'rgb(108, 114, 122)' },
-			{ name: 'extra-dark', token: 'N800', color: '#2F343D', isDark: true, rgb: 'rgb(47, 52, 61)' },
-			{ name: 'extra-light-highlight', token: 'P200', color: '#D1EBFE', isDark: false, rgb: 'rgb(209, 235, 254)' },
-			{ name: 'highlight', token: 'P500', color: '#156FF5', isDark: true, rgb: 'rgb(21, 111, 245)' },
-			{ name: 'extra-light-error', token: 'D200', color: '#FFC1C9', isDark: false, rgb: 'rgb(255, 193, 201)' },
-			{ name: 'error', token: 'D500', color: '#EC0D2A', isDark: true, rgb: 'rgb(236, 13, 42)' },
+			{ name: 'stroke-extra-light', token: 'N200', color: '#F2F3F5', isDark: false, rgb: 'rgb(242, 243, 245)' },
+			{ name: 'stroke-light', token: 'N500', color: '#CBCED1', isDark: false, rgb: 'rgb(203, 206, 209)' },
+			{ name: 'stroke-medium', token: 'N600', color: '#9EA2A8', isDark: false, rgb: 'rgb(158, 162, 168)' },
+			{ name: 'stroke-dark', token: 'N700', color: '#6C727A', isDark: true, rgb: 'rgb(108, 114, 122)' },
+			{ name: 'stroke-extra-dark', token: 'N800', color: '#2F343D', isDark: true, rgb: 'rgb(47, 52, 61)' },
+			{ name: 'stroke-extra-light-highlight', token: 'P200', color: '#D1EBFE', isDark: false, rgb: 'rgb(209, 235, 254)' },
+			{ name: 'stroke-highlight', token: 'P500', color: '#156FF5', isDark: true, rgb: 'rgb(21, 111, 245)' },
+			{ name: 'stroke-extra-light-error', token: 'D200', color: '#FFC1C9', isDark: false, rgb: 'rgb(255, 193, 201)' },
+			{ name: 'stroke-error', token: 'D500', color: '#EC0D2A', isDark: true, rgb: 'rgb(236, 13, 42)' },
 		],
 	},
 	{
 		category: 'Surface',
 		description: 'Use as a container on top of the background',
 		list: [
-			{ name: 'light', token: 'white', color: '#FFFFFF', isDark: false, rgb: 'rgb(255, 255, 255)' },
-			{ name: 'tint', token: 'N100', color: '#F7F8FA', isDark: false, rgb: 'rgb(247, 248, 250)' },
-			{ name: 'neutral', token: 'N400', color: '#E4E7EA', isDark: false, rgb: 'rgb(228, 231, 234)' },
-			{ name: 'hover', token: 'N400', color: '#E4E7EA', isDark: false, rgb: 'rgb(228, 231, 234)' },
-			{ name: 'disabled', token: 'N100', color: '#F7F8FA', isDark: false, rgb: 'rgb(247, 248, 250)' },
+			{ name: 'surface-light', token: 'white', color: '#FFFFFF', isDark: false, rgb: 'rgb(255, 255, 255)' },
+			{ name: 'surface-tint', token: 'N100', color: '#F7F8FA', isDark: false, rgb: 'rgb(247, 248, 250)' },
+			{ name: 'surface-neutral', token: 'N400', color: '#E4E7EA', isDark: false, rgb: 'rgb(228, 231, 234)' },
+			{ name: 'surface-hover', token: 'N400', color: '#E4E7EA', isDark: false, rgb: 'rgb(228, 231, 234)' },
+			{ name: 'surface-disabled', token: 'N100', color: '#F7F8FA', isDark: false, rgb: 'rgb(247, 248, 250)' },
 		],
 	},
 	{
@@ -51,12 +51,12 @@ export const palette = [
 		category: 'Status',
 		description: 'Status Background',
 		list: [
-			{ name: 'status-info', token: 'P200', color: '#D1EBFE', isDark: false, rgb: 'rgb(209, 235, 254)' },
-			{ name: 'status-success', token: 'S500', color: '#C0F6E4', isDark: false, rgb: 'rgb(192, 246, 228)' },
-			{ name: 'status-warning', token: 'W200', color: '#FFECAD', isDark: false, rgb: 'rgb(255, 236, 173)' },
-			{ name: 'status-danger', token: 'D200', color: '#FFC1C9', isDark: false, rgb: 'rgb(255, 193, 201)' },
-			{ name: 'status-service-1', token: 'S1-200', color: '#FAD1B0', isDark: false, rgb: 'rgb(250, 209, 176)' },
-			{ name: 'status-service-2', token: 'S2-200', color: '#EDD0F7', isDark: false, rgb: 'rgb(237, 208, 247)' },
+			{ name: 'status-background-info', token: 'P200', color: '#D1EBFE', isDark: false, rgb: 'rgb(209, 235, 254)' },
+			{ name: 'status-background-success', token: 'S500', color: '#C0F6E4', isDark: false, rgb: 'rgb(192, 246, 228)' },
+			{ name: 'status-background-warning', token: 'W200', color: '#FFECAD', isDark: false, rgb: 'rgb(255, 236, 173)' },
+			{ name: 'status-background-danger', token: 'D200', color: '#FFC1C9', isDark: false, rgb: 'rgb(255, 193, 201)' },
+			{ name: 'status-background-service-1', token: 'S1-200', color: '#FAD1B0', isDark: false, rgb: 'rgb(250, 209, 176)' },
+			{ name: 'status-background-service-2', token: 'S2-200', color: '#EDD0F7', isDark: false, rgb: 'rgb(237, 208, 247)' },
 		],
 	},
 	{
@@ -129,3 +129,19 @@ export const palette = [
 		],
 	},
 ];
+
+export const defaultValues = {
+	...palette.reduce(
+		(rec, group) => ({
+			...rec,
+			...group.list.reduce(
+				(rec, item) => ({
+					...rec,
+					[item.name]: item.color,
+				}),
+				{} as Record<string, string>,
+			),
+		}),
+		{} as Record<string, string>,
+	),
+};

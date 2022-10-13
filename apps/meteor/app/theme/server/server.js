@@ -13,9 +13,6 @@ import { addStyle } from '../../ui-master/server/inject';
 
 const logger = new Logger('rocketchat:theme');
 
-let currentHash = '';
-let currentSize = 0;
-
 export const theme = new (class {
 	constructor() {
 		this.variables = {};
@@ -23,11 +20,6 @@ export const theme = new (class {
 		this.customCSS = '';
 		settingsRegistry.add('css', '');
 		settingsRegistry.addGroup('Layout');
-		settings.change('css', () => {
-			process.emit('message', {
-				refresh: 'client',
-			});
-		});
 
 		this.compileDelayed = _.debounce(Meteor.bindEnvironment(this.compile.bind(this)), 100);
 		settings.watchByRegex(/^theme-./, (key, value) => {
@@ -119,15 +111,17 @@ export const theme = new (class {
 	}
 
 	getCss() {
-		return settings.get('css') || '';
+		return `${settings.get('css') || ''}:root {\n${Object.entries(JSON.parse(settings.get('Layout_Fuselage_Palette')))
+			// .filter(([key, value]) => value !== defaultValues[key])
+			.map(([name, color]) => `--rcx-${name}: ${color};`)
+			.join('\n')}\n}`;
 	}
 })();
 
-Meteor.startup(() => {
-	settings.watch('css', (value = '') => {
-		currentHash = crypto.createHash('sha1').update(value).digest('hex');
-		currentSize = value.length;
-		addStyle('css-theme', value);
+settings.watchMultiple(['css', 'Layout_Fuselage_Palette'], () => {
+	addStyle('css-theme', theme.getCss());
+	process.emit('message', {
+		refresh: 'client',
 	});
 });
 
@@ -138,9 +132,10 @@ WebApp.rawConnectHandlers.use(function (req, res, next) {
 		return next();
 	}
 
+	const data = theme.getCss();
+
 	res.setHeader('Content-Type', 'text/css; charset=UTF-8');
-	res.setHeader('Content-Length', currentSize);
-	res.setHeader('ETag', `"${currentHash}"`);
-	res.write(theme.getCss());
-	res.end();
+	res.setHeader('Content-Length', data.length);
+	res.setHeader('ETag', `"${crypto.createHash('sha1').update(data).digest('hex')}"`);
+	res.end(data, 'utf-8');
 });

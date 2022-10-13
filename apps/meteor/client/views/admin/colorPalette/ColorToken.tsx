@@ -11,9 +11,11 @@ type ColorTokenProps = {
 	item: { name: string; token: string; color: string; isDark: boolean; rgb: string };
 	position: number;
 	disabled?: boolean;
+	value: string;
+	onChange: (e: any) => void;
 };
 
-const ColorToken = ({ item, position }: ColorTokenProps): ReactElement => {
+const ColorToken = ({ item, onChange }: ColorTokenProps): ReactElement => {
 	const reference = useRef(null);
 	const target = useRef(null);
 	const [isVisible, toggle] = useToggle(false);
@@ -29,7 +31,10 @@ const ColorToken = ({ item, position }: ColorTokenProps): ReactElement => {
 		toggle(false);
 	}, [item.rgb, toggle]);
 
-	const applyColor = (): void => toggle(false);
+	const applyColor = (): void => {
+		onChange(color.toString('hex'));
+		toggle(false);
+	};
 
 	const isHexColor = (hex: string): boolean => typeof hex === 'string' && hex.length === 6 && !isNaN(Number(`0x${hex}`));
 	const isLightColor = (color: string): boolean => {
@@ -96,7 +101,6 @@ const ColorToken = ({ item, position }: ColorTokenProps): ReactElement => {
 				justifyContent='space-between'
 				flexShrink={0}
 				m='x4'
-				mis={position === 0 ? '0' : 'x4'}
 				p='x8'
 				fontSize='10px'
 				color={isLightColor(color.toString('hex')) ? 'black' : 'white'}
@@ -104,6 +108,7 @@ const ColorToken = ({ item, position }: ColorTokenProps): ReactElement => {
 				onClick={openColorPicker}
 				style={{ cursor: 'pointer' }}
 			>
+				<input type='hidden' name={item.token} onChange={onChange} value={color.toString('rgb')} />
 				<Box>{item.name}</Box>
 				<Box display='flex' justifyContent='space-between'>
 					<Box>{color.toString('hex')}</Box>
