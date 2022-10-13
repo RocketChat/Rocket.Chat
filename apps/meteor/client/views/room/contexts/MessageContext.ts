@@ -22,7 +22,7 @@ export type MessageContextValue = {
 	oembedEnabled: boolean;
 	actions: {
 		openUserCard: (username: string) => (e: UIEvent) => void;
-		openRoom: (id: string) => () => void;
+		openRoom: (id: string) => (event: UIEvent) => void;
 		openThread: (tmid: string, jump?: string) => (e: MouseEvent) => void;
 		runActionLink: (message: IMessage) => (action: string) => () => void;
 		replyBroadcast: (message: IMessage) => void;

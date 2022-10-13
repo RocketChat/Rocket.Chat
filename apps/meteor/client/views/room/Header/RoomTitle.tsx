@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { Header } from '@rocket.chat/ui-client';
 import React, { ReactElement } from 'react';
 
-import Header from '../../../components/Header';
 import HeaderIconWithRoom from './HeaderIconWithRoom';
 
 type RoomTitleProps = {
@@ -11,7 +11,7 @@ type RoomTitleProps = {
 const RoomTitle = ({ room }: RoomTitleProps): ReactElement => (
 	<>
 		<HeaderIconWithRoom room={room} />
-		<Header.Title>{room.name}</Header.Title>
+		<Header.Title is='h1'>{room.name}</Header.Title>
 	</>
 );
 

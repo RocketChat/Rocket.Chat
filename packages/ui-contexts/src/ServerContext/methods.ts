@@ -174,6 +174,7 @@ export interface ServerMethods {
 		moreBefore: boolean;
 		moreAfter: boolean;
 	};
+	'logoutCleanUp': (user: IUser) => void;
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
 	'openRoom': (rid: IRoom['_id']) => ISubscription;
@@ -225,6 +226,8 @@ export interface ServerMethods {
 	'checkRegistrationSecretURL': (hash: string) => boolean;
 	'livechat:changeLivechatStatus': (params?: void | { status?: string; agentId?: string }) => unknown;
 	'livechat:saveAgentInfo': (_id: string, agentData: unknown, agentDepartments: unknown) => unknown;
+	'livechat:takeInquiry': (inquiryId: string, options?: { clientAction: boolean; forwardingToDepartment?: boolean }) => unknown;
+	'livechat:resumeOnHold': (roomId: string, options?: { clientAction: boolean }) => unknown;
 	'autoTranslate.getProviderUiMetadata': () => Record<string, { name: string; displayName: string }>;
 	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
 	'spotlight': (
