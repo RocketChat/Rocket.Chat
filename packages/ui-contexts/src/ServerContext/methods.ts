@@ -227,8 +227,8 @@ export interface ServerMethods {
 	'checkRegistrationSecretURL': (hash: string) => boolean;
 	'livechat:changeLivechatStatus': (params?: void | { status?: string; agentId?: string }) => unknown;
 	'livechat:saveAgentInfo': (_id: string, agentData: unknown, agentDepartments: unknown) => unknown;
-	'livechat:takeInquiry': (inquiryId: string) => unknown;
-	'livechat:resumeOnHold': (roomId: string) => unknown;
+	'livechat:takeInquiry': (inquiryId: string, options?: { clientAction: boolean; forwardingToDepartment?: boolean }) => unknown;
+	'livechat:resumeOnHold': (roomId: string, options?: { clientAction: boolean }) => unknown;
 	'autoTranslate.getProviderUiMetadata': () => Record<string, { name: string; displayName: string }>;
 	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
 	'spotlight': (

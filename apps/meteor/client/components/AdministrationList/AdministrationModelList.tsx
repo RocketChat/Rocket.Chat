@@ -53,7 +53,7 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 						)}
 						<ListItem
 							icon='cog'
-							text={t('Manage_workspace')}
+							text={t('Workspace')}
 							action={(): void => {
 								if (hasInfoPermission) {
 									infoRoute.push();

@@ -7,11 +7,21 @@ import { callbacks } from '../../../../lib/callbacks';
 import { LICENSE_VERSION } from '../license';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export async function getWorkspaceLicense() {
-	const token = await getWorkspaceAccessToken();
+export async function getWorkspaceLicense(): Promise<{ updated: boolean; license: string }> {
+	const currentLicense = await Settings.findOne('Cloud_Workspace_License');
 
+	const cachedLicenseReturn = () => {
+		const license = currentLicense?.value as string;
+		if (license) {
+			callbacks.run('workspaceLicenseChanged', license);
+		}
+
+		return { updated: false, license };
+	};
+
+	const token = await getWorkspaceAccessToken();
 	if (!token) {
-		return { updated: false, license: '' };
+		return cachedLicenseReturn();
 	}
 
 	let licenseResult;
@@ -21,25 +31,24 @@ export async function getWorkspaceLicense() {
 				Authorization: `Bearer ${token}`,
 			},
 		});
-	} catch (e: any) {
-		if (e.response?.data?.error) {
-			SystemLogger.error(`Failed to update license from Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
-		} else {
-			SystemLogger.error(e);
-		}
+	} catch (err: any) {
+		SystemLogger.error({
+			msg: 'Failed to update license from Rocket.Chat Cloud',
+			...(err.response?.data && { cloudError: err.response.data }),
+			err,
+		});
 
-		return { updated: false, license: '' };
+		return cachedLicenseReturn();
 	}
 
 	const remoteLicense = licenseResult.data;
-	const currentLicense = await Settings.findOne('Cloud_Workspace_License');
 
 	if (!currentLicense || !currentLicense._updatedAt) {
 		throw new Error('Failed to retrieve current license');
 	}
 
 	if (remoteLicense.updatedAt <= currentLicense._updatedAt) {
-		return { updated: false, license: '' };
+		return cachedLicenseReturn();
 	}
 
 	await Settings.updateValueById('Cloud_Workspace_License', remoteLicense.license);
