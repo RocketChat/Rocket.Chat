@@ -387,6 +387,12 @@ describe('LIVECHAT - Agents', function () {
 	});
 
 	describe('livechat/agent.status', () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission to change its own status', async () => {
+			await updatePermission('view-l-room', []);
+			await request.post(api('livechat/agent.status')).set(credentials).send({ status: 'not-available' }).expect(403);
+
+			await updatePermission('view-l-room', ['admin', 'livechat-agent', 'livechat-manager']);
+		});
 		it('should return an "unauthorized error" when the user does not have the necessary permission to change other status', async () => {
 			await updatePermission('manage-livechat-agents', []);
 			await request
@@ -398,13 +404,13 @@ describe('LIVECHAT - Agents', function () {
 			await updatePermission('manage-livechat-agents', ['admin']);
 		});
 		it('should return an error if user is not an agent', async () => {
-			const user: IUser = await createUser();
+			const user: IUser = await createUser({ roles: ['livechat-manager'] });
 			const userCredentials = await login(user.username, password);
 			await request
 				.post(api('livechat/agent.status'))
 				.set(userCredentials)
 				.send({ status: 'available', agentId: user._id })
-				.expect(403)
+				.expect(404)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'Agent not found');
@@ -426,7 +432,7 @@ describe('LIVECHAT - Agents', function () {
 				.post(api('livechat/agent.status'))
 				.set(agent2.credentials)
 				.send({ status: 'available', agentId: 'invalid-agent-id' })
-				.expect(403)
+				.expect(404)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'Agent not found');
@@ -502,8 +508,3 @@ describe('LIVECHAT - Agents', function () {
 		});
 	});
 });
-
-// TODO:
-// Missing tests for following endpoint:
-// livechat/users/:type/:_id
-// livechat/agent.next/:token
