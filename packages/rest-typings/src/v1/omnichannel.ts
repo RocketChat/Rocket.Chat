@@ -914,6 +914,11 @@ export type LivechatRoomsProps = {
 	onhold?: boolean;
 };
 
+export type VisitorSearchChatsResult = Pick<
+	IOmnichannelRoom,
+	'fname' | 'ts' | 'v' | 'msgs' | 'servedBy' | 'closedAt' | 'closedBy' | 'closer' | 'tags' | '_id'
+> & { closingMessage?: IMessage | null };
+
 const LivechatRoomsSchema = {
 	type: 'object',
 	properties: {
@@ -2228,8 +2233,8 @@ export const isGETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams =
 
 type GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams = PaginatedRequest<{
 	searchText?: string;
-	closedChatsOnly?: string;
-	servedChatsOnly?: string;
+	closedChatsOnly?: boolean;
+	servedChatsOnly?: boolean;
 }>;
 
 const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
@@ -3010,7 +3015,9 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams) => PaginatedResult<{ history: IOmnichannelRoom[] }>;
 	};
 	'/v1/livechat/visitors.searchChats/room/:roomId/visitor/:visitorId': {
-		GET: (params: GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams) => PaginatedResult<{ history: IOmnichannelRoom[] }>;
+		GET: (
+			params: GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams,
+		) => PaginatedResult<{ history: VisitorSearchChatsResult[] }>;
 	};
 	'/v1/livechat/visitors.autocomplete': {
 		GET: (params: GETLivechatVisitorsAutocompleteParams) => {
