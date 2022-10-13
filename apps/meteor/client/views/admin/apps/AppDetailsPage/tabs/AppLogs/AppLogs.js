@@ -3,9 +3,9 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useEffect } from 'react';
 
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import AccordionLoading from './AccordionLoading';
-import LogItem from './LogItem';
+import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
+import AccordionLoading from '../../../AccordionLoading';
+import AppLogsItem from './AppLogsItem';
 
 const useAppWithLogs = ({ id }) => {
 	const [data, setData] = useSafely(useState({}));
@@ -51,7 +51,7 @@ function AppLogs({ id }) {
 				<Accordion width='100%' alignSelf='center'>
 					{app.logs &&
 						app.logs.map((log) => (
-							<LogItem
+							<AppLogsItem
 								key={log._createdAt}
 								title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${log.totalTime}ms)`}
 								instanceId={log.instanceId}

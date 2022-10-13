@@ -2,9 +2,9 @@ import { Box, Accordion } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import LogEntry from './LogEntry';
+import AppLogsItemEntry from './AppLogsItemEntry';
 
-type LogItemProps = {
+type AppLogsItemProps = {
 	entries: {
 		severity: string;
 		timestamp: string;
@@ -15,7 +15,7 @@ type LogItemProps = {
 	title: string;
 };
 
-const LogItem: FC<LogItemProps> = ({ entries, instanceId, title, ...props }) => {
+const AppLogsItem: FC<AppLogsItemProps> = ({ entries, instanceId, title, ...props }) => {
 	const t = useTranslation();
 
 	return (
@@ -26,10 +26,10 @@ const LogItem: FC<LogItemProps> = ({ entries, instanceId, title, ...props }) => 
 				</Box>
 			)}
 			{entries.map(({ severity, timestamp, caller, args }, i) => (
-				<LogEntry key={i} severity={severity} timestamp={timestamp} caller={caller} args={args} />
+				<AppLogsItemEntry key={i} severity={severity} timestamp={timestamp} caller={caller} args={args} />
 			))}
 		</Accordion.Item>
 	);
 };
 
-export default LogItem;
+export default AppLogsItem;

@@ -1,9 +1,10 @@
 import { Accordion, Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React, { ReactElement } from 'react';
 
-import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import { useTimeAgo } from '../../../../../../hooks/useTimeAgo';
 
-type release = {
+type IRelease = {
 	version: string;
 	createdDate: string;
 	detailedChangelog: {
@@ -13,10 +14,11 @@ type release = {
 };
 
 type ReleaseItemProps = {
-	release: release;
+	release: IRelease;
 };
 
-const ReleaseItem = ({ release, ...props }: ReleaseItemProps): JSX.Element => {
+const AppReleasesItem = ({ release, ...props }: ReleaseItemProps): ReactElement => {
+	const t = useTranslation();
 	const formatDate = useTimeAgo();
 
 	const title = (
@@ -35,10 +37,10 @@ const ReleaseItem = ({ release, ...props }: ReleaseItemProps): JSX.Element => {
 			{release.detailedChangelog?.rendered ? (
 				<Box dangerouslySetInnerHTML={{ __html: release.detailedChangelog?.rendered }} />
 			) : (
-				'No release information provided'
+				t('No_release_information_provided')
 			)}
 		</Accordion.Item>
 	);
 };
 
-export default ReleaseItem;
+export default AppReleasesItem;
