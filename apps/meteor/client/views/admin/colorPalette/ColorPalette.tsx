@@ -1,21 +1,24 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { filterOnlyChangedColors } from '@rocket.chat/ui-theming/src/filterOnlyChangedColors';
+import { useSetLayoutSetting } from '@rocket.chat/ui-theming/src/hooks/useSetLayoutSetting';
+import { defaultPalette, palette } from '@rocket.chat/ui-theming/src/palette';
 import React, { Fragment, ReactElement } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import ColorToken from './ColorToken';
-import { palette } from './palette';
 
 const ColorPalette = (): ReactElement => {
-	const { control, handleSubmit } = useFormContext();
-	const saveSetting = useEndpoint('POST', '/v1/settings/Layout_Fuselage_Palette');
+	const { control, handleSubmit, reset } = useFormContext();
+	console.log(control._defaultValues);
+	const saveSetting = useSetLayoutSetting();
 	return (
 		<Box
 			is='form'
 			name='palette'
 			id='palette'
 			onSubmit={handleSubmit((data) => {
-				saveSetting({ value: JSON.stringify(data) });
+				saveSetting({ value: JSON.stringify(filterOnlyChangedColors(defaultPalette, data)) });
+				reset(data);
 			})}
 			display='flex'
 			flexDirection='column'
@@ -36,7 +39,7 @@ const ColorPalette = (): ReactElement => {
 								control={control}
 								name={tokenItem.name}
 								render={({ field: { onChange, value } /* , fieldState: { invalid, isTouched, isDirty, error }*/ }): ReactElement => (
-									<ColorToken item={tokenItem} position={i} onChange={onChange} value={value} />
+									<ColorToken name={tokenItem.name} token={tokenItem.token} position={i} onChange={onChange} value={value} />
 								)}
 							/>
 						))}

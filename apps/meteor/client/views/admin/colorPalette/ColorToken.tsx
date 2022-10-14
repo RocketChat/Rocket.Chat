@@ -1,6 +1,8 @@
 import { parseColor } from '@react-stately/color';
 import { Box, Button, Dropdown, Input } from '@rocket.chat/fuselage';
 import { useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
+import { isHexColor } from '@rocket.chat/ui-theming/src/isHexColor';
+import { isLightColor } from '@rocket.chat/ui-theming/src/isLightColor';
 import React, { ReactElement, SyntheticEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -8,43 +10,35 @@ import ColorArea from './ColorArea';
 import ColorSlider from './ColorSlider';
 
 type ColorTokenProps = {
-	item: { name: string; token: string; color: string; isDark: boolean; rgb: string };
+	name: string;
+	token: string;
 	position: number;
 	disabled?: boolean;
 	value: string;
 	onChange: (e: any) => void;
 };
 
-const ColorToken = ({ item, onChange }: ColorTokenProps): ReactElement => {
+const ColorToken = ({ name, token, value, onChange }: ColorTokenProps): ReactElement => {
 	const reference = useRef(null);
 	const target = useRef(null);
 	const [isVisible, toggle] = useToggle(false);
 
 	const [isTyping, setIsTyping] = useState(false);
-	const [input, setInput] = useState(item.color);
-	const [color, setColor] = useState(parseColor(item.color).toFormat('hsba'));
+	const [input, setInput] = useState(value);
+	const [color, setColor] = useState(parseColor(value).toFormat('hsba'));
 	const [xChannel, yChannel, zChannel] = color.getColorChannels();
 
 	const openColorPicker = (): void => toggle(true);
 	const closeColorPicker = useCallback((): void => {
-		setColor(parseColor(item.color).toFormat('hsba'));
+		setColor(parseColor(value).toFormat('hsba'));
 		toggle(false);
-	}, [item.color, toggle]);
+	}, [value, toggle]);
 
 	const applyColor = (): void => {
 		onChange(color.toString('hex'));
 		toggle(false);
 	};
 
-	const isHexColor = (hex: string): boolean => typeof hex === 'string' && hex.length === 6 && !isNaN(Number(`0x${hex}`));
-	const isLightColor = (color: string): boolean => {
-		const hex = color.replace('#', '');
-		const r = parseInt(hex.substring(0, 0 + 2), 16);
-		const g = parseInt(hex.substring(2, 2 + 2), 16);
-		const b = parseInt(hex.substring(4, 4 + 2), 16);
-		const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-		return brightness > 155;
-	};
 	const handleInputChange = (e: SyntheticEvent): void => {
 		setIsTyping(true);
 		const value = (e.target as HTMLInputElement).value.toUpperCase();
@@ -69,10 +63,10 @@ const ColorToken = ({ item, onChange }: ColorTokenProps): ReactElement => {
 		<>
 			{isVisible &&
 				createPortal(
-					<Dropdown reference={reference} ref={target} key={item.name}>
+					<Dropdown reference={reference} ref={target} key={name}>
 						<Box pi='x16'>
 							<Box fontSize='p2b' fontWeight='p2b' display='flex' justifyContent='center'>
-								{item.name}
+								{name}
 							</Box>
 							<Box display='flex' justifyContent='center' flexDirection='column' mb='x8'>
 								<ColorArea aria-labelledby='hsb-label-id-1' value={color} onChange={setColor} xChannel={xChannel} yChannel={yChannel} />
@@ -91,7 +85,7 @@ const ColorToken = ({ item, onChange }: ColorTokenProps): ReactElement => {
 				)}
 
 			<Box
-				key={item.name}
+				key={name}
 				ref={reference}
 				width='120px'
 				height='120px'
@@ -108,11 +102,11 @@ const ColorToken = ({ item, onChange }: ColorTokenProps): ReactElement => {
 				onClick={openColorPicker}
 				style={{ cursor: 'pointer' }}
 			>
-				<input type='hidden' name={item.token} onChange={onChange} value={color.toString('rgb')} />
-				<Box>{item.name}</Box>
+				<input type='hidden' name={name} onChange={onChange} value={color.toString('rgb')} />
+				<Box>{name}</Box>
 				<Box display='flex' justifyContent='space-between'>
 					<Box>{color.toString('hex')}</Box>
-					<Box>{item.token}</Box>
+					<Box>{token}</Box>
 				</Box>
 			</Box>
 		</>

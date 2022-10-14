@@ -1,34 +1,51 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
+import { hasChanges } from '@rocket.chat/ui-theming/src/hasChanges';
+import { useLayoutPalette } from '@rocket.chat/ui-theming/src/hooks/useLayoutVariables';
+import { defaultPalette } from '@rocket.chat/ui-theming/src/palette';
 import React, { ReactElement } from 'react';
-import { createPortal } from 'react-dom';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
 import ColorPalette from './ColorPalette';
-import { defaultValues } from './palette';
 
 const ColorPaletteRoute = (): ReactElement => {
 	const t = useTranslation();
+
+	const values = useLayoutPalette();
+
 	const methods = useForm({
-		defaultValues,
+		defaultValues: { ...defaultPalette, ...values },
 	});
 
 	return (
 		<FormProvider {...methods}>
-			{createPortal(
-				<style>
-					{`:root {\n${Object.entries(methods.getValues())
-						.filter(([key, value]) => value !== defaultValues[key])
-						.map(([name, color]) => `--rcx-${name}: ${color};`)
-						.join('\n')}\n}`}
-				</style>,
-				document.head,
-			)}
+			<PaletteStyleTag palette={methods.watch()} />
 			<Page>
 				<Page.Header title='Main UI colors'>
 					<ButtonGroup>
-						<Button form='palette' type='submit' primary flexGrow={1} disabled={!methods.formState.isDirty}>
+						<Button
+							form='palette'
+							secondary
+							disabled={!hasChanges(defaultPalette, methods.getValues())}
+							onClick={() => {
+								methods.reset({ ...defaultPalette });
+							}}
+						>
+							{t('Reset')}
+						</Button>
+						<Button
+							form='palette'
+							onClick={() => {
+								methods.reset();
+							}}
+							secondary
+							disabled={!methods.formState.isDirty}
+						>
+							{t('Cancel')}
+						</Button>
+						<Button form='palette' type='submit' primary disabled={!methods.formState.isDirty}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>

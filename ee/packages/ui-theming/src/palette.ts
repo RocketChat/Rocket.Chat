@@ -63,57 +63,57 @@ export const palette = [
 	{
 		description: 'Status Font',
 		list: [
-			{ name: 'status-font-on-info', token: 'P600', color: '#095AD2' },
-			{ name: 'status-font-on-success', token: 'S800', color: '#148660' },
-			{ name: 'status-font-on-warning', token: 'W900', color: '#8E6300' },
-			{ name: 'status-font-on-danger', token: 'D800', color: '#9B1325' },
-			{ name: 'status-font-on-service-1', token: 'S1-800', color: '#974809' },
-			{ name: 'status-font-on-service-2 ', token: 'S2-600', color: '#7F1B9F' },
+			{ name: 'status-fonts-on-info', token: 'P600', color: '#095AD2' },
+			{ name: 'status-fonts-on-success', token: 'S800', color: '#148660' },
+			{ name: 'status-fonts-on-warning', token: 'W900', color: '#8E6300' },
+			{ name: 'status-fonts-on-danger', token: 'D800', color: '#9B1325' },
+			{ name: 'status-fonts-on-service-1', token: 'S1-800', color: '#974809' },
+			{ name: 'status-fonts-on-service-2 ', token: 'S2-600', color: '#7F1B9F' },
 		],
 	},
 	{
 		category: 'Button',
 		description: 'Primary Background',
 		list: [
-			{ name: 'button-primary-default', token: 'P500', color: '#156FF5' },
-			{ name: 'button-primary-hover', token: 'P600', color: '#095AD2' },
-			{ name: 'button-primary-focus', token: 'P500', color: '#156FF5' },
-			{ name: 'button-primary-keyfocus', token: 'P500', color: '#156FF5' },
-			{ name: 'button-primary-press', token: 'P700', color: '#095AD2' },
-			{ name: 'button-primary-disabled', token: 'P200', color: '#D1EBFE' },
+			{ name: 'button-background-primary-default', token: 'P500', color: '#156FF5' },
+			{ name: 'button-background-primary-hover', token: 'P600', color: '#095AD2' },
+			{ name: 'button-background-primary-focus', token: 'P500', color: '#156FF5' },
+			{ name: 'button-background-primary-keyfocus', token: 'P500', color: '#156FF5' },
+			{ name: 'button-background-primary-press', token: 'P700', color: '#095AD2' },
+			{ name: 'button-background-primary-disabled', token: 'P200', color: '#D1EBFE' },
 		],
 	},
 	{
 		description: 'Secondary Background',
 		list: [
-			{ name: 'button-secondary-default', token: 'N400', color: '#E4E7EA' },
-			{ name: 'button-secondary-hover', token: 'N500', color: '#CBCED1' },
-			{ name: 'button-secondary-focus', token: 'N400', color: '#E4E7EA' },
-			{ name: 'button-secondary-keyfocus', token: 'N400', color: '#E4E7EA' },
-			{ name: 'button-secondary-press', token: 'N600', color: '#CBCED1' },
-			{ name: 'button-secondary-disabled', token: 'N300', color: '#EEEFF1' },
+			{ name: 'button-background-secondary-default', token: 'N400', color: '#E4E7EA' },
+			{ name: 'button-background-secondary-hover', token: 'N500', color: '#CBCED1' },
+			{ name: 'button-background-secondary-focus', token: 'N400', color: '#E4E7EA' },
+			{ name: 'button-background-secondary-keyfocus', token: 'N400', color: '#E4E7EA' },
+			{ name: 'button-background-secondary-press', token: 'N600', color: '#CBCED1' },
+			{ name: 'button-background-secondary-disabled', token: 'N300', color: '#EEEFF1' },
 		],
 	},
 	{
 		description: 'Secondary Danger Background',
 		list: [
-			{ name: 'button-secondary-danger-default', token: 'N400', color: '#E4E7EA' },
-			{ name: 'button-secondary-danger-hover', token: 'N500', color: '#CBCED1' },
-			{ name: 'button-secondary-danger-focus', token: 'N400', color: '#E4E7EA' },
-			{ name: 'button-secondary-danger-keyfocus', token: 'N400', color: '#E4E7EA' },
-			{ name: 'button-secondary-danger-press', token: 'N600', color: '#CBCED1' },
-			{ name: 'button-secondary-danger-disabled', token: 'N300', color: '#EEEFF1' },
+			{ name: 'button-background-secondary-danger-default', token: 'N400', color: '#E4E7EA' },
+			{ name: 'button-background-secondary-danger-hover', token: 'N500', color: '#CBCED1' },
+			{ name: 'button-background-secondary-danger-focus', token: 'N400', color: '#E4E7EA' },
+			{ name: 'button-background-secondary-danger-keyfocus', token: 'N400', color: '#E4E7EA' },
+			{ name: 'button-background-secondary-danger-press', token: 'N600', color: '#CBCED1' },
+			{ name: 'button-background-secondary-danger-disabled', token: 'N300', color: '#EEEFF1' },
 		],
 	},
 	{
 		description: 'Danger Background',
 		list: [
-			{ name: 'button-danger-default', token: 'D500', color: '#EC0D2A' },
-			{ name: 'button-danger-hover', token: 'D600', color: '#D40C26' },
-			{ name: 'button-danger-focus', token: 'D500', color: '#EC0D2A' },
-			{ name: 'button-danger-keyfocus', token: 'D500', color: '#EC0D2A' },
-			{ name: 'button-danger-press', token: 'D700', color: '#BB0B21' },
-			{ name: 'button-danger-disabled', token: 'D200', color: '#FFC1C9' },
+			{ name: 'button-background-danger-default', token: 'D500', color: '#EC0D2A' },
+			{ name: 'button-background-danger-hover', token: 'D600', color: '#D40C26' },
+			{ name: 'button-background-danger-focus', token: 'D500', color: '#EC0D2A' },
+			{ name: 'button-background-danger-keyfocus', token: 'D500', color: '#EC0D2A' },
+			{ name: 'button-background-danger-press', token: 'D700', color: '#BB0B21' },
+			{ name: 'button-background-danger-disabled', token: 'D200', color: '#FFC1C9' },
 		],
 	},
 	{
@@ -135,7 +135,7 @@ export const palette = [
 	},
 ];
 
-export const defaultValues = {
+export const defaultPalette = {
 	...palette.reduce(
 		(rec, group) => ({
 			...rec,
