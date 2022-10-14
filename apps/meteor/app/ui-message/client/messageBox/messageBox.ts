@@ -25,7 +25,6 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
-import './messageBoxAudioMessage.ts';
 import './messageBox.html';
 
 type MessageBoxTemplateInstance = Blaze.TemplateInstance<{

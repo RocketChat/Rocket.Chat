@@ -18,23 +18,17 @@ import OverflowElement from '../elements/OverflowElement';
 import PlainTextInputElement from '../elements/PlainTextInputElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
 
-type FuselageSurfaceRendererProps = ConstructorParameters<
-  typeof UiKit.SurfaceRenderer
->[0];
-
 export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement> {
-  public constructor(allowedBlocks?: FuselageSurfaceRendererProps) {
-    super(
-      allowedBlocks || [
-        'actions',
-        'context',
-        'divider',
-        'image',
-        'input',
-        'section',
-        'preview',
-      ]
-    );
+  public constructor() {
+    super([
+      'actions',
+      'context',
+      'divider',
+      'image',
+      'input',
+      'section',
+      'preview',
+    ]);
   }
 
   public plain_text(

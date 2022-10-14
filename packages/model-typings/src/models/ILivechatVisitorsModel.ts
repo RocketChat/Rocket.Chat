@@ -18,9 +18,9 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 		}
 	>;
 	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
-		emailOrPhone: string,
-		nameOrUsername: RegExp,
-		allowedCustomFields: string[],
+		emailOrPhone?: string,
+		nameOrUsername?: RegExp,
+		allowedCustomFields?: string[],
 		options?: FindOptions<ILivechatVisitor>,
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>>;
 
