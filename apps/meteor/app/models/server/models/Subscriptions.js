@@ -1373,14 +1373,6 @@ export class Subscriptions extends Base {
 
 		return this.update(query, update, { multi: true });
 	}
-
-	setOnHold(roomId) {
-		return this.update({ rid: roomId }, { $set: { onHold: true } }, { multi: true });
-	}
-
-	unsetOnHold(roomId) {
-		return this.update({ rid: roomId }, { $unset: { onHold: 1 } }, { multi: true });
-	}
 }
 
 export default new Subscriptions('subscription', true);
