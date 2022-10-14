@@ -53,7 +53,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload, $('.js-input-message', messageBox).get(0) as HTMLTextAreaElement | undefined, { rid, tmid });
+			fileUpload(filesToUpload, $('.js-input-message', messageBox).get(0) as HTMLTextAreaElement, { rid, tmid });
 			$input.remove();
 		});
 
