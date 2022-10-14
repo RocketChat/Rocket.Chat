@@ -9,7 +9,6 @@ import ColorToken from './ColorToken';
 
 const ColorPalette = (): ReactElement => {
 	const { control, handleSubmit, reset } = useFormContext();
-	console.log(control._defaultValues);
 	const saveSetting = useSetLayoutSetting();
 	return (
 		<Box
