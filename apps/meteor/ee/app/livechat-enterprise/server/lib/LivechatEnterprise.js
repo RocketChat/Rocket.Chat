@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry } from '@rocket.chat/models';
+import { LivechatInquiry, Users } from '@rocket.chat/models';
 
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { Users, LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
+import { LivechatRooms, Messages } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
@@ -20,12 +20,13 @@ import { settings } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
+import { LivechatUnitMonitors } from '../../../models/server';
 
 export const LivechatEnterprise = {
-	addMonitor(username) {
+	async addMonitor(username) {
 		check(username, String);
 
-		const user = Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
+		const user = await Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -40,10 +41,10 @@ export const LivechatEnterprise = {
 		return false;
 	},
 
-	removeMonitor(username) {
+	async removeMonitor(username) {
 		check(username, String);
 
-		const user = Users.findOneByUsername(username, { fields: { _id: 1 } });
+		const user = await Users.findOneByUsername(username, { fields: { _id: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -51,11 +52,15 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		if (removeUserFromRoles(user._id, ['livechat-monitor'])) {
-			return true;
+		const removeRoleResult = removeUserFromRoles(user._id, ['livechat-monitor']);
+		if (!removeRoleResult) {
+			return false;
 		}
 
-		return false;
+		// remove this monitor from any unit it is assigned to
+		LivechatUnitMonitors.removeByMonitorId(user._id);
+
+		return true;
 	},
 
 	removeUnit(_id) {
@@ -190,7 +195,6 @@ export const LivechatEnterprise = {
 			return false;
 		}
 		LivechatRooms.setOnHold(roomId);
-		Subscriptions.setOnHold(roomId);
 
 		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
 		Meteor.defer(() => {
@@ -209,7 +213,6 @@ export const LivechatEnterprise = {
 
 		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
 		LivechatRooms.unsetAllOnHoldFieldsByRoomId(roomId);
-		Subscriptions.unsetOnHold(roomId);
 	},
 };
 
