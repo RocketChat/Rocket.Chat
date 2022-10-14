@@ -243,7 +243,10 @@ export class NotificationsModule {
 				return false;
 			}
 
-			if (e === 'typing' || (e === 'user-activity' && Array.isArray(_activity) && (_activity.length === 0 || _activity.includes('user-typing')))) {
+			if (
+				e === 'typing' ||
+				(e === 'user-activity' && Array.isArray(_activity) && (_activity.length === 0 || _activity.includes('user-typing')))
+			) {
 				api.broadcast('user.typing', {
 					user: { username },
 					isTyping: _activity.includes('user-typing'),
@@ -254,9 +257,9 @@ export class NotificationsModule {
 			// DEPRECATED
 			// Keep compatibility between old and new events
 			if (e === 'user-activity' && Array.isArray(_activity) && (_activity.length === 0 || _activity.includes('user-typing'))) {
-				streamRoom._emit(`${ rid }/typing`, [username, _activity.includes('user-typing')], this.connection, true);
+				streamRoom._emit(`${rid}/typing`, [username, _activity.includes('user-typing')], this.connection, true);
 			} else if (e === 'typing') {
-				streamRoom._emit(`${ rid }/user-activity`, [username, _activity ? ['user-typing'] : [], extraData], this.connection, true);
+				streamRoom._emit(`${rid}/user-activity`, [username, _activity ? ['user-typing'] : [], extraData], this.connection, true);
 			}
 
 			return true;
@@ -369,7 +372,7 @@ export class NotificationsModule {
 			});
 
 			if (!room) {
-				console.warn(`Invalid eventName: "${ roomId }"`);
+				console.warn(`Invalid eventName: "${roomId}"`);
 				return false;
 			}
 
@@ -429,7 +432,7 @@ export class NotificationsModule {
 				const roomEvent = (...args: any[]): void => {
 					// TODO if receive a removed event could do => streamer.removeListener(rid, roomEvent);
 					const payload = streamer.changedPayload(streamer.subscriptionName, 'id', {
-						eventName: `${ userId }/rooms-changed`,
+						eventName: `${userId}/rooms-changed`,
 						args,
 					});
 
@@ -491,11 +494,11 @@ export class NotificationsModule {
 	}
 
 	notifyRoom(room: string, eventName: string, ...args: any[]): void {
-		return this.streamRoom.emit(`${ room }/${ eventName }`, ...args);
+		return this.streamRoom.emit(`${room}/${eventName}`, ...args);
 	}
 
 	notifyUser(userId: string, eventName: string, ...args: any[]): void {
-		return this.streamUser.emit(`${ userId }/${ eventName }`, ...args);
+		return this.streamUser.emit(`${userId}/${eventName}`, ...args);
 	}
 
 	notifyAllInThisInstance(eventName: string, ...args: any[]): void {
@@ -507,11 +510,11 @@ export class NotificationsModule {
 	}
 
 	notifyRoomInThisInstance(room: string, eventName: string, ...args: any[]): void {
-		return this.streamRoom.emitWithoutBroadcast(`${ room }/${ eventName }`, ...args);
+		return this.streamRoom.emitWithoutBroadcast(`${room}/${eventName}`, ...args);
 	}
 
 	notifyUserInThisInstance(userId: string, eventName: string, ...args: any[]): void {
-		return this.streamUser.emitWithoutBroadcast(`${ userId }/${ eventName }`, ...args);
+		return this.streamUser.emitWithoutBroadcast(`${userId}/${eventName}`, ...args);
 	}
 
 	sendPresence(uid: string, ...args: any[]): void {

@@ -1,4 +1,3 @@
-
 import { Meteor } from 'meteor/meteor';
 import type { IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, MatrixBridgedUser } from '@rocket.chat/models';
@@ -47,7 +46,10 @@ export class RocketChatUserAdapter {
 			return [];
 		}
 		const internalUserIds = internalBridgedUsers.map((bridgedUser) => bridgedUser.uid);
-		const internalUserIdsMap: Record<string, Record<string, any>> = internalBridgedUsers.reduce((acc, bridgedUser) => ({ ...acc, [bridgedUser.uid]: { mui: bridgedUser.mui, remote: bridgedUser.remote } }), {});
+		const internalUserIdsMap: Record<string, Record<string, any>> = internalBridgedUsers.reduce(
+			(acc, bridgedUser) => ({ ...acc, [bridgedUser.uid]: { mui: bridgedUser.mui, remote: bridgedUser.remote } }),
+			{},
+		);
 		const users = await Users.findByIds(internalUserIds).toArray();
 
 		if (users.length === 0) {
@@ -119,7 +121,7 @@ export class RocketChatUserAdapter {
 		const { _id, username, statusText, roles, name } = user;
 		await Users.updateOne({ _id }, { $set: { status, statusText: statusMessage || '' } });
 		api.broadcast('presence.status', {
-			user: { status, _id , username, statusText: statusMessage || statusText, roles, name },
+			user: { status, _id, username, statusText: statusMessage || statusText, roles, name },
 			previousStatus: user.status,
 		});
 	}

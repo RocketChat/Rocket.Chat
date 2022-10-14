@@ -1,6 +1,4 @@
-
 import type { IMessage } from '@rocket.chat/core-typings';
-import { ExternalPresence } from '../infrastructure/matrix/definitions/events/UserPresenceChanged';
 
 export interface IExternalUserProfileInformation {
 	displayName: string;
@@ -57,8 +55,6 @@ export interface IFederationBridge {
 	leaveRoom(externalRoomId: string, externalUserId: string): Promise<void>;
 	kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void>;
 	logFederationStartupInfo(info?: string): void;
-	uploadContent(externalSenderId: string, content: Buffer, options?: { name?: string; type?: string }): Promise<string | undefined>;
-	convertMatrixUrlToHttp(externalUserId: string, matrixUrl: string): string;
 	setUserAvatar(externalUserId: string, avatarUrl: string): Promise<void>;
 	getReadStreamForFileFromUrl(externaUserId: string, fileUrl: string): Promise<ReadableStream>;
 	redactEvent(externalRoomId: string, externalUserId: string, externalEventId: string): Promise<void>;
@@ -87,5 +83,4 @@ export interface IFederationBridge {
 		eventToReplyTo: string,
 	): Promise<string>;
 	notifyUserTyping(externalRoomId: string, externalUserId: string, isTyping: boolean): Promise<void>;
-	setUserPresence(externalUserId: string, status: ExternalPresence, statusMessage?: string): Promise<void>;
 }

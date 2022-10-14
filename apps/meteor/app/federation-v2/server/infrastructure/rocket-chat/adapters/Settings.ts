@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../../../../settings/server';
-import { IFederationBridgeRegistrationFile } from '../../../domain/IFederationBridge';
+import type { IFederationBridgeRegistrationFile } from '../../../domain/IFederationBridge';
 
 const EVERYTHING_REGEX = '.*';
 const LISTEN_RULES = EVERYTHING_REGEX;
@@ -59,23 +59,11 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public areEphemeralEventsEnabled(): boolean {
-		return (
-			settings.get('Federation_Matrix_enable_presence_status') === true ||
-			settings.get('Federation_Matrix_enable_typing_status') === true ||
-			settings.get('Federation_Matrix_enable_sync_user_avatar') === true
-		);
-	}
-
-	public isUserPresenceStatusEnabled(): boolean {
-		return settings.get('Federation_Matrix_enable_presence_status') === true;
+		return settings.get('Federation_Matrix_enable_typing_status') === true;
 	}
 
 	public isTypingStatusEnabled(): boolean {
 		return settings.get('Federation_Matrix_enable_typing_status') === true;
-	}
-
-	public isSyncUserAvatarEnabled(): boolean {
-		return settings.get('Federation_Matrix_enable_sync_user_avatar') === true;
 	}
 
 	public onFederationEnabledStatusChanged(
@@ -99,9 +87,7 @@ export class RocketChatSettingsAdapter {
 				'Federation_Matrix_homeserver_domain',
 				'Federation_Matrix_bridge_url',
 				'Federation_Matrix_bridge_localpart',
-				'Federation_Matrix_enable_presence_status',
 				'Federation_Matrix_enable_typing_status',
-				'Federation_Matrix_enable_sync_user_avatar',
 			],
 			([enabled]) =>
 				Promise.await(
@@ -175,9 +161,7 @@ export class RocketChatSettingsAdapter {
 				'Federation_Matrix_homeserver_domain',
 				'Federation_Matrix_bridge_url',
 				'Federation_Matrix_bridge_localpart',
-				'Federation_Matrix_enable_presence_status',
 				'Federation_Matrix_enable_typing_status',
-				'Federation_Matrix_enable_sync_user_avatar',
 			],
 			this.updateRegistrationFile.bind(this),
 		);
@@ -253,28 +237,12 @@ export class RocketChatSettingsAdapter {
 					i18nDescription: 'Federation_Matrix_registration_file_desc',
 				});
 
-				this.add('Federation_Matrix_enable_presence_status', false, {
-					readonly: false,
-					type: 'boolean',
-					i18nLabel: 'Federation_Matrix_enable_presence_status',
-					i18nDescription: 'Federation_Matrix_enable_presence_status_desc',
-					alert: 'Federation_Matrix_enable_presence_status_Alert',
-				});
-
 				this.add('Federation_Matrix_enable_typing_status', false, {
 					readonly: false,
 					type: 'boolean',
 					i18nLabel: 'Federation_Matrix_enable_typing_status',
 					i18nDescription: 'Federation_Matrix_enable_typing_status_desc',
 					alert: 'Federation_Matrix_enable_typing_status_Alert',
-				});
-
-				this.add('Federation_Matrix_enable_sync_user_avatar', false, {
-					readonly: false,
-					type: 'boolean',
-					i18nLabel: 'Federation_Matrix_enable_sync_user_avatar',
-					i18nDescription: 'Federation_Matrix_enable_sync_user_avatar_desc',
-					alert: 'Federation_Matrix_enable_sync_user_avatar_Alert',
 				});
 			});
 		});

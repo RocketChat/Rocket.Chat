@@ -28,7 +28,7 @@ import { FederationMessageServiceListener } from '../application/MessageServiceL
 import { MatrixMessageReactedHandler } from './matrix/handlers/Message';
 import { FederationMessageServiceSender } from '../application/sender/MessageServiceSender';
 import { FederationUserServiceListener } from '../application/UserServiceListener';
-import { MatrixUserPresenceChangedHandler, MatrixUserTypingStatusChangedHandler } from './matrix/handlers/User';
+import { MatrixUserTypingStatusChangedHandler } from './matrix/handlers/User';
 import { FederationUserServiceSender } from '../application/sender/UserServiceSender';
 
 export class FederationFactory {
@@ -120,7 +120,14 @@ export class FederationFactory {
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		bridge: IFederationBridge,
 	): FederationMessageServiceListener {
-		return new FederationMessageServiceListener(rocketRoomAdapter, rocketUserAdapter, rocketMessageAdapter, rocketFileAdapter, rocketSettingsAdapter, bridge);
+		return new FederationMessageServiceListener(
+			rocketRoomAdapter,
+			rocketUserAdapter,
+			rocketMessageAdapter,
+			rocketFileAdapter,
+			rocketSettingsAdapter,
+			bridge,
+		);
 	}
 
 	public static buildUserServiceReceiver(
@@ -130,13 +137,7 @@ export class FederationFactory {
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		bridge: IFederationBridge,
 	): FederationUserServiceListener {
-		return new FederationUserServiceListener(
-			rocketRoomAdapter,
-			rocketUserAdapter,
-			rocketFileAdapter,
-			rocketSettingsAdapter,
-			bridge,
-		);
+		return new FederationUserServiceListener(rocketRoomAdapter, rocketUserAdapter, rocketFileAdapter, rocketSettingsAdapter, bridge);
 	}
 
 	public static buildRoomInternalHooksValidator(
@@ -168,12 +169,7 @@ export class FederationFactory {
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 	): MatrixEventsHandler {
 		return new MatrixEventsHandler(
-			FederationFactory.getEventHandlers(
-				roomServiceReceive,
-				messageServiceReceiver,
-				userServiceReceiver,
-				rocketSettingsAdapter,
-			),
+			FederationFactory.getEventHandlers(roomServiceReceive, messageServiceReceiver, userServiceReceiver, rocketSettingsAdapter),
 		);
 	}
 
@@ -192,7 +188,6 @@ export class FederationFactory {
 			new MatrixRoomTopicChangedHandler(roomServiceReceiver),
 			new MatrixRoomEventRedactedHandler(roomServiceReceiver),
 			new MatrixMessageReactedHandler(messageServiceReceiver),
-			new MatrixUserPresenceChangedHandler(userServiceReceiver),
 			new MatrixUserTypingStatusChangedHandler(userServiceReceiver),
 		];
 	}

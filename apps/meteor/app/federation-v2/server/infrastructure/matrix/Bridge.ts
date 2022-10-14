@@ -11,7 +11,6 @@ import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definit
 import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
-import { ExternalPresence } from './definitions/events/UserPresenceChanged';
 
 let MatrixUserInstance: any;
 
@@ -261,10 +260,6 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async notifyUserTyping(externalRoomId: string, externalUserId: string, isTyping: boolean): Promise<void> {
 		await this.bridgeInstance.getIntent(externalUserId).sendTyping(externalRoomId, isTyping);
-	}
-
-	public async setUserPresence(externalUserId: string, status: ExternalPresence, statusMessage?: string): Promise<void> {
-		await this.bridgeInstance.getIntent(externalUserId).setPresence(status, statusMessage || '');
 	}
 
 	public async sendMessageReaction(
