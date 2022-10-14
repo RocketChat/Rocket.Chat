@@ -70,6 +70,7 @@ export type App = {
 		support: string;
 	};
 	description: string;
+	shortDescription?: string;
 	privacyPolicySummary: string;
 	detailedDescription: {
 		raw: string;
