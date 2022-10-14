@@ -43,41 +43,6 @@
 	padding: 0 20px;
 }
 
-.visitor-navigation,
-.visitor-custom-fields {
-	.visitor-scroll {
-		overflow-y: auto;
-
-		height: 130px;
-		margin-top: 4px;
-		margin-bottom: 20px;
-		padding: 4px;
-
-		border: 1px solid #e7e7e7;
-		border-radius: 4px;
-
-		ul {
-			li {
-				white-space: nowrap;
-
-				a {
-					display: block;
-					overflow: hidden;
-
-					text-decoration: underline;
-					text-overflow: ellipsis;
-
-					color: var(--secondary-font-color);
-
-					&:hover {
-						text-decoration: none;
-					}
-				}
-			}
-		}
-	}
-}
-
 .livechat-status {
 	color: #9d9fa3;
 
@@ -96,31 +61,9 @@
 		bottom: 0;
 		left: 10px;
 
-		content: " ";
+		content: ' ';
 
 		border-bottom: 1px solid #cccccc;
-	}
-}
-
-.user-view {
-	li {
-		color: var(--secondary-font-color);
-
-		font-size: 12px;
-		font-weight: 300;
-		line-height: 18px;
-	}
-
-	nav.centered-buttons {
-		margin-bottom: 1em;
-
-		text-align: center;
-
-		button {
-			display: inline-block;
-
-			width: auto;
-		}
 	}
 }
 

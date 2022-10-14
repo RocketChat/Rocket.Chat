@@ -21,7 +21,7 @@ import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointA
 import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import WarningModal from '../../../../admin/apps/WarningModal';
-import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../../contexts/ToolboxContext';
 import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';
 import RoomInfo from './RoomInfo';
 

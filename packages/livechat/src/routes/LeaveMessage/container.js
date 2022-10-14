@@ -8,7 +8,6 @@ import { createToken } from '../../lib/random';
 import { Consumer } from '../../store';
 import LeaveMessage from './component';
 
-
 export class LeaveMessageContainer extends Component {
 	handleSubmit = async (fields) => {
 		const { alerts, dispatch, successMessage } = this.props;
@@ -23,7 +22,9 @@ export class LeaveMessageContainer extends Component {
 			parentCall('callback', ['offline-form-submit', fields]);
 			return true;
 		} catch (error) {
-			const { data: { message } } = error;
+			const {
+				data: { message },
+			} = error;
 			console.error(message);
 			const alert = { id: createToken(), children: message, error: true, timeout: 5000 };
 			await dispatch({ alerts: (alerts.push(alert), alerts) });
@@ -33,35 +34,19 @@ export class LeaveMessageContainer extends Component {
 		}
 	};
 
-	render = (props) => (
-		<LeaveMessage {...props} onSubmit={this.handleSubmit} />
-	);
+	render = (props) => <LeaveMessage {...props} onSubmit={this.handleSubmit} />;
 }
-
 
 export const LeaveMessageConnector = ({ ref, ...props }) => (
 	<Consumer>
 		{({
 			config: {
 				departments = {},
-				messages: {
-					offlineMessage: message,
-					offlineSuccessMessage: successMessage,
-					offlineUnavailableMessage: unavailableMessage,
-				} = {},
-				theme: {
-					offlineTitle: title,
-					offlineColor: color,
-				} = {},
-				settings: {
-					displayOfflineForm,
-				} = {},
+				messages: { offlineMessage: message, offlineSuccessMessage: successMessage, offlineUnavailableMessage: unavailableMessage } = {},
+				theme: { offlineTitle: title, offlineColor: color } = {},
+				settings: { displayOfflineForm } = {},
 			} = {},
-			iframe: {
-				theme: {
-					offlineTitle: customOfflineTitle,
-				} = {},
-			} = {},
+			iframe: { theme: { offlineTitle: customOfflineTitle } = {} } = {},
 			loading,
 			token,
 			dispatch,
@@ -89,6 +74,5 @@ export const LeaveMessageConnector = ({ ref, ...props }) => (
 		)}
 	</Consumer>
 );
-
 
 export default LeaveMessageConnector;
