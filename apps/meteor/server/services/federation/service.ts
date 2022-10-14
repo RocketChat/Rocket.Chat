@@ -6,7 +6,13 @@ export class FederationService extends ServiceClassInternal implements IFederati
 	protected name = 'federation';
 
 	async created() {
-		this.onEvent('user.typing', async ({ isTyping, roomId, user: { username } }): Promise<void> => {
+		this.onEvent('user.avatarUpdate', async ({ username }): Promise<void> => {
+			if (!username) {
+				return;
+			}
+			await federationUserServiceSender.afterUserAvatarChanged(username);
+		});
+		this.onEvent('user.typing', async ({ isTyping, roomId, user: { username }}): Promise<void> => {
 			if (!roomId || !username) {
 				return;
 			}
