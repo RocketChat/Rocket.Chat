@@ -25,7 +25,7 @@ type appButtonResponseProps = {
 type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';
 	icon: 'warning' | 'ban' | 'checkmark-circled' | 'check';
-	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Enabled';
+	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed';
 };
 
 type PlanType = 'Subscription' | 'Paid' | 'Free';
@@ -213,7 +213,7 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App)
 
 	return {
 		icon: 'check',
-		label: 'Enabled',
+		label: 'Installed',
 	};
 };
 
