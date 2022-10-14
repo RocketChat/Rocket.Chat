@@ -16,13 +16,14 @@ import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useTranslateAttachments, useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
+import { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 import MessageContentBody from './MessageContentBody';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
 import PreviewList from './UrlPreview';
 
 const MessageContent: FC<{
-	message: IMessage;
+	message: MessageWithMdEnforced;
 	sequential: boolean;
 	subscription?: ISubscription;
 	id: IMessage['_id'];
@@ -53,19 +54,23 @@ const MessageContent: FC<{
 
 	return (
 		<>
-			{!message.blocks && (message.md || message.msg) && (
+			{!message.blocks && message.md && (
 				<MessageBody data-qa-type='message-body'>
-					{!isEncryptedMessage && <MessageContentBody message={message} />}
-					{isEncryptedMessage && message.e2e === 'done' && <MessageContentBody message={message} />}
+					{!isEncryptedMessage && <MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />}
+					{isEncryptedMessage && message.e2e === 'done' && (
+						<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
+					)}
 					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</MessageBody>
 			)}
+
 			{message.blocks && (
 				<MessageBlock fixedWidth>
 					<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
 				</MessageBlock>
 			)}
-			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} />}
+
+			{!!messageAttachments.length && <Attachments attachments={messageAttachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
 
@@ -87,14 +92,14 @@ const MessageContent: FC<{
 				<ThreadMetric
 					openThread={openThread(message._id)}
 					counter={message.tcount}
-					following={Boolean(mineUid && message?.replies.indexOf(mineUid) > -1)}
+					following={Boolean(mineUid && message?.replies?.indexOf(mineUid) > -1)}
 					mid={message._id}
 					rid={message.rid}
 					lm={message.tlm}
 					unread={unread}
 					mention={mention}
 					all={all}
-					participants={message?.replies.length}
+					participants={message?.replies?.length}
 				/>
 			)}
 

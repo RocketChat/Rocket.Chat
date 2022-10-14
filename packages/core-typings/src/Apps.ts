@@ -69,6 +69,7 @@ export type App = {
 		support: string;
 	};
 	description: string;
+	shortDescription?: string;
 	privacyPolicySummary: string;
 	detailedDescription: {
 		raw: string;
@@ -104,7 +105,7 @@ export type App = {
 	};
 	tosLink: string;
 	privacyLink: string;
-	marketplace: unknown;
+	marketplace?: unknown;
 	modifiedAt: string;
 	permissions: AppPermission[];
 	languages: string[];

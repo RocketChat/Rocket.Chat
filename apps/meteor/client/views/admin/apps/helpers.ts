@@ -170,7 +170,7 @@ export const appButtonProps = ({
 type appStatusSpanPropsResponse = {
 	type?: 'failed' | 'warning';
 	icon: 'warning' | 'ban' | 'checkmark-circled' | 'check';
-	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Enabled';
+	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed';
 };
 
 export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App): appStatusSpanPropsResponse | undefined => {
@@ -206,7 +206,7 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App)
 
 	return {
 		icon: 'check',
-		label: 'Enabled',
+		label: 'Installed',
 	};
 };
 

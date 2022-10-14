@@ -62,17 +62,28 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
 		createFederatedUser: sinon.stub(),
+		getInternalUserByUsername: sinon.stub(),
 	};
 	const messageAdapter = {
 		sendMessage: sinon.stub(),
+		sendFileMessage: sinon.stub(),
+		deleteMessage: sinon.stub(),
+		getMessageByFederationId: sinon.stub(),
+		editMessage: sinon.stub(),
+		findOneByFederationIdOnReactions: sinon.stub(),
+		unreactToMessage: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
+	};
+	const fileAdapter = {
+		uploadFile: sinon.stub(),
 	};
 	const bridge = {
 		getUserProfileInformation: sinon.stub().resolves({}),
 		extractHomeserverOrigin: sinon.stub().returns('localDomain'),
 		joinRoom: sinon.stub(),
+		getReadStreamForFileFromUrl: sinon.stub(),
 	};
 
 	beforeEach(() => {
@@ -81,6 +92,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			userAdapter as any,
 			messageAdapter as any,
 			settingsAdapter as any,
+			fileAdapter as any,
 			bridge as any,
 		);
 	});
@@ -101,9 +113,18 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		roomAdapter.addUserToRoom.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.createFederatedUser.reset();
+		userAdapter.getInternalUserByUsername.reset();
 		messageAdapter.sendMessage.reset();
+		messageAdapter.sendFileMessage.reset();
+		messageAdapter.deleteMessage.reset();
+		messageAdapter.getMessageByFederationId.reset();
+		messageAdapter.editMessage.reset();
+		messageAdapter.unreactToMessage.reset();
+		messageAdapter.findOneByFederationIdOnReactions.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.joinRoom.reset();
+		bridge.getReadStreamForFileFromUrl.reset();
+		fileAdapter.uploadFile.reset();
 	});
 
 	describe('#onCreateRoom()', () => {
@@ -526,6 +547,53 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		});
 	});
 
+	describe('#onExternalFileMessageReceived()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: false,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+		it('should NOT send a message if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			await service.onExternalFileMessageReceived({
+				messageText: 'text',
+			} as any);
+
+			expect(messageAdapter.sendFileMessage.called).to.be.false;
+		});
+
+		it('should NOT send a message if the sender does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			userAdapter.getFederatedUserByExternalId.resolves(undefined);
+			await service.onExternalFileMessageReceived({
+				messageText: 'text',
+			} as any);
+
+			expect(messageAdapter.sendFileMessage.called).to.be.false;
+		});
+
+		it('should send a message if the room and the sender already exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			bridge.getReadStreamForFileFromUrl.resolves();
+			const files = [{ id: 'fileId', name: 'filename' }];
+			const attachments = ['attachment', 'attachment2'];
+			fileAdapter.uploadFile.resolves({ files, attachments } as any);
+
+			await service.onExternalFileMessageReceived({
+				messageBody: {
+					filename: 'filename',
+					size: 12,
+					mimetype: 'mimetype',
+					url: 'url',
+				},
+			} as any);
+
+			expect(messageAdapter.sendFileMessage.calledWith(user, room, files, attachments)).to.be.true;
+		});
+	});
+
 	describe('#onExternalMessageReceived()', () => {
 		it('should NOT send a message if the room does not exists', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
@@ -665,6 +733,169 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			} as any);
 			room.changeRoomTopic('roomTopic');
 			expect(roomAdapter.updateRoomTopic.calledWith(room, user)).to.be.true;
+		});
+	});
+
+	describe('#onRedactEvent()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: false,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT delete the message if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			await service.onRedactEvent({
+				redactsEvent: 'redactsEvent',
+			} as any);
+
+			expect(messageAdapter.deleteMessage.called).to.be.false;
+			expect(messageAdapter.unreactToMessage.called).to.be.false;
+		});
+
+		it('should NOT delete the message if the sender does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(undefined);
+			await service.onRedactEvent({
+				redactsEvent: 'redactsEvent',
+			} as any);
+
+			expect(messageAdapter.deleteMessage.called).to.be.false;
+			expect(messageAdapter.unreactToMessage.called).to.be.false;
+		});
+
+		it('should NOT delete the message if the message does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			messageAdapter.getMessageByFederationId.resolves(undefined);
+			await service.onRedactEvent({
+				redactsEvent: 'redactsEvent',
+			} as any);
+
+			expect(messageAdapter.deleteMessage.called).to.be.false;
+			expect(messageAdapter.unreactToMessage.called).to.be.false;
+		});
+
+		it('should delete the message if its a raw text redact handler', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			messageAdapter.getMessageByFederationId.resolves({ msg: 'msg' });
+			messageAdapter.findOneByFederationIdOnReactions.resolves(undefined);
+			await service.onRedactEvent({
+				redactsEvent: 'redactsEvent',
+			} as any);
+
+			expect(messageAdapter.deleteMessage.calledWith({ msg: 'msg' }, user)).to.be.true;
+			expect(messageAdapter.unreactToMessage.called).to.be.false;
+		});
+
+		it('should NOT unreact if the message was not reacted before by the user', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			messageAdapter.getMessageByFederationId.resolves(undefined);
+			messageAdapter.findOneByFederationIdOnReactions.resolves({
+				msg: 'msg',
+				reactions: {
+					reaction: {
+						federationReactionEventIds: {},
+						usernames: [],
+					},
+				},
+			});
+			await service.onRedactEvent({
+				redactsEvent: 'redactsEvent',
+			} as any);
+
+			expect(messageAdapter.deleteMessage.called).to.be.false;
+			expect(messageAdapter.unreactToMessage.called).to.be.false;
+		});
+
+		it('should unreact if the message was reacted before by the user', async () => {
+			const message = {
+				msg: 'msg',
+				reactions: {
+					reaction: {
+						federationReactionEventIds: {
+							redactsEvent: user.getUsername(),
+						},
+						usernames: [user.getUsername()],
+					},
+				},
+			};
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			messageAdapter.getMessageByFederationId.resolves(undefined);
+			messageAdapter.findOneByFederationIdOnReactions.resolves(message);
+			await service.onRedactEvent({
+				redactsEvent: 'redactsEvent',
+			} as any);
+
+			expect(messageAdapter.deleteMessage.called).to.be.false;
+			expect(messageAdapter.unreactToMessage.calledWith(user, message, 'reaction', 'redactsEvent')).to.be.true;
+		});
+	});
+
+	describe('#onExternalMessageEditedReceived()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: false,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT update the message if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			await service.onExternalMessageEditedReceived({
+				editsEvent: 'editsEvent',
+			} as any);
+
+			expect(messageAdapter.editMessage.called).to.be.false;
+		});
+
+		it('should NOT update the message if the sender does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(undefined);
+			await service.onExternalMessageEditedReceived({
+				editsEvent: 'editsEvent',
+			} as any);
+
+			expect(messageAdapter.editMessage.called).to.be.false;
+		});
+
+		it('should NOT update the message if the message does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			messageAdapter.getMessageByFederationId.resolves(undefined);
+			await service.onExternalMessageEditedReceived({
+				editsEvent: 'editsEvent',
+			} as any);
+
+			expect(messageAdapter.editMessage.called).to.be.false;
+		});
+
+		it('should NOT update the message if the content of the message is equal of the oldest one', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			messageAdapter.getMessageByFederationId.resolves({ msg: 'newMessageText' });
+			await service.onExternalMessageEditedReceived({
+				editsEvent: 'editsEvent',
+				newMessageText: 'newMessageText',
+			} as any);
+
+			expect(messageAdapter.editMessage.called).to.be.false;
+		});
+
+		it('should update the message', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			messageAdapter.getMessageByFederationId.resolves({ msg: 'differentOne' });
+			await service.onExternalMessageEditedReceived({
+				editsEvent: 'editsEvent',
+				newMessageText: 'newMessageText',
+			} as any);
+
+			expect(messageAdapter.editMessage.calledWith(user, 'newMessageText', { msg: 'differentOne' })).to.be.true;
 		});
 	});
 });
