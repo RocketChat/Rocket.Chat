@@ -2031,7 +2031,7 @@
   "Federation_Invite_Users_To_Private_Rooms": "Von nun an können Sie Verbund-Benutzer nur noch in private Räume oder Diskussionen einladen.",
   "Federation_Inviting_users_from_another_server": "Benutzer von einem anderen Server einladen",
   "Federation_Is_working_correctly": "Die Verbundintegration funktioniert ordnungsgemäß.",
-  "Federation_Legacy_support": "Verlaufsunterstützung",
+  "Federation_Legacy_support": "Legacy-Unterstützung",
   "Federation_Must_add_records": "Sie müssen die folgenden DNS-Einträge auf Ihrem Server hinzufügen:",
   "Federation_Protocol": "Protokoll",
   "Federation_Protocol_details": "Wir empfehlen HTTP nur für interne, sehr spezielle Fälle zu verwenden.",
