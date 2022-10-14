@@ -172,7 +172,6 @@ API.v1.addRoute(
 				const setting = await Settings.findOneNotHiddenById(this.urlParams._id);
 
 				if (!setting) {
-					console.error('Setting not found', this.urlParams._id);
 					return API.v1.failure();
 				}
 
@@ -196,7 +195,6 @@ API.v1.addRoute(
 				) {
 					const s = await Settings.findOneNotHiddenById(this.urlParams._id);
 					if (!s) {
-						console.error('Setting not found 3');
 						return API.v1.failure();
 					}
 					settings.set(s);
@@ -204,7 +202,6 @@ API.v1.addRoute(
 					return API.v1.success();
 				}
 
-				console.error('Setting not found 2');
 				return API.v1.failure();
 			},
 		},
