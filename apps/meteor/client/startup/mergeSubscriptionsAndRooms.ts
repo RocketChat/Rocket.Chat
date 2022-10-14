@@ -1,12 +1,9 @@
 import { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { Tracker } from 'meteor/tracker';
 
 import { Rooms, Subscriptions } from '../../app/models/client';
 import { callbacks } from '../../lib/callbacks';
 import { SubscriptionWithRoom } from '../definitions/SubscriptionWithRoom';
-import { runReactiveFunctions } from '../hooks/useReactiveQuery';
 
 const getLowerCaseNames = (
 	room: Pick<IRoom, 'name' | 'fname' | 'prid'>,
@@ -180,9 +177,3 @@ callbacks.add('cachedCollection-loadFromServer-rooms', mergeRoomSub);
 callbacks.add('cachedCollection-received-subscriptions', mergeSubRoom);
 callbacks.add('cachedCollection-sync-subscriptions', mergeSubRoom);
 callbacks.add('cachedCollection-loadFromServer-subscriptions', mergeSubRoom);
-
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		runReactiveFunctions();
-	});
-});

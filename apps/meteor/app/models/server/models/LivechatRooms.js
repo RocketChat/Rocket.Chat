@@ -209,7 +209,10 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
-			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
+			'$or': [
+				{ 'email.thread': { $elemMatch: { $in: emailThread } } },
+				{ 'email.thread': new RegExp(emailThread.map((t) => `"${t}"`).join('|')) },
+			],
 			...(departmentId && { departmentId }),
 		};
 
