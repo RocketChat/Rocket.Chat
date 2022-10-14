@@ -21,6 +21,7 @@ const user: IUser = Users.findOneById('rocket.cat');
 const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
+// TODO: change these messages with room notifications
 const sendErrorReplyMessage = (error: string, options: any): void => {
 	if (!options?.rid || !options?.msgId) {
 		return;
@@ -29,6 +30,21 @@ const sendErrorReplyMessage = (error: string, options: any): void => {
 	const message = {
 		groupable: false,
 		msg: `@${options.sender} something went wrong when replying email, sorry. **Error:**: ${error}`,
+		_id: String(Date.now()),
+		rid: options.rid,
+		ts: new Date(),
+	};
+
+	sendMessage(user, message, { _id: options.rid });
+};
+
+const sendSuccessReplyMessage = (options: any): void => {
+	if (!options?.rid || !options?.msgId) {
+		return;
+	}
+	const message = {
+		groupable: false,
+		msg: `@${options.sender} Attachment was sent successfully`,
 		_id: String(Date.now()),
 		rid: options.rid,
 		ts: new Date(),
@@ -66,6 +82,7 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 slashCommands.add({
 	command: 'sendEmailAttachment',
 	callback: (command: any, params: string) => {
+		logger.debug('sendEmailAttachment command: ', command, params);
 		if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
 			return;
 		}
@@ -142,6 +159,12 @@ slashCommands.add({
 				},
 			},
 		);
+
+		return sendSuccessReplyMessage({
+			msgId: message._id,
+			sender: message.u.username,
+			rid: room._id,
+		});
 	},
 	options: {
 		description: 'Send attachment as email',
@@ -151,26 +174,34 @@ slashCommands.add({
 });
 
 callbacks.add(
-	'beforeSaveMessage',
+	'afterSaveMessage',
 	function (message: IMessage, room: any) {
 		if (!room?.email?.inbox) {
 			return message;
 		}
 
-		if (message.file) {
-			message.attachments = message.attachments || [];
-			message.attachments.push({
-				actions: [
-					{
-						type: 'button',
-						text: t('Send_via_Email_as_attachment'),
-						msg: `/sendEmailAttachment ${message._id}`,
-						msg_in_chat_window: true,
-						msg_processing_type: 'sendMessage',
-					},
-				],
-			});
-
+		if (message.files?.length && message.u.username !== 'rocket.cat') {
+			sendMessage(
+				user,
+				{
+					msg: '',
+					attachments: [
+						{
+							actions: [
+								{
+									type: 'button',
+									text: t('Send_via_Email_as_attachment'),
+									msg: `/sendEmailAttachment ${message._id}`,
+									msg_in_chat_window: true,
+									msg_processing_type: 'sendMessage',
+								},
+							],
+						},
+					],
+				},
+				room,
+				true,
+			);
 			return message;
 		}
 
