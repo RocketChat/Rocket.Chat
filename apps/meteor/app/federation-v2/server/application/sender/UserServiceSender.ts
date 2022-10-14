@@ -1,6 +1,6 @@
 import type { IFederationBridge } from '../../domain/IFederationBridge';
 import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
-import { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
 import { FederationService } from '../AbstractFederationService';
@@ -33,7 +33,7 @@ export class FederationUserServiceSender extends FederationService {
 		if (!this.internalSettingsAdapter.isTypingStatusEnabled()) {
 			return;
 		}
-		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalUsername(internalUsername)
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalUsername(internalUsername);
 		if (!federatedUser) {
 			return;
 		}
@@ -42,7 +42,7 @@ export class FederationUserServiceSender extends FederationService {
 		if (!federatedRoom) {
 			return;
 		}
-		
+
 		await this.bridge.notifyUserTyping(federatedRoom.getExternalId(), federatedUser.getExternalId(), isTyping);
 	}
 }

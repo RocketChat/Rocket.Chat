@@ -30,6 +30,7 @@ import { FederationMessageServiceSender } from '../application/sender/MessageSer
 import { FederationUserServiceListener } from '../application/UserServiceListener';
 import { MatrixUserTypingStatusChangedHandler } from './matrix/handlers/User';
 import { FederationUserServiceSender } from '../application/sender/UserServiceSender';
+import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';
 
 export class FederationFactory {
 	public static buildRocketSettingsAdapter(): RocketChatSettingsAdapter {
@@ -50,6 +51,10 @@ export class FederationFactory {
 
 	public static buildRocketFileAdapter(): RocketChatFileAdapter {
 		return new RocketChatFileAdapter();
+	}
+
+	public static buildRocketNotificationAdapter(): RocketChatNotificationAdapter {
+		return new RocketChatNotificationAdapter();
 	}
 
 	public static buildFederationQueue(): InMemoryQueue {
@@ -134,10 +139,18 @@ export class FederationFactory {
 		rocketRoomAdapter: RocketChatRoomAdapter,
 		rocketUserAdapter: RocketChatUserAdapter,
 		rocketFileAdapter: RocketChatFileAdapter,
+		rocketNotificationAdapter: RocketChatNotificationAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		bridge: IFederationBridge,
 	): FederationUserServiceListener {
-		return new FederationUserServiceListener(rocketRoomAdapter, rocketUserAdapter, rocketFileAdapter, rocketSettingsAdapter, bridge);
+		return new FederationUserServiceListener(
+			rocketRoomAdapter,
+			rocketUserAdapter,
+			rocketFileAdapter,
+			rocketNotificationAdapter,
+			rocketSettingsAdapter,
+			bridge,
+		);
 	}
 
 	public static buildRoomInternalHooksValidator(

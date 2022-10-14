@@ -59,7 +59,7 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public areEphemeralEventsEnabled(): boolean {
-		return settings.get('Federation_Matrix_enable_typing_status') === true;
+		return this.isTypingStatusEnabled();
 	}
 
 	public isTypingStatusEnabled(): boolean {

@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import type { IUser, UserStatus } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 
 import { setUserAvatar } from '../../../../../lib/server';
 import { FederatedUser } from '../../../domain/FederatedUser';
-import { api } from '../../../../../../server/sdk/api';
 
 const createFederatedUserInstance = (externalUserId: string, user: IUser, remote = true): FederatedUser => {
 	const federatedUser = FederatedUser.createWithInternalReference(externalUserId, !remote, user);
@@ -114,15 +113,5 @@ export class RocketChatUserAdapter {
 
 	public async updateFederationAvatar(internalUserId: string, externalAvatarUrl: string): Promise<void> {
 		await Users.setFederationAvatarUrlById(internalUserId, externalAvatarUrl);
-	}
-
-	public async updateStatus(federatedUser: FederatedUser, status: UserStatus, statusMessage?: string): Promise<void> {
-		const user = federatedUser.getInternalReference();
-		const { _id, username, statusText, roles, name } = user;
-		await Users.updateOne({ _id }, { $set: { status, statusText: statusMessage || '' } });
-		api.broadcast('presence.status', {
-			user: { status, _id, username, statusText: statusMessage || statusText, roles, name },
-			previousStatus: user.status,
-		});
 	}
 }

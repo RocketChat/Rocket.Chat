@@ -107,7 +107,6 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		roomAdapter.createFederatedRoom.reset();
 		roomAdapter.createFederatedRoomForDirectMessage.reset();
 		roomAdapter.removeDirectMessageRoom.reset();
-		roomAdapter.getFederatedRoomByExternalId.reset();
 		roomAdapter.updateRoomType.reset();
 		roomAdapter.updateRoomName.reset();
 		roomAdapter.updateFederatedRoomByInternalRoomId.reset();
