@@ -1,5 +1,5 @@
 import type { AppPricingPlan } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Tag, Margins } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
 
@@ -37,7 +37,7 @@ const formatPriceAndPurchaseType = (purchaseType: string, pricingPlans: AppPrici
 	return { type: 'Free', price: '-' };
 };
 
-const PriceDisplay: FC<PriceDisplayProps> = ({ purchaseType, pricingPlans, price, showType = true, ...props }) => {
+const PriceDisplay: FC<PriceDisplayProps> = ({ purchaseType, pricingPlans, price, showType = true }) => {
 	const t = useTranslation();
 
 	const { type, price: formattedPrice } = useMemo(
@@ -46,14 +46,16 @@ const PriceDisplay: FC<PriceDisplayProps> = ({ purchaseType, pricingPlans, price
 	);
 
 	return (
-		<Box display='flex' flexDirection='column' {...props}>
-			{showType && (
-				<Box color='default' withTruncatedText>
-					{t(type as TranslationKey)}
-				</Box>
-			)}
-			<Box withTruncatedText>{!showType && type === 'Free' ? t(type) : formattedPrice}</Box>
-		</Box>
+		<Margins inlineStart='x8'>
+			<Tag small>
+				{showType && (
+					<Box color='default' withTruncatedText>
+						{t(type as TranslationKey)}
+					</Box>
+				)}
+				<Box withTruncatedText>{!showType && type === 'Free' ? t(type) : formattedPrice}</Box>
+			</Tag>
+		</Margins>
 	);
 };
 
