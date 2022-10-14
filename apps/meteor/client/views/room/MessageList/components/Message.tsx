@@ -2,6 +2,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Message as MessageTemplate, MessageLeftContainer, MessageContainer, MessageBody, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
@@ -29,6 +30,7 @@ const Message: FC<{
 		actions: { openUserCard },
 	} = useMessageActions();
 
+	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const isSelecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
@@ -46,7 +48,7 @@ const Message: FC<{
 			data-qa-selected={isSelected}
 		>
 			<MessageLeftContainer>
-				{!sequential && message.u.username && !isSelecting && (
+				{!sequential && message.u.username && !isSelecting && showUserAvatar && (
 					<UserAvatar
 						url={message.avatar}
 						username={message.u.username}
