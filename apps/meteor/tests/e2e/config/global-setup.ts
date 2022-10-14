@@ -4,6 +4,7 @@ import { chromium } from '@playwright/test';
 
 import * as constants from './constants';
 import injectInitialData from '../fixtures/inject-initial-data';
+import insertApp from '../fixtures/insert-apps';
 
 export default async function (): Promise<void> {
 	const browser = await chromium.launch();
@@ -52,4 +53,6 @@ export default async function (): Promise<void> {
 		await page.context().storageState({ path: `${user.username}-session.json` });
 		await browser.close();
 	}
+
+	await insertApp();
 }

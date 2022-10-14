@@ -170,4 +170,16 @@ export class HomeContent {
 	get takeOmnichannelChatButton(): Locator {
 		return this.page.locator('role=button[name="Take it!"]');
 	}
+
+	get btnCall(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
+	}
+
+	get btnStartCall(): Locator {
+		return this.page.locator('#video-conf-root .rcx-button--primary.rcx-button >> text="Start call"');
+	}
+
+	get btnJoinCall(): Locator {
+		return this.page.locator('.rcx-button--small >> text="Join call"');
+	}
 }
