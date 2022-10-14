@@ -26,7 +26,7 @@ const { FederatedUserEE } = proxyquire.noCallThru().load('../../../../../../app/
 });
 const { FederationRoomInternalHooksServiceSender } = proxyquire
 	.noCallThru()
-	.load('../../../../../../app/federation-v2/server/application/sender/RoomInternalHooksServiceSender', {
+	.load('../../../../../../app/federation-v2/server/application/sender/room/RoomInternalHooksServiceSender', {
 		mongodb: {
 			'ObjectId': class ObjectId {
 				toHexString(): string {
@@ -50,10 +50,12 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		getInternalUserById: sinon.stub(),
 		getFederatedUserByInternalUsername: sinon.stub(),
 		createLocalUser: sinon.stub(),
+		getInternalUserByUsername: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
 	};
+	const messageAdapter = {};
 	const bridge = {
 		getUserProfileInformation: sinon.stub().resolves({}),
 		extractHomeserverOrigin: sinon.stub(),
@@ -74,7 +76,13 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 	];
 
 	beforeEach(() => {
-		service = new FederationRoomInternalHooksServiceSender(roomAdapter as any, userAdapter as any, settingsAdapter as any, bridge as any);
+		service = new FederationRoomInternalHooksServiceSender(
+			roomAdapter as any,
+			userAdapter as any,
+			settingsAdapter as any,
+			messageAdapter as any,
+			bridge as any,
+		);
 	});
 
 	afterEach(() => {
@@ -86,6 +94,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		userAdapter.createFederatedUser.reset();
 		userAdapter.getFederatedUserByInternalUsername.reset();
 		userAdapter.createLocalUser.reset();
+		userAdapter.getInternalUserByUsername.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.createUser.reset();
 		bridge.createRoom.reset();

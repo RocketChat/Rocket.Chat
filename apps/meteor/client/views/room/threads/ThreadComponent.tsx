@@ -10,7 +10,7 @@ import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
-import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
+import { useTabBarOpenUserInfo } from '../contexts/ToolboxContext';
 import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
 

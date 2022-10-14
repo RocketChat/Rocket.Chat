@@ -102,7 +102,7 @@ export class Spotlight {
 
 		users.push(
 			...Promise.await(
-				SubscriptionsRaw.findConnectedUsersExcept(userId, text, usernames, searchFields, options.limit || 5, roomType, match),
+				SubscriptionsRaw.findConnectedUsersExcept(userId, text, usernames, searchFields, {}, options.limit || 5, roomType, match),
 				{
 					readPreference: options.readPreference,
 				},

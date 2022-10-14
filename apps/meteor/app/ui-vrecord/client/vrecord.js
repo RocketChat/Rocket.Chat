@@ -77,7 +77,9 @@ Template.vrecDialog.events({
 	'click .vrec-dialog .ok'(e, instance) {
 		const [rid, tmid, input] = [instance.rid.get(), instance.tmid.get(), instance.input.get()];
 		const cb = (blob) => {
-			fileUpload([{ file: blob, type: 'video', name: `${TAPi18n.__('Video record')}.webm` }], input, { rid, tmid });
+			const fileName = `${TAPi18n.__('Video record')}.webm`;
+			const file = new File([blob], fileName, { type: 'video/webm' });
+			fileUpload([{ file, type: 'video/webm', name: fileName }], input, { rid, tmid });
 			VRecDialog.close();
 		};
 		VideoRecorder.stop(cb);

@@ -1,20 +1,24 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import React, { useEffect, FC } from 'react';
+import React, { useEffect, Suspense, ReactElement } from 'react';
 
 import { openRoom } from '../../../../../app/ui-utils/client/lib/openRoom';
-import RoomWithData from '../../../room/Room';
+import { Room, RoomProvider, RoomSkeleton } from '../../../room';
 
-const Chat: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
+type ChatProps = { rid: IRoom['_id'] };
+
+const Chat = ({ rid }: ChatProps): ReactElement => {
 	useEffect(() => {
-		// NewRoomManager.open(rid);
-		// RoomManager.open(`l${rid}`);
 		openRoom('l', rid, false);
 	}, [rid]);
 
 	return (
 		<Box position='absolute' backgroundColor='surface' width='full' height='full'>
-			<RoomWithData />
+			<Suspense fallback={<RoomSkeleton />}>
+				<RoomProvider rid={rid}>
+					<Room />
+				</RoomProvider>
+			</Suspense>
 		</Box>
 	);
 };
