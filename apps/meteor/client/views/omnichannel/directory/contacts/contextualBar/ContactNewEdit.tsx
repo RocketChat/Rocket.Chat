@@ -2,8 +2,9 @@ import { ILivechatCustomField, ILivechatVisitor, Serialized } from '@rocket.chat
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useState, useEffect, ReactElement, MouseEvent } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 import { useController, useForm } from 'react-hook-form';
+import { debounce } from 'underscore';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
@@ -110,9 +111,11 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 		control,
 		setValue,
 		getValues,
+		handleSubmit,
+		trigger,
 	} = useForm<ContactFormData>({
-		mode: 'onBlur',
-		reValidateMode: 'onBlur',
+		mode: 'onSubmit',
+		reValidateMode: 'onSubmit',
 		defaultValues: initialValue,
 	});
 
@@ -170,13 +173,9 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 		setValue('username', user.username || '');
 	};
 
-	const handleSave = async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
-		e.preventDefault();
+	const validate = (fieldName: keyof ContactFormData): (() => void) => debounce(() => trigger(fieldName), 500);
 
-		if (!isValid) {
-			return;
-		}
-
+	const handleSave = async (): Promise<void> => {
 		const { name, phone, email, customFields, username, token } = getValues();
 
 		const payload = {
@@ -219,14 +218,22 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 				<Field>
 					<Field.Label>{t('Email')}</Field.Label>
 					<Field.Row>
-						<TextInput {...register('email', { validate: { isEmailValid } })} error={errors.email?.message} flexGrow={1} />
+						<TextInput
+							{...register('email', { validate: isEmailValid, onChange: validate('email') })}
+							error={errors.email?.message}
+							flexGrow={1}
+						/>
 					</Field.Row>
 					<Field.Error>{errors.email?.message}</Field.Error>
 				</Field>
 				<Field>
 					<Field.Label>{t('Phone')}</Field.Label>
 					<Field.Row>
-						<TextInput {...register('phone', { validate: isPhoneValid })} error={errors.phone?.message} flexGrow={1} />
+						<TextInput
+							{...register('phone', { validate: isPhoneValid, onChange: validate('phone') })}
+							error={errors.phone?.message}
+							flexGrow={1}
+						/>
 					</Field.Row>
 					<Field.Error>{errors.phone?.message}</Field.Error>
 				</Field>
@@ -245,7 +252,7 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 					<Button flexGrow={1} onClick={close}>
 						{t('Cancel')}
 					</Button>
-					<Button mie='none' type='submit' onClick={handleSave} flexGrow={1} disabled={!isValid} primary>
+					<Button mie='none' type='submit' onClick={handleSubmit(handleSave)} flexGrow={1} disabled={!isValid} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
