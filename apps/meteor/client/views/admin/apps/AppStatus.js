@@ -1,5 +1,6 @@
 import { Box, Button, Icon, Throbber, Tag } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, memo } from 'react';
 
