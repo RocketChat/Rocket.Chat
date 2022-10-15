@@ -281,10 +281,11 @@ function AppMenu({ app, ...props }) {
 		};
 	}, [
 		canAppBeSubscribed,
+		isSubscribed,
 		t,
 		handleSubscription,
 		app.installed,
-		button?.label,
+		button.label,
 		handleAcquireApp,
 		context,
 		handleViewLogs,
