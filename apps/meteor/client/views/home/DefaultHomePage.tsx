@@ -21,6 +21,7 @@ const DefaultHomePage = (): ReactElement => {
 	const canAddUsers = usePermission('view-user-administration');
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const workspaceName = useSetting('Site_Name');
+	const displayCustomBody = Boolean(useSetting('Layout_Home_Body'));
 
 	return (
 		<Page data-qa='page-home' data-qa-type='default' background='tint'>
@@ -56,9 +57,11 @@ const DefaultHomePage = (): ReactElement => {
 						<DocumentationCard />
 					</HomepageGridItem>
 				</Grid>
-				<Box mbs='x16'>
-					<CustomHomePageContent />
-				</Box>
+				{displayCustomBody && (
+					<Box mbs='x16'>
+						<CustomHomePageContent />
+					</Box>
+				)}
 			</PageScrollableContent>
 		</Page>
 	);
