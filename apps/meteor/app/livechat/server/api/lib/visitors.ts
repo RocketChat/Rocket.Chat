@@ -1,8 +1,10 @@
+import type { ILivechatVisitor, IMessage, IOmnichannelRoom, IRoom, IUser, IVisitor } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Messages, LivechatRooms, LivechatCustomField } from '@rocket.chat/models';
+import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
 
-export async function findVisitorInfo({ visitorId }) {
+export async function findVisitorInfo({ visitorId }: { visitorId: IVisitor['_id'] }) {
 	const visitor = await LivechatVisitors.findOneById(visitorId);
 	if (!visitor) {
 		throw new Error('visitor-not-found');
@@ -13,7 +15,13 @@ export async function findVisitorInfo({ visitorId }) {
 	};
 }
 
-export async function findVisitedPages({ roomId, pagination: { offset, count, sort } }) {
+export async function findVisitedPages({
+	roomId,
+	pagination: { offset, count, sort },
+}: {
+	roomId: IRoom['_id'];
+	pagination: { offset: number; count: number; sort: FindOptions<IMessage>['sort'] };
+}) {
 	const room = await LivechatRooms.findOneById(roomId);
 	if (!room) {
 		throw new Error('invalid-room');
@@ -34,7 +42,17 @@ export async function findVisitedPages({ roomId, pagination: { offset, count, so
 	};
 }
 
-export async function findChatHistory({ userId, roomId, visitorId, pagination: { offset, count, sort } }) {
+export async function findChatHistory({
+	userId,
+	roomId,
+	visitorId,
+	pagination: { offset, count, sort },
+}: {
+	userId: IUser['_id'];
+	roomId: IRoom['_id'];
+	visitorId: IVisitor['_id'];
+	pagination: { offset: number; count: number; sort: FindOptions<IOmnichannelRoom>['sort'] };
+}) {
 	const room = await LivechatRooms.findOneById(roomId);
 	if (!room) {
 		throw new Error('invalid-room');
@@ -67,6 +85,14 @@ export async function searchChats({
 	closedChatsOnly,
 	servedChatsOnly: served,
 	pagination: { offset, count, sort },
+}: {
+	userId: IUser['_id'];
+	roomId: IRoom['_id'];
+	visitorId: IVisitor['_id'];
+	searchText?: string;
+	closedChatsOnly?: string;
+	servedChatsOnly?: string;
+	pagination: { offset: number; count: number; sort: FindOptions<IOmnichannelRoom>['sort'] };
 }) {
 	const room = await LivechatRooms.findOneById(roomId);
 	if (!room) {
@@ -104,14 +130,22 @@ export async function searchChats({
 		history,
 		count: history.length,
 		offset,
-		total: (total && total.count) || 0,
+		total: total?.count ?? 0,
 	};
 }
 
-export async function findVisitorsToAutocomplete({ selector }) {
+export async function findVisitorsToAutocomplete({
+	selector,
+}: {
+	selector: {
+		exceptions?: ILivechatVisitor['_id'][];
+		conditions?: Record<string, unknown>;
+		term: string;
+	};
+}) {
 	const { exceptions = [], conditions = {} } = selector;
 
-	const options = {
+	const options: FindOptions<ILivechatVisitor> = {
 		projection: {
 			_id: 1,
 			name: 1,
@@ -133,6 +167,10 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
 	emailOrPhone,
 	nameOrUsername,
 	pagination: { offset, count, sort },
+}: {
+	emailOrPhone?: string;
+	nameOrUsername?: RegExp;
+	pagination: { offset: number; count: number; sort: FindOptions<IVisitor>['sort'] };
 }) {
 	const allowedCF = await LivechatCustomField.findMatchingCustomFields('visitor', true, { projection: { _id: 1 } })
 		.map((cf) => cf._id)
