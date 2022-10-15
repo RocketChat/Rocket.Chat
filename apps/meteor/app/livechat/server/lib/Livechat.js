@@ -55,7 +55,7 @@ export const Livechat = {
 
 	findGuest(token) {
 		return LivechatVisitors.getVisitorByToken(token, {
-			fields: {
+			projection: {
 				name: 1,
 				username: 1,
 				token: 1,
