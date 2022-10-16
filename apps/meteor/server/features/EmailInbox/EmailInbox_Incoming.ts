@@ -127,7 +127,7 @@ async function uploadAttachment(attachment: Attachment, rid: string, visitorToke
 }
 
 export async function onEmailReceived(email: ParsedMail, inbox: string, department = ''): Promise<void> {
-	logger.debug(`New email conversation received on inbox ${inbox}. Will be assigned to department ${department}`, email);
+	logger.debug(`New email conversation received on inbox ${inbox}. Will be assigned to department ${department}`);
 	if (!email.from?.value?.[0]?.address) {
 		return;
 	}
@@ -161,12 +161,18 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 		room = await QueueManager.unarchiveRoom(room);
 	}
 
-	let msg = email.text;
-
-	if (email.html) {
-		// Try to remove the signature and history
-		msg = stripHtml(email.html.replace(/<div name="messageSignatureSection.+/s, '')).result;
-	}
+	// TODO: html => md with turndown
+	const msg = email.html
+		? stripHtml(email.html, {
+				dumpLinkHrefsNearby: {
+					enabled: true,
+					putOnNewLine: false,
+					wrapHeads: '(',
+					wrapTails: ')',
+				},
+				skipHtmlDecoding: false,
+		  }).result
+		: email.text || '';
 
 	const rid = room?._id ?? Random.id();
 	const msgId = Random.id();
