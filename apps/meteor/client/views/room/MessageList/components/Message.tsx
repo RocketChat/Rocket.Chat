@@ -30,7 +30,7 @@ const Message: FC<{
 		actions: { openUserCard },
 	} = useMessageActions();
 
-	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
+	const showUserAvatar = useUserPreference<boolean>('displayAvatars');
 	const isSelecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
