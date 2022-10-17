@@ -1,5 +1,5 @@
 import type { AppPricingPlan } from '@rocket.chat/core-typings';
-import { Box, Tag, Margins } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
 
@@ -22,16 +22,10 @@ const AppStatusPriceDisplay: FC<AppStatusPriceDisplayProps> = ({ purchaseType, p
 	);
 
 	return (
-		<Margins inlineStart='x8'>
-			<Tag small>
-				{showType && (
-					<Box color='default' withTruncatedText>
-						{t(type as TranslationKey)}
-					</Box>
-				)}
-				<Box withTruncatedText>{!showType && type === 'Free' ? t(type) : formattedPrice}</Box>
-			</Tag>
-		</Margins>
+		<Tag small>
+			{showType && <Box color='default'>{t(type as TranslationKey)}</Box>}
+			<Box>{!showType && type === 'Free' ? t(type) : formattedPrice}</Box>
+		</Tag>
 	);
 };
 

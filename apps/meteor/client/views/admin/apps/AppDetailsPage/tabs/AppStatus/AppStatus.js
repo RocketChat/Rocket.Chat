@@ -139,7 +139,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 						)}
 					</Button>
 					{shouldShowPriceDisplay && !installed && (
-						<Box>
+						<Box mis='x8'>
 							<AppStatusPriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} />
 						</Box>
 					)}
